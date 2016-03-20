@@ -419,7 +419,18 @@ exports.examples = [
     return (
       <View>
         <Text>
-          This text contains an inline image <Image source={require('./flux.png')}/>. Neat, huh?
+          This text contains an inline image <Image source={require('./flux.png')} style={{width: 30, height: 11, resizeMode: 'cover'}}/>. Neat, huh?
+        </Text>
+      </View>
+    );
+  },
+}, {
+  title: 'Text shadow',
+  render: function() {
+    return (
+      <View>
+        <Text style={{fontSize: 20, textShadowOffset: {width: 2, height: 2}, textShadowRadius: 1, textShadowColor: '#00cccc'}}>
+          Demo text shadow
         </Text>
       </View>
     );

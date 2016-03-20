@@ -19,10 +19,24 @@
 
 #include <jni.h>
 
-#include "References.h"
+#include "References-forward.h"
+
+#ifdef __ANDROID__
+# include <android/log.h>
+# define XLOG_TAG "fb-jni"
+# define XLOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, XLOG_TAG, __VA_ARGS__)
+# define XLOGD(...) __android_log_print(ANDROID_LOG_DEBUG, XLOG_TAG, __VA_ARGS__)
+# define XLOGI(...) __android_log_print(ANDROID_LOG_INFO, XLOG_TAG, __VA_ARGS__)
+# define XLOGW(...) __android_log_print(ANDROID_LOG_WARN, XLOG_TAG, __VA_ARGS__)
+# define XLOGE(...) __android_log_print(ANDROID_LOG_ERROR, XLOG_TAG, __VA_ARGS__)
+# define XLOGWTF(...) __android_log_print(ANDROID_LOG_FATAL, XLOG_TAG, __VA_ARGS__)
+#endif
 
 namespace facebook {
 namespace jni {
+
+class JObject;
+
 
 /// Wrapper of a jmethodID. Provides a common base for JMethod specializations
 class JMethodBase {
@@ -65,7 +79,7 @@ class JMethod<TYPE(Args...)> : public JMethodBase {                             
                                                                                  \
   TYPE operator()(alias_ref<jobject> self, Args... args);                        \
                                                                                  \
-  friend class JObjectWrapper<jclass>;                                           \
+  friend class JClass;                                                           \
 }
 
 DEFINE_PRIMITIVE_METHOD_CLASS(void);
@@ -82,26 +96,15 @@ DEFINE_PRIMITIVE_METHOD_CLASS(jdouble);
 /// @endcond
 
 
-/// JMethod specialization for references that wraps the return value in a @ref local_ref
-template<typename T, typename... Args>
-class JMethod<T*(Args...)> : public JMethodBase {
- public:
-  static_assert(IsPlainJniReference<T*>(), "T* must be a JNI reference");
-
-  using JMethodBase::JMethodBase;
-  JMethod() noexcept {};
-  JMethod(const JMethod& other) noexcept = default;
-
-  /// Invoke a method and return a local reference wrapping the result
-  local_ref<T*> operator()(alias_ref<jobject> self, Args... args);
-
-  friend class JObjectWrapper<jclass>;
-};
-
-
 /// Convenience type representing constructors
+/// These should only be used with JClass::getConstructor and JClass::newObject.
 template<typename F>
-using JConstructor = JMethod<F>;
+struct JConstructor : private JMethod<F> {
+  using JMethod<F>::JMethod;
+ private:
+  JConstructor(const JMethod<F>& other) : JMethod<F>(other.getId()) {}
+  friend class JClass;
+};
 
 /// Representation of a jStaticMethodID
 template<typename F>
@@ -126,7 +129,7 @@ class JStaticMethod<TYPE(Args...)> : public JMethodBase {                   \
                                                                             \
   TYPE operator()(alias_ref<jclass> cls, Args... args);                     \
                                                                             \
-  friend class JObjectWrapper<jclass>;                                      \
+  friend class JClass;                                                      \
 }
 
 DEFINE_PRIMITIVE_STATIC_METHOD_CLASS(void);
@@ -142,22 +145,6 @@ DEFINE_PRIMITIVE_STATIC_METHOD_CLASS(jdouble);
 #pragma pop_macro("DEFINE_PRIMITIVE_STATIC_METHOD_CLASS")
 /// @endcond
 
-
-/// JStaticMethod specialization for references that wraps the return value in a @ref local_ref
-template<typename T, typename... Args>
-class JStaticMethod<T*(Args...)> : public JMethodBase {
-  static_assert(IsPlainJniReference<T*>(), "T* must be a JNI reference");
-
- public:
-  using JMethodBase::JMethodBase;
-  JStaticMethod() noexcept {};
-  JStaticMethod(const JStaticMethod& other) noexcept = default;
-
-  /// Invoke a method and return a local reference wrapping the result
-  local_ref<T*> operator()(alias_ref<jclass> cls, Args... args);
-
-  friend class JObjectWrapper<jclass>;
-};
 
 /// Representation of a jNonvirtualMethodID
 template<typename F>
@@ -180,9 +167,9 @@ class JNonvirtualMethod<TYPE(Args...)> : public JMethodBase {               \
   JNonvirtualMethod() noexcept {};                                          \
   JNonvirtualMethod(const JNonvirtualMethod& other) noexcept = default;     \
                                                                             \
-  TYPE operator()(alias_ref<jobject> self, jclass cls, Args... args);       \
+  TYPE operator()(alias_ref<jobject> self, alias_ref<jclass> cls, Args... args);       \
                                                                             \
-  friend class JObjectWrapper<jclass>;                                      \
+  friend class JClass;                                                      \
 }
 
 DEFINE_PRIMITIVE_NON_VIRTUAL_METHOD_CLASS(void);
@@ -197,23 +184,6 @@ DEFINE_PRIMITIVE_NON_VIRTUAL_METHOD_CLASS(jdouble);
 
 #pragma pop_macro("DEFINE_PRIMITIVE_NON_VIRTUAL_METHOD_CLASS")
 /// @endcond
-
-
-/// JNonvirtualMethod specialization for references that wraps the return value in a @ref local_ref
-template<typename T, typename... Args>
-class JNonvirtualMethod<T*(Args...)> : public JMethodBase {
-  static_assert(IsPlainJniReference<T*>(), "T* must be a JNI reference");
-
- public:
-  using JMethodBase::JMethodBase;
-  JNonvirtualMethod() noexcept {};
-  JNonvirtualMethod(const JNonvirtualMethod& other) noexcept = default;
-
-  /// Invoke a method and return a local reference wrapping the result
-  local_ref<T*> operator()(alias_ref<jobject> self, jclass cls, Args... args);
-
-  friend class JObjectWrapper<jclass>;
-};
 
 
 /**
@@ -245,7 +215,7 @@ class JField {
   /// @pre object != nullptr
   void set(jobject object, T value) noexcept;
 
-  friend class JObjectWrapper<jobject>;
+  friend class JObject;
 };
 
 
@@ -278,19 +248,10 @@ class JStaticField {
   /// @pre object != nullptr
   void set(jclass jcls, T value) noexcept;
 
-  friend class JObjectWrapper<jclass>;
-
+  friend class JClass;
+  friend class JObject;
 };
 
-
-/// Type traits for Java types (currently providing Java type descriptors)
-template<typename T>
-struct jtype_traits;
-
-
-/// Type traits for Java methods (currently providing Java type descriptors)
-template<typename F>
-struct jmethod_traits;
 
 /// Template magic to provide @ref jmethod_traits
 template<typename R, typename... Args>
@@ -299,4 +260,75 @@ struct jmethod_traits<R(Args...)> {
   static std::string constructor_descriptor();
 };
 
+
+// jtype_traits ////////////////////////////////////////////////////////////////////////////////////
+
+template<typename T>
+struct jtype_traits {
+private:
+  using Repr = ReprType<T>;
+public:
+  // The jni type signature (described at
+  // http://docs.oracle.com/javase/1.5.0/docs/guide/jni/spec/types.html).
+  static std::string descriptor() {
+    std::string descriptor;
+    if (Repr::kJavaDescriptor == nullptr) {
+      descriptor = Repr::get_instantiated_java_descriptor();
+    } else {
+      descriptor = Repr::kJavaDescriptor;
+    }
+    return descriptor;
+  }
+
+  // The signature used for class lookups. See
+  // http://docs.oracle.com/javase/6/docs/api/java/lang/Class.html#getName().
+  static std::string base_name() {
+    if (Repr::kJavaDescriptor != nullptr) {
+      std::string base_name = Repr::kJavaDescriptor;
+      return base_name.substr(1, base_name.size() - 2);
+    }
+    return Repr::get_instantiated_base_name();
+  }
+};
+
+#pragma push_macro("DEFINE_FIELD_AND_ARRAY_TRAIT")
+#undef DEFINE_FIELD_AND_ARRAY_TRAIT
+
+#define DEFINE_FIELD_AND_ARRAY_TRAIT(TYPE, DSC)                     \
+template<>                                                          \
+struct jtype_traits<TYPE> {                                         \
+  static std::string descriptor() { return std::string{#DSC}; }     \
+  static std::string base_name() { return descriptor(); }           \
+  using array_type = TYPE ## Array;                                 \
+};                                                                  \
+template<>                                                          \
+struct jtype_traits<TYPE ## Array> {                                \
+  static std::string descriptor() { return std::string{"[" #DSC}; } \
+  static std::string base_name() { return descriptor(); }           \
+  using entry_type = TYPE;                                          \
+};
+
+// There is no voidArray, handle that without the macro.
+template<>
+struct jtype_traits<void> {
+  static std::string descriptor() { return std::string{"V"}; };
+};
+
+DEFINE_FIELD_AND_ARRAY_TRAIT(jboolean, Z)
+DEFINE_FIELD_AND_ARRAY_TRAIT(jbyte,    B)
+DEFINE_FIELD_AND_ARRAY_TRAIT(jchar,    C)
+DEFINE_FIELD_AND_ARRAY_TRAIT(jshort,   S)
+DEFINE_FIELD_AND_ARRAY_TRAIT(jint,     I)
+DEFINE_FIELD_AND_ARRAY_TRAIT(jlong,    J)
+DEFINE_FIELD_AND_ARRAY_TRAIT(jfloat,   F)
+DEFINE_FIELD_AND_ARRAY_TRAIT(jdouble,  D)
+
+#pragma pop_macro("DEFINE_FIELD_AND_ARRAY_TRAIT")
+
+
+template <typename T>
+struct jmethod_traits_from_cxx;
+
 }}
+
+#include "Meta-inl.h"

@@ -29,14 +29,6 @@ RCT_EXPORT_MODULE()
   return _bridge.uiManager.methodQueue;
 }
 
-- (instancetype)init
-{
-  if ((self = [super init])) {
-    _snapshotCounter = [NSMutableDictionary new];
-  }
-  return self;
-}
-
 RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
 {
   RCTAssert(_controller != nil, @"No snapshot controller configured.");
@@ -44,6 +36,9 @@ RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
   [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
 
     NSString *testName = NSStringFromSelector(_testSelector);
+    if (!_snapshotCounter) {
+      _snapshotCounter = [NSMutableDictionary new];
+    }
     _snapshotCounter[testName] = (@([_snapshotCounter[testName] integerValue] + 1)).stringValue;
 
     NSError *error = nil;
@@ -67,7 +62,7 @@ RCT_REMAP_METHOD(shouldResolve, shouldResolve_resolve:(RCTPromiseResolveBlock)re
 
 RCT_REMAP_METHOD(shouldReject, shouldReject_resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
-  reject(nil);
+  reject(nil, nil, nil);
 }
 
 RCT_EXPORT_METHOD(markTestCompleted)

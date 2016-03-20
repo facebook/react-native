@@ -20,6 +20,7 @@
 #import "RCTFPSGraph.h"
 #import "RCTInvalidating.h"
 #import "RCTJavaScriptExecutor.h"
+#import "RCTJSCExecutor.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTRootView.h"
 #import "RCTUIManager.h"
@@ -311,7 +312,7 @@ RCT_EXPORT_MODULE()
                        forMode:NSRunLoopCommonModes];
 
   id<RCTJavaScriptExecutor> executor = [_bridge valueForKey:@"javaScriptExecutor"];
-  if ([executor isKindOfClass:NSClassFromString(@"RCTContextExecutor")]) {
+  if ([executor isKindOfClass:[RCTJSCExecutor class]]) {
     self.container.frame = (CGRect) {
       self.container.frame.origin, {
         self.container.frame.size.width + 44,
@@ -500,12 +501,18 @@ RCT_EXPORT_MODULE()
 
 - (void)loadPerformanceLoggerData
 {
-  NSMutableArray *data = [NSMutableArray new];
-  NSArray *times = RCTPerformanceLoggerOutput();
   NSUInteger i = 0;
+  NSMutableArray<NSString *> *data = [NSMutableArray new];
+  NSArray<NSNumber *> *values = RCTPerformanceLoggerOutput();
   for (NSString *label in RCTPerformanceLoggerLabels()) {
-    [data addObject:[NSString stringWithFormat:@"%@: %lldus", label,
-                     [times[i+1] longLongValue] - [times[i] longLongValue]]];
+    long long value = values[i+1].longLongValue - values[i].longLongValue;
+    NSString *unit = @"ms";
+    if ([label hasSuffix:@"Size"]) {
+      unit = @"b";
+    } else if ([label hasSuffix:@"Count"]) {
+      unit = @"";
+    }
+    [data addObject:[NSString stringWithFormat:@"%@: %lld%@", label, value, unit]];
     i += 2;
   }
   _perfLoggerMarks = [data copy];

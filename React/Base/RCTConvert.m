@@ -12,6 +12,8 @@
 #import <objc/message.h>
 
 #import "RCTDefines.h"
+#import "RCTImageSource.h"
+#import "RCTParserUtils.h"
 #import "RCTUtils.h"
 
 @implementation RCTConvert
@@ -116,8 +118,31 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
 
 + (NSURLRequest *)NSURLRequest:(id)json
 {
-  NSURL *URL = [self NSURL:json];
-  return URL ? [NSURLRequest requestWithURL:URL] : nil;
+  if ([json isKindOfClass:[NSString class]]) {
+    NSURL *URL = [self NSURL:json];
+    return URL ? [NSURLRequest requestWithURL:URL] : nil;
+  }
+  if ([json isKindOfClass:[NSDictionary class]]) {
+    NSURL *URL = [self NSURL:json[@"uri"] ?: json[@"url"]];
+    if (!URL) {
+      return nil;
+    }
+    NSData *body = [self NSData:json[@"body"]];
+    NSString *method = [self NSString:json[@"method"]].uppercaseString ?: @"GET";
+    NSDictionary *headers = [self NSDictionary:json[@"headers"]];
+    if ([method isEqualToString:@"GET"] && headers == nil && body == nil) {
+      return [NSURLRequest requestWithURL:URL];
+    }
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+    request.HTTPBody = body;
+    request.HTTPMethod = method;
+    request.allHTTPHeaderFields = headers;
+    return [request copy];
+  }
+  if (json) {
+    RCTLogConvertError(json, @"a valid URLRequest");
+  }
+  return nil;
 }
 
 + (RCTFileURL *)RCTFileURL:(id)json
@@ -172,7 +197,7 @@ NSNumber *RCTConvertEnumValue(const char *typeName, NSDictionary *mapping, NSNum
   }
   if ([json isKindOfClass:[NSNumber class]]) {
     NSArray *allValues = mapping.allValues;
-    if ([mapping.allValues containsObject:json] || [json isEqual:defaultValue]) {
+    if ([allValues containsObject:json] || [json isEqual:defaultValue]) {
       return json;
     }
     RCTLogError(@"Invalid %s '%@'. should be one of: %@", typeName, json, allValues);
@@ -228,6 +253,12 @@ RCT_ENUM_CONVERTER(NSUnderlineStyle, (@{
   @"dotted": @(NSUnderlinePatternDot | NSUnderlineStyleSingle),
   @"dashed": @(NSUnderlinePatternDash | NSUnderlineStyleSingle),
 }), NSUnderlineStyleSingle, integerValue)
+
+RCT_ENUM_CONVERTER(RCTBorderStyle, (@{
+  @"solid": @(RCTBorderStyleSolid),
+  @"dotted": @(RCTBorderStyleDotted),
+  @"dashed": @(RCTBorderStyleDashed),
+}), RCTBorderStyleSolid, integerValue)
 
 RCT_ENUM_CONVERTER(RCTTextDecorationLineType, (@{
   @"none": @(RCTTextDecorationLineTypeNone),
@@ -397,6 +428,9 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
 
 + (UIColor *)UIColor:(id)json
 {
+  if (!json) {
+    return nil;
+  }
   if ([json isKindOfClass:[NSArray class]]) {
     NSArray *components = [self NSNumberArray:json];
     CGFloat alpha = components.count > 3 ? [self CGFloat:components[3]] : 1.0;
@@ -404,84 +438,22 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
                            green:[self CGFloat:components[1]]
                             blue:[self CGFloat:components[2]]
                            alpha:alpha];
-  } else {
+  } else if ([json isKindOfClass:[NSNumber class]]) {
     NSUInteger argb = [self NSUInteger:json];
     CGFloat a = ((argb >> 24) & 0xFF) / 255.0;
     CGFloat r = ((argb >> 16) & 0xFF) / 255.0;
     CGFloat g = ((argb >> 8) & 0xFF) / 255.0;
     CGFloat b = (argb & 0xFF) / 255.0;
     return [UIColor colorWithRed:r green:g blue:b alpha:a];
+  } else {
+    RCTLogConvertError(json, @"a UIColor. Did you forget to call processColor() on the JS side?");
+    return nil;
   }
 }
 
 + (CGColorRef)CGColor:(id)json
 {
   return [self UIColor:json].CGColor;
-}
-
-/* This method is only used when loading images synchronously, e.g. for tabbar icons */
-+ (UIImage *)UIImage:(id)json
-{
-  // TODO: we might as well cache the result of these checks (and possibly the
-  // image itself) so as to reduce overhead on subsequent checks of the same input
-
-  if (!json) {
-    return nil;
-  }
-
-  UIImage *image;
-  NSString *path;
-  CGFloat scale = 0.0;
-  BOOL isPackagerAsset = NO;
-  if ([json isKindOfClass:[NSString class]]) {
-    path = json;
-  } else if ([json isKindOfClass:[NSDictionary class]]) {
-    if (!(path = [self NSString:json[@"uri"]])) {
-      return nil;
-    }
-    scale = [self CGFloat:json[@"scale"]];
-    isPackagerAsset = [self BOOL:json[@"__packager_asset"]];
-  } else {
-    RCTLogConvertError(json, @"an image");
-    return nil;
-  }
-
-  NSURL *URL = [self NSURL:path];
-  NSString *scheme = URL.scheme.lowercaseString;
-  if ([scheme isEqualToString:@"file"]) {
-    if (RCTIsXCAssetURL(URL)) {
-      // Image may reside inside a .car file, in which case we have no choice
-      // but to use +[UIImage imageNamed] - but this method isn't thread safe
-      RCTAssertMainThread();
-      NSString *assetName = RCTBundlePathForURL(URL);
-      image = [UIImage imageNamed:assetName];
-    } else {
-      // Attempt to load from the file system
-      NSString *filePath = URL.path;
-      if (filePath.pathExtension.length == 0) {
-        filePath = [filePath stringByAppendingPathExtension:@"png"];
-      }
-      image = [UIImage imageWithContentsOfFile:filePath];
-    }
-  } else if ([scheme isEqualToString:@"data"]) {
-    image = [UIImage imageWithData:[NSData dataWithContentsOfURL:URL]];
-  } else if ([scheme isEqualToString:@"http"] && isPackagerAsset) {
-    image = [UIImage imageWithData:[NSData dataWithContentsOfURL:URL]];
-  } else {
-    RCTLogConvertError(json, @"an image. Only local files or data URIs are supported");
-  }
-
-  if (scale > 0) {
-    image = [UIImage imageWithCGImage:image.CGImage
-                                scale:scale
-                          orientation:image.imageOrientation];
-  }
-  return image;
-}
-
-+ (CGImageRef)CGImage:(id)json
-{
-  return [self UIImage:json].CGImage;
 }
 
 #if !defined(__IPHONE_8_2) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_2
@@ -526,8 +498,34 @@ RCT_ENUM_CONVERTER(RCTFontStyle, (@{
 
 static RCTFontWeight RCTWeightOfFont(UIFont *font)
 {
+  static NSDictionary *nameToWeight;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    nameToWeight = @{
+      @"normal": @(UIFontWeightRegular),
+      @"bold": @(UIFontWeightBold),
+      @"ultralight": @(UIFontWeightUltraLight),
+      @"thin": @(UIFontWeightThin),
+      @"light": @(UIFontWeightLight),
+      @"regular": @(UIFontWeightRegular),
+      @"medium": @(UIFontWeightMedium),
+      @"semibold": @(UIFontWeightSemibold),
+      @"bold": @(UIFontWeightBold),
+      @"heavy": @(UIFontWeightHeavy),
+      @"black": @(UIFontWeightBlack),
+    };
+  });
+
   NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
-  return [traits[UIFontWeightTrait] doubleValue];
+  RCTFontWeight weight = [traits[UIFontWeightTrait] doubleValue];
+  if (weight == 0.0) {
+    for (NSString *name in nameToWeight) {
+      if ([font.fontName.lowercaseString hasSuffix:name]) {
+        return [nameToWeight[name] doubleValue];
+      }
+    }
+  }
+  return weight;
 }
 
 static BOOL RCTFontIsItalic(UIFont *font)
@@ -701,6 +699,12 @@ NSArray *RCTConvertArrayValue(SEL type, id json)
   return values;
 }
 
+SEL RCTConvertSelectorForType(NSString *type)
+{
+  const char *input = type.UTF8String;
+  return NSSelectorFromString([RCTParseType(&input) stringByAppendingString:@":"]);
+}
+
 RCT_ARRAY_CONVERTER(NSURL)
 RCT_ARRAY_CONVERTER(RCTFileURL)
 RCT_ARRAY_CONVERTER(UIColor)
@@ -839,5 +843,86 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
   @"easeInEaseOut": @(RCTAnimationTypeEaseInEaseOut),
   @"keyboard": @(RCTAnimationTypeKeyboard),
 }), RCTAnimationTypeEaseInEaseOut, integerValue)
+
+@end
+
+@interface RCTImageSource (Packager)
+
+@property (nonatomic, assign) BOOL packagerAsset;
+
+@end
+
+@implementation RCTConvert (Deprecated)
+
+/* This method is only used when loading images synchronously, e.g. for tabbar icons */
++ (UIImage *)UIImage:(id)json
+{
+  if (!json) {
+    return nil;
+  }
+
+  RCTImageSource *imageSource = [self RCTImageSource:json];
+  if (!imageSource) {
+    return nil;
+  }
+
+  __block UIImage *image;
+  if (![NSThread isMainThread]) {
+    // It seems that none of the UIImage loading methods can be guaranteed
+    // thread safe, so we'll pick the lesser of two evils here and block rather
+    // than run the risk of crashing
+    RCTLogWarn(@"Calling [RCTConvert UIImage:] on a background thread is not recommended");
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      image = [self UIImage:json];
+    });
+    return image;
+  }
+
+  NSURL *URL = imageSource.imageURL;
+  NSString *scheme = URL.scheme.lowercaseString;
+  if ([scheme isEqualToString:@"file"]) {
+    NSString *assetName = RCTBundlePathForURL(URL);
+    image = [UIImage imageNamed:assetName];
+    if (!image) {
+      // Attempt to load from the file system
+      NSString *filePath = URL.path;
+      if (filePath.pathExtension.length == 0) {
+        filePath = [filePath stringByAppendingPathExtension:@"png"];
+      }
+      image = [UIImage imageWithContentsOfFile:filePath];
+    }
+  } else if ([scheme isEqualToString:@"data"]) {
+    image = [UIImage imageWithData:[NSData dataWithContentsOfURL:URL]];
+  } else if ([scheme isEqualToString:@"http"] && imageSource.packagerAsset) {
+    image = [UIImage imageWithData:[NSData dataWithContentsOfURL:URL]];
+  } else {
+    RCTLogConvertError(json, @"an image. Only local files or data URIs are supported");
+  }
+
+  CGFloat scale = imageSource.scale;
+  if (!scale && imageSource.size.width) {
+    // If no scale provided, set scale to image width / source width
+    scale = CGImageGetWidth(image.CGImage) / imageSource.size.width;
+  }
+
+  if (scale) {
+    image = [UIImage imageWithCGImage:image.CGImage
+                                scale:scale
+                          orientation:image.imageOrientation];
+  }
+
+  if (!CGSizeEqualToSize(imageSource.size, CGSizeZero) &&
+      !CGSizeEqualToSize(imageSource.size, image.size)) {
+    RCTLogError(@"Image source size %@ does not match loaded image size %@.",
+                NSStringFromCGSize(imageSource.size), NSStringFromCGSize(image.size));
+  }
+
+  return image;
+}
+
++ (CGImageRef)CGImage:(id)json
+{
+  return [self UIImage:json].CGImage;
+}
 
 @end

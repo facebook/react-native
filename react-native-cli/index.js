@@ -138,7 +138,7 @@ function createAfterConfirmation(name, verbose) {
 
   var property = {
     name: 'yesno',
-    message: 'Directory ' + name + ' already exist. Continue?',
+    message: 'Directory ' + name + ' already exists. Continue?',
     validator: /y[es]*|n[o]?/,
     warning: 'Must respond yes or no',
     default: 'no'
@@ -172,7 +172,7 @@ function createProject(name, verbose) {
     version: '0.0.1',
     private: true,
     scripts: {
-      start: 'react-native start'
+      start: 'node node_modules/react-native/local-cli/cli.js start'
     }
   };
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson));
@@ -234,8 +234,12 @@ function checkNodeVersion() {
 
 function checkForVersionArgument() {
   if (process.argv.indexOf('-v') >= 0 || process.argv.indexOf('--version') >= 0) {
-    var pjson = require('./package.json');
-    console.log(pjson.version);
+    console.log('react-native-cli: ' + require('./package.json').version);
+    try {
+      console.log('react-native: ' + require(REACT_NATIVE_PACKAGE_JSON_PATH()).version);
+    } catch (e) {
+      console.log('react-native: n/a - not inside a React Native project directory')
+    }
     process.exit();
   }
 }

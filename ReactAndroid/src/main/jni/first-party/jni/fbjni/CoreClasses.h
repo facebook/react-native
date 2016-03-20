@@ -15,8 +15,9 @@
  * to provide access to corresponding JNI functions + some conveniance.
  */
 
-#include "Meta.h"
-#include "References.h"
+#include "References-forward.h"
+#include "Meta-forward.h"
+#include "TypeTraits.h"
 
 #include <memory>
 
@@ -24,6 +25,9 @@
 
 namespace facebook {
 namespace jni {
+
+class JClass;
+class JObject;
 
 /// Lookup a class by name. Note this functions returns an alias_ref that
 /// points to a leaked global reference.  This is appropriate for classes
@@ -34,7 +38,7 @@ namespace jni {
 /// in a "static auto" variable, or a static global.
 ///
 /// @return Returns a leaked global reference to the class
-alias_ref<jclass> findClassStatic(const char* name);
+alias_ref<JClass> findClassStatic(const char* name);
 
 /// Lookup a class by name. Note this functions returns a local reference,
 /// which means that it must not be stored in a static variable.
@@ -43,34 +47,66 @@ alias_ref<jclass> findClassStatic(const char* name);
 /// (like caching method ids).
 ///
 /// @return Returns a global reference to the class
-local_ref<jclass> findClassLocal(const char* name);
+local_ref<JClass> findClassLocal(const char* name);
 
 /// Check to see if two references refer to the same object. Comparison with nullptr
 /// returns true if and only if compared to another nullptr. A weak reference that
 /// refers to a reclaimed object count as nullptr.
-bool isSameObject(alias_ref<jobject> lhs, alias_ref<jobject> rhs) noexcept;
+bool isSameObject(alias_ref<JObject> lhs, alias_ref<JObject> rhs) noexcept;
 
+// Together, these classes allow convenient use of any class with the fbjni
+// helpers.  To use:
+//
+// struct MyClass : public JavaClass<MyClass> {
+//   constexpr static auto kJavaDescriptor = "Lcom/example/package/MyClass;";
+// };
+//
+// Then, an alias_ref<MyClass::javaobject> will be backed by an instance of
+// MyClass. JavaClass provides a convenient way to add functionality to these
+// smart references.
+//
+// For example:
+//
+// struct MyClass : public JavaClass<MyClass> {
+//   constexpr static auto kJavaDescriptor = "Lcom/example/package/MyClass;";
+//
+//   void foo() {
+//     static auto method = javaClassStatic()->getMethod<void()>("foo");
+//     method(self());
+//   }
+//
+//   static local_ref<javaobject> create(int i) {
+//     return newInstance(i);
+//   }
+// };
+//
+// auto obj = MyClass::create(10);
+// obj->foo();
+//
+// While users of a JavaClass-type can lookup methods and fields through the
+// underlying JClass, those calls can only be checked at runtime. It is recommended
+// that the JavaClass-type instead explicitly expose it's methods as in the example
+// above.
 
-/// Wrapper to provide functionality to jobject references
-template<>
-class JObjectWrapper<jobject> {
- public:
-  /// Java type descriptor
-  static constexpr const char* kJavaDescriptor = "Ljava/lang/Object;";
+namespace detail {
+template<typename JC, typename... Args>
+static local_ref<JC> newInstance(Args... args);
+}
+
+class MonitorLock;
+
+class JObject : detail::JObjectBase {
+public:
+  static constexpr auto kJavaDescriptor = "Ljava/lang/Object;";
 
   static constexpr const char* get_instantiated_java_descriptor() { return nullptr; }
-
-  /// Wrap an existing JNI reference
-  JObjectWrapper(jobject reference = nullptr) noexcept;
-
-  // Copy constructor
-  JObjectWrapper(const JObjectWrapper& other) noexcept;
+  static constexpr const char* get_instantiated_base_name() { return nullptr; }
 
   /// Get a @ref local_ref of the object's class
-  local_ref<jclass> getClass() const noexcept;
+  local_ref<JClass> getClass() const noexcept;
 
   /// Checks if the object is an instance of a class
-  bool isInstanceOf(alias_ref<jclass> cls) const noexcept;
+  bool isInstanceOf(alias_ref<JClass> cls) const noexcept;
 
   /// Get the primitive value of a field
   template<typename T>
@@ -78,7 +114,7 @@ class JObjectWrapper<jobject> {
 
   /// Get and wrap the value of a field in a @ref local_ref
   template<typename T>
-  local_ref<T*> getFieldValue(JField<T*> field) noexcept;
+  local_ref<T*> getFieldValue(JField<T*> field) const noexcept;
 
   /// Set the value of field. Any Java type is accepted, including the primitive types
   /// and raw reference types.
@@ -88,41 +124,108 @@ class JObjectWrapper<jobject> {
   /// Convenience method to create a std::string representing the object
   std::string toString() const;
 
- protected:
-  jobject this_;
+  // Take this object's monitor lock
+  MonitorLock lock() const noexcept;
 
- private:
-  template<typename T, typename A>
-  friend class base_owned_ref;
+  typedef _jobject _javaobject;
+  typedef _javaobject* javaobject;
 
-  template<typename T>
-  friend class alias_ref;
-
-  friend void swap(JObjectWrapper<jobject>& a, JObjectWrapper<jobject>& b) noexcept;
-
-  void set(jobject reference) noexcept;
-  jobject get() const noexcept;
+protected:
   jobject self() const noexcept;
+private:
+  friend void swap(JObject& a, JObject& b) noexcept;
+  template<typename>
+  friend struct detail::ReprAccess;
+  template<typename, typename, typename>
+  friend class JavaClass;
+
+  template <typename, typename>
+  friend class JObjectWrapper;
 };
 
-using JObject = JObjectWrapper<jobject>;
+// This is only to maintain backwards compatibility with things that are
+// already providing a specialization of JObjectWrapper. Any such instances
+// should be updated to use a JavaClass.
+template<>
+class JObjectWrapper<jobject> : public JObject {
+};
 
-void swap(JObjectWrapper<jobject>& a, JObjectWrapper<jobject>& b) noexcept;
 
+namespace detail {
+template <typename, typename Base, typename JType>
+struct JTypeFor {
+  static_assert(
+      std::is_base_of<
+        std::remove_pointer<jobject>::type,
+        typename std::remove_pointer<JType>::type
+      >::value, "");
+  using _javaobject = typename std::remove_pointer<JType>::type;
+  using javaobject = JType;
+};
+
+template <typename T, typename Base>
+struct JTypeFor<T, Base, void> {
+  // JNI pattern for jobject assignable pointer
+  struct _javaobject :  Base::_javaobject {
+    // This allows us to map back to the defining type (in ReprType, for
+    // example).
+    typedef T JniRefRepr;
+  };
+  using javaobject = _javaobject*;
+};
+}
+
+// JavaClass provides a method to inform fbjni about user-defined Java types.
+// Given a class:
+// struct Foo : JavaClass<Foo> {
+//   static constexpr auto kJavaDescriptor = "Lcom/example/package/Foo;";
+// };
+// fbjni can determine the java type/method signatures for Foo::javaobject and
+// smart refs (like alias_ref<Foo::javaobject>) will hold an instance of Foo
+// and provide access to it through the -> and * operators.
+//
+// The "Base" template argument can be used to specify the JavaClass superclass
+// of this type (for instance, JString's Base is JObject).
+//
+// The "JType" template argument is used to provide a jni type (like jstring,
+// jthrowable) to be used as javaobject. This should only be necessary for
+// built-in jni types and not user-defined ones.
+template <typename T, typename Base = JObject, typename JType = void>
+class JavaClass : public Base {
+  using JObjType = typename detail::JTypeFor<T, Base, JType>;
+public:
+  using _javaobject = typename JObjType::_javaobject;
+  using javaobject = typename JObjType::javaobject;
+
+  using JavaBase = JavaClass;
+
+  static alias_ref<JClass> javaClassStatic();
+  static local_ref<JClass> javaClassLocal();
+protected:
+  /// Allocates a new object and invokes the specified constructor
+  /// Like JClass's getConstructor, this function can only check at runtime if
+  /// the class actually has a constructor that accepts the corresponding types.
+  /// While a JavaClass-type can expose this function directly, it is recommended
+  /// to instead to use this to explicitly only expose those constructors that
+  /// the Java class actually has (i.e. with static create() functions).
+  template<typename... Args>
+  static local_ref<T> newInstance(Args... args) {
+    return detail::newInstance<JavaClass>(args...);
+  }
+
+  javaobject self() const noexcept;
+};
 
 /// Wrapper to provide functionality to jclass references
 struct NativeMethod;
 
-template<>
-class JObjectWrapper<jclass> : public JObjectWrapper<jobject> {
+class JClass : public JavaClass<JClass, JObject, jclass> {
  public:
   /// Java type descriptor
   static constexpr const char* kJavaDescriptor = "Ljava/lang/Class;";
 
-  using JObjectWrapper<jobject>::JObjectWrapper;
-
   /// Get a @local_ref to the super class of this class
-  local_ref<jclass> getSuperclass() const noexcept;
+  local_ref<JClass> getSuperclass() const noexcept;
 
   /// Register native methods for the class.  Usage looks like this:
   ///
@@ -141,7 +244,7 @@ class JObjectWrapper<jclass> : public JObjectWrapper<jobject> {
 
   /// Check to see if the class is assignable from another class
   /// @pre cls != nullptr
-  bool isAssignableFrom(alias_ref<jclass> cls) const noexcept;
+  bool isAssignableFrom(alias_ref<JClass> cls) const noexcept;
 
   /// Convenience method to lookup the constructor with descriptor as specified by the
   /// type arguments
@@ -212,95 +315,96 @@ class JObjectWrapper<jclass> : public JObjectWrapper<jobject> {
   template<typename F>
   JNonvirtualMethod<F> getNonvirtualMethod(const char* name, const char* descriptor) const;
 
- private:
+private:
   jclass self() const noexcept;
 };
-
-using JClass = JObjectWrapper<jclass>;
 
 // Convenience method to register methods on a class without holding
 // onto the class object.
 void registerNatives(const char* name, std::initializer_list<NativeMethod> methods);
 
 /// Wrapper to provide functionality to jstring references
-template<>
-class JObjectWrapper<jstring> : public JObjectWrapper<jobject> {
+class JString : public JavaClass<JString, JObject, jstring> {
  public:
   /// Java type descriptor
   static constexpr const char* kJavaDescriptor = "Ljava/lang/String;";
 
-  using JObjectWrapper<jobject>::JObjectWrapper;
-
   /// Convenience method to convert a jstring object to a std::string
   std::string toStdString() const;
-
- private:
-  jstring self() const noexcept;
 };
 
 /// Convenience functions to convert a std::string or const char* into a @ref local_ref to a
 /// jstring
-local_ref<jstring> make_jstring(const char* modifiedUtf8);
-local_ref<jstring> make_jstring(const std::string& modifiedUtf8);
-
-using JString = JObjectWrapper<jstring>;
+local_ref<JString> make_jstring(const char* modifiedUtf8);
+local_ref<JString> make_jstring(const std::string& modifiedUtf8);
 
 /// Wrapper to provide functionality to jthrowable references
-template<>
-class JObjectWrapper<jthrowable> : public JObjectWrapper<jobject> {
+class JThrowable : public JavaClass<JThrowable, JObject, jthrowable> {
  public:
-  /// Java type descriptor
   static constexpr const char* kJavaDescriptor = "Ljava/lang/Throwable;";
-
-  using JObjectWrapper<jobject>::JObjectWrapper;
-
- private:
-  jthrowable self() const noexcept;
 };
 
-
-/// @cond INTERNAL
-template<class T> class _jtypeArray : public _jobjectArray {};
-// @endcond
-/// Wrapper to provide functionality for arrays of j-types
-template<class T> using jtypeArray = _jtypeArray<T>*;
-
-template<typename T>
+namespace detail {
+template<typename Target>
 class ElementProxy {
-   private:
-    JObjectWrapper<_jtypeArray<T>*>* target_;
-    size_t idx_;
+ private:
+  Target* target_;
+  size_t idx_;
 
-   public:
-    ElementProxy(JObjectWrapper<_jtypeArray<T>*>* target, size_t idx);
+ public:
+  using T = typename Target::javaentry;
+  ElementProxy(Target* target, size_t idx);
 
-    ElementProxy<T>& operator=(const T& o);
+  ElementProxy& operator=(const T& o);
 
-    ElementProxy<T>& operator=(alias_ref<T>& o);
+  ElementProxy& operator=(alias_ref<T>& o);
 
-    ElementProxy<T>& operator=(alias_ref<T>&& o);
+  ElementProxy& operator=(alias_ref<T>&& o);
 
-    ElementProxy<T>& operator=(const ElementProxy<T>& o);
+  ElementProxy& operator=(const ElementProxy& o);
 
-    operator const local_ref<T> () const;
+  operator const local_ref<T> () const;
 
-    operator local_ref<T> ();
-  };
+  operator local_ref<T> ();
+};
+}
+
+namespace detail {
+class JArray : public JavaClass<JArray, JObject, jarray> {
+ public:
+  // This cannot be used in a scope that derives a descriptor (like in a method
+  // signature). Use a more derived type instead (like JArrayInt or
+  // JArrayClass<T>).
+  static constexpr const char* kJavaDescriptor = nullptr;
+  size_t size() const noexcept;
+};
+
+// This is used so that the JArrayClass<T> javaobject extends jni's
+// jobjectArray. This class should not be used directly. A general Object[]
+// should use JArrayClass<jobject>.
+class JTypeArray : public JavaClass<JTypeArray, JArray, jobjectArray> {
+  // This cannot be used in a scope that derives a descriptor (like in a method
+  // signature).
+  static constexpr const char* kJavaDescriptor = nullptr;
+};
+}
 
 template<typename T>
-class JObjectWrapper<jtypeArray<T>> : public JObjectWrapper<jobject> {
+class JArrayClass : public JavaClass<JArrayClass<T>, detail::JTypeArray> {
  public:
+  static_assert(is_plain_jni_reference<T>(), "");
+  // javaentry is the jni type of an entry in the array (i.e. jint).
+  using javaentry = T;
+  // javaobject is the jni type of the array.
+  using javaobject = typename JavaClass<JArrayClass<T>, detail::JTypeArray>::javaobject;
   static constexpr const char* kJavaDescriptor = nullptr;
-  static std::string get_instantiated_java_descriptor() {
-    return "[" + jtype_traits<T>::descriptor();
-  };
-
-  using JObjectWrapper<jobject>::JObjectWrapper;
+  static std::string get_instantiated_java_descriptor();
+  static std::string get_instantiated_base_name();
 
   /// Allocate a new array from Java heap, for passing as a JNI parameter or return value.
   /// NOTE: if using as a return value, you want to call release() instead of get() on the
   /// smart pointer.
-  static local_ref<jtypeArray<T>> newArray(size_t count);
+  static local_ref<javaobject> newArray(size_t count);
 
   /// Assign an object to the array.
   /// Typically you will use the shorthand (*ref)[idx]=value;
@@ -312,9 +416,6 @@ class JObjectWrapper<jtypeArray<T>> : public JObjectWrapper<jobject> {
   /// If you use auto, you'll get an ElementProxy, which may need to be cast.
   local_ref<T> getElement(size_t idx);
 
-  /// Get the size of the array.
-  size_t size();
-
   /// EXPERIMENTAL SUBSCRIPT SUPPORT
   /// This implementation of [] returns a proxy object which then has a bunch of specializations
   /// (adopt_local free function, operator= and casting overloads on the ElementProxy) that can
@@ -324,187 +425,167 @@ class JObjectWrapper<jtypeArray<T>> : public JObjectWrapper<jobject> {
   /// by using idioms that haven't been tried yet. Consider yourself warned. On the other hand,
   /// it does make for some idiomatic assignment code; see TestBuildStringArray in fbjni_tests
   /// for some examples.
-  ElementProxy<T> operator[](size_t idx);
-
- private:
-  jtypeArray<T> self() const noexcept;
+  detail::ElementProxy<JArrayClass> operator[](size_t idx);
 };
 
-template <class T>
-using JArrayClass = JObjectWrapper<jtypeArray<T>>;
+template <typename T>
+using jtypeArray = typename JArrayClass<T>::javaobject;
 
 template<typename T>
-local_ref<jtypeArray<T>> adopt_local_array(jobjectArray ref) {
-  return adopt_local(static_cast<jtypeArray<T>>(ref));
+local_ref<typename JArrayClass<T>::javaobject> adopt_local_array(jobjectArray ref) {
+  return adopt_local(static_cast<typename JArrayClass<T>::javaobject>(ref));
 }
 
-template<typename T>
-local_ref<T> adopt_local(ElementProxy<T> elementProxy) {
-  return static_cast<local_ref<T>>(elementProxy);
+template<typename Target>
+local_ref<typename Target::javaentry> adopt_local(detail::ElementProxy<Target> elementProxy) {
+  return static_cast<local_ref<typename Target::javaentry>>(elementProxy);
 }
+
+template <typename T, typename PinAlloc>
+class PinnedPrimitiveArray;
+
+template <typename T> class PinnedArrayAlloc;
+template <typename T> class PinnedRegionAlloc;
+template <typename T> class PinnedCriticalAlloc;
 
 /// Wrapper to provide functionality to jarray references.
 /// This is an empty holder by itself. Construct a PinnedPrimitiveArray to actually interact with
 /// the elements of the array.
-template<>
-class JObjectWrapper<jarray> : public JObjectWrapper<jobject> {
+template <typename JArrayType>
+class JPrimitiveArray :
+    public JavaClass<JPrimitiveArray<JArrayType>, detail::JArray, JArrayType> {
+  static_assert(is_jni_primitive_array<JArrayType>(), "");
  public:
   static constexpr const char* kJavaDescriptor = nullptr;
+  static std::string get_instantiated_java_descriptor();
+  static std::string get_instantiated_base_name();
 
-  using JObjectWrapper<jobject>::JObjectWrapper;
-  size_t size() const noexcept;
+  using T = typename jtype_traits<JArrayType>::entry_type;
 
- private:
-  jarray self() const noexcept;
+  static local_ref<JArrayType> newArray(size_t count);
+
+  void getRegion(jsize start, jsize length, T* buf);
+  std::unique_ptr<T[]> getRegion(jsize start, jsize length);
+  void setRegion(jsize start, jsize length, const T* buf);
+
+  /// Returns a view of the underlying array. This will either be a "pinned"
+  /// version of the array (in which case changes to one immediately affect the
+  /// other) or a copy of the array (in which cases changes to the view will take
+  /// affect when destroyed or on calls to release()/commit()).
+  PinnedPrimitiveArray<T, PinnedArrayAlloc<T>> pin();
+
+  /// Returns a view of part of the underlying array. A pinned region is always
+  /// backed by a copy of the region.
+  PinnedPrimitiveArray<T, PinnedRegionAlloc<T>> pinRegion(jsize start, jsize length);
+
+  /// Returns a view of the underlying array like pin(). However, while the pin
+  /// is held, the code is considered within a "critical region". In a critical
+  /// region, native code must not call JNI functions or make any calls that may
+  /// block on other Java threads. These restrictions make it more likely that
+  /// the view will be "pinned" rather than copied (for example, the VM may
+  /// suspend garbage collection within a critical region).
+  PinnedPrimitiveArray<T, PinnedCriticalAlloc<T>> pinCritical();
+
+private:
+  friend class PinnedArrayAlloc<T>;
+  T* getElements(jboolean* isCopy);
+  void releaseElements(T* elements, jint mode);
 };
 
-using JArray = JObjectWrapper<jarray>;
+local_ref<jbooleanArray> make_boolean_array(jsize size);
+local_ref<jbyteArray> make_byte_array(jsize size);
+local_ref<jcharArray> make_char_array(jsize size);
+local_ref<jshortArray> make_short_array(jsize size);
+local_ref<jintArray> make_int_array(jsize size);
+local_ref<jlongArray> make_long_array(jsize size);
+local_ref<jfloatArray> make_float_array(jsize size);
+local_ref<jdoubleArray> make_double_array(jsize size);
 
-template <typename T>
-class PinnedPrimitiveArray;
-
-#pragma push_macro("DECLARE_PRIMITIVE_ARRAY_UTILS")
-#undef DECLARE_PRIMITIVE_ARRAY_UTILS
-#define DECLARE_PRIMITIVE_ARRAY_UTILS(TYPE, NAME, DESC)                \
-                                                                       \
-local_ref<j ## TYPE ## Array> make_ ## TYPE ## _array(jsize size);     \
-                                                                       \
-template<> class JObjectWrapper<j ## TYPE ## Array> : public JArray {  \
- public:                                                               \
-  static constexpr const char* kJavaDescriptor = "[" # DESC;           \
-                                                                       \
-  using JArray::JArray;                                                \
-                                                                       \
-  static local_ref<j ## TYPE ## Array> newArray(size_t count);         \
-                                                                       \
-  j ## TYPE* getRegion(jsize start, jsize length, j ## TYPE* buf);     \
-  std::unique_ptr<j ## TYPE[]> getRegion(jsize start, jsize length);   \
-  void setRegion(jsize start, jsize length, const j ## TYPE* buf);     \
-  PinnedPrimitiveArray<j ## TYPE> pin();                               \
-                                                                       \
- private:                                                              \
-  j ## TYPE ## Array self() const noexcept {                           \
-    return static_cast<j ## TYPE ## Array>(this_);                     \
-  }                                                                    \
-};                                                                     \
-                                                                       \
-using JArray ## NAME = JObjectWrapper<j ## TYPE ## Array>              \
-
-
-DECLARE_PRIMITIVE_ARRAY_UTILS(boolean, Boolean, "Z");
-DECLARE_PRIMITIVE_ARRAY_UTILS(byte, Byte, "B");
-DECLARE_PRIMITIVE_ARRAY_UTILS(char, Char, "C");
-DECLARE_PRIMITIVE_ARRAY_UTILS(short, Short, "S");
-DECLARE_PRIMITIVE_ARRAY_UTILS(int, Int, "I");
-DECLARE_PRIMITIVE_ARRAY_UTILS(long, Long, "J");
-DECLARE_PRIMITIVE_ARRAY_UTILS(float, Float, "F");
-DECLARE_PRIMITIVE_ARRAY_UTILS(double, Double, "D");
-
-#pragma pop_macro("DECLARE_PRIMITIVE_ARRAY_UTILS")
-
+using JArrayBoolean = JPrimitiveArray<jbooleanArray>;
+using JArrayByte = JPrimitiveArray<jbyteArray>;
+using JArrayChar = JPrimitiveArray<jcharArray>;
+using JArrayShort = JPrimitiveArray<jshortArray>;
+using JArrayInt = JPrimitiveArray<jintArray>;
+using JArrayLong = JPrimitiveArray<jlongArray>;
+using JArrayFloat = JPrimitiveArray<jfloatArray>;
+using JArrayDouble = JPrimitiveArray<jdoubleArray>;
 
 /// RAII class for pinned primitive arrays
 /// This currently only supports read/write access to existing java arrays. You can't create a
 /// primitive array this way yet. This class also pins the entire array into memory during the
 /// lifetime of the PinnedPrimitiveArray. If you need to unpin the array manually, call the
-/// release() function. During a long-running block of code, you should unpin the array as soon
-/// as you're done with it, to avoid holding up the Java garbage collector.
-template <typename T>
+/// release() or abort() functions. During a long-running block of code, you
+/// should unpin the array as soon as you're done with it, to avoid holding up
+/// the Java garbage collector.
+template <typename T, typename PinAlloc>
 class PinnedPrimitiveArray {
   public:
    static_assert(is_jni_primitive<T>::value,
        "PinnedPrimitiveArray requires primitive jni type.");
 
-   PinnedPrimitiveArray(PinnedPrimitiveArray&&) noexcept;
+   using ArrayType = typename jtype_traits<T>::array_type;
+
+   PinnedPrimitiveArray(PinnedPrimitiveArray&&);
    PinnedPrimitiveArray(const PinnedPrimitiveArray&) = delete;
    ~PinnedPrimitiveArray() noexcept;
 
-   PinnedPrimitiveArray& operator=(PinnedPrimitiveArray&&) noexcept;
+   PinnedPrimitiveArray& operator=(PinnedPrimitiveArray&&);
    PinnedPrimitiveArray& operator=(const PinnedPrimitiveArray&) = delete;
 
    T* get();
    void release();
+   /// Unpins the array. If the array is a copy, pending changes are discarded.
+   void abort();
+   /// If the array is a copy, copies pending changes to the underlying java array.
+   void commit();
+
+   bool isCopy() const noexcept;
 
    const T& operator[](size_t index) const;
    T& operator[](size_t index);
-   bool isCopy() const noexcept;
    size_t size() const noexcept;
 
   private:
-   alias_ref<jarray> array_;
+   alias_ref<ArrayType> array_;
+   size_t start_;
    T* elements_;
    jboolean isCopy_;
    size_t size_;
 
-   PinnedPrimitiveArray(alias_ref<jarray>) noexcept;
+   void allocate(alias_ref<ArrayType>, jint start, jint length);
+   void releaseImpl(jint mode);
+   void clear() noexcept;
 
-   friend class JObjectWrapper<jbooleanArray>;
-   friend class JObjectWrapper<jbyteArray>;
-   friend class JObjectWrapper<jcharArray>;
-   friend class JObjectWrapper<jshortArray>;
-   friend class JObjectWrapper<jintArray>;
-   friend class JObjectWrapper<jlongArray>;
-   friend class JObjectWrapper<jfloatArray>;
-   friend class JObjectWrapper<jdoubleArray>;
+   PinnedPrimitiveArray(alias_ref<ArrayType>, jint start, jint length);
+
+   friend class JPrimitiveArray<typename jtype_traits<T>::array_type>;
 };
 
-
-namespace detail {
-
-class BaseJavaClass {
-public:
-  typedef _jobject _javaobject;
-  typedef _javaobject* javaobject;
-};
-
+#pragma push_macro("PlainJniRefMap")
+#undef PlainJniRefMap
+#define PlainJniRefMap(rtype, jtype) \
+namespace detail { \
+template<> \
+struct RefReprType<jtype> { \
+  using type = rtype; \
+}; \
 }
 
-// Together, these classes allow convenient use of any class with the fbjni
-// helpers.  To use:
-//
-// struct MyClass : public JavaClass<MyClass> {
-//   constexpr static auto kJavaDescriptor = "Lcom/example/package/MyClass;";
-// };
-//
-// alias_ref<MyClass::javaobject> myClass = foo();
+PlainJniRefMap(JArrayBoolean, jbooleanArray);
+PlainJniRefMap(JArrayByte, jbyteArray);
+PlainJniRefMap(JArrayChar, jcharArray);
+PlainJniRefMap(JArrayShort, jshortArray);
+PlainJniRefMap(JArrayInt, jintArray);
+PlainJniRefMap(JArrayLong, jlongArray);
+PlainJniRefMap(JArrayFloat, jfloatArray);
+PlainJniRefMap(JArrayDouble, jdoubleArray);
+PlainJniRefMap(JObject, jobject);
+PlainJniRefMap(JClass, jclass);
+PlainJniRefMap(JString, jstring);
+PlainJniRefMap(JThrowable, jthrowable);
 
-template <typename T, typename Base = detail::BaseJavaClass>
-class JavaClass {
-public:
-  // JNI pattern for jobject assignable pointer
-  struct _javaobject : public Base::_javaobject {
-    typedef T javaClass;
-  };
-  typedef _javaobject* javaobject;
-
-  static alias_ref<jclass> javaClassStatic();
-  static local_ref<jclass> javaClassLocal();
-};
-
-template <typename T>
-class JObjectWrapper<T,
-    typename std::enable_if<
-      is_plain_jni_reference<T>::value &&
-      std::is_class<typename std::remove_pointer<T>::type::javaClass>::value
-    >::type>
-  : public JObjectWrapper<jobject> {
-public:
-  static constexpr const char* kJavaDescriptor =
-    std::remove_pointer<T>::type::javaClass::kJavaDescriptor;
-
-  using JObjectWrapper<jobject>::JObjectWrapper;
-
-  template<typename U>
-  JObjectWrapper(const JObjectWrapper<U>& w)
-    : JObjectWrapper<jobject>(w) {
-    static_assert(std::is_convertible<U, T>::value,
-                  "U must be convertible to T");
-  }
-};
+#pragma pop_macro("PlainJniRefMap")
 
 }}
 
 #include "CoreClasses-inl.h"
-// This is here because code in Meta-inl.h uses alias_ref, which
-// requires JObjectWrapper<jobject> to be concrete before it can work.
-#include "Meta-inl.h"

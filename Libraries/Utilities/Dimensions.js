@@ -11,40 +11,55 @@
  */
 'use strict';
 
-var NativeModules = require('NativeModules');
+var Platform = require('Platform');
+var UIManager = require('UIManager');
+var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
-var dimensions = NativeModules.UIManager.Dimensions;
-
-// We calculate the window dimensions in JS so that we don't encounter loss of
-// precision in transferring the dimensions (which could be non-integers) over
-// the bridge.
-if (dimensions && dimensions.windowPhysicalPixels) {
-  // parse/stringify => Clone hack
-  dimensions = JSON.parse(JSON.stringify(dimensions));
-
-  var windowPhysicalPixels = dimensions.windowPhysicalPixels;
-  dimensions.window = {
-    width: windowPhysicalPixels.width / windowPhysicalPixels.scale,
-    height: windowPhysicalPixels.height / windowPhysicalPixels.scale,
-    scale: windowPhysicalPixels.scale,
-    fontScale: windowPhysicalPixels.fontScale,
-  };
-
-  // delete so no callers rely on this existing
-  delete dimensions.windowPhysicalPixels;
-}
-
+var dimensions = {};
 class Dimensions {
   /**
-   * This should only be called from native code.
+   * This should only be called from native code by sending the
+   * didUpdateDimensions event.
    *
    * @param {object} dims Simple string-keyed object of dimensions to set
    */
-  static set(dims: {[key:string]: any}): bool {
+  static set(dims: {[key:string]: any}): void {
+    // We calculate the window dimensions in JS so that we don't encounter loss of
+    // precision in transferring the dimensions (which could be non-integers) over
+    // the bridge.
+    if (dims && dims.windowPhysicalPixels) {
+      // parse/stringify => Clone hack
+      dims = JSON.parse(JSON.stringify(dims));
+
+      var windowPhysicalPixels = dims.windowPhysicalPixels;
+      dims.window = {
+        width: windowPhysicalPixels.width / windowPhysicalPixels.scale,
+        height: windowPhysicalPixels.height / windowPhysicalPixels.scale,
+        scale: windowPhysicalPixels.scale,
+        fontScale: windowPhysicalPixels.fontScale,
+      };
+      if (Platform.OS === 'android') {
+        // Screen and window dimensions are different on android
+        var screenPhysicalPixels = dims.screenPhysicalPixels;
+        dims.screen = {
+          width: screenPhysicalPixels.width / screenPhysicalPixels.scale,
+          height: screenPhysicalPixels.height / screenPhysicalPixels.scale,
+          scale: screenPhysicalPixels.scale,
+          fontScale: screenPhysicalPixels.fontScale,
+        };
+
+        // delete so no callers rely on this existing
+        delete dims.screenPhysicalPixels;
+      } else {
+        dims.screen = dims.window;
+      }
+      // delete so no callers rely on this existing
+      delete dims.windowPhysicalPixels;
+    }
+
     Object.assign(dimensions, dims);
-    return true;
   }
 
   /**
@@ -57,6 +72,8 @@ class Dimensions {
    * than caching the value (for example, using inline styles rather than
    * setting a value in a `StyleSheet`).
    *
+   * Example: `var {height, width} = Dimensions.get('window');`
+   *
    * @param {string} dim Name of dimension as defined when calling `set`.
    * @returns {Object?} Value for the dimension.
    */
@@ -65,5 +82,10 @@ class Dimensions {
     return dimensions[dim];
   }
 }
+
+Dimensions.set(UIManager.Dimensions);
+RCTDeviceEventEmitter.addListener('didUpdateDimensions', function(update) {
+  Dimensions.set(update);
+});
 
 module.exports = Dimensions;

@@ -10,50 +10,48 @@
 package com.facebook.react.bridge;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.common.SetBuilder;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.systrace.Systrace;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
   * A set of Java APIs to expose to a particular JavaScript instance.
   */
 public class NativeModuleRegistry {
 
-  private final ArrayList<ModuleDefinition> mModuleTable;
-  private final Map<Class<NativeModule>, NativeModule> mModuleInstances;
-  private final String mModuleDescriptions;
+  private final List<ModuleDefinition> mModuleTable;
+  private final Map<Class<? extends NativeModule>, NativeModule> mModuleInstances;
   private final ArrayList<OnBatchCompleteListener> mBatchCompleteListenerModules;
+  private final ArrayList<OnExecutorUnregisteredListener> mOnExecutorUnregisteredListenerModules;
 
   private NativeModuleRegistry(
-      ArrayList<ModuleDefinition> moduleTable,
-      Map<Class<NativeModule>, NativeModule> moduleInstances,
-      String moduleDescriptions) {
+      List<ModuleDefinition> moduleTable,
+      Map<Class<? extends NativeModule>, NativeModule> moduleInstances) {
     mModuleTable = moduleTable;
     mModuleInstances = moduleInstances;
-    mModuleDescriptions = moduleDescriptions;
 
-    mBatchCompleteListenerModules = new ArrayList<OnBatchCompleteListener>(mModuleTable.size());
+    mBatchCompleteListenerModules = new ArrayList<>(mModuleTable.size());
+    mOnExecutorUnregisteredListenerModules = new ArrayList<>(mModuleTable.size());
     for (int i = 0; i < mModuleTable.size(); i++) {
       ModuleDefinition definition = mModuleTable.get(i);
       if (definition.target instanceof OnBatchCompleteListener) {
         mBatchCompleteListenerModules.add((OnBatchCompleteListener) definition.target);
+      }
+      if (definition.target instanceof OnExecutorUnregisteredListener) {
+        mOnExecutorUnregisteredListenerModules.add((OnExecutorUnregisteredListener) definition.target);
       }
     }
   }
 
   /* package */ void call(
       CatalystInstance catalystInstance,
+      ExecutorToken executorToken,
       int moduleId,
       int methodId,
       ReadableNativeArray parameters) {
@@ -61,11 +59,33 @@ public class NativeModuleRegistry {
     if (definition == null) {
       throw new RuntimeException("Call to unknown module: " + moduleId);
     }
-    definition.call(catalystInstance, methodId, parameters);
+    definition.call(catalystInstance, executorToken, methodId, parameters);
   }
 
-  /* package */ String moduleDescriptions() {
-    return mModuleDescriptions;
+  /* package */ void writeModuleDescriptions(JsonWriter writer) throws IOException {
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateJSON");
+    try {
+      writer.beginObject();
+      for (ModuleDefinition moduleDef : mModuleTable) {
+        writer.name(moduleDef.name).beginObject();
+        writer.name("moduleID").value(moduleDef.id);
+        writer.name("supportsWebWorkers").value(moduleDef.target.supportsWebWorkers());
+        writer.name("methods").beginObject();
+        for (int i = 0; i < moduleDef.methods.size(); i++) {
+          MethodRegistration method = moduleDef.methods.get(i);
+          writer.name(method.name).beginObject();
+          writer.name("methodID").value(i);
+          writer.name("type").value(method.method.getType());
+          writer.endObject();
+        }
+        writer.endObject();
+        moduleDef.target.writeConstantsField(writer, "constants");
+        writer.endObject();
+      }
+      writer.endObject();
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
   }
 
   /* package */ void notifyCatalystInstanceDestroy() {
@@ -99,9 +119,28 @@ public class NativeModuleRegistry {
     }
   }
 
+  /* package */ void notifyReactBridgeInitialized(ReactBridge bridge) {
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "NativeModuleRegistry_notifyReactBridgeInitialized");
+    try {
+      for (NativeModule nativeModule : mModuleInstances.values()) {
+        nativeModule.onReactBridgeInitialized(bridge);
+      }
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
+  }
+
   public void onBatchComplete() {
     for (int i = 0; i < mBatchCompleteListenerModules.size(); i++) {
       mBatchCompleteListenerModules.get(i).onBatchComplete();
+    }
+  }
+
+  public void onExecutorUnregistered(ExecutorToken executorToken) {
+    for (int i = 0; i < mOnExecutorUnregisteredListenerModules.size(); i++) {
+      mOnExecutorUnregisteredListenerModules.get(i).onExecutorDestroyed(executorToken);
     }
   }
 
@@ -135,12 +174,13 @@ public class NativeModuleRegistry {
 
     public void call(
         CatalystInstance catalystInstance,
+        ExecutorToken executorToken,
         int methodId,
         ReadableNativeArray parameters) {
       MethodRegistration method = this.methods.get(methodId);
       Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, method.tracingName);
       try {
-        this.methods.get(methodId).method.invoke(catalystInstance, parameters);
+        this.methods.get(methodId).method.invoke(catalystInstance, executorToken, parameters);
       } finally {
         Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       }
@@ -161,58 +201,31 @@ public class NativeModuleRegistry {
 
   public static class Builder {
 
-    private ArrayList<ModuleDefinition> mModuleDefinitions;
-    private Map<Class<NativeModule>, NativeModule> mModuleInstances;
-    private Set<String> mSeenModuleNames;
-
-    public Builder() {
-      mModuleDefinitions = new ArrayList<ModuleDefinition>();
-      mModuleInstances = MapBuilder.newHashMap();
-      mSeenModuleNames = SetBuilder.newHashSet();
-    }
+    private final HashMap<String, NativeModule> mModules = MapBuilder.newHashMap();
 
     public Builder add(NativeModule module) {
-      ModuleDefinition registration = new ModuleDefinition(
-          mModuleDefinitions.size(),
-          module.getName(),
-          module);
-      Assertions.assertCondition(
-          !mSeenModuleNames.contains(module.getName()),
-          "Module " + module.getName() + " was already registered!");
-      mSeenModuleNames.add(module.getName());
-      mModuleDefinitions.add(registration);
-      mModuleInstances.put((Class<NativeModule>) module.getClass(), module);
+      NativeModule existing = mModules.get(module.getName());
+      if (existing != null && !module.canOverrideExistingModule()) {
+        throw new IllegalStateException("Native module " + module.getClass().getSimpleName() +
+            " tried to override " + existing.getClass().getSimpleName() + " for module name " +
+            module.getName() + ". If this was your intention, return true from " +
+            module.getClass().getSimpleName() + "#canOverrideExistingModule()");
+      }
+      mModules.put(module.getName(), module);
       return this;
     }
 
     public NativeModuleRegistry build() {
-      JsonFactory jsonFactory = new JsonFactory();
-      StringWriter writer = new StringWriter();
-      try {
-        JsonGenerator jg = jsonFactory.createGenerator(writer);
-        jg.writeStartObject();
-        for (ModuleDefinition module : mModuleDefinitions) {
-          jg.writeObjectFieldStart(module.name);
-          jg.writeNumberField("moduleID", module.id);
-          jg.writeObjectFieldStart("methods");
-          for (int i = 0; i < module.methods.size(); i++) {
-            MethodRegistration method = module.methods.get(i);
-            jg.writeObjectFieldStart(method.name);
-            jg.writeNumberField("methodID", i);
-            jg.writeStringField("type", method.method.getType());
-            jg.writeEndObject();
-          }
-          jg.writeEndObject();
-          module.target.writeConstantsField(jg, "constants");
-          jg.writeEndObject();
-        }
-        jg.writeEndObject();
-        jg.close();
-      } catch (IOException ioe) {
-        throw new RuntimeException("Unable to serialize Java module configuration", ioe);
+      List<ModuleDefinition> moduleTable = new ArrayList<>();
+      Map<Class<? extends NativeModule>, NativeModule> moduleInstances = new HashMap<>();
+
+      int idx = 0;
+      for (NativeModule module : mModules.values()) {
+        ModuleDefinition moduleDef = new ModuleDefinition(idx++, module.getName(), module);
+        moduleTable.add(moduleDef);
+        moduleInstances.put(module.getClass(), module);
       }
-      String moduleDefinitionJson = writer.getBuffer().toString();
-      return new NativeModuleRegistry(mModuleDefinitions, mModuleInstances, moduleDefinitionJson);
+      return new NativeModuleRegistry(moduleTable, moduleInstances);
     }
   }
 }

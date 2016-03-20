@@ -326,7 +326,7 @@ examplify(React.createClass({
 
 <p><code>Animated</code> can offload the animation to a different thread (CoreAnimation, CSS transitions, main thread...) and we don't have a good way to know the real value. If you try to query the value then modify it, you are going to be out of sync and the result will look terrible.</p>
 
-<p>There's however one exception: when you want to stop the current animation. You need to know where it stopped in order to continue from there. We cannot know the value synchronously so we give it via a callback in <code>stopAnimation</code>. It will not suffer from beign out of sync since the animation is no longer running.</p>
+<p>There's however one exception: when you want to stop the current animation. You need to know where it stopped in order to continue from there. We cannot know the value synchronously so we give it via a callback in <code>stopAnimation</code>. It will not suffer from being out of sync since the animation is no longer running.</p>
 
 <script type="text/jsx;harmony=true;stripTypes=true">
 examplify(React.createClass({

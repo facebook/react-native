@@ -25,13 +25,16 @@ public class ImageResizeMode {
    */
   public static ScalingUtils.ScaleType toScaleType(@Nullable String resizeModeValue) {
     if ("contain".equals(resizeModeValue)) {
-      return ScalingUtils.ScaleType.CENTER_INSIDE;
+      return ScalingUtils.ScaleType.FIT_CENTER;
     }
     if ("cover".equals(resizeModeValue)) {
       return ScalingUtils.ScaleType.CENTER_CROP;
     }
     if ("stretch".equals(resizeModeValue)) {
       return ScalingUtils.ScaleType.FIT_XY;
+    }
+    if ("center".equals(resizeModeValue)) {
+      return ScalingUtils.ScaleType.CENTER_INSIDE;
     }
     if (resizeModeValue == null) {
       // Use the default. Never use null.

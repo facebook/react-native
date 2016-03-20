@@ -23,7 +23,7 @@ On Android, ‘accessible={true}’ property for a react-native View will be tra
 ```javascript
 <View accessible={true}>
   <Text>text one</Text>
-  <Text >text two</Text>
+  <Text>text two</Text>
 </View>
 ```
 
@@ -81,7 +81,7 @@ Assign this property to a custom function which will be called when someone perf
 
 #### accessibilityComponentType (Android)
 
-In some cases, we also want to alert the end user of the type of selected component (ie, that it is a “button”). If we were using native buttons, this would work automatically. Since we are using javascript, we need to provide a bit more context for TalkBack. To do so, you must specify the ‘accessibilityComponentType’ property for any UI component. For instances, we support ‘button’, ‘radiobutton_checked’ and ‘radiobutton_unchecked’ and so on.
+In some cases, we also want to alert the end user of the type of selected component (i.e., that it is a “button”). If we were using native buttons, this would work automatically. Since we are using javascript, we need to provide a bit more context for TalkBack. To do so, you must specify the ‘accessibilityComponentType’ property for any UI component. For instances, we support ‘button’, ‘radiobutton_checked’ and ‘radiobutton_unchecked’ and so on.
 
 ```javascript
 <TouchableWithoutFeedback accessibilityComponentType=”button”

@@ -52,6 +52,11 @@
   }];
 }
 
+- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor
+{
+  self.backgroundColor = inheritedBackgroundColor;
+}
+
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
 {
   [_reactSubviews insertObject:subview atIndex:atIndex];
@@ -69,8 +74,10 @@
 
 - (void)setTextStorage:(NSTextStorage *)textStorage
 {
-  _textStorage = textStorage;
-  [self setNeedsDisplay];
+  if (_textStorage != textStorage) {
+    _textStorage = textStorage;
+    [self setNeedsDisplay];
+  }
 }
 
 - (void)drawRect:(CGRect)rect

@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 
 import java.util.Map;
 
-import android.os.SystemClock;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.View;
@@ -21,11 +20,12 @@ import android.view.View;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.drawer.events.DrawerClosedEvent;
 import com.facebook.react.views.drawer.events.DrawerOpenedEvent;
@@ -74,6 +74,19 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     int widthInPx = Float.isNaN(width) ?
         ReactDrawerLayout.DEFAULT_DRAWER_WIDTH : Math.round(PixelUtil.toPixelFromDIP(width));
     view.setDrawerWidth(widthInPx);
+  }
+
+  @ReactProp(name = "drawerLockMode")
+  public void setDrawerLockMode(ReactDrawerLayout view, @Nullable String drawerLockMode) {
+    if (drawerLockMode == null || "unlocked".equals(drawerLockMode)) {
+      view.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+    } else if ("locked-closed".equals(drawerLockMode)) {
+      view.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    } else if ("locked-open".equals(drawerLockMode)) {
+      view.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Unknown drawerLockMode " + drawerLockMode);
+    }
   }
 
   @Override
@@ -151,25 +164,25 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     @Override
     public void onDrawerSlide(View view, float v) {
       mEventDispatcher.dispatchEvent(
-          new DrawerSlideEvent(mDrawerLayout.getId(), SystemClock.uptimeMillis(), v));
+          new DrawerSlideEvent(mDrawerLayout.getId(), SystemClock.nanoTime(), v));
     }
 
     @Override
     public void onDrawerOpened(View view) {
       mEventDispatcher.dispatchEvent(
-        new DrawerOpenedEvent(mDrawerLayout.getId(), SystemClock.uptimeMillis()));
+        new DrawerOpenedEvent(mDrawerLayout.getId(), SystemClock.nanoTime()));
     }
 
     @Override
     public void onDrawerClosed(View view) {
       mEventDispatcher.dispatchEvent(
-          new DrawerClosedEvent(mDrawerLayout.getId(), SystemClock.uptimeMillis()));
+          new DrawerClosedEvent(mDrawerLayout.getId(), SystemClock.nanoTime()));
     }
 
     @Override
     public void onDrawerStateChanged(int i) {
       mEventDispatcher.dispatchEvent(
-          new DrawerStateChangedEvent(mDrawerLayout.getId(), SystemClock.uptimeMillis(), i));
+          new DrawerStateChangedEvent(mDrawerLayout.getId(), SystemClock.nanoTime(), i));
     }
   }
 }

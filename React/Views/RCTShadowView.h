@@ -63,14 +63,16 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 
 @property (nonatomic, assign) CGFloat width;
 @property (nonatomic, assign) CGFloat height;
-@property (nonatomic, assign) CGFloat minWidth;
-@property (nonatomic, assign) CGFloat minHeight;
-@property (nonatomic, assign) CGFloat maxWidth;
-@property (nonatomic, assign) CGFloat maxHeight;
 @property (nonatomic, assign) CGRect frame;
 
 - (void)setTopLeft:(CGPoint)topLeft;
 - (void)setSize:(CGSize)size;
+
+/**
+ * Set the natural size of the view, which is used when no explicit size is set.
+ * Use UIViewNoIntrinsicMetric to ignore a dimension.
+ */
+- (void)setIntrinsicContentSize:(CGSize)size;
 
 /**
  * Size flexibility type used to find size constraints.
@@ -164,10 +166,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 - (void)setTextComputed NS_REQUIRES_SUPER;
 - (BOOL)isTextDirty;
 
-/**
- * Triggers a recalculation of the shadow view's layout.
- */
-- (void)updateLayout NS_REQUIRES_SUPER;
+- (void)didSetProps:(NSArray<NSString *> *)changedProps NS_REQUIRES_SUPER;
 
 /**
  * Computes the recursive offset, meaning the sum of all descendant offsets -

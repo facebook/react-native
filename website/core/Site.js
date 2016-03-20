@@ -11,10 +11,16 @@
 
 var React = require('React');
 var HeaderLinks = require('HeaderLinks');
+var Metadata = require('Metadata');
 
 var Site = React.createClass({
   render: function() {
+    const path = Metadata.config.RN_DEPLOYMENT_PATH;
+    const version = Metadata.config.RN_VERSION;
+    const algoliaVersion = version === 'next' ? 'master' : version;
+    var basePath = '/react-native/' + (path ? path + '/' : '');
     var title = this.props.title ? this.props.title + ' – ' : '';
+    var currentYear = (new Date()).getFullYear();
     title += 'React Native | A framework for building native apps using React';
     return (
       <html>
@@ -29,8 +35,12 @@ var Site = React.createClass({
           <meta property="og:image" content="http://facebook.github.io/react-native/img/opengraph.png?2" />
           <meta property="og:description" content="A framework for building native apps using React" />
 
-          <link rel="shortcut icon" href="/react-native/img/favicon.png?2" />
-          <link rel="stylesheet" href="/react-native/css/react-native.css" />
+          <base href={basePath} />
+
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css" />
+
+          <link rel="shortcut icon" href="img/favicon.png?2" />
+          <link rel="stylesheet" href="css/react-native.css" />
 
           <script type="text/javascript" src="//use.typekit.net/vqa1hcx.js"></script>
           <script type="text/javascript">{'try{Typekit.load();}catch(e){}'}</script>
@@ -40,9 +50,12 @@ var Site = React.createClass({
           <div className="container">
             <div className="nav-main">
               <div className="wrap">
-                <a className="nav-home" href="/react-native/">
-                  <img src="/react-native/img/header_logo.png" />
+                <a className="nav-home" href="">
+                  <img src="img/header_logo.png" />
                   React Native
+                </a>
+                <a className="nav-version" href="/react-native/versions.html">
+                  {version}
                 </a>
                 <HeaderLinks section={this.props.section} />
               </div>
@@ -51,11 +64,12 @@ var Site = React.createClass({
             {this.props.children}
 
             <footer className="wrap">
-              <div className="center">© 2015 Facebook Inc.</div>
+              <div className="center">© {currentYear} Facebook Inc.</div>
             </footer>
           </div>
 
           <div id="fb-root" />
+          <script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script>
           <script dangerouslySetInnerHTML={{__html: `
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -67,8 +81,15 @@ var Site = React.createClass({
             !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)
             ){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";
             fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+
+            docsearch({
+              apiKey: '2c98749b4a1e588efec53b2acec13025',
+              indexName: 'react-native-versions',
+              inputSelector: '#algolia-doc-search',
+              algoliaOptions: { facetFilters: [ "tags:${algoliaVersion}" ], hitsPerPage: 5 }
+            });
           `}} />
-          <script src="/react-native/js/scripts.js" />
+          <script src="js/scripts.js" />
         </body>
       </html>
     );

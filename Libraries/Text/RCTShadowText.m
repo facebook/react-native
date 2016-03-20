@@ -30,7 +30,7 @@ NSString *const RCTReactTagAttributeName = @"ReactTagAttributeName";
   CGFloat _effectiveLetterSpacing;
 }
 
-static css_dim_t RCTMeasure(void *context, float width)
+static css_dim_t RCTMeasure(void *context, float width, float height)
 {
   RCTShadowText *shadowText = (__bridge RCTShadowText *)context;
   NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width];
@@ -213,8 +213,6 @@ static css_dim_t RCTMeasure(void *context, float width)
         NSTextAttachment *imageAttachment = [NSTextAttachment new];
         imageAttachment.image = image;
         [attributedString appendAttributedString:[NSAttributedString attributedStringWithAttachment:imageAttachment]];
-      } else {
-        //TODO: add placeholder image?
       }
     } else {
       RCTLogError(@"<Text> can't have any children except <Text>, <Image> or raw strings");
@@ -305,21 +303,30 @@ static css_dim_t RCTMeasure(void *context, float width)
   }
 
   // Text decoration
-  if(_textDecorationLine == RCTTextDecorationLineTypeUnderline ||
-     _textDecorationLine == RCTTextDecorationLineTypeUnderlineStrikethrough) {
+  if (_textDecorationLine == RCTTextDecorationLineTypeUnderline ||
+      _textDecorationLine == RCTTextDecorationLineTypeUnderlineStrikethrough) {
     [self _addAttribute:NSUnderlineStyleAttributeName withValue:@(_textDecorationStyle)
      toAttributedString:attributedString];
   }
-  if(_textDecorationLine == RCTTextDecorationLineTypeStrikethrough ||
-     _textDecorationLine == RCTTextDecorationLineTypeUnderlineStrikethrough){
+  if (_textDecorationLine == RCTTextDecorationLineTypeStrikethrough ||
+      _textDecorationLine == RCTTextDecorationLineTypeUnderlineStrikethrough){
     [self _addAttribute:NSStrikethroughStyleAttributeName withValue:@(_textDecorationStyle)
      toAttributedString:attributedString];
   }
-  if(_textDecorationColor) {
+  if (_textDecorationColor) {
     [self _addAttribute:NSStrikethroughColorAttributeName withValue:_textDecorationColor
      toAttributedString:attributedString];
     [self _addAttribute:NSUnderlineColorAttributeName withValue:_textDecorationColor
      toAttributedString:attributedString];
+  }
+
+  // Text shadow
+  if (!CGSizeEqualToSize(_textShadowOffset, CGSizeZero)) {
+    NSShadow *shadow = [NSShadow new];
+    shadow.shadowOffset = _textShadowOffset;
+    shadow.shadowBlurRadius = _textShadowRadius;
+    shadow.shadowColor = _textShadowColor;
+    [self _addAttribute:NSShadowAttributeName withValue:shadow toAttributedString:attributedString];
   }
 }
 
@@ -364,13 +371,15 @@ RCT_TEXT_PROPERTY(IsHighlighted, _isHighlighted, BOOL)
 RCT_TEXT_PROPERTY(LetterSpacing, _letterSpacing, CGFloat)
 RCT_TEXT_PROPERTY(LineHeight, _lineHeight, CGFloat)
 RCT_TEXT_PROPERTY(NumberOfLines, _numberOfLines, NSUInteger)
-RCT_TEXT_PROPERTY(ShadowOffset, _shadowOffset, CGSize)
 RCT_TEXT_PROPERTY(TextAlign, _textAlign, NSTextAlignment)
 RCT_TEXT_PROPERTY(TextDecorationColor, _textDecorationColor, UIColor *);
 RCT_TEXT_PROPERTY(TextDecorationLine, _textDecorationLine, RCTTextDecorationLineType);
 RCT_TEXT_PROPERTY(TextDecorationStyle, _textDecorationStyle, NSUnderlineStyle);
 RCT_TEXT_PROPERTY(WritingDirection, _writingDirection, NSWritingDirection)
 RCT_TEXT_PROPERTY(Opacity, _opacity, CGFloat)
+RCT_TEXT_PROPERTY(TextShadowOffset, _textShadowOffset, CGSize);
+RCT_TEXT_PROPERTY(TextShadowRadius, _textShadowRadius, CGFloat);
+RCT_TEXT_PROPERTY(TextShadowColor, _textShadowColor, UIColor *);
 
 - (void)setAllowFontScaling:(BOOL)allowFontScaling
 {

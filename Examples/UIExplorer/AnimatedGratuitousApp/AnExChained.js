@@ -26,6 +26,8 @@ var {
 } = React;
 
 class AnExChained extends React.Component {
+  state: any;
+
   constructor(props: Object) {
     super(props);
     this.state = {
@@ -77,6 +79,7 @@ class AnExChained extends React.Component {
           return (
             <Animated.Image
               {...handlers}
+              key={i}
               source={{uri: CHAIN_IMGS[j]}}
               style={[styles.sticker, {
                 transform: this.state.stickers[j].getTranslateTransform(), // simple conversion

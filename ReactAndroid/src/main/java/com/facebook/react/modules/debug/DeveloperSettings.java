@@ -28,4 +28,9 @@ public interface DeveloperSettings {
    * @return Whether dev mode should be enabled in JS bundles.
    */
   boolean isJSDevModeEnabled();
+
+  /**
+   * @return Whether element inspector is enabled.
+   */
+  boolean isElementInspectorEnabled();
 }

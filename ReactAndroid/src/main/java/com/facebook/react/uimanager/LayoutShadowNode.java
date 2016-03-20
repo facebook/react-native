@@ -12,6 +12,8 @@ import com.facebook.csslayout.CSSFlexDirection;
 import com.facebook.csslayout.CSSJustify;
 import com.facebook.csslayout.CSSPositionType;
 import com.facebook.csslayout.CSSWrap;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
 /**
  * Supply setters for base view layout properties such as width, height, flex properties,
@@ -93,7 +95,7 @@ public class LayoutShadowNode extends ReactShadowNode {
       ViewProps.MARGIN_RIGHT,
       ViewProps.MARGIN_TOP,
       ViewProps.MARGIN_BOTTOM,
-  }, defaultFloat = 0f)
+  }, defaultFloat = CSSConstants.UNDEFINED)
   public void setMargins(int index, float margin) {
     setMargin(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], PixelUtil.toPixelFromDIP(margin));
   }
@@ -119,7 +121,7 @@ public class LayoutShadowNode extends ReactShadowNode {
       ViewProps.BORDER_RIGHT_WIDTH,
       ViewProps.BORDER_TOP_WIDTH,
       ViewProps.BORDER_BOTTOM_WIDTH,
-  }, defaultFloat = 0f)
+  }, defaultFloat = CSSConstants.UNDEFINED)
   public void setBorderWidths(int index, float borderWidth) {
     setBorder(ViewProps.BORDER_SPACING_TYPES[index], PixelUtil.toPixelFromDIP(borderWidth));
   }

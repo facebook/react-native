@@ -16,20 +16,6 @@ var Dimensions = require('Dimensions');
 /**
  * PixelRatio class gives access to the device pixel density.
  *
- * There are a few use cases for using PixelRatio:
- *
- * ### Displaying a line that's as thin as the device permits
- *
- * A width of 1 is actually pretty thick on devices with high pixel density
- * (such as iPhone 4+ and many Android devices), we can make one that's
- * thinner using a width of `1 / PixelRatio.get()`.
- * It's a technique that works on all the devices independent of their
- * pixel density.
- *
- * ```
- * style={{ borderWidth: 1 / PixelRatio.get() }}
- * ```
- *
  * ### Fetching a correctly sized image
  *
  * You should get a higher resolution image if you are on a high pixel density
@@ -89,6 +75,17 @@ class PixelRatio {
    */
   static getPixelSizeForLayoutSize(layoutSize: number): number {
     return Math.round(layoutSize * PixelRatio.get());
+  }
+
+  /**
+   * Rounds a layout size (dp) to the nearest layout size that corresponds to
+   * an integer number of pixels. For example, on a device with a PixelRatio
+   * of 3, `PixelRatio.roundToNearestPixel(8.4) = 8.33`, which corresponds to
+   * exactly (8.33 * 3) = 25 pixels.
+   */
+  static roundToNearestPixel(layoutSize: number): number {
+    var ratio = PixelRatio.get();
+    return Math.round(layoutSize * ratio) / ratio;
   }
 
   // No-op for iOS, but used on the web. Should not be documented.

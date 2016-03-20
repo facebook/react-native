@@ -9,12 +9,16 @@
 'use strict';
 
 jest.dontMock('MatrixMath');
-jest.dontMock('invariant');
+jest.dontMock('fbjs/lib/invariant');
 
 var MatrixMath = require('MatrixMath');
 
 function degreesToRadians(degrees) {
   return degrees * Math.PI / 180;
+}
+
+function convertZeroes(degrees) {
+  return degrees.map(value => value === -0 ? 0 : value);
 }
 
 describe('MatrixMath', () => {
@@ -26,11 +30,11 @@ describe('MatrixMath', () => {
 
     [30, 45, 60, 75, 90, 100, 115, 120, 133, 167].forEach(angle => {
       var mat = MatrixMath.createRotateZ(degreesToRadians(angle));
-      expect(MatrixMath.decomposeMatrix(mat).rotationDegrees)
+      expect(convertZeroes(MatrixMath.decomposeMatrix(mat).rotationDegrees))
         .toEqual([0, 0, angle]);
 
       mat = MatrixMath.createRotateZ(degreesToRadians(-angle));
-      expect(MatrixMath.decomposeMatrix(mat).rotationDegrees)
+      expect(convertZeroes(MatrixMath.decomposeMatrix(mat).rotationDegrees))
         .toEqual([0, 0, -angle]);
     });
 
@@ -51,7 +55,7 @@ describe('MatrixMath', () => {
     // 360 is expressed as 0
     expect(MatrixMath.decomposeMatrix(
       MatrixMath.createRotateZ(degreesToRadians(360))
-    ).rotationDegrees).toEqual([0, 0, 0]);
+    ).rotationDegrees).toEqual([0, 0, -0]);
 
     expect(MatrixMath.decomposeMatrix(
       MatrixMath.createRotateZ(degreesToRadians(33.33333333))
@@ -83,12 +87,12 @@ describe('MatrixMath', () => {
     [30, 45, 60, 75, 90, 100, 110, 120, 133, 167].forEach(angle => {
       mat = MatrixMath.createIdentityMatrix();
       MatrixMath.reuseRotateYCommand(mat, degreesToRadians(angle));
-      expect(MatrixMath.decomposeMatrix(mat).rotationDegrees)
+      expect(convertZeroes(MatrixMath.decomposeMatrix(mat).rotationDegrees))
         .toEqual([0, angle, 0]);
 
       mat = MatrixMath.createIdentityMatrix();
       MatrixMath.reuseRotateYCommand(mat, degreesToRadians(-angle));
-      expect(MatrixMath.decomposeMatrix(mat).rotationDegrees)
+      expect(convertZeroes(MatrixMath.decomposeMatrix(mat).rotationDegrees))
         .toEqual([0, -angle, 0]);
     });
 
@@ -115,7 +119,7 @@ describe('MatrixMath', () => {
     [30, 45, 60, 75, 90, 100, 110, 120, 133, 167].forEach(angle => {
       mat = MatrixMath.createIdentityMatrix();
       MatrixMath.reuseRotateXCommand(mat, degreesToRadians(angle));
-      expect(MatrixMath.decomposeMatrix(mat).rotationDegrees)
+      expect(convertZeroes(MatrixMath.decomposeMatrix(mat).rotationDegrees))
         .toEqual([angle, 0, 0]);
     });
 

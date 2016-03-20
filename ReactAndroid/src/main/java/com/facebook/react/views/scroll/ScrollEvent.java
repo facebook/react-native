@@ -9,10 +9,13 @@
 
 package com.facebook.react.views.scroll;
 
+import javax.annotation.Nullable;
+
 import java.lang.Override;
 
 import android.support.v4.util.Pools;
 
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.PixelUtil;
@@ -27,18 +30,18 @@ public class ScrollEvent extends Event<ScrollEvent> {
   private static final Pools.SynchronizedPool<ScrollEvent> EVENTS_POOL =
       new Pools.SynchronizedPool<>(3);
 
-  public static final String EVENT_NAME = "topScroll";
-
   private int mScrollX;
   private int mScrollY;
   private int mContentWidth;
   private int mContentHeight;
   private int mScrollViewWidth;
   private int mScrollViewHeight;
+  private @Nullable ScrollEventType mScrollEventType;
 
   public static ScrollEvent obtain(
       int viewTag,
       long timestampMs,
+      ScrollEventType scrollEventType,
       int scrollX,
       int scrollY,
       int contentWidth,
@@ -52,6 +55,7 @@ public class ScrollEvent extends Event<ScrollEvent> {
     event.init(
         viewTag,
         timestampMs,
+        scrollEventType,
         scrollX,
         scrollY,
         contentWidth,
@@ -72,6 +76,7 @@ public class ScrollEvent extends Event<ScrollEvent> {
   private void init(
       int viewTag,
       long timestampMs,
+      ScrollEventType scrollEventType,
       int scrollX,
       int scrollY,
       int contentWidth,
@@ -79,6 +84,7 @@ public class ScrollEvent extends Event<ScrollEvent> {
       int scrollViewWidth,
       int scrollViewHeight) {
     super.init(viewTag, timestampMs);
+    mScrollEventType = scrollEventType;
     mScrollX = scrollX;
     mScrollY = scrollY;
     mContentWidth = contentWidth;
@@ -89,13 +95,22 @@ public class ScrollEvent extends Event<ScrollEvent> {
 
   @Override
   public String getEventName() {
-    return EVENT_NAME;
+    return Assertions.assertNotNull(mScrollEventType).getJSEventName();
   }
 
   @Override
   public short getCoalescingKey() {
     // All scroll events for a given view can be coalesced
     return 0;
+  }
+
+  @Override
+  public boolean canCoalesce() {
+    // Only SCROLL events can be coalesced, all others can not be
+    if (mScrollEventType == ScrollEventType.SCROLL) {
+      return true;
+    }
+    return false;
   }
 
   @Override

@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TouchableOpacity
+ * @noflow
  */
 'use strict';
 
@@ -123,6 +124,10 @@ var TouchableOpacity = React.createClass({
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 
+  touchableGetHitSlop: function() {
+    return this.props.hitSlop;
+  },
+
   touchableGetHighlightDelayMS: function() {
     return this.props.delayPressIn || 0;
   },
@@ -153,11 +158,13 @@ var TouchableOpacity = React.createClass({
     return (
       <Animated.View
         accessible={true}
+        accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}
         accessibilityTraits={this.props.accessibilityTraits}
         style={[this.props.style, {opacity: this.state.anim}]}
         testID={this.props.testID}
         onLayout={this.props.onLayout}
+        hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
         onResponderGrant={this.touchableHandleResponderGrant}

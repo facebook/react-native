@@ -11,23 +11,25 @@
  */
 'use strict';
 
-var RCTUIManager = require('NativeModules').UIManager;
 var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+var UIManager = require('UIManager');
 var UnimplementedView = require('UnimplementedView');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
+
 var insetsDiffer = require('insetsDiffer');
 var pointsDiffer = require('pointsDiffer');
 var matricesDiffer = require('matricesDiffer');
 var processColor = require('processColor');
+var resolveAssetSource = require('resolveAssetSource');
 var sizesDiffer = require('sizesDiffer');
 var verifyPropTypes = require('verifyPropTypes');
-var warning = require('warning');
+var warning = require('fbjs/lib/warning');
 
 /**
  * Used to create React components that directly wrap native component
  * implementations.  Config information is extracted from data exported from the
- * RCTUIManager module.  You should also wrap the native component in a
+ * UIManager module.  You should also wrap the native component in a
  * hand-written component with full propTypes definitions and other
  * documentation - pass the hand-written component in as `componentInterface` to
  * verify all the native props are documented via `propTypes`.
@@ -46,13 +48,13 @@ function requireNativeComponent(
   componentInterface?: ?ComponentInterface,
   extraConfig?: ?{nativeOnly?: Object},
 ): Function {
-  var viewConfig = RCTUIManager[viewName];
+  var viewConfig = UIManager[viewName];
   if (!viewConfig || !viewConfig.NativeProps) {
     warning(false, 'Native component for "%s" does not exist', viewName);
     return UnimplementedView;
   }
   var nativeProps = {
-    ...RCTUIManager.RCTView.NativeProps,
+    ...UIManager.RCTView.NativeProps,
     ...viewConfig.NativeProps,
   };
   viewConfig.uiViewClassName = viewName;
@@ -104,14 +106,22 @@ var TypeToDifferMap = {
   // (not yet implemented)
 };
 
+function processColorArray(colors: []): [] {
+  return colors && colors.map(processColor);
+}
+
 var TypeToProcessorMap = {
   // iOS Types
   CGColor: processColor,
-  CGColorArray: processColor,
+  CGColorArray: processColorArray,
   UIColor: processColor,
-  UIColorArray: processColor,
+  UIColorArray: processColorArray,
+  CGImage: resolveAssetSource,
+  UIImage: resolveAssetSource,
+  RCTImageSource: resolveAssetSource,
   // Android Types
   Color: processColor,
+  ColorArray: processColorArray,
 };
 
 module.exports = requireNativeComponent;

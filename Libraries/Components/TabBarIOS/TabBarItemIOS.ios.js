@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TabBarItemIOS
+ * @noflow
  */
 'use strict';
 
@@ -15,12 +16,12 @@ var React = require('React');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
-var resolveAssetSource = require('resolveAssetSource');
 
 var requireNativeComponent = require('requireNativeComponent');
 
 var TabBarItemIOS = React.createClass({
   propTypes: {
+    ...View.propTypes,
     /**
      * Little red bubble that sits at the top right of the icon.
      */
@@ -30,7 +31,7 @@ var TabBarItemIOS = React.createClass({
     ]),
     /**
      * Items comes with a few predefined system icons. Note that if you are
-     * using them, the title and selectedIcon will be overriden with the
+     * using them, the title and selectedIcon will be overridden with the
      * system ones.
      */
     systemIcon: React.PropTypes.oneOf([
@@ -96,29 +97,23 @@ var TabBarItemIOS = React.createClass({
   },
 
   render: function() {
-    var tabContents = null;
+    var {style, children, ...props} = this.props;
+
     // if the tab has already been shown once, always continue to show it so we
     // preserve state between tab transitions
     if (this.state.hasBeenSelected) {
-      tabContents =
+      var tabContents =
         <StaticContainer shouldUpdate={this.props.selected}>
-          {this.props.children}
+          {children}
         </StaticContainer>;
     } else {
-      tabContents = <View />;
+      var tabContents = <View />;
     }
-
-    var badge = typeof this.props.badge === 'number' ?
-      '' + this.props.badge :
-      this.props.badge;
 
     return (
       <RCTTabBarItem
-        {...this.props}
-        icon={this.props.systemIcon || resolveAssetSource(this.props.icon)}
-        selectedIcon={resolveAssetSource(this.props.selectedIcon)}
-        badge={badge}
-        style={[styles.tab, this.props.style]}>
+        {...props}
+        style={[styles.tab, style]}>
         {tabContents}
       </RCTTabBarItem>
     );

@@ -7,9 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#include "Exceptions.h"
-#include "CoreClasses.h"
-#include <jni/ALog.h>
+#include "jni/fbjni.h"
 
 #include <fb/assert.h>
 
@@ -193,7 +191,7 @@ void setNewJavaException(jclass exceptionClass, const char* fmt, ARGS... args) {
   JNIEnv* env = internal::getEnv();
 
   try {
-    char *msg = (char*) alloca(msgSize);
+    char *msg = (char*) alloca(msgSize + 1);
     snprintf(msg, kMaxExceptionMessageBufferSize, fmt, args...);
     env->ThrowNew(exceptionClass, msg);
   } catch (...) {

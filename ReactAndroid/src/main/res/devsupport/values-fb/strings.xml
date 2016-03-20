@@ -12,5 +12,5 @@
     <string name="catalyst_jsload_title">[Please wait...#71bad104a80f916d3bfb1ffa23a487af:1]</string>
     <string name="catalyst_jsload_message">[Fetching JS bundle#0de4127d4fc6e7d1e265e07433f26e25:1]</string>
     <string name="catalyst_jsload_error">[Unable to download JS bundle#51057ecd2555f91873cce4c452e1ea03:1]</string>
-    <string name="catalyst_inspect_element">[Inspect Element#c1b106c92869437ebd88f326d632b973:1]</string>
+    <string name="catalyst_element_inspector">[Show Inspector#c1b106c92869437ebd88f326d632b973:1]</string>
 </resources>

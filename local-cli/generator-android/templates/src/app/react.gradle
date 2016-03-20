@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 def config = project.hasProperty("react") ? project.react : [];
 
 def bundleAssetName = config.bundleAssetName ?: "index.android.bundle"
@@ -9,67 +11,87 @@ def elvisFile(thing) {
 }
 
 def reactRoot = elvisFile(config.root) ?: file("../../")
-def jsBundleDirDebug = elvisFile(config.jsBundleDirDebug) ?:
-        file("$buildDir/intermediates/assets/debug")
-def jsBundleDirRelease = elvisFile(config.jsBundleDirRelease) ?:
-        file("$buildDir/intermediates/assets/release")
-def resourcesDirDebug = elvisFile(config.resourcesDirDebug) ?:
-        file("$buildDir/intermediates/res/merged/debug")
-def resourcesDirRelease = elvisFile(config.resourcesDirRelease) ?:
-        file("$buildDir/intermediates/res/merged/release")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
 
-def jsBundleFileDebug = file("$jsBundleDirDebug/$bundleAssetName")
-def jsBundleFileRelease = file("$jsBundleDirRelease/$bundleAssetName")
-
-task bundleDebugJsAndAssets(type: Exec) {
-    // create dirs if they are not there (e.g. the "clean" task just ran)
-    doFirst {
-        jsBundleDirDebug.mkdirs()
-        resourcesDirDebug.mkdirs()
+void runBefore(String dependentTaskName, Task task) {
+    Task dependentTask = tasks.findByPath(dependentTaskName);
+    if (dependentTask != null) {
+        dependentTask.dependsOn task
     }
-
-    // set up inputs and outputs so gradle can cache the result
-    inputs.files fileTree(dir: reactRoot, excludes: inputExcludes)
-    outputs.dir jsBundleDirDebug
-    outputs.dir resourcesDirDebug
-
-    // set up the call to the react-native cli
-    workingDir reactRoot
-    commandLine "react-native", "bundle", "--platform", "android", "--dev", "true", "--entry-file",
-            entryFile, "--bundle-output", jsBundleFileDebug, "--assets-dest", resourcesDirDebug
-
-    enabled config.bundleInDebug ?: false
-}
-
-task bundleReleaseJsAndAssets(type: Exec) {
-    // create dirs if they are not there (e.g. the "clean" task just ran)
-    doFirst {
-        jsBundleDirRelease.mkdirs()
-        resourcesDirRelease.mkdirs()
-    }
-
-    // set up inputs and outputs so gradle can cache the result
-    inputs.files fileTree(dir: reactRoot, excludes: inputExcludes)
-    outputs.dir jsBundleDirRelease
-    outputs.dir resourcesDirRelease
-
-    // set up the call to the react-native cli
-    workingDir reactRoot
-    commandLine "react-native", "bundle", "--platform", "android", "--dev", "false", "--entry-file",
-            entryFile, "--bundle-output", jsBundleFileRelease, "--assets-dest", resourcesDirRelease
-
-    enabled config.bundleInRelease ?: true
 }
 
 gradle.projectsEvaluated {
-    // hook bundleDebugJsAndAssets into the android build process
-    bundleDebugJsAndAssets.dependsOn mergeDebugResources
-    bundleDebugJsAndAssets.dependsOn mergeDebugAssets
-    processDebugResources.dependsOn bundleDebugJsAndAssets
+    // Grab all build types and product flavors
+    def buildTypes = android.buildTypes.collect { type -> type.name }
+    def productFlavors = android.productFlavors.collect { flavor -> flavor.name }
 
-    // hook bundleReleaseJsAndAssets into the android build process
-    bundleReleaseJsAndAssets.dependsOn mergeReleaseResources
-    bundleReleaseJsAndAssets.dependsOn mergeReleaseAssets
-    processReleaseResources.dependsOn bundleReleaseJsAndAssets
+    // When no product flavors defined, use empty
+    if (!productFlavors) productFlavors.add('')
+
+    productFlavors.each { productFlavorName ->
+        buildTypes.each { buildTypeName ->
+            // Create variant and target names
+            def targetName = "${productFlavorName.capitalize()}${buildTypeName.capitalize()}"
+            def targetPath = productFlavorName ?
+                    "${productFlavorName}/${buildTypeName}" :
+                    "${buildTypeName}"
+
+            // React js bundle directories
+            def jsBundleDirConfigName = "jsBundleDir${targetName}"
+            def jsBundleDir = elvisFile(config."$jsBundleDirConfigName") ?:
+                    file("$buildDir/intermediates/assets/${targetPath}")
+
+            def resourcesDirConfigName = "resourcesDir${targetName}"
+            def resourcesDir = elvisFile(config."${resourcesDirConfigName}") ?:
+                    file("$buildDir/intermediates/res/merged/${targetPath}")
+            def jsBundleFile = file("$jsBundleDir/$bundleAssetName")
+
+            // Bundle task name for variant
+            def bundleJsAndAssetsTaskName = "bundle${targetName}JsAndAssets"
+
+            def currentBundleTask = tasks.create(
+                    name: bundleJsAndAssetsTaskName,
+                    type: Exec) {
+                group = "react"
+                description = "bundle JS and assets for ${targetName}."
+
+                // Create dirs if they are not there (e.g. the "clean" task just ran)
+                doFirst {
+                    jsBundleDir.mkdirs()
+                    resourcesDir.mkdirs()
+                }
+
+                // Set up inputs and outputs so gradle can cache the result
+                inputs.files fileTree(dir: reactRoot, excludes: inputExcludes)
+                outputs.dir jsBundleDir
+                outputs.dir resourcesDir
+
+                // Set up the call to the react-native cli
+                workingDir reactRoot
+
+                // Set up dev mode
+                def devEnabled = !targetName.toLowerCase().contains("release")
+                if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                    commandLine "cmd", "/c", "react-native", "bundle", "--platform", "android", "--dev", "${devEnabled}",
+                            "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir
+                } else {
+                    commandLine "react-native", "bundle", "--platform", "android", "--dev", "${devEnabled}",
+                            "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir
+                }
+
+                enabled config."bundleIn${targetName}" ||
+                    config."bundleIn${buildTypeName.capitalize()}" ?:
+                            targetName.toLowerCase().contains("release")
+            }
+
+            // Hook bundle${productFlavor}${buildType}JsAndAssets into the android build process
+            currentBundleTask.dependsOn("merge${targetName}Resources")
+            currentBundleTask.dependsOn("merge${targetName}Assets")
+
+            runBefore("processArmeabi-v7a${targetName}Resources", currentBundleTask)
+            runBefore("processX86${targetName}Resources", currentBundleTask)
+            runBefore("processUniversal${targetName}Resources", currentBundleTask)
+            runBefore("process${targetName}Resources", currentBundleTask)
+        }
+    }
 }

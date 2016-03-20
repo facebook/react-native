@@ -23,13 +23,19 @@
                     moduleProvider:(moduleProvider__)]
 
 @protocol RCTBridgeModule;
+@class RCTBridge;
 
 @class RCTRootView;
 
 @interface RCTTestRunner : NSObject
 
+/**
+ * Controls the mode snapshots are run in. If set to true, new snapshots are written to disk,
+ * otherwise, the UI will be compared to the existing snapshot.
+ */
 @property (nonatomic, assign) BOOL recordMode;
-@property (nonatomic, strong) NSURL *scriptURL;
+
+@property (nonatomic, readonly) NSURL *scriptURL;
 
 /**
  * Initialize a runner.  It's recommended that you use the RCTInitRunnerForApp

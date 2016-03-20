@@ -19,6 +19,8 @@ var React = require('react-native');
 var {
   ScrollView,
   StyleSheet,
+  Text,
+  TouchableOpacity,
   View,
   Image
 } = React;
@@ -31,27 +33,45 @@ exports.examples = [
   title: '<ScrollView>',
   description: 'To make content scrollable, wrap it within a <ScrollView> component',
   render: function() {
+    var _scrollView: ScrollView;
     return (
-      <ScrollView
-        automaticallyAdjustContentInsets={false}
-        onScroll={() => { console.log('onScroll!'); }}
-        scrollEventThrottle={200}
-        style={styles.scrollView}>
-        {THUMBS.map(createThumbRow)}
-      </ScrollView>
+      <View>
+        <ScrollView
+          ref={(scrollView) => { _scrollView = scrollView; }}
+          automaticallyAdjustContentInsets={false}
+          onScroll={() => { console.log('onScroll!'); }}
+          scrollEventThrottle={200}
+          style={styles.scrollView}>
+          {THUMBS.map(createThumbRow)}
+        </ScrollView>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => { _scrollView.scrollTo({y: 0}); }}>
+          <Text>Scroll to top</Text>
+        </TouchableOpacity>
+      </View>
     );
   }
 }, {
   title: '<ScrollView> (horizontal = true)',
   description: 'You can display <ScrollView>\'s child components horizontally rather than vertically',
   render: function() {
+    var _scrollView: ScrollView;
     return (
-      <ScrollView
-        automaticallyAdjustContentInsets={false}
-        horizontal={true}
-        style={[styles.scrollView, styles.horizontalScrollView]}>
-        {THUMBS.map(createThumbRow)}
-      </ScrollView>
+      <View>
+        <ScrollView
+          ref={(scrollView) => { _scrollView = scrollView; }}
+          automaticallyAdjustContentInsets={false}
+          horizontal={true}
+          style={[styles.scrollView, styles.horizontalScrollView]}>
+          {THUMBS.map(createThumbRow)}
+        </ScrollView>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => { _scrollView.scrollTo({x: 0}); }}>
+          <Text>Scroll to start</Text>
+        </TouchableOpacity>
+      </View>
     );
   }
 }];

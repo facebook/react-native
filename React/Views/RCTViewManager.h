@@ -30,7 +30,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
  * allowing the manager (or the views that it manages) to manipulate the view
  * hierarchy and send events back to the JS context.
  */
-@property (nonatomic, weak) RCTBridge *bridge;
+@property (nonatomic, weak, readonly) RCTBridge *bridge;
 
 /**
  * This method instantiates a native view to be managed by the module. Override
@@ -40,15 +40,6 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
  * view and return the same instance for subsequent calls.
  */
 - (UIView *)view;
-
-/**
- * This method instantiates a native view using the props passed into the component.
- * This method should be used when you need to know about specific props in order to
- * initialize a view. By default, this just calls the -view method. Each prop will
- * still be set individually, after the view is created. Like the -view method,
- * -viewWithProps: should return a fresh instance each time it is called.
- */
-- (UIView *)viewWithProps:(NSDictionary<NSString *, id> *)props;
 
 /**
  * This method instantiates a shadow view to be managed by the module. If omitted,

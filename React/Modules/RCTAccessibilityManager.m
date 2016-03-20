@@ -59,6 +59,8 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if ((self = [super init])) {
+
+    // TODO: can this be moved out of the startup path?
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveNewContentSizeCategory:)
                                                  name:UIContentSizeCategoryDidChangeNotification
@@ -176,7 +178,7 @@ RCT_EXPORT_METHOD(getCurrentVoiceOverState:(RCTResponseSenderBlock)callback
 
 - (RCTAccessibilityManager *)accessibilityManager
 {
-  return self.modules[RCTBridgeModuleNameForClass([RCTAccessibilityManager class])];
+  return [self moduleForClass:[RCTAccessibilityManager class]];
 }
 
 @end

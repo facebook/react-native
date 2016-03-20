@@ -11,9 +11,16 @@
  */
 'use strict';
 
+var PixelRatio = require('PixelRatio');
 var StyleSheetRegistry = require('StyleSheetRegistry');
 var StyleSheetValidation = require('StyleSheetValidation');
-var flattenStyle = require('flattenStyle');
+
+var flatten = require('flattenStyle');
+
+var hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
+if (hairlineWidth === 0) {
+  hairlineWidth = 1 / PixelRatio.get();
+}
 
 /**
  * A StyleSheet is an abstraction similar to CSS StyleSheets
@@ -59,10 +66,32 @@ var flattenStyle = require('flattenStyle');
  *  - It also allows to send the style only once through the bridge. All
  * subsequent uses are going to refer an id (not implemented yet).
  */
-class StyleSheet {
-  static flatten: typeof flattenStyle;
+module.exports = {
+  /**
+   * This is defined as the width of a thin line on the platform. It can be
+   * used as the thickness of a border or division between two elements.
+   * Example:
+   * ```
+   *   {
+   *     borderBottomColor: '#bbb',
+   *     borderBottomWidth: StyleSheet.hairlineWidth
+   *   }
+   * ```
+   *
+   * This constant will always be a round number of pixels (so a line defined
+   * by it look crisp) and will try to match the standard width of a thin line
+   * on the underlying platform. However, you should not rely on it being a
+   * constant size, because on different platforms and screen densities its
+   * value may be calculated differently.
+   */
+  hairlineWidth,
 
-  static create(obj: {[key: string]: any}): {[key: string]: number} {
+  flatten,
+
+  /**
+   * Creates a StyleSheet style reference from the given object.
+   */
+  create(obj: {[key: string]: any}): {[key: string]: number} {
     var result = {};
     for (var key in obj) {
       StyleSheetValidation.validateStyle(key, obj);
@@ -70,9 +99,4 @@ class StyleSheet {
     }
     return result;
   }
-}
-
-/* TODO(brentvatne) docs are needed for this */
-StyleSheet.flatten = flattenStyle;
-
-module.exports = StyleSheet;
+};

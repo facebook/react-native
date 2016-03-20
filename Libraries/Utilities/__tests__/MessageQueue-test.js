@@ -8,12 +8,8 @@
  */
 'use strict';
 
-jest.setMock('ReactUpdates', {
-  batchedUpdates: fn => fn()
-});
-
-jest.dontMock('MessageQueue');
-jest.dontMock('keyMirror');
+jest.dontMock('MessageQueue')
+  .dontMock('fbjs/lib/keyMirror');
 var MessageQueue = require('MessageQueue');
 
 let MODULE_IDS = 0;
@@ -23,8 +19,6 @@ let PARAMS = 2;
 let TestModule = {
   testHook1(){}, testHook2(){},
 };
-
-let customRequire = (moduleName) => TestModule;
 
 let assertQueue = (flushedQueue, index, moduleID, methodID, params) => {
   expect(flushedQueue[MODULE_IDS][index]).toEqual(moduleID);
@@ -39,9 +33,10 @@ describe('MessageQueue', () => {
   beforeEach(() => {
     queue = new MessageQueue(
       remoteModulesConfig,
-      localModulesConfig,
-      customRequire,
+      localModulesConfig
     );
+
+    queue.registerCallableModule('one', TestModule);
 
     TestModule.testHook1 = jasmine.createSpy();
     TestModule.testHook2 = jasmine.createSpy();
@@ -54,15 +49,15 @@ describe('MessageQueue', () => {
   });
 
   it('should call a local function with id', () => {
-    expect(TestModule.testHook1.callCount).toEqual(0);
+    expect(TestModule.testHook1.calls.count()).toEqual(0);
     queue.__callFunction(0, 0, [1]);
-    expect(TestModule.testHook1.callCount).toEqual(1);
+    expect(TestModule.testHook1.calls.count()).toEqual(1);
   });
 
   it('should call a local function with the function name', () => {
-    expect(TestModule.testHook2.callCount).toEqual(0);
+    expect(TestModule.testHook2.calls.count()).toEqual(0);
     queue.__callFunction('one', 'testHook2', [2]);
-    expect(TestModule.testHook2.callCount).toEqual(1);
+    expect(TestModule.testHook2.calls.count()).toEqual(1);
   });
 
   it('should generate native modules', () => {
@@ -77,7 +72,7 @@ describe('MessageQueue', () => {
     assertQueue(flushedQueue, 0, 0, 1, ['foo', 0, 1]);
   });
 
-  it('should call the stored callback', (done) => {
+  it('should call the stored callback', () => {
     var done = false;
     queue.RemoteModules.one.remoteMethod1(() => { done = true; });
     queue.__invokeCallback(1);

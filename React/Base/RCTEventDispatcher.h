@@ -48,23 +48,17 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 
 @property (nonatomic, strong, readonly) NSNumber *viewTag;
 @property (nonatomic, copy, readonly) NSString *eventName;
-@property (nonatomic, copy, readonly) NSDictionary *body;
-@property (nonatomic, assign, readonly) uint16_t coalescingKey;
 
 - (BOOL)canCoalesce;
 - (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent;
 
+// used directly for doing a JS call
 + (NSString *)moduleDotMethod;
+// must contain only JSON compatible values
+- (NSArray *)arguments;
 
 @end
 
-@interface RCTBaseEvent : NSObject <RCTEvent>
-
-- (instancetype)initWithViewTag:(NSNumber *)viewTag
-                      eventName:(NSString *)eventName
-                           body:(NSDictionary *)body NS_DESIGNATED_INITIALIZER;
-
-@end
 
 /**
  * This class wraps the -[RCTBridge enqueueJSCall:args:] method, and
@@ -101,6 +95,14 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 
 /**
  * Send a pre-prepared event object.
+ * 
+ * If the event can be coalesced it is added to a pool of events that are sent at the beginning of the next js frame.
+ * Otherwise if the event cannot be coalesced we first flush the pool of coalesced events and the new event after that.
+ *
+ * Why it works this way?
+ * Making sure js gets events in the right order is crucial for correctly interpreting gestures.
+ * Unfortunately we cannot emit all events as they come. If we would do that we would have to emit scroll and touch moved event on every frame,
+ * which is too much data to transfer and process on older devices. This is especially bad when js starts lagging behind main thread.
  */
 - (void)sendEvent:(id<RCTEvent>)event;
 

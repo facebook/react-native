@@ -32,6 +32,7 @@ var ActivityIndicatorIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
+    ...View.propTypes,
     /**
      * Whether to show the indicator (true, the default) or hide it (false).
      */

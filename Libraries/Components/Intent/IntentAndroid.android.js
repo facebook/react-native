@@ -7,14 +7,56 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule IntentAndroid
+ * @flow
  */
 'use strict';
 
-var IntentAndroidModule = require('NativeModules').IntentAndroid;
-var invariant = require('invariant');
+var Linking = require('Linking');
+var invariant = require('fbjs/lib/invariant');
 
 /**
+ * NOTE: `IntentAndroid` is being deprecated. Use `Linking` instead.
+ *
  * `IntentAndroid` gives you a general interface to handle external links.
+ *
+ * ### Basic Usage
+ *
+ * #### Handling deep links
+ *
+ * If your app was launched from an external url registered to your app you can
+ * access and handle it from any component you want with
+ *
+ * ```
+ * componentDidMount() {
+ *   var url = IntentAndroid.getInitialURL(url => {
+ *     if (url) {
+ *       console.log('Initial url is: ' + url);
+ *     }
+ *   });
+ * }
+ * ```
+ *
+ * Example to add support for deep linking inside your React Native app.
+ * More Info: [Enabling Deep Links for App Content - Add Intent Filters for Your Deep Links](http://developer.android.com/training/app-indexing/deep-linking.html#adding-filters).
+ *
+ * Edit in `android/app/src/main/AndroidManifest.xml`
+ *
+ * ```
+ *  <intent-filter>
+ *    <action android:name="android.intent.action.VIEW" />
+ *    <category android:name="android.intent.category.DEFAULT" />
+ *    <category android:name="android.intent.category.BROWSABLE" />
+ *
+ *    <!-- Accepts URIs that begin with "http://www.facebook.com/react -->
+ *    <data android:scheme="http"
+ *       android:host="www.facebook.com"
+ *       android:pathPrefix="/react" />
+ *    <!-- note that the leading "/" is required for pathPrefix-->
+ *
+ *    <!-- Accepts URIs that begin with "facebook://react -->
+ *    <!-- <data android:scheme="facebook" android:host="react" /> -->
+ *  </intent-filter>
+ * ```
  *
  * #### Opening external links
  *
@@ -50,10 +92,12 @@ class IntentAndroid {
    * If you're passing in a non-http(s) URL, it's best to check {@code canOpenURL} first.
    *
    * NOTE: For web URLs, the protocol ("http://", "https://") must be set accordingly!
+   *
+   * @deprecated
    */
   static openURL(url: string) {
-    this._validateURL(url);
-    IntentAndroidModule.openURL(url);
+    console.warn('"IntentAndroid.openURL" is deprecated. Use the promise based "Linking.openURL" instead.');
+    Linking.openURL(url);
   }
 
   /**
@@ -65,25 +109,33 @@ class IntentAndroid {
    * NOTE: For web URLs, the protocol ("http://", "https://") must be set accordingly!
    *
    * @param URL the URL to open
+   *
+   * @deprecated
    */
   static canOpenURL(url: string, callback: Function) {
-    this._validateURL(url);
+    console.warn('"IntentAndroid.canOpenURL" is deprecated. Use the promise based "Linking.canOpenURL" instead.');
     invariant(
       typeof callback === 'function',
       'A valid callback function is required'
     );
-    IntentAndroidModule.canOpenURL(url, callback);
+    Linking.canOpenURL(url).then(callback);
   }
 
-  static _validateURL(url: string) {
+  /**
+   * If the app launch was triggered by an app link with {@code Intent.ACTION_VIEW},
+   * it will give the link url, otherwise it will give `null`
+   *
+   * Refer http://developer.android.com/training/app-indexing/deep-linking.html#handling-intents
+   *
+   * @deprecated
+   */
+  static getInitialURL(callback: Function) {
+    console.warn('"IntentAndroid.getInitialURL" is deprecated. Use the promise based "Linking.getInitialURL" instead.');
     invariant(
-      typeof url === 'string',
-      'Invalid URL: should be a string. Was: ' + url
+      typeof callback === 'function',
+      'A valid callback function is required'
     );
-    invariant(
-      url,
-      'Invalid URL: cannot be empty'
-    );
+    Linking.getInitialURL().then(callback);
   }
 }
 

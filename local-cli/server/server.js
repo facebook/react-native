@@ -31,6 +31,10 @@ function _server(argv, config, resolve, reject) {
     default: 8081,
     type: 'string',
   }, {
+    command: 'host',
+    default: '',
+    type: 'string',
+  }, {
     command: 'root',
     type: 'string',
     description: 'add another root(s) to be used by the packager in this project',
@@ -79,7 +83,7 @@ function _server(argv, config, resolve, reject) {
   }
 
   args.assetRoots = args.assetRoots
-    ? argToArray(args.projectRoots).map(dir =>
+    ? argToArray(args.assetRoots).map(dir =>
       path.resolve(process.cwd(), dir)
     )
     : config.getAssetRoots();

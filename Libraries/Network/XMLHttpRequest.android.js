@@ -26,7 +26,7 @@ function convertHeadersMapToArray(headers: Object): Array<Header> {
 }
 
 class XMLHttpRequest extends XMLHttpRequestBase {
-  sendImpl(method: ?string, url: ?string, headers: Object, data: any): void {
+  sendImpl(method: ?string, url: ?string, headers: Object, data: any, timeout: number): void {
     var body;
     if (typeof data === 'string') {
       body = {string: data};
@@ -40,14 +40,14 @@ class XMLHttpRequest extends XMLHttpRequestBase {
     } else {
       body = data;
     }
-
     var useIncrementalUpdates = this.onreadystatechange ? true : false;
     var requestId = RCTNetworking.sendRequest(
       method,
       url,
       convertHeadersMapToArray(headers),
       body,
-      useIncrementalUpdates
+      useIncrementalUpdates,
+      timeout
     );
     this.didCreateRequest(requestId);
   }

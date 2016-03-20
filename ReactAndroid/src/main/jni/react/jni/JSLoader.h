@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <android/asset_manager.h>
 #include <string>
 #include <jni.h>
 
@@ -9,13 +10,21 @@ namespace facebook {
 namespace react {
 
 /**
+ * Helper method for loading a JS script from Android assets without
+ * a reference to an AssetManager.
+ */
+std::string loadScriptFromAssets(const std::string& assetName);
+
+/**
  * Helper method for loading JS script from android asset
  */
-std::string loadScriptFromAssets(JNIEnv *env, jobject assetManager, std::string assetName);
+std::string loadScriptFromAssets(AAssetManager *assetManager, const std::string& assetName);
 
 /**
  * Helper method for loading JS script from a file
  */
-std::string loadScriptFromFile(std::string fileName);
+std::string loadScriptFromFile(const std::string& fileName);
+
+void registerJSLoaderNatives();
 
 } }

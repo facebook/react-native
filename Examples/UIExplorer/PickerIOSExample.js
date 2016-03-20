@@ -87,27 +87,52 @@ var PickerExample = React.createClass({
               key={carMake}
               value={carMake}
               label={CAR_MAKES_AND_MODELS[carMake].name}
-              />
-            )
-          )}
+            />
+          ))}
         </PickerIOS>
         <Text>Please choose a model of {make.name}:</Text>
         <PickerIOS
           selectedValue={this.state.modelIndex}
           key={this.state.carMake}
           onValueChange={(modelIndex) => this.setState({modelIndex})}>
-          {CAR_MAKES_AND_MODELS[this.state.carMake].models.map(
-            (modelName, modelIndex) => (
-              <PickerItemIOS
-                key={this.state.carmake + '_' + modelIndex}
-                value={modelIndex}
-                label={modelName}
-              />
-            ))
-          }
+          {CAR_MAKES_AND_MODELS[this.state.carMake].models.map((modelName, modelIndex) => (
+            <PickerItemIOS
+              key={this.state.carMake + '_' + modelIndex}
+              value={modelIndex}
+              label={modelName}
+            />
+          ))}
         </PickerIOS>
         <Text>You selected: {selectionString}</Text>
       </View>
+    );
+  },
+});
+
+var PickerStyleExample = React.createClass({
+  getInitialState: function() {
+    return {
+      carMake: 'cadillac',
+      modelIndex: 0,
+    };
+  },
+
+  render: function() {
+    var make = CAR_MAKES_AND_MODELS[this.state.carMake];
+    var selectionString = make.name + ' ' + make.models[this.state.modelIndex];
+    return (
+      <PickerIOS
+        itemStyle={{fontSize: 25, color: 'red', textAlign: 'left', fontWeight: 'bold'}}
+        selectedValue={this.state.carMake}
+        onValueChange={(carMake) => this.setState({carMake, modelIndex: 0})}>
+        {Object.keys(CAR_MAKES_AND_MODELS).map((carMake) => (
+          <PickerItemIOS
+            key={carMake}
+            value={carMake}
+            label={CAR_MAKES_AND_MODELS[carMake].name}
+          />
+        ))}
+      </PickerIOS>
     );
   },
 });
@@ -120,5 +145,11 @@ exports.examples = [
   title: '<PickerIOS>',
   render: function(): ReactElement {
     return <PickerExample />;
+  },
+},
+{
+  title: '<PickerIOS> with custom styling',
+  render: function(): ReactElement {
+    return <PickerStyleExample />;
   },
 }];

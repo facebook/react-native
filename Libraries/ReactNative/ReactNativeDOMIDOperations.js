@@ -13,8 +13,8 @@
 
 var ReactNativeTagHandles = require('ReactNativeTagHandles');
 var ReactMultiChildUpdateTypes = require('ReactMultiChildUpdateTypes');
-var RCTUIManager = require('NativeModules').UIManager;
 var ReactPerf = require('ReactPerf');
+var UIManager = require('UIManager');
 
 /**
  * Updates a component's children by processing a series of updates.
@@ -59,7 +59,7 @@ var dangerouslyProcessChildrenUpdates = function(childrenUpdates, markupList) {
   for (var updateParentTagString in byContainerTag) {
     var updateParentTagNumber = +updateParentTagString;
     var childUpdatesToSend = byContainerTag[updateParentTagNumber];
-    RCTUIManager.manageChildren(
+    UIManager.manageChildren(
       updateParentTagNumber,
       childUpdatesToSend.moveFromIndices,
       childUpdatesToSend.moveToIndices,
@@ -93,7 +93,7 @@ var ReactNativeDOMIDOperations = {
     'dangerouslyReplaceNodeWithMarkupByID',
     function(id, mountImage) {
       var oldTag = ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(id);
-      RCTUIManager.replaceExistingNonRootView(oldTag, mountImage.tag);
+      UIManager.replaceExistingNonRootView(oldTag, mountImage.tag);
       ReactNativeTagHandles.associateRootNodeIDWithMountedNodeHandle(id, mountImage.tag);
     }
   ),

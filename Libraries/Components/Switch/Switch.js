@@ -6,10 +6,12 @@
  */
 'use strict';
 
-var Platform = require('Platform');
+var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
+var Platform = require('Platform');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
+var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -23,6 +25,7 @@ type DefaultProps = {
  */
 var Switch = React.createClass({
   propTypes: {
+    ...View.propTypes,
     /**
      * The value of the switch.  If true the switch will be turned on.
      * Default value is false.
@@ -34,7 +37,7 @@ var Switch = React.createClass({
      */
     disabled: React.PropTypes.bool,
     /**
-     * Invoked with the new value when the value chages.
+     * Invoked with the new value when the value changes.
      */
     onValueChange: React.PropTypes.func,
     /**
@@ -46,17 +49,17 @@ var Switch = React.createClass({
      * Background color when the switch is turned off.
      * @platform ios
      */
-    tintColor: React.PropTypes.string,
+    tintColor: ColorPropType,
     /**
      * Background color when the switch is turned on.
      * @platform ios
      */
-    onTintColor: React.PropTypes.string,
+    onTintColor: ColorPropType,
     /**
      * Color of the foreground switch grip.
      * @platform ios
      */
-    thumbTintColor: React.PropTypes.string,
+    thumbTintColor: ColorPropType,
   },
 
   getDefaultProps: function(): DefaultProps {
@@ -89,7 +92,7 @@ var Switch = React.createClass({
     if (Platform.OS === 'android') {
       props.enabled = !this.props.disabled;
       props.on = this.props.value;
-      props.style = [styles.rctSwitchAndroid, this.props.style];
+      props.style = this.props.style;
     } else if (Platform.OS === 'ios') {
       props.style = [styles.rctSwitchIOS, this.props.style];
     }
@@ -107,15 +110,11 @@ var styles = StyleSheet.create({
   rctSwitchIOS: {
     height: 31,
     width: 51,
-  },
-  rctSwitchAndroid: {
-    height: 27,
-    width: 40,
-  },
+  }
 });
 
 if (Platform.OS === 'android') {
-  var RCTSwitch = requireNativeComponent('AndroidSwitch', null, {
+  var RCTSwitch = requireNativeComponent('AndroidSwitch', Switch, {
     nativeOnly: { onChange: true, on: true, enabled: true }
   });
 } else {

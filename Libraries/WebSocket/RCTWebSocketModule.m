@@ -11,7 +11,7 @@
 
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
-#import "RCTSRWebSocket.h"
+#import "RCTConvert.h"
 #import "RCTUtils.h"
 
 @implementation RCTSRWebSocket (React)
@@ -28,10 +28,6 @@
 
 @end
 
-@interface RCTWebSocketModule () <RCTSRWebSocketDelegate>
-
-@end
-
 @implementation RCTWebSocketModule
 {
     NSMutableDictionary<NSNumber *, RCTSRWebSocket *> *_sockets;
@@ -41,14 +37,6 @@ RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
 
-- (instancetype)init
-{
-  if ((self = [super init])) {
-    _sockets = [NSMutableDictionary new];
-  }
-  return self;
-}
-
 - (void)dealloc
 {
   for (RCTSRWebSocket *socket in _sockets.allValues) {
@@ -57,11 +45,19 @@ RCT_EXPORT_MODULE()
   }
 }
 
-RCT_EXPORT_METHOD(connect:(NSURL *)URL socketID:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols headers:(NSDictionary *)headers socketID:(nonnull NSNumber *)socketID)
 {
-  RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURL:URL];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+  [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
+    [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
+  }];
+
+  RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURLRequest:request protocols:protocols];
   webSocket.delegate = self;
   webSocket.reactTag = socketID;
+  if (!_sockets) {
+    _sockets = [NSMutableDictionary new];
+  }
   _sockets[socketID] = webSocket;
   [webSocket open];
 }
@@ -81,8 +77,10 @@ RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message
 {
+  BOOL binary = [message isKindOfClass:[NSData class]];
   [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketMessage" body:@{
-    @"data": message,
+    @"data": binary ? [message base64EncodedStringWithOptions:0] : message,
+    @"type": binary ? @"binary" : @"text",
     @"id": webSocket.reactTag
   }];
 }

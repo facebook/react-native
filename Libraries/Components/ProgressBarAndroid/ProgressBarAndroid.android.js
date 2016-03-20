@@ -14,11 +14,14 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ReactPropTypes = require('ReactPropTypes');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+var View = require('View');
+var ColorPropType = require('ColorPropType');
 
 var requireNativeComponent = require('requireNativeComponent');
 
 var STYLE_ATTRIBUTES = [
   'Horizontal',
+  'Normal',
   'Small',
   'Large',
   'Inverse',
@@ -63,10 +66,12 @@ var indeterminateType = function(props, propName, componentName) {
  */
 var ProgressBarAndroid = React.createClass({
   propTypes: {
+    ...View.propTypes,
     /**
      * Style of the ProgressBar. One of:
      *
      * - Horizontal
+     * - Normal (default)
      * - Small
      * - Large
      * - Inverse
@@ -86,7 +91,7 @@ var ProgressBarAndroid = React.createClass({
     /**
      * Color of the progress bar.
      */
-    color: ReactPropTypes.string,
+    color: ColorPropType,
     /**
      * Used to locate this view in end-to-end tests.
      */
@@ -95,7 +100,7 @@ var ProgressBarAndroid = React.createClass({
 
   getDefaultProps: function() {
     return {
-      styleAttr: 'Large',
+      styleAttr: 'Normal',
       indeterminate: true
     };
   },

@@ -22,7 +22,7 @@ import android.widget.ProgressBar;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.react.uimanager.LayoutShadowNode;
-import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 /**
  * Node responsible for holding the style of the ProgressBar, see under
@@ -51,7 +51,7 @@ public class ProgressBarShadowNode extends LayoutShadowNode implements CSSNode.M
   }
 
   @Override
-  public void measure(CSSNode node, float width, MeasureOutput measureOutput) {
+  public void measure(CSSNode node, float width, float height, MeasureOutput measureOutput) {
     final int style = ReactProgressBarViewManager.getStyleFromString(getStyle());
     if (!mMeasured.contains(style)) {
       ProgressBar progressBar = new ProgressBar(getThemedContext(), null, style);

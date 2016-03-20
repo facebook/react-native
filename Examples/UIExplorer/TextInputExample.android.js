@@ -72,6 +72,29 @@ var TextEventsExample = React.createClass({
   }
 });
 
+class AutoExpandingTextInput extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {text: '', height: 0};
+  }
+  render() {
+    return (
+      <TextInput
+        {...this.props}
+        multiline={true}
+        onChange={(event) => {
+          this.setState({
+            text: event.nativeEvent.text,
+            height: event.nativeEvent.contentSize.height,
+          });
+        }}
+        style={[styles.default, {height: Math.max(35, this.state.height)}]}
+        value={this.state.text}
+      />
+    );
+  }
+}
+
 class RewriteExample extends React.Component {
   constructor(props) {
     super(props);
@@ -155,6 +178,60 @@ class TokenizedTextExample extends React.Component {
   }
 }
 
+var BlurOnSubmitExample = React.createClass({
+  focusNextField(nextField) {
+    this.refs[nextField].focus();
+  },
+
+  render: function() {
+    return (
+      <View>
+        <TextInput
+          ref="1"
+          style={styles.singleLine}
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('2')}
+        />
+        <TextInput
+          ref="2"
+          style={styles.singleLine}
+          keyboardType="email-address"
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('3')}
+        />
+        <TextInput
+          ref="3"
+          style={styles.singleLine}
+          keyboardType="url"
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('4')}
+        />
+        <TextInput
+          ref="4"
+          style={styles.singleLine}
+          keyboardType="numeric"
+          placeholder="blurOnSubmit = false"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('5')}
+        />
+        <TextInput
+          ref="5"
+          style={styles.singleLine}
+          keyboardType="numbers-and-punctuation"
+          placeholder="blurOnSubmit = true"
+          returnKeyType="done"
+        />
+      </View>
+    );
+  }
+});
+
 var styles = StyleSheet.create({
   multiline: {
     height: 60,
@@ -185,7 +262,13 @@ exports.examples = [
   {
     title: 'Auto-focus',
     render: function() {
-      return <TextInput autoFocus={true} style={styles.singleLine} />;
+      return (
+        <TextInput
+          autoFocus={true}
+          style={styles.singleLine}
+          accessibilityLabel="I am the accessibility label for text input"
+        />
+      );
     }
   },
   {
@@ -242,6 +325,7 @@ exports.examples = [
         'default',
         'email-address',
         'numeric',
+        'phone-pad',
       ];
       var examples = keyboardTypes.map((type) => {
         return (
@@ -255,6 +339,10 @@ exports.examples = [
       });
       return <View>{examples}</View>;
     }
+  },
+  {
+    title: 'Blur on submit',
+    render: function(): ReactElement { return <BlurOnSubmitExample />; },
   },
   {
     title: 'Event handling',
@@ -297,6 +385,11 @@ exports.examples = [
             <Text style={{backgroundColor: 'rgba(100, 100, 100, 0.3)'}}>
               Darker backgroundColor
             </Text>
+          </TextInput>
+          <TextInput
+            defaultValue="Highlight Color is red"
+            selectionColor={'red'}
+            style={styles.singleLine}>
           </TextInput>
         </View>
       );
@@ -347,25 +440,19 @@ exports.examples = [
             placeholder="multiline, aligned top-left"
             placeholderTextColor="red"
             multiline={true}
-            textAlign="start"
-            textAlignVertical="top"
-            style={styles.multiline}
+            style={[styles.multiline, {textAlign: "left", textAlignVertical: "top"}]}
           />
           <TextInput
             autoCorrect={true}
             placeholder="multiline, aligned center"
             placeholderTextColor="green"
             multiline={true}
-            textAlign="center"
-            textAlignVertical="center"
-            style={[styles.multiline]}
+            style={[styles.multiline, {textAlign: "center", textAlignVertical: "center"}]}
           />
           <TextInput
             autoCorrect={true}
             multiline={true}
-            textAlign="end"
-            textAlignVertical="bottom"
-            style={[styles.multiline, {color: 'blue'}]}>
+            style={[styles.multiline, {color: 'blue'}, {textAlign: "right", textAlignVertical: "bottom"}]}>
             <Text style={styles.multiline}>multiline with children, aligned bottom-right</Text>
           </TextInput>
         </View>
@@ -385,6 +472,20 @@ exports.examples = [
           <TextInput numberOfLines={5}
             multiline={true}
             placeholder="Five line input"
+          />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Auto-expanding',
+    render: function() {
+      return (
+        <View>
+          <AutoExpandingTextInput
+            placeholder="height increases with content"
+            enablesReturnKeyAutomatically={true}
+            returnKeyType="done"
           />
         </View>
       );

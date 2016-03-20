@@ -18,9 +18,12 @@ package com.facebook.react.uimanager.events;
  */
 public abstract class Event<T extends Event> {
 
+  private static int sUniqueID = 0;
+
   private boolean mInitialized;
   private int mViewTag;
   private long mTimestampMs;
+  private int mUniqueID = sUniqueID++;
 
   protected Event() {
   }
@@ -78,6 +81,13 @@ public abstract class Event<T extends Event> {
    */
   public short getCoalescingKey() {
     return 0;
+  }
+
+  /**
+   * @return The unique id of this event.
+   */
+  public int getUniqueID() {
+    return mUniqueID;
   }
 
   /**

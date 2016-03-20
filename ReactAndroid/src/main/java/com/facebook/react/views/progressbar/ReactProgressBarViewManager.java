@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.uimanager.BaseViewManager;
-import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewProps;
 
@@ -31,7 +31,7 @@ public class ReactProgressBarViewManager extends
   /* package */ static final String PROP_PROGRESS = "progress";
 
   /* package */ static final String REACT_CLASS = "AndroidProgressBar";
-  /* package */ static final String DEFAULT_STYLE = "Large";
+  /* package */ static final String DEFAULT_STYLE = "Normal";
 
   @Override
   public String getName() {
@@ -99,6 +99,8 @@ public class ReactProgressBarViewManager extends
       return android.R.attr.progressBarStyleSmallInverse;
     } else if (styleStr.equals("LargeInverse")) {
       return android.R.attr.progressBarStyleLargeInverse;
+    } else if (styleStr.equals("Normal")) {
+      return android.R.attr.progressBarStyle;
     } else {
       throw new JSApplicationIllegalArgumentException("Unknown ProgressBar style: " + styleStr);
     }

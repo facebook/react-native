@@ -365,6 +365,11 @@ var TextExample = React.createClass({
             This text contains an inline image <Image source={require('./flux.png')}/>. Neat, huh?
           </Text>
         </UIExplorerBlock>
+        <UIExplorerBlock title="Text shadow">
+          <Text style={{fontSize: 20, textShadowOffset: {width: 2, height: 2}, textShadowRadius: 1, textShadowColor: '#00cccc'}}>
+            Demo text shadow
+          </Text>
+        </UIExplorerBlock>
       </UIExplorerPage>
     );
   }

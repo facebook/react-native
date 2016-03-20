@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule AsyncStorage
+ * @noflow
  * @flow-weak
  */
 'use strict';
@@ -32,6 +33,10 @@ var RCTAsyncStorage = RCTAsyncRocksDBStorage || RCTAsyncSQLiteStorage || RCTAsyn
  * method returns a `Promise` object.
  */
 var AsyncStorage = {
+  _getRequests: ([]: Array<any>),
+  _getKeys: ([]: Array<string>),
+  _immediate: (null: ?number),
+
   /**
    * Fetches `key` and passes the result to `callback`, along with an `Error` if
    * there is any. Returns a `Promise` object.
@@ -100,6 +105,30 @@ var AsyncStorage = {
   /**
    * Merges existing value with input value, assuming they are stringified json.
    * Returns a `Promise` object. Not supported by all native implementations.
+   *
+   * Example:
+   * ```javascript
+   * let UID123_object = {
+   *  name: 'Chris',
+   *  age: 30,
+   *  traits: {hair: 'brown', eyes: 'brown'},
+   * };
+
+   // need only define what will be added or updated
+   * let UID123_delta = {
+   *  age: 31,
+   *  traits: {eyes: 'blue', shoe_size: 10}
+   * };
+
+   * AsyncStorage.setItem(store_key, JSON.stringify(UID123_object), () => {
+   *   AsyncStorage.mergeItem('UID123', JSON.stringify(UID123_delta), () => {
+   *     AsyncStorage.getItem('UID123', (err, result) => {
+   *       console.log(result);
+   *       // => {'name':'Chris','age':31,'traits':{'shoe_size':10,'hair':'brown','eyes':'blue'}}
+   *     });
+   *   });
+   * });
+   * ```
    */
   mergeItem: function(
     key: string,
@@ -139,6 +168,8 @@ var AsyncStorage = {
 
   /**
    * Gets *all* keys known to the app, for all callers, libraries, etc. Returns a `Promise` object.
+   *
+   * Example: see multiGet for example
    */
   getAllKeys: function(callback?: ?(error: ?Error, keys: ?Array<string>) => void): Promise {
     return new Promise((resolve, reject) => {
@@ -163,27 +194,87 @@ var AsyncStorage = {
    * indicate which key caused the error.
    */
 
+  /** Flushes any pending requests using a single multiget */
+  flushGetRequests: function(): void {
+    const getRequests = this._getRequests;
+    const getKeys = this._getKeys;
+
+    this._getRequests = [];
+    this._getKeys = [];
+
+    RCTAsyncStorage.multiGet(getKeys, function(errors, result) {
+      // Even though the runtime complexity of this is theoretically worse vs if we used a map,
+      // it's much, much faster in practice for the data sets we deal with (we avoid
+      // allocating result pair arrays). This was heavily benchmarked.
+      //
+      // Is there a way to avoid using the map but fix the bug in this breaking test?
+      // https://github.com/facebook/react-native/commit/8dd8ad76579d7feef34c014d387bf02065692264
+      let map = {};
+      result.forEach(([key, value]) => map[key] = value);
+      const reqLength = getRequests.length;
+      for (let i = 0; i < reqLength; i++) {
+        const request = getRequests[i];
+        const requestKeys = request.keys;
+        let requestResult = requestKeys.map(key => [key, map[key]]);
+        request.callback && request.callback(null, requestResult);
+        request.resolve && request.resolve(requestResult);
+      }
+    });
+  },
+
   /**
    * multiGet invokes callback with an array of key-value pair arrays that
    * matches the input format of multiSet. Returns a `Promise` object.
    *
    *   multiGet(['k1', 'k2'], cb) -> cb([['k1', 'val1'], ['k2', 'val2']])
+   *
+   * Example:
+   * ```javascript
+   * AsyncStorage.getAllKeys((err, keys) => {
+   *   AsyncStorage.multiGet(keys, (err, stores) => {
+   *    stores.map((result, i, store) => {
+   *      // get at each store's key/value so you can work with it
+   *      let key = store[i][0];
+   *      let value = store[i][1];
+   *     });
+   *   });
+   * });
+   * ```
    */
   multiGet: function(
     keys: Array<string>,
     callback?: ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void
   ): Promise {
-    return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiGet(keys, function(errors, result) {
-        var error = convertErrors(errors);
-        callback && callback(error, result);
-        if (error) {
-          reject(error);
-        } else {
-          resolve(result);
-        }
+    if (!this._immediate) {
+      this._immediate = setImmediate(() => {
+        this._immediate = null;
+        this.flushGetRequests();
       });
+    }
+
+    var getRequest = {
+      keys: keys,
+      callback: callback,
+      // do we need this?
+      keyIndex: this._getKeys.length,
+      resolve: null,
+      reject: null,
+    };
+
+    var promiseResult = new Promise((resolve, reject) => {
+      getRequest.resolve = resolve;
+      getRequest.reject = reject;
     });
+
+    this._getRequests.push(getRequest);
+    // avoid fetching duplicates
+    keys.forEach(key => {
+      if (this._getKeys.indexOf(key) === -1) {
+        this._getKeys.push(key);
+      }
+    });
+
+    return promiseResult;
   },
 
   /**
@@ -191,6 +282,8 @@ var AsyncStorage = {
    * the output of multiGet, e.g. Returns a `Promise` object.
    *
    *   multiSet([['k1', 'val1'], ['k2', 'val2']], cb);
+   *
+   * Example: see multiMerge for an example
    */
   multiSet: function(
     keyValuePairs: Array<Array<string>>,
@@ -211,6 +304,15 @@ var AsyncStorage = {
 
   /**
    * Delete all the keys in the `keys` array. Returns a `Promise` object.
+   *
+   * Example:
+   * ```javascript
+   * let keys = ['k1', 'k2'];
+   * AsyncStorage.multiRemove(keys, (err) => {
+   *   // keys k1 & k2 removed, if they existed
+   *   // do most stuff after removal (if you want)
+   * });
+   * ```
    */
   multiRemove: function(
     keys: Array<string>,
@@ -234,6 +336,52 @@ var AsyncStorage = {
    * json. Returns a `Promise` object.
    *
    * Not supported by all native implementations.
+   *
+   * Example:
+   * ```javascript
+   // first user, initial values
+   * let UID234_object = {
+   *  name: 'Chris',
+   *  age: 30,
+   *  traits: {hair: 'brown', eyes: 'brown'},
+   * };
+
+   * // first user, delta values
+   * let UID234_delta = {
+   *  age: 31,
+   *  traits: {eyes: 'blue', shoe_size: 10},
+   * };
+
+   * // second user, initial values
+   * let UID345_object = {
+   *  name: 'Marge',
+   *  age: 25,
+   *  traits: {hair: 'blonde', eyes: 'blue'},
+   * };
+
+   * // second user, delta values
+   * let UID345_delta = {
+   *  age: 26,
+   *  traits: {eyes: 'green', shoe_size: 6},
+   * };
+
+   * let multi_set_pairs   = [['UID234', JSON.stringify(UID234_object)], ['UID345', JSON.stringify(UID345_object)]]
+   * let multi_merge_pairs = [['UID234', JSON.stringify(UID234_delta)], ['UID345', JSON.stringify(UID345_delta)]]
+
+   * AsyncStorage.multiSet(multi_set_pairs, (err) => {
+   *   AsyncStorage.multiMerge(multi_merge_pairs, (err) => {
+   *     AsyncStorage.multiGet(['UID234','UID345'], (err, stores) => {
+   *       stores.map( (result, i, store) => {
+   *         let key = store[i][0];
+   *         let val = store[i][1];
+   *         console.log(key, val);
+   *         // => UID234 {"name":"Chris","age":31,"traits":{"shoe_size":10,"hair":"brown","eyes":"blue"}}
+   *         // => UID345 {"name":"Marge","age":26,"traits":{"shoe_size":6,"hair":"blonde","eyes":"green"}}
+   *       });
+   *     });
+   *   });
+   * });
+   * ```
    */
   multiMerge: function(
     keyValuePairs: Array<Array<string>>,
