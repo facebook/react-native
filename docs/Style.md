@@ -75,7 +75,7 @@ In order to let a call site customize the style of your component children, you 
 var List = React.createClass({
   propTypes: {
     style: View.propTypes.style,
-    elementStyle: View.propTypes.style,
+    elementStyle: Text.propTypes.style,
   },
   render: function() {
     return (
