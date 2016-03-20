@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
