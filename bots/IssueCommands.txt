@@ -33,9 +33,5 @@ comment Okay, reopening this issue.
 reopen
 
 @facebook-github-bot feature
-comment Hey {issue_author}! Thanks for opening the issue, however it looks like a feature request. As noted in the [Issue template](https://github.com/facebook/react-native/blob/master/ISSUE_TEMPLATE.md) we'd like to use the GitHub issues to track bugs only. Can you implement the feature as a standalone npm module? If not consider sending a pull request or a create an entry on [Product Pains](https://productpains.com/product/react-native). It has a voting system and if the feature gets upvoted enough it might get implemented.
-feature
-
-@facebook-github-bot feature
-comment Hey {issue_author}! Thanks for opening the issue, but we are closing it because it looks like a feature request. If this can't be implemented as a standalone [npm](https://npmjs.org) module free to send us a Pull Request or create an entry on [Product Pains](https://productpains.com/product/react-native). It has a voting system and if the feature gets upvoted enough it might get implemented.'
-feature
+comment Hey {issue_author}! Thanks for opening the issue, however it looks like a feature request. As noted in the [Issue template](https://github.com/facebook/react-native/blob/master/ISSUE_TEMPLATE.md) we'd like to use the GitHub issues to track bugs only. Can you implement the feature as a standalone npm module? If not consider sending a pull request or a create an entry on [Product Pains](https://productpains.com/product/react-native). It has a voting system and if the feature gets upvoted enough it might get implemented. Will close this issue.
+close
