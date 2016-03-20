@@ -87,6 +87,22 @@ function shouldDisplayInSidebar(componentName) {
 
   return true;
 }
+function getPreviousComponent(i) {
+  var previous;
+  var filepath = all[i];
+
+  if (all[i - 1]) {
+    var previousComponentName = getNameFromPath(all[i - 1]);
+
+    if (shouldDisplayInSidebar(previousComponentName)) {
+      return slugify(previousComponentName);
+    } else {
+      return getPreviousComponent(i - 1);
+    }
+  } else {
+    return 'android-building-from-source';
+  }
+}
 
 function getNextComponent(i) {
   var next;
@@ -124,6 +140,7 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
 
   // Put Flexbox into the Polyfills category
   var category = (type === 'style' ? 'Polyfills' : type + 's');
+  var previous = getPreviousComponent(i);
   var next = getNextComponent(i);
 
   var res = [
@@ -134,6 +151,7 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
     'category: ' + category,
     'permalink: docs/' + slugify(componentName) + '.html',
     'platform: ' + componentPlatform,
+    'previous: ' + previous,
     'next: ' + next,
     'sidebar: ' + shouldDisplayInSidebar(componentName),
     'runnable:' + isRunnable(componentName),

@@ -4,6 +4,7 @@ title: Testing
 layout: docs
 category: Guides
 permalink: docs/testing.html
+previous: debugging
 next: javascript-environment
 ---
 

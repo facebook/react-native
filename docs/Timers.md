@@ -4,6 +4,7 @@ title: Timers
 layout: docs
 category: Polyfills
 permalink: docs/timers.html
+previous: network
 next: colors
 ---
 

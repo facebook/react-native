@@ -4,6 +4,7 @@ title: Style
 layout: docs
 category: Guides
 permalink: docs/style.html
+previous: videos
 next: images
 ---
 

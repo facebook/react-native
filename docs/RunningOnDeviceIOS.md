@@ -4,6 +4,7 @@ title: Running On Device
 layout: docs
 category: Guides (iOS)
 permalink: docs/running-on-device-ios.html
+previous: linking-libraries-ios
 next: embedded-app-ios
 ---
 

@@ -4,6 +4,7 @@ title: Colors
 layout: docs
 category: Polyfills
 permalink: docs/colors.html
+previous: timers
 ---
 
 The following formats are supported:

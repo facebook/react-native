@@ -4,6 +4,7 @@ title: Known Issues
 layout: docs
 category: Guides
 permalink: docs/known-issues.html
+previous: navigator-comparison
 next: performance
 ---
 

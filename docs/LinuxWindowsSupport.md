@@ -4,6 +4,7 @@ title: Linux and Windows Support
 layout: docs
 category: Quick Start
 permalink: docs/linux-windows-support.html
+previous: android-setup
 next: tutorial
 ---
 

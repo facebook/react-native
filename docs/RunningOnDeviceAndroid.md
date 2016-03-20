@@ -4,6 +4,7 @@ title: Running On Device
 layout: docs
 category: Guides (Android)
 permalink: docs/running-on-device-android.html
+previous: native-components-android
 next: embedded-app-android
 ---
 

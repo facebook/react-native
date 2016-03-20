@@ -4,6 +4,7 @@ title: Gesture Responder System
 layout: docs
 category: Guides
 permalink: docs/gesture-responder-system.html
+previous: images
 next: animations
 ---
 

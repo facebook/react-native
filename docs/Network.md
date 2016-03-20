@@ -4,6 +4,7 @@ title: Network
 layout: docs
 category: Polyfills
 permalink: docs/network.html
+previous: geolocation
 next: timers
 ---
 

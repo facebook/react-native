@@ -4,6 +4,7 @@ title: Integrating with Existing Apps
 layout: docs
 category: Guides (iOS)
 permalink: docs/embedded-app-ios.html
+previous: running-on-device-ios
 next: communication-ios
 ---
 

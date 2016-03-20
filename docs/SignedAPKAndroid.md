@@ -4,6 +4,7 @@ title: Generating Signed APK
 layout: docs
 category: Guides (Android)
 permalink: docs/signed-apk-android.html
+previous: embedded-app-android
 next: android-ui-performance
 ---
 

@@ -4,6 +4,7 @@ title: Linking Libraries
 layout: docs
 category: Guides (iOS)
 permalink: docs/linking-libraries-ios.html
+previous: native-components-ios
 next: running-on-device-ios
 ---
 

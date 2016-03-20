@@ -4,6 +4,7 @@ title: Communication between native and React Native
 layout: docs
 category: Guides (iOS)
 permalink: docs/communication-ios.html
+previous: embedded-app-ios
 next: native-modules-android
 ---
 

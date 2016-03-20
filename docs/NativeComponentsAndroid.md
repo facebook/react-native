@@ -4,6 +4,7 @@ title: Native UI Components
 layout: docs
 category: Guides (Android)
 permalink: docs/native-components-android.html
+previous: native-modules-android
 next: running-on-device-android
 ---
 

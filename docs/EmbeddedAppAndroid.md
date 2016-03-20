@@ -4,6 +4,7 @@ title: Integrating with Existing Apps
 layout: docs
 category: Guides (Android)
 permalink: docs/embedded-app-android.html
+previous: running-on-device-android
 next: signed-apk-android
 ---
 

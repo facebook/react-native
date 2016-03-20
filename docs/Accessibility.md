@@ -4,6 +4,7 @@ title: Accessibility
 layout: docs
 category: Guides
 permalink: docs/accessibility.html
+previous: animations
 next: direct-manipulation
 ---
 

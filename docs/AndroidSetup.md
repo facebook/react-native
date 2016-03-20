@@ -4,6 +4,7 @@ title: Android Setup
 layout: docs
 category: Quick Start
 permalink: docs/android-setup.html
+previous: getting-started-linux
 next: linux-windows-support
 ---
 
