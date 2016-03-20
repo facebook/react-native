@@ -209,7 +209,7 @@ public class ReactEditText extends EditText {
     Typeface tf = super.getTypeface();
     super.setInputType(type);
     mStagedInputType = type;
-    //Input type password defaults to monospace font, so we need to re-apply the font
+    // Input type password defaults to monospace font, so we need to re-apply the font
     super.setTypeface(tf);
 
     // We override the KeyListener so that all keys on the soft input keyboard as well as hardware
