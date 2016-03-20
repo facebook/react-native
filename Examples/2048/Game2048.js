@@ -26,7 +26,7 @@ var {
 
 var Animated = require('Animated');
 var GameBoard = require('GameBoard');
-var TouchableBounce = require('TouchableBounce');
+var TouchableBounce = require('react-native-touchable-bounce');
 
 var BOARD_PADDING = 3;
 var CELL_MARGIN = 4;
