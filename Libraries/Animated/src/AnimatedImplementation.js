@@ -1536,7 +1536,7 @@ var event = function(
  *    componentDidMount() {
  *      Animated.timing(          // Uses easing functions
  *        this.state.fadeAnim,    // The value to drive
- *        {toValue: 1},           // Configuration
+ *        {toValue: 1}            // Configuration
  *      ).start();                // Don't forget start!
  *    }
  *    render() {
