@@ -29,7 +29,7 @@ comment {author} tells me to close this issue. If you think it should still be o
 close
 
 @facebook-github-bot bugfix
-Hey {issue_author}, if you're sure this is a bug can you send a PR with a fix? We're a small team and rely on the community to fix issues that don't affect fb apps.
+comment Hey {issue_author}, we're a small team and rely on the community to fix issues that don't affect fb apps. If you're sure this is a bug can you send a pull request with a fix?
 
 @facebook-github-bot reopen
 comment Okay, reopening this issue.
