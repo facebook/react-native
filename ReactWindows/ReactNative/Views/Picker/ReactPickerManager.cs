@@ -12,9 +12,7 @@ namespace ReactNative.Views.Picker
     /// A view manager responsible for rendering picker.
     /// </summary>
     public class ReactPickerManager : BaseViewManager<ComboBox, ReactPickerShadowNode>
-    {
-        private int _selected;
-
+    { 
         /// <summary>
         /// The name of the view manager.
         /// </summary>
@@ -51,8 +49,7 @@ namespace ReactNative.Views.Picker
             // Temporarily disable selection changed event handler.
             view.SelectionChanged -= OnSelectionChanged;
 
-            _selected = selected;
-            view.SelectedIndex = view.Items.Count > _selected ? _selected : -1;
+            view.SelectedIndex = view.Items.Count > selected ? selected : -1;
 
             if (view.SelectedIndex != -1)
             {
@@ -75,23 +72,23 @@ namespace ReactNative.Views.Picker
 
             for (var index = 0; index < items.Count; index++)
             {
-                JToken label;
-                if ((items[index] as JObject).TryGetValue("label", out label))
+                var label = items[index].Value<JToken>("label");
+                if (label != null)
                 {
                     var item = new ComboBoxItem();
-                    JToken color;
+
                     item.Content = label.Value<string>();
-                    if ((color = items[index].Value<JToken>("color")) != null)
+                    var color = items[index].Value<JToken>("color");
+                    if (color != null)
                     {
                         var rgb = color.Value<uint>();
                         item.Foreground = new SolidColorBrush(ColorHelpers.Parse(rgb));
                     } 
+
                     view.Items.Add(item);
                 }            
             } 
-               
-            view.SelectedIndex = view.Items.Count > _selected ? _selected : -1;
-
+              
             view.SelectionChanged += OnSelectionChanged;
         }
 
