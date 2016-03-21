@@ -12,6 +12,7 @@ const mkdirp = require('mkdirp');
 const path = require('path');
 const Promise = require('promise');
 
+const buildSourceMapWithMetaData = require('./build-unbundle-sourcemap-with-metadata');
 const writeFile = require('../writeFile');
 const writeSourceMap = require('./write-sourcemap');
 const MAGIC_UNBUNDLE_NUMBER = require('./magic-number');
@@ -29,12 +30,11 @@ function saveAsAssets(bundle, options, log) {
   const {
     'bundle-output': bundleOutput,
     'bundle-encoding': encoding,
-    dev,
     'sourcemap-output': sourcemapOutput,
   } = options;
 
   log('start');
-  const {startupCode, modules} = bundle.getUnbundle({minify: !dev});
+  const {startupCode, startupModules, modules} = bundle.getUnbundle();
   log('finish');
 
   log('Writing bundle output to:', bundleOutput);
@@ -49,7 +49,13 @@ function saveAsAssets(bundle, options, log) {
     );
   writeUnbundle.then(() => log('Done writing unbundle output'));
 
-  return Promise.all([writeUnbundle, writeSourceMap(sourcemapOutput, '', log)]);
+  const sourceMap =
+    buildSourceMapWithMetaData({startupModules, modules});
+
+  return Promise.all([
+    writeUnbundle,
+    writeSourceMap(sourcemapOutput, JSON.stringify(sourceMap), log)
+  ]);
 }
 
 function createDir(dirName) {
