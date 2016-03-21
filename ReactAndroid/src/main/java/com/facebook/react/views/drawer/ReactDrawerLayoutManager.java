@@ -11,15 +11,21 @@ package com.facebook.react.views.drawer;
 
 import javax.annotation.Nullable;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 
+import android.os.Build;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.View;
 
+import com.facebook.common.logging.FLog;
+
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -86,6 +92,24 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
       view.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
     } else {
       throw new JSApplicationIllegalArgumentException("Unknown drawerLockMode " + drawerLockMode);
+    }
+  }
+
+  @Override
+  public void setElevation(ReactDrawerLayout view, float elevation) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      // Facebook is using an older version of the support lib internally that doesn't support
+      // setDrawerElevation so we invoke it using reflection.
+      // TODO: Call the method directly when this is no longer needed.
+      try {
+        Method method = ReactDrawerLayout.class.getMethod("setDrawerElevation", float.class);
+        method.invoke(view, PixelUtil.toPixelFromDIP(elevation));
+      } catch (Exception ex) {
+        FLog.w(
+            ReactConstants.TAG,
+            "setDrawerElevation is not available in this version of the support lib.",
+            ex);
+      }
     }
   }
 

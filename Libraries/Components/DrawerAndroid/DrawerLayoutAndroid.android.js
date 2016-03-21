@@ -156,7 +156,7 @@ var DrawerLayoutAndroid = React.createClass({
         drawerWidth={this.props.drawerWidth}
         drawerPosition={this.props.drawerPosition}
         drawerLockMode={this.props.drawerLockMode}
-        style={styles.base}
+        style={[styles.base, this.props.style]}
         onDrawerSlide={this._onDrawerSlide}
         onDrawerOpen={this._onDrawerOpen}
         onDrawerClose={this._onDrawerClose}
@@ -218,6 +218,7 @@ var DrawerLayoutAndroid = React.createClass({
 var styles = StyleSheet.create({
   base: {
     flex: 1,
+    elevation: 16,
   },
   mainSubview: {
     position: 'absolute',
@@ -230,6 +231,7 @@ var styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     bottom: 0,
+    backgroundColor: 'white',
   },
 });
 
