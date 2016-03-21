@@ -6,6 +6,7 @@
 #include <JavaScriptCore/JSObjectRef.h>
 #include <JavaScriptCore/JSValueRef.h>
 
+#include <alloca.h>
 #include <stdexcept>
 #include <algorithm>
 
