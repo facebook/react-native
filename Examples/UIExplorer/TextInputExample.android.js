@@ -420,7 +420,7 @@ exports.examples = [
             secureTextEntry={true}
             style={[styles.singleLine, {color: 'red'}]}
             placeholder="color is supported too"
-            placeholderColor="red"
+            placeholderTextColor="red"
           />
         </View>
       );
