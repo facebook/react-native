@@ -227,35 +227,38 @@ const View = React.createClass({
     onLayout: PropTypes.func,
 
     /**
-     * In the absence of `auto` property, `none` is much like `CSS`'s `none`
-     * value. `box-none` is as if you had applied the `CSS` class:
+     * Controls whether the View can be the target of touch events.
      *
+     *   - 'auto': The View can be the target of touch events.
+     *   - 'none': The View is never the target of touch events.
+     *   - 'box-none': The View is never the target of touch events but it's
+     *     subviews can be. It behaves like if the following classes
+     *     in CSS:
      * ```
      * .box-none {
-     *   pointer-events: none;
+     * 		pointer-events: none;
      * }
      * .box-none * {
-     *   pointer-events: all;
+     * 		pointer-events: all;
      * }
      * ```
-     *
-     * `box-only` is the equivalent of
-     *
+     *   - 'box-only': The view can be the target of touch events but it's
+     *     subviews cannot be. It behaves like if the following classes
+     *     in CSS:
      * ```
      * .box-only {
-     *   pointer-events: all;
+     * 		pointer-events: all;
      * }
      * .box-only * {
-     *   pointer-events: none;
+     * 		pointer-events: none;
      * }
      * ```
-     *
-     * But since `pointerEvents` does not affect layout/appearance, and we are
-     * already deviating from the spec by adding additional modes, we opt to not
-     * include `pointerEvents` on `style`. On some platforms, we would need to
-     * implement it as a `className` anyways. Using `style` or not is an
-     * implementation detail of the platform.
      */
+    // Since `pointerEvents` does not affect layout/appearance, and we are
+    // already deviating from the spec by adding additional modes, we opt to not
+    // include `pointerEvents` on `style`. On some platforms, we would need to
+    // implement it as a `className` anyways. Using `style` or not is an
+    // implementation detail of the platform.
     pointerEvents: PropTypes.oneOf([
       'box-none',
       'none',
