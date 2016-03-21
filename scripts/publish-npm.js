@@ -50,10 +50,12 @@
 require(`shelljs/global`);
 
 const buildBranch = process.env.CIRCLE_BRANCH;
+const userName = process.env.CIRCLE_PROJECT_USERNAME;
+
 const requiredJavaVersion = `1.7`;
 
 let branchVersion;
-if (buildBranch.indexOf(`-stable`) !== -1) {
+if (buildBranch.indexOf(`-stable`) !== -1 && userName === `facebook`) {
   branchVersion = buildBranch.slice(0, buildBranch.indexOf(`-stable`));
 } else {
   echo(`Error: We publish only from stable branches`);

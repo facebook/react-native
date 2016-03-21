@@ -13,9 +13,10 @@ require(`shelljs/global`);
 
 const CIRCLE_BRANCH = process.env.CIRCLE_BRANCH;
 const CIRCLE_PROJECT_USERNAME = process.env.CIRCLE_PROJECT_USERNAME;
-const CI_PULL_REQUEST = process.env.CI_PULL_REQUEST;
+const PULL_REQUEST_NUMBER = process.env.CIRCLE_PR_NUMBER;
 const GIT_USER = process.env.GIT_USER;
-const remoteBranch = `https://${GIT_USER}@github.com/facebook/react-native.git`;
+const stableDocsRepo = `https://${GIT_USER}@github.com/facebook/react-native.git`;
+const prDocsRepo = `https://${GIT_USER}@github.com/facebook/react-native-pr-docs.git`;
 
 if (!which(`git`)) {
   echo(`Sorry, this script requires git`);
@@ -23,12 +24,18 @@ if (!which(`git`)) {
 }
 
 let version;
+let repo;
 let isBlogToBeDeployed = false;
-if (CIRCLE_BRANCH.indexOf(`-stable`) !== -1) {
+if (CIRCLE_BRANCH.indexOf(`-stable`) !== -1 && CIRCLE_PROJECT_USERNAME === `facebook`) {
   version = CIRCLE_BRANCH.slice(0, CIRCLE_BRANCH.indexOf(`-stable`));
-} else if (CIRCLE_BRANCH === `master`) {
+  repo = stableDocsRepo;
+} else if (CIRCLE_BRANCH === `master` && CIRCLE_PROJECT_USERNAME === `facebook`) {
   version = `next`;
   isBlogToBeDeployed = true;
+  repo = stableDocsRepo;
+} else if (PULL_REQUEST_NUMBER) {
+  version = PULL_REQUEST_NUMBER;
+  repo = prDocsRepo;
 }
 
 rm(`-rf`, `build`);
@@ -43,13 +50,13 @@ if (branchWithLatestTag.indexOf(`-stable`) !== -1) {
   latestVersion = branchWithLatestTag.slice(0, branchWithLatestTag.indexOf(`-stable`));
 }
 
-if (!CI_PULL_REQUEST && CIRCLE_PROJECT_USERNAME === `facebook`) {
+if (repo && version) {
   echo(`Building branch ${version}, preparing to push to gh-pages`);
   // if code is running in a branch in CI, commit changes to gh-pages branch
   cd(`build`);
   rm(`-rf`, `react-native-gh-pages`);
 
-  if (exec(`git clone ${remoteBranch} react-native-gh-pages`).code !== 0) {
+  if (exec(`git clone ${repo} react-native-gh-pages`).code !== 0) {
     echo(`Error: Git clone failed`);
     exit(1);
   }
