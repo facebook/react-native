@@ -20,6 +20,7 @@ const React = require('react-native');
 const {
   AppRegistry,
   BackAndroid,
+  Dimensions,
   NavigationExperimental,
   SplitViewWindows,    
   StyleSheet,
@@ -35,7 +36,7 @@ const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
 const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
 const UIExplorerHeaderWindows = require('./UIExplorerHeaderWindows');
 
-var PANE_WIDTH = 250;
+var DRAWER_WIDTH_LEFT = 56;
 
 class UIExplorerApp extends React.Component {
   componentWillMount() {
@@ -60,7 +61,7 @@ class UIExplorerApp extends React.Component {
     return (
       <SplitViewWindows
         panePosition={SplitViewWindows.positions.Left}
-        paneWidth={PANE_WIDTH}
+        paneWidth={Dimensions.get('window').width - DRAWER_WIDTH_LEFT}
         keyboardDismissMode="on-drag"
         onDrawerOpen={() => {
           this._overrideBackPressForSplitView = true;
