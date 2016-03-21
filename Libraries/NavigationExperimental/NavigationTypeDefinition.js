@@ -45,6 +45,7 @@ export type NavigationPosition = NavigationAnimatedValue;
 export type NavigationScene = {
   index: number,
   isStale: boolean,
+  key: string,
   navigationState: NavigationState,
 };
 

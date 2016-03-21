@@ -14,7 +14,7 @@
 const Animated = require('Animated');
 const NavigationContainer = require('NavigationContainer');
 const NavigationPropTypes = require('NavigationPropTypes');
-const NavigationStateUtils = require('NavigationStateUtils');
+const NavigationScenesReducer = require('NavigationScenesReducer');
 const React = require('react-native');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
@@ -26,42 +26,7 @@ import type {
   NavigationParentState,
   NavigationScene,
   NavigationSceneRenderer,
-  NavigationState,
 } from 'NavigationTypeDefinition';
-
-/**
- * Helper function to compare route keys (e.g. "9", "11").
- */
-function compareKey(one: string, two: string): number {
-  var delta = one.length - two.length;
-  if (delta > 0) {
-    return 1;
-  }
-  if (delta < 0) {
-    return -1;
-  }
-  return one > two ? 1 : -1;
-}
-
-/**
- * Helper function to sort scenes based on their index and view key.
- */
-function compareScenes(
-  one: NavigationScene,
-  two: NavigationScene,
-): number {
-  if (one.index > two.index) {
-    return 1;
-  }
-  if (one.index < two.index) {
-    return -1;
-  }
-
-  return compareKey(
-    one.navigationState.key,
-    two.navigationState.key,
-  );
-}
 
 type Props = {
   applyAnimation: NavigationAnimationSetter,
@@ -125,7 +90,7 @@ class NavigationAnimatedView
 
     this.state = {
       position: new Animated.Value(this.props.navigationState.index),
-      scenes: this._reduceScenes([], this.props.navigationState),
+      scenes: NavigationScenesReducer([], this.props.navigationState),
     };
   }
 
@@ -142,7 +107,7 @@ class NavigationAnimatedView
   componentWillReceiveProps(nextProps: Props): void {
     if (nextProps.navigationState !== this.props.navigationState) {
       this.setState({
-        scenes: this._reduceScenes(
+        scenes: NavigationScenesReducer(
           this.state.scenes,
           nextProps.navigationState,
           this.props.navigationState
@@ -178,37 +143,6 @@ class NavigationAnimatedView
     if (scenes.length !== this.state.scenes.length) {
       this.setState({ scenes });
     }
-  }
-
-  _reduceScenes(
-    scenes: Array<NavigationScene>,
-    nextState: NavigationParentState,
-    lastState: ?NavigationParentState
-  ): Array<NavigationScene> {
-    const nextScenes = nextState.children.map((child, index) => {
-      return {
-        index,
-        isStale: false,
-        navigationState: child,
-      };
-    });
-
-    if (lastState) {
-      lastState.children.forEach((child: NavigationState, index: number) => {
-        if (
-          !NavigationStateUtils.get(nextState, child.key) &&
-          index !== nextState.index
-        ) {
-          nextScenes.push({
-            index,
-            isStale: true,
-            navigationState: child,
-          });
-        }
-      });
-    }
-
-    return nextScenes.sort(compareScenes);
   }
 
   render(): ReactElement {

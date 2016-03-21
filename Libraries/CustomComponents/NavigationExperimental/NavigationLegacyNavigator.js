@@ -273,6 +273,7 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
     return React.cloneElement(
       navigationBar,
       {
+        key: 'header_' + props.scene.key,
         ref: this._onNavigationBarRef,
         navigator: navigationBarNavigator || this,
         navState: {...this.state},
@@ -319,7 +320,7 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
     return (
       <NavigationCard
         {...props}
-        key={'card_' + props.scene.navigationState.key}
+        key={'card_' + props.scene.key}
         panHandlers={panHandlers}
         renderScene={this._renderScene}
         style={style}
