@@ -209,6 +209,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  @ReactProp(name = ViewProps.COLOR, customType = "Color")
+  public void setColor(ReactEditText view, @Nullable Integer color) {
+    if (color == null) {
+      view.setTextColor(DefaultStyleValuesUtil.getDefaultTextColor(view.getContext()));
+    } else {
+      view.setTextColor(color);
+    }
+  }
+
   @ReactProp(name = "underlineColorAndroid", customType = "Color")
   public void setUnderlineColor(ReactEditText view, @Nullable Integer underlineColor) {
     if (underlineColor == null) {
