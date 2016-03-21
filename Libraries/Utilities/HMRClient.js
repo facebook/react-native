@@ -98,7 +98,7 @@ Error: ${e.message}`
             RCTExceptionsManager && RCTExceptionsManager.dismissRedbox && RCTExceptionsManager.dismissRedbox();
           }
 
-          modules.forEach(({name, code}, i) => {
+          modules.forEach(({id, code}, i) => {
             code = code + '\n\n' + sourceMappingURLs[i];
 
             require('SourceMapsCache').fetch({
@@ -116,7 +116,7 @@ Error: ${e.message}`
 
             code = [
               `__accept(`,
-                `${name},`,
+                `${id},`,
                 `function(global,require,module,exports){`,
                   `${code}`,
                 '\n},',
