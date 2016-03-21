@@ -252,7 +252,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                 return JSON.stringify({
                   type: 'update',
                   body: {
-                    modules: bundle.getModulesNamesAndCode(),
+                    modules: bundle.getModulesIdsAndCode(),
                     inverseDependencies: client.inverseDependenciesCache,
                     sourceURLs: bundle.getSourceURLs(),
                     sourceMappingURLs: bundle.getSourceMappingURLs(),

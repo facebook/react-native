@@ -34,10 +34,10 @@ class HMRBundle extends BundleBase {
     return Promise.resolve();
   }
 
-  getModulesNamesAndCode() {
+  getModulesIdsAndCode() {
     return this._modules.map(module => {
       return {
-        name: JSON.stringify(module.name),
+        id: JSON.stringify(module.id),
         code: module.code,
       };
     });
