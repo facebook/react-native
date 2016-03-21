@@ -461,8 +461,13 @@ var ScrollResponderMixin = {
     if (this.preventNegativeScrollOffset) {
       scrollOffsetY = Math.max(0, scrollOffsetY);
     }
-    this.scrollResponderScrollTo({x: 0, y: scrollOffsetY, animated: true});
-
+   
+    //For horizontal scrolling enabled scroll views, current x position of the scroll view needs to be taken into account to
+    // preserve the horizontal scroll offset and prevent the scroll view from scrolling back.
+    ScrollViewManager.getScrollViewOrigin(React.findNodeHandle(this), (scrollOffsetX) => {
+      this.scrollResponderScrollTo({x: scrollOffsetX, y: scrollOffsetY, animated: true});
+    });
+    
     this.additionalOffset = 0;
     this.preventNegativeScrollOffset = false;
   },

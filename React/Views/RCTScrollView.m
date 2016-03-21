@@ -911,6 +911,11 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
   [_scrollView.refreshControl endRefreshing];
 }
 
+- (CGPoint) getScrollViewOrigin
+{
+   return [_scrollView bounds].origin;
+};
+
 @end
 
 @implementation RCTEventDispatcher (RCTScrollView)
