@@ -129,7 +129,7 @@ class NavigationCardStack extends React.Component {
     return (
       <NavigationCard
         {...props}
-        key={'card_' + props.scene.navigationState.key}
+        key={'card_' + props.scene.key}
         panHandlers={panHandlers}
         renderScene={this.props.renderScene}
         style={style}
