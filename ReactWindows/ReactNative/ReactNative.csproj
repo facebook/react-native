@@ -282,6 +282,7 @@
     <Compile Include="UIManager\LayoutAnimation\LayoutCreateAnimation.cs" />
     <Compile Include="UIManager\LayoutAnimation\LayoutAnimationController.cs" />
     <Compile Include="UIManager\LayoutAnimation\LayoutUpdateAnimation.cs" />
+    <Compile Include="Views\Split\Events\SplitViewClosedEvent.cs" />
     <Compile Include="Views\Image\ImageExtensions.cs" />
     <Compile Include="UIManager\LayoutAnimation\InterpolationType.cs" />
     <Compile Include="UIManager\UIImplementationProvider.cs" />
@@ -292,8 +293,17 @@
     <Compile Include="Views\Scroll\ReactScrollViewCommandHelper.cs" />
     <Compile Include="Views\Scroll\ScrollEventType.cs" />
     <Compile Include="Views\Scroll\ScrollEventTypeExtensions.cs" />
-    <Compile Include="Views\TextInput\ReactMultilineTextInputManager.cs" />
-    <Compile Include="Views\TextInput\TextBoxExtensions.cs" />
+    <Compile Include="Views\Split\Events\SplitViewOpenedEvent.cs" />
+    <Compile Include="Views\Split\ReactSplitView.cs" />
+    <Compile Include="Views\Split\ReactSplitViewManager.cs" />
+    <Compile Include="Views\TextInput\InputScopeHelpers.cs" />
+    <Compile Include="Views\TextInput\ReactTextBox.cs" />
+    <Compile Include="Views\TextInput\ReactTextChangedEvent.cs" />
+    <Compile Include="Views\TextInput\ReactTextInputBlurEvent.cs" />
+    <Compile Include="Views\TextInput\ReactTextInputEndEditingEvent.cs" />
+    <Compile Include="Views\TextInput\ReactTextInputFocusEvent.cs" />
+    <Compile Include="Views\TextInput\ReactTextInputSelectionEvent.cs" />
+    <Compile Include="Views\TextInput\ReactTextInputSubmitEditingEvent.cs" />
     <Compile Include="Views\Text\FontStyleHelpers.cs" />
     <Compile Include="UIManager\RootViewHelper.cs" />
     <Compile Include="UIManager\RootViewManager.cs" />
@@ -335,9 +345,6 @@
     <Compile Include="Views\Text\ReactTextShadowNode.cs" />
     <Compile Include="Views\Text\ReactTextViewManager.cs" />
     <Compile Include="Views\Text\ReactVirtualTextViewManager.cs" />
-    <Compile Include="Views\TextInput\ReactTextChangedEvent.cs" />
-    <Compile Include="Views\TextInput\ReactTextInputBlurEvent.cs" />
-    <Compile Include="Views\TextInput\ReactTextInputFocusEvent.cs" />
     <Compile Include="Views\View\ReactViewManager.cs" />
     <Compile Include="Views\TextInput\ReactTextInputManager.cs" />
     <Compile Include="Modules\Toast\ToastHelper.cs" />

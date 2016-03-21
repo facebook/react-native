@@ -229,8 +229,7 @@ namespace ReactNative.UIManager
                             "window",
                             new Dictionary<string, object>
                             {
-                                { "width", 100 },
-                                { "height", 100 },
+                                /* TODO: handle variable height/width? */
                                 { "scale", 1 },
                                 /* TODO: verify values? */
                                 /* TODO: density and DPI needed? */

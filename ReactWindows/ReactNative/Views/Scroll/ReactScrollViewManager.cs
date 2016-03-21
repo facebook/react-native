@@ -93,7 +93,7 @@ namespace ReactNative.Views.Scroll
         /// <param name="parent">The view parent.</param>
         public override void RemoveAllChildren(ScrollViewer parent)
         {
-            RemoveChildAt(parent, 0);
+            parent.Content = null;
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace ReactNative.Views.Scroll
             }
 
             EnsureChild(parent);
-            parent.Content = null;
+            RemoveAllChildren(parent);
         }
 
         /// <summary>

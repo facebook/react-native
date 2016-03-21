@@ -52,6 +52,7 @@ var ReactNative = {
   get PullToRefreshViewAndroid() { return require('PullToRefreshViewAndroid'); },
   get RecyclerViewBackedScrollView() { return require('RecyclerViewBackedScrollView'); },
   get RefreshControl() { return require('RefreshControl'); },
+  get SplitViewWindows() { return require('SplitViewWindows'); },
   get StatusBar() { return require('StatusBar'); },
   get SwitchAndroid() { return require('SwitchAndroid'); },
   get SwitchIOS() { return require('SwitchIOS'); },

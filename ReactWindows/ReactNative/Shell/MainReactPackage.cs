@@ -12,6 +12,7 @@ using ReactNative.UIManager;
 using ReactNative.Views.Image;
 using ReactNative.Views.Picker;
 using ReactNative.Views.Scroll;
+using ReactNative.Views.Split;
 using ReactNative.Views.Switch;
 using ReactNative.Views.Text;
 using ReactNative.Views.TextInput;
@@ -71,7 +72,6 @@ namespace ReactNative.Shell
         {
             return new List<IViewManager>
             {
-                //new ReactDrawerLayoutManager(),
                 //new ReactHorizontalScrollViewManager(),
                 new ReactImageManager(),
                 new ReactVirtualImageManager(),
@@ -80,6 +80,7 @@ namespace ReactNative.Shell
                 new ReactRawTextManager(),
                 //new RecyclerViewBackedScrollViewManager(),
                 new ReactScrollViewManager(),
+                new ReactSplitViewManager(),
                 new ReactSwitchManager(),
                 new ReactTextInputManager(),
                 new ReactTextViewManager(),
