@@ -194,12 +194,12 @@ public class DevServerHelper {
 
         StringBuilder sb = new StringBuilder();
         sb.append("Could not connect to development server.\n\n")
-          .append("URL: ").append(request.urlString()).append("\n\n")
           .append("Try the following to fix the issue:\n")
           .append("\u2022 Ensure that the packager server is running\n")
           .append("\u2022 Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run 'adb devices' to see a list of connected devices\n")
           .append("\u2022 If you're on a physical device connected to the same machine, run 'adb reverse tcp:8081 tcp:8081' to forward requests from your device\n")
-          .append("\u2022 If your device is on the same Wi-Fi network, set 'Debug server host & port for device' in 'Dev settings' to your machine's IP address and the port of the local dev server - e.g. 10.0.1.1:8081");
+          .append("\u2022 If your device is on the same Wi-Fi network, set 'Debug server host & port for device' in 'Dev settings' to your machine's IP address and the port of the local dev server - e.g. 10.0.1.1:8081\n\n")
+          .append("URL: ").append(request.urlString());
         callback.onFailure(new DebugServerException(sb.toString()));
       }
 
