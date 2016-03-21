@@ -10,11 +10,4 @@
  */
 'use strict';
 
-var React = require('React');
-
-var PickerAndroid = React.createClass({
-  render: function() {
-  },
-});
-
-module.exports = PickerAndroid;
+module.exports = require('UnimplementedView');
