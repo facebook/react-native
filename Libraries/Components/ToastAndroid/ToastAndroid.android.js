@@ -7,11 +7,14 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ToastAndroid
+ * @flow
  */
 
 'use strict';
 
-var RCTToastAndroid = require('NativeModules').ToastAndroid;
+const RCTToastAndroid = require('NativeModules').ToastAndroid;
+
+let lastToastId = 0;
 
 /**
  * This exposes the native ToastAndroid module as a JS module. This has a function 'show'
@@ -19,9 +22,11 @@ var RCTToastAndroid = require('NativeModules').ToastAndroid;
  *
  * 1. String message: A string with the text to toast
  * 2. int duration: The duration of the toast. May be ToastAndroid.SHORT or ToastAndroid.LONG
+ *
+ * Returns an object with a `dismiss` method to dismiss the Toast.
  */
 
-var ToastAndroid = {
+const ToastAndroid = {
 
   SHORT: RCTToastAndroid.SHORT,
   LONG: RCTToastAndroid.LONG,
@@ -29,8 +34,12 @@ var ToastAndroid = {
   show: function (
     message: string,
     duration: number
-  ): void {
-    RCTToastAndroid.show(message, duration);
+  ): { dismiss: Function } {
+    lastToastId++;
+    RCTToastAndroid.show(message, duration, lastToastId);
+    return {
+      dismiss: () => RCTToastAndroid.dismiss(lastToastId)
+    };
   },
 
 };

@@ -34,25 +34,32 @@ var ToastExample = React.createClass({
     description: 'Example that demonstrates the use of an Android Toast to provide feedback.',
   },
 
-  getInitialState: function() {
-    return {};
-  },
+  _toasts: [],
 
   render: function() {
     return (
       <UIExplorerPage title="ToastAndroid">
         <UIExplorerBlock title="Simple toast">
           <TouchableWithoutFeedback
-            onPress={() =>
-              ToastAndroid.show('This is a toast with short duration', ToastAndroid.SHORT)}>
+            onPress={() => this._toasts.push(
+              ToastAndroid.show('This is a toast with short duration', ToastAndroid.SHORT))}>
             <Text style={styles.text}>Click me.</Text>
           </TouchableWithoutFeedback>
         </UIExplorerBlock>
         <UIExplorerBlock title="Toast with long duration">
           <TouchableWithoutFeedback
-            onPress={() =>
-              ToastAndroid.show('This is a toast with long duration', ToastAndroid.LONG)}>
+            onPress={() => this._toasts.push(
+              ToastAndroid.show('This is a toast with long duration', ToastAndroid.LONG))}>
             <Text style={styles.text}>Click me too.</Text>
+          </TouchableWithoutFeedback>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Dismisses the last toast">
+          <TouchableWithoutFeedback
+            onPress={() => {
+              const toast = this._toasts.pop();
+              toast && toast.dismiss();
+            }}>
+            <Text style={styles.text}>Click me to dismiss a toast.</Text>
           </TouchableWithoutFeedback>
         </UIExplorerBlock>
       </UIExplorerPage>
