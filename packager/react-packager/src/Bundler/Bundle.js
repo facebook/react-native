@@ -115,9 +115,7 @@ class Bundle extends BundleBase {
 
     return {
       startupCode,
-      modules: modules.map(({name, code, polyfill}) =>
-        ({name, code, polyfill})
-      ),
+      startupModules: allModules,
       modules,
     };
   }
