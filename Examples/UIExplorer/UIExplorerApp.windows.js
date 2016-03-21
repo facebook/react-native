@@ -83,7 +83,7 @@ class UIExplorerApp extends React.Component {
         displayTitleRow={true}
         disableSearch={true}
         onNavigate={(action) => {
-          this.pane && this.pane.closePane();
+          this.splitView && this.splitView.closePane();
           onNavigate(action);
         }}
       />
