@@ -456,7 +456,7 @@ var ListView = React.createClass({
       }
       var isEarlyBreak = rowCount >= this.state.curRenderedRowsCount;
       if (isEarlyBreak || sectionRowCount === rowIDs.length) {
-        //early break or end section
+        // early break or end section
         var style = this.props.sectionStyle;
         bodyComponents.push(
           <View key={'section_' + sectionID} style={typeof style === 'function' ? style(sectionID) : style}>
