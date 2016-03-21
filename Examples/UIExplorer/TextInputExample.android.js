@@ -418,10 +418,10 @@ exports.examples = [
           />
           <TextInput 
             secureTextEntry={true}
-			style={[styles.singleLine, {color: 'red'}]}
+            style={[styles.singleLine, {color: 'red'}]}
             placeholder="color is supported too"
             placeholderTextColor="red"
-		  />
+          />
           <TextInput 
             secureTextEntry={true}
             style={[styles.singleLine, {fontFamily: 'sans-serif'}]}
@@ -441,7 +441,7 @@ exports.examples = [
             secureTextEntry={true}
             style={[styles.singleLine, {fontFamily: 'serif'}]}
             placeholder="Serif"
-	 	  />
+          />
         </View>
       );
     }
