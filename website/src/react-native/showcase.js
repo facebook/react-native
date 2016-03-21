@@ -71,12 +71,6 @@ var featured = [
     author: 'MovieLaLa'
   },
   {
-    name: 'MyMuesli',
-    icon: 'https://lh3.googleusercontent.com/1dCCeiyjuWRgY-Cnv-l-lOA1sVH3Cn0vkVWWZnaBQbhHOhsngLcnfy68WEerudPUysc=w300-rw',
-    link: 'https://play.google.com/store/apps/details?id=com.mymuesli',
-    author: 'Shawn Khameneh (@shawnscode), 3DWD'
-  },
-  {
     name: 'Myntra',
     icon: 'http://a5.mzstatic.com/us/r30/Purple6/v4/9c/78/df/9c78dfa6-0061-1af2-5026-3e1d5a073c94/icon350x350.png',
     link: 'https://itunes.apple.com/in/app/myntra-fashion-shopping-app/id907394059',
@@ -168,7 +162,7 @@ var featured = [
   {
     name: 'Zhopout',
     icon: 'http://zhopout.com/Content/Images/zhopout-logo-app-3.png',    
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.zhopout',
+    link: 'https://play.google.com/store/apps/details?id=com.zhopout',
     author: 'Jarvis Software Private Limited ',
     blogs: [
       "https://medium.com/@murugandurai/how-we-developed-our-mobile-app-in-30-days-using-react-native-45affa6449e8#.29nnretsi",     
@@ -480,6 +474,12 @@ var apps = [
     icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/a2/61/58/a261584d-a4cd-cbfa-cf9d-b5f1f15a7139/icon175x175.jpeg',
     link: 'https://itunes.apple.com/app/id1031729525?mt=8&at=11l7ss&ct=reactnativeshowcase',
     author: 'Josh Buchea',
+  },
+  {
+    name: 'MyMuesli',
+    icon: 'https://lh3.googleusercontent.com/1dCCeiyjuWRgY-Cnv-l-lOA1sVH3Cn0vkVWWZnaBQbhHOhsngLcnfy68WEerudPUysc=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.mymuesli',
+    author: 'Shawn Khameneh (@shawnscode), 3DWD'
   },
   {
     name: 'MyPED',
