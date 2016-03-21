@@ -113,7 +113,7 @@ var ListViewSectionStyleExample = React.createClass({
     var sectionIDs = [];
     var rowIDs = [];
     for (var ii = 0; ii < NUM_SECTIONS; ii++) {
-      var sectionName = ii;
+      var sectionName = ii.toString();
       sectionIDs.push(sectionName);
       dataBlob[sectionName] = sectionName;
       rowIDs[ii] = [];
@@ -144,8 +144,8 @@ var ListViewSectionStyleExample = React.createClass({
     );
   },
 
-  sectionStyle: function(sectionId) {
-    return parseInt(sectionId, 10) % 2 === 0 ? { backgroundColor: 'green' } : null
+  sectionStyle: function(sectionID : string) {
+    return parseInt(sectionID, 10) % 2 === 0 ? { backgroundColor: 'green' } : null;
   },
 
   render: function() {
