@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace ReactNative.Views.Split
 {
-    class SplitViewManager : ViewParentManager<SplitView>
+    class ReactSplitViewManager : ViewParentManager<SplitView>
     {
         private const int OpenPane = 1;
         private const int ClosePane = 2;
