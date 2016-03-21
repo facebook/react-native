@@ -11,7 +11,6 @@ package com.facebook.react.bridge.queue;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import android.os.Looper;
 
@@ -83,6 +82,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
   /**
    * @return whether the current Thread is also the Thread associated with this MessageQueueThread.
    */
+  @DoNotStrip
   @Override
   public boolean isOnThread() {
     return mLooper.getThread() == Thread.currentThread();
@@ -92,6 +92,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
    * Asserts {@link #isOnThread()}, throwing a {@link AssertionException} (NOT an
    * {@link AssertionError}) if the assertion fails.
    */
+  @DoNotStrip
   @Override
   public void assertIsOnThread() {
     SoftAssertions.assertCondition(isOnThread(), mAssertionErrorMessage);
@@ -101,6 +102,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
    * Quits this queue's Looper. If that Looper was running on a different Thread than the current
    * Thread, also waits for the last message being processed to finish and the Thread to die.
    */
+  @DoNotStrip
   @Override
   public void quitSynchronous() {
     mIsFinished = true;
@@ -158,7 +160,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
               registrationFuture.set(null);
             }
           });
-      registrationFuture.getOrThrow(5000, TimeUnit.MILLISECONDS);
+      registrationFuture.getOrThrow();
     }
     return mqt;
   }
@@ -180,14 +182,14 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
             Looper.prepare();
 
             looperFuture.set(Looper.myLooper());
-            MessageQueueThreadRegistry.register(mqtFuture.getOrThrow(5000, TimeUnit.MILLISECONDS));
+            MessageQueueThreadRegistry.register(mqtFuture.getOrThrow());
 
             Looper.loop();
           }
         }, "mqt_" + name);
     bgThread.start();
 
-    Looper myLooper = looperFuture.getOrThrow(5000, TimeUnit.MILLISECONDS);
+    Looper myLooper = looperFuture.getOrThrow();
     MessageQueueThreadImpl mqt = new MessageQueueThreadImpl(name, myLooper, exceptionHandler);
     mqtFuture.set(mqt);
 

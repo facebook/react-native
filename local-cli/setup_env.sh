@@ -5,4 +5,5 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-ulimit -n 4096
+# 2048 is the max for non root users on Mac
+ulimit -n 2048

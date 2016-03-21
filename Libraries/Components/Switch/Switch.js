@@ -44,7 +44,7 @@ var Switch = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: React.PropTypes.string,
-    
+
     /**
      * Background color when the switch is turned off.
      * @platform ios

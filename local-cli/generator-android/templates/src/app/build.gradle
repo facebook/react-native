@@ -26,7 +26,9 @@ import com.android.build.OutputFile
  *
  *   // whether to bundle JS and assets in another build variant (if configured).
  *   // See http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Build-Variants
- *   // The configuration property is in the format 'bundleIn${productFlavor}${buildType}'
+ *   // The configuration property can be in the following formats
+ *   //         'bundleIn${productFlavor}${buildType}'
+ *   //         'bundleIn${buildType}'
  *   // bundleInFreeDebug: true,
  *   // bundleInPaidRelease: true,
  *   // bundleInBeta: true,
@@ -60,8 +62,7 @@ import com.android.build.OutputFile
 apply from: "react.gradle"
 
 /**
- * Set this to true to create three separate APKs instead of one:
- *   - A universal APK that works on all devices
+ * Set this to true to create two separate APKs instead of one:
  *   - An APK that only works on ARM devices
  *   - An APK that only works on x86 devices
  * The advantage is the size of the APK is reduced by about 4MB.
@@ -73,7 +74,7 @@ def enableSeparateBuildPerCPUArchitecture = false
 /**
  * Run Proguard to shrink the Java bytecode in release builds.
  */
-def enableProguardInReleaseBuilds = true
+def enableProguardInReleaseBuilds = false
 
 android {
     compileSdkVersion 23
@@ -91,9 +92,9 @@ android {
     }
     splits {
         abi {
-            enable enableSeparateBuildPerCPUArchitecture
-            universalApk false
             reset()
+            enable enableSeparateBuildPerCPUArchitecture
+            universalApk false  // If true, also generate a universal APK
             include "armeabi-v7a", "x86"
         }
     }
@@ -121,5 +122,5 @@ android {
 dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:23.0.1"
-    compile "com.facebook.react:react-native:0.13.0"
+    compile "com.facebook.react:react-native:+"  // From node_modules
 }

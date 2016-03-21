@@ -14,7 +14,7 @@
 var MatrixMath = require('MatrixMath');
 var Platform = require('Platform');
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var stringifySafe = require('stringifySafe');
 
 /**

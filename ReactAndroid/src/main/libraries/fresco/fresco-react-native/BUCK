@@ -22,8 +22,18 @@ remote_file(
     sha1 = 'a944015ddf50fdad79302e42a85a351633c24472',
 )
 
+android_library(
+  name = 'imagepipeline',
+  exported_deps = [
+      ':imagepipeline-core',
+      ':bolts',
+  ],
+  visibility = ['//ReactAndroid/...',],
+)
+
+
 android_prebuilt_aar(
-    name = 'imagepipeline',
+    name = 'imagepipeline-core',
     aar = ':imagepipeline-aar',
     visibility = ['//ReactAndroid/...',],
 )
@@ -32,6 +42,18 @@ remote_file(
     name = 'imagepipeline-aar',
     url = 'mvn:com.facebook.fresco:imagepipeline:aar:0.8.1',
     sha1 = '93fe3e629c03aea8f63dabd80a0e616b0caef65b',
+)
+
+prebuilt_jar(
+  name = 'bolts',
+  binary_jar = ':download-bolts',
+  visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+  name = 'download-bolts',
+  url = 'mvn:com.parse.bolts:bolts-tasks:jar:1.4.0',
+  sha1 = 'd85884acf6810a3bbbecb587f239005cbc846dc4',
 )
 
 android_prebuilt_aar(

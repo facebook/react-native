@@ -6,7 +6,7 @@
 
 jest
   .dontMock('NavigationTreeNode')
-  .dontMock('invariant')
+  .dontMock('fbjs/lib/invariant')
   .dontMock('immutable');
 
 var NavigationTreeNode = require('NavigationTreeNode');

@@ -25,6 +25,8 @@ var {
   ViewPagerAndroid,
 } = React;
 
+import type { ViewPagerScrollState } from 'ViewPagerAndroid';
+
 var PAGES = 5;
 var BGCOLOR = ['#fdc08e', '#fff6b9', '#99d1b7', '#dde5fe', '#f79273'];
 var IMAGE_URIS = [
@@ -114,6 +116,10 @@ var ViewPagerAndroidExample = React.createClass({
     this.setState({progress: e.nativeEvent});
   },
 
+  onPageScrollStateChanged: function(state : ViewPagerScrollState) {
+    this.setState({scrollState: state});
+  },
+
   move: function(delta) {
     var page = this.state.page + delta;
     this.go(page);
@@ -155,6 +161,7 @@ var ViewPagerAndroidExample = React.createClass({
           initialPage={0}
           onPageScroll={this.onPageScroll}
           onPageSelected={this.onPageSelected}
+          onPageScrollStateChanged={this.onPageScrollStateChanged}
           ref={viewPager => { this.viewPager = viewPager; }}>
           {pages}
         </ViewPagerAndroid>
@@ -170,6 +177,7 @@ var ViewPagerAndroidExample = React.createClass({
               enabled={true}
               onPress={() => this.setState({animationsAreEnabled: true})}
             /> }
+          <Text style={styles.scrollStateText}>ScrollState[ {this.state.scrollState} ]</Text>
         </View>
         <View style={styles.buttons}>
           <Button text="Start" enabled={page > 0} onPress={() => this.go(0)}/>
@@ -206,6 +214,9 @@ var styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
+  },
+  scrollStateText: {
+    color: '#99d1b7',
   },
   container: {
     flex: 1,

@@ -13,7 +13,7 @@
 
 var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 
-export type ComponentInterface = ReactClass<any, any, any> | {
+export type ComponentInterface = ReactClass<any> | {
   name?: string;
   displayName?: string;
   propTypes: Object;
@@ -50,6 +50,9 @@ function verifyPropTypes(
         viewConfig.uiViewClassName + '.' + prop + '` of native type `' +
         nativeProps[prop] + '`';
       };
+      message += '\nIf you haven\'t changed this prop yourself, this usually means that ' +
+        'your versions of the native code and JavaScript code are out of sync. Updating both ' +
+        'should make this error go away.';
       throw new Error(message);
     }
   }

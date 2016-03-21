@@ -50,6 +50,7 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
   public Map getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.of(
         PageScrollEvent.EVENT_NAME, MapBuilder.of("registrationName", "onPageScroll"),
+        PageScrollStateChangedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onPageScrollStateChanged"),
         PageSelectedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onPageSelected")
     );
   }

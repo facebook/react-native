@@ -7,7 +7,7 @@
 /* eslint-disable space-infix-ops */
 'use strict';
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 /**
  * Memory conservative (mutative) matrix math utilities. Uses "command"
@@ -67,8 +67,14 @@ var MatrixMath = {
     ];
   },
 
+  /**
+   * This create a perspective projection towards negative z
+   * Clipping the z range of [-near, -far]
+   *
+   * @param fovInRadians - field of view in randians
+   */
   createPerspective: function(fovInRadians, aspect, near, far) {
-    var h = 1 / Math.tan(fovInRadians);
+    var h = 1 / Math.tan(fovInRadians / 2);
     var r_depth  = 1 / (near - far);
     var C = (far + near) * r_depth;
     var D = 2 * (far * near * r_depth);

@@ -316,12 +316,13 @@ UIImage *__nullable RCTTransformImage(UIImage *image,
     return nil;
   }
 
-  UIGraphicsBeginImageContextWithOptions(destSize, NO, destScale);
+  BOOL opaque = !RCTImageHasAlpha(image.CGImage);
+  UIGraphicsBeginImageContextWithOptions(destSize, opaque, destScale);
   CGContextRef currentContext = UIGraphicsGetCurrentContext();
   CGContextConcatCTM(currentContext, transform);
   [image drawAtPoint:CGPointZero];
   UIImage *result = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsGetCurrentContext();
+  UIGraphicsEndImageContext();
   return result;
 }
 

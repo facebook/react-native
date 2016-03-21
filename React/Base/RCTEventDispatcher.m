@@ -30,56 +30,8 @@ static NSNumber *RCTGetEventID(id<RCTEvent> event)
 {
   return @(
     event.viewTag.intValue |
-    (((uint64_t)event.eventName.hash & 0xFFFF) << 32)  |
-    (((uint64_t)event.coalescingKey) << 48)
-  );
+    (((uint64_t)event.eventName.hash & 0xFFFF) << 32));
 }
-
-@implementation RCTBaseEvent
-
-@synthesize viewTag = _viewTag;
-@synthesize eventName = _eventName;
-@synthesize body = _body;
-
-- (instancetype)initWithViewTag:(NSNumber *)viewTag
-                      eventName:(NSString *)eventName
-                           body:(NSDictionary *)body
-{
-  if (RCT_DEBUG) {
-    RCTAssertParam(eventName);
-  }
-
-  if ((self = [super init])) {
-    _viewTag = viewTag;
-    _eventName = eventName;
-    _body = body;
-  }
-  return self;
-}
-
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
-
-- (uint16_t)coalescingKey
-{
-  return 0;
-}
-
-- (BOOL)canCoalesce
-{
-  return YES;
-}
-
-- (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent
-{
-  return newEvent;
-}
-
-+ (NSString *)moduleDotMethod
-{
-  return nil;
-}
-
-@end
 
 @interface RCTEventDispatcher() <RCTFrameUpdateObserver>
 
@@ -186,6 +138,7 @@ RCT_EXPORT_MODULE()
 - (void)sendEvent:(id<RCTEvent>)event
 {
   if (!event.canCoalesce) {
+    [self flushEventsQueue];
     [self dispatchEvent:event];
     return;
   }
@@ -207,19 +160,7 @@ RCT_EXPORT_MODULE()
 
 - (void)dispatchEvent:(id<RCTEvent>)event
 {
-  NSMutableArray<id /* any JSON value */> *arguments = [NSMutableArray new];
-
-  if (event.viewTag) {
-    [arguments addObject:event.viewTag];
-  }
-
-  [arguments addObject:RCTNormalizeInputEventName(event.eventName)];
-
-  if (event.body) {
-    [arguments addObject:event.body];
-  }
-
-  [_bridge enqueueJSCall:[[event class] moduleDotMethod] args:arguments];
+  [_bridge enqueueJSCall:[[event class] moduleDotMethod] args:[event arguments]];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -229,8 +170,13 @@ RCT_EXPORT_MODULE()
 
 - (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
 {
+  [self flushEventsQueue];
+}
+
+- (void)flushEventsQueue
+{
   [_eventQueueLock lock];
-   NSDictionary *eventQueue = _eventQueue;
+  NSDictionary *eventQueue = _eventQueue;
   _eventQueue = [NSMutableDictionary new];
   self.paused = YES;
   [_eventQueueLock unlock];

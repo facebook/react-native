@@ -11,6 +11,9 @@
 function ModuleTransport(data) {
   this.name = data.name;
 
+  assertExists(data, 'id');
+  this.id = data.id;
+
   assertExists(data, 'code');
   this.code = data.code;
 
@@ -21,11 +24,8 @@ function ModuleTransport(data) {
   this.sourcePath = data.sourcePath;
 
   this.virtual = data.virtual;
-
-  if (this.virtual && data.map) {
-    throw new Error('Virtual modules cannot have source maps');
-  }
-
+  this.meta = data.meta;
+  this.polyfill = data.polyfill;
   this.map = data.map;
 
   Object.freeze(this);

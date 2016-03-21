@@ -97,6 +97,8 @@ var TextEventsExample = React.createClass({
 });
 
 class AutoExpandingTextInput extends React.Component {
+  state: any;
+
   constructor(props) {
     super(props);
     this.state = {text: '', height: 0};
@@ -120,6 +122,8 @@ class AutoExpandingTextInput extends React.Component {
 }
 
 class RewriteExample extends React.Component {
+  state: any;
+
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -149,6 +153,8 @@ class RewriteExample extends React.Component {
 }
 
 class RewriteExampleInvalidCharacters extends React.Component {
+  state: any;
+
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -170,6 +176,8 @@ class RewriteExampleInvalidCharacters extends React.Component {
 }
 
 class TokenizedTextExample extends React.Component {
+  state: any;
+
   constructor(props) {
     super(props);
     this.state = {text: 'Hello #World'};
@@ -348,7 +356,13 @@ exports.examples = [
   {
     title: 'Auto-focus',
     render: function() {
-      return <TextInput autoFocus={true} style={styles.default} />;
+      return (
+        <TextInput
+          autoFocus={true}
+          style={styles.default}
+          accessibilityLabel="I am the accessibility label for text input"
+        />
+      );
     }
   },
   {
@@ -531,6 +545,25 @@ exports.examples = [
           <TextInput
             style={[styles.default, {color: 'green'}]}
             defaultValue="Green"
+          />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Colored highlight/cursor for text input',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            style={styles.default}
+            selectionColor={"green"}
+            defaultValue="Highlight me"
+          />
+          <TextInput
+            style={styles.default}
+            selectionColor={"rgba(86, 76, 205, 1)"}
+            defaultValue="Highlight me"
           />
         </View>
       );

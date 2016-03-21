@@ -21,8 +21,7 @@ static NSString *RCTCurrentAppBackgroundState()
   dispatch_once(&onceToken, ^{
     states = @{
       @(UIApplicationStateActive): @"active",
-      @(UIApplicationStateBackground): @"background",
-      @(UIApplicationStateInactive): @"inactive"
+      @(UIApplicationStateBackground): @"background"
     };
   });
 
@@ -53,9 +52,12 @@ RCT_EXPORT_MODULE()
 
   for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
                            UIApplicationDidEnterBackgroundNotification,
-                           UIApplicationDidFinishLaunchingNotification]) {
+                           UIApplicationDidFinishLaunchingNotification,
+                           UIApplicationWillResignActiveNotification,
+                           UIApplicationWillEnterForegroundNotification]) {
+
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleAppStateDidChange)
+                                             selector:@selector(handleAppStateDidChange:)
                                                  name:name
                                                object:nil];
   }
@@ -79,9 +81,18 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - App Notification Methods
 
-- (void)handleAppStateDidChange
+- (void)handleAppStateDidChange:(NSNotification *)notification
 {
-  NSString *newState = RCTCurrentAppBackgroundState();
+  NSString *newState;
+
+  if ([notification.name isEqualToString:UIApplicationWillResignActiveNotification]) {
+    newState = @"inactive";
+  } else if ([notification.name isEqualToString:UIApplicationWillEnterForegroundNotification]) {
+    newState = @"active";
+  } else {
+    newState = RCTCurrentAppBackgroundState();
+  }
+
   if (![newState isEqualToString:_lastKnownState]) {
     _lastKnownState = newState;
     [_bridge.eventDispatcher sendDeviceEventWithName:@"appStateDidChange"

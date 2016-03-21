@@ -32,7 +32,6 @@ var {
   UIManager,
 } = NativeModules;
 
-var PAGE_SIZE = 4;
 var THUMB_URLS = [
   require('./Thumbnails/like.png'),
   require('./Thumbnails/dislike.png'),
@@ -182,8 +181,8 @@ var ListViewPagingExample = React.createClass({
         renderSectionHeader={this.renderSectionHeader}
         renderRow={this.renderRow}
         initialListSize={10}
-        pageSize={PAGE_SIZE}
-        scrollRenderAheadDistance={2000}
+        pageSize={4}
+        scrollRenderAheadDistance={500}
       />
     );
   },

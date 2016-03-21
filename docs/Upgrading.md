@@ -50,7 +50,7 @@ Xcode project format is pretty complex and sometimes it's tricky to upgrade and 
 
 ### From 0.13 to 0.14
 
-The major change in this version happened to the CLI ([see changelog](https://github.com/facebook/react-native/releases/tag/v0.14.0-rc)) and static images ([see docs](http://facebook.github.io/react-native/docs/images.html)). To use the new asset system in existing Xcode project, do the following:
+The major change in this version happened to the CLI ([see changelog](https://github.com/facebook/react-native/releases/tag/v0.14.0-rc)) and static images ([see docs](docs/images.html)). To use the new asset system in existing Xcode project, do the following:
 
 Add new "Run Script" step to your project's build phases:
 

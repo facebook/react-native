@@ -7,10 +7,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule Clipboard
+ * @flow
  */
 'use strict';
 
-var Clipboard = require('NativeModules').Clipboard;
+const Clipboard = require('NativeModules').Clipboard;
+const deprecatedCallback = require('deprecatedCallback');
 
 /**
  * `Clipboard` gives you an interface for setting and getting content from Clipboard on both iOS and Android
@@ -24,14 +26,13 @@ module.exports = {
    * }
    * ```
    */
-  getString() {
-    if (arguments.length > 0) {
-        let callback = arguments[0];
-        console.warn('Clipboard.getString(callback) is deprecated. Use the returned Promise instead');
-        Clipboard.getString().then(callback);
-        return;
-    }
-    return Clipboard.getString();
+  getString(): Promise<string> {
+    return deprecatedCallback(
+      Clipboard.getString(),
+      Array.prototype.slice.call(arguments),
+      'success-first',
+      'Clipboard.getString(callback) is deprecated. Use the returned Promise instead'
+    );
   },
   /**
    * Set content of string type. You can use following code to set clipboard content
@@ -40,9 +41,9 @@ module.exports = {
    *   Clipboard.setString('hello world');
    * }
    * ```
-   * @param this parameter is content that will be set into clipboard.
+   * @param the content to be stored in the clipboard.
    */
-  setString(content) {
+  setString(content: string) {
     Clipboard.setString(content);
   }
 };

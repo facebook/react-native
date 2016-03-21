@@ -28,6 +28,7 @@ var INNERVIEW_REF = 'innerView';
 var DrawerLayoutValidAttributes = {
   drawerWidth: true,
   drawerPosition: true,
+  drawerLockMode: true
 };
 
 var DRAWER_STATES = [
@@ -96,6 +97,18 @@ var DrawerLayoutAndroid = React.createClass({
      */
     drawerWidth: ReactPropTypes.number,
     /**
+     * Specifies the lock mode of the drawer. The drawer can be locked in 3 states:
+     * - unlocked (default), meaning that the drawer will respond (open/close) to touch gestures.
+     * - locked-closed, meaning that the drawer will stay closed and not respond to gestures.
+     * - locked-open, meaning that the drawer will stay opened and not respond to gestures.
+     * The drawer may still be opened and closed programmatically (`openDrawer`/`closeDrawer`).
+     */
+    drawerLockMode: ReactPropTypes.oneOf([
+      'unlocked',
+      'locked-closed',
+      'locked-open'
+    ]),
+    /**
      * Function called whenever there is an interaction with the navigation view.
      */
     onDrawerSlide: ReactPropTypes.func,
@@ -142,7 +155,8 @@ var DrawerLayoutAndroid = React.createClass({
         ref={RK_DRAWER_REF}
         drawerWidth={this.props.drawerWidth}
         drawerPosition={this.props.drawerPosition}
-        style={styles.base}
+        drawerLockMode={this.props.drawerLockMode}
+        style={[styles.base, this.props.style]}
         onDrawerSlide={this._onDrawerSlide}
         onDrawerOpen={this._onDrawerOpen}
         onDrawerClose={this._onDrawerClose}
@@ -204,6 +218,7 @@ var DrawerLayoutAndroid = React.createClass({
 var styles = StyleSheet.create({
   base: {
     flex: 1,
+    elevation: 16,
   },
   mainSubview: {
     position: 'absolute',
@@ -216,6 +231,7 @@ var styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     bottom: 0,
+    backgroundColor: 'white',
   },
 });
 

@@ -77,6 +77,11 @@ public class ViewProps {
   public static final String BORDER_TOP_WIDTH = "borderTopWidth";
   public static final String BORDER_RIGHT_WIDTH = "borderRightWidth";
   public static final String BORDER_BOTTOM_WIDTH = "borderBottomWidth";
+  public static final String BORDER_RADIUS = "borderRadius";
+  public static final String BORDER_TOP_LEFT_RADIUS = "borderTopLeftRadius";
+  public static final String BORDER_TOP_RIGHT_RADIUS = "borderTopRightRadius";
+  public static final String BORDER_BOTTOM_LEFT_RADIUS = "borderBottomLeftRadius";
+  public static final String BORDER_BOTTOM_RIGHT_RADIUS = "borderBottomRightRadius";
   public static final int[] BORDER_SPACING_TYPES = {
       Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM
   };

@@ -42,7 +42,7 @@ function saveAsAssets(bundle, options, log) {
   const writeUnbundle =
     createDir(modulesDir).then( // create the modules directory first
       Promise.all([
-        writeModules(modulesDir, modules, encoding),
+        writeModules(modules, modulesDir, encoding),
         writeFile(bundleOutput, startupCode, encoding),
         writeMagicFlagFile(modulesDir),
       ])
@@ -57,43 +57,15 @@ function createDir(dirName) {
     mkdirp(dirName, error => error ? reject(error) : resolve()));
 }
 
-function createDirectoriesForModules(modulesDir, modules) {
-  const dirNames =
-    modules.map(name => {
-      // get all needed directory names
-      const dir = path.dirname(name);
-      return dir === '.' || dir === '' ? null : path.join(modulesDir, dir);
-    })
-    .filter(Boolean) // remove empty directories
-    .sort()
-    .filter((dir, i, dirs) => {
-      // remove parent directories and dedupe.
-      // After sorting, parent directories are located before child directories
-      const next = dirs[i + 1];
-      return !next || next !== dir && !next.startsWith(dir + path.sep);
-    });
-
-  return dirNames.reduce(
-    (promise, dirName) =>
-      promise.then(() => createDir(dirName)), Promise.resolve());
-}
-
 function writeModuleFile(module, modulesDir, encoding) {
-  const {name, code} = module;
-  return writeFile(path.join(modulesDir, name + '.js'), code, encoding);
+  const {code, id} = module;
+  return writeFile(path.join(modulesDir, id + '.js'), code, encoding);
 }
 
-function writeModuleFiles(modules, modulesDir, encoding) {
+function writeModules(modules, modulesDir, encoding) {
   const writeFiles =
     modules.map(module => writeModuleFile(module, modulesDir, encoding));
   return Promise.all(writeFiles);
-}
-
-function writeModules(modulesDir, modules, encoding) {
-  return (
-    createDirectoriesForModules(modulesDir, modules.map(({name}) => name))
-      .then(() => writeModuleFiles(modules, modulesDir, encoding))
-  );
 }
 
 function writeMagicFlagFile(outputDir) {

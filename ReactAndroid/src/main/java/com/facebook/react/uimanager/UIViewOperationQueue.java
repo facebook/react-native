@@ -385,6 +385,38 @@ public class UIViewOperationQueue {
     }
   }
 
+  private final class MeasureInWindowOperation implements UIOperation {
+
+    private final int mReactTag;
+    private final Callback mCallback;
+
+    private MeasureInWindowOperation(
+        final int reactTag,
+        final Callback callback) {
+      super();
+      mReactTag = reactTag;
+      mCallback = callback;
+    }
+
+    @Override
+    public void execute() {
+      try {
+        mNativeViewHierarchyManager.measureInWindow(mReactTag, mMeasureBuffer);
+      } catch (NoSuchNativeViewException e) {
+        // Invoke with no args to signal failure and to allow JS to clean up the callback
+        // handle.
+        mCallback.invoke();
+        return;
+      }
+
+      float x = PixelUtil.toDIPFromPixel(mMeasureBuffer[0]);
+      float y = PixelUtil.toDIPFromPixel(mMeasureBuffer[1]);
+      float width = PixelUtil.toDIPFromPixel(mMeasureBuffer[2]);
+      float height = PixelUtil.toDIPFromPixel(mMeasureBuffer[3]);
+      mCallback.invoke(x, y, width, height);
+    }
+  }
+
   private ArrayList<UIOperation> mOperations = new ArrayList<>();
 
   private final class FindTargetForTouchOperation implements UIOperation {
@@ -634,6 +666,14 @@ public class UIViewOperationQueue {
         new MeasureOperation(reactTag, callback));
   }
 
+  public void enqueueMeasureInWindow(
+      final int reactTag,
+      final Callback callback) {
+    mOperations.add(
+        new MeasureInWindowOperation(reactTag, callback)
+    );
+  }
+
   public void enqueueFindTargetForTouch(
       final int reactTag,
       final float targetX,
@@ -673,6 +713,10 @@ public class UIViewOperationQueue {
                      operations.get(i).execute();
                    }
                  }
+
+                 // Clear layout animation, as animation only apply to current UI operations batch.
+                 mNativeViewHierarchyManager.clearLayoutAnimation();
+
                  if (mViewHierarchyUpdateDebugListener != null) {
                    mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateFinished();
                  }
@@ -723,9 +767,6 @@ public class UIViewOperationQueue {
           mDispatchUIRunnables.get(i).run();
         }
         mDispatchUIRunnables.clear();
-
-        // Clear layout animation, as animation only apply to current UI operations batch.
-        mNativeViewHierarchyManager.clearLayoutAnimation();
       }
 
       ReactChoreographer.getInstance().postFrameCallback(

@@ -23,7 +23,7 @@ var currentCentroidY = TouchHistoryMath.currentCentroidY;
  * recognize simple multi-touch gestures.
  *
  * It provides a predictable wrapper of the responder handlers provided by the
- * [gesture responder system](/react-native/docs/gesture-responder-system.html).
+ * [gesture responder system](docs/gesture-responder-system.html).
  * For each handler, it provides a new `gestureState` object alongside the
  * native event object:
  *

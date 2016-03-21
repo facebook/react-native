@@ -97,6 +97,8 @@ RCT_EXPORT_VIEW_PROPERTY(mapType, MKMapType)
 RCT_EXPORT_VIEW_PROPERTY(annotations, NSArray<RCTMapAnnotation *>)
 RCT_EXPORT_VIEW_PROPERTY(overlays, NSArray<RCTMapOverlay *>)
 RCT_EXPORT_VIEW_PROPERTY(onAnnotationDragStateChange, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onAnnotationFocus, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onAnnotationBlur, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
@@ -104,39 +106,11 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   [view setRegion:json ? [RCTConvert MKCoordinateRegion:json] : defaultView.region animated:YES];
 }
 
-- (NSDictionary<NSString *, id> *)constantsToExport
-{
-  NSString *red, *green, *purple;
-
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_9_0
-
-  if (![MKPinAnnotationView respondsToSelector:@selector(redPinColor)]) {
-    red = RCTMapPinRed;
-    green = RCTMapPinGreen;
-    purple = RCTMapPinPurple;
-  } else
-
-#endif
-
-  {
-    red = RCTColorToHexString([MKPinAnnotationView redPinColor].CGColor);
-    green = RCTColorToHexString([MKPinAnnotationView greenPinColor].CGColor);
-    purple = RCTColorToHexString([MKPinAnnotationView purplePinColor].CGColor);
-  }
-
-  return @{
-    @"PinColors": @{
-      @"RED": red,
-      @"GREEN": green,
-      @"PURPLE": purple,
-    }
-  };
-}
-
 #pragma mark MKMapViewDelegate
 
 - (void)mapView:(RCTMap *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
+  // TODO: Remove deprecated onAnnotationPress API call later.
   if (mapView.onPress && [view.annotation isKindOfClass:[RCTMapAnnotation class]]) {
     RCTMapAnnotation *annotation = (RCTMapAnnotation *)view.annotation;
     mapView.onPress(@{
@@ -149,6 +123,27 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
         @"longitude": @(annotation.coordinate.longitude)
       }
     });
+  }
+
+  if ([view.annotation isKindOfClass:[RCTMapAnnotation class]]) {
+    RCTMapAnnotation *annotation = (RCTMapAnnotation *)view.annotation;
+    if (mapView.onAnnotationFocus) {
+      mapView.onAnnotationFocus(@{
+        @"annotationId": annotation.identifier
+      });
+    }
+  }
+}
+
+- (void)mapView:(RCTMap *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
+{
+  if ([view.annotation isKindOfClass:[RCTMapAnnotation class]]) {
+    RCTMapAnnotation *annotation = (RCTMapAnnotation *)view.annotation;
+    if (mapView.onAnnotationBlur) {
+      mapView.onAnnotationBlur(@{
+        @"annotationId": annotation.identifier
+      });
+    }
   }
 }
 

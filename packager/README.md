@@ -12,7 +12,7 @@ to wait more than a few seconds after starting the packager.
 
 The main deviation from the node module system is the support for our
 proprietary module format known as `@providesModule`. However, we
-discourage people to use this module format because going forward, we
+discourage people from using this module format because going forward we
 want to completely separate our infrastructure from React Native and
 provide an experience most JavaScript developers are familiar with,
 namely the node module format. We want to even go further, and let you
