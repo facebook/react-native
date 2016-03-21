@@ -61,7 +61,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
       magicNumber = NSSwapLittleIntToHost(magicNumber);
 
-      int32_t sourceLength = 0;
+      int64_t sourceLength = 0;
       if (magicNumber == RCTRAMBundleMagicNumber) {
         source = [NSData dataWithBytes:&magicNumber length:sizeof(magicNumber)];
 
