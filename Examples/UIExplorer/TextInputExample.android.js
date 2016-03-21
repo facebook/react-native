@@ -253,7 +253,7 @@ var styles = StyleSheet.create({
   hashtag: {
     color: 'blue',
     fontWeight: 'bold',
-  }
+  },
 });
 
 exports.title = '<TextInput>';
