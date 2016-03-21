@@ -35,6 +35,7 @@ const  {
   AnimatedView: NavigationAnimatedView,
   Card: NavigationCard,
   Header: NavigationHeader,
+  HeaderTitle: NavigationHeaderTitle,
   Reducer: NavigationReducer,
   RootContainer: NavigationRootContainer,
 } = NavigationExperimental;
@@ -99,8 +100,10 @@ class NavigationAnimatedExample extends React.Component {
   _renderHeader(/*NavigationSceneRendererProps*/ props) {
     return (
       <NavigationHeader
-        {...props}
-        getTitle={state => state.key}
+        navigationProps={props}
+        renderTitleComponent={(navigationProps, scene) => {
+          return <NavigationHeaderTitle>{scene.navigationState.key}</NavigationHeaderTitle>;
+        }}
       />
     );
   }
@@ -144,7 +147,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollView: {
-    marginTop: 64
+    marginTop: NavigationHeader.HEIGHT,
   },
 });
 

@@ -25,24 +25,19 @@ const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
 
 const {
   Alert,
-  Animated,
   AppRegistry,
   NavigationExperimental,
   SnapshotViewIOS,
   StyleSheet,
-  Text,
-  TouchableHighlight,
   View,
 } = React;
 
 const {
   CardStack: NavigationCardStack,
   Header: NavigationHeader,
-  Reducer: NavigationReducer,
+  HeaderTitle: NavigationHeaderTitle,
   RootContainer: NavigationRootContainer,
 } = NavigationExperimental;
-
-import type { Value } from 'Animated';
 
 import type { NavigationSceneRendererProps } from 'NavigationTypeDefinition';
 
@@ -127,9 +122,11 @@ class UIExplorerApp extends React.Component {
   _renderOverlay(props: NavigationSceneRendererProps): ReactElement {
     return (
       <NavigationHeader
-        {...props}
         key={'header_' + props.scene.navigationState.key}
-        getTitle={UIExplorerStateTitleMap}
+        navigationProps={props}
+        renderTitleComponent={(navigationProps, scene) => {
+          return <NavigationHeaderTitle>{UIExplorerStateTitleMap(scene.navigationState)}</NavigationHeaderTitle>;
+        }}
       />
     );
   }
@@ -165,7 +162,7 @@ const styles = StyleSheet.create({
   },
   exampleContainer: {
     flex: 1,
-    paddingTop: 60,
+    paddingTop: NavigationHeader.HEIGHT,
   },
 });
 

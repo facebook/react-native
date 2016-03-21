@@ -27,10 +27,10 @@ const {
 } = React;
 
 const {
-  AnimatedView: NavigationAnimatedView,
   CardStack: NavigationCardStack,
   Container: NavigationContainer,
   Header: NavigationHeader,
+  HeaderTitle: NavigationHeaderTitle,
   Reducer: NavigationReducer,
   RootContainer: NavigationRootContainer,
   View: NavigationView,
@@ -178,8 +178,10 @@ class ExampleTabScreen extends React.Component {
   _renderHeader(props: NavigationSceneRendererProps) {
     return (
       <NavigationHeader
-        {...props}
-        getTitle={state => stateTypeTitleMap(state)}
+        navigationProps={props}
+        renderTitleComponent={(navigationProps, scene) => {
+          return <NavigationHeaderTitle>{stateTypeTitleMap(scene.navigationState)}</NavigationHeaderTitle>;
+        }}
       />
     );
   }
@@ -284,7 +286,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollView: {
-    marginTop: 64
+    marginTop: NavigationHeader.HEIGHT
   },
   tabContent: {
     flex: 1,
