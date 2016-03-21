@@ -5,6 +5,7 @@ using ReactNative.Tests.Constants;
 using ReactNative.UIManager;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Windows.UI.Xaml;
 
 namespace ReactNative.Tests.UIManager
@@ -29,13 +30,15 @@ namespace ReactNative.Tests.UIManager
         }
 
         [TestMethod]
-        public void UIManagerModule_CustomEvents_Constants()
+        public async Task UIManagerModule_CustomEvents_Constants()
         {
             var context = new ReactContext();
             var viewManagers = new List<IViewManager>();
             var uiImplementation = new UIImplementation(context, viewManagers);
 
-            var module = new UIManagerModule(context, viewManagers, uiImplementation);
+            var module = await DispatcherHelpers.CallOnDispatcherAsync(
+                () => new UIManagerModule(context, viewManagers, uiImplementation));
+
             var constants = module.Constants;
 
             Assert.AreEqual("onSelect", constants.GetMap("customBubblingEventTypes").GetMap("topSelect").GetMap("phasedRegistrationNames").GetValue("bubbled"));
@@ -57,13 +60,15 @@ namespace ReactNative.Tests.UIManager
         }
 
         [TestMethod]
-        public void UIManagerModule_Constants_ViewManagerOverrides()
+        public async Task UIManagerModule_Constants_ViewManagerOverrides()
         {
             var context = new ReactContext();
             var viewManagers = new List<IViewManager> { new TestViewManager() };
             var uiImplementation = new UIImplementation(context, viewManagers);
 
-            var module = new UIManagerModule(context, viewManagers, uiImplementation);
+            var module = await DispatcherHelpers.CallOnDispatcherAsync(
+                () => new UIManagerModule(context, viewManagers, uiImplementation));
+
             var constants = module.Constants;
 
             Assert.AreEqual(42, constants.GetMap("customDirectEventTypes").GetValue("otherSelectionChange"));
