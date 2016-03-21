@@ -294,7 +294,6 @@
     <Compile Include="Views\Scroll\ScrollEventType.cs" />
     <Compile Include="Views\Scroll\ScrollEventTypeExtensions.cs" />
     <Compile Include="Views\Split\Events\SplitViewOpenedEvent.cs" />
-    <Compile Include="Views\Split\ReactSplitView.cs" />
     <Compile Include="Views\Split\ReactSplitViewManager.cs" />
     <Compile Include="Views\TextInput\InputScopeHelpers.cs" />
     <Compile Include="Views\TextInput\ReactTextBox.cs" />
