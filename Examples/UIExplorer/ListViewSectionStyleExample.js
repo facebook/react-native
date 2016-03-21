@@ -144,7 +144,7 @@ var ListViewSectionStyleExample = React.createClass({
     );
   },
 
-  sectionStyle: function(sectionID : string) {
+  sectionStyle: function(sectionID : string): ReactElement {
     return parseInt(sectionID, 10) % 2 === 0 ? { backgroundColor: 'green' } : null;
   },
 
@@ -162,13 +162,7 @@ var ListViewSectionStyleExample = React.createClass({
         scrollRenderAheadDistance={500}
       />
     );
-  },
-
-  _onPressHeader: function() {
-    var config = layoutAnimationConfigs[Math.floor(this.state.headerPressCount / 2) % layoutAnimationConfigs.length];
-    LayoutAnimation.configureNext(config);
-    this.setState({headerPressCount: this.state.headerPressCount + 1});
-  },
+  }
 
 });
 
