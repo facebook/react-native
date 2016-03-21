@@ -15,7 +15,7 @@
 #import "RCTProfile.h"
 
 static int64_t RCTPLData[RCTPLSize][2] = {};
-static int64_t RCTPLCookies[RCTPLSize] = {};
+static NSUInteger RCTPLCookies[RCTPLSize] = {};
 
 void RCTPerformanceLoggerStart(RCTPLTag tag)
 {

@@ -33,8 +33,7 @@ NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContext
 
 static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
 
-typedef struct ModuleData
-{
+typedef struct ModuleData {
   uint32_t offset;
   uint32_t length;
   uint32_t lineNo;
@@ -706,7 +705,9 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
 {
   _bundle = fopen(sourceURL.path.UTF8String, "r");
   if (!_bundle) {
-    *error = RCTErrorWithMessage([NSString stringWithFormat:@"Bundle %@ cannot be opened: %d", sourceURL.path, errno]);
+    if (error) {
+      *error = RCTErrorWithMessage([NSString stringWithFormat:@"Bundle %@ cannot be opened: %d", sourceURL.path, errno]);
+    }
     return nil;
   }
 
@@ -721,7 +722,9 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
 
   uint32_t tableLength;
   if (readBundle(_bundle, currentOffset, sizeof(tableLength), &tableLength) != 0) {
-    *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
+    if (error) {
+      *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
+    }
     return nil;
   }
   tableLength = NSSwapLittleIntToHost(tableLength);
@@ -733,7 +736,9 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
 
   char tableStart[tableLength];
   if (readBundle(_bundle, currentOffset, tableLength, tableStart) != 0) {
-    *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
+    if (error) {
+      *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
+    }
     return nil;
   }
 
@@ -745,7 +750,9 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
     char *name = malloc(nameLength + 1);
 
     if (!name) {
-      *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
+      if (error) {
+        *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
+      }
       return nil;
     }
 
@@ -767,12 +774,17 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
 
   void *startupCode;
   if (!(startupCode = malloc(startupData->length))) {
-    *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
+    if (error) {
+      *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
+    }
     return nil;
   }
 
   if (readBundle(_bundle, startupData->offset, startupData->length, startupCode) != 0) {
-    *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
+    if (error) {
+      *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
+    }
+    free(startupCode);
     return nil;
   }
   return [NSData dataWithBytesNoCopy:startupCode length:startupData->length freeWhenDone:YES];

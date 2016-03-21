@@ -27,6 +27,7 @@
 #import "RCTModuleMethod.h"
 #import "RCTProfile.h"
 #import "RCTRootView.h"
+#import "RCTRootShadowView.h"
 #import "RCTRootViewInternal.h"
 #import "RCTScrollableProtocol.h"
 #import "RCTShadowView.h"
@@ -358,7 +359,7 @@ RCT_EXPORT_MODULE()
     if (!_viewRegistry) {
       return;
     }
-    RCTShadowView *shadowView = [RCTShadowView new];
+    RCTRootShadowView *shadowView = [RCTRootShadowView new];
     shadowView.reactTag = reactTag;
     shadowView.frame = frame;
     shadowView.backgroundColor = rootView.backgroundColor;
@@ -406,9 +407,12 @@ RCT_EXPORT_MODULE()
 
     // Trigger re-layout when size flexibility changes, as the root view might grow or
     // shrink in the flexible dimensions.
-    if (RCTIsReactRootView(reactTag) && shadowView.sizeFlexibility != sizeFlexibility) {
-      shadowView.sizeFlexibility = sizeFlexibility;
-      dirtyLayout = YES;
+    if (RCTIsReactRootView(reactTag)) {
+      RCTRootShadowView *rootShadowView = (RCTRootShadowView *)shadowView;
+      if (rootShadowView.sizeFlexibility != sizeFlexibility) {
+        rootShadowView.sizeFlexibility = sizeFlexibility;
+        dirtyLayout = YES;
+      }
     }
 
     if (dirtyLayout) {
@@ -433,12 +437,11 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (void)setBackgroundColor:(UIColor *)color forRootView:(UIView *)rootView
+- (void)setBackgroundColor:(UIColor *)color forView:(UIView *)view
 {
   RCTAssertMainThread();
 
-  NSNumber *reactTag = rootView.reactTag;
-  RCTAssert(RCTIsReactRootView(reactTag), @"Specified view %@ is not a root view", reactTag);
+  NSNumber *reactTag = view.reactTag;
 
   __weak RCTUIManager *weakSelf = self;
   dispatch_async(_shadowQueue, ^{
@@ -446,10 +449,10 @@ RCT_EXPORT_MODULE()
     if (!_viewRegistry) {
       return;
     }
-    RCTShadowView *rootShadowView = strongSelf->_shadowViewRegistry[reactTag];
-    RCTAssert(rootShadowView != nil, @"Could not locate root view with tag #%@", reactTag);
-    rootShadowView.backgroundColor = color;
-    [self _amendPendingUIBlocksWithStylePropagationUpdateForRootView:rootShadowView];
+    RCTShadowView *shadowView = strongSelf->_shadowViewRegistry[reactTag];
+    RCTAssert(shadowView != nil, @"Could not locate root view with tag #%@", reactTag);
+    shadowView.backgroundColor = color;
+    [self _amendPendingUIBlocksWithStylePropagationUpdateForShadowView:shadowView];
     [self flushUIBlocks];
   });
 }
@@ -500,7 +503,7 @@ RCT_EXPORT_MODULE()
   [_pendingUIBlocks addObject:outerBlock];
 }
 
-- (RCTViewManagerUIBlock)uiBlockWithLayoutUpdateForRootView:(RCTShadowView *)rootShadowView
+- (RCTViewManagerUIBlock)uiBlockWithLayoutUpdateForRootView:(RCTRootShadowView *)rootShadowView
 {
   RCTAssert(![NSThread isMainThread], @"Should be called on shadow thread");
 
@@ -509,7 +512,7 @@ RCT_EXPORT_MODULE()
   // these structures in the UI-thread block. `NSMutableArray` is not thread
   // safe so we rely on the fact that we never mutate it after it's passed to
   // the main thread.
-  NSSet<RCTShadowView *> *viewsWithNewFrames = [rootShadowView collectRootUpdatedFrames];
+  NSSet<RCTShadowView *> *viewsWithNewFrames = [rootShadowView collectViewsWithUpdatedFrames];
 
   if (!viewsWithNewFrames.count) {
     // no frame change results in no UI update block
@@ -656,7 +659,7 @@ RCT_EXPORT_MODULE()
   };
 }
 
-- (void)_amendPendingUIBlocksWithStylePropagationUpdateForRootView:(RCTShadowView *)topView
+- (void)_amendPendingUIBlocksWithStylePropagationUpdateForShadowView:(RCTShadowView *)topView
 {
   NSMutableSet<RCTApplierBlock> *applierBlocks = [NSMutableSet setWithCapacity:1];
   [topView collectUpdatedProperties:applierBlocks parentProperties:@{}];
@@ -1015,9 +1018,9 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
 
   // Perform layout
   for (NSNumber *reactTag in _rootViewTags) {
-    RCTShadowView *rootView = _shadowViewRegistry[reactTag];
+    RCTRootShadowView *rootView = (RCTRootShadowView *)_shadowViewRegistry[reactTag];
     [self addUIBlock:[self uiBlockWithLayoutUpdateForRootView:rootView]];
-    [self _amendPendingUIBlocksWithStylePropagationUpdateForRootView:rootView];
+    [self _amendPendingUIBlocksWithStylePropagationUpdateForShadowView:rootView];
   }
 
   // Clear layout animations
