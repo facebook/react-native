@@ -46,6 +46,7 @@ var ReactNative = Object.assign(Object.create(require('ReactNative')), {
   SliderIOS: require('SliderIOS'),
   Slider: require('Slider'),
   SnapshotViewIOS: require('SnapshotViewIOS'),
+  SplitViewWindows: require('SplitViewWindows'),
   StatusBar: require('StatusBar'),
   Switch: require('Switch'),
   PullToRefreshViewAndroid: require('PullToRefreshViewAndroid'),
