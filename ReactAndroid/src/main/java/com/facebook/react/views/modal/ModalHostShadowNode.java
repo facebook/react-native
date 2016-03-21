@@ -16,14 +16,16 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
+import com.facebook.csslayout.CSSNode;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
 /**
  * We implement the Modal by using an Android Dialog. That will fill the entire window of the
  * application.  To get layout to work properly, we need to layout all the elements within the
- * Modal as if they can fill the entire window.  To do that, we need to explicitly set the
- * styleWidth and styleHeight on the LayoutShadowNode to be the window size.  This will then cause
- * the children to layout as if they can fill the window.
+ * Modal's inner content view as if they can fill the entire window.  To do that, we need to
+ * explicitly set the styleWidth and styleHeight on the LayoutShadowNode of the child of this node
+ * to be the window size.  This will then cause the children of the Modal to layout as if they can
+ * fill the window.
  *
  * To get that we use information from the WindowManager and default Display.  We don't use
  * DisplayMetricsHolder because it returns values that include the status bar.  We only want the
@@ -33,15 +35,15 @@ class ModalHostShadowNode extends LayoutShadowNode {
 
   private final Point mMinPoint = new Point();
   private final Point mMaxPoint = new Point();
+
   /**
-   * Once we have all the properties for the we need to measure the window and set the style
-   * width and height appropriately so that layout is done properly for the view assuming it
-   * fills the entire window instead of the place it is in the view tree
+   * We need to set the styleWidth and styleHeight of the one child (represented by the <View/>
+   * within the <RCTModalHostView/> in Modal.js.  This needs to fill the entire window.
    */
   @Override
   @TargetApi(16)
-  public void onAfterUpdateTransaction() {
-    super.onAfterUpdateTransaction();
+  public void addChildAt(CSSNode child, int i) {
+    super.addChildAt(child, i);
 
     Context context = getThemedContext();
     WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -60,7 +62,7 @@ class ModalHostShadowNode extends LayoutShadowNode {
       width = mMaxPoint.x;
       height = mMinPoint.y;
     }
-    setStyleWidth(width);
-    setStyleHeight(height);
+    child.setStyleWidth(width);
+    child.setStyleHeight(height);
   }
 }
