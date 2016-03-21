@@ -4,7 +4,7 @@ Thanks for submitting a pull request! Please provide enough information so that 
 
 Explain the **motivation** for making this change. What existing problem does the pull request solve?
 
-Example: When "Adding a function to do X", explain why it is necessary to have a way to do X.
+Prefer **small pull requests**. These are much easier to review and more likely to get merged. Make sure the PR does only one thing, otherwise please split it.
 
 **Test plan (required)**
 
