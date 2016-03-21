@@ -87,7 +87,7 @@ var PickerWindows = React.createClass({
       prompt: this.props.prompt,
       selected: this.state.selectedIndex,
       testID: this.props.testID,
-      style: [styles.pickerWindows, this.props.style],
+      style: [this.props.style],
     };
 
     return <Picker ref={REF_PICKER} {...nativeProps} />;
@@ -116,22 +116,13 @@ var PickerWindows = React.createClass({
   },
 });
 
-var styles = StyleSheet.create({
-  pickerWindows: {
-    // The picker will conform to whatever width is given, but we do
-    // have to set the component's height explicitly on the
-    // surrounding view to ensure it gets rendered.
-    // TODO would be better to export a native constant for this,
-    // like in iOS the RCTDatePickerManager.m
-    height: 40,
-  },
-});
-
 var cfg = {
   nativeOnly: {
+    items: true,
+    selected: true,
   }
 };
 
-var ComboBoxPicker = requireNativeComponent('RCTPicker', PickerWindows, PickerWindows, cfg);
+var ComboBoxPicker = requireNativeComponent('RCTPicker', PickerWindows, cfg);
 
 module.exports = PickerWindows;
