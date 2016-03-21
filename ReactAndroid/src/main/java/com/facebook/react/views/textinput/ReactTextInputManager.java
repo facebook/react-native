@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -170,6 +171,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setTextSize(
         TypedValue.COMPLEX_UNIT_PX,
         (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize)));
+  }
+
+  @ReactProp(name = ViewProps.FONT_FAMILY)
+  public void setFontFamily(ReactEditText view, String fontFamily) {
+    view.setTypeface(Typeface.create(fontFamily,view.getTypeface().getStyle()));
   }
 
   @ReactProp(name = "onSelectionChange", defaultBoolean = false)
