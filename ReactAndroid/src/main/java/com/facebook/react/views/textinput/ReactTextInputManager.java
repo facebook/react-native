@@ -191,7 +191,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       fontWeight = Typeface.NORMAL;
     }
     if (fontWeight != view.getTypeface().getStyle()) {
-        view.setTypeface(view.getTypeface(), fontWeight);
+      view.setTypeface(view.getTypeface(), fontWeight);
     }
   }
 
@@ -203,9 +203,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else if ("normal".equals(fontStyleString)) {
       fontStyle = Typeface.NORMAL;
     }
-      if (fontStyle != view.getTypeface().getStyle()) {
-          view.setTypeface(view.getTypeface(), fontStyle);
-      }
+    if (fontStyle != view.getTypeface().getStyle()) {
+      view.setTypeface(view.getTypeface(), fontStyle);
+    }
   }
 
   @ReactProp(name = "onSelectionChange", defaultBoolean = false)
