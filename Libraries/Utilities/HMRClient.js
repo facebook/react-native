@@ -96,15 +96,15 @@ Error: ${e.message}`
               ? global.nativeInjectHMRUpdate
               : eval;
 
-            // TODO: (martinb) yellow box if cannot accept module
-            code = `
-              __accept(
-                ${name},
-                function(global, require, module, exports) {
-                  ${code}
-                },
-                ${JSON.stringify(inverseDependencies)}
-              );`;
+            code = [
+              `__accept(`,
+                `${name},`,
+                `function(global,require,module,exports){`,
+                  `${code}`,
+                '\n},',
+                `${JSON.stringify(inverseDependencies)}`,
+              `);`,
+            ].join('');
 
             injectFunction(code, sourceURLs[i]);
           });
