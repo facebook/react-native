@@ -444,7 +444,7 @@ var ListView = React.createClass({
             adjacentRowHighlighted
           );
 
-          if(separator) {
+          if (separator) {
             sectionComponents.push(separator);
           }
 
@@ -459,7 +459,7 @@ var ListView = React.createClass({
         //early break or end section
         var style = this.props.sectionStyle;
         bodyComponents.push(
-          <View key={'section_' + sectionID} style={typeof style == 'function' ? style(sectionID) : style}>
+          <View key={'section_' + sectionID} style={typeof style === 'function' ? style(sectionID) : style}>
             {sectionComponents}
           </View>
         );
