@@ -65,7 +65,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
   private static final String KEYBOARD_TYPE_PHONE_PAD = "phone-pad";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
-
+  private static final int UNSET = -1;
+  
   @Override
   public String getName() {
     return REACT_CLASS;
@@ -176,6 +177,35 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = ViewProps.FONT_FAMILY)
   public void setFontFamily(ReactEditText view, String fontFamily) {
     view.setTypeface(Typeface.create(fontFamily,view.getTypeface().getStyle()));
+  }
+
+  @ReactProp(name = ViewProps.FONT_WEIGHT)
+  public void setFontWeight(ReactEditText view, @Nullable String fontWeightString) {
+    int fontWeightNumeric = fontWeightString != null ?
+            parseNumericFontWeight(fontWeightString) : -1;
+    int fontWeight = UNSET;
+    if (fontWeightNumeric >= 500 || "bold".equals(fontWeightString)) {
+      fontWeight = Typeface.BOLD;
+    } else if ("normal".equals(fontWeightString) ||
+            (fontWeightNumeric != -1 && fontWeightNumeric < 500)) {
+      fontWeight = Typeface.NORMAL;
+    }
+    if (fontWeight != view.getTypeface().getStyle()) {
+        view.setTypeface(view.getTypeface(), fontWeight);
+    }
+  }
+
+  @ReactProp(name = ViewProps.FONT_STYLE)
+  public void setFontStyle(ReactEditText view, @Nullable String fontStyleString) {
+    int fontStyle = UNSET;
+    if ("italic".equals(fontStyleString)) {
+      fontStyle = Typeface.ITALIC;
+    } else if ("normal".equals(fontStyleString)) {
+      fontStyle = Typeface.NORMAL;
+    }
+      if (fontStyle != view.getTypeface().getStyle()) {
+          view.setTypeface(view.getTypeface(), fontStyle);
+      }
   }
 
   @ReactProp(name = "onSelectionChange", defaultBoolean = false)
@@ -378,6 +408,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           InputType.TYPE_TEXT_VARIATION_PASSWORD,
           InputType.TYPE_NUMBER_VARIATION_PASSWORD);
     }
+  }
+
+  /**
+   * Return -1 if the input string is not a valid numeric fontWeight (100, 200, ..., 900), otherwise
+   * return the weight.
+   */
+  private static int parseNumericFontWeight(String fontWeightString) {
+    // This should be much faster than using regex to verify input and Integer.parseInt
+    return fontWeightString.length() == 3 && fontWeightString.endsWith("00")
+            && fontWeightString.charAt(0) <= '9' && fontWeightString.charAt(0) >= '1' ?
+            100 * (fontWeightString.charAt(0) - '0') : -1;
   }
 
   private static void updateStagedInputTypeFlag(
