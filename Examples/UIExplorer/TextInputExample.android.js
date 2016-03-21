@@ -254,6 +254,9 @@ var styles = StyleSheet.create({
     color: 'blue',
     fontWeight: 'bold',
   },
+  coloredPasswordInput: {
+    color: 'red'
+  }
 });
 
 exports.title = '<TextInput>';
@@ -418,10 +421,30 @@ exports.examples = [
           />
           <TextInput 
             secureTextEntry={true}
-            style={[styles.singleLine, {color: 'red'}]}
+			style={[styles.singleLine, {color: 'red'}]}
             placeholder="color is supported too"
             placeholderTextColor="red"
+		  />
+          <TextInput 
+            secureTextEntry={true}
+            style={[styles.singleLine, {fontFamily: 'sans-serif'}]}
+            placeholder="Also support custom fonts like Sans-Serif"
           />
+          <TextInput 
+            secureTextEntry={true}
+            style={[styles.singleLine, {fontFamily: 'sans-serif', fontWeight: 'bold'}]}
+            placeholder="Sans-Serif bold"
+          />
+          <TextInput 
+            secureTextEntry={true}
+            style={[styles.singleLine, {fontFamily: 'sans-serif', fontStyle: 'italic'}]}
+            placeholder="Sans-Serif italic"
+          />
+          <TextInput 
+            secureTextEntry={true}
+            style={[styles.singleLine, {fontFamily: 'serif'}]}
+            placeholder="Serif"
+	 	  />
         </View>
       );
     }
