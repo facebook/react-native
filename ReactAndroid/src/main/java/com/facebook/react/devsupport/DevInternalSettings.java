@@ -35,6 +35,7 @@ public class DevInternalSettings implements
   private static final String PREFS_RELOAD_ON_JS_CHANGE_KEY = "reload_on_js_change";
   private static final String PREFS_INSPECTOR_DEBUG_KEY = "inspector_debug";
   private static final String PREFS_HOT_MODULE_REPLACEMENT_KEY = "hot_module_replacement";
+  private static final String PREFS_USE_CACHED_BUNDLE = "use_cached_bundle";
 
   private final SharedPreferences mPreferences;
   private final DevSupportManager mDebugManager;
@@ -66,6 +67,11 @@ public class DevInternalSettings implements
     return mPreferences.getBoolean(PREFS_JS_DEV_MODE_DEBUG_KEY, true);
   }
 
+  @Override
+  public  boolean getShouldUseCachedBundle() {
+    return mPreferences.getBoolean(PREFS_USE_CACHED_BUNDLE, true);
+  }
+
   public @Nullable String getDebugServerHost() {
     return mPreferences.getString(PREFS_DEBUG_SERVER_HOST_KEY, null);
   }
@@ -73,7 +79,8 @@ public class DevInternalSettings implements
   public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
     if (PREFS_FPS_DEBUG_KEY.equals(key) ||
         PREFS_RELOAD_ON_JS_CHANGE_KEY.equals(key) ||
-        PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key)) {
+        PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key) ||
+        PREFS_USE_CACHED_BUNDLE.equals(key)) {
       mDebugManager.reloadSettings();
     }
   }

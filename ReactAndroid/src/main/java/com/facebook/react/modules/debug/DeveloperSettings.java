@@ -33,4 +33,10 @@ public interface DeveloperSettings {
    * @return Whether element inspector is enabled.
    */
   boolean isElementInspectorEnabled();
+
+  /**
+   * @return Whether an cached bundle file should be used.
+   */
+  boolean getShouldUseCachedBundle();
+
 }
