@@ -13,19 +13,18 @@ It's [currently not possible](https://github.com/facebook/react-devtools/issues/
 
 However, you can still use the Console feature of the devtools, and debugging JavaScript with breakpoints works too. To use the console, make sure to select the `⚙debuggerWorker.js` entry in the devtools dropdown that by default is set to `<top frame>`.
 
-### Missing Modules and Native Views
+### Missing Android Modules and Views
 
-The work on React Native for Android started later than React Native for iOS. Not all of the views present on iOS have been released on Android yet.
+The work on React Native for Android started later than React Native for iOS. Most views and modules are now available on Android, with the following exceptions:
 
 #### Views
 
-- Maps - Please use Leland Richardson's [react-native-maps](https://github.com/lelandrichardson/react-native-maps) as it is more feature-complete than our internal implementation at fb.
-- Slider (also known as SeekBar)
+- Maps - Please use Leland Richardson's [react-native-maps](https://github.com/lelandrichardson/react-native-maps) as it is more feature-complete than our internal implementation.
+- Android Slider (also known as SeekBar)
 
 #### Modules
 
-- Media
-- PushNotificationIOS
+- Android Push Notifications - Please use a [3rd party module](https://js.coach/react-native?filters=android&search=gcm).
 
 ### Some props are only supported on one platform
 
@@ -38,12 +37,6 @@ There are known cases where the APIs could be made more consistent across iOS an
 - `<ViewPagerAndroid>` and `<ScrollView pagingEnabled={true}>` on iOS do a similar thing. We might want to unify them to `<ViewPager>`.
 - `ActivityIndicator` could render a native spinning indicator on both platforms (currently this is done using `ActivityIndicatorIOS` on iOS and `ProgressBarAndroid` on Android).
 - `ProgressBar` could render a horizontal progress bar on both platforms (on iOS this is `ProgressViewIOS`, on Android it's `ProgressBarAndroid`).
-
-### Using 3rd-party native modules
-
-There are many awesome 3rd-party modules: [JS.coach](https://js.coach/react-native)
-
-Adding these to your apps should be made simpler. Here's [an example](https://github.com/apptailor/react-native-google-signin) how this is done currently.
 
 ### The `overflow` style property defaults to `hidden` and cannot be changed on Android
 
