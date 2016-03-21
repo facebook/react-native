@@ -179,6 +179,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setTypeface(Typeface.create(fontFamily,view.getTypeface().getStyle()));
   }
 
+  /**
+  /* This code was taken from the method setFontWeight of the class ReactTextShadowNode
+  /* TODO: Factor into a common place they can both use
+  */
   @ReactProp(name = ViewProps.FONT_WEIGHT)
   public void setFontWeight(ReactEditText view, @Nullable String fontWeightString) {
     int fontWeightNumeric = fontWeightString != null ?
@@ -195,6 +199,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  /**
+  /* This code was taken from the method setFontStyle of the class ReactTextShadowNode
+  /* TODO: Factor into a common place they can both use
+  */
   @ReactProp(name = ViewProps.FONT_STYLE)
   public void setFontStyle(ReactEditText view, @Nullable String fontStyleString) {
     int fontStyle = UNSET;
@@ -420,6 +428,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   /**
+   * This code was taken from the method parseNumericFontWeight of the class ReactTextShadowNode
+   * TODO: Factor into a common place they can both use
+   *
    * Return -1 if the input string is not a valid numeric fontWeight (100, 200, ..., 900), otherwise
    * return the weight.
    */
