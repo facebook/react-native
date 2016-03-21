@@ -407,7 +407,7 @@ exports.examples = [
     }
   },
   {
-    title: 'fontFamly, fontWeight and fontStyle',
+    title: 'fontFamily, fontWeight and fontStyle',
     render: function() {
       return (
         <View>
