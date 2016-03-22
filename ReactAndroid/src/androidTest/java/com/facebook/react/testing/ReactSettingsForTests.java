@@ -28,6 +28,11 @@ public class ReactSettingsForTests implements DeveloperSettings {
   }
 
   @Override
+  public boolean isJSMinifyEnabled() {
+    return false;
+  }
+
+  @Override
   public boolean isElementInspectorEnabled() {
     return false;
   }
