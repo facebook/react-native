@@ -45,6 +45,12 @@ var styleKeyMap = {
         };
     },
 
+    textDecorationLine: function(value) {
+        return {
+            textDecoration: value,
+        };
+    },
+
     shadowColor: function(value, allValues) {
         var color = value || 'transparent';
         var width = 0;
