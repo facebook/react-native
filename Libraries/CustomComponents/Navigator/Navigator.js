@@ -370,7 +370,7 @@ var Navigator = React.createClass({
       transitionQueue: [],
     }, () => {
       this._handleSpringUpdate();
-      this._navBar && this._navBar.immediatelyRefresh();
+      this._navBar && this._navBar.immediatelyRefresh && this._navBar.immediatelyRefresh();
     });
   },
 
