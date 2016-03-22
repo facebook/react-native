@@ -360,7 +360,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Facebook.CSSLayout">
-      <HintPath>..\References\Facebook.CSSLayout.dll</HintPath>
+      <HintPath>$(MSBuildThisFileDirectory)\..\References\Facebook.CSSLayout.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
