@@ -18,10 +18,6 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
-static NSString *const RCTStorageDirectory = @"RCTAsyncLocalStorage_V1";
-static NSString *const RCTManifestFileName = @"manifest.json";
-static const NSUInteger RCTInlineValueThreshold = 1024;
-
 #pragma mark - Static helper functions
 
 static NSDictionary *RCTErrorForKey(NSString *key)
@@ -62,27 +58,6 @@ static NSString *RCTReadFile(NSString *filePath, NSString *key, NSDictionary **e
   return nil;
 }
 
-static NSString *RCTGetStorageDirectory()
-{
-  static NSString *storageDirectory = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    storageDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-    storageDirectory = [storageDirectory stringByAppendingPathComponent:RCTStorageDirectory];
-  });
-  return storageDirectory;
-}
-
-static NSString *RCTGetManifestFilePath()
-{
-  static NSString *manifestFilePath = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    manifestFilePath = [RCTGetStorageDirectory() stringByAppendingPathComponent:RCTManifestFileName];
-  });
-  return manifestFilePath;
-}
-
 // Only merges objects - all other types are just clobbered (including arrays)
 static BOOL RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *source)
 {
@@ -111,7 +86,45 @@ static BOOL RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *so
   return modified;
 }
 
-static dispatch_queue_t RCTGetMethodQueue()
+#pragma mark - RCTAsyncLocalStorage
+
+@implementation RCTAsyncLocalStorage
+{
+  BOOL _haveSetup;
+  // The manifest is a dictionary of all keys with small values inlined.  Null values indicate values that are stored
+  // in separate files (as opposed to nil values which don't exist).  The manifest is read off disk at startup, and
+  // written to disk after all mutations.
+  NSMutableDictionary<NSString *, NSString *> *_manifest;
+}
+
+RCT_EXPORT_MODULE()
+
+static NSString *const RCTStorageDirectory = @"RCTAsyncLocalStorage_V1";
+static NSString *const RCTManifestFileName = @"manifest.json";
+static const NSUInteger RCTInlineValueThreshold = 1024;
+
+- (NSString *)_storageDirectory
+{
+  static NSString *storageDirectory = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    storageDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+    storageDirectory = [storageDirectory stringByAppendingPathComponent:RCTStorageDirectory];
+  });
+  return storageDirectory;
+}
+
+- (NSString *)_manifestFilePath
+{
+  static NSString *manifestFilePath = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    manifestFilePath = [[self _storageDirectory] stringByAppendingPathComponent:RCTManifestFileName];
+  });
+  return manifestFilePath;
+}
+
+- (dispatch_queue_t)methodQueue
 {
   // We want all instances to share the same queue since they will be reading/writing the same files.
   static dispatch_queue_t queue;
@@ -122,7 +135,7 @@ static dispatch_queue_t RCTGetMethodQueue()
   return queue;
 }
 
-static NSCache *RCTGetCache()
+- (NSCache *)_cache
 {
   // We want all instances to share the same cache since they will be reading/writing the same files.
   static NSCache *cache;
@@ -140,54 +153,28 @@ static NSCache *RCTGetCache()
 }
 
 static BOOL RCTHasCreatedStorageDirectory = NO;
-static NSDictionary *RCTDeleteStorageDirectory()
+- (NSDictionary *)_deleteStorageDirectory
 {
   NSError *error;
-  [[NSFileManager defaultManager] removeItemAtPath:RCTGetStorageDirectory() error:&error];
+  [[NSFileManager defaultManager] removeItemAtPath:[self _storageDirectory] error:&error];
   RCTHasCreatedStorageDirectory = NO;
   return error ? RCTMakeError(@"Failed to delete storage directory.", error, nil) : nil;
 }
 
-#pragma mark - RCTAsyncLocalStorage
-
-@implementation RCTAsyncLocalStorage
-{
-  BOOL _haveSetup;
-  // The manifest is a dictionary of all keys with small values inlined.  Null values indicate values that are stored
-  // in separate files (as opposed to nil values which don't exist).  The manifest is read off disk at startup, and
-  // written to disk after all mutations.
-  NSMutableDictionary<NSString *, NSString *> *_manifest;
-}
-
-RCT_EXPORT_MODULE()
-
-- (dispatch_queue_t)methodQueue
-{
-  return RCTGetMethodQueue();
-}
-
 - (void)clearAllData
 {
-  dispatch_async(RCTGetMethodQueue(), ^{
+  dispatch_async([self methodQueue], ^{
     [_manifest removeAllObjects];
-    [RCTGetCache() removeAllObjects];
-    RCTDeleteStorageDirectory();
-  });
-}
-
-+ (void)clearAllData
-{
-  dispatch_async(RCTGetMethodQueue(), ^{
-    [RCTGetCache() removeAllObjects];
-    RCTDeleteStorageDirectory();
+    [[self _cache] removeAllObjects];
+    [self _deleteStorageDirectory];
   });
 }
 
 - (void)invalidate
 {
   if (_clearOnInvalidate) {
-    [RCTGetCache() removeAllObjects];
-    RCTDeleteStorageDirectory();
+    [[self _cache] removeAllObjects];
+    [self _deleteStorageDirectory];
   }
   _clearOnInvalidate = NO;
   [_manifest removeAllObjects];
@@ -207,16 +194,16 @@ RCT_EXPORT_MODULE()
 - (NSString *)_filePathForKey:(NSString *)key
 {
   NSString *safeFileName = RCTMD5Hash(key);
-  return [RCTGetStorageDirectory() stringByAppendingPathComponent:safeFileName];
+  return [[self _storageDirectory] stringByAppendingPathComponent:safeFileName];
 }
 
 - (NSDictionary *)_ensureSetup
 {
-  RCTAssertThread(RCTGetMethodQueue(), @"Must be executed on storage thread");
+  RCTAssertThread([self methodQueue], @"Must be executed on storage thread");
 
   NSError *error = nil;
   if (!RCTHasCreatedStorageDirectory) {
-    [[NSFileManager defaultManager] createDirectoryAtPath:RCTGetStorageDirectory()
+    [[NSFileManager defaultManager] createDirectoryAtPath:[self _storageDirectory]
                               withIntermediateDirectories:YES
                                                attributes:nil
                                                     error:&error];
@@ -227,7 +214,7 @@ RCT_EXPORT_MODULE()
   }
   if (!_haveSetup) {
     NSDictionary *errorOut;
-    NSString *serialized = RCTReadFile(RCTGetManifestFilePath(), nil, &errorOut);
+    NSString *serialized = RCTReadFile([self _manifestFilePath], nil, &errorOut);
     _manifest = serialized ? RCTJSONParseMutable(serialized, &error) : [NSMutableDictionary new];
     if (error) {
       RCTLogWarn(@"Failed to parse manifest - creating new one.\n\n%@", error);
@@ -242,7 +229,7 @@ RCT_EXPORT_MODULE()
 {
   NSError *error;
   NSString *serialized = RCTJSONStringify(_manifest, &error);
-  [serialized writeToFile:RCTGetManifestFilePath() atomically:YES encoding:NSUTF8StringEncoding error:&error];
+  [serialized writeToFile:[self _manifestFilePath] atomically:YES encoding:NSUTF8StringEncoding error:&error];
   NSDictionary *errorOut;
   if (error) {
     errorOut = RCTMakeError(@"Failed to write manifest file.", error, nil);
@@ -265,14 +252,15 @@ RCT_EXPORT_MODULE()
 
 - (NSString *)_getValueForKey:(NSString *)key errorOut:(NSDictionary **)errorOut
 {
+  NSCache *cache = [self _cache];
   NSString *value = _manifest[key]; // nil means missing, null means there may be a data file, else: NSString
   if (value == (id)kCFNull) {
-    value = [RCTGetCache() objectForKey:key];
+    value = [cache objectForKey:key];
     if (!value) {
       NSString *filePath = [self _filePathForKey:key];
       value = RCTReadFile(filePath, key, errorOut);
       if (value) {
-        [RCTGetCache() setObject:value forKey:key cost:value.length];
+        [cache setObject:value forKey:key cost:value.length];
       } else {
         // file does not exist after all, so remove from manifest (no need to save
         // manifest immediately though, as cost of checking again next time is negligible)
@@ -300,14 +288,14 @@ RCT_EXPORT_MODULE()
     if (_manifest[key] == (id)kCFNull) {
       // If the value already existed but wasn't inlined, remove the old file.
       [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
-      [RCTGetCache() removeObjectForKey:key];
+      [[self _cache] removeObjectForKey:key];
     }
     *changedManifest = YES;
     _manifest[key] = value;
     return nil;
   }
   [value writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
-  [RCTGetCache() setObject:value forKey:key cost:value.length];
+  [[self _cache] setObject:value forKey:key cost:value.length];
   if (error) {
     errorOut = RCTMakeError(@"Failed to write value.", error, @{@"key": key});
   } else if (_manifest[key] != (id)kCFNull) {
@@ -404,13 +392,14 @@ RCT_EXPORT_METHOD(multiRemove:(NSArray<NSString *> *)keys
   }
   NSMutableArray<NSDictionary *> *errors;
   BOOL changedManifest = NO;
+  NSCache *cache = [self _cache];
   for (NSString *key in keys) {
     NSDictionary *keyError = RCTErrorForKey(key);
     if (!keyError) {
       if (_manifest[key] == (id)kCFNull) {
         NSString *filePath = [self _filePathForKey:key];
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
-        [RCTGetCache() removeObjectForKey:key];
+        [cache removeObjectForKey:key];
         // remove the key from manifest, but no need to mark as changed just for
         // this, as the cost of checking again next time is negligible.
         [_manifest removeObjectForKey:key];
@@ -430,8 +419,8 @@ RCT_EXPORT_METHOD(multiRemove:(NSArray<NSString *> *)keys
 RCT_EXPORT_METHOD(clear:(RCTResponseSenderBlock)callback)
 {
   [_manifest removeAllObjects];
-  [RCTGetCache() removeAllObjects];
-  NSDictionary *error = RCTDeleteStorageDirectory();
+  [[self _cache] removeAllObjects];
+  NSDictionary *error = [self _deleteStorageDirectory];
   callback(@[RCTNullIfNil(error)]);
 }
 
