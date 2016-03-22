@@ -173,16 +173,17 @@ const StatusBar = React.createClass({
       }
       animated = animated || false;
       StatusBar._defaultProps.backgroundColor.value = color;
-      StatusBarManager.setColor(processColor(color), animated);
+      if (Platform.OS === 'windows') {
+        StatusBarManager.setColor(processColor(color));    
+      }
+      else {
+        StatusBarManager.setColor(processColor(color), animated);
+      }
     },
 
     setTranslucent(translucent: boolean) {
-      if (Platform.OS === 'windows') {
-        StatusBar._defaultProps.translucent = translucent;
-        StatusBarManager.setTranslucent(translucent);
-      }
-      else if (Platform.OS !== 'android') {
-        console.warn('`setTranslucent` is only available on Android');
+      if (Platform.OS === 'ios') {
+        console.warn('`setTranslucent` is not available on iOS');
         return;
       }
       else {     
@@ -288,6 +289,7 @@ const StatusBar = React.createClass({
       const oldProps = StatusBar._currentValues;
       const mergedProps = mergePropsStack(StatusBar._propsStack, StatusBar._defaultProps);
 
+<<<<<<< 6e3cb35ceff81c36aa41dca3340cacd0434967d3
       // Update the props that have changed using the merged values from the props stack.
       if (Platform.OS === 'ios') {
         if (!oldProps || oldProps.barStyle.value !== mergedProps.barStyle.value) {
@@ -327,7 +329,6 @@ const StatusBar = React.createClass({
         if (!oldProps || oldProps.backgroundColor.value !== mergedProps.backgroundColor.value) {
           StatusBarManager.setColor(
             processColor(mergedProps.backgroundColor.value),
-            mergedProps.backgroundColor.animated,
           );
         }
         if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
