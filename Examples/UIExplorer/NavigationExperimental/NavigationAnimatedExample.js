@@ -99,8 +99,10 @@ class NavigationAnimatedExample extends React.Component {
   _renderHeader(/*NavigationSceneRendererProps*/ props) {
     return (
       <NavigationHeader
-        {...props}
-        getTitle={state => state.key}
+        navigationProps={props}
+        renderTitleComponent={(navigationProps, scene) => {
+          return <NavigationHeader.Title>{scene.navigationState.key}</NavigationHeader.Title>;
+        }}
       />
     );
   }
@@ -144,7 +146,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollView: {
-    marginTop: 64
+    marginTop: NavigationHeader.HEIGHT,
   },
 });
 
