@@ -45,6 +45,7 @@ export type NavigationPosition = NavigationAnimatedValue;
 export type NavigationScene = {
   index: number,
   isStale: boolean,
+  key: string,
   navigationState: NavigationState,
 };
 
@@ -66,6 +67,21 @@ export type NavigationSceneRendererProps = {
 
   // All the scenes of the containing view's.
   scenes: Array<NavigationScene>,
+};
+
+export type NavigationPanPanHandlers = {
+  onMoveShouldSetResponder: Function,
+  onMoveShouldSetResponderCapture: Function,
+  onResponderEnd: Function,
+  onResponderGrant: Function,
+  onResponderMove: Function,
+  onResponderReject: Function,
+  onResponderRelease: Function,
+  onResponderStart: Function,
+  onResponderTerminate: Function,
+  onResponderTerminationRequest: Function,
+  onStartShouldSetResponder: Function,
+  onStartShouldSetResponderCapture: Function,
 };
 
 // Functions.

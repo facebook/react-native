@@ -16,7 +16,7 @@ var transformPath = require.resolve(hmrTransform);
 
 module.exports = function(options, filename) {
   var transform = filename
-      ? path.relative(path.dirname(filename), transformPath) // packager can't handle absolute paths
+      ? './' + path.relative(path.dirname(filename), transformPath) // packager can't handle absolute paths
       : hmrTransform;
   return {
     plugins: resolvePlugins([
@@ -32,4 +32,4 @@ module.exports = function(options, filename) {
       ]
     ])
   };
-}
+};

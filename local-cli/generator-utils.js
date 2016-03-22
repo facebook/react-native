@@ -19,7 +19,7 @@ function copyAndReplace(src, dest, replacements) {
   } else {
     var content = fs.readFileSync(src, 'utf8');
     Object.keys(replacements).forEach(function(regex) {
-      content = content.replace(new RegExp(regex, 'g'), replacements[regex]);
+      content = content.replace(new RegExp(regex, 'gm'), replacements[regex]);
     });
     fs.writeFileSync(dest, content);
   }

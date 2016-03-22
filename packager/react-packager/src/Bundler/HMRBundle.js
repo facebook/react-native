@@ -21,22 +21,23 @@ class HMRBundle extends BundleBase {
   }
 
   addModule(resolver, response, module, moduleTransport) {
-    return resolver.resolveRequires(
+    const code = resolver.resolveRequires(
       response,
       module,
       moduleTransport.code,
       moduleTransport.meta.dependencyOffsets,
-    ).then(code => {
-      super.addModule(new ModuleTransport({...moduleTransport, code}));
-      this._sourceMappingURLs.push(this._sourceMappingURLFn(moduleTransport.sourcePath));
-      this._sourceURLs.push(this._sourceURLFn(moduleTransport.sourcePath));
-    });
+    );
+
+    super.addModule(new ModuleTransport({...moduleTransport, code}));
+    this._sourceMappingURLs.push(this._sourceMappingURLFn(moduleTransport.sourcePath));
+    this._sourceURLs.push(this._sourceURLFn(moduleTransport.sourcePath));
+    return Promise.resolve();
   }
 
-  getModulesNamesAndCode() {
+  getModulesIdsAndCode() {
     return this._modules.map(module => {
       return {
-        name: JSON.stringify(module.name),
+        id: JSON.stringify(module.id),
         code: module.code,
       };
     });

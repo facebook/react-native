@@ -214,40 +214,6 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   }
 }
 
-
-- (void)applySizeConstraints
-{
-  switch (_sizeFlexibility) {
-    case RCTRootViewSizeFlexibilityNone:
-      break;
-    case RCTRootViewSizeFlexibilityWidth:
-      _cssNode->style.dimensions[CSS_WIDTH] = CSS_UNDEFINED;
-      break;
-    case RCTRootViewSizeFlexibilityHeight:
-      _cssNode->style.dimensions[CSS_HEIGHT] = CSS_UNDEFINED;
-      break;
-    case RCTRootViewSizeFlexibilityWidthAndHeight:
-      _cssNode->style.dimensions[CSS_WIDTH] = CSS_UNDEFINED;
-      _cssNode->style.dimensions[CSS_HEIGHT] = CSS_UNDEFINED;
-      break;
-  }
-}
-
-- (NSSet<RCTShadowView *> *)collectRootUpdatedFrames
-{
-  RCTAssert(RCTIsReactRootView(self.reactTag),
-            @"The method has been called on a view with react tag %@, which is not a root view", self.reactTag);
-
-  [self applySizeConstraints];
-
-  [self fillCSSNode:_cssNode];
-  layoutNode(_cssNode, CSS_UNDEFINED, CSS_UNDEFINED, CSS_DIRECTION_INHERIT);
-
-  NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];
-  [self applyLayoutNode:_cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
-  return viewsWithNewFrame;
-}
-
 - (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor
 {
   CGPoint offset = CGPointZero;
@@ -270,7 +236,6 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   if ((self = [super init])) {
 
     _frame = CGRectMake(0, 0, CSS_UNDEFINED, CSS_UNDEFINED);
-    _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
 
     for (unsigned int ii = 0; ii < META_PROP_COUNT; ii++) {
       _paddingMetaProps[ii] = CSS_UNDEFINED;
@@ -535,8 +500,7 @@ RCT_POSITION_PROPERTY(Left, left, LEFT)
   [self dirtyLayout];
 }
 
-static inline BOOL
-RCTAssignSuggestedDimension(css_node_t *css_node, int dimension, CGFloat amount)
+static inline BOOL RCTAssignSuggestedDimension(css_node_t *css_node, int dimension, CGFloat amount)
 {
   if (amount != UIViewNoIntrinsicMetric
       && isnan(css_node->style.dimensions[dimension])) {
