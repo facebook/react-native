@@ -153,6 +153,23 @@ static const NSUInteger RCTInlineValueThreshold = 1024;
 }
 
 static BOOL RCTHasCreatedStorageDirectory = NO;
+
+- (NSError *)_createStorageDirectory
+{
+  if (!RCTHasCreatedStorageDirectory) {
+    NSError *error = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:[self _storageDirectory]
+                              withIntermediateDirectories:YES
+                                               attributes:nil
+                                                    error:&error];
+    if (error) {
+      return error;
+    }
+    RCTHasCreatedStorageDirectory = YES;
+  }
+  return nil;
+}
+
 - (NSDictionary *)_deleteStorageDirectory
 {
   NSError *error;
@@ -201,16 +218,9 @@ static BOOL RCTHasCreatedStorageDirectory = NO;
 {
   RCTAssertThread([self methodQueue], @"Must be executed on storage thread");
 
-  NSError *error = nil;
-  if (!RCTHasCreatedStorageDirectory) {
-    [[NSFileManager defaultManager] createDirectoryAtPath:[self _storageDirectory]
-                              withIntermediateDirectories:YES
-                                               attributes:nil
-                                                    error:&error];
-    if (error) {
-      return RCTMakeError(@"Failed to create storage directory.", error, nil);
-    }
-    RCTHasCreatedStorageDirectory = YES;
+  NSError *error = [self _createStorageDirectory];
+  if (error) {
+    return RCTMakeError(@"Failed to create storage directory.", error, nil);
   }
   if (!_haveSetup) {
     NSDictionary *errorOut;
