@@ -162,7 +162,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     });
   });
 
-  dispatch_group_notify(initModulesAndLoadSource, dispatch_get_main_queue(), ^{
+  dispatch_group_notify(initModulesAndLoadSource, bridgeQueue, ^{
     RCTBatchedBridge *strongSelf = weakSelf;
     if (sourceCode && strongSelf.loading) {
       [strongSelf executeSourceCode:sourceCode];
