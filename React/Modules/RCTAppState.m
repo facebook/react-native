@@ -88,7 +88,7 @@ RCT_EXPORT_MODULE()
   if ([notification.name isEqualToString:UIApplicationWillResignActiveNotification]) {
     newState = @"inactive";
   } else if ([notification.name isEqualToString:UIApplicationWillEnterForegroundNotification]) {
-    newState = @"active";
+    newState = @"background";
   } else {
     newState = RCTCurrentAppBackgroundState();
   }
