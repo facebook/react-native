@@ -132,6 +132,12 @@ var featured = [
     author: 'Iodine Inc.',
   },
   {
+    name: 'Taxfyle - taxes filed on-demand via licensed CPA',
+    icon: 'https://s3.amazonaws.com/taxfyle-public/images/taxfyle-icon-1024px.png',
+    link: 'https://itunes.apple.com/us/app/taxfyle/id1058033104?mt=8',
+    author: 'Taxfyle',
+  },
+  {
     name: 'This AM',
     icon: 'http://s3.r29static.com//bin/public/efe/x/1542038/image.png',
     link: 'https://itunes.apple.com/us/app/refinery29-this-am-top-breaking/id988472315?mt=8',
