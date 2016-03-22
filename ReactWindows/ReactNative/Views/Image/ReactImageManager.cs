@@ -1,5 +1,4 @@
 ﻿using ReactNative.UIManager;
-using ReactNative.UIManager.Events;
 using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
@@ -14,12 +13,11 @@ namespace ReactNative.Views.Image
     /// </summary>
     public class ReactImageManager : SimpleViewManager<Border>
     {
-        private const string ReactClass = "RCTImageView";
-        private const string PROP_SOURCE = "source";
-        private const string PROP_URI = "uri";
+        private readonly Dictionary<Border, ExceptionRoutedEventHandler> _imageFailedHandlers =
+            new Dictionary<Border, ExceptionRoutedEventHandler>();
 
-        private Uri _imageSource;
-        private uint? _tintColor;
+        private readonly Dictionary<Border, RoutedEventHandler> _imageOpenedHandlers =
+            new Dictionary<Border, RoutedEventHandler>();
 
         /// <summary>
         /// The view manager name.
@@ -28,7 +26,7 @@ namespace ReactNative.Views.Image
         {
             get
             {
-                return ReactClass;
+                return "RCTImageView";
             }
         }
 
@@ -41,31 +39,51 @@ namespace ReactNative.Views.Image
             {
                 return new Dictionary<string, object>
                 {
-                    { "topLoadEnd", new Dictionary<string, object> { { "registrationName", "onLoadEnd" } } },
-                    { "topLoadStart", new Dictionary<string, object> { { "registrationName", "onLoadStart" } } },
+                    {
+                        "topLoadStart",
+                        new Dictionary<string, object>
+                        {
+                            { "registrationName", "onLoadStart" }
+                        }
+                    },
+                    {
+                        "topLoad",
+                        new Dictionary<string, object>
+                        {
+                            { "registrationName", "onLoad" }
+                        }
+                    },
+                    {
+                        "topLoadEnd",
+                        new Dictionary<string, object>
+                        {
+                            { "registrationName", "onLoadEnd" }
+                        }
+                    },
                 };
             }
         }
 
         /// <summary>
-        /// Sets the <see cref="ImageBrush"/> source for the background of a <see cref="Border"/>.
+        /// Set the source URI of the image.
         /// </summary>
         /// <param name="view">The image view instance.</param>
-        /// <param name="sourceMap">The source map.</param>
-        [ReactProperty(PROP_SOURCE)]
-        public void SetSource(Border view, Dictionary<string, string> sourceMap)
+        /// <param name="source">The source URI.</param>
+        [ReactProperty("src")]
+        public void SetSource(Border view, string source)
         {
-            var source = default(string);
+            var imageBrush = (ImageBrush)view.Background;
+            imageBrush.ImageSource = new BitmapImage(new Uri(source));
 
-            if (sourceMap != null && sourceMap.TryGetValue(PROP_URI, out source))
-            {
-                if (!Uri.TryCreate(source, UriKind.Absolute, out _imageSource))
-                {
-                    _imageSource = new Uri("ms-appx://" + source);
-                }
-            }
+            view.GetReactContext()
+                .GetNativeModule<UIManagerModule>()
+                .EventDispatcher
+                .DispatchEvent(
+                    new ReactImageLoadEvent(
+                        view.GetTag(),
+                        ReactImageLoadEvent.OnLoadStart));
         }
-
+        
         /// <summary>
         /// The border radius of the <see cref="ReactRootView"/>.
         /// </summary>
@@ -94,37 +112,6 @@ namespace ReactNative.Views.Image
         }
 
         /// <summary>
-        /// Set the alpha tint color of the <see cref="Border"/> background.
-        /// </summary>
-        /// <param name="view">The image view instance.</param>
-        /// <param name="color">The masked color value.</param>
-        [ReactProperty("tintColor", CustomType = "Color")]
-        public void SetTintColor(Border view, uint? color)
-        {
-            if (color.HasValue)
-            {
-                _tintColor = color.Value;
-            }
-        }
-
-        /// <summary>
-        /// Sets the background image effect of the border depending on any tinting requirements.
-        /// </summary>
-        /// <param name="view">The image view instance.</param>
-        protected override void OnAfterUpdateTransaction(Border view)
-        {
-            var element = view.Background as ImageBrush;
-            if (_tintColor.HasValue && _imageSource != null)
-            {
-                view.CreateColorBlendedImageSource(_imageSource, ColorHelpers.Parse(_tintColor.Value));
-            }
-            else if(_imageSource != null)
-            {
-                view.CreateBackgroundBitmapImage(_imageSource);
-            }
-        }
-
-        /// <summary>
         /// Sets the border thickness of the image view.
         /// </summary>
         /// <param name="view">The image view instance.</param>
@@ -143,16 +130,28 @@ namespace ReactNative.Views.Image
         }
 
         /// <summary>
-        /// Called when the image view. is detached from view hierarchy and allows for 
-        /// additional cleanup by the <see cref="ReactImageManager"/>.
-        /// subclass.
+        /// Called when view is detached from view hierarchy and allows for 
+        /// additional cleanup.
         /// </summary>
         /// <param name="reactContext">The react context.</param>
-        /// <param name="view">The image view instance.</param>
+        /// <param name="view">The view.</param>
         public override void OnDropViewInstance(ThemedReactContext reactContext, Border view)
         {
-            view.Loaded -= OnInterceptImageLoadedEvent;
-            view.Loading -= OnInterceptImageLoadingEvent;
+            var imageBrush = (ImageBrush)view.Background;
+
+            var imageFailedHandler = default(ExceptionRoutedEventHandler);
+            if (_imageFailedHandlers.TryGetValue(view, out imageFailedHandler))
+            {
+                _imageFailedHandlers.Remove(view);
+                imageBrush.ImageFailed -= imageFailedHandler;
+            }
+
+            var imageOpenedHandler = default(RoutedEventHandler);
+            if (_imageOpenedHandlers.TryGetValue(view, out imageOpenedHandler))
+            {
+                _imageOpenedHandlers.Remove(view);
+                imageBrush.ImageOpened -= imageOpenedHandler;
+            }
         }
 
         /// <summary>
@@ -162,61 +161,60 @@ namespace ReactNative.Views.Image
         /// <returns>The image view instance.</returns>
         protected override Border CreateViewInstance(ThemedReactContext reactContext)
         {
-            return new Border();
+            return new Border
+            {
+                Background = new ImageBrush(),
+            };
         }
 
         /// <summary>
-        /// Installing the textchanged event emitter on the <see cref="TextInput"/> Control.
+        /// Install custom event emitters on the given view.
         /// </summary>
         /// <param name="reactContext">The react context.</param>
-        /// <param name="view">The image view instance.</param>
+        /// <param name="view">The view instance.</param>
         protected override void AddEventEmitters(ThemedReactContext reactContext, Border view)
         {
-            view.Loading += OnInterceptImageLoadingEvent;
-            view.Loaded += OnInterceptImageLoadedEvent;
+            var imageBrush = (ImageBrush)view.Background;
+
+            var imageFailedHandler = new ExceptionRoutedEventHandler(
+                (sender, args) => OnImageFailed(view, args));
+
+            imageBrush.ImageFailed += imageFailedHandler;
+
+            var imageOpenedHandler = new RoutedEventHandler(
+                (sender, args) => OnImageOpened(view, args));
+
+            imageBrush.ImageOpened += imageOpenedHandler;
+
+            _imageFailedHandlers.Add(view, imageFailedHandler);
         }
 
-        /// <summary>
-        /// The <see cref="Border"/> event interceptor for image load start events for the native control.
-        /// </summary>
-        /// <param name="sender">The source sender view.</param>
-        /// <param name="e">The received event arguments.</param>
-        protected void OnInterceptImageLoadingEvent(FrameworkElement sender, object e)
+        private void OnImageFailed(Border view, ExceptionRoutedEventArgs args)
         {
-            var border = (Border)sender;
-            var imageBrush = GetImageBrush(border);
-            var bitmapImage = imageBrush?.ImageSource as BitmapImage;
-            if (imageBrush != null && bitmapImage != null)
-            {
-                bitmapImage.DecodePixelHeight = (int)sender.Height;
-                bitmapImage.DecodePixelWidth = (int)sender.Width;
-                imageBrush.Stretch = Stretch.Fill;
-            }
-
-            GetEventDispatcher(border).DispatchEvent(
-                new ReactImageLoadEvent(border.GetTag(), ReactImageLoadEvent.OnLoadStart));
+            view.GetReactContext()
+                .GetNativeModule<UIManagerModule>()
+                .EventDispatcher
+                .DispatchEvent(
+                    new ReactImageLoadEvent(
+                        view.GetTag(),
+                        ReactImageLoadEvent.OnLoadEnd));
         }
 
-        /// <summary>
-        /// The <see cref="Border"/> event interceptor for image load completed events for the native control.
-        /// </summary>
-        /// <param name="sender">The source sender view.</param>
-        /// <param name="e">The received event arguments.</param>
-        protected void OnInterceptImageLoadedEvent(object sender, RoutedEventArgs e)
+        private void OnImageOpened(Border view, RoutedEventArgs args)
         {
-            var senderImage = (Border)sender;
-            GetEventDispatcher(senderImage).DispatchEvent(
-                new ReactImageLoadEvent(senderImage.GetTag(), ReactImageLoadEvent.OnLoadEnd));
-        }
+            var eventDispatcher = view.GetReactContext()
+                .GetNativeModule<UIManagerModule>()
+                .EventDispatcher;
 
-        private ImageBrush GetImageBrush(Border border)
-        {
-            return border.Background as ImageBrush;
-        }
+            eventDispatcher.DispatchEvent(
+                new ReactImageLoadEvent(
+                    view.GetTag(),
+                    ReactImageLoadEvent.OnLoad));
 
-        private static EventDispatcher GetEventDispatcher(FrameworkElement image)
-        {
-            return image.GetReactContext().ReactInstance.GetNativeModule<UIManagerModule>().EventDispatcher;
+            eventDispatcher.DispatchEvent(
+                new ReactImageLoadEvent(
+                    view.GetTag(),
+                    ReactImageLoadEvent.OnLoadEnd));
         }
     }
 }

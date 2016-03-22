@@ -30,7 +30,7 @@ namespace ReactNative.UIManager
         /// Set's the  <typeparamref name="TFrameworkElement"/> styling layout 
         /// properties, based on the <see cref="JObject"/> map.
         /// </summary>
-        /// <param name="view">The framework element instance.</param>
+        /// <param name="view">The view instance.</param>
         /// <param name="decomposedMatrix">The requested styling properties to set.</param>
         [ReactProperty(PROP_DECOMPOSED_MATRIX)]
         public void SetDecomposedMatrix(TFrameworkElement view, JObject decomposedMatrix)
@@ -48,7 +48,7 @@ namespace ReactNative.UIManager
         /// <summary>
         /// Sets the opacity of the <typeparamref name="TFrameworkElement"/>.
         /// </summary>
-        /// <param name="view">The framework element instance.</param>
+        /// <param name="view">The view instance.</param>
         /// <param name="opacity">The opacity value.</param>
         [ReactProperty(PROP_OPACITY, DefaultDouble = 1.0)]
         public void SetOpacity(TFrameworkElement view, double opacity)
@@ -59,7 +59,7 @@ namespace ReactNative.UIManager
         /// <summary>
         /// Sets the elevation of the <typeparamref name="TFrameworkElement"/>.
         /// </summary>
-        /// <param name="view">The framework element instance.</param>
+        /// <param name="view">The view instance.</param>
         /// <param name="elevation">The elevation value.</param>
         [ReactProperty(PROP_ELEVATION)]
         public void SetElevation(TFrameworkElement view, double elevation)
@@ -71,7 +71,7 @@ namespace ReactNative.UIManager
         /// <summary>
         /// Sets the scale factor for the X-dimension of the <typeparamref name="TFrameworkElement"/>.
         /// </summary>
-        /// <param name="view">The framework element instance.</param>
+        /// <param name="view">The view instance.</param>
         /// <param name="factor">The scaling factor.</param>
         [ReactProperty(PROP_DECOMPOSED_MATRIX_SCALE_X, DefaultDouble = 1.0)]
         public void SetScaleX(TFrameworkElement view, double factor)
@@ -83,7 +83,7 @@ namespace ReactNative.UIManager
         /// <summary>
         /// Sets the scale factor for the Y-dimension of the <typeparamref name="TFrameworkElement"/>.
         /// </summary>
-        /// <param name="view">The framework element instance.</param>
+        /// <param name="view">The view instance.</param>
         /// <param name="factor">The scaling factor.</param>
         [ReactProperty(PROP_DECOMPOSED_MATRIX_SCALE_Y, DefaultDouble = 1.0)]
         public void SetScaleY(TFrameworkElement view, double factor)
@@ -95,7 +95,7 @@ namespace ReactNative.UIManager
         /// <summary>
         /// Sets the X-coordinate translation for the <typeparamref name="TFrameworkElement"/>.
         /// </summary>
-        /// <param name="view">The view panel.</param>
+        /// <param name="view">The view instance.</param>
         /// <param name="distance">The translation distance.</param>
         [ReactProperty(PROP_DECOMPOSED_MATRIX_TRANSLATE_X, DefaultDouble = 1.0)]
         public void SetTranslationX(TFrameworkElement view, double distance)
@@ -107,13 +107,31 @@ namespace ReactNative.UIManager
         /// <summary>
         /// Sets the Y-coordinate translation for the <typeparamref name="TFrameworkElement"/>.
         /// </summary>
-        /// <param name="view">The view panel.</param>
+        /// <param name="view">The view instance.</param>
         /// <param name="distance">The translation distance.</param>
         [ReactProperty(PROP_DECOMPOSED_MATRIX_TRANSLATE_Y, DefaultDouble = 1.0)]
         public void SetTranslationY(TFrameworkElement view, double distance)
         {
             var transform = EnsureTransform(view);
             transform.TranslateY = distance;
+        }
+
+        /// <summary>
+        /// Sets the overflow property for the <typeparamref name="TFrameworkElement"/>.
+        /// </summary>
+        /// <param name="view">The view instance.</param>
+        /// <param name="overflow">The overflow value.</param>
+        [ReactProperty("overflow")]
+        public void SetOverflow(TFrameworkElement view, string overflow)
+        {
+            if (overflow == "hidden")
+            {
+                WinRTXamlToolkit.Controls.Extensions.FrameworkElementExtensions.SetClipToBounds(view, true);
+            }
+            else
+            {
+                WinRTXamlToolkit.Controls.Extensions.FrameworkElementExtensions.SetClipToBounds(view, false);
+            }
         }
 
         private void SetRotationX(TFrameworkElement view, double rotation)

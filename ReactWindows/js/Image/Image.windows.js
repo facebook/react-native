@@ -11,58 +11,61 @@
  */
 'use strict';
 
-var EdgeInsetsPropType = require('EdgeInsetsPropType');
+var NativeMethodsMixin = require('NativeMethodsMixin');
+var NativeModules = require('NativeModules');
 var ImageResizeMode = require('ImageResizeMode');
 var ImageStylePropTypes = require('ImageStylePropTypes');
-var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var View = require('View');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
+var View = require('View');
 
 var flattenStyle = require('flattenStyle');
-var invariant = require('fbjs/lib/invariant');
+var invariant = require('invariant');
+var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
-var warning = require('fbjs/lib/warning');
-
-var {
-  ImageViewManager,
-  NetworkImageViewManager,
-} = require('NativeModules');
 
 /**
- * A React component for displaying different types of images,
+ * <Image> - A react component for displaying different types of images,
  * including network images, static resources, temporary local images, and
- * images from local disk, such as the camera roll.
+ * images from local disk, such as the camera roll.  Example usage:
  *
- * Example usage:
+ *   renderImages: function() {
+ *     return (
+ *       <View>
+ *         <Image
+ *           style={styles.icon}
+ *           source={require('./myIcon.png')}
+ *         />
+ *         <Image
+ *           style={styles.logo}
+ *           source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
+ *         />
+ *       </View>
+ *     );
+ *   },
  *
- * ```
- * renderImages: function() {
- *   return (
- *     <View>
- *       <Image
- *         style={styles.icon}
- *         source={require('./myIcon.png')}
- *       />
- *       <Image
- *         style={styles.logo}
- *         source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
- *       />
- *     </View>
- *   );
- * },
- * ```
+ * More example code in ImageExample.js
  */
+
+var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
+  src: true,
+  loadingIndicatorSrc: true,
+  resizeMode: true,
+  progressiveRenderingEnabled: true,
+  fadeDuration: true,
+});
+
 var Image = React.createClass({
   propTypes: {
+    ...View.propTypes,
     style: StyleSheetPropType(ImageStylePropTypes),
-    /**
+   /**
      * `uri` is a string representing the resource identifier for the image, which
-     * could be an http address, a local file path, or the name of a static image
+     * could be an http address, a local file path, or a static image
      * resource (which should be wrapped in the `require('./path/to/image.png')` function).
      */
     source: PropTypes.oneOfType([
@@ -73,67 +76,23 @@ var Image = React.createClass({
       PropTypes.number,
     ]),
     /**
-     * A static image to display while loading the image source.
-     * @platform windows
+     * similarly to `source`, this property represents the resource used to render
+     * the loading indicator for the image, displayed until image is ready to be
+     * displayed, typically after when it got downloaded from network.
      */
-    defaultSource: PropTypes.oneOfType([
+    loadingIndicatorSource: PropTypes.oneOfType([
       PropTypes.shape({
         uri: PropTypes.string,
       }),
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
     ]),
-    /**
-     * When true, indicates the image is an accessibility element.
-     * @platform windows
-     */
-    accessible: PropTypes.bool,
-    /**
-     * The text that's read by the screen reader when the user interacts with
-     * the image.
-     * @platform windows
-     */
-    accessibilityLabel: PropTypes.string,
-    /**
-     * Determines how to resize the image when the frame doesn't match the raw
-     * image dimensions.
-     *
-     * 'cover': Scale the image uniformly (maintain the image's aspect ratio)
-     * so that both dimensions (width and height) of the image will be equal
-     * to or larger than the corresponding dimension of the view (minus padding).
-     *
-     * 'contain': Scale the image uniformly (maintain the image's aspect ratio)
-     * so that both dimensions (width and height) of the image will be equal to
-     * or less than the corresponding dimension of the view (minus padding).
-     *
-     * 'stretch': Scale width and height independently, This may change the
-     * aspect ratio of the src.
-     */
-    resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch']),
-    /**
-     * A unique identifier for this element to be used in UI Automation
-     * testing scripts.
-     */
-    testID: PropTypes.string,
-    /**
-     * Invoked on mount and layout changes with
-     * `{nativeEvent: {layout: {x, y, width, height}}}`.
-     */
-    onLayout: PropTypes.func,
+    progressiveRenderingEnabled: PropTypes.bool,
+    fadeDuration: PropTypes.number,
     /**
      * Invoked on load start
      */
     onLoadStart: PropTypes.func,
-    /**
-     * Invoked on download progress with `{nativeEvent: {loaded, total}}`
-     * @platform windows
-     */
-    onProgress: PropTypes.func,
-    /**
-     * Invoked on load error with `{nativeEvent: {error}}`
-     * @platform windows
-     */
-    onError: PropTypes.func,
     /**
      * Invoked when load completes successfully
      */
@@ -142,43 +101,48 @@ var Image = React.createClass({
      * Invoked when load either succeeds or fails
      */
     onLoadEnd: PropTypes.func,
+    /**
+     * Used to locate this view in end-to-end tests.
+     */
+    testID: PropTypes.string,
   },
 
   statics: {
     resizeMode: ImageResizeMode,
-    /**
-     * Retrieve the width and height (in pixels) of an image prior to displaying it.
-     * This method can fail if the image cannot be found, or fails to download.
-     *
-     * In order to retrieve the image dimensions, the image may first need to be
-     * loaded or downloaded, after which it will be cached. This means that in
-     * principle you could use this method to preload images, however it is not
-     * optimized for that purpose, and may in future be implemented in a way that
-     * does not fully load/download the image data. A proper, supported way to
-     * preload images will be provided as a separate API.
-     *
-     * @platform windows
-     */
-    getSize: function(
-      uri: string,
-      success: (width: number, height: number) => void,
-      failure: (error: any) => void,
-    ) {
-      ImageViewManager.getSize(uri, success, failure || function() {
-        console.warn('Failed to get size for image: ' + uri);
-      });
-    }
   },
 
   mixins: [NativeMethodsMixin],
 
   /**
    * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
-   * make `this` look like an actual native component class.
+   * make `this` look like an actual native component class. Since it can render
+   * as 3 different native components we need to update viewConfig accordingly
    */
   viewConfig: {
-    uiViewClassName: 'UIView',
-    validAttributes: ReactNativeViewAttributes.UIView
+    uiViewClassName: 'RCTView',
+    validAttributes: ReactNativeViewAttributes.RCTView,
+  },
+
+  _updateViewConfig: function(props) {
+    if (props.children) {
+      this.viewConfig = {
+        uiViewClassName: 'RCTView',
+        validAttributes: ReactNativeViewAttributes.RCTView,
+      };
+    } else {
+      this.viewConfig = {
+        uiViewClassName: 'RCTImageView',
+        validAttributes: ImageViewAttributes,
+      };
+    }
+  },
+
+  componentWillMount: function() {
+    this._updateViewConfig(this.props);
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    this._updateViewConfig(nextProps);
   },
 
   contextTypes: {
@@ -186,54 +150,69 @@ var Image = React.createClass({
   },
 
   render: function() {
-    var source = resolveAssetSource(this.props.source) || {};
-    var {width, height, uri} = source;
-    var style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
+    var source = resolveAssetSource(this.props.source);
+    var loadingIndicatorSource = resolveAssetSource(this.props.loadingIndicatorSource);
 
-    var isNetwork = uri && uri.match(/^https?:/);
-    var RawImage = isNetwork ? RCTNetworkImageView : RCTImageView;
-    var resizeMode = this.props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
-    var tintColor = (style || {}).tintColor; // Workaround for flow bug t7737108
+    // As opposed to the ios version, here it render `null`
+    // when no source or source.uri... so let's not break that.
 
-    // This is a workaround for #8243665. RCTNetworkImageView does not support tintColor
-    // TODO: Remove this hack once we have one image implementation #8389274
-    if (isNetwork && tintColor) {
-      RawImage = RCTImageView;
+    if (source && source.uri === '') {
+      console.warn('source.uri should not be an empty string');
     }
 
-    if (this.props.src) {
-      console.warn('The <Image> component requires a `source` property rather than `src`.');
-    }
+    if (source && source.uri) {
+      var {width, height} = source;
+      var style = flattenStyle([{width, height}, styles.base, this.props.style]);
+      var {onLoadStart, onLoad, onLoadEnd} = this.props;
 
-    if (this.context.isInAParentText) {
-      RawImage = RCTVirtualImage;
-      if (!width || !height) {
-        console.warn('You must specify a width and height for the image %s', uri);
+      var nativeProps = merge(this.props, {
+        style,
+        src: source.uri,
+        loadingIndicatorSrc: loadingIndicatorSource ? loadingIndicatorSource.uri : null,
+      });
+
+      if (nativeProps.children) {
+        // TODO(6033040): Consider implementing this as a separate native component
+        var imageProps = merge(nativeProps, {
+          style: styles.absoluteImage,
+          children: undefined,
+        });
+        return (
+          <View style={nativeProps.style}>
+            <RKImage {...imageProps}/>
+            {this.props.children}
+          </View>
+        );
+      } else if (!this.context.isInAParentText) {
+          return <RKImage {...nativeProps}/>;
       }
     }
-
-    return (
-      <RawImage
-        {...this.props}
-        style={style}
-        resizeMode={resizeMode}
-        tintColor={tintColor}
-        source={source}
-      />
-    );
-  },
+    return null;
+  }
 });
 
 var styles = StyleSheet.create({
   base: {
     overflow: 'hidden',
   },
+  absoluteImage: {
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    position: 'absolute'
+  }
 });
 
-var RCTImageView = requireNativeComponent('RCTImageView', Image);
-var RCTNetworkImageView = NetworkImageViewManager ? requireNativeComponent('RCTNetworkImageView', Image) : RCTImageView;
-var RCTVirtualImage = requireNativeComponent('RCTVirtualImage', Image);
-
+var cfg = {
+  nativeOnly: {
+    src: true,
+    loadingIndicatorSrc: true,
+    defaultImageSrc: true,
+    imageTag: true,
+    progressHandlerRegistered: true,
+  },
+};
+var RKImage = requireNativeComponent('RCTImageView', Image, cfg);
 
 module.exports = Image;
-
