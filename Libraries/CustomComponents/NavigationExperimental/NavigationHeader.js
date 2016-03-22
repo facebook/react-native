@@ -74,7 +74,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, void> {
   };
 
   static propTypes = {
-    navigationProps: React.PropTypes.shape(NavigationPropTypes).isRequired,
+    navigationProps: React.PropTypes.shape(NavigationPropTypes.SceneRenderer).isRequired,
     renderTitleComponent: React.PropTypes.func,
     renderLeftComponent: React.PropTypes.func,
     renderRightComponent: React.PropTypes.func,

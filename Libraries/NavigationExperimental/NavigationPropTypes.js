@@ -59,14 +59,14 @@ const scene = PropTypes.shape({
 });
 
 /* NavigationSceneRendererProps */
-const SceneRenderer = PropTypes.shape({
+const SceneRenderer = {
   layout: layout.isRequired,
   navigationState: navigationParentState.isRequired,
   onNavigate: PropTypes.func.isRequired,
   position: animatedValue.isRequired,
   scene: scene.isRequired,
   scenes: PropTypes.arrayOf(scene).isRequired,
-});
+};
 
 /* NavigationPanPanHandlers */
 const panHandlers = PropTypes.shape({
