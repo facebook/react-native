@@ -2,17 +2,40 @@
 using ReactNative.UIManager;
 using System;
 using Windows.Foundation.Metadata;
-using Windows.Security.ExchangeActiveSyncProvisioning;
 using Windows.UI;
 using Windows.UI.Core;
+using Windows.ApplicationModel.Core;
 
 namespace ReactNative.Modules.StatusBar
 {
     /// <summary>
     /// A module that allows JS to set statusbar properties.
     /// </summary>
-    class StatusBarModule : NativeModuleBase
+    public class StatusBarModule : NativeModuleBase
     {
+        /// <summary>
+        /// Runtime platform.
+        /// </summary>
+        public enum PlatformType
+        {
+            /// <summary>
+            /// Mobile.
+            /// </summary>
+            Mobile,
+            /// <summary>
+            /// Desktop.
+            /// </summary>
+            Desktop,
+            /// <summary>
+            /// Other.
+            /// </summary>
+            Other,
+        };
+
+        private PlatformType _platformType;
+        private IStatusBar _statusBar;
+        private ITitleBar _titleBar;
+
         private bool _hidden;
         private bool _translucent;
         private Color? _color;
@@ -20,28 +43,38 @@ namespace ReactNative.Modules.StatusBar
         /// <summary>
         /// Instantiates the <see cref="StatusBarModule"/>.
         /// </summary>
-        internal StatusBarModule()
+        internal StatusBarModule() : this(DetectPlatform(), CreateDefaultIStatusBar(), CreateDefaultITitleBar())
         {
-            //Mobile customization
-            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+        }
+
+        /// <summary>
+        /// Instantiates the <see cref="StatusBarModule"/>.
+        /// </summary>
+        internal StatusBarModule(PlatformType platformType, IStatusBar statusBar, ITitleBar titleBar)
+        {
+            switch (platformType)
             {
-                var statusBar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView();
-                if (statusBar != null)
-                {
-                    _color = statusBar.BackgroundColor;
-                    _translucent = statusBar.BackgroundOpacity == 1 ? false : true;
-                }
+                case PlatformType.Mobile:                 
+                    if (statusBar != null)
+                    {
+                        _color = statusBar.BackgroundColor;
+                        _translucent = statusBar.BackgroundOpacity == 1 ? false : true;
+                    }
+                    break;
+
+                case PlatformType.Desktop:
+                    if (titleBar != null)
+                    {
+                        _color = titleBar.BackgroundColor;
+                    }
+                    break;
+
+                default: break;        
             }
 
-            //PC customization
-            else if (!DeviceInfo.IsRunningOnEmulator && ApiInformation.IsTypePresent("Windows.UI.ViewManagement.ApplicationView"))
-            {
-                var titleBar = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar;
-                if (titleBar != null)
-                {
-                    _color = titleBar.BackgroundColor;
-                }
-            }
+            _platformType = platformType;
+            _statusBar = statusBar;
+            _titleBar = titleBar;
         }
 
         /// <summary>
@@ -104,42 +137,82 @@ namespace ReactNative.Modules.StatusBar
         {
             RunOnDispatcher(async () =>
             {
-                try
+                switch (_platformType)
                 {
-                    //Mobile customization
-                    if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
-                    {
-                        var statusBar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView();
-                        if (statusBar != null)
+                    case PlatformType.Mobile:
+                        if (_statusBar != null)
                         {
-                            statusBar.BackgroundOpacity = _translucent ? 0.5 : 1;
-                            statusBar.BackgroundColor = color;
+                            _statusBar.BackgroundOpacity = _translucent ? 0.5 : 1;
+                            _statusBar.BackgroundColor = color;
                             if (hidden)
                             {
-                                await statusBar.HideAsync();
+                                await _statusBar.HideAsync();
                             }
                             else
                             {
-                                await statusBar.ShowAsync();
+                                await _statusBar.ShowAsync();
                             }
                         }
-                    }
 
-                    //PC customization
-                    else if (!DeviceInfo.IsRunningOnEmulator && ApiInformation.IsTypePresent("Windows.UI.ViewManagement.ApplicationView"))
-                    {
-                        var titleBar = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar;
-                        if (titleBar != null)
+                        break;
+
+                    case PlatformType.Desktop:
+                        if (_titleBar != null)
                         {
-                            titleBar.BackgroundColor = color;
+                            _titleBar.BackgroundColor = color;
                         }
-                    }        
-                }
-                catch (Exception)
-                {
 
-                }
+                        break;
+
+                    default: break;
+                }        
             });
+        }
+
+        /// <summary>
+        /// Detect running platform.
+        /// </summary>
+        private static PlatformType DetectPlatform()
+        {
+            //Mobile customization
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+                return PlatformType.Mobile;
+            }
+
+            //PC customization
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.ApplicationView"))
+            {
+                return PlatformType.Desktop;
+            }
+
+            return PlatformType.Other;
+        }
+
+        /// <summary>
+        /// Create default statusbar.
+        /// </summary>
+        private static IStatusBar CreateDefaultIStatusBar()
+        {
+            if (DetectPlatform() == PlatformType.Mobile)
+            {
+                return new DefaultStatusBar(Windows.UI.ViewManagement.StatusBar.GetForCurrentView());
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Create default titlebar.
+        /// </summary>
+        private static ITitleBar CreateDefaultITitleBar()
+        {
+            if (DetectPlatform() == PlatformType.Desktop)
+            {
+                return new DefaultTitleBar(Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar);
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -148,20 +221,7 @@ namespace ReactNative.Modules.StatusBar
         /// <param name="action">The action.</param>
         private static async void RunOnDispatcher(DispatchedHandler action)
         {
-            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, action);
-        }
-
-        private static class DeviceInfo
-        {
-            private static EasClientDeviceInformation deviceInfo = new EasClientDeviceInformation();
-
-            public static bool IsRunningOnEmulator
-            {
-                get
-                {
-                    return (deviceInfo.SystemProductName == "Virtual");
-                }
-            }
+            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, action);
         }
     }
 }
