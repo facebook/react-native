@@ -30,7 +30,6 @@ const {
   CardStack: NavigationCardStack,
   Container: NavigationContainer,
   Header: NavigationHeader,
-  HeaderTitle: NavigationHeaderTitle,
   Reducer: NavigationReducer,
   RootContainer: NavigationRootContainer,
   View: NavigationView,
@@ -180,7 +179,7 @@ class ExampleTabScreen extends React.Component {
       <NavigationHeader
         navigationProps={props}
         renderTitleComponent={(navigationProps, scene) => {
-          return <NavigationHeaderTitle>{stateTypeTitleMap(scene.navigationState)}</NavigationHeaderTitle>;
+          return <NavigationHeader.Title>{stateTypeTitleMap(scene.navigationState)}</NavigationHeader.Title>;
         }}
       />
     );

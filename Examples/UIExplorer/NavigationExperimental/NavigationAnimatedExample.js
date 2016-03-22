@@ -35,7 +35,6 @@ const  {
   AnimatedView: NavigationAnimatedView,
   Card: NavigationCard,
   Header: NavigationHeader,
-  HeaderTitle: NavigationHeaderTitle,
   Reducer: NavigationReducer,
   RootContainer: NavigationRootContainer,
 } = NavigationExperimental;
@@ -102,7 +101,7 @@ class NavigationAnimatedExample extends React.Component {
       <NavigationHeader
         navigationProps={props}
         renderTitleComponent={(navigationProps, scene) => {
-          return <NavigationHeaderTitle>{scene.navigationState.key}</NavigationHeaderTitle>;
+          return <NavigationHeader.Title>{scene.navigationState.key}</NavigationHeader.Title>;
         }}
       />
     );

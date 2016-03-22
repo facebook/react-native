@@ -35,7 +35,6 @@ const {
 const {
   CardStack: NavigationCardStack,
   Header: NavigationHeader,
-  HeaderTitle: NavigationHeaderTitle,
   RootContainer: NavigationRootContainer,
 } = NavigationExperimental;
 
@@ -125,7 +124,7 @@ class UIExplorerApp extends React.Component {
         key={'header_' + props.scene.navigationState.key}
         navigationProps={props}
         renderTitleComponent={(navigationProps, scene) => {
-          return <NavigationHeaderTitle>{UIExplorerStateTitleMap(scene.navigationState)}</NavigationHeaderTitle>;
+          return <NavigationHeader.Title>{UIExplorerStateTitleMap(scene.navigationState)}</NavigationHeader.Title>;
         }}
       />
     );

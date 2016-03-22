@@ -17,8 +17,6 @@ const NavigationCardStack = require('NavigationCardStack');
 const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleInterpolator');
 const NavigationContainer = require('NavigationContainer');
 const NavigationHeader = require('NavigationHeader');
-const NavigationHeaderTitle = require('NavigationHeaderTitle');
-const NavigationHeaderBackButton = require('NavigationHeaderBackButton');
 const NavigationLegacyNavigator = require('NavigationLegacyNavigator');
 const NavigationLinearPanResponder = require('NavigationLinearPanResponder');
 const NavigationReducer = require('NavigationReducer');
@@ -43,8 +41,6 @@ const NavigationExperimental = {
   Card: NavigationCard,
   CardStack: NavigationCardStack,
   Header: NavigationHeader,
-  HeaderTitle: NavigationHeaderTitle,
-  HeaderBackButton: NavigationHeaderBackButton,
   LegacyNavigator: NavigationLegacyNavigator,
 
   // Animations Style Interpolators:
