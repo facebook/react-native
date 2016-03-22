@@ -393,15 +393,13 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       markUpdated();
     }
   }
-  
-  
+    
   @ReactProp(name = ViewProps.FONT_FAMILY)
   public void setFontFamily(@Nullable String fontFamily) {
     mFontFamily = fontFamily;
     markUpdated();
   }
-  
-  
+    
   /**
   /* This code is duplicated in ReactTextInputManager 
   /* TODO: Factor into a common place they can both use
