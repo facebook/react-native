@@ -283,7 +283,6 @@
     <Compile Include="UIManager\LayoutAnimation\LayoutAnimationController.cs" />
     <Compile Include="UIManager\LayoutAnimation\LayoutUpdateAnimation.cs" />
     <Compile Include="Views\Split\Events\SplitViewClosedEvent.cs" />
-    <Compile Include="Views\Image\ImageExtensions.cs" />
     <Compile Include="UIManager\LayoutAnimation\InterpolationType.cs" />
     <Compile Include="UIManager\UIImplementationProvider.cs" />
     <Compile Include="Views\Image\ReactImageLoadEvent.cs" />

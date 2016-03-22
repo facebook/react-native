@@ -365,8 +365,7 @@ namespace ReactNative.UIManager
         /// Called after a layout step at the end of a UI batch from
         /// <see cref="UIManagerModule"/>. May be used to enqueue additional UI
         /// operations for the native view. Will only be called on nodes marked
-        /// as updated either with <see cref="dirty"/> or 
-        /// <see cref="MarkUpdated"/>.
+        /// as updated.
         /// </summary>
         /// <param name="uiViewOperationQueue">
         /// Interface for enqueueing UI operations.

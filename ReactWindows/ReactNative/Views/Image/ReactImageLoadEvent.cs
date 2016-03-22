@@ -10,29 +10,19 @@ namespace ReactNative.Views.Image
     public class ReactImageLoadEvent : Event
     {
         /// <summary>
-        /// The event identifier for image load errors.
-        /// </summary>
-        public const int OnError = 1;
-
-        /// <summary>
         /// The event identifier for image load.
         /// </summary>
-        public const int OnLoad = 2;
+        public const int OnLoad = 1;
 
         /// <summary>
         /// The event identifier for image load end.
         /// </summary>
-        public const int OnLoadEnd = 3;
+        public const int OnLoadEnd = 2;
 
         /// <summary>
         /// The event identifier for image load start.
         /// </summary>
-        public const int OnLoadStart = 4;
-
-        /// <summary>
-        /// The event identifier for image load progress.
-        /// </summary>
-        public const int OnProgress = 5;
+        public const int OnLoadStart = 3;
 
         private readonly int _eventType;
 
@@ -56,16 +46,12 @@ namespace ReactNative.Views.Image
             {
                 switch (_eventType)
                 {
-                    case OnError:
-                        return "topError";
                     case OnLoad:
                         return "topLoad";
                     case OnLoadEnd:
                         return "topLoadEnd";
                     case OnLoadStart:
                         return "topLoadStart";
-                    case OnProgress:
-                        return "topProgress";
                     default:
                         throw new InvalidOperationException(
                             $"Invalid image event '{_eventType}'.");
