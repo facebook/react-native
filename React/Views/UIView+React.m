@@ -27,7 +27,7 @@
   objc_setAssociatedObject(self, @selector(reactTag), reactTag, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-#if RCT_DEBUG
+#if RCT_DEV
 
 - (RCTShadowView *)_DEBUG_reactShadowView
 {
