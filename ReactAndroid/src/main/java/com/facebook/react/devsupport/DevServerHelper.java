@@ -56,7 +56,7 @@ public class DevServerHelper {
   private static final String DEVICE_LOCALHOST = "localhost:8081";
 
   private static final String BUNDLE_URL_FORMAT =
-      "http://%s/%s.bundle?platform=android&dev=%s&hot=%s";
+      "http://%s/%s.bundle?platform=android&dev=%s&hot=%s&minify=%s";
   private static final String SOURCE_MAP_URL_FORMAT =
       BUNDLE_URL_FORMAT.replaceFirst("\\.bundle", ".map");
   private static final String LAUNCH_CHROME_DEVTOOLS_COMMAND_URL_FORMAT =
@@ -129,6 +129,13 @@ public class DevServerHelper {
   }
 
   /**
+   * @return whether we should request minified JS bundles.
+   */
+  private boolean getJSMinifyMode() {
+    return mSettings.isJSMinifyEnabled();
+  }
+
+  /**
    * @return whether we should enabled HMR when requesting JS bundles.
    */
   private boolean getHMR() {
@@ -169,15 +176,15 @@ public class DevServerHelper {
     return Build.FINGERPRINT.contains("generic");
   }
 
-  private static String createBundleURL(String host, String jsModulePath, boolean devMode, boolean hmr) {
-    return String.format(Locale.US, BUNDLE_URL_FORMAT, host, jsModulePath, devMode, hmr);
+  private static String createBundleURL(String host, String jsModulePath, boolean devMode, boolean hmr, boolean jsMinify) {
+    return String.format(Locale.US, BUNDLE_URL_FORMAT, host, jsModulePath, devMode, hmr, jsMinify);
   }
 
   public void downloadBundleFromURL(
       final BundleDownloadCallback callback,
       final String jsModulePath,
       final File outputFile) {
-    final String bundleURL = createBundleURL(getDebugServerHost(), jsModulePath, getDevMode(), getHMR());
+    final String bundleURL = createBundleURL(getDebugServerHost(), jsModulePath, getDevMode(), getHMR(), getJSMinifyMode());
     final Request request = new Request.Builder()
         .url(bundleURL)
         .build();
@@ -397,17 +404,17 @@ public class DevServerHelper {
   }
 
   public String getSourceMapUrl(String mainModuleName) {
-    return String.format(Locale.US, SOURCE_MAP_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode(), getHMR());
+    return String.format(Locale.US, SOURCE_MAP_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
   }
 
   public String getSourceUrl(String mainModuleName) {
-    return String.format(Locale.US, BUNDLE_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode(), getHMR());
+    return String.format(Locale.US, BUNDLE_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
   }
 
   public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
     // The host IP we use when connecting to the JS bundle server from the emulator is not the
     // same as the one needed to connect to the same server from the Chrome proxy running on the
     // host itself.
-    return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode(), getHMR());
+    return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
   }
 }
