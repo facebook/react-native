@@ -73,6 +73,7 @@ Error: ${e.message}`
     };
     activeWS.onmessage = ({data}) => {
       // Moving to top gives errors due to NativeModules not being initialized
+      const { AndroidConstants } = require('NativeModules');
       const HMRLoadingView = require('HMRLoadingView');
 
       data = JSON.parse(data);
@@ -103,7 +104,7 @@ Error: ${e.message}`
 
             require('SourceMapsCache').fetch({
               text: code,
-              url: sourceURLs[i],
+              url: 'http://' + AndroidConstants.ServerHost + sourceURLs[i],
               sourceMappingURL: sourceMappingURLs[i],
             });
 

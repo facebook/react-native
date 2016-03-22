@@ -9,14 +9,6 @@
 
 package com.facebook.react.devsupport;
 
-import javax.annotation.Nullable;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
@@ -33,6 +25,13 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nullable;
 
 import okio.Okio;
 import okio.Sink;
@@ -110,6 +109,21 @@ public class DevServerHelper {
     return context.getPackageName() + RELOAD_APP_ACTION_SUFFIX;
   }
 
+  public static String getServerHost() {
+    // Since genymotion runs in vbox it use different hostname to refer to adb host.
+    // We detect whether app runs on genymotion and replace js bundle server hostname accordingly
+
+    if (isRunningOnGenymotion()) {
+      return GENYMOTION_LOCALHOST;
+    }
+
+    if (isRunningOnStockEmulator()) {
+      return EMULATOR_LOCALHOST;
+    }
+
+    return DEVICE_LOCALHOST;
+  }
+
   public String getWebsocketProxyURL() {
     return String.format(Locale.US, WEBSOCKET_PROXY_URL_FORMAT, getDebugServerHost());
   }
@@ -149,30 +163,28 @@ public class DevServerHelper {
     // Check debug server host setting first. If empty try to detect emulator type and use default
     // hostname for those
     String hostFromSettings = mSettings.getDebugServerHost();
+
     if (!TextUtils.isEmpty(hostFromSettings)) {
       return Assertions.assertNotNull(hostFromSettings);
     }
 
-    // Since genymotion runs in vbox it use different hostname to refer to adb host.
-    // We detect whether app runs on genymotion and replace js bundle server hostname accordingly
-    if (isRunningOnGenymotion()) {
-      return GENYMOTION_LOCALHOST;
-    }
-    if (isRunningOnStockEmulator()) {
-      return EMULATOR_LOCALHOST;
-    }
-    FLog.w(
+    String host = DevServerHelper.getServerHost();
+
+    if (host.equals(DEVICE_LOCALHOST)) {
+      FLog.w(
         ReactConstants.TAG,
         "You seem to be running on device. Run 'adb reverse tcp:8081 tcp:8081' " +
-            "to forward the debug server's port to the device.");
-    return DEVICE_LOCALHOST;
+          "to forward the debug server's port to the device.");
+    }
+
+    return host;
   }
 
-  private boolean isRunningOnGenymotion() {
+  private static boolean isRunningOnGenymotion() {
     return Build.FINGERPRINT.contains("vbox");
   }
 
-  private boolean isRunningOnStockEmulator() {
+  private static boolean isRunningOnStockEmulator() {
     return Build.FINGERPRINT.contains("generic");
   }
 
