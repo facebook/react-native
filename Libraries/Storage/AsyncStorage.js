@@ -28,9 +28,11 @@ var RCTAsyncStorage = RCTAsyncRocksDBStorage || RCTAsyncSQLiteStorage || RCTAsyn
  * of AsyncStorage directly for anything more than light usage since it
  * operates globally.
  *
- * This JS code is a simple facade over the native iOS implementation to provide
- * a clear JS API, real Error objects, and simple non-multi functions. Each
- * method returns a `Promise` object.
+ * On iOS, AsyncStorage is backed by native code that stores small values in serialized
+ * dictionary and larger values in separate files.This JS code is a simple facade that
+ * provides a clear JS API, real Error objects, and simple non-multi functions. Each
+ * method returns a `Promise` object. On Android, AsyncStorage will use either RocksDB
+ * or SQLite based on what is available.
  */
 var AsyncStorage = {
   _getRequests: ([]: Array<any>),
