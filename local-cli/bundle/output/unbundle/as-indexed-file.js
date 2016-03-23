@@ -31,7 +31,7 @@ function saveAsIndexedFile(bundle, options, log) {
   } = options;
 
   log('start');
-  const {startupCode, modules} = bundle.getUnbundle();
+  const {startupCode, modules} = bundle.getUnbundle('INDEX');
   log('finish');
 
   log('Writing unbundle output to:', bundleOutput);
@@ -112,7 +112,7 @@ function buildModuleTable(buffers) {
       uInt32Buffer(currentLine),
     ]);
 
-    currentLine += linesCount - 1;
+    currentLine += linesCount;
 
     currentOffset += length;
     tableLength += entry.length;
@@ -129,7 +129,7 @@ function buildModuleBuffers(startupCode, modules, encoding) {
       modules.map(module =>
         moduleToBuffer(
           String(module.id),
-          module.code + '\n', // each module starts on a newline
+          module.code,
           encoding,
         )
       )

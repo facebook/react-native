@@ -34,7 +34,7 @@ function saveAsAssets(bundle, options, log) {
   } = options;
 
   log('start');
-  const {startupCode, startupModules, modules} = bundle.getUnbundle();
+  const {startupCode, startupModules, modules} = bundle.getUnbundle('ASSETS');
   log('finish');
 
   log('Writing bundle output to:', bundleOutput);

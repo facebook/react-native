@@ -24,12 +24,9 @@ const SourceMapConsumer = sourceMap.SourceMapConsumer;
  */
 function buildUnbundleSourcemap(bundle) {
   const generator = new sourceMap.SourceMapGenerator({});
-  const nonPolyfillModules = bundle.getModules().filter(module =>
-    !module.polyfill
-  );
 
-  let offset = 1;
-  nonPolyfillModules.forEach(module => {
+  let offset = 0;
+  bundle.getUnbundle('INDEX').allModules.forEach(module => {
     if (module.map) { // assets have no sourcemap
       const consumer = new SourceMapConsumer(module.map);
       consumer.eachMapping(mapping => {

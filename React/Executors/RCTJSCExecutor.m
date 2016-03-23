@@ -562,9 +562,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
     JSValueRef jsError = NULL;
     JSStringRef execJSString = JSStringCreateWithUTF8CString(script.bytes);
-    JSStringRef jsURL = JSStringCreateWithCFString((__bridge CFStringRef)sourceURL.absoluteString);
-    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, jsURL, 0, &jsError);
-    JSStringRelease(jsURL);
+    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, _bundleURL, 0, &jsError);
     JSStringRelease(execJSString);
     RCTPerformanceLoggerEnd(RCTPLScriptExecution);
 
