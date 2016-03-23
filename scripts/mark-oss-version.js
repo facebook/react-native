@@ -17,8 +17,10 @@
 /*eslint-disable no-undef */
 require(`shelljs/global`);
 
-// TODO:
 // - check we are in release branch
+let branch = exec(`git symbolic-ref --short HEAD`, {silent: true}).stdout.trim();
+
+exit(0)
 // - check that argument version matches branch
 // - change package.json
 // - change ReactAndroid/gradle.properties
