@@ -85,7 +85,7 @@ afterEvaluate { project ->
     artifacts {
         archives androidSourcesJar
         // TODO Make Javadoc generation work with Java 1.8, currently only works with 1.7
-        // archives androidJavadocJar
+        archives androidJavadocJar
     }
 
     version = VERSION_NAME
