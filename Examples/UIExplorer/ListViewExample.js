@@ -63,7 +63,7 @@ var ListViewSimpleExample = React.createClass({
     );
   },
 
-  _renderRow: function(rowData: string, sectionID: number, rowID: number, highlightRow: funct) {
+  _renderRow: function(rowData: string, sectionID: number, rowID: number, highlightRow: (sectionID: number, rowID: number) => void) {
     var rowHash = Math.abs(hashCode(rowData));
     var imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
     return (
