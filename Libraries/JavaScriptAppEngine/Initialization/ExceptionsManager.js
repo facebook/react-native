@@ -54,7 +54,8 @@ function reportException(e: Error, isFatal: bool) {
         // This can happen in a variety of normal situations, such as
         // Network module not being available, or when running locally
         console.warn('Unable to load source map: ' + error.message);
-      });
+      })
+      .then(() => (console._errorOriginal || console.error)(e));
     }
   }
 }
@@ -71,9 +72,8 @@ function handleException(e: Error, isFatal: boolean) {
     e = new Error(e);
   }
 
+  console.log('%cError: ' + e.message + '%c (Loading sourcemaps…)', 'color: #F00;', 'color: #000');
   reportException(e, isFatal);
-
-  (console._errorOriginal || console.error)(e);
 }
 
 /**
