@@ -27,7 +27,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THE SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * @providesModule NavigationCardStackStyleInterpolator
+ * @providesModule NavigationPagerStyleInterpolator
  * @flow
  */
 'use strict';
@@ -37,18 +37,18 @@ import type  {
 } from 'NavigationTypeDefinition';
 
 /**
- * Utility that builds the style for the card in the cards stack.
+ * Utility that builds the style for the card in the cards list.
  *
- *     +------------+
- *   +-+            |
- * +-+ |            |
- * | | |            |
- * | | |  Focused   |
- * | | |   Card     |
- * | | |            |
- * +-+ |            |
- *   +-+            |
- *     +------------+
+ * +-------------+-------------+-------------+
+ * |             |             |             |
+ * |             |             |             |
+ * |             |             |             |
+ * |    Next     |   Focused   |  Previous   |
+ * |    Card     |    Card     |    Card     |
+ * |             |             |             |
+ * |             |             |             |
+ * |             |             |             |
+ * +-------------+-------------+-------------+
  */
 
 function forHorizontal(props: NavigationSceneRendererProps): Object {
@@ -60,72 +60,25 @@ function forHorizontal(props: NavigationSceneRendererProps): Object {
 
   const index = scene.index;
   const inputRange = [index - 1, index, index + 1];
+
   const width = layout.initWidth;
-
-  const opacity = position.interpolate({
-    inputRange,
-    outputRange: [1, 1, 0.3],
-  });
-
-  const scale = position.interpolate({
-    inputRange,
-    outputRange: [1, 1, 0.95],
-  });
-
-  const translateY = 0;
   const translateX = position.interpolate({
     inputRange,
-    outputRange: [width, 0, -10],
+    outputRange: [width, 0, -width],
   });
 
   return {
-    opacity,
+    opacity : 1,
+    shadowColor: 'transparent',
+    shadowRadius: 0,
     transform: [
-      { scale },
+      { scale: 1 },
       { translateX },
-      { translateY },
-    ],
-  };
-}
-
-function forVertical(props: NavigationSceneRendererProps): Object {
-  const {
-    layout,
-    position,
-    scene,
-  } = props;
-
-  const index = scene.index;
-  const inputRange = [index - 1, index, index + 1];
-  const height = layout.initHeight;
-
-  const opacity = position.interpolate({
-    inputRange,
-    outputRange: [1, 1, 0.3],
-  });
-
-  const scale = position.interpolate({
-    inputRange,
-    outputRange: [1, 1, 0.95],
-  });
-
-  const translateX = 0;
-  const translateY = position.interpolate({
-    inputRange,
-    outputRange: [height, 0, -10],
-  });
-
-  return {
-    opacity,
-    transform: [
-      { scale },
-      { translateX },
-      { translateY },
+      { translateY: 0 },
     ],
   };
 }
 
 module.exports = {
   forHorizontal,
-  forVertical,
 };
