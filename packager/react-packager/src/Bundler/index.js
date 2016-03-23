@@ -388,8 +388,9 @@ class Bundler {
       if (response.dependencies.length > 0) {
         const numModuleSystemDependencies =
           this._resolver.getModuleSystemDependencies({dev, unbundle}).length;
+
         entryFilePath = response.dependencies[
-          response.numPrependedDependencies +
+          (response.numPrependedDependencies || 0) +
           numModuleSystemDependencies
         ].path;
       }
