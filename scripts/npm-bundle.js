@@ -15,7 +15,7 @@
 
 /*eslint-disable no-undef */
 require(`shelljs/global`);
-let lodash = require(`lodash`);
+let _ = require(`lodash`);
 let originalPackageJson = cat(`package.json`);
 let packageJson = JSON.parse(cat(`package.json`));
 let withDeps = process.argv.indexOf('--with-deps') !== -1;
@@ -34,17 +34,20 @@ if(withDeps) {
     }
     return Object
       .keys(packageTree.dependencies)
-      .concat(Object.keys(packageTree.dependencies)
-        .map(key => getDependencies(packageTree.dependencies[key])))
+      .filter(key => !!packageTree.dependencies[key].resolved) // removing optional deps
+      .map((key) => {
+        // sub dependencies
+        return [key].concat(getDependencies(packageTree.dependencies[key]))
+      });
   }
-  let packagesToBundleFlat = lodash.uniq(lodash.flattenDeep(getDependencies(packagesToBundle)));
+  let packagesToBundleFlat = _.uniq(_.flattenDeep(getDependencies(packagesToBundle)));
   console.log("Packages to be bundled", packagesToBundleFlat);
   packageJson.bundledDependencies = packagesToBundleFlat;
   JSON.stringify(packageJson, null, 4).to(`package.json`);
 }
 
 echo(`packing react-native`);
-exec(`npm pack`);
+// exec(`npm pack`);
 // revert changes to package.json
 originalPackageJson.to(`package.json`);
 

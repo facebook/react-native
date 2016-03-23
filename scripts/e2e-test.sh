@@ -48,7 +48,7 @@ function cleanup {
 trap cleanup EXIT
 
 # pack react-native into .tgz file
-node ./scripts/npm-bundle.js
+node ./scripts/npm-bundle.js --with-deps
 PACKAGE=$(pwd)/react-native-0.0.0-master.tgz
 
 # get react-native-cli dependencies
