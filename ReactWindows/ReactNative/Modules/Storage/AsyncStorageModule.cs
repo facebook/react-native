@@ -1,468 +1,398 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.Storage;
 
 namespace ReactNative.Modules.Storage
 {
-    /// <summary>
-    /// The asynchronous storage module.
-    /// </summary>
-    public class AsyncStorageModule : NativeModuleBase
+    class AsyncStorageModule : NativeModuleBase
     {
-        private enum _DataType
-        {
-            Null,
-            Array,
-            Constructor,
-            Date,           
-            Object,    
-            Uri,
-            String,
-            Raw,
-        }
+        private const string DirectoryName = "AsyncStorage\\";
+        private const string FileExtension = ".data";
 
-        private const string _invalidKey = "Invalid key";
-        private const string _invalidPair = "Invalid key value pair";
+        private readonly object _gate = new object();
 
-        private const string _data = "Data";
-        private const string _type = "Type";
-
-        private ApplicationDataContainer _dataContainer;
-        private ApplicationDataContainer _typeContainer;
-
-        /// <summary>
-        /// Instantiates the <see cref="AsyncStorageModule"/>.
-        /// </summary>
-        internal AsyncStorageModule()
-        {
-            _dataContainer = ApplicationData.Current.LocalSettings.CreateContainer(Name + _data, ApplicationDataCreateDisposition.Always);
-            _typeContainer = ApplicationData.Current.LocalSettings.CreateContainer(Name + _type, ApplicationDataCreateDisposition.Always);
-#if CLEAR_STORAGE
-            _dataContainer.Values.Clear();
-            _typeContainer.Values.Clear();
-#endif
-        }
-
-        /// <summary>
-        /// The name of the module.
-        /// </summary>
         public override string Name
         {
             get
             {
-                return "AsyncLocalStorage";
+                return "AsyncStorageModule";
             }
         }
 
-        /// <summary>
-        /// Given an array of keys, this returns through an <see cref="ICallback"/> a <see cref="JArray"/> 
-        /// of (key, value) pairs for the keys found, and (key, null) for the keys that haven't been found.
-        /// </summary>
-        /// <param name="keys">Array of key values</param>
-        /// <param name="callback">Callback.</param>
         [ReactMethod]
-        public void multiGet(string[] keys, ICallback callback)
+        public async void multiGet(string[] keys, ICallback callback)
         {
-            Debug.Assert(callback != null);
-
-            var result = new JArray();
-
             if (keys == null)
             {
-                result.Add(new JArray
-                {
-                    _invalidKey,
-                    JValue.CreateNull(),
-                });
-
-                callback.Invoke(result);
+                callback.Invoke(AsyncStorageErrorHelpers.GetInvalidKeyError(null), null);
                 return;
             }
 
-            foreach (var key in keys)
+            var error = default(JObject);
+            var data = new JArray();
+
+            await Task.Run(() =>
             {
-                result.Add(new JArray
+                lock (_gate)
                 {
-                    key,
-                    GetTokenFromContainer(key),
-                });
-            }
-
-            callback.Invoke(null, result);
-        }
-
-        /// <summary>
-        /// Inserts multiple (key, value) pairs from a <see cref="JArray"/>.
-        /// The insertion will replace conflicting (key, value) pairs.
-        /// When done invokes <see cref="ICallback"/> with possible errors.
-        /// </summary>
-        /// <param name="keyValueArray">Array of key values</param>
-        /// <param name="callback">Callback.</param>
-        [ReactMethod]
-        public void multiSet(JArray keyValueArray, ICallback callback)
-        {
-            Debug.Assert(callback != null);
-
-            if (keyValueArray == null)
-            {
-                callback.Invoke(new JArray
-                {
-                    _invalidKey,
-                    null,
-                });
-
-                return;
-            }
-
-            var result = default(JArray);
-            foreach (var keyValue in keyValueArray)
-            {
-                if (keyValue.Type == JTokenType.Array && keyValue.Value<JArray>().Count == 2)
-                {
-                    var pair = keyValue.Value<JArray>();
-                    if (pair.First.Type == JTokenType.String)
+                    foreach (var key in keys)
                     {
-                        AddTokenToContainer(pair.First.Value<string>(), pair.Last);
-                    }
-                    else
-                    {
-                        result = result ?? new JArray();
-                        result.Add(new JArray
+                        if (key == null)
                         {
-                            _invalidKey,
-                            pair.First,
-                        });
-                    }
-                }
-                else
-                {
-                    result = result ?? new JArray();
-                    result.Add(new JArray
-                    {
-                        _invalidPair,
-                        keyValue,
-                    });
-                }
-            }
-
-            callback.Invoke(result);
-        }
-
-        /// <summary>
-        /// Removes all rows of the keys given.
-        /// When done invokes <see cref="ICallback"/>.
-        /// </summary>
-        /// <param name="keys">Array of key values</param>
-        /// <param name="callback">Callback.</param>
-        [ReactMethod]
-        public void multiRemove(string[] keys, ICallback callback)
-        {
-            Debug.Assert(callback != null);
-
-            if (keys == null)
-            {
-                callback.Invoke(new JArray
-                {
-                    _invalidKey,
-                    JValue.CreateNull(),
-                });
-
-                return;
-            }
-
-            foreach (var key in keys)
-            {
-                _dataContainer.Values.Remove(key);
-                _typeContainer.Values.Remove(key);
-            }
-
-            callback.Invoke();
-        }
-
-        /// <summary>
-        /// Given a <see cref="JArray"/> of (key, value) pairs, this will merge the given values with the stored values
-        /// of the given keys, if they exist.
-        /// When done invokes <see cref="ICallback"/> with possible errors.
-        /// </summary>
-        /// <param name="keyValueArray">Array of key values</param>
-        /// <param name="callback">Callback.</param>
-        [ReactMethod]
-        public void multiMerge(JArray keyValueArray, ICallback callback)
-        {
-            Debug.Assert(callback != null);
-
-            if (keyValueArray == null)
-            {
-                callback.Invoke(new JArray
-                {
-                    _invalidKey,
-                    JValue.CreateNull(),
-                });
-
-                return;
-            }
-
-            var result = default(JArray);
-            foreach (var keyValue in keyValueArray)
-            {
-                if (keyValue.Type == JTokenType.Array && keyValue.Value<JArray>().Count == 2)
-                {
-                    var pair = keyValue.Value<JArray>();
-                    if (pair.First.Type == JTokenType.String)
-                    {
-                        var key = pair.First.Value<string>();
-                        var tokenOld = GetTokenFromContainer(key);
-                        var tokenNew = pair.Last;
-
-                        if (tokenOld.Type == JTokenType.Object && tokenNew.Type == JTokenType.Object)
-                        {
-                            DeepMergeInto((JObject)tokenOld, (JObject)tokenNew);
-                            AddTokenToContainer(key, tokenOld);
-                        }
-                        else if (tokenOld.Type == JTokenType.Array)
-                        {
-                            ((JArray)tokenOld).Merge(tokenNew);
-                            AddTokenToContainer(key, tokenOld);
-                        }
-                        else if (tokenNew.Type == JTokenType.Array)
-                        {
-                            ((JArray)tokenNew).Merge(tokenOld);
-                            AddTokenToContainer(key, tokenNew);
-                        }
-                        else if (tokenOld.Type == JTokenType.Null)
-                        {
-                            AddTokenToContainer(key, tokenNew);
-                        }
-                    }
-                    else
-                    {
-                        result = result ?? new JArray();
-                        result.Add(new JArray
-                        {
-                            _invalidKey,
-                            pair.First,
-                        });
-                    }
-                }
-                else
-                {
-                    result = result ?? new JArray();
-                    result.Add(new JArray
-                    {
-                        _invalidPair,
-                        keyValue,
-                    });
-                }
-            }
-
-            callback.Invoke(result);
-        }
-
-        /// <summary>
-        /// Clears the <see cref="ApplicationDataContainer"/>.
-        /// When done invokes <see cref="ICallback"/>.
-        /// </summary>
-        /// <param name="callback">Callback.</param>
-        [ReactMethod]
-        public void clear(ICallback callback)
-        {
-            Debug.Assert(callback != null);
-
-            _dataContainer.Values.Clear();
-            _typeContainer.Values.Clear();
-
-            callback.Invoke();
-        }
-
-        /// <summary>
-        /// Returns a <see cref="JArray"/> with all keys from the 
-        /// through <see cref="ICallback"/>.
-        /// </summary>
-        /// <param name="callback">Callback.</param>
-        [ReactMethod]
-        public void getAllKeys(ICallback callback)
-        {
-            Debug.Assert(callback != null);
-
-            callback.Invoke(null, new JArray(_dataContainer.Values.Keys));
-        }
-
-        /// <summary>
-        /// Adds <see cref="JToken"/> to <see cref="ApplicationDataContainer"/> with the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="token">The token.</param>
-        private void AddTokenToContainer(string key, JToken token)
-        {
-            switch (token.Type)
-            {
-                case JTokenType.Null:
-                    _dataContainer.Values[key] = "";
-                    AddTokenTypeToContainer(key, _DataType.Null);
-                    break;
-                case JTokenType.Boolean:
-                    _dataContainer.Values[key] = token.Value<bool>();
-                    break;
-                case JTokenType.Integer:
-                    _dataContainer.Values[key] = token.Value<long>();
-                    break;
-                case JTokenType.Float:
-                    _dataContainer.Values[key] = token.Value<double>();
-                    break;
-                case JTokenType.TimeSpan:
-                    _dataContainer.Values[key] = token.Value<TimeSpan>();
-                    break;
-                case JTokenType.Guid:
-                    _dataContainer.Values[key] = token.Value<Guid>();
-                    break;
-                case JTokenType.Date:
-                    _dataContainer.Values[key] = token.ToString();
-                    AddTokenTypeToContainer(key, _DataType.Date);
-                    break;
-                case JTokenType.Uri:
-                    _dataContainer.Values[key] = token.ToString();
-                    AddTokenTypeToContainer(key, _DataType.Uri);
-                    break;                                
-                case JTokenType.String:
-                    _dataContainer.Values[key] = token.Value<string>();
-                    AddTokenTypeToContainer(key, _DataType.String);
-                    break;
-                case JTokenType.Array:
-                    _dataContainer.Values[key] = token.ToString();
-                    AddTokenTypeToContainer(key, _DataType.Array);
-                    break;
-                case JTokenType.Constructor:
-                    _dataContainer.Values[key] = token.ToString();
-                    AddTokenTypeToContainer(key, _DataType.Constructor);
-                    break;
-                case JTokenType.Object:
-                    _dataContainer.Values[key] = token.ToString();
-                    AddTokenTypeToContainer(key, _DataType.Object);
-                    break;              
-                case JTokenType.Raw:
-                    _dataContainer.Values[key] = token.ToString();
-                    AddTokenTypeToContainer(key, _DataType.Raw);
-                    break;
-                default:
-                    Debug.Assert(false); // Not supported JToken type
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Gets related value for a specific key from <see cref="ApplicationDataContainer"/> as <see cref="JToken"/>.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        private JToken GetTokenFromContainer(string key)
-        {
-            object value;
-            if (_dataContainer.Values.TryGetValue(key, out value))
-            {
-                if (value is bool || value is long || value is double || value is Guid || value is TimeSpan)
-                {
-                    return JToken.FromObject(value);
-                }
-                else if (value is string)
-                {
-                    var valueStr = (string)value;
-                    var type = GetTokenTypeFromContainer(key);
-                    switch (type)
-                    {
-                        case _DataType.Array:
-                            return JArray.Parse(valueStr);
-                        case _DataType.Constructor:
-                            return JToken.Parse(valueStr);
-                        case _DataType.Object:
-                            return JObject.Parse(valueStr);
-                        case _DataType.Date:
-                            return JToken.FromObject(DateTime.Parse(valueStr));
-                        case _DataType.Uri:
-                            return JToken.FromObject(new Uri(valueStr));
-                        case _DataType.Raw:
-                            return new JRaw(valueStr);
-                        case _DataType.String:
-                            return JValue.CreateString(valueStr); 
-                        default:
+                            error = AsyncStorageErrorHelpers.GetInvalidKeyError(null);
                             break;
+                        }
+
+                        var value = Get(key);
+                        data.Add(new JArray(key, value));
                     }
                 }
-            }
+            });
 
-            return JValue.CreateNull();
-        }
-
-        /// <summary>
-        /// Adds token's type to <see cref="ApplicationDataContainer"/> with the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="type">The type.</param>
-        private void AddTokenTypeToContainer(string key, _DataType type)
-        {
-            _typeContainer.Values[key] = (int)type;
-        }
-
-        /// <summary>
-        /// Gets token's type for a specific key from <see cref="ApplicationDataContainer"/>.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        private _DataType GetTokenTypeFromContainer(string key)
-        {
-            object value;
-            if (_typeContainer.Values.TryGetValue(key, out value))
+            if (error != null)
             {
-                return (_DataType)value;
+                callback.Invoke(error);
             }
             else
             {
-                return _DataType.Null;
+                callback.Invoke(null, data);
             }
         }
 
-        /// <summary>
-        /// Merge two <see cref="JObject"/>.
-        /// </summary>
-        /// <param name="oldObj">The old value.</param>
-        /// <param name="newObj">The old value.</param>
-        private static void DeepMergeInto(JObject oldObj, JObject newObj)
+        [ReactMethod]
+        public async void multiSet(string[][] keyValueArray, ICallback callback)
         {
-            IDictionary<string, JToken> dictionary = newObj; 
-            var keys = dictionary.Keys;
-
-            foreach (var key in keys)
+            if (keyValueArray == null || keyValueArray.Length == 0)
             {
-                JToken tokenNew, tokenOld;
-                newObj.TryGetValue(key, out tokenNew);
-                oldObj.TryGetValue(key, out tokenOld);
-                if (tokenNew?.Type == JTokenType.Object && tokenOld?.Type == JTokenType.Object)
+                callback.Invoke(AsyncStorageErrorHelpers.GetInvalidKeyError(null));
+                return;
+            }
+
+            var error = default(JObject);
+
+            await Task.Run(() =>
+            {
+                lock (_gate)
                 {
-                    DeepMergeInto((JObject)tokenOld, (JObject)tokenNew);
-                    PutToJObject(key, tokenOld, oldObj);
+                    foreach (var pair in keyValueArray)
+                    {
+                        if (pair.Length != 2)
+                        {
+                            error = AsyncStorageErrorHelpers.GetInvalidValueError(null);
+                            break;
+                        }
+
+                        if (pair[0] == null)
+                        {
+                            error = AsyncStorageErrorHelpers.GetInvalidKeyError(null);
+                            break;
+                        }
+
+                        if (pair[1] == null)
+                        {
+                            error = AsyncStorageErrorHelpers.GetInvalidValueError(pair[0]);
+                            break;
+                        }
+
+                        error = Set(pair[0], pair[1]);
+                        if (error != null)
+                        {
+                            break;
+                        }
+                    }
+                }
+            });
+
+            if (error != null)
+            {
+                callback.Invoke(error);
+            }
+            else
+            {
+                callback.Invoke();
+            }
+        }
+
+        [ReactMethod]
+        public async void multiRemove(string[] keys, ICallback callback)
+        {
+            if (keys == null || keys.Length == 0)
+            {
+                callback.Invoke(AsyncStorageErrorHelpers.GetInvalidKeyError(null));
+                return;
+            }
+
+            var error = default(JObject);
+
+            await Task.Run(() =>
+            {
+                lock (_gate)
+                {
+                    foreach (var key in keys)
+                    {
+                        if (key == null)
+                        {
+                            error = AsyncStorageErrorHelpers.GetInvalidKeyError(null);
+                            break;
+                        }
+
+                        error = Remove(key);
+                        if (error != null)
+                        {
+                            break;
+                        }
+                    }
+                }
+            });
+
+            if (error != null)
+            {
+                callback.Invoke(error);
+            }
+            else
+            {
+                callback.Invoke();
+            }
+        }
+
+        [ReactMethod]
+        public async void multiMerge(string[][] keyValueArray, ICallback callback)
+        {
+            if (keyValueArray == null || keyValueArray.Length == 0)
+            {
+                callback.Invoke(AsyncStorageErrorHelpers.GetInvalidKeyError(null));
+                return;
+            }
+
+            var error = default(JObject);
+
+            await Task.Run(() =>
+            {
+                lock (_gate)
+                {
+                    foreach (var pair in keyValueArray)
+                    {
+                        if (pair.Length != 2)
+                        {
+                            error = AsyncStorageErrorHelpers.GetInvalidValueError(null);
+                            break;
+                        }
+
+                        if (pair[0] == null)
+                        {
+                            error = AsyncStorageErrorHelpers.GetInvalidKeyError(null);
+                            break;
+                        }
+
+                        if (pair[1] == null)
+                        {
+                            error = AsyncStorageErrorHelpers.GetInvalidValueError(pair[0]);
+                            break;
+                        }
+
+                        error = Merge(pair[0], pair[1]);
+                        if (error != null)
+                        {
+                            break;
+                        }
+                    }
+                }
+            });
+
+            if (error != null)
+            {
+                callback.Invoke(error);
+            }
+            else
+            {
+                callback.Invoke();
+            }
+        }
+
+        [ReactMethod]
+        public async void clear(ICallback callback)
+        {
+            await Task.Run(() =>
+            {
+                lock (_gate)
+                {
+                    var localFolder = ApplicationData.Current.LocalFolder;
+                    var storageItem = localFolder.TryGetItemAsync(DirectoryName).AsTask().Result;
+                    if (storageItem != null)
+                    {
+                        storageItem.DeleteAsync().AsTask().Wait();
+                    }
+                }
+            });
+
+            callback.Invoke();
+        }
+
+        [ReactMethod]
+        public async void getAllKeys(ICallback callback)
+        {
+            var keys = new JArray();
+
+            await Task.Run(() =>
+            {
+                lock (_gate)
+                {
+                    var localFolder = ApplicationData.Current.LocalFolder;
+                    var storageItem = localFolder.TryGetItemAsync(DirectoryName).AsTask().Result;
+                    if (storageItem != null)
+                    {
+                        var directory = localFolder.GetFolderAsync(DirectoryName).AsTask().Result;
+                        var items = directory.GetItemsAsync().AsTask().Result;
+                        foreach (var item in items)
+                        {
+                            var itemName = item.Name;
+                            var itemLength = itemName.Length;
+                            var extLength = FileExtension.Length;
+                            if (itemName.EndsWith(FileExtension) && itemLength > extLength)
+                            {
+                                keys.Add(item.Name.Substring(0, itemLength - extLength));
+                            }
+                        }
+                    }
+                }
+            });
+
+            callback.Invoke(null, keys);
+        }
+
+        private string Get(string key)
+        {
+            var localFolder = ApplicationData.Current.LocalFolder;
+            var fileName = GetFileName(key);
+
+            var storageItem = localFolder.TryGetItemAsync(fileName).AsTask().Result;
+            if (storageItem != null)
+            {
+                var file = localFolder.GetFileAsync(fileName).AsTask().Result;
+                return FileIO.ReadTextAsync(file).AsTask().Result;
+            }
+
+            return null;
+        }
+
+        private JObject Merge(string key, string value)
+        {
+            var oldValue = Get(key);
+
+            var newValue = default(string);
+            if (oldValue == null)
+            {
+                newValue = value;
+            }
+            else
+            {
+                var oldJson = JObject.Parse(oldValue);
+                var newJson = JObject.Parse(value);
+                DeepMergeInto(oldJson, newJson);
+                newValue = oldJson.ToString(Formatting.None);
+            }
+
+            return Set(key, newValue);
+        }
+
+        private JObject Remove(string key)
+        {
+            var localFolder = ApplicationData.Current.LocalFolder;
+            var fileName = GetFileName(key);
+            var storageItem = localFolder.TryGetItemAsync(fileName).AsTask().Result;
+            if (storageItem != null)
+            {
+                storageItem.DeleteAsync().AsTask().Wait();
+            }
+
+            return null;
+        }
+
+        private JObject Set(string key, string value)
+        {
+            var localFolder = ApplicationData.Current.LocalFolder;
+            var file = localFolder.CreateFileAsync(GetFileName(key), CreationCollisionOption.ReplaceExisting).AsTask().Result;
+            FileIO.WriteTextAsync(file, value).AsTask().Wait();
+            return default(JObject);
+        }
+
+        private static string GetFileName(string key)
+        {
+            var sb = new StringBuilder();
+            sb.Append(DirectoryName);
+            foreach (var ch in key)
+            {
+                switch (ch)
+                {
+                    case '\\':
+                        sb.Append("{bsl}");
+                        break;
+                    case '/':
+                        sb.Append("{fsl}");
+                        break;
+                    case ':':
+                        sb.Append("{col}");
+                        break;
+                    case '*':
+                        sb.Append("{asx}");
+                        break;
+                    case '?':
+                        sb.Append("{q}");
+                        break;
+                    case '<':
+                        sb.Append("{lt}");
+                        break;
+                    case '>':
+                        sb.Append("{gt}");
+                        break;
+                    case '|':
+                        sb.Append("{bar}");
+                        break;
+                    case '"':
+                        sb.Append("{quo}");
+                        break;
+                    case '.':
+                        sb.Append("{dot}");
+                        break;
+                    case '{':
+                        sb.Append("{ocb}");
+                        break;
+                    case '}':
+                        sb.Append("{ccb}");
+                        break;
+                    default:
+                        sb.Append(ch);
+                        break;
+                }
+            }
+
+            sb.Append(FileExtension);
+
+            return sb.ToString();
+        }
+
+        private static void DeepMergeInto(JObject oldJson, JObject newJson)
+        {
+            foreach (var property in newJson)
+            {
+                var key = property.Key;
+                var value = property.Value;
+                var newInner = value as JObject;
+                var oldInner = oldJson[key] as JObject;
+                if (newInner != null && oldInner != null)
+                {
+                    DeepMergeInto(oldInner, newInner);
                 }
                 else
                 {
-                    var property = newObj.Property(key);
-                    foreach (var token in property)
-                    {
-                        PutToJObject(key, token, oldObj);
-                    }
+                    oldJson[key] = value;
                 }
             }
-        }
-
-        /// <summary>
-        /// Puts an { <see cref="string"/>, <see cref="JToken"/> } item to <see cref="JObject"/>.
-        /// Replaces existing value.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="token">The token.</param>
-        /// <param name="obj">The object.</param>
-        private static void PutToJObject(string key, JToken token, JObject obj)
-        {
-            obj.Remove(key);
-            obj.Add(key, token);
         }
     }
 }
