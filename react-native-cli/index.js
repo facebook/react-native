@@ -209,7 +209,7 @@ function getInstallPackage(rnPackage) {
 }
 
 function run(root, projectName, rnPackage) {
-  exec('npm install --save --cache-min 999999 ' + getInstallPackage(rnPackage), function(e, stdout, stderr) {
+  exec('npm install --save ' + getInstallPackage(rnPackage), function(e, stdout, stderr) {
     if (e) {
       console.log(stdout);
       console.error(stderr);

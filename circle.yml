@@ -50,7 +50,6 @@ test:
 
   override:
     # Publish to Sinopia, create a new app using 'react-native init' and check the packager starts
-    - npm ls --prod --json
     - ./scripts/e2e-test.sh --packager
 
     # eslint bot
