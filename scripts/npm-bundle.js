@@ -47,7 +47,7 @@ if(withDeps) {
 }
 
 echo(`packing react-native`);
-// exec(`npm pack`);
+exec(`npm pack`);
 // revert changes to package.json
 originalPackageJson.to(`package.json`);
 
