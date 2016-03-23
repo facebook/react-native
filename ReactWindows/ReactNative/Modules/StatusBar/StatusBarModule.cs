@@ -2,14 +2,13 @@
 using ReactNative.UIManager;
 using System;
 using Windows.Foundation.Metadata;
-using Windows.UI;
 using Windows.UI.Core;
 using Windows.ApplicationModel.Core;
 
 namespace ReactNative.Modules.StatusBar
 {
     /// <summary>
-    /// A module that allows JS to set statusbar properties.
+    /// A module that allows JS to set StatusBar properties.
     /// </summary>
     public class StatusBarModule : NativeModuleBase
     {
@@ -34,47 +33,21 @@ namespace ReactNative.Modules.StatusBar
 
         private PlatformType _platformType;
         private IStatusBar _statusBar;
-        private ITitleBar _titleBar;
-
-        private bool _hidden;
-        private bool _translucent;
-        private Color? _color;
 
         /// <summary>
         /// Instantiates the <see cref="StatusBarModule"/>.
         /// </summary>
-        internal StatusBarModule() : this(DetectPlatform(), CreateDefaultIStatusBar(), CreateDefaultITitleBar())
+        internal StatusBarModule() : this(DetectPlatform(), CreateDefaultStatusBar())
         {
         }
 
         /// <summary>
         /// Instantiates the <see cref="StatusBarModule"/>.
         /// </summary>
-        internal StatusBarModule(PlatformType platformType, IStatusBar statusBar, ITitleBar titleBar)
+        internal StatusBarModule(PlatformType platformType, IStatusBar statusBar)
         {
-            switch (platformType)
-            {
-                case PlatformType.Mobile:                 
-                    if (statusBar != null)
-                    {
-                        _color = statusBar.BackgroundColor;
-                        _translucent = statusBar.BackgroundOpacity == 1 ? false : true;
-                    }
-                    break;
-
-                case PlatformType.Desktop:
-                    if (titleBar != null)
-                    {
-                        _color = titleBar.BackgroundColor;
-                    }
-                    break;
-
-                default: break;        
-            }
-
             _platformType = platformType;
             _statusBar = statusBar;
-            _titleBar = titleBar;
         }
 
         /// <summary>
@@ -89,84 +62,60 @@ namespace ReactNative.Modules.StatusBar
         }
 
         /// <summary>
-        /// Hide or show statusbar.
+        /// Hide or show StatusBar.
         /// </summary>
-        /// <param name="hide">Hide or show statusbar.</param>
+        /// <param name="hide">Hide or show StatusBar.</param>
         [ReactMethod]
         public void setHidden(bool hide)
         {
-            _hidden = hide;
-
-            SetProperties(_hidden, _translucent, _color);
+            if (_platformType == PlatformType.Mobile && _statusBar != null)
+            {
+                RunOnDispatcher(async () =>
+                {
+                    if (hide)
+                    {
+                        await _statusBar.HideAsync();
+                    }
+                    else
+                    {
+                        await _statusBar.ShowAsync();
+                    }
+                });
+            }
         }
 
         /// <summary>
-        /// Set statusbar background color.
+        /// Set StatusBar background color.
         /// </summary>
         /// <param name="color">RGB color.</param>
         [ReactMethod]
         public void setColor(uint? color)
         {
-            if (color.HasValue)
+            if (color.HasValue && _statusBar != null)
             {
-                _color = ColorHelpers.Parse(color.Value);
+                var value = ColorHelpers.Parse(color.Value);
 
-                SetProperties(_hidden, _translucent, _color);
+                RunOnDispatcher(() =>
+                {
+                    _statusBar.BackgroundColor = value;
+                });
             }
         }
 
         /// <summary>
-        /// Set statusbar opacity.
+        /// Set StatusBar opacity.
         /// </summary>
-        /// <param name="translucent">Is statusbar translucent.</param>
+        /// <param name="translucent">Is StatusBar translucent.</param>
         [ReactMethod]
         public void setTranslucent(bool translucent)
         {
-            _translucent = translucent;
-
-            SetProperties(_hidden, _translucent, _color);
-        }
-
-        /// <summary>
-        /// Update statusbar properties.
-        /// </summary>
-        /// <param name="hidden">Is statusbar hidden.</param>
-        /// <param name="translucent">Is statusbar translucent.</param>
-        /// <param name="color">Background color.</param>
-        private void SetProperties(bool hidden, bool translucent, Color? color)
-        {
-            RunOnDispatcher(async () =>
+            if (_platformType == PlatformType.Mobile && _statusBar != null)
             {
-                switch (_platformType)
+                RunOnDispatcher(() =>
                 {
-                    case PlatformType.Mobile:
-                        if (_statusBar != null)
-                        {
-                            _statusBar.BackgroundOpacity = _translucent ? 0.5 : 1;
-                            _statusBar.BackgroundColor = color;
-                            if (hidden)
-                            {
-                                await _statusBar.HideAsync();
-                            }
-                            else
-                            {
-                                await _statusBar.ShowAsync();
-                            }
-                        }
-
-                        break;
-
-                    case PlatformType.Desktop:
-                        if (_titleBar != null)
-                        {
-                            _titleBar.BackgroundColor = color;
-                        }
-
-                        break;
-
-                    default: break;
-                }        
-            });
+                    _statusBar.BackgroundOpacity = translucent ? 0.5 : 1;
+                });
+            }
         }
 
         /// <summary>
@@ -190,26 +139,19 @@ namespace ReactNative.Modules.StatusBar
         }
 
         /// <summary>
-        /// Create default statusbar.
+        /// Create default StatusBar.
         /// </summary>
-        private static IStatusBar CreateDefaultIStatusBar()
+        private static IStatusBar CreateDefaultStatusBar()
         {
-            if (DetectPlatform() == PlatformType.Mobile)
+            var platformType = DetectPlatform();
+
+            if (platformType == PlatformType.Mobile)
             {
                 return new DefaultStatusBar(Windows.UI.ViewManagement.StatusBar.GetForCurrentView());
             }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Create default titlebar.
-        /// </summary>
-        private static ITitleBar CreateDefaultITitleBar()
-        {
-            if (DetectPlatform() == PlatformType.Desktop)
+            else if (platformType == PlatformType.Desktop)
             {
-                return new DefaultTitleBar(Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar);
+                return new DefaultStatusBar(Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar);
             }
 
             return null;
