@@ -10,6 +10,10 @@
 #include "RCTDefines.h"
 #include "RCTMacros.h"
 
+#if defined(OSMETA_PLATFORM_WINDOWS) && (defined(__arm__) || defined(__thumb__))
+.thumb
+#endif
+
 #if RCT_DEV && defined(__arm__)
 
   .thumb
