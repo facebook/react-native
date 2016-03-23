@@ -45,7 +45,7 @@ Create a React Native project:
 **To run the iOS app:**
 
 - `$ cd AwesomeProject`
-- Open `ios/AwesomeProject.xcodeproj` and hit run in Xcode.
+- `$ react-native run-ios` **OR** open `ios/AwesomeProject.xcodeproj` and hit "Run" button in Xcode
 - Open `index.ios.js` in your text editor of choice and edit some lines.
 - Hit ⌘-R in your iOS simulator to reload the app and see your change!
 
