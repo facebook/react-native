@@ -170,9 +170,9 @@ class Bundler {
     });
   }
 
-  _sourceHMRURL(platform, path) {
+  _sourceHMRURL(platform, host, port, path) {
     return this._hmrURL(
-      '',
+      `http://${host}:${port}`,
       platform,
       'bundle',
       path,
@@ -217,7 +217,7 @@ class Bundler {
     return this._bundle({
       ...options,
       bundle: new HMRBundle({
-        sourceURLFn: this._sourceHMRURL.bind(this, options.platform),
+        sourceURLFn: this._sourceHMRURL.bind(this, options.platform, host, port),
         sourceMappingURLFn: this._sourceMappingHMRURL.bind(
           this,
           options.platform,
@@ -385,12 +385,11 @@ class Bundler {
 
       // get entry file complete path (`entryFile` is relative to roots)
       let entryFilePath;
-      if (response.dependencies.length > 1) { // skip HMR requests
+      if (response.dependencies.length > 0) {
         const numModuleSystemDependencies =
           this._resolver.getModuleSystemDependencies({dev, unbundle}).length;
-
         entryFilePath = response.dependencies[
-          (response.numPrependedDependencies || 0) +
+          response.numPrependedDependencies +
           numModuleSystemDependencies
         ].path;
       }
