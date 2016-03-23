@@ -209,6 +209,8 @@
     <Compile Include="Modules\StatusBar\IStatusBar.cs" />
     <Compile Include="Modules\StatusBar\ITitleBar.cs" />
     <Compile Include="Modules\StatusBar\StatusBarModule.cs" />
+    <Compile Include="Modules\Storage\AsyncStorageErrorHelpers.cs" />
+    <Compile Include="Modules\Storage\AsyncStorageModule.cs" />
     <Compile Include="ReactContextInitializedEventArgs.cs" />
     <Compile Include="ReactPage.cs" />
     <Compile Include="ReactRootView.cs" />
@@ -223,7 +225,6 @@
     <Compile Include="IReactInstanceManager.cs" />
     <Compile Include="Modules\Core\ExceptionsManagerModule.cs" />
     <Compile Include="Modules\Core\Timing.cs" />
-    <Compile Include="Modules\Storage\AsyncStorageModule.cs" />
     <Compile Include="Modules\WebSocket\WebSocketModule.cs" />
     <Compile Include="ReactInstanceManager.cs" />
     <Compile Include="Chakra\JavaScriptBackgroundWorkItemCallback.cs" />
