@@ -41,16 +41,18 @@ describe('Bundler', function() {
     isAsset,
     isAsset_DEPRECATED,
     isJSON,
+    isPolyfill,
     resolution,
   }) {
     return {
       path,
       resolution,
-      getDependencies() { return Promise.resolve(dependencies); },
-      getName() { return Promise.resolve(id); },
-      isJSON() { return isJSON; },
-      isAsset() { return isAsset; },
-      isAsset_DEPRECATED() { return isAsset_DEPRECATED; },
+      getDependencies: () => Promise.resolve(dependencies),
+      getName: () => Promise.resolve(id),
+      isJSON: () => isJSON,
+      isAsset: () => isAsset,
+      isAsset_DEPRECATED: () => isAsset_DEPRECATED,
+      isPolyfill: () => isPolyfill,
       read: () => ({
         code: 'arbitrary',
         source: 'arbitrary',
