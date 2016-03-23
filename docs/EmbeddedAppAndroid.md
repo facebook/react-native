@@ -20,7 +20,7 @@ In your app's `build.gradle` file add the React Native dependency:
 
     compile 'com.facebook.react:react-native:+'
 
-and add React Native local maven repository from npm modules.
+and add React Native local Maven repository from npm modules.
 
     repositories {
         maven {
