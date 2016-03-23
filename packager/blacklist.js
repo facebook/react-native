@@ -13,7 +13,6 @@ var path = require('path');
 // Don't forget to everything listed here to `package.json`
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
-  /js\/tmp\/.*/,
   /node_modules[/\\]react[/\\]dist[/\\].*/,
   'node_modules/react/lib/React.js',
   'node_modules/react/lib/ReactDOM.js',
