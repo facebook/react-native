@@ -54,7 +54,7 @@ PACKAGE=$(pwd)/react-native-0.0.0-master.tgz
 # get react-native-cli dependencies
 cd react-native-cli
 node ../scripts/npm-bundle.js
-CLI_PACKAGE=$(pwd)/react-native-cli-*.tgz
+CLI_PACKAGE=$(pwd)/react-native-cli-0.2.0.tgz
 
 cd $TEMP
 
