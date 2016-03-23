@@ -20,7 +20,7 @@ namespace ReactNative.Modules.Storage
         {
             get
             {
-                return "AsyncStorageModule";
+                return "AsyncLocalStorage";
             }
         }
 
