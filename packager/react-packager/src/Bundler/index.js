@@ -356,13 +356,13 @@ class Bundler {
     const modulesByName = Object.create(null);
 
     if (!resolutionResponse) {
-      let onProgess = noop;
+      let onProgress = noop;
       if (process.stdout.isTTY && !this._opts.silent) {
         const bar = new ProgressBar(
           'transformed :current/:total (:percent)',
           {complete: '=', incomplete: ' ', width: 40, total: 1},
         );
-        onProgess = (_, total) => {
+        onProgress = (_, total) => {
           bar.total = total;
           bar.tick();
         };
@@ -373,7 +373,7 @@ class Bundler {
         dev,
         platform,
         hot,
-        onProgess,
+        onProgress,
         minify,
         generateSourceMaps: unbundle,
       });
@@ -383,10 +383,22 @@ class Bundler {
       Activity.endEvent(findEventId);
       onResolutionResponse(response);
 
+      // get entry file complete path (`entryFile` is relative to roots)
+      let entryFilePath;
+      if (response.dependencies.length > 0) {
+        const numModuleSystemDependencies =
+          this._resolver.getModuleSystemDependencies({dev, unbundle}).length;
+        entryFilePath = response.dependencies[
+          response.numPrependedDependencies +
+          numModuleSystemDependencies
+        ].path;
+      }
+
       const toModuleTransport = module =>
         this._toModuleTransport({
           module,
           bundle,
+          entryFilePath,
           transformOptions: response.transformOptions,
         }).then(transformed => {
           modulesByName[transformed.name] = module;
@@ -432,7 +444,7 @@ class Bundler {
     hot = false,
     recursive = true,
     generateSourceMaps = false,
-    onProgess,
+    onProgress,
   }) {
     return this.getTransformOptions(
       entryFile,
@@ -450,11 +462,12 @@ class Bundler {
         platform,
         transform: transformSpecificOptions,
       };
+
       return this._resolver.getDependencies(
         entryFile,
         {dev, platform, recursive},
         transformOptions,
-        onProgess,
+        onProgress,
       );
     });
   }
@@ -491,7 +504,7 @@ class Bundler {
     );
   }
 
-  _toModuleTransport({module, bundle, transformOptions}) {
+  _toModuleTransport({module, bundle, entryFilePath, transformOptions}) {
     let moduleTransport;
     if (module.isAsset_DEPRECATED()) {
       moduleTransport = this._generateAssetModule_DEPRECATED(bundle, module);
@@ -509,15 +522,24 @@ class Bundler {
       module.read(transformOptions),
     ]).then((
       [name, {code, dependencies, dependencyOffsets, map, source}]
-    ) => new ModuleTransport({
-      name,
-      id: this._getModuleId(module),
-      code,
-      map,
-      meta: {dependencies, dependencyOffsets},
-      sourceCode: source,
-      sourcePath: module.path
-    }));
+    ) => {
+      const preloaded =
+        module.path === entryFilePath ||
+        module.isPolyfill() || (
+          transformOptions.transform.preloadedModules &&
+          transformOptions.transform.preloadedModules.hasOwnProperty(module.path)
+        );
+
+      return new ModuleTransport({
+        name,
+        id: this._getModuleId(module),
+        code,
+        map,
+        meta: {dependencies, dependencyOffsets, preloaded},
+        sourceCode: source,
+        sourcePath: module.path
+      })
+    });
   }
 
   getGraphDebugInfo() {
