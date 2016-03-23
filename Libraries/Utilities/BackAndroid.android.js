@@ -20,17 +20,19 @@ type BackPressEventName = $Enum<{
   backPress: string;
 }>;
 
-var _backPressSubscriptions = new Set();
+var _backPressSubscriptions = [];
 
 RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
-  var backPressSubscriptions = new Set(_backPressSubscriptions);
-  var invokeDefault = true;
-  backPressSubscriptions.forEach((subscription) => {
+  var propagate = true;
+  for (var i = _backPressSubscriptions.length - 1; i >= 0; i--) {
+    var subscription = _backPressSubscriptions[i];
     if (subscription()) {
-      invokeDefault = false;
+      propagate = false;
+      break;
     }
-  });
-  if (invokeDefault) {
+  }
+
+  if (propagate) {
     BackAndroid.exitApp();
   }
 });
@@ -60,18 +62,18 @@ var BackAndroid = {
   addEventListener: function (
     eventName: BackPressEventName,
     handler: Function
-  ): {remove: () => void} {
-    _backPressSubscriptions.add(handler);
-    return {
-      remove: () => BackAndroid.removeEventListener(eventName, handler),
-    };
+  ): void {
+    _backPressSubscriptions.push(handler);
   },
 
   removeEventListener: function(
     eventName: BackPressEventName,
     handler: Function
   ): void {
-    _backPressSubscriptions.delete(handler);
+    var index = _backPressSubscriptions.indexOf(handler);
+    if (index !== -1) {
+      _backPressSubscriptions.splice(index, 1);
+    }
   },
 
 };
