@@ -371,6 +371,7 @@ var Navigator = React.createClass({
     }, () => {
       this._handleSpringUpdate();
       this._navBar && this._navBar.immediatelyRefresh();
+      this._emitDidFocus(this.state.routeStack[this.state.presentedIndex]);
     });
   },
 
