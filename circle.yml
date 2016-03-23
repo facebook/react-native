@@ -49,6 +49,9 @@ test:
     - source scripts/circle-ci-android-setup.sh && waitForAVD
 
   override:
+    # Publish to Sinopia, create a new app using 'react-native init' and check the packager starts
+    - ./scripts/e2e-test.sh --packager
+
     # eslint bot
     - cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
     # JS tests for dependencies installed with npm3
@@ -78,8 +81,6 @@ test:
     - ./gradlew :ReactAndroid:installDebugAndroidTest
     - source scripts/circle-ci-android-setup.sh && retry3 ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests.gradle
 
-    # Publish to Sinopia, create a new app using 'react-native init' and check the packager starts
-    - ./scripts/e2e-test.sh --packager
 
     # testing docs generation is not broken
     - cd website && node ./server/generate.js

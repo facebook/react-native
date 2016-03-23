@@ -53,12 +53,13 @@ PACKAGE=$(pwd)/react-native-0.0.0-master.tgz
 
 # get react-native-cli dependencies
 cd react-native-cli
-npm install
-CLI=$(pwd)/react-native-cli/index.js
+node ../scripts/npm-bundle.js
+CLI_PACKAGE=$(pwd)/react-native-cli-*.tgz
 
 cd $TEMP
 
-node $CLI init EndToEndTest --rn-package $PACKAGE
+npm install -g $CLI_PACKAGE
+react-native init EndToEndTest --rn-package $PACKAGE
 cd EndToEndTest
 
 case $1 in
