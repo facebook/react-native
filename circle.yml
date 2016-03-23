@@ -44,12 +44,13 @@ dependencies:
 test:
   pre:
     # starting emulator in advance because it takes very long to boot
-    - $ANDROID_HOME/tools/emulator -avd testAVD -no-skin -no-audio -no-window:
-            background: true
-    - source scripts/circle-ci-android-setup.sh && waitForAVD
+#    - $ANDROID_HOME/tools/emulator -avd testAVD -no-skin -no-audio -no-window:
+#            background: true
+#    - source scripts/circle-ci-android-setup.sh && waitForAVD
 
   override:
     # Publish to Sinopia, create a new app using 'react-native init' and check the packager starts
+    - npm ls --prod --json
     - ./scripts/e2e-test.sh --packager
 
     # eslint bot

@@ -27,7 +27,7 @@ let withDeps = process.argv.indexOf('--with-deps') !== -1;
 if(withDeps) {
   // npm needs a list of all dependencies to bundle but our node_modules can be deduped to some level
   // so we need to ask npm to give us full lust of non dev dependencies
-  let packagesToBundle = JSON.parse(exec(`npm ls --prod --json --silent`, {silent: false}).stdout);
+  let packagesToBundle = JSON.parse(exec(`npm ls --prod --json --silent`, {silent: true}).stdout);
   function getDependencies(packageTree) {
     if (!packageTree.dependencies) {
       return [];
