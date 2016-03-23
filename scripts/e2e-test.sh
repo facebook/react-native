@@ -67,6 +67,7 @@ case $1 in
   echo "Running a basic packager test"
   # Check the packager produces a bundle (doesn't throw an error)
   react-native bundle --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js
+  # TODO do flow check
   ;;
 "--ios"*)
   echo "Running an iOS app"
