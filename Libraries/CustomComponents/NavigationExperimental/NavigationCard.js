@@ -33,9 +33,11 @@
 'use strict';
 
 const Animated = require('Animated');
+const NavigationCardStackPanResponder = require('NavigationCardStackPanResponder');
 const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleInterpolator');
 const NavigationContainer = require('NavigationContainer');
-const NavigationLinearPanResponder = require('NavigationLinearPanResponder');
+const NavigationPagerPanResponder = require('NavigationPagerPanResponder');
+const NavigationPagerStyleInterpolator = require('NavigationPagerStyleInterpolator');
 const NavigationPropTypes = require('NavigationPropTypes');
 const React = require('react-native');
 const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
@@ -91,7 +93,7 @@ class NavigationCard extends React.Component<any, Props, any> {
     }
     if (panHandlers === undefined) {
       // fall back to default pan handlers.
-      panHandlers = NavigationLinearPanResponder.forHorizontal(props);
+      panHandlers = NavigationCardStackPanResponder.forHorizontal(props);
     }
 
     return (
@@ -119,4 +121,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = NavigationContainer.create(NavigationCard);
+
+const NavigationCardContainer = NavigationContainer.create(NavigationCard);
+
+// Export these buil-in interaction modules.
+NavigationCardContainer.CardStackPanResponder = NavigationCardStackPanResponder;
+NavigationCardContainer.CardStackStyleInterpolator = NavigationCardStackStyleInterpolator;
+NavigationCardContainer.PagerPanResponder = NavigationPagerPanResponder;
+NavigationCardContainer.PagerStyleInterpolator = NavigationPagerStyleInterpolator;
+
+module.exports = NavigationCardContainer;

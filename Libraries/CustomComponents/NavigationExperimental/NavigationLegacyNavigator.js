@@ -39,7 +39,9 @@ const NavigationCard = require('NavigationCard');
 const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleInterpolator');
 const NavigationContext = require('NavigationContext');
 const NavigationLegacyNavigatorRouteStack = require('NavigationLegacyNavigatorRouteStack');
-const NavigationLinearPanResponder = require('NavigationLinearPanResponder');
+const NavigationCardStackPanResponder = require('NavigationCardStackPanResponder');
+const NavigationPagerPanResponder = require('NavigationPagerPanResponder');
+const NavigationPagerStyleInterpolator = require('NavigationPagerStyleInterpolator');
 const NavigatorBreadcrumbNavigationBar = require('NavigatorBreadcrumbNavigationBar');
 const NavigatorNavigationBar = require('NavigatorNavigationBar');
 const NavigatorSceneConfigs = require('NavigatorSceneConfigs');
@@ -47,6 +49,7 @@ const React = require('react-native');
 const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
 
 import type  {
+  NavigationActionCaller,
   NavigationAnimatedValue,
   NavigationAnimationSetter,
   NavigationParentState,
@@ -72,15 +75,6 @@ type State = {
   presentedIndex: number,
   routeStack: Array<any>,
 };
-
-function getConfigPopDirection(config: any): ?string {
-  if (config && config.gestures && config.gestures.pop) {
-    const direction = config.gestures.pop.direction;
-    return direction ? String(direction) : null;
-  }
-
-  return null;
-}
 
 const RouteStack = NavigationLegacyNavigatorRouteStack;
 
@@ -108,6 +102,7 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   _renderScene: NavigationSceneRenderer;
   _routeFocused: any;
   _routeToFocus: any;
+  _onNavigate: NavigationActionCaller;
   _stack: NavigationLegacyNavigatorRouteStack;
   _useAnimation: boolean;
 
@@ -206,6 +201,7 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
 
   componentWillMount(): void {
     this._applyAnimation = this._applyAnimation.bind(this);
+    this._onNavigate = this._onNavigate.bind(this);
     this._onNavigationBarRef = this._onNavigationBarRef.bind(this);
     this._onPositionChange = this._onPositionChange.bind(this);
     this._renderCard = this._renderCard.bind(this);
@@ -240,6 +236,7 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
       <NavigationAnimatedView
         applyAnimation={this._applyAnimation}
         navigationState={this._stack.toNavigationState()}
+        onNavigate={this._onNavigate}
         renderOverlay={this._renderHeader}
         renderScene={this._renderCard}
         style={this.props.style}
@@ -285,37 +282,37 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
     const {scene} = props;
     const {configureScene} = this.props;
 
-    let isVertical = false;
+    // Default getters for style and pan responders.
+    let styleGetter = NavigationCardStackStyleInterpolator.forHorizontal;
+    let panResponderGetter =  NavigationCardStackPanResponder.forHorizontal;
 
     if (configureScene) {
       const route = RouteStack.getRouteByNavigationState(scene.navigationState);
       const config = configureScene(route, this.state.routeStack);
-      const direction = getConfigPopDirection(config);
 
-      switch (direction) {
-        case 'left-to-right':
-          // default.
-          break;
-
-        case 'top-to-bottom':
-          isVertical = true;
-          break;
-
-        default:
-          // unsupported config.
-          if (__DEV__) {
-            console.warn('unsupported scene configuration %s', direction);
-          }
+      if (config) {
+        const gestures = config.gestures || {};
+        if (gestures.pop && gestures.pop.direction === 'left-to-right') {
+          // pass, will use default getters.
+        } else if (gestures.pop && gestures.pop.direction === 'top-to-bottom') {
+          styleGetter = NavigationCardStackStyleInterpolator.forVertical;
+          panResponderGetter = NavigationCardStackPanResponder.forVertical;
+        } else if (
+          gestures.jumpBack &&
+          gestures.jumpForward &&
+          gestures.jumpBack.direction === 'left-to-right' &&
+          gestures.jumpForward.direction === 'right-to-left'
+        ) {
+          styleGetter = NavigationPagerStyleInterpolator.forHorizontal;
+          panResponderGetter = NavigationPagerPanResponder.forHorizontal;
+        } else if (__DEV__) {
+          console.warn('unsupported scene configuration', config);
+        }
       }
     }
 
-    const style = isVertical ?
-      NavigationCardStackStyleInterpolator.forVertical(props) :
-      NavigationCardStackStyleInterpolator.forHorizontal(props);
-
-    const panHandlers = isVertical ?
-      NavigationLinearPanResponder.forVertical(props) :
-      NavigationLinearPanResponder.forHorizontal(props);
+    const style = styleGetter(props);
+    const panHandlers = panResponderGetter(props);
 
     return (
       <NavigationCard
@@ -420,6 +417,24 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
     this._routeFocused = route;
     this.navigationContext.emit('didfocus', {route: route});
     this.props.onDidFocus && this.props.onDidFocus(route);
+  }
+
+  _onNavigate(action: any): void {
+    switch (action) {
+      case NavigationCardStackPanResponder.Actions.BACK:
+        this.pop();
+        break;
+      case NavigationPagerPanResponder.Actions.JUMP_BACK:
+        this.jumpBack();
+        break;
+      case NavigationPagerPanResponder.Actions.JUMP_FORWARD:
+        this.jumpForward();
+        break;
+      default:
+        if (__DEV__) {
+          console.warn('unsupported gesture action', action);
+        }
+    }
   }
 }
 

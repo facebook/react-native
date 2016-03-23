@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule NavigationLinearPanResponder
+ * @providesModule NavigationPagerPanResponder
  * @flow
  * @typechecks
  */
@@ -14,6 +14,7 @@
 
 const Animated = require('Animated');
 const NavigationAbstractPanResponder = require('NavigationAbstractPanResponder');
+const NavigationCardStackPanResponder = require('NavigationCardStackPanResponder');
 
 const clamp = require('clamp');
 
@@ -22,53 +23,46 @@ import type {
   NavigationSceneRendererProps,
 } from 'NavigationTypeDefinition';
 
-/**
- * The duration of the card animation in milliseconds.
- */
-const ANIMATION_DURATION = 250;
+import type {
+  NavigationGestureDirection,
+} from 'NavigationCardStackPanResponder';
 
-/**
- * The threshold to invoke the `onNavigate` action.
- * For instance, `1 / 3` means that moving greater than 1 / 3 of the width of
- * the view will navigate.
- */
-const POSITION_THRESHOLD = 1 / 3;
 
-/**
- * The threshold (in pixels) to start the gesture action.
- */
-const RESPOND_THRESHOLD = 15;
-
-/**
- * The threshold (in pixels) to finish the gesture action.
- */
-const DISTANCE_THRESHOLD = 100;
 
 /**
  * Primitive gesture directions.
  */
-const Directions = {
-  'HORIZONTAL': 'horizontal',
-  'VERTICAL': 'vertical',
-};
-
-export type NavigationGestureDirection =  'horizontal' | 'vertical';
+const {
+  ANIMATION_DURATION,
+  DISTANCE_THRESHOLD,
+  POSITION_THRESHOLD,
+  RESPOND_THRESHOLD,
+  Directions,
+} = NavigationCardStackPanResponder;
 
 /**
  * Primitive gesture actions.
  */
 const Actions = {
-  // The gesture to navigate backward.
-  // This is done by swiping from the left to the right or from the top to the
-  // bottom.
-  BACK: {type: 'back'},
+  JUMP_BACK: {type: 'jump_back'},
+  JUMP_FORWARD: {type: 'jump_forward'},
 };
 
 /**
- * Pan responder that handles the One-dimensional gesture (horizontal or
- * vertical).
+ * Pan responder that handles gesture for a card in the cards list.
+ *
+ * +-------------+-------------+-------------+
+ * |             |             |             |
+ * |             |             |             |
+ * |             |             |             |
+ * |    Next     |   Focused   |  Previous   |
+ * |    Card     |    Card     |    Card     |
+ * |             |             |             |
+ * |             |             |             |
+ * |             |             |             |
+ * +-------------+-------------+-------------+
  */
-class NavigationLinearPanResponder extends NavigationAbstractPanResponder {
+class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
 
   _isResponding: boolean;
   _isVertical: boolean;
@@ -121,22 +115,37 @@ class NavigationLinearPanResponder extends NavigationAbstractPanResponder {
       return;
     }
 
-    const props = this._props;
-    const layout = props.layout;
+    const {
+      layout,
+      navigationState,
+      position,
+      scenes,
+    } = this._props;
+
     const isVertical = this._isVertical;
     const axis = isVertical ? 'dy' : 'dx';
-    const index = props.navigationState.index;
+    const index = navigationState.index;
     const distance = isVertical ?
       layout.height.__getValue() :
       layout.width.__getValue();
 
-    const value = clamp(
+    const prevIndex = Math.max(
+      0,
       index - 1,
-      this._startValue - (gesture[axis] / distance),
-      index
     );
 
-    props.position.setValue(value);
+    const nextIndex = Math.min(
+      index + 1,
+      scenes.length - 1,
+    );
+
+    const value = clamp(
+      prevIndex,
+      this._startValue - (gesture[axis] / distance),
+      nextIndex,
+    );
+
+    position.setValue(value);
   }
 
   onPanResponderRelease(event: any, gesture: any): void {
@@ -146,16 +155,32 @@ class NavigationLinearPanResponder extends NavigationAbstractPanResponder {
 
     this._isResponding = false;
 
-    const props = this._props;
+    const {
+      navigationState,
+      onNavigate,
+      position,
+    } = this._props;
+
     const isVertical = this._isVertical;
     const axis = isVertical ? 'dy' : 'dx';
-    const index = props.navigationState.index;
+    const index = navigationState.index;
     const distance = gesture[axis];
 
-    props.position.stopAnimation((value: number) => {
+    position.stopAnimation((value: number) => {
       this._reset();
-       if (distance > DISTANCE_THRESHOLD  || value <= index - POSITION_THRESHOLD) {
-        props.onNavigate(Actions.BACK);
+      if (
+        distance > DISTANCE_THRESHOLD  ||
+        value <= index - POSITION_THRESHOLD
+      ) {
+        onNavigate(Actions.JUMP_BACK);
+        return;
+      }
+
+      if (
+        distance < -DISTANCE_THRESHOLD ||
+        value >= index  + POSITION_THRESHOLD
+      ) {
+        onNavigate(Actions.JUMP_FORWARD);
       }
     });
   }
@@ -181,7 +206,7 @@ function createPanHandlers(
   direction: NavigationGestureDirection,
   props: NavigationSceneRendererProps,
 ): NavigationPanPanHandlers {
-  const responder = new NavigationLinearPanResponder(direction, props);
+  const responder = new NavigationPagerPanResponder(direction, props);
   return responder.panHandlers;
 }
 
@@ -191,15 +216,7 @@ function forHorizontal(
   return createPanHandlers(Directions.HORIZONTAL, props);
 }
 
-function forVertical(
-  props: NavigationSceneRendererProps,
-): NavigationPanPanHandlers {
-  return createPanHandlers(Directions.VERTICAL, props);
-}
-
 module.exports = {
   Actions,
-  Directions,
   forHorizontal,
-  forVertical,
 };
