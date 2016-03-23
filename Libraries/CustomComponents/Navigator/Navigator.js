@@ -198,7 +198,7 @@ var Navigator = React.createClass({
      *
      * Available options are:
      *
-     *  - Navigator.SceneConfigs.PushFromRight
+     *  - Navigator.SceneConfigs.PushFromRight (default)
      *  - Navigator.SceneConfigs.FloatFromRight
      *  - Navigator.SceneConfigs.FloatFromLeft
      *  - Navigator.SceneConfigs.FloatFromBottom
