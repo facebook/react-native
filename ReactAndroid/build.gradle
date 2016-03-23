@@ -255,8 +255,6 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.0.1'
     compile 'com.facebook.fresco:fresco:0.8.1'
     compile 'com.facebook.fresco:imagepipeline-okhttp:0.8.1'
-    compile 'com.facebook.stetho:stetho:1.2.0'
-    compile 'com.facebook.stetho:stetho-okhttp:1.2.0'
     compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
