@@ -31,6 +31,11 @@ namespace ReactNative.Tests.Modules.Storage
                 new[] { "5", "5", "5" },
             };
 
+            module.clear(callback);
+            Assert.IsTrue(waitHandle.WaitOne());
+            Assert.IsNull(error);
+            Assert.IsNull(result);
+
             module.multiSet(array, callback);
             Assert.IsTrue(waitHandle.WaitOne());
             Assert.AreEqual(error["message"], "Invalid Value");
@@ -56,6 +61,11 @@ namespace ReactNative.Tests.Modules.Storage
             {
                 new[] { "test1", "5" },
             };
+
+            module.clear(callback);
+            Assert.IsTrue(waitHandle.WaitOne());
+            Assert.IsNull(error);
+            Assert.IsNull(result);
 
             module.multiSet(array, callback);
             Assert.IsTrue(waitHandle.WaitOne());
@@ -140,12 +150,77 @@ namespace ReactNative.Tests.Modules.Storage
             Assert.AreEqual(result.Count, 4);
         }
 
-        /// **************
-        /// Android tests
-        /// **************
+        [TestMethod]
+        public void AsyncStorageModule_multiSet_LargeValue()
+        {
+            var module = new AsyncStorageModule();
+            var waitHandle = new AutoResetEvent(false);
+
+            var error = default(JObject);
+            var result = default(JArray);
+            var callback = new MockCallback(res =>
+            {
+                error = res.Length > 0 ? (JObject)res[0] : null;
+                result = res.Length > 1 ? (JArray)res[1] : null;
+                waitHandle.Set();
+            });
+
+            module.clear(callback);
+            Assert.IsTrue(waitHandle.WaitOne());
+            Assert.IsNull(error);
+            Assert.IsNull(result);
+
+            var array = new[]
+            {
+                new[] { "testKey", string.Join("", Enumerable.Repeat("a", 1024 * 16)) },
+            };
+            
+            module.multiSet(array, callback);
+            Assert.IsTrue(waitHandle.WaitOne());
+            Assert.IsNull(error);
+            Assert.IsNull(result);
+
+            module.multiGet(new[] { "testKey" }, callback);
+            Assert.IsTrue(waitHandle.WaitOne());
+            Assert.IsNull(error);
+            Assert.AreEqual(
+                JArray.FromObject(array).ToString(Formatting.None),
+                result.ToString(Formatting.None));
+        }
 
         [TestMethod]
-        public void AsyncStorageModule_Android_testMultiSetMultiGet()
+        public void AsyncStorageModule_multiMerge_NullValue()
+        {
+            var module = new AsyncStorageModule();
+            var waitHandle = new AutoResetEvent(false);
+
+            var error = default(JObject);
+            var result = default(JArray);
+            var callback = new MockCallback(res =>
+            {
+                error = res.Length > 0 ? (JObject)res[0] : null;
+                result = res.Length > 1 ? (JArray)res[1] : null;
+                waitHandle.Set();
+            });
+
+            module.clear(callback);
+            Assert.IsTrue(waitHandle.WaitOne());
+            Assert.IsNull(error);
+            Assert.IsNull(result);
+
+            var array = new[]
+            {
+                new[] { "testKey", string.Join("", Enumerable.Repeat("a", 1024 * 16)) },
+            };
+
+            module.multiMerge(array, callback);
+            Assert.IsTrue(waitHandle.WaitOne());
+            Assert.IsNull(error);
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void AsyncStorageModule_testMultiSetMultiGet()
         {
             var mStorage = new AsyncStorageModule();
             var waitHandle = new AutoResetEvent(false);
@@ -200,7 +275,7 @@ namespace ReactNative.Tests.Modules.Storage
         }
 
         [TestMethod]
-        public void AsyncStorageModule_Android_testMultiRemove()
+        public void AsyncStorageModule_testMultiRemove()
         {
             var mStorage = new AsyncStorageModule();
             var waitHandle = new AutoResetEvent(false);
@@ -265,7 +340,7 @@ namespace ReactNative.Tests.Modules.Storage
         }
 
         [TestMethod]
-        public void AsyncStorageModule_Android_testMultiMerge()
+        public void AsyncStorageModule_testMultiMerge()
         {
             var mStorage = new AsyncStorageModule();
             var waitHandle = new AutoResetEvent(false);
@@ -410,7 +485,7 @@ namespace ReactNative.Tests.Modules.Storage
         }
 
         [TestMethod]
-        public void AsyncStorageModule_Android_testGetAllKeys()
+        public void AsyncStorageModule_testGetAllKeys()
         {
             var mStorage = new AsyncStorageModule();
             var waitHandle = new AutoResetEvent(false);
@@ -484,7 +559,7 @@ namespace ReactNative.Tests.Modules.Storage
         }
 
         [TestMethod]
-        public void AsyncStorageModule_Android_testClear()
+        public void AsyncStorageModule_testClear()
         {
             var mStorage = new AsyncStorageModule();
             var waitHandle = new AutoResetEvent(false);
@@ -537,7 +612,7 @@ namespace ReactNative.Tests.Modules.Storage
         }
 
         [TestMethod]
-        public void AsyncStorageModule_Android_testHugeMultiGetMultiGet()
+        public void AsyncStorageModule_testHugeMultiGetMultiGet()
         {
             var mStorage = new AsyncStorageModule();
             var waitHandle = new AutoResetEvent(false);

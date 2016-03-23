@@ -28,10 +28,5 @@ namespace ReactNative.Modules.Storage
         {
             return GetError(key, "Invalid Value");
         }
-
-        public static JObject GetDatabaseError(string key)
-        {
-            return GetError(key, "Database Error");
-        }
     }
 }
