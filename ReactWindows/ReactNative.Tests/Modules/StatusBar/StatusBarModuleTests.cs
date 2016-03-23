@@ -16,91 +16,87 @@ namespace ReactNative.Tests.Modules.StatusBar
         public void StatusBar_setColor()
         {
             var waitHandle = new AutoResetEvent(false);
+            var statusBar = new MockStatusBar(waitHandle);
+            var module = CreateStatusBarModule(StatusBarModule.PlatformType.Mobile, statusBar);
 
-            var statusbar = new MockStatusBar(waitHandle);
-            var titlebar = new MockTitleBar(waitHandle);
-            var module = CreateStatusBarModule(StatusBarModule.PlatformType.Mobile, statusbar, titlebar);
-
-            var colorValue = 0xabcdefed;
-            module.setColor(colorValue);
+            var color = 0xabcdefed;
+            module.setColor(color);
 
             waitHandle.WaitOne();
 
-            var color = colorValue;
             var b = (byte)color;
             color >>= 8;
             var g = (byte)color;
             color >>= 8;
             var r = (byte)color;
 
-            Assert.AreEqual(r, statusbar.BackgroundColor.Value.R);
-            Assert.AreEqual(g, statusbar.BackgroundColor.Value.G);
-            Assert.AreEqual(b, statusbar.BackgroundColor.Value.B);
+            Assert.AreEqual(r, statusBar.BackgroundColor.Value.R);
+            Assert.AreEqual(g, statusBar.BackgroundColor.Value.G);
+            Assert.AreEqual(b, statusBar.BackgroundColor.Value.B);
 
-            module = CreateStatusBarModule(StatusBarModule.PlatformType.Desktop, statusbar, titlebar);
-            module.setColor(colorValue);
+            module = CreateStatusBarModule(StatusBarModule.PlatformType.Desktop, statusBar);
 
+            color = 0xabcabcab;
+
+            module.setColor(color);
             waitHandle.WaitOne();
 
-            Assert.AreEqual(r, titlebar.BackgroundColor.Value.R);
-            Assert.AreEqual(g, titlebar.BackgroundColor.Value.G);
-            Assert.AreEqual(b, titlebar.BackgroundColor.Value.B);
+            b = (byte)color;
+            color >>= 8;
+            g = (byte)color;
+            color >>= 8;
+            r = (byte)color;
+
+            Assert.AreEqual(r, statusBar.BackgroundColor.Value.R);
+            Assert.AreEqual(g, statusBar.BackgroundColor.Value.G);
+            Assert.AreEqual(b, statusBar.BackgroundColor.Value.B);
         }
 
         [TestMethod]
         public void StatusBar_setHidden()
         {
             var waitHandle = new AutoResetEvent(false);
-
-            var statusbar = new MockStatusBar(waitHandle);
-            var titlebar = new MockTitleBar(waitHandle);
-            var module = CreateStatusBarModule(StatusBarModule.PlatformType.Mobile, statusbar, titlebar);
+            var statusBar = new MockStatusBar(waitHandle);
+            var module = CreateStatusBarModule(StatusBarModule.PlatformType.Mobile, statusBar);
 
             module.setHidden(true);
-
             waitHandle.WaitOne();
 
-            Assert.AreEqual(statusbar.Hidden, true);
+            Assert.AreEqual(statusBar.Hidden, true);
 
             module.setHidden(false);
-
             waitHandle.WaitOne();
 
-            Assert.AreEqual(statusbar.Hidden, false);
+            Assert.AreEqual(statusBar.Hidden, false);
         }
 
         [TestMethod]
         public void StatusBar_setTranslucent()
         {
             var waitHandle = new AutoResetEvent(false);
-
-            var statusbar = new MockStatusBar(waitHandle);
-            var titlebar = new MockTitleBar(waitHandle);
-            var module = CreateStatusBarModule(StatusBarModule.PlatformType.Mobile, statusbar, titlebar);
+            var statusBar = new MockStatusBar(waitHandle);
+            var module = CreateStatusBarModule(StatusBarModule.PlatformType.Mobile, statusBar);
 
             module.setTranslucent(false);
-
             waitHandle.WaitOne();
 
-            Assert.AreEqual(statusbar.BackgroundOpacity, 1.0);
+            Assert.AreEqual(statusBar.BackgroundOpacity, 1.0);
 
             module.setTranslucent(true);
-
             waitHandle.WaitOne();
 
-            Assert.AreEqual(statusbar.BackgroundOpacity, 0.5);
+            Assert.AreEqual(statusBar.BackgroundOpacity, 0.5);
         }
 
-        private static StatusBarModule CreateStatusBarModule(StatusBarModule.PlatformType platform, IStatusBar statusbar, ITitleBar titlebar)
+        private static StatusBarModule CreateStatusBarModule(StatusBarModule.PlatformType platform, IStatusBar statusBar)
         {
-            return new StatusBarModule(platform, statusbar, titlebar);
+            return new StatusBarModule(platform, statusBar);
         }
 
         class MockStatusBar : IStatusBar
         {
             private AutoResetEvent _waitHandle;
 
-            private int _counter = 0;
             private bool _hidden = true;
             private Color? _backgroundColor = Colors.Black;
             private double _backgroundOpacity = 0.7;
@@ -127,7 +123,7 @@ namespace ReactNative.Tests.Modules.StatusBar
                 set
                 {
                     _backgroundOpacity = value;
-                    Signal();
+                    _waitHandle.Set();
                 }
             }
 
@@ -140,14 +136,14 @@ namespace ReactNative.Tests.Modules.StatusBar
                 set
                 {
                     _backgroundColor = value;
-                    Signal();
+                    _waitHandle.Set();
                 }
             }
 
             public IAsyncAction HideAsync()
             {
                 _hidden = true;
-                Signal();
+                _waitHandle.Set();
 
                 Func<Task> action = async () =>  { await DummyTask(); };
 
@@ -158,21 +154,11 @@ namespace ReactNative.Tests.Modules.StatusBar
             public IAsyncAction ShowAsync()
             {
                 _hidden = false;
-                Signal();
+                _waitHandle.Set();
 
                 Func<Task> action = async () => { await DummyTask();  };
 
                 return action().AsAsyncAction();
-            }
-
-            private void Signal()
-            {
-                // All three events must fire before waitHandle release
-                if (++_counter == 3)
-                {
-                    _waitHandle.Set();
-                    _counter = 0;
-                }
             }
 
             private static async Task DummyTask()
@@ -184,31 +170,6 @@ namespace ReactNative.Tests.Modules.StatusBar
                     await file.DeleteAsync();
                 }
                 catch (Exception) { }
-            }
-        }
-
-        class MockTitleBar : ITitleBar
-        {
-            private AutoResetEvent _waitHandle;
-
-            private Color? _backgroundColor = Colors.Black;
-
-            public MockTitleBar(AutoResetEvent waitHandle)
-            {
-                _waitHandle = waitHandle;
-            }
-
-            public Color? BackgroundColor
-            {
-                get
-                {
-                    return _backgroundColor;
-                }
-                set
-                {
-                    _backgroundColor = value;
-                    _waitHandle.Set();
-                }
             }
         }
     }

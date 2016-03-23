@@ -169,15 +169,15 @@ const StatusBar = React.createClass({
     setBackgroundColor(color: string, animated?: boolean) {
       if (Platform.OS === 'ios') {
         console.warn('`setBackgroundColor` is only available on Android and Windows');
-        return;
       }
-      animated = animated || false;
-      StatusBar._defaultProps.backgroundColor.value = color;
-      if (Platform.OS === 'windows') {
-        StatusBarManager.setColor(processColor(color));    
-      }
-      else {
+      else if {
+        animated = animated || false;
+        StatusBar._defaultProps.backgroundColor.value = color;
         StatusBarManager.setColor(processColor(color), animated);
+      }
+      else if (Platform.OS === 'windows') {
+        StatusBar._defaultProps.backgroundColor.value = color;
+        StatusBarManager.setColor(processColor(color));    
       }
     },
 
@@ -186,10 +186,8 @@ const StatusBar = React.createClass({
         console.warn('`setTranslucent` is not available on iOS');
         return;
       }
-      else {     
-        StatusBar._defaultProps.translucent = translucent;
-        StatusBarManager.setTranslucent(translucent);
-      }
+      StatusBar._defaultProps.translucent = translucent;
+      StatusBarManager.setTranslucent(translucent);
     },
   },
 
@@ -289,7 +287,6 @@ const StatusBar = React.createClass({
       const oldProps = StatusBar._currentValues;
       const mergedProps = mergePropsStack(StatusBar._propsStack, StatusBar._defaultProps);
 
-<<<<<<< 6e3cb35ceff81c36aa41dca3340cacd0434967d3
       // Update the props that have changed using the merged values from the props stack.
       if (Platform.OS === 'ios') {
         if (!oldProps || oldProps.barStyle.value !== mergedProps.barStyle.value) {
