@@ -671,7 +671,7 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
 - (void)registerNativeRequire
 {
   __weak RCTJSCExecutor *weakSelf = self;
-  _context.context[@"nativeRequire"] = ^(NSString *moduleName) {
+  [self addSynchronousHookWithName:@"nativeRequire" usingBlock:^(NSString *moduleName) {
     RCTJSCExecutor *strongSelf = weakSelf;
     if (!strongSelf || !moduleName) {
       return;
@@ -696,7 +696,7 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
         [strongSelf invalidate];
       });
     }
-  };
+  }];
 }
 
 - (NSData *)loadRAMBundle:(NSURL *)sourceURL error:(NSError **)error
