@@ -252,13 +252,6 @@ var ScrollView = React.createClass({
      */
     scrollsToTop: PropTypes.bool,
     /**
-     * When true, momentum events will be sent from Android
-     * This is internal and set automatically by the framework if you have
-     * onMomentumScrollBegin or onMomentumScrollEnd set on your ScrollView
-     * @platform android
-     */
-    sendMomentumEvents: PropTypes.bool,
-    /**
      * When true, shows a horizontal scroll indicator.
      */
     showsHorizontalScrollIndicator: PropTypes.bool,
@@ -555,10 +548,12 @@ var styles = StyleSheet.create({
 });
 
 if (Platform.OS === 'android') {
-  var AndroidScrollView = requireNativeComponent('RCTScrollView', ScrollView);
+  var nativeOnlyProps = { nativeOnly : { 'sendMomentumEvents' : true } };
+  var AndroidScrollView = requireNativeComponent('RCTScrollView', ScrollView, nativeOnlyProps);
   var AndroidHorizontalScrollView = requireNativeComponent(
     'AndroidHorizontalScrollView',
-    ScrollView
+    ScrollView,
+    nativeOnlyProps
   );
 } else if (Platform.OS === 'ios') {
   var RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView);
