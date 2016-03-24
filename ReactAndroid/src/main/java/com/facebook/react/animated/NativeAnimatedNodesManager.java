@@ -74,6 +74,8 @@ import javax.annotation.Nullable;
       node = new PropsAnimatedNode(config, this);
     } else if ("addition".equals(type)) {
       node = new AdditionAnimatedNode(config, this);
+    } else if ("multiplication".equals(type)) {
+      node = new MultiplicationAnimatedNode(config, this);
     } else {
       throw new JSApplicationIllegalArgumentException("Unsupported node type: " + type);
     }
