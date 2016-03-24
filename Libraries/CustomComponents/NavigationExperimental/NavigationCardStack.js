@@ -32,6 +32,7 @@
  */
 'use strict';
 
+const Animated = require('Animated');
 const NavigationAnimatedView = require('NavigationAnimatedView');
 const NavigationCard = require('NavigationCard');
 const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleInterpolator');
@@ -48,6 +49,7 @@ const {PropTypes} = React;
 const {Directions} = NavigationCardStackPanResponder;
 
 import type {
+  NavigationAnimatedValue,
   NavigationParentState,
   NavigationSceneRenderer,
   NavigationSceneRendererProps,
@@ -62,6 +64,18 @@ type Props = {
   navigationState: NavigationParentState,
   renderOverlay: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
+};
+
+const propTypes = {
+  direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
+  navigationState: NavigationPropTypes.navigationParentState.isRequired,
+  renderOverlay: PropTypes.func,
+  renderScene: PropTypes.func.isRequired,
+};
+
+const defaultProps = {
+  direction: Directions.HORIZONTAL,
+  renderOverlay: emptyFunction.thatReturnsNull,
 };
 
 /**
@@ -80,18 +94,6 @@ type Props = {
  */
 class NavigationCardStack extends React.Component {
   _renderScene : NavigationSceneRenderer;
-
-  static propTypes = {
-    direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
-    navigationState: NavigationPropTypes.navigationParentState.isRequired,
-    renderOverlay: PropTypes.func,
-    renderScene: PropTypes.func.isRequired,
-  };
-
-  static defaultProps = {
-    direction: Directions.HORIZONTAL,
-    renderOverlay: emptyFunction.thatReturnsNull,
-  };
 
   constructor(props: Props, context: any) {
     super(props, context);
@@ -142,6 +144,9 @@ class NavigationCardStack extends React.Component {
     );
   }
 }
+
+NavigationCardStack.propTypes = propTypes;
+NavigationCardStack.defaultProps = defaultProps;
 
 const styles = StyleSheet.create({
   animatedView: {
