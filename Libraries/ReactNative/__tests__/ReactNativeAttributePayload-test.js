@@ -1,16 +1,21 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  */
 'use strict';
 
 jest.dontMock('ReactNativeAttributePayload');
-jest.dontMock('StyleSheetRegistry');
+jest.dontMock('ReactNativePropRegistry');
 jest.dontMock('deepDiffer');
 jest.dontMock('flattenStyle');
-jest.dontMock('styleDiffer');
 
 var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
-var StyleSheetRegistry = require('StyleSheetRegistry');
+var ReactNativePropRegistry = require('ReactNativePropRegistry');
 
 var diff = ReactNativeAttributePayload.diff;
 
@@ -139,7 +144,7 @@ describe('ReactNativeAttributePayload', function() {
       validStyleAttribute
     )).toEqual({ foo: null, bar: null });
 
-    var barStyle = StyleSheetRegistry.registerStyle({
+    var barStyle = ReactNativePropRegistry.register({
       bar: 3,
     });
 
@@ -167,13 +172,13 @@ describe('ReactNativeAttributePayload', function() {
       { someStyle: [{}, { foo: 3, bar: 2 }]},
       { someStyle: [{ foo: 3 }, { bar: 2 }]},
       validStyleAttribute
-    )).toEqual(null);
+    )).toEqual({ foo: 3 }); // this should ideally be null. heuristic tradeoff.
 
     expect(diff(
       { someStyle: [{}, { foo: 3, bar: 2 }]},
       { someStyle: [{ foo: 1, bar: 1 }, { bar: 2 }]},
       validStyleAttribute
-    )).toEqual({ foo: 1 });
+    )).toEqual({ bar: 2, foo: 1 });
   });
 
   it('should clear a prop if a later style is explicit null/undefined', () => {
@@ -188,13 +193,13 @@ describe('ReactNativeAttributePayload', function() {
       { someStyle: [{ foo: 3 }, { foo: null, bar: 2 }]},
       { someStyle: [{ foo: null }, { bar: 2 }]},
       validStyleAttribute
-    )).toEqual(null);
+    )).toEqual({ foo: null });
 
     expect(diff(
       { someStyle: [{ foo: 1 }, { foo: null }]},
       { someStyle: [{ foo: 2 }, { foo: null }]},
       validStyleAttribute
-    )).toEqual(null);
+    )).toEqual({ foo: null }); // this should ideally be null. heuristic.
 
     // Test the same case with object equality because an early bailout doesn't
     // work in this case.
@@ -203,13 +208,13 @@ describe('ReactNativeAttributePayload', function() {
       { someStyle: [{ foo: 1 }, fooObj]},
       { someStyle: [{ foo: 2 }, fooObj]},
       validStyleAttribute
-    )).toEqual(null);
+    )).toEqual({ foo: 3 }); // this should ideally be null. heuristic.
 
     expect(diff(
       { someStyle: [{ foo: 1 }, { foo: 3 }]},
       { someStyle: [{ foo: 2 }, { foo: undefined }]},
       validStyleAttribute
-    )).toEqual({ foo: null });
+    )).toEqual({ foo: null }); // this should ideally be null. heuristic.
   });
 
   // Function properties are just markers to native that events should be sent.
