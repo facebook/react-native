@@ -26,6 +26,10 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ImageExample'),
   },
   {
+    key: 'StatusBarExample',
+    module: require('./StatusBarExample'),
+  },
+  {
     key: 'TextInputExample',
     module: require('./TextInputExample'),
   },

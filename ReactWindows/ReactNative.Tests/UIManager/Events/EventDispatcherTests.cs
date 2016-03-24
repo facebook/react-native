@@ -67,6 +67,7 @@ namespace ReactNative.Tests.UIManager.Events
         [TestMethod]
         public async Task EventDispatcher_NonCoalesced()
         {
+            // TODO: (#288) Check for non-determinism.
             var waitDispatched = new AutoResetEvent(false);
             var executor = new MockJavaScriptExecutor((p0, p1, p2) =>
             {

@@ -25,6 +25,7 @@ const {
   SplitViewWindows,    
   StyleSheet,
   View,
+  StatusBar,
 } = React;
 const {
   RootContainer: NavigationRootContainer,
@@ -110,6 +111,9 @@ class UIExplorerApp extends React.Component {
       const ExampleComponent = UIExplorerExampleList.makeRenderable(ExampleModule);
       return (
         <View style={styles.container}>
+          <StatusBar
+            backgroundColor="#589c90"
+          />
           <UIExplorerHeaderWindows
             onPress={() => this.splitView.openPane()} 
             title={title}
@@ -123,6 +127,9 @@ class UIExplorerApp extends React.Component {
     }
     return (
       <View style={styles.container}>
+        <StatusBar
+          backgroundColor="#589c90"
+        />
         <UIExplorerHeaderWindows
           onPress={() => this.splitView.openPane()} 
           title={title}

@@ -204,7 +204,6 @@
     <Compile Include="Modules\Network\HttpContentHelpers.cs" />
     <Compile Include="Modules\Network\TaskCancellationManager.cs" />
     <Compile Include="Modules\NetInfo\NetInfoModule.cs" />
-    <Compile Include="Modules\StatusBar\DesktopStatusBar.cs" />
     <Compile Include="Modules\StatusBar\IStatusBar.cs" />
     <Compile Include="Modules\StatusBar\MobileStatusBar.cs" />
     <Compile Include="Modules\StatusBar\NopStatusBar.cs" />
@@ -383,9 +382,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="WindowsDesktop, Version=10.0.10586.0">
-      <Name>Windows Desktop Extensions for the UWP</Name>
-    </SDKReference>
     <SDKReference Include="WindowsMobile, Version=10.0.10586.0">
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
