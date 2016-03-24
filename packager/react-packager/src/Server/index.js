@@ -217,6 +217,12 @@ class Server {
     this._hmrFileChangeListener = listener;
   }
 
+  addFileChangeListener(listener) {
+    if (this._fileChangeListeners.indexOf(listener) === -1) {
+      this._fileChangeListeners.push(listener);
+    }
+  }
+
   buildBundle(options) {
     return Promise.resolve().then(() => {
       if (!options.platform) {
@@ -288,6 +294,15 @@ class Server {
       return;
     }
 
+    Promise.all(
+      this._fileChangeListeners.map(listener => listener(absPath))
+    ).then(
+      () => this._onFileChangeComplete(absPath),
+      () => this._onFileChangeComplete(absPath)
+    );
+  }
+
+  _onFileChangeComplete(absPath) {
     // Make sure the file watcher event runs through the system before
     // we rebuild the bundles.
     this._debouncedFileChangeHandler(absPath);
