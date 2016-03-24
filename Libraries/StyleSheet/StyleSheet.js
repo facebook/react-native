@@ -12,7 +12,7 @@
 'use strict';
 
 var PixelRatio = require('PixelRatio');
-var StyleSheetRegistry = require('StyleSheetRegistry');
+var ReactNativePropRegistry = require('ReactNativePropRegistry');
 var StyleSheetValidation = require('StyleSheetValidation');
 
 var flatten = require('flattenStyle');
@@ -95,7 +95,7 @@ module.exports = {
     var result = {};
     for (var key in obj) {
       StyleSheetValidation.validateStyle(key, obj);
-      result[key] = StyleSheetRegistry.registerStyle(obj[key]);
+      result[key] = ReactNativePropRegistry.register(obj[key]);
     }
     return result;
   }

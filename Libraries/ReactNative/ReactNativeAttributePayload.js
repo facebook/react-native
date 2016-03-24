@@ -12,25 +12,42 @@
 'use strict';
 
 var Platform = require('Platform');
+var ReactNativePropRegistry = require('ReactNativePropRegistry');
 
 var deepDiffer = require('deepDiffer');
-var styleDiffer = require('styleDiffer');
 var flattenStyle = require('flattenStyle');
 
-type AttributeDiffer = (prevProp : mixed, nextProp : mixed) => boolean;
+var emptyObject = {};
+
+/**
+ * Create a payload that contains all the updates between two sets of props.
+ *
+ * These helpers are all encapsulated into a single module, because they use
+ * mutation as a performance optimization which leads to subtle shared
+ * dependencies between the code paths. To avoid this mutable state leaking
+ * across modules, I've kept them isolated to this module.
+ */
+
+type AttributeDiffer = (prevProp: mixed, nextProp: mixed) => boolean;
 type AttributePreprocessor = (nextProp: mixed) => mixed;
 
 type CustomAttributeConfiguration =
-  { diff : AttributeDiffer, process : AttributePreprocessor } |
-  { diff : AttributeDiffer } |
-  { process : AttributePreprocessor };
+  { diff: AttributeDiffer, process: AttributePreprocessor } |
+  { diff: AttributeDiffer } |
+  { process: AttributePreprocessor };
 
 type AttributeConfiguration =
-  { [key : string]: (
+  { [key: string]: (
     CustomAttributeConfiguration | AttributeConfiguration /*| boolean*/
   ) };
 
-function translateKey(propKey : string) : string {
+type NestedNode = Array<NestedNode> | Object | number;
+
+// Tracks removed keys
+var removedKeys = null;
+var removedKeyCount = 0;
+
+function translateKey(propKey: string) : string {
   if (propKey === 'transform') {
     // We currently special case the key for `transform`. iOS uses the
     // transformMatrix name and Android uses the decomposedMatrix name.
@@ -55,49 +72,173 @@ function defaultDiffer(prevProp: mixed, nextProp: mixed) : boolean {
   }
 }
 
-function diffNestedProperty(
-  updatePayload :? Object,
-  prevProp, // inferred
-  nextProp, // inferred
-  validAttributes : AttributeConfiguration
+function resolveObject(idOrObject: number | Object) : Object {
+  if (typeof idOrObject === 'number') {
+    return ReactNativePropRegistry.getByID(idOrObject);
+  }
+  return idOrObject;
+}
+
+function restoreDeletedValuesInNestedArray(
+  updatePayload: Object,
+  node: NestedNode,
+  validAttributes: AttributeConfiguration
+) {
+  if (Array.isArray(node)) {
+    var i = node.length;
+    while (i-- && removedKeyCount > 0) {
+      restoreDeletedValuesInNestedArray(
+        updatePayload,
+        node[i],
+        validAttributes
+      );
+    }
+  } else if (node && removedKeyCount > 0) {
+    var obj = resolveObject(node);
+    for (var propKey in removedKeys) {
+      if (!removedKeys[propKey]) {
+        continue;
+      }
+      var nextProp = obj[propKey];
+      if (nextProp === undefined) {
+        continue;
+      }
+
+      var attributeConfig = validAttributes[propKey];
+      if (!attributeConfig) {
+        continue; // not a valid native prop
+      }
+
+      if (typeof nextProp === 'function') {
+        nextProp = true;
+      }
+      if (typeof nextProp === 'undefined') {
+        nextProp = null;
+      }
+
+      if (typeof attributeConfig !== 'object') {
+        // case: !Object is the default case
+        updatePayload[propKey] = nextProp;
+      } else if (typeof attributeConfig.diff === 'function' ||
+                 typeof attributeConfig.process === 'function') {
+        // case: CustomAttributeConfiguration
+        var nextValue = typeof attributeConfig.process === 'function' ?
+                        attributeConfig.process(nextProp) :
+                        nextProp;
+        updatePayload[propKey] = nextValue;
+      }
+      removedKeys[propKey] = false;
+      removedKeyCount--;
+    }
+  }
+}
+
+function diffNestedArrayProperty(
+  updatePayload:? Object,
+  prevArray: Array<NestedNode>,
+  nextArray: Array<NestedNode>,
+  validAttributes: AttributeConfiguration
 ) : ?Object {
-  // The style property is a deeply nested element which includes numbers
-  // to represent static objects. Most of the time, it doesn't change across
-  // renders, so it's faster to spend the time checking if it is different
-  // before actually doing the expensive flattening operation in order to
-  // compute the diff.
-  if (!styleDiffer(prevProp, nextProp)) {
+  var minLength = prevArray.length < nextArray.length ?
+                  prevArray.length :
+                  nextArray.length;
+  var i;
+  for (i = 0; i < minLength; i++) {
+    // Diff any items in the array in the forward direction. Repeated keys
+    // will be overwritten by later values.
+    updatePayload = diffNestedProperty(
+      updatePayload,
+      prevArray[i],
+      nextArray[i],
+      validAttributes
+    );
+  }
+  for (; i < prevArray.length; i++) {
+    // Clear out all remaining properties.
+    updatePayload = clearNestedProperty(
+      updatePayload,
+      prevArray[i],
+      validAttributes
+    );
+  }
+  for (; i < nextArray.length; i++) {
+    // Add all remaining properties.
+    updatePayload = addNestedProperty(
+      updatePayload,
+      nextArray[i],
+      validAttributes
+    );
+  }
+  return updatePayload;
+}
+
+function diffNestedProperty(
+  updatePayload:? Object,
+  prevProp: NestedNode,
+  nextProp: NestedNode,
+  validAttributes: AttributeConfiguration
+) : ?Object {
+
+  if (!updatePayload && prevProp === nextProp) {
+    // If no properties have been added, then we can bail out quickly on object
+    // equality.
     return updatePayload;
   }
 
-  // TODO: Walk both props in parallel instead of flattening.
-
-  var previousFlattenedStyle = flattenStyle(prevProp);
-  var nextFlattenedStyle = flattenStyle(nextProp);
-
-  if (!previousFlattenedStyle || !nextFlattenedStyle) {
-    if (nextFlattenedStyle) {
-      return addProperties(
+  if (!prevProp || !nextProp) {
+    if (nextProp) {
+      return addNestedProperty(
         updatePayload,
-        nextFlattenedStyle,
+        nextProp,
         validAttributes
       );
     }
-    if (previousFlattenedStyle) {
-      return clearProperties(
+    if (prevProp) {
+      return clearNestedProperty(
         updatePayload,
-        previousFlattenedStyle,
+        prevProp,
         validAttributes
       );
     }
     return updatePayload;
   }
 
-  // recurse
+  if (!Array.isArray(prevProp) && !Array.isArray(nextProp)) {
+    // Both are leaves, we can diff the leaves.
+    return diffProperties(
+      updatePayload,
+      resolveObject(prevProp),
+      resolveObject(nextProp),
+      validAttributes
+    );
+  }
+
+  if (Array.isArray(prevProp) && Array.isArray(nextProp)) {
+    // Both are arrays, we can diff the arrays.
+    return diffNestedArrayProperty(
+      updatePayload,
+      prevProp,
+      nextProp,
+      validAttributes
+    );
+  }
+
+  if (Array.isArray(prevProp)) {
+    return diffProperties(
+      updatePayload,
+      // $FlowFixMe - We know that this is always an object when the input is.
+      flattenStyle(prevProp),
+      // $FlowFixMe - We know that this isn't an array because of above flow.
+      resolveObject(nextProp),
+      validAttributes
+    );
+  }
+
   return diffProperties(
     updatePayload,
-    previousFlattenedStyle,
-    nextFlattenedStyle,
+    resolveObject(prevProp),
+      // $FlowFixMe - We know that this is always an object when the input is.
+    flattenStyle(nextProp),
     validAttributes
   );
 }
@@ -107,28 +248,67 @@ function diffNestedProperty(
  * attribute configurations. It processes each prop and adds it to the
  * updatePayload.
  */
-/*
 function addNestedProperty(
-  updatePayload :? Object,
-  nextProp : Object,
-  validAttributes : AttributeConfiguration
+  updatePayload:? Object,
+  nextProp: NestedNode,
+  validAttributes: AttributeConfiguration
 ) {
-  // TODO: Fast path
-  return diffNestedProperty(updatePayload, {}, nextProp, validAttributes);
+  if (!nextProp) {
+    return updatePayload;
+  }
+
+  if (!Array.isArray(nextProp)) {
+    // Add each property of the leaf.
+    return addProperties(
+      updatePayload,
+      resolveObject(nextProp),
+      validAttributes
+    );
+  }
+
+  for (var i = 0; i < nextProp.length; i++) {
+    // Add all the properties of the array.
+    updatePayload = addNestedProperty(
+      updatePayload,
+      nextProp[i],
+      validAttributes
+    );
+  }
+
+  return updatePayload;
 }
-*/
 
 /**
  * clearNestedProperty takes a single set of props and valid attributes. It
  * adds a null sentinel to the updatePayload, for each prop key.
  */
 function clearNestedProperty(
-  updatePayload :? Object,
-  prevProp : Object,
-  validAttributes : AttributeConfiguration
+  updatePayload:? Object,
+  prevProp: NestedNode,
+  validAttributes: AttributeConfiguration
 ) : ?Object {
-  // TODO: Fast path
-  return diffNestedProperty(updatePayload, prevProp, {}, validAttributes);
+  if (!prevProp) {
+    return updatePayload;
+  }
+
+  if (!Array.isArray(prevProp)) {
+    // Add each property of the leaf.
+    return clearProperties(
+      updatePayload,
+      resolveObject(prevProp),
+      validAttributes
+    );
+  }
+
+  for (var i = 0; i < prevProp.length; i++) {
+    // Add all the properties of the array.
+    updatePayload = clearNestedProperty(
+      updatePayload,
+      prevProp[i],
+      validAttributes
+    );
+  }
+  return updatePayload;
 }
 
 /**
@@ -138,14 +318,15 @@ function clearNestedProperty(
  * anything changed.
  */
 function diffProperties(
-  updatePayload : ?Object,
-  prevProps : Object,
-  nextProps : Object,
-  validAttributes : AttributeConfiguration
+  updatePayload: ?Object,
+  prevProps: Object,
+  nextProps: Object,
+  validAttributes: AttributeConfiguration
 ): ?Object {
   var attributeConfig : ?(CustomAttributeConfiguration | AttributeConfiguration);
   var nextProp;
   var prevProp;
+  var altKey;
 
   for (var propKey in nextProps) {
     attributeConfig = validAttributes[propKey];
@@ -153,29 +334,58 @@ function diffProperties(
       continue; // not a valid native prop
     }
 
-    var altKey = translateKey(propKey);
+    altKey = translateKey(propKey);
     if (!validAttributes[altKey]) {
       // If there is no config for the alternative, bail out. Helps ART.
       altKey = propKey;
     }
 
-    if (updatePayload && updatePayload[altKey] !== undefined) {
-      // If we're in a nested attribute set, we may have set this property
-      // already. If so, bail out. The previous update is what counts.
-      continue;
-    }
     prevProp = prevProps[propKey];
     nextProp = nextProps[propKey];
 
     // functions are converted to booleans as markers that the associated
     // events should be sent from native.
     if (typeof nextProp === 'function') {
-      nextProp = true;
+      nextProp = (true : any);
       // If nextProp is not a function, then don't bother changing prevProp
       // since nextProp will win and go into the updatePayload regardless.
       if (typeof prevProp === 'function') {
-        prevProp = true;
+        prevProp = (true : any);
       }
+    }
+
+    // An explicit value of undefined is treated as a null because it overrides
+    // any other preceeding value.
+    if (typeof nextProp === 'undefined') {
+      nextProp = (null : any);
+      if (typeof prevProp === 'undefined') {
+        prevProp = (null : any);
+      }
+    }
+
+    if (removedKeys) {
+      removedKeys[propKey] = false;
+    }
+
+    if (updatePayload && updatePayload[altKey] !== undefined) {
+      // Something else already triggered an update to this key because another
+      // value diffed. Since we're now later in the nested arrays our value is
+      // more important so we need to calculate it and override the existing
+      // value. It doesn't matter if nothing changed, we'll set it anyway.
+
+      // Pattern match on: attributeConfig
+      if (typeof attributeConfig !== 'object') {
+        // case: !Object is the default case
+        updatePayload[altKey] = nextProp;
+      } else if (typeof attributeConfig.diff === 'function' ||
+                 typeof attributeConfig.process === 'function') {
+        // case: CustomAttributeConfiguration
+        var nextValue = typeof attributeConfig.process === 'function' ?
+                        attributeConfig.process(nextProp) :
+                        nextProp;
+        updatePayload[altKey] = nextValue;
+      }
+      continue;
     }
 
     if (prevProp === nextProp) {
@@ -205,12 +415,22 @@ function diffProperties(
       }
     } else {
       // default: fallthrough case when nested properties are defined
+      removedKeys = null;
+      removedKeyCount = 0;
       updatePayload = diffNestedProperty(
         updatePayload,
         prevProp,
         nextProp,
         attributeConfig
       );
+      if (removedKeyCount > 0 && updatePayload) {
+        restoreDeletedValuesInNestedArray(
+          updatePayload,
+          nextProp,
+          attributeConfig
+        );
+        removedKeys = null;
+      }
     }
   }
 
@@ -226,6 +446,17 @@ function diffProperties(
       continue; // not a valid native prop
     }
 
+    altKey = translateKey(propKey);
+    if (!attributeConfig[altKey]) {
+      // If there is no config for the alternative, bail out. Helps ART.
+      altKey = propKey;
+    }
+
+    if (updatePayload && updatePayload[altKey] !== undefined) {
+      // This was already updated to a diff result earlier.
+      continue;
+    }
+
     prevProp = prevProps[propKey];
     if (prevProp === undefined) {
       continue; // was already empty anyway
@@ -237,7 +468,14 @@ function diffProperties(
 
       // case: CustomAttributeConfiguration | !Object
       // Flag the leaf property for removal by sending a sentinel.
-      (updatePayload || (updatePayload = {}))[translateKey(propKey)] = null;
+      (updatePayload || (updatePayload = {}))[altKey] = null;
+      if (!removedKeys) {
+        removedKeys = {};
+      }
+      if (!removedKeys[propKey]) {
+        removedKeys[propKey] = true;
+        removedKeyCount++;
+      }
     } else {
       // default:
       // This is a nested attribute configuration where all the properties
@@ -256,11 +494,12 @@ function diffProperties(
  * addProperties adds all the valid props to the payload after being processed.
  */
 function addProperties(
-  updatePayload : ?Object,
-  props : Object,
-  validAttributes : AttributeConfiguration
+  updatePayload: ?Object,
+  props: Object,
+  validAttributes: AttributeConfiguration
 ) : ?Object {
-  return diffProperties(updatePayload, {}, props, validAttributes);
+  // TODO: Fast path
+  return diffProperties(updatePayload, emptyObject, props, validAttributes);
 }
 
 /**
@@ -268,18 +507,19 @@ function addProperties(
  * to the payload for each valid key.
  */
 function clearProperties(
-  updatePayload : ?Object,
-  prevProps : Object,
-  validAttributes : AttributeConfiguration
+  updatePayload: ?Object,
+  prevProps: Object,
+  validAttributes: AttributeConfiguration
 ) :? Object {
-  return diffProperties(updatePayload, prevProps, {}, validAttributes);
+  // TODO: Fast path
+  return diffProperties(updatePayload, prevProps, emptyObject, validAttributes);
 }
 
 var ReactNativeAttributePayload = {
 
   create: function(
-    props : Object,
-    validAttributes : AttributeConfiguration
+    props: Object,
+    validAttributes: AttributeConfiguration
   ) : ?Object {
     return addProperties(
       null, // updatePayload
@@ -289,9 +529,9 @@ var ReactNativeAttributePayload = {
   },
 
   diff: function(
-    prevProps : Object,
-    nextProps : Object,
-    validAttributes : AttributeConfiguration
+    prevProps: Object,
+    nextProps: Object,
+    validAttributes: AttributeConfiguration
   ) : ?Object {
     return diffProperties(
       null, // updatePayload
