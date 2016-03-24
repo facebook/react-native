@@ -10,7 +10,6 @@
 package com.facebook.react.devsupport;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.Handler;
 import android.text.TextUtils;
 
@@ -18,6 +17,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.ConnectionPool;
@@ -49,10 +49,6 @@ public class DevServerHelper {
 
   public static final String RELOAD_APP_EXTRA_JS_PROXY = "jsproxy";
   private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
-
-  private static final String EMULATOR_LOCALHOST = "10.0.2.2:8081";
-  private static final String GENYMOTION_LOCALHOST = "10.0.3.2:8081";
-  private static final String DEVICE_LOCALHOST = "localhost:8081";
 
   private static final String BUNDLE_URL_FORMAT =
       "http://%s/%s.bundle?platform=android&dev=%s&hot=%s&minify=%s";
@@ -109,21 +105,6 @@ public class DevServerHelper {
     return context.getPackageName() + RELOAD_APP_ACTION_SUFFIX;
   }
 
-  public static String getServerHost() {
-    // Since genymotion runs in vbox it use different hostname to refer to adb host.
-    // We detect whether app runs on genymotion and replace js bundle server hostname accordingly
-
-    if (isRunningOnGenymotion()) {
-      return GENYMOTION_LOCALHOST;
-    }
-
-    if (isRunningOnStockEmulator()) {
-      return EMULATOR_LOCALHOST;
-    }
-
-    return DEVICE_LOCALHOST;
-  }
-
   public String getWebsocketProxyURL() {
     return String.format(Locale.US, WEBSOCKET_PROXY_URL_FORMAT, getDebugServerHost());
   }
@@ -132,7 +113,7 @@ public class DevServerHelper {
    * @return the host to use when connecting to the bundle server from the host itself.
    */
   private static String getHostForJSProxy() {
-    return DEVICE_LOCALHOST;
+    return AndroidInfoHelpers.DEVICE_LOCALHOST;
   }
 
   /**
@@ -168,9 +149,9 @@ public class DevServerHelper {
       return Assertions.assertNotNull(hostFromSettings);
     }
 
-    String host = DevServerHelper.getServerHost();
+    String host = AndroidInfoHelpers.getServerHost();
 
-    if (host.equals(DEVICE_LOCALHOST)) {
+    if (host.equals(AndroidInfoHelpers.DEVICE_LOCALHOST)) {
       FLog.w(
         ReactConstants.TAG,
         "You seem to be running on device. Run 'adb reverse tcp:8081 tcp:8081' " +
@@ -178,14 +159,6 @@ public class DevServerHelper {
     }
 
     return host;
-  }
-
-  private static boolean isRunningOnGenymotion() {
-    return Build.FINGERPRINT.contains("vbox");
-  }
-
-  private static boolean isRunningOnStockEmulator() {
-    return Build.FINGERPRINT.contains("generic");
   }
 
   private static String createBundleURL(String host, String jsModulePath, boolean devMode, boolean hmr, boolean jsMinify) {

@@ -33,7 +33,7 @@ public class AndroidInfoModule extends BaseJavaModule {
   public @Nullable Map<String, Object> getConstants() {
     HashMap<String, Object> constants = new HashMap<String, Object>();
     constants.put("Version", Build.VERSION.SDK_INT);
-    constants.put("ServerHost", DevServerHelper.getServerHost());
+    constants.put("ServerHost", AndroidInfoHelpers.getServerHost());
     return constants;
   }
 }
