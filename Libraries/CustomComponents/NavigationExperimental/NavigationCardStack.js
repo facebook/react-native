@@ -50,7 +50,6 @@ const {Directions} = NavigationCardStackPanResponder;
 
 import type {
   NavigationAnimatedValue,
-  NavigationAnimationSetter,
   NavigationParentState,
   NavigationSceneRenderer,
   NavigationSceneRendererProps,
