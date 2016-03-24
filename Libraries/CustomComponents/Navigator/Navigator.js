@@ -236,9 +236,9 @@ var Navigator = React.createClass({
     onDidFocus: PropTypes.func,
 
     /**
-     * Optionally provide a navigation bar that persists across scene
-     * transitions. The component as navigation bar will receive two props: 
-     * `navigator` and `navState`
+     * Optionally provide a component as navigation bar that persists across scene
+     * transitions. The component will receive two props: `navigator` and `navState`.
+     * It will be rerendered when the routes change. 
      */
     navigationBar: PropTypes.node,
 
