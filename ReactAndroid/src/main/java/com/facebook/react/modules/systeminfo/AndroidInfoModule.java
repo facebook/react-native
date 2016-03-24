@@ -12,7 +12,6 @@ package com.facebook.react.modules.systeminfo;
 import android.os.Build;
 
 import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.devsupport.DevServerHelper;
 
 import java.util.HashMap;
 import java.util.Map;
