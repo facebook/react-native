@@ -170,9 +170,9 @@ class Bundler {
     });
   }
 
-  _sourceHMRURL(platform, host, port, path) {
+  _sourceHMRURL(platform, path) {
     return this._hmrURL(
-      `http://${host}:${port}`,
+      '',
       platform,
       'bundle',
       path,
@@ -217,7 +217,7 @@ class Bundler {
     return this._bundle({
       ...options,
       bundle: new HMRBundle({
-        sourceURLFn: this._sourceHMRURL.bind(this, options.platform, host, port),
+        sourceURLFn: this._sourceHMRURL.bind(this, options.platform),
         sourceMappingURLFn: this._sourceMappingHMRURL.bind(
           this,
           options.platform,
