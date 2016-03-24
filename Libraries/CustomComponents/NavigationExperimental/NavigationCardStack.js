@@ -50,7 +50,6 @@ const {Directions} = NavigationCardStackPanResponder;
 
 import type {
   NavigationAnimatedValue,
-  NavigationAnimationSetter,
   NavigationParentState,
   NavigationSceneRenderer,
   NavigationSceneRendererProps,
@@ -94,7 +93,6 @@ const defaultProps = {
  *     +------------+
  */
 class NavigationCardStack extends React.Component {
-  _applyAnimation: NavigationAnimationSetter;
   _renderScene : NavigationSceneRenderer;
 
   constructor(props: Props, context: any) {
@@ -102,7 +100,6 @@ class NavigationCardStack extends React.Component {
   }
 
   componentWillMount(): void {
-    this._applyAnimation = this._applyAnimation.bind(this);
     this._renderScene = this._renderScene.bind(this);
   }
 
@@ -120,7 +117,6 @@ class NavigationCardStack extends React.Component {
         navigationState={this.props.navigationState}
         renderOverlay={this.props.renderOverlay}
         renderScene={this._renderScene}
-        applyAnimation={this._applyAnimation}
         style={[styles.animatedView, this.props.style]}
       />
     );
@@ -146,19 +142,6 @@ class NavigationCardStack extends React.Component {
         style={style}
       />
     );
-  }
-
-  _applyAnimation(
-    position: NavigationAnimatedValue,
-    navigationState: NavigationParentState,
-  ): void {
-    Animated.timing(
-      position,
-      {
-        duration: 500,
-        toValue: navigationState.index,
-      }
-    ).start();
   }
 }
 
