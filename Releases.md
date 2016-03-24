@@ -13,10 +13,6 @@ Release schedule:
 - 0.24.0 - Apr 18
 - ...
 
-## One time setup
-
-Set up Sinopia: https://github.com/facebook/react-native/tree/master/react-native-cli
-
 #### Check that everything works
 
 Make absolutely sure a basic iOS and Android workflow works on the commit you are going to use for release.
@@ -79,7 +75,7 @@ git pull origin 0.version_you_are_releasing-stable  # e.g. git pull origin 0.22-
 # Cherry-pick those commits
 git cherry-pick commitHash1
 
-# test everything again using sinopia
+# test everything again
 ./scripts/test-manual-e2e.sh
 
 # Check that you can Reload JS and the Chrome debugger works
