@@ -1,9 +1,9 @@
 ﻿using ReactNative.Bridge;
 using ReactNative.UIManager;
 using System;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation.Metadata;
 using Windows.UI.Core;
-using Windows.ApplicationModel.Core;
 
 namespace ReactNative.Modules.StatusBar
 {
@@ -103,10 +103,6 @@ namespace ReactNative.Modules.StatusBar
             if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
             {
                 return new MobileStatusBar();
-            }
-            else if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.ApplicationView"))
-            {
-                return new DesktopStatusBar();
             }
             else
             {
