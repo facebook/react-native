@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -77,10 +84,12 @@ class UIExplorerApp extends React.Component {
   _renderOverlay: Function;
   _renderScene: Function;
   _renderCard: Function;
+  _renderTitleComponent: Function;
   componentWillMount() {
     this._renderNavigation = this._renderNavigation.bind(this);
     this._renderOverlay = this._renderOverlay.bind(this);
     this._renderScene = this._renderScene.bind(this);
+    this._renderTitleComponent = this._renderTitleComponent.bind(this);
   }
   render() {
     return (
@@ -121,12 +130,17 @@ class UIExplorerApp extends React.Component {
   _renderOverlay(props: NavigationSceneRendererProps): ReactElement {
     return (
       <NavigationHeader
-        key={'header_' + props.scene.navigationState.key}
-        navigationProps={props}
-        renderTitleComponent={(navigationProps, scene) => {
-          return <NavigationHeader.Title>{UIExplorerStateTitleMap(scene.navigationState)}</NavigationHeader.Title>;
-        }}
+        {...props}
+        renderTitleComponent={this._renderTitleComponent}
       />
+    );
+  }
+
+  _renderTitleComponent(props: NavigationSceneRendererProps): ReactElement {
+    return (
+      <NavigationHeader.Title>
+        {UIExplorerStateTitleMap(props.scene.navigationState)}
+      </NavigationHeader.Title>
     );
   }
 
