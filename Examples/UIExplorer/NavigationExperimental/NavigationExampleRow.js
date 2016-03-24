@@ -23,22 +23,32 @@ var {
 } = React;
 
 var NavigationExampleRow = React.createClass({
+  propTypes: {
+    darkMode: React.PropTypes.bool,
+  },
+
+  getDefaultProps: function() {
+    return {
+      darkMode: false,
+    };
+  },
+
   render: function() {
     if (this.props.onPress) {
       return (
         <TouchableHighlight
-          style={styles.row}
+          style={[styles.row, this.props.darkMode && styles.rowDark]}
           underlayColor="#D0D0D0"
           onPress={this.props.onPress}>
-          <Text style={styles.buttonText}>
+          <Text style={[styles.rowText, this.props.darkMode && styles.rowTextDark]}>
             {this.props.text}
           </Text>
         </TouchableHighlight>
       );
     }
     return (
-      <View style={styles.row}>
-        <Text style={styles.rowText}>
+      <View style={[styles.row, this.props.darkMode && styles.rowDark]}>
+        <Text style={[styles.rowText, this.props.darkMode && styles.rowTextDark]}>
           {this.props.text}
         </Text>
       </View>
@@ -53,8 +63,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1 / PixelRatio.get(),
     borderBottomColor: '#CDCDCD',
   },
+  rowDark: {
+    backgroundColor: '#4C555C',
+    borderBottomColor: '#A1B4C4',
+  },
   rowText: {
     fontSize: 17,
+  },
+  rowTextDark: {
+    color: 'white',
   },
   buttonText: {
     fontSize: 17,
