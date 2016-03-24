@@ -58,9 +58,6 @@ void RCTRegisterModule(Class moduleClass)
 
   // Register module
   [RCTModuleClasses addObject:moduleClass];
-
-  objc_setAssociatedObject(moduleClass, &RCTBridgeModuleClassIsRegistered,
-                           @NO, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 /**
@@ -81,14 +78,6 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
     name = [name stringByReplacingCharactersInRange:(NSRange){0,@"RK".length} withString:@"RCT"];
   }
   return name;
-}
-
-/**
- * This function checks if a class has been registered
- */
-BOOL RCTBridgeModuleClassIsRegistered(Class cls)
-{
-  return [objc_getAssociatedObject(cls, &RCTBridgeModuleClassIsRegistered) ?: @YES boolValue];
 }
 
 @implementation RCTBridge
