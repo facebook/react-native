@@ -11,6 +11,10 @@
  */
 'use strict';
 
+import type  {
+  NavigationSceneRendererProps,
+} from 'NavigationTypeDefinition';
+
 /**
  * React component PropTypes Definitions. Consider using this as a supplementary
  * measure with `NavigationTypeDefinition`. This helps to capture the propType
@@ -55,6 +59,7 @@ const layout = PropTypes.shape({
 const scene = PropTypes.shape({
   index: PropTypes.number.isRequired,
   isStale: PropTypes.bool.isRequired,
+  key: PropTypes.string.isRequired,
   navigationState,
 });
 
@@ -84,8 +89,30 @@ const panHandlers = PropTypes.shape({
   onStartShouldSetResponderCapture: PropTypes.func.isRequired,
 });
 
+/**
+ * Helper function that extracts the props needed for scene renderer.
+ */
+function extractSceneRendererProps(
+  props: NavigationSceneRendererProps,
+): NavigationSceneRendererProps {
+  return {
+    layout: props.layout,
+    navigationState: props.navigationState,
+    onNavigate: props.onNavigate,
+    position: props.position,
+    scene: props.scene,
+    scenes: props.scenes,
+  };
+}
+
 module.exports = {
+  // helpers
+  extractSceneRendererProps,
+
+  // Bundled propTypes.
   SceneRenderer,
+
+  // propTypes
   action,
   navigationParentState,
   navigationState,
