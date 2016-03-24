@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+'use strict';
+
 var fs = require('fs')
 var glob = require('glob');
 var mkdirp = require('mkdirp');
@@ -29,6 +31,14 @@ function splitHeader(content) {
   };
 }
 
+function rmFile(file) {
+  try {
+    fs.unlinkSync(file);
+  } catch(e) {
+    /* seriously, unlink throws when the file doesn't exist :( */
+  }
+}
+
 function backtickify(str) {
   var escaped = '`' + str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/{/g, '\\{') + '`';
   // Replace require( with require\( so node-haste doesn't replace example
@@ -36,39 +46,68 @@ function backtickify(str) {
   return escaped.replace(/require\(/g, 'require\\(');
 }
 
-function execute() {
-  var MD_DIR = '../docs/';
+function writeFileAndCreateFolder(file, content) {
+  mkdirp.sync(file.replace(new RegExp('/[^/]*$'), ''));
+  fs.writeFileSync(file, content);
+}
 
-  var files = glob.sync('src/react-native/docs/*.*');
-  files.forEach(function(file) {
-    try {
-      fs.unlinkSync(file);
-    } catch(e) {
-      /* seriously, unlink throws when the file doesn't exist :( */
-    }
-  });
+// Extract markdown metadata header
+function extractMetadata(content) {
+  var metadata = {};
+  var both = splitHeader(content);
+  var lines = both.header.split('\n');
+  for (var i = 0; i < lines.length - 1; ++i) {
+    var keyvalue = lines[i].split(':');
+    var key = keyvalue[0].trim();
+    var value = keyvalue.slice(1).join(':').trim();
+    // Handle the case where you have "Community #10"
+    try { value = JSON.parse(value); } catch(e) { }
+    metadata[key] = value;
+  }
+  return {metadata: metadata, rawContent: both.content};
+}
+
+function buildFile(layout, metadata, rawContent) {
+  return [
+    '/**',
+    ' * @generated',
+    ' */',
+    'var React = require("React");',
+    'var Layout = require("' + layout + '");',
+    rawContent && 'var content = ' + backtickify(rawContent) + ';',
+    'var Post = React.createClass({',
+    rawContent && '  statics: { content: content },',
+    '  render: function() {',
+    '    return (',
+    '      <Layout metadata={' + JSON.stringify(metadata) + '}>',
+    rawContent && '        {content}',
+    '      </Layout>',
+    '    );',
+    '  }',
+    '});',
+    'module.exports = Post;'
+  ].filter(e => e).join('\n');
+}
+
+function execute() {
+  var DOCS_MD_DIR = '../docs/';
+  var BLOG_MD_DIR = '../blog/';
+
+  glob.sync('src/react-native/docs/*.*').forEach(rmFile);
+  glob.sync('src/react-native/blog/*.*').forEach(rmFile);
 
   var metadatas = {
     files: [],
   };
 
   function handleMarkdown(content, filename) {
-    var metadata = {};
-
-    // Extract markdown metadata header
-    var both = splitHeader(content);
-    if (!both.header) {
+    if (content.slice(0, 3) !== '---') {
       return;
     }
-    var lines = both.header.split('\n');
-    for (var i = 0; i < lines.length - 1; ++i) {
-      var keyvalue = lines[i].split(':');
-      var key = keyvalue[0].trim();
-      var value = keyvalue.slice(1).join(':').trim();
-      // Handle the case where you have "Community #10"
-      try { value = JSON.parse(value); } catch(e) { }
-      metadata[key] = value;
-    }
+
+    const res = extractMetadata(content);
+    const metadata = res.metadata;
+    const rawContent = res.rawContent;
 
     if (metadata.sidebar !== false) {
       metadatas.files.push(metadata);
@@ -83,35 +122,17 @@ function execute() {
     // Create a dummy .js version that just calls the associated layout
     var layout = metadata.layout[0].toUpperCase() + metadata.layout.substr(1) + 'Layout';
 
-    var content = (
-      '/**\n' +
-      ' * @generated\n' +
-      ' * @jsx React.DOM\n' +
-      ' */\n' +
-      'var React = require("React");\n' +
-      'var Layout = require("' + layout + '");\n' +
-      'var content = ' + backtickify(both.content) + '\n' +
-      'var Post = React.createClass({\n' +
-      '  statics: {\n' +
-      '    content: content\n' +
-      '  },\n' +
-      '  render: function() {\n' +
-      '    return <Layout metadata={' + JSON.stringify(metadata) + '}>{content}</Layout>;\n' +
-      '  }\n' +
-      '});\n' +
-      'module.exports = Post;\n'
+    writeFileAndCreateFolder(
+      'src/react-native/' + metadata.permalink.replace(/\.html$/, '.js'),
+      buildFile(layout, metadata, rawContent)
     );
-
-    var targetFile = 'src/react-native/' + metadata.permalink.replace(/\.html$/, '.js');
-    mkdirp.sync(targetFile.replace(new RegExp('/[^/]*$'), ''));
-    fs.writeFileSync(targetFile, content);
   }
 
   extractDocs().forEach(function(content) {
     handleMarkdown(content, null);
   });
 
-  var files = glob.sync(MD_DIR + '**/*.*');
+  var files = glob.sync(DOCS_MD_DIR + '**/*.*');
   files.forEach(function(file) {
     var extension = path.extname(file);
     if (extension === '.md' || extension === '.markdown') {
@@ -143,6 +164,54 @@ function execute() {
     ' * @providesModule Metadata\n' +
     ' */\n' +
     'module.exports = ' + JSON.stringify(metadatas, null, 2) + ';'
+  );
+
+
+  files = glob.sync(BLOG_MD_DIR + '**/*.*');
+  const metadatasBlog = {
+    files: [],
+  };
+
+  files.sort().reverse().forEach(file => {
+    // Transform
+    //   2015-08-13-blog-post-name-0.5.md
+    // into
+    //   2015/08/13/blog-post-name-0-5.html
+    var filePath = path.basename(file)
+      .replace('-', '/')
+      .replace('-', '/')
+      .replace('-', '/')
+      // react-middleware is broken with files that contains multiple . like react-0.14.js
+      .replace(/\./g, '-')
+      .replace(/\-md$/, '.html');
+
+    var res = extractMetadata(fs.readFileSync(file, {encoding: 'utf8'}));
+    var rawContent = res.rawContent;
+    var metadata = Object.assign({path: filePath, content: rawContent}, res.metadata);
+
+    metadatasBlog.files.push(metadata);
+
+    writeFileAndCreateFolder(
+      'src/react-native/blog/' + filePath.replace(/\.html$/, '.js'),
+      buildFile('BlogPostLayout', metadata, rawContent)
+    );
+  });
+
+  var perPage = 5;
+  for (var page = 0; page < Math.ceil(metadatasBlog.files.length / perPage); ++page) {
+    writeFileAndCreateFolder(
+      'src/react-native/blog' + (page > 0 ? '/page' + (page + 1) : '') + '/index.js',
+      buildFile('BlogPageLayout', { page: page, perPage: perPage })
+    );
+  }
+
+  fs.writeFileSync(
+    'core/metadata-blog.js',
+    '/**\n' +
+    ' * @generated\n' +
+    ' * @providesModule MetadataBlog\n' +
+    ' */\n' +
+    'module.exports = ' + JSON.stringify(metadatasBlog, null, 2) + ';'
   );
 }
 
