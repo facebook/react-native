@@ -29,7 +29,8 @@ const {
   ScrollView,
 } = React;
 
-const  NavigationExampleRow = require('./NavigationExampleRow');
+const NavigationExampleRow = require('./NavigationExampleRow');
+const NavigationHeaderCustomBackButton = require('./NavigationHeaderCustomBackButton');
 
 const  {
   AnimatedView: NavigationAnimatedView,
@@ -108,12 +109,7 @@ class NavigationCustomStylingExample extends React.Component {
               {scene.navigationState.key}
             </NavigationHeader.Title>);
         }}
-        renderLeftComponent={(navigationProps, scene) => {
-          return (
-            <NavigationHeader.BackButton
-              imageSource={require('./assets/back-icon.png')}
-            />);
-        }}
+        renderLeftComponent={(navigationProps, scene) => scene.index !== 0 ? <NavigationHeaderCustomBackButton /> : null}
       />
     );
   }
