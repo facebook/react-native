@@ -89,10 +89,6 @@ class NavigationCard extends React.Component<any, Props, any> {
 
     const defaultStyle = NavigationCardStackStyleInterpolator.forHorizontal(props);
 
-    if (style === undefined) {
-      // fall back to default style.
-      style = NavigationCardStackStyleInterpolator.forHorizontal(props);
-    }
     if (panHandlers === undefined) {
       // fall back to default pan handlers.
       panHandlers = NavigationCardStackPanResponder.forHorizontal(props);
