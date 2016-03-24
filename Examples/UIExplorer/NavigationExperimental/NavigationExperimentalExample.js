@@ -31,6 +31,7 @@ var EXAMPLES = {
   'Tabs': require('./NavigationTabsExample'),
   'Basic': require('./NavigationBasicExample'),
   'Animated Example': require('./NavigationAnimatedExample'),
+  'Custom Styling Example': require('./NavigationCustomStylingExample'),
   'Composition': require('./NavigationCompositionExample'),
   'Card Stack Example': require('./NavigationCardStackExample'),
   'Tic Tac Toe': require('./NavigationTicTacToeExample'),
