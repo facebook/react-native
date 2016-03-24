@@ -462,4 +462,61 @@ public class NativeAnimatedNodeTraversalTest {
     verifyNoMoreInteractions(mUIImplementationMock);
     verifyNoMoreInteractions(animationCallback);
   }
+
+  @Test
+  public void testInterpolationNode() {
+    mNativeAnimatedNodesManager.createAnimatedNode(
+      1,
+      JavaOnlyMap.of("type", "value", "value", 10d));
+
+    mNativeAnimatedNodesManager.createAnimatedNode(
+      2,
+      JavaOnlyMap.of(
+        "type",
+        "interpolation",
+        "inputRange",
+        JavaOnlyArray.of(10d, 20d),
+        "outputRange",
+        JavaOnlyArray.of(0d, 1d)));
+
+    mNativeAnimatedNodesManager.createAnimatedNode(
+      3,
+      JavaOnlyMap.of("type", "style", "style", JavaOnlyMap.of("opacity", 2)));
+    mNativeAnimatedNodesManager.createAnimatedNode(
+      4,
+      JavaOnlyMap.of("type", "props", "props", JavaOnlyMap.of("style", 3)));
+    mNativeAnimatedNodesManager.connectAnimatedNodes(1, 2);
+    mNativeAnimatedNodesManager.connectAnimatedNodes(2, 3);
+    mNativeAnimatedNodesManager.connectAnimatedNodes(3, 4);
+    mNativeAnimatedNodesManager.connectAnimatedNodeToView(4, 50);
+
+    Callback animationCallback = mock(Callback.class);
+    JavaOnlyArray frames = JavaOnlyArray.of(0d, 0.2d, 0.4d, 0.6d, 0.8d, 1d);
+    mNativeAnimatedNodesManager.startAnimatingNode(
+      1,
+      1,
+      JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 20d),
+      animationCallback);
+
+    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+
+    reset(mUIImplementationMock);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN)).isEqualTo(0d);
+
+    for (int i = 0; i < frames.size(); i++) {
+      reset(mUIImplementationMock);
+      mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+      verify(mUIImplementationMock)
+        .synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
+      assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN))
+        .isEqualTo(frames.getDouble(i));
+    }
+
+    reset(mUIImplementationMock);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verifyNoMoreInteractions(mUIImplementationMock);
+  }
 }
