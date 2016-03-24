@@ -87,7 +87,7 @@ git cherry-pick commitHash1
 If everything worked:
 
 ```
-node ./scripts/bump-oss-version.js <exact-version_you_are_releasing> # e.g. git node ./scripts/bump-oss-version.js 0.22.0
+node ./scripts/bump-oss-version.js <exact_version_you_are_releasing> # e.g. git node ./scripts/bump-oss-version.js 0.22.0
 git tag -d latest
 git push origin :latest
 git tag latest # for docs [website](https://facebook.github.io/react-native) to be generated

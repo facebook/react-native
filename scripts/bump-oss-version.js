@@ -30,7 +30,7 @@ let versionMajor = branch.slice(0, branch.indexOf(`-stable`));
 
 // - check that argument version matches branch
 // e.g. 0.33.1 or 0.33.0-rc4
-let version = process.argv.slice(2)[0];
+let version = process.argv[2];
 if (!version || version.indexOf(versionMajor) !== 0) {
   echo(`You must pass a tag like ${versionMajor}.[X]-rc[Y] to bump a version`);
   exit(1);
@@ -72,6 +72,7 @@ if (exec(`git commit -a -m "[${version}] Bump version numbers"`).code) {
 if (exec(`git tag v${version}`).code) {
   echo(`failed to tag the commit with v${version}, are you sure this release wasn't made earlier?`);
   echo(`You may want to rollback the last commit`);
+  echo(`git reset --hard HEAD~1`);
   exit(1);
 }
 
