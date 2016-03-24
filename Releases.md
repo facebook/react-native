@@ -34,7 +34,8 @@ Run:
 
 ```
 git checkout -b <version_you_are_releasing>-stable # e.g. git checkout -b 0.22-stable
-git tag v<version_you_are_releasing>.0-rc # e.g. git tag v0.22.0-rc
+node ./scripts/bump-oss-version.js <exact-version_you_are_releasing> # e.g. git node ./scripts/bump-oss-version.js 0.22.0-rc
+./scripts/test-manual-e2e.sh # to double check that e2e process works
 git push origin <version_you_are_releasing>-stable --tags # e.g. git push origin 0.22-stable --tags
 ```
 
@@ -86,7 +87,7 @@ git cherry-pick commitHash1
 If everything worked:
 
 ```
-git tag v-version_you_are_releasing  # e.g. git tag v0.22.0, git tag v0.22.1
+node ./scripts/bump-oss-version.js <exact_version_you_are_releasing> # e.g. git node ./scripts/bump-oss-version.js 0.22.0
 git tag -d latest
 git push origin :latest
 git tag latest # for docs [website](https://facebook.github.io/react-native) to be generated
