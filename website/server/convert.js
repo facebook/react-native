@@ -95,12 +95,6 @@ function execute() {
 
   glob.sync('src/react-native/docs/*.*').forEach(rmFile);
   glob.sync('src/react-native/blog/*.*').forEach(rmFile);
-  glob.sync('../blog/img/*.*').forEach(file => {
-    writeFileAndCreateFolder(
-      'src/react-native/blog/img/' + path.basename(file),
-      fs.readFileSync(file)
-    );
-  });
 
   var metadatas = {
     files: [],
@@ -173,7 +167,7 @@ function execute() {
   );
 
 
-  files = glob.sync(BLOG_MD_DIR + '**/*.md');
+  files = glob.sync(BLOG_MD_DIR + '**/*.*');
   const metadatasBlog = {
     files: [],
   };
