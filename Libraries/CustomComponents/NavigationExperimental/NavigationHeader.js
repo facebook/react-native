@@ -44,7 +44,9 @@ import type  {
 } from 'NavigationTypeDefinition';
 
 type Props = NavigationSceneRendererProps & {
-  getTitle: (navState: NavigationState) => string,
+  getTitle: (navState: NavigationState) => object,
+  getLeftButton: (navState: NavigationState) => func,
+  getRightButton: (navState: NavigationState) => func,
 };
 
 const {PropTypes} = React;
@@ -52,6 +54,9 @@ const {PropTypes} = React;
 const NavigationHeaderPropTypes = {
   ...NavigationPropTypes.SceneRenderer,
   getTitle: PropTypes.func.isRequired,
+  getLeftButton: PropTypes.func,
+  getRightButton: PropTypes.func,
+  style: View.propTypes.style
 };
 
 class NavigationHeader extends React.Component {
@@ -69,11 +74,73 @@ class NavigationHeader extends React.Component {
       <Animated.View
         style={[
           styles.header,
+          (this.props.style ? this.props.style : null),
         ]}>
         {state.children.map(this._renderTitle, this)}
-        {this._renderBackButton()}
+        {this._renderLeftButton()}
+        {this._renderRightButton()}
       </Animated.View>
     );
+  }
+
+  _renderLeftButton(): ?ReactElement {
+      if (this.props.navigationState.children.length <= 0) {
+          return null
+      }
+
+      let lastChildIndex = this.props.navigationState.children.length - 1
+      let childState = this.props.navigationState.children[lastChildIndex]
+      let index = lastChildIndex
+
+      let leftButton = (this.props.getLeftButton ? this.props.getLeftButton(childState) : null)
+
+      if (leftButton == null) {
+          leftButton = this._renderBackButton()
+      }
+
+      return (
+        <Animated.View
+          key={childState.key + '-LeftButton'}
+          style={[
+            styles.leftButton,
+            {
+              opacity: this.props.position.interpolate({
+                inputRange: [index - 1, index, index + 1],
+                outputRange: [0, 1, 0],
+              })
+            },
+          ]}>
+          {leftButton}
+        </Animated.View>
+      );
+  }
+
+  _renderRightButton(): ?ReactElement {
+      if (this.props.navigationState.children.length <= 0) {
+          return null
+      }
+
+      let lastChildIndex = this.props.navigationState.children.length - 1
+      let childState = this.props.navigationState.children[lastChildIndex]
+      let index = lastChildIndex
+
+      let rightButton = (this.props.getRightButton ? this.props.getRightButton(childState) : null)
+
+      return (
+        <Animated.View
+          key={childState.key + '-RightButton'}
+          style={[
+            styles.rightButton,
+            {
+              opacity: this.props.position.interpolate({
+                inputRange: [index - 1, index, index + 1],
+                outputRange: [0, 1, 0],
+              })
+            },
+          ]}>
+          {rightButton}
+        </Animated.View>
+      );
   }
 
   _renderBackButton(): ?ReactElement {
@@ -88,11 +155,39 @@ class NavigationHeader extends React.Component {
   }
 
   _renderTitle(childState: NavigationState, index:number): ?ReactElement {
+    let title = this.props.getTitle(childState)
+
+    if (title !== String) {
+        return (
+          <Animated.View
+            key={childState.key}
+            style={[
+              styles.title,
+              {
+                opacity: this.props.position.interpolate({
+                  inputRange: [index - 1, index, index + 1],
+                  outputRange: [0, 1, 0],
+                }),
+                left: this.props.position.interpolate({
+                  inputRange: [index - 1, index + 1],
+                  outputRange: [200, -200],
+                }),
+                right: this.props.position.interpolate({
+                  inputRange: [index - 1, index + 1],
+                  outputRange: [-200, 200],
+                }),
+              },
+            ]}>
+            {title}
+          </Animated.View>
+        );
+    }
+
     return (
       <Animated.Text
         key={childState.key}
         style={[
-          styles.title,
+          styles.titleText,
           {
             opacity: this.props.position.interpolate({
               inputRange: [index - 1, index, index + 1],
@@ -108,7 +203,7 @@ class NavigationHeader extends React.Component {
             }),
           },
         ]}>
-        {this.props.getTitle(childState)}
+        {title}
       </Animated.Text>
     );
   }
@@ -124,8 +219,14 @@ NavigationHeader = NavigationContainer.create(NavigationHeader);
 
 const styles = StyleSheet.create({
   title: {
-    textAlign: 'center',
     marginTop: 10,
+    position: 'absolute',
+    top: 20,
+    left: 0,
+    right: 0,
+  },
+  titleText: {
+    textAlign: 'center',
     fontSize: 18,
     fontWeight: '500',
     color: '#0A0A0A',
@@ -144,6 +245,18 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderBottomColor: '#828287',
     position: 'absolute',
+  },
+  leftButton: {
+    height: 37,
+    position: 'absolute',
+    bottom: 4,
+    left: 2,
+  },
+  rightButton: {
+    height: 37,
+    position: 'absolute',
+    bottom: 4,
+    right: 2,
   },
   backButton: {
     width: 29,
