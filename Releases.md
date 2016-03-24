@@ -41,6 +41,8 @@ git push origin <version_you_are_releasing>-stable --tags # e.g. git push origin
 Circle CI will run the tests and publish to npm with version `0.22.0-rc` and tag `next` meaning that
 this version will not be installed for users by default.
 
+Go to [Circle CI](https://circleci.com/gh/facebook/react-native), look for your branch on the left side and look the npm publish step.
+
 ** Note ** CI won't publish to npm if the `last` commit on the new branch does not have a tag `v<branch-name-without-stable>.0-[rc]`.
 
 ## Make sure we have release notes
@@ -85,8 +87,10 @@ If everything worked:
 
 ```
 git tag v-version_you_are_releasing  # e.g. git tag v0.22.0, git tag v0.22.1
+git tag -d latest
+git push origin :latest
 git tag latest # for docs [website](https://facebook.github.io/react-native) to be generated
-git push origin 0.22-stable --tags
+git push origin version_you_are_releasing-stable --tags  # e.g. git push origin 0.22-stable --tags
 ```
 
 Once you see the version in the top left corner of the website has been updated:
