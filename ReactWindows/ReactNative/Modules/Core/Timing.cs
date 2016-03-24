@@ -3,6 +3,7 @@ using ReactNative.Collections;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Windows.UI.Xaml.Media;
 
 namespace ReactNative.Modules.Core
 {
@@ -14,10 +15,10 @@ namespace ReactNative.Modules.Core
         private readonly object _gate = new object();
 
         private readonly HeapBasedPriorityQueue<TimerData> _timers;
-        private readonly Timer _timer;
 
         private JSTimersExecution _jsTimersModule;
         private bool _suspended;
+        private bool _renderingHandled;
 
         /// <summary>
         /// Instantiates the <see cref="Timing"/> module.
@@ -27,7 +28,6 @@ namespace ReactNative.Modules.Core
             : base(reactContext)
         {
             _timers = new HeapBasedPriorityQueue<TimerData>(Comparer<TimerData>.Create((x, y) => (int)(x.TargetTime.Ticks - y.TargetTime.Ticks)));
-            _timer = new Timer(FlushTimers, null, Timeout.Infinite, Timeout.Infinite);
         }
 
         /// <summary>
@@ -55,10 +55,11 @@ namespace ReactNative.Modules.Core
         /// </summary>
         public void OnSuspend()
         {
-            lock (_gate)
+            _suspended = true;
+            if (_renderingHandled)
             {
-                _suspended = true;
-                _timer.Change(Timeout.Infinite, Timeout.Infinite);
+                CompositionTarget.Rendering -= DoFrame;
+                _renderingHandled = false;
             }
         }
 
@@ -67,9 +68,11 @@ namespace ReactNative.Modules.Core
         /// </summary>
         public void OnResume()
         {
-            lock (_gate)
+            _suspended = false;
+            if (!_renderingHandled)
             {
-                UpdateTimer(true);
+                CompositionTarget.Rendering += DoFrame;
+                _renderingHandled = true;
             }
         }
 
@@ -78,7 +81,11 @@ namespace ReactNative.Modules.Core
         /// </summary>
         public void OnDestroy()
         {
-            _timer.Dispose();
+            if (_renderingHandled)
+            {
+                CompositionTarget.Rendering -= DoFrame;
+                _renderingHandled = false;
+            }
         }
 
         /// <summary>
@@ -102,12 +109,17 @@ namespace ReactNative.Modules.Core
             var period = TimeSpan.FromMilliseconds(duration);
             var scheduledTime = DateTimeOffset.FromUnixTimeMilliseconds((long)jsSchedulingTime);
             var initialTargetTime = (scheduledTime + period);
+
+            if (DateTimeOffset.Now > initialTargetTime && !repeat)
+            {
+                _jsTimersModule.callTimers(new[] { callbackId });
+                return;
+            }
+
             var timer = new TimerData(callbackId, initialTargetTime, period, repeat);
-            
             lock (_gate)
             {
                 _timers.Enqueue(timer);
-                UpdateTimer(false);
             }
         }
 
@@ -121,68 +133,31 @@ namespace ReactNative.Modules.Core
             lock (_gate)
             {
                 _timers.Remove(new TimerData(timerId));
-                UpdateTimer(false);
             }
         }
 
-        private void UpdateTimer(bool resume)
+        private void DoFrame(object sender, object e)
         {
-            if (resume)
-            {
-                _suspended = false;
-            }
-
-            if (_suspended)
+            if (Volatile.Read(ref _suspended))
             {
                 return;
             }
 
-            if (_timers.Count == 0)
-            {
-                _timer.Change(Timeout.Infinite, Timeout.Infinite);
-            }
-            else
-            {
-                var diff = _timers.Peek().TargetTime - DateTimeOffset.Now;
-                if (diff < TimeSpan.Zero)
-                {
-                    diff = TimeSpan.Zero;
-                }
-
-                var dueTime = (int)Math.Ceiling(diff.TotalMilliseconds);
-                _timer.Change(dueTime, Timeout.Infinite);
-            }
-        }
-
-        private void FlushTimers(object state)
-        {
             var ready = new List<int>();
+            var now = DateTimeOffset.Now;
 
             lock (_gate)
             {
-                while (_timers.Count > 0)
+                while (_timers.Count > 0 && _timers.Peek().TargetTime < now)
                 {
-                    var next = _timers.Peek();
-                    if (next.TargetTime < DateTimeOffset.Now)
-                    {
-                        _timers.Dequeue();
-                        ready.Add(next.CallbackId);
-                        var nextInterval = next.Increment();
+                    var next = _timers.Dequeue();
+                    ready.Add(next.CallbackId);
+                    var nextInterval = next.Increment(now);
 
-                        if (nextInterval.CanExecute)
-                        {
-                            _timers.Enqueue(nextInterval);
-                        }
-                    }
-                    else
+                    if (nextInterval.CanExecute)
                     {
-                        break;
+                        _timers.Enqueue(nextInterval);
                     }
-                }
-
-                if (_timers.Count > 0)
-                {
-                    UpdateTimer(false);
                 }
             }
 
@@ -223,9 +198,9 @@ namespace ReactNative.Modules.Core
 
             public bool CanExecute { get; private set; }
 
-            public TimerData Increment()
+            public TimerData Increment(DateTimeOffset now)
             {
-                return new TimerData(CallbackId, TargetTime + Period, Period, _repeat)
+                return new TimerData(CallbackId, now + Period, Period, _repeat)
                 {
                     CanExecute = _repeat,
                 };

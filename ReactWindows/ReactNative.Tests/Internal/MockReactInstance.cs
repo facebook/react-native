@@ -3,6 +3,7 @@ using ReactNative.Bridge;
 using ReactNative.Bridge.Queue;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ReactNative.Tests
@@ -11,6 +12,8 @@ namespace ReactNative.Tests
     {
         private readonly Action<int, JArray> _callback;
         private readonly Action<int, int, JArray, string> _function;
+
+        private int _isDisposed;
 
         public MockReactInstance()
             : this((_, __) => { }, (p0, p1, p2, p3) => { })
@@ -37,7 +40,7 @@ namespace ReactNative.Tests
         {
             get
             {
-                throw new NotImplementedException();
+                return Volatile.Read(ref _isDisposed) > 0;
             }
         }
 
@@ -84,7 +87,7 @@ namespace ReactNative.Tests
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            Interlocked.Increment(ref _isDisposed);
         }
     }
 }
