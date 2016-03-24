@@ -28,17 +28,23 @@ const {
 } = React;
 
 type Props = {
-  onNavigate: Function
+  onNavigate: Function;
+  imageSource: any;
 }
 
 const NavigationHeaderBackButton = (props: Props) => (
   <TouchableOpacity style={styles.buttonContainer} onPress={() => props.onNavigate(NavigationRootContainer.getBackAction())}>
-    <Image style={styles.button} source={require('./assets/back-icon.png')} />
+    <Image style={styles.button} source={props.imageSource} />
   </TouchableOpacity>
 );
 
+NavigationHeaderBackButton.defaultProps = {
+  imageSource: require('./assets/back-icon.png'),
+};
+
 NavigationHeaderBackButton.propTypes = {
-  onNavigate: React.PropTypes.func.isRequired
+  onNavigate: React.PropTypes.func.isRequired,
+  imageSource: React.PropTypes.any,
 };
 
 const styles = StyleSheet.create({

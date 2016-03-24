@@ -87,6 +87,8 @@ class NavigationCard extends React.Component<any, Props, any> {
       ...props,
     } = this.props;
 
+    const defaultStyle = NavigationCardStackStyleInterpolator.forHorizontal(props);
+
     if (style === undefined) {
       // fall back to default style.
       style = NavigationCardStackStyleInterpolator.forHorizontal(props);
@@ -97,7 +99,7 @@ class NavigationCard extends React.Component<any, Props, any> {
     }
 
     return (
-      <Animated.View {...panHandlers} style={[styles.main, style]}>
+      <Animated.View {...panHandlers} style={[styles.main, defaultStyle, style]}>
         {renderScene(props)}
       </Animated.View>
     );
