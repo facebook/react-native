@@ -594,11 +594,6 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
           waitUntilDone:NO];
 }
 
-- (void)_runBlock:(dispatch_block_t)block
-{
-  block();
-}
-
 - (void)injectJSONText:(NSString *)script
    asGlobalObjectNamed:(NSString *)objectName
               callback:(RCTJavaScriptCompleteBlock)onComplete
