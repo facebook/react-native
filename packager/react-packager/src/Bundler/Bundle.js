@@ -25,6 +25,8 @@ class Bundle extends BundleBase {
     this._numPrependedModules = 0;
     this._numRequireCalls = 0;
     this._minify = minify;
+
+    this._ramBundle = null; // cached RAM Bundle
   }
 
   addModule(resolver, resolutionResponse, module, moduleTransport) {
@@ -73,6 +75,7 @@ class Bundle extends BundleBase {
       virtual: true,
       sourceCode: code,
       sourcePath: name + '.js',
+      meta: {preloaded: true},
     }));
     this._numRequireCalls += 1;
   }
@@ -103,7 +106,46 @@ class Bundle extends BundleBase {
     return source;
   }
 
-  getUnbundle() {
+  getUnbundle(type) {
+    if (this._ramBundle) {
+      return this._ramBundle;
+    }
+
+    switch (type) {
+      case 'INDEX':
+        this._ramBundle = this._getAsIndexedFileUnbundle();
+        break;
+      case 'ASSETS':
+        this._ramBundle = this._getAsAssetsUnbundle();
+        break;
+      default:
+        throw new Error('Unkown RAM Bundle type:', type);
+    }
+
+    return this._ramBundle;
+  }
+
+  _getAsIndexedFileUnbundle() {
+    const modules = this.getModules();
+
+    // separate modules we need to preload from the ones we don't
+    const shouldPreload = (module) => module.meta && module.meta.preloaded;
+    const preloaded = modules.filter(module => shouldPreload(module));
+    const notPreloaded = modules.filter(module => !shouldPreload(module));
+
+    // code that will be executed on bridge start up
+    const startupCode = preloaded.map(({code}) => code).join('\n');
+
+    return {
+      // include copy of all modules on the order they're writen on the bundle:
+      // polyfills, preloaded, additional requires, non preloaded
+      allModules: preloaded.concat(notPreloaded),
+      startupCode,  // no entries on the index for these modules, only the code
+      modules: notPreloaded, // we include both the code and entries on the index
+    };
+  }
+
+  _getAsAssetsUnbundle() {
     const allModules = this.getModules().slice();
     const prependedModules = this._numPrependedModules;
     const requireCalls = this._numRequireCalls;

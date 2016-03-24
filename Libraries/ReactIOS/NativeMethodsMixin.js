@@ -94,7 +94,7 @@ var NativeMethodsMixin = {
    * Determines the location of the given view in the window and returns the
    * values via an async callback. If the React root view is embedded in
    * another native view, this will give you the absolute coordinates. If
-   * successful, the callback will be called be called with the following
+   * successful, the callback will be called with the following
    * arguments:
    *
    *  - x

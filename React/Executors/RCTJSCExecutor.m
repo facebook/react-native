@@ -562,9 +562,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
     JSValueRef jsError = NULL;
     JSStringRef execJSString = JSStringCreateWithUTF8CString(script.bytes);
-    JSStringRef jsURL = JSStringCreateWithCFString((__bridge CFStringRef)sourceURL.absoluteString);
-    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, jsURL, 0, &jsError);
-    JSStringRelease(jsURL);
+    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, _bundleURL, 0, &jsError);
     JSStringRelease(execJSString);
     RCTPerformanceLoggerEnd(RCTPLScriptExecution);
 
@@ -594,11 +592,6 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
                onThread:_javaScriptThread
              withObject:block
           waitUntilDone:NO];
-}
-
-- (void)_runBlock:(dispatch_block_t)block
-{
-  block();
 }
 
 - (void)injectJSONText:(NSString *)script
@@ -673,7 +666,7 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
 - (void)registerNativeRequire
 {
   __weak RCTJSCExecutor *weakSelf = self;
-  _context.context[@"nativeRequire"] = ^(NSString *moduleName) {
+  [self addSynchronousHookWithName:@"nativeRequire" usingBlock:^(NSString *moduleName) {
     RCTJSCExecutor *strongSelf = weakSelf;
     if (!strongSelf || !moduleName) {
       return;
@@ -698,7 +691,7 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
         [strongSelf invalidate];
       });
     }
-  };
+  }];
 }
 
 - (NSData *)loadRAMBundle:(NSURL *)sourceURL error:(NSError **)error
