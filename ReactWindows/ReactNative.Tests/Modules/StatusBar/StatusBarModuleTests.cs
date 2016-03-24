@@ -17,7 +17,7 @@ namespace ReactNative.Tests.Modules.StatusBar
         {
             var waitHandle = new AutoResetEvent(false);
             var statusBar = new MockStatusBar(waitHandle);
-            var module = CreateStatusBarModule(StatusBarModule.PlatformType.Mobile, statusBar);
+            var module = CreateStatusBarModule(statusBar);
 
             var color = 0xabcdefed;
             module.setColor(color);
@@ -33,23 +33,6 @@ namespace ReactNative.Tests.Modules.StatusBar
             Assert.AreEqual(r, statusBar.BackgroundColor.Value.R);
             Assert.AreEqual(g, statusBar.BackgroundColor.Value.G);
             Assert.AreEqual(b, statusBar.BackgroundColor.Value.B);
-
-            module = CreateStatusBarModule(StatusBarModule.PlatformType.Desktop, statusBar);
-
-            color = 0xabcabcab;
-
-            module.setColor(color);
-            waitHandle.WaitOne();
-
-            b = (byte)color;
-            color >>= 8;
-            g = (byte)color;
-            color >>= 8;
-            r = (byte)color;
-
-            Assert.AreEqual(r, statusBar.BackgroundColor.Value.R);
-            Assert.AreEqual(g, statusBar.BackgroundColor.Value.G);
-            Assert.AreEqual(b, statusBar.BackgroundColor.Value.B);
         }
 
         [TestMethod]
@@ -57,7 +40,7 @@ namespace ReactNative.Tests.Modules.StatusBar
         {
             var waitHandle = new AutoResetEvent(false);
             var statusBar = new MockStatusBar(waitHandle);
-            var module = CreateStatusBarModule(StatusBarModule.PlatformType.Mobile, statusBar);
+            var module = CreateStatusBarModule(statusBar);
 
             module.setHidden(true);
             waitHandle.WaitOne();
@@ -75,7 +58,7 @@ namespace ReactNative.Tests.Modules.StatusBar
         {
             var waitHandle = new AutoResetEvent(false);
             var statusBar = new MockStatusBar(waitHandle);
-            var module = CreateStatusBarModule(StatusBarModule.PlatformType.Mobile, statusBar);
+            var module = CreateStatusBarModule(statusBar);
 
             module.setTranslucent(false);
             waitHandle.WaitOne();
@@ -88,9 +71,9 @@ namespace ReactNative.Tests.Modules.StatusBar
             Assert.AreEqual(statusBar.BackgroundOpacity, 0.5);
         }
 
-        private static StatusBarModule CreateStatusBarModule(StatusBarModule.PlatformType platform, IStatusBar statusBar)
+        private static StatusBarModule CreateStatusBarModule(IStatusBar statusBar)
         {
-            return new StatusBarModule(platform, statusBar);
+            return new StatusBarModule(statusBar);
         }
 
         class MockStatusBar : IStatusBar

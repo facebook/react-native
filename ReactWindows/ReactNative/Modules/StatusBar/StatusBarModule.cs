@@ -12,41 +12,25 @@ namespace ReactNative.Modules.StatusBar
     /// </summary>
     public class StatusBarModule : NativeModuleBase
     {
-        /// <summary>
-        /// Runtime platform.
-        /// </summary>
-        public enum PlatformType
-        {
-            /// <summary>
-            /// Mobile.
-            /// </summary>
-            Mobile,
-            /// <summary>
-            /// Desktop.
-            /// </summary>
-            Desktop,
-            /// <summary>
-            /// Other.
-            /// </summary>
-            Other,
-        };
-
-        private PlatformType _platformType;
-        private IStatusBar _statusBar;
+        private readonly IStatusBar _statusBar;
 
         /// <summary>
         /// Instantiates the <see cref="StatusBarModule"/>.
         /// </summary>
-        internal StatusBarModule() : this(DetectPlatform(), CreateDefaultStatusBar())
+        internal StatusBarModule() 
+            : this(GetStatusBar())
         {
         }
 
         /// <summary>
         /// Instantiates the <see cref="StatusBarModule"/>.
         /// </summary>
-        internal StatusBarModule(PlatformType platformType, IStatusBar statusBar)
+        /// <param name="statusBar">The status bar instance.</param>
+        internal StatusBarModule(IStatusBar statusBar)
         {
-            _platformType = platformType;
+            if (statusBar == null)
+                throw new ArgumentNullException(nameof(statusBar));
+
             _statusBar = statusBar;
         }
 
@@ -68,20 +52,17 @@ namespace ReactNative.Modules.StatusBar
         [ReactMethod]
         public void setHidden(bool hide)
         {
-            if (_platformType == PlatformType.Mobile && _statusBar != null)
+            RunOnDispatcher(async () =>
             {
-                RunOnDispatcher(async () =>
+                if (hide)
                 {
-                    if (hide)
-                    {
-                        await _statusBar.HideAsync();
-                    }
-                    else
-                    {
-                        await _statusBar.ShowAsync();
-                    }
-                });
-            }
+                    await _statusBar.HideAsync();
+                }
+                else
+                {
+                    await _statusBar.ShowAsync();
+                }
+            });
         }
 
         /// <summary>
@@ -91,10 +72,9 @@ namespace ReactNative.Modules.StatusBar
         [ReactMethod]
         public void setColor(uint? color)
         {
-            if (color.HasValue && _statusBar != null)
+            if (color.HasValue)
             {
                 var value = ColorHelpers.Parse(color.Value);
-
                 RunOnDispatcher(() =>
                 {
                     _statusBar.BackgroundColor = value;
@@ -109,52 +89,29 @@ namespace ReactNative.Modules.StatusBar
         [ReactMethod]
         public void setTranslucent(bool translucent)
         {
-            if (_platformType == PlatformType.Mobile && _statusBar != null)
+            RunOnDispatcher(() =>
             {
-                RunOnDispatcher(() =>
-                {
-                    _statusBar.BackgroundOpacity = translucent ? 0.5 : 1;
-                });
-            }
-        }
-
-        /// <summary>
-        /// Detect running platform.
-        /// </summary>
-        private static PlatformType DetectPlatform()
-        {
-            //Mobile customization
-            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
-            {
-                return PlatformType.Mobile;
-            }
-
-            //PC customization
-            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.ApplicationView"))
-            {
-                return PlatformType.Desktop;
-            }
-
-            return PlatformType.Other;
+                _statusBar.BackgroundOpacity = translucent ? 0.5 : 1;
+            });
         }
 
         /// <summary>
         /// Create default StatusBar.
         /// </summary>
-        private static IStatusBar CreateDefaultStatusBar()
+        private static IStatusBar GetStatusBar()
         {
-            var platformType = DetectPlatform();
-
-            if (platformType == PlatformType.Mobile)
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
             {
-                return new DefaultStatusBar(Windows.UI.ViewManagement.StatusBar.GetForCurrentView());
+                return new MobileStatusBar();
             }
-            else if (platformType == PlatformType.Desktop)
+            else if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.ApplicationView"))
             {
-                return new DefaultStatusBar(Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar);
+                return new DesktopStatusBar();
             }
-
-            return null;
+            else
+            {
+                return new NopStatusBar();
+            }
         }
 
         /// <summary>

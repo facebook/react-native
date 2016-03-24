@@ -204,8 +204,10 @@
     <Compile Include="Modules\Network\HttpContentHelpers.cs" />
     <Compile Include="Modules\Network\TaskCancellationManager.cs" />
     <Compile Include="Modules\NetInfo\NetInfoModule.cs" />
-    <Compile Include="Modules\StatusBar\DefaultStatusBar.cs" />
+    <Compile Include="Modules\StatusBar\DesktopStatusBar.cs" />
     <Compile Include="Modules\StatusBar\IStatusBar.cs" />
+    <Compile Include="Modules\StatusBar\MobileStatusBar.cs" />
+    <Compile Include="Modules\StatusBar\NopStatusBar.cs" />
     <Compile Include="Modules\StatusBar\StatusBarModule.cs" />
     <Compile Include="Modules\Storage\AsyncStorageErrorHelpers.cs" />
     <Compile Include="Modules\Storage\AsyncStorageModule.cs" />
