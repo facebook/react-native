@@ -6,39 +6,39 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule StyleSheetRegistry
+ * @providesModule ReactNativePropRegistry
  * @flow
  */
 'use strict';
 
-var styles = {};
+var objects = {};
 var uniqueID = 1;
-var emptyStyle = {};
+var emptyObject = {};
 
-class StyleSheetRegistry {
-  static registerStyle(style: Object): number {
+class ReactNativePropRegistry {
+  static register(object: Object): number {
     var id = ++uniqueID;
     if (__DEV__) {
-      Object.freeze(style);
+      Object.freeze(object);
     }
-    styles[id] = style;
+    objects[id] = object;
     return id;
   }
 
-  static getStyleByID(id: number): Object {
+  static getByID(id: number): Object {
     if (!id) {
       // Used in the style={[condition && id]} pattern,
       // we want it to be a no-op when the value is false or null
-      return emptyStyle;
+      return emptyObject;
     }
 
-    var style = styles[id];
-    if (!style) {
+    var object = objects[id];
+    if (!object) {
       console.warn('Invalid style with id `' + id + '`. Skipping ...');
-      return emptyStyle;
+      return emptyObject;
     }
-    return style;
+    return object;
   }
 }
 
-module.exports = StyleSheetRegistry;
+module.exports = ReactNativePropRegistry;
