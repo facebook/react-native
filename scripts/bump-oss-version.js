@@ -52,15 +52,28 @@ if (sed(`-i`, /s.version\s*=.*/, `s.version             = \"${version}\"`, `Reac
   exit(1);
 }
 
+// verify that files changed, we just do a git diff and check how many times version is added across files
+let numberOfChangedLinesWithNewVersion = exec(`git diff -U0 | grep '^[+]' | grep -c ${version} `, {silent: true})
+  .stdout.trim();
+if (+numberOfChangedLinesWithNewVersion !== 3) {
+  echo(`Failed to update all the files. React.podspec, package.json and gradle.properties must have versions in them`);
+  echo(`Fix the issue, revert and try again`);
+  exec(`git diff`);
+  exit(1);
+}
 
 // - make commit [0.21.0-rc] Bump version numbers
-// TODO verify all cganges
+if (exec(`git commit -a -m "[${version}] Bump version numbers"`).code) {
+  echo(`failed to commit`);
+  exit(1);
+}
+
 // - add tag v0.21.0-rc
-// - change Releases.md to reflect changes in this file
-
-
-
-
+if (exec(`git tag v${version}`).code) {
+  echo(`failed to tag the commit with v${version}, are you sure this release wasn't made earlier?`);
+  echo(`You may want to rollback the last commit`);
+  exit(1);
+}
 
 exit(0);
 /*eslint-enable no-undef */
