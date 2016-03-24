@@ -32,6 +32,10 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ListViewExample'),
   },
   {
+    key: 'ModalExample',
+    module: require('./ModalExample'),
+  },
+  {
     key: 'PickerAndroidExample',
     module: require('./PickerAndroidExample'),
   },
@@ -97,6 +101,10 @@ const APIExamples = [
   {
     key: 'AppStateExample',
     module: require('./AppStateExample'),
+  },
+  {
+    key: 'BackAndroidExample',
+    module: require('./BackAndroidExample'),
   },
   {
     key: 'BorderExample',

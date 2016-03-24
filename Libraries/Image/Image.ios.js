@@ -95,6 +95,11 @@ var Image = React.createClass({
      */
     accessibilityLabel: PropTypes.string,
     /**
+    * blurRadius: the blur radius of the blur filter added to the image
+    * @platform ios
+    */
+    blurRadius: PropTypes.number,
+    /**
      * When the image is resized, the corners of the size specified
      * by capInsets will stay a fixed size, but the center content and borders
      * of the image will be stretched.  This is useful for creating resizable
@@ -206,7 +211,7 @@ var Image = React.createClass({
 
     // This is a workaround for #8243665. RCTNetworkImageView does not support tintColor
     // TODO: Remove this hack once we have one image implementation #8389274
-    if (isNetwork && tintColor) {
+    if (isNetwork && (tintColor || this.props.blurRadius)) {
       RawImage = RCTImageView;
     }
 

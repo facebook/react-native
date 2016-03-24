@@ -13,6 +13,7 @@
 #import "RCTBridge+Private.h"
 #import "RCTModuleMethod.h"
 #import "RCTLog.h"
+#import "RCTProfile.h"
 #import "RCTUtils.h"
 
 @implementation RCTModuleData
@@ -185,6 +186,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 - (id<RCTBridgeModule>)instance
 {
   if (!_setupComplete) {
+    RCT_PROFILE_BEGIN_EVENT(0, [NSString stringWithFormat:@"[RCTModuleData instanceForClass:%@]", _moduleClass], nil);
     if (_requiresMainThreadSetup) {
       // The chances of deadlock here are low, because module init very rarely
       // calls out to other threads, however we can't control when a module might
@@ -196,6 +198,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     } else {
       [self setUpInstanceAndBridge];
     }
+    RCT_PROFILE_END_EVENT(0, @"", nil);
   }
   return _instance;
 }

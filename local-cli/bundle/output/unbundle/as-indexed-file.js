@@ -31,7 +31,7 @@ function saveAsIndexedFile(bundle, options, log) {
   } = options;
 
   log('start');
-  const {startupCode, modules} = bundle.getUnbundle();
+  const {startupCode, modules} = bundle.getUnbundle('INDEX');
   log('finish');
 
   log('Writing unbundle output to:', bundleOutput);
@@ -90,6 +90,7 @@ function buildModuleTable(buffers) {
   // entry:
   //  - module_id: NUL terminated utf8 string
   //  - module_offset: uint_32 offset into the module string
+  //  - module_length: uint_32 length in bytes of the module
   //  - module_line: uint_32 line on which module starts on the bundle
 
   const numBuffers = buffers.length;
@@ -107,10 +108,11 @@ function buildModuleTable(buffers) {
       Buffer(i === 0 ? MAGIC_STARTUP_MODULE_ID : id, 'utf8'),
       nullByteBuffer,
       uInt32Buffer(currentOffset),
+      uInt32Buffer(length),
       uInt32Buffer(currentLine),
     ]);
 
-    currentLine += linesCount - 1;
+    currentLine += linesCount;
 
     currentOffset += length;
     tableLength += entry.length;
@@ -127,7 +129,7 @@ function buildModuleBuffers(startupCode, modules, encoding) {
       modules.map(module =>
         moduleToBuffer(
           String(module.id),
-          module.code + '\n', // each module starts on a newline
+          module.code,
           encoding,
         )
       )

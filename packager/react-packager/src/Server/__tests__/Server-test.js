@@ -8,22 +8,22 @@
  */
 'use strict';
 
+jest.autoMockOff();
+
 jest.setMock('worker-farm', function() { return () => {}; })
-    .dontMock('node-haste/node_modules/throat')
-    .dontMock('os')
-    .dontMock('lodash')
-    .dontMock('path')
-    .dontMock('url')
     .setMock('timers', { setImmediate: (fn) => setTimeout(fn, 0) })
     .setMock('uglify-js')
-    .dontMock('../')
-    .setMock('crypto');
+    .setMock('crypto')
+    .mock('../../Bundler')
+    .mock('../../AssetServer')
+    .mock('../../lib/declareOpts')
+    .mock('node-haste')
+    .mock('../../Activity');
 
 const Promise = require('promise');
 
 var Bundler = require('../../Bundler');
 var Server = require('../');
-var Server = require('../../Server');
 var AssetServer = require('../../AssetServer');
 
 var FileWatcher;
@@ -108,7 +108,7 @@ describe('processRequest', () => {
       requestHandler,
       'mybundle.bundle?runModule=true'
     ).then(response => {
-      expect(response.getHeader('ETag')).toBeDefined()
+      expect(response.getHeader('ETag')).toBeDefined();
     });
   });
 
@@ -118,7 +118,7 @@ describe('processRequest', () => {
       'mybundle.bundle?runModule=true',
       { headers : { 'if-none-match' : 'this is an etag' } }
     ).then(response => {
-      expect(response.statusCode).toEqual(304)
+      expect(response.statusCode).toEqual(304);
     });
   });
 
@@ -262,7 +262,7 @@ describe('processRequest', () => {
 
       Bundler.prototype.bundle = bundleFunc;
 
-      const server = new Server(options);
+      server = new Server(options);
       server.setHMRFileChangeListener(() => {});
 
       requestHandler = server.processRequest.bind(server);

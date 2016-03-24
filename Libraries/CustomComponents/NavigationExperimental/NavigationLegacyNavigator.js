@@ -1,5 +1,10 @@
 /**
- * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
@@ -27,21 +32,27 @@
  */
 'use strict';
 
+const Animated = require('Animated');
 const NavigationAnimatedValueSubscription = require('NavigationAnimatedValueSubscription');
 const NavigationAnimatedView = require('NavigationAnimatedView');
 const NavigationCard = require('NavigationCard');
+const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleInterpolator');
 const NavigationContext = require('NavigationContext');
 const NavigationLegacyNavigatorRouteStack = require('NavigationLegacyNavigatorRouteStack');
+const NavigationCardStackPanResponder = require('NavigationCardStackPanResponder');
+const NavigationPagerPanResponder = require('NavigationPagerPanResponder');
+const NavigationPagerStyleInterpolator = require('NavigationPagerStyleInterpolator');
 const NavigatorBreadcrumbNavigationBar = require('NavigatorBreadcrumbNavigationBar');
 const NavigatorNavigationBar = require('NavigatorNavigationBar');
 const NavigatorSceneConfigs = require('NavigatorSceneConfigs');
 const React = require('react-native');
 const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
 
-const invariant = require('fbjs/lib/invariant');
-const guid = require('guid');
-
 import type  {
+  NavigationActionCaller,
+  NavigationAnimatedValue,
+  NavigationAnimationSetter,
+  NavigationParentState,
   NavigationSceneRenderer,
   NavigationSceneRendererProps,
 } from 'NavigationTypeDefinition';
@@ -50,9 +61,12 @@ type Props = {
   configureScene: any,
   initialRoute: any,
   initialRouteStack: any,
-  renderScene: any,
   navigationBar: any,
   navigationBarNavigator: any,
+  navigator: any,
+  onDidFocus: any,
+  onWillFocus: any,
+  renderScene: any,
   renderScene: any,
   style: any,
 };
@@ -61,15 +75,6 @@ type State = {
   presentedIndex: number,
   routeStack: Array<any>,
 };
-
-function getConfigPopDirection(config: any): ?string {
-  if (config && config.gestures && config.gestures.pop) {
-    const direction = config.gestures.pop.direction;
-    return direction ? String(direction) : null;
-  }
-
-  return null;
-}
 
 const RouteStack = NavigationLegacyNavigatorRouteStack;
 
@@ -86,7 +91,7 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   static NavigationBar: any;
   static SceneConfigs: any;
 
-  _key: string;
+  _applyAnimation: NavigationAnimationSetter;
   _navigationBarRef: any;
   _onNavigationBarRef: (ref: any) => void;
   _onPositionChange: (data: {value: number}) => void;
@@ -95,25 +100,32 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   _renderCard: NavigationSceneRenderer;
   _renderHeader: NavigationSceneRenderer;
   _renderScene: NavigationSceneRenderer;
+  _routeFocused: any;
+  _routeToFocus: any;
+  _onNavigate: NavigationActionCaller;
   _stack: NavigationLegacyNavigatorRouteStack;
+  _useAnimation: boolean;
 
   navigationContext: NavigationContext;
+  parentNavigator: any;
   props: Props;
   state: State;
 
   constructor(props: Props, context: any) {
     super(props, context);
 
-    this.navigationContext = new NavigationContext();
-
     const stack = this._getInitialRouteStack();
 
     // Unfortunately, due to historical reasons, the `state` has been exposed
     // as public members of the navigator, therefore we'd keep private state
     // as private members.
-    this._key = guid();
     this._previousStack = stack;
     this._stack = stack;
+    this._useAnimation = false;
+
+    // Legacy members portred from `Navigator`.
+    this.parentNavigator = props.navigator;
+    this.navigationContext = new NavigationContext();
 
     this.state = {
       routeStack: stack.toArray(),
@@ -122,20 +134,15 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   }
 
   jumpTo(route: any): void {
-    const index = this._stack.indexOf(route);
-    invariant(
-      index > -1,
-      'Cannot jump to route that is not in the route stack'
-    );
-    this._jumpToIndex(index);
+    this._applyStack(this._stack.jumpTo(route));
   }
 
   jumpForward(): void {
-    this._jumpToIndex(this._stack.index + 1);
+    this._applyStack(this._stack.jumpForward());
   }
 
   jumpBack(): void {
-    this._jumpToIndex(this._stack.index - 1);
+    this._applyStack(this._stack.jumpBack());
   }
 
   push(route: any): void {
@@ -143,25 +150,11 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   }
 
   pop(): void {
-    const stack = this._stack;
-    if (stack.size > 1) {
-      this._applyStack(stack.pop());
-    }
+    this._applyStack(this._stack.pop());
   }
 
   replaceAtIndex(route: any, index: number): void {
-    const stack = this._stack;
-
-    if (index < 0) {
-      index += stack.size;
-    }
-
-    if (index >= stack.size) {
-      // Nothing to replace.
-      return;
-    }
-
-    this._applyStack(stack.replaceAtIndex(index, route));
+    this._applyStack(this._stack.replaceAtIndex(index, route));
   }
 
   replace(route: any): void {
@@ -177,47 +170,23 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   }
 
   popToRoute(route: any): void {
-    const stack = this._stack;
-    const nextIndex = stack.indexOf(route);
-    invariant(
-      nextIndex > -1,
-      'Calling popToRoute for a route that doesn\'t exist!'
-    );
-    this._applyStack(stack.slice(0, nextIndex + 1));
+    this._applyStack(this._stack.popToRoute(route));
   }
 
   replacePreviousAndPop(route: any): void {
-    const stack = this._stack;
-    const nextIndex = stack.index - 1;
-    if (nextIndex < 0) {
-      return;
-    }
-    this._applyStack(stack.replaceAtIndex(nextIndex, route).pop());
+    this._applyStack(this._stack.replacePreviousAndPop(route));
   }
 
   resetTo(route: any): void {
-    invariant(!!route, 'Must supply route');
-    this._applyStack(this._stack.slice(0).replaceAtIndex(0, route));
+    this._applyStack(this._stack.resetTo(route));
   }
 
   immediatelyResetRouteStack(routes: Array<any>): void {
-    const index = routes.length - 1;
-    const stack = new RouteStack(index, routes);
-    // Immediately blow away all current scenes with a new key.
-    this._key = guid();
-    this._applyStack(stack);
+    this._applyStack(this._stack.resetRoutes(routes), true);
   }
 
   getCurrentRoutes(): Array<any> {
     return this._stack.toArray();
-  }
-
-  _jumpToIndex(index: number): void {
-    const stack = this._stack;
-    if (index < 0 || index >= stack.size) {
-      return;
-    }
-    this._applyStack(stack.jumpToIndex(index));
   }
 
   // Lyfe cycle and private methods below.
@@ -231,22 +200,43 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   }
 
   componentWillMount(): void {
+    this._applyAnimation = this._applyAnimation.bind(this);
+    this._onNavigate = this._onNavigate.bind(this);
     this._onNavigationBarRef = this._onNavigationBarRef.bind(this);
     this._onPositionChange = this._onPositionChange.bind(this);
     this._renderCard = this._renderCard.bind(this);
     this._renderHeader = this._renderHeader.bind(this);
     this._renderScene = this._renderScene.bind(this);
+
+    this._willFocus();
+  }
+
+  componentDidMount(): void {
+    this._didFocus();
   }
 
   componentWillUnmount(): void {
     this._positionListener && this._positionListener.remove();
   }
 
+  componentWillUpdate(nextProps: Props, nextState: State): void {
+    this._willFocus();
+  }
+
+  componentDidUpdate(prevProps: Props, prevState: State): void {
+    if (this._useAnimation) {
+      // will play animation.
+      return;
+    }
+    this._didFocus();
+  }
+
   render(): ReactElement {
     return (
       <NavigationAnimatedView
-        key={'main_' + this._key}
+        applyAnimation={this._applyAnimation}
         navigationState={this._stack.toNavigationState()}
+        onNavigate={this._onNavigate}
         renderOverlay={this._renderHeader}
         renderScene={this._renderCard}
         style={this.props.style}
@@ -264,6 +254,8 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   }
 
   _renderHeader(props: NavigationSceneRendererProps): ?ReactElement {
+    // `_renderHeader` is the always called before `_renderCard`. We should
+    // subscribe to the position here.
     this._positionListener && this._positionListener.remove();
     this._positionListener = new NavigationAnimatedValueSubscription(
       props.position,
@@ -271,7 +263,6 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
     );
 
     const {navigationBar, navigationBarNavigator} = this.props;
-
     if (!navigationBar) {
       return null;
     }
@@ -279,6 +270,7 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
     return React.cloneElement(
       navigationBar,
       {
+        key: 'header_' + props.scene.key,
         ref: this._onNavigationBarRef,
         navigator: navigationBarNavigator || this,
         navState: {...this.state},
@@ -287,38 +279,48 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   }
 
   _renderCard(props: NavigationSceneRendererProps): ReactElement {
-    let direction = 'horizontal';
-
-    const {navigationState} = props.scene;
+    const {scene} = props;
     const {configureScene} = this.props;
 
+    // Default getters for style and pan responders.
+    let styleGetter = NavigationCardStackStyleInterpolator.forHorizontal;
+    let panResponderGetter =  NavigationCardStackPanResponder.forHorizontal;
+
     if (configureScene) {
-      const route = RouteStack.getRouteByNavigationState(navigationState);
+      const route = RouteStack.getRouteByNavigationState(scene.navigationState);
       const config = configureScene(route, this.state.routeStack);
 
-      switch (getConfigPopDirection(config)) {
-        case 'left-to-right':
-          direction = 'horizontal';
-          break;
-
-        case 'top-to-bottom':
-          direction = 'vertical';
-          break;
-
-        default:
-          // unsupported config.
-          if (__DEV__) {
-            console.warn('unsupported scene configuration');
-          }
+      if (config) {
+        const gestures = config.gestures || {};
+        if (gestures.pop && gestures.pop.direction === 'left-to-right') {
+          // pass, will use default getters.
+        } else if (gestures.pop && gestures.pop.direction === 'top-to-bottom') {
+          styleGetter = NavigationCardStackStyleInterpolator.forVertical;
+          panResponderGetter = NavigationCardStackPanResponder.forVertical;
+        } else if (
+          gestures.jumpBack &&
+          gestures.jumpForward &&
+          gestures.jumpBack.direction === 'left-to-right' &&
+          gestures.jumpForward.direction === 'right-to-left'
+        ) {
+          styleGetter = NavigationPagerStyleInterpolator.forHorizontal;
+          panResponderGetter = NavigationPagerPanResponder.forHorizontal;
+        } else if (__DEV__) {
+          console.warn('unsupported scene configuration', config);
+        }
       }
     }
+
+    const style = styleGetter(props);
+    const panHandlers = panResponderGetter(props);
 
     return (
       <NavigationCard
         {...props}
-        direction={direction}
-        key={'card_' + navigationState.key}
+        key={'card_' + props.scene.key}
+        panHandlers={panHandlers}
         renderScene={this._renderScene}
+        style={style}
       />
     );
   }
@@ -329,10 +331,17 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
     return this.props.renderScene(route, this);
   }
 
-  _applyStack(stack: NavigationLegacyNavigatorRouteStack): void {
+  _applyStack(
+    stack: NavigationLegacyNavigatorRouteStack,
+    noAnimation: ?boolean,
+  ): void {
     if (stack !== this._stack) {
       this._previousStack = this._stack;
       this._stack = stack;
+
+      this._useAnimation = noAnimation ||
+        this._previousStack.index !== stack.index;
+
       this.setState({
         presentedIndex: stack.index,
         routeStack: stack.toArray(),
@@ -359,6 +368,72 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
     ) {
       const progress = (data.value - fromIndex) / (toIndex - fromIndex);
       this._navigationBarRef.updateProgress(progress, fromIndex, toIndex);
+    }
+
+    const diff = this._stack.index - data.value;
+    // When animation stops, the `diff` can still be very a small non-zero value
+    // (e.g. 0.00000002). Call `willFocus` when `diff` is small enough.
+    if (diff < 0.05) {
+      this._didFocus();
+    }
+  }
+
+  _applyAnimation(
+    position: NavigationAnimatedValue,
+    nextState: NavigationParentState,
+    prevState: NavigationParentState,
+  ): void {
+    const {index} = nextState;
+
+    if (!this._useAnimation) {
+      position.setValue(index);
+      return;
+    }
+
+    Animated.timing(
+      position,
+      {
+        duration: 500,
+        toValue: index,
+      }
+    ).start();
+  }
+
+  _willFocus(): void {
+    const route = this._stack.get(this._stack.index);
+    if (this._routeToFocus === route) {
+      return;
+    }
+    this._routeToFocus = route;
+    this.navigationContext.emit('willfocus', {route: route});
+    this.props.onWillFocus && this.props.onWillFocus(route);
+  }
+
+  _didFocus(): void {
+    const route = this._stack.get(this._stack.index);
+    if (this._routeFocused === route) {
+      return;
+    }
+    this._routeFocused = route;
+    this.navigationContext.emit('didfocus', {route: route});
+    this.props.onDidFocus && this.props.onDidFocus(route);
+  }
+
+  _onNavigate(action: any): void {
+    switch (action) {
+      case NavigationCardStackPanResponder.Actions.BACK:
+        this.pop();
+        break;
+      case NavigationPagerPanResponder.Actions.JUMP_BACK:
+        this.jumpBack();
+        break;
+      case NavigationPagerPanResponder.Actions.JUMP_FORWARD:
+        this.jumpForward();
+        break;
+      default:
+        if (__DEV__) {
+          console.warn('unsupported gesture action', action);
+        }
     }
   }
 }
