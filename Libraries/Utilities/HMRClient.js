@@ -98,12 +98,20 @@ Error: ${e.message}`
             RCTExceptionsManager && RCTExceptionsManager.dismissRedbox && RCTExceptionsManager.dismissRedbox();
           }
 
+          let serverHost;
+
+          if (Platform.OS === 'android') {
+            serverHost = require('NativeModules').AndroidConstants.ServerHost;
+          } else {
+            serverHost = port ? `${host}:${port}` : host;
+          }
+
           modules.forEach(({id, code}, i) => {
             code = code + '\n\n' + sourceMappingURLs[i];
 
             require('SourceMapsCache').fetch({
               text: code,
-              url: sourceURLs[i],
+              url: `http://${serverHost}${sourceURLs[i]}`,
               sourceMappingURL: sourceMappingURLs[i],
             });
 

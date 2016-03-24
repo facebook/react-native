@@ -9,16 +9,7 @@
 
 package com.facebook.react.devsupport;
 
-import javax.annotation.Nullable;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
 import android.content.Context;
-import android.os.Build;
 import android.os.Handler;
 import android.text.TextUtils;
 
@@ -26,6 +17,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.ConnectionPool;
@@ -33,6 +25,13 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nullable;
 
 import okio.Okio;
 import okio.Sink;
@@ -50,10 +49,6 @@ public class DevServerHelper {
 
   public static final String RELOAD_APP_EXTRA_JS_PROXY = "jsproxy";
   private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
-
-  private static final String EMULATOR_LOCALHOST = "10.0.2.2:8081";
-  private static final String GENYMOTION_LOCALHOST = "10.0.3.2:8081";
-  private static final String DEVICE_LOCALHOST = "localhost:8081";
 
   private static final String BUNDLE_URL_FORMAT =
       "http://%s/%s.bundle?platform=android&dev=%s&hot=%s&minify=%s";
@@ -118,7 +113,7 @@ public class DevServerHelper {
    * @return the host to use when connecting to the bundle server from the host itself.
    */
   private static String getHostForJSProxy() {
-    return DEVICE_LOCALHOST;
+    return AndroidInfoHelpers.DEVICE_LOCALHOST;
   }
 
   /**
@@ -149,31 +144,21 @@ public class DevServerHelper {
     // Check debug server host setting first. If empty try to detect emulator type and use default
     // hostname for those
     String hostFromSettings = mSettings.getDebugServerHost();
+
     if (!TextUtils.isEmpty(hostFromSettings)) {
       return Assertions.assertNotNull(hostFromSettings);
     }
 
-    // Since genymotion runs in vbox it use different hostname to refer to adb host.
-    // We detect whether app runs on genymotion and replace js bundle server hostname accordingly
-    if (isRunningOnGenymotion()) {
-      return GENYMOTION_LOCALHOST;
-    }
-    if (isRunningOnStockEmulator()) {
-      return EMULATOR_LOCALHOST;
-    }
-    FLog.w(
+    String host = AndroidInfoHelpers.getServerHost();
+
+    if (host.equals(AndroidInfoHelpers.DEVICE_LOCALHOST)) {
+      FLog.w(
         ReactConstants.TAG,
         "You seem to be running on device. Run 'adb reverse tcp:8081 tcp:8081' " +
-            "to forward the debug server's port to the device.");
-    return DEVICE_LOCALHOST;
-  }
+          "to forward the debug server's port to the device.");
+    }
 
-  private boolean isRunningOnGenymotion() {
-    return Build.FINGERPRINT.contains("vbox");
-  }
-
-  private boolean isRunningOnStockEmulator() {
-    return Build.FINGERPRINT.contains("generic");
+    return host;
   }
 
   private static String createBundleURL(String host, String jsModulePath, boolean devMode, boolean hmr, boolean jsMinify) {
