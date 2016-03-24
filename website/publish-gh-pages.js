@@ -23,10 +23,12 @@ if (!which(`git`)) {
 }
 
 let version;
+let isBlogToBeDeployed = false;
 if (CIRCLE_BRANCH.indexOf(`-stable`) !== -1) {
   version = CIRCLE_BRANCH.slice(0, CIRCLE_BRANCH.indexOf(`-stable`));
 } else if (CIRCLE_BRANCH === `master`) {
   version = `next`;
+  isBlogToBeDeployed = true;
 }
 
 rm(`-rf`, `build`);
@@ -83,15 +85,18 @@ if (!CI_PULL_REQUEST && CIRCLE_PROJECT_USERNAME === `facebook`) {
       exit(1);
     }
     cd(`build/react-native-gh-pages`);
-    exec(`cp -R ../react-native/* releases/${version}`);
+    let toCopy = ls(`../react-native`)
+      .filter(file => file !== `blog`)
+      .map(file => `../react-native/${file}`);
+    cp(`-R`, toCopy, `releases/${version}`);
     // versions.html is located in root of website and updated with every release
-    exec(`cp ../react-native/versions.html .`);
+    cp(`../react-native/versions.html`, `.`);
   }
   // generate to root folder when commit is tagged as latest, i.e. stable and needs to be shown at the root of repo
   if (currentCommit === latestTagCommit) {
     echo(`------------ DEPLOYING latest`);
-    // leave only releases folder
-    rm(`-rf`, ls(`*`).filter(name => name !== 'releases'));
+    // leave only releases and blog folder
+    rm(`-rf`, ls(`*`).filter(name => (name !== 'releases') || (name !== 'blog')));
     cd(`../..`);
     if (exec(`RN_VERSION=${version} RN_LATEST_VERSION=${latestVersion} \
     RN_AVAILABLE_DOCS_VERSIONS=${versions} node server/generate.js`).code !== 0) {
@@ -99,7 +104,17 @@ if (!CI_PULL_REQUEST && CIRCLE_PROJECT_USERNAME === `facebook`) {
       exit(1);
     }
     cd(`build/react-native-gh-pages`);
-    exec(`cp -R ../react-native/* .`);
+    // blog is copied separately
+    let toCopy = ls(`../react-native`)
+      .filter(file => file !== `blog`)
+      .map(file => `../react-native/${file}`);
+    cp(`-R`, toCopy, `.`);
+  }
+  // blog is versionless, we always build it in root file
+  if (isBlogToBeDeployed) {
+    echo(`------------ COPYING blog`);
+    rm(`-rf`, `blog`);
+    cp(`-R`, `../react-native/blog`, `.`);
   }
   if (currentCommit === latestTagCommit || version) {
     exec(`git status`);
