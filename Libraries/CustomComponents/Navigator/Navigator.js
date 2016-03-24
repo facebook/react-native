@@ -238,7 +238,7 @@ var Navigator = React.createClass({
     /**
      * Optionally provide a component as navigation bar that persists across scene
      * transitions. The component will receive two props: `navigator` and `navState`.
-     * It will be rerendered when the routes change. 
+     * It will be rerendered when the routes change.
      */
     navigationBar: PropTypes.node,
 
