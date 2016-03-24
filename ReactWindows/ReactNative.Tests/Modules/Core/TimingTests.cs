@@ -14,32 +14,36 @@ namespace ReactNative.Tests.Modules.Core
     public class TimingTests
     {
         [TestMethod]
-        public void Timing_Create()
+        public async Task Timing_Create()
         {
             var ids = new List<int>();
             var waitHandle = new AutoResetEvent(false);
-            var timing = CreateTimingModule(new MockInvocationHandler((name, args) =>
+            var context = CreateReactContext(new MockInvocationHandler((name, args) =>
             {
                 Assert.AreEqual(name, nameof(JSTimersExecution.callTimers));
                 ids.AddRange((IList<int>)args[0]);
                 waitHandle.Set();
             }));
 
+            var timing = new Timing(context);
+            timing.Initialize();
+            await DispatcherHelpers.RunOnDispatcherAsync(context.OnResume);
+
             timing.createTimer(42, 100, DateTimeOffset.Now.ToUnixTimeMilliseconds(), false);
 
             Assert.IsTrue(waitHandle.WaitOne(1000));
             Assert.IsTrue(new[] { 42 }.SequenceEqual(ids));
 
-            timing.OnDestroy();
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
 
         [TestMethod]
-        public void Timing_ManyTimers()
+        public async Task Timing_ManyTimers()
         {
             var count = 1000;
             var ids = new List<int>(count);
             var countdown = new CountdownEvent(count);
-            var timing = CreateTimingModule(new MockInvocationHandler((name, args) =>
+            var context = CreateReactContext(new MockInvocationHandler((name, args) =>
             {
                 Assert.AreEqual(name, nameof(JSTimersExecution.callTimers));
                 var currentIds = (IList<int>)args[0];
@@ -50,6 +54,10 @@ namespace ReactNative.Tests.Modules.Core
                 }
             }));
 
+            var timing = new Timing(context);
+            timing.Initialize();
+            await DispatcherHelpers.RunOnDispatcherAsync(context.OnResume);
+
             var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             for (var i = 0; i < count; ++i)
             {
@@ -58,20 +66,24 @@ namespace ReactNative.Tests.Modules.Core
 
             Assert.IsTrue(countdown.Wait(count * 2));
 
-            timing.OnDestroy();
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
 
         [TestMethod]
-        public void Timing_Create_Delete()
+        public async Task Timing_Create_Delete()
         {
             var ids = new List<int>();
             var waitHandle = new AutoResetEvent(false);
-            var timing = CreateTimingModule(new MockInvocationHandler((name, args) =>
+            var context = CreateReactContext(new MockInvocationHandler((name, args) =>
             {
                 Assert.AreEqual(name, nameof(JSTimersExecution.callTimers));
                 ids.AddRange((IList<int>)args[0]);
                 waitHandle.Set();
             }));
+
+            var timing = new Timing(context);
+            timing.Initialize();
+            await DispatcherHelpers.RunOnDispatcherAsync(context.OnResume);
 
             var id = 42;
             var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -79,39 +91,43 @@ namespace ReactNative.Tests.Modules.Core
             timing.deleteTimer(id);
             Assert.IsFalse(waitHandle.WaitOne(1000));
 
-            timing.OnDestroy();
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
 
         [TestMethod]
-        public void Timing_Suspend_Resume()
+        public async Task Timing_Suspend_Resume()
         {
             var ids = new List<int>();
             var waitHandle = new AutoResetEvent(false);
-            var timing = CreateTimingModule(new MockInvocationHandler((name, args) =>
+            var context = CreateReactContext(new MockInvocationHandler((name, args) =>
             {
                 Assert.AreEqual(name, nameof(JSTimersExecution.callTimers));
                 ids.AddRange((IList<int>)args[0]);
                 waitHandle.Set();
             }));
 
+            var timing = new Timing(context);
+            timing.Initialize();
+            await DispatcherHelpers.RunOnDispatcherAsync(context.OnResume);
+
             var id = 42;
             var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             timing.createTimer(id, 500, now, false);
-            timing.OnSuspend();
+            await DispatcherHelpers.RunOnDispatcherAsync(context.OnSuspend);
             Assert.IsFalse(waitHandle.WaitOne(1000));
-            timing.OnResume();
+            await DispatcherHelpers.RunOnDispatcherAsync(context.OnResume);
             Assert.IsTrue(waitHandle.WaitOne(1000));
-            timing.OnDestroy();
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
 
         [TestMethod]
-        public void Timing_Repeat()
+        public async Task Timing_Repeat()
         {
             var ids = new List<int>();
             var repeat = 10;
             var interval = 200;
             var countdown = new CountdownEvent(repeat);
-            var timing = CreateTimingModule(new MockInvocationHandler((name, args) =>
+            var context = CreateReactContext(new MockInvocationHandler((name, args) =>
             {
                 Assert.AreEqual(name, nameof(JSTimersExecution.callTimers));
                 ids.AddRange((IList<int>)args[0]);
@@ -120,6 +136,10 @@ namespace ReactNative.Tests.Modules.Core
                     var t = ThreadPool.RunAsync(_ => countdown.Signal());
                 }
             }));
+
+            var timing = new Timing(context);
+            timing.Initialize();
+            await DispatcherHelpers.RunOnDispatcherAsync(context.OnResume);
 
             var id = 42;
             var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -132,7 +152,7 @@ namespace ReactNative.Tests.Modules.Core
             Assert.AreEqual(42, ids.Distinct().SingleOrDefault());
             Assert.IsTrue(ids.Count >= repeat);
 
-            timing.OnDestroy();
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
 
         [TestMethod]
@@ -146,13 +166,17 @@ namespace ReactNative.Tests.Modules.Core
 
             var ids = new List<int>();
             var countdown = new CountdownEvent(1);
-            var timing = CreateTimingModule(new MockInvocationHandler((name, args) =>
+            var context = CreateReactContext(new MockInvocationHandler((name, args) =>
             {
                 Assert.AreEqual(name, nameof(JSTimersExecution.callTimers));
                 var firedTimers = (IList<int>)args[0];
                 ids.AddRange((IList<int>)args[0]);
                 countdown.Signal(firedTimers.Count);
             }));
+
+            var timing = new Timing(context);
+            timing.Initialize();
+            await DispatcherHelpers.RunOnDispatcherAsync(context.OnResume);
 
             for (var i = 0; i < batchCount; ++i)
             {
@@ -171,7 +195,7 @@ namespace ReactNative.Tests.Modules.Core
             countdown.Signal();
             Assert.IsTrue(countdown.Wait(batchCount * maxDuration / 4 * 2));
 
-            timing.OnDestroy();
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
 
         [TestMethod]
@@ -191,7 +215,7 @@ namespace ReactNative.Tests.Modules.Core
 
             var waitHandle = new AutoResetEvent(false);
 
-            timing = CreateTimingModule(new MockInvocationHandler((name, args) =>
+            var context = CreateReactContext(new MockInvocationHandler((name, args) =>
             {
                 if (!canceled)
                 {
@@ -205,6 +229,10 @@ namespace ReactNative.Tests.Modules.Core
                 }
             }));
 
+            timing = new Timing(context);
+            timing.Initialize();
+            await DispatcherHelpers.RunOnDispatcherAsync(context.OnResume);
+
             now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             timing.createTimer(id, interval, now, false);
 
@@ -217,10 +245,58 @@ namespace ReactNative.Tests.Modules.Core
 
             Assert.IsTrue(waitHandle.WaitOne());
 
-            timing.OnDestroy();
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
 
-        private static Timing CreateTimingModule(IInvocationHandler handler)
+        [TestMethod]
+        public async Task Timing_Zero_NoRepeat()
+        {
+            var ids = new List<int>();
+            var waitHandle = new AutoResetEvent(false);
+            var context = CreateReactContext(new MockInvocationHandler((name, args) =>
+            {
+                Assert.AreEqual(name, nameof(JSTimersExecution.callTimers));
+                ids.AddRange((IList<int>)args[0]);
+                waitHandle.Set();
+            }));
+
+            var timing = new Timing(context);
+            timing.Initialize();
+            await DispatcherHelpers.RunOnDispatcherAsync(context.OnResume);
+
+            // Callback is called directly
+            timing.createTimer(42, 0, DateTimeOffset.Now.ToUnixTimeMilliseconds(), false);
+
+            Assert.IsTrue(new[] { 42 }.SequenceEqual(ids));
+
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
+        }
+
+        [TestMethod]
+        public async Task Timing_Zero_Repeat()
+        {
+            var ids = new List<int>();
+            var countdown = new CountdownEvent(60);
+            var context = CreateReactContext(new MockInvocationHandler((name, args) =>
+            {
+                Assert.AreEqual(name, nameof(JSTimersExecution.callTimers));
+                ids.AddRange((IList<int>)args[0]);
+                countdown.Signal();
+            }));
+
+            var timing = new Timing(context);
+            timing.Initialize();
+            await DispatcherHelpers.RunOnDispatcherAsync(context.OnResume);
+
+            // Callback is called directly
+            timing.createTimer(42, 0, DateTimeOffset.Now.ToUnixTimeMilliseconds(), true);
+            countdown.Wait();
+            timing.deleteTimer(42);
+
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
+        }
+
+        private static ReactContext CreateReactContext(IInvocationHandler handler)
         {
             var context = new ReactContext();
             var jsTimers = new JSTimersExecution
@@ -230,9 +306,7 @@ namespace ReactNative.Tests.Modules.Core
 
             var reactInstance = new TestReactInstance(jsTimers);
             context.InitializeWithInstance(reactInstance);
-            var timing = new Timing(context);
-            timing.Initialize();
-            return timing;
+            return context;
         }
 
         class TestReactInstance : MockReactInstance
