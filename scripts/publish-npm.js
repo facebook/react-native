@@ -90,11 +90,6 @@ if (javaVersion.indexOf(requiredJavaVersion) === -1) {
   exit(1);
 }
 
-if (sed(`-i`, /^VERSION_NAME=[0-9\.]*-SNAPSHOT/, `VERSION_NAME=${releaseVersion}`, `ReactAndroid/gradle.properties`).code) {
-  echo(`Couldn't update version for Gradle`);
-  exit(1);
-}
-
 // Uncomment Javadoc generation
 if (sed(`-i`, `// archives androidJavadocJar`, `archives androidJavadocJar`, `ReactAndroid/release.gradle`).code) {
   echo(`Couldn't enable Javadoc generation`);
@@ -105,6 +100,9 @@ if (exec(`./gradlew :ReactAndroid:installArchives`).code) {
   echo(`Couldn't generate artifacts`);
   exit(1);
 }
+
+// undo uncommenting javadoc setting
+exec(`git checkout ReactAndroid/gradle.properties`);
 
 echo("Generated artifacts for Maven");
 
@@ -119,23 +117,6 @@ artifacts.forEach((name) => {
   }
 });
 
-// ----------- Reverting changes to local files
-
-exec(`git checkout ReactAndroid/gradle.properties`);
-exec(`git checkout ReactAndroid/release.gradle`);
-
-
-if (exec(`npm version --no-git-tag-version ${releaseVersion}`).code) {
-  echo(`Couldn't update version for npm`);
-  exit(1);
-}
-if (sed(`-i`, `s.version             = "0.0.1-master"`, `s.version             = \"${releaseVersion}\"`, `React.podspec`).code) {
-  echo(`Couldn't update version for React.podspec`);
-  exit(1);
-}
-
-// shrinkwrapping without dev dependencies
-exec(`npm shrinkwrap`);
 if (releaseVersion.indexOf(`-rc`) === -1) {
   // release, package will be installed by default
   exec(`npm publish`);
@@ -143,9 +124,6 @@ if (releaseVersion.indexOf(`-rc`) === -1) {
   // RC release, package will be installed only if users specifically do it
   exec(`npm publish --tag next`);
 }
-
-exec(`git checkout package.json`);
-exec(`git checkout React.podspec`);
 
 echo(`Published to npm ${releaseVersion}`);
 
