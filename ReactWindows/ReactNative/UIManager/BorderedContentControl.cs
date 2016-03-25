@@ -61,20 +61,24 @@ namespace ReactNative.UIManager
         /// Sets the border color.
         /// </summary>
         /// <param name="color">The masked color.</param>
-        public void SetBorderColor(uint color)
+        public void SetBorderColor(uint? color)
         {
             var customBorder = EnsureBorder();
-            customBorder.BorderBrush = new SolidColorBrush(ColorHelpers.Parse(color));
+            customBorder.BorderBrush = color.HasValue
+                ? new SolidColorBrush(ColorHelpers.Parse(color.Value))
+                : null;
         }
 
         /// <summary>
         /// Sets the background color.
         /// </summary>
-        /// <param name="value">The masked color value.</param>
-        public void SetBackgroundColor(uint value)
+        /// <param name="color">The masked color value.</param>
+        public void SetBackgroundColor(uint? color)
         {
             var customBorder = EnsureBorder();
-            customBorder.Background = new SolidColorBrush(ColorHelpers.Parse(value));
+            customBorder.Background = color.HasValue
+                ? new SolidColorBrush(ColorHelpers.Parse(color.Value))
+                : null;
         }
 
         /// <summary>

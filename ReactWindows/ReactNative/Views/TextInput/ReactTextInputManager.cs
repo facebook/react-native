@@ -138,14 +138,9 @@ namespace ReactNative.Views.TextInput
         [ReactProperty(ViewProperties.Color, CustomType = "Color")]
         public void SetColor(ReactTextBox view, uint? color)
         {
-            if (color.HasValue)
-            {
-                view.Foreground = new SolidColorBrush(ColorHelpers.Parse(color.Value));
-            }
-            else
-            {
-                view.Foreground = new SolidColorBrush(Colors.Black);
-            }
+            view.Foreground = color.HasValue
+                ? new SolidColorBrush(ColorHelpers.Parse(color.Value))
+                : null;
         }
 
         /// <summary>
@@ -156,14 +151,9 @@ namespace ReactNative.Views.TextInput
         [ReactProperty(ViewProperties.FontFamily)]
         public void SetFontFamily(ReactTextBox view, string familyName)
         {
-            if (familyName != null)
-            {
-                view.FontFamily = new FontFamily(familyName);
-            }
-            else
-            {
-                view.FontFamily = new FontFamily("Segoe UI");
-            }
+            view.FontFamily = familyName != null
+                ? new FontFamily(familyName)
+                : FontFamily.XamlAutoFontFamily;
         }
 
         /// <summary>
@@ -175,14 +165,7 @@ namespace ReactNative.Views.TextInput
         public void SetFontWeight(ReactTextBox view, string fontWeightString)
         {
             var fontWeight = FontStyleHelpers.ParseFontWeight(fontWeightString);
-            if (fontWeight.HasValue)
-            {
-                view.FontWeight = fontWeight.Value;
-            }
-            else
-            {
-                view.FontWeight = FontWeights.Normal;
-            }
+            view.FontWeight = fontWeight ?? FontWeights.Normal;
         }
 
         /// <summary>
@@ -193,15 +176,8 @@ namespace ReactNative.Views.TextInput
         [ReactProperty(ViewProperties.FontStyle)]
         public void SetFontStyle(ReactTextBox view, string fontStyleString)
         {
-            var fontStyle = FontStyleHelpers.ParseFontStyle(fontStyleString);
-            if (fontStyle.HasValue)
-            {
-                view.FontStyle = fontStyle.Value;
-            }
-            else
-            {
-                view.FontStyle = FontStyle.Normal;
-            }
+            var fontStyle = EnumHelpers.ParseNullable<FontStyle>(fontStyleString);
+            view.FontStyle = fontStyle ?? FontStyle.Normal;
         }
 
         /// <summary>

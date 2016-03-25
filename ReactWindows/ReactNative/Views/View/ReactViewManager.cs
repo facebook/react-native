@@ -143,10 +143,7 @@ namespace ReactNative.Views.View
         [ReactProperty(ViewProperties.BackgroundColor)]
         public void SetBackgroundColor(BorderedContentControl view, uint? color)
         {
-            if (color.HasValue)
-            {
-                view.SetBackgroundColor(color.Value);
-            }
+            view.SetBackgroundColor(color);
         }
 
         /// <summary>
@@ -157,11 +154,7 @@ namespace ReactNative.Views.View
         [ReactProperty("borderColor", CustomType = "Color")]
         public void SetBorderColor(BorderedContentControl view, uint? color)
         {
-            // TODO: what if color is null?
-            if (color.HasValue)
-            {
-                view.SetBorderColor(color.Value);
-            }
+            view.SetBorderColor(color);
         }
 
         /// <summary>

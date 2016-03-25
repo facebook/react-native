@@ -1,5 +1,6 @@
 ﻿using Facebook.CSSLayout;
 using ReactNative.Bridge;
+using ReactNative.Reflection;
 using ReactNative.UIManager;
 using System;
 using System.Collections.Generic;
@@ -19,10 +20,7 @@ namespace ReactNative.Views.Text
     {
         private const int Unset = -1;
 
-        private bool _isColorSet = false;
-        private uint _color;
-        private bool _isBackgroundColorSet = false;
-        private uint _backgroundColor;
+        private uint? _color;
 
         private int _fontSize = Unset;
 
@@ -151,32 +149,8 @@ namespace ReactNative.Views.Text
         [ReactProperty(ViewProperties.Color, CustomType = "Color")]
         public void SetColor(uint? color)
         {
-            _isColorSet = color.HasValue;
-            if (_isColorSet)
-            {
-                _color = color.Value;
-            }
-
+            _color = color;
             MarkUpdated();
-        }
-
-        /// <summary>
-        /// Sets the background color for the node.
-        /// </summary>
-        /// <param name="color">The masked color value.</param>
-        [ReactProperty(ViewProperties.BackgroundColor, CustomType = "Color")]
-        public void SetBackgroundColor(uint? color)
-        {
-            if (!IsVirtualAnchor)
-            {
-                _isBackgroundColorSet = color.HasValue;
-                if (_isBackgroundColorSet)
-                {
-                    _backgroundColor = color.Value;
-                }
-
-                MarkUpdated();
-            }
         }
 
         /// <summary>
@@ -214,7 +188,7 @@ namespace ReactNative.Views.Text
         [ReactProperty(ViewProperties.FontStyle)]
         public void SetFontStyle(string fontStyleString)
         {
-            var fontStyle = FontStyleHelpers.ParseFontStyle(fontStyleString);
+            var fontStyle = EnumHelpers.ParseNullable<FontStyle>(fontStyleString);
             if (_fontStyle != fontStyle)
             {
                 _fontStyle = fontStyle;
@@ -243,9 +217,9 @@ namespace ReactNative.Views.Text
         /// <param name="measureOnly">Signals if the operation is used only for measurement.</param>
         protected static void FormatInline(ReactTextShadowNode textNode, Inline inline, bool measureOnly)
         {
-            if (!measureOnly && textNode._isColorSet)
+            if (!measureOnly && textNode._color.HasValue)
             {
-                inline.Foreground = new SolidColorBrush(ColorHelpers.Parse(textNode._color));
+                inline.Foreground = new SolidColorBrush(ColorHelpers.Parse(textNode._color.Value));
             }
 
             if (textNode._fontSize != Unset)

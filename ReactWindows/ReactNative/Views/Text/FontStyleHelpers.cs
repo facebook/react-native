@@ -22,19 +22,6 @@ namespace ReactNative.Views.Text
             return null;
         }
 
-        public static FontStyle? ParseFontStyle(string fontStyleString)
-        {
-            switch (fontStyleString)
-            {
-                case "italic":
-                    return FontStyle.Italic;
-                case "normal":
-                    return FontStyle.Normal;
-                default:
-                    return null;
-            }
-        }
-
         private static int ParseNumericFontWeight(string fontWeightString)
         {
             return fontWeightString.Length == 3 && fontWeightString.EndsWith("00") &&
