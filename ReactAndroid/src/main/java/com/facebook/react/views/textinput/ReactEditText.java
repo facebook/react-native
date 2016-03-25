@@ -68,6 +68,7 @@ public class ReactEditText extends EditText {
   private int mStagedInputType;
   private boolean mContainsImages;
   private boolean mBlurOnSubmit;
+  private boolean mClearTextOnFocus;
   private @Nullable SelectionWatcher mSelectionWatcher;
   private final InternalKeyListener mKeyListener;
 
@@ -86,6 +87,7 @@ public class ReactEditText extends EditText {
     mIsSettingTextFromJS = false;
     mIsJSSettingFocus = false;
     mBlurOnSubmit = true;
+    mClearTextOnFocus = false;
     mListeners = null;
     mTextWatcherDelegator = null;
     mStagedInputType = getInputType();
@@ -172,8 +174,12 @@ public class ReactEditText extends EditText {
   protected void onFocusChanged(
       boolean focused, int direction, Rect previouslyFocusedRect) {
     super.onFocusChanged(focused, direction, previouslyFocusedRect);
-    if (focused && mSelectionWatcher != null) {
-      mSelectionWatcher.onSelectionChanged(getSelectionStart(), getSelectionEnd());
+    if (focused) {
+      if (mClearTextOnFocus) {
+        setText("");
+      } else if (mSelectionWatcher != null) {
+        mSelectionWatcher.onSelectionChanged(getSelectionStart(), getSelectionEnd());
+      }
     }
   }
 
@@ -187,6 +193,10 @@ public class ReactEditText extends EditText {
 
   public boolean getBlurOnSubmit() {
     return mBlurOnSubmit;
+  }
+
+  public void setClearTextOnFocus(boolean clearTextOnFocus) {
+    mClearTextOnFocus = clearTextOnFocus;
   }
 
   /*protected*/ int getStagedInputType() {
