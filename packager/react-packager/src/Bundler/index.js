@@ -385,7 +385,7 @@ class Bundler {
 
       // get entry file complete path (`entryFile` is relative to roots)
       let entryFilePath;
-      if (response.dependencies.length > 0) {
+      if (response.dependencies.length > 1) { // skip HMR requests
         const numModuleSystemDependencies =
           this._resolver.getModuleSystemDependencies({dev, unbundle}).length;
 
