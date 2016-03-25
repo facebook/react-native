@@ -25,7 +25,6 @@ var {
   View,
 } = React;
 
-exports.displayName = (undefined: ?string);
 exports.framework = 'React';
 exports.title = '<Modal>';
 exports.description = 'Component for presenting modal views.';
