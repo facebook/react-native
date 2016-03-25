@@ -15,9 +15,14 @@ const Platform = require('Platform');
 const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 const {
   IntentAndroid,
-  LinkingManager: LinkingManagerIOS
+  LinkingManager: LinkingManagerIOS,
+  LauncherWindows
 } = require('NativeModules');
-const LinkingManager = Platform.OS === 'android' ? IntentAndroid : LinkingManagerIOS;
+const LinkingManager = Platform.OS === 'android' 
+  ? IntentAndroid 
+  : Platform.OS === 'ios'
+    ? LinkingManagerIOS
+    : LauncherWindows;
 const invariant = require('fbjs/lib/invariant');
 const Map = require('Map');
 
@@ -53,7 +58,7 @@ const DEVICE_NOTIF_EVENT = 'openURL';
  * the steps described [here](docs/linking-libraries-ios.html#manual-linking).
  * In case you also want to listen to incoming app links during your app's
  * execution you'll need to add the following lines to you `*AppDelegate.m`:
- *
+ * 
  * ```
  *#import "RCTLinkingManager.h"
  *
@@ -118,8 +123,8 @@ class Linking {
    * @platform ios
    */
   static addEventListener(type: string, handler: Function) {
-    if (Platform.OS === 'android') {
-        console.warn('Linking.addEventListener is not supported on Android');
+    if (Platform.OS !== 'ios') {
+        console.warn('Linking.addEventListener is only supported on iOS');
     } else {
       invariant(
         type === 'url',
@@ -139,8 +144,8 @@ class Linking {
    * @platform ios
    */
   static removeEventListener(type: string, handler: Function ) {
-    if (Platform.OS === 'android') {
-        console.warn('Linking.removeEventListener is not supported on Android');
+    if (Platform.OS !== 'ios') {
+        console.warn('Linking.removeEventListener is only supported on iOS');
     } else {
       invariant(
         type === 'url',
@@ -191,6 +196,8 @@ class Linking {
    * it will give the link url, otherwise it will give `null`
    *
    * NOTE: To support deep linking on Android, refer http://developer.android.com/training/app-indexing/deep-linking.html#handling-intents
+   * 
+   * NOTE: This is not supported on Windows.
    */
   static getInitialURL(): Promise<?string> {
     if (Platform.OS === 'android') {

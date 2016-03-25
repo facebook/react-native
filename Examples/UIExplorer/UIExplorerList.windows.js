@@ -53,6 +53,10 @@ const APIExamples = [
     module: require('./ClipboardExample'),
   },
   {
+    key: 'LinkingExample',
+    module: require('./LinkingExample'),
+  },
+  {
     key: 'LayoutExample',
     module: require('./LayoutExample'),
   },
