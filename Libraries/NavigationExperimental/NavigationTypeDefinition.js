@@ -107,3 +107,8 @@ export type NavigationReducer = (
 export type NavigationSceneRenderer = (
   props: NavigationSceneRendererProps,
 ) => ?ReactElement;
+
+export type NavigationStyleInterpolator = (
+  props: NavigationSceneRendererProps,
+) => Object;
+
