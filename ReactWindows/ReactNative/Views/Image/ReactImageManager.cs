@@ -103,12 +103,9 @@ namespace ReactNative.Views.Image
         [ReactProperty("borderColor", CustomType = "Color")]
         public void SetBorderColor(Border view, uint? color)
         {
-            // TODO: what if color is null?
-            if (color.HasValue)
-            {
-                var brush = new SolidColorBrush(ColorHelpers.Parse(color.Value));
-                view.BorderBrush = brush;
-            }
+            view.BorderBrush = color.HasValue
+                ? new SolidColorBrush(ColorHelpers.Parse(color.Value))
+                : null;
         }
 
         /// <summary>

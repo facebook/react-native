@@ -3,6 +3,7 @@ using ReactNative.UIManager;
 using System;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation.Metadata;
+using Windows.UI;
 using Windows.UI.Core;
 
 namespace ReactNative.Modules.StatusBar
@@ -72,14 +73,12 @@ namespace ReactNative.Modules.StatusBar
         [ReactMethod]
         public void setColor(uint? color)
         {
-            if (color.HasValue)
+            RunOnDispatcher(() =>
             {
-                var value = ColorHelpers.Parse(color.Value);
-                RunOnDispatcher(() =>
-                {
-                    _statusBar.BackgroundColor = value;
-                });
-            }
+                _statusBar.BackgroundColor = !color.HasValue
+                    ? default(Color?)
+                    : ColorHelpers.Parse(color.Value);
+            });
         }
 
         /// <summary>
