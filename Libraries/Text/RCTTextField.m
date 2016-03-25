@@ -302,21 +302,20 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
   
   dispatch_once(&onceToken, ^{
     textFieldAccessoryMapping = [[NSMutableDictionary alloc] init];
-    // Do any other initialisation stuff here
   });
   
   return textFieldAccessoryMapping;
 }
 
 /**
- * The method to allow application register for injecting inputAccessoryView for particular keyboard type
+ * The method to allow application register handle to produce inputAccessoryView for particular keyboard type
  * handler presents instancdispatch_oncee of KeyboardAccessory type
  */
 
 +(void) registerForKeyboardType:(NSNumber *)type handler:(KeyboardAccessory)handler{
   
-  NSMutableDictionary *dct = [RCTTextField getAcessoryMapping];
-  dct[type] = handler;
+  [RCTTextField getAcessoryMapping][type] = handler;
+  
 
 }
 
