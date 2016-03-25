@@ -207,5 +207,17 @@ namespace ReactNative.UIManager
                 ? EnumHelpers.Parse<CSSPositionType>(position)
                 : CSSPositionType.Relative;
         }
+
+        /// <summary>
+        /// Sets if the view should send an event on layout.
+        /// </summary>
+        /// <param name="shouldNotifyOnLayout">
+        /// The flag signaling if the view should sent an event on layout.
+        /// </param>
+        [ReactProperty("onLayout")]
+        public void SetShouldNotifyOnLayout(bool shouldNotifyOnLayout)
+        {
+            ShouldNotifyOnLayout = shouldNotifyOnLayout;
+        }
     }
 }
