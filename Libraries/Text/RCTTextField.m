@@ -14,6 +14,16 @@
 #import "RCTUtils.h"
 #import "UIView+React.h"
 
+//
+// Repository of accessory Handles
+//
+
+static NSMutableDictionary *textFieldAccessoryMapping;
+
+// input View Accessory Handle definition
+
+typedef UIView * (^KeyboardAccessory)(UITextField *);
+
 @implementation RCTTextField
 {
   RCTEventDispatcher *_eventDispatcher;
@@ -257,6 +267,13 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 
 - (void)reactWillMakeFirstResponder
 {
+  
+  // This fragment was added to let application inject input accessory view if needed
+  //
+  KeyboardAccessory handler = [RCTTextField getAcessoryMapping][[NSNumber numberWithInt:self.keyboardType]];
+  if (handler) {
+    self.inputAccessoryView = handler(self);
+  }
   _jsRequestingFirstResponder = YES;
 }
 
@@ -277,6 +294,30 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
                                  eventCount:_nativeEventCount];
   }
   return result;
+}
+
+
++(NSMutableDictionary*)getAcessoryMapping {
+  static dispatch_once_t onceToken = 0;
+  
+  dispatch_once(&onceToken, ^{
+    textFieldAccessoryMapping = [[NSMutableDictionary alloc] init];
+    // Do any other initialisation stuff here
+  });
+  
+  return textFieldAccessoryMapping;
+}
+
+/**
+ * The method to allow application register for injecting inputAccessoryView for particular keyboard type
+ * handler presents instancdispatch_oncee of KeyboardAccessory type
+ */
+
++(void) registerForKeyboardType:(NSNumber *)type handler:(KeyboardAccessory)handler{
+  
+  NSMutableDictionary *dct = [RCTTextField getAcessoryMapping];
+  dct[type] = handler;
+
 }
 
 @end
