@@ -279,11 +279,11 @@ var TextInput = React.createClass({
     ]),
     /**
      * If true, clears the text field automatically when editing begins
-     * @platform ios
      */
     clearTextOnFocus: PropTypes.bool,
     /**
      * If true, all text will automatically be selected on focus
+     * @platform ios
      */
     selectTextOnFocus: PropTypes.bool,
     /**
