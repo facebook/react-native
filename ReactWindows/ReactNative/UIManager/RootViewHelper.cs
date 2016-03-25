@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Runtime.CompilerServices;
+using Windows.UI.Xaml;
 
 namespace ReactNative.UIManager
 {
@@ -7,6 +8,9 @@ namespace ReactNative.UIManager
     /// </summary>
     public static class RootViewHelper
     {
+        private static readonly ConditionalWeakTable<FrameworkElement, FrameworkElement> s_parent =
+            new ConditionalWeakTable<FrameworkElement, FrameworkElement>();
+
         /// <summary>
         /// Returns the root view of a givenview in a react application.
         /// </summary>
@@ -28,8 +32,42 @@ namespace ReactNative.UIManager
                     return rootView;
                 }
 
-                current = (FrameworkElement)current.Parent;
+                var mapped = default(FrameworkElement);
+                if (s_parent.TryGetValue(current, out mapped))
+                {
+                    current = mapped;
+                }
+                else
+                {
+                    current = (FrameworkElement)current.Parent;
+                }
             }
+        }
+
+        /// <summary>
+        /// Associate an element with its parent.
+        /// </summary>
+        /// <param name="element">The element.</param>
+        /// <param name="parent">The parent.</param>
+        /// <remarks>
+        /// TODO: (#302) Remove this shim.
+        /// </remarks>
+        internal static void SetParent(this FrameworkElement element, FrameworkElement parent)
+        {
+            RemoveParent(element);
+            s_parent.Add(element, parent);
+        }
+
+        /// <summary>
+        /// Unassociate a parent element.
+        /// </summary>
+        /// <param name="element">The element.</param>
+        /// <remarks>
+        /// TODO: (#302) Remove this shim.
+        /// </remarks>
+        internal static void RemoveParent(this FrameworkElement element)
+        {
+            s_parent.Remove(element);
         }
     }
 }

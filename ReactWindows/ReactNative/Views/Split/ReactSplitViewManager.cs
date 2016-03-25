@@ -83,7 +83,7 @@ namespace ReactNative.Views.Split
                 placement != SplitViewPanePlacement.Right)
             {
                 throw new ArgumentOutOfRangeException(
-                    nameof(panePosition), 
+                    nameof(panePosition),
                     $"Unknown pane position '{placement}'.");
             }
 
@@ -115,10 +115,12 @@ namespace ReactNative.Views.Split
             if (index == 0)
             {
                 parent.Content = child;
+                child.SetParent(parent);
             }
             else
             {
                 parent.Pane = child;
+                child.SetParent(parent);
             }
         }
 
@@ -178,12 +180,14 @@ namespace ReactNative.Views.Split
         {
             if (index == 0)
             {
-                EnsureContent(parent);
+                var content = EnsureContent(parent);
+                content.RemoveParent();
                 parent.Content = null;
             }
             else if (index == 0)
             {
-                EnsurePane(parent);
+                var pane = EnsurePane(parent);
+                pane.RemoveParent();
                 parent.Pane = null;
             }
             else
