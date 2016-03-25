@@ -232,7 +232,7 @@ const View = React.createClass({
      *   - 'auto': The View can be the target of touch events.
      *   - 'none': The View is never the target of touch events.
      *   - 'box-none': The View is never the target of touch events but it's
-     *     subviews can be. It behaves like if the following classes
+     *     subviews can be. It behaves like if the view had the following classes
      *     in CSS:
      * ```
      * .box-none {
@@ -243,7 +243,7 @@ const View = React.createClass({
      * }
      * ```
      *   - 'box-only': The view can be the target of touch events but it's
-     *     subviews cannot be. It behaves like if the following classes
+     *     subviews cannot be. It behaves like if the view had the following classes
      *     in CSS:
      * ```
      * .box-only {
