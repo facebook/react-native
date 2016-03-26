@@ -58,7 +58,7 @@ const DEVICE_NOTIF_EVENT = 'openURL';
  * the steps described [here](docs/linking-libraries-ios.html#manual-linking).
  * In case you also want to listen to incoming app links during your app's
  * execution you'll need to add the following lines to you `*AppDelegate.m`:
- * 
+ *
  * ```
  *#import "RCTLinkingManager.h"
  *
