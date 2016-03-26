@@ -56,7 +56,7 @@ const DEVICE_NOTIF_EVENT = 'openURL';
  *
  * NOTE: For iOS, in case you also want to listen to incoming app links during your app's
  * execution you'll need to add the following lines to you `*AppDelegate.m`:
- * 
+ *
  * ```
  *#import "RCTLinkingManager.h"
  *
