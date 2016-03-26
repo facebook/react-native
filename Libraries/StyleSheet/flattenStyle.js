@@ -34,7 +34,7 @@ function flattenStyle(style: ?StyleObj): ?Object {
   }
 
   var result = {};
-  for (var i = 0; i < style.length; ++i) {
+  for (var i = 0, styleLength = style.length; i < styleLength; ++i) {
     var computedStyle = flattenStyle(style[i]);
     if (computedStyle) {
       for (var key in computedStyle) {
