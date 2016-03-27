@@ -148,7 +148,8 @@ var CameraRollView = React.createClass({
       fetchParams.after = this.state.lastCursor;
     }
 
-    CameraRoll.getPhotos(fetchParams, this._appendAssets, logError);
+    CameraRoll.getPhotos(fetchParams)
+      .then((data) => this._appendAssets(data), (e) => logError(e));
   },
 
   /**
