@@ -60,6 +60,7 @@ var LayoutPropTypes = {
   // https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
   flexDirection: ReactPropTypes.oneOf([
     'row',
+    'row-reverse',
     'column'
   ]),
 
