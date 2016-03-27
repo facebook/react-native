@@ -26,7 +26,7 @@ var ActionSheetIOS = {
    * - `destructiveButtonIndex` (int) - index of destructive button in `options`
    * - `title` (string) - a title to show above the action sheet
    * - `message` (string) - a message to show below the title
-=  */
+   */
   showActionSheetWithOptions(options: Object, callback: Function) {
     invariant(
       typeof options === 'object' && options !== null,
