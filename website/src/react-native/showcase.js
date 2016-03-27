@@ -687,6 +687,12 @@ var apps = [
     author: 'Melih Mucuk',
   },
   {
+    name: 'ZBNF - Zero Budget Natural Farming',
+    icon: 'https://lh3.googleusercontent.com/gnEBtkUTy89wgbRlEmbETJN9qzHgAAkcvCknWhZbomDRexFAjkU8W-DQFtFygTGeLtA=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.zbnf',
+    author: 'Chandra Sekhar Kode',
+  },
+  {
     name: '天才段子手',
     icon: 'http://pp.myapp.com/ma_icon/0/icon_12236104_1451810987/96',
     linkAppStore: 'https://itunes.apple.com/us/app/tian-cai-duan-zi-shou-shen/id992312701?l=zh&ls=1&mt=8',
