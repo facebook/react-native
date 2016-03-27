@@ -18,6 +18,10 @@ module.exports = function(options, filename) {
   var transform = filename
       ? './' + path.relative(path.dirname(filename), transformPath) // packager can't handle absolute paths
       : hmrTransform;
+
+  // Fix the path to use '/' on Windows.
+  transform = transform.replace(/\\/g, '/');
+
   return {
     plugins: resolvePlugins([
       [

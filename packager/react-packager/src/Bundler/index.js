@@ -196,15 +196,14 @@ class Bundler {
       throw new Error('No matching project root for ', path);
     }
 
+    // Replaces '\' with '/' for Windows paths.
+    path = path.replace(/\\/g, '/');
+
     const extensionStart = path.lastIndexOf('.');
     let resource = path.substring(
       matchingRoot.length,
       extensionStart !== -1 ? extensionStart : undefined,
     );
-
-    const extension = extensionStart !== -1
-      ? path.substring(extensionStart + 1)
-      : null;
 
     return (
       prefix + resource +
