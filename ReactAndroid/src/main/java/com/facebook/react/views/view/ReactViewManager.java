@@ -146,6 +146,22 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     // handled in NativeViewHierarchyOptimizer
   }
 
+  @ReactProp(name = "backfaceVisibility")
+  public void setBackfaceVisibility(ReactViewGroup view, String backfaceVisibility) {
+    view.setBackfaceVisibility(backfaceVisibility);
+  }
+
+  @Override
+  public void setOpacity(ReactViewGroup view, float opacity) {
+    view.setOpacityIfPossible(opacity);
+  }
+
+  @Override
+  public void setDecomposedMatrix(ReactViewGroup view, ReadableMap decomposedMatrix) {
+    super.setDecomposedMatrix(view, decomposedMatrix);
+    view.rememberDecomposedMatrix(decomposedMatrix);
+  }
+
   @Override
   public String getName() {
     return REACT_CLASS;
