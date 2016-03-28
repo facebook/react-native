@@ -13,12 +13,14 @@
 
 const AsyncStorage = require('AsyncStorage');
 const Linking = require('Linking');
+const NavigationPropTypes = require('NavigationPropTypes');
+const NavigationStateUtils = require('NavigationStateUtils');
 const Platform = require('Platform');
 const React = require('React');
-const NavigationPropTypes = require('NavigationPropTypes');
 
 import type {
   NavigationAction,
+  NavigationParentState,
   NavigationReducer,
   NavigationRenderer,
 } from 'NavigationTypeDefinition';
@@ -26,10 +28,6 @@ import type {
 export type BackAction = {
   type: 'BackAction',
 };
-
-function getBackAction(): BackAction {
-  return { type: 'BackAction' };
-}
 
 type Props = {
   /*
@@ -65,39 +63,56 @@ type Props = {
   renderNavigation: NavigationRenderer,
 };
 
+type State = {
+  navState: ?NavigationParentState,
+};
+
+function getBackAction(): BackAction {
+  return { type: 'BackAction' };
+}
+
 const {PropTypes} = React;
 
-const propTypes = {
-  initialAction: NavigationPropTypes.action.isRequired,
-  linkingActionMap: PropTypes.func,
-  persistenceKey: PropTypes.string,
-  reducer: PropTypes.func.isRequired,
-  renderNavigation: PropTypes.func.isRequired,
-};
-
-const defaultProps = {
-  initialAction: {
-    type: 'RootContainerInitialAction',
-  },
-};
-
-class NavigationRootContainer extends React.Component {
+class NavigationRootContainer extends React.Component<any, Props, State> {
   _handleOpenURLEvent: Function;
 
   props: Props;
+  state: State;
+
+  static propTypes = {
+    initialAction: NavigationPropTypes.action.isRequired,
+    linkingActionMap: PropTypes.func,
+    persistenceKey: PropTypes.string,
+    reducer: PropTypes.func.isRequired,
+    renderNavigation: PropTypes.func.isRequired,
+  };
+
+  static defaultProps = {
+    initialAction: { type: 'RootContainerInitialAction' },
+  };
+
+  static childContextTypes = {
+    onNavigate: PropTypes.func,
+  };
 
   constructor(props: Props) {
     super(props);
-    this.handleNavigation = this.handleNavigation.bind(this);
-    this._handleOpenURLEvent = this._handleOpenURLEvent.bind(this);
+
     let navState = null;
     if (!this.props.persistenceKey) {
-      navState = this.props.reducer(null, props.initialAction);
+      navState = NavigationStateUtils.getParent(
+        this.props.reducer(null, props.initialAction)
+      );
     }
     this.state = { navState };
   }
 
-  componentDidMount() {
+  componentWillMount(): void {
+    this.handleNavigation = this.handleNavigation.bind(this);
+    this._handleOpenURLEvent = this._handleOpenURLEvent.bind(this);
+  }
+
+  componentDidMount(): void {
     if (this.props.LinkingActionMap) {
       Linking.getInitialURL().then(this._handleOpenURL.bind(this));
       Platform.OS === 'ios' && Linking.addEventListener('url', this._handleOpenURLEvent);
@@ -117,15 +132,17 @@ class NavigationRootContainer extends React.Component {
     }
   }
 
-  componentWillUnmount() {
-    Platform.OS === 'ios' && Linking.removeEventListener('url', this._handleOpenURLEvent);
+  componentWillUnmount(): void {
+    if (Platform.OS === 'ios') {
+      Linking.removeEventListener('url', this._handleOpenURLEvent);
+    }
   }
 
-  _handleOpenURLEvent(event: {url: string}) {
+  _handleOpenURLEvent(event: {url: string}): void {
     this._handleOpenURL(event.url);
   }
 
-  _handleOpenURL(url: ?string) {
+  _handleOpenURL(url: ?string): void {
     if (!this.props.LinkingActionMap) {
       return;
     }
@@ -166,12 +183,6 @@ class NavigationRootContainer extends React.Component {
   }
 }
 
-NavigationRootContainer.childContextTypes = {
-  onNavigate: PropTypes.func,
-};
-
-NavigationRootContainer.propTypes = propTypes;
-NavigationRootContainer.defaultProps = defaultProps;
 NavigationRootContainer.getBackAction = getBackAction;
 
 module.exports = NavigationRootContainer;
