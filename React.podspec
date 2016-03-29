@@ -1,7 +1,11 @@
+require 'json'
+
+package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
+
 Pod::Spec.new do |s|
   s.name                = "React"
-  s.version             = "0.0.1-master"
-  s.summary             = "Build high quality mobile apps using React."
+  s.version             = package['version']
+  s.summary             = package['description']
   s.description         = <<-DESC
                             React Native apps are built using the React JS
                             framework, and render directly to native UIKit
@@ -16,7 +20,7 @@ Pod::Spec.new do |s|
                             quality or capability.
                          DESC
   s.homepage            = "http://facebook.github.io/react-native/"
-  s.license             = "BSD"
+  s.license             = package['license']
   s.author              = "Facebook"
   s.source              = { :git => "https://github.com/facebook/react-native.git", :tag => "v#{s.version}" }
   s.default_subspec     = 'Core'
