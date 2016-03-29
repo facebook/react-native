@@ -20,6 +20,7 @@ const StyleSheet = require('StyleSheet');
 const View = require('View');
 
 import type {
+  NavigationActionCaller,
   NavigationAnimatedValue,
   NavigationAnimationSetter,
   NavigationLayout,
@@ -31,7 +32,7 @@ import type {
 type Props = {
   applyAnimation: NavigationAnimationSetter,
   navigationState: NavigationParentState,
-  onNavigate: (action: any) => void,
+  onNavigate: NavigationActionCaller,
   renderOverlay: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
   style: any,
