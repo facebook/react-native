@@ -117,6 +117,13 @@ artifacts.forEach((name) => {
   }
 });
 
+// don't publish `ReactAndroid` to npm
+const pak = JSON.parse(cat(`package.json`));
+
+pak.files = pak.files.filter(filename => filename !== 'ReactAndroid');
+
+JSON.stringify(pak, null, 2).to(`package.json`);
+
 if (releaseVersion.indexOf(`-rc`) === -1) {
   // release, package will be installed by default
   exec(`npm publish`);
@@ -124,6 +131,9 @@ if (releaseVersion.indexOf(`-rc`) === -1) {
   // RC release, package will be installed only if users specifically do it
   exec(`npm publish --tag next`);
 }
+
+// undo ignore ReactAndroid
+exec(`git checkout package.json`);
 
 echo(`Published to npm ${releaseVersion}`);
 
