@@ -197,7 +197,7 @@ namespace ReactNative.Views.Text
         }
 
         /// <summary>
-        /// Marks a node as dirty.
+        /// Marks a node as updated.
         /// </summary>
         protected override void MarkUpdated()
         {
@@ -206,6 +206,20 @@ namespace ReactNative.Views.Text
             if (!_isVirtual)
             {
                 dirty();
+            }
+        }
+
+        /// <summary>
+        /// Marks that the node is dirty.
+        /// </summary> 
+        /// <remarks>
+        /// TODO: (#289) Remove when resolved.
+        /// </remarks>
+        protected sealed override void dirty()
+        {
+            if (!HasNewLayout)
+            {
+                base.dirty();
             }
         }
 

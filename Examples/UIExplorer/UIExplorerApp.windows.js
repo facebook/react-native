@@ -31,7 +31,7 @@ const {
   RootContainer: NavigationRootContainer,
 } = NavigationExperimental;
 const UIExplorerActions = require('./UIExplorerActions');
-const UIExplorerExampleList = require('./UIExplorerExampleListWindows');
+const UIExplorerExampleList = require('./UIExplorerExampleList');
 const UIExplorerList = require('./UIExplorerList');
 const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
 const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
