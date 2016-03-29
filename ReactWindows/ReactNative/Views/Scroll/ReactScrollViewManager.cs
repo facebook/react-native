@@ -120,7 +120,14 @@ namespace ReactNative.Views.Scroll
         [ReactProperty("showsHorizontalScrollIndicator")]
         public void SetShowsHorizontalScrollIndicator(ScrollViewer view, bool? showIndicator)
         {
-            view.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            if (showIndicator.HasValue && showIndicator.Value)
+            {
+                view.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            }
+            else
+            {
+                view.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
+            }
         }
 
         /// <summary>
@@ -133,7 +140,14 @@ namespace ReactNative.Views.Scroll
         [ReactProperty("showsVerticalScrollIndicator")]
         public void SetShowsVerticalScrollIndicator(ScrollViewer view, bool? showIndicator)
         {
-            view.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            if (showIndicator.HasValue && showIndicator.Value)
+            {
+                view.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            }
+            else
+            {
+                view.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
+            }
         }
 
         /// <summary>
@@ -157,6 +171,8 @@ namespace ReactNative.Views.Scroll
                 throw new InvalidOperationException("ScrollViewer already has a child element.");
             }
 
+            child.VerticalAlignment = VerticalAlignment.Top;
+            child.HorizontalAlignment = HorizontalAlignment.Left;
             parent.Content = child;
         }
 
@@ -265,7 +281,6 @@ namespace ReactNative.Views.Scroll
             {
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden,
                 HorizontalScrollMode = ScrollMode.Disabled,
-                VerticalContentAlignment = VerticalAlignment.Top,
                 VerticalScrollBarVisibility = ScrollBarVisibility.Hidden,
                 VerticalScrollMode = ScrollMode.Auto,
             };
