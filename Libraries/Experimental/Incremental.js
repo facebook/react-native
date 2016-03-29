@@ -129,6 +129,7 @@ class Incremental extends React.Component {
         this.setState({doIncrementalRender: true}, resolve);
       }),
     }).then(() => {
+      DEBUG && console.log('call onDone for ' + this.getName());
       this._mounted && this.props.onDone && this.props.onDone();
     });
   }

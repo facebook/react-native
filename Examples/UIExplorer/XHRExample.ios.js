@@ -146,7 +146,8 @@ class FormUploader extends React.Component {
 
   _fetchRandomPhoto() {
     CameraRoll.getPhotos(
-      {first: PAGE_SIZE},
+      {first: PAGE_SIZE}
+    ).then(
       (data) => {
         if (!this._isMounted) {
           return;

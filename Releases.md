@@ -13,10 +13,6 @@ Release schedule:
 - 0.24.0 - Apr 18
 - ...
 
-## One time setup
-
-Set up Sinopia: https://github.com/facebook/react-native/tree/master/react-native-cli
-
 #### Check that everything works
 
 Make absolutely sure a basic iOS and Android workflow works on the commit you are going to use for release.
@@ -38,12 +34,15 @@ Run:
 
 ```
 git checkout -b <version_you_are_releasing>-stable # e.g. git checkout -b 0.22-stable
-git tag v<version_you_are_releasing>.0-rc # e.g. git tag v0.22.0-rc
+node ./scripts/bump-oss-version.js <exact-version_you_are_releasing> # e.g. git node ./scripts/bump-oss-version.js 0.22.0-rc
+./scripts/test-manual-e2e.sh # to double check that e2e process works
 git push origin <version_you_are_releasing>-stable --tags # e.g. git push origin 0.22-stable --tags
 ```
 
 Circle CI will run the tests and publish to npm with version `0.22.0-rc` and tag `next` meaning that
 this version will not be installed for users by default.
+
+Go to [Circle CI](https://circleci.com/gh/facebook/react-native), look for your branch on the left side and look the npm publish step.
 
 ** Note ** CI won't publish to npm if the `last` commit on the new branch does not have a tag `v<branch-name-without-stable>.0-[rc]`.
 
@@ -79,7 +78,7 @@ git pull origin 0.version_you_are_releasing-stable  # e.g. git pull origin 0.22-
 # Cherry-pick those commits
 git cherry-pick commitHash1
 
-# test everything again using sinopia
+# test everything again
 ./scripts/test-manual-e2e.sh
 
 # Check that you can Reload JS and the Chrome debugger works
@@ -88,9 +87,11 @@ git cherry-pick commitHash1
 If everything worked:
 
 ```
-git tag v-version_you_are_releasing  # e.g. git tag v0.22.0, git tag v0.22.1
+node ./scripts/bump-oss-version.js <exact_version_you_are_releasing> # e.g. git node ./scripts/bump-oss-version.js 0.22.0
+git tag -d latest
+git push origin :latest
 git tag latest # for docs [website](https://facebook.github.io/react-native) to be generated
-git push origin 0.22-stable --tags
+git push origin version_you_are_releasing-stable --tags  # e.g. git push origin 0.22-stable --tags
 ```
 
 Once you see the version in the top left corner of the website has been updated:

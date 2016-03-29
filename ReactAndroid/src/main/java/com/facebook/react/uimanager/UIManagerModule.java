@@ -83,6 +83,14 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     reactContext.addLifecycleEventListener(this);
   }
 
+  /**
+   * This method gives an access to the {@link UIImplementation} object that can be used to execute
+   * operations on the view hierarchy.
+   */
+  public UIImplementation getUIImplementation() {
+    return mUIImplementation;
+  }
+
   @Override
   public String getName() {
     return "RKUIManager";
