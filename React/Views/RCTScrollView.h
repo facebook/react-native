@@ -50,6 +50,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onRefreshStart;
 
 - (void)endRefreshing;
+- (CGPoint) getScrollViewOrigin;
 
 @end
 
