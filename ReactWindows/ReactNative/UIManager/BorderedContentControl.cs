@@ -91,7 +91,10 @@ namespace ReactNative.UIManager
             customBorder.CornerRadius = new CornerRadius(radius);
         }
 
-        private Border EnsureBorder()
+        /// <summary>
+        /// Ensure access to <see cref="Border"/>.
+        /// </summary>
+        protected Border EnsureBorder()
         {
             if (_hasCustomBorder)
             {

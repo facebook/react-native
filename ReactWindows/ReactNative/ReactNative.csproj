@@ -352,6 +352,7 @@
     <Compile Include="Views\TextInput\ReactTextInputManager.cs" />
     <Compile Include="Modules\Toast\ToastHelper.cs" />
     <Compile Include="Modules\Toast\ToastModule.cs" />
+    <Compile Include="Views\View\BorderedViewParentManager.cs" />
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
   </ItemGroup>
   <ItemGroup>
