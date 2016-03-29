@@ -98,11 +98,11 @@ if (cli) {
   case 'init':
     if (!commands[1]) {
       console.error(
-        'Usage: react-native init <ProjectName> [--verbose]'
+        'Usage: react-native init <ProjectName>'
       );
       process.exit(1);
     } else {
-      init(commands[1], argv.verbose, argv.version);
+      init(commands[1], true, argv.version);
     }
     break;
   default:
@@ -232,7 +232,7 @@ function runVerbose(root, projectName, rnPackage) {
   var proc = spawn('npm', ['install', '--verbose', '--save', getInstallPackage(rnPackage)], {stdio: 'inherit'});
   proc.on('close', function (code) {
     if (code !== 0) {
-      console.error('`npm install --save react-native` failed');
+      console.error('`npm install --verbose --save react-native` failed');
       return;
     }
 
