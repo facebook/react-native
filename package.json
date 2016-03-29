@@ -102,6 +102,7 @@
     "React",
     "React.podspec",
     "ReactAndroid",
+    "react.gradle",
     "android",
     "Libraries",
     "packager",
