@@ -7,7 +7,7 @@ namespace ReactNative.UIManager
 {
     /// <summary>
     /// Base class that should be suitable for the majority of subclasses of <see cref="IViewManager"/>.
-    /// It provides support for base view properties such as backgroundColor, opacity, etc.
+    /// It provides support for base view properties such as opacity, etc.
     /// </summary>
     /// <typeparam name="TFrameworkElement">Type of framework element.</typeparam>
     /// <typeparam name="TLayoutShadowNode">Type of shadow node.</typeparam>

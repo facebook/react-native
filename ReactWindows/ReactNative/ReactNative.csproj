@@ -293,8 +293,8 @@
     <Compile Include="Views\Image\ReactImageLoadEvent.cs" />
     <Compile Include="Views\Image\ReactImageManager.cs" />
     <Compile Include="Views\Image\ReactVirtualImageManager.cs" />
-    <Compile Include="Views\Scroll\IScrollCommandHandler.cs" />
-    <Compile Include="Views\Scroll\ReactScrollViewCommandHelper.cs" />
+    <Compile Include="Views\Picker\ReactPickerManager.cs" />
+    <Compile Include="Views\Picker\ReactPickerShadowNode.cs" />
     <Compile Include="Views\Scroll\ScrollEventType.cs" />
     <Compile Include="Views\Scroll\ScrollEventTypeExtensions.cs" />
     <Compile Include="Views\Split\Events\SplitViewOpenedEvent.cs" />

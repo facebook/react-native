@@ -5,14 +5,17 @@ using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace ReactNative.Views.Scroll
 {
     /// <summary>
     /// The view manager for scrolling views.
     /// </summary>
-    public class ReactScrollViewManager : ViewParentManager<ScrollViewer>, IScrollCommandHandler<ScrollViewer>
+    public class ReactScrollViewManager : ViewParentManager<ScrollViewer>
     {
+        private const int CommandScrollTo = 1;
+
         /// <summary>
         /// The name of the view manager.
         /// </summary>
@@ -21,6 +24,20 @@ namespace ReactNative.Views.Scroll
             get
             {
                 return "RCTScrollView";
+            }
+        }
+
+        /// <summary>
+        /// The commands map for the view manager.
+        /// </summary>
+        public override IReadOnlyDictionary<string, object> CommandsMap
+        {
+            get
+            {
+                return new Dictionary<string, object>
+                {
+                    { "scrollTo", CommandScrollTo },
+                };
             }
         }
 
@@ -45,14 +62,78 @@ namespace ReactNative.Views.Scroll
         }
 
         /// <summary>
+        /// Sets the background color of the view.
+        /// </summary>
+        /// <param name="view">The view instance.</param>
+        /// <param name="color">The masked color value.</param>
+        [ReactProperty(ViewProperties.BackgroundColor)]
+        public void SetBackgroundColor(ScrollViewer view, uint? color)
+        {
+            if (color.HasValue)
+            {
+                view.Background = new SolidColorBrush(ColorHelpers.Parse(color.Value));
+            }
+            else
+            {
+                view.Background = null;
+            }
+        }
+
+        /// <summary>
         /// Sets whether scroll is enabled on the view.
         /// </summary>
-        /// <param name="view">The view.</param>
+        /// <param name="view">The view instance.</param>
         /// <param name="enabled">The enabled value.</param>
         [ReactProperty("scrollEnabled", DefaultBoolean = true)]
         public void SetEnabled(ScrollViewer view, bool enabled)
         {
             view.IsEnabled = enabled;
+        }
+
+        /// <summary>
+        /// Sets whether horizontal scroll is enabled on the view.
+        /// </summary>
+        /// <param name="view">The view instance.</param>
+        /// <param name="horizontal">
+        /// The flag signaling whether horizontal scrolling is enabled.
+        /// </param>
+        [ReactProperty("horizontal")]
+        public void SetHorizontal(ScrollViewer view, bool? horizontal)
+        {
+            if (horizontal.HasValue && horizontal.Value)
+            {
+                view.HorizontalScrollMode = ScrollMode.Auto;
+            }
+            else
+            {
+                view.HorizontalScrollMode = ScrollMode.Disabled;
+            }
+        }
+
+        /// <summary>
+        /// Sets whether the horizontal scroll indicator is shown.
+        /// </summary>
+        /// <param name="view">The view instance.</param>
+        /// <param name="showIndicator">
+        /// The value to show the indicator or not.
+        /// </param>
+        [ReactProperty("showsHorizontalScrollIndicator")]
+        public void SetShowsHorizontalScrollIndicator(ScrollViewer view, bool? showIndicator)
+        {
+            view.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+        }
+
+        /// <summary>
+        /// Sets whether the vertical scroll indicator is shown.
+        /// </summary>
+        /// <param name="view">The view instance.</param>
+        /// <param name="showIndicator">
+        /// The value to show the indicator or not.
+        /// </param>
+        [ReactProperty("showsVerticalScrollIndicator")]
+        public void SetShowsVerticalScrollIndicator(ScrollViewer view, bool? showIndicator)
+        {
+            view.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
         }
 
         /// <summary>
@@ -137,23 +218,6 @@ namespace ReactNative.Views.Scroll
         }
 
         /// <summary>
-        /// Creates a new view instance.
-        /// </summary>
-        /// <param name="reactContext">The react context.</param>
-        /// <returns>The view instance.</returns>
-        protected override ScrollViewer CreateViewInstance(ThemedReactContext reactContext)
-        {
-            var view = new ScrollViewer
-            {
-                HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden,
-                VerticalScrollBarVisibility = ScrollBarVisibility.Hidden,
-            };
-
-            view.ViewChanging += OnViewChanging;
-            return view;
-        }
-
-        /// <summary>
         /// Called when view is detached from view hierarchy and allows for 
         /// additional cleanup by the <see cref="IViewManager"/>
         /// subclass.
@@ -176,27 +240,38 @@ namespace ReactNative.Views.Scroll
         /// <param name="args">Optional arguments for the command.</param>
         public override void ReceiveCommand(ScrollViewer view, int commandId, JArray args)
         {
-            ReactScrollViewCommandHelper.ReceiveCommand(this, view, commandId, args);
+            switch (commandId)
+            {
+                case CommandScrollTo:
+                    var x = args[0].Value<double>();
+                    var y = args[1].Value<double>();
+                    var animated = args[2].Value<bool>();
+                    ScrollTo(view, x, y, animated);
+                    break;
+                default:
+                    throw new InvalidOperationException(
+                        $"Unsupported command '{commandId}' received by '{typeof(ReactScrollViewManager)}'.");
+            }
         }
 
         /// <summary>
-        /// Scroll to a specific offset.
+        /// Creates a new view instance.
         /// </summary>
-        /// <param name="scrollView">The scroll view.</param>
-        /// <param name="x">The X-coordinate.</param>
-        /// <param name="y">The Y-coordinate.</param>
-        /// <param name="animated">
-        /// <code>true</code> if the scroll should be animated, <code>false</code> otherwise.
-        /// </param>
-        public void ScrollTo(ScrollViewer scrollView, double x, double y, bool animated)
+        /// <param name="reactContext">The react context.</param>
+        /// <returns>The view instance.</returns>
+        protected override ScrollViewer CreateViewInstance(ThemedReactContext reactContext)
         {
-            if (animated)
+            var view = new ScrollViewer
             {
-                throw new NotImplementedException("Animated scroll has not yet been implemented.");
-            }
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden,
+                HorizontalScrollMode = ScrollMode.Disabled,
+                VerticalContentAlignment = VerticalAlignment.Top,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Hidden,
+                VerticalScrollMode = ScrollMode.Auto,
+            };
 
-            scrollView.ScrollToHorizontalOffset(x);
-            scrollView.ScrollToVerticalOffset(y);
+            view.ViewChanging += OnViewChanging;
+            return view;
         }
 
         private void OnViewChanging(object sender, ScrollViewerViewChangingEventArgs args)
@@ -267,6 +342,11 @@ namespace ReactNative.Views.Scroll
             }
 
             return frameworkElement;
+        }
+
+        private static void ScrollTo(ScrollViewer scrollView, double x, double y, bool animated)
+        {
+            scrollView.ChangeView(x, y, null, !animated);
         }
 
         class ScrollEvent : Event
