@@ -133,7 +133,7 @@
     "babel-core": "^6.6.4",
     "babel-plugin-external-helpers": "^6.5.0",
     "babel-polyfill": "^6.6.1",
-    "babel-preset-react-native": "^1.5.2",
+    "babel-preset-react-native": "1.5.2",
     "babel-register": "^6.6.0",
     "babel-types": "^6.6.4",
     "babylon": "^6.6.4",
