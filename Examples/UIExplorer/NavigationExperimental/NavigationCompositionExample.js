@@ -265,21 +265,33 @@ class NavigationCompositionExample extends React.Component {
 }
 
 class ExampleMainView extends React.Component {
+  _renderScene: NavigationSceneRenderer;
+
+  componentWillMount() {
+    this._renderScene = this._renderScene.bind(this);
+  }
+
   render() {
     return (
       <NavigationView
         navigationState={this.props.navigationState}
         style={styles.tabsContent}
-        renderScene={(tabState, index) => (
-          <ExampleTabScreen
-            key={tabState.key}
-            navigationState={tabState}
-            onNavigate={this._handleNavigation.bind(this, tabState.key)}
-          />
-        )}
+        renderScene={this._renderScene}
       />
     );
   }
+
+  _renderScene(props: NavigationSceneRendererProps): ReactElement {
+    const {scene} = props;
+    return (
+      <ExampleTabScreen
+        key={'tab_screen' + scene.key}
+        navigationState={scene.navigationState}
+        onNavigate={this._handleNavigation.bind(this, scene.key)}
+      />
+    );
+  }
+
   _handleNavigation(tabKey, action) {
     if (ExampleExitAction.match(action)) {
       this.props.onExampleExit();
@@ -288,6 +300,7 @@ class ExampleMainView extends React.Component {
     this.props.onNavigate(action);
   }
 }
+
 ExampleMainView = NavigationContainer.create(ExampleMainView);
 
 const styles = StyleSheet.create({
