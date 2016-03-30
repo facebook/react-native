@@ -35,7 +35,10 @@ SYMBOL_NAME(RCTProfileTrampoline):
    * profile
    */
   mov r0, #0xc
-  bl SYMBOL_NAME(malloc)
+
+	ldr ip, LCPI_malloc
+	blx ip
+
   /**
    * r4 is the callee saved register we'll use to refer to the allocated memory,
    * store its initial value, so we can restore it later
@@ -87,10 +90,20 @@ SYMBOL_NAME(RCTProfileTrampoline):
   ldr r1, [r4, #0x8]
   ldr r4, [r4]
   push {r1} // save the caller on the stack
-  bl SYMBOL_NAME(free)
+
+	ldr ip, LCPI_free
+	blx ip
 
   pop {lr} // pop the caller
   pop {r0} // pop the return value
   bx lr // jump to the calleer
+
+	trap
+
+	.p2align 2
+LCPI_malloc:
+	.long SYMBOL_NAME(malloc)
+LCPI_free:
+	.long SYMBOL_NAME(free)
 
 #endif
