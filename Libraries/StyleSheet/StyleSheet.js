@@ -110,7 +110,7 @@ module.exports = {
    *   }
    * });
    *
-   * StyleSheet.flatten([styles.listItem, styles.selectedListItem]
+   * StyleSheet.flatten([styles.listItem, styles.selectedListItem])
    * // returns { flex: 1, fontSize: 16, color: 'green' }
    * ```
    * Alternative use:
