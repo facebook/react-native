@@ -10,9 +10,12 @@
  */
 'use strict';
 
+var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
+var Platform = require('Platform');
 var React = require('React');
 var ReactPropTypes = require('ReactPropTypes');
+var StatusBar = require('StatusBar');
 var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');
 var View = require('View');
@@ -24,12 +27,6 @@ var requireNativeComponent = require('requireNativeComponent');
 
 var RK_DRAWER_REF = 'drawerlayout';
 var INNERVIEW_REF = 'innerView';
-
-var DrawerLayoutValidAttributes = {
-  drawerWidth: true,
-  drawerPosition: true,
-  drawerLockMode: true
-};
 
 var DRAWER_STATES = [
   'Idle',
@@ -132,21 +129,52 @@ var DrawerLayoutAndroid = React.createClass({
      * The navigation view that will be rendered to the side of the screen and can be pulled in.
      */
     renderNavigationView: ReactPropTypes.func.isRequired,
+
+    /**
+     * Make the drawer take the entire screen and draw the background of the
+     * status bar to allow it to open over the status bar. It will only have an
+     * effect on API 21+.
+     */
+    statusBarBackgroundColor: ColorPropType,
   },
 
   mixins: [NativeMethodsMixin],
+
+  getInitialState: function() {
+    return {statusBarBackgroundColor: undefined};
+  },
 
   getInnerViewNode: function() {
     return this.refs[INNERVIEW_REF].getInnerViewNode();
   },
 
+  componentDidMount: function() {
+    this._updateStatusBarBackground();
+  },
+
+  componentDidReceiveProps: function() {
+    this._updateStatusBarBackground();
+  },
+
   render: function() {
+    var drawStatusBar = Platform.Version >= 21 && this.props.statusBarBackgroundColor;
     var drawerViewWrapper =
       <View style={[styles.drawerSubview, {width: this.props.drawerWidth}]} collapsable={false}>
         {this.props.renderNavigationView()}
+        {drawStatusBar && <View style={styles.drawerStatusBar} />}
       </View>;
     var childrenWrapper =
       <View ref={INNERVIEW_REF} style={styles.mainSubview} collapsable={false}>
+        {drawStatusBar &&
+        <StatusBar
+          translucent
+          backgroundColor={this.state.statusBarBackgroundColor}
+        />}
+        {drawStatusBar &&
+        <View style={[
+          styles.statusBar,
+          {backgroundColor: this.props.statusBarBackgroundColor}
+        ]} />}
         {this.props.children}
       </View>;
     return (
@@ -213,6 +241,23 @@ var DrawerLayoutAndroid = React.createClass({
   _getDrawerLayoutHandle: function() {
     return React.findNodeHandle(this.refs[RK_DRAWER_REF]);
   },
+
+  // Update the StatusBar component background color one frame after creating the
+  // status bar background View to avoid a white flicker that happens because
+  // the StatusBar background becomes transparent before the status bar View
+  // from this component has rendered.
+  _updateStatusBarBackground: function() {
+    if (Platform.Version >= 21 && this.props.statusBarBackgroundColor) {
+      // Check if the value is not already transparent to avoid an extra render.
+      if (this.state.statusBarBackgroundColor !== 'transparent') {
+        requestAnimationFrame(() => {
+          this.setState({statusBarBackgroundColor: 'transparent'});
+        });
+      }
+    } else {
+      this.setState({statusBarBackgroundColor: undefined});
+    }
+  },
 });
 
 var styles = StyleSheet.create({
@@ -232,6 +277,17 @@ var styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     backgroundColor: 'white',
+  },
+  statusBar: {
+    height: StatusBar.currentHeight,
+  },
+  drawerStatusBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: StatusBar.currentHeight,
+    backgroundColor: 'rgba(0, 0, 0, 0.251)',
   },
 });
 
