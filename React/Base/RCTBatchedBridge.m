@@ -61,6 +61,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
 @synthesize flowID = _flowID;
 @synthesize flowIDMap = _flowIDMap;
+@synthesize flowIDMapLock = _flowIDMapLock;
 @synthesize loading = _loading;
 @synthesize valid = _valid;
 
@@ -885,10 +886,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       @autoreleasepool {
         for (NSNumber *indexObj in calls) {
           NSUInteger index = indexObj.unsignedIntegerValue;
-          if (callID != -1 && _flowIDMap != NULL) {
+          if (RCT_DEV && callID != -1 && _flowIDMap != NULL && RCTProfileIsProfiling()) {
+            [self.flowIDMapLock lock];
             int64_t newFlowID = (int64_t)CFDictionaryGetValue(_flowIDMap, (const void *)(_flowID + index));
             _RCTProfileEndFlowEvent(@(newFlowID));
             CFDictionaryRemoveValue(_flowIDMap, (const void *)(_flowID + index));
+            [self.flowIDMapLock unlock];
           }
           [self _handleRequestNumber:index
                             moduleID:[moduleIDs[index] integerValue]
