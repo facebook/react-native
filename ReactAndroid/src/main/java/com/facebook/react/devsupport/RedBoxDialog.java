@@ -180,6 +180,13 @@ import org.json.JSONObject;
 
     mDevSupportManager = devSupportManager;
 
+    Window window = getWindow();
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        window.setType(WindowManager.LayoutParams.TYPE_TOAST);
+    } else {
+        window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+    }
+
     mStackView = (ListView) findViewById(R.id.rn_redbox_stack);
     mStackView.setOnItemClickListener(this);
     mReloadJs = (Button) findViewById(R.id.rn_redbox_reloadjs);
