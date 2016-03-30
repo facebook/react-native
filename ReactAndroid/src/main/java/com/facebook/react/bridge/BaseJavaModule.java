@@ -11,6 +11,7 @@ package com.facebook.react.bridge;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.systrace.Systrace;
+import com.facebook.systrace.SystraceMessage;
 
 import javax.annotation.Nullable;
 
@@ -160,6 +161,7 @@ public abstract class BaseJavaModule implements NativeModule {
     private final Object[] mArguments;
     private String mType = METHOD_TYPE_REMOTE;
     private final int mJSArgumentsNeeded;
+    private final String mTraceName;
 
     public JavaMethod(Method method) {
       mMethod = method;
@@ -169,6 +171,7 @@ public abstract class BaseJavaModule implements NativeModule {
       // save to allocate only one arguments object per method that can be reused across calls
       mArguments = new Object[parameterTypes.length];
       mJSArgumentsNeeded = calculateJSArgumentsNeeded();
+      mTraceName = BaseJavaModule.this.getName() + "." + mMethod.getName();
     }
 
     private ArgumentExtractor[] buildArgumentExtractors(Class[] paramTypes) {
@@ -231,7 +234,9 @@ public abstract class BaseJavaModule implements NativeModule {
 
     @Override
     public void invoke(CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray parameters) {
-      Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "callJavaModuleMethod");
+      SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "callJavaModuleMethod")
+          .arg("method", mTraceName)
+          .flush();
       try {
         if (mJSArgumentsNeeded != parameters.size()) {
           throw new NativeArgumentsParseException(
