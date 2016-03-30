@@ -1,6 +1,6 @@
 {
   "name": "react-native",
-  "version": "0.0.0-master",
+  "version": "1000.0.0",
   "description": "A framework for building native apps using React",
   "license": "BSD-3-Clause",
   "repository": {
@@ -102,6 +102,7 @@
     "React",
     "React.podspec",
     "ReactAndroid",
+    "react.gradle",
     "android",
     "Libraries",
     "packager",
@@ -133,7 +134,7 @@
     "babel-core": "^6.6.4",
     "babel-plugin-external-helpers": "^6.5.0",
     "babel-polyfill": "^6.6.1",
-    "babel-preset-react-native": "^1.5.2",
+    "babel-preset-react-native": "1.5.2",
     "babel-register": "^6.6.0",
     "babel-types": "^6.6.4",
     "babylon": "^6.6.4",
@@ -179,8 +180,8 @@
     "yeoman-generator": "^0.20.3"
   },
   "devDependencies": {
-    "babel-eslint": "^5.0.0",
-    "eslint": "~2.2.0",
+    "babel-eslint": "5.0.0",
+    "eslint": "2.2.0",
     "eslint-plugin-flow-vars": "^0.2.1",
     "eslint-plugin-react": "^4.2.1",
     "flow-bin": "0.22.0",
