@@ -6,7 +6,7 @@ namespace ReactNative.Views.View
     /// <summary>
     /// View manager for React view instances.
     /// </summary>
-    public class ReactViewManager : BorderedViewParentManager<BorderedContentControl>
+    public class ReactViewManager : BorderedCanvasManager<Canvas>
     {
         /// <summary>
         /// The name of this view manager. This will be the name used to 
@@ -21,13 +21,13 @@ namespace ReactNative.Views.View
         }
 
         /// <summary>
-        /// Creates a new view instance.
+        /// Creates a new view instance of type <see cref="Canvas"/>.
         /// </summary>
         /// <param name="reactContext">The react context.</param>
         /// <returns>The view instance.</returns>
-        protected override BorderedContentControl CreateViewInstance(ThemedReactContext reactContext)
+        protected override Canvas CreateInnerElement(ThemedReactContext reactContext)
         {
-            return new BorderedContentControl(new Canvas());
+            return new Canvas();
         }
     }
 }

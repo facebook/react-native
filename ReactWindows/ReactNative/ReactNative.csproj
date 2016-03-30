@@ -217,7 +217,6 @@
     <Compile Include="Reflection\EnumHelpers.cs" />
     <Compile Include="Touch\IOnInterceptTouchEventListener.cs" />
     <Compile Include="Touch\TouchHandler.cs" />
-    <Compile Include="UIManager\BorderedContentControl.cs" />
     <Compile Include="UIManager\BorderExtensions.cs" />
     <Compile Include="UIManager\ColorHelpers.cs" />
     <Compile Include="UIManager\CSSNodeExtensions.cs" />
@@ -348,11 +347,12 @@
     <Compile Include="Views\Text\ReactTextShadowNode.cs" />
     <Compile Include="Views\Text\ReactTextViewManager.cs" />
     <Compile Include="Views\Text\ReactVirtualTextViewManager.cs" />
+    <Compile Include="UIManager\BorderedCanvasManager.cs" />
     <Compile Include="Views\View\ReactViewManager.cs" />
     <Compile Include="Views\TextInput\ReactTextInputManager.cs" />
     <Compile Include="Modules\Toast\ToastHelper.cs" />
     <Compile Include="Modules\Toast\ToastModule.cs" />
-    <Compile Include="Views\View\BorderedViewParentManager.cs" />
+    <Compile Include="UIManager\BorderedViewParentManager.cs" />
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
   </ItemGroup>
   <ItemGroup>
