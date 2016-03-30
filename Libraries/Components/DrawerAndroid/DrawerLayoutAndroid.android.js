@@ -289,6 +289,17 @@ var styles = StyleSheet.create({
     height: StatusBar.currentHeight,
     backgroundColor: 'rgba(0, 0, 0, 0.251)',
   },
+  statusBar: {
+    height: StatusBar.currentHeight,
+  },
+  drawerStatusBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: StatusBar.currentHeight,
+    backgroundColor: 'rgba(0, 0, 0, 0.251)',
+  },
 });
 
 // The View that contains both the actual drawer and the main view
