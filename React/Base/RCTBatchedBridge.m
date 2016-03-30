@@ -14,8 +14,8 @@
 #import "RCTBridge+Private.h"
 #import "RCTBridgeMethod.h"
 #import "RCTConvert.h"
+#import "RCTDisplayLink.h"
 #import "RCTJSCExecutor.h"
-#import "RCTFrameUpdate.h"
 #import "RCTJavaScriptLoader.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
@@ -56,8 +56,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   NSMutableDictionary<NSString *, RCTModuleData *> *_moduleDataByName;
   NSArray<RCTModuleData *> *_moduleDataByID;
   NSArray<Class> *_moduleClassesByID;
-  CADisplayLink *_jsDisplayLink;
-  NSMutableSet<RCTModuleData *> *_frameUpdateObservers;
+  RCTDisplayLink *_displayLink;
 }
 
 @synthesize flowID = _flowID;
@@ -81,8 +80,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     _valid = YES;
     _loading = YES;
     _pendingCalls = [NSMutableArray new];
-    _frameUpdateObservers = [NSMutableSet new];
-    _jsDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_jsThreadUpdate:)];
+    _displayLink = [RCTDisplayLink new];
 
     [RCTBridge setCurrentBridge:self];
 
@@ -409,20 +407,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 - (void)registerModuleForFrameUpdates:(id<RCTBridgeModule>)module
                        withModuleData:(RCTModuleData *)moduleData
 {
-  if (![_frameUpdateObservers containsObject:moduleData]) {
-    if ([moduleData.moduleClass conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
-      [_frameUpdateObservers addObject:moduleData];
-      // Don't access the module instance via moduleData, as this will cause deadlock
-      id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)module;
-      __weak typeof(self) weakSelf = self;
-      __weak typeof(_javaScriptExecutor) weakJavaScriptExecutor = _javaScriptExecutor;
-      observer.pauseCallback = ^{
-        [weakJavaScriptExecutor executeBlockOnJavaScriptQueue:^{
-          [weakSelf updateJSDisplayLinkState];
-        }];
-      };
-    }
-  }
+  [_displayLink registerModuleForFrameUpdates:module withModuleData:moduleData];
 }
 
 - (NSString *)moduleConfig
@@ -439,21 +424,6 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   return RCTJSONStringify(@{
     @"remoteModuleConfig": config,
   }, NULL);
-}
-
-- (void)updateJSDisplayLinkState
-{
-  RCTAssertJSThread();
-
-  BOOL pauseDisplayLink = YES;
-  for (RCTModuleData *moduleData in _frameUpdateObservers) {
-    id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
-    if (!observer.paused) {
-      pauseDisplayLink = NO;
-      break;
-    }
-  }
-  _jsDisplayLink.paused = pauseDisplayLink;
 }
 
 - (void)injectJSONConfiguration:(NSString *)configJSON
@@ -492,7 +462,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
     // Register the display link to start sending js calls after everything is setup
     NSRunLoop *targetRunLoop = [_javaScriptExecutor isKindOfClass:[RCTJSCExecutor class]] ? [NSRunLoop currentRunLoop] : [NSRunLoop mainRunLoop];
-    [_jsDisplayLink addToRunLoop:targetRunLoop forMode:NSRunLoopCommonModes];
+    [_displayLink addToRunLoop:targetRunLoop];
 
     // Perform the state update and notification on the main thread, so we can't run into
     // timing issues with RCTRootView
@@ -643,8 +613,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
   dispatch_group_notify(group, dispatch_get_main_queue(), ^{
     [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
-      [_jsDisplayLink invalidate];
-      _jsDisplayLink = nil;
+      [_displayLink invalidate];
+      _displayLink = nil;
 
       [_javaScriptExecutor invalidate];
       _javaScriptExecutor = nil;
@@ -656,7 +626,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       _moduleDataByName = nil;
       _moduleDataByID = nil;
       _moduleClassesByID = nil;
-      _frameUpdateObservers = nil;
       _pendingCalls = nil;
 
       if (_flowIDMap != NULL) {
@@ -1008,30 +977,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 
   return YES;
-}
-
-- (void)_jsThreadUpdate:(CADisplayLink *)displayLink
-{
-  RCTAssertJSThread();
-  RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBatchedBridge _jsThreadUpdate:]", nil);
-
-  RCTFrameUpdate *frameUpdate = [[RCTFrameUpdate alloc] initWithDisplayLink:displayLink];
-  for (RCTModuleData *moduleData in _frameUpdateObservers) {
-    id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
-    if (!observer.paused) {
-      RCTProfileBeginFlowEvent();
-      [self dispatchBlock:^{
-        RCTProfileEndFlowEvent();
-        [observer didUpdateFrame:frameUpdate];
-      } queue:moduleData.methodQueue];
-    }
-  }
-
-  [self updateJSDisplayLinkState];
-
-  RCTProfileImmediateEvent(0, @"JS Thread Tick", displayLink.timestamp, 'g');
-
-  RCT_PROFILE_END_EVENT(0, @"objc_call", nil);
 }
 
 - (void)startProfiling
