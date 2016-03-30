@@ -44,19 +44,23 @@ typedef struct ModuleData {
 @property (nonatomic, strong, readonly) JSContext *context;
 @property (nonatomic, assign, readonly) JSGlobalContextRef ctx;
 
-- (instancetype)initWithJSContext:(JSContext *)context NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithJSContext:(JSContext *)context
+                         onThread:(NSThread *)javaScriptThread NS_DESIGNATED_INITIALIZER;
 
 @end
 
 @implementation RCTJavaScriptContext
 {
   RCTJavaScriptContext *_selfReference;
+  NSThread *_javaScriptThread;
 }
 
 - (instancetype)initWithJSContext:(JSContext *)context
+                         onThread:(NSThread *)javaScriptThread
 {
   if ((self = [super init])) {
     _context = context;
+    _javaScriptThread = javaScriptThread;
 
     /**
      * Explicitly introduce a retain cycle here - The RCTJSCExecutor might
@@ -85,14 +89,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 - (void)invalidate
 {
   if (self.isValid) {
+    RCTAssertThread(_javaScriptThread, @"Must be invalidated on JS thread.");
+
     _context = nil;
     _selfReference = nil;
-  }
-}
+    _javaScriptThread = nil;
 
-- (void)dealloc
-{
-  CFRunLoopStop([[NSRunLoop currentRunLoop] getCFRunLoop]);
+    CFRunLoopStop([[NSRunLoop currentRunLoop] getCFRunLoop]);
+  }
 }
 
 @end
@@ -213,7 +217,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
   if (!_context) {
     JSContext *context = [JSContext new];
-    _context = [[RCTJavaScriptContext alloc] initWithJSContext:context];
+    _context = [[RCTJavaScriptContext alloc] initWithJSContext:context onThread:_javaScriptThread];
   }
 
   return _context;
