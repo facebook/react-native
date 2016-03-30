@@ -180,8 +180,8 @@
     "yeoman-generator": "^0.20.3"
   },
   "devDependencies": {
-    "babel-eslint": "5.0.0",
-    "eslint": "2.2.0",
+    "babel-eslint": "^6.0.0",
+    "eslint": "^2.5.3",
     "eslint-plugin-flow-vars": "^0.2.1",
     "eslint-plugin-react": "^4.2.1",
     "flow-bin": "0.22.0",
