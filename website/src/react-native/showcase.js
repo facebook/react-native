@@ -168,6 +168,13 @@ var featured = [
       "https://medium.com/@murugandurai/how-we-developed-our-mobile-app-in-30-days-using-react-native-45affa6449e8#.29nnretsi",     
     ],
   },
+  {
+    name: '蜂鸟众包',
+    icon: 'http://img.wdjimg.com/mms/icon/v1/7/fd/b017c4a3eda1330f6b2561ec57cb0fd7_256_256.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/feng-niao-zhong-bao-jian-zhi/id1061034377?l=en&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=me.ele.crowdsource',
+    author: 'Eleme',
+  },
 ];
 
 var apps = [
