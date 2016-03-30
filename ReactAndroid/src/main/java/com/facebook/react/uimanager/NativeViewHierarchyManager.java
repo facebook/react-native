@@ -37,6 +37,9 @@ import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 /**
  * Delegate of {@link UIManagerModule} that owns the native view hierarchy and mapping between
  * native view names used in JS and corresponding instances of {@link ViewManager}. The
