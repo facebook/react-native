@@ -39,7 +39,15 @@ android_library(
   ]),
   deps = [
     ':all-libs',
-    ':res'
+    ':res',
+    ':build_config',
+  ],
+)
+
+android_build_config(
+  name = 'build_config',
+  package = '<%= package %>',
+  values = [
   ],
 )
 
@@ -51,6 +59,7 @@ android_resource(
 
 android_binary(
   name = 'app',
+  package_type = 'debug',
   manifest = 'src/main/AndroidManifest.xml',
   keystore = '//android/keystores:debug',
   deps = [
