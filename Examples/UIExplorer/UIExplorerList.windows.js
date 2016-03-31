@@ -45,6 +45,10 @@ var ComponentExamples: Array<UIExplorerExample> = [
 
 const APIExamples = [
   {
+    key: 'AlertExample',
+    module: require('./AlertExample').AlertExample,
+  },
+  {
     key: 'AppStateExample',
     module: require('./AppStateExample'),
   },
