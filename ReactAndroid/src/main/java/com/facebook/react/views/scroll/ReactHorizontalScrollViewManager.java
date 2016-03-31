@@ -11,6 +11,8 @@ package com.facebook.react.views.scroll;
 
 import javax.annotation.Nullable;
 
+import android.graphics.Color;
+
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -84,5 +86,16 @@ public class ReactHorizontalScrollViewManager
     } else {
       scrollView.scrollTo(data.mDestX, data.mDestY);
     }
+  }
+
+  /**
+   * When set, fills the rest of the scrollview with a color to avoid setting a background and
+   * creating unnecessary overdraw.
+   * @param view
+   * @param color
+   */
+  @ReactProp(name = "endFillColor", defaultInt = Color.TRANSPARENT, customType = "Color")
+  public void setBottomFillColor(ReactHorizontalScrollView view, int color) {
+    view.setEndFillColor(color);
   }
 }
