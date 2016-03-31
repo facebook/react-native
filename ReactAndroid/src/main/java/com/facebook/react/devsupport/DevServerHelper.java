@@ -432,7 +432,12 @@ public class DevServerHelper {
 
   private void handleOnChangePollingResponse(boolean didServerContentChanged) {
     if (mOnChangePollingEnabled) {
-      if (didServerContentChanged) {
+      // Before this commit, the package server doesn't inform changes to live reloading
+      // clients when one more HMR clients connected, this commit allow server informs
+      // both live reloading clients and HMR clients.
+      // When HMR enabled, live reload subscription doesnt't disconnect, so need disable
+      // live reloading.
+      if (didServerContentChanged && !mSettings.isHotModuleReplacementEnabled()) {
         UiThreadUtil.runOnUiThread(new Runnable() {
           @Override
           public void run() {

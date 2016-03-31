@@ -721,7 +721,14 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
       if (strongSelf && strongSelf->_liveReloadEnabled) {
         NSHTTPURLResponse *HTTPResponse = (NSHTTPURLResponse *)response;
         if (!error && HTTPResponse.statusCode == 205) {
-          [strongSelf reload];
+          // Before this commit, the package server doesn't inform changes to live reloading
+          // clients when one more HMR clients connected, this commit allow server informs
+          // both live reloading clients and HMR clients.
+          // When HMR enabled, live reload subscription doesnt't disconnect, so need disable
+          // live reloading.
+          if (!strongSelf->_hotLoadingEnabled) {
+            [strongSelf reload];
+          }
         } else {
           if (error.code != NSURLErrorCancelled) {
             strongSelf->_updateTask = nil;
