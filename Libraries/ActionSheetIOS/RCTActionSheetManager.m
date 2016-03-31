@@ -61,6 +61,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   }
 
   NSString *title = [RCTConvert NSString:options[@"title"]];
+  NSString *message = [RCTConvert NSString:options[@"message"]];
   NSArray<NSString *> *buttons = [RCTConvert NSStringArray:options[@"options"]];
   NSInteger destructiveButtonIndex = options[@"destructiveButtonIndex"] ? [RCTConvert NSInteger:options[@"destructiveButtonIndex"]] : -1;
   NSInteger cancelButtonIndex = options[@"cancelButtonIndex"] ? [RCTConvert NSInteger:options[@"cancelButtonIndex"]] : -1;
@@ -113,7 +114,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   {
     UIAlertController *alertController =
     [UIAlertController alertControllerWithTitle:title
-                                        message:nil
+                                        message:message
                                  preferredStyle:UIAlertControllerStyleActionSheet];
 
     NSInteger index = 0;
