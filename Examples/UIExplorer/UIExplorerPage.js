@@ -37,9 +37,9 @@ var UIExplorerPage = React.createClass({
     var ContentWrapper;
     var wrapperProps = {};
     if (this.props.noScroll) {
-      ContentWrapper = (View: ReactClass<any, any, any>);
+      ContentWrapper = (View: ReactClass<any>);
     } else {
-      ContentWrapper = (ScrollView: ReactClass<any, any, any>);
+      ContentWrapper = (ScrollView: ReactClass<any>);
       wrapperProps.automaticallyAdjustContentInsets = !this.props.title;
       wrapperProps.keyboardShouldPersistTaps = true;
       wrapperProps.keyboardDismissMode = 'interactive';

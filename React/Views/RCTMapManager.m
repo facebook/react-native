@@ -106,35 +106,6 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   [view setRegion:json ? [RCTConvert MKCoordinateRegion:json] : defaultView.region animated:YES];
 }
 
-- (NSDictionary<NSString *, id> *)constantsToExport
-{
-  NSString *red, *green, *purple;
-
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_9_0
-
-  if (![MKPinAnnotationView respondsToSelector:@selector(redPinColor)]) {
-    red = RCTMapPinRed;
-    green = RCTMapPinGreen;
-    purple = RCTMapPinPurple;
-  } else
-
-#endif
-
-  {
-    red = RCTColorToHexString([MKPinAnnotationView redPinColor].CGColor);
-    green = RCTColorToHexString([MKPinAnnotationView greenPinColor].CGColor);
-    purple = RCTColorToHexString([MKPinAnnotationView purplePinColor].CGColor);
-  }
-
-  return @{
-    @"PinColors": @{
-      @"RED": red,
-      @"GREEN": green,
-      @"PURPLE": purple,
-    }
-  };
-}
-
 #pragma mark MKMapViewDelegate
 
 - (void)mapView:(RCTMap *)mapView didSelectAnnotationView:(MKAnnotationView *)view

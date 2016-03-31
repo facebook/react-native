@@ -178,6 +178,60 @@ class TokenizedTextExample extends React.Component {
   }
 }
 
+var BlurOnSubmitExample = React.createClass({
+  focusNextField(nextField) {
+    this.refs[nextField].focus();
+  },
+
+  render: function() {
+    return (
+      <View>
+        <TextInput
+          ref="1"
+          style={styles.singleLine}
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('2')}
+        />
+        <TextInput
+          ref="2"
+          style={styles.singleLine}
+          keyboardType="email-address"
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('3')}
+        />
+        <TextInput
+          ref="3"
+          style={styles.singleLine}
+          keyboardType="url"
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('4')}
+        />
+        <TextInput
+          ref="4"
+          style={styles.singleLine}
+          keyboardType="numeric"
+          placeholder="blurOnSubmit = false"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('5')}
+        />
+        <TextInput
+          ref="5"
+          style={styles.singleLine}
+          keyboardType="numbers-and-punctuation"
+          placeholder="blurOnSubmit = true"
+          returnKeyType="done"
+        />
+      </View>
+    );
+  }
+});
+
 var styles = StyleSheet.create({
   multiline: {
     height: 60,
@@ -287,6 +341,10 @@ exports.examples = [
     }
   },
   {
+    title: 'Blur on submit',
+    render: function(): ReactElement { return <BlurOnSubmitExample />; },
+  },
+  {
     title: 'Event handling',
     render: function(): ReactElement { return <TextEventsExample />; },
   },
@@ -352,11 +410,19 @@ exports.examples = [
     title: 'Passwords',
     render: function() {
       return (
-        <TextInput
-          defaultValue="iloveturtles"
-          password={true}
-          style={styles.singleLine}
-        />
+        <View>
+          <TextInput
+            defaultValue="iloveturtles"
+            secureTextEntry={true}
+            style={styles.singleLine}
+          />
+          <TextInput 
+            secureTextEntry={true}
+            style={[styles.singleLine, {color: 'red'}]}
+            placeholder="color is supported too"
+            placeholderTextColor="red"
+          />
+        </View>
       );
     }
   },

@@ -10,12 +10,12 @@
 
 const Activity = require('../Activity');
 const AssetServer = require('../AssetServer');
-const FileWatcher = require('../DependencyResolver/FileWatcher');
-const getPlatformExtension = require('../DependencyResolver/lib/getPlatformExtension');
+const FileWatcher = require('node-haste').FileWatcher;
+const getPlatformExtension = require('node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const Promise = require('promise');
 
-const _ = require('underscore');
+const _ = require('lodash');
 const declareOpts = require('../lib/declareOpts');
 const path = require('path');
 const url = require('url');
@@ -73,7 +73,7 @@ const validateOpts = declareOpts({
     type: 'string',
     required: false,
   },
-  disableInternalTransforms: {
+  silent: {
     type: 'boolean',
     default: false,
   },
@@ -146,6 +146,10 @@ const dependencyOpts = declareOpts({
     type: 'boolean',
     default: true,
   },
+  hot: {
+    type: 'boolean',
+    default: false,
+  },
 });
 
 class Server {
@@ -182,7 +186,7 @@ class Server {
 
     this._fileWatcher = options.nonPersistent
       ? FileWatcher.createDummyWatcher()
-      : new FileWatcher(watchRootConfigs);
+      : new FileWatcher(watchRootConfigs, {useWatchman: true});
 
     this._assetServer = new AssetServer({
       projectRoots: opts.projectRoots,
@@ -197,7 +201,7 @@ class Server {
     this._fileWatcher.on('all', this._onFileChange.bind(this));
 
     this._debouncedFileChangeHandler = _.debounce(filePath => {
-      this._rebuildBundles(filePath);
+      this._clearBundles();
       this._informChangeWatchers();
     }, 50);
   }
@@ -211,6 +215,12 @@ class Server {
 
   setHMRFileChangeListener(listener) {
     this._hmrFileChangeListener = listener;
+  }
+
+  addFileChangeListener(listener) {
+    if (this._fileChangeListeners.indexOf(listener) === -1) {
+      this._fileChangeListeners.push(listener);
+    }
   }
 
   buildBundle(options) {
@@ -240,8 +250,8 @@ class Server {
     return this.buildBundle(options);
   }
 
-  buildBundleForHMR(modules) {
-    return this._bundler.hmrBundle(modules);
+  buildBundleForHMR(modules, host, port) {
+    return this._bundler.hmrBundle(modules, host, port);
   }
 
   getShallowDependencies(entryFile) {
@@ -259,12 +269,7 @@ class Server {
       }
 
       const opts = dependencyOpts(options);
-      return this._bundler.getDependencies(
-        opts.entryFile,
-        opts.dev,
-        opts.platform,
-        opts.recursive,
-      );
+      return this._bundler.getDependencies(opts);
     });
   }
 
@@ -289,6 +294,15 @@ class Server {
       return;
     }
 
+    Promise.all(
+      this._fileChangeListeners.map(listener => listener(absPath))
+    ).then(
+      () => this._onFileChangeComplete(absPath),
+      () => this._onFileChangeComplete(absPath)
+    );
+  }
+
+  _onFileChangeComplete(absPath) {
     // Make sure the file watcher event runs through the system before
     // we rebuild the bundles.
     this._debouncedFileChangeHandler(absPath);
@@ -296,30 +310,6 @@ class Server {
 
   _clearBundles() {
     this._bundles = Object.create(null);
-  }
-
-  _rebuildBundles() {
-    const buildBundle = this.buildBundle.bind(this);
-    const bundles = this._bundles;
-
-    Object.keys(bundles).forEach(function(optionsJson) {
-      const options = JSON.parse(optionsJson);
-      // Wait for a previous build (if exists) to finish.
-      bundles[optionsJson] = (bundles[optionsJson] || Promise.resolve()).finally(function() {
-        // With finally promise callback we can't change the state of the promise
-        // so we need to reassign the promise.
-        bundles[optionsJson] = buildBundle(options).then(function(p) {
-          // Make a throwaway call to getSource to cache the source string.
-          p.getSource({
-            inlineSourceMap: options.inlineSourceMap,
-            minify: options.minify,
-            dev: options.dev,
-          });
-          return p;
-        });
-      });
-      return bundles[optionsJson];
-    });
   }
 
   _informChangeWatchers() {
@@ -521,7 +511,7 @@ class Server {
       return true;
     }).join('.') + '.js';
 
-    const sourceMapUrlObj = _.clone(urlObj);
+    const sourceMapUrlObj = Object.assign({}, urlObj);
     sourceMapUrlObj.pathname = pathname.replace(/\.bundle$/, '.map');
 
     // try to get the platform from the url

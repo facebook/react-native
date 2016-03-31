@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const PropTypes = require('ReactPropTypes');
 const React = require('React');
@@ -53,7 +54,7 @@ const AccessibilityComponentType = [
 
 const forceTouchAvailable = (UIManager.RCTView.Constants &&
   UIManager.RCTView.Constants.forceTouchAvailable) || false;
-  
+
 const statics = {
   AccessibilityTraits,
   AccessibilityComponentType,
@@ -202,6 +203,19 @@ const View = React.createClass({
     onMoveShouldSetResponderCapture: PropTypes.func,
 
     /**
+     * This defines how far a touch event can start away from the view.
+     * Typical interface guidelines recommend touch targets that are at least
+     * 30 - 40 points/density-independent pixels. If a Touchable view has a
+     * height of 20 the touchable height can be extended to 40 with
+     * `hitSlop={{top: 10, bottom: 10, left: 0, right: 0}}`
+     * ** NOTE **
+     * The touch area never extends past the parent view bounds and the Z-index
+     * of sibling views always takes precedence if a touch hits two overlapping
+     * views.
+     */
+    hitSlop: EdgeInsetsPropType,
+
+    /**
      * Invoked on mount and layout changes with
      *
      *   {nativeEvent: { layout: {x, y, width, height}}}.
@@ -213,35 +227,38 @@ const View = React.createClass({
     onLayout: PropTypes.func,
 
     /**
-     * In the absence of `auto` property, `none` is much like `CSS`'s `none`
-     * value. `box-none` is as if you had applied the `CSS` class:
+     * Controls whether the View can be the target of touch events.
      *
+     *   - 'auto': The View can be the target of touch events.
+     *   - 'none': The View is never the target of touch events.
+     *   - 'box-none': The View is never the target of touch events but it's
+     *     subviews can be. It behaves like if the view had the following classes
+     *     in CSS:
      * ```
      * .box-none {
-     *   pointer-events: none;
+     * 		pointer-events: none;
      * }
      * .box-none * {
-     *   pointer-events: all;
+     * 		pointer-events: all;
      * }
      * ```
-     *
-     * `box-only` is the equivalent of
-     *
+     *   - 'box-only': The view can be the target of touch events but it's
+     *     subviews cannot be. It behaves like if the view had the following classes
+     *     in CSS:
      * ```
      * .box-only {
-     *   pointer-events: all;
+     * 		pointer-events: all;
      * }
      * .box-only * {
-     *   pointer-events: none;
+     * 		pointer-events: none;
      * }
      * ```
-     *
-     * But since `pointerEvents` does not affect layout/appearance, and we are
-     * already deviating from the spec by adding additional modes, we opt to not
-     * include `pointerEvents` on `style`. On some platforms, we would need to
-     * implement it as a `className` anyways. Using `style` or not is an
-     * implementation detail of the platform.
      */
+    // Since `pointerEvents` does not affect layout/appearance, and we are
+    // already deviating from the spec by adding additional modes, we opt to not
+    // include `pointerEvents` on `style`. On some platforms, we would need to
+    // implement it as a `className` anyways. Using `style` or not is an
+    // implementation detail of the platform.
     pointerEvents: PropTypes.oneOf([
       'box-none',
       'none',

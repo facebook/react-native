@@ -17,14 +17,8 @@ Anytime you change the contents, just refresh the page and it's going to be upda
 
 # Publish the website
 
-First setup your environment by having two folders, one `react-native` and one `react-native-gh-pages`. The publish script expects those exact names.
-
 ```sh
-./setup.sh
+cd website
+npm run publish-website
 ```
 
-Then, after you've done changes, just run the command and it'll automatically build the static version of the site and publish it to gh-pages.
-
-```sh
-./publish.sh
-```

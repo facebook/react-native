@@ -87,11 +87,14 @@ import com.facebook.react.uimanager.events.TouchEventType;
             "ContentMode",
             MapBuilder.of(
                 "ScaleAspectFit",
-                ImageView.ScaleType.CENTER_INSIDE.ordinal(),
+                ImageView.ScaleType.FIT_CENTER.ordinal(),
                 "ScaleAspectFill",
-                ImageView.ScaleType.CENTER_CROP.ordinal())));
+                ImageView.ScaleType.CENTER_CROP.ordinal(),
+                "ScaleAspectCenter",
+                ImageView.ScaleType.CENTER_INSIDE.ordinal())));
 
-    DisplayMetrics displayMetrics = DisplayMetricsHolder.getDisplayMetrics();
+    DisplayMetrics displayMetrics = DisplayMetricsHolder.getWindowDisplayMetrics();
+    DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
     constants.put(
         "Dimensions",
         MapBuilder.of(
@@ -106,7 +109,19 @@ import com.facebook.react.uimanager.events.TouchEventType;
                 "fontScale",
                 displayMetrics.scaledDensity,
                 "densityDpi",
-                displayMetrics.densityDpi)));
+                displayMetrics.densityDpi),
+        "screenPhysicalPixels",
+        MapBuilder.of(
+            "width",
+            screenDisplayMetrics.widthPixels,
+            "height",
+            screenDisplayMetrics.heightPixels,
+            "scale",
+            screenDisplayMetrics.density,
+            "fontScale",
+            screenDisplayMetrics.scaledDensity,
+            "densityDpi",
+            screenDisplayMetrics.densityDpi)));
 
     constants.put(
         "StyleConstants",

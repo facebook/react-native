@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var warning = require('warning');
+var warning = require('fbjs/lib/warning');
 
 const TimePickerAndroid = {
   async open(options: Object): Promise<Object> {
@@ -19,6 +19,6 @@ const TimePickerAndroid = {
       message: 'TimePickerAndroid is not supported on this platform.'
     });
   },
-}
+};
 
 module.exports = TimePickerAndroid;

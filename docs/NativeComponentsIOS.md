@@ -49,7 +49,7 @@ Then you just need a little bit of JavaScript to make this a usable React compon
 ```javascript
 // MapView.js
 
-var { requireNativeComponent } = require('react-native');
+import { requireNativeComponent } from 'react-native';
 
 // requireNativeComponent automatically resolves this to "RCTMapManager"
 module.exports = requireNativeComponent('RCTMap', null);
@@ -79,8 +79,7 @@ This isn't very well documented though - in order to know what properties are av
 
 ```javascript
 // MapView.js
-var React = require('react-native');
-var { requireNativeComponent } = React;
+import React, { requireNativeComponent } from 'react-native';
 
 class MapView extends React.Component {
   render() {
@@ -302,7 +301,8 @@ Since all our native react views are subclasses of `UIView`, most style attribut
 ```javascript
 // DatePickerIOS.ios.js
 
-var RCTDatePickerIOSConsts = require('react-native').UIManager.RCTDatePicker.Constants;
+import { UIManager } from 'react-native';
+var RCTDatePickerIOSConsts = UIManager.RCTDatePicker.Constants;
 ...
   render: function() {
     return (

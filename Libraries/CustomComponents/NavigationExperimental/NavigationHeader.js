@@ -1,5 +1,10 @@
 /**
- * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
@@ -27,123 +32,219 @@
  */
 'use strict';
 
-const Animated = require('Animated');
-const Image = require('Image');
-const NavigationContainer = require('NavigationContainer');
-const NavigationReducer = require('NavigationReducer');
 const React = require('react-native');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const TouchableOpacity = require('TouchableOpacity');
-const View = require('View');
+const NavigationContainer = require('NavigationContainer');
+const NavigationHeaderTitle = require('NavigationHeaderTitle');
+const NavigationHeaderBackButton = require('NavigationHeaderBackButton');
+const NavigationPropTypes = require('NavigationPropTypes');
+const NavigationHeaderStyleInterpolator = require('NavigationHeaderStyleInterpolator');
+const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
 
-import type {
-  NavigationState,
-  NavigationParentState
-} from 'NavigationState';
+const {
+  Animated,
+  Platform,
+  StyleSheet,
+  View,
+} = React;
 
-type Props = {
-  navigationState: NavigationParentState,
-  onNavigate: Function,
-  position: Animated.Value,
-  getTitle: (navState: NavigationState) => string,
+import type  {
+  NavigationSceneRenderer,
+  NavigationSceneRendererProps,
+  NavigationStyleInterpolator,
+} from 'NavigationTypeDefinition';
+
+type DefaultProps = {
+  renderLeftComponent: NavigationSceneRenderer,
+  renderRightComponent: NavigationSceneRenderer,
+  renderTitleComponent: NavigationSceneRenderer,
 };
 
-class NavigationHeader extends React.Component {
-  _handleBackPress: Function;
+type Props = NavigationSceneRendererProps & {
+  renderLeftComponent: NavigationSceneRenderer,
+  renderRightComponent: NavigationSceneRenderer,
+  renderTitleComponent: NavigationSceneRenderer,
+  style?: any;
+};
+
+type SubViewName = 'left' | 'title' | 'right';
+
+const APPBAR_HEIGHT = Platform.OS === 'ios' ? 44 : 56;
+const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : 0;
+const {PropTypes} = React;
+
+class NavigationHeader extends React.Component<DefaultProps, Props, any> {
   props: Props;
-  componentWillMount() {
-    this._handleBackPress = this._handleBackPress.bind(this);
+
+  static defaultProps = {
+
+    renderTitleComponent: (props: NavigationSceneRendererProps) => {
+      const {navigationState} = props;
+      const title = String(navigationState.title || '');
+      return <NavigationHeaderTitle>{title}</NavigationHeaderTitle>;
+    },
+
+    renderLeftComponent: (props: NavigationSceneRendererProps) => {
+      return props.scene.index > 0 ? <NavigationHeaderBackButton /> : null;
+    },
+
+    renderRightComponent: (props: NavigationSceneRendererProps) => {
+      return null;
+    },
+  };
+
+  static propTypes = {
+    ...NavigationPropTypes.SceneRenderer,
+    renderLeftComponent: PropTypes.func,
+    renderRightComponent: PropTypes.func,
+    renderTitleComponent: PropTypes.func,
+    style: View.propTypes.style,
+  };
+
+  shouldComponentUpdate(nextProps: Props, nextState: any): boolean {
+    return ReactComponentWithPureRenderMixin.shouldComponentUpdate.call(
+      this,
+      nextProps,
+      nextState
+    );
   }
-  render() {
-    var state = this.props.navigationState;
+
+  render(): ReactElement {
+    const { scenes, style } = this.props;
+
+    const scenesProps = scenes.map(scene => {
+      const props = NavigationPropTypes.extractSceneRendererProps(this.props);
+      props.scene = scene;
+      return props;
+    });
+
+    return (
+      <View style={[ styles.appbar, style ]}>
+        {scenesProps.map(this._renderLeft, this)}
+        {scenesProps.map(this._renderTitle, this)}
+        {scenesProps.map(this._renderRight, this)}
+      </View>
+    );
+  }
+
+  _renderLeft(props: NavigationSceneRendererProps): ?ReactElement {
+    return this._renderSubView(
+      props,
+      'left',
+      this.props.renderLeftComponent,
+      NavigationHeaderStyleInterpolator.forLeft,
+    );
+  }
+
+  _renderTitle(props: NavigationSceneRendererProps): ?ReactElement {
+    return this._renderSubView(
+      props,
+      'title',
+      this.props.renderTitleComponent,
+      NavigationHeaderStyleInterpolator.forCenter,
+    );
+  }
+
+  _renderRight(props: NavigationSceneRendererProps): ?ReactElement {
+    return this._renderSubView(
+      props,
+      'right',
+      this.props.renderRightComponent,
+      NavigationHeaderStyleInterpolator.forRight,
+    );
+  }
+
+  _renderSubView(
+    props: NavigationSceneRendererProps,
+    name: SubViewName,
+    renderer: NavigationSceneRenderer,
+    styleInterpolator: NavigationStyleInterpolator,
+  ): ?ReactElement {
+    const {
+      scene,
+      navigationState,
+    } = props;
+
+    const {
+      index,
+      isStale,
+      key,
+    } = scene;
+
+    const offset = navigationState.index - index;
+
+    if (Math.abs(offset) > 2) {
+      // Scene is far away from the active scene. Hides it to avoid unnecessary
+      // rendering.
+      return null;
+    }
+
+    const subView = renderer(props);
+    if (subView === null) {
+      return null;
+    }
+
+    const pointerEvents = offset !== 0 || isStale ? 'none' : 'auto';
     return (
       <Animated.View
+        pointerEvents={pointerEvents}
+        key={name + '_' + key}
         style={[
-          styles.header,
+          styles[name],
+          styleInterpolator(props),
         ]}>
-        {state.children.map(this._renderTitle, this)}
-        {this._renderBackButton()}
+        {subView}
       </Animated.View>
     );
   }
-  _renderBackButton() {
-    if (this.props.navigationState.index === 0) {
-      return null;
-    }
-    return (
-      <TouchableOpacity style={styles.backButton} onPress={this._handleBackPress}>
-        <Image source={require('./back_chevron.png')} style={styles.backButtonImage} />
-      </TouchableOpacity>
-    );
-  }
-  _renderTitle(childState, index) {
-    return (
-      <Animated.Text
-        key={childState.key}
-        style={[
-          styles.title,
-          {
-            opacity: this.props.position.interpolate({
-              inputRange: [index - 1, index, index + 1],
-              outputRange: [0, 1, 0],
-            }),
-            left: this.props.position.interpolate({
-              inputRange: [index - 1, index + 1],
-              outputRange: [200, -200],
-            }),
-            right: this.props.position.interpolate({
-              inputRange: [index - 1, index + 1],
-              outputRange: [-200, 200],
-            }),
-          },
-        ]}>
-        {this.props.getTitle(childState)}
-      </Animated.Text>
-    );
-  }
-  _handleBackPress() {
-    this.props.onNavigate(NavigationReducer.StackReducer.PopAction());
-  }
 }
+
+const styles = StyleSheet.create({
+  appbar: {
+    alignItems: 'center',
+    backgroundColor: Platform.OS === 'ios' ? '#EFEFF2' : '#FFF',
+    borderBottomColor: 'rgba(0, 0, 0, .15)',
+    borderBottomWidth: Platform.OS === 'ios' ? StyleSheet.hairlineWidth : 0,
+    elevation: 2,
+    flexDirection: 'row',
+    height: APPBAR_HEIGHT + STATUSBAR_HEIGHT,
+    justifyContent: 'flex-start',
+    left: 0,
+    marginBottom: 16, // This is needed for elevation shadow
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+
+  title: {
+    bottom: 0,
+    left: APPBAR_HEIGHT,
+    marginTop: STATUSBAR_HEIGHT,
+    position: 'absolute',
+    right: APPBAR_HEIGHT,
+    top: 0,
+  },
+
+  left: {
+    bottom: 0,
+    left: 0,
+    marginTop: STATUSBAR_HEIGHT,
+    position: 'absolute',
+    top: 0,
+  },
+
+  right: {
+    bottom: 0,
+    marginTop: STATUSBAR_HEIGHT,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+});
 
 NavigationHeader = NavigationContainer.create(NavigationHeader);
 
-const styles = StyleSheet.create({
-  title: {
-    textAlign: 'center',
-    marginTop: 10,
-    fontSize: 18,
-    fontWeight: '500',
-    color: '#0A0A0A',
-    position: 'absolute',
-    top: 20,
-    left: 0,
-    right: 0,
-  },
-  header: {
-    backgroundColor: '#EFEFF2',
-    paddingTop: 20,
-    top: 0,
-    height: 64,
-    right: 0,
-    left: 0,
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#828287',
-    position: 'absolute',
-  },
-  backButton: {
-    width: 29,
-    height: 37,
-    position: 'absolute',
-    bottom: 4,
-    left: 2,
-    padding: 8,
-  },
-  backButtonImage: {
-    width: 13,
-    height: 21,
-  },
-});
+NavigationHeader.HEIGHT = APPBAR_HEIGHT + STATUSBAR_HEIGHT;
+NavigationHeader.Title = NavigationHeaderTitle;
+NavigationHeader.BackButton = NavigationHeaderBackButton;
 
 module.exports = NavigationHeader;

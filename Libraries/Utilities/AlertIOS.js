@@ -45,7 +45,7 @@ type ButtonsArray = Array<{
 class AlertIOS {
   /**
    * Creates a popup to alert the user. See
-   * [Alert](/react-native/docs/alert.html).
+   * [Alert](docs/alert.html).
    *
    *  - title: string -- The dialog's title.
    *  - message: string -- An optional message that appears above the text input.

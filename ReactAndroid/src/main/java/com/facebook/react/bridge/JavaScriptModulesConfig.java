@@ -14,8 +14,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-
 /**
  * Class stores configuration of javascript modules that can be used across the bridge
  */
@@ -23,35 +21,38 @@ public class JavaScriptModulesConfig {
 
   private final List<JavaScriptModuleRegistration> mModules;
 
-  private JavaScriptModulesConfig(List<JavaScriptModuleRegistration> modules) {
+  public JavaScriptModulesConfig(List<JavaScriptModuleRegistration> modules) {
     mModules = modules;
   }
 
-  /*package*/ List<JavaScriptModuleRegistration> getModuleDefinitions() {
+  public List<JavaScriptModuleRegistration> getModuleDefinitions() {
     return mModules;
   }
 
-  /*package*/ void writeModuleDescriptions(JsonGenerator jg) throws IOException {
-    jg.writeStartObject();
+  public void writeModuleDescriptions(JsonWriter writer) throws IOException {
+    writer.beginObject();
     for (JavaScriptModuleRegistration registration : mModules) {
-      jg.writeObjectFieldStart(registration.getName());
-      appendJSModuleToJSONObject(jg, registration);
-      jg.writeEndObject();
+      writer.name(registration.getName()).beginObject();
+      appendJSModuleToJSONObject(writer, registration);
+      writer.endObject();
     }
-    jg.writeEndObject();
+    writer.endObject();
   }
 
   private void appendJSModuleToJSONObject(
-      JsonGenerator jg,
+      JsonWriter writer,
       JavaScriptModuleRegistration registration) throws IOException {
-    jg.writeObjectField("moduleID", registration.getModuleId());
-    jg.writeObjectFieldStart("methods");
+    writer.name("moduleID").value(registration.getModuleId());
+    writer.name("methods").beginObject();
     for (Method method : registration.getMethods()) {
-      jg.writeObjectFieldStart(method.getName());
-      jg.writeObjectField("methodID", registration.getMethodId(method));
-      jg.writeEndObject();
+      writer.name(method.getName()).beginObject();
+      writer.name("methodID").value(registration.getMethodId(method));
+      writer.endObject();
     }
-    jg.writeEndObject();
+    writer.endObject();
+    if (registration.getModuleInterface().isAnnotationPresent(SupportsWebWorkers.class)) {
+      writer.name("supportsWebWorkers").value(true);
+    }
   }
 
   public static class Builder {

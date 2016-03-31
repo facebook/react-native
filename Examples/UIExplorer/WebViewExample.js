@@ -20,6 +20,7 @@ var {
   StyleSheet,
   Text,
   TextInput,
+  TouchableWithoutFeedback,
   TouchableOpacity,
   View,
   WebView
@@ -160,6 +161,60 @@ var WebViewExample = React.createClass({
 
 });
 
+var Button = React.createClass({
+  _handlePress: function() {
+    if (this.props.enabled !== false && this.props.onPress) {
+      this.props.onPress();
+    }
+  },
+  render: function() {
+    return (
+      <TouchableWithoutFeedback onPress={this._handlePress}>
+        <View style={[styles.button, this.props.enabled ? {} : styles.buttonDisabled]}>
+          <Text style={styles.buttonText}>{this.props.text}</Text>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  }
+});
+
+var ScaledWebView = React.createClass({
+
+  getInitialState: function() {
+    return {
+      scalingEnabled: true,
+    }
+  },
+
+  render: function() {
+    return (
+      <View>
+        <WebView
+          style={{
+            backgroundColor: BGWASH,
+            height: 200,
+          }}
+          source={{uri: 'https://facebook.github.io/react/'}}
+          scalesPageToFit={this.state.scalingEnabled}
+        />
+        <View style={styles.buttons}>
+        { this.state.scalingEnabled ?
+          <Button
+            text="Scaling:ON"
+            enabled={true}
+            onPress={() => this.setState({scalingEnabled: false})}
+          /> :
+          <Button
+            text="Scaling:OFF"
+            enabled={true}
+            onPress={() => this.setState({scalingEnabled: true})}
+          /> }
+        </View>
+      </View>
+    );
+  },
+})
+
 var styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -229,6 +284,21 @@ var styles = StyleSheet.create({
     width: 20,
     marginRight: 6,
   },
+  buttons: {
+    flexDirection: 'row',
+    height: 30,
+    backgroundColor: 'black',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  button: {
+    flex: 0.5,
+    width: 0,
+    margin: 5,
+    borderColor: 'gray',
+    borderWidth: 1,
+    backgroundColor: 'gray',
+  },
 });
 
 const HTML = `
@@ -266,6 +336,10 @@ exports.examples = [
   {
     title: 'Simple Browser',
     render(): ReactElement { return <WebViewExample />; }
+  },
+  {
+    title: 'Scale Page to Fit',
+    render(): ReactElement { return <ScaledWebView/>; }
   },
   {
     title: 'Bundled HTML',

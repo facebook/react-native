@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
-import android.os.SystemClock;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
@@ -15,6 +14,7 @@ import android.view.ViewGroup;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.common.SystemClock;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
@@ -344,7 +344,7 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
     ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
         .dispatchEvent(ScrollEvent.obtain(
                 getId(),
-                SystemClock.uptimeMillis(),
+                SystemClock.nanoTime(),
                 ScrollEventType.SCROLL,
                 0, /* offsetX = 0, horizontal scrolling only */
                 calculateAbsoluteOffset(),
@@ -359,7 +359,7 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
       ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
           .dispatchEvent(new ContentSizeChangeEvent(
                   getId(),
-                  SystemClock.uptimeMillis(),
+                  SystemClock.nanoTime(),
                   getWidth(),
                   newTotalChildrenHeight));
     }

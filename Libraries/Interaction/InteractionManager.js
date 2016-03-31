@@ -16,14 +16,16 @@ const EventEmitter = require('EventEmitter');
 const Set = require('Set');
 const TaskQueue = require('TaskQueue');
 
-const invariant = require('invariant');
-const keyMirror = require('keyMirror');
+const invariant = require('fbjs/lib/invariant');
+const keyMirror = require('fbjs/lib/keyMirror');
 const setImmediate = require('setImmediate');
 
 type Handle = number;
 import type {Task} from 'TaskQueue';
 
 const _emitter = new EventEmitter();
+
+const DEBUG_DELAY = 0;
 
 /**
  * InteractionManager allows long-running work to be scheduled after any
@@ -143,7 +145,7 @@ let _deadline = -1;
 function _scheduleUpdate() {
   if (!_nextUpdateHandle) {
     if (_deadline > 0) {
-      _nextUpdateHandle = setTimeout(_processUpdate, 0);
+      _nextUpdateHandle = setTimeout(_processUpdate, 0 + DEBUG_DELAY);
     } else {
       _nextUpdateHandle = setImmediate(_processUpdate);
     }

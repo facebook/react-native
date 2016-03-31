@@ -14,7 +14,6 @@
 #import "RCTBridge.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
-#import "RCTViewManager.h"
 #import "UIView+React.h"
 
 typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
@@ -40,10 +39,10 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
 
 @implementation RCTComponentData
 {
-  id<RCTComponent> _defaultView;
-  RCTShadowView *_defaultShadowView;
+  id<RCTComponent> _defaultView; // Only needed for RCT_CUSTOM_VIEW_PROPERTY
   NSMutableDictionary<NSString *, RCTPropBlock> *_viewPropBlocks;
   NSMutableDictionary<NSString *, RCTPropBlock> *_shadowPropBlocks;
+  BOOL _implementsUIBlockToAmendWithShadowViewRegistry;
   __weak RCTBridge *_bridge;
 }
 
@@ -63,6 +62,14 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
     if ([_name hasSuffix:@"Manager"]) {
       _name = [_name substringToIndex:_name.length - @"Manager".length];
     }
+
+    _implementsUIBlockToAmendWithShadowViewRegistry = NO;
+    Class cls = _managerClass;
+    while (cls != [RCTViewManager class]) {
+      _implementsUIBlockToAmendWithShadowViewRegistry = _implementsUIBlockToAmendWithShadowViewRegistry ||
+      RCTClassOverridesInstanceMethod(cls, @selector(uiBlockToAmendWithShadowViewRegistry:));
+      cls = [cls superclass];
+    }
   }
   return self;
 }
@@ -81,7 +88,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   RCTAssertMainThread();
 
-  UIView *view = [_manager view];
+  UIView *view = [self.manager view];
   view.reactTag = tag;
   view.multipleTouchEnabled = YES;
   view.userInteractionEnabled = YES; // required for touch handling
@@ -97,10 +104,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return shadowView;
 }
 
-- (RCTPropBlock)propBlockForKey:(NSString *)name defaultView:(id)defaultView
+- (RCTPropBlock)propBlockForKey:(NSString *)name
+                   inDictionary:(NSMutableDictionary<NSString *, RCTPropBlock> *)propBlocks
 {
-  BOOL shadowView = [defaultView isKindOfClass:[RCTShadowView class]];
-  NSMutableDictionary<NSString *, RCTPropBlock> *propBlocks = shadowView ? _shadowPropBlocks : _viewPropBlocks;
+  BOOL shadowView = (propBlocks == _shadowPropBlocks);
   RCTPropBlock propBlock = propBlocks[name];
   if (!propBlock) {
 
@@ -110,10 +117,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     SEL type = NULL;
     NSString *keyPath = nil;
     SEL selector = NSSelectorFromString([NSString stringWithFormat:@"propConfig%@_%@", shadowView ? @"Shadow" : @"", name]);
-    Class managerClass = [_manager class];
-    if ([managerClass respondsToSelector:selector]) {
+    if ([_managerClass respondsToSelector:selector]) {
       NSArray<NSString *> *typeAndKeyPath =
-        ((NSArray<NSString *> *(*)(id, SEL))objc_msgSend)(managerClass, selector);
+        ((NSArray<NSString *> *(*)(id, SEL))objc_msgSend)(_managerClass, selector);
       type = RCTConvertSelectorForType(typeAndKeyPath[0]);
       keyPath = typeAndKeyPath.count > 1 ? typeAndKeyPath[1] : nil;
     } else {
@@ -129,8 +135,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       SEL customSetter = NSSelectorFromString([NSString stringWithFormat:@"set_%@:for%@View:withDefaultView:", name, shadowView ? @"Shadow" : @""]);
 
       propBlock = ^(id<RCTComponent> view, id json) {
+        RCTComponentData *strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        json = RCTNilIfNull(json);
+        if (!json && !strongSelf->_defaultView) {
+          // Only create default view if json is null
+          strongSelf->_defaultView = [strongSelf createViewWithTag:nil];
+        }
         ((void (*)(id, SEL, id, id, id))objc_msgSend)(
-          weakSelf.manager, customSetter, json == (id)kCFNull ? nil : json, view, defaultView
+          strongSelf.manager, customSetter, json, view, strongSelf->_defaultView
         );
       };
 
@@ -153,13 +168,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                          [key substringFromIndex:1]]);
 
       // Build setter block
-      void (^setterBlock)(id target, id source, id json) = nil;
+      void (^setterBlock)(id target, id json) = nil;
       if (type == NSSelectorFromString(@"RCTBubblingEventBlock:") ||
           type == NSSelectorFromString(@"RCTDirectEventBlock:")) {
 
         // Special case for event handlers
-        __weak RCTViewManager *weakManager = _manager;
-        setterBlock = ^(id target, __unused id source, id json) {
+        __weak RCTViewManager *weakManager = self.manager;
+        setterBlock = ^(id target, id json) {
           __weak id<RCTComponent> weakTarget = target;
           ((void (*)(id, SEL, id))objc_msgSend)(target, setter, [RCTConvert BOOL:json] ? ^(NSDictionary *body) {
             body = [NSMutableDictionary dictionaryWithDictionary:body];
@@ -180,11 +195,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   #define RCT_CASE(_value, _type) \
           case _value: { \
+            __block BOOL setDefaultValue = NO; \
+            __block _type defaultValue; \
             _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
             _type (*get)(id, SEL) = (typeof(get))objc_msgSend; \
             void (*set)(id, SEL, _type) = (typeof(set))objc_msgSend; \
-            setterBlock = ^(id target, id source, id json) { \
-              set(target, setter, json ? convert([RCTConvert class], type, json) : get(source, getter)); \
+            setterBlock = ^(id target, id json) { \
+              if (json) { \
+                if (!setDefaultValue && target) { \
+                  if ([target respondsToSelector:getter]) { \
+                    defaultValue = get(target, getter); \
+                  } \
+                  setDefaultValue = YES; \
+                } \
+                set(target, setter, convert([RCTConvert class], type, json)); \
+              } else if (setDefaultValue) { \
+                set(target, setter, defaultValue); \
+              } \
             }; \
             break; \
           }
@@ -214,36 +241,60 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
             typeInvocation.selector = type;
             typeInvocation.target = [RCTConvert class];
 
-            __block NSInvocation *sourceInvocation = nil;
             __block NSInvocation *targetInvocation = nil;
+            __block NSMutableData *defaultValue = nil;
 
-            setterBlock = ^(id target, id source, id json) { \
+            setterBlock = ^(id target, id json) { \
+
+              if (!target) {
+                return;
+              }
+
+              // Get default value
+              if (!defaultValue) {
+                if (!json) {
+                  // We only set the defaultValue when we first pass a non-null
+                  // value, so if the first value sent for a prop is null, it's
+                  // a no-op (we'd be resetting it to its default when its
+                  // value is already the default).
+                  return;
+                }
+                // Use NSMutableData to store defaultValue instead of malloc, so
+                // it will be freed automatically when setterBlock is released.
+                defaultValue = [[NSMutableData alloc] initWithLength:typeSignature.methodReturnLength];
+                if ([target respondsToSelector:getter]) {
+                  NSMethodSignature *signature = [target methodSignatureForSelector:getter];
+                  NSInvocation *sourceInvocation = [NSInvocation invocationWithMethodSignature:signature];
+                  sourceInvocation.selector = getter;
+                  [sourceInvocation invokeWithTarget:target];
+                  [sourceInvocation getReturnValue:defaultValue.mutableBytes];
+                }
+              }
 
               // Get value
-              void *value = malloc(typeSignature.methodReturnLength);
+              BOOL freeValueOnCompletion = NO;
+              void *value = defaultValue.mutableBytes;
               if (json) {
+                freeValueOnCompletion = YES;
+                value = malloc(typeSignature.methodReturnLength);
                 [typeInvocation setArgument:&json atIndex:2];
                 [typeInvocation invoke];
                 [typeInvocation getReturnValue:value];
-              } else {
-                if (!sourceInvocation && source) {
-                  NSMethodSignature *signature = [source methodSignatureForSelector:getter];
-                  sourceInvocation = [NSInvocation invocationWithMethodSignature:signature];
-                  sourceInvocation.selector = getter;
-                }
-                [sourceInvocation invokeWithTarget:source];
-                [sourceInvocation getReturnValue:value];
               }
 
               // Set value
-              if (!targetInvocation && target) {
+              if (!targetInvocation) {
                 NSMethodSignature *signature = [target methodSignatureForSelector:setter];
                 targetInvocation = [NSInvocation invocationWithMethodSignature:signature];
                 targetInvocation.selector = setter;
               }
               [targetInvocation setArgument:value atIndex:2];
               [targetInvocation invokeWithTarget:target];
-              free(value);
+              if (freeValueOnCompletion) {
+                // Only free the value if we `malloc`d it locally, otherwise it
+                // points to `defaultValue.mutableBytes`, which is managed by ARC.
+                free(value);
+              }
             };
             break;
           }
@@ -258,20 +309,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
           target = [target valueForKey:part];
         }
 
-        if (json == (id)kCFNull) {
-
-          // Copy default property
-          id source = defaultView;
-          for (NSString *part in parts) {
-            source = [source valueForKey:part];
-          }
-          setterBlock(target, source, nil);
-
-        } else {
-
-          // Set property with json
-          setterBlock(target, nil, json);
-        }
+        // Set property with json
+        setterBlock(target, RCTNilIfNull(json));
       };
     }
 
@@ -299,12 +338,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return;
   }
 
-  if (!_defaultView) {
-    _defaultView = [self createViewWithTag:nil];
-  }
-
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
-    [self propBlockForKey:key defaultView:_defaultView](view, json);
+    [self propBlockForKey:key inDictionary:_viewPropBlocks](view, json);
   }];
 
   if ([view respondsToSelector:@selector(didSetProps:)]) {
@@ -318,12 +353,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return;
   }
 
-  if (!_defaultShadowView) {
-    _defaultShadowView = [self createShadowViewWithTag:nil];
-  }
-
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
-    [self propBlockForKey:key defaultView:_defaultShadowView](shadowView, json);
+    [self propBlockForKey:key inDictionary:_shadowPropBlocks](shadowView, json);
   }];
 
   if ([shadowView respondsToSelector:@selector(didSetProps:)]) {
@@ -410,6 +441,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     @"directEvents" : directEvents,
     @"bubblingEvents" : bubblingEvents,
   };
+}
+
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *, RCTShadowView *> *)registry
+{
+  if (_implementsUIBlockToAmendWithShadowViewRegistry) {
+    return [[self manager] uiBlockToAmendWithShadowViewRegistry:registry];
+  }
+  return nil;
 }
 
 @end

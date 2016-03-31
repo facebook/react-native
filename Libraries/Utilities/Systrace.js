@@ -202,4 +202,12 @@ var Systrace = {
 
 Systrace.setEnabled(global.__RCTProfileIsProfiling || false);
 
+if (__DEV__) {
+  // This is needed, because require callis in polyfills are not processed as
+  // other files. Therefore, calls to `require('moduleId')` are not replaced
+  // with numeric IDs
+  // TODO(davidaurelio) Scan polyfills for dependencies, too (t9759686)
+  require.Systrace = Systrace;
+}
+
 module.exports = Systrace;

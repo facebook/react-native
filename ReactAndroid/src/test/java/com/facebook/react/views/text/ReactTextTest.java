@@ -373,7 +373,8 @@ public class ReactTextTest {
   public UIManagerModule getUIManagerModule() {
     ReactApplicationContext reactContext = ReactTestHelper.createCatalystContextForTest();
     DisplayMetrics displayMetrics = reactContext.getResources().getDisplayMetrics();
-    DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
+    DisplayMetricsHolder.setWindowDisplayMetrics(displayMetrics);
+    DisplayMetricsHolder.setScreenDisplayMetrics(displayMetrics);
     List<ViewManager> viewManagers = Arrays.asList(
         new ViewManager[] {
             new ReactTextViewManager(),

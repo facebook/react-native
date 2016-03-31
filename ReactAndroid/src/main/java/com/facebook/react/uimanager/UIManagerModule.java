@@ -83,6 +83,14 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     reactContext.addLifecycleEventListener(this);
   }
 
+  /**
+   * This method gives an access to the {@link UIImplementation} object that can be used to execute
+   * operations on the view hierarchy.
+   */
+  public UIImplementation getUIImplementation() {
+    return mUIImplementation;
+  }
+
   @Override
   public String getName() {
     return "RKUIManager";
@@ -251,6 +259,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void measure(int reactTag, Callback callback) {
     mUIImplementation.measure(reactTag, callback);
+  }
+
+  /**
+   * Determines the location on screen, width, and height of the given view relative to the device
+   * screen and returns the values via an async callback.  This is the absolute position including
+   * things like the status bar
+   */
+  @ReactMethod
+  public void measureInWindow(int reactTag, Callback callback) {
+    mUIImplementation.measureInWindow(reactTag, callback);
   }
 
   /**

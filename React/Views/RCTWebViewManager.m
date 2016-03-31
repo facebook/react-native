@@ -36,8 +36,8 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)
 RCT_REMAP_VIEW_PROPERTY(bounces, _webView.scrollView.bounces, BOOL)
 RCT_REMAP_VIEW_PROPERTY(scrollEnabled, _webView.scrollView.scrollEnabled, BOOL)
-RCT_REMAP_VIEW_PROPERTY(scalesPageToFit, _webView.scalesPageToFit, BOOL)
 RCT_REMAP_VIEW_PROPERTY(decelerationRate, _webView.scrollView.decelerationRate, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(scalesPageToFit, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(injectedJavaScript, NSString)
 RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL)
@@ -46,21 +46,8 @@ RCT_EXPORT_VIEW_PROPERTY(onLoadingFinish, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoadingError, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onShouldStartLoadWithRequest, RCTDirectEventBlock)
 RCT_REMAP_VIEW_PROPERTY(allowsInlineMediaPlayback, _webView.allowsInlineMediaPlayback, BOOL)
+RCT_REMAP_VIEW_PROPERTY(mediaPlaybackRequiresUserAction, _webView.mediaPlaybackRequiresUserAction, BOOL)
 
-- (NSDictionary<NSString *, id> *)constantsToExport
-{
-  return @{
-    @"JSNavigationScheme": RCTJSNavigationScheme,
-    @"NavigationType": @{
-      @"LinkClicked": @(UIWebViewNavigationTypeLinkClicked),
-      @"FormSubmitted": @(UIWebViewNavigationTypeFormSubmitted),
-      @"BackForward": @(UIWebViewNavigationTypeBackForward),
-      @"Reload": @(UIWebViewNavigationTypeReload),
-      @"FormResubmitted": @(UIWebViewNavigationTypeFormResubmitted),
-      @"Other": @(UIWebViewNavigationTypeOther)
-    },
-  };
-}
 
 RCT_EXPORT_METHOD(goBack:(nonnull NSNumber *)reactTag)
 {

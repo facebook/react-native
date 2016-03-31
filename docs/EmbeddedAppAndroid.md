@@ -18,7 +18,7 @@ Since React makes no assumptions about the rest of your technology stack, it's e
 
 In your app's `build.gradle` file add the React Native dependency:
 
-    compile 'com.facebook.react:react-native:0.17.+'
+    compile 'com.facebook.react:react-native:0.20.+'
 
 You can find the latest version of the react-native library on [Maven Central](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.facebook.react%22%20AND%20a%3A%22react-native%22). Next, make sure you have the Internet permission in your `AndroidManifest.xml`:
 
@@ -121,18 +121,17 @@ In your project's root folder, run:
 
 This creates a node module for your app and adds the `react-native` npm dependency. Now open the newly created `package.json` file and add this under `scripts`:
 
-    "start": "node_modules/react-native/packager/packager.sh"
+    "start": "node node_modules/react-native/local-cli/cli.js start"
 
 Copy & paste the following code to `index.android.js` in your root folder — it's a barebones React Native app:
 
 ```js
 'use strict';
 
-var React = require('react-native');
-var {
+import React, {
   Text,
   View
-} = React;
+} from 'react-native';
 
 class MyAwesomeApp extends React.Component {
   render() {
@@ -166,7 +165,7 @@ To run your app, you need to first start the development server. To do this, sim
 
 Now build and run your Android app as normal (e.g. `./gradlew installDebug`). Once you reach your React-powered activity inside the app, it should load the JavaScript code from the development server and display:
 
-![Screenshot](/react-native/img/EmbeddedAppAndroid.png)
+![Screenshot](img/EmbeddedAppAndroid.png)
 
 ## Sharing a ReactInstance across multiple Activities / Fragments in your app
 

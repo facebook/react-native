@@ -1,5 +1,10 @@
 /**
- * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
@@ -215,6 +220,12 @@ var ListView = React.createClass({
      * @platform ios
      */
     stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number),
+    /**
+     * Flag indicating whether empty section headers should be rendered. In the future release
+     * empty section headers will be rendered by default, and the flag will be deprecated.
+     * If empty sections are not desired to be rendered their indices should be excluded from sectionID object.
+     */
+    enableEmptySections: PropTypes.bool,
   },
 
   /**
@@ -223,7 +234,7 @@ var ListView = React.createClass({
   getMetrics: function() {
     return {
       contentLength: this.scrollProperties.contentLength,
-      totalRows: this.props.dataSource.getRowCount(),
+      totalRows: (this.props.enableEmptySections ? this.props.dataSource.getRowAndSectionCount() : this.props.dataSource.getRowCount()),
       renderedRows: this.state.curRenderedRowsCount,
       visibleRows: Object.keys(this._visibleRows).length,
     };
@@ -231,19 +242,23 @@ var ListView = React.createClass({
 
   /**
    * Provides a handle to the underlying scroll responder.
+   * Note that the view in `SCROLLVIEW_REF` may not be a `ScrollView`, so we
+   * need to check that it responds to `getScrollResponder` before calling it.
    */
   getScrollResponder: function() {
-    return this.refs[SCROLLVIEW_REF] && 
+    return this.refs[SCROLLVIEW_REF] &&
+      this.refs[SCROLLVIEW_REF].getScrollResponder &&
       this.refs[SCROLLVIEW_REF].getScrollResponder();
   },
 
   scrollTo: function(...args) {
-    this.refs[SCROLLVIEW_REF] && 
+    this.refs[SCROLLVIEW_REF] &&
+      this.refs[SCROLLVIEW_REF].scrollTo &&
       this.refs[SCROLLVIEW_REF].scrollTo(...args);
   },
 
   setNativeProps: function(props) {
-    this.refs[SCROLLVIEW_REF] && 
+    this.refs[SCROLLVIEW_REF] &&
       this.refs[SCROLLVIEW_REF].setNativeProps(props);
   },
 
@@ -305,7 +320,7 @@ var ListView = React.createClass({
               state.curRenderedRowsCount,
               props.initialListSize
             ),
-            props.dataSource.getRowCount()
+            props.enableEmptySections ? props.dataSource.getRowAndSectionCount() : props.dataSource.getRowCount()
           ),
         };
       }, () => this._renderMoreRowsIfNeeded());
@@ -338,7 +353,19 @@ var ListView = React.createClass({
       var sectionID = dataSource.sectionIdentities[sectionIdx];
       var rowIDs = allRowIDs[sectionIdx];
       if (rowIDs.length === 0) {
-        continue;
+        if (this.props.enableEmptySections === undefined) {
+          var warning = require('fbjs/lib/warning');
+          warning(false, 'In next release empty section headers will be rendered.'
+                  + ' In this release you can use \'enableEmptySections\' flag to render empty section headers.');
+          continue;
+        } else {
+          var invariant = require('fbjs/lib/invariant');
+          invariant(
+            this.props.enableEmptySections,
+            'In next release \'enableEmptySections\' flag will be deprecated, empty section headers will always be rendered.'
+            + ' If empty section headers are not desirable their indices should be excluded from sectionIDs object.'
+            + ' In this release \'enableEmptySections\' may only have value \'true\' to allow empty section headers rendering.');
+        }
       }
 
       if (this.props.renderSectionHeader) {
@@ -390,8 +417,10 @@ var ListView = React.createClass({
             rowID,
             adjacentRowHighlighted
           );
-          bodyComponents.push(separator);
-          totalIndex++;
+          if (separator) {
+            bodyComponents.push(separator);
+            totalIndex++;
+          }
         }
         if (++rowCount === this.state.curRenderedRowsCount) {
           break;
@@ -477,7 +506,7 @@ var ListView = React.createClass({
     if (this.props.onEndReached &&
         this.scrollProperties.contentLength !== this._sentEndForContentLength &&
         this._getDistanceFromEnd(this.scrollProperties) < this.props.onEndReachedThreshold &&
-        this.state.curRenderedRowsCount === this.props.dataSource.getRowCount()) {
+        this.state.curRenderedRowsCount === (this.props.enableEmptySections ? this.props.dataSource.getRowAndSectionCount() : this.props.dataSource.getRowCount())) {
       this._sentEndForContentLength = this.scrollProperties.contentLength;
       this.props.onEndReached(event);
       return true;
@@ -488,7 +517,7 @@ var ListView = React.createClass({
   _renderMoreRowsIfNeeded: function() {
     if (this.scrollProperties.contentLength === null ||
       this.scrollProperties.visibleLength === null ||
-      this.state.curRenderedRowsCount === this.props.dataSource.getRowCount()) {
+      this.state.curRenderedRowsCount === (this.props.enableEmptySections ? this.props.dataSource.getRowAndSectionCount() : this.props.dataSource.getRowCount())) {
       this._maybeCallOnEndReached();
       return;
     }
@@ -503,7 +532,7 @@ var ListView = React.createClass({
     this.setState((state, props) => {
       var rowsToRender = Math.min(
         state.curRenderedRowsCount + props.pageSize,
-        props.dataSource.getRowCount()
+        (props.enableEmptySections ? props.dataSource.getRowAndSectionCount() : props.dataSource.getRowCount())
       );
       this._prevRenderedRowsCount = state.curRenderedRowsCount;
       return {
