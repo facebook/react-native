@@ -69,14 +69,9 @@ namespace ReactNative.Views.Scroll
         [ReactProperty(ViewProperties.BackgroundColor)]
         public void SetBackgroundColor(ScrollViewer view, uint? color)
         {
-            if (color.HasValue)
-            {
-                view.Background = new SolidColorBrush(ColorHelpers.Parse(color.Value));
-            }
-            else
-            {
-                view.Background = null;
-            }
+            view.Background = color.HasValue
+                ? new SolidColorBrush(ColorHelpers.Parse(color.Value))
+                : null;
         }
 
         /// <summary>
@@ -100,14 +95,9 @@ namespace ReactNative.Views.Scroll
         [ReactProperty("horizontal")]
         public void SetHorizontal(ScrollViewer view, bool? horizontal)
         {
-            if (horizontal.HasValue && horizontal.Value)
-            {
-                view.HorizontalScrollMode = ScrollMode.Auto;
-            }
-            else
-            {
-                view.HorizontalScrollMode = ScrollMode.Disabled;
-            }
+            view.HorizontalScrollMode = horizontal ?? false
+                ? ScrollMode.Auto
+                : ScrollMode.Disabled;
         }
 
         /// <summary>
@@ -120,14 +110,10 @@ namespace ReactNative.Views.Scroll
         [ReactProperty("showsHorizontalScrollIndicator")]
         public void SetShowsHorizontalScrollIndicator(ScrollViewer view, bool? showIndicator)
         {
-            if (showIndicator.HasValue && showIndicator.Value)
-            {
-                view.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-            }
-            else
-            {
-                view.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
-            }
+            view.HorizontalScrollBarVisibility =
+                showIndicator ?? false
+                    ? ScrollBarVisibility.Visible
+                    : ScrollBarVisibility.Hidden;
         }
 
         /// <summary>
@@ -140,14 +126,27 @@ namespace ReactNative.Views.Scroll
         [ReactProperty("showsVerticalScrollIndicator")]
         public void SetShowsVerticalScrollIndicator(ScrollViewer view, bool? showIndicator)
         {
-            if (showIndicator.HasValue && showIndicator.Value)
-            {
-                view.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-            }
-            else
-            {
-                view.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
-            }
+            view.VerticalScrollBarVisibility =
+                showIndicator ?? false
+                    ? ScrollBarVisibility.Visible
+                    : ScrollBarVisibility.Hidden;
+        }
+
+        /// <summary>
+        /// Sets the content offset of the scroll view.
+        /// </summary>
+        /// <param name="view">The view instance.</param>
+        /// <param name="contentOffset">The content offset.</param>
+        [ReactProperty("contentOffset")]
+        public void SetContentOffset(ScrollViewer view, JObject contentOffset)
+        {
+            view.ViewChanging -= OnViewChanging;
+            view.ChangeView(
+                contentOffset.Value<double?>("x"), 
+                contentOffset.Value<double>("y"), 
+                null,
+                true);
+            view.ViewChanging += OnViewChanging;
         }
 
         /// <summary>
