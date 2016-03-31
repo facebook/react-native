@@ -10,15 +10,21 @@
 # This script is supposed to be invoked as part of Xcode build process
 # and relies on environment variables (including PWD) set by Xcode
 
+DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
+
+if [[ "$CONFIGURATION" = "Debug" && "$PLATFORM_NAME" != "iphonesimulator" ]]; then
+  ipconfig getifaddr en0 > "$DEST/packager-ip.txt"
+fi
+
 case "$CONFIGURATION" in
   Debug)
     # Speed up build times by skipping the creation of the offline package for debug
     # builds on the simulator since the packager is supposed to be running anyways.
-    if [[ "$PLATFORM_NAME" = "iphonesimulator" ]]; then		
-      echo "Skipping bundling for Simulator platform"		
-      exit 0;		
+    if [[ "$PLATFORM_NAME" = "iphonesimulator" ]]; then
+      echo "Skipping bundling for Simulator platform"
+      exit 0;
     fi
-    
+
     DEV=true
     ;;
   "")
@@ -66,7 +72,6 @@ type $NODE_BINARY >/dev/null 2>&1 || nodejs_not_found
 
 # Print commands before executing them (useful for troubleshooting)
 set -x
-DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 
 $NODE_BINARY "$REACT_NATIVE_DIR/local-cli/cli.js" bundle \
   --entry-file index.ios.js \
