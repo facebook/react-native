@@ -11,6 +11,7 @@
  */
 'use strict';
 
+var Platform = require('Platform');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
@@ -61,7 +62,7 @@ Modal.propTypes = {
   animated: PropTypes.bool,
   transparent: PropTypes.bool,
   visible: PropTypes.bool,
-  onRequestClose: PropTypes.func,
+  onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
   onShow: PropTypes.func,
 };
 

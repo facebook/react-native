@@ -13,6 +13,8 @@ import javax.annotation.Nullable;
 
 import java.util.Map;
 
+import android.graphics.Color;
+
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -68,6 +70,17 @@ public class ReactScrollViewManager
   @ReactProp(name = "sendMomentumEvents")
   public void setSendMomentumEvents(ReactScrollView view, boolean sendMomentumEvents) {
     view.setSendMomentumEvents(sendMomentumEvents);
+  }
+
+  /**
+   * When set, fills the rest of the scrollview with a color to avoid setting a background and
+   * creating unnecessary overdraw.
+   * @param view
+   * @param color
+   */
+  @ReactProp(name = "endFillColor", defaultInt = Color.TRANSPARENT, customType = "Color")
+  public void setBottomFillColor(ReactScrollView view, int color) {
+    view.setEndFillColor(color);
   }
 
   @Override
