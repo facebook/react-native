@@ -44,19 +44,23 @@ typedef struct ModuleData {
 @property (nonatomic, strong, readonly) JSContext *context;
 @property (nonatomic, assign, readonly) JSGlobalContextRef ctx;
 
-- (instancetype)initWithJSContext:(JSContext *)context NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithJSContext:(JSContext *)context
+                         onThread:(NSThread *)javaScriptThread NS_DESIGNATED_INITIALIZER;
 
 @end
 
 @implementation RCTJavaScriptContext
 {
   RCTJavaScriptContext *_selfReference;
+  NSThread *_javaScriptThread;
 }
 
 - (instancetype)initWithJSContext:(JSContext *)context
+                         onThread:(NSThread *)javaScriptThread
 {
   if ((self = [super init])) {
     _context = context;
+    _javaScriptThread = javaScriptThread;
 
     /**
      * Explicitly introduce a retain cycle here - The RCTJSCExecutor might
@@ -85,14 +89,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 - (void)invalidate
 {
   if (self.isValid) {
+    RCTAssertThread(_javaScriptThread, @"Must be invalidated on JS thread.");
+
     _context = nil;
     _selfReference = nil;
-  }
-}
+    _javaScriptThread = nil;
 
-- (void)dealloc
-{
-  CFRunLoopStop([[NSRunLoop currentRunLoop] getCFRunLoop]);
+    CFRunLoopStop([[NSRunLoop currentRunLoop] getCFRunLoop]);
+  }
 }
 
 @end
@@ -213,7 +217,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
   if (!_context) {
     JSContext *context = [JSContext new];
-    _context = [[RCTJavaScriptContext alloc] initWithJSContext:context];
+    _context = [[RCTJavaScriptContext alloc] initWithJSContext:context onThread:_javaScriptThread];
   }
 
   return _context;
@@ -302,17 +306,26 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
   __weak RCTBridge *weakBridge = _bridge;
 #ifndef __clang_analyzer__
-  weakBridge.flowIDMap = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
+  _bridge.flowIDMap = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
 #endif
+  _bridge.flowIDMapLock = [NSLock new];
   [self addSynchronousHookWithName:@"nativeTraceBeginAsyncFlow" usingBlock:^(__unused uint64_t tag, __unused NSString *name, int64_t cookie) {
-    int64_t newCookie = [_RCTProfileBeginFlowEvent() longLongValue];
-    CFDictionarySetValue(weakBridge.flowIDMap, (const void *)cookie, (const void *)newCookie);
+    if (RCTProfileIsProfiling()) {
+      [weakBridge.flowIDMapLock lock];
+      int64_t newCookie = [_RCTProfileBeginFlowEvent() longLongValue];
+      CFDictionarySetValue(weakBridge.flowIDMap, (const void *)cookie, (const void *)newCookie);
+      [weakBridge.flowIDMapLock unlock];
+    }
   }];
 
   [self addSynchronousHookWithName:@"nativeTraceEndAsyncFlow" usingBlock:^(__unused uint64_t tag, __unused NSString *name, int64_t cookie) {
-    int64_t newCookie = (int64_t)CFDictionaryGetValue(weakBridge.flowIDMap, (const void *)cookie);
-    _RCTProfileEndFlowEvent(@(newCookie));
-    CFDictionaryRemoveValue(weakBridge.flowIDMap, (const void *)cookie);
+    if (RCTProfileIsProfiling()) {
+      [weakBridge.flowIDMapLock lock];
+      int64_t newCookie = (int64_t)CFDictionaryGetValue(weakBridge.flowIDMap, (const void *)cookie);
+      _RCTProfileEndFlowEvent(@(newCookie));
+      CFDictionaryRemoveValue(weakBridge.flowIDMap, (const void *)cookie);
+      [weakBridge.flowIDMapLock unlock];
+    }
   }];
 
   [self executeBlockOnJavaScriptQueue:^{
@@ -592,11 +605,6 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
                onThread:_javaScriptThread
              withObject:block
           waitUntilDone:NO];
-}
-
-- (void)_runBlock:(dispatch_block_t)block
-{
-  block();
 }
 
 - (void)injectJSONText:(NSString *)script

@@ -32,8 +32,6 @@ dependencies:
     - npm install
     # for eslint bot
     - npm install github@0.2.4
-    # for deployment scripts
-    - npm install shelljs@0.6.0
     - cd website && npm install
   cache_directories:
     - "ReactAndroid/build/downloads"
@@ -78,7 +76,6 @@ test:
     - ./gradlew :ReactAndroid:installDebugAndroidTest
     - source scripts/circle-ci-android-setup.sh && retry3 ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests.gradle
 
-    # Publish to Sinopia, create a new app using 'react-native init' and check the packager starts
     - ./scripts/e2e-test.sh --packager
 
     # testing docs generation is not broken

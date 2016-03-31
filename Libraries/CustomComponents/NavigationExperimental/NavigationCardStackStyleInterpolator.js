@@ -32,14 +32,24 @@
  */
 'use strict';
 
-/**
- * Predefined interpolator that renders the animated style for NavigationCard.
- *
- */
-
 import type  {
   NavigationSceneRendererProps,
 } from 'NavigationTypeDefinition';
+
+/**
+ * Utility that builds the style for the card in the cards stack.
+ *
+ *     +------------+
+ *   +-+            |
+ * +-+ |            |
+ * | | |            |
+ * | | |  Focused   |
+ * | | |   Card     |
+ * | | |            |
+ * +-+ |            |
+ *   +-+            |
+ *     +------------+
+ */
 
 function forHorizontal(props: NavigationSceneRendererProps): Object {
   const {
