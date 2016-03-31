@@ -71,7 +71,8 @@ class UIExplorerApp extends React.Component {
           this._overrideBackPressForDrawerLayout = false;
         }}
         ref={(drawer) => { this.drawer = drawer; }}
-        renderNavigationView={this._renderDrawerContent.bind(this, onNavigate)}>
+        renderNavigationView={this._renderDrawerContent.bind(this, onNavigate)}
+        statusBarBackgroundColor="#589c90">
         {this._renderNavigation(navigationState, onNavigate)}
       </DrawerLayoutAndroid>
     );
@@ -79,15 +80,17 @@ class UIExplorerApp extends React.Component {
 
   _renderDrawerContent(onNavigate) {
     return (
-      <UIExplorerExampleList
-        list={UIExplorerList}
-        displayTitleRow={true}
-        disableSearch={true}
-        onNavigate={(action) => {
-          this.drawer && this.drawer.closeDrawer();
-          onNavigate(action);
-        }}
-      />
+      <View style={styles.drawerContentWrapper}>
+        <UIExplorerExampleList
+          list={UIExplorerList}
+          displayTitleRow={true}
+          disableSearch={true}
+          onNavigate={(action) => {
+            this.drawer && this.drawer.closeDrawer();
+            onNavigate(action);
+          }}
+        />
+      </View>
     );
   }
 
@@ -113,9 +116,6 @@ class UIExplorerApp extends React.Component {
       const ExampleComponent = UIExplorerExampleList.makeRenderable(ExampleModule);
       return (
         <View style={styles.container}>
-          <StatusBar
-            backgroundColor="#589c90"
-          />
           <ToolbarAndroid
             logo={require('image!launcher_icon')}
             navIcon={require('image!ic_menu_black_24dp')}
@@ -131,9 +131,6 @@ class UIExplorerApp extends React.Component {
     }
     return (
       <View style={styles.container}>
-        <StatusBar
-          backgroundColor="#589c90"
-        />
         <ToolbarAndroid
           logo={require('image!launcher_icon')}
           navIcon={require('image!ic_menu_black_24dp')}
@@ -180,6 +177,10 @@ const styles = StyleSheet.create({
   toolbar: {
     backgroundColor: '#E9EAED',
     height: 56,
+  },
+  drawerContentWrapper: {
+    paddingTop: StatusBar.currentHeight,
+    backgroundColor: 'white',
   },
 });
 

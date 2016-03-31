@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.facebook.react.bridge.Arguments;
@@ -28,7 +29,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.stetho.okhttp.StethoInterceptor;
 
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Headers;
@@ -67,10 +67,15 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   /* package */ NetworkingModule(
       ReactApplicationContext reactContext,
       @Nullable String defaultUserAgent,
-      OkHttpClient client) {
+      OkHttpClient client,
+      @Nullable List<NetworkInterceptorCreator> networkInterceptorCreators) {
     super(reactContext);
     mClient = client;
-    mClient.networkInterceptors().add(new StethoInterceptor());
+    if (networkInterceptorCreators != null) {
+      for (NetworkInterceptorCreator networkInterceptorCreator : networkInterceptorCreators) {
+        mClient.networkInterceptors().add(networkInterceptorCreator.create());
+      }
+    }
     mCookieHandler = new ForwardingCookieHandler(reactContext);
     mShuttingDown = false;
     mDefaultUserAgent = defaultUserAgent;
@@ -78,9 +83,33 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
   /**
    * @param context the ReactContext of the application
+   * @param defaultUserAgent the User-Agent header that will be set for all requests where the
+   * caller does not provide one explicitly
+   * @param client the {@link OkHttpClient} to be used for networking
+   */
+  public NetworkingModule(
+    ReactApplicationContext context,
+    @Nullable String defaultUserAgent,
+    OkHttpClient client) {
+    this(context, defaultUserAgent, client, null);
+  }
+
+  /**
+   * @param context the ReactContext of the application
    */
   public NetworkingModule(final ReactApplicationContext context) {
-    this(context, null, OkHttpClientProvider.getOkHttpClient());
+    this(context, null, OkHttpClientProvider.getOkHttpClient(), null);
+  }
+
+  /**
+   * @param context the ReactContext of the application
+   * @param networkInterceptorCreators list of {@link NetworkInterceptorCreator}'s whose create()
+   * methods would be called to attach the interceptors to the client.
+   */
+  public NetworkingModule(
+    ReactApplicationContext context,
+    List<NetworkInterceptorCreator> networkInterceptorCreators) {
+    this(context, null, OkHttpClientProvider.getOkHttpClient(), networkInterceptorCreators);
   }
 
   /**
@@ -89,11 +118,11 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * caller does not provide one explicitly
    */
   public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
-    this(context, defaultUserAgent, OkHttpClientProvider.getOkHttpClient());
+    this(context, defaultUserAgent, OkHttpClientProvider.getOkHttpClient(), null);
   }
 
   public NetworkingModule(ReactApplicationContext reactContext, OkHttpClient client) {
-    this(reactContext, null, client);
+    this(reactContext, null, client, null);
   }
 
   @Override
