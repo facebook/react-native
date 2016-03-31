@@ -327,12 +327,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
   NSUInteger allowedLength = _maxLength.integerValue - textView.text.length + range.length;
   if (text.length > allowedLength) {
-    if (text.length > 1) {
+    
+    // modify by xiaozh
+    if (text.length > 1 && [text isEqualToString:@""]) {
+    // end
+      
       // Truncate the input string so the result is exactly maxLength
       NSString *limitedString = [text substringToIndex:allowedLength];
       NSMutableString *newString = textView.text.mutableCopy;
       [newString replaceCharactersInRange:range withString:limitedString];
       textView.text = newString;
+      
       // Collapse selection at end of insert to match normal paste behavior
       UITextPosition *insertEnd = [textView positionFromPosition:textView.beginningOfDocument
                                                           offset:(range.location + allowedLength)];
@@ -436,6 +441,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)textViewDidChange:(UITextView *)textView
 {
+  
+  if(_maxLength){
+    if (textView.text.length > _maxLength.integerValue) {
+      textView.text = [textView.text substringToIndex:_maxLength.integerValue];
+    }
+  }
+  
   [self updateContentSize];
   [self _setPlaceholderVisibility];
   _nativeEventCount++;

@@ -42,7 +42,12 @@ RCT_EXPORT_MODULE()
   }
   NSUInteger allowedLength = textField.maxLength.integerValue - textField.text.length + range.length;
   if (string.length > allowedLength) {
-    if (string.length > 1) {
+    
+    // modify by xiaozh
+//    if (string.length > 1) {
+    if (string.length > 1 && [textField.text isEqualToString:@""]) {
+    // end
+      
       // Truncate the input string so the result is exactly maxLength
       NSString *limitedString = [string substringToIndex:allowedLength];
       NSMutableString *newString = textField.text.mutableCopy;
