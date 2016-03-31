@@ -11,6 +11,7 @@
  */
 'use strict';
 
+var ColorPropType = require('ColorPropType');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var Platform = require('Platform');
 var PointPropType = require('PointPropType');
@@ -318,6 +319,15 @@ var ScrollView = React.createClass({
       PropTypes.func,
       'Use the `refreshControl` prop instead.'
     ),
+
+    /**
+     * Sometimes a scrollview takes up more space than its content fills. When this is
+     * the case, this prop will fill the rest of the scrollview with a color to avoid setting
+     * a background and creating unnecessary overdraw. This is an advanced optimization
+     * that is not needed in the general case.
+     * @platform android
+     */
+    endFillColor: ColorPropType,
   },
 
   mixins: [ScrollResponder.Mixin],
