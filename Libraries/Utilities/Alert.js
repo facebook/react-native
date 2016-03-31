@@ -49,6 +49,18 @@ type Buttons = Array<{
  *   - Two buttons mean 'negative', 'positive' (such as 'Cancel', 'OK')
  *   - Three buttons mean 'neutral', 'negative', 'positive' (such as 'Later', 'Cancel', 'OK')
  *
+ * ```
+ * // Works on iOS and Android
+ * Alert.alert(
+ *   'Alert Title',
+ *   'My Alert Msg',
+ *   [
+ *     {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
+ *     {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+ *     {text: 'OK', onPress: () => console.log('OK Pressed')},
+ *   ]
+ * )
+ * ```
  * ## Windows
  * 
  * On Windows at most two buttons can be specified.
@@ -62,7 +74,6 @@ type Buttons = Array<{
  *   'Alert Title',
  *   'My Alert Msg',
  *   [
- *     {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
  *     {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
  *     {text: 'OK', onPress: () => console.log('OK Pressed')},
  *   ]
