@@ -194,7 +194,6 @@
     <Compile Include="Modules\Core\JavaScriptException.cs" />
     <Compile Include="Modules\Core\JSTimersExecution.cs" />
     <Compile Include="Modules\Core\SourceCodeModule.cs" />
-    <Compile Include="Modules\Dialog\DialogManager.cs" />
     <Compile Include="Modules\Dialog\DialogModule.cs" />
     <Compile Include="Modules\Launch\LauncherModule.cs" />
     <Compile Include="Modules\NetInfo\DefaultNetworkInformation.cs" />

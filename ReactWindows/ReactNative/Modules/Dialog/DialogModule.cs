@@ -16,11 +16,9 @@ namespace ReactNative.Modules.Dialog
 
         private const string KeyButtonPositive = "buttonPositive";
         private const string KeyButtonNegative = "buttonNegative";
-        private const string KeyButtonNeutral = "buttonNeutral";
 
         private const int KeyButtonPositiveValue = 0;
         private const int KeyButtonNegativeValue = 1;
-        private const int KeyButtonNeutralValue = 2;
 
         private MessageDialog _pendingDialog;
         private bool _isInForeground;
@@ -48,7 +46,6 @@ namespace ReactNative.Modules.Dialog
                     { ActionDismissed, ActionDismissed },
                     { KeyButtonPositive, KeyButtonPositiveValue },
                     { KeyButtonNegative, KeyButtonNegativeValue },
-                    { KeyButtonNeutral, KeyButtonNeutralValue },
                 };
             }
         }
@@ -85,7 +82,8 @@ namespace ReactNative.Modules.Dialog
             ICallback errorCallback,
             ICallback actionCallback)
         {
-            var messageDialog = new MessageDialog(config.Value<string>("message") ?? "")
+            var message = config.Value<string>("message") ?? "";
+            var messageDialog = new MessageDialog(message)
             {
                 Title = config.Value<string>("title"),
             };
@@ -110,16 +108,6 @@ namespace ReactNative.Modules.Dialog
                 });
             }
 
-            if (config.ContainsKey(KeyButtonNeutral))
-            {
-                messageDialog.Commands.Add(new UICommand
-                {
-                    Label = config.Value<string>(KeyButtonNeutral),
-                    Id = KeyButtonNeutralValue,
-                    Invoked = target => OnInvoked(target, actionCallback),
-                });
-            }
-
             RunOnDispatcher(async () =>
             {
                 if (_isInForeground)
@@ -135,7 +123,7 @@ namespace ReactNative.Modules.Dialog
 
         private void OnInvoked(IUICommand target, ICallback callback)
         {
-            callback.Invoke("buttonClicked", target.Id);
+            callback.Invoke(ActionButtonClicked, target.Id);
         }
 
         private static async void RunOnDispatcher(DispatchedHandler action)

@@ -51,9 +51,11 @@ type Buttons = Array<{
  *
  * ## Windows
  * 
- * On Windows you can specify any number of buttons, however styles are not
- * supported.
- * 
+ * On Windows at most two buttons can be specified.
+ *
+ *   - If you specify one button, it will be the 'positive' one (such as 'OK')
+ *   - Two buttons mean 'negative', 'positive' (such as 'Cancel', 'OK')
+ *
  * ```
  * // Works on iOS, Android, and Windows
  * Alert.alert(
@@ -152,15 +154,11 @@ class AlertWindows {
       title: title || '',
       message: message || '',
     };
-    // At most three buttons (neutral, negative, positive). Ignore rest.
-    // The text 'OK' should be probably localized. iOS Alert does that in native.
-    var validButtons: Buttons = buttons ? buttons.slice(0, 3) : [{text: 'OK'}];
+    // At most two buttons (negative, positive). Ignore rest. The text 
+    // 'OK' should be probably localized. iOS Alert does that in native.
+    var validButtons: Buttons = buttons ? buttons.slice(0, 2) : [{text: 'OK'}];
     var buttonPositive = validButtons.pop();
     var buttonNegative = validButtons.pop();
-    var buttonNeutral = validButtons.pop();
-    if (buttonNeutral) {
-      config = {...config, buttonNeutral: buttonNeutral.text || '' }
-    }
     if (buttonNegative) {
       config = {...config, buttonNegative: buttonNegative.text || '' }
     }
@@ -174,9 +172,7 @@ class AlertWindows {
         if (action !== DialogModuleWindows.buttonClicked) {
           return;
         }
-        if (buttonKey === DialogModuleWindows.buttonNeutral) {
-          buttonNeutral.onPress && buttonNeutral.onPress();
-        } else if (buttonKey === DialogModuleWindows.buttonNegative) {
+        if (buttonKey === DialogModuleWindows.buttonNegative) {
           buttonNegative.onPress && buttonNegative.onPress();
         } else if (buttonKey === DialogModuleWindows.buttonPositive) {
           buttonPositive.onPress && buttonPositive.onPress();
