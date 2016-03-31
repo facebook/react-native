@@ -59,6 +59,9 @@
 .*/node_modules/isemail/.*\.json
 .*/node_modules/tr46/.*\.json
 
+# Buck folder
+.*\.buckd/
+
 [include]
 
 [libs]
