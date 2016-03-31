@@ -13,7 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const parseCommandLine = require('../util/parseCommandLine');
 const findXcodeProject = require('./findXcodeProject');
-const parseIOSSimulatorsList = require('./parseIOSSimulatorsList');
+const findMatchingSimulator = require('./findMatchingSimulator');
 const Promise = require('promise');
 
 /**
@@ -32,7 +32,7 @@ function _runIOS(argv, config, resolve, reject) {
     description: 'Explicitly set simulator to use',
     type: 'string',
     required: false,
-    default: 'iPhone 6',
+    default: null,
   }, {
     command: 'scheme',
     description: 'Explicitly set Xcode scheme to use',
@@ -50,10 +50,15 @@ function _runIOS(argv, config, resolve, reject) {
   const scheme = args.scheme || inferredSchemeName
   console.log(`Found Xcode ${xcodeProject.isWorkspace ? 'workspace' : 'project'} ${xcodeProject.name}`);
 
-  const simulators = parseIOSSimulatorsList(
-    child_process.execFileSync('xcrun', ['simctl', 'list', 'devices'], {encoding: 'utf8'})
-  );
-  const selectedSimulator = matchingSimulator(simulators, args.simulator);
+  try {
+    var simulators = JSON.parse(
+      child_process.execFileSync('xcrun', ['simctl', 'list', '--json', 'devices'], {encoding: 'utf8'})
+    );
+  } catch (e) {
+    throw new Error(`Could not parse the simulator list output`);
+  }
+
+  const selectedSimulator = findMatchingSimulator(simulators, args.simulator);
   if (!selectedSimulator) {
     throw new Error(`Cound't find ${args.simulator} simulator`);
   }
@@ -61,7 +66,7 @@ function _runIOS(argv, config, resolve, reject) {
   const simulatorFullName = `${selectedSimulator.name} (${selectedSimulator.version})`;
   console.log(`Launching ${simulatorFullName}...`);
   try {
-    child_process.spawnSync('xcrun', ['instruments', '-w', simulatorFullName]);
+    child_process.spawnSync('xcrun', ['instruments', '-w', selectedSimulator.udid]);
   } catch(e) {
     // instruments always fail with 255 because it expects more arguments,
     // but we want it to only launch the simulator
@@ -88,14 +93,6 @@ function _runIOS(argv, config, resolve, reject) {
 
   console.log(`Launching ${bundleID}`);
   child_process.spawnSync('xcrun', ['simctl', 'launch', 'booted', bundleID], {stdio: 'inherit'});
-}
-
-function matchingSimulator(simulators, simulatorName) {
-  for (let i = simulators.length - 1; i >= 0; i--) {
-    if (simulators[i].name === simulatorName) {
-      return simulators[i];
-    }
-  }
 }
 
 module.exports = runIOS;
