@@ -2,6 +2,7 @@
 using ReactNative.Modules.AppState;
 using ReactNative.Modules.Clipboard;
 using ReactNative.Modules.Core;
+using ReactNative.Modules.Dialog;
 using ReactNative.Modules.Launch;
 using ReactNative.Modules.NetInfo;
 using ReactNative.Modules.Network;
@@ -42,7 +43,7 @@ namespace ReactNative.Shell
                 new AsyncStorageModule(),
                 //new CameraRollManager(reactContext),
                 new ClipboardModule(),
-                //new DialogModule(reactContext),
+                new DialogModule(reactContext),
                 new LauncherModule(),
                 //new LocationModule(reactContext),
                 new NetworkingModule(reactContext),

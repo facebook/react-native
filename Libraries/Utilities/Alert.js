@@ -14,6 +14,7 @@
 var AlertIOS = require('AlertIOS');
 var Platform = require('Platform');
 var DialogModuleAndroid = require('NativeModules').DialogManagerAndroid;
+var DialogModuleWindows = require('NativeModules').DialogManagerWindows;
 
 import type { AlertType, AlertButtonStyle } from 'AlertIOS';
 
@@ -48,8 +49,13 @@ type Buttons = Array<{
  *   - Two buttons mean 'negative', 'positive' (such as 'Cancel', 'OK')
  *   - Three buttons mean 'neutral', 'negative', 'positive' (such as 'Later', 'Cancel', 'OK')
  *
+ * ## Windows
+ * 
+ * On Windows you can specify any number of buttons, however styles are not
+ * supported.
+ * 
  * ```
- * // Works on both iOS and Android
+ * // Works on iOS, Android, and Windows
  * Alert.alert(
  *   'Alert Title',
  *   'My Alert Msg',
@@ -78,6 +84,8 @@ class Alert {
       AlertIOS.alert(title, message, buttons);
     } else if (Platform.OS === 'android') {
       AlertAndroid.alert(title, message, buttons);
+    } else if (Platform.OS === 'windows') {
+      AlertWindows.alert(title, message, buttons);
     }
   }
 }
@@ -123,6 +131,54 @@ class AlertAndroid {
         } else if (buttonKey === DialogModuleAndroid.buttonNegative) {
           buttonNegative.onPress && buttonNegative.onPress();
         } else if (buttonKey === DialogModuleAndroid.buttonPositive) {
+          buttonPositive.onPress && buttonPositive.onPress();
+        }
+      }
+    );
+  }
+}
+
+/**
+ * Wrapper around the Windows native module.
+ */
+class AlertWindows {
+
+  static alert(
+    title: ?string,
+    message?: ?string,
+    buttons?: Buttons,
+  ): void {
+    var config = {
+      title: title || '',
+      message: message || '',
+    };
+    // At most three buttons (neutral, negative, positive). Ignore rest.
+    // The text 'OK' should be probably localized. iOS Alert does that in native.
+    var validButtons: Buttons = buttons ? buttons.slice(0, 3) : [{text: 'OK'}];
+    var buttonPositive = validButtons.pop();
+    var buttonNegative = validButtons.pop();
+    var buttonNeutral = validButtons.pop();
+    if (buttonNeutral) {
+      config = {...config, buttonNeutral: buttonNeutral.text || '' }
+    }
+    if (buttonNegative) {
+      config = {...config, buttonNegative: buttonNegative.text || '' }
+    }
+    if (buttonPositive) {
+      config = {...config, buttonPositive: buttonPositive.text || '' }
+    }
+    DialogModuleWindows.showAlert(
+      config,
+      (errorMessage) => console.warn(message),
+      (action, buttonKey) => {
+        if (action !== DialogModuleWindows.buttonClicked) {
+          return;
+        }
+        if (buttonKey === DialogModuleWindows.buttonNeutral) {
+          buttonNeutral.onPress && buttonNeutral.onPress();
+        } else if (buttonKey === DialogModuleWindows.buttonNegative) {
+          buttonNegative.onPress && buttonNegative.onPress();
+        } else if (buttonKey === DialogModuleWindows.buttonPositive) {
           buttonPositive.onPress && buttonPositive.onPress();
         }
       }
