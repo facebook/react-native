@@ -4,7 +4,7 @@ title: Style
 layout: docs
 category: Guides
 permalink: docs/style.html
-next: gesture-responder-system
+next: images
 ---
 
 React Native doesn't implement CSS but instead relies on JavaScript to let you style your application. This has been a controversial decision and you can read through those slides for the rationale behind it.
@@ -33,7 +33,7 @@ var styles = StyleSheet.create({
 
 `StyleSheet.create` construct is optional but provides some key advantages. It ensures that the values are **immutable** and **opaque** by transforming them into plain numbers that reference an internal table. By putting it at the end of the file, you also ensure that they are only created once for the application and not on every render.
 
-All the attribute names and values are a subset of what works on the web. For layout, React Native implements [Flexbox](/react-native/docs/flexbox.html).
+All the attribute names and values are a subset of what works on the web. For layout, React Native implements [Flexbox](docs/flexbox.html).
 
 ## Using Styles
 
@@ -95,8 +95,8 @@ var List = React.createClass({
 
 You can checkout latest support of CSS Properties in following Links.
 
-- [View Properties](/react-native/docs/view.html#style)
-- [Image Properties](/react-native/docs/image.html#style)
-- [Text Properties](/react-native/docs/text.html#style)
-- [Flex Properties](/react-native/docs/flexbox.html#content)
-- [Transform Properties](/react-native/docs/transforms.html#content)
+- [View Properties](docs/view.html#style)
+- [Image Properties](docs/image.html#style)
+- [Text Properties](docs/text.html#style)
+- [Flex Properties](docs/flexbox.html#content)
+- [Transform Properties](docs/transforms.html#content)

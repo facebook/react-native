@@ -9,20 +9,14 @@
  * @providesModule Interpolation
  * @flow
  */
+/* eslint no-bitwise: 0 */
 'use strict';
 
-// TODO(#7644673): fix this hack once github jest actually checks invariants
-var invariant = function(condition, message) {
-  if (!condition) {
-    var error = new Error(message);
-    (error: any).framesToPop = 1; // $FlowIssue
-    throw error;
-  }
-};
+var invariant = require('fbjs/lib/invariant');
+var normalizeColor = require('normalizeColor');
 
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
-// $FlowFixMe D2163827
 export type InterpolationConfigType = {
   inputRange: Array<number>;
   outputRange: (Array<number> | Array<string>);
@@ -163,6 +157,22 @@ function interpolate(
   return result;
 }
 
+function colorToRgba(input: string): string {
+  var int32Color = normalizeColor(input);
+  if (int32Color === null) {
+    return input;
+  }
+
+  int32Color = int32Color || 0; // $FlowIssue
+
+  var r = (int32Color & 0xff000000) >>> 24;
+  var g = (int32Color & 0x00ff0000) >>> 16;
+  var b = (int32Color & 0x0000ff00) >>> 8;
+  var a = (int32Color & 0x000000ff) / 255;
+
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
+}
+
 var stringShapeRegex = /[0-9\.-]+/g;
 
 /**
@@ -178,6 +188,7 @@ function createInterpolationFromStringOutputRange(
 ): (input: number) => string {
   var outputRange: Array<string> = (config.outputRange: any);
   invariant(outputRange.length >= 2, 'Bad output range');
+  outputRange = outputRange.map(colorToRgba);
   checkPattern(outputRange);
 
   // ['rgba(0, 100, 200, 0)', 'rgba(50, 150, 250, 0.5)']
@@ -188,13 +199,22 @@ function createInterpolationFromStringOutputRange(
   //   [200, 250],
   //   [0, 0.5],
   // ]
+  /* $FlowFixMe(>=0.18.0): `outputRange[0].match()` can return `null`. Need to
+   * guard against this possibility.
+   */
   var outputRanges = outputRange[0].match(stringShapeRegex).map(() => []);
   outputRange.forEach(value => {
+    /* $FlowFixMe(>=0.18.0): `value.match()` can return `null`. Need to guard
+     * against this possibility.
+     */
     value.match(stringShapeRegex).forEach((number, i) => {
       outputRanges[i].push(+number);
     });
   });
 
+  /* $FlowFixMe(>=0.18.0): `outputRange[0].match()` can return `null`. Need to
+   * guard against this possibility.
+   */
   var interpolations = outputRange[0].match(stringShapeRegex).map((value, i) => {
     return Interpolation.create({
       ...config,

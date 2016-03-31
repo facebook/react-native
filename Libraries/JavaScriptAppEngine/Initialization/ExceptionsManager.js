@@ -11,42 +11,44 @@
  */
 'use strict';
 
-var RCTExceptionsManager = require('NativeModules').ExceptionsManager;
+let exceptionID = 0;
 
-var loadSourceMap = require('loadSourceMap');
-var parseErrorStack = require('parseErrorStack');
-var stringifySafe = require('stringifySafe');
+/**
+ * Handles the developer-visible aspect of errors and exceptions
+ */
+function reportException(e: Error, isFatal: bool) {
+  const parseErrorStack = require('parseErrorStack');
+  const RCTExceptionsManager = require('NativeModules').ExceptionsManager;
 
-var sourceMapPromise;
-
-var exceptionID = 0;
-
-function reportException(e: Error, isFatal: bool, stack?: any) {
-  var currentExceptionID = ++exceptionID;
+  const currentExceptionID = ++exceptionID;
   if (RCTExceptionsManager) {
-    if (!stack) {
-      stack = parseErrorStack(e);
-    }
+    const stack = parseErrorStack(e);
     if (isFatal) {
       RCTExceptionsManager.reportFatalException(e.message, stack, currentExceptionID);
     } else {
       RCTExceptionsManager.reportSoftException(e.message, stack, currentExceptionID);
     }
     if (__DEV__) {
-      (sourceMapPromise = sourceMapPromise || loadSourceMap())
-        .then(map => {
-          var prettyStack = parseErrorStack(e, map);
-          RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack, currentExceptionID);
-        })
-        .catch(error => {
-          // This can happen in a variety of normal situations, such as
-          // Network module not being available, or when running locally
-          console.warn('Unable to load source map: ' + error.message);
-        });
+      require('SourceMapsCache').getSourceMaps().then(sourceMaps => {
+        const prettyStack = parseErrorStack(e, sourceMaps);
+        RCTExceptionsManager.updateExceptionMessage(
+          e.message,
+          prettyStack,
+          currentExceptionID,
+        );
+      })
+      .catch(error => {
+        // This can happen in a variety of normal situations, such as
+        // Network module not being available, or when running locally
+        console.warn('Unable to load source map: ' + error.message);
+      });
     }
   }
 }
 
+/**
+ * Logs exceptions to the (native) console and displays them
+ */
 function handleException(e: Error, isFatal: boolean) {
   // Workaround for reporting errors caused by `throw 'some string'`
   // Unfortunately there is no way to figure out the stacktrace in this
@@ -55,19 +57,9 @@ function handleException(e: Error, isFatal: boolean) {
   if (!e.message) {
     e = new Error(e);
   }
-  var stack = parseErrorStack(e);
-  var msg =
-    'Error: ' + e.message +
-    '\n stack: \n' + stackToString(stack) +
-    '\n URL: ' + (e: any).sourceURL +
-    '\n line: ' + (e: any).line +
-    '\n message: ' + e.message;
-  if (console.errorOriginal) {
-    console.errorOriginal(msg);
-  } else {
-    console.error(msg);
-  }
-  reportException(e, isFatal, stack);
+
+  (console._errorOriginal || console.error)(e.message);
+  reportException(e, isFatal);
 }
 
 /**
@@ -75,54 +67,36 @@ function handleException(e: Error, isFatal: boolean) {
  * setting `console.reportErrorsAsExceptions = false;` in your app.
  */
 function installConsoleErrorReporter() {
-  if (console.reportException) {
+  // Enable reportErrorsAsExceptions
+  if (console._errorOriginal) {
     return; // already installed
   }
-  console.reportException = reportException;
-  console.errorOriginal = console.error.bind(console);
+  console._errorOriginal = console.error.bind(console);
   console.error = function reactConsoleError() {
-    // Note that when using the built-in context executor on iOS (i.e., not
-    // Chrome debugging), console.error is already stubbed out to cause a
-    // redbox via RCTNativeLoggingHook.
-    console.errorOriginal.apply(null, arguments);
+    console._errorOriginal.apply(null, arguments);
     if (!console.reportErrorsAsExceptions) {
       return;
     }
-    var str = Array.prototype.map.call(arguments, stringifySafe).join(', ');
-    if (str.slice(0, 10) === '"Warning: ') {
-      // React warnings use console.error so that a stack trace is shown, but
-      // we don't (currently) want these to show a redbox
-      // (Note: Logic duplicated in polyfills/console.js.)
-      return;
+
+    if (arguments[0] && arguments[0].stack) {
+      reportException(arguments[0], /* isFatal */ false);
+    } else {
+      const stringifySafe = require('stringifySafe');
+      const str = Array.prototype.map.call(arguments, stringifySafe).join(', ');
+      if (str.slice(0, 10) === '"Warning: ') {
+        // React warnings use console.error so that a stack trace is shown, but
+        // we don't (currently) want these to show a redbox
+        // (Note: Logic duplicated in polyfills/console.js.)
+        return;
+      }
+      const error : any = new Error('console.error: ' + str);
+      error.framesToPop = 1;
+      reportException(error, /* isFatal */ false);
     }
-    var error: any = new Error('console.error: ' + str);
-    error.framesToPop = 1;
-    reportException(error, /* isFatal */ false);
   };
   if (console.reportErrorsAsExceptions === undefined) {
     console.reportErrorsAsExceptions = true; // Individual apps can disable this
   }
-}
-
-function stackToString(stack) {
-  var maxLength = Math.max.apply(null, stack.map(frame => frame.methodName.length));
-  return stack.map(frame => stackFrameToString(frame, maxLength)).join('\n');
-}
-
-function stackFrameToString(stackFrame, maxLength) {
-  var fileNameParts = stackFrame.file.split('/');
-  var fileName = fileNameParts[fileNameParts.length - 1];
-
-  if (fileName.length > 18) {
-    fileName = fileName.substr(0, 17) + '\u2026' /* ... */;
-  }
-
-  var spaces = fillSpaces(maxLength - stackFrame.methodName.length);
-  return '  ' + stackFrame.methodName + spaces + '  ' + fileName + ':' + stackFrame.lineNumber;
-}
-
-function fillSpaces(n) {
-  return new Array(n + 1).join(' ');
 }
 
 module.exports = { handleException, installConsoleErrorReporter };

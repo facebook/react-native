@@ -7,11 +7,16 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule WebSocketBase
- *
+ * @flow
  */
 'use strict';
 
 var EventTarget = require('event-target-shim');
+
+const CONNECTING = 0;
+const OPEN = 1;
+const CLOSING = 2;
+const CLOSED = 3;
 
 /**
  * Shared base for platform-specific WebSocket implementations.
@@ -29,37 +34,48 @@ class WebSocketBase extends EventTarget('close', 'error', 'message', 'open') {
   readyState: number;
   url: ?string;
 
-  constructor(url: string, protocols: ?any) {
+  constructor(url: string, protocols: ?string | ?Array<string>, options: ?{origin?: string}) {
     super();
-    this.CONNECTING = 0;
-    this.OPEN = 1;
-    this.CLOSING = 2;
-    this.CLOSED = 3;
+    this.CONNECTING = CONNECTING;
+    this.OPEN = OPEN;
+    this.CLOSING = CLOSING;
+    this.CLOSED = CLOSED;
 
+    if (typeof protocols === 'string') {
+      protocols = [protocols];
+    }
+
+<<<<<<< HEAD
     this.readyState = this.CONNECTING;
 
     if (!protocols) {
       protocols = [];
+=======
+    if (!Array.isArray(protocols)) {
+      protocols = null;
+>>>>>>> facebook/master
     }
 
-    this.connectToSocketImpl(url);
+    this.readyState = this.CONNECTING;
+    this.connectToSocketImpl(url, protocols, options);
   }
 
   close(): void {
-    if (this.readyState === WebSocketBase.CLOSING ||
-        this.readyState === WebSocketBase.CLOSED) {
+    if (this.readyState === this.CLOSING ||
+        this.readyState === this.CLOSED) {
       return;
     }
 
-    if (this.readyState === WebSocketBase.CONNECTING) {
+    if (this.readyState === this.CONNECTING) {
       this.cancelConnectionImpl();
     }
 
+    this.readyState = this.CLOSING;
     this.closeConnectionImpl();
   }
 
   send(data: any): void {
-    if (this.readyState === WebSocketBase.CONNECTING) {
+    if (this.readyState === this.CONNECTING) {
       throw new Error('INVALID_STATE_ERR');
     }
 
@@ -76,7 +92,7 @@ class WebSocketBase extends EventTarget('close', 'error', 'message', 'open') {
     throw new Error('Subclass must define closeConnectionImpl method');
   }
 
-  connectToSocketImpl(): void {
+  connectToSocketImpl(url: string, protocols: ?Array<string>, options: ?{origin?: string}): void {
     throw new Error('Subclass must define connectToSocketImpl method');
   }
 
@@ -84,14 +100,18 @@ class WebSocketBase extends EventTarget('close', 'error', 'message', 'open') {
     throw new Error('Subclass must define cancelConnectionImpl method');
   }
 
-  sendStringImpl(): void {
+  sendStringImpl(message: string): void {
     throw new Error('Subclass must define sendStringImpl method');
   }
 
   sendArrayBufferImpl(): void {
     throw new Error('Subclass must define sendArrayBufferImpl method');
   }
-
 }
+
+WebSocketBase.CONNECTING = CONNECTING;
+WebSocketBase.OPEN = OPEN;
+WebSocketBase.CLOSING = CLOSING;
+WebSocketBase.CLOSED = CLOSED;
 
 module.exports = WebSocketBase;

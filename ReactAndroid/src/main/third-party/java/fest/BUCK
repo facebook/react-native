@@ -1,0 +1,32 @@
+android_library(
+    name = 'fest',
+    exported_deps = [
+        ':fest-core',
+        ':fest-util',
+    ],
+    visibility = ['//ReactAndroid/...',],
+)
+
+prebuilt_jar(
+    name = 'fest-core',
+    binary_jar = ':fest-binary-jar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'fest-binary-jar',
+    url = 'mvn:org.easytesting:fest-assert-core:jar:2.0M10',
+    sha1 = 'cb7c91cf614901928ae405f19d9bcdedf82781db',
+)
+
+prebuilt_jar(
+    name = 'fest-util',
+    binary_jar = ':fest-util-binary-jar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'fest-util-binary-jar',
+    url = 'mvn:org.easytesting:fest-util:jar:1.2.5',
+    sha1 = 'c4a8d7305b23b8d043be12c979813b096df11f44',
+)

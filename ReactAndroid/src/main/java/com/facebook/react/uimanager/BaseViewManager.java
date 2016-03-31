@@ -6,28 +6,37 @@ import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
 
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.DisplayMetricsHolder;
 
 /**
  * Base class that should be suitable for the majority of subclasses of {@link ViewManager}.
  * It provides support for base view properties such as backgroundColor, opacity, etc.
  */
-public abstract class BaseViewManager<T extends View, C extends ReactShadowNode>
+public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode>
     extends ViewManager<T, C> {
 
   private static final String PROP_BACKGROUND_COLOR = ViewProps.BACKGROUND_COLOR;
   private static final String PROP_DECOMPOSED_MATRIX = "decomposedMatrix";
   private static final String PROP_DECOMPOSED_MATRIX_ROTATE = "rotate";
+  private static final String PROP_DECOMPOSED_MATRIX_ROTATE_X = "rotateX";
+  private static final String PROP_DECOMPOSED_MATRIX_ROTATE_Y = "rotateY";
   private static final String PROP_DECOMPOSED_MATRIX_SCALE_X = "scaleX";
   private static final String PROP_DECOMPOSED_MATRIX_SCALE_Y = "scaleY";
   private static final String PROP_DECOMPOSED_MATRIX_TRANSLATE_X = "translateX";
   private static final String PROP_DECOMPOSED_MATRIX_TRANSLATE_Y = "translateY";
+  private static final String PROP_DECOMPOSED_MATRIX_PERSPECTIVE = "perspective";
   private static final String PROP_OPACITY = "opacity";
+  private static final String PROP_ELEVATION = "elevation";
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
   private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
   private static final String PROP_ACCESSIBILITY_COMPONENT_TYPE = "accessibilityComponentType";
   private static final String PROP_ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
   private static final String PROP_IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
+  private static final int PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX = 2;
+  private static final float CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER = 5;
 
   // DEPRECATED
   private static final String PROP_ROTATION = "rotation";
@@ -59,6 +68,14 @@ public abstract class BaseViewManager<T extends View, C extends ReactShadowNode>
   @ReactProp(name = PROP_OPACITY, defaultFloat = 1.f)
   public void setOpacity(T view, float opacity) {
     view.setAlpha(opacity);
+  }
+  
+  @ReactProp(name = PROP_ELEVATION)
+  public void setElevation(T view, float elevation) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      view.setElevation(PixelUtil.toPixelFromDIP(elevation));
+    }
+    // Do nothing on API < 21
   }
 
   @ReactProp(name = PROP_RENDER_TO_HARDWARE_TEXTURE)
@@ -113,15 +130,15 @@ public abstract class BaseViewManager<T extends View, C extends ReactShadowNode>
   }
 
   @Deprecated
-  @ReactProp(name = PROP_TRANSLATE_X, defaultFloat = 1f)
+  @ReactProp(name = PROP_TRANSLATE_X, defaultFloat = 0f)
   public void setTranslateX(T view, float translateX) {
-    view.setTranslationX(translateX);
+    view.setTranslationX(PixelUtil.toPixelFromDIP(translateX));
   }
 
   @Deprecated
-  @ReactProp(name = PROP_TRANSLATE_Y, defaultFloat = 1f)
+  @ReactProp(name = PROP_TRANSLATE_Y, defaultFloat = 0f)
   public void setTranslateY(T view, float translateY) {
-    view.setTranslationY(translateY);
+    view.setTranslationY(PixelUtil.toPixelFromDIP(translateY));
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_LIVE_REGION)
@@ -144,16 +161,36 @@ public abstract class BaseViewManager<T extends View, C extends ReactShadowNode>
             (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_TRANSLATE_Y)));
     view.setRotation(
         (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_ROTATE));
+    view.setRotationX(
+        (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_ROTATE_X));
+    view.setRotationY(
+        (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_ROTATE_Y));
     view.setScaleX(
         (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_SCALE_X));
     view.setScaleY(
         (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_SCALE_Y));
+        
+    if (matrix.hasKey(PROP_DECOMPOSED_MATRIX_PERSPECTIVE)) {
+      ReadableArray perspectiveArray = matrix.getArray(PROP_DECOMPOSED_MATRIX_PERSPECTIVE);
+      if (perspectiveArray.size() > PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX) {
+        float cameraDistance = (float)(-1 / perspectiveArray.getDouble(PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX));
+        float scale = DisplayMetricsHolder.getScreenDisplayMetrics().density;
+
+        // The following converts the matrix's perspective to a camera distance
+        // such that the camera perspective looks the same on Android and iOS        
+        float normalizedCameraDistance = scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
+
+        view.setCameraDistance(normalizedCameraDistance);
+      }
+    }
   }
 
   private static void resetTransformMatrix(View view) {
     view.setTranslationX(PixelUtil.toPixelFromDIP(0));
     view.setTranslationY(PixelUtil.toPixelFromDIP(0));
     view.setRotation(0);
+    view.setRotationX(0);
+    view.setRotationY(0);
     view.setScaleX(1);
     view.setScaleY(1);
   }

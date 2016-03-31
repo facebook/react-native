@@ -12,14 +12,18 @@
 'use strict';
 
 /**
- * Make sure `setTimeout`/`setInterval` are patched correctly.
+ * Make sure essential globals are available and are patched correctly. Please don't remove this
+ * line. Bundles created by react-packager `require` it before executing any application code. This
+ * ensures it exists in the dependency graph and can be `require`d.
  */
 require('InitializeJavaScriptAppEngine');
+
 var EventPluginHub = require('EventPluginHub');
 var EventPluginUtils = require('EventPluginUtils');
 var IOSDefaultEventPluginOrder = require('IOSDefaultEventPluginOrder');
 var IOSNativeBridgeEventPlugin = require('IOSNativeBridgeEventPlugin');
 var NodeHandle = require('NodeHandle');
+var ReactElement = require('ReactElement');
 var ReactComponentEnvironment = require('ReactComponentEnvironment');
 var ReactDefaultBatchingStrategy = require('ReactDefaultBatchingStrategy');
 var ReactEmptyComponent = require('ReactEmptyComponent');
@@ -34,8 +38,7 @@ var ReactUpdates = require('ReactUpdates');
 var ResponderEventPlugin = require('ResponderEventPlugin');
 var UniversalWorkerNodeHandle = require('UniversalWorkerNodeHandle');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 // Just to ensure this gets packaged, since its only caller is from Native.
 require('RCTEventEmitter');
@@ -78,12 +81,15 @@ function inject() {
     ReactNativeComponentEnvironment
   );
 
-  // Can't import View here because it depends on React to make its composite
-  var RCTView = createReactNativeComponentClass({
-    validAttributes: {},
-    uiViewClassName: 'RCTView',
-  });
-  ReactEmptyComponent.injection.injectEmptyComponent(RCTView);
+  var EmptyComponent = () => {
+    // Can't import View at the top because it depends on React to make its composite
+    var View = require('View');
+    return ReactElement.createElement(View, {
+      collapsable: true,
+      style: { position: 'absolute' }
+    });
+  };
+  ReactEmptyComponent.injection.injectEmptyComponent(EmptyComponent);
 
   EventPluginUtils.injection.injectMount(ReactNativeMount);
 

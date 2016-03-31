@@ -13,9 +13,9 @@
 #import "RCTConvert+MapKit.h"
 #import "RCTComponent.h"
 
-extern const CLLocationDegrees RCTMapDefaultSpan;
-extern const NSTimeInterval RCTMapRegionChangeObserveInterval;
-extern const CGFloat RCTMapZoomBoundBuffer;
+RCT_EXTERN const CLLocationDegrees RCTMapDefaultSpan;
+RCT_EXTERN const NSTimeInterval RCTMapRegionChangeObserveInterval;
+RCT_EXTERN const CGFloat RCTMapZoomBoundBuffer;
 
 @interface RCTMap: MKMapView
 
@@ -25,11 +25,16 @@ extern const CGFloat RCTMapZoomBoundBuffer;
 @property (nonatomic, assign) CGFloat maxDelta;
 @property (nonatomic, assign) UIEdgeInsets legalLabelInsets;
 @property (nonatomic, strong) NSTimer *regionChangeObserveTimer;
-@property (nonatomic, strong) NSMutableArray *annotationIds;
+@property (nonatomic, copy) NSArray<NSString *> *annotationIDs;
+@property (nonatomic, copy) NSArray<NSString *> *overlayIDs;
 
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 @property (nonatomic, copy) RCTBubblingEventBlock onPress;
+@property (nonatomic, copy) RCTBubblingEventBlock onAnnotationDragStateChange;
+@property (nonatomic, copy) RCTBubblingEventBlock onAnnotationFocus;
+@property (nonatomic, copy) RCTBubblingEventBlock onAnnotationBlur;
 
-- (void)setAnnotations:(RCTPointAnnotationArray *)annotations;
+- (void)setAnnotations:(NSArray<RCTMapAnnotation *> *)annotations;
+- (void)setOverlays:(NSArray<RCTMapOverlay *> *)overlays;
 
 @end

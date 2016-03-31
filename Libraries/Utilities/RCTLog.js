@@ -11,14 +11,16 @@
  */
 'use strict';
 
-var invariant = require('invariant');
+var BatchedBridge = require('BatchedBridge');
+
+var invariant = require('fbjs/lib/invariant');
 
 var levelsMap = {
   log: 'log',
   info: 'info',
   warn: 'warn',
   error: 'error',
-  mustfix: 'error',
+  fatal: 'error',
 };
 
 class RCTLog {
@@ -38,5 +40,10 @@ class RCTLog {
     return true;
   }
 }
+
+BatchedBridge.registerCallableModule(
+  'RCTLog',
+  RCTLog
+);
 
 module.exports = RCTLog;

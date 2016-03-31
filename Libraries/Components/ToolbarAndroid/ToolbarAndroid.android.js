@@ -13,13 +13,22 @@
 
 var Image = require('Image');
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var RCTUIManager = require('NativeModules').UIManager;
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var ReactPropTypes = require('ReactPropTypes');
+var UIManager = require('UIManager');
+var View = require('View');
+var ColorPropType = require('ColorPropType');
 
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
+
+var optionalImageSource = ReactPropTypes.oneOfType([
+  Image.propTypes.source,
+  // Image.propTypes.source is required but we want it to be optional, so we OR
+  // it with a nullable propType.
+  ReactPropTypes.oneOf([])
+]);
 
 /**
  * React component that wraps the Android-only [`Toolbar` widget][0]. A Toolbar can display a logo,
@@ -41,9 +50,9 @@ var resolveAssetSource = require('resolveAssetSource');
  * render: function() {
  *   return (
  *     <ToolbarAndroid
- *       logo={require('image!app_logo')}
+ *       logo={require('./app_logo.png')}
  *       title="AwesomeApp"
- *       actions={[{title: 'Settings', icon: require('image!icon_settings'), show: 'always'}]}
+ *       actions={[{title: 'Settings', icon: require('./icon_settings.png'), show: 'always'}]}
  *       onActionSelected={this.onActionSelected} />
  *   )
  * },
@@ -60,6 +69,7 @@ var ToolbarAndroid = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
+    ...View.propTypes,
     /**
      * Sets possible actions on the toolbar as part of the action menu. These are displayed as icons
      * or text on the right side of the widget. If they don't fit they are placed in an 'overflow'
@@ -68,27 +78,27 @@ var ToolbarAndroid = React.createClass({
      * This property takes an array of objects, where each object has the following keys:
      *
      * * `title`: **required**, the title of this action
-     * * `icon`: the icon for this action, e.g. `require('image!some_icon')`
+     * * `icon`: the icon for this action, e.g. `require('./some_icon.png')`
      * * `show`: when to show this action as an icon or hide it in the overflow menu: `always`,
      * `ifRoom` or `never`
      * * `showWithText`: boolean, whether to show text alongside the icon or not
      */
     actions: ReactPropTypes.arrayOf(ReactPropTypes.shape({
       title: ReactPropTypes.string.isRequired,
-      icon: Image.propTypes.source,
+      icon: optionalImageSource,
       show: ReactPropTypes.oneOf(['always', 'ifRoom', 'never']),
       showWithText: ReactPropTypes.bool
     })),
     /**
      * Sets the toolbar logo.
      */
-    logo: Image.propTypes.source,
+    logo: optionalImageSource,
     /**
      * Sets the navigation icon.
      */
-    navIcon: Image.propTypes.source,
+    navIcon: optionalImageSource,
     /**
-     * Callback that is called when an action is selected. The only argument that is passeed to the
+     * Callback that is called when an action is selected. The only argument that is passed to the
      * callback is the position of the action in the actions array.
      */
     onActionSelected: ReactPropTypes.func,
@@ -97,13 +107,17 @@ var ToolbarAndroid = React.createClass({
      */
     onIconClicked: ReactPropTypes.func,
     /**
+     * Sets the overflow icon.
+     */
+    overflowIcon: optionalImageSource,
+    /**
      * Sets the toolbar subtitle.
      */
     subtitle: ReactPropTypes.string,
     /**
      * Sets the toolbar subtitle color.
      */
-    subtitleColor: ReactPropTypes.string,
+    subtitleColor: ColorPropType,
     /**
      * Sets the toolbar title.
      */
@@ -111,7 +125,36 @@ var ToolbarAndroid = React.createClass({
     /**
      * Sets the toolbar title color.
      */
-    titleColor: ReactPropTypes.string,
+    titleColor: ColorPropType,
+    /**
+     * Sets the content inset for the toolbar starting edge.
+     *
+     * The content inset affects the valid area for Toolbar content other than
+     * the navigation button and menu. Insets define the minimum margin for
+     * these components and can be used to effectively align Toolbar content
+     * along well-known gridlines.
+     */
+    contentInsetStart: ReactPropTypes.number,
+    /**
+     * Sets the content inset for the toolbar ending edge.
+     *
+     * The content inset affects the valid area for Toolbar content other than
+     * the navigation button and menu. Insets define the minimum margin for
+     * these components and can be used to effectively align Toolbar content
+     * along well-known gridlines.
+     */
+    contentInsetEnd: ReactPropTypes.number,
+    /**
+     * Used to set the toolbar direction to RTL.
+     * In addition to this property you need to add
+     *
+     *   android:supportsRtl="true"
+     *
+     * to your application AndroidManifest.xml and then call
+     * `setLayoutDirection(LayoutDirection.RTL)` in your MainActivity
+     * `onCreate` method.
+     */
+    rtl: ReactPropTypes.bool,
     /**
      * Used to locate this view in end-to-end tests.
      */
@@ -128,8 +171,11 @@ var ToolbarAndroid = React.createClass({
     if (this.props.navIcon) {
       nativeProps.navIcon = resolveAssetSource(this.props.navIcon);
     }
+    if (this.props.overflowIcon) {
+      nativeProps.overflowIcon = resolveAssetSource(this.props.overflowIcon);
+    }
     if (this.props.actions) {
-      nativeProps.actions = [];
+      var nativeActions = [];
       for (var i = 0; i < this.props.actions.length; i++) {
         var action = {
           ...this.props.actions[i],
@@ -138,10 +184,11 @@ var ToolbarAndroid = React.createClass({
           action.icon = resolveAssetSource(action.icon);
         }
         if (action.show) {
-          action.show = RCTUIManager.ToolbarAndroid.Constants.ShowAsAction[action.show];
+          action.show = UIManager.ToolbarAndroid.Constants.ShowAsAction[action.show];
         }
-        nativeProps.actions.push(action);
+        nativeActions.push(action);
       }
+      nativeProps.nativeActions = nativeActions;
     }
 
     return <NativeToolbar onSelect={this._onSelect} {...nativeProps} />;
@@ -162,12 +209,18 @@ var toolbarAttributes = {
   actions: true,
   logo: true,
   navIcon: true,
+  overflowIcon: true,
+  rtl: true,
   subtitle: true,
   subtitleColor: true,
   title: true,
   titleColor: true,
 };
 
-var NativeToolbar = requireNativeComponent('ToolbarAndroid', null);
+var NativeToolbar = requireNativeComponent('ToolbarAndroid', ToolbarAndroid, {
+  nativeOnly: {
+    nativeActions: true,
+  }
+});
 
 module.exports = ToolbarAndroid;

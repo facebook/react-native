@@ -13,6 +13,7 @@
 
 #import "RCTAssert.h"
 #import "RCTLog.h"
+#import "RCTShadowView.h"
 
 @implementation UIView (React)
 
@@ -25,6 +26,21 @@
 {
   objc_setAssociatedObject(self, @selector(reactTag), reactTag, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
+
+#if RCT_DEV
+
+- (RCTShadowView *)_DEBUG_reactShadowView
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)_DEBUG_setReactShadowView:(RCTShadowView *)shadowView
+{
+  // Use assign to avoid keeping the shadowView alive it if no longer exists
+  objc_setAssociatedObject(self, @selector(_DEBUG_reactShadowView), shadowView, OBJC_ASSOCIATION_ASSIGN);
+}
+
+#endif
 
 - (BOOL)isReactRootView
 {
@@ -51,7 +67,7 @@
   [subview removeFromSuperview];
 }
 
-- (NSArray *)reactSubviews
+- (NSArray<UIView *> *)reactSubviews
 {
   return self.subviews;
 }
@@ -78,13 +94,13 @@
     return;
   }
 
-  self.layer.position = position;
-  self.layer.bounds = bounds;
+  self.center = position;
+  self.bounds = bounds;
 }
 
-- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor
+- (void)reactSetInheritedBackgroundColor:(__unused UIColor *)inheritedBackgroundColor
 {
-  self.backgroundColor = inheritedBackgroundColor;
+  // Does nothing by default
 }
 
 - (UIViewController *)reactViewController

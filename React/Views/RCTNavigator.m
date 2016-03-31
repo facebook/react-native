@@ -200,8 +200,8 @@ NSInteger kNeverProgressed = -10000;
 
 // Previous views are only mainted in order to detect incorrect
 // addition/removal of views below the `requestedTopOfStack`
-@property (nonatomic, copy, readwrite) NSArray *previousViews;
-@property (nonatomic, readwrite, strong) NSMutableArray *currentViews;
+@property (nonatomic, copy, readwrite) NSArray<RCTNavItem *> *previousViews;
+@property (nonatomic, readwrite, strong) NSMutableArray<RCTNavItem *> *currentViews;
 @property (nonatomic, readwrite, strong) RCTNavigationController *navigationController;
 /**
  * Display link is used to get high frequency sample rate during
@@ -335,6 +335,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)dealloc
 {
   _navigationController.delegate = nil;
+  [_navigationController removeFromParentViewController];
 }
 
 - (UIViewController *)reactViewController
@@ -360,6 +361,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       (RCTWrapperViewController *)[context viewControllerForKey:UITransitionContextFromViewControllerKey];
     RCTWrapperViewController *toController =
       (RCTWrapperViewController *)[context viewControllerForKey:UITransitionContextToViewControllerKey];
+      
+    // This may be triggered by a navigation controller unrelated to me: if so, ignore.
+    if (fromController.navigationController != _navigationController ||
+        toController.navigationController != _navigationController) {
+      return;
+    }
+    
     NSUInteger indexOfFrom = [_currentViews indexOfObject:fromController.navItem];
     NSUInteger indexOfTo = [_currentViews indexOfObject:toController.navItem];
     CGFloat destination = indexOfFrom < indexOfTo ? 1.0 : -1.0;
@@ -399,7 +407,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
  * `requestedTopOfStack` changes, there had better be enough subviews present
  * to satisfy the push/pop.
  */
-- (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
+- (void)insertReactSubview:(RCTNavItem *)view atIndex:(NSInteger)atIndex
 {
   RCTAssert([view isKindOfClass:[RCTNavItem class]], @"RCTNavigator only accepts RCTNavItem subviews");
   RCTAssert(
@@ -409,7 +417,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_currentViews insertObject:view atIndex:atIndex];
 }
 
-- (NSArray *)reactSubviews
+- (NSArray<RCTNavItem *> *)reactSubviews
 {
   return _currentViews;
 }
@@ -417,10 +425,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+  [self reactAddControllerToClosestParent:_navigationController];
   _navigationController.view.frame = self.bounds;
 }
 
-- (void)removeReactSubview:(UIView *)subview
+- (void)removeReactSubview:(RCTNavItem *)subview
 {
   if (_currentViews.count <= 0 || subview == _currentViews[0]) {
     RCTLogError(@"Attempting to remove invalid RCT subview of RCTNavigator");

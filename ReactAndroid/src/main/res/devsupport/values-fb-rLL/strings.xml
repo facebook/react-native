@@ -12,5 +12,5 @@
     <string name="catalyst_jsload_title">(অনুগ্রহ করে অপেক্ষা করুন….)</string>
     <string name="catalyst_jsload_message">Fetching JS bundle</string>
     <string name="catalyst_jsload_error">Unable to download JS bundle</string>
-    <string name="catalyst_inspect_element">(तत्व निरीक्षण गर्नुहोस्)</string>
+    <string name="catalyst_element_inspector">(तत्व निरीक्षण गर्नुहोस्)</string>
 </resources>

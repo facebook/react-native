@@ -11,6 +11,22 @@
 
 #import "RCTBridge.h"
 
+@protocol RCTRootViewDelegate;
+
+/**
+ * This enum is used to define size flexibility type of the root view.
+ * If a dimension is flexible, the view will recalculate that dimension
+ * so the content fits. Recalculations are performed when the root's frame,
+ * size flexibility mode or content size changes. After a recalculation,
+ * rootViewDidChangeIntrinsicSize method of the RCTRootViewDelegate will be called.
+ */
+typedef NS_ENUM(NSInteger, RCTRootViewSizeFlexibility) {
+  RCTRootViewSizeFlexibilityNone = 0,
+  RCTRootViewSizeFlexibilityWidth,
+  RCTRootViewSizeFlexibilityHeight,
+  RCTRootViewSizeFlexibilityWidthAndHeight,
+};
+
 /**
  * This notification is sent when the first subviews are added to the root view
  * after the application has loaded. This is used to hide the `loadingView`, and
@@ -59,17 +75,29 @@ extern NSString *const RCTContentDidAppearNotification;
 @property (nonatomic, strong, readonly) RCTBridge *bridge;
 
 /**
- * The default properties to apply to the view when the script bundle
- * is first loaded. Defaults to nil/empty.
+ * The properties to apply to the view. Use this property to update
+ * application properties and rerender the view. Initialized with
+ * initialProperties argument of the initializer.
+ *
+ * Set this property only on the main thread.
  */
-@property (nonatomic, copy, readonly) NSDictionary *initialProperties;
+@property (nonatomic, copy, readwrite) NSDictionary *appProperties;
 
 /**
- * The class of the RCTJavaScriptExecutor to use with this view.
- * If not specified, it will default to using RCTContextExecutor.
- * Changes will take effect next time the bundle is reloaded.
+ * The size flexibility mode of the root view.
  */
-@property (nonatomic, strong) Class executorClass;
+@property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
+
+/**
+ * The size of the root view's content. This is set right before the
+ * rootViewDidChangeIntrinsicSize method of RCTRootViewDelegate is called.
+ */
+@property (readonly, nonatomic, assign) CGSize intrinsicSize;
+
+/**
+ * The delegate that handles intrinsic size updates.
+ */
+@property (nonatomic, weak) id<RCTRootViewDelegate> delegate;
 
 /**
  * The backing view controller of the root view.
@@ -87,6 +115,25 @@ extern NSString *const RCTContentDidAppearNotification;
  * (for example) a UIActivityIndicatorView or a placeholder image.
  */
 @property (nonatomic, strong) UIView *loadingView;
+
+/**
+ * Calling this will result in emitting a "touches cancelled" event to js,
+ * which effectively cancels all js "gesture recognizers" such as as touchable
+ * (unless they explicitely ignore cancellation events, but noone should do that).
+ *
+ * This API is exposed for integration purposes where you embed RN rootView
+ * in a native view with a native gesture recognizer,
+ * whose activation should prevent any in-flight js "gesture recognizer" from activating.
+ *
+ * An example would be RN rootView embedded in an UIScrollView.
+ * When you touch down on a touchable component and drag your finger up,
+ * you don't want any touch to be registered as soon as the UIScrollView starts scrolling.
+ *
+ * Note that this doesn't help with tapping on a touchable element that is being scrolled,
+ * unless you can call cancelTouches exactly between "touches began" and "touches ended" events.
+ * This is a reason why this API may be soon removed in favor of a better solution.
+ */
+- (void)cancelTouches;
 
 /**
  * Timings for hiding the loading view after the content has loaded. Both of

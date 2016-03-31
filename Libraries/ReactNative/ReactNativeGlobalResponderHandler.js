@@ -11,18 +11,18 @@
  */
 'use strict';
 
-var RCTUIManager = require('NativeModules').UIManager;
 var ReactNativeTagHandles = require('ReactNativeTagHandles');
+var UIManager = require('UIManager');
 
 var ReactNativeGlobalResponderHandler = {
   onChange: function(from: string, to: string, blockNativeResponder: boolean) {
     if (to !== null) {
-      RCTUIManager.setJSResponder(
+      UIManager.setJSResponder(
         ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(to),
         blockNativeResponder
       );
     } else {
-      RCTUIManager.clearJSResponder();
+      UIManager.clearJSResponder();
     }
   }
 };

@@ -7,20 +7,17 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#include "Hybrid.h"
+#include "jni/fbjni.h"
 
-#include "Exceptions.h"
-#include "Registration.h"
 
 namespace facebook {
 namespace jni {
 
 namespace detail {
 
-void setNativePointer(alias_ref<HybridData::javaobject> hybridData,
-                      std::unique_ptr<BaseHybridClass> new_value) {
-  static auto pointerField = hybridData->getClass()->getField<jlong>("mNativePointer");
-  auto* old_value = reinterpret_cast<BaseHybridClass*>(hybridData->getFieldValue(pointerField));
+void HybridData::setNativePointer(std::unique_ptr<BaseHybridClass> new_value) {
+  static auto pointerField = getClass()->getField<jlong>("mNativePointer");
+  auto* old_value = reinterpret_cast<BaseHybridClass*>(getFieldValue(pointerField));
   if (new_value) {
     // Modify should only ever be called once with a non-null
     // new_value.  If this happens again it's a programmer error, so
@@ -35,35 +32,28 @@ void setNativePointer(alias_ref<HybridData::javaobject> hybridData,
   // ownership of it, to HybridData which is managed by the java GC.  The
   // finalizer on hybridData calls resetNative which will delete the object, if
   // reseetNative has not already been called.
-  hybridData->setFieldValue(pointerField, reinterpret_cast<jlong>(new_value.release()));
+  setFieldValue(pointerField, reinterpret_cast<jlong>(new_value.release()));
 }
 
-BaseHybridClass* getNativePointer(alias_ref<HybridData::javaobject> hybridData) {
-  static auto pointerField = hybridData->getClass()->getField<jlong>("mNativePointer");
-  auto* value = reinterpret_cast<BaseHybridClass*>(hybridData->getFieldValue(pointerField));
+BaseHybridClass* HybridData::getNativePointer() {
+  static auto pointerField = getClass()->getField<jlong>("mNativePointer");
+  auto* value = reinterpret_cast<BaseHybridClass*>(getFieldValue(pointerField));
   if (!value) {
     throwNewJavaException("java/lang/NullPointerException", "java.lang.NullPointerException");
   }
   return value;
 }
 
-local_ref<HybridData::javaobject> getHybridData(alias_ref<jobject> jthis,
-                                                JField<HybridData::javaobject> field) {
-  auto hybridData = jthis->getFieldValue(field);
-  if (!hybridData) {
-    throwNewJavaException("java/lang/NullPointerException", "java.lang.NullPointerException");
-  }
-  return hybridData;
+local_ref<HybridData> HybridData::create() {
+  return newInstance();
 }
 
 }
 
 namespace {
-
-void resetNative(alias_ref<detail::HybridData::javaobject> jthis) {
-  detail::setNativePointer(jthis, nullptr);
+void resetNative(alias_ref<detail::HybridData> jthis) {
+  jthis->setNativePointer(nullptr);
 }
-
 }
 
 void HybridDataOnLoad() {

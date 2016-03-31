@@ -15,18 +15,17 @@ Like the native module guide, this too is a more advanced guide that assumes you
 
 For this example we are going to walk through the implementation requirements to allow the use of ImageViews in JavaScript.
 
-Native views are created and manipulated by extending `ViewManager` or more commonly `SimpleViewManager` . A `SimpleViewManager` is convenient in this case because it applies common properties such as background color, opacity, and Flexbox layout. An example of when you would use `ViewManager` instead is when wrapping a component with FrameLayout, such as ProgressBar.
+Native views are created and manipulated by extending `ViewManager` or more commonly `SimpleViewManager` . A `SimpleViewManager` is convenient in this case because it applies common properties such as background color, opacity, and Flexbox layout.
 
 These subclasses are essentially singletons - only one instance of each is created by the bridge. They vend native views to the `NativeViewHierarchyManager`, which delegates back to them to set and update the properties of the views as necessary. The `ViewManagers` are also typically the delegates for the views, sending events back to JavaScript via the bridge.
 
 Vending a view is simple:
 
 1. Create the ViewManager subclass.
-2. Annotate the view properties with `@UIProp`
-3. Implement the `createViewInstance` method
-4. Implement the `updateView` method
-5. Register the manager in `createViewManagers` of the applications package.
-6. Implement the JavaScript module
+2. Implement the `createViewInstance` method
+3. Expose view property setters using `@ReactProp` (or `@ReactPropGroup`) annotation
+4. Register the manager in `createViewManagers` of the applications package.
+5. Implement the JavaScript module
 
 ## 1. Create the `ViewManager` subclass
 
@@ -45,20 +44,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   }
 ```
 
-## 2. Annotate the view properties
-
-Properties that are to be reflected in JavaScript are annotated with `@UIProp`. The types currently supported are `BOOLEAN`, `NUMBER`, `STRING`, `MAP` and `ARRAY`. Each property is declared as a public static final String and its assigned value will be the name of the property in JavaScript.
-
-```java
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_SRC = "src";
-  @UIProp(UIProp.Type.NUMBER)
-  public static final String PROP_BORDER_RADIUS = "borderRadius";
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_RESIZE_MODE = ViewProps.RESIZE_MODE;
-```
-
-## 3. Implement method `createViewInstance`
+## 2. Implement method `createViewInstance`
 
 Views are created in the `createViewInstance` method, the view should initialize itself in its default state, any properties will be set via a follow up call to `updateView.`
 
@@ -69,34 +55,38 @@ Views are created in the `createViewInstance` method, the view should initialize
   }
 ```
 
-## 4. Implement method `updateView`
+## 3. Expose view property setters using `@ReactProp` (or `@ReactPropGroup`) annotation
 
-Setting properties on a view is not handled by automatically calling setter methods as it is on iOS; for Android, you manually invoke the setters via the `updateView` of your `ViewManager`. Values are fetched from the `CatalystStylesDiffMap` and dispatched to the `View` instance as required. It is up to a combination of `updateView` and the `View` class to check the validity of the properties and behave accordingly.
+Properties that are to be reflected in JavaScript needs to be exposed as setter method annotated with `@ReactProp` (or `@ReactPropGroup`). Setter method should take view to be updated (of the current view type) as a first argument and property value as a second argument. Setter should be declared as a `void` method and should be `public`. Property type sent to JS is determined automatically based on the type of value argument of the setter. The following type of values are currently supported: `boolean`, `int`, `float`, `double`, `String`, `Boolean`, `Integer`, `ReadableArray`, `ReadableMap`.
+
+Annotation `@ReactProp` has one obligatory argument `name` of type `String`. Name assigned to the `@ReactProp` annotation linked to the setter method is used to reference the property on JS side.
+
+Except from `name`, `@ReactProp` annotation may take following optional arguments: `defaultBoolean`, `defaultInt`, `defaultFloat`. Those arguments should be of the corresponding primitive type (accordingly `boolean`, `int`, `float`) and the value provided will be passed to the setter method in case when the property that the setter is referencing has been removed from the component. Note that "default" values are only provided for primitive types, in case when setter is of some complex type, `null` will be provided as a default value in case when corresponding property gets removed.
+
+Setter declaration requirements for methods annotated with `@ReactPropGroup` are different than for `@ReactProp`, please refer to the `@ReactPropGroup` annotation class docs for more information about it.
+
+**IMPORTANT!** in ReactJS updating the property value will result in setter method call. Note that one of the ways we can update component is by removing properties that has been set before. In that case setter method will be called as well to notify view manager that property has changed. In that case "default" value will be provided (for primitive types "default" can value can be specified using `defaultBoolean`, `defaultFloat`, etc. arguments of `@ReactProp` annotation, for complex types setter will be called with value set to `null`).
 
 ```java
-  @Override
-  public void updateView(final ReactImageView view,
-                         final CatalystStylesDiffMap props) {
-    super.updateView(view, props);
-
-    if (props.hasKey(PROP_RESIZE_MODE)) {
-      view.setScaleType(
-        ImageResizeMode.toScaleType(props.getString(PROP_RESIZE_MODE)));
-    }
-    if (props.hasKey(PROP_SRC)) {
-       view.setSource(props.getString(PROP_SRC));
-    }
-    if (props.hasKey(PROP_BORDER_RADIUS)) {
-      view.setBorderRadius(props.getFloat(PROP_BORDER_RADIUS, 0.0f));
-    }
-    view.maybeUpdateView();
+  @ReactProp(name = "src")
+  public void setSrc(ReactImageView view, @Nullable String src) {
+    view.setSource(src);
   }
-}
+
+  @ReactProp(name = "borderRadius", defaultFloat = 0f)
+  public void setBorderRadius(ReactImageView view, float borderRadius) {
+    view.setBorderRadius(borderRadius);
+  }
+
+  @ReactProp(name = ViewProps.RESIZE_MODE)
+  public void setResizeMode(ReactImageView view, @Nullable String resizeMode) {
+    view.setScaleType(ImageResizeMode.toScaleType(resizeMode));
+  }
 ```
 
-## 5. Register the `ViewManager`
+## 4. Register the `ViewManager`
 
-The final Java step is to register the ViewManager to the application, this happens in a similar way to [Native Modules](NativeModulesAndroid.md), via the applications package member function `createViewManagers.`
+The final Java step is to register the ViewManager to the application, this happens in a similar way to [Native Modules](docs/native-modules-android.html), via the applications package member function `createViewManagers.`
 
 ```java
   @Override
@@ -108,14 +98,14 @@ The final Java step is to register the ViewManager to the application, this happ
   }
 ```
 
-## 6. Implement the JavaScript module
+## 5. Implement the JavaScript module
 
 The very final step is to create the JavaScript module that defines the interface layer between Java and JavaScript for the users of your new view. Much of the effort is handled by internal React code in Java and JavaScript and all that is left for you is to describe the `propTypes`.
 
 ```js
 // ImageView.js
 
-var { requireNativeComponent } = require('react-native');
+import { requireNativeComponent, PropTypes } from 'react-native';
 
 var iface = {
   name: 'ImageView',

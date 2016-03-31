@@ -10,7 +10,8 @@
       android:theme="@style/AppTheme">
       <activity
         android:name=".MainActivity"
-        android:label="@string/app_name">
+        android:label="@string/app_name"
+        android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />

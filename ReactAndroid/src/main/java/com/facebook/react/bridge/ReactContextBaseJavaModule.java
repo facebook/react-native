@@ -9,6 +9,10 @@
 
 package com.facebook.react.bridge;
 
+import javax.annotation.Nullable;
+
+import android.app.Activity;
+
 /**
  * Base class for Catalyst native modules that require access to the {@link ReactContext}
  * instance.
@@ -26,5 +30,18 @@ public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
    */
   protected final ReactApplicationContext getReactApplicationContext() {
     return mReactApplicationContext;
+  }
+
+  /**
+   * Get the activity to which this context is currently attached, or {@code null} if not attached.
+   *
+   * DO NOT HOLD LONG-LIVED REFERENCES TO THE OBJECT RETURNED BY THIS METHOD, AS THIS WILL CAUSE
+   * MEMORY LEAKS.
+   *
+   * For example, never store the value returned by this method in a member variable. Instead, call
+   * this method whenever you actually need the Activity and make sure to check for {@code null}.
+   */
+  protected @Nullable final Activity getCurrentActivity() {
+    return mReactApplicationContext.getCurrentActivity();
   }
 }

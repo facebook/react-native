@@ -15,11 +15,13 @@ struct MethodCall {
   int moduleId;
   int methodId;
   folly::dynamic arguments;
+  int callId;
 
-  MethodCall(int mod, int meth, folly::dynamic args)
+  MethodCall(int mod, int meth, folly::dynamic args, int cid)
     : moduleId(mod)
     , methodId(meth)
-    , arguments(std::move(args)) {}
+    , arguments(std::move(args))
+    , callId(cid) {}
 };
 
 std::vector<MethodCall> parseMethodCalls(const std::string& json);

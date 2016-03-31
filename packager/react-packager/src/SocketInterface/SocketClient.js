@@ -9,6 +9,7 @@
 'use strict';
 
 const Bundle = require('../Bundler/Bundle');
+const PrepackBundle = require('../Bundler/PrepackBundle');
 const Promise = require('promise');
 const bser = require('bser');
 const debug = require('debug')('ReactNativePackager:SocketClient');
@@ -100,6 +101,13 @@ class SocketClient {
     }).then(json => Bundle.fromJSON(json));
   }
 
+  buildPrepackBundle(options) {
+    return this._send({
+      type: 'buildPrepackBundle',
+      data: options,
+    }).then(json => PrepackBundle.fromJSON(json));
+  }
+
   _send(message) {
     message.id = uid();
     this._sock.write(bser.dumpToBuffer(message));
@@ -128,9 +136,12 @@ class SocketClient {
     delete this._resolvers[message.id];
 
     if (message.type === 'error') {
-      resolver.reject(new Error(
-        message.data + '\n' + 'See logs ' + LOG_PATH
-      ));
+      const errorLog =
+        message.data && message.data.indexOf('TimeoutError') === -1
+          ? 'See logs ' + LOG_PATH
+          : getServerLogs();
+
+      resolver.reject(new Error(message.data + '\n' + errorLog));
     } else {
       resolver.resolve(message.data);
     }

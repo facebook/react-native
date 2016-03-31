@@ -1,54 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:orientation="vertical"
   android:background="#E80000"
   >
-  <TextView
-      android:id="@+id/catalyst_redbox_title"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="12dp"
-      android:layout_marginBottom="12dp"
-      android:layout_marginRight="8dp"
-      android:layout_marginLeft="8dp"
-      android:drawableLeft="@android:drawable/ic_dialog_alert"
-      android:drawablePadding="8dp"
-      android:gravity="center_vertical"
-      android:textAppearance="@android:style/TextAppearance.Holo.Medium"
-      tools:text="Error"
-      />
-  <ImageView
-      android:id="@+id/catalyst_redbox_divider"
-      android:layout_width="match_parent"
-      android:layout_height="1dp"
-      android:layout_below="@id/catalyst_redbox_title"
-      android:scaleType="fitXY"
-      android:gravity="fill_horizontal"
-      android:src="@android:drawable/divider_horizontal_dark"
-      />
+  <ListView
+    android:id="@+id/rn_redbox_stack"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    />
   <Button
-      android:id="@+id/catalyst_redbox_reloadjs"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_alignParentBottom="true"
-      android:text="@string/catalyst_reloadjs"
-      android:textColor="@android:color/black"
-      />
-  <TextView
-      android:id="@+id/catalyst_redbox_details"
-      android:layout_width="wrap_content"
-      android:layout_height="0dp"
-      android:layout_below="@id/catalyst_redbox_divider"
-      android:layout_above="@id/catalyst_redbox_reloadjs"
-      android:layout_alignParentLeft="true"
-      android:layout_alignParentStart="true"
-      android:padding="8dp"
-      android:textSize="10sp"
-      android:scrollbars="vertical|horizontal"
-      android:gravity="center_vertical"
-      tools:text="Error message"
-      />
-</RelativeLayout>
+    android:id="@+id/rn_redbox_reloadjs"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:text="@string/catalyst_reloadjs"
+    />
+</LinearLayout>

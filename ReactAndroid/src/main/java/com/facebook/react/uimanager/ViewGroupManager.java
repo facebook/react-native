@@ -16,11 +16,16 @@ import android.view.ViewGroup;
  * Class providing children management API for view managers of classes extending ViewGroup.
  */
 public abstract class ViewGroupManager <T extends ViewGroup>
-    extends BaseViewManager<T, ReactShadowNode> {
+    extends BaseViewManager<T, LayoutShadowNode> {
 
   @Override
-  public ReactShadowNode createCSSNodeInstance() {
-    return new ReactShadowNode();
+  public LayoutShadowNode createShadowNodeInstance() {
+    return new LayoutShadowNode();
+  }
+
+  @Override
+  public Class<? extends LayoutShadowNode> getShadowNodeClass() {
+    return LayoutShadowNode.class;
   }
 
   @Override
@@ -39,8 +44,14 @@ public abstract class ViewGroupManager <T extends ViewGroup>
     return parent.getChildAt(index);
   }
 
-  public void removeView(T parent, View child) {
-    parent.removeView(child);
+  public void removeViewAt(T parent, int index) {
+    parent.removeViewAt(index);
+  }
+
+  public void removeAllViews(T parent) {
+    for (int i = getChildCount(parent) - 1; i >= 0; i--) {
+      removeViewAt(parent, i);
+    }
   }
 
   /**

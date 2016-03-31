@@ -44,7 +44,7 @@
    * Load from pre-bundled file on disk. To re-generate the static bundle, `cd`
    * to your Xcode project folder in the terminal, and run
    *
-   * $ curl 'http://localhost:8081/Examples/Movies/MoviesApp.includeRequire.runModule.bundle' -o main.jsbundle
+   * $ curl 'http://localhost:8081/Examples/Movies/MoviesApp.ios.bundle?platform=ios&dev=true' -o main.jsbundle
    *
    * then add the `main.jsbundle` file to your project and uncomment this line:
    */
@@ -57,7 +57,7 @@
                                                    launchOptions:launchOptions];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [[UIViewController alloc] init];
+  UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];

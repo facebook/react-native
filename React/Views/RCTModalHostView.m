@@ -18,8 +18,8 @@
 
 @implementation RCTModalHostView
 {
-  RCTBridge *_bridge;
-  BOOL _isValid;
+  __weak RCTBridge *_bridge;
+  BOOL _isPresented;
   RCTModalHostViewController *_modalViewController;
   RCTTouchHandler *_touchHandler;
 }
@@ -33,7 +33,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
     _bridge = bridge;
     _modalViewController = [RCTModalHostViewController new];
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:bridge];
-    _isValid = YES;
+    _isPresented = NO;
 
     __weak typeof(self) weakSelf = self;
     _modalViewController.boundsDidChangeBlock = ^(CGRect newBounds) {
@@ -46,45 +46,68 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 
 - (void)notifyForBoundsChange:(CGRect)newBounds
 {
-  if (_modalViewController.view && _isValid) {
+  if (_modalViewController.view && _isPresented) {
     [_bridge.uiManager setFrame:newBounds forView:_modalViewController.view];
   }
 }
 
-- (NSArray *)reactSubviews
+- (NSArray<UIView *> *)reactSubviews
 {
-  return [NSArray arrayWithObjects:_modalViewController.view, nil];
+  return _modalViewController.view ? @[_modalViewController.view] : @[];
 }
 
 - (void)insertReactSubview:(UIView *)subview atIndex:(__unused NSInteger)atIndex
 {
+  RCTAssert([_modalViewController.view reactTag] == nil, @"Modal view can only have one subview");
   [subview addGestureRecognizer:_touchHandler];
+  subview.autoresizingMask = UIViewAutoresizingFlexibleHeight |
+                             UIViewAutoresizingFlexibleWidth;
   _modalViewController.view = subview;
 }
 
 - (void)removeReactSubview:(UIView *)subview
 {
   RCTAssert(subview == _modalViewController.view, @"Cannot remove view other than modal view");
+  [subview removeGestureRecognizer:_touchHandler];
   _modalViewController.view = nil;
+}
+
+- (void)dismissModalViewController
+{
+  if (_isPresented) {
+    [_modalViewController dismissViewControllerAnimated:self.animated completion:nil];
+    _isPresented = NO;
+  }
+}
+
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+
+  if (!_isPresented && self.window) {
+    RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
+    [self.reactViewController presentViewController:_modalViewController animated:self.animated completion:^{
+      if (_onShow) {
+        _onShow(nil);
+      }
+    }];
+    _isPresented = YES;
+  }
 }
 
 - (void)didMoveToSuperview
 {
   [super didMoveToSuperview];
 
-  if (self.superview) {
-    RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
-    [self.reactViewController presentViewController:_modalViewController animated:self.animated completion:nil];
-  } else {
-    [_modalViewController dismissViewControllerAnimated:self.animated completion:nil];
+  if (_isPresented && !self.superview) {
+    [self dismissModalViewController];
   }
 }
 
 - (void)invalidate
 {
-  _isValid = NO;
   dispatch_async(dispatch_get_main_queue(), ^{
-    [_modalViewController dismissViewControllerAnimated:self.animated completion:nil];
+    [self dismissModalViewController];
   });
 }
 

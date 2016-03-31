@@ -8,9 +8,8 @@
  */
 
 // switchview because switch is a keyword
-package com.facebook.react.views.switchviewview;
+package com.facebook.react.views.switchview;
 
-import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -18,12 +17,13 @@ import android.widget.CompoundButton;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.uimanager.ReactProp;
-import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.common.SystemClock;
+import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.SimpleViewManager;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 /**
  * View manager for {@link ReactSwitch} components.
@@ -32,7 +32,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
 
   private static final String REACT_CLASS = "AndroidSwitch";
 
-  private static class ReactSwitchShadowNode extends ReactShadowNode implements
+  static class ReactSwitchShadowNode extends LayoutShadowNode implements
       CSSNode.MeasureFunction {
 
     private int mWidth;
@@ -44,7 +44,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
     }
 
     @Override
-    public void measure(CSSNode node, float width, MeasureOutput measureOutput) {
+    public void measure(CSSNode node, float width, float height, MeasureOutput measureOutput) {
       if (!mMeasured) {
         // Create a switch with the default config and measure it; since we don't (currently)
         // support setting custom switch text, this is fine, as all switches will measure the same
@@ -71,7 +71,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSwitchEvent(
                   buttonView.getId(),
-                  SystemClock.uptimeMillis(),
+                  SystemClock.nanoTime(),
                   isChecked));
         }
       };
@@ -82,8 +82,13 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
   }
 
   @Override
-  public ReactShadowNode createCSSNodeInstance() {
+  public LayoutShadowNode createShadowNodeInstance() {
     return new ReactSwitchShadowNode();
+  }
+
+  @Override
+  public Class getShadowNodeClass() {
+    return ReactSwitchShadowNode.class;
   }
 
   @Override

@@ -20,6 +20,15 @@ import javax.annotation.Nullable;
 public class SoftAssertions {
 
   /**
+   * Throw {@link AssertionException} with a given message. Use this method surrounded with
+   * {@code if} block with assert condition in case you plan to do string concatenation to produce
+   * the message.
+   */
+  public static void assertUnreachable(String message) {
+    throw new AssertionException(message);
+  }
+
+  /**
    * Asserts the given condition, throwing an {@link AssertionException} if the condition doesn't
    * hold.
    */

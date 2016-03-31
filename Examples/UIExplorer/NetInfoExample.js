@@ -15,83 +15,84 @@
  */
 'use strict';
 
-var React = require('react-native');
-var {
+const React = require('react-native');
+const {
   NetInfo,
   Text,
-  View
+  View,
+  TouchableWithoutFeedback,
 } = React;
 
-var ReachabilitySubscription = React.createClass({
+const ConnectionInfoSubscription = React.createClass({
   getInitialState() {
     return {
-      reachabilityHistory: [],
+      connectionInfoHistory: [],
     };
   },
   componentDidMount: function() {
     NetInfo.addEventListener(
-      'change',
-      this._handleReachabilityChange
+        'change',
+        this._handleConnectionInfoChange
     );
   },
   componentWillUnmount: function() {
     NetInfo.removeEventListener(
-      'change',
-      this._handleReachabilityChange
+        'change',
+        this._handleConnectionInfoChange
     );
   },
-  _handleReachabilityChange: function(reachability) {
-    var reachabilityHistory = this.state.reachabilityHistory.slice();
-    reachabilityHistory.push(reachability);
+  _handleConnectionInfoChange: function(connectionInfo) {
+    const connectionInfoHistory = this.state.connectionInfoHistory.slice();
+    connectionInfoHistory.push(connectionInfo);
     this.setState({
-      reachabilityHistory,
+      connectionInfoHistory,
     });
   },
   render() {
     return (
-      <View>
-        <Text>{JSON.stringify(this.state.reachabilityHistory)}</Text>
-      </View>
+        <View>
+          <Text>{JSON.stringify(this.state.connectionInfoHistory)}</Text>
+        </View>
     );
   }
 });
 
-var ReachabilityCurrent = React.createClass({
+const ConnectionInfoCurrent = React.createClass({
   getInitialState() {
     return {
-      reachability: null,
+      connectionInfo: null,
     };
   },
   componentDidMount: function() {
     NetInfo.addEventListener(
-      'change',
-      this._handleReachabilityChange
+        'change',
+        this._handleConnectionInfoChange
     );
     NetInfo.fetch().done(
-      (reachability) => { this.setState({reachability}); }
+        (connectionInfo) => { this.setState({connectionInfo}); }
     );
   },
   componentWillUnmount: function() {
     NetInfo.removeEventListener(
-      'change',
-      this._handleReachabilityChange
+        'change',
+        this._handleConnectionInfoChange
     );
   },
-  _handleReachabilityChange: function(reachability) {
+  _handleConnectionInfoChange: function(connectionInfo) {
     this.setState({
-      reachability,
+      connectionInfo,
     });
   },
   render() {
     return (
-      <View>
-        <Text>{this.state.reachability}</Text>
-      </View>
+        <View>
+          <Text>{this.state.connectionInfo}</Text>
+        </View>
     );
   }
 });
 
-var IsConnected = React.createClass({
+const IsConnected = React.createClass({
   getInitialState() {
     return {
       isConnected: null,
@@ -99,17 +100,17 @@ var IsConnected = React.createClass({
   },
   componentDidMount: function() {
     NetInfo.isConnected.addEventListener(
-      'change',
-      this._handleConnectivityChange
+        'change',
+        this._handleConnectivityChange
     );
     NetInfo.isConnected.fetch().done(
-      (isConnected) => { this.setState({isConnected}); }
+        (isConnected) => { this.setState({isConnected}); }
     );
   },
   componentWillUnmount: function() {
     NetInfo.isConnected.removeEventListener(
-      'change',
-      this._handleConnectivityChange
+        'change',
+        this._handleConnectivityChange
     );
   },
   _handleConnectivityChange: function(isConnected) {
@@ -119,9 +120,37 @@ var IsConnected = React.createClass({
   },
   render() {
     return (
-      <View>
-        <Text>{this.state.isConnected ? 'Online' : 'Offline'}</Text>
-      </View>
+        <View>
+          <Text>{this.state.isConnected ? 'Online' : 'Offline'}</Text>
+        </View>
+    );
+  }
+});
+
+const IsConnectionExpensive = React.createClass({
+  getInitialState() {
+    return {
+      isConnectionExpensive: (null : ?boolean),
+    };
+  },
+  _checkIfExpensive() {
+    NetInfo.isConnectionExpensive().then(
+        isConnectionExpensive => { this.setState({isConnectionExpensive}); }
+    );
+  },
+  render() {
+    return (
+        <View>
+          <TouchableWithoutFeedback onPress={this._checkIfExpensive}>
+            <View>
+              <Text>Click to see if connection is expensive:
+                {this.state.isConnectionExpensive === true ? 'Expensive' :
+                this.state.isConnectionExpensive === false ? 'Not expensive'
+                : 'Unknown'}
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
     );
   }
 });
@@ -135,13 +164,19 @@ exports.examples = [
     render(): ReactElement { return <IsConnected />; }
   },
   {
-    title: 'NetInfo.reachabilityIOS',
-    description: 'Asynchronously load and observe iOS reachability',
-    render(): ReactElement { return <ReachabilityCurrent />; }
+    title: 'NetInfo.update',
+    description: 'Asynchronously load and observe connectionInfo',
+    render(): ReactElement { return <ConnectionInfoCurrent />; }
   },
   {
-    title: 'NetInfo.reachabilityIOS',
-    description: 'Observed updates to iOS reachability',
-    render(): ReactElement { return <ReachabilitySubscription />; }
+    title: 'NetInfo.updateHistory',
+    description: 'Observed updates to connectionInfo',
+    render(): ReactElement { return <ConnectionInfoSubscription />; }
+  },
+  {
+    platform: 'android',
+    title: 'NetInfo.isConnectionExpensive (Android)',
+    description: 'Asynchronously check isConnectionExpensive',
+    render(): ReactElement { return <IsConnectionExpensive />; }
   },
 ];

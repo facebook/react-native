@@ -22,14 +22,14 @@ RCT_EXPORT_MODULE()
   return [RCTSegmentedControl new];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(values, NSStringArray)
+RCT_EXPORT_VIEW_PROPERTY(values, NSArray<NSString *>)
 RCT_EXPORT_VIEW_PROPERTY(selectedIndex, NSInteger)
 RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(momentary, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 
-- (NSDictionary *)constantsToExport
+- (NSDictionary<NSString *, id> *)constantsToExport
 {
   RCTSegmentedControl *view = [RCTSegmentedControl new];
   return @{

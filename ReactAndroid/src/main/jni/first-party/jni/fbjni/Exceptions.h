@@ -114,7 +114,7 @@ template<typename... Args>
   assertIfExceptionsNotInitialized();
   int msgSize = snprintf(nullptr, 0, fmt, args...);
 
-  char *msg = (char*) alloca(msgSize);
+  char *msg = (char*) alloca(msgSize + 1);
   snprintf(msg, kMaxExceptionMessageBufferSize, fmt, args...);
   throwNewJavaException(throwableName, msg);
 }

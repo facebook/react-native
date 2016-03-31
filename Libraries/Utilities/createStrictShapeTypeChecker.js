@@ -13,7 +13,7 @@
 
 var ReactPropTypeLocationNames = require('ReactPropTypeLocationNames');
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var merge = require('merge');
 
 function createStrictShapeTypeChecker(
@@ -24,7 +24,7 @@ function createStrictShapeTypeChecker(
       if (isRequired) {
         invariant(
           false,
-          `Required object \`${propName}\` was not specified in `+
+          `Required object \`${propName}\` was not specified in ` +
           `\`${componentName}\`.`
         );
       }

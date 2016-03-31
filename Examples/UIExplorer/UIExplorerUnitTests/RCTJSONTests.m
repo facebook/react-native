@@ -23,14 +23,14 @@
 
 - (void)testEncodingObject
 {
-  NSDictionary *obj = @{@"foo": @"bar"};
+  NSDictionary<NSString *, id> *obj = @{@"foo": @"bar"};
   NSString *json = @"{\"foo\":\"bar\"}";
   XCTAssertEqualObjects(json, RCTJSONStringify(obj, NULL));
 }
 
 - (void)testEncodingArray
 {
-  NSArray *array = @[@"foo", @"bar"];
+  NSArray<id> *array = @[@"foo", @"bar"];
   NSString *json = @"[\"foo\",\"bar\"]";
   XCTAssertEqualObjects(json, RCTJSONStringify(array, NULL));
 }
@@ -44,14 +44,14 @@
 
 - (void)testDecodingObject
 {
-  NSDictionary *obj = @{@"foo": @"bar"};
+  NSDictionary<NSString *, id> *obj = @{@"foo": @"bar"};
   NSString *json = @"{\"foo\":\"bar\"}";
   XCTAssertEqualObjects(obj, RCTJSONParse(json, NULL));
 }
 
 - (void)testDecodingArray
 {
-  NSArray *array = @[@"foo", @"bar"];
+  NSArray<id> *array = @[@"foo", @"bar"];
   NSString *json = @"[\"foo\",\"bar\"]";
   XCTAssertEqualObjects(array, RCTJSONParse(json, NULL));
 }
@@ -66,16 +66,47 @@
 - (void)testDecodingMutableArray
 {
   NSString *json = @"[1,2,3]";
-  NSMutableArray *array = RCTJSONParseMutable(json, NULL);
+  NSMutableArray<id> *array = RCTJSONParseMutable(json, NULL);
   XCTAssertNoThrow([array addObject:@4]);
   XCTAssertEqualObjects(array, (@[@1, @2, @3, @4]));
 }
 
 - (void)testLeadingWhitespace
 {
-  NSDictionary *obj = @{@"foo": @"bar"};
+  NSDictionary<NSString *, id> *obj = @{@"foo": @"bar"};
   NSString *json = @" \r\n\t{\"foo\":\"bar\"}";
   XCTAssertEqualObjects(obj, RCTJSONParse(json, NULL));
+}
+
+- (void)testNotJSONSerializable
+{
+  NSDictionary<NSString *, id> *obj = @{@"foo": [NSDate date]};
+  NSString *json = @"{\"foo\":null}";
+  XCTAssertEqualObjects(json, RCTJSONStringify(obj, NULL));
+}
+
+- (void)testNaN
+{
+  NSDictionary<NSString *, id> *obj = @{@"foo": @(NAN)};
+  NSString *json = @"{\"foo\":0}";
+  XCTAssertEqualObjects(json, RCTJSONStringify(obj, NULL));
+}
+
+- (void)testNotUTF8Convertible
+{
+  //see https://gist.github.com/0xced/56035d2f57254cf518b5
+  NSString *string = [[NSString alloc] initWithBytes:"\xd8\x00" length:2 encoding:NSUTF16StringEncoding];
+  NSDictionary<NSString *, id> *obj = @{@"foo": string};
+  NSString *json = @"{\"foo\":null}";
+  XCTAssertEqualObjects(json, RCTJSONStringify(obj, NULL));
+}
+
+- (void)testErrorPointer
+{
+  NSDictionary<NSString *, id> *obj = @{@"foo": [NSDate date]};
+  NSError *error;
+  XCTAssertNil(RCTJSONStringify(obj, &error));
+  XCTAssertNotNil(error);
 }
 
 @end

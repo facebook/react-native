@@ -11,22 +11,22 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var Platform = require('Platform');
-var React = require('React');
-var ReactInstanceMap = require('ReactInstanceMap');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var StyleSheetPropType = require('StyleSheetPropType');
-var TextStylePropTypes = require('TextStylePropTypes');
-var Touchable = require('Touchable');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const Platform = require('Platform');
+const React = require('React');
+const ReactInstanceMap = require('ReactInstanceMap');
+const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+const StyleSheetPropType = require('StyleSheetPropType');
+const TextStylePropTypes = require('TextStylePropTypes');
+const Touchable = require('Touchable');
 
-var createReactNativeComponentClass =
+const createReactNativeComponentClass =
   require('createReactNativeComponentClass');
-var merge = require('merge');
+const merge = require('merge');
 
-var stylePropType = StyleSheetPropType(TextStylePropTypes);
+const stylePropType = StyleSheetPropType(TextStylePropTypes);
 
-var viewConfig = {
+const viewConfig = {
   validAttributes: merge(ReactNativeViewAttributes.UIView, {
     isHighlighted: true,
     numberOfLines: true,
@@ -68,13 +68,10 @@ var viewConfig = {
  * ```
  */
 
-var Text = React.createClass({
-
-  mixins: [Touchable.Mixin, NativeMethodsMixin],
-
+const Text = React.createClass({
   propTypes: {
     /**
-     * Used to truncate the text with an elipsis after computing the text
+     * Used to truncate the text with an ellipsis after computing the text
      * layout, including line wrapping, such that the total number of lines
      * does not exceed this number.
      */
@@ -102,125 +99,130 @@ var Text = React.createClass({
     testID: React.PropTypes.string,
     /**
      * Specifies should fonts scale to respect Text Size accessibility setting on iOS.
+     * @platform ios
      */
     allowFontScaling: React.PropTypes.bool,
   },
-
-  viewConfig: viewConfig,
-
-  getInitialState: function(): Object {
-    return merge(this.touchableGetInitialState(), {
-      isHighlighted: false,
-    });
-  },
-  
-  getDefaultProps: function(): Object {
+  getDefaultProps(): Object {
     return {
+      accessible: true,
       allowFontScaling: true,
     };
   },
-
-  onStartShouldSetResponder: function(): bool {
-    var shouldSetFromProps = this.props.onStartShouldSetResponder &&
-      this.props.onStartShouldSetResponder();
-    return shouldSetFromProps || !!this.props.onPress;
-  },
-
-  /*
-   * Returns true to allow responder termination
-   */
-  handleResponderTerminationRequest: function(): bool {
-    // Allow touchable or props.onResponderTerminationRequest to deny
-    // the request
-    var allowTermination = this.touchableHandleResponderTerminationRequest();
-    if (allowTermination && this.props.onResponderTerminationRequest) {
-      allowTermination = this.props.onResponderTerminationRequest();
-    }
-    return allowTermination;
-  },
-
-  handleResponderGrant: function(e: SyntheticEvent, dispatchID: string) {
-    this.touchableHandleResponderGrant(e, dispatchID);
-    this.props.onResponderGrant &&
-      this.props.onResponderGrant.apply(this, arguments);
-  },
-
-  handleResponderMove: function(e: SyntheticEvent) {
-    this.touchableHandleResponderMove(e);
-    this.props.onResponderMove &&
-      this.props.onResponderMove.apply(this, arguments);
-  },
-
-  handleResponderRelease: function(e: SyntheticEvent) {
-    this.touchableHandleResponderRelease(e);
-    this.props.onResponderRelease &&
-      this.props.onResponderRelease.apply(this, arguments);
-  },
-
-  handleResponderTerminate: function(e: SyntheticEvent) {
-    this.touchableHandleResponderTerminate(e);
-    this.props.onResponderTerminate &&
-      this.props.onResponderTerminate.apply(this, arguments);
-  },
-
-  touchableHandleActivePressIn: function() {
-    if (this.props.suppressHighlighting || !this.props.onPress) {
-      return;
-    }
-    this.setState({
-      isHighlighted: true,
-    });
-  },
-
-  touchableHandleActivePressOut: function() {
-    if (this.props.suppressHighlighting || !this.props.onPress) {
-      return;
-    }
-    this.setState({
+  getInitialState: function(): Object {
+    return merge(Touchable.Mixin.touchableGetInitialState(), {
       isHighlighted: false,
     });
   },
-
-  touchableHandlePress: function() {
-    this.props.onPress && this.props.onPress();
-  },
-
-  touchableGetPressRectOffset: function(): RectOffset {
-    return PRESS_RECT_OFFSET;
-  },
-
-  getChildContext: function(): Object {
+  mixins: [NativeMethodsMixin],
+  viewConfig: viewConfig,
+  getChildContext(): Object {
     return {isInAParentText: true};
   },
-
   childContextTypes: {
     isInAParentText: React.PropTypes.bool
   },
+  contextTypes: {
+    isInAParentText: React.PropTypes.bool
+  },
+  /**
+   * Only assigned if touch is needed.
+   */
+  _handlers: (null: ?Object),
+  /**
+   * These are assigned lazily the first time the responder is set to make plain
+   * text nodes as cheap as possible.
+   */
+  touchableHandleActivePressIn: (null: ?Function),
+  touchableHandleActivePressOut: (null: ?Function),
+  touchableHandlePress: (null: ?Function),
+  touchableGetPressRectOffset: (null: ?Function),
+  render(): ReactElement {
+    let newProps = this.props;
+    if (this.props.onStartShouldSetResponder || this.props.onPress) {
+      if (!this._handlers) {
+        this._handlers = {
+          onStartShouldSetResponder: (): bool => {
+            const shouldSetFromProps = this.props.onStartShouldSetResponder &&
+                this.props.onStartShouldSetResponder();
+            const setResponder = shouldSetFromProps || !!this.props.onPress;
+            if (setResponder && !this.touchableHandleActivePressIn) {
+              // Attach and bind all the other handlers only the first time a touch
+              // actually happens.
+              for (let key in Touchable.Mixin) {
+                if (typeof Touchable.Mixin[key] === 'function') {
+                  (this: any)[key] = Touchable.Mixin[key].bind(this);
+                }
+              }
+              this.touchableHandleActivePressIn = () => {
+                if (this.props.suppressHighlighting || !this.props.onPress) {
+                  return;
+                }
+                this.setState({
+                  isHighlighted: true,
+                });
+              };
 
-  render: function() {
-    var props = {};
-    for (var key in this.props) {
-      props[key] = this.props[key];
-    }
-    // Text is accessible by default
-    if (props.accessible !== false) {
-      props.accessible = true;
-    }
-    props.isHighlighted = this.state.isHighlighted;
-    props.onStartShouldSetResponder = this.onStartShouldSetResponder;
-    props.onResponderTerminationRequest =
-      this.handleResponderTerminationRequest;
-    props.onResponderGrant = this.handleResponderGrant;
-    props.onResponderMove = this.handleResponderMove;
-    props.onResponderRelease = this.handleResponderRelease;
-    props.onResponderTerminate = this.handleResponderTerminate;
+              this.touchableHandleActivePressOut = () => {
+                if (this.props.suppressHighlighting || !this.props.onPress) {
+                  return;
+                }
+                this.setState({
+                  isHighlighted: false,
+                });
+              };
 
-    // TODO: Switch to use contextTypes and this.context after React upgrade
-    var context = ReactInstanceMap.get(this)._context;
-    if (context.isInAParentText) {
-      return <RCTVirtualText {...props} />;
+              this.touchableHandlePress = () => {
+                this.props.onPress && this.props.onPress();
+              };
+
+              this.touchableGetPressRectOffset = function(): RectOffset {
+                return PRESS_RECT_OFFSET;
+              };
+            }
+            return setResponder;
+          },
+          onResponderGrant: function(e: SyntheticEvent, dispatchID: string) {
+            this.touchableHandleResponderGrant(e, dispatchID);
+            this.props.onResponderGrant &&
+              this.props.onResponderGrant.apply(this, arguments);
+          }.bind(this),
+          onResponderMove: function(e: SyntheticEvent) {
+            this.touchableHandleResponderMove(e);
+            this.props.onResponderMove &&
+              this.props.onResponderMove.apply(this, arguments);
+          }.bind(this),
+          onResponderRelease: function(e: SyntheticEvent) {
+            this.touchableHandleResponderRelease(e);
+            this.props.onResponderRelease &&
+              this.props.onResponderRelease.apply(this, arguments);
+          }.bind(this),
+          onResponderTerminate: function(e: SyntheticEvent) {
+            this.touchableHandleResponderTerminate(e);
+            this.props.onResponderTerminate &&
+              this.props.onResponderTerminate.apply(this, arguments);
+          }.bind(this),
+          onResponderTerminationRequest: function(): bool {
+            // Allow touchable or props.onResponderTerminationRequest to deny
+            // the request
+            var allowTermination = this.touchableHandleResponderTerminationRequest();
+            if (allowTermination && this.props.onResponderTerminationRequest) {
+              allowTermination = this.props.onResponderTerminationRequest.apply(this, arguments);
+            }
+            return allowTermination;
+          }.bind(this),
+        };
+      }
+      newProps = {
+        ...this.props,
+        ...this._handlers,
+        isHighlighted: this.state.isHighlighted,
+      };
+    }
+    if (this.context.isInAParentText) {
+      return <RCTVirtualText {...newProps} />;
     } else {
-      return <RCTText {...props} />;
+      return <RCTText {...newProps} />;
     }
   },
 });

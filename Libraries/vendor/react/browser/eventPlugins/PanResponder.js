@@ -23,9 +23,26 @@ var currentCentroidY = TouchHistoryMath.currentCentroidY;
  * recognize simple multi-touch gestures.
  *
  * It provides a predictable wrapper of the responder handlers provided by the
- * [gesture responder system](/react-native/docs/gesture-responder-system.html).
+ * [gesture responder system](docs/gesture-responder-system.html).
  * For each handler, it provides a new `gestureState` object alongside the
- * normal event.
+ * native event object:
+ *
+ * ```
+ * onPanResponderMove: (event, gestureState) => {}
+ * ```
+ *
+ * A native event is a synthetic touch event with the following form:
+ *
+ *  - `nativeEvent`
+ *      + `changedTouches` - Array of all touch events that have changed since the last event
+ *      + `identifier` - The ID of the touch
+ *      + `locationX` - The X position of the touch, relative to the element
+ *      + `locationY` - The Y position of the touch, relative to the element
+ *      + `pageX` - The X position of the touch, relative to the root element
+ *      + `pageY` - The Y position of the touch, relative to the root element
+ *      + `target` - The node id of the element receiving the touch event
+ *      + `timestamp` - A time identifier for the touch, useful for velocity calculation
+ *      + `touches` - Array of all current touches on the screen
  *
  * A `gestureState` object has the following:
  *
@@ -39,7 +56,7 @@ var currentCentroidY = TouchHistoryMath.currentCentroidY;
  *  - `dy` - accumulated distance of the gesture since the touch started
  *  - `vx` - current velocity of the gesture
  *  - `vy` - current velocity of the gesture
- *  - `numberActiveTouches` - Number of touches currently on screeen
+ *  - `numberActiveTouches` - Number of touches currently on screen
  *
  * ### Basic Usage
  *
@@ -246,7 +263,7 @@ var PanResponder = {
    *  - `onPanResponderMove: (e, gestureState) => {...}`
    *  - `onPanResponderTerminate: (e, gestureState) => {...}`
    *  - `onPanResponderTerminationRequest: (e, gestureState) => {...}`
-   *  - 'onShouldBlockNativeResponder: (e, gestureState) => {...}'
+   *  - `onShouldBlockNativeResponder: (e, gestureState) => {...}`
    *
    *  In general, for events that have capture equivalents, we update the
    *  gestureState once in the capture phase and can use it in the bubble phase

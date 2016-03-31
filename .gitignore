@@ -4,7 +4,6 @@
 !**/*.xcworkspacedata
 !**/*.xcsettings
 !**/*.xcscheme
-build/
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -22,16 +21,28 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 
-# OS X
-.DS_Store
+# Gradle
+/build/
+/Examples/**/android/app/build/
+/ReactAndroid/build/
 
-# Android/IJ
+# Buck
+.buckd
+buck-out
+/ReactAndroid/src/main/jni/prebuilt/lib/armeabi-v7a/
+/ReactAndroid/src/main/jni/prebuilt/lib/x86/
+
+# Android
 .idea
 .gradle
 local.properties
 *.iml
+/android/
 
 # Node
 node_modules
 *.log
 .nvm
+
+# OS X
+.DS_Store

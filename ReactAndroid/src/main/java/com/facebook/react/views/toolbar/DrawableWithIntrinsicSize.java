@@ -1,4 +1,11 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 package com.facebook.react.views.toolbar;
 
@@ -31,12 +38,12 @@ public class DrawableWithIntrinsicSize extends ForwardingDrawable implements Dra
 
   @Override
   public int getIntrinsicWidth() {
-    return (int) PixelUtil.toDIPFromPixel(mImageInfo.getWidth());
+    return mImageInfo.getWidth();
   }
 
   @Override
   public int getIntrinsicHeight() {
-    return (int) PixelUtil.toDIPFromPixel(mImageInfo.getHeight());
+    return mImageInfo.getHeight();
   }
 
 }

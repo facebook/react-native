@@ -15,20 +15,21 @@
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ReactChildren = require('ReactChildren');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var RCTPickerIOSConsts = require('NativeModules').UIManager.RCTPicker.Constants;
 var StyleSheet = require('StyleSheet');
+var StyleSheetPropType = require('StyleSheetPropType');
+var TextStylePropTypes = require('TextStylePropTypes');
 var View = require('View');
 
+var itemStylePropType = StyleSheetPropType(TextStylePropTypes);
 var requireNativeComponent = require('requireNativeComponent');
-var merge = require('merge');
-
-var PICKER = 'picker';
 
 var PickerIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
+    ...View.propTypes,
+    itemStyle: itemStylePropType,
     onValueChange: React.PropTypes.func,
     selectedValue: React.PropTypes.any, // string or integer basically
   },
@@ -58,8 +59,8 @@ var PickerIOS = React.createClass({
     return (
       <View style={this.props.style}>
         <RCTPickerIOS
-          ref={PICKER}
-          style={styles.pickerIOS}
+          ref={picker => this._picker = picker}
+          style={[styles.pickerIOS, this.props.itemStyle]}
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}
           onChange={this._onChange}
@@ -73,7 +74,7 @@ var PickerIOS = React.createClass({
       this.props.onChange(event);
     }
     if (this.props.onValueChange) {
-      this.props.onValueChange(event.nativeEvent.newValue);
+      this.props.onValueChange(event.nativeEvent.newValue, event.nativeEvent.newIndex);
     }
 
     // The picker is a controlled component. This means we expect the
@@ -82,8 +83,8 @@ var PickerIOS = React.createClass({
     // disallow/undo/mutate the selection of certain values. In other
     // words, the embedder of this component should be the source of
     // truth, not the native component.
-    if (this.state.selectedIndex !== event.nativeEvent.newIndex) {
-      this.refs[PICKER].setNativeProps({
+    if (this._picker && this.state.selectedIndex !== event.nativeEvent.newIndex) {
+      this._picker.setNativeProps({
         selectedIndex: this.state.selectedIndex
       });
     }
@@ -111,7 +112,11 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTPickerIOS = requireNativeComponent('RCTPicker', PickerIOS, {
+var RCTPickerIOS = requireNativeComponent('RCTPicker', {
+  propTypes: {
+    style: itemStylePropType,
+  },
+}, {
   nativeOnly: {
     items: true,
     onChange: true,

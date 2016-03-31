@@ -27,7 +27,7 @@ typedef void (^RCTBubblingEventBlock)(NSDictionary *body);
 
 - (void)insertReactSubview:(id<RCTComponent>)subview atIndex:(NSInteger)atIndex;
 - (void)removeReactSubview:(id<RCTComponent>)subview;
-- (NSArray *)reactSubviews;
+- (NSArray<id<RCTComponent>> *)reactSubviews;
 - (id<RCTComponent>)reactSuperview;
 - (NSNumber *)reactTagAtPoint:(CGPoint)point;
 
@@ -35,6 +35,13 @@ typedef void (^RCTBubblingEventBlock)(NSDictionary *body);
 - (BOOL)isReactRootView;
 
 @optional
+
+/**
+ * Called each time props have been set.
+ * Not all props have to be set - React can set only changed ones.
+ * @param changedProps String names of all set props.
+ */
+- (void)didSetProps:(NSArray<NSString *> *)changedProps;
 
 // TODO: Deprecate this
 // This method is called after layout has been performed for all views known

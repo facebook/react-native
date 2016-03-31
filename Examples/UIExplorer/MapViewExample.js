@@ -17,10 +17,13 @@
 
 var React = require('react-native');
 var {
+  Image,
   MapView,
+  PropTypes,
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } = React;
 
@@ -34,22 +37,20 @@ var regionText = {
 var MapRegionInput = React.createClass({
 
   propTypes: {
-    region: React.PropTypes.shape({
-      latitude: React.PropTypes.number.isRequired,
-      longitude: React.PropTypes.number.isRequired,
-      latitudeDelta: React.PropTypes.number.isRequired,
-      longitudeDelta: React.PropTypes.number.isRequired,
+    region: PropTypes.shape({
+      latitude: PropTypes.number.isRequired,
+      longitude: PropTypes.number.isRequired,
+      latitudeDelta: PropTypes.number,
+      longitudeDelta: PropTypes.number,
     }),
-    onChange: React.PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
   },
 
-  getInitialState: function() {
+  getInitialState() {
     return {
       region: {
         latitude: 0,
         longitude: 0,
-        latitudeDelta: 0,
-        longitudeDelta: 0,
       }
     };
   },
@@ -91,7 +92,9 @@ var MapRegionInput = React.createClass({
             {'Latitude delta'}
           </Text>
           <TextInput
-            value={'' + region.latitudeDelta}
+            value={
+              region.latitudeDelta == null ? '' : String(region.latitudeDelta)
+            }
             style={styles.textInput}
             onChange={this._onChangeLatitudeDelta}
             selectTextOnFocus={true}
@@ -102,7 +105,9 @@ var MapRegionInput = React.createClass({
             {'Longitude delta'}
           </Text>
           <TextInput
-            value={'' + region.longitudeDelta}
+            value={
+              region.longitudeDelta == null ? '' : String(region.longitudeDelta)
+            }
             style={styles.textInput}
             onChange={this._onChangeLongitudeDelta}
             selectTextOnFocus={true}
@@ -135,10 +140,12 @@ var MapRegionInput = React.createClass({
 
   _change: function() {
     this.setState({
-      latitude: parseFloat(regionText.latitude),
-      longitude: parseFloat(regionText.longitude),
-      latitudeDelta: parseFloat(regionText.latitudeDelta),
-      longitudeDelta: parseFloat(regionText.longitudeDelta),
+      region: {
+        latitude: parseFloat(regionText.latitude),
+        longitude: parseFloat(regionText.longitude),
+        latitudeDelta: parseFloat(regionText.latitudeDelta),
+        longitudeDelta: parseFloat(regionText.longitudeDelta),
+      },
     });
     this.props.onChange(this.state.region);
   },
@@ -149,10 +156,10 @@ var MapViewExample = React.createClass({
 
   getInitialState() {
     return {
-      mapRegion: null,
-      mapRegionInput: null,
-      annotations: null,
       isFirstLoad: true,
+      mapRegion: undefined,
+      mapRegionInput: undefined,
+      annotations: [],
     };
   },
 
@@ -163,12 +170,12 @@ var MapViewExample = React.createClass({
           style={styles.map}
           onRegionChange={this._onRegionChange}
           onRegionChangeComplete={this._onRegionChangeComplete}
-          region={this.state.mapRegion || undefined}
-          annotations={this.state.annotations || undefined}
+          region={this.state.mapRegion}
+          annotations={this.state.annotations}
         />
         <MapRegionInput
           onChange={this._onRegionInputChanged}
-          region={this.state.mapRegionInput || undefined}
+          region={this.state.mapRegionInput}
         />
       </View>
     );
@@ -208,6 +215,42 @@ var MapViewExample = React.createClass({
 
 });
 
+var AnnotationExample = React.createClass({
+
+  getInitialState() {
+    return {
+      isFirstLoad: true,
+      annotations: [],
+      mapRegion: undefined,
+    };
+  },
+
+  render() {
+    if (this.state.isFirstLoad) {
+      var onRegionChangeComplete = (region) => {
+        this.setState({
+          isFirstLoad: false,
+          annotations: [{
+            longitude: region.longitude,
+            latitude: region.latitude,
+            ...this.props.annotation,
+          }],
+        });
+      };
+    }
+
+    return (
+      <MapView
+        style={styles.map}
+        onRegionChangeComplete={onRegionChangeComplete}
+        region={this.state.mapRegion}
+        annotations={this.state.annotations}
+      />
+    );
+  },
+
+});
+
 var styles = StyleSheet.create({
   map: {
     height: 150,
@@ -242,12 +285,123 @@ exports.description = 'Base component to display maps';
 exports.examples = [
   {
     title: 'Map',
-    render(): ReactElement { return <MapViewExample />; }
+    render() {
+      return <MapViewExample />;
+    }
   },
   {
-    title: 'Map shows user location',
+    title: 'showsUserLocation + followUserLocation',
     render() {
-      return  <MapView style={styles.map} showsUserLocation={true} />;
+      return (
+        <MapView
+          style={styles.map}
+          showsUserLocation={true}
+          followUserLocation={true}
+        />
+      );
     }
-  }
+  },
+  {
+    title: 'Callout example',
+    render() {
+      return <AnnotationExample style={styles.map} annotation={{
+        title: 'More Info...',
+        rightCalloutView: (
+          <TouchableOpacity
+            onPress={() => {
+              alert('You Are Here');
+            }}>
+            <Image
+              style={{width:30, height:30}}
+              source={require('./uie_thumb_selected.png')}
+            />
+          </TouchableOpacity>
+        ),
+      }}/>;
+    }
+  },
+  {
+    title: 'Annotation focus example',
+    render() {
+      return <AnnotationExample style={styles.map} annotation={{
+        title: 'More Info...',
+        onFocus: () => {
+          alert('Annotation gets focus');
+        },
+        onBlur: () => {
+          alert('Annotation lost focus');
+        }
+      }}/>;
+    }
+  },
+  {
+    title: 'Draggable pin',
+    render() {
+      return <AnnotationExample style={styles.map} annotation={{
+        draggable: true,
+        onDragStateChange: (event) => {
+          console.log('Drag state: ' + event.state);
+        },
+      }}/>;
+    }
+  },
+  {
+    title: 'Custom pin color',
+    render() {
+      return <AnnotationExample style={styles.map} annotation={{
+        title: 'You Are Purple',
+        tintColor: MapView.PinColors.PURPLE,
+      }}/>;
+    }
+  },
+  {
+    title: 'Custom pin image',
+    render() {
+      return <AnnotationExample style={styles.map} annotation={{
+        title: 'Thumbs Up!',
+        image: require('image!uie_thumb_big'),
+      }}/>;
+    }
+  },
+  {
+    title: 'Custom pin view',
+    render() {
+      return <AnnotationExample style={styles.map} annotation={{
+        title: 'Thumbs Up!',
+        view: <View style={{
+          alignItems: 'center',
+        }}>
+          <Text style={{fontWeight: 'bold', color: '#f007'}}>
+            Thumbs Up!
+          </Text>
+          <Image
+            style={{width: 90, height: 65, resizeMode: 'cover'}}
+            source={require('image!uie_thumb_big')}
+          />
+        </View>,
+      }}/>;
+    }
+  },
+  {
+    title: 'Custom overlay',
+    render() {
+      return <MapView
+        style={styles.map}
+        region={{
+          latitude: 39.06,
+          longitude: -95.22,
+        }}
+        overlays={[{
+          coordinates:[
+            {latitude: 32.47, longitude: -107.85},
+            {latitude: 45.13, longitude: -94.48},
+            {latitude: 39.27, longitude: -83.25},
+            {latitude: 32.47, longitude: -107.85},
+          ],
+          strokeColor: '#f007',
+          lineWidth: 3,
+        }]}
+      />;
+    }
+  },
 ];

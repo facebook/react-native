@@ -23,7 +23,7 @@
 {
   UITableView *_stackTraceTableView;
   NSString *_lastErrorMessage;
-  NSArray *_lastStackTrace;
+  NSArray<NSDictionary *> *_lastStackTrace;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -91,7 +91,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)openStackFrameInEditor:(NSDictionary *)stackFrame
 {
-  NSData *stackFrameJSON = [RCTJSONStringify(stackFrame, nil) dataUsingEncoding:NSUTF8StringEncoding];
+  NSData *stackFrameJSON = [RCTJSONStringify(stackFrame, NULL) dataUsingEncoding:NSUTF8StringEncoding];
   NSString *postLength = [NSString stringWithFormat:@"%tu", stackFrameJSON.length];
   NSMutableURLRequest *request = [NSMutableURLRequest new];
   request.URL = [RCTConvert NSURL:@"http://localhost:8081/open-stack-frame"];
@@ -103,11 +103,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [[[NSURLSession sharedSession] dataTaskWithRequest:request] resume];
 }
 
-- (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack showIfHidden:(BOOL)shouldShow
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack showIfHidden:(BOOL)shouldShow
 {
   if ((self.hidden && shouldShow) || (!self.hidden && [_lastErrorMessage isEqualToString:message])) {
     _lastStackTrace = stack;
-    _lastErrorMessage = message;
+    // message is displayed using UILabel, which is unable to render text of
+    // unlimited length, so we truncate it
+    _lastErrorMessage = [message substringToIndex:MIN((NSUInteger)10000, message.length)];
 
     [_stackTraceTableView reloadData];
 
@@ -193,8 +195,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 
   cell.textLabel.text = stackFrame[@"methodName"];
-  cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ @ %@:%@",
-    [stackFrame[@"file"] lastPathComponent], stackFrame[@"lineNumber"], stackFrame[@"column"]];
+  if (stackFrame[@"file"]) {
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ @ %zd:%zd",
+                                 [stackFrame[@"file"] lastPathComponent],
+                                 [stackFrame[@"lineNumber"] integerValue],
+                                 [stackFrame[@"column"] integerValue]];
+  } else {
+    cell.detailTextLabel.text = @"";
+  }
   return cell;
 }
 
@@ -225,7 +233,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 #pragma mark - Key commands
 
-- (NSArray *)keyCommands
+- (NSArray<UIKeyCommand *> *)keyCommands
 {
   // NOTE: We could use RCTKeyCommands for this, but since
   // we control this window, we can use the standard, non-hacky
@@ -281,17 +289,17 @@ RCT_EXPORT_MODULE()
   [self showErrorMessage:combinedMessage];
 }
 
-- (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack
 {
   [self showErrorMessage:message withStack:stack showIfHidden:YES];
 }
 
-- (void)updateErrorMessage:(NSString *)message withStack:(NSArray *)stack
+- (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack
 {
   [self showErrorMessage:message withStack:stack showIfHidden:NO];
 }
 
-- (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack showIfHidden:(BOOL)shouldShow
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack showIfHidden:(BOOL)shouldShow
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     if (!_window) {
@@ -301,7 +309,7 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (void)dismiss
+RCT_EXPORT_METHOD(dismiss)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     [_window dismiss];
@@ -319,7 +327,7 @@ RCT_EXPORT_MODULE()
 
 - (RCTRedBox *)redBox
 {
-  return self.modules[RCTBridgeModuleNameForClass([RCTRedBox class])];
+  return [self moduleForClass:[RCTRedBox class]];
 }
 
 @end
@@ -332,9 +340,9 @@ RCT_EXPORT_MODULE()
 - (void)showError:(NSError *)message {}
 - (void)showErrorMessage:(NSString *)message {}
 - (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details {}
-- (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack {}
-- (void)updateErrorMessage:(NSString *)message withStack:(NSArray *)stack {}
-- (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack showIfHidden:(BOOL)shouldShow {}
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack {}
+- (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack {}
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack showIfHidden:(BOOL)shouldShow {}
 - (void)dismiss {}
 
 @end

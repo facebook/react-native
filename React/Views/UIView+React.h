@@ -9,11 +9,16 @@
 
 #import <UIKit/UIKit.h>
 
+@class RCTShadowView;
+
 #import "RCTComponent.h"
 
 //TODO: let's try to eliminate this category if possible
 
 @interface UIView (React) <RCTComponent>
+
+- (NSArray<UIView *> *)reactSubviews;
+- (UIView *)reactSuperview;
 
 /**
  * Used by the UIIManager to set the view frame.
@@ -45,5 +50,12 @@
 - (void)reactWillMakeFirstResponder;
 - (void)reactDidMakeFirstResponder;
 - (BOOL)reactRespondsToTouch:(UITouch *)touch;
+
+/**
+ Tools for debugging
+ */
+#if RCT_DEV
+@property (nonatomic, strong, setter=_DEBUG_setReactShadowView:) RCTShadowView *_DEBUG_reactShadowView;
+#endif
 
 @end

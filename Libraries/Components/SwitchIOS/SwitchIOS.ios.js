@@ -13,10 +13,12 @@
  */
 'use strict';
 
+var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
+var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -30,16 +32,15 @@ type DefaultProps = {
 type Event = Object;
 
 /**
- * Use `SwitchIOS` to render a boolean input on iOS.  This is
- * a controlled component, so you must hook in to the `onValueChange` callback
- * and update the `value` prop in order for the component to update, otherwise
- * the user's change will be reverted immediately to reflect `props.value` as the
- * source of truth.
+ * @deprecated
+ *
+ * Use <Switch> instead for cross-platform compatibility.
  */
 var SwitchIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
+    ...View.propTypes,
     /**
      * The value of the switch, if true the switch will be turned on.
      * Default value is false.
@@ -60,17 +61,17 @@ var SwitchIOS = React.createClass({
     /**
      * Background color when the switch is turned on.
      */
-    onTintColor: PropTypes.string,
+    onTintColor: ColorPropType,
 
     /**
      * Background color for the switch round button.
      */
-    thumbTintColor: PropTypes.string,
+    thumbTintColor: ColorPropType,
 
     /**
      * Background color when the switch is turned off.
      */
-    tintColor: PropTypes.string,
+    tintColor: ColorPropType,
   },
 
   getDefaultProps: function(): DefaultProps {

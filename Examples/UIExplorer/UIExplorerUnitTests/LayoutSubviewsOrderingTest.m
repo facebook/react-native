@@ -14,16 +14,16 @@
 /**
  * This test exists to insure that didLayoutSubviews is always called immediately after layoutSubviews for a VC:View
  * pair. In Catalyst we have multiple levels of ViewController containment, and we rely on this ordering
- * to insure that layoutGuides are set on RKViewControllers before Views further down in the heirarchy have
+ * to insure that layoutGuides are set on RKViewControllers before Views further down in the hierarchy have
  * their layoutSubviews called (and need to use the aforementioned layoutGuides)
  */
 - (void)testLayoutSubviewsOrdering
 {
   // create some Views and ViewControllers
-  UIViewController *parentVC = [[UIViewController alloc] init];
-  UIView *parentView = [[UIView alloc] init];
-  UIViewController *childVC = [[UIViewController alloc] init];
-  UIView *childView = [[UIView alloc] init];
+  UIViewController *parentVC = [UIViewController new];
+  UIView *parentView = [UIView new];
+  UIViewController *childVC = [UIViewController new];
+  UIView *childView = [UIView new];
 
   // The ordering we expect is:
   //   parentView::layoutSubviews
@@ -63,7 +63,7 @@
     }
   }] viewDidLayoutSubviews];
 
-  // setup View heirarchy and force layout
+  // setup View hierarchy and force layout
   parentVC.view = parentView;
   childVC.view = childView;
   [parentVC addChildViewController:childVC];

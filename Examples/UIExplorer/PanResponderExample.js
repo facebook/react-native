@@ -11,7 +11,7 @@
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * @flow-weak
+ * @flow weak
  */
 'use strict';
 
@@ -52,8 +52,10 @@ var PanResponderExample = React.createClass({
     this._previousLeft = 20;
     this._previousTop = 84;
     this._circleStyles = {
-      left: this._previousLeft,
-      top: this._previousTop,
+      style: {
+        left: this._previousLeft,
+        top: this._previousTop
+      }
     };
   },
 
@@ -77,14 +79,20 @@ var PanResponderExample = React.createClass({
   },
 
   _highlight: function() {
-    this.circle && this.circle.setNativeProps({
-      backgroundColor: processColor(CIRCLE_HIGHLIGHT_COLOR)
+    const circle = this.circle;
+    circle && circle.setNativeProps({
+      style: {
+        backgroundColor: processColor(CIRCLE_HIGHLIGHT_COLOR)
+      }
     });
   },
 
   _unHighlight: function() {
-    this.circle && this.circle.setNativeProps({
-      backgroundColor: processColor(CIRCLE_COLOR)
+    const circle = this.circle;
+    circle && circle.setNativeProps({
+      style: {
+        backgroundColor: processColor(CIRCLE_COLOR)
+      }
     });
   },
 
@@ -106,8 +114,8 @@ var PanResponderExample = React.createClass({
     this._highlight();
   },
   _handlePanResponderMove: function(e: Object, gestureState: Object) {
-    this._circleStyles.left = this._previousLeft + gestureState.dx;
-    this._circleStyles.top = this._previousTop + gestureState.dy;
+    this._circleStyles.style.left = this._previousLeft + gestureState.dx;
+    this._circleStyles.style.top = this._previousTop + gestureState.dy;
     this._updatePosition();
   },
   _handlePanResponderEnd: function(e: Object, gestureState: Object) {

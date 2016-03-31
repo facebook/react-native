@@ -20,24 +20,20 @@ static std::vector<MethodCall> executeForMethodCalls(
     int moduleId,
     int methodId,
     std::vector<MethodArgument> args = std::vector<MethodArgument>()) {
-  std::vector<MethodArgument> call;
-  call.emplace_back((double) moduleId);
-  call.emplace_back((double) methodId);
-  call.emplace_back(std::move(args));
-  return parseMethodCalls(e.executeJSCall("Bridge", "callFunction", call));
+  return parseMethodCalls(e.callFunction(moduleId, methodId, std::move(args)));
 }
 
 TEST(JSCExecutor, CallFunction) {
   auto jsText = ""
   "var Bridge = {"
-  "  callFunction: function (module, method, args) {"
+  "  callFunctionReturnFlushedQueue: function (module, method, args) {"
   "    return [[module + 1], [method + 1], [args]];"
   "  },"
   "};"
   "function require() { return Bridge; }"
   "";
   JSCExecutor e;
-  e.executeApplicationScript(jsText, "");
+  e.loadApplicationScript(jsText, "");
   std::vector<MethodArgument> args;
   args.emplace_back(true);
   args.emplace_back(0.4);
@@ -58,7 +54,7 @@ TEST(JSCExecutor, CallFunction) {
 TEST(JSCExecutor, CallFunctionWithMap) {
   auto jsText = ""
   "var Bridge = {"
-  "  callFunction: function (module, method, args) {"
+  "  callFunctionReturnFlushedQueue: function (module, method, args) {"
   "    var s = args[0].foo + args[0].bar + args[0].baz;"
   "    return [[module], [method], [[s]]];"
   "  },"
@@ -66,7 +62,7 @@ TEST(JSCExecutor, CallFunctionWithMap) {
   "function require() { return Bridge; }"
   "";
   JSCExecutor e;
-  e.executeApplicationScript(jsText, "");
+  e.loadApplicationScript(jsText, "");
   std::vector<MethodArgument> args;
   std::map<std::string, MethodArgument> map {
     { "foo", MethodArgument("hello") },
@@ -85,7 +81,7 @@ TEST(JSCExecutor, CallFunctionWithMap) {
 TEST(JSCExecutor, CallFunctionReturningMap) {
   auto jsText = ""
   "var Bridge = {"
-  "  callFunction: function (module, method, args) {"
+  "  callFunctionReturnFlushedQueue: function (module, method, args) {"
   "    var s = { foo: 4, bar: true };"
   "    return [[module], [method], [[s]]];"
   "  },"
@@ -93,7 +89,7 @@ TEST(JSCExecutor, CallFunctionReturningMap) {
   "function require() { return Bridge; }"
   "";
   JSCExecutor e;
-  e.executeApplicationScript(jsText, "");
+  e.loadApplicationScript(jsText, "");
   auto returnedCalls = executeForMethodCalls(e, 10, 9);
   ASSERT_EQ(1, returnedCalls.size());
   auto returnedCall = returnedCalls[0];
@@ -111,7 +107,7 @@ TEST(JSCExecutor, CallFunctionReturningMap) {
 TEST(JSCExecutor, CallFunctionWithArray) {
   auto jsText = ""
   "var Bridge = {"
-  "  callFunction: function (module, method, args) {"
+  "  callFunctionReturnFlushedQueue: function (module, method, args) {"
   "    var s = args[0][0]+ args[0][1] + args[0][2] + args[0].length;"
   "    return [[module], [method], [[s]]];"
   "  },"
@@ -119,7 +115,7 @@ TEST(JSCExecutor, CallFunctionWithArray) {
   "function require() { return Bridge; }"
   "";
   JSCExecutor e;
-  e.executeApplicationScript(jsText, "");
+  e.loadApplicationScript(jsText, "");
   std::vector<MethodArgument> args;
   std::vector<MethodArgument> array {
     MethodArgument("hello"),
@@ -138,7 +134,7 @@ TEST(JSCExecutor, CallFunctionWithArray) {
 TEST(JSCExecutor, CallFunctionReturningNumberArray) {
   auto jsText = ""
   "var Bridge = {"
-  "  callFunction: function (module, method, args) {"
+  "  callFunctionReturnFlushedQueue: function (module, method, args) {"
   "    var s = [3, 1, 4];"
   "    return [[module], [method], [[s]]];"
   "  },"
@@ -146,7 +142,7 @@ TEST(JSCExecutor, CallFunctionReturningNumberArray) {
   "function require() { return Bridge; }"
   "";
   JSCExecutor e;
-  e.executeApplicationScript(jsText, "");
+  e.loadApplicationScript(jsText, "");
   auto returnedCalls = executeForMethodCalls(e, 10, 9);
   ASSERT_EQ(1, returnedCalls.size());
   auto returnedCall = returnedCalls[0];
@@ -162,14 +158,14 @@ TEST(JSCExecutor, CallFunctionReturningNumberArray) {
 TEST(JSCExecutor, SetSimpleGlobalVariable) {
   auto jsText = ""
   "var Bridge = {"
-  "  callFunction: function (module, method, args) {"
+  "  callFunctionReturnFlushedQueue: function (module, method, args) {"
   "    return [[module], [method], [[__foo]]];"
   "  },"
   "};"
   "function require() { return Bridge; }"
   "";
   JSCExecutor e;
-  e.executeApplicationScript(jsText, "");
+  e.loadApplicationScript(jsText, "");
   e.setGlobalVariable("__foo", "42");
   auto returnedCalls = executeForMethodCalls(e, 10, 9);
   ASSERT_EQ(1, returnedCalls.size());
@@ -182,14 +178,14 @@ TEST(JSCExecutor, SetSimpleGlobalVariable) {
 TEST(JSCExecutor, SetObjectGlobalVariable) {
   auto jsText = ""
   "var Bridge = {"
-  "  callFunction: function (module, method, args) {"
+  "  callFunctionReturnFlushedQueue: function (module, method, args) {"
   "    return [[module], [method], [[__foo]]];"
   "  },"
   "};"
   "function require() { return Bridge; }"
   "";
   JSCExecutor e;
-  e.executeApplicationScript(jsText, "");
+  e.loadApplicationScript(jsText, "");
   auto jsonObject = ""
   "{"
   "  \"foo\": \"hello\","

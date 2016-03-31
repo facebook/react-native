@@ -16,6 +16,7 @@
 
 #import "RCTBridge.h"
 #import "RCTJavaScriptLoader.h"
+#import "RCTLinkingManager.h"
 #import "RCTRootView.h"
 
 @interface AppDelegate() <RCTBridgeDelegate>
@@ -26,10 +27,10 @@
 
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self
-                                            launchOptions:launchOptions];
+  _bridge = [[RCTBridge alloc] initWithDelegate:self
+                                  launchOptions:launchOptions];
 
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_bridge
                                                    moduleName:@"UIExplorerApp"
                                             initialProperties:nil];
 
@@ -66,7 +67,7 @@
      * Load from pre-bundled file on disk. To re-generate the static bundle, `cd`
      * to your Xcode project folder and run
      *
-     * $ curl 'http://localhost:8081/Examples/UIExplorer/UIExplorerApp.ios.bundle' -o main.jsbundle
+     * $ curl 'http://localhost:8081/Examples/UIExplorer/UIExplorerApp.ios.bundle?platform=ios' -o main.jsbundle
      *
      * then add the `main.jsbundle` file to your project and uncomment this line:
      */
@@ -78,6 +79,14 @@
   #endif
 
   return sourceURL;
+}
+
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+  return [RCTLinkingManager application:application openURL:url
+                      sourceApplication:sourceApplication annotation:annotation];
 }
 
 - (void)loadSourceForBridge:(RCTBridge *)bridge

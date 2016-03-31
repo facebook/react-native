@@ -18,7 +18,7 @@ var NodeHandle = require('NodeHandle');
 var EventConstants = require('EventConstants');
 
 var merge = require('merge');
-var warning = require('warning');
+var warning = require('fbjs/lib/warning');
 
 var topLevelTypes = EventConstants.topLevelTypes;
 
@@ -107,7 +107,7 @@ var ReactNativeEventEmitter = merge(ReactEventEmitterMixin, {
    *
    * @see receiveEvent.
    *
-   * @param {rootNodeID} rootNodeID React root node ID that event occured on.
+   * @param {rootNodeID} rootNodeID React root node ID that event occurred on.
    * @param {TopLevelType} topLevelType Top level type of event.
    * @param {object} nativeEventParam Object passed from native.
    */
@@ -127,9 +127,9 @@ var ReactNativeEventEmitter = merge(ReactEventEmitterMixin, {
   },
 
   /**
-   * Publically exposed method on module for native objc to invoke when a top
+   * Publicly exposed method on module for native objc to invoke when a top
    * level event is extracted.
-   * @param {rootNodeID} rootNodeID React root node ID that event occured on.
+   * @param {rootNodeID} rootNodeID React root node ID that event occurred on.
    * @param {TopLevelType} topLevelType Top level type of event.
    * @param {object} nativeEventParam Object passed from native.
    */
@@ -183,7 +183,7 @@ var ReactNativeEventEmitter = merge(ReactEventEmitterMixin, {
 
     for (var jj = 0; jj < changedTouches.length; jj++) {
       var touch = changedTouches[jj];
-      // Touch objects can fullfill the role of `DOM` `Event` objects if we set
+      // Touch objects can fulfill the role of `DOM` `Event` objects if we set
       // the `changedTouches`/`touches`. This saves allocations.
       touch.changedTouches = changedTouches;
       touch.touches = touches;

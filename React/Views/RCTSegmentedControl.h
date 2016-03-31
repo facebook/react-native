@@ -13,7 +13,7 @@
 
 @interface RCTSegmentedControl : UISegmentedControl
 
-@property (nonatomic, copy) NSArray *values;
+@property (nonatomic, copy) NSArray<NSString *> *values;
 @property (nonatomic, assign) NSInteger selectedIndex;
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 

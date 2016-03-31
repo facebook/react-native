@@ -16,5 +16,6 @@
 @interface RCTTouchHandler : UIGestureRecognizer
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+- (void)cancel;
 
 @end

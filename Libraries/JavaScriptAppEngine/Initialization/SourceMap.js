@@ -327,7 +327,7 @@ define('source-map/source-map-generator', ['require', 'exports', 'module' ,  'so
    * Applies the mappings of a sub-source-map for a specific source file to the
    * source map being generated. Each mapping to the supplied source file is
    * rewritten using the supplied source map. Note: The resolution for the
-   * resulting mappings is the minimium of this map and the supplied map.
+   * resulting mappings is the minimum of this map and the supplied map.
    *
    * @param aSourceMapConsumer The source map to be applied.
    * @param aSourceFile Optional. The filename of the source file.
@@ -1058,7 +1058,7 @@ define('source-map/source-map-consumer', ['require', 'exports', 'module' ,  'sou
    *
    *   - version: Which version of the source map spec this map is following.
    *   - sources: An array of URLs to the original source files.
-   *   - names: An array of identifiers which can be referrenced by individual mappings.
+   *   - names: An array of identifiers which can be referenced by individual mappings.
    *   - sourceRoot: Optional. The URL root from which all sources are relative.
    *   - sourcesContent: Optional. An array of contents of the original source files.
    *   - mappings: A string of base64 VLQs which contain the actual mappings.
@@ -1369,7 +1369,7 @@ define('source-map/source-map-consumer', ['require', 'exports', 'module' ,  'sou
   /**
    * Returns the original source content. The only argument is the url of the
    * original source file. Returns null if no original source content is
-   * availible.
+   * available.
    */
   SourceMapConsumer.prototype.sourceContentFor =
     function SourceMapConsumer_sourceContentFor(aSource) {

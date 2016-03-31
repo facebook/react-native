@@ -24,23 +24,31 @@
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
-{
-  return [self initWithUserDefaults:[NSUserDefaults standardUserDefaults]];
-}
-
 - (instancetype)initWithUserDefaults:(NSUserDefaults *)defaults
 {
-  if ((self = [super init])) {
+  if ((self = [self init])) {
     _defaults = defaults;
+  }
+  return self;
+}
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(userDefaultsDidChange:)
-                                                 name:NSUserDefaultsDidChangeNotification
-                                               object:_defaults];
+- (void)setBridge:(RCTBridge *)bridge
+{
+  _bridge = bridge;
+
+  if (!_defaults) {
+    _defaults = [NSUserDefaults standardUserDefaults];
   }
 
-  return self;
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(userDefaultsDidChange:)
+                                               name:NSUserDefaultsDidChangeNotification
+                                             object:_defaults];
+}
+
+- (NSDictionary<NSString *, id> *)constantsToExport
+{
+  return @{@"settings": RCTJSONClean([_defaults dictionaryRepresentation])};
 }
 
 - (void)dealloc
@@ -57,13 +65,6 @@ RCT_EXPORT_MODULE()
   [_bridge.eventDispatcher
    sendDeviceEventWithName:@"settingsUpdated"
    body:RCTJSONClean([_defaults dictionaryRepresentation])];
-}
-
-- (NSDictionary *)constantsToExport
-{
-  return @{
-    @"settings": RCTJSONClean([_defaults dictionaryRepresentation])
-  };
 }
 
 /**
@@ -89,7 +90,7 @@ RCT_EXPORT_METHOD(setValues:(NSDictionary *)values)
 /**
  * Remove some values from the settings.
  */
-RCT_EXPORT_METHOD(deleteValues:(NSStringArray *)keys)
+RCT_EXPORT_METHOD(deleteValues:(NSArray<NSString *> *)keys)
 {
   _ignoringUpdates = YES;
   for (NSString *key in keys) {

@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 'use strict';
 
 var chalk = require('chalk');
@@ -21,6 +29,11 @@ module.exports = yeoman.generators.NamedBase.extend({
       type: String,
       defaults: 'com.' + this.name.toLowerCase()
     });
+    this.option('upgrade', {
+      desc: 'Specify an upgrade',
+      type: Boolean,
+      defaults: false
+    });
   },
 
   initializing: function() {
@@ -34,15 +47,29 @@ module.exports = yeoman.generators.NamedBase.extend({
       package: this.options.package,
       name: this.name
     };
-    this.fs.copyTpl(
-      this.templatePath(path.join('src', '**')),
-      this.destinationPath('android'),
-      templateParams
-    );
-    this.fs.copy(
-      this.templatePath(path.join('bin', '**')),
-      this.destinationPath('android')
-    );
+    if (!this.options.upgrade) {
+      this.fs.copyTpl(
+        this.templatePath(path.join('src', '**')),
+        this.destinationPath('android'),
+        templateParams
+      );
+      this.fs.copy(
+        this.templatePath(path.join('bin', '**')),
+        this.destinationPath('android')
+      );
+    } else {
+      this.fs.copyTpl(
+        this.templatePath(path.join('src', '*')),
+        this.destinationPath('android'),
+        templateParams
+      );
+      this.fs.copyTpl(
+        this.templatePath(path.join('src', 'app', '*')),
+        this.destinationPath(path.join('android', 'app')),
+        templateParams
+      );
+    }
+
     var javaPath = path.join.apply(
       null,
       ['android', 'app', 'src', 'main', 'java'].concat(this.options.package.split('.'))
@@ -57,7 +84,7 @@ module.exports = yeoman.generators.NamedBase.extend({
   end: function() {
     var projectPath = this.destinationRoot();
     this.log(chalk.white.bold('To run your app on Android:'));
-    this.log(chalk.white('   Have an Android emulator running, or a device connected'));
+    this.log(chalk.white('   Have an Android emulator running (quickest way to get started), or a device connected'));
     this.log(chalk.white('   cd ' + projectPath));
     this.log(chalk.white('   react-native run-android'));
   }

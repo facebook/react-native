@@ -25,7 +25,7 @@
   return self;
 }
 
-- (void)setValues:(NSArray *)values
+- (void)setValues:(NSArray<NSString *> *)values
 {
   _values = [values copy];
   [self removeAllSegments];

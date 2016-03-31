@@ -19,7 +19,7 @@
  */
 
 var guid = require('guid');
-var isNode = require('isNode');
+var isNode = require('fbjs/lib/isNode');
 var toIterator = require('toIterator');
 var _shouldPolyfillES6Collection = require('_shouldPolyfillES6Collection');
 

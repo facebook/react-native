@@ -24,103 +24,87 @@ var {
   AlertIOS,
 } = React;
 
+var { SimpleAlertExampleBlock } = require('./AlertExample');
+
 exports.framework = 'React';
 exports.title = 'AlertIOS';
 exports.description = 'iOS alerts and action sheets';
 exports.examples = [{
   title: 'Alerts',
   render() {
+    return <SimpleAlertExampleBlock />;
+  }
+},
+{
+  title: 'Prompt Options',
+  render(): ReactElement {
+    return <PromptOptions />;
+  }
+},
+{
+  title: 'Prompt Types',
+  render() {
     return (
       <View>
-        <TouchableHighlight style={styles.wrapper}
-          onPress={() => AlertIOS.alert(
-            'Foo Title',
-            'My Alert Msg'
-          )}>
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={() => AlertIOS.prompt('Plain Text Entry')}>
+
           <View style={styles.button}>
-            <Text>Alert with message and default button</Text>
+            <Text>
+              plain-text
+            </Text>
           </View>
+
         </TouchableHighlight>
-        <TouchableHighlight style={styles.wrapper}
-          onPress={() => AlertIOS.alert(
-            null,
-            null,
-            [
-              {text: 'Button', onPress: () => console.log('Button Pressed!')},
-            ]
-          )}>
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={() => AlertIOS.prompt('Secure Text', null, null, 'secure-text')}>
+
           <View style={styles.button}>
-            <Text>Alert with only one button</Text>
+            <Text>
+              secure-text
+            </Text>
           </View>
+
         </TouchableHighlight>
-        <TouchableHighlight style={styles.wrapper}
-          onPress={() => AlertIOS.alert(
-            'Foo Title',
-            'My Alert Msg',
-            [
-              {text: 'Foo', onPress: () => console.log('Foo Pressed!')},
-              {text: 'Bar', onPress: () => console.log('Bar Pressed!')},
-            ]
-          )}>
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={() => AlertIOS.prompt('Login & Password', null, null, 'login-password')}>
+
           <View style={styles.button}>
-            <Text>Alert with two buttons</Text>
+            <Text>
+              login-password
+            </Text>
           </View>
-        </TouchableHighlight>
-        <TouchableHighlight style={styles.wrapper}
-          onPress={() => AlertIOS.alert(
-            'Foo Title',
-            null,
-            [
-              {text: 'Foo', onPress: () => console.log('Foo Pressed!')},
-              {text: 'Bar', onPress: () => console.log('Bar Pressed!')},
-              {text: 'Baz', onPress: () => console.log('Baz Pressed!')},
-            ]
-          )}>
-          <View style={styles.button}>
-            <Text>Alert with 3 buttons</Text>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight style={styles.wrapper}
-          onPress={() => AlertIOS.alert(
-            'Foo Title',
-            'My Alert Msg',
-            '..............'.split('').map((dot, index) => ({
-              text: 'Button ' + index,
-              onPress: () => console.log('Pressed ' + index)
-            }))
-          )}>
-          <View style={styles.button}>
-            <Text>Alert with too many buttons</Text>
-          </View>
+
         </TouchableHighlight>
       </View>
     );
   }
-},
-{
-  title: 'Prompt',
-  render(): React.Component {
-    return <PromptExample />
-  }
 }];
 
-class PromptExample extends React.Component {
+class PromptOptions extends React.Component {
+  state: any;
+  customButtons: Array<Object>;
+
   constructor(props) {
     super(props);
 
-    this.promptResponse = this.promptResponse.bind(this);
+    // $FlowFixMe this seems to be a Flow bug, `saveResponse` is defined below
+    this.saveResponse = this.saveResponse.bind(this);
+
+    this.customButtons = [{
+      text: 'Custom OK',
+      onPress: this.saveResponse
+    }, {
+      text: 'Custom Cancel',
+      style: 'cancel',
+    }];
+
     this.state = {
       promptValue: undefined,
     };
-
-    this.title = 'Type a value';
-    this.defaultValue = 'Default value';
-    this.buttons = [{
-      text: 'Custom cancel',
-    }, {
-      text: 'Custom OK',
-      onPress: this.promptResponse
-    }];
   }
 
   render() {
@@ -132,7 +116,7 @@ class PromptExample extends React.Component {
 
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this.prompt.bind(this, this.title, this.promptResponse)}>
+          onPress={() => AlertIOS.prompt('Type a value', null, this.saveResponse)}>
 
           <View style={styles.button}>
             <Text>
@@ -143,7 +127,7 @@ class PromptExample extends React.Component {
 
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this.prompt.bind(this, this.title, this.buttons)}>
+          onPress={() => AlertIOS.prompt('Type a value', null, this.customButtons)}>
 
           <View style={styles.button}>
             <Text>
@@ -154,22 +138,22 @@ class PromptExample extends React.Component {
 
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this.prompt.bind(this, this.title, this.defaultValue, this.promptResponse)}>
+          onPress={() => AlertIOS.prompt('Type a value', null, this.saveResponse, undefined, 'Default value')}>
 
           <View style={styles.button}>
             <Text>
-              prompt with title, default value & callback
+              prompt with title, callback & default value
             </Text>
           </View>
         </TouchableHighlight>
 
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this.prompt.bind(this, this.title, this.defaultValue, this.buttons)}>
+          onPress={() => AlertIOS.prompt('Type a value', null, this.customButtons, 'login-password', 'admin@site.com')}>
 
           <View style={styles.button}>
             <Text>
-              prompt with title, default value & custom buttons
+              prompt with title, custom buttons, login/password & default value
             </Text>
           </View>
         </TouchableHighlight>
@@ -177,13 +161,8 @@ class PromptExample extends React.Component {
     );
   }
 
-  prompt() {
-    // Flow's apply support is broken: #7035621
-    ((AlertIOS.prompt: any).apply: any)(AlertIOS, arguments);
-  }
-
-  promptResponse(promptValue) {
-    this.setState({ promptValue });
+  saveResponse(promptValue) {
+    this.setState({ promptValue: JSON.stringify(promptValue) });
   }
 }
 

@@ -11,15 +11,19 @@ package com.facebook.react.bridge;
 
 import javax.annotation.Nullable;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 
-import com.facebook.react.bridge.queue.CatalystQueueConfiguration;
-import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.queue.MessageQueueThread;
+import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 
 /**
  * Abstract ContextWrapper for Android applicaiton or activity {@link Context} and
@@ -29,6 +33,8 @@ public class ReactContext extends ContextWrapper {
 
   private final CopyOnWriteArraySet<LifecycleEventListener> mLifecycleEventListeners =
       new CopyOnWriteArraySet<>();
+  private final CopyOnWriteArraySet<ActivityEventListener> mActivityEventListeners =
+      new CopyOnWriteArraySet<>();
 
   private @Nullable CatalystInstance mCatalystInstance;
   private @Nullable LayoutInflater mInflater;
@@ -36,6 +42,7 @@ public class ReactContext extends ContextWrapper {
   private @Nullable MessageQueueThread mNativeModulesMessageQueueThread;
   private @Nullable MessageQueueThread mJSMessageQueueThread;
   private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
+  private @Nullable WeakReference<Activity> mCurrentActivity;
 
   public ReactContext(Context base) {
     super(base);
@@ -54,7 +61,7 @@ public class ReactContext extends ContextWrapper {
 
     mCatalystInstance = catalystInstance;
 
-    CatalystQueueConfiguration queueConfig = catalystInstance.getCatalystQueueConfiguration();
+    ReactQueueConfiguration queueConfig = catalystInstance.getReactQueueConfiguration();
     mUiMessageQueueThread = queueConfig.getUIQueueThread();
     mNativeModulesMessageQueueThread = queueConfig.getNativeModulesQueueThread();
     mJSMessageQueueThread = queueConfig.getJSQueueThread();
@@ -90,6 +97,13 @@ public class ReactContext extends ContextWrapper {
     return mCatalystInstance.getJSModule(jsInterface);
   }
 
+  public <T extends JavaScriptModule> T getJSModule(ExecutorToken executorToken, Class<T> jsInterface) {
+    if (mCatalystInstance == null) {
+      throw new RuntimeException("Trying to invoke JS before CatalystInstance has been set!");
+    }
+    return mCatalystInstance.getJSModule(executorToken, jsInterface);
+  }
+
   /**
    * @return the instance of the specified module interface associated with this ReactContext.
    */
@@ -116,11 +130,20 @@ public class ReactContext extends ContextWrapper {
     mLifecycleEventListeners.remove(listener);
   }
 
+  public void addActivityEventListener(ActivityEventListener listener) {
+    mActivityEventListeners.add(listener);
+  }
+
+  public void removeActivityEventListener(ActivityEventListener listener) {
+    mActivityEventListeners.remove(listener);
+  }
+
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onResume}
    */
-  public void onResume() {
+  public void onHostResume(@Nullable Activity activity) {
     UiThreadUtil.assertOnUiThread();
+    mCurrentActivity = new WeakReference(activity);
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostResume();
     }
@@ -129,23 +152,41 @@ public class ReactContext extends ContextWrapper {
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onPause}
    */
-  public void onPause() {
+  public void onHostPause() {
     UiThreadUtil.assertOnUiThread();
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostPause();
     }
+    mCurrentActivity = null;
   }
 
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onDestroy}
    */
-  public void onDestroy() {
+  public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostDestroy();
     }
+  }
+
+  /**
+   * Destroy this instance, making it unusable.
+   */
+  public void destroy() {
+    UiThreadUtil.assertOnUiThread();
+
     if (mCatalystInstance != null) {
       mCatalystInstance.destroy();
+    }
+  }
+
+  /**
+   * Should be called by the hosting Fragment in {@link Fragment#onActivityResult}
+   */
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    for (ActivityEventListener listener : mActivityEventListeners) {
+      listener.onActivityResult(requestCode, resultCode, data);
     }
   }
 
@@ -198,5 +239,33 @@ public class ReactContext extends ContextWrapper {
     } else {
       throw e;
     }
+  }
+
+  public boolean hasCurrentActivity() {
+    return mCurrentActivity != null && mCurrentActivity.get() != null;
+  }
+
+  /**
+   * Same as {@link Activity#startActivityForResult(Intent, int)}, this just redirects the call to
+   * the current activity. Returns whether the activity was started, as this might fail if this
+   * was called before the context is in the right state.
+   */
+  public boolean startActivityForResult(Intent intent, int code, Bundle bundle) {
+    Activity activity = getCurrentActivity();
+    Assertions.assertNotNull(activity);
+    activity.startActivityForResult(intent, code, bundle);
+    return true;
+  }
+
+  /**
+   * Get the activity to which this context is currently attached, or {@code null} if not attached.
+   * DO NOT HOLD LONG-LIVED REFERENCES TO THE OBJECT RETURNED BY THIS METHOD, AS THIS WILL CAUSE
+   * MEMORY LEAKS.
+   */
+  /* package */ @Nullable Activity getCurrentActivity() {
+    if (mCurrentActivity == null) {
+      return null;
+    }
+    return mCurrentActivity.get();
   }
 }

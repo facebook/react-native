@@ -11,25 +11,24 @@
 'use strict';
 
 var PropTypes = require('ReactPropTypes');
-var RCTUIManager = require('NativeModules').UIManager;
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+var UIManager = require('UIManager');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
-var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var onlyChild = require('onlyChild');
 var processColor = require('processColor');
+var requireNativeComponent = require('requireNativeComponent');
 
-var rippleBackgroundPropType = createStrictShapeTypeChecker({
+var rippleBackgroundPropType = PropTypes.shape({
   type: React.PropTypes.oneOf(['RippleAndroid']),
-  color: PropTypes.string,
+  color: PropTypes.number,
   borderless: PropTypes.bool,
 });
 
-var themeAttributeBackgroundPropType = createStrictShapeTypeChecker({
+var themeAttributeBackgroundPropType = PropTypes.shape({
   type: React.PropTypes.oneOf(['ThemeAttrAndroid']),
   attribute: PropTypes.string.isRequired,
 });
@@ -39,15 +38,15 @@ var backgroundPropType = PropTypes.oneOfType([
   themeAttributeBackgroundPropType,
 ]);
 
-var TouchableView = createReactNativeComponentClass({
-  validAttributes: {
-    ...ReactNativeViewAttributes.UIView,
+var TouchableView = requireNativeComponent('RCTView', null, {
+  nativeOnly: {
     nativeBackgroundAndroid: backgroundPropType,
-  },
-  uiViewClassName: 'RCTView',
+  }
 });
 
-var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+type Event = Object;
+
+var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
  * A wrapper for making views respond properly to touches (Android only).
@@ -141,27 +140,32 @@ var TouchableNativeFeedback = React.createClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function() {
-    this.props.onPressIn && this.props.onPressIn();
+  touchableHandleActivePressIn: function(e: Event) {
+    this.props.onPressIn && this.props.onPressIn(e);
     this._dispatchPressedStateChange(true);
-    this._dispatchHotspotUpdate(this.pressInLocation.pageX, this.pressInLocation.pageY);
+    this._dispatchHotspotUpdate(this.pressInLocation.locationX, this.pressInLocation.locationY);
   },
 
-  touchableHandleActivePressOut: function() {
-    this.props.onPressOut && this.props.onPressOut();
+  touchableHandleActivePressOut: function(e: Event) {
+    this.props.onPressOut && this.props.onPressOut(e);
     this._dispatchPressedStateChange(false);
   },
 
-  touchableHandlePress: function() {
-    this.props.onPress && this.props.onPress();
+  touchableHandlePress: function(e: Event) {
+    this.props.onPress && this.props.onPress(e);
   },
 
-  touchableHandleLongPress: function() {
-    this.props.onLongPress && this.props.onLongPress();
+  touchableHandleLongPress: function(e: Event) {
+    this.props.onLongPress && this.props.onLongPress(e);
   },
 
   touchableGetPressRectOffset: function() {
-    return PRESS_RECT_OFFSET;   // Always make sure to predeclare a constant!
+    // Always make sure to predeclare a constant!
+    return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
+  },
+
+  touchableGetHitSlop: function() {
+    return this.props.hitSlop;
   },
 
   touchableGetHighlightDelayMS: function() {
@@ -182,17 +186,17 @@ var TouchableNativeFeedback = React.createClass({
   },
 
   _dispatchHotspotUpdate: function(destX, destY) {
-    RCTUIManager.dispatchViewManagerCommand(
+    UIManager.dispatchViewManagerCommand(
       React.findNodeHandle(this),
-      RCTUIManager.RCTView.Commands.hotspotUpdate,
+      UIManager.RCTView.Commands.hotspotUpdate,
       [destX || 0, destY || 0]
     );
   },
 
   _dispatchPressedStateChange: function(pressed) {
-    RCTUIManager.dispatchViewManagerCommand(
+    UIManager.dispatchViewManagerCommand(
       React.findNodeHandle(this),
-      RCTUIManager.RCTView.Commands.setPressed,
+      UIManager.RCTView.Commands.setPressed,
       [pressed]
     );
   },
@@ -202,10 +206,12 @@ var TouchableNativeFeedback = React.createClass({
       ...onlyChild(this.props.children).props,
       nativeBackgroundAndroid: this.props.background,
       accessible: this.props.accessible !== false,
+      accessibilityLabel: this.props.accessibilityLabel,
       accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityTraits: this.props.accessibilityTraits,
       testID: this.props.testID,
       onLayout: this.props.onLayout,
+      hitSlop: this.props.hitSlop,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this.touchableHandleResponderTerminationRequest,
       onResponderGrant: this.touchableHandleResponderGrant,

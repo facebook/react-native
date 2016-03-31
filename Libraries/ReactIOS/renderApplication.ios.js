@@ -7,18 +7,21 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule renderApplication
+ * @noflow
  */
+
 'use strict';
 
-var Inspector = require('Inspector');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var Subscribable = require('Subscribable');
 var View = require('View');
-var WarningBox = require('WarningBox');
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
+
+var Inspector = __DEV__ ? require('Inspector') : null;
+var YellowBox = __DEV__ ? require('YellowBox') : null;
 
 var AppContainer = React.createClass({
   mixins: [Subscribable.Mixin],
@@ -28,7 +31,7 @@ var AppContainer = React.createClass({
   },
 
   toggleElementInspector: function() {
-    var inspector = this.state.inspector
+    var inspector = !__DEV__ || this.state.inspector
       ? null
       : <Inspector
           rootTag={this.props.rootTag}
@@ -46,14 +49,16 @@ var AppContainer = React.createClass({
   },
 
   render: function() {
-    var shouldRenderWarningBox = __DEV__ && console.yellowBoxEnabled;
-    var warningBox = shouldRenderWarningBox ? <WarningBox /> : null;
+    let yellowBox = null;
+    if (__DEV__) {
+      yellowBox = <YellowBox />;
+    }
     return (
       <View style={styles.appContainer}>
         <View collapsible={false} style={styles.appContainer} ref="main">
           {this.props.children}
         </View>
-        {warningBox}
+        {yellowBox}
         {this.state.inspector}
       </View>
     );
@@ -61,7 +66,7 @@ var AppContainer = React.createClass({
 });
 
 function renderApplication<D, P, S>(
-  RootComponent: ReactClass<D, P, S>,
+  RootComponent: ReactClass<P>,
   initialProps: P,
   rootTag: any
 ) {
@@ -69,11 +74,7 @@ function renderApplication<D, P, S>(
     rootTag,
     'Expect to have a valid rootTag, instead got ', rootTag
   );
-  // not when debugging in chrome
-  if (__DEV__ && !window.document) {
-    var setupDevtools = require('setupDevtools');
-    setupDevtools();
-  }
+  /* eslint-disable jsx-no-undef-with-namespace */
   React.render(
     <AppContainer rootTag={rootTag}>
       <RootComponent
@@ -83,15 +84,12 @@ function renderApplication<D, P, S>(
     </AppContainer>,
     rootTag
   );
+  /* eslint-enable jsx-no-undef-with-namespace */
 }
 
 var styles = StyleSheet.create({
   appContainer: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    right: 0,
-    bottom: 0,
+    flex: 1,
   },
 });
 

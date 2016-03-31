@@ -42,6 +42,7 @@ var TextEventsExample = React.createClass({
       curText: '<No Event>',
       prevText: '<No Event>',
       prev2Text: '<No Event>',
+      prev3Text: '<No Event>',
     };
   },
 
@@ -51,6 +52,7 @@ var TextEventsExample = React.createClass({
         curText: text,
         prevText: state.curText,
         prev2Text: state.prevText,
+        prev3Text: state.prev2Text,
       };
     });
   },
@@ -73,19 +75,55 @@ var TextEventsExample = React.createClass({
           onSubmitEditing={(event) => this.updateText(
             'onSubmitEditing text: ' + event.nativeEvent.text
           )}
+          onSelectionChange={(event) => this.updateText(
+            'onSelectionChange range: ' +
+              event.nativeEvent.selection.start + ',' +
+              event.nativeEvent.selection.end
+          )}
+          onKeyPress={(event) => {
+            this.updateText('onKeyPress key: ' + event.nativeEvent.key);
+          }}
           style={styles.default}
         />
         <Text style={styles.eventLabel}>
           {this.state.curText}{'\n'}
           (prev: {this.state.prevText}){'\n'}
-          (prev2: {this.state.prev2Text})
+          (prev2: {this.state.prev2Text}){'\n'}
+          (prev3: {this.state.prev3Text})
         </Text>
       </View>
     );
   }
 });
 
+class AutoExpandingTextInput extends React.Component {
+  state: any;
+
+  constructor(props) {
+    super(props);
+    this.state = {text: '', height: 0};
+  }
+  render() {
+    return (
+      <TextInput
+        {...this.props}
+        multiline={true}
+        onChange={(event) => {
+          this.setState({
+            text: event.nativeEvent.text,
+            height: event.nativeEvent.contentSize.height,
+          });
+        }}
+        style={[styles.default, {height: Math.max(35, this.state.height)}]}
+        value={this.state.text}
+      />
+    );
+  }
+}
+
 class RewriteExample extends React.Component {
+  state: any;
+
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -113,6 +151,139 @@ class RewriteExample extends React.Component {
     );
   }
 }
+
+class RewriteExampleInvalidCharacters extends React.Component {
+  state: any;
+
+  constructor(props) {
+    super(props);
+    this.state = {text: ''};
+  }
+  render() {
+    return (
+      <View style={styles.rewriteContainer}>
+        <TextInput
+          multiline={false}
+          onChangeText={(text) => {
+            this.setState({text: text.replace(/\s/g, '')});
+          }}
+          style={styles.default}
+          value={this.state.text}
+        />
+      </View>
+    );
+  }
+}
+
+class TokenizedTextExample extends React.Component {
+  state: any;
+
+  constructor(props) {
+    super(props);
+    this.state = {text: 'Hello #World'};
+  }
+  render() {
+
+    //define delimiter
+    let delimiter = /\s+/;
+
+    //split string
+    let _text = this.state.text;
+    let token, index, parts = [];
+    while (_text) {
+      delimiter.lastIndex = 0;
+      token = delimiter.exec(_text);
+      if (token === null) {
+        break;
+      }
+      index = token.index;
+      if (token[0].length === 0) {
+        index = 1;
+      }
+      parts.push(_text.substr(0, index));
+      parts.push(token[0]);
+      index = index + token[0].length;
+      _text = _text.slice(index);
+    }
+    parts.push(_text);
+
+    //highlight hashtags
+    parts = parts.map((text) => {
+      if (/^#/.test(text)) {
+        return <Text key={text} style={styles.hashtag}>{text}</Text>;
+      } else {
+        return text;
+      }
+    });
+
+    return (
+      <View>
+        <TextInput
+          multiline={true}
+          style={styles.multiline}
+          onChangeText={(text) => {
+            this.setState({text});
+          }}>
+          <Text>{parts}</Text>
+        </TextInput>
+      </View>
+    );
+  }
+}
+
+var BlurOnSubmitExample = React.createClass({
+  focusNextField(nextField) {
+    this.refs[nextField].focus();
+  },
+
+  render: function() {
+    return (
+      <View>
+        <TextInput
+          ref="1"
+          style={styles.default}
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('2')}
+        />
+        <TextInput
+          ref="2"
+          style={styles.default}
+          keyboardType="email-address"
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('3')}
+        />
+        <TextInput
+          ref="3"
+          style={styles.default}
+          keyboardType="url"
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('4')}
+        />
+        <TextInput
+          ref="4"
+          style={styles.default}
+          keyboardType="numeric"
+          placeholder="blurOnSubmit = false"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('5')}
+        />
+        <TextInput
+          ref="5"
+          style={styles.default}
+          keyboardType="numbers-and-punctuation"
+          placeholder="blurOnSubmit = true"
+          returnKeyType="done"
+        />
+      </View>
+    );
+  }
+});
 
 var styles = StyleSheet.create({
   page: {
@@ -172,6 +343,10 @@ var styles = StyleSheet.create({
     textAlign: 'right',
     width: 24,
   },
+  hashtag: {
+    color: 'blue',
+    fontWeight: 'bold',
+  },
 });
 
 exports.displayName = (undefined: ?string);
@@ -181,13 +356,25 @@ exports.examples = [
   {
     title: 'Auto-focus',
     render: function() {
-      return <TextInput autoFocus={true} style={styles.default} />;
+      return (
+        <TextInput
+          autoFocus={true}
+          style={styles.default}
+          accessibilityLabel="I am the accessibility label for text input"
+        />
+      );
     }
   },
   {
     title: "Live Re-Write (<sp>  ->  '_') + maxLength",
     render: function() {
       return <RewriteExample />;
+    }
+  },
+  {
+    title: 'Live Re-Write (no spaces allowed)',
+    render: function() {
+      return <RewriteExampleInvalidCharacters />;
     }
   },
   {
@@ -260,6 +447,27 @@ exports.examples = [
           <WithLabel key={type} label={type}>
             <TextInput
               keyboardType={type}
+              style={styles.default}
+            />
+          </WithLabel>
+        );
+      });
+      return <View>{examples}</View>;
+    }
+  },
+  {
+    title: 'Keyboard appearance',
+    render: function() {
+      var keyboardAppearance = [
+        'default',
+        'light',
+        'dark',
+      ];
+      var examples = keyboardAppearance.map((type) => {
+        return (
+          <WithLabel key={type} label={type}>
+            <TextInput
+              keyboardAppearance={type}
               style={styles.default}
             />
           </WithLabel>
@@ -343,6 +551,25 @@ exports.examples = [
     }
   },
   {
+    title: 'Colored highlight/cursor for text input',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            style={styles.default}
+            selectionColor={"green"}
+            defaultValue="Highlight me"
+          />
+          <TextInput
+            style={styles.default}
+            selectionColor={"rgba(86, 76, 205, 1)"}
+            defaultValue="Highlight me"
+          />
+        </View>
+      );
+    }
+  },
+  {
     title: 'Clear button mode',
     render: function () {
       return (
@@ -401,6 +628,27 @@ exports.examples = [
     }
   },
   {
+    title: 'Blur on submit',
+    render: function(): ReactElement { return <BlurOnSubmitExample />; },
+  },
+  {
+    title: 'Multiline blur on submit',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            style={styles.multiline}
+            placeholder="blurOnSubmit = true"
+            returnKeyType="next"
+            blurOnSubmit={true}
+            multiline={true}
+            onSubmitEditing={event => alert(event.nativeEvent.text)}
+          />
+        </View>
+      );
+    }
+  },
+  {
     title: 'Multiline',
     render: function() {
       return (
@@ -437,5 +685,25 @@ exports.examples = [
         </View>
       );
     }
-  }
+  },
+  {
+    title: 'Auto-expanding',
+    render: function() {
+      return (
+        <View>
+          <AutoExpandingTextInput
+            placeholder="height increases with content"
+            enablesReturnKeyAutomatically={true}
+            returnKeyType="done"
+          />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Attributed text',
+    render: function() {
+      return <TokenizedTextExample />;
+    }
+  },
 ];

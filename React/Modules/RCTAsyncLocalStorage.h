@@ -27,11 +27,8 @@
 
 @property (nonatomic, readonly, getter=isValid) BOOL valid;
 
-- (void)multiGet:(NSArray *)keys callback:(RCTResponseSenderBlock)callback;
-- (void)multiSet:(NSArray *)kvPairs callback:(RCTResponseSenderBlock)callback;
-- (void)multiRemove:(NSArray *)keys callback:(RCTResponseSenderBlock)callback;
-- (void)clear:(RCTResponseSenderBlock)callback;
-- (void)getAllKeys:(RCTResponseSenderBlock)callback;
+// Clear the RCTAsyncLocalStorage data from native code
+- (void)clearAllData;
 
 // For clearing data when the bridge may not exist, e.g. when logging out.
 + (void)clearAllData;

@@ -9,7 +9,7 @@
 
 package com.facebook.react.bridge;
 
-import android.content.res.AssetManager;
+import android.content.Context;
 
 /**
  * A class that stores JS bundle information and allows {@link CatalystInstance} to load a correct
@@ -22,13 +22,22 @@ public abstract class JSBundleLoader {
    * should be used. JS bundle will be read from assets directory in native code to save on passing
    * large strings from java to native memory.
    */
-  public static JSBundleLoader createAssetLoader(
-      final AssetManager assetManager,
-      final String assetFileName) {
+  public static JSBundleLoader createFileLoader(
+      final Context context,
+      final String fileName) {
     return new JSBundleLoader() {
       @Override
       public void loadScript(ReactBridge bridge) {
-        bridge.loadScriptFromAssets(assetManager, assetFileName);
+        if (fileName.startsWith("assets://")) {
+          bridge.loadScriptFromAssets(context.getAssets(), fileName.replaceFirst("assets://", ""));
+        } else {
+          bridge.loadScriptFromFile(fileName, "file://" + fileName);
+        }
+      }
+
+      @Override
+      public String getSourceUrl() {
+        return (fileName.startsWith("assets://") ? "" : "file://") + fileName;
       }
     };
   }
@@ -46,7 +55,12 @@ public abstract class JSBundleLoader {
     return new JSBundleLoader() {
       @Override
       public void loadScript(ReactBridge bridge) {
-        bridge.loadScriptFromNetworkCached(sourceURL, cachedFileLocation);
+        bridge.loadScriptFromFile(cachedFileLocation, sourceURL);
+      }
+
+      @Override
+      public String getSourceUrl() {
+        return sourceURL;
       }
     };
   }
@@ -54,16 +68,26 @@ public abstract class JSBundleLoader {
   /**
    * This loader is used when proxy debugging is enabled. In that case there is no point in fetching
    * the bundle from device as remote executor will have to do it anyway.
+   *
+   * @param proxySourceURL the URL to load the JS bundle from in Chrome
+   * @param realSourceURL the URL to report as the source URL, e.g. for asset loading
    */
   public static JSBundleLoader createRemoteDebuggerBundleLoader(
-      final String sourceURL) {
+      final String proxySourceURL,
+      final String realSourceURL) {
     return new JSBundleLoader() {
       @Override
       public void loadScript(ReactBridge bridge) {
-        bridge.loadScriptFromNetworkCached(sourceURL, null);
+        bridge.loadScriptFromFile(null, proxySourceURL);
+      }
+
+      @Override
+      public String getSourceUrl() {
+        return realSourceURL;
       }
     };
   }
 
   public abstract void loadScript(ReactBridge bridge);
+  public abstract String getSourceUrl();
 }

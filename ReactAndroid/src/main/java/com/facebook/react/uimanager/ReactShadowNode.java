@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 import com.facebook.csslayout.CSSNode;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 
 /**
  * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily
@@ -23,7 +24,7 @@ import com.facebook.infer.annotation.Assertions;
  * {@link CSSNode} by adding additional capabilities.
  *
  * Instances of this class receive property updates from JS via @{link UIManagerModule}. Subclasses
- * may use {@link #updateProperties} to persist some of the updated fields in the node instance that
+ * may use {@link #updateShadowNode} to persist some of the updated fields in the node instance that
  * corresponds to a particular view type.
  *
  * Subclasses of {@link ReactShadowNode} should be created only from {@link ViewManager} that
@@ -39,6 +40,7 @@ import com.facebook.infer.annotation.Assertions;
  * children (e.g. {@link #getNativeChildCount()}). See {@link NativeViewHierarchyOptimizer} for more
  * information.
  */
+@ReactPropertyHolder
 public class ReactShadowNode extends CSSNode {
 
   private int mReactTag;
@@ -103,6 +105,10 @@ public class ReactShadowNode extends CSSNode {
     }
   }
 
+  public boolean hasUnseenUpdates() {
+    return mNodeUpdated;
+  }
+
   @Override
   protected void dirty() {
     if (!isVirtual()) {
@@ -119,16 +125,7 @@ public class ReactShadowNode extends CSSNode {
     int increase = node.mIsLayoutOnly ? node.mTotalNativeChildren : 1;
     mTotalNativeChildren += increase;
 
-    if (mIsLayoutOnly) {
-      ReactShadowNode parent = getParent();
-      while (parent != null) {
-        parent.mTotalNativeChildren += increase;
-        if (!parent.mIsLayoutOnly) {
-          break;
-        }
-        parent = parent.getParent();
-      }
-    }
+    updateNativeChildrenCountInParent(increase);
   }
 
   @Override
@@ -138,17 +135,33 @@ public class ReactShadowNode extends CSSNode {
 
     int decrease = removed.mIsLayoutOnly ? removed.mTotalNativeChildren : 1;
     mTotalNativeChildren -= decrease;
+    updateNativeChildrenCountInParent(-decrease);
+    return removed;
+  }
+
+  public void removeAllChildren() {
+    int decrease = 0;
+    for (int i = getChildCount() - 1; i >= 0; i--) {
+      ReactShadowNode removed = (ReactShadowNode) super.removeChildAt(i);
+      decrease += removed.mIsLayoutOnly ? removed.mTotalNativeChildren : 1;
+    }
+    markUpdated();
+
+    mTotalNativeChildren -= decrease;
+    updateNativeChildrenCountInParent(-decrease);
+  }
+
+  private void updateNativeChildrenCountInParent(int delta) {
     if (mIsLayoutOnly) {
       ReactShadowNode parent = getParent();
       while (parent != null) {
-        parent.mTotalNativeChildren -= decrease;
+        parent.mTotalNativeChildren += delta;
         if (!parent.mIsLayoutOnly) {
           break;
         }
         parent = parent.getParent();
       }
     }
-    return removed;
   }
 
   /**
@@ -159,8 +172,13 @@ public class ReactShadowNode extends CSSNode {
   public void onBeforeLayout() {
   }
 
-  public void updateProperties(CatalystStylesDiffMap styles) {
-    BaseCSSPropertyApplicator.applyCSSProperties(this, styles);
+  public final void updateProperties(ReactStylesDiffMap props) {
+    ViewManagerPropertyUpdater.updateProps(this, props);
+    onAfterUpdateTransaction();
+  }
+
+  public void onAfterUpdateTransaction() {
+    // no-op
   }
 
   /**
@@ -231,15 +249,15 @@ public class ReactShadowNode extends CSSNode {
     return Assertions.assertNotNull(mThemedContext);
   }
 
-  protected void setThemedContext(ThemedReactContext themedContext) {
+  public void setThemedContext(ThemedReactContext themedContext) {
     mThemedContext = themedContext;
   }
 
-  /* package */ void setShouldNotifyOnLayout(boolean shouldNotifyOnLayout) {
+  public void setShouldNotifyOnLayout(boolean shouldNotifyOnLayout) {
     mShouldNotifyOnLayout = shouldNotifyOnLayout;
   }
 
-  /* package */ boolean shouldNotifyOnLayout() {
+  public boolean shouldNotifyOnLayout() {
     return mShouldNotifyOnLayout;
   }
 
@@ -264,6 +282,15 @@ public class ReactShadowNode extends CSSNode {
     ReactShadowNode removed = mNativeChildren.remove(i);
     removed.mNativeParent = null;
     return removed;
+  }
+
+  public void removeAllNativeChildren() {
+    if (mNativeChildren != null) {
+      for (int i = mNativeChildren.size() - 1; i >= 0; i--) {
+        mNativeChildren.get(i).mNativeParent = null;
+      }
+      mNativeChildren.clear();
+    }
   }
 
   public int getNativeChildCount() {

@@ -18,8 +18,7 @@
 
 export type Example = {
   title: string,
-  /* $FlowFixMe(>=0.16.0) */
-  render: () => ?ReactElement<any, any, any>,
+  render: () => ?ReactElement<any>,
   description?: string,
   platform?: string;
 };

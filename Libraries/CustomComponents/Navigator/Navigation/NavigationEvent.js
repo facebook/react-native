@@ -27,7 +27,7 @@
  */
 'use strict';
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 class NavigationEventPool {
   _list: Array<any>;
@@ -36,13 +36,13 @@ class NavigationEventPool {
     this._list = [];
   }
 
-  get(type: string, target: Object, data: any): NavigationEvent {
+  get(type: string, currentTarget: Object, data: any): NavigationEvent {
     var event;
     if (this._list.length > 0) {
       event = this._list.pop();
-      event.constructor.call(event, type, target, data);
+      event.constructor.call(event, type, currentTarget, data);
     } else {
-      event = new NavigationEvent(type, target, data);
+      event = new NavigationEvent(type, currentTarget, data);
     }
     return event;
   }
@@ -54,21 +54,57 @@ class NavigationEventPool {
 
 var _navigationEventPool = new NavigationEventPool();
 
+/**
+ * The NavigationEvent interface represents any event of the navigation.
+ * It contains common properties and methods to any event.
+ *
+ * == Important Properties ==
+ *
+ * - target:
+ *   A reference to the navigation context that dispatched the event. It is
+ *   different from event.currentTarget when the event handler is called during
+ *   the bubbling or capturing phase of the event.
+ *
+ * - currentTarget:
+ *   Identifies the current target for the event, as the event traverses the
+ *   navigation context tree. It always refers to the navigation context the
+ *   event handler has been attached to as opposed to event.target which
+ *   identifies the navigation context on which the event occurred.
+ *
+ * - eventPhase:
+ *   Returns an integer value which specifies the current evaluation phase of
+ *   the event flow; possible values are listed in NavigationEvent phase
+ *   constants below.
+ */
 class NavigationEvent {
+  static AT_TARGET: number;
+  static BUBBLING_PHASE: number;
+  static CAPTURING_PHASE: number;
+  static NONE: number;
+
+  _currentTarget: ?Object;
   _data: any;
   _defaultPrevented: boolean;
-  _propagationStopped: boolean;
   _disposed: boolean;
-  _target: ?Object;
+  _propagationStopped: boolean;
   _type: ?string;
 
-  static pool(type: string, target: Object, data: any): NavigationEvent {
-    return _navigationEventPool.get(type, target, data);
+  target: ?Object;
+
+  // Returns an integer value which specifies the current evaluation phase of
+  // the event flow.
+  eventPhase: number;
+
+  static pool(type: string, currentTarget: Object, data: any): NavigationEvent {
+    return _navigationEventPool.get(type, currentTarget, data);
   }
 
-  constructor(type: string, target: Object, data: any) {
+  constructor(type: string, currentTarget: Object, data: any) {
+    this.target = currentTarget;
+    this.eventPhase = NavigationEvent.NONE;
+
     this._type = type;
-    this._target = target;
+    this._currentTarget = currentTarget;
     this._data = data;
     this._defaultPrevented = false;
     this._disposed = false;
@@ -81,8 +117,8 @@ class NavigationEvent {
   }
 
   /* $FlowFixMe - get/set properties not yet supported */
-  get target(): Object {
-    return this._target;
+  get currentTarget(): Object {
+    return this._currentTarget;
   }
 
   /* $FlowFixMe - get/set properties not yet supported */
@@ -122,8 +158,10 @@ class NavigationEvent {
     this._disposed = true;
 
     // Clean up.
+    this.target = null;
+    this.eventPhase = NavigationEvent.NONE;
     this._type = null;
-    this._target = null;
+    this._currentTarget = null;
     this._data = null;
     this._defaultPrevented = false;
 
@@ -131,5 +169,27 @@ class NavigationEvent {
     _navigationEventPool.put(this);
   }
 }
+
+/**
+ * Event phase constants.
+ * These values describe which phase the event flow is currently being
+ * evaluated.
+ */
+
+// No event is being processed at this time.
+NavigationEvent.NONE = 0;
+
+// The event is being propagated through the currentTarget's ancestor objects.
+NavigationEvent.CAPTURING_PHASE = 1;
+
+// The event has arrived at the event's currentTarget. Event listeners registered for
+// this phase are called at this time.
+NavigationEvent.AT_TARGET = 2;
+
+// The event is propagating back up through the currentTarget's ancestors in reverse
+// order, starting with the parent. This is known as bubbling, and occurs only
+// if event propagation isn't prevented. Event listeners registered for this
+// phase are triggered during this process.
+NavigationEvent.BUBBLING_PHASE = 3;
 
 module.exports = NavigationEvent;
