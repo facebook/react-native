@@ -31,10 +31,6 @@ class <%= name %> extends Component {
   }
 }
 
-// TODO testing flow
-const a: number = 2;
-a = "2";
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
