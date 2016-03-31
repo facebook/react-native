@@ -50,7 +50,7 @@ type Buttons = Array<{
  *   - Three buttons mean 'neutral', 'negative', 'positive' (such as 'Later', 'Cancel', 'OK')
  *
  * ```
- * // Works on iOS and Android
+ * // Works on both iOS and Android
  * Alert.alert(
  *   'Alert Title',
  *   'My Alert Msg',
