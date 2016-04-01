@@ -67,6 +67,9 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
         case Number:
           hashMap.put(key, getDouble(key));
           break;
+        case String:
+          hashMap.put(key, getString(key));
+          break;
         case Map:
           hashMap.put(key, getMap(key).toHashMap());
           break;
