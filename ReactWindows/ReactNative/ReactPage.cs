@@ -138,7 +138,7 @@ namespace ReactNative
         {
             return new ReactRootView();
         }
-        
+
         /// <summary>
         /// Captures the key down events to 
         /// </summary>

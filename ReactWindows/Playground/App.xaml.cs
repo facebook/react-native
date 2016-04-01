@@ -1,7 +1,5 @@
 ﻿using ReactNative;
-using ReactNative.Shell;
 using System;
-using System.Linq;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Core;
