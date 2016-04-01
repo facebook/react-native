@@ -48,23 +48,18 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 
 @property (nonatomic, strong, readonly) NSNumber *viewTag;
 @property (nonatomic, copy, readonly) NSString *eventName;
-@property (nonatomic, copy, readonly) NSDictionary *body;
 @property (nonatomic, assign, readonly) uint16_t coalescingKey;
 
 - (BOOL)canCoalesce;
 - (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent;
 
+// used directly for doing a JS call
 + (NSString *)moduleDotMethod;
+// must contain only JSON compatible values
+- (NSArray *)arguments;
 
 @end
 
-@interface RCTBaseEvent : NSObject <RCTEvent>
-
-- (instancetype)initWithViewTag:(NSNumber *)viewTag
-                      eventName:(NSString *)eventName
-                           body:(NSDictionary *)body NS_DESIGNATED_INITIALIZER;
-
-@end
 
 /**
  * This class wraps the -[RCTBridge enqueueJSCall:args:] method, and
@@ -101,6 +96,9 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 
 /**
  * Send a pre-prepared event object.
+ *
+ * Events are sent to JS as soon as the thread is free to process them.
+ * If an event can be coalesced and there is another compatible event waiting, the coalescing will happen immediately.
  */
 - (void)sendEvent:(id<RCTEvent>)event;
 

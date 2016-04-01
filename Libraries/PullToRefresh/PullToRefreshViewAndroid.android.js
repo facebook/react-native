@@ -16,15 +16,16 @@ var RefreshLayoutConsts = require('UIManager').AndroidSwipeRefreshLayout.Constan
 var View = require('View');
 
 var onlyChild = require('onlyChild');
-var processColor = require('processColor');
 var requireNativeComponent = require('requireNativeComponent');
 
 var NATIVE_REF = 'native_swiperefreshlayout';
 
 /**
+ * Deprecated. Use `RefreshControl` instead.
+ *
  * React view that supports a single scrollable child view (e.g. `ScrollView`). When this child
  * view is at `scrollY: 0`, swiping down triggers an `onRefresh` event.
- * 
+ *
  * The style `{flex: 1}` might be required to ensure the expected behavior of the child component
  * (e.g. when the child is expected to scroll with `ScrollView` or `ListView`).
  */
@@ -57,6 +58,10 @@ var PullToRefreshViewAndroid = React.createClass({
     size: React.PropTypes.oneOf(RefreshLayoutConsts.SIZE.DEFAULT, RefreshLayoutConsts.SIZE.LARGE),
   },
 
+  componentDidMount: function() {
+    console.warn('`PullToRefreshViewAndroid` is deprecated. Use `RefreshControl` instead.');
+  },
+
   getInnerViewNode: function() {
     return this.refs[NATIVE_REF];
   },
@@ -68,7 +73,7 @@ var PullToRefreshViewAndroid = React.createClass({
   render: function() {
     return (
       <NativePullToRefresh
-        colors={this.props.colors && this.props.colors.map(processColor)}
+        colors={this.props.colors}
         enabled={this.props.enabled}
         onRefresh={this._onRefresh}
         progressBackgroundColor={this.props.progressBackgroundColor}

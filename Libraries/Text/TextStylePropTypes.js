@@ -47,6 +47,12 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
     ['auto' /*default*/, 'left', 'right', 'center', 'justify']
   ),
   /**
+   * @platform android
+   */
+  textAlignVertical: ReactPropTypes.oneOf(
+    ['auto' /*default*/, 'top', 'bottom', 'center']
+  ),
+  /**
    * @platform ios
    */
   textDecorationLine: ReactPropTypes.oneOf(

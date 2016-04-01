@@ -18,10 +18,28 @@
 	<string>1.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.reactjs.ios</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>rnuiexplorer</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>You need to add NSLocationWhenInUseUsageDescription key in Info.plist to enable geolocation, otherwise it is going to *fail silently*!</string>
 	<key>UILaunchStoryboardName</key>
@@ -38,11 +56,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSAppTransportSecurity</key>
-  <dict>
-    <!--See http://ste.vn/2015/06/10/configuring-app-transport-security-ios-9-osx-10-11/-->
-    <key>NSAllowsArbitraryLoads</key>
-    <true/>
-  </dict>
 </dict>
 </plist>

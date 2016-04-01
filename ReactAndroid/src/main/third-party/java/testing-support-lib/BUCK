@@ -1,0 +1,12 @@
+android_prebuilt_aar(
+    name = 'testing-support-lib',
+    aar = ':testing-support-lib-download',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'testing-support-lib-download',
+    url = 'mvn:com.android.support.test:testing-support-lib:aar:0.1',
+    sha1 = '36e4f08b2a3389dd5a5093411df35091bdd68361',
+)
+

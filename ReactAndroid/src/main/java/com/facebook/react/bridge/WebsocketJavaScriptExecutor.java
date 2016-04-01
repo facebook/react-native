@@ -159,10 +159,10 @@ public class WebsocketJavaScriptExecutor implements JavaJSExecutor {
   }
 
   @Override
-  public void executeApplicationScript(String script, String sourceURL)
+  public void loadApplicationScript(String script, String sourceURL)
       throws ProxyExecutorException {
     JSExecutorCallbackFuture callback = new JSExecutorCallbackFuture();
-    Assertions.assertNotNull(mWebSocketClient).executeApplicationScript(
+    Assertions.assertNotNull(mWebSocketClient).loadApplicationScript(
         sourceURL,
         mInjectedObjects,
         callback);
@@ -190,7 +190,7 @@ public class WebsocketJavaScriptExecutor implements JavaJSExecutor {
 
   @Override
   public void setGlobalVariable(String propertyName, String jsonEncodedValue) {
-    // Store and use in the next executeApplicationScript() call.
+    // Store and use in the next loadApplicationScript() call.
     mInjectedObjects.put(propertyName, jsonEncodedValue);
   }
 }

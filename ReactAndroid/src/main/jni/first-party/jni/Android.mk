@@ -9,6 +9,7 @@ LOCAL_SRC_FILES:= \
        LocalString.cpp \
        OnLoad.cpp \
        WeakReference.cpp \
+       fbjni/ByteBuffer.cpp \
        fbjni/Exceptions.cpp \
        fbjni/Hybrid.cpp \
        fbjni/References.cpp

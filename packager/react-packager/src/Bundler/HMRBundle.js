@@ -12,35 +12,43 @@ const BundleBase = require('./BundleBase');
 const ModuleTransport = require('../lib/ModuleTransport');
 
 class HMRBundle extends BundleBase {
-  constructor() {
+  constructor({sourceURLFn, sourceMappingURLFn}) {
     super();
+    this._sourceURLFn = sourceURLFn
+    this._sourceMappingURLFn = sourceMappingURLFn;
+    this._sourceURLs = [];
+    this._sourceMappingURLs = [];
   }
 
-  addModule(resolver, response, module, transformed) {
-    return resolver.resolveRequires(response,
+  addModule(resolver, response, module, moduleTransport) {
+    const code = resolver.resolveRequires(
+      response,
       module,
-      transformed.code,
-    ).then(({name, code}) => {
-      code = `
-        __accept(
-          '${name}',
-          function(global, require, module, exports) {
-            ${code}
-          }
-        );
-      `;
+      moduleTransport.code,
+      moduleTransport.meta.dependencyOffsets,
+    );
 
-      const moduleTransport = new ModuleTransport({
-        code,
-        name,
-        map: transformed.map,
-        sourceCode: transformed.sourceCode,
-        sourcePath: transformed.sourcePath,
-        virtual: transformed.virtual,
-      });
+    super.addModule(new ModuleTransport({...moduleTransport, code}));
+    this._sourceMappingURLs.push(this._sourceMappingURLFn(moduleTransport.sourcePath));
+    this._sourceURLs.push(this._sourceURLFn(moduleTransport.sourcePath));
+    return Promise.resolve();
+  }
 
-      super.addModule(moduleTransport);
+  getModulesIdsAndCode() {
+    return this._modules.map(module => {
+      return {
+        id: JSON.stringify(module.id),
+        code: module.code,
+      };
     });
+  }
+
+  getSourceURLs() {
+    return this._sourceURLs;
+  }
+
+  getSourceMappingURLs() {
+    return this._sourceMappingURLs;
   }
 }
 

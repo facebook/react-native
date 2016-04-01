@@ -15,7 +15,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public abstract class JavaScriptExecutor extends Countable {
   public interface Factory {
-    JavaScriptExecutor create() throws Exception;
+    JavaScriptExecutor create(WritableNativeMap jscConfig) throws Exception;
   }
 
   /**

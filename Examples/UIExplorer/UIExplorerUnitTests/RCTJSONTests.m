@@ -78,4 +78,35 @@
   XCTAssertEqualObjects(obj, RCTJSONParse(json, NULL));
 }
 
+- (void)testNotJSONSerializable
+{
+  NSDictionary<NSString *, id> *obj = @{@"foo": [NSDate date]};
+  NSString *json = @"{\"foo\":null}";
+  XCTAssertEqualObjects(json, RCTJSONStringify(obj, NULL));
+}
+
+- (void)testNaN
+{
+  NSDictionary<NSString *, id> *obj = @{@"foo": @(NAN)};
+  NSString *json = @"{\"foo\":0}";
+  XCTAssertEqualObjects(json, RCTJSONStringify(obj, NULL));
+}
+
+- (void)testNotUTF8Convertible
+{
+  //see https://gist.github.com/0xced/56035d2f57254cf518b5
+  NSString *string = [[NSString alloc] initWithBytes:"\xd8\x00" length:2 encoding:NSUTF16StringEncoding];
+  NSDictionary<NSString *, id> *obj = @{@"foo": string};
+  NSString *json = @"{\"foo\":null}";
+  XCTAssertEqualObjects(json, RCTJSONStringify(obj, NULL));
+}
+
+- (void)testErrorPointer
+{
+  NSDictionary<NSString *, id> *obj = @{@"foo": [NSDate date]};
+  NSError *error;
+  XCTAssertNil(RCTJSONStringify(obj, &error));
+  XCTAssertNotNil(error);
+}
+
 @end

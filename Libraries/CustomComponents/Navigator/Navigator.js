@@ -42,8 +42,9 @@ var TimerMixin = require('react-timer-mixin');
 var View = require('View');
 
 var clamp = require('clamp');
+var deprecatedPropType = require('deprecatedPropType');
 var flattenStyle = require('flattenStyle');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var rebound = require('rebound');
 
 var PropTypes = React.PropTypes;
@@ -194,6 +195,20 @@ var Navigator = React.createClass({
      * ```
      * (route, routeStack) => Navigator.SceneConfigs.FloatFromRight
      * ```
+     *
+     * Available options are:
+     *
+     *  - Navigator.SceneConfigs.PushFromRight (default)
+     *  - Navigator.SceneConfigs.FloatFromRight
+     *  - Navigator.SceneConfigs.FloatFromLeft
+     *  - Navigator.SceneConfigs.FloatFromBottom
+     *  - Navigator.SceneConfigs.FloatFromBottomAndroid
+     *  - Navigator.SceneConfigs.FadeAndroid
+     *  - Navigator.SceneConfigs.HorizontalSwipeJump
+     *  - Navigator.SceneConfigs.HorizontalSwipeJumpFromRight
+     *  - Navigator.SceneConfigs.VerticalUpSwipeJump
+     *  - Navigator.SceneConfigs.VerticalDownSwipeJump
+     *
      */
     configureScene: PropTypes.func,
 
@@ -224,25 +239,20 @@ var Navigator = React.createClass({
     initialRouteStack: PropTypes.arrayOf(PropTypes.object),
 
     /**
-     * @deprecated
-     * Use `navigationContext.addListener('willfocus', callback)` instead.
-     *
      * Will emit the target route upon mounting and before each nav transition
      */
     onWillFocus: PropTypes.func,
 
     /**
-     * @deprecated
-     * Use `navigationContext.addListener('didfocus', callback)` instead.
-     *
      * Will be called with the new route of each scene after the transition is
      * complete or after the initial mounting
      */
     onDidFocus: PropTypes.func,
 
     /**
-     * Optionally provide a navigation bar that persists across scene
-     * transitions
+     * Optionally provide a component as navigation bar that persists across scene
+     * transitions. The component will receive two props: `navigator` and `navState`.
+     * It will be rerendered when the routes change.
      */
     navigationBar: PropTypes.node,
 
@@ -376,6 +386,7 @@ var Navigator = React.createClass({
     }, () => {
       this._handleSpringUpdate();
       this._navBar && this._navBar.immediatelyRefresh();
+      this._emitDidFocus(this.state.routeStack[this.state.presentedIndex]);
     });
   },
 
@@ -781,7 +792,7 @@ var Navigator = React.createClass({
   },
 
   _matchGestureAction: function(eligibleGestures, gestures, gestureState) {
-    if (!gestures) {
+    if (!gestures || !eligibleGestures || !eligibleGestures.some) {
       return null;
     }
     var matchedGesture = null;

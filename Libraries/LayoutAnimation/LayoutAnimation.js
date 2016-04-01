@@ -15,7 +15,7 @@ var PropTypes = require('ReactPropTypes');
 var UIManager = require('UIManager');
 
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
-var keyMirror = require('keyMirror');
+var keyMirror = require('fbjs/lib/keyMirror');
 
 var TypesEnum = {
   spring: true,

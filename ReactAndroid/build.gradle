@@ -55,17 +55,17 @@ task prepareDoubleConversion(dependsOn: downloadDoubleConversion, type: Copy) {
 }
 
 task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/facebook/folly/archive/v0.50.0.tar.gz'
+    src 'https://github.com/facebook/folly/archive/deprecate-dynamic-initializer.tar.gz'
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'folly-0.50.0.tar.gz');
+    dest new File(downloadsDir, 'folly-deprecate-dynamic-initializer.tar.gz');
 }
 
 task prepareFolly(dependsOn: downloadFolly, type: Copy) {
     from tarTree(downloadFolly.dest)
     from 'src/main/jni/third-party/folly/Android.mk'
-    include 'folly-0.50.0/folly/**/*', 'Android.mk'
-    eachFile {fname -> fname.path = (fname.path - "folly-0.50.0/")}
+    include 'folly-deprecate-dynamic-initializer/folly/**/*', 'Android.mk'
+    eachFile {fname -> fname.path = (fname.path - "folly-deprecate-dynamic-initializer/")}
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/folly"
 }
@@ -204,6 +204,11 @@ task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
     into "$buildDir/react-ndk/exported"
 }
 
+task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
+  from "$buildDir/react-ndk/exported"
+  into "src/main/jni/prebuilt/lib"
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
@@ -219,14 +224,14 @@ android {
         }
 
         buildConfigField 'boolean', 'IS_INTERNAL_BUILD', 'false'
-        testApplicationId "com.facebook.react.tests"
+        testApplicationId "com.facebook.react.tests.gradle"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     sourceSets.main {
         jni.srcDirs = []
         jniLibs.srcDir "$buildDir/react-ndk/exported"
-        res.srcDirs = ['src/main/res/devsupport', 'src/main/res/shell']
+        res.srcDirs = ['src/main/res/devsupport', 'src/main/res/shell', 'src/main/res/views/modal']
         java {
           srcDirs = ['src/main/java', 'src/main/libraries/soloader']
           exclude 'com/facebook/react/processing'
@@ -250,8 +255,6 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.0.1'
     compile 'com.facebook.fresco:fresco:0.8.1'
     compile 'com.facebook.fresco:imagepipeline-okhttp:0.8.1'
-    compile 'com.facebook.stetho:stetho:1.2.0'
-    compile 'com.facebook.stetho:stetho-okhttp:1.2.0'
     compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
@@ -261,6 +264,7 @@ dependencies {
 
     testCompile "junit:junit:${JUNIT_VERSION}"
     testCompile "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"
+    testCompile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
     testCompile "org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}"
     testCompile "org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}"
     testCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"

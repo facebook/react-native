@@ -31,7 +31,7 @@ public abstract class JSBundleLoader {
         if (fileName.startsWith("assets://")) {
           bridge.loadScriptFromAssets(context.getAssets(), fileName.replaceFirst("assets://", ""));
         } else {
-          bridge.loadScriptFromFile(fileName, fileName);
+          bridge.loadScriptFromFile(fileName, "file://" + fileName);
         }
       }
 

@@ -213,8 +213,6 @@ static css_dim_t RCTMeasure(void *context, float width, float height)
         NSTextAttachment *imageAttachment = [NSTextAttachment new];
         imageAttachment.image = image;
         [attributedString appendAttributedString:[NSAttributedString attributedStringWithAttachment:imageAttachment]];
-      } else {
-        //TODO: add placeholder image?
       }
     } else {
       RCTLogError(@"<Text> can't have any children except <Text>, <Image> or raw strings");

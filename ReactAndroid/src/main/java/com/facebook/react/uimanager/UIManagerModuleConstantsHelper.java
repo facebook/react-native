@@ -9,11 +9,8 @@
 
 package com.facebook.react.uimanager;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import android.util.DisplayMetrics;
 
 import com.facebook.react.common.MapBuilder;
 
@@ -39,10 +36,8 @@ import com.facebook.react.common.MapBuilder;
    * {@link UIManagerModuleConstants}.
    * TODO(6845124): Create a test for this
    */
-  /* package */ static Map<String, Object> createConstants(
-      DisplayMetrics displayMetrics,
-      List<ViewManager> viewManagers) {
-    Map<String, Object> constants = UIManagerModuleConstants.getConstants(displayMetrics);
+  /* package */ static Map<String, Object> createConstants(List<ViewManager> viewManagers) {
+    Map<String, Object> constants = UIManagerModuleConstants.getConstants();
     Map bubblingEventTypesConstants = UIManagerModuleConstants.getBubblingEventTypeConstants();
     Map directEventTypesConstants = UIManagerModuleConstants.getDirectEventTypeConstants();
 

@@ -448,7 +448,10 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
         expectedCount -= 2;
       }
 
-      RCTLogError(@"%@.%@ was called with %zd arguments, but expects %zd",
+      RCTLogError(@"%@.%@ was called with %zd arguments, but expects %zd. \
+                  If you haven\'t changed this method yourself, this usually means that \
+                  your versions of the native code and JavaScript code are out of sync. \
+                  Updating both should make this error go away.",
                   RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName,
                   actualCount, expectedCount);
       return;

@@ -27,7 +27,7 @@ type ReactNativeBaseComponentViewConfig = {
  */
 var createReactNativeComponentClass = function(
   viewConfig: ReactNativeBaseComponentViewConfig
-): ReactClass<any, any, any> {
+): ReactClass<any> {
   var Constructor = function(element) {
     this._currentElement = element;
 

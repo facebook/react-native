@@ -98,6 +98,34 @@ var styles = StyleSheet.create({
     marginRight: 10,
     backgroundColor: 'lightgrey',
   },
+  border9: {
+    borderWidth: 10,
+    borderTopLeftRadius: 10,
+    borderBottomRightRadius: 20,
+    borderColor: 'black',
+  },
+  border10: {
+    borderWidth: 10,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 10,
+    borderBottomRightRadius: 20,
+    borderColor: 'black',
+    elevation: 10,
+  },
+  border11: {
+    width: 0,
+    height: 0,
+    borderStyle: 'solid',
+    overflow: 'hidden',
+    borderTopWidth: 50,
+    borderRightWidth: 0,
+    borderBottomWidth: 50,
+    borderLeftWidth: 100,
+    borderTopColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderLeftColor: 'red',
+  },
 });
 
 exports.title = 'Border';
@@ -178,6 +206,28 @@ exports.examples = [
           <View style={[styles.box, styles.border8, {borderRightWidth: 5}]} />
         </View>
       );
+    }
+  },
+  {
+    title: 'Corner Radii',
+    description: 'borderTopLeftRadius & borderBottomRightRadius',
+    render() {
+      return <View style={[styles.box, styles.border9]} />;
+    }
+  },
+  {
+    title: 'Corner Radii / Elevation',
+    description: 'borderTopLeftRadius & borderBottomRightRadius & elevation',
+    platform: 'android',
+    render() {
+      return <View style={[styles.box, styles.border10]} />;
+    }
+  },
+  {
+    title: 'CSS Trick - Triangle',
+    description: 'create a triangle by manipulating border colors and widths',
+    render() {
+      return <View style={[styles.border11]} />;
     }
   },
 ];

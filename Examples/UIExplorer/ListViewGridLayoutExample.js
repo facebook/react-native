@@ -67,6 +67,9 @@ var ListViewGridLayoutExample = React.createClass({
       <ListView
         contentContainerStyle={styles.list}
         dataSource={this.state.dataSource}
+        initialListSize={21}
+        pageSize={3} // should be a multiple of the no. of visible cells per row
+        scrollRenderAheadDistance={500}
         renderRow={this._renderRow}
       />
     );

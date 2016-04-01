@@ -9,18 +9,21 @@
 
 package com.facebook.react.modules.core;
 
-import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.common.ReactConstants;
 
 public class ExceptionsManagerModule extends BaseJavaModule {
 
+  static private final Pattern mJsModuleIdPattern = Pattern.compile("(?:^|[/\\\\])(\\d+\\.js)$");
   private final DevSupportManager mDevSupportManager;
 
   public ExceptionsManagerModule(DevSupportManager devSupportManager) {
@@ -32,16 +35,35 @@ public class ExceptionsManagerModule extends BaseJavaModule {
     return "RKExceptionsManager";
   }
 
-  private String stackTraceToString(ReadableArray stack) {
-    StringBuilder stringBuilder = new StringBuilder();
+  // If the file name of a stack frame is numeric (+ ".js"), we assume it's a lazily injected module
+  // coming from a "random access bundle". We are using special source maps for these bundles, so
+  // that we can symbolicate stack traces for multiple injected files with a single source map.
+  // We have to include the module id in the stack for that, though. The ".js" suffix is kept to
+  // avoid ambiguities between "module-id:line" and "line:column".
+  static private String stackFrameToModuleId(ReadableMap frame) {
+    if (frame.hasKey("file") &&
+        !frame.isNull("file") &&
+        frame.getType("file") == ReadableType.String) {
+      final Matcher matcher = mJsModuleIdPattern.matcher(frame.getString("file"));
+      if (matcher.find()) {
+        return matcher.group(1) + ":";
+      }
+    }
+    return "";
+  }
+
+  private String stackTraceToString(String message, ReadableArray stack) {
+    StringBuilder stringBuilder = new StringBuilder(message).append(", stack:\n");
     for (int i = 0; i < stack.size(); i++) {
       ReadableMap frame = stack.getMap(i);
-      stringBuilder.append(frame.getString("methodName"));
-      stringBuilder.append("\n    ");
-      stringBuilder.append(new File(frame.getString("file")).getName());
-      stringBuilder.append(":");
-      stringBuilder.append(frame.getInt("lineNumber"));
-      if (frame.hasKey("column") && !frame.isNull("column")) {
+      stringBuilder
+          .append(frame.getString("methodName"))
+          .append("@")
+          .append(stackFrameToModuleId(frame))
+          .append(frame.getInt("lineNumber"));
+      if (frame.hasKey("column") &&
+          !frame.isNull("column") &&
+          frame.getType("column") == ReadableType.Number) {
         stringBuilder
             .append(":")
             .append(frame.getInt("column"));
@@ -58,14 +80,14 @@ public class ExceptionsManagerModule extends BaseJavaModule {
 
   @ReactMethod
   public void reportSoftException(String title, ReadableArray details, int exceptionId) {
-    FLog.e(ReactConstants.TAG, title + "\n" + stackTraceToString(details));
+    FLog.e(ReactConstants.TAG, stackTraceToString(title, details));
   }
 
   private void showOrThrowError(String title, ReadableArray details, int exceptionId) {
     if (mDevSupportManager.getDevSupportEnabled()) {
       mDevSupportManager.showNewJSError(title, details, exceptionId);
     } else {
-      throw new JavascriptException(stackTraceToString(details));
+      throw new JavascriptException(stackTraceToString(title, details));
     }
   }
 
@@ -73,6 +95,13 @@ public class ExceptionsManagerModule extends BaseJavaModule {
   public void updateExceptionMessage(String title, ReadableArray details, int exceptionId) {
     if (mDevSupportManager.getDevSupportEnabled()) {
       mDevSupportManager.updateJSError(title, details, exceptionId);
+    }
+  }
+
+  @ReactMethod
+  public void dismissRedbox() {
+    if (mDevSupportManager.getDevSupportEnabled()) {
+      mDevSupportManager.hideRedboxDialog();
     }
   }
 }

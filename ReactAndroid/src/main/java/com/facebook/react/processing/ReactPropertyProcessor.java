@@ -64,7 +64,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
   private static final Set<TypeName> BOXED_PRIMITIVES;
 
   private static final TypeName PROPS_TYPE =
-      ClassName.get("com.facebook.react.uimanager", "CatalystStylesDiffMap");
+      ClassName.get("com.facebook.react.uimanager", "ReactStylesDiffMap");
   private static final TypeName STRING_TYPE = TypeName.get(String.class);
   private static final TypeName READABLE_MAP_TYPE = TypeName.get(ReadableMap.class);
   private static final TypeName READABLE_ARRAY_TYPE = TypeName.get(ReadableArray.class);
@@ -578,7 +578,8 @@ public class ReactPropertyProcessor extends AbstractProcessor {
       if (checkPropertyExists(name)) {
         throw new ReactPropertyException(
             "Module " + mClassName + " has already registered a property named \"" +
-                name + '"', propertyInfo);
+                name + "\". If you want to override a property, don't add" +
+                "the @ReactProp annotation to the property in the subclass", propertyInfo);
       }
 
       mProperties.add(propertyInfo);

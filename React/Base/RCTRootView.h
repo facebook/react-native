@@ -84,13 +84,6 @@ extern NSString *const RCTContentDidAppearNotification;
 @property (nonatomic, copy, readwrite) NSDictionary *appProperties;
 
 /**
- * The class of the RCTJavaScriptExecutor to use with this view.
- * If not specified, it will default to using RCTJSCExecutor.
- * Changes will take effect next time the bundle is reloaded.
- */
-@property (nonatomic, strong) Class executorClass;
-
-/**
  * The size flexibility mode of the root view.
  */
 @property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
@@ -122,6 +115,25 @@ extern NSString *const RCTContentDidAppearNotification;
  * (for example) a UIActivityIndicatorView or a placeholder image.
  */
 @property (nonatomic, strong) UIView *loadingView;
+
+/**
+ * Calling this will result in emitting a "touches cancelled" event to js,
+ * which effectively cancels all js "gesture recognizers" such as as touchable
+ * (unless they explicitely ignore cancellation events, but noone should do that).
+ *
+ * This API is exposed for integration purposes where you embed RN rootView
+ * in a native view with a native gesture recognizer,
+ * whose activation should prevent any in-flight js "gesture recognizer" from activating.
+ *
+ * An example would be RN rootView embedded in an UIScrollView.
+ * When you touch down on a touchable component and drag your finger up,
+ * you don't want any touch to be registered as soon as the UIScrollView starts scrolling.
+ *
+ * Note that this doesn't help with tapping on a touchable element that is being scrolled,
+ * unless you can call cancelTouches exactly between "touches began" and "touches ended" events.
+ * This is a reason why this API may be soon removed in favor of a better solution.
+ */
+- (void)cancelTouches;
 
 /**
  * Timings for hiding the loading view after the content has loaded. Both of

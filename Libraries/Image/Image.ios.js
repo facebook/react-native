@@ -23,10 +23,10 @@ var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 
 var flattenStyle = require('flattenStyle');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
-var warning = require('warning');
+var warning = require('fbjs/lib/warning');
 
 var {
   ImageViewManager,
@@ -95,6 +95,11 @@ var Image = React.createClass({
      */
     accessibilityLabel: PropTypes.string,
     /**
+    * blurRadius: the blur radius of the blur filter added to the image
+    * @platform ios
+    */
+    blurRadius: PropTypes.number,
+    /**
      * When the image is resized, the corners of the size specified
      * by capInsets will stay a fixed size, but the center content and borders
      * of the image will be stretched.  This is useful for creating resizable
@@ -155,6 +160,28 @@ var Image = React.createClass({
 
   statics: {
     resizeMode: ImageResizeMode,
+    /**
+     * Retrieve the width and height (in pixels) of an image prior to displaying it.
+     * This method can fail if the image cannot be found, or fails to download.
+     *
+     * In order to retrieve the image dimensions, the image may first need to be
+     * loaded or downloaded, after which it will be cached. This means that in
+     * principle you could use this method to preload images, however it is not
+     * optimized for that purpose, and may in future be implemented in a way that
+     * does not fully load/download the image data. A proper, supported way to
+     * preload images will be provided as a separate API.
+     *
+     * @platform ios
+     */
+    getSize: function(
+      uri: string,
+      success: (width: number, height: number) => void,
+      failure: (error: any) => void,
+    ) {
+      ImageViewManager.getSize(uri, success, failure || function() {
+        console.warn('Failed to get size for image: ' + uri);
+      });
+    }
   },
 
   mixins: [NativeMethodsMixin],
@@ -174,33 +201,40 @@ var Image = React.createClass({
 
   render: function() {
     var source = resolveAssetSource(this.props.source) || {};
-    var {width, height} = source;
+    var {width, height, uri} = source;
     var style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
 
-    var isNetwork = source.uri && source.uri.match(/^https?:/);
+    var isNetwork = uri && uri.match(/^https?:/);
     var RawImage = isNetwork ? RCTNetworkImageView : RCTImageView;
     var resizeMode = this.props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
     var tintColor = (style || {}).tintColor; // Workaround for flow bug t7737108
 
     // This is a workaround for #8243665. RCTNetworkImageView does not support tintColor
     // TODO: Remove this hack once we have one image implementation #8389274
-    if (isNetwork && tintColor) {
+    if (isNetwork && (tintColor || this.props.blurRadius)) {
       RawImage = RCTImageView;
     }
 
-    if (this.context.isInAParentText) {
-      return <RCTVirtualImage source={source}/>;
-    } else {
-      return (
-        <RawImage
-          {...this.props}
-          style={style}
-          resizeMode={resizeMode}
-          tintColor={tintColor}
-          source={source}
-        />
-      );
+    if (this.props.src) {
+      console.warn('The <Image> component requires a `source` property rather than `src`.');
     }
+
+    if (this.context.isInAParentText) {
+      RawImage = RCTVirtualImage;
+      if (!width || !height) {
+        console.warn('You must specify a width and height for the image %s', uri);
+      }
+    }
+
+    return (
+      <RawImage
+        {...this.props}
+        style={style}
+        resizeMode={resizeMode}
+        tintColor={tintColor}
+        source={source}
+      />
+    );
   },
 });
 
@@ -214,27 +248,5 @@ var RCTImageView = requireNativeComponent('RCTImageView', Image);
 var RCTNetworkImageView = NetworkImageViewManager ? requireNativeComponent('RCTNetworkImageView', Image) : RCTImageView;
 var RCTVirtualImage = requireNativeComponent('RCTVirtualImage', Image);
 
-/**
- * Retrieve the width and height (in pixels) of an image prior to displaying it.
- * This method can fail if the image cannot be found, or fails to download.
- *
- * In order to retrieve the image dimensions, the image may first need to be
- * loaded or downloaded, after which it will be cached. This means that in
- * principle you could use this method to preload images, however it is not
- * optimized for that purpose, and may in future be implemented in a way that
- * does not fully load/download the image data. A proper, supported way to
- * preload images will be provided as a separate API.
- *
- * @platform ios
- */
-Image.getSize = function(
-  uri: string,
-  success: (width: number, height: number) => void,
-  failure: (error: any) => void,
-) {
-  ImageViewManager.getSize(uri, success, failure || function() {
-    console.warn('Failed to get size for image: ' + uri);
-  });
-};
 
 module.exports = Image;
