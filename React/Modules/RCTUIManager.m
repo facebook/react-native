@@ -323,7 +323,7 @@ RCT_EXPORT_MODULE()
 - (dispatch_queue_t)methodQueue
 {
   if (!_shadowQueue) {
-    const char *queueName = "com.facebook.React.ShadowQueue";
+    const char *queueName = "com.facebook.react.ShadowQueue";
 
     if ([NSOperation instancesRespondToSelector:@selector(qualityOfService)]) {
       dispatch_queue_attr_t attr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0);

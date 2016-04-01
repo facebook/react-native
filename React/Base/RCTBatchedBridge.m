@@ -26,7 +26,7 @@
 
 #define RCTAssertJSThread() \
   RCTAssert(![NSStringFromClass([_javaScriptExecutor class]) isEqualToString:@"RCTJSCExecutor"] || \
-              [[[NSThread currentThread] name] isEqualToString:@"com.facebook.React.JavaScript"], \
+              [[[NSThread currentThread] name] isEqualToString:RCTJSCThreadName], \
             @"This method must be called on JS thread")
 
 /**
