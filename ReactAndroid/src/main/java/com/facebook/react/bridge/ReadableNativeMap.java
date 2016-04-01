@@ -13,6 +13,9 @@ import com.facebook.jni.Countable;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 
+import java.util.HashMap;
+
+
 /**
  * Implementation of a read-only map in native memory. This will generally be constructed and filled
  * in native code so you shouldn't construct one yourself.
@@ -46,6 +49,35 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
   @Override
   public ReadableMapKeySetIterator keySetIterator() {
     return new ReadableNativeMapKeySetIterator(this);
+  }
+
+  public HashMap<String, Object>toHashMap() {
+    ReadableMapKeySetIterator iterator = keySetIterator();
+    HashMap<String, Object> hashMap = new HashMap<>();
+
+    while (iterator.hasNextKey()) {
+      String key = iterator.nextKey();
+      switch (getType(key)) {
+        case Null:
+          hashMap.put(key, null);
+          break;
+        case Boolean:
+          hashMap.put(key, getBoolean(key));
+          break;
+        case Number:
+          hashMap.put(key, getDouble(key));
+          break;
+        case Map:
+          hashMap.put(key, getMap(key).toHashMap());
+          break;
+        case Array:
+          hashMap.put(key, getArray(key).toArrayList());
+          break;
+        default:
+          throw new IllegalArgumentException("Could not convert object with key: " + key + ".");
+      }
+    }
+    return hashMap;
   }
 
   /**
