@@ -39,7 +39,15 @@ Callback <span class="token operator">-</span><span class="token operator">&gt;<
 ReadableMap <span class="token operator">-</span><span class="token operator">&gt;</span> Object
 ReadableArray <span class="token operator">-</span><span class="token operator">&gt;</span> Array</div><p>Read more about <a href="https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/bridge/ReadableMap.java" target="_blank">ReadableMap</a> and <a href="https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/bridge/ReadableArray.java" target="_blank">ReadableArray</a></p><h3><a class="anchor" name="register-the-module"></a>Register the Module <a class="hash-link" href="docs/native-modules-android.html#register-the-module">#</a></h3><p>The last step within Java is to register the Module; this happens in the <code>createNativeModules</code> of your apps package. If a module is not registered it will not be available from JavaScript.</p><div class="prism language-javascript">class <span class="token class-name">AnExampleReactPackage</span> implements <span class="token class-name">ReactPackage</span> <span class="token punctuation">{</span>
 
-  <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+  @Override
+  public List&lt;Class&lt;<span class="token operator">?</span> extends <span class="token class-name">JavaScriptModule</span><span class="token operator">&gt;</span><span class="token operator">&gt;</span> <span class="token function">createJSModules<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> Collections<span class="token punctuation">.</span><span class="token function">emptyList<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  @Override
+  public List&lt;ViewManager<span class="token operator">&gt;</span> <span class="token function">createViewManagers<span class="token punctuation">(</span></span>ReactApplicationContext reactContext<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> Collections<span class="token punctuation">.</span><span class="token function">emptyList<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
 
   @Override
   public List&lt;NativeModule<span class="token operator">&gt;</span> <span class="token function">createNativeModules<span class="token punctuation">(</span></span>
