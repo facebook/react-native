@@ -59,6 +59,11 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
+- (uint16_t)coalescingKey
+{
+  return 0;
+}
+
 - (NSDictionary *)body
 {
   NSDictionary *body = @{

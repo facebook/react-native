@@ -18,6 +18,7 @@
 
 @synthesize eventName = _eventName;
 @synthesize viewTag = _viewTag;
+@synthesize coalescingKey = _coalescingKey;
 
 - (instancetype)initWithEventName:(NSString *)eventName
                      reactTouches:(NSArray<NSDictionary *> *)reactTouches
