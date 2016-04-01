@@ -95,7 +95,15 @@ The last step within Java is to register the Module; this happens in the `create
 ```java
 class AnExampleReactPackage implements ReactPackage {
 
-  ...
+  @Override
+  public List<Class<? extends JavaScriptModule>> createJSModules() {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+    return Collections.emptyList();
+  }
 
   @Override
   public List<NativeModule> createNativeModules(
