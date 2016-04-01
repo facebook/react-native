@@ -40,7 +40,7 @@ function setupDevtools() {
   function handleClose() {
     if (!hasClosed) {
       hasClosed = true;
-      setTimeout(setupDevtools, 200);
+      setTimeout(setupDevtools, 2000);
       closeListeners.forEach(fn => fn());
     }
   }

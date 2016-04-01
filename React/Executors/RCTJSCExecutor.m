@@ -27,7 +27,7 @@
 #import "RCTRedBox.h"
 #import "RCTSourceCode.h"
 
-NSString *const RCTJSCThreadName = @"com.facebook.React.JavaScript";
+NSString *const RCTJSCThreadName = @"com.facebook.react.JavaScript";
 
 NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContextCreatedNotification";
 
@@ -193,7 +193,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     _javaScriptThread = [[NSThread alloc] initWithTarget:[self class]
                                                 selector:@selector(runRunLoopThread)
                                                   object:nil];
-    _javaScriptThread.name = @"com.facebook.React.JavaScript";
+    _javaScriptThread.name = RCTJSCThreadName;
 
     if ([_javaScriptThread respondsToSelector:@selector(setQualityOfService:)]) {
       [_javaScriptThread setQualityOfService:NSOperationQualityOfServiceUserInteractive];
