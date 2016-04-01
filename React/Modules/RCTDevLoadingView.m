@@ -70,7 +70,7 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
       _window.windowLevel = UIWindowLevelStatusBar + 1;
 
       // set a root VC so rotation is supported
-      _window.rootViewController = [RCTModalHostViewController new];
+      _window.rootViewController = [UIViewController new];
 
       _label = [[UILabel alloc] initWithFrame:_window.bounds];
       _label.font = [UIFont systemFontOfSize:12.0];
