@@ -11,10 +11,7 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
-#import "RCTBridge+Private.h"
 #import "RCTUtils.h"
-#import "RCTProfile.h"
-
 
 const NSInteger RCTTextUpdateLagWarningThreshold = 3;
 
@@ -38,24 +35,38 @@ static NSNumber *RCTGetEventID(id<RCTEvent> event)
   );
 }
 
+@interface RCTEventDispatcher() <RCTFrameUpdateObserver>
+
+@end
+
 @implementation RCTEventDispatcher
 {
-  // We need this lock to protect access to _eventQueue and __eventsDispatchScheduled. It's filled in on main thread and consumed on js thread.
-  NSLock *_eventQueueLock;
   NSMutableDictionary *_eventQueue;
-  BOOL _eventsDispatchScheduled;
+  NSLock *_eventQueueLock;
 }
 
 @synthesize bridge = _bridge;
+@synthesize paused = _paused;
+@synthesize pauseCallback = _pauseCallback;
 
 RCT_EXPORT_MODULE()
 
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
+  _paused = YES;
   _eventQueue = [NSMutableDictionary new];
   _eventQueueLock = [NSLock new];
-  _eventsDispatchScheduled = NO;
+}
+
+- (void)setPaused:(BOOL)paused
+{
+  if (_paused != paused) {
+    _paused = paused;
+    if (_pauseCallback) {
+      _pauseCallback();
+    }
+  }
 }
 
 - (void)sendAppEventWithName:(NSString *)name body:(id)body
@@ -128,23 +139,23 @@ RCT_EXPORT_MODULE()
 
 - (void)sendEvent:(id<RCTEvent>)event
 {
+  if (!event.canCoalesce) {
+    [self flushEventsQueue];
+    [self dispatchEvent:event];
+    return;
+  }
+
   [_eventQueueLock lock];
 
   NSNumber *eventID = RCTGetEventID(event);
-
   id<RCTEvent> previousEvent = _eventQueue[eventID];
+
   if (previousEvent) {
-    RCTAssert([event canCoalesce], @"Got event %@ which cannot be coalesced, but has the same eventID %@ as the previous event %@", event, eventID, previousEvent);
     event = [previousEvent coalesceWithEvent:event];
   }
-  _eventQueue[eventID] = event;
 
-  if (!_eventsDispatchScheduled) {
-    _eventsDispatchScheduled = YES;
-    [_bridge dispatchBlock:^{
-      [self flushEventsQueue];
-    } queue:RCTJSThread];
-  }
+  _eventQueue[eventID] = event;
+  self.paused = NO;
 
   [_eventQueueLock unlock];
 }
@@ -159,13 +170,17 @@ RCT_EXPORT_MODULE()
   return RCTJSThread;
 }
 
-// js thread only
+- (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
+{
+  [self flushEventsQueue];
+}
+
 - (void)flushEventsQueue
 {
   [_eventQueueLock lock];
   NSDictionary *eventQueue = _eventQueue;
   _eventQueue = [NSMutableDictionary new];
-  _eventsDispatchScheduled = NO;
+  self.paused = YES;
   [_eventQueueLock unlock];
 
   for (id<RCTEvent> event in eventQueue.allValues) {
