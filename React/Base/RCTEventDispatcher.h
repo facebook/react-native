@@ -97,13 +97,8 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 /**
  * Send a pre-prepared event object.
  *
- * If the event can be coalesced it is added to a pool of events that are sent at the beginning of the next js frame.
- * Otherwise if the event cannot be coalesced we first flush the pool of coalesced events and the new event after that.
- *
- * Why it works this way?
- * Making sure js gets events in the right order is crucial for correctly interpreting gestures.
- * Unfortunately we cannot emit all events as they come. If we would do that we would have to emit scroll and touch moved event on every frame,
- * which is too much data to transfer and process on older devices. This is especially bad when js starts lagging behind main thread.
+ * Events are sent to JS as soon as the thread is free to process them.
+ * If an event can be coalesced and there is another compatible event waiting, the coalescing will happen immediately.
  */
 - (void)sendEvent:(id<RCTEvent>)event;
 
