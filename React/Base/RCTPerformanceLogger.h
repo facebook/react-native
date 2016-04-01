@@ -14,12 +14,17 @@
 typedef NS_ENUM(NSUInteger, RCTPLTag) {
   RCTPLScriptDownload = 0,
   RCTPLScriptExecution,
+  RCTPLRAMBundleLoad,
+  RCTPLRAMStartupCodeSize,
+  RCTPLRAMNativeRequiresCount,
+  RCTPLRAMNativeRequiresSize,
   RCTPLNativeModuleInit,
   RCTPLNativeModuleMainThread,
   RCTPLNativeModulePrepareConfig,
   RCTPLNativeModuleInjectConfig,
   RCTPLNativeModuleMainThreadUsesCount,
   RCTPLJSCExecutorSetup,
+  RCTPLBridgeStartup,
   RCTPLTTI,
   RCTPLBundleSize,
   RCTPLSize
@@ -44,6 +49,11 @@ RCT_EXTERN void RCTPerformanceLoggerEnd(RCTPLTag tag);
  * Sets given value for a metric with given tag.
  */
 RCT_EXTERN void RCTPerformanceLoggerSet(RCTPLTag tag, int64_t value);
+
+/**
+ * Adds given value to the current value for a metric with given tag.
+ */
+RCT_EXTERN void RCTPerformanceLoggerAdd(RCTPLTag tag, int64_t value);
 
 /**
  * Starts an additional measurement for a metric with given tag.

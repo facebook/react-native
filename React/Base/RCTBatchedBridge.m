@@ -482,6 +482,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
 - (void)didFinishLoading
 {
+  RCTPerformanceLoggerEnd(RCTPLBridgeStartup);
   _loading = NO;
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
     for (dispatch_block_t call in _pendingCalls) {
