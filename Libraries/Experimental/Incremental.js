@@ -88,7 +88,6 @@ export type Props = {
   */
  name: string;
  children: any;
- disabled: boolean;
 };
 class Incremental extends React.Component {
   props: Props;
@@ -98,6 +97,7 @@ class Incremental extends React.Component {
   context: Context;
   _incrementId: number;
   _mounted: boolean;
+  _rendered: boolean;
 
   constructor(props: Props, context: Context) {
     super(props, context);
@@ -135,8 +135,11 @@ class Incremental extends React.Component {
   }
 
   render(): ?ReactElement {
-    if (this.props.disabled || !this.context.incrementalGroupEnabled || this.state.doIncrementalRender) {
+    if (this._rendered || // Make sure that once we render once, we stay rendered even if incrementalGroupEnabled gets flipped.
+        !this.context.incrementalGroupEnabled ||
+        this.state.doIncrementalRender) {
       DEBUG && console.log('render ' + this.getName());
+      this._rendered = true;
       return this.props.children;
     }
     return null;
