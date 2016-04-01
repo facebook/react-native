@@ -89,6 +89,7 @@ NSArray *RCTPerformanceLoggerLabels(void)
       @"ScriptExecution",
       @"RAMBundleLoad",
       @"RAMStartupCodeSize",
+      @"RAMNativeRequires",
       @"RAMNativeRequiresCount",
       @"RAMNativeRequiresSize",
       @"NativeModuleInit",
