@@ -195,6 +195,20 @@ var Navigator = React.createClass({
      * ```
      * (route, routeStack) => Navigator.SceneConfigs.FloatFromRight
      * ```
+     *
+     * Available options are:
+     *
+     *  - Navigator.SceneConfigs.PushFromRight (default)
+     *  - Navigator.SceneConfigs.FloatFromRight
+     *  - Navigator.SceneConfigs.FloatFromLeft
+     *  - Navigator.SceneConfigs.FloatFromBottom
+     *  - Navigator.SceneConfigs.FloatFromBottomAndroid
+     *  - Navigator.SceneConfigs.FadeAndroid
+     *  - Navigator.SceneConfigs.HorizontalSwipeJump
+     *  - Navigator.SceneConfigs.HorizontalSwipeJumpFromRight
+     *  - Navigator.SceneConfigs.VerticalUpSwipeJump
+     *  - Navigator.SceneConfigs.VerticalDownSwipeJump
+     *
      */
     configureScene: PropTypes.func,
 
