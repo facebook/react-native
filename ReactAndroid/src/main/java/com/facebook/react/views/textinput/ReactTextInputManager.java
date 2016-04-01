@@ -186,6 +186,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setBlurOnSubmit(blurOnSubmit);
   }
 
+  @ReactProp(name = "clearTextOnFocus", defaultBoolean = false)
+  public void setClearTextOnFocus(ReactEditText view, boolean clearTextOnFocus) {
+    view.setClearTextOnFocus(clearTextOnFocus);
+  }
+
   @ReactProp(name = "placeholder")
   public void setPlaceholder(ReactEditText view, @Nullable String placeholder) {
     view.setHint(placeholder);

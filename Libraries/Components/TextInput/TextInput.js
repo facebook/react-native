@@ -279,7 +279,6 @@ var TextInput = React.createClass({
     ]),
     /**
      * If true, clears the text field automatically when editing begins
-     * @platform ios
      */
     clearTextOnFocus: PropTypes.bool,
     /**
@@ -524,6 +523,7 @@ var TextInput = React.createClass({
         underlineColorAndroid={this.props.underlineColorAndroid}
         children={children}
         editable={this.props.editable}
+        clearTextOnFocus={this.props.clearTextOnFocus}
       />;
 
     return (
