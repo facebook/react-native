@@ -20,6 +20,7 @@
 #import "RCTView.h"
 #import "RCTWrapperViewController.h"
 #import "UIView+React.h"
+#import "AHKNavigationController.h"
 
 typedef NS_ENUM(NSUInteger, RCTNavigationLock) {
   RCTNavigationLockNone,
@@ -31,7 +32,7 @@ NSInteger kNeverRequested = -1;
 NSInteger kNeverProgressed = -10000;
 
 
-@interface UINavigationController ()
+@interface AHKNavigationController ()
 
 // need to declare this since `UINavigationController` doesnt publicly declare the fact that it implements
 // UINavigationBarDelegate :(
@@ -41,7 +42,7 @@ NSInteger kNeverProgressed = -10000;
 
 // http://stackoverflow.com/questions/5115135/uinavigationcontroller-how-to-cancel-the-back-button-event
 // There's no other way to do this unfortunately :(
-@interface RCTNavigationController : UINavigationController <UINavigationBarDelegate>
+@interface RCTNavigationController : AHKNavigationController <UINavigationBarDelegate>
 {
   dispatch_block_t _scrollCallback;
 }
@@ -348,7 +349,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
  * swipe-back abort interaction, which leaves us *no* other way to clean up
  * locks aside from the animation complete hook.
  */
-- (void)navigationController:(UINavigationController *)navigationController
+- (void)navigationController:(AHKNavigationController *)navigationController
       willShowViewController:(__unused UIViewController *)viewController
                     animated:(__unused BOOL)animated
 {
@@ -361,13 +362,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       (RCTWrapperViewController *)[context viewControllerForKey:UITransitionContextFromViewControllerKey];
     RCTWrapperViewController *toController =
       (RCTWrapperViewController *)[context viewControllerForKey:UITransitionContextToViewControllerKey];
-      
+
     // This may be triggered by a navigation controller unrelated to me: if so, ignore.
     if (fromController.navigationController != _navigationController ||
         toController.navigationController != _navigationController) {
       return;
     }
-    
+
     NSUInteger indexOfFrom = [_currentViews indexOfObject:fromController.navItem];
     NSUInteger indexOfTo = [_currentViews indexOfObject:toController.navItem];
     CGFloat destination = indexOfFrom < indexOfTo ? 1.0 : -1.0;
@@ -552,7 +553,7 @@ BOOL jsGettingtooSlow =
 // TODO: This will likely fail when performing multiple pushes/pops. We must
 // free the lock only after the *last* push/pop.
 - (void)wrapperViewController:(RCTWrapperViewController *)wrapperViewController
-didMoveToNavigationController:(UINavigationController *)navigationController
+didMoveToNavigationController:(AHKNavigationController *)navigationController
 {
   if (self.superview == nil) {
     // If superview is nil, then a JS reload (Cmd+R) happened
