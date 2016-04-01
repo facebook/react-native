@@ -117,3 +117,13 @@
 - (void)_immediatelyCallTimer:(NSNumber *)timer;
 
 @end
+
+@interface RCTBatchedBridge : RCTBridge <RCTInvalidating>
+
+@property (nonatomic, weak) RCTBridge *parentBridge;
+@property (nonatomic, weak) id<RCTJavaScriptExecutor> javaScriptExecutor;
+@property (nonatomic, assign) BOOL moduleSetupComplete;
+
+- (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+
+@end
