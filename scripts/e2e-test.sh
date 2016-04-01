@@ -93,7 +93,7 @@ do
     SERVER_PID=$!
     cp ~/.android/debug.keystore keystores/debug.keystore
     ./gradlew :app:copyDownloadableDepsToLibs
-    buck install -r android-app
+    buck install -r android/app
     # TODO t10114777 check it renders "Welcome to React Native"
     ;;
   *)
