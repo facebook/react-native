@@ -25,14 +25,6 @@ NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotific
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
 NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
 
-@interface RCTBatchedBridge : RCTBridge <RCTInvalidating>
-
-@property (nonatomic, weak) RCTBridge *parentBridge;
-
-- (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
-
-@end
-
 static NSMutableArray<Class> *RCTModuleClasses;
 NSArray<Class> *RCTGetModuleClasses(void);
 NSArray<Class> *RCTGetModuleClasses(void)
