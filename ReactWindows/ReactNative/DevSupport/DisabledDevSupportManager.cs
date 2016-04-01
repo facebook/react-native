@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Runtime.ExceptionServices;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
 
 namespace ReactNative.DevSupport
 {
@@ -44,9 +46,12 @@ namespace ReactNative.DevSupport
             }
         }
 
-        public void HandleException(Exception exception)
+        public async void HandleException(Exception exception)
         {
-            ExceptionDispatchInfo.Capture(exception).Throw();
+            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
+            {
+                ExceptionDispatchInfo.Capture(exception).Throw();
+            });
         }
 
         public void HandleReloadJavaScript()

@@ -86,9 +86,9 @@ namespace ReactNative.Bridge
             {
                 try
                 {
-                    var storageFile = SourceUrl.StartsWith("ms-appx:///")
-                        ? await StorageFile.GetFileFromApplicationUriAsync(new Uri(SourceUrl))
-                        : await StorageFile.GetFileFromPathAsync(SourceUrl);
+                    var storageFile = SourceUrl.StartsWith("file:///")
+                        ? await StorageFile.GetFileFromPathAsync(SourceUrl)
+                        : await StorageFile.GetFileFromApplicationUriAsync(new Uri(SourceUrl));
 
                     using (var stream = await storageFile.OpenStreamForReadAsync())
                     using (var reader = new StreamReader(stream))

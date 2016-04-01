@@ -198,7 +198,6 @@ namespace ReactNative.UIManager
         private static Dictionary<string, object> GetConstants()
         {
             var bounds = ApplicationView.GetForCurrentView().VisibleBounds;
-            var frame = Window.Current.Content as Frame;
             var scale = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
 
             return new Map
@@ -240,7 +239,6 @@ namespace ReactNative.UIManager
                                 { "width", bounds.Width },
                                 { "height", bounds.Height },
                                 { "scale", scale },
-                                /* TODO: verify values? */
                                 /* TODO: density and DPI needed? */
                             }
                         },
