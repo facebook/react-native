@@ -55,7 +55,7 @@ RCT_EXPORT_MODULE()
     _url = [RCTConvert NSURL:URLString];
   }
 
-  _jsQueue = dispatch_queue_create("com.facebook.React.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
+  _jsQueue = dispatch_queue_create("com.facebook.react.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
   _socket = [[RCTSRWebSocket alloc] initWithURL:_url];
   _socket.delegate = self;
   _callbacks = [NSMutableDictionary new];
