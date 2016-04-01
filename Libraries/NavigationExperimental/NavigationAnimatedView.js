@@ -20,6 +20,7 @@ const StyleSheet = require('StyleSheet');
 const View = require('View');
 
 import type {
+  NavigationActionCaller,
   NavigationAnimatedValue,
   NavigationAnimationSetter,
   NavigationLayout,
@@ -31,7 +32,7 @@ import type {
 type Props = {
   applyAnimation: NavigationAnimationSetter,
   navigationState: NavigationParentState,
-  onNavigate: (action: any) => void,
+  onNavigate: NavigationActionCaller,
   renderOverlay: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
   style: any,
@@ -44,28 +45,18 @@ type State = {
 
 const {PropTypes} = React;
 
-const propTypes = {
-  applyAnimation: PropTypes.func,
-  navigationState: NavigationPropTypes.navigationState.isRequired,
-  onNavigate: PropTypes.func.isRequired,
-  renderOverlay: PropTypes.func,
-  renderScene: PropTypes.func.isRequired,
-};
-
-const defaultProps = {
-  applyAnimation: (
-    position: NavigationAnimatedValue,
-    navigationState: NavigationParentState,
-  ) => {
-    Animated.spring(
-      position,
-      {
-        bounciness: 0,
-        toValue: navigationState.index,
-      }
-    ).start();
-  },
-};
+function applyDefaultAnimation(
+  position: NavigationAnimatedValue,
+  navigationState: NavigationParentState,
+): void {
+  Animated.spring(
+    position,
+    {
+      bounciness: 0,
+      toValue: navigationState.index,
+    }
+  ).start();
+}
 
 class NavigationAnimatedView
   extends React.Component<any, Props, State> {
@@ -77,6 +68,18 @@ class NavigationAnimatedView
 
   props: Props;
   state: State;
+
+  static propTypes = {
+    applyAnimation: PropTypes.func,
+    navigationState: NavigationPropTypes.navigationState.isRequired,
+    onNavigate: PropTypes.func.isRequired,
+    renderOverlay: PropTypes.func,
+    renderScene: PropTypes.func.isRequired,
+  };
+
+  static defaultProps = {
+    applyAnimation: applyDefaultAnimation,
+  };
 
   constructor(props: Props, context: any) {
     super(props, context);
@@ -232,9 +235,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-NavigationAnimatedView.propTypes = propTypes;
-NavigationAnimatedView.defaultProps = defaultProps;
 
 NavigationAnimatedView = NavigationContainer.create(NavigationAnimatedView);
 

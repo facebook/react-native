@@ -168,6 +168,13 @@ var featured = [
       "https://medium.com/@murugandurai/how-we-developed-our-mobile-app-in-30-days-using-react-native-45affa6449e8#.29nnretsi",
     ],
   },
+  {
+    name: '蜂鸟众包',
+    icon: 'http://img.wdjimg.com/mms/icon/v1/7/fd/b017c4a3eda1330f6b2561ec57cb0fd7_256_256.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/feng-niao-zhong-bao-jian-zhi/id1061034377?l=en&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=me.ele.crowdsource',
+    author: 'Eleme',
+  },
 ];
 
 var apps = [
@@ -213,6 +220,13 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/de/app/breathe-meditation-timer/id1087354227?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.idearockers.breathe',
     author: 'idearockers UG',
+  },
+  {
+    name: 'Bulut Filo Yönetimi',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple49/v4/a2/6b/b5/a26bb5b5-e67b-8ecc-55eb-c33232ee3c5e/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/tr/app/bulut-filo-yonetimi/id1090955364?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.bulutfilo',
+    author: 'Macellan.net',
   },
   {
     name: 'CANDDi',
@@ -605,6 +619,12 @@ var apps = [
     icon: 'http://a3.mzstatic.com/eu/r30/Purple49/v4/71/71/df/7171df47-6e03-8619-19a8-07f52186b0ed/icon175x175.jpeg',
     link: 'https://itunes.apple.com/fr/app/sneat-reservez-les-meilleurs/id1062510079?l=en&mt=8',
     author: 'sneat'
+  },
+  {
+    name: 'Software Interview Preparation',
+    icon: 'https://lh3.googleusercontent.com/11AuzaeCnxrRnIp1E_a_6WWiQIRRoWhrvFr20eCRJX4ZMW6O3tGjZLiUw3thKUgGaC8X=w300',
+    link: 'https://play.google.com/store/apps/details?id=com.SoftwareInterview',
+    author: 'Andrew F. Ly',
   },
   {
     name: 'Spero for Cancer',
