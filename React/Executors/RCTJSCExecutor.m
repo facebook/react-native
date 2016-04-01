@@ -678,6 +678,8 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
 
 - (void)registerNativeRequire
 {
+  RCTPerformanceLoggerSet(RCTPLRAMNativeRequiresCount, 0);
+  RCTPerformanceLoggerSet(RCTPLRAMNativeRequiresSize, 0);
   __weak RCTJSCExecutor *weakSelf = self;
   [self addSynchronousHookWithName:@"nativeRequire" usingBlock:^(NSString *moduleName) {
     RCTJSCExecutor *strongSelf = weakSelf;
@@ -685,6 +687,7 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
       return;
     }
 
+    RCT_PROFILE_BEGIN_EVENT(0, [@"nativeRequire_" stringByAppendingString:moduleName], nil);
     ModuleData *data = (ModuleData *)CFDictionaryGetValue(strongSelf->_jsModules, moduleName.UTF8String);
     char bytes[data->length];
     if (readBundle(strongSelf->_bundle, data->offset, data->length, bytes) != 0) {
@@ -697,6 +700,10 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
 
     CFDictionaryRemoveValue(strongSelf->_jsModules, moduleName.UTF8String);
     JSStringRelease(code);
+    RCT_PROFILE_END_EVENT(0, @"js_call", nil);
+
+    RCTPerformanceLoggerAdd(RCTPLRAMNativeRequiresCount, 1);
+    RCTPerformanceLoggerAdd(RCTPLRAMNativeRequiresSize, data->length);
 
     if (!result) {
       dispatch_async(dispatch_get_main_queue(), ^{
@@ -709,6 +716,7 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
 
 - (NSData *)loadRAMBundle:(NSURL *)sourceURL error:(NSError **)error
 {
+  RCTPerformanceLoggerStart(RCTPLRAMBundleLoad);
   _bundle = fopen(sourceURL.path.UTF8String, "r");
   if (!_bundle) {
     if (error) {
@@ -793,6 +801,8 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
     free(startupCode);
     return nil;
   }
+  RCTPerformanceLoggerEnd(RCTPLRAMBundleLoad);
+  RCTPerformanceLoggerSet(RCTPLRAMStartupCodeSize, startupData->length);
   return [NSData dataWithBytesNoCopy:startupCode length:startupData->length freeWhenDone:YES];
 }
 
