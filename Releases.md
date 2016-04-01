@@ -9,7 +9,7 @@ Release schedule:
 - 0.22.0 - Mar 21
 - **0.23 branch cut**, 0.23.0-rc - **week of Mar 21**
 - 0.23.0 - Apr 4
-- **0.24 branch cut**, 0.23.0-rc - **week of Apr 4**
+- **0.24 branch cut**, 0.24.0-rc - **week of Apr 4**
 - 0.24.0 - Apr 18
 - ...
 
