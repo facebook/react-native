@@ -62,7 +62,7 @@ npm install -g $CLI_PACKAGE
 react-native init EndToEndTest --version $PACKAGE
 cd EndToEndTest
 
-# iterates all arguments and runs e2e tests for all of them one by one
+# Iterates through all arguments and runs e2e tests for all of them one by one
 # e.g. ./scripts/e2e-test.sh --packager --ios --android will run all e2e tests but will install the test app once
 while test $# -gt 0
 do
