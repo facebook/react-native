@@ -48,6 +48,12 @@ void RCTPerformanceLoggerSet(RCTPLTag tag, int64_t value)
   RCTPLData[tag][1] = value;
 }
 
+void RCTPerformanceLoggerAdd(RCTPLTag tag, int64_t value)
+{
+  RCTPLData[tag][0] = 0;
+  RCTPLData[tag][1] += value;
+}
+
 void RCTPerformanceLoggerAppendStart(RCTPLTag tag)
 {
   RCTPLData[tag][0] = CACurrentMediaTime() * 1000;
@@ -65,28 +71,12 @@ void RCTPerformanceLoggerAppendEnd(RCTPLTag tag)
 
 NSArray<NSNumber *> *RCTPerformanceLoggerOutput(void)
 {
-  return @[
-    @(RCTPLData[RCTPLScriptDownload][0]),
-    @(RCTPLData[RCTPLScriptDownload][1]),
-    @(RCTPLData[RCTPLScriptExecution][0]),
-    @(RCTPLData[RCTPLScriptExecution][1]),
-    @(RCTPLData[RCTPLNativeModuleInit][0]),
-    @(RCTPLData[RCTPLNativeModuleInit][1]),
-    @(RCTPLData[RCTPLNativeModuleMainThread][0]),
-    @(RCTPLData[RCTPLNativeModuleMainThread][1]),
-    @(RCTPLData[RCTPLNativeModulePrepareConfig][0]),
-    @(RCTPLData[RCTPLNativeModulePrepareConfig][1]),
-    @(RCTPLData[RCTPLNativeModuleInjectConfig][0]),
-    @(RCTPLData[RCTPLNativeModuleInjectConfig][1]),
-    @(RCTPLData[RCTPLNativeModuleMainThreadUsesCount][0]),
-    @(RCTPLData[RCTPLNativeModuleMainThreadUsesCount][1]),
-    @(RCTPLData[RCTPLJSCExecutorSetup][0]),
-    @(RCTPLData[RCTPLJSCExecutorSetup][1]),
-    @(RCTPLData[RCTPLTTI][0]),
-    @(RCTPLData[RCTPLTTI][1]),
-    @(RCTPLData[RCTPLBundleSize][0]),
-    @(RCTPLData[RCTPLBundleSize][1]),
-  ];
+  NSMutableArray *result = [NSMutableArray array];
+  for (NSUInteger index = 0; index < RCTPLSize; index++) {
+    [result addObject:@(RCTPLData[index][0])];
+    [result addObject:@(RCTPLData[index][1])];
+  }
+  return result;
 }
 
 NSArray *RCTPerformanceLoggerLabels(void)
@@ -97,12 +87,17 @@ NSArray *RCTPerformanceLoggerLabels(void)
     labels = @[
       @"ScriptDownload",
       @"ScriptExecution",
+      @"RAMBundleLoad",
+      @"RAMStartupCodeSize",
+      @"RAMNativeRequiresCount",
+      @"RAMNativeRequiresSize",
       @"NativeModuleInit",
       @"NativeModuleMainThread",
       @"NativeModulePrepareConfig",
       @"NativeModuleInjectConfig",
       @"NativeModuleMainThreadUsesCount",
       @"JSCExecutorSetup",
+      @"BridgeStartup",
       @"RootViewTTI",
       @"BundleSize",
     ];

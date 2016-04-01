@@ -26,7 +26,7 @@
 
 #define RCTAssertJSThread() \
   RCTAssert(![NSStringFromClass([_javaScriptExecutor class]) isEqualToString:@"RCTJSCExecutor"] || \
-              [[[NSThread currentThread] name] isEqualToString:@"com.facebook.React.JavaScript"], \
+              [[[NSThread currentThread] name] isEqualToString:RCTJSCThreadName], \
             @"This method must be called on JS thread")
 
 /**
@@ -41,14 +41,6 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
 
 RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
-@interface RCTBatchedBridge : RCTBridge
-
-@property (nonatomic, weak) RCTBridge *parentBridge;
-@property (nonatomic, weak) id<RCTJavaScriptExecutor> javaScriptExecutor;
-@property (nonatomic, assign) BOOL moduleSetupComplete;
-
-@end
-
 @implementation RCTBatchedBridge
 {
   BOOL _wasBatchActive;
@@ -61,6 +53,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
 @synthesize flowID = _flowID;
 @synthesize flowIDMap = _flowIDMap;
+@synthesize flowIDMapLock = _flowIDMapLock;
 @synthesize loading = _loading;
 @synthesize valid = _valid;
 
@@ -489,6 +482,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
 - (void)didFinishLoading
 {
+  RCTPerformanceLoggerEnd(RCTPLBridgeStartup);
   _loading = NO;
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
     for (dispatch_block_t call in _pendingCalls) {
@@ -885,10 +879,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       @autoreleasepool {
         for (NSNumber *indexObj in calls) {
           NSUInteger index = indexObj.unsignedIntegerValue;
-          if (callID != -1 && _flowIDMap != NULL) {
+          if (RCT_DEV && callID != -1 && _flowIDMap != NULL && RCTProfileIsProfiling()) {
+            [self.flowIDMapLock lock];
             int64_t newFlowID = (int64_t)CFDictionaryGetValue(_flowIDMap, (const void *)(_flowID + index));
             _RCTProfileEndFlowEvent(@(newFlowID));
             CFDictionaryRemoveValue(_flowIDMap, (const void *)(_flowID + index));
+            [self.flowIDMapLock unlock];
           }
           [self _handleRequestNumber:index
                             moduleID:[moduleIDs[index] integerValue]
