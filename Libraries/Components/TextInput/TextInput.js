@@ -284,7 +284,6 @@ var TextInput = React.createClass({
     clearTextOnFocus: PropTypes.bool,
     /**
      * If true, all text will automatically be selected on focus
-     * @platform ios
      */
     selectTextOnFocus: PropTypes.bool,
     /**
@@ -524,6 +523,7 @@ var TextInput = React.createClass({
         underlineColorAndroid={this.props.underlineColorAndroid}
         children={children}
         editable={this.props.editable}
+        selectTextOnFocus={this.props.selectTextOnFocus}
       />;
 
     return (
