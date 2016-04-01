@@ -209,6 +209,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  @ReactProp(name = "selectTextOnFocus", defaultBoolean = false)
+  public void setSelectTextOnFocus(ReactEditText view, boolean selectTextOnFocus) {
+    view.setSelectAllOnFocus(selectTextOnFocus);
+  }
+
   @ReactProp(name = ViewProps.COLOR, customType = "Color")
   public void setColor(ReactEditText view, @Nullable Integer color) {
     if (color == null) {
