@@ -449,11 +449,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)dispatchFakeScrollEvent
 {
-  [_bridge.eventDispatcher sendScrollEventWithType:RCTScrollEventTypeMove
-                                          reactTag:self.reactTag
-                                        scrollView:nil
-                                          userData:nil
-                                     coalescingKey:0];
+  [_bridge.eventDispatcher sendFakeScrollEvent:self.reactTag];
 }
 
 /**

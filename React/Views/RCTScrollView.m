@@ -931,29 +931,26 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
     _coalescingKey++;
     _lastEmittedEventType = type;
   }
-  [_eventDispatcher sendScrollEventWithType:type
-                                   reactTag:reactTag
-                                 scrollView:scrollView
-                                   userData:userData
-                              coalescingKey:_coalescingKey];
+  RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithType:type
+                                                            reactTag:reactTag
+                                                          scrollView:scrollView
+                                                            userData:userData
+                                                       coalescingKey:_coalescingKey];
+  [_eventDispatcher sendEvent:scrollEvent];
 }
 
 @end
 
 @implementation RCTEventDispatcher (RCTScrollView)
 
-- (void)sendScrollEventWithType:(RCTScrollEventType)type
-                       reactTag:(NSNumber *)reactTag
-                     scrollView:(UIScrollView *)scrollView
-                       userData:(NSDictionary *)userData
-                  coalescingKey:(uint16_t)coalescingKey
+- (void)sendFakeScrollEvent:(NSNumber *)reactTag
 {
-  RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithType:type
+  RCTScrollEvent *fakeScrollEvent = [[RCTScrollEvent alloc] initWithType:RCTScrollEventTypeMove
                                                             reactTag:reactTag
-                                                          scrollView:scrollView
-                                                            userData:userData
-                                                       coalescingKey:coalescingKey];
-  [self sendEvent:scrollEvent];
+                                                          scrollView:nil
+                                                            userData:nil
+                                                       coalescingKey:0];
+  [self sendEvent:fakeScrollEvent];
 }
 
 @end
