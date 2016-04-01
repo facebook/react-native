@@ -29,14 +29,19 @@
 
 @synthesize viewTag = _viewTag;
 @synthesize eventName = _eventName;
+@synthesize coalescingKey = _coalescingKey;
 
-- (instancetype)initWithViewTag:(NSNumber *)viewTag eventName:(NSString *)eventName body:(NSDictionary<NSString *, id> *)body
+- (instancetype)initWithViewTag:(NSNumber *)viewTag
+                      eventName:(NSString *)eventName
+                           body:(NSDictionary<NSString *, id> *)body
+                  coalescingKey:(uint16_t)coalescingKey
 {
   if (self = [super init]) {
     _viewTag = viewTag;
     _eventName = eventName;
     _body = body;
     _canCoalesce = YES;
+    _coalescingKey = coalescingKey;
   }
   return self;
 }
@@ -85,7 +90,8 @@
   _body = @{ @"foo": @"bar" };
   _testEvent = [[RCTTestEvent alloc] initWithViewTag:nil
                                            eventName:_eventName
-                                                body:_body];
+                                                body:_body
+                                       coalescingKey:0];
 
   _JSMethod = [[_testEvent class] moduleDotMethod];
 }
@@ -127,7 +133,8 @@
 {
   RCTTestEvent *nonCoalescingEvent = [[RCTTestEvent alloc] initWithViewTag:nil
                                                                  eventName:_eventName
-                                                                      body:@{}];
+                                                                      body:@{}
+                                                             coalescingKey:0];
   nonCoalescingEvent.canCoalesce = NO;
   [_eventDispatcher sendEvent:_testEvent];
 
@@ -144,7 +151,8 @@
 {
   RCTTestEvent *ignoredEvent = [[RCTTestEvent alloc] initWithViewTag:nil
                                                            eventName:_eventName
-                                                                body:@{ @"other": @"body" }];
+                                                                body:@{ @"other": @"body" }
+                                                       coalescingKey:0];
 
   [_eventDispatcher sendEvent:ignoredEvent];
   [_eventDispatcher sendEvent:_testEvent];
@@ -162,7 +170,8 @@
   NSString *firstEventName = RCTNormalizeInputEventName(@"firstEvent");
   RCTTestEvent *firstEvent = [[RCTTestEvent alloc] initWithViewTag:nil
                                                            eventName:firstEventName
-                                                                body:_body];
+                                                                body:_body
+                                                     coalescingKey:0];
 
   [_eventDispatcher sendEvent:firstEvent];
   [_eventDispatcher sendEvent:_testEvent];
