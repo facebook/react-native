@@ -392,6 +392,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSMutableArray<NSValue *> *_cachedChildFrames;
   BOOL _allowNextScrollNoMatterWhat;
   CGRect _lastClippedToRect;
+  uint16_t _coalescingKey;
+  RCTScrollEventType _lastEmittedEventType;
 }
 
 @synthesize nativeScrollDelegate = _nativeScrollDelegate;
@@ -925,11 +927,15 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
                      scrollView:(UIScrollView *)scrollView
                        userData:(NSDictionary *)userData
 {
+  if (_lastEmittedEventType != type) {
+    _coalescingKey++;
+    _lastEmittedEventType = type;
+  }
   [_eventDispatcher sendScrollEventWithType:type
                                    reactTag:reactTag
                                  scrollView:scrollView
                                    userData:userData
-                              coalescingKey:0];
+                              coalescingKey:_coalescingKey];
 }
 
 @end
