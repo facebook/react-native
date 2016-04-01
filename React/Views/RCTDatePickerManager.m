@@ -20,7 +20,7 @@ RCT_ENUM_CONVERTER(UIDatePickerMode, (@{
   @"time": @(UIDatePickerModeTime),
   @"date": @(UIDatePickerModeDate),
   @"datetime": @(UIDatePickerModeDateAndTime),
-  @"countdown": @(UIDatePickerModeCountDownTimer), // not supported yet
+  @"countdown": @(UIDatePickerModeCountDownTimer),
 }), UIDatePickerModeTime, integerValue)
 
 @end
@@ -34,6 +34,7 @@ RCT_EXPORT_MODULE()
   return [RCTDatePicker new];
 }
 
+RCT_EXPORT_VIEW_PROPERTY(countDownDuration, double)
 RCT_EXPORT_VIEW_PROPERTY(date, NSDate)
 RCT_EXPORT_VIEW_PROPERTY(minimumDate, NSDate)
 RCT_EXPORT_VIEW_PROPERTY(maximumDate, NSDate)
