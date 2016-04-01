@@ -16,6 +16,7 @@ typedef NS_ENUM(NSUInteger, RCTPLTag) {
   RCTPLScriptExecution,
   RCTPLRAMBundleLoad,
   RCTPLRAMStartupCodeSize,
+  RCTPLRAMNativeRequires,
   RCTPLRAMNativeRequiresCount,
   RCTPLRAMNativeRequiresSize,
   RCTPLNativeModuleInit,
