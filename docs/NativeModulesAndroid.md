@@ -18,7 +18,7 @@ This guide will use the [Toast](http://developer.android.com/reference/android/w
 We start by creating a native module. A native module is a Java class that usually extends the `ReactContextBaseJavaModule` class and implements the functionality required by the JavaScript. Our goal here is to be able to write `ToastAndroid.show('Awesome', ToastAndroid.SHORT);` from JavaScript to display a short toast on the screen.
 
 ```java
-package com.facebook.react.modules.toast;
+package com.example.modules.toast;
 
 import android.widget.Toast;
 
@@ -91,21 +91,43 @@ Read more about [ReadableMap](https://github.com/facebook/react-native/blob/mast
 ### Register the Module
 
 The last step within Java is to register the Module; this happens in the `createNativeModules` of your apps package. If a module is not registered it will not be available from JavaScript.
+In the package class it is important you override three methods: `createNativeModules`, `createJSModules` and `createViewManagers`.
+
+Note: It is necessary to have same package name of `MainActivity.java` in your packaging class and module class. Only then your module will be accessible across classes. 
 
 ```java
-class AnExampleReactPackage implements ReactPackage {
+//AnExampleReactPackage.java
+package com.example.modules.toast;
 
-  ...
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.JavaScriptModule;
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.uimanager.ViewManager;
+
+public class AnExampleReactPackage implements ReactPackage {
 
   @Override
   public List<NativeModule> createNativeModules(
                               ReactApplicationContext reactContext) {
-    List<NativeModule> modules = new ArrayList<>();
-
-    modules.add(new ToastModule(reactContext));
-
-    return modules;
+    //Registering the module.
+    return Arrays.<NativeModule>asList(new ToastModule(reactContext));
   }
+
+  @Override
+  public List<Class<? extends JavaScriptModule>> createJSModules() {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+    return Collections.emptyList();
+  }
+}
 ```
 
 The package needs to be provided in the `getPackages` method of the `MainActivity.java` file. This file exists under the android folder in your react-native application directory. The path to this file is: `android/app/src/main/java/com/your-app-name/MainActivity.java`.
