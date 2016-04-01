@@ -111,6 +111,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                    launchOptions:(NSDictionary *)launchOptions
 {
   if ((self = [super init])) {
+    RCTPerformanceLoggerStart(RCTPLBridgeStartup);
     RCTPerformanceLoggerStart(RCTPLTTI);
 
     _delegate = delegate;
@@ -126,6 +127,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                     launchOptions:(NSDictionary *)launchOptions
 {
   if ((self = [super init])) {
+    RCTPerformanceLoggerStart(RCTPLBridgeStartup);
     RCTPerformanceLoggerStart(RCTPLTTI);
 
     _bundleURL = bundleURL;
