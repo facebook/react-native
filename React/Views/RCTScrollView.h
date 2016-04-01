@@ -62,6 +62,7 @@
 - (void)sendScrollEventWithType:(RCTScrollEventType)type
                        reactTag:(NSNumber *)reactTag
                      scrollView:(UIScrollView *)scrollView
-                       userData:(NSDictionary *)userData;
+                       userData:(NSDictionary *)userData
+                  coalescingKey:(uint16_t)coalescingKey;
 
 @end
