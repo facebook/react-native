@@ -48,6 +48,7 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 
 @property (nonatomic, strong, readonly) NSNumber *viewTag;
 @property (nonatomic, copy, readonly) NSString *eventName;
+@property (nonatomic, assign, readonly) uint16_t coalescingKey;
 
 - (BOOL)canCoalesce;
 - (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent;
@@ -95,7 +96,7 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 
 /**
  * Send a pre-prepared event object.
- * 
+ *
  * If the event can be coalesced it is added to a pool of events that are sent at the beginning of the next js frame.
  * Otherwise if the event cannot be coalesced we first flush the pool of coalesced events and the new event after that.
  *
