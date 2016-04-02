@@ -550,10 +550,7 @@ namespace ReactNative.UIManager
         /// <summary>
         /// Marks that the node is dirty.
         /// </summary>
-        /// <remarks>
-        /// TODO: (#289) Reseal when issue is resolved.
-        /// </remarks>
-        protected override void dirty()
+        protected sealed override void dirty()
         {
             if (!IsVirtual)
             {
