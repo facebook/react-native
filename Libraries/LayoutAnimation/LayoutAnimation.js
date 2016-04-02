@@ -74,6 +74,12 @@ function configureNext(config: Config, onAnimationDidEnd?: Function) {
   UIManager.configureNextLayoutAnimation(
     config, onAnimationDidEnd || function() {}, function() { /* unused */ }
   );
+  // Clear the layout animation configuration after the current frame.
+  requestAnimationFrame(() => {
+    UIManager.configureNextLayoutAnimation(
+      null, function() { /* unused */ }, function() { /* unused */ }
+    );
+  });
 }
 
 function create(duration: number, type, creationProp): Config {
@@ -85,6 +91,10 @@ function create(duration: number, type, creationProp): Config {
     },
     update: {
       type,
+    },
+    delete: {
+      type,
+      property: creationProp,
     },
   };
 }
