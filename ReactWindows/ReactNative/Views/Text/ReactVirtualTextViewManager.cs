@@ -5,8 +5,6 @@
     /// </summary>
     public class ReactVirtualTextViewManager : ReactRawTextManager
     {
-        private const string ReactClass = "RCTVirtualText";
-
         /// <summary>
         /// The view manager name.
         /// </summary>
@@ -14,7 +12,7 @@
         {
             get
             {
-                return ReactClass;
+                return "RCTVirtualText";
             }
         }
     }

@@ -210,20 +210,6 @@ namespace ReactNative.Views.Text
         }
 
         /// <summary>
-        /// Marks that the node is dirty.
-        /// </summary> 
-        /// <remarks>
-        /// TODO: (#289) Remove when resolved.
-        /// </remarks>
-        protected sealed override void dirty()
-        {
-            if (!HasNewLayout)
-            {
-                base.dirty();
-            }
-        }
-
-        /// <summary>
         /// Formats an inline instance with shadow properties..
         /// </summary>
         /// <param name="textNode">The text shadow node.</param>
@@ -299,12 +285,12 @@ namespace ReactNative.Views.Text
 
         class ReactTextShadowNodeInlineVisitor : CSSNodeVisitor<Inline>
         {
-            private static ReactTextShadowNodeInlineVisitor s_instance = new ReactTextShadowNodeInlineVisitor();
+            private static readonly ReactTextShadowNodeInlineVisitor s_instance = new ReactTextShadowNodeInlineVisitor();
 
             public static Inline Apply(CSSNode node)
             {
                 return s_instance.Visit(node);
-            } 
+            }
 
             protected sealed override Inline Make(CSSNode node, IList<Inline> children)
             {

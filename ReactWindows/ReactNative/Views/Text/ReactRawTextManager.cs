@@ -9,8 +9,6 @@ namespace ReactNative.Views.Text
     /// </summary>
     public class ReactRawTextManager : ReactTextViewManager
     {
-        private const string ReactClass = "RCTRawText";
-
         /// <summary>
         /// The name of the view manager.
         /// </summary>
@@ -18,7 +16,7 @@ namespace ReactNative.Views.Text
         {
             get
             {
-                return ReactClass;
+                return "RCTRawText";
             }
         }
 
