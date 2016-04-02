@@ -44,6 +44,7 @@ function cleanup {
   rm $MARKER_IOS
   rm $MARKER_ANDROID
   [ $SERVER_PID ] && kill -9 $SERVER_PID
+  exit $EXIT_CODE
 }
 trap cleanup EXIT
 
