@@ -296,6 +296,10 @@ class XMLHttpRequestBase {
       onload(null);
     }
   }
+
+  toString() {
+    return '[object XMLHttpRequest]';
+  }
 }
 
 XMLHttpRequestBase.UNSENT = UNSENT;
