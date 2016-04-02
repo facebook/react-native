@@ -89,6 +89,10 @@ class FormData {
       return {string: String(value), headers, fieldName: name};
     });
   }
+
+  toString() {
+    return '[object FormData]';
+  }
 }
 
 module.exports = FormData;
