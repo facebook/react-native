@@ -95,7 +95,7 @@ export type NavigationAnimationSetter = (
 ) => void;
 
 export type NavigationRenderer = (
-  navigationState: NavigationState,
+  navigationState: ?NavigationState,
   onNavigate: NavigationActionCaller,
 ) => ReactElement;
 
@@ -107,3 +107,8 @@ export type NavigationReducer = (
 export type NavigationSceneRenderer = (
   props: NavigationSceneRendererProps,
 ) => ?ReactElement;
+
+export type NavigationStyleInterpolator = (
+  props: NavigationSceneRendererProps,
+) => Object;
+
