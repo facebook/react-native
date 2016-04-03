@@ -361,7 +361,7 @@ public abstract class BaseJavaModule implements NativeModule {
   public void onCatalystInstanceDestroy() {
     // do nothing
   }
-  
+
   @Override
   public boolean supportsWebWorkers() {
     return false;

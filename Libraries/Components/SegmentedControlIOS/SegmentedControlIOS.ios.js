@@ -60,7 +60,7 @@ var SegmentedControlIOS = React.createClass({
     values: PropTypes.arrayOf(PropTypes.string),
 
     /**
-     * The index in `props.values` of the segment to be (pre)selected.  
+     * The index in `props.values` of the segment to be (pre)selected.
      */
     selectedIndex: PropTypes.number,
 

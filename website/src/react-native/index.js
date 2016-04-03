@@ -48,10 +48,10 @@ var index = React.createClass({
           <Prism>
 {`// iOS
 
-import React, { 
+import React, {
   Component,
-  TabBarIOS, 
-  NavigatorIOS 
+  TabBarIOS,
+  NavigatorIOS
 } from 'react-native';
 
 class App extends Component {
@@ -70,11 +70,11 @@ class App extends Component {
 <Prism>
 {`// Android
 
-import React, { 
+import React, {
   Component,
-  DrawerLayoutAndroid, 
-  ProgressBarAndroid, 
-  Text 
+  DrawerLayoutAndroid,
+  ProgressBarAndroid,
+  Text
 } from 'react-native';
 
 class App extends Component {
@@ -105,7 +105,7 @@ class App extends Component {
           <Prism>
 {`// iOS & Android
 
-import React, { 
+import React, {
   Component,
   ScrollView,
   TouchableHighlight,
@@ -134,10 +134,10 @@ class TouchDemo extends Component {
 
 var React, {
   Component,
-  Image, 
-  StyleSheet, 
-  Text, 
-  View 
+  Image,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 
 class ReactNative extends Component {
@@ -176,9 +176,9 @@ var styles = StyleSheet.create({
           <Prism>
 {`// iOS & Android
 
-import React, { 
+import React, {
   Component,
-  Text 
+  Text
 } from 'react-native';
 
 class GeoInfo extends Component {
@@ -283,7 +283,7 @@ RCT_EXPORT_VIEW_PROPERTY(myCustomProperty, NSString);
           <Prism>
 {`// JavaScript
 
-import React, { 
+import React, {
   Component,
   requireNativeComponent
 } from 'react-native';
@@ -379,7 +379,7 @@ public class MyCustomViewManager extends SimpleViewManager<MyCustomView> {
 
 import React, {
   Component,
-  requireNativeComponent 
+  requireNativeComponent
 } from 'react-native';
 
 var NativeMyCustomView = requireNativeComponent('MyCustomView', MyCustomView);

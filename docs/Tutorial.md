@@ -219,7 +219,7 @@ Add some initial state to our application so that we can check `this.state.movie
 
 ```javascript
   constructor(props) {
-    super(props); 
+    super(props);
     this.state = {
       movies: null,
     };

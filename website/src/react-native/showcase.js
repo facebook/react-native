@@ -161,11 +161,11 @@ var featured = [
   },
   {
     name: 'Zhopout',
-    icon: 'http://zhopout.com/Content/Images/zhopout-logo-app-3.png',    
+    icon: 'http://zhopout.com/Content/Images/zhopout-logo-app-3.png',
     link: 'https://play.google.com/store/apps/details?id=com.zhopout',
     author: 'Jarvis Software Private Limited ',
     blogs: [
-      "https://medium.com/@murugandurai/how-we-developed-our-mobile-app-in-30-days-using-react-native-45affa6449e8#.29nnretsi",     
+      "https://medium.com/@murugandurai/how-we-developed-our-mobile-app-in-30-days-using-react-native-45affa6449e8#.29nnretsi",
     ],
   },
   {
@@ -207,7 +207,7 @@ var apps = [
     icon: 'http://a5.mzstatic.com/us/r30/Purple7/v4/c1/9a/3f/c19a3f82-ecc3-d60b-f983-04acc203705f/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/bionic-estore/id994537615?mt=8',
     author: 'Digidemon',
-  },  
+  },
   {
     name: 'Bitt Wallet',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/5b/00/34/5b003497-cc85-a0d0-0d3e-4fb3bc6f95cd/icon175x175.jpeg',
