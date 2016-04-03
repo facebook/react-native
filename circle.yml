@@ -77,7 +77,7 @@ test:
     - source scripts/circle-ci-android-setup.sh && retry3 ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests.gradle
 
     # JS and Android e2e test
-    - ./scripts/e2e-test.sh --packager --android
+    - source scripts/circle-ci-android-setup.sh && retry3 ./scripts/e2e-test.sh --packager --android
 
     # testing docs generation is not broken
     - cd website && node ./server/generate.js
