@@ -317,6 +317,12 @@ var apps = [
     author: 'Sharath Prabhal',
   },
   {
+    name: 'Emergency Kittens',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/42/79/c6/4279c605-f37e-bc9c-3730-706590349eed/icon175x175.jpeg',
+    link:  'https://itunes.apple.com/us/app/emergency-kittens-adorable/id1071497489?ls=1&mt=8',
+    author: 'Clowder Labs',
+  },
+  {
     name: 'Fan of it',
     icon: 'http://a4.mzstatic.com/us/r30/Purple3/v4/c9/3f/e8/c93fe8fb-9332-e744-f04a-0f4f78e42aa8/icon350x350.png',
     link: 'https://itunes.apple.com/za/app/fan-of-it/id1017025530?mt=8',
