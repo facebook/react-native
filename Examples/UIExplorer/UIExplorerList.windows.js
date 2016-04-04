@@ -22,6 +22,10 @@ export type UIExplorerExample = {
 
 var ComponentExamples: Array<UIExplorerExample> = [
   {
+    key: 'FlipViewWindowsExample',
+    module: require('./FlipViewWindowsExample'),
+  },
+  {
     key: 'ImageExample',
     module: require('./ImageExample'),
   },

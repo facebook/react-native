@@ -31,6 +31,7 @@ var ReactNative = {
   get ART() { return require('ReactNativeART'); },
   get DatePickerIOS() { return require('DatePickerIOS'); },
   get DrawerLayoutAndroid() { return require('DrawerLayoutAndroid'); },
+  get FlipViewWindows() { return require('FlipViewWindows'); },
   get Image() { return require('Image'); },
   get ImageEditor() { return require('ImageEditor'); },
   get ImageStore() { return require('ImageStore'); },
