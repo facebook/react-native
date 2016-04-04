@@ -9,7 +9,7 @@
  * !! 3) Copy the file from github to here                       !!
  * !!    (don't forget to keep this header)                      !!
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * @generated 
+ * @generated
  *
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
@@ -149,8 +149,8 @@ struct css_node {
   int children_count;
   int line_index;
 
-  css_node_t* next_absolute_child;
-  css_node_t* next_flex_child;
+  css_node_t *next_absolute_child;
+  css_node_t *next_flex_child;
 
   css_dim_t (*measure)(void *context, float width, float height);
   void (*print)(void *context);
@@ -158,7 +158,6 @@ struct css_node {
   bool (*is_dirty)(void *context);
   void *context;
 };
-
 
 // Lifecycle of nodes and children
 css_node_t *new_css_node(void);
@@ -173,8 +172,12 @@ typedef enum {
 } css_print_options_t;
 void print_css_node(css_node_t *node, css_print_options_t options);
 
+bool isUndefined(float value);
+
 // Function that computes the layout!
 void layoutNode(css_node_t *node, float maxWidth, float maxHeight, css_direction_t parentDirection);
-bool isUndefined(float value);
+
+// Reset the calculated layout values for a given node. You should call this before `layoutNode`.
+void resetNodeLayout(css_node_t *node);
 
 #endif
