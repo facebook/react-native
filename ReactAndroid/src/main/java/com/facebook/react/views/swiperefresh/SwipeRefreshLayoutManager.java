@@ -33,6 +33,8 @@ import com.facebook.react.uimanager.annotations.ReactProp;
  */
 public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefreshLayout> {
 
+  public static final float REFRESH_TRIGGER_DISTANCE = 48;
+
   @Override
   protected ReactSwipeRefreshLayout createViewInstance(ThemedReactContext reactContext) {
     return new ReactSwipeRefreshLayout(reactContext);
@@ -92,8 +94,8 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
       public void run() {
         int diameter = view.getProgressCircleDiameter();
         int start = Math.round(PixelUtil.toPixelFromDIP(offset)) - diameter;
-        int end = Math.round(PixelUtil.toPixelFromDIP(offset+48));
-        view.setProgressViewOffset(false,start,end);
+        int end = Math.round(PixelUtil.toPixelFromDIP(offset + REFRESH_TRIGGER_DISTANCE));
+        view.setProgressViewOffset(false, start, end);
       }
     });
   }
