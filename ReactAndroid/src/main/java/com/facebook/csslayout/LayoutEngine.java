@@ -7,7 +7,7 @@
  */
 
 // NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<dcc87213906997ff353adb1148c8e77c>>
+// @generated SignedSource<<1d6f1ec2d1fbd24c5176f48d5005c0d5>>
 
 package com.facebook.csslayout;
 
@@ -207,6 +207,10 @@ public class LayoutEngine {
       node.lastLayout.parentMaxWidth = parentMaxWidth;
       node.lastLayout.parentMaxHeight = parentMaxHeight;
 
+      for (int i = 0, childCount = node.getChildCount(); i < childCount; i++) {
+        node.getChildAt(i).layout.resetResult();
+      }
+
       layoutNodeImpl(layoutContext, node, parentMaxWidth, parentMaxHeight, parentDirection);
       node.lastLayout.copy(node.layout);
     } else {
@@ -222,10 +226,6 @@ public class LayoutEngine {
       float parentMaxWidth,
       float parentMaxHeight,
       CSSDirection parentDirection) {
-    for (int i = 0, childCount = node.getChildCount(); i < childCount; i++) {
-      node.getChildAt(i).layout.resetResult();
-    }
-
     /** START_GENERATED **/
   
     CSSDirection direction = resolveDirection(node, parentDirection);
