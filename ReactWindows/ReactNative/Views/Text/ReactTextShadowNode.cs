@@ -271,8 +271,8 @@ namespace ReactNative.Views.Text
                     var normalizedHeight = CSSConstants.IsUndefined(height) ? double.PositiveInfinity : height;
                     textBlock.Measure(new Size(normalizedWidth, normalizedHeight));
                     return new MeasureOutput(
-                        (float)textBlock.DesiredSize.Width,
-                        (float)textBlock.DesiredSize.Height);
+                        (float)Math.Ceiling(textBlock.DesiredSize.Width),
+                        (float)Math.Ceiling(textBlock.DesiredSize.Height));
                 }
                 finally
                 {
