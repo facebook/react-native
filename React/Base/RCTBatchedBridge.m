@@ -26,7 +26,7 @@
 
 #define RCTAssertJSThread() \
   RCTAssert(![NSStringFromClass([_javaScriptExecutor class]) isEqualToString:@"RCTJSCExecutor"] || \
-              [[[NSThread currentThread] name] isEqualToString:@"com.facebook.React.JavaScript"], \
+              [[[NSThread currentThread] name] isEqualToString:RCTJSCThreadName], \
             @"This method must be called on JS thread")
 
 /**
@@ -40,14 +40,6 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
 };
 
 RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
-
-@interface RCTBatchedBridge : RCTBridge
-
-@property (nonatomic, weak) RCTBridge *parentBridge;
-@property (nonatomic, weak) id<RCTJavaScriptExecutor> javaScriptExecutor;
-@property (nonatomic, assign) BOOL moduleSetupComplete;
-
-@end
 
 @implementation RCTBatchedBridge
 {
@@ -490,6 +482,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
 - (void)didFinishLoading
 {
+  RCTPerformanceLoggerEnd(RCTPLBridgeStartup);
   _loading = NO;
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
     for (dispatch_block_t call in _pendingCalls) {
