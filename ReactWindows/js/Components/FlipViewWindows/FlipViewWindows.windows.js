@@ -63,7 +63,7 @@ var FlipViewWindows = React.createClass({
     ...View.propTypes,
     /**
      * Index of initial page that should be selected. Use `setPage` method to
-     * update the page, and `onPageSelected` to monitor page changes
+     * update the page, and `onSelectionChange` to monitor page changes
      */
     initialPage: ReactPropTypes.number,
 
