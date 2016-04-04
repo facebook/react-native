@@ -412,13 +412,17 @@ var EmbeddedSimulator = React.createClass({
 
     var metadata = this.props.metadata;
 
+    var imagePreview = metadata.platform === 'android'
+      ? <img alt="Run example in simulator" width="170" height="338" src="img/uiexplorer_main_android.png" />
+      : <img alt="Run example in simulator" width="170" height="356" src="img/uiexplorer_main_ios.png" />;
+
     return (
       <div className="column-left">
         <p><a className="modal-button-open"><strong>Run this example</strong></a></p>
         <div className="modal-button-open modal-button-open-img">
-          <img alt="Run example in simulator" width="170" height="358" src="img/alertIOS.png" />
+          {imagePreview}
         </div>
-        <Modal />
+        <Modal metadata={metadata} />
       </div>
     );
   }
@@ -426,9 +430,12 @@ var EmbeddedSimulator = React.createClass({
 
 var Modal = React.createClass({
   render: function() {
-    var appParams = {route: 'AlertIOS'};
+    var metadata = this.props.metadata;
+    var appParams = {route: metadata.title};
     var encodedParams = encodeURIComponent(JSON.stringify(appParams));
-    var url = `https://appetize.io/embed/bypdk4jnjra5uwyj2kzd2aenv4?device=iphone5s&scale=70&autoplay=false&orientation=portrait&deviceColor=white&params=${encodedParams}`;
+    var url = metadata.platform === 'android'
+      ? `https://appetize.io/embed/q7wkvt42v6bkr0pzt1n0gmbwfr?device=nexus5&scale=65&autoplay=false&orientation=portrait&osVersion=6.0&deviceColor=white&params=${encodedParams}`
+      : `https://appetize.io/embed/7vdfm9h3e6vuf4gfdm7r5rgc48?device=iphone6s&scale=60&autoplay=false&orientation=portrait&osVersion=9.2&deviceColor=white&params=${encodedParams}`;
 
     return (
       <div>
