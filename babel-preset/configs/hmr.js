@@ -25,7 +25,7 @@ module.exports = function(options, filename) {
         {
           transforms: [{
             transform: transform,
-            imports: ['react-native'],
+            imports: ['react-native/Libraries/react-native/react-native.js'],
             locals: ['module'],
           }]
         },

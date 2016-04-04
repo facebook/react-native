@@ -27,7 +27,7 @@
 #import "RCTRedBox.h"
 #import "RCTSourceCode.h"
 
-NSString *const RCTJSCThreadName = @"com.facebook.React.JavaScript";
+NSString *const RCTJSCThreadName = @"com.facebook.react.JavaScript";
 
 NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContextCreatedNotification";
 
@@ -44,19 +44,23 @@ typedef struct ModuleData {
 @property (nonatomic, strong, readonly) JSContext *context;
 @property (nonatomic, assign, readonly) JSGlobalContextRef ctx;
 
-- (instancetype)initWithJSContext:(JSContext *)context NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithJSContext:(JSContext *)context
+                         onThread:(NSThread *)javaScriptThread NS_DESIGNATED_INITIALIZER;
 
 @end
 
 @implementation RCTJavaScriptContext
 {
   RCTJavaScriptContext *_selfReference;
+  NSThread *_javaScriptThread;
 }
 
 - (instancetype)initWithJSContext:(JSContext *)context
+                         onThread:(NSThread *)javaScriptThread
 {
   if ((self = [super init])) {
     _context = context;
+    _javaScriptThread = javaScriptThread;
 
     /**
      * Explicitly introduce a retain cycle here - The RCTJSCExecutor might
@@ -85,14 +89,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 - (void)invalidate
 {
   if (self.isValid) {
+    RCTAssertThread(_javaScriptThread, @"Must be invalidated on JS thread.");
+
     _context = nil;
     _selfReference = nil;
-  }
-}
+    _javaScriptThread = nil;
 
-- (void)dealloc
-{
-  CFRunLoopStop([[NSRunLoop currentRunLoop] getCFRunLoop]);
+    CFRunLoopStop([[NSRunLoop currentRunLoop] getCFRunLoop]);
+  }
 }
 
 @end
@@ -189,7 +193,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     _javaScriptThread = [[NSThread alloc] initWithTarget:[self class]
                                                 selector:@selector(runRunLoopThread)
                                                   object:nil];
-    _javaScriptThread.name = @"com.facebook.React.JavaScript";
+    _javaScriptThread.name = RCTJSCThreadName;
 
     if ([_javaScriptThread respondsToSelector:@selector(setQualityOfService:)]) {
       [_javaScriptThread setQualityOfService:NSOperationQualityOfServiceUserInteractive];
@@ -213,7 +217,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
   if (!_context) {
     JSContext *context = [JSContext new];
-    _context = [[RCTJavaScriptContext alloc] initWithJSContext:context];
+    _context = [[RCTJavaScriptContext alloc] initWithJSContext:context onThread:_javaScriptThread];
   }
 
   return _context;
@@ -302,17 +306,26 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
   __weak RCTBridge *weakBridge = _bridge;
 #ifndef __clang_analyzer__
-  weakBridge.flowIDMap = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
+  _bridge.flowIDMap = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
 #endif
+  _bridge.flowIDMapLock = [NSLock new];
   [self addSynchronousHookWithName:@"nativeTraceBeginAsyncFlow" usingBlock:^(__unused uint64_t tag, __unused NSString *name, int64_t cookie) {
-    int64_t newCookie = [_RCTProfileBeginFlowEvent() longLongValue];
-    CFDictionarySetValue(weakBridge.flowIDMap, (const void *)cookie, (const void *)newCookie);
+    if (RCTProfileIsProfiling()) {
+      [weakBridge.flowIDMapLock lock];
+      int64_t newCookie = [_RCTProfileBeginFlowEvent() longLongValue];
+      CFDictionarySetValue(weakBridge.flowIDMap, (const void *)cookie, (const void *)newCookie);
+      [weakBridge.flowIDMapLock unlock];
+    }
   }];
 
   [self addSynchronousHookWithName:@"nativeTraceEndAsyncFlow" usingBlock:^(__unused uint64_t tag, __unused NSString *name, int64_t cookie) {
-    int64_t newCookie = (int64_t)CFDictionaryGetValue(weakBridge.flowIDMap, (const void *)cookie);
-    _RCTProfileEndFlowEvent(@(newCookie));
-    CFDictionaryRemoveValue(weakBridge.flowIDMap, (const void *)cookie);
+    if (RCTProfileIsProfiling()) {
+      [weakBridge.flowIDMapLock lock];
+      int64_t newCookie = (int64_t)CFDictionaryGetValue(weakBridge.flowIDMap, (const void *)cookie);
+      _RCTProfileEndFlowEvent(@(newCookie));
+      CFDictionaryRemoveValue(weakBridge.flowIDMap, (const void *)cookie);
+      [weakBridge.flowIDMapLock unlock];
+    }
   }];
 
   [self executeBlockOnJavaScriptQueue:^{
@@ -665,6 +678,10 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
 
 - (void)registerNativeRequire
 {
+  RCTPerformanceLoggerSet(RCTPLRAMNativeRequires, 0);
+  RCTPerformanceLoggerSet(RCTPLRAMNativeRequiresCount, 0);
+  RCTPerformanceLoggerSet(RCTPLRAMNativeRequiresSize, 0);
+
   __weak RCTJSCExecutor *weakSelf = self;
   [self addSynchronousHookWithName:@"nativeRequire" usingBlock:^(NSString *moduleName) {
     RCTJSCExecutor *strongSelf = weakSelf;
@@ -672,7 +689,13 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
       return;
     }
 
+    RCTPerformanceLoggerAdd(RCTPLRAMNativeRequiresCount, 1);
+    RCTPerformanceLoggerAppendStart(RCTPLRAMNativeRequires);
+    RCT_PROFILE_BEGIN_EVENT(0, [@"nativeRequire_" stringByAppendingString:moduleName], nil);
+
     ModuleData *data = (ModuleData *)CFDictionaryGetValue(strongSelf->_jsModules, moduleName.UTF8String);
+    RCTPerformanceLoggerAdd(RCTPLRAMNativeRequiresSize, data->length);
+
     char bytes[data->length];
     if (readBundle(strongSelf->_bundle, data->offset, data->length, bytes) != 0) {
       RCTFatal(RCTErrorWithMessage(@"Error loading RAM module"));
@@ -685,6 +708,9 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
     CFDictionaryRemoveValue(strongSelf->_jsModules, moduleName.UTF8String);
     JSStringRelease(code);
 
+    RCT_PROFILE_END_EVENT(0, @"js_call", nil);
+    RCTPerformanceLoggerAppendEnd(RCTPLRAMNativeRequires);
+
     if (!result) {
       dispatch_async(dispatch_get_main_queue(), ^{
         RCTFatal(RCTNSErrorFromJSError(strongSelf->_context.ctx, jsError));
@@ -696,6 +722,7 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
 
 - (NSData *)loadRAMBundle:(NSURL *)sourceURL error:(NSError **)error
 {
+  RCTPerformanceLoggerStart(RCTPLRAMBundleLoad);
   _bundle = fopen(sourceURL.path.UTF8String, "r");
   if (!_bundle) {
     if (error) {
@@ -780,6 +807,8 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
     free(startupCode);
     return nil;
   }
+  RCTPerformanceLoggerEnd(RCTPLRAMBundleLoad);
+  RCTPerformanceLoggerSet(RCTPLRAMStartupCodeSize, startupData->length);
   return [NSData dataWithBytesNoCopy:startupCode length:startupData->length freeWhenDone:YES];
 }
 

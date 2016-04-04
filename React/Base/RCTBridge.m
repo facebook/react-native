@@ -25,14 +25,6 @@ NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotific
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
 NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
 
-@interface RCTBatchedBridge : RCTBridge <RCTInvalidating>
-
-@property (nonatomic, weak) RCTBridge *parentBridge;
-
-- (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
-
-@end
-
 static NSMutableArray<Class> *RCTModuleClasses;
 NSArray<Class> *RCTGetModuleClasses(void);
 NSArray<Class> *RCTGetModuleClasses(void)
@@ -119,6 +111,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                    launchOptions:(NSDictionary *)launchOptions
 {
   if ((self = [super init])) {
+    RCTPerformanceLoggerStart(RCTPLBridgeStartup);
     RCTPerformanceLoggerStart(RCTPLTTI);
 
     _delegate = delegate;
@@ -134,6 +127,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                     launchOptions:(NSDictionary *)launchOptions
 {
   if ((self = [super init])) {
+    RCTPerformanceLoggerStart(RCTPLBridgeStartup);
     RCTPerformanceLoggerStart(RCTPLTTI);
 
     _bundleURL = bundleURL;
