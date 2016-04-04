@@ -41,7 +41,7 @@ type Props = {
    * events, and use this mapper to convert URIs into actions that your app can
    * handle
    */
-  linkingActionMap: ?((uri: string) => NavigationAction),
+  linkingActionMap: ?((uri: ?string) => NavigationAction),
 
   /*
    * Provide this key, and the container will store the navigation state in
@@ -113,7 +113,7 @@ class NavigationRootContainer extends React.Component<any, Props, State> {
   }
 
   componentDidMount(): void {
-    if (this.props.LinkingActionMap) {
+    if (this.props.linkingActionMap) {
       Linking.getInitialURL().then(this._handleOpenURL.bind(this));
       Platform.OS === 'ios' && Linking.addEventListener('url', this._handleOpenURLEvent);
     }
@@ -143,10 +143,10 @@ class NavigationRootContainer extends React.Component<any, Props, State> {
   }
 
   _handleOpenURL(url: ?string): void {
-    if (!this.props.LinkingActionMap) {
+    if (!this.props.linkingActionMap) {
       return;
     }
-    const action = this.props.LinkingActionMap(url);
+    const action = this.props.linkingActionMap(url);
     if (action) {
       this.handleNavigation(action);
     }

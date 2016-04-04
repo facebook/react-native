@@ -31,17 +31,44 @@ const {
 const {
   RootContainer: NavigationRootContainer,
 } = NavigationExperimental;
-const UIExplorerActions = require('./UIExplorerActions');
 const UIExplorerExampleList = require('./UIExplorerExampleList');
 const UIExplorerList = require('./UIExplorerList');
 const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
 const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
+const URIActionMap = require('./URIActionMap');
 
 var DRAWER_WIDTH_LEFT = 56;
 
+type Props = {
+  exampleFromAppetizeParams: string,
+};
+
+type State = {
+  initialExampleUri: ?string,
+};
+
 class UIExplorerApp extends React.Component {
+  _handleOpenInitialExample: Function;
+  state: State;
+  constructor(props: Props) {
+    super(props);
+    this._handleOpenInitialExample = this._handleOpenInitialExample.bind(this);
+    this.state = {
+      initialExampleUri: props.exampleFromAppetizeParams,
+    };
+  }
+
   componentWillMount() {
     BackAndroid.addEventListener('hardwareBackPress', this._handleBackButtonPress.bind(this));
+  }
+
+  componentDidMount() {
+    // There's a race condition if we try to navigate to the specified example
+    // from the initial props at the same time the navigation logic is setting
+    // up the initial navigation state. This hack adds a delay to avoid this
+    // scenario. So after the initial example list is shown, we then transition
+    // to the initial example.
+    setTimeout(this._handleOpenInitialExample, 500);
   }
 
   render() {
@@ -51,8 +78,19 @@ class UIExplorerApp extends React.Component {
         ref={navRootRef => { this._navigationRootRef = navRootRef; }}
         reducer={UIExplorerNavigationReducer}
         renderNavigation={this._renderApp.bind(this)}
+        linkingActionMap={URIActionMap}
       />
     );
+  }
+
+  _handleOpenInitialExample() {
+    if (this.state.initialExampleUri) {
+      const exampleAction = URIActionMap(this.state.initialExampleUri);
+      if (exampleAction && this._navigationRootRef) {
+        this._navigationRootRef.handleNavigation(exampleAction);
+      }
+    }
+    this.setState({initialExampleUri: null});
   }
 
   _renderApp(navigationState, onNavigate) {
