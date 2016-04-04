@@ -377,6 +377,12 @@ public class ReactViewGroup extends ViewGroup implements
     return mPointerEvents;
   }
 
+  @Override
+  protected void dispatchSetPressed(boolean pressed) {
+    // Prevents the ViewGroup from dispatching the pressed state
+    // to it's children.
+  }
+
   /*package*/ void setPointerEvents(PointerEvents pointerEvents) {
     mPointerEvents = pointerEvents;
   }
