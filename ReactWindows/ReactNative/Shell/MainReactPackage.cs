@@ -11,6 +11,7 @@ using ReactNative.Modules.Storage;
 using ReactNative.Modules.Toast;
 using ReactNative.Modules.WebSocket;
 using ReactNative.UIManager;
+using ReactNative.Views.Flip;
 using ReactNative.Views.Image;
 using ReactNative.Views.Picker;
 using ReactNative.Views.Scroll;
@@ -75,7 +76,7 @@ namespace ReactNative.Shell
         {
             return new List<IViewManager>
             {
-                //new ReactHorizontalScrollViewManager(),
+                new ReactFlipViewManager(),
                 new ReactImageManager(),
                 //new ReactProgressBarViewManager(),
                 new ReactPickerManager(),
@@ -88,7 +89,6 @@ namespace ReactNative.Shell
                 new ReactTextViewManager(),
                 //new ReactToolbarManager(),
                 new ReactViewManager(),
-                //new ReactViewPagerManager(),
                 //new ReactTextInlineImageViewManager(),
                 new ReactVirtualTextViewManager(),
                 //new SwipeRefreshLayoutManager(),

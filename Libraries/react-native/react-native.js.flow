@@ -29,6 +29,7 @@ var ReactNative = Object.assign(Object.create(require('ReactNative')), {
   ART: require('ReactNativeART'),
   DatePickerIOS: require('DatePickerIOS'),
   DrawerLayoutAndroid: require('DrawerLayoutAndroid'),
+  FlipViewWindows: require('FlipViewWindows'),
   Image: require('Image'),
   ImageEditor: require('ImageEditor'),
   ImageStore: require('ImageStore'),
