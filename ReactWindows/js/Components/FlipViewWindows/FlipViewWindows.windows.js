@@ -34,7 +34,8 @@ type Event = Object;
  *   return (
  *     <FlipViewWindows
  *       style={styles.flipView}
- *       alwaysAnimate={false}>
+ *       alwaysAnimate={false}
+ *       initialPage={0}>
  *       <View style={styles.pageStyle}>
  *         <Text>First page</Text>
  *       </View>
@@ -60,7 +61,12 @@ var FlipViewWindows = React.createClass({
 
   propTypes: {
     ...View.propTypes,
-    
+    /**
+     * Index of initial page that should be selected. Use `setPage` method to
+     * update the page, and `onPageSelected` to monitor page changes
+     */
+    initialPage: ReactPropTypes.number,
+
     /**
      * Indicates whether `setPage` calls should be animated.
      */
@@ -75,6 +81,12 @@ var FlipViewWindows = React.createClass({
     onSelectionChange: ReactPropTypes.func,
   },
 
+  componentDidMount: function() {
+    if (this.props.initialPage) {
+      this.setPage(this.props.initialPage);
+    }
+  },
+  
   getInnerViewNode: function(): ReactComponent {
     return this.refs[FLIPVIEW_REF].getInnerViewNode();
   },
@@ -144,4 +156,3 @@ var FlipViewWindows = React.createClass({
 var NativeWindowsFlipView = requireNativeComponent('WindowsFlipView', FlipViewWindows);
 
 module.exports = FlipViewWindows;
-
