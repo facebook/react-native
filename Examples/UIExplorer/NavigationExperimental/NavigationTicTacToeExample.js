@@ -32,7 +32,7 @@ const {
 type GameGrid = Array<Array<?string>>;
 
 const evenOddPlayerMap = ['O', 'X'];
-const rowLeterMap = ['a', 'b', 'c'];
+const rowLetterMap = ['a', 'b', 'c'];
 
 function parseGame(game: string): GameGrid {
   const gameTurns = game ? game.split('-') : [];
@@ -40,7 +40,7 @@ function parseGame(game: string): GameGrid {
   for (let i = 0; i < 3; i++) {
     const row = Array(3);
     for (let j = 0; j < 3; j++) {
-      const turnIndex = gameTurns.indexOf(rowLeterMap[i]+j);
+      const turnIndex = gameTurns.indexOf(rowLetterMap[i]+j);
       if (turnIndex === -1) {
         row[j] = null;
       } else {
@@ -53,7 +53,7 @@ function parseGame(game: string): GameGrid {
 }
 
 function playTurn(game: string, row: number, col: number): string {
-  const turn = rowLeterMap[row] + col;
+  const turn = rowLetterMap[row] + col;
   return game ? (game + '-' + turn) : turn;
 }
 

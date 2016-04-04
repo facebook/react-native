@@ -58,10 +58,11 @@ const NavigationBasicReducer = NavigationReducer.StackReducer({
 
 class NavigationAnimatedExample extends React.Component {
   componentWillMount() {
-    this._renderNavigation = this._renderNavigation.bind(this);
     this._renderCard = this._renderCard.bind(this);
-    this._renderScene = this._renderScene.bind(this);
     this._renderHeader = this._renderHeader.bind(this);
+    this._renderNavigation = this._renderNavigation.bind(this);
+    this._renderScene = this._renderScene.bind(this);
+    this._renderTitleComponent = this._renderTitleComponent.bind(this);
   }
   render() {
     return (
@@ -100,8 +101,16 @@ class NavigationAnimatedExample extends React.Component {
     return (
       <NavigationHeader
         {...props}
-        getTitle={state => state.key}
+        renderTitleComponent={this._renderTitleComponent}
       />
+    );
+  }
+
+  _renderTitleComponent(/*NavigationSceneRendererProps*/ props) {
+    return (
+      <NavigationHeader.Title>
+        {props.scene.navigationState.key}
+      </NavigationHeader.Title>
     );
   }
 
@@ -144,7 +153,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollView: {
-    marginTop: 64
+    marginTop: NavigationHeader.HEIGHT,
   },
 });
 

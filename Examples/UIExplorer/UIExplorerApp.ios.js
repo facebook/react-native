@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -25,24 +32,18 @@ const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
 
 const {
   Alert,
-  Animated,
   AppRegistry,
   NavigationExperimental,
   SnapshotViewIOS,
   StyleSheet,
-  Text,
-  TouchableHighlight,
   View,
 } = React;
 
 const {
   CardStack: NavigationCardStack,
   Header: NavigationHeader,
-  Reducer: NavigationReducer,
   RootContainer: NavigationRootContainer,
 } = NavigationExperimental;
-
-import type { Value } from 'Animated';
 
 import type { NavigationSceneRendererProps } from 'NavigationTypeDefinition';
 
@@ -83,10 +84,12 @@ class UIExplorerApp extends React.Component {
   _renderOverlay: Function;
   _renderScene: Function;
   _renderCard: Function;
+  _renderTitleComponent: Function;
   componentWillMount() {
     this._renderNavigation = this._renderNavigation.bind(this);
     this._renderOverlay = this._renderOverlay.bind(this);
     this._renderScene = this._renderScene.bind(this);
+    this._renderTitleComponent = this._renderTitleComponent.bind(this);
   }
   render() {
     return (
@@ -128,9 +131,16 @@ class UIExplorerApp extends React.Component {
     return (
       <NavigationHeader
         {...props}
-        key={'header_' + props.scene.navigationState.key}
-        getTitle={UIExplorerStateTitleMap}
+        renderTitleComponent={this._renderTitleComponent}
       />
+    );
+  }
+
+  _renderTitleComponent(props: NavigationSceneRendererProps): ReactElement {
+    return (
+      <NavigationHeader.Title>
+        {UIExplorerStateTitleMap(props.scene.navigationState)}
+      </NavigationHeader.Title>
     );
   }
 
@@ -165,7 +175,7 @@ const styles = StyleSheet.create({
   },
   exampleContainer: {
     flex: 1,
-    paddingTop: 60,
+    paddingTop: NavigationHeader.HEIGHT,
   },
 });
 

@@ -27,27 +27,35 @@ function runIOS(argv, config) {
 }
 
 function _runIOS(argv, config, resolve, reject) {
-  const args = parseCommandLine([{
-    command: 'simulator',
-    description: 'Explicitly set simulator to use',
-    type: 'string',
-    required: false,
-    default: 'iPhone 6',
-  }, {
-    command: 'scheme',
-    description: 'Explicitly set Xcode scheme to use',
-    type: 'string',
-    required: false,
-  }], argv);
+  const args = parseCommandLine([
+    {
+      command: 'simulator',
+      description: 'Explicitly set simulator to use',
+      type: 'string',
+      required: false,
+      default: 'iPhone 6',
+    }, {
+      command: 'scheme',
+      description: 'Explicitly set Xcode scheme to use',
+      type: 'string',
+      required: false,
+    }, {
+      command: 'project-path',
+      description: 'Path relative to project root where the Xcode project (.xcodeproj) lives. The default is \'ios\'.',
+      type: 'string',
+      required: false,
+      default: 'ios',
+    }
+  ], argv);
 
-  process.chdir('ios');
+  process.chdir(args['project-path']);
   const xcodeProject = findXcodeProject(fs.readdirSync('.'));
   if (!xcodeProject) {
     throw new Error(`Could not find Xcode project files in ios folder`);
   }
 
   const inferredSchemeName = path.basename(xcodeProject.name, path.extname(xcodeProject.name));
-  const scheme = args.scheme || inferredSchemeName
+  const scheme = args.scheme || inferredSchemeName;
   console.log(`Found Xcode ${xcodeProject.isWorkspace ? 'workspace' : 'project'} ${xcodeProject.name}`);
 
   const simulators = parseIOSSimulatorsList(

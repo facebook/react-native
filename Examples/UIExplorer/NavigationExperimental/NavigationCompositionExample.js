@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -27,7 +34,6 @@ const {
 } = React;
 
 const {
-  AnimatedView: NavigationAnimatedView,
   CardStack: NavigationCardStack,
   Container: NavigationContainer,
   Header: NavigationHeader,
@@ -140,7 +146,7 @@ const ExampleAppReducer = NavigationReducer.TabsReducer({
   ],
 });
 
-function stateTypeTitleMap(pageState) {
+function stateTypeTitleMap(pageState: any) {
   switch (pageState.type) {
     case 'ProfilePage':
       return 'Profile Page';
@@ -179,8 +185,16 @@ class ExampleTabScreen extends React.Component {
     return (
       <NavigationHeader
         {...props}
-        getTitle={state => stateTypeTitleMap(state)}
+        renderTitleComponent={this._renderTitleComponent}
       />
+    );
+  }
+
+  _renderTitleComponent(props: NavigationSceneRendererProps) {
+    return (
+      <NavigationHeader.Title>
+        {stateTypeTitleMap(props.scene.navigationState)}
+      </NavigationHeader.Title>
     );
   }
 
@@ -251,21 +265,33 @@ class NavigationCompositionExample extends React.Component {
 }
 
 class ExampleMainView extends React.Component {
+  _renderScene: NavigationSceneRenderer;
+
+  componentWillMount() {
+    this._renderScene = this._renderScene.bind(this);
+  }
+
   render() {
     return (
       <NavigationView
         navigationState={this.props.navigationState}
         style={styles.tabsContent}
-        renderScene={(tabState, index) => (
-          <ExampleTabScreen
-            key={tabState.key}
-            navigationState={tabState}
-            onNavigate={this._handleNavigation.bind(this, tabState.key)}
-          />
-        )}
+        renderScene={this._renderScene}
       />
     );
   }
+
+  _renderScene(props: NavigationSceneRendererProps): ReactElement {
+    const {scene} = props;
+    return (
+      <ExampleTabScreen
+        key={'tab_screen' + scene.key}
+        navigationState={scene.navigationState}
+        onNavigate={this._handleNavigation.bind(this, scene.key)}
+      />
+    );
+  }
+
   _handleNavigation(tabKey, action) {
     if (ExampleExitAction.match(action)) {
       this.props.onExampleExit();
@@ -274,6 +300,7 @@ class ExampleMainView extends React.Component {
     this.props.onNavigate(action);
   }
 }
+
 ExampleMainView = NavigationContainer.create(ExampleMainView);
 
 const styles = StyleSheet.create({
@@ -284,7 +311,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollView: {
-    marginTop: 64
+    marginTop: NavigationHeader.HEIGHT
   },
   tabContent: {
     flex: 1,
