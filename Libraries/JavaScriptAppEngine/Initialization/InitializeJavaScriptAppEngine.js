@@ -70,7 +70,7 @@ function polyfillGlobal(name, newValue, scope = global) {
   Object.defineProperty(scope, name, {...descriptor, value: newValue});
 }
 
-function polyfillLazyGlobal(name, valueFn, scope = GLOBAL) {
+function polyfillLazyGlobal(name, valueFn, scope = global) {
   if (scope[name] !== undefined) {
     const descriptor = Object.getOwnPropertyDescriptor(scope, name);
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
