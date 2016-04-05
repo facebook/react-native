@@ -124,6 +124,16 @@ var featured = [
 
 var apps = [
   {
+    name: 'Azendoo',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/b8/d0/d6/b8d0d66e-1a87-8ff2-f843-0ddce8b535e1/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/azendoo-tasks-conversations/id581907820?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.azendoo.azmobile',
+    author: 'Azendoo',
+    blogs: [
+      "http://blog.azendoo.com/azendoo-mobile-v2-release/",
+    ],
+  },
+  {
     name: 'Accio',
     icon: 'http://a3.mzstatic.com/us/r30/Purple3/v4/03/a1/5b/03a15b9f-04d7-a70a-620a-9c9850a859aa/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/accio-on-demand-delivery/id1047060673?mt=8',
