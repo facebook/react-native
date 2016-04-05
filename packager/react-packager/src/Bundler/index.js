@@ -29,6 +29,10 @@ const sizeOf = Promise.denodeify(imageSize);
 
 const noop = () => {};
 
+// the path from here to AssetRegistry.js
+// bad hardcode and David Aurelio should be ashamed for approving this change
+const hardcodedAssetRegistryAbsolutePath = path.resolve(__dirname, '..', '..', '..', '..', 'Libraries', 'Image', 'AssetRegistry.js');
+
 const validateOpts = declareOpts({
   projectRoots: {
     type: 'array',
@@ -152,6 +156,7 @@ class Bundler {
         opts.getTransformOptionsModulePath
       );
     }
+    
   }
 
   kill() {
@@ -612,10 +617,14 @@ class Bundler {
       };
 
       const json = JSON.stringify(asset);
+      let assetRegistryRelativeToModule = path.relative(module.path, hardcodedAssetRegistryAbsolutePath);
+      if (!assetRegistryRelativeToModule.startsWith('.')) {
+        assetRegistryRelativeToModule = '.' + path.sep + assetRegistryRelativeToModule;
+      }
       const code =
-        `module.exports = require('AssetRegistry').registerAsset(${json});`;
-      const dependencies = ['AssetRegistry'];
-      const dependencyOffsets = [code.indexOf('AssetRegistry') - 1];
+        `module.exports = require(${JSON.stringify(assetRegistryRelativeToModule)}).registerAsset(${json});`;
+      const dependencies = [assetRegistryRelativeToModule];
+      const dependencyOffsets = [code.indexOf(assetRegistryRelativeToModule) - 1];
 
       return {
         asset,
