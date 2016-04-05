@@ -38,7 +38,6 @@
 var fs = require('fs');
 var path = require('path');
 var exec = require('child_process').exec;
-var spawn = require('child_process').spawn;
 var chalk = require('chalk');
 var prompt = require('prompt');
 var semver = require('semver');
@@ -193,11 +192,17 @@ function createProject(name, verbose, rnPackage) {
 
   console.log('Installing react-native package from npm...');
 
+  var extraParams = getInstallPackage(rnPackage);
+
   if (verbose) {
-    runVerbose(root, projectName, rnPackage);
-  } else {
-    run(root, projectName, rnPackage);
+  	extraParams += ' --verbose';
   }
+
+  run({
+  	root,
+  	projectName,
+  	extraParams
+  })
 }
 
 function getInstallPackage(rnPackage) {
@@ -212,8 +217,11 @@ function getInstallPackage(rnPackage) {
   return packageToInstall;
 }
 
-function run(root, projectName, rnPackage) {
-  exec('npm install --save ' + getInstallPackage(rnPackage), function(e, stdout, stderr) {
+function run(options) {
+  const	root = options.root;
+  const	projectName = options.projectName;
+  const	extraParams = options.extraParams;
+  exec('npm install --save ' + extraParams, function(e, stdout, stderr) {
     if (e) {
       console.log(stdout);
       console.error(stderr);
@@ -224,19 +232,6 @@ function run(root, projectName, rnPackage) {
     checkNodeVersion();
 
     var cli = require(CLI_MODULE_PATH());
-    cli.init(root, projectName);
-  });
-}
-
-function runVerbose(root, projectName, rnPackage) {
-  var proc = spawn('npm', ['install', '--verbose', '--save', getInstallPackage(rnPackage)], {stdio: 'inherit'});
-  proc.on('close', function (code) {
-    if (code !== 0) {
-      console.error('`npm install --save react-native` failed');
-      return;
-    }
-
-    cli = require(CLI_MODULE_PATH());
     cli.init(root, projectName);
   });
 }
