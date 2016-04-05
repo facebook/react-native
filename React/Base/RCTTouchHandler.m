@@ -234,7 +234,6 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
 {
   // If gesture just recognized, send all touches to JS as if they just began.
   if (self.state == UIGestureRecognizerStateBegan) {
-    _coalescingKey++;
     [self _updateAndDispatchTouches:_nativeTouches.set eventName:@"topTouchStart" originatingTime:0];
 
     // We store this flag separately from `state` because after a gesture is
@@ -253,6 +252,7 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
 {
   [super touchesBegan:touches withEvent:event];
 
+  _coalescingKey++;
   // "start" has to record new touches before extracting the event.
   // "end"/"cancel" needs to remove the touch *after* extracting the event.
   [self _recordNewTouches:touches];
@@ -278,6 +278,7 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
 {
   [super touchesEnded:touches withEvent:event];
 
+  _coalescingKey++;
   if (_dispatchedInitialTouches) {
     [self _updateAndDispatchTouches:touches eventName:@"touchEnd" originatingTime:event.timestamp];
 
