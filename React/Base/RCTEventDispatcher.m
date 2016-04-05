@@ -39,9 +39,12 @@ static NSNumber *RCTGetEventID(id<RCTEvent> event)
 
 @implementation RCTEventDispatcher
 {
-  // We need this lock to protect access to _eventQueue and __eventsDispatchScheduled. It's filled in on main thread and consumed on js thread.
+  // We need this lock to protect access to _events, _eventQueue and _eventsDispatchScheduled. It's filled in on main thread and consumed on js thread.
   NSLock *_eventQueueLock;
-  NSMutableDictionary *_eventQueue;
+  // We have this id -> event mapping so we coalesce effectively.
+  NSMutableDictionary<NSNumber *, id<RCTEvent>> *_events;
+  // This array contains ids of events in order they come in, so we can emit them to JS in the exact same order.
+  NSMutableArray<NSNumber *> *_eventQueue;
   BOOL _eventsDispatchScheduled;
 }
 
@@ -52,7 +55,8 @@ RCT_EXPORT_MODULE()
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
-  _eventQueue = [NSMutableDictionary new];
+  _events = [NSMutableDictionary new];
+  _eventQueue = [NSMutableArray new];
   _eventQueueLock = [NSLock new];
   _eventsDispatchScheduled = NO;
 }
@@ -131,12 +135,14 @@ RCT_EXPORT_MODULE()
 
   NSNumber *eventID = RCTGetEventID(event);
 
-  id<RCTEvent> previousEvent = _eventQueue[eventID];
+  id<RCTEvent> previousEvent = _events[eventID];
   if (previousEvent) {
     RCTAssert([event canCoalesce], @"Got event %@ which cannot be coalesced, but has the same eventID %@ as the previous event %@", event, eventID, previousEvent);
     event = [previousEvent coalesceWithEvent:event];
+  } else {
+    [_eventQueue addObject:eventID];
   }
-  _eventQueue[eventID] = event;
+  _events[eventID] = event;
 
   BOOL scheduleEventsDispatch = NO;
   if (!_eventsDispatchScheduled) {
@@ -170,13 +176,15 @@ RCT_EXPORT_MODULE()
 - (void)flushEventsQueue
 {
   [_eventQueueLock lock];
-  NSDictionary *eventQueue = _eventQueue;
-  _eventQueue = [NSMutableDictionary new];
+  NSDictionary *events = _events;
+  _events = [NSMutableDictionary new];
+  NSMutableArray *eventQueue = _eventQueue;
+  _eventQueue = [NSMutableArray new];
   _eventsDispatchScheduled = NO;
   [_eventQueueLock unlock];
 
-  for (id<RCTEvent> event in eventQueue.allValues) {
-    [self dispatchEvent:event];
+  for (NSNumber *eventId in eventQueue) {
+    [self dispatchEvent:events[eventId]];
   }
 }
 
