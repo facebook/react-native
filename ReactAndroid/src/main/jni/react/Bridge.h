@@ -143,7 +143,7 @@ private:
   // This is used to avoid a race condition where a proxyCallback gets queued after ~Bridge(),
   // on the same thread. In that case, the callback will try to run the task on m_callback which
   // will have been destroyed within ~Bridge(), thus causing a SIGSEGV.
-  std::shared_ptr<bool> m_destroyed;
+  std::shared_ptr<std::atomic_bool> m_destroyed;
   JSExecutor* m_mainExecutor;
   std::unique_ptr<ExecutorToken> m_mainExecutorToken;
   std::unique_ptr<ExecutorTokenFactory> m_executorTokenFactory;
