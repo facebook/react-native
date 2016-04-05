@@ -137,7 +137,7 @@ var ScrollResponderMixin = {
    * Invoke this from an `onScroll` event.
    */
   scrollResponderHandleScrollShouldSetResponder: function(): boolean {
-    return this.state.isTouching;
+    return this.state.isTouching && this.props.scrollEnabled;
   },
 
   /**
@@ -202,7 +202,10 @@ var ScrollResponderMixin = {
    * a touch has already started.
    */
   scrollResponderHandleResponderReject: function() {
-    warning(false, "ScrollView doesn't take rejection well - scrolls anyway");
+    if(this.props.scrollEnabled) {
+      warning(false, "ScrollView doesn't take rejection well - scrolls anyway");
+    }
+
   },
 
   /**
@@ -221,7 +224,7 @@ var ScrollResponderMixin = {
    *   rejected.
    */
   scrollResponderHandleTerminationRequest: function(): boolean {
-    return !this.state.observedScrollSinceBecomingResponder;
+    return !this.state.observedScrollSinceBecomingResponder || !this.props.scrollEnabled;
   },
 
   /**
