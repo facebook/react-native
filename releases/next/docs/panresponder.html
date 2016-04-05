@@ -68,8 +68,6 @@ are the responder.</p></li></ul></div></div></div></span></div><div><table width
 <span class="token punctuation">}</span> <span class="token operator">=</span> React<span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> CIRCLE_SIZE <span class="token operator">=</span> <span class="token number">80</span><span class="token punctuation">;</span>
-<span class="token keyword">var</span> CIRCLE_COLOR <span class="token operator">=</span> <span class="token string">&#x27;blue&#x27;</span><span class="token punctuation">;</span>
-<span class="token keyword">var</span> CIRCLE_HIGHLIGHT_COLOR <span class="token operator">=</span> <span class="token string">&#x27;green&#x27;</span><span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> PanResponderExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
 
@@ -98,13 +96,14 @@ are the responder.</p></li></ul></div></div></div></span></div><div><table width
     <span class="token keyword">this</span><span class="token punctuation">.</span>_circleStyles <span class="token operator">=</span> <span class="token punctuation">{</span>
       style<span class="token punctuation">:</span> <span class="token punctuation">{</span>
         left<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_previousLeft<span class="token punctuation">,</span>
-        top<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_previousTop
+        top<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_previousTop<span class="token punctuation">,</span>
+        backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;green&#x27;</span><span class="token punctuation">,</span>
       <span class="token punctuation">}</span>
     <span class="token punctuation">}</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
   componentDidMount<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_updatePosition<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_updateNativeStyles<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
   render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -123,24 +122,16 @@ are the responder.</p></li></ul></div></div></div></span></div><div><table width
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
   _highlight<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    const circle <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>circle<span class="token punctuation">;</span>
-    circle &amp;&amp; circle<span class="token punctuation">.</span><span class="token function">setNativeProps<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-      style<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-        backgroundColor<span class="token punctuation">:</span> <span class="token function">processColor<span class="token punctuation">(</span></span>CIRCLE_HIGHLIGHT_COLOR<span class="token punctuation">)</span>
-      <span class="token punctuation">}</span>
-    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_circleStyles<span class="token punctuation">.</span>style<span class="token punctuation">.</span>backgroundColor <span class="token operator">=</span> <span class="token string">&#x27;blue&#x27;</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_updateNativeStyles<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
   _unHighlight<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    const circle <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>circle<span class="token punctuation">;</span>
-    circle &amp;&amp; circle<span class="token punctuation">.</span><span class="token function">setNativeProps<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-      style<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-        backgroundColor<span class="token punctuation">:</span> <span class="token function">processColor<span class="token punctuation">(</span></span>CIRCLE_COLOR<span class="token punctuation">)</span>
-      <span class="token punctuation">}</span>
-    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_circleStyles<span class="token punctuation">.</span>style<span class="token punctuation">.</span>backgroundColor <span class="token operator">=</span> <span class="token string">&#x27;green&#x27;</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_updateNativeStyles<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
-  _updatePosition<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  _updateNativeStyles<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>circle &amp;&amp; <span class="token keyword">this</span><span class="token punctuation">.</span>circle<span class="token punctuation">.</span><span class="token function">setNativeProps<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">.</span>_circleStyles<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
@@ -160,7 +151,7 @@ are the responder.</p></li></ul></div></div></div></span></div><div><table width
   _handlePanResponderMove<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>e<span class="token punctuation">:</span> Object<span class="token punctuation">,</span> gestureState<span class="token punctuation">:</span> Object<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>_circleStyles<span class="token punctuation">.</span>style<span class="token punctuation">.</span>left <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_previousLeft <span class="token operator">+</span> gestureState<span class="token punctuation">.</span>dx<span class="token punctuation">;</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>_circleStyles<span class="token punctuation">.</span>style<span class="token punctuation">.</span>top <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_previousTop <span class="token operator">+</span> gestureState<span class="token punctuation">.</span>dy<span class="token punctuation">;</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_updatePosition<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_updateNativeStyles<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   _handlePanResponderEnd<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>e<span class="token punctuation">:</span> Object<span class="token punctuation">,</span> gestureState<span class="token punctuation">:</span> Object<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_unHighlight<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -174,7 +165,6 @@ are the responder.</p></li></ul></div></div></div></span></div><div><table width
     width<span class="token punctuation">:</span> CIRCLE_SIZE<span class="token punctuation">,</span>
     height<span class="token punctuation">:</span> CIRCLE_SIZE<span class="token punctuation">,</span>
     borderRadius<span class="token punctuation">:</span> CIRCLE_SIZE <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">,</span>
-    backgroundColor<span class="token punctuation">:</span> CIRCLE_COLOR<span class="token punctuation">,</span>
     position<span class="token punctuation">:</span> <span class="token string">&#x27;absolute&#x27;</span><span class="token punctuation">,</span>
     left<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
     top<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
