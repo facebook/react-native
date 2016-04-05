@@ -161,11 +161,11 @@ var featured = [
   },
   {
     name: 'Zhopout',
-    icon: 'http://zhopout.com/Content/Images/zhopout-logo-app-3.png',    
+    icon: 'http://zhopout.com/Content/Images/zhopout-logo-app-3.png',
     link: 'https://play.google.com/store/apps/details?id=com.zhopout',
     author: 'Jarvis Software Private Limited ',
     blogs: [
-      "https://medium.com/@murugandurai/how-we-developed-our-mobile-app-in-30-days-using-react-native-45affa6449e8#.29nnretsi",     
+      "https://medium.com/@murugandurai/how-we-developed-our-mobile-app-in-30-days-using-react-native-45affa6449e8#.29nnretsi",
     ],
   },
   {
@@ -191,6 +191,16 @@ var apps = [
     author: 'Lukas Liesis',
   },
   {
+    name: 'Azendoo',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/b8/d0/d6/b8d0d66e-1a87-8ff2-f843-0ddce8b535e1/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/azendoo-tasks-conversations/id581907820?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.azendoo.azmobile',
+    author: 'Azendoo',
+    blogs: [
+      "http://blog.azendoo.com/azendoo-mobile-v2-release/",
+    ],
+  },
+  {
     name: 'Beetroot',
     icon: 'http://is1.mzstatic.com/image/pf/us/r30/Purple5/v4/66/fd/dd/66fddd70-f848-4fc5-43ee-4d52197ccab8/pr_source.png',
     link: 'https://itunes.apple.com/us/app/beetroot/id1016159001?ls=1&mt=8',
@@ -207,7 +217,7 @@ var apps = [
     icon: 'http://a5.mzstatic.com/us/r30/Purple7/v4/c1/9a/3f/c19a3f82-ecc3-d60b-f983-04acc203705f/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/bionic-estore/id994537615?mt=8',
     author: 'Digidemon',
-  },  
+  },
   {
     name: 'Bitt Wallet',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/5b/00/34/5b003497-cc85-a0d0-0d3e-4fb3bc6f95cd/icon175x175.jpeg',
