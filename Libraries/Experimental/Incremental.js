@@ -131,7 +131,10 @@ class Incremental extends React.Component {
     }).then(() => {
       DEBUG && console.log('call onDone for ' + this.getName());
       this._mounted && this.props.onDone && this.props.onDone();
-    });
+    }).catch((ex) => {
+      ex.message = `Incremental render failed for ${this.getName()}: ${ex.message}`;
+      throw ex;
+    }).done();
   }
 
   render(): ?ReactElement {
