@@ -14,8 +14,11 @@
 const BoundingDimensions = require('BoundingDimensions');
 const Position = require('Position');
 const React = require('React'); // eslint-disable-line no-unused-vars
+const ReactNative = require('ReactNative');
 const TouchEventUtils = require('fbjs/lib/TouchEventUtils');
 const View = require('View');
+const UIManager = require('UIManager');
+const Platform = require('Platform');
 
 const keyMirror = require('fbjs/lib/keyMirror');
 const normalizeColor = require('normalizeColor');
@@ -712,12 +715,23 @@ var TouchableMixin = {
 
       var shouldInvokePress =  !IsLongPressingIn[curState] || pressIsLongButStillCallOnPress;
       if (shouldInvokePress && this.touchableHandlePress) {
+        if (Platform.OS === 'android') {
+          this._playClickSound();
+        }
         this.touchableHandlePress(e);
       }
     }
 
     this.touchableDelayTimeout && clearTimeout(this.touchableDelayTimeout);
     this.touchableDelayTimeout = null;
+  },
+
+  _playClickSound: function() {
+    UIManager.dispatchViewManagerCommand(
+      ReactNative.findNodeHandle(this),
+      UIManager.RCTView.Commands.playClickSound,
+      null
+    );
   }
 
 };
