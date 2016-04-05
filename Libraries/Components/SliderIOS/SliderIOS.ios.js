@@ -131,7 +131,11 @@ var SliderIOS = React.createClass({
       onSlidingComplete && onSlidingComplete(event.nativeEvent.value);
     });
 
-    return <RCTSlider {...props}/>;
+    return <RCTSlider
+      {...props}
+      onStartShouldSetResponder={() => true}
+      onResponderTerminationRequest={() => false}
+    />;
   }
 });
 
