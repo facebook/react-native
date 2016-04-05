@@ -19,8 +19,10 @@ module.exports = function(options, filename) {
       ? './' + path.relative(path.dirname(filename), transformPath) // packager can't handle absolute paths
       : hmrTransform;
 
-  // Fix the path to use '/' on Windows.
-  transform = transform.replace(/\\/g, '/');
+  // Fix the module path to use '/' on Windows.
+  if (path.sep === '\\') {
+    transform = transform.replace(/\\/g, '/');
+  }
 
   return {
     plugins: resolvePlugins([
