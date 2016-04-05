@@ -25,6 +25,7 @@
 var React = require('react-native');
 var {
   Image,
+  Platform,
   StyleSheet,
   Text,
   View,
@@ -425,16 +426,18 @@ exports.examples = [
                     source={image}
                   />
                 </View>
-                <View style={styles.leftMargin}>
-                  <Text style={[styles.resizeModeText]}>
-                    Center
-                  </Text>
-                  <Image
-                    style={styles.resizeMode}
-                    resizeMode={Image.resizeMode.center}
-                    source={image}
-                  />
-                </View>
+                { Platform.OS === 'android' ?
+                  <View style={styles.leftMargin}>
+                    <Text style={[styles.resizeModeText]}>
+                      Center
+                    </Text>
+                    <Image
+                      style={styles.resizeMode}
+                      resizeMode={Image.resizeMode.center}
+                      source={image}
+                    />
+                  </View>
+                : null }
               </View>
             </View>
           );
