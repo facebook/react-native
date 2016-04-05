@@ -189,22 +189,23 @@ class Bundler {
     );
   }
 
-  _hmrURL(prefix, platform, extensionOverride, path) {
-    const matchingRoot = this._projectRoots.find(root => path.startsWith(root));
+  _hmrURL(prefix, platform, extensionOverride, filePath) {
+    const matchingRoot = this._projectRoots.find(root => filePath.startsWith(root));
 
     if (!matchingRoot) {
-      throw new Error('No matching project root for ', path);
+      throw new Error('No matching project root for ', filePath);
     }
 
-    const extensionStart = path.lastIndexOf('.');
-    let resource = path.substring(
+    // Replaces '\' with '/' for Windows paths.
+    if (path.sep === '\\') {
+      filePath = filePath.replace(/\\/g, '/');
+    }
+
+    const extensionStart = filePath.lastIndexOf('.');
+    let resource = filePath.substring(
       matchingRoot.length,
       extensionStart !== -1 ? extensionStart : undefined,
     );
-
-    const extension = extensionStart !== -1
-      ? path.substring(extensionStart + 1)
-      : null;
 
     return (
       prefix + resource +
