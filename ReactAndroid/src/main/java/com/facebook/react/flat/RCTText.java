@@ -11,6 +11,7 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import android.support.v4.text.TextDirectionHeuristicsCompat;
 import android.text.BoringLayout;
 import android.text.Layout;
 import android.text.StaticLayout;
@@ -132,7 +133,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
         TextUtils.TruncateAt.END,
         maximumWidth,
         mNumberOfLines,
-        false);
+        TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR);
 
     if (mDrawCommand != null && !mDrawCommand.isFrozen()) {
       mDrawCommand.setLayout(layout);
