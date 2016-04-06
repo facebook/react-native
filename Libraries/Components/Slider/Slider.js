@@ -23,6 +23,9 @@ var requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
 
+/**
+ * A component used to select a single value from a range of values.
+ */
 var Slider = React.createClass({
   mixins: [NativeMethodsMixin],
 
