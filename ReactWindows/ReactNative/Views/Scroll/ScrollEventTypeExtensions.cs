@@ -8,6 +8,10 @@ namespace ReactNative.Views.Scroll
         {
             switch (type)
             {
+                case ScrollEventType.BeginDrag:
+                    return "topScrollBeginDrag";
+                case ScrollEventType.EndDrag:
+                    return "topScrollEndDrag";
                 case ScrollEventType.Scroll:
                     return "topScroll";
                 default:
