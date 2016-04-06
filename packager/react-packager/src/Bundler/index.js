@@ -426,8 +426,33 @@ class Bundler {
     this._cache.invalidate(filePath);
   }
 
-  getShallowDependencies(entryFile) {
-    return this._resolver.getShallowDependencies(entryFile);
+  getShallowDependencies({
+    entryFile,
+    platform,
+    dev = true,
+    minify = !dev,
+    hot = false,
+    generateSourceMaps = false,
+  }) {
+    return this.getTransformOptions(
+      entryFile,
+      {
+        dev,
+        platform,
+        hot,
+        generateSourceMaps,
+        projectRoots: this._projectRoots,
+      },
+    ).then(transformSpecificOptions => {
+      const transformOptions = {
+        minify,
+        dev,
+        platform,
+        transform: transformSpecificOptions,
+      };
+
+      return this._resolver.getShallowDependencies(entryFile, transformOptions);
+    });
   }
 
   stat(filePath) {
