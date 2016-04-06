@@ -139,7 +139,7 @@ if (__DEV__) { // HMR
   }
 
   function acceptAll(modules, inverseDependencies) {
-    if (modules.length === 0) {
+    if (!modules || modules.length === 0) {
       return true;
     }
 
