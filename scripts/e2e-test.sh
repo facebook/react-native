@@ -18,10 +18,6 @@ SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname $SCRIPTS)
 TEMP=$(mktemp -d /tmp/react-native-XXXXXXXX)
 
-echo $SCRIPTS
-
-exit 0
-
 # When tests run on CI server, we won't be able to see logs
 # from packager because it runs in a separate window. This is
 # a simple workaround, see packager/packager.sh
@@ -54,6 +50,7 @@ function cleanup {
 trap cleanup EXIT
 
 # pack react-native into a .tgz file
+./gradlew :ReactAndroid:installArchives
 npm pack
 PACKAGE=$(pwd)/react-native-*.tgz
 
@@ -96,18 +93,18 @@ do
   "--android"*)
     echo "Running an Android app"
     npm install --save-dev appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3
-    cp $SCRIPTS/android-e2e-test.js tests
-    cd android
+    cp $SCRIPTS/android-e2e-test.js ./
+    cd android && ./gradlew :app:copyDownloadableDepsToLibs
     # Make sure we installed local version of react-native
     ls `basename $MARKER_ANDROID` > /dev/null
-    ../node_modules/react-native/packager/packager.sh --nonPersistent &
+    cd ..
+    ./node_modules/react-native/packager/packager.sh --nonPersistent > /dev/null 2>&1 &
     SERVER_PID=$!
-    node node_modules/.bin/appium &
+    node ./node_modules/.bin/appium > /dev/null 2>&1 &
     APPIUM_PID=$!
-    cp ~/.android/debug.keystore keystores/debug.keystore
-    ./gradlew :app:copyDownloadableDepsToLibs
+    cp ~/.android/debug.keystore android/keystores/debug.keystore
     buck build android/app
-    node node_modules/.bin/_mocha tests/android-e2e-test.js
+    node node_modules/.bin/_mocha android-e2e-test.js
     ;;
 
   *)

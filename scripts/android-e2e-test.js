@@ -1,6 +1,7 @@
 'use strict';
 
 /**
+ * Used in e2e-test.sh and executed in CircleCI.
  * E2e test that tests Hot Module Reloading and Chrome Debugging for a bootstrapped app.
  * Check out more examples: https://github.com/appium/sample-code/tree/master/sample-code/examples/node and
  * https://www.npmjs.com/package/wd-android
@@ -11,15 +12,16 @@
  * To set up:
  * - npm install --save-dev appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3
  * - cp <this file> <to app installation path>
- * - npm start &
- * - node node_modules/.bin/appium &
+ * - npm start
+ * - node node_modules/.bin/appium
  *
  * To run this test:
  * - cd android
- * - cp ~/.android/debug.keystore keystores/debug.keystore
+ * - cp ~/android/debug.keystore keystores/debug.keystore
  * - ./gradlew :app:copyDownloadableDepsToLibs
+ * - cd ..
  * - buck build android/app
- * - node node_modules/.bin/_mocha tests/android-e2e-test.js
+ * - node node_modules/.bin/_mocha android-e2e-test.js
  *
  */
 
