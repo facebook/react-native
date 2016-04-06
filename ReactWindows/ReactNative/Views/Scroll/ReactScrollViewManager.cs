@@ -51,6 +51,20 @@ namespace ReactNative.Views.Scroll
                 return new Dictionary<string, object>
                 {
                     {
+                        ScrollEventType.BeginDrag.GetJavaScriptEventName(),
+                        new Dictionary<string, object>
+                        {
+                            { "registrationName", "onScrollBeginDrag" },
+                        }
+                    },
+                    {
+                        ScrollEventType.EndDrag.GetJavaScriptEventName(),
+                        new Dictionary<string, object>
+                        {
+                            { "registrationName", "onScrollEndDrag" },
+                        }
+                    },
+                    {
                         ScrollEventType.Scroll.GetJavaScriptEventName(),
                         new Dictionary<string, object>
                         {
@@ -234,14 +248,15 @@ namespace ReactNative.Views.Scroll
 
         /// <summary>
         /// Called when view is detached from view hierarchy and allows for 
-        /// additional cleanup by the <see cref="IViewManager"/>
-        /// subclass.
+        /// additional cleanup by the <see cref="ReactScrollViewManager"/>.
         /// </summary>
         /// <param name="reactContext">The react context.</param>
         /// <param name="view">The view.</param>
         public override void OnDropViewInstance(ThemedReactContext reactContext, ScrollViewer view)
         {
             view.ViewChanging -= OnViewChanging;
+            view.DirectManipulationStarted -= OnDirectManipulationStarted;
+            view.DirectManipulationCompleted -= OnDirectManipulationCompleted;
         }
 
         /// <summary>
@@ -276,29 +291,75 @@ namespace ReactNative.Views.Scroll
         /// <returns>The view instance.</returns>
         protected override ScrollViewer CreateViewInstance(ThemedReactContext reactContext)
         {
-            var view = new ScrollViewer
+            return new ScrollViewer
             {
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden,
                 HorizontalScrollMode = ScrollMode.Disabled,
                 VerticalScrollBarVisibility = ScrollBarVisibility.Hidden,
                 VerticalScrollMode = ScrollMode.Auto,
             };
+        }
 
+        /// <summary>
+        /// Adds event emitters for drag and scroll events.
+        /// </summary>
+        /// <param name="reactContext">The react context.</param>
+        /// <param name="view">The view instance.</param>
+        protected override void AddEventEmitters(ThemedReactContext reactContext, ScrollViewer view)
+        {
+            view.DirectManipulationCompleted += OnDirectManipulationCompleted;
+            view.DirectManipulationStarted += OnDirectManipulationStarted;
             view.ViewChanging += OnViewChanging;
-            return view;
+        }
+
+        private void OnDirectManipulationCompleted(object sender, object e)
+        {
+            var scrollViewer = (ScrollViewer)sender;
+            EmitScrollEvent(
+                scrollViewer,
+                ScrollEventType.EndDrag,
+                scrollViewer.HorizontalOffset,
+                scrollViewer.VerticalOffset,
+                scrollViewer.ZoomFactor);
+        }
+
+        private void OnDirectManipulationStarted(object sender, object e)
+        {
+            var scrollViewer = (ScrollViewer)sender;
+            EmitScrollEvent(
+                scrollViewer,
+                ScrollEventType.BeginDrag,
+                scrollViewer.HorizontalOffset,
+                scrollViewer.VerticalOffset,
+                scrollViewer.ZoomFactor);
         }
 
         private void OnViewChanging(object sender, ScrollViewerViewChangingEventArgs args)
         {
             var nextView = args.NextView;
             var scrollViewer = (ScrollViewer)sender;
+            EmitScrollEvent(
+                scrollViewer,
+                ScrollEventType.Scroll,
+                nextView.HorizontalOffset,
+                nextView.VerticalOffset,
+                nextView.ZoomFactor);
+        }
+
+        private void EmitScrollEvent(
+            ScrollViewer scrollViewer, 
+            ScrollEventType eventType,
+            double x, 
+            double y,
+            double zoomFactor)
+        {
             var reactTag = scrollViewer.GetTag();
 
             // Scroll position
             var contentOffset = new JObject
             {
-                { "x", nextView.HorizontalOffset },
-                { "y", nextView.VerticalOffset },
+                { "x", x },
+                { "y", y },
             };
 
             // Distance the content view is inset from the enclosing scroll view
@@ -325,20 +386,22 @@ namespace ReactNative.Views.Scroll
                 { "height", scrollViewer.ActualHeight },
             };
 
-            var scrollEvent = new ScrollEvent(reactTag, ScrollEventType.Scroll, new JObject
-            {
-                { "target", reactTag },
-                { "contentOffset", contentOffset },
-                { "contentInset", contentInset },
-                { "contentSize", contentSize },
-                { "layoutMeasurement", layoutMeasurement },
-                { "zoomScale", nextView.ZoomFactor },
-            });
-
             scrollViewer.GetReactContext()
                 .GetNativeModule<UIManagerModule>()
                 .EventDispatcher
-                .DispatchEvent(scrollEvent);
+                .DispatchEvent(
+                    new ScrollEvent(
+                        reactTag,
+                        eventType,
+                        new JObject
+                        {
+                            { "target", reactTag },
+                            { "contentOffset", contentOffset },
+                            { "contentInset", contentInset },
+                            { "contentSize", contentSize },
+                            { "layoutMeasurement", layoutMeasurement },
+                            { "zoomScale", zoomFactor },
+                        }));
         }
 
         private static FrameworkElement EnsureChild(ScrollViewer view)
