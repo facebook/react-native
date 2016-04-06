@@ -612,10 +612,11 @@ class Bundler {
       };
 
       const json = JSON.stringify(asset);
+      const assetRegistryPath = 'react-native/Libraries/Image/AssetRegistry';
       const code =
-        `module.exports = require('AssetRegistry').registerAsset(${json});`;
-      const dependencies = ['AssetRegistry'];
-      const dependencyOffsets = [code.indexOf('AssetRegistry') - 1];
+        `module.exports = require(${JSON.stringify(assetRegistryPath)}).registerAsset(${json});`;
+      const dependencies = [assetRegistryPath];
+      const dependencyOffsets = [code.indexOf(assetRegistryPath) - 1];
 
       return {
         asset,

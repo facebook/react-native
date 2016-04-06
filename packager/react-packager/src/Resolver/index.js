@@ -107,7 +107,7 @@ class Resolver {
       cache: opts.cache,
       shouldThrowOnUnresolvedErrors: (_, platform) => platform === 'ios',
       transformCode: opts.transformCode,
-      assetDependencies: ['AssetRegistry'],
+      assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
     });
 
     this._getModuleId = options.getModuleId;
