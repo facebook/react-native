@@ -390,10 +390,11 @@ class Bundler {
         const numModuleSystemDependencies =
           this._resolver.getModuleSystemDependencies({dev, unbundle}).length;
 
-        entryFilePath = response.dependencies[
-          (response.numPrependedDependencies || 0) +
-          numModuleSystemDependencies
-        ].path;
+
+        const dependencyIndex = (response.numPrependedDependencies || 0) + numModuleSystemDependencies;
+        if (dependencyIndex in response.dependencies) {
+          entryFilePath = response.dependencies[dependencyIndex].path;
+        }
       }
 
       const toModuleTransport = module =>
