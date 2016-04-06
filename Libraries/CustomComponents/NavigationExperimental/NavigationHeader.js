@@ -183,7 +183,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
       return null;
     }
 
-    const pointerEvents = offset !== 0 || isStale ? 'none' : 'auto';
+    const pointerEvents = offset !== 0 || isStale ? 'none' : 'box-none';
     return (
       <Animated.View
         pointerEvents={pointerEvents}
