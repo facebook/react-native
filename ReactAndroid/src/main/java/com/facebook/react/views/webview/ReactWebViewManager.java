@@ -267,7 +267,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public void setDomStorageEnabled(WebView view, boolean enabled) {
     view.getSettings().setDomStorageEnabled(enabled);
   }
-    
+
 
   @ReactProp(name = "userAgent")
   public void setUserAgent(WebView view, @Nullable String userAgent) {

@@ -41,11 +41,11 @@ var ActionSheetIOS = {
       callback
     );
   },
-  
+
   /**
    * Display the iOS share sheet. The `options` object should contain
    * one or both of:
-   * 
+   *
    * - `message` (string) - a message to share
    * - `url` (string) - a URL to share
    *

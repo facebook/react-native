@@ -57,7 +57,7 @@ sudo npm install -g flow-bin
 
 ## Setting up an Android Device
 
-Let's set up an Android device to run our starter project. 
+Let's set up an Android device to run our starter project.
 
 First thing is to plug in your device and check the manufacturer code by using `lsusb`, which should output something like this:
 
@@ -65,7 +65,7 @@ First thing is to plug in your device and check the manufacturer code by using `
 $ lsusb
 Bus 002 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
 Bus 002 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-Bus 001 Device 003: ID 22b8:2e76 Motorola PCS 
+Bus 001 Device 003: ID 22b8:2e76 Motorola PCS
 Bus 001 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
 Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 Bus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
@@ -90,7 +90,7 @@ You'll see that after removing the phone, the line which has the phone model ("M
 
 From the above line, you want to grab the first four digits from the device ID:
 
-`22b8:2e76` 
+`22b8:2e76`
 
 In this case, it's `22b8`. That's the identifier for Motorola.
 

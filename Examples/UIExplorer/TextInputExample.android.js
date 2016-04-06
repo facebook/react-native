@@ -416,7 +416,7 @@ exports.examples = [
             secureTextEntry={true}
             style={styles.singleLine}
           />
-          <TextInput 
+          <TextInput
             secureTextEntry={true}
             style={[styles.singleLine, {color: 'red'}]}
             placeholder="color is supported too"

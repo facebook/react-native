@@ -227,7 +227,7 @@ void JSCExecutor::loadApplicationScript(
 #else
   String jsScript = String::createExpectingAscii(script);
 #endif
-  
+
   ReactMarker::logMarker("loadApplicationScript_endStringConvert");
 
   String jsSourceURL(sourceURL.c_str());

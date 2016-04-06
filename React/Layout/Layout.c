@@ -601,7 +601,7 @@ static void layoutNodeImpl(css_node_t *node, float parentMaxWidth, float parentM
     if (isRowUndefined || isColumnUndefined) {
       css_dim_t measureDim = node->measure(
         node->context,
-        
+
         width,
         height
       );
