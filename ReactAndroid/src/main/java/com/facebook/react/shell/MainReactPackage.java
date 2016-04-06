@@ -47,6 +47,7 @@ import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
 import com.facebook.react.views.recyclerview.RecyclerViewBackedScrollViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
 import com.facebook.react.views.scroll.ReactScrollViewManager;
+import com.facebook.react.views.slider.ReactSliderManager;
 import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager;
 import com.facebook.react.views.switchview.ReactSwitchManager;
 import com.facebook.react.views.text.ReactRawTextManager;
@@ -109,6 +110,7 @@ public class MainReactPackage implements ReactPackage {
       new ReactProgressBarViewManager(),
       new ReactRawTextManager(),
       new ReactScrollViewManager(),
+      new ReactSliderManager(),
       new ReactSwitchManager(),
       new FrescoBasedReactTextInlineImageViewManager(),
       new ReactTextInputManager(),

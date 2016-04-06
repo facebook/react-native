@@ -209,6 +209,7 @@ var components = [
   '../Libraries/Components/RefreshControl/RefreshControl.js',
   '../Libraries/Components/ScrollView/ScrollView.js',
   '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
+  '../Libraries/Components/SliderIOS/Slider.js',
   '../Libraries/Components/SliderIOS/SliderIOS.ios.js',
   '../Libraries/Components/StatusBar/StatusBar.js',
   '../Libraries/Components/Switch/Switch.js',

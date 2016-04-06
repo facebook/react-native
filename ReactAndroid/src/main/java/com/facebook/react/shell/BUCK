@@ -17,6 +17,7 @@ android_library(
     react_native_target('java/com/facebook/react/views/progressbar:progressbar'),
     react_native_target('java/com/facebook/react/views/recyclerview:recyclerview'),
     react_native_target('java/com/facebook/react/views/scroll:scroll'),
+    react_native_target('java/com/facebook/react/views/slider:slider'),
     react_native_target('java/com/facebook/react/views/swiperefresh:swiperefresh'),
     react_native_target('java/com/facebook/react/views/switchview:switchview'),
     react_native_target('java/com/facebook/react/views/text:text'),
