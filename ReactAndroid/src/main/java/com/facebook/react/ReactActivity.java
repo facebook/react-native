@@ -182,6 +182,13 @@ public abstract class ReactActivity extends Activity implements DefaultHardwareB
   }
 
   @Override
+  public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    if (mReactInstanceManager != null) {
+      mReactInstanceManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+  }
+
+  @Override
   public boolean onKeyUp(int keyCode, KeyEvent event) {
     if (mReactInstanceManager != null &&
         mReactInstanceManager.getDevSupportManager().getDevSupportEnabled()) {
