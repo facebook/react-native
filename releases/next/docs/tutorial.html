@@ -78,7 +78,7 @@
  * their very own API that lives in React Native&#x27;s Github repo.
  */</span>
 <span class="token keyword">var</span> REQUEST_URL <span class="token operator">=</span> <span class="token string">&#x27;https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json&#x27;</span><span class="token punctuation">;</span></div><p>Add some initial state to our application so that we can check <code>this.state.movies === null</code> to determine whether the movies data has been loaded or not. We can set this data when the response comes back with <code>this.setState({movies: moviesData})</code>. Add this code just above the render function inside our React class.</p><div class="prism language-javascript">  <span class="token function">constructor<span class="token punctuation">(</span></span>props<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token function">super<span class="token punctuation">(</span></span>props<span class="token punctuation">)</span><span class="token punctuation">;</span> 
+    <span class="token function">super<span class="token punctuation">(</span></span>props<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>state <span class="token operator">=</span> <span class="token punctuation">{</span>
       movies<span class="token punctuation">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">;</span>
