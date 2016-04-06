@@ -18,6 +18,10 @@ SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname $SCRIPTS)
 TEMP=$(mktemp -d /tmp/react-native-XXXXXXXX)
 
+echo $SCRIPTS
+
+exit 0
+
 # When tests run on CI server, we won't be able to see logs
 # from packager because it runs in a separate window. This is
 # a simple workaround, see packager/packager.sh
@@ -44,6 +48,7 @@ function cleanup {
   rm $MARKER_IOS
   rm $MARKER_ANDROID
   [ $SERVER_PID ] && kill -9 $SERVER_PID
+  [ $APPIUM_PID ] && kill -9 $APPIUM_PID
   exit $EXIT_CODE
 }
 trap cleanup EXIT
@@ -68,6 +73,7 @@ cd EndToEndTest
 while test $# -gt 0
 do
   case $1 in
+
   "--packager"*)
     echo "Running a basic packager test"
     # Check the packager produces a bundle (doesn't throw an error)
@@ -75,6 +81,7 @@ do
     # Check that flow passes
     $ROOT/node_modules/.bin/flow check
     ;;
+
   "--ios"*)
     echo "Running an iOS app"
     cd ios
@@ -85,18 +92,24 @@ do
     # Start the app on the simulator
     xctool -scheme EndToEndTest -sdk iphonesimulator test
     ;;
+
   "--android"*)
     echo "Running an Android app"
+    npm install --save-dev appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3
+    cp $SCRIPTS/android-e2e-test.js tests
     cd android
     # Make sure we installed local version of react-native
     ls `basename $MARKER_ANDROID` > /dev/null
     ../node_modules/react-native/packager/packager.sh --nonPersistent &
     SERVER_PID=$!
+    node node_modules/.bin/appium &
+    APPIUM_PID=$!
     cp ~/.android/debug.keystore keystores/debug.keystore
     ./gradlew :app:copyDownloadableDepsToLibs
-    buck install -r android/app
-    # TODO t10114777 check it renders "Welcome to React Native"
+    buck build android/app
+    node node_modules/.bin/_mocha tests/android-e2e-test.js
     ;;
+
   *)
     echo "Please run the script with --ios, --android or --packager" >&2
     exit 1

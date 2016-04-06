@@ -1,25 +1,25 @@
 'use strict';
 
 /**
- * e2e test that tests Hot Module Reloading works for a new app
+ * E2e test that tests Hot Module Reloading and Chrome Debugging for a bootstrapped app.
  * Check out more examples: https://github.com/appium/sample-code/tree/master/sample-code/examples/node and
  * https://www.npmjs.com/package/wd-android
  *
- * To run this test using BUCK (a bit faster):
+ * We are not including this into default React Native app because it is quite framework dependent and does not
+ * give very much value to the community. But it has a price of adding 4 more packagers.
+ *
+ * To set up:
+ * - npm install --save-dev appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3
+ * - cp <this file> <to app installation path>
  * - npm start &
- * - npm run appium &
+ * - node node_modules/.bin/appium &
+ *
+ * To run this test:
  * - cd android
  * - cp ~/.android/debug.keystore keystores/debug.keystore
  * - ./gradlew :app:copyDownloadableDepsToLibs
  * - buck build android/app
- * - npm run e2e-android
- *
- * To run this test using Gradle:
- * - npm start &
- * - npm run appium &
- * - cd android
- * - ./gradlew :app:assembleDebug
- * - npm run e2e-android -- --gradle
+ * - node node_modules/.bin/_mocha tests/android-e2e-test.js
  *
  */
 
@@ -51,9 +51,7 @@ describe('Android Test App', function () {
     const desired = {
       platformName: 'Android',
       deviceName: 'Android Emulator',
-      app: process.argv.indexOf('--gradle') === -1 ?
-        path.resolve('buck-out/gen/android/app/app.apk') :
-        path.resolve('android/app/build/outputs/apk/app-debug.apk')
+      app: path.resolve('buck-out/gen/android/app/app.apk')
     };
 
     return driver
@@ -82,5 +80,16 @@ describe('Android Test App', function () {
     finally(() => {
       fs.writeFileSync('index.android.js', androidAppCode, 'utf-8');
     });
+  });
+
+  it('should have Debug In Chrome working', function () {
+    const androidAppCode = fs.readFileSync('index.android.js', 'utf-8');
+    // http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU
+    return driver.
+    waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]').
+    pressDeviceKey(82).
+    elementByXPath('//android.widget.TextView[starts-with(@text, "Debug in Chrome")]').
+    click().
+    waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]')
   });
 });
