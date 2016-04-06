@@ -40,42 +40,36 @@ namespace ReactNative.Touch
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            if (e.Pointer.PointerDeviceType == PointerDeviceType.Touch)
+            var pointerId = e.Pointer.PointerId;
+            if (IndexOfPointerWithId(pointerId) != -1)
             {
-                var pointerId = e.Pointer.PointerId;
-                if (IndexOfPointerWithId(pointerId) != -1)
-                {
-                    throw new InvalidOperationException("A pointer with this ID already exists.");
-                }
+                throw new InvalidOperationException("A pointer with this ID already exists.");
+            }
 
-                var reactView = GetReactViewFromView(e.OriginalSource as FrameworkElement);
-                if (reactView != null && _view.CapturePointer(e.Pointer))
-                {
-                    var pointer = new ReactPointer();
-                    pointer.Target = reactView.GetTag();
-                    pointer.PointerId = e.Pointer.PointerId;
-                    pointer.Identifier = ++_activePointers;
-                    pointer.ReactView = reactView;
-                    UpdatePointerForEvent(pointer, e);
+            var reactView = GetReactViewFromView(e.OriginalSource as FrameworkElement);
+            if (reactView != null && _view.CapturePointer(e.Pointer))
+            {
+                var pointer = new ReactPointer();
+                pointer.Target = reactView.GetTag();
+                pointer.PointerId = e.Pointer.PointerId;
+                pointer.Identifier = ++_activePointers;
+                pointer.ReactView = reactView;
+                UpdatePointerForEvent(pointer, e);
 
-                    var pointerIndex = _pointers.Count;
-                    _pointers.Add(pointer);
-                    DispatchTouchEvent(TouchEventType.Start, _pointers, pointerIndex);
-                }
+                var pointerIndex = _pointers.Count;
+                _pointers.Add(pointer);
+                DispatchTouchEvent(TouchEventType.Start, _pointers, pointerIndex);
             }
         }
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs e)
         {
-            if (e.Pointer.PointerDeviceType == PointerDeviceType.Touch)
+            var pointerIndex = IndexOfPointerWithId(e.Pointer.PointerId);
+            if (pointerIndex != -1)
             {
-                var pointerIndex = IndexOfPointerWithId(e.Pointer.PointerId);
-                if (pointerIndex != -1)
-                {
-                    var pointer = _pointers[pointerIndex];
-                    UpdatePointerForEvent(pointer, e);
-                    DispatchTouchEvent(TouchEventType.Move, _pointers, pointerIndex);
-                }
+                var pointer = _pointers[pointerIndex];
+                UpdatePointerForEvent(pointer, e);
+                DispatchTouchEvent(TouchEventType.Move, _pointers, pointerIndex);
             }
         }
 
@@ -96,20 +90,17 @@ namespace ReactNative.Touch
 
         private void OnPointerConcluded(TouchEventType touchEventType, PointerRoutedEventArgs e)
         {
-            if (e.Pointer.PointerDeviceType == PointerDeviceType.Touch)
+            var pointerIndex = IndexOfPointerWithId(e.Pointer.PointerId);
+            if (pointerIndex != -1)
             {
-                var pointerIndex = IndexOfPointerWithId(e.Pointer.PointerId);
-                if (pointerIndex != -1)
-                {
-                    var pointer = _pointers[pointerIndex];
-                    UpdatePointerForEvent(pointer, e);
-                    DispatchTouchEvent(touchEventType, _pointers, pointerIndex);
+                var pointer = _pointers[pointerIndex];
+                UpdatePointerForEvent(pointer, e);
+                DispatchTouchEvent(touchEventType, _pointers, pointerIndex);
 
-                    --_activePointers;
-                    _pointers.RemoveAt(pointerIndex);
+                --_activePointers;
+                _pointers.RemoveAt(pointerIndex);
 
-                    _view.ReleasePointerCapture(e.Pointer);
-                }
+                _view.ReleasePointerCapture(e.Pointer);
             }
         }
 
