@@ -96,6 +96,17 @@ module.exports = yeoman.generators.NamedBase.extend({
       return;
     }
 
-    this.npmInstall('react', { '--save': true });
+    var reactNativePackageJson = require('../../package.json');
+    var { peerDependencies } = reactNativePackageJson;
+    if (!peerDependencies) {
+      return;
+    }
+
+    var reactVersion = peerDependencies.react;
+    if (!reactVersion) {
+      return;
+    }
+
+    this.npmInstall(`react@${reactVersion}`, { '--save': true });
   }
 });
