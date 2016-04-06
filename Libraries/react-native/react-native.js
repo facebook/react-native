@@ -31,6 +31,7 @@ var ReactNative = {
   get ProgressViewIOS() { return require('ProgressViewIOS'); },
   get ScrollView() { return require('ScrollView'); },
   get SegmentedControlIOS() { return require('SegmentedControlIOS'); },
+  get Slider() { return require('Slider'); },
   get SliderIOS() { return require('SliderIOS'); },
   get SnapshotViewIOS() { return require('SnapshotViewIOS'); },
   get Switch() { return require('Switch'); },
