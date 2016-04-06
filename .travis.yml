@@ -23,9 +23,15 @@ script:
 
 env:
   matrix:
+<<<<<<< 43b66650432216b3307aa8465d7b2f5514442cfc
     - TEST_TYPE=e2e-objc
     - TEST_TYPE=js
     - TEST_TYPE=objc
+=======
+    - TEST_TYPE=objc
+    - TEST_TYPE=js
+    - TEST_TYPE=e2e-objc
+>>>>>>> stability
 
 branches:
   only:
