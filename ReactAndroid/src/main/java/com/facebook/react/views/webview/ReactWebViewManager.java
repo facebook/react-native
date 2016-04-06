@@ -258,6 +258,13 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     view.getSettings().setJavaScriptEnabled(enabled);
   }
 
+  @ReactProp(name = "chromeClient")
+  public void setChromeClient(WebView view, boolean enabled) {
+    if (enabled) {
+      view.setWebChromeClient(new WebChromeClient());
+    }
+  }
+
   @ReactProp(name = "scalesPageToFit")
   public void setScalesPageToFit(WebView view, boolean enabled) {
     view.getSettings().setUseWideViewPort(!enabled);
@@ -267,7 +274,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public void setDomStorageEnabled(WebView view, boolean enabled) {
     view.getSettings().setDomStorageEnabled(enabled);
   }
-    
 
   @ReactProp(name = "userAgent")
   public void setUserAgent(WebView view, @Nullable String userAgent) {

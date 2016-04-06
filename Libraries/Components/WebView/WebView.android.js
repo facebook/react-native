@@ -122,6 +122,12 @@ var WebView = React.createClass({
     javaScriptEnabled: PropTypes.bool,
 
     /**
+     * Used on Android only, enable chromeClient on webview. Used for HTML5 video support.
+     * @platform android
+     */
+    chromeClient: PropTypes.bool,
+
+    /**
      * Used on Android only, controls whether DOM Storage is enabled or not
      * @platform android
      */
