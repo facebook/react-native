@@ -103,7 +103,7 @@ static void lastResort(const char* tag, const char* msg, const char* arg = nullp
   } else {
     __android_log_print(ANDROID_LOG_ERROR, tag, "%s: %s", msg, arg);
   }
-#else 
+#else
   std::cerr << msg;
   if (arg) {
     std::cerr << ": " << arg;

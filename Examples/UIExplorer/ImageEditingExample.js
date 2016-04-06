@@ -230,7 +230,7 @@ class ImageCropper extends React.Component {
     );
     this._minimumZoomScale = Math.max(
       this.props.size.width / this._scaledImageSize.width,
-      this.props.size.height / this._scaledImageSize.height 
+      this.props.size.height / this._scaledImageSize.height
     );
     this._updateTransformData(
       this._contentOffset,

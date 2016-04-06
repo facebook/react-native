@@ -241,10 +241,10 @@ RCT_EXPORT_MODULE(TestModule)
   NSString *injectedStuff;
   RUN_RUNLOOP_WHILE(!(injectedStuff = _jsExecutor.injectedStuff[@"__fbBatchedBridgeConfig"]));
   XCTAssertNotNil(injectedStuff);
-  
+
   __block NSNumber *testModuleID = nil;
   __block NSNumber *testMethodID = nil;
-  
+
   NSArray *remoteModuleConfig = RCTJSONParse(injectedStuff, NULL)[@"remoteModuleConfig"];
   [remoteModuleConfig enumerateObjectsUsingBlock:^(id moduleConfig, NSUInteger i, __unused BOOL *stop) {
     if ([moduleConfig isKindOfClass:[NSArray class]] && [moduleConfig[0] isEqualToString:@"UnregisteredTestModule"]) {
@@ -253,15 +253,15 @@ RCT_EXPORT_MODULE(TestModule)
       *stop = YES;
     }
   }];
-  
+
   XCTAssertNotNil(testModuleID);
   XCTAssertNotNil(testMethodID);
-  
+
   NSArray *args = @[];
   NSArray *buffer = @[@[testModuleID], @[testMethodID], @[args]];
-  
+
   [_bridge.batchedBridge handleBuffer:buffer];
-  
+
   dispatch_sync(_unregisteredTestModule.methodQueue, ^{
     XCTAssertTrue(_unregisteredTestModule.testMethodCalled);
   });
