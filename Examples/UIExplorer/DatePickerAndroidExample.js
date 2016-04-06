@@ -46,7 +46,7 @@ var DatePickerAndroidExample = React.createClass({
   async showPicker(stateKey, options) {
     try {
       var newState = {};
-      const {action, year, month, day} = await DatePickerAndroid.open(options);      
+      const {action, year, month, day} = await DatePickerAndroid.open(options);
       if (action === DatePickerAndroid.dismissedAction) {
         newState[stateKey + 'Text'] = 'dismissed';
       } else {
