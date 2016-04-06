@@ -208,11 +208,6 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'ReleaseBundle' or '$(Configuration)' == 'DebugBundle'">
-    <Content Include="ReactAssets\index.windows.bundle">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'ReleaseBundle' or '$(Configuration)' == 'DebugBundle'">
     <Content Include="ReactAssets\**\*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
