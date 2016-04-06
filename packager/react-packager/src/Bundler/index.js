@@ -29,10 +29,6 @@ const sizeOf = Promise.denodeify(imageSize);
 
 const noop = () => {};
 
-// the path from here to AssetRegistry.js
-// bad hardcode and David Aurelio should be ashamed for approving this change
-const hardcodedAssetRegistryAbsolutePath = path.resolve(__dirname, '..', '..', '..', '..', 'Libraries', 'Image', 'AssetRegistry.js');
-
 const validateOpts = declareOpts({
   projectRoots: {
     type: 'array',
@@ -617,14 +613,11 @@ class Bundler {
       };
 
       const json = JSON.stringify(asset);
-      let assetRegistryRelativeToModule = path.relative(module.path, hardcodedAssetRegistryAbsolutePath);
-      if (!assetRegistryRelativeToModule.startsWith('.')) {
-        assetRegistryRelativeToModule = '.' + path.sep + assetRegistryRelativeToModule;
-      }
+      const assetRegistryPath = 'react-native/Libraries/Image/AssetRegistry';
       const code =
-        `module.exports = require(${JSON.stringify(assetRegistryRelativeToModule)}).registerAsset(${json});`;
-      const dependencies = [assetRegistryRelativeToModule];
-      const dependencyOffsets = [code.indexOf(assetRegistryRelativeToModule) - 1];
+        `module.exports = require(${JSON.stringify(assetRegistryPath)}).registerAsset(${json});`;
+      const dependencies = [assetRegistryPath];
+      const dependencyOffsets = [code.indexOf(assetRegistryPath) - 1];
 
       return {
         asset,
