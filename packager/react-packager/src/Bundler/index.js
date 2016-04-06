@@ -152,6 +152,7 @@ class Bundler {
         opts.getTransformOptionsModulePath
       );
     }
+    
   }
 
   kill() {
