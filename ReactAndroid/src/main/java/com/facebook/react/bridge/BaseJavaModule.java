@@ -189,7 +189,8 @@ public abstract class BaseJavaModule implements NativeModule {
 
       ArgumentExtractor[] argumentExtractors = new ArgumentExtractor[paramTypes.length - executorTokenOffset];
       for (int i = 0; i < paramTypes.length - executorTokenOffset; i += argumentExtractors[i].getJSArgumentsNeeded()) {
-        Class argumentClass = paramTypes[i + executorTokenOffset];
+        int paramIndex = i + executorTokenOffset;
+        Class argumentClass = paramTypes[paramIndex];
         if (argumentClass == Boolean.class || argumentClass == boolean.class) {
           argumentExtractors[i] = ARGUMENT_EXTRACTOR_BOOLEAN;
         } else if (argumentClass == Integer.class || argumentClass == int.class) {
@@ -205,7 +206,7 @@ public abstract class BaseJavaModule implements NativeModule {
         } else if (argumentClass == Promise.class) {
           argumentExtractors[i] = ARGUMENT_EXTRACTOR_PROMISE;
           Assertions.assertCondition(
-              i == paramTypes.length - 1, "Promise must be used as last parameter only");
+              paramIndex == paramTypes.length - 1, "Promise must be used as last parameter only");
           mType = METHOD_TYPE_REMOTE_ASYNC;
         } else if (argumentClass == ReadableMap.class) {
           argumentExtractors[i] = ARGUMENT_EXTRACTOR_MAP;
@@ -361,7 +362,7 @@ public abstract class BaseJavaModule implements NativeModule {
   public void onCatalystInstanceDestroy() {
     // do nothing
   }
-  
+
   @Override
   public boolean supportsWebWorkers() {
     return false;
