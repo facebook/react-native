@@ -382,6 +382,12 @@ var apps = [
     author: 'Elephant, LLC',
   },
   {
+    name: 'hello dating',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple49/v4/54/29/59/54295932-f821-35db-8556-ba4006098ee9/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/il/app/hello-dating/id1072062348?mt=8',
+    author: 'Gertler Davidov communication'
+  },
+  {
     name: 'Hey, Neighbor!',
     icon: 'https://raw.githubusercontent.com/scrollback/io.scrollback.neighborhoods/master/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png',
     link: 'https://play.google.com/store/apps/details?id=io.scrollback.neighborhoods',
