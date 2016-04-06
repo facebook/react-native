@@ -48,7 +48,12 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           if (dep.isAsset() || dep.isAsset_DEPRECATED() || dep.isJSON()) {
             return Promise.resolve({path: dep.path, deps: []});
           }
-          return packagerServer.getShallowDependencies(dep.path)
+          return packagerServer.getShallowDependencies({
+            platform: platform,
+            dev: true,
+            hot: true,
+            entryFile: dep.path
+          })
             .then(deps => {
               return {
                 path: dep.path,
@@ -147,7 +152,12 @@ function attachHMRServer({httpServer, path, packagerServer}) {
 
           client.ws.send(JSON.stringify({type: 'update-start'}));
           stat.then(() => {
-            return packagerServer.getShallowDependencies(filename)
+            return packagerServer.getShallowDependencies({
+              entryFile: filename,
+              platform: client.platform,
+              dev: true,
+              hot: true,
+            })
               .then(deps => {
                 if (!client) {
                   return [];

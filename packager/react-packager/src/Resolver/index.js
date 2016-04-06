@@ -120,8 +120,8 @@ class Resolver {
     });
   }
 
-  getShallowDependencies(entryFile) {
-    return this._depGraph.getShallowDependencies(entryFile);
+  getShallowDependencies(entryFile, transformOptions) {
+    return this._depGraph.getShallowDependencies(entryFile, transformOptions);
   }
 
   stat(filePath) {
