@@ -148,6 +148,7 @@
     "connect": "^2.8.3",
     "core-js": "^2.2.2",
     "debug": "^2.2.0",
+    "denodeify": "^1.2.1",
     "event-target-shim": "^1.0.5",
     "fbjs": "^0.8.3",
     "fbjs-scripts": "^0.7.0",
@@ -163,6 +164,8 @@
     "jstransform": "^11.0.3",
     "lodash": "^3.10.1",
     "mime": "^1.3.4",
+    "mime-types": "2.1.11",
+    "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "module-deps": "^3.9.1",
     "node-fetch": "^1.3.3",
@@ -183,6 +186,7 @@
     "stacktrace-parser": "^0.1.3",
     "temp": "0.8.3",
     "uglify-js": "^2.6.2",
+    "whatwg-fetch": "^1.0.0",
     "wordwrap": "^1.0.0",
     "worker-farm": "^1.3.1",
     "ws": "^1.1.0",
@@ -190,10 +194,7 @@
     "xmldoc": "^0.4.0",
     "yargs": "^3.24.0",
     "yeoman-environment": "1.5.3",
-    "yeoman-generator": "0.21.2",
-    "mime-types": "2.1.11",
-    "whatwg-fetch": "^1.0.0",
-    "denodeify": "^1.2.1"
+    "yeoman-generator": "0.21.2"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.0",
