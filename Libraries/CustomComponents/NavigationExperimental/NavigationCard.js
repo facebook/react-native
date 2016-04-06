@@ -80,24 +80,44 @@ class NavigationCard extends React.Component<any, Props, any> {
   }
 
   render(): ReactElement {
-    let {
-      style,
+    const {
       panHandlers,
       renderScene,
-      ...props,
+      style,
+      ...props, /* NavigationSceneRendererProps */
     } = this.props;
 
+    let viewStyle = null;
     if (style === undefined) {
       // fall back to default style.
-      style = NavigationCardStackStyleInterpolator.forHorizontal(props);
+      viewStyle = NavigationCardStackStyleInterpolator.forHorizontal(props);
+    } else {
+      viewStyle = style;
     }
-    if (panHandlers === undefined) {
-      // fall back to default pan handlers.
-      panHandlers = NavigationCardStackPanResponder.forHorizontal(props);
+
+    const  {
+      navigationState,
+      scene,
+    } = props;
+
+    const interactive = navigationState.index === scene.index && !scene.isStale;
+    const pointerEvents = interactive ? 'auto' : 'none';
+
+    let viewPanHandlers = null;
+    if (interactive) {
+      if (panHandlers === undefined) {
+        // fall back to default pan handlers.
+        viewPanHandlers = NavigationCardStackPanResponder.forHorizontal(props);
+      } else {
+        viewPanHandlers = panHandlers;
+      }
     }
 
     return (
-      <Animated.View {...panHandlers} style={[styles.main, style]}>
+      <Animated.View
+        {...viewPanHandlers}
+        pointerEvents={pointerEvents}
+        style={[styles.main, viewStyle]}>
         {renderScene(props)}
       </Animated.View>
     );
