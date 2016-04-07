@@ -15,6 +15,8 @@ var RCTNetworking = require('RCTNetworking');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 const warning = require('fbjs/lib/warning');
 
+type ResponseType = '' | 'arraybuffer' | 'blob' | 'document' | 'json' | 'text';
+
 const UNSENT = 0;
 const OPENED = 1;
 const HEADERS_RECEIVED = 2;
@@ -70,7 +72,7 @@ class XMLHttpRequestBase {
   _lowerCaseResponseHeaders: Object;
   _method: ?string;
   _response: void | null | string | Object;
-  _responseType: '' | 'arraybuffer' | 'blob' | 'document' | 'json' | 'text';
+  _responseType: ResponseType;
   _sent: boolean;
   _url: ?string;
 
@@ -92,7 +94,7 @@ class XMLHttpRequestBase {
     this._aborted = false;
   }
 
-  _reset() {
+  _reset(): void {
     this.readyState = this.UNSENT;
     this.responseHeaders = undefined;
     this.responseText = '';
@@ -111,11 +113,11 @@ class XMLHttpRequestBase {
     this._clearSubscriptions();
   }
 
-  get responseType() {
+  get responseType(): ResponseType {
     return this._responseType;
   }
 
-  set responseType(responseType) {
+  set responseType(responseType): void {
     if (this.readyState > HEADERS_RECEIVED) {
       throw new Error(
         "Failed to set the 'responseType' property on 'XMLHttpRequest': The " +
@@ -135,7 +137,7 @@ class XMLHttpRequestBase {
     this._responseType = responseType;
   }
 
-  get response() {
+  get response(): ?Object | string {
     const {responseType} = this;
     if (responseType === '' || responseType === 'text') {
       return this.readyState < LOADING || this._hasError
@@ -370,17 +372,18 @@ XMLHttpRequestBase.HEADERS_RECEIVED = HEADERS_RECEIVED;
 XMLHttpRequestBase.LOADING = LOADING;
 XMLHttpRequestBase.DONE = DONE;
 
-function toArrayBuffer(text, contentType) {
+function toArrayBuffer(text: string, contentType: string): ArrayBuffer {
   const {length} = text;
   if (length === 0) {
     return new ArrayBuffer();
   }
 
   /*eslint-disable no-bitwise, no-sparse-arrays*/
-  const charset = (contentType.match(/;\s*charset=([^;]*)/i) || [, 'utf-8'])[1];
+  const charsetMatch = contentType.match(/;\s*charset=([^;]*)/i);
+  const charset = charsetMatch ? charsetMatch[1].trim() : 'utf-8';
 
   let array;
-  if (/^utf8$/i.test(charset)) {
+  if (/^utf-?8$/i.test(charset)) {
     const bytes = Array(length); // we need at least this size
     let add = 0;
     for (let i = 0; i < length; i++) {
