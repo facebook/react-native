@@ -243,6 +243,7 @@ void JSCExecutor::loadApplicationScript(
     evaluateScript(m_context, jsScript, jsSourceURL, m_deviceCacheDir.c_str());
   }
   flush();
+  ReactMarker::logMarker("RUN_JS_BUNDLE_END");
   ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
 }
 
