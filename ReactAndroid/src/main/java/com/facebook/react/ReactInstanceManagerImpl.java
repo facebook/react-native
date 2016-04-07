@@ -80,7 +80,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_CATALYST_INS
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_REACT_CONTEXT_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_START;
-import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START;
 
 /**
@@ -791,6 +790,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
       JSBundleLoader jsBundleLoader) {
     FLog.i(ReactConstants.TAG, "Creating react context.");
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START);
+    // CREATE_REACT_CONTEXT_END is in JSCExecutor.cpp
     mSourceUrl = jsBundleLoader.getSourceUrl();
     NativeModuleRegistry.Builder nativeRegistryBuilder = new NativeModuleRegistry.Builder();
     JavaScriptModulesConfig.Builder jsModulesBuilder = new JavaScriptModulesConfig.Builder();
@@ -857,7 +857,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
         .setNativeModuleCallExceptionHandler(exceptionHandler);
 
     ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
-    // CREATE_CATALYST_INSTANCE_END is in JSCExecutor.cpp
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstance");
     CatalystInstance catalystInstance;
     try {
@@ -874,12 +873,13 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     reactContext.initializeWithInstance(catalystInstance);
 
     ReactMarker.logMarker(RUN_JS_BUNDLE_START);
+    // RUN_JS_BUNDLE_END is in JSCExecutor.cpp
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "runJSBundle");
     try {
       catalystInstance.runJSBundle();
     } finally {
+      // This will actually finish when `JSCExecutor#loadApplicationScript()` finishes
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-      ReactMarker.logMarker(RUN_JS_BUNDLE_END);
     }
 
     return reactContext;
