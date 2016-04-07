@@ -14,7 +14,6 @@
  * Available arguments:
  * --ios - to test only ios application end to end
  * --android - to test only android application end to end
- * --packager - to test that application can be installed and that packager works but don't start the application
  * --skip-cli-install - to test not in SI mode without installing react-native-cli globally
  */
 /*eslint-disable no-undef */
@@ -113,7 +112,7 @@ if (args.indexOf('--android') !== -1) {
   SERVER_PID = exec('REACT_NATIVE_MAX_WORKERS=1 npm start', {async: true}).pid;
   echo('Starting appium server');
   APPIUM_PID = exec('node ./node_modules/.bin/appium', {async: true}).pid;
-  exec('keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US');
+  exec('keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"');
   echo('Building app');
   if (exec('buck build android/app').code) {
     echo('could not execute Buck build, is it installed and in PATH?');
