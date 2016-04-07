@@ -110,7 +110,7 @@ if(args.indexOf('--android') !== -1) {
   }
   cd('..');
   echo('Starting packager server');
-  SERVER_PID = exec('./node_modules/react-native/packager/packager.sh --nonPersistent', {async: true}).pid;
+  SERVER_PID = exec('npm start', {async: true}).pid;
   echo('Starting appium server');
   APPIUM_PID = exec('node ./node_modules/.bin/appium', {async: true}).pid;
   cp('~/.android/debug.keystore', 'android/keystores/debug.keystore');
