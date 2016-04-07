@@ -139,7 +139,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
         if (DevServerHelper.getReloadAppAction(context).equals(action)) {
           if (intent.getBooleanExtra(DevServerHelper.RELOAD_APP_EXTRA_JS_PROXY, false)) {
             mIsUsingJSProxy = true;
-            mDevServerHelper.launchChromeDevtools();
+            mDevServerHelper.launchJSDevtools();
           } else {
             mIsUsingJSProxy = false;
           }
@@ -584,7 +584,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
   private void reloadJSInProxyMode(final ProgressDialog progressDialog) {
     // When using js proxy, there is no need to fetch JS bundle as proxy executor will do that
     // anyway
-    mDevServerHelper.launchChromeDevtools();
+    mDevServerHelper.launchJSDevtools();
 
     JavaJSExecutor.Factory factory = new JavaJSExecutor.Factory() {
       @Override

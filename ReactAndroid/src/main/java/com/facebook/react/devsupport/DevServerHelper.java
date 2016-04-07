@@ -54,8 +54,8 @@ public class DevServerHelper {
       "http://%s/%s.bundle?platform=android&dev=%s&hot=%s&minify=%s";
   private static final String SOURCE_MAP_URL_FORMAT =
       BUNDLE_URL_FORMAT.replaceFirst("\\.bundle", ".map");
-  private static final String LAUNCH_CHROME_DEVTOOLS_COMMAND_URL_FORMAT =
-      "http://%s/launch-chrome-devtools";
+  private static final String LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT =
+      "http://%s/launch-js-devtools";
   private static final String ONCHANGE_ENDPOINT_URL_FORMAT =
       "http://%s/onchange";
   private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
@@ -366,13 +366,13 @@ public class DevServerHelper {
     return String.format(Locale.US, ONCHANGE_ENDPOINT_URL_FORMAT, getDebugServerHost());
   }
 
-  private String createLaunchChromeDevtoolsCommandUrl() {
-    return String.format(LAUNCH_CHROME_DEVTOOLS_COMMAND_URL_FORMAT, getDebugServerHost());
+  private String createLaunchJSDevtoolsCommandUrl() {
+    return String.format(LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT, getDebugServerHost());
   }
 
-  public void launchChromeDevtools() {
+  public void launchJSDevtools() {
     Request request = new Request.Builder()
-        .url(createLaunchChromeDevtoolsCommandUrl())
+        .url(createLaunchJSDevtoolsCommandUrl())
         .build();
     mClient.newCall(request).enqueue(new Callback() {
       @Override
@@ -398,7 +398,7 @@ public class DevServerHelper {
 
   public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
     // The host IP we use when connecting to the JS bundle server from the emulator is not the
-    // same as the one needed to connect to the same server from the Chrome proxy running on the
+    // same as the one needed to connect to the same server from the JavaScript proxy running on the
     // host itself.
     return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
   }
