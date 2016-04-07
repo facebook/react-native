@@ -24,6 +24,7 @@
 @property (nonatomic, assign) BOOL shadowHidden;
 @property (nonatomic, strong) UIColor *tintColor;
 @property (nonatomic, strong) UIColor *barTintColor;
+@property (nonatomic, strong) UIFont *titleFont;
 @property (nonatomic, strong) UIColor *titleTextColor;
 @property (nonatomic, assign) BOOL translucent;
 

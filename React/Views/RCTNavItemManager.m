@@ -42,4 +42,21 @@ RCT_EXPORT_VIEW_PROPERTY(rightButtonTitle, NSString)
 RCT_EXPORT_VIEW_PROPERTY(onLeftButtonPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onRightButtonPress, RCTBubblingEventBlock)
 
+RCT_CUSTOM_VIEW_PROPERTY(titleFontSize, CGFloat, RCTNavItem)
+{
+  view.titleFont = [RCTConvert UIFont:view.titleFont withSize:json ?: @(defaultView.titleFont.pointSize)];
+}
+RCT_CUSTOM_VIEW_PROPERTY(titleFontWeight, NSString, RCTNavItem)
+{
+  view.titleFont = [RCTConvert UIFont:view.titleFont withWeight:json ?: @"normal"];
+}
+RCT_CUSTOM_VIEW_PROPERTY(titleFontStyle, NSString, RCTNavItem)
+{
+  view.titleFont = [RCTConvert UIFont:view.titleFont withStyle:json ?: @"normal"];
+}
+RCT_CUSTOM_VIEW_PROPERTY(titleFontFamily, NSString, RCTNavItem)
+{
+  view.titleFont = [RCTConvert UIFont:view.titleFont withFamily:json ?: defaultView.titleFont.familyName];
+}
+
 @end
