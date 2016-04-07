@@ -41,7 +41,7 @@ function saveAsAssets(bundle, options, log) {
   const modulesDir = path.join(path.dirname(bundleOutput), MODULES_DIR);
   const writeUnbundle =
     createDir(modulesDir).then( // create the modules directory first
-      Promise.all([
+      () => Promise.all([
         writeModules(modules, modulesDir, encoding),
         writeFile(bundleOutput, startupCode, encoding),
         writeMagicFlagFile(modulesDir),
