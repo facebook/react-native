@@ -84,31 +84,30 @@ if (exec('npm pack').code) {
 
 // test begins
 const PACKAGE = path.join(ROOT, 'react-native-*.tgz');
-// cd(TEMP);
-cd('/tmp/react-native-Lf6EB6mD');
-// if (exec(`react-native init EndToEndTest --version ${PACKAGE}`).code) {
-//   echo('Failed to execute react-native init');
-//   echo('Most common reason is npm registry connectivity, try again');
-//   exit(cleanup(1));
-// }
+cd(TEMP);
+if (exec(`react-native init EndToEndTest --version ${PACKAGE}`).code) {
+  echo('Failed to execute react-native init');
+  echo('Most common reason is npm registry connectivity, try again');
+  exit(cleanup(1));
+}
 cd('EndToEndTest');
 
 if(args.indexOf('--android') !== -1) {
   echo('Running an Android e2e test');
   echo('Installing e2e framework');
-  // if(exec('npm install --save-dev appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3').code) {
-  //   echo('Failed to install appium');
-  //   exit(cleanup(1));
-  // }
+  if(exec('npm install --save-dev appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3').code) {
+    echo('Failed to install appium');
+    exit(cleanup(1));
+  }
   cp(`${SCRIPTS}/android-e2e-test.js`, 'android-e2e-test.js');
   cd('android');
   echo('Downloading Maven deps');
   exec('./gradlew :app:copyDownloadableDepsToLibs');
   // Make sure we installed local version of react-native
-  // if (!test('-e', path.basename(MARKER_ANDROID))) {
-  //   echo('Android marker was not found, react native init command failed?');
-  //   exit(cleanup(1));
-  // }
+  if (!test('-e', path.basename(MARKER_ANDROID))) {
+    echo('Android marker was not found, react native init command failed?');
+    exit(cleanup(1));
+  }
   cd('..');
   echo('Starting packager server');
   SERVER_PID = exec('./node_modules/react-native/packager/packager.sh --nonPersistent', {async: true}).pid;
