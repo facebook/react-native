@@ -92,7 +92,7 @@ if (exec(`react-native init EndToEndTest --version ${PACKAGE}`).code) {
 }
 cd('EndToEndTest');
 
-if(args.indexOf('--android') !== -1) {
+if (args.indexOf('--android') !== -1) {
   echo('Running an Android e2e test');
   echo('Installing e2e framework');
   if(exec('npm install --save-dev appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3').code) {
@@ -126,7 +126,21 @@ if(args.indexOf('--android') !== -1) {
   exit(cleanup(0));
 }
 
+if (args.indexOf('--ios') !== -1) {
+  echo('Running an iOS app');
+  cd('ios');
+  // Make sure we installed local version of react-native
+  if (!test('-e', path.basename(MARKER_IOS))) {
+    echo('Android marker was not found, react native init command failed?');
+    exit(cleanup(1));
+  }
+  echo('Starting packager server');
+  SERVER_PID = exec('REACT_NATIVE_MAX_WORKERS=1 npm start', {async: true}).pid;
+  echo('Executing ios e2e test');
+  if (exec('xctool -scheme EndToEndTest -sdk iphonesimulator test').code) {
+    exit(cleanup(1));
+  }
+}
 
-
-// exit(cleanup(0));
+exit(cleanup(0));
 /*eslint-enable no-undef */
