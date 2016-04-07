@@ -222,7 +222,10 @@ var DrawerLayoutAndroid = React.createClass({
     }
   },
 
-  openDrawer: function() {
+  /**
+   * Opens the drawer.
+   */
+  openDrawer: function(test: number) {
     UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
       UIManager.AndroidDrawerLayout.Commands.openDrawer,
@@ -230,6 +233,9 @@ var DrawerLayoutAndroid = React.createClass({
     );
   },
 
+  /**
+   * Closes the drawer.
+   */
   closeDrawer: function() {
     UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
