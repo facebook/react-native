@@ -13,6 +13,12 @@ const Promise = require('promise');
 const ReactPackager = require('../../packager/react-packager');
 const saveAssets = require('./saveAssets');
 
+function saveBundle(output, bundle, args) {
+  return Promise.resolve(
+    output.save(bundle, args, log)
+  ).then(() => bundle);
+}
+
 function buildBundle(args, config, output = outputBundle, packagerInstance) {
   return new Promise((resolve, reject) => {
 
@@ -40,10 +46,7 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
     var bundlePromise;
     if (packagerInstance) {
       bundlePromise = output.build(packagerInstance, requestOpts)
-        .then(bundle => {
-          output.save(bundle, args, log);
-          return bundle;
-        });
+        .then(bundle => saveBundle(output, bundle, args));
     } else {
       const clientPromise = ReactPackager.createClientFor(options);
 
@@ -53,10 +56,7 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
           log('Created ReactPackager');
           return output.build(client, requestOpts);
         })
-        .then(bundle => {
-          output.save(bundle, args, log);
-          return bundle;
-        });
+        .then(bundle => saveBundle(output, bundle, args));
 
       // When we're done bundling, close the client
       Promise.all([clientPromise, bundlePromise])
