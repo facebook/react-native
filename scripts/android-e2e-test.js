@@ -17,7 +17,7 @@
  *
  * To run this test:
  * - cd android
- * - cp ~/android/debug.keystore keystores/debug.keystore
+ * - `cp ~/android/debug.keystore keystores/debug.keystore` or `keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US`
  * - ./gradlew :app:copyDownloadableDepsToLibs
  * - cd ..
  * - buck build android/app

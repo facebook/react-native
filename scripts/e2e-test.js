@@ -113,7 +113,7 @@ if(args.indexOf('--android') !== -1) {
   SERVER_PID = exec('REACT_NATIVE_MAX_WORKERS=1 npm start', {async: true}).pid;
   echo('Starting appium server');
   APPIUM_PID = exec('node ./node_modules/.bin/appium', {async: true}).pid;
-  cp('~/.android/debug.keystore', 'android/keystores/debug.keystore');
+  exec('keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US');
   echo('Building app');
   if (exec('buck build android/app').code) {
     echo('could not execute Buck build, is it installed and in PATH?');
