@@ -118,19 +118,29 @@ if (args.indexOf('--android') !== -1) {
     echo('could not execute Buck build, is it installed and in PATH?');
     exit(cleanup(1));
   }
+  // wait a bit to allow packager to startup
+  exec('sleep 20s');
   echo('Executing android e2e test');
-  if (exec('node node_modules/.bin/_mocha android-e2e-test.js').code) {
+  // try 3 times
+  let androidTestResult;
+  for(let tries = 0; tries < 3; tries++) {
+    echo(`Try ${tries} of 3`);
+    androidTestResult = exec('node node_modules/.bin/_mocha android-e2e-test.js').code;
+    if (androidTestResult === 0) {
+      break;
+    }
+  }
+  if(androidTestResult) {
     exit(cleanup(1));
   }
-  exit(cleanup(0));
 }
 
 if (args.indexOf('--ios') !== -1) {
   echo('Running an iOS app');
   cd('ios');
   // Make sure we installed local version of react-native
-  if (!test('-e', path.basename(MARKER_IOS))) {
-    echo('Android marker was not found, react native init command failed?');
+  if (!test('-e', path.join('EndToEndTest', path.basename(MARKER_IOS)))) {
+    echo('iOS marker was not found, react native init command failed?');
     exit(cleanup(1));
   }
   echo('Starting packager server');

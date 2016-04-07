@@ -58,7 +58,7 @@ describe('Android Test App', function () {
 
     return driver
       .init(desired)
-      .setImplicitWaitTimeout(50000);
+      .setImplicitWaitTimeout(60000);
   });
 
   after(function () {
