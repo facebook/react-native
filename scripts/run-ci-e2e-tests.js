@@ -108,10 +108,10 @@ if (args.indexOf('--android') !== -1) {
     exit(cleanup(1));
   }
   cd('..');
-  echo('Starting packager server');
   SERVER_PID = exec('REACT_NATIVE_MAX_WORKERS=1 npm start', {async: true}).pid;
-  echo('Starting appium server');
+  echo(`Starting packager server, ${SERVER_PID}`);
   APPIUM_PID = exec('node ./node_modules/.bin/appium', {async: true}).pid;
+  echo(`Starting appium server, ${APPIUM_PID}`);
   exec('keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"');
   echo('Building app');
   if (exec('buck build android/app').code) {
@@ -119,12 +119,12 @@ if (args.indexOf('--android') !== -1) {
     exit(cleanup(1));
   }
   // wait a bit to allow packager to startup
-  exec('sleep 20s');
+  exec('sleep 10s');
   echo('Executing android e2e test');
   // try 3 times
   let androidTestResult;
   for(let tries = 0; tries < 3; tries++) {
-    echo(`Try ${tries} of 3`);
+    echo(`Try ${tries + 1} of 3`);
     androidTestResult = exec('node node_modules/.bin/_mocha android-e2e-test.js').code;
     if (androidTestResult === 0) {
       break;

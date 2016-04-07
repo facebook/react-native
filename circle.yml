@@ -69,15 +69,14 @@ test:
     # build test APK
     - buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
     # run installed apk with tests
-#    - source scripts/circle-ci-android-setup.sh && retry3 ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests
+    - source scripts/circle-ci-android-setup.sh && retry3 ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests
 
     - ./gradlew :ReactAndroid:testDebugUnitTest
     # Deprecated: we just check that e2e tests are compiling, executing them with Gradle becomes a bottleneck
     - ./gradlew :ReactAndroid:assembleDebugAndroidTest
 
-    # JS and Android e2e test
-    # TODO add retries
-    - node ./scripts/e2e-test.js --android
+    # Android e2e test
+    - source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android
 
     # testing docs generation is not broken
     - cd website && node ./server/generate.js

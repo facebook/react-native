@@ -76,7 +76,10 @@ describe('Android Test App', function () {
     waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]').
     then(() => {
       const newContents = androidAppCode.replace('Welcome to React Native!', 'Welcome to React Native with HMR!');
-      fs.writeFileSync('index.android.js', newContents, 'utf-8');
+      // change file after 5 seconds to allow HMR client to connect
+      setTimeout(() => {
+        fs.writeFileSync('index.android.js', newContents, 'utf-8');
+      }, 5000);
     }).
     waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native with HMR!")]').
     finally(() => {
