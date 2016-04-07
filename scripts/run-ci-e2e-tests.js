@@ -113,9 +113,14 @@ if (args.indexOf('--android') !== -1) {
   packagerProcess.stdout.on('data', function(data) {
     echo('----packager----', data);
   });
-
   echo(`Starting packager server, ${SERVER_PID}`);
-  APPIUM_PID = exec('node ./node_modules/.bin/appium', {async: true}).pid;
+
+  // TODO for debugging
+  const appiumProcess = exec('node ./node_modules/.bin/appium', {async: true});
+  appiumProcess.stdout.on('data', function(data) {
+    echo('----appium----', data);
+  });
+  APPIUM_PID = appiumProcess.pid;
   echo(`Starting appium server, ${APPIUM_PID}`);
   exec('keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"');
   echo('Building app');
@@ -126,16 +131,7 @@ if (args.indexOf('--android') !== -1) {
   // wait a bit to allow packager to startup
   exec('sleep 10s');
   echo('Executing android e2e test');
-  // the new e2e test may be flaky, for a while this command should run with retries
-  let androidTestResult;
-  for(let tries = 0; tries < 3; tries++) {
-    echo(`Try ${tries + 1} of 3`);
-    androidTestResult = exec('node node_modules/.bin/_mocha android-e2e-test.js').code;
-    if (androidTestResult === 0) {
-      break;
-    }
-  }
-  if(androidTestResult) {
+  if(exec('node node_modules/.bin/_mocha android-e2e-test.js').code) {
     exit(cleanup(1));
   }
 }
@@ -148,7 +144,7 @@ if (args.indexOf('--ios') !== -1) {
     echo('iOS marker was not found, react native init command failed?');
     exit(cleanup(1));
   }
-  const packagerProcess = exec('REACT_NATIVE_MAX_WORKERS=1 npm start', {async: true});
+  const packagerProcess = exec('REACT_NATIVE_MAX_WORKERS=1 npm start -- --non-persistent', {async: true});
   SERVER_PID = packagerProcess.pid;
   packagerProcess.stdout.on('data', function(data) {
     echo('----packager----', data);
