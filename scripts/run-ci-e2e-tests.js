@@ -108,7 +108,12 @@ if (args.indexOf('--android') !== -1) {
     exit(cleanup(1));
   }
   cd('..');
-  SERVER_PID = exec('REACT_NATIVE_MAX_WORKERS=1 npm start', {async: true}).pid;
+  const packagerProcess = exec('REACT_NATIVE_MAX_WORKERS=1 npm start', {async: true});
+  SERVER_PID = packagerProcess.pid;
+  packagerProcess.stdout.on('data', function(data) {
+    echo('----packager----', data);
+  });
+
   echo(`Starting packager server, ${SERVER_PID}`);
   APPIUM_PID = exec('node ./node_modules/.bin/appium', {async: true}).pid;
   echo(`Starting appium server, ${APPIUM_PID}`);
@@ -121,7 +126,7 @@ if (args.indexOf('--android') !== -1) {
   // wait a bit to allow packager to startup
   exec('sleep 10s');
   echo('Executing android e2e test');
-  // try 3 times
+  // the new e2e test may be flaky, for a while this command should run with retries
   let androidTestResult;
   for(let tries = 0; tries < 3; tries++) {
     echo(`Try ${tries + 1} of 3`);
@@ -143,8 +148,12 @@ if (args.indexOf('--ios') !== -1) {
     echo('iOS marker was not found, react native init command failed?');
     exit(cleanup(1));
   }
-  echo('Starting packager server');
-  SERVER_PID = exec('REACT_NATIVE_MAX_WORKERS=1 npm start', {async: true}).pid;
+  const packagerProcess = exec('REACT_NATIVE_MAX_WORKERS=1 npm start', {async: true});
+  SERVER_PID = packagerProcess.pid;
+  packagerProcess.stdout.on('data', function(data) {
+    echo('----packager----', data);
+  });
+  echo(`Starting packager server, ${SERVER_PID}`);
   echo('Executing ios e2e test');
   if (exec('xctool -scheme EndToEndTest -sdk iphonesimulator test').code) {
     exit(cleanup(1));
