@@ -38,7 +38,7 @@ var API = {
     assertNativeAnimatedModule();
     NativeAnimatedModule.disconnectAnimatedNodes(parentTag, childTag);
   },
-  startAnimatingNode: function(animationTag: number, nodeTag: number, config: Object, endCallback: EndCallback) {
+  startAnimatingNode: function(animationTag: number, nodeTag: number, config: Object, endCallback: EndCallback): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.startAnimatingNode(nodeTag, config, endCallback);
   },
