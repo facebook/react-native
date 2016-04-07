@@ -13,13 +13,22 @@
 
 var RCTNetworking = require('RCTNetworking');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var invariant = require('fbjs/lib/invariant');
+const warning = require('fbjs/lib/warning');
 
 const UNSENT = 0;
 const OPENED = 1;
 const HEADERS_RECEIVED = 2;
 const LOADING = 3;
 const DONE = 4;
+
+const SUPPORTED_RESPONSE_TYPES = {
+  arraybuffer: typeof global.ArrayBuffer === 'function',
+  blob: typeof global.Blob === 'function',
+  document: false,
+  json: true,
+  text: true,
+  '': true,
+};
 
 /**
  * Shared base for platform-specific XMLHttpRequest implementations.
@@ -44,8 +53,6 @@ class XMLHttpRequestBase {
   readyState: number;
   responseHeaders: ?Object;
   responseText: ?string;
-  response: ?string;
-  responseType: '' | 'text';
   status: number;
   timeout: number;
   responseURL: ?string;
@@ -57,12 +64,15 @@ class XMLHttpRequestBase {
   _requestId: ?number;
   _subscriptions: [any];
 
-  _method: ?string;
-  _url: ?string;
-  _headers: Object;
-  _sent: boolean;
   _aborted: boolean;
+  _hasError: boolean;
+  _headers: Object;
   _lowerCaseResponseHeaders: Object;
+  _method: ?string;
+  _response: void | null | string | Object;
+  _responseType: '' | 'arraybuffer' | 'blob' | 'document' | 'json' | 'text';
+  _sent: boolean;
+  _url: ?string;
 
   constructor() {
     this.UNSENT = UNSENT;
@@ -86,18 +96,88 @@ class XMLHttpRequestBase {
     this.readyState = this.UNSENT;
     this.responseHeaders = undefined;
     this.responseText = '';
-    this.response = null;
-    this.responseType = '';
     this.status = 0;
     delete this.responseURL;
 
     this._requestId = null;
 
+    this._cachedResponse = undefined;
+    this._hasError = false;
     this._headers = {};
+    this._responseType = '';
     this._sent = false;
     this._lowerCaseResponseHeaders = {};
 
     this._clearSubscriptions();
+  }
+
+  get responseType() {
+    return this._responseType;
+  }
+
+  set responseType(responseType) {
+    if (this.readyState > HEADERS_RECEIVED) {
+      throw new Error(
+        "Failed to set the 'responseType' property on 'XMLHttpRequest': The " +
+        "response type cannot be set if the object's state is LOADING or DONE"
+      );
+    }
+    if (!SUPPORTED_RESPONSE_TYPES.hasOwnProperty(responseType)) {
+      warning(
+        `The provided value '${responseType}' is not a valid 'responseType'.`);
+      return;
+    }
+
+    if (!SUPPORTED_RESPONSE_TYPES[responseType]) {
+      warning(
+        `The provided value '${responseType}' is unsupported in this environment.`);
+    }
+    this._responseType = responseType;
+  }
+
+  get response() {
+    const {responseType} = this;
+    if (responseType === '' || responseType === 'text') {
+      return this.readyState < LOADING || this._hasError
+        ? ''
+        : this.responseText;
+    }
+
+    if (this.readyState !== DONE) {
+      return null;
+    }
+
+    if (this._cachedResponse !== undefined) {
+      return this._cachedResponse;
+    }
+
+    switch (this.responseType) {
+      case 'document':
+        this._cachedResponse = null;
+        break;
+
+      case 'arraybuffer':
+        this._cachedResponse = toArrayBuffer(
+          this.responseText, this.getResponseHeader('content-type'));
+        break;
+
+      case 'blob':
+        this._cachedResponse = new global.Blob([this.responseText]);
+        break;
+
+      case 'json':
+        try {
+          this._cachedResponse = JSON.parse(this.responseText);
+        } catch (_) {
+          this._cachedResponse = null;
+        }
+        break;
+
+      default:
+        this._cachedResponse = null;
+    }
+
+    return this._cachedResponse;
   }
 
   didCreateRequest(requestId: number): void {
@@ -151,22 +231,7 @@ class XMLHttpRequestBase {
       } else {
         this.responseText += responseText;
       }
-      switch(this.responseType) {
-      case '':
-      case 'text':
-        this.response = this.responseText;
-        break;
-      case 'blob': // whatwg-fetch sets this in Chrome
-        /* global Blob: true */
-        invariant(
-          typeof Blob === 'function',
-          `responseType "blob" is only supported on platforms with native Blob support`
-        );
-        this.response = new Blob([this.responseText]);
-        break;
-      default: //TODO: Support other types, eg: document, arraybuffer, json
-        invariant(false, `responseType "${this.responseType}" is unsupported`);
-      }
+      this._cachedResponse = undefined; // force lazy recomputation
       this.setReadyState(this.LOADING);
     }
   }
@@ -175,6 +240,7 @@ class XMLHttpRequestBase {
     if (requestId === this._requestId) {
       if (error) {
         this.responseText = error;
+        this._hasError = true;
       }
       this._clearSubscriptions();
       this._requestId = null;
@@ -303,5 +369,53 @@ XMLHttpRequestBase.OPENED = OPENED;
 XMLHttpRequestBase.HEADERS_RECEIVED = HEADERS_RECEIVED;
 XMLHttpRequestBase.LOADING = LOADING;
 XMLHttpRequestBase.DONE = DONE;
+
+function toArrayBuffer(text, contentType) {
+  const {length} = text;
+  if (length === 0) {
+    return new ArrayBuffer();
+  }
+
+  /*eslint-disable no-bitwise, no-sparse-arrays*/
+  const charset = (contentType.match(/;\s*charset=([^;]*)/i) || [, 'utf-8'])[1];
+
+  let array;
+  if (/^utf8$/i.test(charset)) {
+    const bytes = Array(length); // we need at least this size
+    let add = 0;
+    for (let i = 0; i < length; i++) {
+      let codePoint = text.charCodeAt(i);
+      if (codePoint < 0x80) {
+        bytes[i + add] = codePoint;
+      } else if (codePoint < 0x7ff) {
+        bytes[i + add] = 0xc0 | (codePoint >>> 6);
+        bytes[i + add + 1] = codePoint & 0x3f;
+        add += 1;
+      } else if (codePoint < 0xffff) {
+        bytes[i + add] = 0xe0 | (codePoint >>> 12);
+        codePoint &= 0xfff;
+        bytes[i + add + 1] = 0x80 | (codePoint >>> 6);
+        bytes[i + add + 2] = 0x80 | (codePoint & 0x3f);
+        add += 2;
+      } else {
+        bytes[i + add] = 0xf0 | (codePoint >>> 18);
+        codePoint &= 0x3ffff;
+        bytes[i + add + 1] = 0x80 | (codePoint >>> 12);
+        codePoint &= 0xfff;
+        bytes[i + add + 2] = 0x80 | (codePoint >>> 6);
+        bytes[i + add + 3] = 0x80 | (codePoint & 0x3f);
+        add += 3;
+      }
+
+      array = new Uint8Array(bytes);
+    }
+  } else { //TODO: utf16 / ucs2 / utf32
+    array = new Uint8Array(length);
+    for (let i = 0; i < length; i++) {
+      array[i] = text.charCodeAt(i); // Uint8Array automatically masks with 0xff
+    }
+  }
+  return array.buffer;
+}
 
 module.exports = XMLHttpRequestBase;
