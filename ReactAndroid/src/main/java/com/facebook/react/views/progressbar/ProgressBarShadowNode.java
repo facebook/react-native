@@ -61,7 +61,7 @@ public class ProgressBarShadowNode extends LayoutShadowNode implements CSSNode.M
       MeasureOutput measureOutput) {
     final int style = ReactProgressBarViewManager.getStyleFromString(getStyle());
     if (!mMeasured.contains(style)) {
-      ProgressBar progressBar = new ProgressBar(getThemedContext(), null, style);
+      ProgressBar progressBar = ReactProgressBarViewManager.createProgressBar(getThemedContext(), style);
       final int spec = View.MeasureSpec.makeMeasureSpec(
           ViewGroup.LayoutParams.WRAP_CONTENT,
           View.MeasureSpec.UNSPECIFIED);
