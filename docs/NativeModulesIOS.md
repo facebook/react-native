@@ -59,7 +59,7 @@ CalendarManager.addEvent('Birthday Party', '4 Privet Drive, Surrey');
 >
 > The name of the method exported to JavaScript is the native method's name up to the first colon. React Native also defines a macro called `RCT_REMAP_METHOD()` to specify the JavaScript method's name. This is useful when multiple native methods are the same up to the first colon and would have conflicting JavaScript names.
 
-The return type of bridge methods is always `void`. React Native bridge is asynchronous, so the only way to pass a result to JavaScript is by using callbacks or emitting events (see below).
+The CalendarManager module is instantiated on the Objective-C side using a [CalendarManager new] call. The return type of bridge methods is always `void`. React Native bridge is asynchronous, so the only way to pass a result to JavaScript is by using callbacks or emitting events (see below).
 
 ## Argument Types
 
@@ -133,7 +133,7 @@ and call it from JavaScript:
 ```javascript
 CalendarManager.addEvent('Birthday Party', {
   location: '4 Privet Drive, Surrey',
-  time: date.toTime(),
+  time: date.getTime(),
   description: '...'
 })
 ```
@@ -288,7 +288,7 @@ You must create a class extension of RCTConvert like so:
 @implementation RCTConvert (StatusBarAnimation)
   RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{ @"statusBarAnimationNone" : @(UIStatusBarAnimationNone),
                                                @"statusBarAnimationFade" : @(UIStatusBarAnimationFade),
-                                               @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide)},
+                                               @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide)}),
                       UIStatusBarAnimationNone, integerValue)
 @end
 ```

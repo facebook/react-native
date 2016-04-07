@@ -17,7 +17,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.os.SystemClock;
 import android.util.LayoutDirection;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,11 +25,12 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.toolbar.events.ToolbarClickEvent;
 
@@ -131,7 +131,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
           @Override
           public void onClick(View v) {
             mEventDispatcher.dispatchEvent(
-                new ToolbarClickEvent(view.getId(), SystemClock.uptimeMillis(), -1));
+                new ToolbarClickEvent(view.getId(), SystemClock.nanoTime(), -1));
           }
         });
 
@@ -142,7 +142,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
             mEventDispatcher.dispatchEvent(
                 new ToolbarClickEvent(
                     view.getId(),
-                    SystemClock.uptimeMillis(),
+                    SystemClock.nanoTime(),
                     menuItem.getOrder()));
             return true;
           }

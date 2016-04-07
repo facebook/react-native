@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 
 import android.text.Spannable;
 import android.util.TypedValue;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
@@ -23,20 +22,16 @@ import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewDefaults;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactTextShadowNode;
 import com.facebook.react.views.text.ReactTextUpdate;
 
 @VisibleForTesting
 public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     CSSNode.MeasureFunction {
-
-  private static final int MEASURE_SPEC = View.MeasureSpec.makeMeasureSpec(
-      ViewGroup.LayoutParams.WRAP_CONTENT,
-      View.MeasureSpec.UNSPECIFIED);
 
   private @Nullable EditText mEditText;
   private @Nullable float[] mComputedPadding;
@@ -88,7 +83,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
       editText.setLines(mNumberOfLines);
     }
 
-    editText.measure(MEASURE_SPEC, MEASURE_SPEC);
+    editText.measure(0 /* unspecified */, 0 /* unspecified */);
     measureOutput.height = editText.getMeasuredHeight();
   }
 

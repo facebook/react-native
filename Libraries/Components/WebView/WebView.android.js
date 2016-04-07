@@ -11,6 +11,7 @@
 'use strict';
 
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
+var ProgressBarAndroid = require('ProgressBarAndroid');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
@@ -18,7 +19,7 @@ var UIManager = require('UIManager');
 var View = require('View');
 
 var deprecatedPropType = require('deprecatedPropType');
-var keyMirror = require('keyMirror');
+var keyMirror = require('fbjs/lib/keyMirror');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
@@ -32,6 +33,15 @@ var WebViewState = keyMirror({
   LOADING: null,
   ERROR: null,
 });
+
+var defaultRenderLoading = () => (
+  <View style={styles.loadingView}>
+    <ProgressBarAndroid
+      style={styles.loadingProgressBar}
+      styleAttr="Inverse"
+    />
+  </View>
+);
 
 /**
  * Renders a native WebView.
@@ -123,6 +133,11 @@ var WebView = React.createClass({
     injectedJavaScript: PropTypes.string,
 
     /**
+     * Sets whether the webpage scales to fit the view and the user can change the scale.
+     */
+    scalesPageToFit: PropTypes.bool,
+
+    /**
      * Sets the user-agent for this WebView. The user-agent can also be set in native using
      * WebViewConfig. This prop will overwrite that config.
      */
@@ -132,6 +147,12 @@ var WebView = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
+
+    /**
+     * Determines whether HTML5 audio & videos require the user to tap before they can
+     * start playing. The default value is `false`.
+     */
+    mediaPlaybackRequiresUserAction: PropTypes.bool,
   },
 
   getInitialState: function() {
@@ -139,6 +160,13 @@ var WebView = React.createClass({
       viewState: WebViewState.IDLE,
       lastErrorEvent: null,
       startInLoadingState: true,
+    };
+  },
+
+  getDefaultProps: function() {
+    return {
+      javaScriptEnabled : true,
+      scalesPageToFit: true,
     };
   },
 
@@ -152,7 +180,7 @@ var WebView = React.createClass({
     var otherView = null;
 
    if (this.state.viewState === WebViewState.LOADING) {
-      otherView = this.props.renderLoading && this.props.renderLoading();
+      otherView = (this.props.renderLoading || defaultRenderLoading)();
     } else if (this.state.viewState === WebViewState.ERROR) {
       var errorEvent = this.state.lastErrorEvent;
       otherView = this.props.renderError && this.props.renderError(
@@ -170,23 +198,13 @@ var WebView = React.createClass({
       webViewStyles.push(styles.hidden);
     }
 
-    var {javaScriptEnabled, domStorageEnabled} = this.props;
-    if (this.props.javaScriptEnabledAndroid) {
-      console.warn('javaScriptEnabledAndroid is deprecated. Use javaScriptEnabled instead');
-      javaScriptEnabled = this.props.javaScriptEnabledAndroid;
-    }
-    if (this.props.domStorageEnabledAndroid) {
-      console.warn('domStorageEnabledAndroid is deprecated. Use domStorageEnabled instead');
-      domStorageEnabled = this.props.domStorageEnabledAndroid;
-    }
-
     var source = this.props.source || {};
     if (this.props.html) {
       source.html = this.props.html;
     } else if (this.props.url) {
       source.uri = this.props.url;
     }
-    
+
     if (source.method === 'POST' && source.headers) {
       console.warn('WebView: `source.headers` is not supported when using POST.');
     } else if (source.method === 'GET' && source.body) {
@@ -199,16 +217,18 @@ var WebView = React.createClass({
         key="webViewKey"
         style={webViewStyles}
         source={resolveAssetSource(source)}
+        scalesPageToFit={this.props.scalesPageToFit}
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
-        javaScriptEnabled={javaScriptEnabled}
-        domStorageEnabled={domStorageEnabled}
+        javaScriptEnabled={this.props.javaScriptEnabled}
+        domStorageEnabled={this.props.domStorageEnabled}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         onLoadingStart={this.onLoadingStart}
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
         testID={this.props.testID}
+        mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
       />;
 
     return (
@@ -296,6 +316,14 @@ var styles = StyleSheet.create({
   hidden: {
     height: 0,
     flex: 0, // disable 'flex:1' when hiding a View
+  },
+  loadingView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingProgressBar: {
+    height: 20,
   },
 });
 

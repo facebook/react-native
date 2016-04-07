@@ -15,11 +15,8 @@
 # Ignore react and fbjs where there are overlaps, but don't ignore
 # anything that react-native relies on
 .*/node_modules/fbjs/lib/Map.js
-.*/node_modules/fbjs/lib/Promise.js
 .*/node_modules/fbjs/lib/fetch.js
 .*/node_modules/fbjs/lib/ExecutionEnvironment.js
-.*/node_modules/fbjs/lib/isEmpty.js
-.*/node_modules/fbjs/lib/crc32.js
 .*/node_modules/fbjs/lib/ErrorUtils.js
 
 # Flow has a built-in definition for the 'react' module which we prefer to use
@@ -27,6 +24,11 @@
 .*/node_modules/react/react.js
 .*/node_modules/react/lib/React.js
 .*/node_modules/react/lib/ReactDOM.js
+
+.*/__mocks__/.*
+.*/__tests__/.*
+
+.*/commoner/test/source/widget/share.js
 
 # Ignore commoner tests
 .*/node_modules/commoner/test/.*
@@ -40,13 +42,41 @@
 # Ignore Website
 .*/website/.*
 
+# Ignore generators
+.*/local-cli/generator.*
+
+# Ignore BUCK generated folders
+.*\.buckd/
+
+.*/node_modules/is-my-json-valid/test/.*\.json
+.*/node_modules/iconv-lite/encodings/tables/.*\.json
+.*/node_modules/y18n/test/.*\.json
+.*/node_modules/spdx-license-ids/spdx-license-ids.json
+.*/node_modules/spdx-exceptions/index.json
+.*/node_modules/resolve/test/subdirs/node_modules/a/b/c/x.json
+.*/node_modules/resolve/lib/core.json
+.*/node_modules/jsonparse/samplejson/.*\.json
+.*/node_modules/json5/test/.*\.json
+.*/node_modules/ua-parser-js/test/.*\.json
+.*/node_modules/builtin-modules/builtin-modules.json
+.*/node_modules/binary-extensions/binary-extensions.json
+.*/node_modules/url-regex/tlds.json
+.*/node_modules/joi/.*\.json
+.*/node_modules/isemail/.*\.json
+.*/node_modules/tr46/.*\.json
+
+
 [include]
 
 [libs]
 Libraries/react-native/react-native-interface.js
+flow/
 
 [options]
 module.system=haste
+
+esproposal.class_static_fields=enable
+esproposal.class_instance_fields=enable
 
 munge_underscores=true
 
@@ -57,9 +87,9 @@ suppress_type=$FlowIssue
 suppress_type=$FlowFixMe
 suppress_type=$FixMe
 
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(>=0\\.\\(2[0-1]\\|1[0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)
-suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(>=0\\.\\(2[0-1]\\|1[0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)?:? #[0-9]+
+suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(>=0\\.\\(2[0-2]\\|1[0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)
+suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(>=0\\.\\(2[0-2]\\|1[0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)?:? #[0-9]+
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 
 [version]
-0.21.0
+^0.22.0

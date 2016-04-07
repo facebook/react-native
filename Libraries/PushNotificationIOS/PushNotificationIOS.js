@@ -13,7 +13,7 @@
 
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var RCTPushNotificationManager = require('NativeModules').PushNotificationManager;
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 var _notifHandlers = new Map();
 var _initialNotification = RCTPushNotificationManager &&
@@ -79,7 +79,10 @@ class PushNotificationIOS {
    * details is an object containing:
    *
    * - `alertBody` : The message displayed in the notification alert.
+   * - `alertAction` : The "action" displayed beneath an actionable notification. Defaults to "view";
    * - `soundName` : The sound played when the notification is fired (optional).
+   * - `category`  : The category of this notification, required for actionable notifications (optional).
+   * - `userInfo`  : An optional object containing additional notification data.
    */
   static presentLocalNotification(details: Object) {
     RCTPushNotificationManager.presentLocalNotification(details);
@@ -92,7 +95,9 @@ class PushNotificationIOS {
    *
    * - `fireDate` : The date and time when the system should deliver the notification.
    * - `alertBody` : The message displayed in the notification alert.
+   * - `alertAction` : The "action" displayed beneath an actionable notification. Defaults to "view";
    * - `soundName` : The sound played when the notification is fired (optional).
+   * - `category`  : The category of this notification, required for actionable notifications (optional).
    * - `userInfo` : An optional object containing additional notification data.
    */
   static scheduleLocalNotification(details: Object) {
@@ -132,12 +137,14 @@ class PushNotificationIOS {
   }
 
   /**
-   * Attaches a listener to remote notification events while the app is running
+   * Attaches a listener to remote or local notification events while the app is running
    * in the foreground or the background.
    *
    * Valid events are:
    *
    * - `notification` : Fired when a remote notification is received. The
+   *   handler will be invoked with an instance of `PushNotificationIOS`.
+   * - `localNotification` : Fired when a local notification is received. The
    *   handler will be invoked with an instance of `PushNotificationIOS`.
    * - `register`: Fired when the user registers for remote notifications. The
    *   handler will be invoked with a hex string representing the deviceToken.

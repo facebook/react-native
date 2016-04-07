@@ -25,7 +25,7 @@ const TimePickerModule = require('NativeModules').TimePickerAndroid;
  *     minute: 0,
  *     is24Hour: false, // Will display '2 PM'
  *   });
- *   if (action !== DatePickerAndroid.dismissedAction) {
+ *   if (action !== TimePickerAndroid.dismissedAction) {
  *     // Selected hour (0-23), minute (0-59)
  *   }
  * } catch ({code, message}) {
@@ -62,6 +62,6 @@ class TimePickerAndroid {
    * The dialog has been dismissed.
    */
   static get dismissedAction() { return 'dismissedAction'; }
-};
+}
 
 module.exports = TimePickerAndroid;

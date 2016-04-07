@@ -54,7 +54,9 @@ function loadModuleImplementation(moduleId, module) {
   // The systrace module will expose itself on the require function so that
   // it can be used here.
   // TODO(davidaurelio) Scan polyfills for dependencies, too (t9759686)
-  const {Systrace} = require;
+  if (__DEV__) {
+    var {Systrace} = require;
+  }
 
   const exports = module.exports = {};
   const {factory} = module;
@@ -80,7 +82,7 @@ function unknownModuleError(id) {
   let message = 'Requiring unknown module "' + id + '".';
   if (__DEV__) {
     message +=
-      'If you are sure the module is there, try restarting the packager.';
+      'If you are sure the module is there, try restarting the packager or running "npm install".';
   }
   return Error(message);
 }

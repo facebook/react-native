@@ -61,7 +61,7 @@ On Android, the Platform module can be also used to detect which is the version 
 ```javascript
 var {Platform} = React;
 
-if(Platform.Version === '5.0'){
+if(Platform.Version === 21){
   console.log('Running on Lollipop!');
 }
 ```

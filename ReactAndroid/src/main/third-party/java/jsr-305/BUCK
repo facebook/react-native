@@ -1,7 +1,7 @@
 prebuilt_jar(
     name = 'jsr-305',
     binary_jar = ':jsr305-binary-jar',
-    visibility = ['//ReactAndroid/...',],
+    visibility = ['PUBLIC'],
 )
 
 remote_file(

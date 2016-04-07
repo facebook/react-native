@@ -70,12 +70,15 @@ function getExample(componentName, componentPlatform) {
 
 // Determines whether a component should have a link to a runnable example
 
-function isRunnable(componentName) {
-  if (componentName === 'AlertIOS') {
-    return true;
+function isRunnable(componentName, componentPlatform) {
+  var path = '../Examples/UIExplorer/' + componentName + 'Example.js';
+  if (!fs.existsSync(path)) {
+    path = '../Examples/UIExplorer/' + componentName + 'Example.'+ componentPlatform +'.js';
+    if (!fs.existsSync(path)) {
+      return false;
+    }
   }
-
-  return false;
+  return true;
 }
 
 // Hide a component from the sidebar by making it return false from
@@ -136,7 +139,7 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
     'platform: ' + componentPlatform,
     'next: ' + next,
     'sidebar: ' + shouldDisplayInSidebar(componentName),
-    'runnable:' + isRunnable(componentName),
+    'runnable:' + isRunnable(componentName, componentPlatform),
     'path:' + json.filepath,
     '---',
     JSON.stringify(json, null, 2),
@@ -203,10 +206,10 @@ var components = [
   '../Libraries/Components/Picker/Picker.js',
   '../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.android.js',
   '../Libraries/Components/ProgressViewIOS/ProgressViewIOS.ios.js',
-  '../Libraries/PullToRefresh/PullToRefreshViewAndroid.android.js',
   '../Libraries/Components/RefreshControl/RefreshControl.js',
   '../Libraries/Components/ScrollView/ScrollView.js',
   '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
+  '../Libraries/Components/Slider/Slider.js',
   '../Libraries/Components/SliderIOS/SliderIOS.ios.js',
   '../Libraries/Components/StatusBar/StatusBar.js',
   '../Libraries/Components/Switch/Switch.js',
@@ -235,6 +238,7 @@ var apis = [
   '../Libraries/Storage/AsyncStorage.js',
   '../Libraries/Utilities/BackAndroid.android.js',
   '../Libraries/CameraRoll/CameraRoll.js',
+  '../Libraries/Components/Clipboard/Clipboard.js',
   '../Libraries/Components/DatePickerAndroid/DatePickerAndroid.android.js',
   '../Libraries/Utilities/Dimensions.js',
   '../Libraries/Components/Intent/IntentAndroid.android.js',
@@ -252,6 +256,7 @@ var apis = [
   '../Libraries/Components/TimePickerAndroid/TimePickerAndroid.android.js',
   '../Libraries/Components/ToastAndroid/ToastAndroid.android.js',
   '../Libraries/Vibration/VibrationIOS.ios.js',
+  '../Libraries/Vibration/Vibration.js',
 ];
 
 var stylesWithPermalink = [

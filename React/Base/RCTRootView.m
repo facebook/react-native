@@ -359,7 +359,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
 {
   _backgroundColor = backgroundColor;
   if (self.reactTag && _bridge.isValid) {
-    [_bridge.uiManager setBackgroundColor:backgroundColor forRootView:self];
+    [_bridge.uiManager setBackgroundColor:backgroundColor forView:self];
   }
 }
 

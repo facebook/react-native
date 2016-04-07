@@ -157,11 +157,6 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   absolutePosition.x += node->layout.position[CSS_LEFT];
   absolutePosition.y += node->layout.position[CSS_TOP];
 
-  node->layout.dimensions[CSS_WIDTH] = CSS_UNDEFINED;
-  node->layout.dimensions[CSS_HEIGHT] = CSS_UNDEFINED;
-  node->layout.position[CSS_LEFT] = 0;
-  node->layout.position[CSS_TOP] = 0;
-
   for (int i = 0; i < node->children_count; ++i) {
     RCTShadowView *child = (RCTShadowView *)_reactSubviews[i];
     [child applyLayoutNode:node->get_child(node->context, i)
@@ -214,40 +209,6 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   }
 }
 
-
-- (void)applySizeConstraints
-{
-  switch (_sizeFlexibility) {
-    case RCTRootViewSizeFlexibilityNone:
-      break;
-    case RCTRootViewSizeFlexibilityWidth:
-      _cssNode->style.dimensions[CSS_WIDTH] = CSS_UNDEFINED;
-      break;
-    case RCTRootViewSizeFlexibilityHeight:
-      _cssNode->style.dimensions[CSS_HEIGHT] = CSS_UNDEFINED;
-      break;
-    case RCTRootViewSizeFlexibilityWidthAndHeight:
-      _cssNode->style.dimensions[CSS_WIDTH] = CSS_UNDEFINED;
-      _cssNode->style.dimensions[CSS_HEIGHT] = CSS_UNDEFINED;
-      break;
-  }
-}
-
-- (NSSet<RCTShadowView *> *)collectRootUpdatedFrames
-{
-  RCTAssert(RCTIsReactRootView(self.reactTag),
-            @"The method has been called on a view with react tag %@, which is not a root view", self.reactTag);
-
-  [self applySizeConstraints];
-
-  [self fillCSSNode:_cssNode];
-  layoutNode(_cssNode, CSS_UNDEFINED, CSS_UNDEFINED, CSS_DIRECTION_INHERIT);
-
-  NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];
-  [self applyLayoutNode:_cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
-  return viewsWithNewFrame;
-}
-
 - (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor
 {
   CGPoint offset = CGPointZero;
@@ -270,7 +231,6 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   if ((self = [super init])) {
 
     _frame = CGRectMake(0, 0, CSS_UNDEFINED, CSS_UNDEFINED);
-    _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
 
     for (unsigned int ii = 0; ii < META_PROP_COUNT; ii++) {
       _paddingMetaProps[ii] = CSS_UNDEFINED;
@@ -533,6 +493,28 @@ RCT_POSITION_PROPERTY(Left, left, LEFT)
   _cssNode->style.dimensions[CSS_WIDTH] = CGRectGetWidth(frame);
   _cssNode->style.dimensions[CSS_HEIGHT] = CGRectGetHeight(frame);
   [self dirtyLayout];
+}
+
+static inline BOOL RCTAssignSuggestedDimension(css_node_t *css_node, int dimension, CGFloat amount)
+{
+  if (amount != UIViewNoIntrinsicMetric
+      && isnan(css_node->style.dimensions[dimension])) {
+    css_node->style.dimensions[dimension] = amount;
+    return YES;
+  }
+  return NO;
+}
+
+- (void)setIntrinsicContentSize:(CGSize)size
+{
+  if (_cssNode->style.flex == 0) {
+    BOOL dirty = NO;
+    dirty |= RCTAssignSuggestedDimension(_cssNode, CSS_HEIGHT, size.height);
+    dirty |= RCTAssignSuggestedDimension(_cssNode, CSS_WIDTH, size.width);
+    if (dirty) {
+      [self dirtyLayout];
+    }
+  }
 }
 
 - (void)setTopLeft:(CGPoint)topLeft

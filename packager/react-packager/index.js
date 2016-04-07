@@ -10,10 +10,10 @@
 
 require('../babelRegisterOnly')([/react-packager\/src/]);
 
+require('node-haste/lib/fastpath').replace();
 useGracefulFs();
 
 var debug = require('debug');
-var omit = require('underscore').omit;
 var Activity = require('./src/Activity');
 
 exports.createServer = createServer;
@@ -115,6 +115,16 @@ function createNonPersistentServer(options) {
   }
 
   return createServer(options);
+}
+
+function omit(obj, blacklistedKeys) {
+  return Object.keys(obj).reduce((clone, key) => {
+    if (blacklistedKeys.indexOf(key) === -1) {
+      clone[key] = obj[key];
+    }
+
+    return clone;
+  }, {});
 }
 
 // we need to listen on a socket as soon as a server is created, but only once.

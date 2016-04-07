@@ -18,7 +18,7 @@ Since React makes no assumptions about the rest of your technology stack, it's e
 
 In your app's `build.gradle` file add the React Native dependency:
 
-    compile 'com.facebook.react:react-native:0.17.+'
+    compile 'com.facebook.react:react-native:0.20.+'
 
 You can find the latest version of the react-native library on [Maven Central](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.facebook.react%22%20AND%20a%3A%22react-native%22). Next, make sure you have the Internet permission in your `AndroidManifest.xml`:
 
@@ -121,7 +121,7 @@ In your project's root folder, run:
 
 This creates a node module for your app and adds the `react-native` npm dependency. Now open the newly created `package.json` file and add this under `scripts`:
 
-    "start": "node_modules/react-native/packager/packager.sh"
+    "start": "node node_modules/react-native/local-cli/cli.js start"
 
 Copy & paste the following code to `index.android.js` in your root folder — it's a barebones React Native app:
 

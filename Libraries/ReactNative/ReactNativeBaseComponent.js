@@ -19,8 +19,8 @@ var ReactMultiChild = require('ReactMultiChild');
 var UIManager = require('UIManager');
 
 var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
-var invariant = require('invariant');
-var warning = require('warning');
+var invariant = require('fbjs/lib/invariant');
+var warning = require('fbjs/lib/warning');
 
 var registrationNames = ReactNativeEventEmitter.registrationNames;
 var putListener = ReactNativeEventEmitter.putListener;
@@ -185,7 +185,11 @@ ReactNativeBaseComponent.Mixin = {
     var tag = ReactNativeTagHandles.allocateTag();
 
     if (__DEV__) {
-      deepFreezeAndThrowOnMutationInDev(this._currentElement.props);
+      for (var key in this.viewConfig.validAttributes) {
+        if (this._currentElement.props.hasOwnProperty(key)) {
+          deepFreezeAndThrowOnMutationInDev(this._currentElement.props[key]);
+        }
+      }
     }
 
     var updatePayload = ReactNativeAttributePayload.create(

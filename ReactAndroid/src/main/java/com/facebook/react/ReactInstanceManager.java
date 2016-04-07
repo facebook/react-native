@@ -41,8 +41,8 @@ import com.facebook.react.uimanager.ViewManager;
  * The lifecycle of the instance of {@link ReactInstanceManager} should be bound to the activity
  * that owns the {@link ReactRootView} that is used to render react application using this
  * instance manager (see {@link ReactRootView#startReactApplication}). It's required to pass
- * owning activity's lifecycle events to the instance manager (see {@link #onPause},
- * {@link #onDestroy} and {@link #onResume}).
+ * owning activity's lifecycle events to the instance manager (see {@link #onHostPause},
+ * {@link #onHostDestroy} and {@link #onHostResume}).
  *
  * Ideally, this would be an interface, but because of the API used by earlier versions, it has to
  * have a static method, and so cannot (in Java < 8), be one.
@@ -61,6 +61,8 @@ public abstract class ReactInstanceManager {
   }
 
   public abstract DevSupportManager getDevSupportManager();
+
+  public abstract MemoryPressureRouter getMemoryPressureRouter();
 
   /**
    * Trigger react context initialization asynchronously in a background async task. This enables
@@ -84,22 +86,32 @@ public abstract class ReactInstanceManager {
    * consume the event, mDefaultBackButtonImpl will be invoked at the end of the round trip to JS.
    */
   public abstract void onBackPressed();
-  public abstract void onPause();
+
+  /**
+   * Call this from {@link Activity#onPause()}. This notifies any listening modules so they can do
+   * any necessary cleanup.
+   */
+  public abstract void onHostPause();
   /**
    * Use this method when the activity resumes to enable invoking the back button directly from JS.
    *
    * This method retains an instance to provided mDefaultBackButtonImpl. Thus it's
    * important to pass from the activity instance that owns this particular instance of {@link
-   * ReactInstanceManager}, so that once this instance receive {@link #onDestroy} event it will
+   * ReactInstanceManager}, so that once this instance receive {@link #onHostDestroy} event it will
    * clear the reference to that defaultBackButtonImpl.
    *
    * @param defaultBackButtonImpl a {@link DefaultHardwareBackBtnHandler} from an Activity that owns
    * this instance of {@link ReactInstanceManager}.
    */
-  public abstract void onResume(
+  public abstract void onHostResume(
     Activity activity,
     DefaultHardwareBackBtnHandler defaultBackButtonImpl);
-  public abstract void onDestroy();
+
+  /**
+   * Call this from {@link Activity#onDestroy()}. This notifies any listening modules so they can do
+   * any necessary cleanup.
+   */
+  public abstract void onHostDestroy();
   public abstract void onActivityResult(int requestCode, int resultCode, Intent data);
   public abstract void showDevOptionsDialog();
 
@@ -126,6 +138,11 @@ public abstract class ReactInstanceManager {
   public abstract void detachRootView(ReactRootView rootView);
 
   /**
+   * Destroy this React instance and the attached JS context.
+   */
+  public abstract void destroy();
+
+  /**
    * Uses configured {@link ReactPackage} instances to create all view managers
    */
   public abstract List<ViewManager> createAllViewManagers(
@@ -136,8 +153,15 @@ public abstract class ReactInstanceManager {
    */
   public abstract void addReactInstanceEventListener(ReactInstanceEventListener listener);
 
+  /**
+   * Remove a listener previously added with {@link #addReactInstanceEventListener}.
+   */
+  public abstract void removeReactInstanceEventListener(ReactInstanceEventListener listener);
+
   @VisibleForTesting
   public abstract @Nullable ReactContext getCurrentReactContext();
+
+  public abstract LifecycleState getLifecycleState();
 
   /**
    * Creates a builder that is capable of creating an instance of {@link ReactInstanceManagerImpl}.
@@ -161,6 +185,7 @@ public abstract class ReactInstanceManager {
     protected @Nullable LifecycleState mInitialLifecycleState;
     protected @Nullable UIImplementationProvider mUIImplementationProvider;
     protected @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
+    protected @Nullable JSCConfig mJSCConfig;
 
     protected Builder() {
     }
@@ -254,6 +279,11 @@ public abstract class ReactInstanceManager {
       return this;
     }
 
+    public Builder setJSCConfig(JSCConfig jscConfig) {
+      mJSCConfig = jscConfig;
+      return this;
+    }
+
     /**
      * Instantiates a new {@link ReactInstanceManagerImpl}.
      * Before calling {@code build}, the following must be called:
@@ -287,7 +317,8 @@ public abstract class ReactInstanceManager {
           mBridgeIdleDebugListener,
           Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
           mUIImplementationProvider,
-          mNativeModuleCallExceptionHandler);
+          mNativeModuleCallExceptionHandler,
+          mJSCConfig);
     }
   }
 }

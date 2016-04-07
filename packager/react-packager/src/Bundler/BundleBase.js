@@ -8,7 +8,6 @@
  */
 'use strict';
 
-const _ = require('underscore');
 const ModuleTransport = require('../lib/ModuleTransport');
 
 class BundleBase {
@@ -32,11 +31,19 @@ class BundleBase {
   }
 
   addModule(module) {
-    if (!module instanceof ModuleTransport) {
+    if (!(module instanceof ModuleTransport)) {
       throw new Error('Expeceted a ModuleTransport object');
     }
 
-    this._modules.push(module);
+    return this._modules.push(module) - 1;
+  }
+
+  replaceModuleAt(index, module) {
+    if (!(module instanceof ModuleTransport)) {
+      throw new Error('Expeceted a ModuleTransport object');
+    }
+
+    this._modules[index] = module;
   }
 
   getModules() {
@@ -53,9 +60,8 @@ class BundleBase {
 
   finalize(options) {
     Object.freeze(this._modules);
-    Object.seal(this._modules);
     Object.freeze(this._assets);
-    Object.seal(this._assets);
+
     this._finalized = true;
   }
 
@@ -66,7 +72,7 @@ class BundleBase {
       return this._source;
     }
 
-    this._source = _.pluck(this._modules, 'code').join('\n');
+    this._source = this._modules.map((module) => module.code).join('\n');
     return this._source;
   }
 
@@ -90,9 +96,8 @@ class BundleBase {
     bundle.setMainModuleId(json.mainModuleId);
 
     Object.freeze(bundle._modules);
-    Object.seal(bundle._modules);
     Object.freeze(bundle._assets);
-    Object.seal(bundle._assets);
+
     bundle._finalized = true;
   }
 }

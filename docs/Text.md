@@ -23,7 +23,7 @@ Behind the scenes, this is going to be converted to a flat `NSAttributedString` 
 
 ## Containers
 
-The `<Text>` element is special relative to layout: everything inside is no longer using the flexbox layout but using text layout. This means that elements inside of a `<Text>` are no longer rectangles, but wrap when they see the end of the line. 
+The `<Text>` element is special relative to layout: everything inside is no longer using the flexbox layout but using text layout. This means that elements inside of a `<Text>` are no longer rectangles, but wrap when they see the end of the line.
 
 ```javascript
 <Text>
@@ -63,7 +63,7 @@ When the browser is trying to render a text node, it's going to go all the way u
 In React Native, we are more strict about it: **you must wrap all the text nodes inside of a `<Text>` component**; you cannot have a text node directly under a `<View>`.
 
 ```javascript
-// BAD: will fatal, can't have a text node as child of a <View>
+// BAD: will raise exception, can't have a text node as child of a <View>
 <View>
   Some text
 </View>

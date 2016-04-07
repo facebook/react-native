@@ -12,6 +12,7 @@ package com.facebook.react.uimanager;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -385,7 +386,37 @@ public class UIViewOperationQueue {
     }
   }
 
-  private ArrayList<UIOperation> mOperations = new ArrayList<>();
+  private final class MeasureInWindowOperation implements UIOperation {
+
+    private final int mReactTag;
+    private final Callback mCallback;
+
+    private MeasureInWindowOperation(
+        final int reactTag,
+        final Callback callback) {
+      super();
+      mReactTag = reactTag;
+      mCallback = callback;
+    }
+
+    @Override
+    public void execute() {
+      try {
+        mNativeViewHierarchyManager.measureInWindow(mReactTag, mMeasureBuffer);
+      } catch (NoSuchNativeViewException e) {
+        // Invoke with no args to signal failure and to allow JS to clean up the callback
+        // handle.
+        mCallback.invoke();
+        return;
+      }
+
+      float x = PixelUtil.toDIPFromPixel(mMeasureBuffer[0]);
+      float y = PixelUtil.toDIPFromPixel(mMeasureBuffer[1]);
+      float width = PixelUtil.toDIPFromPixel(mMeasureBuffer[2]);
+      float height = PixelUtil.toDIPFromPixel(mMeasureBuffer[3]);
+      mCallback.invoke(x, y, width, height);
+    }
+  }
 
   private final class FindTargetForTouchOperation implements UIOperation {
 
@@ -461,13 +492,16 @@ public class UIViewOperationQueue {
 
   private final NativeViewHierarchyManager mNativeViewHierarchyManager;
   private final AnimationRegistry mAnimationRegistry;
-
   private final Object mDispatchRunnablesLock = new Object();
+  private final Object mNonBatchedOperationsLock = new Object();
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
   private final ReactApplicationContext mReactApplicationContext;
-
   @GuardedBy("mDispatchRunnablesLock")
   private final ArrayList<Runnable> mDispatchUIRunnables = new ArrayList<>();
+
+  private ArrayList<UIOperation> mOperations = new ArrayList<>();
+  @GuardedBy("mNonBatchedOperationsLock")
+  private ArrayDeque<UIOperation> mNonBatchedOperations = new ArrayDeque<>();
 
   private @Nullable NotThreadSafeViewHierarchyUpdateDebugListener mViewHierarchyUpdateDebugListener;
 
@@ -478,6 +512,10 @@ public class UIViewOperationQueue {
     mAnimationRegistry = nativeViewHierarchyManager.getAnimationRegistry();
     mDispatchUIFrameCallback = new DispatchUIFrameCallback(reactContext);
     mReactApplicationContext = reactContext;
+  }
+
+  /*package*/ NativeViewHierarchyManager getNativeViewHierarchyManager() {
+    return mNativeViewHierarchyManager;
   }
 
   public void setViewHierarchyUpdateDebugListener(
@@ -568,12 +606,14 @@ public class UIViewOperationQueue {
       int viewReactTag,
       String viewClassName,
       @Nullable ReactStylesDiffMap initialProps) {
-    mOperations.add(
+    synchronized (mNonBatchedOperationsLock) {
+      mNonBatchedOperations.addLast(
         new CreateViewOperation(
-            themedContext,
-            viewReactTag,
-            viewClassName,
-            initialProps));
+          themedContext,
+          viewReactTag,
+          viewClassName,
+          initialProps));
+    }
   }
 
   public void enqueueUpdateProperties(int reactTag, String className, ReactStylesDiffMap props) {
@@ -634,6 +674,14 @@ public class UIViewOperationQueue {
         new MeasureOperation(reactTag, callback));
   }
 
+  public void enqueueMeasureInWindow(
+      final int reactTag,
+      final Callback callback) {
+    mOperations.add(
+        new MeasureInWindowOperation(reactTag, callback)
+    );
+  }
+
   public void enqueueFindTargetForTouch(
       final int reactTag,
       final float targetX,
@@ -655,6 +703,17 @@ public class UIViewOperationQueue {
       mOperations = new ArrayList<>();
     }
 
+    final UIOperation[] nonBatchedOperations;
+    synchronized (mNonBatchedOperationsLock) {
+      if (!mNonBatchedOperations.isEmpty()) {
+        nonBatchedOperations =
+          mNonBatchedOperations.toArray(new UIOperation[mNonBatchedOperations.size()]);
+        mNonBatchedOperations.clear();
+      } else {
+        nonBatchedOperations = null;
+      }
+    }
+
     if (mViewHierarchyUpdateDebugListener != null) {
       mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateEnqueued();
     }
@@ -668,6 +727,14 @@ public class UIViewOperationQueue {
                    .arg("BatchId", batchId)
                    .flush();
                try {
+                 // All nonBatchedOperations should be executed before regular operations as
+                 // regular operations may depend on them
+                 if (nonBatchedOperations != null) {
+                   for (UIOperation op : nonBatchedOperations) {
+                     op.execute();
+                   }
+                 }
+
                  if (operations != null) {
                    for (int i = 0; i < operations.size(); i++) {
                      operations.get(i).execute();
@@ -716,12 +783,22 @@ public class UIViewOperationQueue {
    */
   private class DispatchUIFrameCallback extends GuardedChoreographerFrameCallback {
 
+    private static final int MIN_TIME_LEFT_IN_FRAME_TO_SCHEDULE_MORE_WORK_MS = 8;
+    private static final int FRAME_TIME_MS = 16;
+
     private DispatchUIFrameCallback(ReactContext reactContext) {
       super(reactContext);
     }
 
     @Override
     public void doFrameGuarded(long frameTimeNanos) {
+      Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "dispatchNonBatchedUIOperations");
+      try {
+        dispatchPendingNonBatchedOperations(frameTimeNanos);
+      } finally {
+        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      }
+
       synchronized (mDispatchRunnablesLock) {
         for (int i = 0; i < mDispatchUIRunnables.size(); i++) {
           mDispatchUIRunnables.get(i).run();
@@ -730,7 +807,27 @@ public class UIViewOperationQueue {
       }
 
       ReactChoreographer.getInstance().postFrameCallback(
-          ReactChoreographer.CallbackType.DISPATCH_UI, this);
+        ReactChoreographer.CallbackType.DISPATCH_UI, this);
+    }
+
+    private void dispatchPendingNonBatchedOperations(long frameTimeNanos) {
+      while (true) {
+        long timeLeftInFrame = FRAME_TIME_MS - ((System.nanoTime() - frameTimeNanos) / 1000000);
+        if (timeLeftInFrame < MIN_TIME_LEFT_IN_FRAME_TO_SCHEDULE_MORE_WORK_MS) {
+          break;
+        }
+
+        UIOperation nextOperation;
+        synchronized (mNonBatchedOperationsLock) {
+          if (mNonBatchedOperations.isEmpty()) {
+            break;
+          }
+
+          nextOperation = mNonBatchedOperations.pollFirst();
+        }
+
+        nextOperation.execute();
+      }
     }
   }
 }

@@ -54,6 +54,15 @@ var TouchableBounce = React.createClass({
      * is disabled. Ensure you pass in a constant to reduce memory allocations.
      */
     pressRetentionOffset: EdgeInsetsPropType,
+    /**
+     * This defines how far your touch can start away from the button. This is
+     * added to `pressRetentionOffset` when moving off of the button.
+     * ** NOTE **
+     * The touch area never extends past the parent view bounds and the Z-index
+     * of sibling views always takes precedence if a touch hits two overlapping
+     * views.
+     */
+    hitSlop: EdgeInsetsPropType,
   },
 
   getInitialState: function(): State {
@@ -108,6 +117,10 @@ var TouchableBounce = React.createClass({
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 
+  touchableGetHitSlop: function(): ?Object {
+    return this.props.hitSlop;
+  },
+
   touchableGetHighlightDelayMS: function(): number {
     return 0;
   },
@@ -121,6 +134,7 @@ var TouchableBounce = React.createClass({
         accessibilityComponentType={this.props.accessibilityComponentType}
         accessibilityTraits={this.props.accessibilityTraits}
         testID={this.props.testID}
+        hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
         onResponderGrant={this.touchableHandleResponderGrant}

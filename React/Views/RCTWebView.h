@@ -35,6 +35,7 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, copy) NSString *injectedJavaScript;
+@property (nonatomic, assign) BOOL scalesPageToFit;
 
 - (void)goForward;
 - (void)goBack;

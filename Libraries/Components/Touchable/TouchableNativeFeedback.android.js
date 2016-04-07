@@ -44,6 +44,8 @@ var TouchableView = requireNativeComponent('RCTView', null, {
   }
 });
 
+type Event = Object;
+
 var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
@@ -138,28 +140,32 @@ var TouchableNativeFeedback = React.createClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function() {
-    this.props.onPressIn && this.props.onPressIn();
+  touchableHandleActivePressIn: function(e: Event) {
+    this.props.onPressIn && this.props.onPressIn(e);
     this._dispatchPressedStateChange(true);
     this._dispatchHotspotUpdate(this.pressInLocation.locationX, this.pressInLocation.locationY);
   },
 
-  touchableHandleActivePressOut: function() {
-    this.props.onPressOut && this.props.onPressOut();
+  touchableHandleActivePressOut: function(e: Event) {
+    this.props.onPressOut && this.props.onPressOut(e);
     this._dispatchPressedStateChange(false);
   },
 
-  touchableHandlePress: function() {
-    this.props.onPress && this.props.onPress();
+  touchableHandlePress: function(e: Event) {
+    this.props.onPress && this.props.onPress(e);
   },
 
-  touchableHandleLongPress: function() {
-    this.props.onLongPress && this.props.onLongPress();
+  touchableHandleLongPress: function(e: Event) {
+    this.props.onLongPress && this.props.onLongPress(e);
   },
 
   touchableGetPressRectOffset: function() {
     // Always make sure to predeclare a constant!
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
+  },
+
+  touchableGetHitSlop: function() {
+    return this.props.hitSlop;
   },
 
   touchableGetHighlightDelayMS: function() {
@@ -205,6 +211,7 @@ var TouchableNativeFeedback = React.createClass({
       accessibilityTraits: this.props.accessibilityTraits,
       testID: this.props.testID,
       onLayout: this.props.onLayout,
+      hitSlop: this.props.hitSlop,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this.touchableHandleResponderTerminationRequest,
       onResponderGrant: this.touchableHandleResponderGrant,

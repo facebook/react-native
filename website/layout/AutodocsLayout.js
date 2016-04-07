@@ -41,12 +41,12 @@ function renderType(type) {
     return '{' + Object.keys(type.value).map((key => key + ': ' + renderType(type.value[key]))).join(', ') + '}';
   }
 
-  if (type.name == 'union') {
+  if (type.name === 'union') {
     return type.value.map(renderType).join(', ');
   }
 
   if (type.name === 'arrayOf') {
-    return '[' + renderType(type.value) + ']';
+    return <span>[{renderType(type.value)}]</span>;
   }
 
   if (type.name === 'instanceOf') {
@@ -56,10 +56,10 @@ function renderType(type) {
   if (type.name === 'custom') {
     if (styleReferencePattern.test(type.raw)) {
       var name = type.raw.substring(0, type.raw.indexOf('.'));
-      return <a href={slugify(name) + '.html#style'}>{name}#style</a>
+      return <a href={'docs/' + slugify(name) + '.html#style'}>{name}#style</a>;
     }
     if (type.raw === 'ColorPropType') {
-      return <a href={'colors.html'}>color</a>
+      return <a href={'docs/colors.html'}>color</a>;
     }
     if (type.raw === 'EdgeInsetsPropType') {
       return '{top: number, left: number, bottom: number, right: number}';
@@ -140,7 +140,7 @@ var ComponentDoc = React.createClass({
     return (
       <div className="prop" key={name}>
         <Header level={4} className="propTitle" toSlug={name}>
-          <a href={slugify(name) + '.html#props'}>{name} props...</a>
+          <a href={'docs/' + slugify(name) + '.html#props'}>{name} props...</a>
         </Header>
       </div>
     );
@@ -175,15 +175,15 @@ var ComponentDoc = React.createClass({
           if (name === 'LayoutPropTypes') {
             name = 'Flexbox';
             link =
-              <a href={slugify(name) + '.html#proptypes'}>{name}...</a>;
+              <a href={'docs/' + slugify(name) + '.html#proptypes'}>{name}...</a>;
           } else if (name === 'TransformPropTypes') {
             name = 'Transforms';
             link =
-              <a href={slugify(name) + '.html#proptypes'}>{name}...</a>;
+              <a href={'docs/' + slugify(name) + '.html#proptypes'}>{name}...</a>;
           } else {
             name = name.replace('StylePropTypes', '');
             link =
-              <a href={slugify(name) + '.html#style'}>{name}#style...</a>;
+              <a href={'docs/' + slugify(name) + '.html#style'}>{name}#style...</a>;
           }
           return (
             <div className="prop" key={name}>
@@ -412,13 +412,17 @@ var EmbeddedSimulator = React.createClass({
 
     var metadata = this.props.metadata;
 
+    var imagePreview = metadata.platform === 'android'
+      ? <img alt="Run example in simulator" width="170" height="338" src="img/uiexplorer_main_android.png" />
+      : <img alt="Run example in simulator" width="170" height="356" src="img/uiexplorer_main_ios.png" />;
+
     return (
       <div className="column-left">
         <p><a className="modal-button-open"><strong>Run this example</strong></a></p>
         <div className="modal-button-open modal-button-open-img">
-          <img alt="Run example in simulator" width="170" height="358" src="img/alertIOS.png" />
+          {imagePreview}
         </div>
-        <Modal />
+        <Modal metadata={metadata} />
       </div>
     );
   }
@@ -426,9 +430,12 @@ var EmbeddedSimulator = React.createClass({
 
 var Modal = React.createClass({
   render: function() {
-    var appParams = {route: 'AlertIOS'};
+    var metadata = this.props.metadata;
+    var appParams = {route: metadata.title};
     var encodedParams = encodeURIComponent(JSON.stringify(appParams));
-    var url = `https://appetize.io/embed/bypdk4jnjra5uwyj2kzd2aenv4?device=iphone5s&scale=70&autoplay=false&orientation=portrait&deviceColor=white&params=${encodedParams}`;
+    var url = metadata.platform === 'android'
+      ? `https://appetize.io/embed/q7wkvt42v6bkr0pzt1n0gmbwfr?device=nexus5&scale=65&autoplay=false&orientation=portrait&osVersion=6.0&deviceColor=white&params=${encodedParams}`
+      : `https://appetize.io/embed/7vdfm9h3e6vuf4gfdm7r5rgc48?device=iphone6s&scale=60&autoplay=false&orientation=portrait&osVersion=9.2&deviceColor=white&params=${encodedParams}`;
 
     return (
       <div>
@@ -448,6 +455,14 @@ var Modal = React.createClass({
 });
 
 var Autodocs = React.createClass({
+  childContextTypes: {
+    permalink: React.PropTypes.string
+  },
+
+  getChildContext: function() {
+    return {permalink: this.props.metadata.permalink};
+  },
+
   renderFullDescription: function(docs) {
     if (!docs.fullDescription) {
       return;
@@ -506,8 +521,8 @@ var Autodocs = React.createClass({
             {this.renderFullDescription(docs)}
             {this.renderExample(docs, metadata)}
             <div className="docs-prevnext">
-              {metadata.previous && <a className="docs-prev" href={metadata.previous + '.html#content'}>&larr; Prev</a>}
-              {metadata.next && <a className="docs-next" href={metadata.next + '.html#content'}>Next &rarr;</a>}
+              {metadata.previous && <a className="docs-prev" href={'docs/' + metadata.previous + '.html#content'}>&larr; Prev</a>}
+              {metadata.next && <a className="docs-next" href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>}
             </div>
           </div>
 

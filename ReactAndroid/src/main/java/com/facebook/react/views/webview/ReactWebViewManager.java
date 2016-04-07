@@ -9,16 +9,21 @@
 
 package com.facebook.react.views.webview;
 
+import javax.annotation.Nullable;
+
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.facebook.catalyst.views.webview.events.TopLoadingErrorEvent;
-import com.facebook.catalyst.views.webview.events.TopLoadingFinishEvent;
-import com.facebook.catalyst.views.webview.events.TopLoadingStartEvent;
+import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
+import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
+import com.facebook.react.views.webview.events.TopLoadingStartEvent;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
@@ -27,6 +32,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.SystemClock;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -34,13 +40,6 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
-
-import java.io.UnsupportedEncodingException;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Nullable;
 
 /**
  * Manages instances of {@link WebView}
@@ -106,7 +105,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           webView,
           new TopLoadingStartEvent(
               webView.getId(),
-              SystemClock.uptimeMillis(),
+              SystemClock.nanoTime(),
               createWebViewEvent(webView, url)));
     }
 
@@ -129,7 +128,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
       dispatchEvent(
           webView,
-          new TopLoadingErrorEvent(webView.getId(), SystemClock.uptimeMillis(), eventData));
+          new TopLoadingErrorEvent(webView.getId(), SystemClock.nanoTime(), eventData));
     }
 
     @Override
@@ -140,7 +139,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           webView,
           new TopLoadingStartEvent(
               webView.getId(),
-              SystemClock.uptimeMillis(),
+              SystemClock.nanoTime(),
               createWebViewEvent(webView, url)));
     }
 
@@ -149,7 +148,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           webView,
           new TopLoadingFinishEvent(
               webView.getId(),
-              SystemClock.uptimeMillis(),
+              SystemClock.nanoTime(),
               createWebViewEvent(webView, url)));
     }
 
@@ -259,10 +258,16 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     view.getSettings().setJavaScriptEnabled(enabled);
   }
 
+  @ReactProp(name = "scalesPageToFit")
+  public void setScalesPageToFit(WebView view, boolean enabled) {
+    view.getSettings().setUseWideViewPort(!enabled);
+  }
+
   @ReactProp(name = "domStorageEnabled")
   public void setDomStorageEnabled(WebView view, boolean enabled) {
     view.getSettings().setDomStorageEnabled(enabled);
   }
+
 
   @ReactProp(name = "userAgent")
   public void setUserAgent(WebView view, @Nullable String userAgent) {
@@ -270,6 +275,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       // TODO(8496850): Fix incorrect behavior when property is unset (uA == null)
       view.getSettings().setUserAgentString(userAgent);
     }
+  }
+
+  @ReactProp(name = "mediaPlaybackRequiresUserAction")
+  public void setMediaPlaybackRequiresUserAction(WebView view, boolean requires) {
+    view.getSettings().setMediaPlaybackRequiresUserGesture(requires);
   }
 
   @ReactProp(name = "injectedJavaScript")

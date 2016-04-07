@@ -118,6 +118,7 @@ In a view controller that wants to manage this view, go ahead and add an outlet 
 @property (weak, nonatomic) IBOutlet ReactView *reactView;
 @end
 ```
+__NOTE__ For Swift apps there is no need for that.
 
 Here I disabled **AutoLayout** for simplicity. In real production world, you should turn on AutoLayout and setup constraints by yourself.
 
@@ -149,6 +150,34 @@ Then add it as a subview of the `ReactView`.
 rootView.frame = self.bounds;
 ```
 
+### Swift apps
+
+Add the following to ReactView.swift file:
+
+```
+import UIKit
+import React
+
+class ReactView: UIView {
+
+  let rootView: RCTRootView = RCTRootView(bundleURL: NSURL(string: "http://localhost:8081/index.ios.bundle?platform=ios"),
+    moduleName: "SimpleApp", initialProperties: nil, launchOptions: nil)
+
+  override func layoutSubviews() {
+    super.layoutSubviews()
+
+    loadReact()
+  }
+
+  func loadReact () {
+        addSubview(rootView)
+        rootView.frame = self.bounds
+  }
+}
+```
+
+And then make sure your view is added in a ViewContainer or story board file.
+
 ## Start Development Server
 
 In root directory, we need to start React Native development server.
@@ -157,7 +186,7 @@ In root directory, we need to start React Native development server.
 (JS_DIR=`pwd`/ReactComponent; cd node_modules/react-native; npm run start -- --root $JS_DIR)
 ```
 
-This command will start up a React Native development server within our CocoaPods dependency to build our bundled script. The `--root` option indicates the root of your React Native apps – this will be our `ReactComponents` directory containing the single `index.ios.js` file. This running server will package up the `index.ios.bundle` file accessible via `http://localhost:8081/index.ios.bundle`.
+This command will start up a React Native development server within our CocoaPods dependency to build our bundled script. The `--root` option indicates the root of your React Native apps – this will be our `ReactComponent` directory containing the single `index.ios.js` file. This running server will package up the `index.ios.bundle` file accessible via `http://localhost:8081/index.ios.bundle`.
 
 ## Update App Transport Security
 
@@ -193,4 +222,4 @@ Live reload and all of the debugging tools will work from the simulator (make su
 
 So under the hood, when `RCTRootView` is initialized, it will try to download, parse and run the bundle file from React Native development server. This means all you need to do is to implement your own container view or view controller for the `RCTRootView` – the `RCTRootView` ingests your bundled JS and renders your React components. Bravo!
 
-You can checkout full source code of a sample application [here](https://github.com/tjwudi/EmbededReactNativeExample).
+You can checkout full source code of a sample application [here](https://github.com/hfossli/ReactNativeIntegration).

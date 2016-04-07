@@ -42,11 +42,4 @@
     modal.classList.remove('modal-open');
   }
 
-  // Algolia
-  docsearch({
-    apiKey: 'e3d767b736584dbe6d4c35f7cf7d4633',
-    indexName: 'react-native',
-    inputSelector: '#algolia-doc-search'
-  });
-
 }());
