@@ -49,21 +49,18 @@ function cleanup {
 }
 trap cleanup EXIT
 
-# pack react-native into a .tgz file
-# TODO only run for android
-./gradlew :ReactAndroid:installArchives -Pjobs=1
-npm pack
-PACKAGE=$(pwd)/react-native-*.tgz
-
 # get react-native-cli dependencies
 cd react-native-cli
 npm pack
 CLI_PACKAGE=$(pwd)/react-native-cli-*.tgz
 
-cd $TEMP
-
 npm install -g $CLI_PACKAGE
-# TODO only for android
+
+# pack react-native into a .tgz file
+#./gradlew :ReactAndroid:installArchives -Pjobs=1
+npm pack
+PACKAGE=$(pwd)/react-native-*.tgz
+cd $TEMP
 react-native init EndToEndTest --version $PACKAGE
 cd EndToEndTest
 
