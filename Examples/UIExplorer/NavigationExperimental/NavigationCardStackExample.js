@@ -142,11 +142,6 @@ class NavigationCardStackExample extends React.Component {
     });
   }
 
-  _onNavigate(action) {
-    if (action && action.type === 'back') {
-      this._pop();
-    }
-  }
 }
 
 const styles = StyleSheet.create({
