@@ -110,7 +110,7 @@ if(args.indexOf('--android') !== -1) {
   }
   cd('..');
   echo('Starting packager server');
-  SERVER_PID = exec('npm start', {async: true}).pid;
+  SERVER_PID = exec('REACT_NATIVE_MAX_WORKERS=1 npm start', {async: true}).pid;
   echo('Starting appium server');
   APPIUM_PID = exec('node ./node_modules/.bin/appium', {async: true}).pid;
   cp('~/.android/debug.keystore', 'android/keystores/debug.keystore');
@@ -119,14 +119,11 @@ if(args.indexOf('--android') !== -1) {
     echo('could not execute Buck build, is it installed and in PATH?');
     exit(cleanup(1));
   }
-  setTimeout(() => {
-    echo('Executing android e2e test');
-    if (exec('node node_modules/.bin/_mocha android-e2e-test.js').code) {
-      exit(cleanup(1));
-    }
-    exit(cleanup(0));
-
-  }, 20000)
+  echo('Executing android e2e test');
+  if (exec('node node_modules/.bin/_mocha android-e2e-test.js').code) {
+    exit(cleanup(1));
+  }
+  exit(cleanup(0));
 }
 
 
