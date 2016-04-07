@@ -41,7 +41,7 @@ class ShareMessageExample extends React.Component {
     super(props);
 
     this.shareMessage = this.shareMessage.bind(this);
-    this.shareTextContent = this.shareTextContent.bind(this);
+    this.shareText = this.shareText.bind(this);
 
     this.state = {
       result: ''
@@ -58,7 +58,7 @@ class ShareMessageExample extends React.Component {
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={this.shareTextContent}>
+          onPress={this.shareText}>
           <View style={styles.button}>
             <Text>Click to share message, URL and subject</Text>
           </View>
@@ -69,14 +69,14 @@ class ShareMessageExample extends React.Component {
   }
 
   shareMessage() {
-    Share.shareTextContent({
+    Share.shareText({
       message: 'React Native | A framework for building native apps using React'
     })
     .then((result) => this.setState({result:result}))
     .catch(()=> this.setState({result:'Canceled'}))
   }
-  shareTextContent() {
-    Share.shareTextContent({
+  shareText() {
+    Share.shareText({
       message: 'A framework for building native apps using React', 
       url: 'http://facebook.github.io/react-native/',
       subject: 'React Native'

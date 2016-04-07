@@ -22,9 +22,9 @@ const processColor = require('processColor');
 class Share {
   
   /**
-   * Open a dialog to share text contents.
+   * Open a dialog to share text content.
    * 
-   * ### Contents
+   * ### Content
    * 
    *  - `message` - a message to share
    *  - `url` - an URL to share. In Android, this will overwrite message
@@ -43,25 +43,34 @@ class Share {
    * 
    * - `dialogTitle`
    */
-  static shareTextContent(contents: Object, options?: Object): Promise<boolean> {
+  static shareText(content: Object, options?: Object): Promise<boolean> {
     invariant(
-      typeof contents === 'object' && contents !== null,
-      'Contents must a valid object'
+      typeof content === 'object' && content !== null,
+      'Content must a valid object'
     );
     invariant(
-      contents.url || contents.message,
+      content.url || content.message,
       'At least one of URL and message is required'
     );
-    for(let content in contents) {
-      invariant(
-        typeof content === 'string',
-        'Invalid Content: should be a string. Was: ' + content
-      );
-    }
-    return Platform.OS === 'android'
-      ? ShareModule.shareTextContent(contents, typeof options === 'object' && options.dialogTitle ? options.dialogTitle : null)
-      : new Promise((resolve, reject) => {
-        let actionSheetOptions = {...contents, ...options};
+    invariant(
+      !content.message || typeof content.message === 'string',
+      'Invalid message: message should be a string. Was: ' + content.message
+    );
+    invariant(
+      !content.url || typeof content.url === 'string',
+      'Invalid url: url should be a string. Was: ' + content.url
+    );
+    invariant(
+      !content.subject || typeof content.subject === 'string',
+      'Invalid subject: subject should be a string. Was: ' + content.subject
+    );
+  
+    if(Platform.OS === 'android') {
+      let dialogTitle = typeof options === 'object' && options.dialogTitle ? options.dialogTitle : null;
+      return ShareModule.shareText(content, dialogTitle);
+    } else {
+      return new Promise((resolve, reject) => {
+        let actionSheetOptions = {...content, ...options};
         if (typeof options === 'object' && options.tintColor) {
           actionSheetOptions.tintColor = processColor(options.tintColor);
         }
@@ -77,6 +86,7 @@ class Share {
           }
         );
       });
+    }
   }
 
 }

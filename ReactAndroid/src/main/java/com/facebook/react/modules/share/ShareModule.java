@@ -25,8 +25,6 @@ import com.facebook.react.bridge.ReadableMap;
  */
 public class ShareModule extends ReactContextBaseJavaModule {
 
-  private Promise mPromise;
-
   public ShareModule(ReactApplicationContext reactContext) {
     super(reactContext);
   }
@@ -37,15 +35,15 @@ public class ShareModule extends ReactContextBaseJavaModule {
   }
 
   /**
-   * Open a chooser dialog to send text contents to other apps.
+   * Open a chooser dialog to send text content to other apps.
    *
    * Refer http://developer.android.com/intl/ko/training/sharing/send.html
    * 
-   * @param contents the data to send
+   * @param content the data to send
    * @param title the title of the chooser dialog
    */
   @ReactMethod
-  public void shareTextContent(ReadableMap contents, String title, final Promise promise) {
+  public void shareText(ReadableMap content, String title, Promise promise) {
     Activity currentActivity = getCurrentActivity();
 
     if (currentActivity == null) {
@@ -53,38 +51,34 @@ public class ShareModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    if (contents == null) {
-      throw new JSApplicationIllegalArgumentException("Invalid contents");
+    if (content == null) {
+      promise.reject("Invalid content");
+      return;
     }
-
-    mPromise = promise;
 
     try {
       Intent intent = new Intent(Intent.ACTION_SEND);
       intent.setTypeAndNormalize("text/plain");
       
-      if(contents.hasKey("subject")) {
-        intent.putExtra(Intent.EXTRA_SUBJECT, contents.getString("subject"));
+      if(content.hasKey("subject")) {
+        intent.putExtra(Intent.EXTRA_SUBJECT, content.getString("subject"));
       }
 
-      if(contents.hasKey("message")) {
-        intent.putExtra(Intent.EXTRA_TEXT, contents.getString("message"));
+      if(content.hasKey("message")) {
+        intent.putExtra(Intent.EXTRA_TEXT, content.getString("message"));
       } 
 
-      if(contents.hasKey("url")) {
-        intent.putExtra(Intent.EXTRA_TEXT, contents.getString("url")); // this will overwrite message
+      if(content.hasKey("url")) {
+        intent.putExtra(Intent.EXTRA_TEXT, content.getString("url")); // this will overwrite message
       }
 
       currentActivity.startActivity(Intent.createChooser(intent, title));
       //TODO: use createChooser (Intent target, CharSequence title, IntentSender sender) after API level 22 
-      mPromise.resolve(true);
-      mPromise = null;
+      promise.resolve(true);
     } catch (Exception e) {
-      mPromise.reject("Failed to open share dialog");
-      mPromise = null;
+      promise.reject("Failed to open share dialog");
     }
     
   }
-
 
 }
