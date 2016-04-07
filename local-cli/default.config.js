@@ -34,7 +34,7 @@ var config = {
 };
 
 function getRoots() {
-  var root = process.env.react_native_app_root;
+  var root = process.env.REACT_NATIVE_APP_ROOT;
   if (root) {
     return [path.resolve(root)];
   }
