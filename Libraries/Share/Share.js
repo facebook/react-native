@@ -64,8 +64,8 @@ class Share {
       !content.subject || typeof content.subject === 'string',
       'Invalid subject: subject should be a string. Was: ' + content.subject
     );
-  
-    if(Platform.OS === 'android') {
+
+    if (Platform.OS === 'android') {
       let dialogTitle = typeof options === 'object' && options.dialogTitle ? options.dialogTitle : null;
       return ShareModule.shareText(content, dialogTitle);
     } else {
