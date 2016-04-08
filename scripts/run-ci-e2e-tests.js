@@ -18,6 +18,7 @@
  */
 /*eslint-disable no-undef */
 require('shelljs/global');
+var spawn = require('child_process').spawn;
 const path = require('path');
 
 const SCRIPTS = __dirname;
@@ -45,7 +46,8 @@ function cleanup(errorCode) {
 
   if(SERVER_PID) {
     echo(`Killing packager ${SERVER_PID}`);
-    exec(`kill -9 ${SERVER_PID}`);
+    // exec(`kill -9 ${SERVER_PID}`);
+    exec('killall -9 node');
   }
   if(APPIUM_PID) {
     echo(`Killing appium ${APPIUM_PID}`);
@@ -108,17 +110,17 @@ if (args.indexOf('--android') !== -1) {
     exit(cleanup(1));
   }
   cd('..');
-  const packagerProcess = exec('REACT_NATIVE_MAX_WORKERS=1 npm start', {async: true});
-  SERVER_PID = packagerProcess.pid;
-  packagerProcess.stdout.on('data', function(data) {
-    echo('----packager----', data);
+  const packagerProcess = spawn('npm', ['start'], {
+    stdio: 'inherit',
+    env: {
+      REACT_NATIVE_MAX_WORKERS: 1
+    }
   });
+  SERVER_PID = packagerProcess.pid;
   echo(`Starting packager server, ${SERVER_PID}`);
 
-  // TODO for debugging
-  const appiumProcess = exec('node ./node_modules/.bin/appium', {async: true});
-  appiumProcess.stdout.on('data', function(data) {
-    echo('----appium----', data);
+  const appiumProcess = spawn('node', ['./node_modules/.bin/appium'], {
+    stdio: 'inherit',
   });
   APPIUM_PID = appiumProcess.pid;
   echo(`Starting appium server, ${APPIUM_PID}`);
@@ -144,11 +146,10 @@ if (args.indexOf('--ios') !== -1) {
     echo('iOS marker was not found, react native init command failed?');
     exit(cleanup(1));
   }
-  const packagerProcess = exec('REACT_NATIVE_MAX_WORKERS=1 npm start -- --non-persistent', {async: true});
+  // exec async does not print log, probably bug in current implementation of shelljs
+  // const packagerProcess = exec('REACT_NATIVE_MAX_WORKERS=1 npm start -- --non-persistent', {async: true});
+  const packagerProcess = spawn('npm', ['start'], {stdio: 'inherit'});
   SERVER_PID = packagerProcess.pid;
-  packagerProcess.stdout.on('data', function(data) {
-    echo('----packager----', data);
-  });
   echo(`Starting packager server, ${SERVER_PID}`);
   echo('Executing ios e2e test');
   if (exec('xctool -scheme EndToEndTest -sdk iphonesimulator test').code) {
