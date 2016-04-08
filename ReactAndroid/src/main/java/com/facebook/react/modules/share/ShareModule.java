@@ -44,13 +44,6 @@ public class ShareModule extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void shareText(ReadableMap content, String title, Promise promise) {
-    Activity currentActivity = getCurrentActivity();
-
-    if (currentActivity == null) {
-      promise.reject("Activity doesn't exist");
-      return;
-    }
-
     if (content == null) {
       promise.reject("Invalid content");
       return;
@@ -60,25 +53,33 @@ public class ShareModule extends ReactContextBaseJavaModule {
       Intent intent = new Intent(Intent.ACTION_SEND);
       intent.setTypeAndNormalize("text/plain");
       
-      if(content.hasKey("subject")) {
+      if (content.hasKey("subject")) {
         intent.putExtra(Intent.EXTRA_SUBJECT, content.getString("subject"));
       }
 
-      if(content.hasKey("message")) {
+      if (content.hasKey("message")) {
         intent.putExtra(Intent.EXTRA_TEXT, content.getString("message"));
       } 
 
-      if(content.hasKey("url")) {
+      if (content.hasKey("url")) {
         intent.putExtra(Intent.EXTRA_TEXT, content.getString("url")); // this will overwrite message
       }
 
-      currentActivity.startActivity(Intent.createChooser(intent, title));
       //TODO: use createChooser (Intent target, CharSequence title, IntentSender sender) after API level 22 
+      Intent chooser = Intent.createChooser(intent, title); 
+
+      Activity currentActivity = getCurrentActivity();
+      if (currentActivity != null) {
+        currentActivity.startActivity(chooser);
+      } else {
+        getReactApplicationContext().startActivity(chooser);
+      }
       promise.resolve(true);
+
     } catch (Exception e) {
       promise.reject("Failed to open share dialog");
     }
-    
+
   }
 
 }
