@@ -128,7 +128,10 @@ var GESTURE_ACTIONS = [
  * Use `Navigator` to transition between different scenes in your app. To
  * accomplish this, provide route objects to the navigator to identify each
  * scene, and also a `renderScene` function that the navigator can use to
- * render the scene for a given route.
+ * render the scene for a given route. 
+ * 
+ * To pass properties between routes, provide a property object
+ * to your component, and reference this object when pushing to a new route.
  *
  * To change the animation or gesture properties of the scene, provide a
  * `configureScene` prop to get the config object for a given route. See
@@ -183,6 +186,117 @@ var GESTURE_ACTIONS = [
  *  - `popToTop()` - Pop to the first scene in the stack, unmounting every
  *     other scene
  *
+ * ### Examples
+ *
+ * ```
+ * var App = React.createClass({
+ *  renderScene(route, navigator) {
+ *  	if(route.name == 'Home') {
+ *    	return <Home {...route.passProps} navigator={navigator} />
+ *    }
+ *    if(route.name === 'About') {
+ *    	return <About {...route.passProps} navigator={navigator} />  
+ *    }
+ *  },
+ *  render() {
+ *    return (
+ *      <Navigator 
+ *      style={{ flex:1, paddingTop:30 }}
+ *			initialRoute={{ component: Home, name: 'Home' }}
+ *      renderScene={this.renderScene}
+ *      />
+ *    );
+ *  }
+ * });
+ *      
+ * var Home = React.createClass({
+ *  onPress(){
+ *  	this.props.navigator.push({
+ *    	name: 'About',
+ *      passProps: {
+ *      	myProp: 'Hello World'
+ *      }
+ *    })
+ *  },
+ *	render() {
+ *  	return (
+ *    	<View>
+ *      	<Text>Home View</Text>
+ *      	<TouchableHighlight onPress={ () => this.onPress() }>
+ *      		<Text>Go To About</Text>
+ *      	</TouchableHighlight>
+ *      </View>
+ *    )
+ *  }
+ * })
+ *
+ * var About = React.createClass({
+ *  onPress(){
+ *  	this.props.navigator.pop()
+ *  },
+ *	render() {
+ *  	return (
+ *    	<View>
+ *      	<Text>About View</Text>
+ *      	<Text>{ this.props.myProp }</Text>
+ *      	<TouchableHighlight onPress={this.onPress}>
+ *      		<Text>Go Back</Text>
+ *      	</TouchableHighlight>
+ *      </View>
+ *    )
+ *  } 
+ * })
+ * ```
+ * 
+ * ### Render scene using React.createElement
+
+ * var App = React.createClass({
+ * 	renderScene(route, navigator) { 
+ *   	return React.createElement(route.component, { ...this.props, ...route.passProps, navigator, route })
+ *   },
+ *   render() {
+ *   	return (
+ *     	<Navigator
+ *       style={{ flex:1 }}
+ *       initialRoute={{ component: Home }}
+ *       renderScene={ this.renderScene } />
+ *     )
+ *   },
+ * })
+ *   
+ * var Home = React.createClass({
+ *   onPress(someprops) {
+ *   	this.props.navigator.push({
+ *     	component: About,
+ *       passProps: {
+ *       	someprops: someprops,
+ *       }
+ *     })
+ *   },
+ *   
+ *   render() {
+ *     return (
+ *       <View style={styles.container}>
+ *         	<Text>Hello from Home</Text>
+ *       		<TouchableHighlight onPress={ () => this.onPress('Hello World') }>
+ *       			<Text>Go to about</Text>
+ *       		</TouchableHighlight>
+ *       </View>
+ *     );
+ *   }
+ * });
+ * 
+ * var About = React.createClass({
+ * 	render() {
+ *   	return (
+ *     	<View>
+ *       		<Text>Hello from About</Text>
+ *       		<Text>These are the props: { this.props.someprops }</Text>
+ *       </View>
+ *     )
+ *   }
+ * })
+ * ```
  */
 var Navigator = React.createClass({
 
