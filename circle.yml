@@ -77,7 +77,6 @@ test:
 
     # Android e2e test
     - node ./scripts/run-ci-e2e-tests.js --android
-    - ./scripts/run-ci-e2e-android.sh
 
     # testing docs generation is not broken
     - cd website && node ./server/generate.js

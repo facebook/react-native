@@ -58,7 +58,7 @@ describe('Android Test App', function () {
 
     return driver
       .init(desired)
-      .setImplicitWaitTimeout(120000);
+      .setImplicitWaitTimeout(150000);
   });
 
   after(function () {
@@ -84,7 +84,7 @@ describe('Android Test App', function () {
     }).
     waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native with HMR!")]').
     finally(() => {
-      _clearInterval(intervalToUpdate);
+      clearInterval(intervalToUpdate);
       fs.writeFileSync('index.android.js', androidAppCode, 'utf-8');
     });
   });
