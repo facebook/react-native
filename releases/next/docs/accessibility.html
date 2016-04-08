@@ -31,7 +31,7 @@
   “radiobutton_unchecked” <span class="token punctuation">:</span> “radiobutton_checked”<span class="token punctuation">;</span>
   <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>radioButton <span class="token operator">===</span> “radiobutton_checked”<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     RCTUIManager<span class="token punctuation">.</span><span class="token function">sendAccessibilityEvent<span class="token punctuation">(</span></span>
-      React<span class="token punctuation">.</span><span class="token function">findNodeHandle<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      ReactNative<span class="token punctuation">.</span><span class="token function">findNodeHandle<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
       RCTUIManager<span class="token punctuation">.</span>AccessibilityEventTypes<span class="token punctuation">.</span>typeViewClicked<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
