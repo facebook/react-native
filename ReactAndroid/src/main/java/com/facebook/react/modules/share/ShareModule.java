@@ -13,12 +13,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.ReactConstants;
 
 /**
  * Intent module. Launch other activities or open URLs.
@@ -75,8 +77,8 @@ public class ShareModule extends ReactContextBaseJavaModule {
         getReactApplicationContext().startActivity(chooser);
       }
       promise.resolve(true);
-
     } catch (Exception e) {
+      FLog.e(ReactConstants.TAG, "Failed to open share dialog", e);
       promise.reject("Failed to open share dialog");
     }
 
