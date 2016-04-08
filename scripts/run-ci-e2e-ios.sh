@@ -32,6 +32,8 @@ function cleanup {
 
   rm $MARKER_IOS
   [ $SERVER_PID ] && kill -9 $SERVER_PID
+  # hack because packager is running as daemon
+  killall -9 node
   exit $EXIT_CODE
 }
 trap cleanup EXIT

@@ -30,6 +30,8 @@ function cleanup {
   rm $MARKER_ANDROID
   [ $SERVER_PID ] && kill -9 $SERVER_PID
   [ $APPIUM_PID ] && kill -9 $APPIUM_PID
+  # hack because packager is running as daemon
+  killall -9 node
   exit $EXIT_CODE
 }
 trap cleanup EXIT
