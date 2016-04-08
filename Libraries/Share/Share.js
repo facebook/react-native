@@ -68,7 +68,7 @@ class Share {
     if (Platform.OS === 'android') {
       let dialogTitle = typeof options === 'object' && options.dialogTitle ? options.dialogTitle : null;
       return ShareModule.shareText(content, dialogTitle);
-    } else {
+    } else if (Platform.OS === 'ios') {
       return new Promise((resolve, reject) => {
         let actionSheetOptions = {...content, ...options};
         if (typeof options === 'object' && options.tintColor) {
@@ -86,6 +86,9 @@ class Share {
           }
         );
       });
+    } else {
+      console.warn('Share.shareText is not supported on this platform');
+      return Promise.reject();
     }
   }
 
