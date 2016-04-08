@@ -13,9 +13,12 @@
 
 var RCTNetworking = require('RCTNetworking');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const invariant = require('fbjs/lib/invariant');
+const utf8 = require('utf8');
 const warning = require('fbjs/lib/warning');
 
 type ResponseType = '' | 'arraybuffer' | 'blob' | 'document' | 'json' | 'text';
+type Response = ?Object | string;
 
 const UNSENT = 0;
 const OPENED = 1;
@@ -54,7 +57,7 @@ class XMLHttpRequestBase {
   upload: any;
   readyState: number;
   responseHeaders: ?Object;
-  responseText: ?string;
+  responseText: string;
   status: number;
   timeout: number;
   responseURL: ?string;
@@ -67,6 +70,7 @@ class XMLHttpRequestBase {
   _subscriptions: [any];
 
   _aborted: boolean;
+  _cachedResponse: Response;
   _hasError: boolean;
   _headers: Object;
   _lowerCaseResponseHeaders: Object;
@@ -117,7 +121,7 @@ class XMLHttpRequestBase {
     return this._responseType;
   }
 
-  set responseType(responseType): void {
+  set responseType(responseType: ResponseType): void {
     if (this.readyState > HEADERS_RECEIVED) {
       throw new Error(
         "Failed to set the 'responseType' property on 'XMLHttpRequest': The " +
@@ -137,7 +141,7 @@ class XMLHttpRequestBase {
     this._responseType = responseType;
   }
 
-  get response(): ?Object | string {
+  get response(): Response {
     const {responseType} = this;
     if (responseType === '' || responseType === 'text') {
       return this.readyState < LOADING || this._hasError
@@ -160,11 +164,14 @@ class XMLHttpRequestBase {
 
       case 'arraybuffer':
         this._cachedResponse = toArrayBuffer(
-          this.responseText, this.getResponseHeader('content-type'));
+          this.responseText, this.getResponseHeader('content-type') || '');
         break;
 
       case 'blob':
-        this._cachedResponse = new global.Blob([this.responseText]);
+        this._cachedResponse = new global.Blob(
+          [this.responseText],
+          {type: this.getResponseHeader('content-type') || ''}
+        );
         break;
 
       case 'json':
@@ -375,50 +382,21 @@ XMLHttpRequestBase.DONE = DONE;
 function toArrayBuffer(text: string, contentType: string): ArrayBuffer {
   const {length} = text;
   if (length === 0) {
-    return new ArrayBuffer();
+    return new ArrayBuffer(0);
   }
 
-  /*eslint-disable no-bitwise, no-sparse-arrays*/
   const charsetMatch = contentType.match(/;\s*charset=([^;]*)/i);
   const charset = charsetMatch ? charsetMatch[1].trim() : 'utf-8';
 
-  let array;
   if (/^utf-?8$/i.test(charset)) {
-    const bytes = Array(length); // we need at least this size
-    let add = 0;
-    for (let i = 0; i < length; i++) {
-      let codePoint = text.charCodeAt(i);
-      if (codePoint < 0x80) {
-        bytes[i + add] = codePoint;
-      } else if (codePoint < 0x7ff) {
-        bytes[i + add] = 0xc0 | (codePoint >>> 6);
-        bytes[i + add + 1] = codePoint & 0x3f;
-        add += 1;
-      } else if (codePoint < 0xffff) {
-        bytes[i + add] = 0xe0 | (codePoint >>> 12);
-        codePoint &= 0xfff;
-        bytes[i + add + 1] = 0x80 | (codePoint >>> 6);
-        bytes[i + add + 2] = 0x80 | (codePoint & 0x3f);
-        add += 2;
-      } else {
-        bytes[i + add] = 0xf0 | (codePoint >>> 18);
-        codePoint &= 0x3ffff;
-        bytes[i + add + 1] = 0x80 | (codePoint >>> 12);
-        codePoint &= 0xfff;
-        bytes[i + add + 2] = 0x80 | (codePoint >>> 6);
-        bytes[i + add + 3] = 0x80 | (codePoint & 0x3f);
-        add += 3;
-      }
-
-      array = new Uint8Array(bytes);
-    }
+    return utf8.encode(text);
   } else { //TODO: utf16 / ucs2 / utf32
-    array = new Uint8Array(length);
+    const array = new Uint8Array(length);
     for (let i = 0; i < length; i++) {
       array[i] = text.charCodeAt(i); // Uint8Array automatically masks with 0xff
     }
+    return array.buffer;
   }
-  return array.buffer;
 }
 
 module.exports = XMLHttpRequestBase;
