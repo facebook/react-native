@@ -156,8 +156,7 @@ void JSCExecutor::destroy() {
 
 void JSCExecutor::initOnJSVMThread() {
   #if defined(WITH_FB_JSC_TUNING) && !defined(WITH_JSC_INTERNAL)
-  // TODO: Find a way to pass m_jscConfig to configureJSCForAndroid()
-  configureJSCForAndroid(m_jscConfig.getDefault("GCTimers", false).asBool());
+  configureJSCForAndroid(m_jscConfig);
   #endif
   m_context = JSGlobalContextCreateInGroup(nullptr, nullptr);
   s_globalContextRefToJSCExecutor[m_context] = this;
