@@ -94,7 +94,7 @@ deployment:
     branch: [/.*-stable/, /master/]
     commands:
       # generate docs website
-      - git config --global user.email "bestnader@fb.com"
+      - git config --global user.email "reactjs-bot@users.noreply.github.com"
       - git config --global user.name "Website Deployment Script"
       - echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
       - cd website && GIT_USER=reactjs-bot npm run gh-pages
