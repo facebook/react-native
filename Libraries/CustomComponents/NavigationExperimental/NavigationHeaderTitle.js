@@ -40,10 +40,11 @@ type Props = {
   children: ReactElement;
   style: any;
   textStyle: any;
+  pointerEvents: any;
 }
 
-const NavigationHeaderTitle = ({ children, style, textStyle }: Props) => (
-  <View style={[ styles.title, style ]}>
+const NavigationHeaderTitle = ({ children, style, textStyle, pointerEvents }: Props) => (
+  <View style={[ styles.title, style ]} pointerEvents={pointerEvents}>
     <Text style={[ styles.titleText, textStyle ]}>{children}</Text>
   </View>
 );
