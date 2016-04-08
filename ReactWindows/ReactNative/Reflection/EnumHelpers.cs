@@ -6,13 +6,16 @@ using System.Linq;
 
 namespace ReactNative.Reflection
 {
-    static class EnumHelpers
+    static partial class EnumHelpers
     {
         private static readonly ConcurrentDictionary<Type, IReadOnlyDictionary<string, object>> s_enumCache =
             new ConcurrentDictionary<Type, IReadOnlyDictionary<string, object>>();
 
         public static T Parse<T>(string value)
         {
+#if NO_REFLECTION
+            return ParseStatic<T>(value);
+#else
             var lookup = s_enumCache.GetOrAdd(
                 typeof(T),
                 type => Enum.GetValues(type)
@@ -30,6 +33,7 @@ namespace ReactNative.Reflection
             }
 
             return (T)result;
+#endif
         }
 
         public static T? ParseNullable<T>(string value)
