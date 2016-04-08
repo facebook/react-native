@@ -121,7 +121,7 @@ if (args.indexOf('--android') !== -1) {
   });
   SERVER_PID = packagerProcess.pid;
   echo(`Starting packager server, ${SERVER_PID}`);
-  const appiumProcess = spawn('node', ['./node_modules/.bin/appium'], );
+  const appiumProcess = spawn('node', ['./node_modules/.bin/appium']);
   APPIUM_PID = appiumProcess.pid;
   echo(`Starting appium server, ${APPIUM_PID}`);
   exec('keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"');
