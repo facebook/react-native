@@ -620,18 +620,6 @@
         [DllImport("chakra.dll", ExactSpelling = true)]
         internal static extern JavaScriptErrorCode JsIsRuntimeExecutionDisabled(JavaScriptRuntime runtime, out bool isDisabled);
 
-        [DllImport("chakra.dll", ExactSpelling = true)]
-        internal static extern JavaScriptErrorCode JsStartProfiling(IActiveScriptProfilerCallback callback, ProfilerEventMask eventMask, int context);
-
-        [DllImport("chakra.dll", ExactSpelling = true)]
-        internal static extern JavaScriptErrorCode JsStopProfiling(int reason);
-
-        [DllImport("chakra.dll", ExactSpelling = true)]
-        internal static extern JavaScriptErrorCode JsEnumerateHeap(out IActiveScriptProfilerHeapEnum enumerator);
-
-        [DllImport("chakra.dll", ExactSpelling = true)]
-        internal static extern JavaScriptErrorCode JsIsEnumeratingHeap(out bool isEnumeratingHeap);
-
         [DllImport("chakra.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
         internal static extern JavaScriptErrorCode JsProjectWinRTNamespace(string namespaceName);
 
