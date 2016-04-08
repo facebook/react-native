@@ -336,7 +336,7 @@ var apps = [
   {
     name: 'Emoji Poetry',
     icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/31/b5/09/31b509b2-aaec-760f-ccec-2ce72fe7134e/icon175x175.jpeg',
-    linkAppStore: 'https://itunes.apple.com/us/app/emoji-poetry/id1068972506?l=en&mt=8,
+    linkAppStore: 'https://itunes.apple.com/us/app/emoji-poetry/id1068972506?l=en&mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.arzamasemoji',
     author: 'forforce.com',
     blogs: [
