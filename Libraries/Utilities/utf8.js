@@ -46,6 +46,14 @@ exports.encode = (string: string): ArrayBuffer => {
   const {length} = string;
   const bytes = new ByteVector(length);
 
+  // each character / char code is assumed to represent an UTF-16 wchar
+  // with the notable exception of surrogate pairs, each wchar represents the
+  // corresponding unicode code point.
+  // For an explanation of UTF-8 encoding, read [1]
+  // For an explanation of UTF-16 surrogate pairs, read [2]
+  //
+  // [1] https://en.wikipedia.org/wiki/UTF-8#Description
+  // [2] https://en.wikipedia.org/wiki/UTF-16#U.2B10000_to_U.2B10FFFF
   let nextCodePoint = string.charCodeAt(0);
   for (let i = 0; i < length; i++) {
     let codePoint = nextCodePoint;
@@ -68,16 +76,16 @@ exports.encode = (string: string): ArrayBuffer => {
       i += 1;
       nextCodePoint = string.charCodeAt(i + 1);
     } else {
-      bytes.push(0xe0 | codePoint >>> 12);
-      codePoint &= 0xfff;
       bytes
-        .push(0x80 | codePoint >>> 6)
+        .push(0xe0 | codePoint >>> 12)
+        .push(0x80 | codePoint >>> 6 & 0x3f)
         .push(0x80 | codePoint & 0x3f);
     }
   }
   return bytes.getBuffer();
 };
 
+// align to multiples of 8 bytes
 function align(size: number): number {
   return size % 8 ? (Math.floor(size / 8) + 1) << 3 : size;
 }
