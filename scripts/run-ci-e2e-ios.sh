@@ -4,11 +4,6 @@
 set -e
 set -x
 
-if [ -z $1 ]; then
-  echo "Please run the script with --ios, --android or --packager" >&2
-  exit 1
-fi
-
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname $SCRIPTS)
 TEMP=$(mktemp -d /tmp/react-native-XXXXXXXX)
