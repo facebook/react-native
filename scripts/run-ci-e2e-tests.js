@@ -96,7 +96,7 @@ cd('EndToEndTest');
 if (args.indexOf('--android') !== -1) {
   echo('Running an Android e2e test');
   echo('Installing e2e framework');
-  if(exec('npm install --save-dev appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3').code) {
+  if(exec('npm install --save-dev appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3', {silent: true}).code) {
     echo('Failed to install appium');
     exit(cleanup(1));
   }
@@ -110,11 +110,11 @@ if (args.indexOf('--android') !== -1) {
     exit(cleanup(1));
   }
   cd('..');
+  let packagerEnv = Object.create(process.env);
+  packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
   const packagerProcess = spawn('npm', ['start'], {
     stdio: 'inherit',
-    env: {
-      REACT_NATIVE_MAX_WORKERS: 1
-    }
+    env: packagerEnv
   });
   SERVER_PID = packagerProcess.pid;
   echo(`Starting packager server, ${SERVER_PID}`);
