@@ -88,6 +88,7 @@ class Share {
       });
     } else {
       console.warn('Share.shareText is not supported on this platform');
+      return Promise.reject();
     }
   }
 
