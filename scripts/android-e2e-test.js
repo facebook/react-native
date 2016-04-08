@@ -31,7 +31,7 @@ const fs = require('fs');
 require('colors');
 
 describe('Android Test App', function () {
-  this.timeout(300000);
+  this.timeout(600000);
   let driver;
 
   before(function () {
@@ -58,7 +58,7 @@ describe('Android Test App', function () {
 
     return driver
       .init(desired)
-      .setImplicitWaitTimeout(60000);
+      .setImplicitWaitTimeout(120000);
   });
 
   after(function () {
@@ -67,6 +67,7 @@ describe('Android Test App', function () {
 
   it('should have Hot Module Reloading working', function () {
     const androidAppCode = fs.readFileSync('index.android.js', 'utf-8');
+    let intervalToUpdate;
     // http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU
     return driver.
     waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]').
@@ -75,14 +76,15 @@ describe('Android Test App', function () {
     click().
     waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]').
     then(() => {
-      const newContents = androidAppCode.replace('Welcome to React Native!', 'Welcome to React Native with HMR!');
-      // change file after 5 seconds to allow HMR client to connect
-      setTimeout(() => {
-        fs.writeFileSync('index.android.js', newContents, 'utf-8');
-      }, 5000);
+      let iteration = 0;
+      // change file every 3 seconds to consider slow android emulator on CI
+      intervalToUpdate = setInterval(() => {
+        fs.writeFileSync('index.android.js', androidAppCode.replace('Welcome to React Native!', 'Welcome to React Native with HMR!' + iteration), 'utf-8');
+      }, 3000);
     }).
     waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native with HMR!")]').
     finally(() => {
+      _clearInterval(intervalToUpdate);
       fs.writeFileSync('index.android.js', androidAppCode, 'utf-8');
     });
   });

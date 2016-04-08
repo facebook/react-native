@@ -46,6 +46,8 @@ function cleanup(errorCode) {
 
   if(SERVER_PID) {
     echo(`Killing packager ${SERVER_PID}`);
+    // TODO this is quite drastic but packager starts a daemon that we can't kill the commented way
+    // it will be fixed in April, as David Aurelio says
     // exec(`kill -9 ${SERVER_PID}`);
     exec('killall -9 node');
   }
@@ -112,16 +114,14 @@ if (args.indexOf('--android') !== -1) {
   cd('..');
   let packagerEnv = Object.create(process.env);
   packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
+  // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
   const packagerProcess = spawn('npm', ['start'], {
     stdio: 'inherit',
     env: packagerEnv
   });
   SERVER_PID = packagerProcess.pid;
   echo(`Starting packager server, ${SERVER_PID}`);
-
-  const appiumProcess = spawn('node', ['./node_modules/.bin/appium'], {
-    stdio: 'inherit',
-  });
+  const appiumProcess = spawn('node', ['./node_modules/.bin/appium'], );
   APPIUM_PID = appiumProcess.pid;
   echo(`Starting appium server, ${APPIUM_PID}`);
   exec('keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"');
@@ -131,7 +131,6 @@ if (args.indexOf('--android') !== -1) {
     exit(cleanup(1));
   }
   // wait a bit to allow packager to startup
-  exec('sleep 20s');
   echo('Executing android e2e test');
   if(exec('node node_modules/.bin/_mocha android-e2e-test.js').code) {
     exit(cleanup(1));
@@ -146,8 +145,7 @@ if (args.indexOf('--ios') !== -1) {
     echo('iOS marker was not found, react native init command failed?');
     exit(cleanup(1));
   }
-  // exec async does not print log, probably bug in current implementation of shelljs
-  // const packagerProcess = exec('REACT_NATIVE_MAX_WORKERS=1 npm start -- --non-persistent', {async: true});
+  // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
   const packagerProcess = spawn('npm', ['start'], {stdio: 'inherit'});
   SERVER_PID = packagerProcess.pid;
   echo(`Starting packager server, ${SERVER_PID}`);
