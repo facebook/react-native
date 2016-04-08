@@ -168,6 +168,36 @@ class EventEmitter {
       this._currentSubscription = null;
     }
   }
+
+  /**
+   * Removes the given listener for event of specific type.
+   *
+   * @param {string} eventType - Name of the event to emit
+   * @param {function} listener - Function to invoke when the specified event is
+   *   emitted
+   *
+   * @example
+   *   emitter.removeListener('someEvent', function(message) {
+   *     console.log(message);
+   *   }); // removes the listener if already registered
+   *
+   */
+  removeListener(eventType: String, listener) {
+    var subscriptions = this._subscriber.getSubscriptionsForType(eventType);
+    if (subscriptions) {
+      var keys = Object.keys(subscriptions);
+      for (var ii = 0; ii < keys.length; ii++) {
+        var key = keys[ii];
+        var subscription = subscriptions[key];
+
+        // Remove the subscription if it still exists and
+        // its listener matches the listener in method parameters
+        if (subscription && subscription.listener === listener) {
+          subscription.remove();
+        }
+      }
+    }
+  }
 }
 
 module.exports = EventEmitter;
