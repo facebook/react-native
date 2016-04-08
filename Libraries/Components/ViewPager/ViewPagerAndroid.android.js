@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('React');
+var ReactNative = require('ReactNative');
 var ReactElement = require('ReactElement');
 var ReactPropTypes = require('ReactPropTypes');
 var UIManager = require('UIManager');
@@ -192,7 +193,7 @@ var ViewPagerAndroid = React.createClass({
    */
   setPage: function(selectedPage: number) {
     UIManager.dispatchViewManagerCommand(
-      React.findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       UIManager.AndroidViewPager.Commands.setPage,
       [selectedPage],
     );
@@ -204,7 +205,7 @@ var ViewPagerAndroid = React.createClass({
    */
   setPageWithoutAnimation: function(selectedPage: number) {
     UIManager.dispatchViewManagerCommand(
-      React.findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       UIManager.AndroidViewPager.Commands.setPageWithoutAnimation,
       [selectedPage],
     );

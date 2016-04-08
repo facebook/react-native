@@ -16,6 +16,7 @@ var InspectorOverlay = require('InspectorOverlay');
 var InspectorPanel = require('InspectorPanel');
 var InspectorUtils = require('InspectorUtils');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var StyleSheet = require('StyleSheet');
 var UIManager = require('NativeModules').UIManager;
 var View = require('View');
@@ -101,7 +102,7 @@ class Inspector extends React.Component {
     // if we inspect a stateless component we can't use the getPublicInstance method
     // therefore we use the internal _instance property directly.
     var publicInstance = instance._instance || {};
-    UIManager.measure(React.findNodeHandle(instance), (x, y, width, height, left, top) => {
+    UIManager.measure(ReactNative.findNodeHandle(instance), (x, y, width, height, left, top) => {
       this.setState({
         inspected: {
           frame: {left, top, width, height},
