@@ -14,6 +14,7 @@
 
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var StyleSheet = require('StyleSheet');
 var Subscribable = require('Subscribable');
 var View = require('View');
@@ -35,7 +36,7 @@ var AppContainer = React.createClass({
       ? null
       : <Inspector
           rootTag={this.props.rootTag}
-          inspectedViewTag={React.findNodeHandle(this.refs.main)}
+          inspectedViewTag={ReactNative.findNodeHandle(this.refs.main)}
         />;
     this.setState({inspector});
   },
@@ -75,7 +76,7 @@ function renderApplication<D, P, S>(
     'Expect to have a valid rootTag, instead got ', rootTag
   );
   /* eslint-disable jsx-no-undef-with-namespace */
-  React.render(
+  ReactNative.render(
     <AppContainer rootTag={rootTag}>
       <RootComponent
         {...initialProps}

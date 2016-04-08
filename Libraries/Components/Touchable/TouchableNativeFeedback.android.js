@@ -12,6 +12,7 @@
 
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
@@ -187,7 +188,7 @@ var TouchableNativeFeedback = React.createClass({
 
   _dispatchHotspotUpdate: function(destX, destY) {
     UIManager.dispatchViewManagerCommand(
-      React.findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       UIManager.RCTView.Commands.hotspotUpdate,
       [destX || 0, destY || 0]
     );
@@ -195,7 +196,7 @@ var TouchableNativeFeedback = React.createClass({
 
   _dispatchPressedStateChange: function(pressed) {
     UIManager.dispatchViewManagerCommand(
-      React.findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       UIManager.RCTView.Commands.setPressed,
       [pressed]
     );

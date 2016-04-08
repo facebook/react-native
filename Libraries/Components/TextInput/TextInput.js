@@ -17,6 +17,7 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var Platform = require('Platform');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var ReactChildren = require('ReactChildren');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
@@ -320,7 +321,7 @@ var TextInput = React.createClass({
 
   isFocused: function(): boolean {
     return TextInputState.currentlyFocusedField() ===
-      React.findNodeHandle(this.refs.input);
+      ReactNative.findNodeHandle(this.refs.input);
   },
 
   contextTypes: {

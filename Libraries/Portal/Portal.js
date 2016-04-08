@@ -1,5 +1,10 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule Portal
  * @flow
@@ -8,6 +13,7 @@
 
 var Platform = require('Platform');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');
 var View = require('View');
@@ -136,7 +142,7 @@ var Portal = React.createClass({
       setTimeout(() => {
         if (this._getOpenModals().length > 0) {
           UIManager.sendAccessibilityEvent(
-            React.findNodeHandle(this),
+            ReactNative.findNodeHandle(this),
             UIManager.AccessibilityEventTypes.typeWindowStateChanged);
         }
       }, 0);

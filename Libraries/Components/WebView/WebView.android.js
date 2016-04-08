@@ -13,6 +13,7 @@
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var ProgressBarAndroid = require('ProgressBarAndroid');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');
@@ -274,7 +275,7 @@ var WebView = React.createClass({
   },
 
   getWebViewHandle: function() {
-    return React.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
+    return ReactNative.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
   },
 
   onLoadingStart: function(event) {
