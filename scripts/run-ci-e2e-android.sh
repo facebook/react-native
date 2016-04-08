@@ -62,7 +62,7 @@ cd android && ./gradlew :app:copyDownloadableDepsToLibs
 # Make sure we installed local version of react-native
 ls `basename $MARKER_ANDROID` > /dev/null
 cd ..
-./node_modules/react-native/packager/packager.sh --nonPersistent > /dev/null 2>&1 &
+REACT_NATIVE_MAX_WORKERS=1 npm start > /dev/null 2>&1 &
 SERVER_PID=$!
 node ./node_modules/.bin/appium > /dev/null 2>&1 &
 APPIUM_PID=$!
