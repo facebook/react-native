@@ -15,6 +15,7 @@ var Dimensions = require('Dimensions');
 var Platform = require('Platform');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
 var UIManager = require('UIManager');
@@ -354,7 +355,7 @@ var ScrollResponderMixin = {
   scrollResponderGetScrollableNode: function(): any {
     return this.getScrollableNode ?
       this.getScrollableNode() :
-      React.findNodeHandle(this);
+      ReactNative.findNodeHandle(this);
   },
 
   /**
@@ -430,7 +431,7 @@ var ScrollResponderMixin = {
     this.preventNegativeScrollOffset = !!preventNegativeScrollOffset;
     UIManager.measureLayout(
       nodeHandle,
-      React.findNodeHandle(this.getInnerViewNode()),
+      ReactNative.findNodeHandle(this.getInnerViewNode()),
       this.scrollResponderTextInputFocusError,
       this.scrollResponderInputMeasureAndScrollToKeyboard
     );
