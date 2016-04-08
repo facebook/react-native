@@ -16,7 +16,7 @@ const {
   ActionSheetManager,
   ShareModule
 } = require('NativeModules');
-const invariant = require('invariant');
+const invariant = require('fbjs/lib/invariant');
 const processColor = require('processColor');
 
 class Share {
