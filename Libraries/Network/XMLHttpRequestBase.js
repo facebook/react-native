@@ -134,10 +134,10 @@ class XMLHttpRequestBase {
       return;
     }
 
-    if (!SUPPORTED_RESPONSE_TYPES[responseType]) {
-      warning(
-        `The provided value '${responseType}' is unsupported in this environment.`);
-    }
+    invariant(
+      SUPPORTED_RESPONSE_TYPES[responseType] || responseType === 'document',
+      `The provided value '${responseType}' is unsupported in this environment.`
+    );
     this._responseType = responseType;
   }
 
