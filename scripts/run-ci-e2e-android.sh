@@ -61,7 +61,7 @@ REACT_NATIVE_MAX_WORKERS=1 npm start > /dev/null 2>&1 &
 SERVER_PID=$!
 node ./node_modules/.bin/appium > /dev/null 2>&1 &
 APPIUM_PID=$!
-cp ~/.android/debug.keystore android/keystores/debug.keystore
+keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"
 buck build android/app
 sleep 20s
 node node_modules/.bin/_mocha android-e2e-test.js

@@ -55,7 +55,7 @@ echo "Running an iOS app"
 cd ios
 # Make sure we installed local version of react-native
 ls EndToEndTest/`basename $MARKER_IOS` > /dev/null
-../node_modules/react-native/packager/packager.sh --nonPersistent &
+REACT_NATIVE_MAX_WORKERS=1 npm start -- --non-persistent &
 SERVER_PID=$!
 # Start the app on the simulator
 xctool -scheme EndToEndTest -sdk iphonesimulator test
