@@ -129,7 +129,7 @@ if (args.indexOf('--android') !== -1) {
     exit(cleanup(1));
   }
   // wait a bit to allow packager to startup
-  exec('sleep 10s');
+  exec('sleep 20s');
   echo('Executing android e2e test');
   if(exec('node node_modules/.bin/_mocha android-e2e-test.js').code) {
     exit(cleanup(1));
