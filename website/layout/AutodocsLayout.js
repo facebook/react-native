@@ -305,7 +305,7 @@ var APIDoc = React.createClass({
       <Method
         key={method.name}
         name={method.name}
-        description={removeCommentsFromDocblock(method.docblock)}
+        description={method.docblock && removeCommentsFromDocblock(method.docblock)}
         params={method.params}
         modifiers={method.modifiers}
       />
