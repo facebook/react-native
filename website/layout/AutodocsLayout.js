@@ -267,7 +267,7 @@ var ComponentDoc = React.createClass({
   },
 
   renderMethods: function(methods) {
-    if (!methods.length) {
+    if (!methods || !methods.length) {
       return null;
     }
     return (
