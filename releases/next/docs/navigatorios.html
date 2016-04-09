@@ -23,9 +23,7 @@ is passed as a prop to any component rendered by NavigatorIOS.</p><div class="pr
     <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>navigator<span class="token punctuation">.</span><span class="token function">push<span class="token punctuation">(</span></span>nextRoute<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></div><p>A navigation object contains the following functions:</p><ul><li><code>push(route)</code> - Navigate forward to a new route</li><li><code>pop()</code> - Go back one page</li><li><code>popN(n)</code> - Go back N pages at once. When N=1, behavior matches <code>pop()</code></li><li><code>replace(route)</code> - Replace the route for the current page and immediately
-load the view for the new route</li><li><code>replacePrevious(route)</code> - Replace the route/view for the previous page</li><li><code>replacePreviousAndPop(route)</code> - Replaces the previous route/view and
-transitions back to it</li><li><code>resetTo(route)</code> - Replaces the top item and popToTop</li><li><code>popToRoute(route)</code> - Go back to the item for a particular route object</li><li><code>popToTop()</code> - Go back to the top item</li></ul><p>Navigator functions are also available on the NavigatorIOS component:</p><div class="prism language-javascript"><span class="token keyword">var</span> MyView <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></div><p>Navigator functions are also available on the NavigatorIOS component:</p><div class="prism language-javascript"><span class="token keyword">var</span> MyView <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
   _handleNavigationRequest<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>refs<span class="token punctuation">.</span>nav<span class="token punctuation">.</span><span class="token function">push<span class="token punctuation">(</span></span>otherRoute<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
@@ -41,7 +39,100 @@ the configuration for that route&#x27;s navigation bar, overriding any props
 passed to the NavigatorIOS component.</p></div><h3><a class="anchor" name="props"></a>Props <a class="hash-link" href="docs/navigatorios.html#props">#</a></h3><div class="props"><div class="prop"><h4 class="propTitle"><a class="anchor" name="bartintcolor"></a>barTintColor <span class="propType">string</span> <a class="hash-link" href="docs/navigatorios.html#bartintcolor">#</a></h4><div><p>The default background color of the navigation bar</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="initialroute"></a>initialRoute <span class="propType">{component: function, title: string, passProps: object, backButtonIcon: Image.propTypes.source, backButtonTitle: string, leftButtonIcon: Image.propTypes.source, leftButtonTitle: string, onLeftButtonPress: function, rightButtonIcon: Image.propTypes.source, rightButtonTitle: string, onRightButtonPress: function, wrapperStyle: [object Object], navigationBarHidden: bool, shadowHidden: bool, tintColor: string, barTintColor: string, titleTextColor: string, translucent: bool}</span> <a class="hash-link" href="docs/navigatorios.html#initialroute">#</a></h4><div><p>NavigatorIOS uses &quot;route&quot; objects to identify child views, their props,
 and navigation bar configuration. &quot;push&quot; and all the other navigation
 operations expect routes to be like this:</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="itemwrapperstyle"></a>itemWrapperStyle <span class="propType"><a href="docs/view.html#style">View#style</a></span> <a class="hash-link" href="docs/navigatorios.html#itemwrapperstyle">#</a></h4><div><p>The default wrapper style for components in the navigator.
-A common use case is to set the backgroundColor for every page</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="navigationbarhidden"></a>navigationBarHidden <span class="propType">bool</span> <a class="hash-link" href="docs/navigatorios.html#navigationbarhidden">#</a></h4><div><p>A Boolean value that indicates whether the navigation bar is hidden by default</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="shadowhidden"></a>shadowHidden <span class="propType">bool</span> <a class="hash-link" href="docs/navigatorios.html#shadowhidden">#</a></h4><div><p>A Boolean value that indicates whether to hide the 1px hairline shadow by default</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="tintcolor"></a>tintColor <span class="propType">string</span> <a class="hash-link" href="docs/navigatorios.html#tintcolor">#</a></h4><div><p>The default color used for buttons in the navigation bar</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="titletextcolor"></a>titleTextColor <span class="propType">string</span> <a class="hash-link" href="docs/navigatorios.html#titletextcolor">#</a></h4><div><p>The default text color of the navigation bar title</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="translucent"></a>translucent <span class="propType">bool</span> <a class="hash-link" href="docs/navigatorios.html#translucent">#</a></h4><div><p>A Boolean value that indicates whether the navigation bar is translucent by default</p></div></div></div></div><div><table width="100%"><tbody><tr><td><h3><a class="anchor" name="examples"></a>Examples <a class="hash-link" href="docs/navigatorios.html#examples">#</a></h3></td><td style="text-align:right;"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/NavigatorIOSExample.js">Edit on GitHub</a></td></tr></tbody></table><div class="prism language-javascript"><span class="token string">&#x27;use strict&#x27;</span><span class="token punctuation">;</span>
+A common use case is to set the backgroundColor for every page</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="navigationbarhidden"></a>navigationBarHidden <span class="propType">bool</span> <a class="hash-link" href="docs/navigatorios.html#navigationbarhidden">#</a></h4><div><p>A Boolean value that indicates whether the navigation bar is hidden by default</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="shadowhidden"></a>shadowHidden <span class="propType">bool</span> <a class="hash-link" href="docs/navigatorios.html#shadowhidden">#</a></h4><div><p>A Boolean value that indicates whether to hide the 1px hairline shadow by default</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="tintcolor"></a>tintColor <span class="propType">string</span> <a class="hash-link" href="docs/navigatorios.html#tintcolor">#</a></h4><div><p>The default color used for buttons in the navigation bar</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="titletextcolor"></a>titleTextColor <span class="propType">string</span> <a class="hash-link" href="docs/navigatorios.html#titletextcolor">#</a></h4><div><p>The default text color of the navigation bar title</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="translucent"></a>translucent <span class="propType">bool</span> <a class="hash-link" href="docs/navigatorios.html#translucent">#</a></h4><div><p>A Boolean value that indicates whether the navigation bar is translucent by default</p></div></div></div><span><h3><a class="anchor" name="methods"></a>Methods <a class="hash-link" href="docs/navigatorios.html#methods">#</a></h3><div class="props"><div class="prop"><h4 class="propTitle"><a class="anchor" name="push"></a>push<span class="propType">(route: {
+  component: Function;
+  title: string;
+  passProps?: Object;
+  backButtonTitle?: string;
+  backButtonIcon?: Object;
+  leftButtonTitle?: string;
+  leftButtonIcon?: Object;
+  onLeftButtonPress?: Function;
+  rightButtonTitle?: string;
+  rightButtonIcon?: Object;
+  onRightButtonPress?: Function;
+  wrapperStyle?: any;
+})</span> <a class="hash-link" href="docs/navigatorios.html#push">#</a></h4><div><p>Navigate forward to a new route</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="popn"></a>popN<span class="propType">(n: number)</span> <a class="hash-link" href="docs/navigatorios.html#popn">#</a></h4><div><p>Go back N pages at once. When N=1, behavior matches <code>pop()</code></p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="pop"></a>pop<span class="propType">()</span> <a class="hash-link" href="docs/navigatorios.html#pop">#</a></h4><div><p>Go back one page</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="replaceatindex"></a>replaceAtIndex<span class="propType">(route: {
+  component: Function;
+  title: string;
+  passProps?: Object;
+  backButtonTitle?: string;
+  backButtonIcon?: Object;
+  leftButtonTitle?: string;
+  leftButtonIcon?: Object;
+  onLeftButtonPress?: Function;
+  rightButtonTitle?: string;
+  rightButtonIcon?: Object;
+  onRightButtonPress?: Function;
+  wrapperStyle?: any;
+}, index: number)</span> <a class="hash-link" href="docs/navigatorios.html#replaceatindex">#</a></h4><div><p>Replace a route in the navigation stack.</p><p><code>index</code> specifies the route in the stack that should be replaced.
+If it&#x27;s negative, it counts from the back.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="replace"></a>replace<span class="propType">(route: {
+  component: Function;
+  title: string;
+  passProps?: Object;
+  backButtonTitle?: string;
+  backButtonIcon?: Object;
+  leftButtonTitle?: string;
+  leftButtonIcon?: Object;
+  onLeftButtonPress?: Function;
+  rightButtonTitle?: string;
+  rightButtonIcon?: Object;
+  onRightButtonPress?: Function;
+  wrapperStyle?: any;
+})</span> <a class="hash-link" href="docs/navigatorios.html#replace">#</a></h4><div><p>Replace the route for the current page and immediately
+load the view for the new route.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="replaceprevious"></a>replacePrevious<span class="propType">(route: {
+  component: Function;
+  title: string;
+  passProps?: Object;
+  backButtonTitle?: string;
+  backButtonIcon?: Object;
+  leftButtonTitle?: string;
+  leftButtonIcon?: Object;
+  onLeftButtonPress?: Function;
+  rightButtonTitle?: string;
+  rightButtonIcon?: Object;
+  onRightButtonPress?: Function;
+  wrapperStyle?: any;
+})</span> <a class="hash-link" href="docs/navigatorios.html#replaceprevious">#</a></h4><div><p>Replace the route/view for the previous page.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="poptotop"></a>popToTop<span class="propType">()</span> <a class="hash-link" href="docs/navigatorios.html#poptotop">#</a></h4><div><p>Go back to the top item</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="poptoroute"></a>popToRoute<span class="propType">(route: {
+  component: Function;
+  title: string;
+  passProps?: Object;
+  backButtonTitle?: string;
+  backButtonIcon?: Object;
+  leftButtonTitle?: string;
+  leftButtonIcon?: Object;
+  onLeftButtonPress?: Function;
+  rightButtonTitle?: string;
+  rightButtonIcon?: Object;
+  onRightButtonPress?: Function;
+  wrapperStyle?: any;
+})</span> <a class="hash-link" href="docs/navigatorios.html#poptoroute">#</a></h4><div><p>Go back to the item for a particular route object</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="replacepreviousandpop"></a>replacePreviousAndPop<span class="propType">(route: {
+  component: Function;
+  title: string;
+  passProps?: Object;
+  backButtonTitle?: string;
+  backButtonIcon?: Object;
+  leftButtonTitle?: string;
+  leftButtonIcon?: Object;
+  onLeftButtonPress?: Function;
+  rightButtonTitle?: string;
+  rightButtonIcon?: Object;
+  onRightButtonPress?: Function;
+  wrapperStyle?: any;
+})</span> <a class="hash-link" href="docs/navigatorios.html#replacepreviousandpop">#</a></h4><div><p>Replaces the previous route/view and transitions back to it.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="resetto"></a>resetTo<span class="propType">(route: {
+  component: Function;
+  title: string;
+  passProps?: Object;
+  backButtonTitle?: string;
+  backButtonIcon?: Object;
+  leftButtonTitle?: string;
+  leftButtonIcon?: Object;
+  onLeftButtonPress?: Function;
+  rightButtonTitle?: string;
+  rightButtonIcon?: Object;
+  onRightButtonPress?: Function;
+  wrapperStyle?: any;
+})</span> <a class="hash-link" href="docs/navigatorios.html#resetto">#</a></h4><div><p>Replaces the top item and popToTop</p></div></div></div></span></div><div><table width="100%"><tbody><tr><td><h3><a class="anchor" name="examples"></a>Examples <a class="hash-link" href="docs/navigatorios.html#examples">#</a></h3></td><td style="text-align:right;"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/NavigatorIOSExample.js">Edit on GitHub</a></td></tr></tbody></table><div class="prism language-javascript"><span class="token string">&#x27;use strict&#x27;</span><span class="token punctuation">;</span>
 
 const React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 const ReactNative <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
