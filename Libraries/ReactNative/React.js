@@ -11,4 +11,33 @@
  */
 'use strict';
 
-module.exports = require('ReactNative');
+const ReactIsomorphic = require('ReactIsomorphic');
+const ReactNativeImpl = require('ReactNativeImpl');
+const warning = require('warning');
+
+const React = { ...ReactIsomorphic };
+
+const dedupe = {};
+
+for (const key in ReactNativeImpl) {
+  React[key] = ReactNativeImpl[key];
+  if (__DEV__) {
+    Object.defineProperty(React, key, {
+      get: function() {
+        warning(
+          dedupe[key],
+          'React.' + key + ' is deprecated. Use ReactNative.' + key +
+          ' from the "react-native" package instead.'
+        );
+        dedupe[key] = true;
+        return ReactNativeImpl[key];
+      },
+      set: function(value) {
+        // Useful for hacky solutions like createExamplePage.
+        ReactNativeImpl[key] = value;
+      },
+    });
+  }
+}
+
+module.exports = React;
