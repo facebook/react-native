@@ -15,14 +15,15 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const UIExplorerActions = require('./UIExplorerActions');
 // $FlowFixMe : This is a platform-forked component, and flow seems to only run on iOS?
 const UIExplorerList = require('./UIExplorerList');
 
 const {
   Alert,
-} = React;
+} = ReactNative;
 
 function PathActionMap(path: string): ?Object {
   // Warning! Hacky parsing for example code. Use a library for this!

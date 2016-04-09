@@ -32,7 +32,6 @@ public class OkHttpClientProvider {
   }
 
   private static OkHttpClient createClient() {
-    // TODO: #7108751 plug in stetho
     OkHttpClient client = new OkHttpClient();
 
     // No timeouts by default

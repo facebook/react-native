@@ -154,10 +154,11 @@ public abstract class BaseJavaModule implements NativeModule {
         }
       };
 
-  private class JavaMethod implements NativeMethod {
+  public class JavaMethod implements NativeMethod {
 
     private Method mMethod;
     private final ArgumentExtractor[] mArgumentExtractors;
+    private final String mSignature;
     private final Object[] mArguments;
     private String mType = METHOD_TYPE_REMOTE;
     private final int mJSArgumentsNeeded;
@@ -167,11 +168,81 @@ public abstract class BaseJavaModule implements NativeModule {
       mMethod = method;
       Class[] parameterTypes = method.getParameterTypes();
       mArgumentExtractors = buildArgumentExtractors(parameterTypes);
+      mSignature = buildSignature(parameterTypes);
       // Since native methods are invoked from a message queue executed on a single thread, it is
       // save to allocate only one arguments object per method that can be reused across calls
       mArguments = new Object[parameterTypes.length];
       mJSArgumentsNeeded = calculateJSArgumentsNeeded();
       mTraceName = BaseJavaModule.this.getName() + "." + mMethod.getName();
+    }
+
+    public Method getMethod() {
+      return mMethod;
+    }
+
+    public String getSignature() {
+      return mSignature;
+    }
+
+    private String buildSignature(Class[] paramTypes) {
+      StringBuilder builder = new StringBuilder(paramTypes.length);
+      for (int i = 0; i < paramTypes.length; i++) {
+        Class argumentClass = paramTypes[i];
+        if (argumentClass == ExecutorToken.class) {
+          if (!BaseJavaModule.this.supportsWebWorkers()) {
+            throw new RuntimeException(
+              "Module " + BaseJavaModule.this + " doesn't support web workers, but " +
+                mMethod.getName() +
+                " takes an ExecutorToken.");
+          }
+
+          builder.append('T');
+        } else if (argumentClass == boolean.class) {
+          builder.append('z');
+        } else if (argumentClass == Boolean.class) {
+          builder.append('Z');
+        } else if (argumentClass == int.class) {
+          builder.append('i');
+        } else if (argumentClass == Integer.class) {
+          builder.append('I');
+        } else if (argumentClass == double.class) {
+          builder.append('d');
+        } else if (argumentClass == Double.class) {
+          builder.append('D');
+        } else if (argumentClass == float.class) {
+          builder.append('f');
+        } else if (argumentClass == Float.class) {
+          builder.append('F');
+        } else if (argumentClass == String.class) {
+          builder.append('S');
+        } else if (argumentClass == Callback.class) {
+          builder.append('X');
+        } else if (argumentClass == Promise.class) {
+          builder.append('P');
+          Assertions.assertCondition(
+            i == paramTypes.length - 1, "Promise must be used as last parameter only");
+          mType = METHOD_TYPE_REMOTE_ASYNC;
+        } else if (argumentClass == ReadableMap.class) {
+          builder.append('M');
+        } else if (argumentClass == ReadableArray.class) {
+          builder.append('A');
+        } else {
+          throw new RuntimeException(
+            "Got unknown argument class: " + argumentClass.getSimpleName());
+        }
+      }
+
+      // Modules that support web workers are expected to take an ExecutorToken as the first
+      // parameter to all their @ReactMethod-annotated methods.
+      if (BaseJavaModule.this.supportsWebWorkers()) {
+        if (builder.charAt(0) != 'T') {
+          throw new RuntimeException(
+            "Module " + BaseJavaModule.this + " supports web workers, but " + mMethod.getName() +
+              "does not take an ExecutorToken as its first parameter.");
+        }
+      }
+
+      return builder.toString();
     }
 
     private ArgumentExtractor[] buildArgumentExtractors(Class[] paramTypes) {

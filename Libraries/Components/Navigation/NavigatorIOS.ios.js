@@ -16,6 +16,7 @@ var Image = require('Image');
 var NavigationContext = require('NavigationContext');
 var RCTNavigatorManager = require('NativeModules').NavigatorManager;
 var React = require('React');
+var ReactNative = require('ReactNative');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
@@ -37,7 +38,7 @@ function getuid() {
 var NavigatorTransitionerIOS = React.createClass({
   requestSchedulingNavigation: function(cb) {
     RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
-      React.findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       logError,
       cb
     );
