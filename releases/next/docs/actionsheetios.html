@@ -4,14 +4,15 @@ one or both of:</p><ul><li><code>message</code> (string) - a message to share</l
 uri, the file it points to will be loaded and shared directly.
 In this way, you can share images, videos, PDF files, etc.</p></div></div></div></span></div><div><table width="100%"><tbody><tr><td><h3><a class="anchor" name="examples"></a>Examples <a class="hash-link" href="docs/actionsheetios.html#examples">#</a></h3></td><td style="text-align:right;"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/ActionSheetIOSExample.js">Edit on GitHub</a></td></tr></tbody></table><div class="prism language-javascript"><span class="token string">&#x27;use strict&#x27;</span><span class="token punctuation">;</span>
 
-<span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> ReactNative <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> <span class="token punctuation">{</span>
   ActionSheetIOS<span class="token punctuation">,</span>
   StyleSheet<span class="token punctuation">,</span>
   Text<span class="token punctuation">,</span>
   UIManager<span class="token punctuation">,</span>
   View<span class="token punctuation">,</span>
-<span class="token punctuation">}</span> <span class="token operator">=</span> React<span class="token punctuation">;</span>
+<span class="token punctuation">}</span> <span class="token operator">=</span> ReactNative<span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> BUTTONS <span class="token operator">=</span> <span class="token punctuation">[</span>
   <span class="token string">&#x27;Option 0&#x27;</span><span class="token punctuation">,</span>

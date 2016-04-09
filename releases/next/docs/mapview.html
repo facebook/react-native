@@ -31,17 +31,18 @@ See <code>EdgeInsetsPropType.js</code> for more information.</p></div></div><div
 Default value is <code>true</code>.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="showspointsofinterest"></a><span class="platform">ios</span>showsPointsOfInterest <span class="propType">bool</span> <a class="hash-link" href="docs/mapview.html#showspointsofinterest">#</a></h4><div><p>If <code>false</code> points of interest won&#x27;t be displayed on the map.
 Default value is <code>true</code>.</p></div></div></div></div><div><table width="100%"><tbody><tr><td><h3><a class="anchor" name="examples"></a>Examples <a class="hash-link" href="docs/mapview.html#examples">#</a></h3></td><td style="text-align:right;"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/MapViewExample.js">Edit on GitHub</a></td></tr></tbody></table><div class="prism language-javascript"><span class="token string">&#x27;use strict&#x27;</span><span class="token punctuation">;</span>
 
-<span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> ReactNative <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> <span class="token punctuation">{</span> PropTypes <span class="token punctuation">}</span> <span class="token operator">=</span> React<span class="token punctuation">;</span>
 <span class="token keyword">var</span> <span class="token punctuation">{</span>
   Image<span class="token punctuation">,</span>
   MapView<span class="token punctuation">,</span>
-  PropTypes<span class="token punctuation">,</span>
   StyleSheet<span class="token punctuation">,</span>
   Text<span class="token punctuation">,</span>
   TextInput<span class="token punctuation">,</span>
   TouchableOpacity<span class="token punctuation">,</span>
   View<span class="token punctuation">,</span>
-<span class="token punctuation">}</span> <span class="token operator">=</span> React<span class="token punctuation">;</span>
+<span class="token punctuation">}</span> <span class="token operator">=</span> ReactNative<span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> regionText <span class="token operator">=</span> <span class="token punctuation">{</span>
   latitude<span class="token punctuation">:</span> <span class="token string">&#x27;0&#x27;</span><span class="token punctuation">,</span>

@@ -46,14 +46,15 @@ If you&#x27;re passing in a non-http(s) URL, it&#x27;s best to check {@code canO
 inside <code>Info.plist</code>.</p><p>@param URL the URL to open</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="getinitialurl"></a><span class="propType">static </span>getInitialURL<span class="propType">()</span> <a class="hash-link" href="docs/linking.html#getinitialurl">#</a></h4><div><p>If the app launch was triggered by an app link with,
 it will give the link url, otherwise it will give <code>null</code></p><p>NOTE: To support deep linking on Android, refer <a href="http://developer.android.com/training/app-indexing/deep-linking.html#handling-intents">http://developer.android.com/training/app-indexing/deep-linking.html#handling-intents</a></p></div></div></div></span></div><div><table width="100%"><tbody><tr><td><h3><a class="anchor" name="examples"></a>Examples <a class="hash-link" href="docs/linking.html#examples">#</a></h3></td><td style="text-align:right;"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/LinkingExample.js">Edit on GitHub</a></td></tr></tbody></table><div class="prism language-javascript"><span class="token string">&#x27;use strict&#x27;</span><span class="token punctuation">;</span>
 
-<span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> ReactNative <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> <span class="token punctuation">{</span>
   Linking<span class="token punctuation">,</span>
   StyleSheet<span class="token punctuation">,</span>
   Text<span class="token punctuation">,</span>
   TouchableNativeFeedback<span class="token punctuation">,</span>
   View<span class="token punctuation">,</span>
-<span class="token punctuation">}</span> <span class="token operator">=</span> React<span class="token punctuation">;</span>
+<span class="token punctuation">}</span> <span class="token operator">=</span> ReactNative<span class="token punctuation">;</span>
 <span class="token keyword">var</span> UIExplorerBlock <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./UIExplorerBlock&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> OpenURLButton <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>

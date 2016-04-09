@@ -92,7 +92,8 @@ top of the screen when scrolling. For example, passing
 top of the scroll view. This property is not supported in conjunction
 with <code>horizontal={true}</code>.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="zoomscale"></a><span class="platform">ios</span>zoomScale <span class="propType">number</span> <a class="hash-link" href="docs/scrollview.html#zoomscale">#</a></h4><div><p>The current scale of the scroll view content. The default value is 1.0.</p></div></div></div></div><div><table width="100%"><tbody><tr><td><h3><a class="anchor" name="examples"></a>Examples <a class="hash-link" href="docs/scrollview.html#examples">#</a></h3></td><td style="text-align:right;"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/ScrollViewExample.js">Edit on GitHub</a></td></tr></tbody></table><div class="prism language-javascript"><span class="token string">&#x27;use strict&#x27;</span><span class="token punctuation">;</span>
 
-<span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> ReactNative <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> <span class="token punctuation">{</span>
   ScrollView<span class="token punctuation">,</span>
   StyleSheet<span class="token punctuation">,</span>
@@ -100,7 +101,7 @@ with <code>horizontal={true}</code>.</p></div></div><div class="prop"><h4 class=
   TouchableOpacity<span class="token punctuation">,</span>
   View<span class="token punctuation">,</span>
   Image
-<span class="token punctuation">}</span> <span class="token operator">=</span> React<span class="token punctuation">;</span>
+<span class="token punctuation">}</span> <span class="token operator">=</span> ReactNative<span class="token punctuation">;</span>
 
 exports<span class="token punctuation">.</span>displayName <span class="token operator">=</span> <span class="token punctuation">(</span>undefined<span class="token punctuation">:</span> <span class="token operator">?</span>string<span class="token punctuation">)</span><span class="token punctuation">;</span>
 exports<span class="token punctuation">.</span>title <span class="token operator">=</span> <span class="token string">&#x27;&lt;ScrollView&gt;&#x27;</span><span class="token punctuation">;</span>

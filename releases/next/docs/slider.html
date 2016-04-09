@@ -13,13 +13,14 @@ rightmost pixel of the image will be stretched to fill the track.</p></div></div
 default blue gradient image.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="thumbimage"></a><span class="platform">ios</span>thumbImage <span class="propType">Image.propTypes.source</span> <a class="hash-link" href="docs/slider.html#thumbimage">#</a></h4><div><p>Sets an image for the thumb. Only static images are supported.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="trackimage"></a><span class="platform">ios</span>trackImage <span class="propType">Image.propTypes.source</span> <a class="hash-link" href="docs/slider.html#trackimage">#</a></h4><div><p>Assigns a single image for the track. Only static images are supported.
 The center pixel of the image will be stretched to fill the track.</p></div></div></div></div><div><table width="100%"><tbody><tr><td><h3><a class="anchor" name="examples"></a>Examples <a class="hash-link" href="docs/slider.html#examples">#</a></h3></td><td style="text-align:right;"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/SliderExample.js">Edit on GitHub</a></td></tr></tbody></table><div class="prism language-javascript"><span class="token string">&#x27;use strict&#x27;</span><span class="token punctuation">;</span>
 
-<span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> ReactNative <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> <span class="token punctuation">{</span>
   Slider<span class="token punctuation">,</span>
   Text<span class="token punctuation">,</span>
   StyleSheet<span class="token punctuation">,</span>
   View<span class="token punctuation">,</span>
-<span class="token punctuation">}</span> <span class="token operator">=</span> React<span class="token punctuation">;</span>
+<span class="token punctuation">}</span> <span class="token operator">=</span> ReactNative<span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> SliderExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
   <span class="token function">getDefaultProps<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
