@@ -68,12 +68,36 @@ function getExample(componentName, componentPlatform) {
   };
 }
 
+// Add methods that should not appear in the components documentation.
+var methodsBlacklist = [
+  // Native methods mixin.
+  'getInnerViewNode',
+  'setNativeProps',
+  // Touchable mixin.
+  'touchableHandlePress' ,
+  'touchableHandleActivePressIn',
+  'touchableHandleActivePressOut',
+  'touchableHandleLongPress',
+  'touchableGetPressRectOffset',
+  'touchableGetHitSlop',
+  'touchableGetHighlightDelayMS',
+  'touchableGetLongPressDelayMS',
+  'touchableGetPressOutDelayMS',
+  // Scrollable mixin.
+  'getScrollableNode',
+  'getScrollResponder',
+];
+
+function filterMethods(method) {
+  return method.name[0] !== '_' && methodsBlacklist.indexOf(method.name) === -1;
+}
+
 // Determines whether a component should have a link to a runnable example
 
 function isRunnable(componentName, componentPlatform) {
   var path = '../Examples/UIExplorer/' + componentName + 'Example.js';
   if (!fs.existsSync(path)) {
-    path = '../Examples/UIExplorer/' + componentName + 'Example.'+ componentPlatform +'.js';
+    path = '../Examples/UIExplorer/' + componentName + 'Example.' + componentPlatform + '.js';
     if (!fs.existsSync(path)) {
       return false;
     }
@@ -92,9 +116,6 @@ function shouldDisplayInSidebar(componentName) {
 }
 
 function getNextComponent(i) {
-  var next;
-  var filepath = all[i];
-
   if (all[i + 1]) {
     var nextComponentName = getNameFromPath(all[i + 1]);
 
@@ -124,6 +145,10 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
     json.styles = styles;
   }
   json.example = getExample(componentName, componentPlatform);
+
+  if (json.methods) {
+    json.methods = json.methods.filter(filterMethods);
+  }
 
   // Put Flexbox into the Polyfills category
   var category = (type === 'style' ? 'Polyfills' : type + 's');

@@ -252,6 +252,11 @@ var ListView = React.createClass({
       this.refs[SCROLLVIEW_REF].getScrollResponder();
   },
 
+  /**
+   * Scrolls to a given x, y offset, either immediately or with a smooth animation.
+   *
+   * See `ScrollView#scrollTo`.
+   */
   scrollTo: function(...args) {
     this.refs[SCROLLVIEW_REF] &&
       this.refs[SCROLLVIEW_REF].scrollTo &&
@@ -334,7 +339,7 @@ var ListView = React.createClass({
     });
   },
 
-  onRowHighlighted: function(sectionID, rowID) {
+  _onRowHighlighted: function(sectionID, rowID) {
     this.setState({highlightedRow: {sectionID, rowID}});
   },
 
@@ -400,7 +405,7 @@ var ListView = React.createClass({
               dataSource.getRowData(sectionIdx, rowIdx),
               sectionID,
               rowID,
-              this.onRowHighlighted
+              this._onRowHighlighted
             )}
           />;
         bodyComponents.push(row);

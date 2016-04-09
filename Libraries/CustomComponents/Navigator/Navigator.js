@@ -42,7 +42,6 @@ var TimerMixin = require('react-timer-mixin');
 var View = require('View');
 
 var clamp = require('clamp');
-var deprecatedPropType = require('deprecatedPropType');
 var flattenStyle = require('flattenStyle');
 var invariant = require('fbjs/lib/invariant');
 var rebound = require('rebound');
@@ -159,30 +158,6 @@ var GESTURE_ACTIONS = [
  *     }
  *   />
  * ```
- *
- * ### Navigator Methods
- *
- * If you have a ref to the Navigator element, you can invoke several methods
- * on it to trigger navigation:
- *
- *  - `getCurrentRoutes()` - returns the current list of routes
- *  - `jumpBack()` - Jump backward without unmounting the current scene
- *  - `jumpForward()` - Jump forward to the next scene in the route stack
- *  - `jumpTo(route)` - Transition to an existing scene without unmounting
- *  - `push(route)` - Navigate forward to a new scene, squashing any scenes
- *     that you could `jumpForward` to
- *  - `pop()` - Transition back and unmount the current scene
- *  - `replace(route)` - Replace the current scene with a new route
- *  - `replaceAtIndex(route, index)` - Replace a scene as specified by an index
- *  - `replacePrevious(route)` - Replace the previous scene
- *  - `resetTo(route)` - Navigate to a new scene and reset route stack
- *  - `immediatelyResetRouteStack(routeStack)` - Reset every scene with an
- *     array of routes
- *  - `popToRoute(route)` - Pop to a particular scene, as specified by its
- *     route. All scenes after it will be unmounted
- *  - `popToTop()` - Pop to the first scene in the stack, unmounting every
- *     other scene
- *
  */
 var Navigator = React.createClass({
 
@@ -366,6 +341,8 @@ var Navigator = React.createClass({
   },
 
   /**
+   * Reset every scene with an array of routes.
+   *
    * @param {RouteStack} nextRouteStack Next route stack to reinitialize. This
    * doesn't accept stack item `id`s, which implies that all existing items are
    * destroyed, and then potentially recreated according to `routeStack`. Does
@@ -898,6 +875,9 @@ var Navigator = React.createClass({
     this._transitionTo(destIndex);
   },
 
+  /**
+   * Transition to an existing scene without unmounting
+   */
   jumpTo: function(route) {
     var destIndex = this.state.routeStack.indexOf(route);
     invariant(
@@ -907,14 +887,24 @@ var Navigator = React.createClass({
     this._jumpN(destIndex - this.state.presentedIndex);
   },
 
+  /**
+   * Jump forward to the next scene in the route stack.
+   */
   jumpForward: function() {
     this._jumpN(1);
   },
 
+  /**
+   * Jump backward without unmounting the current scene.
+   */
   jumpBack: function() {
     this._jumpN(-1);
   },
 
+  /**
+   * Navigate forward to a new scene, squashing any scenes that you could
+   * `jumpForward` to.
+   */
   push: function(route) {
     invariant(!!route, 'Must supply route to push');
     var activeLength = this.state.presentedIndex + 1;
@@ -956,6 +946,9 @@ var Navigator = React.createClass({
     );
   },
 
+  /**
+   * Transition back and unmount the current scene.
+   */
   pop: function() {
     if (this.state.transitionQueue.length) {
       // This is the workaround to prevent user from firing multiple `pop()`
@@ -973,7 +966,7 @@ var Navigator = React.createClass({
   },
 
   /**
-   * Replace a route in the navigation stack.
+   * Replace a scene as specified by an index
    *
    * `index` specifies the route in the stack that should be replaced.
    * If it's negative, it counts from the back.
@@ -1008,23 +1001,30 @@ var Navigator = React.createClass({
   },
 
   /**
-   * Replaces the current scene in the stack.
+   * Replace the current scene with a new route.
    */
   replace: function(route) {
     this.replaceAtIndex(route, this.state.presentedIndex);
   },
 
   /**
-   * Replace the current route's parent.
+   * Replace the previous scene.
    */
   replacePrevious: function(route) {
     this.replaceAtIndex(route, this.state.presentedIndex - 1);
   },
 
+  /**
+   * Pop to the first scene in the stack, unmounting every other scene.
+   */
   popToTop: function() {
     this.popToRoute(this.state.routeStack[0]);
   },
 
+  /**
+   * Pop to a particular scene, as specified by its route.
+   * All scenes after it will be unmounted.
+   */
   popToRoute: function(route) {
     var indexOfRoute = this.state.routeStack.indexOf(route);
     invariant(
@@ -1035,6 +1035,9 @@ var Navigator = React.createClass({
     this._popN(numToPop);
   },
 
+  /**
+   * Replace the previous scene and pop to it.
+   */
   replacePreviousAndPop: function(route) {
     if (this.state.routeStack.length < 2) {
       return;
@@ -1043,6 +1046,9 @@ var Navigator = React.createClass({
     this.pop();
   },
 
+  /**
+   * Navigate to a new scene and reset route stack.
+   */
   resetTo: function(route) {
     invariant(!!route, 'Must supply route to push');
     this.replaceAtIndex(route, 0, () => {
@@ -1054,6 +1060,9 @@ var Navigator = React.createClass({
     });
   },
 
+  /**
+   * Returns the current list of routes.
+   */
   getCurrentRoutes: function() {
     // Clone before returning to avoid caller mutating the stack
     return this.state.routeStack.slice();

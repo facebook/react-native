@@ -37,12 +37,22 @@ function renderType(type) {
     return 'enum(' + type.value.map((v) => renderEnumValue(v.value)).join(', ') + ')';
   }
 
+  if (type.name === '$Enum') {
+    if (type.elements[0].signature.properties) {
+      return type.elements[0].signature.properties.map(p => `'${p.key}'`).join(' | ');
+    }
+    return type.name;
+  }
+
   if (type.name === 'shape') {
     return '{' + Object.keys(type.value).map((key => key + ': ' + renderType(type.value[key]))).join(', ') + '}';
   }
 
   if (type.name === 'union') {
-    return type.value.map(renderType).join(', ');
+    if (type.value) {
+      return type.value.map(renderType).join(', ');
+    }
+    return type.elements.map(renderType).join(' | ');
   }
 
   if (type.name === 'arrayOf') {
@@ -74,6 +84,11 @@ function renderType(type) {
   if (type.name === 'func') {
     return 'function';
   }
+
+  if (type.name === 'signature') {
+    return type.raw;
+  }
+
   return type.name;
 }
 
@@ -104,6 +119,18 @@ function sortByPlatform(props, nameA, nameB) {
   }
 
   return 0;
+}
+
+function removeCommentsFromDocblock(docblock) {
+  return docblock
+    .trim('\n ')
+    .replace(/^\/\*+/, '')
+    .replace(/\*\/$/, '')
+    .split('\n')
+    .map(function(line) {
+      return line.trim().replace(/^\* ?/, '');
+    })
+    .join('\n');
 }
 
 var ComponentDoc = React.createClass({
@@ -226,6 +253,35 @@ var ComponentDoc = React.createClass({
     }
   },
 
+  renderMethod: function(method) {
+    return (
+      <Method
+        key={method.name}
+        name={method.name}
+        description={method.description}
+        params={method.params}
+        modifiers={method.modifiers}
+        returns={method.returns}
+      />
+    );
+  },
+
+  renderMethods: function(methods) {
+    if (!methods || !methods.length) {
+      return null;
+    }
+    return (
+      <span>
+        <H level={3}>Methods</H>
+        <div className="props">
+          {methods.filter((method) => {
+            return method.name[0] !== '_';
+          }).map(this.renderMethod)}
+        </div>
+      </span>
+    );
+  },
+
   render: function() {
     var content = this.props.content;
     this.extractPlatformFromProps(content.props);
@@ -236,71 +292,23 @@ var ComponentDoc = React.createClass({
         </Marked>
         <H level={3}>Props</H>
         {this.renderProps(content.props, content.composes)}
+        {this.renderMethods(content.methods)}
       </div>
     );
   }
 });
 
 var APIDoc = React.createClass({
-  removeCommentsFromDocblock: function(docblock) {
-    return docblock
-      .trim('\n ')
-      .replace(/^\/\*+/, '')
-      .replace(/\*\/$/, '')
-      .split('\n')
-      .map(function(line) {
-        return line.trim().replace(/^\* ?/, '');
-      })
-      .join('\n');
-  },
-
-  renderTypehintRec: function(typehint) {
-    if (typehint.type === 'simple') {
-      return typehint.value;
-    }
-
-    if (typehint.type === 'generic') {
-      return this.renderTypehintRec(typehint.value[0]) + '<' + this.renderTypehintRec(typehint.value[1]) + '>';
-    }
-
-    return JSON.stringify(typehint);
-
-  },
-
-  renderTypehint: function(typehint) {
-    try {
-      var typehint = JSON.parse(typehint);
-    } catch(e) {
-      return typehint;
-    }
-
-    return this.renderTypehintRec(typehint);
-  },
 
   renderMethod: function(method) {
     return (
-      <div className="prop" key={method.name}>
-        <Header level={4} className="propTitle" toSlug={method.name}>
-          {method.modifiers.length && <span className="propType">
-            {method.modifiers.join(' ') + ' '}
-          </span> || ''}
-          {method.name}
-          <span className="propType">
-            ({method.params
-              .map((param) => {
-                var res = param.name;
-                if (param.typehint) {
-                  res += ': ' + this.renderTypehint(param.typehint);
-                }
-                return res;
-              })
-              .join(', ')})
-          </span>
-        </Header>
-        {method.docblock && <Marked>
-          {this.removeCommentsFromDocblock(method.docblock)}
-        </Marked>}
-      </div>
+      <Method
+        key={method.name}
+        name={method.name}
+        description={method.docblock && removeCommentsFromDocblock(method.docblock)}
+        params={method.params}
+        modifiers={method.modifiers}
+      />
     );
   },
 
@@ -332,7 +340,7 @@ var APIDoc = React.createClass({
           }
         </Header>
         {property.docblock && <Marked>
-          {this.removeCommentsFromDocblock(property.docblock)}
+          {removeCommentsFromDocblock(property.docblock)}
         </Marked>}
       </div>
     );
@@ -371,7 +379,7 @@ var APIDoc = React.createClass({
                 </Header>
                 <ul>
                   {cls.docblock && <Marked>
-                    {this.removeCommentsFromDocblock(cls.docblock)}
+                    {removeCommentsFromDocblock(cls.docblock)}
                   </Marked>}
                   {this.renderMethods(cls.methods)}
                   {this.renderProperties(cls.properties)}
@@ -394,7 +402,7 @@ var APIDoc = React.createClass({
     return (
       <div>
         <Marked>
-          {this.removeCommentsFromDocblock(content.docblock)}
+          {removeCommentsFromDocblock(content.docblock)}
         </Marked>
         {this.renderMethods(content.methods)}
         {this.renderProperties(content.properties)}
@@ -402,6 +410,62 @@ var APIDoc = React.createClass({
       </div>
     );
   }
+});
+
+var Method = React.createClass({
+  renderTypehintRec: function(typehint) {
+    if (typehint.type === 'simple') {
+      return typehint.value;
+    }
+
+    if (typehint.type === 'generic') {
+      return this.renderTypehintRec(typehint.value[0]) + '<' + this.renderTypehintRec(typehint.value[1]) + '>';
+    }
+
+    return JSON.stringify(typehint);
+
+  },
+
+  renderTypehint: function(typehint) {
+    if (typeof typehint === 'object' && typehint.name) {
+      return renderType(typehint);
+    }
+    try {
+      var typehint = JSON.parse(typehint);
+    } catch (e) {
+      return typehint;
+    }
+
+    return this.renderTypehintRec(typehint);
+  },
+
+  render: function() {
+    return (
+      <div className="prop">
+        <Header level={4} className="propTitle" toSlug={this.props.name}>
+          {this.props.modifiers.length && <span className="propType">
+            {this.props.modifiers.join(' ') + ' '}
+          </span> || ''}
+          {this.props.name}
+          <span className="propType">
+            ({this.props.params
+              .map((param) => {
+                var res = param.name;
+                if (param.type) {
+                  res += ': ' + this.renderTypehint(param.type);
+                }
+                return res;
+              })
+              .join(', ')})
+              {this.props.returns && ': ' + this.renderTypehint(this.props.returns.type)}
+          </span>
+        </Header>
+        {this.props.description && <Marked>
+          {this.props.description}
+        </Marked>}
+      </div>
+    );
+  },
 });
 
 var EmbeddedSimulator = React.createClass({
