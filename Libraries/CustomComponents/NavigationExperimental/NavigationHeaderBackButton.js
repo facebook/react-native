@@ -16,7 +16,8 @@
 */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const NavigationContainer = require('NavigationContainer');
 const NavigationRootContainer = require('NavigationRootContainer');
 
@@ -25,7 +26,7 @@ const {
   Platform,
   StyleSheet,
   TouchableOpacity,
-} = React;
+} = ReactNative;
 
 type Props = {
   onNavigate: Function

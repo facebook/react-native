@@ -15,7 +15,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Modal,
   StyleSheet,
@@ -23,7 +24,7 @@ var {
   Text,
   TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';

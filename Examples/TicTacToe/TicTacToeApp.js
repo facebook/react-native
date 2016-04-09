@@ -16,14 +16,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   AppRegistry,
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 
 class Board {
   grid: Array<Array<number>>;

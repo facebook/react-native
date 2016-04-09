@@ -45,7 +45,7 @@ const NavigationPagerStyleInterpolator = require('NavigationPagerStyleInterpolat
 const NavigatorBreadcrumbNavigationBar = require('NavigatorBreadcrumbNavigationBar');
 const NavigatorNavigationBar = require('NavigatorNavigationBar');
 const NavigatorSceneConfigs = require('NavigatorSceneConfigs');
-const React = require('react-native');
+const React = require('React');
 const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
 
 import type  {

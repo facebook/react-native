@@ -23,7 +23,7 @@ import type  {
  */
 
 const Animated = require('Animated');
-const React = require('react-native');
+const React = require('React');
 
 const {PropTypes} = React;
 

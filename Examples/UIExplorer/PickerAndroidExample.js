@@ -15,7 +15,8 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const StyleSheet = require('StyleSheet');
 const UIExplorerBlock = require('UIExplorerBlock');
 const UIExplorerPage = require('UIExplorerPage');
@@ -24,7 +25,7 @@ const {
   Picker,
   Text,
   TouchableWithoutFeedback,
-} = React;
+} = ReactNative;
 const Item = Picker.Item;
 
 const PickerExample = React.createClass({

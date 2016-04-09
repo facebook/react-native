@@ -32,7 +32,8 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('React');
+const ReactNative = require('react-native');
 const NavigationContainer = require('NavigationContainer');
 const NavigationHeaderTitle = require('NavigationHeaderTitle');
 const NavigationHeaderBackButton = require('NavigationHeaderBackButton');
@@ -45,7 +46,7 @@ const {
   Platform,
   StyleSheet,
   View,
-} = React;
+} = ReactNative;
 
 import type  {
   NavigationSceneRenderer,
