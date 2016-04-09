@@ -82,6 +82,7 @@ class PushNotificationIOS {
    * - `alertAction` : The "action" displayed beneath an actionable notification. Defaults to "view";
    * - `soundName` : The sound played when the notification is fired (optional).
    * - `category`  : The category of this notification, required for actionable notifications (optional).
+   * - `applicationIconBadgeNumber` : The number to display as the app’s icon badge. The default value of this property is 0, which means that no badge is displayed.
    * - `userInfo`  : An optional object containing additional notification data.
    */
   static presentLocalNotification(details: Object) {
@@ -98,6 +99,7 @@ class PushNotificationIOS {
    * - `alertAction` : The "action" displayed beneath an actionable notification. Defaults to "view";
    * - `soundName` : The sound played when the notification is fired (optional).
    * - `category`  : The category of this notification, required for actionable notifications (optional).
+   * - `applicationIconBadgeNumber` : The number to display as the app’s icon badge. The default value of this property is 0, which means that no badge is displayed.
    * - `userInfo` : An optional object containing additional notification data.
    */
   static scheduleLocalNotification(details: Object) {
