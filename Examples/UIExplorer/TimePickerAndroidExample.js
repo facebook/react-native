@@ -13,13 +13,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   TimePickerAndroid,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
-} = React;
+} = ReactNative;
 
 var UIExplorerBlock = require('./UIExplorerBlock');
 var UIExplorerPage = require('./UIExplorerPage');

@@ -15,7 +15,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   AlertIOS,
   PushNotificationIOS,
@@ -23,7 +24,7 @@ var {
   Text,
   TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 
 var Button = React.createClass({
   render: function() {

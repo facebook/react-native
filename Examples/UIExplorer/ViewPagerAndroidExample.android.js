@@ -21,7 +21,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Image,
   StyleSheet,
@@ -30,7 +31,7 @@ var {
   TouchableOpacity,
   View,
   ViewPagerAndroid,
-} = React;
+} = ReactNative;
 
 import type { ViewPagerScrollState } from 'ViewPagerAndroid';
 

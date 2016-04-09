@@ -15,7 +15,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   PixelRatio,
   Image,
@@ -27,7 +28,7 @@ var {
   Platform,
   TouchableNativeFeedback,
   View,
-} = React;
+} = ReactNative;
 
 exports.displayName = (undefined: ?string);
 exports.description = 'Touchable and onPress examples.';

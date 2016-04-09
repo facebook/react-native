@@ -15,14 +15,15 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const {
   StatusBar,
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 
 exports.framework = 'React';
 exports.title = '<StatusBar>';

@@ -18,9 +18,10 @@
  */
 'use strict';
 
-var optimist = require('optimist');
+var optimistModule = require('optimist');
 
 function parseCommandLine(config, args) {
+  var optimist = new optimistModule();
   args = args || process.argv;
   // optimist default API requires you to write the command name three time
   // This is a small wrapper to accept an object instead
