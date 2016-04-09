@@ -457,7 +457,9 @@ class WindowedListView extends React.Component {
         lastRow === this.props.data.length - 1;
     if (this.props.renderFooter) {
       rows.push(
-        <View style={showFooter ? styles.include : styles.remove}>
+        <View
+          key="ind-footer"
+          style={showFooter ? styles.include : styles.remove}>
           {this.props.renderFooter()}
         </View>
       );
