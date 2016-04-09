@@ -16,7 +16,8 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const {
   InteractionManager,
   ScrollView,
@@ -24,7 +25,7 @@ const {
   Text,
   TouchableOpacity,
   View,
-} = React;
+} = ReactNative;
 
 const Incremental = require('Incremental');
 const IncrementalGroup = require('IncrementalGroup');

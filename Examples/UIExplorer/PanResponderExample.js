@@ -22,13 +22,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   PanResponder,
   StyleSheet,
   View,
   processColor,
-} = React;
+} = ReactNative;
 
 var CIRCLE_SIZE = 80;
 
