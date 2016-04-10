@@ -305,4 +305,53 @@ RCT_EXPORT_METHOD(getInitialNotification:(RCTPromiseResolveBlock)resolve
   resolve(RCTNullIfNil(initialNotification));
 }
 
+RCT_EXPORT_METHOD(scheduledLocalNotifications:(RCTResponseSenderBlock)callback)
+{
+  NSArray<UILocalNotification *> *scheduledLocalNotifications = [UIApplication sharedApplication].scheduledLocalNotifications;
+
+
+  NSMutableArray *formattedScheduledLocalNotifications = [[NSMutableArray alloc] init];
+
+  for (UILocalNotification *notification in scheduledLocalNotifications) {
+
+    NSMutableDictionary* formattedScheduledLocalNotification = [NSMutableDictionary dictionary];
+
+    if (notification.fireDate) {
+      NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+      [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"];
+      NSString *fireDateString = [formatter stringFromDate:notification.fireDate];
+
+      [formattedScheduledLocalNotification setObject: fireDateString forKey:@"fireDate"];
+    }
+
+    if (notification.alertBody) {
+      [formattedScheduledLocalNotification setObject: notification.alertBody forKey:@"alertBody"];
+    }
+
+    if (notification.alertAction) {
+      [formattedScheduledLocalNotification setObject: notification.alertAction forKey:@"alertAction"];
+    }
+
+    if (notification.soundName) {
+      [formattedScheduledLocalNotification setObject: notification.soundName forKey:@"soundName"];
+    }
+
+    if (notification.category) {
+      [formattedScheduledLocalNotification setObject: notification.category forKey:@"category"];
+    }
+
+    if (notification.applicationIconBadgeNumber) {
+      [formattedScheduledLocalNotification setObject: [NSNumber numberWithInteger:notification.applicationIconBadgeNumber] forKey:@"applicationIconBadgeNumber"];
+    }
+
+    if (notification.userInfo) {
+      [formattedScheduledLocalNotification setObject: notification.userInfo forKey:@"userInfo"];
+    }
+
+    [formattedScheduledLocalNotifications addObject:formattedScheduledLocalNotification];
+  }
+
+  callback(@[formattedScheduledLocalNotifications]);
+}
+
 @end
