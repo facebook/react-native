@@ -190,6 +190,19 @@ RCT_EXPORT_MODULE()
   return nil;
 }
 
+- (NSDictionary<NSString *, id> *)stripNullsInRequestHeaders:(NSDictionary<NSString *, id> *)headers
+{
+  NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:headers.count];
+  for (NSString *key in headers.allKeys) {
+    id val = headers[key];
+    if (val != [NSNull null]) {
+      result[key] = val;
+    }
+  }
+
+  return result;
+}
+
 - (RCTURLRequestCancellationBlock)buildRequest:(NSDictionary<NSString *, id> *)query
                                  completionBlock:(void (^)(NSURLRequest *request))block
 {
@@ -198,7 +211,7 @@ RCT_EXPORT_MODULE()
   NSURL *URL = [RCTConvert NSURL:query[@"url"]]; // this is marked as nullable in JS, but should not be null
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
   request.HTTPMethod = [RCTConvert NSString:RCTNilIfNull(query[@"method"])].uppercaseString ?: @"GET";
-  request.allHTTPHeaderFields = [RCTConvert NSDictionary:query[@"headers"]];
+  request.allHTTPHeaderFields = [self stripNullsInRequestHeaders:[RCTConvert NSDictionary:query[@"headers"]]];
   request.timeoutInterval = [RCTConvert NSTimeInterval:query[@"timeout"]];
   NSDictionary<NSString *, id> *data = [RCTConvert NSDictionary:RCTNilIfNull(query[@"data"])];
   return [self processDataForHTTPQuery:data callback:^(NSError *error, NSDictionary<NSString *, id> *result) {
