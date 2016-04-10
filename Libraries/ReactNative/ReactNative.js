@@ -13,7 +13,7 @@
 
 const ReactIsomorphic = require('ReactIsomorphic');
 const ReactNativeImpl = require('ReactNativeImpl');
-const warning = require('warning');
+const warning = require('fbjs/lib/warning');
 
 const ReactNative = { ...ReactNativeImpl };
 
