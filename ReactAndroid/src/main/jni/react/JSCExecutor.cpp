@@ -9,6 +9,7 @@
 #include <string>
 #include <glog/logging.h>
 #include <folly/json.h>
+#include <folly/Memory.h>
 #include <folly/String.h>
 #include <sys/time.h>
 
@@ -199,6 +200,9 @@ void JSCExecutor::terminateOnJSVMThread() {
     terminateOwnedWebWorker(workerId);
   }
 
+  m_batchedBridge.reset();
+  m_flushedQueueObj.reset();
+
   s_globalContextRefToJSCExecutor.erase(m_context);
   JSGlobalContextRelease(m_context);
   m_context = nullptr;
@@ -257,28 +261,62 @@ void JSCExecutor::loadApplicationUnbundle(
   loadApplicationScript(startupCode, sourceURL);
 }
 
+bool JSCExecutor::ensureBatchedBridgeObject() {
+  if (m_batchedBridge) {
+    return true;
+  }
+
+  Value batchedBridgeValue = Object::getGlobalObject(m_context).getProperty("__fbBatchedBridge");
+  if (batchedBridgeValue.isUndefined()) {
+    return false;
+  }
+  m_batchedBridge = folly::make_unique<Object>(batchedBridgeValue.asObject());
+  m_flushedQueueObj = folly::make_unique<Object>(m_batchedBridge->getProperty("flushedQueue").asObject());
+  return true;
+}
+
 void JSCExecutor::flush() {
-  // TODO: Make this a first class function instead of evaling. #9317773
-  std::string calls = executeJSCallWithJSC(m_context, "flushedQueue", std::vector<folly::dynamic>());
+  #ifdef WITH_FBSYSTRACE
+  FbSystraceSection s(
+      TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor.flush");
+  #endif
+
+  if (!ensureBatchedBridgeObject()) {
+    throwJSExecutionException(
+        "Couldn't get the native call queue: bridge configuration isn't available. This shouldn't be possible. Congratulations.");
+  }
+
+  std::string calls = m_flushedQueueObj->callAsFunction().toJSONString();
   m_bridge->callNativeModules(*this, calls, true);
 }
 
 void JSCExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
-  // TODO:  Make this a first class function instead of evaling. #9317773
-  std::vector<folly::dynamic> call{
-    moduleId,
-    methodId,
-    std::move(arguments),
+  if (!ensureBatchedBridgeObject()) {
+    throwJSExecutionException(
+        "Couldn't call JS module %s, method %s: bridge configuration isn't available. This "
+        "probably means you're calling a JS module method before bridge setup has completed or without a JS bundle loaded.",
+        moduleId.c_str(),
+        methodId.c_str());
+  }
+
+  std::vector<folly::dynamic> call {
+      moduleId,
+      methodId,
+      std::move(arguments),
   };
   std::string calls = executeJSCallWithJSC(m_context, "callFunctionReturnFlushedQueue", std::move(call));
   m_bridge->callNativeModules(*this, calls, true);
 }
 
 void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
-  // TODO: Make this a first class function instead of evaling. #9317773
-  std::vector<folly::dynamic> call{
-    (double) callbackId,
-    std::move(arguments)
+  if (!ensureBatchedBridgeObject()) {
+    throwJSExecutionException(
+        "Couldn't invoke JS callback %d: bridge configuration isn't available. This shouldn't be possible. Congratulations.", (int) callbackId);
+  }
+
+  std::vector<folly::dynamic> call {
+      (double) callbackId,
+      std::move(arguments)
   };
   std::string calls = executeJSCallWithJSC(m_context, "invokeCallbackAndReturnFlushedQueue", std::move(call));
   m_bridge->callNativeModules(*this, calls, true);
