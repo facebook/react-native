@@ -46,8 +46,8 @@ exports.encode = (string: string): ArrayBuffer => {
   const {length} = string;
   const bytes = new ByteVector(length);
 
-  // each character / char code is assumed to represent an UTF-16 wchar
-  // with the notable exception of surrogate pairs, each wchar represents the
+  // each character / char code is assumed to represent an UTF-16 wchar.
+  // With the notable exception of surrogate pairs, each wchar represents the
   // corresponding unicode code point.
   // For an explanation of UTF-8 encoding, read [1]
   // For an explanation of UTF-16 surrogate pairs, read [2]
