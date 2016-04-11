@@ -85,6 +85,7 @@ import com.facebook.react.views.image.ImageLoadEvent;
   private boolean mNeedsOffscreenAlphaCompositing = false;
   private Drawable mHotspot;
   private PointerEvents mPointerEvents = PointerEvents.AUTO;
+  private long mLastTouchDownTime;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
 
   /* package */ FlatViewGroup(Context context) {
@@ -136,11 +137,7 @@ import com.facebook.react.views.image.ImageLoadEvent;
   @Override
   public boolean interceptsTouchEvent(float touchX, float touchY) {
     NodeRegion nodeRegion = anyNodeRegionWithinBounds(touchX, touchY);
-    if (nodeRegion != null) {
-      return nodeRegion.mIsVirtual;
-    }
-
-    return false;
+    return nodeRegion != null && nodeRegion.mIsVirtual;
   }
 
   @Override
@@ -267,8 +264,12 @@ import com.facebook.react.views.image.ImageLoadEvent;
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
-    if (interceptsTouchEvent(ev.getX(), ev.getY())) {
-      return true;
+    final long downTime = ev.getDownTime();
+    if (downTime != mLastTouchDownTime) {
+      mLastTouchDownTime = downTime;
+      if (interceptsTouchEvent(ev.getX(), ev.getY())) {
+        return true;
+      }
     }
 
     if (mOnInterceptTouchEventListener != null &&
