@@ -33,6 +33,7 @@ require('colors');
 describe('Android Test App', function () {
   this.timeout(600000);
   let driver;
+  let debugIntervalId;
 
   before(function () {
     driver = wd.promiseChainRemote({
@@ -49,6 +50,11 @@ describe('Android Test App', function () {
       console.log(' > ' + meth.magenta, path, (data || '').grey);
     });
 
+    // every 10 seconds print what you see, debugging Android e2e on CI    
+    debugIntervalId = setInterval(() => {
+        driver.source().print();
+    }, 10000)
+
 
     const desired = {
       platformName: 'Android',
@@ -62,9 +68,10 @@ describe('Android Test App', function () {
   });
 
   after(function () {
+    clearInterval(debugIntervalId);
     return driver.quit();
   });
-
+  
   it('should have Hot Module Reloading working', function () {
     const androidAppCode = fs.readFileSync('index.android.js', 'utf-8');
     let intervalToUpdate;
