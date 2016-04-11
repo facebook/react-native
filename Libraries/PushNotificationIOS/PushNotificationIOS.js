@@ -145,8 +145,8 @@ class PushNotificationIOS {
   /**
    * Gets the local notifications that are currently scheduled.
    */
-  static scheduledLocalNotifications(callback: Function) {
-    RCTPushNotificationManager.scheduledLocalNotifications(callback);
+  static getScheduledLocalNotifications(callback: Function) {
+    RCTPushNotificationManager.getScheduledLocalNotifications(callback);
   }
 
   /**
