@@ -54,10 +54,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private static final String REQUEST_BODY_KEY_FORMDATA = "formData";
   private static final String USER_AGENT_HEADER_NAME = "user-agent";
 
-  private static final int MIN_BUFFER_SIZE = 8 * 1024; // 8kb
-  private static final int MAX_BUFFER_SIZE = 512 * 1024; // 512kb
-
-  private static final int CHUNK_TIMEOUT_NS = 100 * 1000000; // 100ms
+  private static final int MAX_CHUNK_SIZE_BETWEEN_FLUSHES = 8 * 1024; // 8K
 
   private final OkHttpClient mClient;
   private final ForwardingCookieHandler mCookieHandler;
@@ -279,38 +276,13 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       ResponseBody responseBody) throws IOException {
     Reader reader = responseBody.charStream();
     try {
-      StringBuilder sb = new StringBuilder(getBufferSize(responseBody));
-      char[] buffer = new char[MIN_BUFFER_SIZE];
+      char[] buffer = new char[MAX_CHUNK_SIZE_BETWEEN_FLUSHES];
       int read;
-      long last = System.nanoTime();
       while ((read = reader.read(buffer)) != -1) {
-        sb.append(buffer, 0, read);
-        long now = System.nanoTime();
-        if (shouldDispatch(now, last)) {
-          onDataReceived(executorToken, requestId, sb.toString());
-          sb.setLength(0);
-          last = now;
-        }
-      }
-
-      if (sb.length() > 0) {
-        onDataReceived(executorToken, requestId, sb.toString());
+        onDataReceived(executorToken, requestId, new String(buffer, 0, read));
       }
     } finally {
       reader.close();
-    }
-  }
-
-  private static boolean shouldDispatch(long now, long last) {
-    return last + CHUNK_TIMEOUT_NS < now;
-  }
-
-  private static int getBufferSize(ResponseBody responseBody) throws IOException {
-    long length = responseBody.contentLength();
-    if (length == -1) {
-      return MIN_BUFFER_SIZE;
-    } else {
-      return (int) min(length, MAX_BUFFER_SIZE);
     }
   }
 
