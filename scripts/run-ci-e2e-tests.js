@@ -114,7 +114,6 @@ if (args.indexOf('--android') !== -1) {
   cd('..');
   exec('keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"');
 
-  SERVER_PID = packagerProcess.pid;
   echo(`Starting packager server, ${SERVER_PID}`);
   const appiumProcess = spawn('node', ['./node_modules/.bin/appium']);
   APPIUM_PID = appiumProcess.pid;
@@ -131,6 +130,7 @@ if (args.indexOf('--android') !== -1) {
     stdio: 'inherit',
     env: packagerEnv
   });
+  SERVER_PID = packagerProcess.pid;
   // wait a bit to allow packager to startup
   exec('sleep 5s');
   echo('Executing android e2e test');
