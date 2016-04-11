@@ -251,7 +251,7 @@ RCT_EXPORT_METHOD(cancelLocalNotifications:(NSDictionary *)userInfo)
   }
 }
 
-RCT_EXPORT_METHOD(scheduledLocalNotifications:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTResponseSenderBlock)callback)
 {
   NSArray<UILocalNotification *> *scheduledLocalNotifications = [UIApplication sharedApplication].scheduledLocalNotifications;
 
