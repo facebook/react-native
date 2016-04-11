@@ -218,6 +218,7 @@ const styles = StyleSheet.create({
     height: 56,
   },
   drawerContentWrapper: {
+    flex: 1,
     paddingTop: StatusBar.currentHeight,
     backgroundColor: 'white',
   },
