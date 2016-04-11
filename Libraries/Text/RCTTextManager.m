@@ -9,7 +9,6 @@
 
 #import "RCTTextManager.h"
 
-#import "Layout.h"
 #import "RCTAccessibilityManager.h"
 #import "RCTAssert.h"
 #import "RCTConvert.h"
@@ -22,7 +21,7 @@
 
 @interface RCTShadowText (Private)
 
-- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width widthMode:(css_measure_mode_t)widthMode;
+- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width;
 
 @end
 
@@ -135,7 +134,7 @@ RCT_EXPORT_SHADOW_PROPERTY(textShadowColor, UIColor)
 
       UIEdgeInsets padding = shadowText.paddingAsInsets;
       CGFloat width = shadowText.frame.size.width - (padding.left + padding.right);
-      NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width widthMode:CSS_MEASURE_MODE_EXACTLY];
+      NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width];
 
       [uiBlocks addObject:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTTextView *> *viewRegistry) {
         RCTTextView *textView = viewRegistry[reactTag];

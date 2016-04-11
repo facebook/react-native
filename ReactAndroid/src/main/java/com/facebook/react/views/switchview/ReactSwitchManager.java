@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
-import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.react.bridge.ReactContext;
@@ -45,13 +44,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
     }
 
     @Override
-    public void measure(
-        CSSNode node,
-        float width,
-        CSSMeasureMode widthMode,
-        float height,
-        CSSMeasureMode heightMode,
-        MeasureOutput measureOutput) {
+    public void measure(CSSNode node, float width, float height, MeasureOutput measureOutput) {
       if (!mMeasured) {
         // Create a switch with the default config and measure it; since we don't (currently)
         // support setting custom switch text, this is fine, as all switches will measure the same
