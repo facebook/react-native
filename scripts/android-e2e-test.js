@@ -33,7 +33,7 @@ require('colors');
 describe('Android Test App', function () {
   this.timeout(600000);
   let driver;
-  let debugIntervalId;
+//   let debugIntervalId;
   
   before(function () {
     driver = wd.promiseChainRemote({
@@ -51,9 +51,9 @@ describe('Android Test App', function () {
     });
 
     // every 10 seconds print what you see, debugging Android e2e on CI    
-    debugIntervalId = setInterval(() => {
-        driver.source().print();
-    }, 50000);
+    // debugIntervalId = setInterval(() => {
+    //     driver.source().print();
+    // }, 50000);
     
     const desired = {
       platformName: 'Android',
