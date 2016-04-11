@@ -21,3 +21,5 @@ Follow steps on https://github.com/facebook/react-native/blob/master/react-nativ
 In case the app crashed:
 
 - Run `adb logcat` and try to find a Java exception
+
+Testing the blame bot (PR 3).
