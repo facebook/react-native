@@ -118,7 +118,7 @@ if (args.indexOf('--android') !== -1) {
   packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
   // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
   const packagerProcess = spawn('npm', ['start'], {
-    // stdio: 'inherit',
+    stdio: 'inherit',
     env: packagerEnv
   });
   SERVER_PID = packagerProcess.pid;
