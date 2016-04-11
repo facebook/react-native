@@ -46,11 +46,10 @@ function cleanup(errorCode) {
 
   if(SERVER_PID) {
     echo(`Killing packager ${SERVER_PID}`);
-    // TODO this is quite drastic but packager starts a daemon that we can't kill the commented way
-    // it will be fixed in April, as David Aurelio says
+    // this is quite drastic but packager starts a daemon that we can't kill by killing the parent process
+    // it will be fixed in April, as David Aurelio says, so until then we will kill a server by port number
     exec(`kill -9 ${SERVER_PID}`);
-    // TODO not like this
-    // exec('killall -9 node');
+    exec("lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill");
   }
   if(APPIUM_PID) {
     echo(`Killing appium ${APPIUM_PID}`);
