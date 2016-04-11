@@ -141,6 +141,64 @@ public class NativeAnimatedNodeTraversalTest {
   }
 
   @Test
+  public void testNodeValueListenerIfNotListening() {
+    int nodeId = 1;
+
+    createSimpleAnimatedViewWithOpacity(1000, 0d);
+    JavaOnlyArray frames = JavaOnlyArray.of(0d, 0.2d, 0.4d, 0.6d, 0.8d, 1d);
+
+    Callback animationCallback = mock(Callback.class);
+    AnimatedNodeValueListener valueListener = mock(AnimatedNodeValueListener.class);
+
+    mNativeAnimatedNodesManager.startListeningToAnimatedNodeValue(nodeId, valueListener);
+    mNativeAnimatedNodesManager.startAnimatingNode(
+      1,
+      nodeId,
+      JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 1d),
+      animationCallback);
+
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verify(valueListener).onValueUpdate(eq(0d));
+
+    mNativeAnimatedNodesManager.stopListeningToAnimatedNodeValue(nodeId);
+
+    reset(valueListener);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verifyNoMoreInteractions(valueListener);
+  }
+
+  @Test
+  public void testNodeValueListenerIfListening() {
+    int nodeId = 1;
+
+    createSimpleAnimatedViewWithOpacity(1000, 0d);
+    JavaOnlyArray frames = JavaOnlyArray.of(0d, 0.2d, 0.4d, 0.6d, 0.8d, 1d);
+
+    Callback animationCallback = mock(Callback.class);
+    AnimatedNodeValueListener valueListener = mock(AnimatedNodeValueListener.class);
+
+    mNativeAnimatedNodesManager.startListeningToAnimatedNodeValue(nodeId, valueListener);
+    mNativeAnimatedNodesManager.startAnimatingNode(
+      1,
+      nodeId,
+      JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 1d),
+      animationCallback);
+
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verify(valueListener).onValueUpdate(eq(0d));
+
+    for (int i = 0; i < frames.size(); i++) {
+      reset(valueListener);
+      mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+      verify(valueListener).onValueUpdate(eq(frames.getDouble(i)));
+    }
+
+    reset(valueListener);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verifyNoMoreInteractions(valueListener);
+  }
+
+  @Test
   public void testAnimationCallbackFinish() {
     createSimpleAnimatedViewWithOpacity(1000, 0d);
 
