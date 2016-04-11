@@ -53,7 +53,7 @@ describe('Android Test App', function () {
     // every 10 seconds print what you see, debugging Android e2e on CI    
     debugIntervalId = setInterval(() => {
         driver.source().print();
-    }, 10000)
+    }, 50000)
 
 
     const desired = {
@@ -68,7 +68,7 @@ describe('Android Test App', function () {
   });
 
   after(function () {
-    clearInterval(debugIntervalId);
+    // clearInterval(debugIntervalId);
     return driver.quit();
   });
   
@@ -96,7 +96,7 @@ describe('Android Test App', function () {
     });
   });
 
-  xit('should have Debug In Chrome working', function () {
+  it('should have Debug In Chrome working', function () {
     const androidAppCode = fs.readFileSync('index.android.js', 'utf-8');
     // http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU
     return driver.

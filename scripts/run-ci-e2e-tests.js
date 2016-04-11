@@ -103,8 +103,6 @@ if (args.indexOf('--android') !== -1) {
     echo('Failed to install appium');
     exit(cleanup(1));
   }
-  // TODO to debug what is installed
-  exec('npm list');
   cp(`${SCRIPTS}/android-e2e-test.js`, 'android-e2e-test.js');
   cd('android');
   echo('Downloading Maven deps');
@@ -121,7 +119,7 @@ if (args.indexOf('--android') !== -1) {
   packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
   // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
   const packagerProcess = spawn('npm', ['start'], {
-    stdio: 'inherit',
+    // stdio: 'inherit',
     env: packagerEnv
   });
   SERVER_PID = packagerProcess.pid;
