@@ -76,7 +76,7 @@ test:
 #    - ./gradlew :ReactAndroid:assembleDebugAndroidTest
 
     # Android e2e test
-    # - node ./scripts/run-ci-e2e-tests.js --android
+    - node ./scripts/run-ci-e2e-tests.js --android
 
     # testing docs generation is not broken
     # - cd website && node ./server/generate.js
