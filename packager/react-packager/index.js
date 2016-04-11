@@ -73,17 +73,6 @@ exports.getOrderedDependencyPaths = function(options, bundleOptions) {
     });
 };
 
-exports.createClientFor = function(options) {
-  if (options.verbose) {
-    enableDebug();
-  }
-  startSocketInterface();
-  return (
-    require('./src/SocketInterface')
-      .getOrCreateSocketFor(omit(options, ['verbose']))
-  );
-};
-
 function useGracefulFs() {
   var fs = require('fs');
   var gracefulFs = require('graceful-fs');
@@ -111,7 +100,6 @@ function createServer(options) {
     enableDebug();
   }
 
-  startSocketInterface();
   var Server = require('./src/Server');
   return new Server(omit(options, ['verbose']));
 }
@@ -134,20 +122,4 @@ function omit(obj, blacklistedKeys) {
 
     return clone;
   }, {});
-}
-
-// we need to listen on a socket as soon as a server is created, but only once.
-// This file also serves as entry point when spawning a socket server; in that
-// case we need to start the server immediately.
-var didStartSocketInterface = false;
-function startSocketInterface() {
-  if (didStartSocketInterface) {
-    return;
-  }
-  didStartSocketInterface = true;
-  require('./src/SocketInterface').listenOnServerMessages();
-}
-
-if (require.main === module) { // used as entry point
-  startSocketInterface();
 }
