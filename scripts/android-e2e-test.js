@@ -89,7 +89,7 @@ describe('Android Test App', function () {
     });
   });
 
-  it('should have Debug In Chrome working', function () {
+  xit('should have Debug In Chrome working', function () {
     const androidAppCode = fs.readFileSync('index.android.js', 'utf-8');
     // http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU
     return driver.
