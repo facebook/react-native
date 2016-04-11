@@ -114,13 +114,6 @@ if (args.indexOf('--android') !== -1) {
   cd('..');
   exec('keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"');
 
-  let packagerEnv = Object.create(process.env);
-  packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
-  // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
-  const packagerProcess = spawn('npm', ['start'], {
-    stdio: 'inherit',
-    env: packagerEnv
-  });
   SERVER_PID = packagerProcess.pid;
   echo(`Starting packager server, ${SERVER_PID}`);
   const appiumProcess = spawn('node', ['./node_modules/.bin/appium']);
@@ -131,7 +124,15 @@ if (args.indexOf('--android') !== -1) {
     echo('could not execute Buck build, is it installed and in PATH?');
     exit(cleanup(1));
   }
+  let packagerEnv = Object.create(process.env);
+  packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
+  // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
+  const packagerProcess = spawn('npm', ['start'], {
+    stdio: 'inherit',
+    env: packagerEnv
+  });
   // wait a bit to allow packager to startup
+  exec('sleep 5s');
   echo('Executing android e2e test');
   if(exec('node node_modules/.bin/_mocha android-e2e-test.js').code) {
     exit(cleanup(1));
