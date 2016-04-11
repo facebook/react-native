@@ -75,7 +75,7 @@ class XMLHttpRequestBase {
   _headers: Object;
   _lowerCaseResponseHeaders: Object;
   _method: ?string;
-  _response: void | null | string | Object;
+  _response: string | ?Object;
   _responseType: ResponseType;
   _sent: boolean;
   _url: ?string;
@@ -117,10 +117,12 @@ class XMLHttpRequestBase {
     this._clearSubscriptions();
   }
 
+  // $FlowIssue #10784535
   get responseType(): ResponseType {
     return this._responseType;
   }
 
+  // $FlowIssue #10784535
   set responseType(responseType: ResponseType): void {
     if (this.readyState > HEADERS_RECEIVED) {
       throw new Error(
@@ -134,6 +136,7 @@ class XMLHttpRequestBase {
       return;
     }
 
+    // redboxes early, e.g. for 'arraybuffer' on ios 7
     invariant(
       SUPPORTED_RESPONSE_TYPES[responseType] || responseType === 'document',
       `The provided value '${responseType}' is unsupported in this environment.`
@@ -141,6 +144,7 @@ class XMLHttpRequestBase {
     this._responseType = responseType;
   }
 
+  // $FlowIssue #10784535
   get response(): Response {
     const {responseType} = this;
     if (responseType === '' || responseType === 'text') {
