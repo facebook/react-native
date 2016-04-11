@@ -453,13 +453,9 @@ public class FlatUIImplementation extends UIImplementation {
       node = node.getParent();
     }
 
-    FlatShadowNode nonVirtualNode = (FlatShadowNode) node;
-    nonVirtualNode.forceMountToView();
-    mStateBuilder.ensureBackingViewIsCreated(nonVirtualNode);
-
     FlatUIViewOperationQueue operationsQueue = mStateBuilder.getOperationsQueue();
     operationsQueue.enqueueSetJSResponder(
-        nonVirtualNode.getReactTag(),
+        node.getReactTag(),
         possiblyVirtualReactTag,
         blockNativeResponder);
   }
