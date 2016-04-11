@@ -64,6 +64,15 @@ exports.getDependencies = function(options, bundleOptions) {
     });
 };
 
+exports.getOrderedDependencyPaths = function(options, bundleOptions) {
+  var server = createNonPersistentServer(options);
+  return server.getOrderedDependencyPaths(bundleOptions)
+    .then(function(paths) {
+      server.end();
+      return paths;
+    });
+};
+
 exports.createClientFor = function(options) {
   if (options.verbose) {
     enableDebug();
