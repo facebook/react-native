@@ -75,26 +75,36 @@ describe('Android Test App', function () {
   it('should have Hot Module Reloading working', function () {
     const androidAppCode = fs.readFileSync('index.android.js', 'utf-8');
     let intervalToUpdate;
-    // http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU
     return driver.
-    waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]').
-    pressDeviceKey(82).
-    elementByXPath('//android.widget.TextView[starts-with(@text, "Enable Hot Reloading")]').
-    click().
-    waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]').
-    then(() => {
-      let iteration = 0;
-      // change file every 3 seconds to consider slow android emulator on CI
-      intervalToUpdate = setInterval(() => {
-        fs.writeFileSync('index.android.js', androidAppCode.replace('Welcome to React Native!', 'Welcome to React Native with HMR!' + iteration), 'utf-8');
-      }, 3000);
-    }).
-    waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native with HMR!")]').
-    finally(() => {
-      clearInterval(intervalToUpdate);
-      fs.writeFileSync('index.android.js', androidAppCode, 'utf-8');
-    });
+      setImplicitWaitTimeout(5000).
+      // some times app starts with red screen and ReloadJS buttons if packager was not ready
+      waitForElementByXPath('//android.widget.Button[@text="Reload JS"]').
+      then((elem) => {
+        elem.click();
+      }, (err) => {
+        // ignoring if Reload JS button can't be located, then it should be all fine
+      }).
+      setImplicitWaitTimeout(150000).
+      waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]').
+      // http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU
+      pressDeviceKey(82).
+      elementByXPath('//android.widget.TextView[starts-with(@text, "Enable Hot Reloading")]').
+      click().
+      waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]').
+      then(() => {
+        let iteration = 0;
+        // change file every 3 seconds to consider slow android emulator on CI
+        intervalToUpdate = setInterval(() => {
+          fs.writeFileSync('index.android.js', androidAppCode.replace('Welcome to React Native!', 'Welcome to React Native with HMR!' + iteration), 'utf-8');
+        }, 3000);
+      }).
+      waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native with HMR!")]').
+      finally(() => {
+        clearInterval(intervalToUpdate);
+        fs.writeFileSync('index.android.js', androidAppCode, 'utf-8');
+      });
   });
+
 
   it('should have Debug In Chrome working', function () {
     const androidAppCode = fs.readFileSync('index.android.js', 'utf-8');
