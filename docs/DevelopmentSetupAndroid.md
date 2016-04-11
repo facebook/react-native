@@ -78,7 +78,7 @@ Genymotion is much easier to set up than stock Google emulators. However, it's o
   1. Run `android avd` and click on **Create...**
   ![Create AVD dialog](img/CreateAVD.png)
   2. With the new AVD selected, click `Start...`
-5. To bring up the developer menu press F2 (or install [Frappé](http://getfrappe.com))
+5. To bring up the developer menu press F2 (or ⌘+M for Android Studio 2.0 or newer) (or install [Frappé](http://getfrappe.com))
 
 ### Windows Hyper-V Alternative
 
