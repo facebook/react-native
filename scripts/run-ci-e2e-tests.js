@@ -48,7 +48,8 @@ function cleanup(errorCode) {
     echo(`Killing packager ${SERVER_PID}`);
     // TODO this is quite drastic but packager starts a daemon that we can't kill the commented way
     // it will be fixed in April, as David Aurelio says
-    // exec(`kill -9 ${SERVER_PID}`);
+    exec(`kill -9 ${SERVER_PID}`);
+    // TODO not like this
     // exec('killall -9 node');
   }
   if(APPIUM_PID) {
@@ -102,6 +103,8 @@ if (args.indexOf('--android') !== -1) {
     echo('Failed to install appium');
     exit(cleanup(1));
   }
+  // TODO to debug what is installed
+  exec('npm list');
   cp(`${SCRIPTS}/android-e2e-test.js`, 'android-e2e-test.js');
   cd('android');
   echo('Downloading Maven deps');
@@ -112,8 +115,8 @@ if (args.indexOf('--android') !== -1) {
     exit(cleanup(1));
   }
   cd('..');
-  // TODO for testing on server
-  exit(0);
+  exec('keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"');
+
   let packagerEnv = Object.create(process.env);
   packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
   // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
@@ -126,7 +129,6 @@ if (args.indexOf('--android') !== -1) {
   const appiumProcess = spawn('node', ['./node_modules/.bin/appium']);
   APPIUM_PID = appiumProcess.pid;
   echo(`Starting appium server, ${APPIUM_PID}`);
-  exec('keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"');
   echo('Building app');
   if (exec('buck build android/app').code) {
     echo('could not execute Buck build, is it installed and in PATH?');
