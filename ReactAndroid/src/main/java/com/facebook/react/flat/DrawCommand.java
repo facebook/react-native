@@ -12,8 +12,8 @@ package com.facebook.react.flat;
 import android.graphics.Canvas;
 
 /**
- * DrawCommand is an inteface that shadow nodes need to implement to do the drawing.
- * Instaces of DrawCommand are created in background thread and passed to UI thread.
+ * DrawCommand is an interface that shadow nodes need to implement to do the drawing.
+ * Instances of DrawCommand are created in background thread and passed to UI thread.
  * Once a DrawCommand is shared with UI thread, it can no longer be mutated in background thread.
  */
 public interface DrawCommand {
