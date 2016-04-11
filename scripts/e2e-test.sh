@@ -98,7 +98,7 @@ do
     # TODO t10114777 check it renders "Welcome to React Native"
     ;;
   *)
-    echo "Please run the script with --ios, --android or --packager" >&2
+    echo "Please run the script with --ios, --android or --packager." >&2
     exit 1
     ;;
   esac
