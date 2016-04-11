@@ -18,7 +18,6 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 
-import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.csslayout.Spacing;
@@ -68,13 +67,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   }
 
   @Override
-  public void measure(
-      CSSNode node,
-      float width,
-      CSSMeasureMode widthMode,
-      float height,
-      CSSMeasureMode heightMode,
-      MeasureOutput measureOutput) {
+  public void measure(CSSNode node, float width, float height, MeasureOutput measureOutput) {
     CharSequence text = getText();
     if (TextUtils.isEmpty(text)) {
       // to indicate that we don't have anything to display
@@ -87,7 +80,8 @@ import com.facebook.react.uimanager.annotations.ReactProp;
     mText = text;
 
     // technically, width should never be negative, but there is currently a bug in
-    boolean unconstrainedWidth = widthMode == CSSMeasureMode.UNDEFINED || width < 0;
+    // LayoutEngine where a negative value can be passed.
+    boolean unconstrainedWidth = Float.isNaN(width) || width < 0;
 
     BoringLayout.Metrics metrics = BoringLayout.isBoring(text, PAINT, sBoringLayoutMetrics);
     if (metrics != null) {
