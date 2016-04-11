@@ -55,12 +55,6 @@ describe('Android Test App', function () {
         driver.source().print();
     }, 50000);
     
-    driver.pause = function(millisec) {
-      return new Promise((resolve) => {
-        setTimeout(() => {resolve(this)}, millisec);
-      });
-    }
-
     const desired = {
       platformName: 'Android',
       deviceName: 'Android Emulator',
@@ -81,7 +75,6 @@ describe('Android Test App', function () {
     const androidAppCode = fs.readFileSync('index.android.js', 'utf-8');
     let intervalToUpdate;
     return driver.
-      pause(5000).
       setImplicitWaitTimeout(5000).
       // some times app starts with red screen and ReloadJS buttons if packager was not ready
       waitForElementByXPath('//android.widget.Button[@text="Reload JS"]').
@@ -91,14 +84,11 @@ describe('Android Test App', function () {
         // ignoring if Reload JS button can't be located, then it should be all fine
       }).
       setImplicitWaitTimeout(150000).
-      pause(5000).
       waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]').
       // http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU
       pressDeviceKey(82).
-      pause(5000).
       elementByXPath('//android.widget.TextView[starts-with(@text, "Enable Hot Reloading")]').
       click().
-      pause(5000).
       waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]').
       then(() => {
         let iteration = 0;
@@ -120,10 +110,8 @@ describe('Android Test App', function () {
     // http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU
     return driver.
     waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]').
-    pause(5000).
     pressDeviceKey(82).
-    elementByXPath('//android.widget.TextView[starts-with(@text, "Debug in Chrome")]').
-    pause(5000).
+    elementByXPath('//android.widget.TextView[starts-with(@text, "Debug")]').
     click().
     waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]')
   });
