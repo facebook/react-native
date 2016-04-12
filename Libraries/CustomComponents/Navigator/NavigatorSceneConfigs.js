@@ -475,13 +475,13 @@ var BaseRightToLeftGesture = {
 var BaseDownUpGesture = {
   ...BaseLeftToRightGesture,
   fullDistance: SCREEN_HEIGHT,
-  direction: 'down-to-up',
+  direction: 'bottom-to-top',
 };
 
 var BaseUpDownGesture = {
   ...BaseLeftToRightGesture,
   fullDistance: SCREEN_HEIGHT,
-  direction: 'up-to-down',
+  direction: 'top-to-bottom',
 };
 
 var BaseConfig = {
@@ -603,17 +603,18 @@ var NavigatorSceneConfigs = {
     ...BaseConfig,
     gestures: {
       jumpBack: {
-        ...BaseDownUpGesture,
+        ...BaseUpDownGesture,
         overswipe: BaseOverswipeConfig,
         edgeHitWidth: null,
         isDetachable: true,
       },
       jumpForward: {
-        ...BaseDownUpGesture,
+        ...BaseUpDownGesture,
         overswipe: BaseOverswipeConfig,
         edgeHitWidth: null,
         isDetachable: true,
       },
+      pop: BaseUpDownGesture,
     },
     animationInterpolators: {
       into: buildStyleInterpolator(FromTheDown),
@@ -624,17 +625,18 @@ var NavigatorSceneConfigs = {
     ...BaseConfig,
     gestures: {
       jumpBack: {
-        ...BaseUpDownGesture,
+        ...BaseDownUpGesture,
         overswipe: BaseOverswipeConfig,
         edgeHitWidth: null,
         isDetachable: true,
       },
       jumpForward: {
-        ...BaseUpDownGesture,
+        ...BaseDownUpGesture,
         overswipe: BaseOverswipeConfig,
         edgeHitWidth: null,
         isDetachable: true,
       },
+      pop: BaseDownUpGesture,
     },
     animationInterpolators: {
       into: buildStyleInterpolator(FromTheTop),
