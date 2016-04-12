@@ -159,8 +159,11 @@ var DrawerLayoutAndroid = React.createClass({
 
   render: function() {
     var drawStatusBar = Platform.Version >= 21 && this.props.statusBarBackgroundColor;
+    var drawerSubviewBackgroundColor = (this.props.style || {}).backgroundColor || 'white';
     var drawerViewWrapper =
-      <View style={[styles.drawerSubview, {width: this.props.drawerWidth}]} collapsable={false}>
+      <View
+        style={[styles.drawerSubview, {width: this.props.drawerWidth, backgroundColor: drawerSubviewBackgroundColor}]}
+        collapsable={false}>
         {this.props.renderNavigationView()}
         {drawStatusBar && <View style={styles.drawerStatusBar} />}
       </View>;
