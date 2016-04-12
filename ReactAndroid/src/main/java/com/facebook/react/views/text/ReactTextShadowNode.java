@@ -25,6 +25,8 @@ import android.text.TextPaint;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.StrikethroughSpan;
+import android.text.style.UnderlineSpan;
 import android.widget.TextView;
 
 import com.facebook.csslayout.CSSConstants;
@@ -145,6 +147,12 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                     textCSSNode.mFontWeight,
                     textCSSNode.mFontFamily,
                     textCSSNode.getThemedContext().getAssets())));
+      }
+      if (textCSSNode.mIsUnderlineTextDecorationSet) {
+        ops.add(new SetSpanOperation(start, end, new UnderlineSpan()));
+      }
+      if (textCSSNode.mIsLineThroughTextDecorationSet) {
+        ops.add(new SetSpanOperation(start, end, new StrikethroughSpan()));
       }
       if (textCSSNode.mTextShadowOffsetDx != 0 || textCSSNode.mTextShadowOffsetDy != 0) {
         ops.add(new SetSpanOperation(
@@ -287,6 +295,9 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   private float mTextShadowRadius = 1;
   private int mTextShadowColor = DEFAULT_TEXT_SHADOW_COLOR;
 
+  private boolean mIsUnderlineTextDecorationSet = false;
+  private boolean mIsLineThroughTextDecorationSet = false;
+
   /**
    * mFontStyle can be {@link Typeface#NORMAL} or {@link Typeface#ITALIC}.
    * mFontWeight can be {@link Typeface#NORMAL} or {@link Typeface#BOLD}.
@@ -426,6 +437,22 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       mFontStyle = fontStyle;
       markUpdated();
     }
+  }
+
+  @ReactProp(name = ViewProps.TEXT_DECORATION_LINE)
+  public void setTextDecorationLine(@Nullable String textDecorationLineString) {
+    mIsUnderlineTextDecorationSet = false;
+    mIsLineThroughTextDecorationSet = false;
+    if (textDecorationLineString != null) {
+      for (String textDecorationLineSubString : textDecorationLineString.split(" ")) {
+        if ("underline".equals(textDecorationLineSubString)) {
+          mIsUnderlineTextDecorationSet = true;
+        } else if ("line-through".equals(textDecorationLineSubString)) {
+          mIsLineThroughTextDecorationSet = true;
+        }
+      }
+    }
+    markUpdated();
   }
 
   @ReactProp(name = PROP_SHADOW_OFFSET)
