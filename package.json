@@ -142,6 +142,7 @@
     "bser": "^1.0.2",
     "chalk": "^1.1.1",
     "connect": "^2.8.3",
+    "core-js": "^2.2.2",
     "debug": "^2.2.0",
     "event-target-shim": "^1.0.5",
     "fbjs": "^0.7.2",
