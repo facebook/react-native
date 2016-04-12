@@ -303,13 +303,11 @@ static css_dim_t RCTMeasure(void *context, float width, float height)
   }
 
   // Text decoration
-  if (_textDecorationLine == RCTTextDecorationLineTypeUnderline ||
-      _textDecorationLine == RCTTextDecorationLineTypeUnderlineStrikethrough) {
+  if(_textDecorationLine & RCTTextDecorationLineTypeUnderline) {
     [self _addAttribute:NSUnderlineStyleAttributeName withValue:@(_textDecorationStyle)
      toAttributedString:attributedString];
   }
-  if (_textDecorationLine == RCTTextDecorationLineTypeStrikethrough ||
-      _textDecorationLine == RCTTextDecorationLineTypeUnderlineStrikethrough){
+  if(_textDecorationLine & RCTTextDecorationLineTypeStrikethrough) {
     [self _addAttribute:NSStrikethroughStyleAttributeName withValue:@(_textDecorationStyle)
      toAttributedString:attributedString];
   }

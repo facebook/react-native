@@ -5,12 +5,13 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule processTextDecorationLine
  */
+'use strict';
 
-#import <Foundation/Foundation.h>
+function processTextDecorationLine(value) {
+  throw new Error('not required on iOS');
+}
 
-typedef NS_OPTIONS(NSInteger, RCTTextDecorationLineType) {
-  RCTTextDecorationLineTypeNone = 0,
-  RCTTextDecorationLineTypeUnderline = 1 << 0,
-  RCTTextDecorationLineTypeStrikethrough = 1 << 1,
-};
+module.exports = processTextDecorationLine;

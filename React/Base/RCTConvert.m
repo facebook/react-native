@@ -216,12 +216,21 @@ NSNumber *RCTConvertEnumValue(const char *typeName, NSDictionary *mapping, NSNum
 
 NSNumber *RCTConvertMultiEnumValue(const char *typeName, NSDictionary *mapping, NSNumber *defaultValue, id json)
 {
+  NSArray *array = nil;
   if ([json isKindOfClass:[NSArray class]]) {
-    if ([json count] == 0) {
+    array = json;
+  } else if ([json isKindOfClass:[NSString class]]) {
+    // support space-separated enum values in a string
+    array = [json componentsSeparatedByString:@" "];
+    // prevent errors from extra whitespace causing blank strings
+    array = [array filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"length > 0"]];
+  }
+  if (array) {
+    if ([array count] == 0) {
       return defaultValue;
     }
     long long result = 0;
-    for (id arrayElement in json) {
+    for (id arrayElement in array) {
       NSNumber *value = RCTConvertEnumValue(typeName, mapping, defaultValue, arrayElement);
       result |= value.longLongValue;
     }
@@ -260,11 +269,10 @@ RCT_ENUM_CONVERTER(RCTBorderStyle, (@{
   @"dashed": @(RCTBorderStyleDashed),
 }), RCTBorderStyleSolid, integerValue)
 
-RCT_ENUM_CONVERTER(RCTTextDecorationLineType, (@{
+RCT_MULTI_ENUM_CONVERTER(RCTTextDecorationLineType, (@{
   @"none": @(RCTTextDecorationLineTypeNone),
   @"underline": @(RCTTextDecorationLineTypeUnderline),
   @"line-through": @(RCTTextDecorationLineTypeStrikethrough),
-  @"underline line-through": @(RCTTextDecorationLineTypeUnderlineStrikethrough),
 }), RCTTextDecorationLineTypeNone, integerValue)
 
 RCT_ENUM_CONVERTER(NSWritingDirection, (@{
