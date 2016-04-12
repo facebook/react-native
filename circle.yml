@@ -10,6 +10,7 @@ machine:
     TERM: "dumb"
     ADB_INSTALL_TIMEOUT: 10
     GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
+    APPIUM_DEBUG_INTERVAL: 3000
 
 dependencies:
   override:
@@ -72,11 +73,11 @@ test:
     - source scripts/circle-ci-android-setup.sh && retry3 ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests
 
     - ./gradlew :ReactAndroid:testDebugUnitTest
-    # Deprecated: we just check that e2e tests are compiling, executing them with Gradle becomes a bottleneck
+    # Deprecated: these tests are executed using Buck above, while we support Gradle we just make sure the test code compiles
     - ./gradlew :ReactAndroid:assembleDebugAndroidTest
 
     # Android e2e test
-    - node ./scripts/run-ci-e2e-tests.js --android
+    - ource scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android
 
     # testing docs generation is not broken
     - cd website && node ./server/generate.js

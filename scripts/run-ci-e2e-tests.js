@@ -14,7 +14,7 @@
  * Available arguments:
  * --ios - to test only ios application end to end
  * --android - to test only android application end to end
- * --skip-cli-install - to test not in SI mode without installing react-native-cli globally
+ * --skip-cli-install - to skip react-native-cli global installation (for local debugging)
  */
 /*eslint-disable no-undef */
 require('shelljs/global');
@@ -98,7 +98,7 @@ cd('EndToEndTest');
 if (args.indexOf('--android') !== -1) {
   echo('Running an Android e2e test');
   echo('Installing e2e framework');
-  if(exec('npm install --save-dev appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3', {silent: true}).code) {
+  if(exec('npm install --save-dev appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3 pretty-data2@0.40.1', {silent: true}).code) {
     echo('Failed to install appium');
     exit(cleanup(1));
   }
