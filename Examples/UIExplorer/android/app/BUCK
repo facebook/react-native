@@ -5,12 +5,12 @@ android_binary(
   manifest = 'src/main/AndroidManifest.xml',
   keystore = '//keystores:debug',
   deps = [
-    ':movies-lib',
+    ':uiexplorer-lib',
   ],
 )
 
 android_library(
-  name = 'movies-lib',
+  name = 'uiexplorer-lib',
   srcs = glob(['src/main/java/**/*.java']),
   deps = [
     ':res',
@@ -27,5 +27,5 @@ android_library(
 android_resource(
   name = 'res',
   res = 'src/main/res',
-  package = 'com.facebook.react.movies',
+  package = 'com.facebook.react.uiapp',
 )
