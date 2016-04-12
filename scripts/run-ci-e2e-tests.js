@@ -150,13 +150,13 @@ if (args.indexOf('--ios') !== -1) {
   // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
   let packagerEnv = Object.create(process.env);
   packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
-  const packagerProcess = spawn('../node_modules/react-native/packager/packager.sh', ['--nonPersistent'], 
+  const packagerProcess = spawn('npm', ['start'], 
   {
     stdio: 'inherit',
     env: packagerEnv
   });
-  // wait a bit to allow packager to startup
-  exec('sleep 5s');
+  // prepare cache
+  exec('curl http://localhost:8081/index.ios.bundle?platform=ios&dev=true');
   SERVER_PID = packagerProcess.pid;
   echo(`Starting packager server, ${SERVER_PID}`);
   echo('Executing ios e2e test');
