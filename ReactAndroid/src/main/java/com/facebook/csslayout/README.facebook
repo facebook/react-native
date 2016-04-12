@@ -1,7 +1,7 @@
 The source of truth for css-layout is: https://github.com/facebook/css-layout
 
 The code here should be kept in sync with GitHub.
-HEAD at the time this code was synced: https://github.com/facebook/css-layout/commit/68e0b0cc58dcdf023651905d39c0e8147141b123
+HEAD at the time this code was synced: https://github.com/facebook/css-layout/commit/b0d00ad33850d83450139d994bded89d20ddac32
 
 There is generated code in:
  - README.facebook (this file)

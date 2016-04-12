@@ -30,6 +30,7 @@ import android.text.style.UnderlineSpan;
 import android.widget.TextView;
 
 import com.facebook.csslayout.CSSConstants;
+import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.infer.annotation.Assertions;
@@ -201,7 +202,13 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   private static final CSSNode.MeasureFunction TEXT_MEASURE_FUNCTION =
       new CSSNode.MeasureFunction() {
         @Override
-        public void measure(CSSNode node, float width, float height, MeasureOutput measureOutput) {
+        public void measure(
+            CSSNode node,
+            float width,
+            CSSMeasureMode widthMode,
+            float height,
+            CSSMeasureMode heightMode,
+            MeasureOutput measureOutput) {
           // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
           ReactTextShadowNode reactCSSNode = (ReactTextShadowNode) node;
           TextPaint textPaint = sTextPaintInstance;
@@ -214,8 +221,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
               Layout.getDesiredWidth(text, textPaint) : Float.NaN;
 
           // technically, width should never be negative, but there is currently a bug in
-          // LayoutEngine where a negative value can be passed.
-          boolean unconstrainedWidth = CSSConstants.isUndefined(width) || width < 0;
+          boolean unconstrainedWidth = widthMode == CSSMeasureMode.UNDEFINED || width < 0;
 
           if (boring == null &&
               (unconstrainedWidth ||

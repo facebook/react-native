@@ -26,14 +26,15 @@ NSString *const RCTReactTagAttributeName = @"ReactTagAttributeName";
 {
   NSTextStorage *_cachedTextStorage;
   CGFloat _cachedTextStorageWidth;
+  CGFloat _cachedTextStorageWidthMode;
   NSAttributedString *_cachedAttributedString;
   CGFloat _effectiveLetterSpacing;
 }
 
-static css_dim_t RCTMeasure(void *context, float width, float height)
+static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t widthMode, float height, css_measure_mode_t heightMode)
 {
   RCTShadowText *shadowText = (__bridge RCTShadowText *)context;
-  NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width];
+  NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width widthMode:widthMode];
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
   CGSize computedSize = [layoutManager usedRectForTextContainer:textContainer].size;
@@ -55,6 +56,8 @@ static css_dim_t RCTMeasure(void *context, float width, float height)
     _isHighlighted = NO;
     _textDecorationStyle = NSUnderlineStyleSingle;
     _opacity = 1.0;
+    _cachedTextStorageWidth = -1;
+    _cachedTextStorageWidthMode = -1;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(contentSizeMultiplierDidChange:)
                                                  name:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
@@ -89,7 +92,8 @@ static css_dim_t RCTMeasure(void *context, float width, float height)
   UIEdgeInsets padding = self.paddingAsInsets;
   CGFloat width = self.frame.size.width - (padding.left + padding.right);
 
-  NSTextStorage *textStorage = [self buildTextStorageForWidth:width];
+  // HACK (t10802067)
+  NSTextStorage *textStorage = [self buildTextStorageForWidth:width widthMode:isnan(width) ? CSS_MEASURE_MODE_UNDEFINED : CSS_MEASURE_MODE_EXACTLY];
   [applierBlocks addObject:^(NSDictionary<NSNumber *, RCTText *> *viewRegistry) {
     RCTText *view = viewRegistry[self.reactTag];
     view.textStorage = textStorage;
@@ -106,9 +110,9 @@ static css_dim_t RCTMeasure(void *context, float width, float height)
   [self dirtyPropagation];
 }
 
-- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width
+- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width widthMode:(css_measure_mode_t)widthMode
 {
-  if (_cachedTextStorage && width == _cachedTextStorageWidth) {
+  if (_cachedTextStorage && width == _cachedTextStorageWidth && widthMode == _cachedTextStorageWidthMode) {
     return _cachedTextStorage;
   }
 
@@ -121,12 +125,13 @@ static css_dim_t RCTMeasure(void *context, float width, float height)
   textContainer.lineFragmentPadding = 0.0;
   textContainer.lineBreakMode = _numberOfLines > 0 ? NSLineBreakByTruncatingTail : NSLineBreakByClipping;
   textContainer.maximumNumberOfLines = _numberOfLines;
-  textContainer.size = (CGSize){isnan(width) ? CGFLOAT_MAX : width, CGFLOAT_MAX};
+  textContainer.size = (CGSize){widthMode == CSS_MEASURE_MODE_UNDEFINED ? CGFLOAT_MAX : width, CGFLOAT_MAX};
 
   [layoutManager addTextContainer:textContainer];
   [layoutManager ensureLayoutForTextContainer:textContainer];
 
   _cachedTextStorageWidth = width;
+  _cachedTextStorageWidthMode = widthMode;
   _cachedTextStorage = textStorage;
 
   return textStorage;
