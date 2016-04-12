@@ -26,6 +26,7 @@ NSString *const RCTReactTagAttributeName = @"ReactTagAttributeName";
 {
   NSTextStorage *_cachedTextStorage;
   CGFloat _cachedTextStorageWidth;
+  CGFloat _cachedTextStorageWidthMode;
   NSAttributedString *_cachedAttributedString;
   CGFloat _effectiveLetterSpacing;
 }
@@ -55,6 +56,8 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
     _isHighlighted = NO;
     _textDecorationStyle = NSUnderlineStyleSingle;
     _opacity = 1.0;
+    _cachedTextStorageWidth = -1;
+    _cachedTextStorageWidthMode = -1;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(contentSizeMultiplierDidChange:)
                                                  name:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
@@ -89,7 +92,8 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
   UIEdgeInsets padding = self.paddingAsInsets;
   CGFloat width = self.frame.size.width - (padding.left + padding.right);
 
-  NSTextStorage *textStorage = [self buildTextStorageForWidth:width widthMode:CSS_MEASURE_MODE_EXACTLY];
+  // HACK (t10802067)
+  NSTextStorage *textStorage = [self buildTextStorageForWidth:width widthMode:isnan(width) ? CSS_MEASURE_MODE_UNDEFINED : CSS_MEASURE_MODE_EXACTLY];
   [applierBlocks addObject:^(NSDictionary<NSNumber *, RCTText *> *viewRegistry) {
     RCTText *view = viewRegistry[self.reactTag];
     view.textStorage = textStorage;
@@ -108,7 +112,7 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
 
 - (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width widthMode:(css_measure_mode_t)widthMode
 {
-  if (_cachedTextStorage && width == _cachedTextStorageWidth) {
+  if (_cachedTextStorage && width == _cachedTextStorageWidth && widthMode == _cachedTextStorageWidthMode) {
     return _cachedTextStorage;
   }
 
@@ -127,6 +131,7 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
   [layoutManager ensureLayoutForTextContainer:textContainer];
 
   _cachedTextStorageWidth = width;
+  _cachedTextStorageWidthMode = widthMode;
   _cachedTextStorage = textStorage;
 
   return textStorage;
