@@ -77,7 +77,7 @@ test:
     - ./gradlew :ReactAndroid:assembleDebugAndroidTest
 
     # Android e2e test
-    - ource scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android
+    - source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android
 
     # testing docs generation is not broken
     - cd website && node ./server/generate.js
