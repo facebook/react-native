@@ -159,7 +159,7 @@ if (args.indexOf('--ios') !== -1) {
   echo(`Starting packager server, ${SERVER_PID}`);
   exec('sleep 5s');
   // prepare cache to reduce chances of possible red screen "Can't fibd variable __fbBatchedBridge..."
-  exec('curl http://localhost:8081/index.ios.bundle?platform=ios&dev=true');
+  exec('response=$(curl --write-out %{http_code} --silent --output /dev/null localhost:8081/index.ios.bundle?platform=ios)');
   echo('Executing ios e2e test');
   if (exec('xctool -scheme EndToEndTest -sdk iphonesimulator test').code) {
     exit(cleanup(1));
