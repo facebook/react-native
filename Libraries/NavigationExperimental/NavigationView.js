@@ -13,7 +13,7 @@
 
 const Animated = require('Animated');
 const NavigationContainer = require('NavigationContainer');
-const React = require('react-native');
+const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 const NavigationScenesReducer = require('NavigationScenesReducer');

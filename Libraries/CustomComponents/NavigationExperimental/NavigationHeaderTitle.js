@@ -27,14 +27,15 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 
 const {
   Platform,
   StyleSheet,
   View,
   Text,
-} = React;
+} = ReactNative;
 
 type Props = {
   children: ReactElement;

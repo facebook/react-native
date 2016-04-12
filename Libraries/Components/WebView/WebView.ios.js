@@ -312,9 +312,9 @@ var WebView = React.createClass({
         decelerationRate={decelerationRate}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
-        onLoadingStart={this.onLoadingStart}
-        onLoadingFinish={this.onLoadingFinish}
-        onLoadingError={this.onLoadingError}
+        onLoadingStart={this._onLoadingStart}
+        onLoadingFinish={this._onLoadingFinish}
+        onLoadingError={this._onLoadingError}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         scalesPageToFit={this.props.scalesPageToFit}
         allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
@@ -329,6 +329,9 @@ var WebView = React.createClass({
     );
   },
 
+  /**
+   * Go forward one page in the webview's history.
+   */
   goForward: function() {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
@@ -337,6 +340,9 @@ var WebView = React.createClass({
     );
   },
 
+  /**
+   * Go back one page in the webview's history.
+   */
   goBack: function() {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
@@ -345,6 +351,9 @@ var WebView = React.createClass({
     );
   },
 
+  /**
+   * Reloads the current page.
+   */
   reload: function() {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
@@ -357,23 +366,26 @@ var WebView = React.createClass({
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
    */
-  updateNavigationState: function(event: Event) {
+  _updateNavigationState: function(event: Event) {
     if (this.props.onNavigationStateChange) {
       this.props.onNavigationStateChange(event.nativeEvent);
     }
   },
 
+  /**
+   * Returns the native webview node.
+   */
   getWebViewHandle: function(): any {
     return ReactNative.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
   },
 
-  onLoadingStart: function(event: Event) {
+  _onLoadingStart: function(event: Event) {
     var onLoadStart = this.props.onLoadStart;
     onLoadStart && onLoadStart(event);
-    this.updateNavigationState(event);
+    this._updateNavigationState(event);
   },
 
-  onLoadingError: function(event: Event) {
+  _onLoadingError: function(event: Event) {
     event.persist(); // persist this event because we need to store it
     var {onError, onLoadEnd} = this.props;
     onError && onError(event);
@@ -386,14 +398,14 @@ var WebView = React.createClass({
     });
   },
 
-  onLoadingFinish: function(event: Event) {
+  _onLoadingFinish: function(event: Event) {
     var {onLoad, onLoadEnd} = this.props;
     onLoad && onLoad(event);
     onLoadEnd && onLoadEnd(event);
     this.setState({
       viewState: WebViewState.IDLE,
     });
-    this.updateNavigationState(event);
+    this._updateNavigationState(event);
   },
 });
 

@@ -20,14 +20,15 @@
 */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 
 const {
   Animated,
   NavigationExperimental,
   StyleSheet,
   ScrollView,
-} = React;
+} = ReactNative;
 
 const  NavigationExampleRow = require('./NavigationExampleRow');
 

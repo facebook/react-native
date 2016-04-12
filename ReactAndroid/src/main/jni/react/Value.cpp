@@ -69,6 +69,11 @@ Value Object::callAsFunction(int nArgs, JSValueRef args[]) {
   return Value(m_context, result);
 }
 
+Value Object::callAsFunction() {
+  JSValueRef args[0];
+  return callAsFunction(0, args);
+}
+
 Value Object::getProperty(const String& propName) const {
   JSValueRef exn;
   JSValueRef property = JSObjectGetProperty(m_context, m_obj, propName, &exn);

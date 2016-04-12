@@ -81,7 +81,10 @@ var TouchableOpacity = React.createClass({
     ensurePositiveDelayProps(nextProps);
   },
 
-  setOpacityTo: function(value) {
+  /**
+   * Animate the touchable to a new opacity.
+   */
+  setOpacityTo: function(value: number) {
     Animated.timing(
       this.state.anim,
       {toValue: value, duration: 150}
