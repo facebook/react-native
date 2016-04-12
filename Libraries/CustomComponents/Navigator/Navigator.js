@@ -784,12 +784,14 @@ var Navigator = React.createClass({
       }
       var isTravelVertical = gesture.direction === 'top-to-bottom' || gesture.direction === 'bottom-to-top';
       var isTravelInverted = gesture.direction === 'right-to-left' || gesture.direction === 'bottom-to-top';
+      var startedLoc = isTravelVertical ? gestureState.y0 : gestureState.x0;
       var currentLoc = isTravelVertical ? gestureState.moveY : gestureState.moveX;
       var travelDist = isTravelVertical ? gestureState.dy : gestureState.dx;
       var oppositeAxisTravelDist =
         isTravelVertical ? gestureState.dx : gestureState.dy;
       var edgeHitWidth = gesture.edgeHitWidth;
       if (isTravelInverted) {
+        startedLoc = -startedLoc;
         currentLoc = -currentLoc;
         travelDist = -travelDist;
         oppositeAxisTravelDist = -oppositeAxisTravelDist;
@@ -797,8 +799,11 @@ var Navigator = React.createClass({
           -(SCREEN_HEIGHT - edgeHitWidth) :
           -(SCREEN_WIDTH - edgeHitWidth);
       }
+      if (startedLoc === 0) {
+        startedLoc = currentLoc;
+      }
       var moveStartedInRegion = gesture.edgeHitWidth == null ||
-        currentLoc < edgeHitWidth;
+        startedLoc < edgeHitWidth;
       if (!moveStartedInRegion) {
         return false;
       }
