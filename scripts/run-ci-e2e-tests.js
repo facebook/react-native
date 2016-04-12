@@ -46,9 +46,9 @@ function cleanup(errorCode) {
 
   if(SERVER_PID) {
     echo(`Killing packager ${SERVER_PID}`);
-    // this is quite drastic but packager starts a daemon that we can't kill by killing the parent process
-    // it will be fixed in April, as David Aurelio says, so until then we will kill a server by port number
     exec(`kill -9 ${SERVER_PID}`);
+    // this is quite drastic but packager starts a daemon that we can't kill by killing the parent process
+    // it will be fixed in April (quote David Aurelio), so until then we will kill the zombie by the port number
     exec("lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill");
   }
   if(APPIUM_PID) {
@@ -148,7 +148,15 @@ if (args.indexOf('--ios') !== -1) {
     exit(cleanup(1));
   }
   // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
-  const packagerProcess = spawn('npm', ['start'], {stdio: 'inherit'});
+  let packagerEnv = Object.create(process.env);
+  packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
+  const packagerProcess = spawn('npm', ['start', '--', '--nonPersistent'], 
+  {
+    stdio: 'inherit',
+    env: packagerEnv
+  });
+  // wait a bit to allow packager to startup
+  exec('sleep 5s');
   SERVER_PID = packagerProcess.pid;
   echo(`Starting packager server, ${SERVER_PID}`);
   echo('Executing ios e2e test');
