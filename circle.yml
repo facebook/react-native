@@ -10,7 +10,6 @@ machine:
     TERM: "dumb"
     ADB_INSTALL_TIMEOUT: 10
     GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
-    APPIUM_DEBUG_INTERVAL: 3000
 
 dependencies:
   override:
