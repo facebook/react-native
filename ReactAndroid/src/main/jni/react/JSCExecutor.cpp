@@ -187,6 +187,10 @@ void JSCExecutor::initOnJSVMThread() {
   #ifdef JSC_HAS_PERF_STATS_API
   addJSCPerfStatsHooks(m_context);
   #endif
+
+  #if defined(WITH_FB_JSC_TUNING) && !defined(WITH_JSC_INTERNAL)
+  configureJSContextForAndroid(m_context, m_jscConfig, m_deviceCacheDir);
+  #endif
 }
 
 void JSCExecutor::terminateOnJSVMThread() {
@@ -238,13 +242,7 @@ void JSCExecutor::loadApplicationScript(
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor::loadApplicationScript",
     "sourceURL", sourceURL);
   #endif
-  if (!jsSourceURL || !usePreparsingAndStringRef()) {
-    evaluateScript(m_context, jsScript, jsSourceURL);
-  } else {
-    // If we're evaluating a script, get the device's cache dir
-    //  in which a cache file for that script will be stored.
-    evaluateScript(m_context, jsScript, jsSourceURL, m_deviceCacheDir.c_str());
-  }
+  evaluateScript(m_context, jsScript, jsSourceURL);
   flush();
   ReactMarker::logMarker("RUN_JS_BUNDLE_END");
   ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
