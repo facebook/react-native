@@ -283,7 +283,6 @@ var styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     bottom: 0,
-    backgroundColor: 'white',
   },
   statusBar: {
     height: StatusBar.currentHeight,
