@@ -16,6 +16,7 @@ import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.csslayout.Spacing;
@@ -70,7 +71,13 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
   }
 
   @Override
-  public void measure(CSSNode node, float width, float height, MeasureOutput measureOutput) {
+  public void measure(
+      CSSNode node,
+      float width,
+      CSSMeasureMode widthMode,
+      float height,
+      CSSMeasureMode heightMode,
+      MeasureOutput measureOutput) {
     // measure() should never be called before setThemedContext()
     EditText editText = Assertions.assertNotNull(mEditText);
 
