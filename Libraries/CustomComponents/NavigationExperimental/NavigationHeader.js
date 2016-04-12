@@ -65,7 +65,7 @@ type Props = NavigationSceneRendererProps & {
   renderRightComponent: NavigationSceneRenderer,
   renderTitleComponent: NavigationSceneRenderer,
   style?: any;
-  pointerEvents?: any;
+  viewProps?: any;
 };
 
 type SubViewName = 'left' | 'title' | 'right';
@@ -92,8 +92,6 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     renderRightComponent: (props: NavigationSceneRendererProps) => {
       return null;
     },
-
-    pointerEvents: 'auto',
   };
 
   static propTypes = {
@@ -102,7 +100,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     renderRightComponent: PropTypes.func,
     renderTitleComponent: PropTypes.func,
     style: View.propTypes.style,
-    pointerEvents: View.propTypes.pointerEvents,
+    viewProps: PropTypes.shape(View.propTypes),
   };
 
   shouldComponentUpdate(nextProps: Props, nextState: any): boolean {
@@ -114,7 +112,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
   }
 
   render(): ReactElement {
-    const { scenes, style, pointerEvents } = this.props;
+    const { scenes, style, viewProps } = this.props;
 
     const scenesProps = scenes.map(scene => {
       const props = NavigationPropTypes.extractSceneRendererProps(this.props);
@@ -123,7 +121,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     });
 
     return (
-      <View style={[ styles.appbar, style ]} pointerEvents={pointerEvents}>
+      <View style={[ styles.appbar, style ]} {...viewProps}>
         {scenesProps.map(this._renderLeft, this)}
         {scenesProps.map(this._renderTitle, this)}
         {scenesProps.map(this._renderRight, this)}
