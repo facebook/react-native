@@ -133,7 +133,10 @@ const RefreshControl = React.createClass({
 
   _onRefresh() {
     this.props.onRefresh && this.props.onRefresh();
-    this._nativeRef.setNativeProps({refreshing: this.props.refreshing});
+
+    if (this._nativeRef) {
+      this._nativeRef.setNativeProps({refreshing: this.props.refreshing});
+    }
   },
 });
 
