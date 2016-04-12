@@ -17,12 +17,13 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIImplementation;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
+
+import javax.annotation.Nullable;
 
 /**
  * This is the main class that coordinates how native animated JS implementation drives UI changes.
@@ -49,12 +50,12 @@ import java.util.Queue;
     mUIImplementation = uiImplementation;
   }
 
-  /*package*/ AnimatedNode getNodeById(int id) {
+  /*package*/ @Nullable AnimatedNode getNodeById(int id) {
     return mAnimatedNodes.get(id);
   }
 
   public boolean hasActiveAnimations() {
-    return !mActiveAnimations.isEmpty();
+    return !mActiveAnimations.isEmpty() || !mUpdatedNodes.isEmpty();
   }
 
   public void createAnimatedNode(int tag, ReadableMap config) {
@@ -315,6 +316,8 @@ import java.util.Queue;
         + activeNodesCount + " but toposort visited only " + updatedNodesCount);
     }
 
+    // Clean mUpdatedNodes queue
+    mUpdatedNodes.clear();
 
     // Cleanup finished animations. Iterate over the array of animations and override ones that has
     // finished, then resize `mActiveAnimations`.
