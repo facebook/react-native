@@ -10,6 +10,20 @@
  */
 'use strict';
 
+var warning = require('fbjs/lib/warning');
+
+if (__DEV__) {
+  var warningDedupe = {};
+  var addonWarn = function addonWarn(prevName, newPackageName) {
+    warning(
+      warningDedupe[prevName],
+      'React.addons.' + prevName + ' is deprecated. Please import the "' +
+      newPackageName + '" package instead.'
+    );
+    warningDedupe[prevName] = true;
+  };
+}
+
 // Export React, plus some native additions.
 var ReactNative = {
   // Components
@@ -105,15 +119,60 @@ var ReactNative = {
 
   // See http://facebook.github.io/react/docs/addons.html
   addons: {
-    get LinkedStateMixin() { return require('LinkedStateMixin'); },
+    get LinkedStateMixin() {
+      if (__DEV__) {
+        addonWarn('LinkedStateMixin', 'react-addons-linked-state-mixin');
+      }
+      return require('LinkedStateMixin');
+    },
     Perf: undefined,
-    get PureRenderMixin() { return require('ReactComponentWithPureRenderMixin'); },
-    get TestModule() { return require('NativeModules').TestModule; },
+    get PureRenderMixin() {
+      if (__DEV__) {
+        addonWarn('PureRenderMixin', 'react-addons-pure-render-mixin');
+      }
+      return require('ReactComponentWithPureRenderMixin');
+    },
+    get TestModule() {
+      if (__DEV__) {
+        warning(
+          warningDedupe.TestModule,
+          'React.addons.TestModule is deprecated. ' +
+          'Use ReactNative.NativeModules.TestModule instead.'
+        );
+        warningDedupe.TestModule = true;
+      }
+      return require('NativeModules').TestModule;
+    },
     TestUtils: undefined,
-    get batchedUpdates() { return require('ReactUpdates').batchedUpdates; },
-    get cloneWithProps() { return require('cloneWithProps'); },
-    get createFragment() { return require('ReactFragment').create; },
-    get update() { return require('update'); },
+    get batchedUpdates() {
+      if (__DEV__) {
+        warning(
+          warningDedupe.batchedUpdates,
+          'React.addons.batchedUpdates is deprecated. ' +
+          'Use ReactNative.unstable_batchedUpdates instead.'
+        );
+        warningDedupe.batchedUpdates = true;
+      }
+      return require('ReactUpdates').batchedUpdates;
+    },
+    get cloneWithProps() {
+      if (__DEV__) {
+        addonWarn('cloneWithProps', 'react-addons-clone-with-props');
+      }
+      return require('cloneWithProps');
+    },
+    get createFragment() {
+      if (__DEV__) {
+        addonWarn('createFragment', 'react-addons-create-fragment');
+      }
+      return require('ReactFragment').create;
+    },
+    get update() {
+      if (__DEV__) {
+        addonWarn('update', 'react-addons-update');
+      }
+      return require('update');
+    },
   },
 };
 
@@ -138,11 +197,21 @@ for (var key in ReactNativeInternal) {
 if (__DEV__) {
   Object.defineProperty(ReactNative.addons, 'Perf', {
     enumerable: true,
-    get: () => require('ReactDefaultPerf'),
+    get: () => {
+      if (__DEV__) {
+        addonWarn('Perf', 'react-addons-perf');
+      }
+      return require('ReactDefaultPerf');
+    }
   });
   Object.defineProperty(ReactNative.addons, 'TestUtils', {
     enumerable: true,
-    get: () => require('ReactTestUtils'),
+    get: () => {
+      if (__DEV__) {
+        addonWarn('update', 'react-addons-test-utils');
+      }
+      return require('ReactTestUtils');
+    }
   });
 }
 
