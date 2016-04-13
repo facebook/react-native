@@ -71,13 +71,12 @@ test:
     # run installed apk with tests
     - source scripts/circle-ci-android-setup.sh && retry3 ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests
 
-    # Deprecated: run tests with Gradle, we keep them for a while to compare performance
     - ./gradlew :ReactAndroid:testDebugUnitTest
-    - ./gradlew :ReactAndroid:installDebugAndroidTest
-    - source scripts/circle-ci-android-setup.sh && retry3 ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests.gradle
+    # Deprecated: these tests are executed using Buck above, while we support Gradle we just make sure the test code compiles
+    - ./gradlew :ReactAndroid:assembleDebugAndroidTest
 
-    # JS and Android e2e test
-    - source scripts/circle-ci-android-setup.sh && retry3 ./scripts/e2e-test.sh --packager --android
+    # Android e2e test
+    - source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android --js
 
     # testing docs generation is not broken
     - cd website && node ./server/generate.js
