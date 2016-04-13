@@ -145,7 +145,7 @@ if (args.indexOf('--ios') !== -1) {
   cd('ios');
   // Make sure we installed local version of react-native
   if (!test('-e', path.join('EndToEndTest', path.basename(MARKER_IOS)))) {
-    echo('iOS marker was not found, react native init command failed?');
+    echo('iOS marker was not found, `react-native init` command failed?');
     exit(cleanup(1));
   }
   // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
