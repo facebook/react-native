@@ -123,8 +123,12 @@ var featured = [
   {
     name: 'Squad',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/e8/5b/3f/e85b3f52-72f3-f427-a32e-a73efe2e9682/icon175x175.jpeg',
-    link: 'https://itunes.apple.com/us/app/squad-snaps-for-groups-friends/id1043626975?mt=8',
+    linkAppStore: 'https://itunes.apple.com/us/app/squad-snaps-for-groups-friends/id1043626975?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.tackk.squad',
     author: 'Tackk Inc.',
+    blogs: [
+      'https://medium.com/@rpastorelle/building-3-react-native-apps-in-one-summer-dcd0c31454ff#.z0fh9dehn',
+    ],
   },
   {
     name: 'Start - medication manager for depression',
