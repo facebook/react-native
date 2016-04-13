@@ -2,7 +2,7 @@
 
 /**
  * Used in run-ci-e2e-test.js and executed in Travis and Circle CI.
- * E2e test that verifies that init app can be installed, compiled, started and Hot Module Reloading with Chrome Debugging work.
+ * E2e test that verifies that init app can be installed, compiled, started and Hot Module reloading and Chrome debugging work.
  * For other examples of appium refer to: https://github.com/appium/sample-code/tree/master/sample-code/examples/node and
  * https://www.npmjs.com/package/wd-android
  *
@@ -41,15 +41,15 @@ describe('Android Test App', function () {
     driver.on('status', function (info) {
       console.log(info.cyan);
     });
-    driver.on('command', function (meth, path, data) {
+    driver.on('command', function (method, path, data) {
       if (path === 'source()' && data) {
-        console.log(' > ' + meth.yellow, 'Screen contents'.grey, '\n', pd.xml(data).yellow);
+        console.log(' > ' + method.yellow, 'Screen contents'.grey, '\n', pd.xml(data).yellow);
       } else {
-        console.log(' > ' + meth.yellow, path.grey, data || '');
+        console.log(' > ' + method.yellow, path.grey, data || '');
       }
     });
-    driver.on('http', function (meth, path, data) {
-      console.log(' > ' + meth.magenta, path, (data || '').grey);
+    driver.on('http', function (method, path, data) {
+      console.log(' > ' + method.magenta, path, (data || '').grey);
     });
 
     // every interval print what is on the screen

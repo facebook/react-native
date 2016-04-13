@@ -14,6 +14,7 @@
  * Available arguments:
  * --ios - to test only ios application end to end
  * --android - to test only android application end to end
+ * --js - to test that JS in the application is compilable
  * --skip-cli-install - to skip react-native-cli global installation (for local debugging)
  */
 /*eslint-disable no-undef */
@@ -164,6 +165,18 @@ if (args.indexOf('--ios') !== -1) {
   if (exec('xctool -scheme EndToEndTest -sdk iphonesimulator test').code) {
     exit(cleanup(1));
   }
+}
+
+if (args.indexOf('--js') !== -1) {
+  // Check the packager produces a bundle (doesn't throw an error)
+ if (exec('react-native bundle --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js').code) {
+   echo('Could not build package');
+   exit(cleanup(1));
+ }
+ if (exec(`${ROOT}/node_modules/.bin/flow check`).code) {
+   echo('Flow check does not pass');
+   exit(cleanup(1));
+ }
 }
 
 exit(cleanup(0));
