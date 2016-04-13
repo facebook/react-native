@@ -20,11 +20,10 @@ git checkout -b "YOUR PERSONAL BRANCH"
 
 Build your environment :
 
-- Open up the ReactNative solution file in Visual Studio Enterprise. The solution file can be found in {CWD}/ReactWindows/ReactNative.sln.
+- Open up the ReactNative solution file in Visual Studio. The solution file can be found in {CWD}/ReactWindows/ReactNative.sln.
 - If this is your first time using UWP, you will have to install the SDK. Right click on the solution file in the solution explorer and select the option labeled "Install Missing Components". You'll likely have to shutdown visual studio to continue the installation.
 - You can start building the solution once all the packges are installed Build->Rebuild Solution. 
 
 Unit Tests:
 
-- Open up the Test Explorer Tests->Windows->Test Explorer, then select Run All. You can reach out to Erik Schlegel or Eric Rozellif you experience any test failures. 
-
+- Open up the Test Explorer Tests->Windows->Test Explorer, then select Run All. Please file issues for any apparent non-determinism in the unit tests.
