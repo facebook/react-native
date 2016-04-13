@@ -304,7 +304,7 @@ class XMLHttpRequestBase {
       throw new Error('Cannot load an empty url');
     }
     this._reset();
-    this._method = method;
+    this._method = method.toUpperCase();
     this._url = url;
     this._aborted = false;
     this.setReadyState(this.OPENED);
