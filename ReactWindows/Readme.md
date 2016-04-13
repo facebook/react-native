@@ -8,7 +8,7 @@ This setup has only been tested on Windows 10 so far. The target environment is 
 
 ## Prerequisites
 
-Assuming you have [Visual Studio 2015 Enterprise](\\products\PUBLIC\Products\Developers) installed, you will also need to have Windows 10 SDK installed. 
+Assuming you have [Visual Studio Community 2015](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx) installed, you will also need to have Windows 10 SDK installed. 
 
 Clone this repo onto your local machine.
 ```
