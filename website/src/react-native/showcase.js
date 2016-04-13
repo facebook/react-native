@@ -45,7 +45,8 @@ var featured = [
   {
     name: 'Discovery VR',
     icon: 'http://a2.mzstatic.com/us/r30/Purple6/v4/d1/d5/f4/d1d5f437-9f6b-b5aa-5fe7-47bd19f934bf/icon175x175.png',
-    link:  'https://itunes.apple.com/us/app/discovery-vr/id1030815031?mt=8',
+    linkAppStore: 'https://itunes.apple.com/us/app/discovery-vr/id1030815031?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.discovery.DiscoveryVR',
     author: 'Discovery Communications',
     blog: [
       "https://medium.com/ios-os-x-development/an-ios-developer-on-react-native-1f24786c29f0",
@@ -132,6 +133,12 @@ var featured = [
     author: 'Iodine Inc.',
   },
   {
+    name: 'Taxfyle - taxes filed on-demand via licensed CPA',
+    icon: 'https://s3.amazonaws.com/taxfyle-public/images/taxfyle-icon-1024px.png',
+    link: 'https://itunes.apple.com/us/app/taxfyle/id1058033104?mt=8',
+    author: 'Taxfyle',
+  },
+  {
     name: 'This AM',
     icon: 'http://s3.r29static.com//bin/public/efe/x/1542038/image.png',
     link: 'https://itunes.apple.com/us/app/refinery29-this-am-top-breaking/id988472315?mt=8',
@@ -161,12 +168,19 @@ var featured = [
   },
   {
     name: 'Zhopout',
-    icon: 'http://zhopout.com/Content/Images/zhopout-logo-app-3.png',    
+    icon: 'http://zhopout.com/Content/Images/zhopout-logo-app-3.png',
     link: 'https://play.google.com/store/apps/details?id=com.zhopout',
     author: 'Jarvis Software Private Limited ',
     blogs: [
-      "https://medium.com/@murugandurai/how-we-developed-our-mobile-app-in-30-days-using-react-native-45affa6449e8#.29nnretsi",     
+      "https://medium.com/@murugandurai/how-we-developed-our-mobile-app-in-30-days-using-react-native-45affa6449e8#.29nnretsi",
     ],
+  },
+  {
+    name: '蜂鸟众包',
+    icon: 'http://img.wdjimg.com/mms/icon/v1/7/fd/b017c4a3eda1330f6b2561ec57cb0fd7_256_256.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/feng-niao-zhong-bao-jian-zhi/id1061034377?l=en&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=me.ele.crowdsource',
+    author: 'Eleme',
   },
 ];
 
@@ -182,6 +196,16 @@ var apps = [
     icon: 'https://lh3.googleusercontent.com/mZJjidMobu3NAZApdtp-vdBBzIWzCNTaIcKShbGqwXRRzL3B9bbi6E0eRuykgT6vmg=w300-rw',
     link: 'https://play.google.com/store/apps/details?id=com.arcchat',
     author: 'Lukas Liesis',
+  },
+  {
+    name: 'Azendoo',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/b8/d0/d6/b8d0d66e-1a87-8ff2-f843-0ddce8b535e1/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/azendoo-tasks-conversations/id581907820?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.azendoo.azmobile',
+    author: 'Azendoo',
+    blogs: [
+      "http://blog.azendoo.com/azendoo-mobile-v2-release/",
+    ],
   },
   {
     name: 'Beetroot',
@@ -200,7 +224,7 @@ var apps = [
     icon: 'http://a5.mzstatic.com/us/r30/Purple7/v4/c1/9a/3f/c19a3f82-ecc3-d60b-f983-04acc203705f/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/bionic-estore/id994537615?mt=8',
     author: 'Digidemon',
-  },  
+  },
   {
     name: 'Bitt Wallet',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/5b/00/34/5b003497-cc85-a0d0-0d3e-4fb3bc6f95cd/icon175x175.jpeg',
@@ -213,6 +237,13 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/de/app/breathe-meditation-timer/id1087354227?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.idearockers.breathe',
     author: 'idearockers UG',
+  },
+  {
+    name: 'Bulut Filo Yönetimi',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple49/v4/a2/6b/b5/a26bb5b5-e67b-8ecc-55eb-c33232ee3c5e/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/tr/app/bulut-filo-yonetimi/id1090955364?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.bulutfilo',
+    author: 'Macellan.net',
   },
   {
     name: 'CANDDi',
@@ -356,6 +387,12 @@ var apps = [
     icon: 'http://a2.mzstatic.com/us/r30/Purple4/v4/5f/19/fc/5f19fc13-e7af-cd6b-6749-cedabdaeee7d/icon350x350.png',
     link: 'https://itunes.apple.com/us/app/hashtag-by-hashley-ironic/id1022724462?mt=8',
     author: 'Elephant, LLC',
+  },
+  {
+    name: 'hello dating',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple49/v4/54/29/59/54295932-f821-35db-8556-ba4006098ee9/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/il/app/hello-dating/id1072062348?mt=8',
+    author: 'Gertler Davidov communication'
   },
   {
     name: 'Hey, Neighbor!',
@@ -601,6 +638,12 @@ var apps = [
     author: 'sneat'
   },
   {
+    name: 'Software Interview Preparation',
+    icon: 'https://lh3.googleusercontent.com/11AuzaeCnxrRnIp1E_a_6WWiQIRRoWhrvFr20eCRJX4ZMW6O3tGjZLiUw3thKUgGaC8X=w300',
+    link: 'https://play.google.com/store/apps/details?id=com.SoftwareInterview',
+    author: 'Andrew F. Ly',
+  },
+  {
     name: 'Spero for Cancer',
     icon: 'https://s3-us-west-1.amazonaws.com/cancerspot/site_images/Spero1024.png',
     link: 'https://geo.itunes.apple.com/us/app/spero-for-cancer/id1033923573?mt=8',
@@ -638,6 +681,16 @@ var apps = [
     author: 'Ho Yin Tsun Eugene',
   },
   {
+    name: 'uSwitch - Energy switching app',
+    icon: 'https://lh3.googleusercontent.com/NpkGlwFWdj7VsK2ueVwlgdrrBrNJ-yN-4TkEHjjSjDUu7NpMcfyAp10p97f0zci0CSFQ=w300-rw',
+    linkAppStore: 'https://itunes.apple.com/gb/app/uswitch-compare-switch-save/id935325621?mt=8&ct=react',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.uswitchmobileapp',
+    author: 'uSwitch Ltd',
+    videos: [
+      'https://www.youtube.com/watch?v=YgJtAEZJN28',
+    ],
+  },
+  {
     name: 'Veggies in Season',
     icon: 'https://s3.amazonaws.com/veggies-assets/icon175x175.png',
     link: 'https://itunes.apple.com/es/app/veggies-in-season/id1088215278?mt=8',
@@ -649,6 +702,12 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/gb/app/wearvr/id1066288171?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.wearvr.app',
     author: 'WEARVR LLC',
+  },
+  {
+    name: 'wego concerts',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/03/91/2d/03912daa-fae7-6a25-5f11-e6b19290b3f4/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/wego-concerts-follow-friends/id869478093?mt=8',
+    author: 'Wego, LLC',
   },
   {
     name: 'Whammy',
@@ -718,6 +777,13 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/cn/app/hong-bei-bang-hai-liang-hong/id1007812319?mt=8',
     author: 'Hongbeibang'
   },
+  {
+    name: 'Spatula',
+    icon: 'https://lh3.googleusercontent.com/26xtcDsloLCAOpqgH_87sDxaSJsLuSN--oj-z5Frcdsaq4ta2GQlktF5ktTNWrRHyqo=w300-rw',
+    linkAppStore: 'https://itunes.apple.com/us/app/spatula/id1090496189?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.usespatula',
+    author: 'Kushal Dave'
+  }
 ];
 
 var AppList = React.createClass({

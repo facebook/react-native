@@ -406,6 +406,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
     }
   }
 
+  @Override
+  protected void finalize() throws Throwable {
+    Assertions.assertCondition(mDestroyed, "Bridge was not destroyed before finalizer!");
+    super.finalize();
+  }
+
   private class NativeModulesReactCallback implements ReactCallback {
 
     @Override

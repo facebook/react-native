@@ -731,7 +731,7 @@ public class UIImplementation {
           absoluteY,
           mOperationsQueue,
           mNativeViewHierarchyOptimizer);
-      
+
       // notify JS about layout event if requested
       if (cssNode.shouldNotifyOnLayout()) {
         eventDispatcher.dispatchEvent(

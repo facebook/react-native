@@ -11,12 +11,14 @@
  */
 'use strict';
 
+var ColorPropType = require('ColorPropType');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var Platform = require('Platform');
 var PointPropType = require('PointPropType');
 var RCTScrollView = require('NativeModules').UIManager.RCTScrollView;
 var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
 var React = require('React');
+var ReactNative = require('ReactNative');
 var ScrollResponder = require('ScrollResponder');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
@@ -318,6 +320,15 @@ var ScrollView = React.createClass({
       PropTypes.func,
       'Use the `refreshControl` prop instead.'
     ),
+
+    /**
+     * Sometimes a scrollview takes up more space than its content fills. When this is
+     * the case, this prop will fill the rest of the scrollview with a color to avoid setting
+     * a background and creating unnecessary overdraw. This is an advanced optimization
+     * that is not needed in the general case.
+     * @platform android
+     */
+    endFillColor: ColorPropType,
   },
 
   mixins: [ScrollResponder.Mixin],
@@ -330,9 +341,12 @@ var ScrollView = React.createClass({
     this.refs[SCROLLVIEW].setNativeProps(props);
   },
 
+  /**
+   * Deprecated. Use `RefreshControl` instead.
+   */
   endRefreshing: function() {
     RCTScrollViewManager.endRefreshing(
-      React.findNodeHandle(this)
+      ReactNative.findNodeHandle(this)
     );
   },
 
@@ -347,18 +361,19 @@ var ScrollView = React.createClass({
   },
 
   getScrollableNode: function(): any {
-    return React.findNodeHandle(this.refs[SCROLLVIEW]);
+    return ReactNative.findNodeHandle(this.refs[SCROLLVIEW]);
   },
 
   getInnerViewNode: function(): any {
-    return React.findNodeHandle(this.refs[INNERVIEW]);
+    return ReactNative.findNodeHandle(this.refs[INNERVIEW]);
   },
 
   /**
    * Scrolls to a given x, y offset, either immediately or with a smooth animation.
+   *
    * Syntax:
    *
-   * scrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})
+   * `scrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})`
    *
    * Note: The weird argument signature is due to the fact that, for historical reasons,
    * the function also accepts separate arguments as as alternative to the options object.
@@ -386,7 +401,7 @@ var ScrollView = React.createClass({
     this.scrollTo({x, y, animated: false});
   },
 
-  handleScroll: function(e: Object) {
+  _handleScroll: function(e: Object) {
     if (__DEV__) {
       if (this.props.onScroll && !this.props.scrollEventThrottle && Platform.OS === 'ios') {
         console.log(
@@ -469,7 +484,7 @@ var ScrollView = React.createClass({
       onStartShouldSetResponder: this.scrollResponderHandleStartShouldSetResponder,
       onStartShouldSetResponderCapture: this.scrollResponderHandleStartShouldSetResponderCapture,
       onScrollShouldSetResponder: this.scrollResponderHandleScrollShouldSetResponder,
-      onScroll: this.handleScroll,
+      onScroll: this._handleScroll,
       onResponderGrant: this.scrollResponderHandleResponderGrant,
       onResponderTerminationRequest: this.scrollResponderHandleTerminationRequest,
       onResponderTerminate: this.scrollResponderHandleTerminate,

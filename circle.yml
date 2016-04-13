@@ -76,7 +76,8 @@ test:
     - ./gradlew :ReactAndroid:installDebugAndroidTest
     - source scripts/circle-ci-android-setup.sh && retry3 ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests.gradle
 
-    - ./scripts/e2e-test.sh --packager
+    # JS and Android e2e test
+    - source scripts/circle-ci-android-setup.sh && retry3 ./scripts/e2e-test.sh --packager --android
 
     # testing docs generation is not broken
     - cd website && node ./server/generate.js
@@ -93,7 +94,7 @@ deployment:
     branch: [/.*-stable/, /master/]
     commands:
       # generate docs website
-      - git config --global user.email "bestnader@fb.com"
+      - git config --global user.email "reactjs-bot@users.noreply.github.com"
       - git config --global user.name "Website Deployment Script"
       - echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
       - cd website && GIT_USER=reactjs-bot npm run gh-pages

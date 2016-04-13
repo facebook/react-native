@@ -42,6 +42,12 @@
 # Ignore Website
 .*/website/.*
 
+# Ignore generators
+.*/local-cli/generator.*
+
+# Ignore BUCK generated folders
+.*\.buckd/
+
 .*/node_modules/is-my-json-valid/test/.*\.json
 .*/node_modules/iconv-lite/encodings/tables/.*\.json
 .*/node_modules/y18n/test/.*\.json
@@ -58,6 +64,7 @@
 .*/node_modules/joi/.*\.json
 .*/node_modules/isemail/.*\.json
 .*/node_modules/tr46/.*\.json
+
 
 [include]
 
@@ -85,4 +92,4 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(>=0\\.\\(2[0-2]\\|1[0-9]\\|[0-9
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 
 [version]
-0.22.0
+^0.22.0

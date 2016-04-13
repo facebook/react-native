@@ -95,7 +95,7 @@ export type NavigationAnimationSetter = (
 ) => void;
 
 export type NavigationRenderer = (
-  navigationState: NavigationState,
+  navigationState: ?NavigationState,
   onNavigate: NavigationActionCaller,
 ) => ReactElement;
 

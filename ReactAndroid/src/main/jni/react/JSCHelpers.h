@@ -42,7 +42,6 @@ JSValueRef makeJSCException(
 JSValueRef evaluateScript(
     JSContextRef ctx,
     JSStringRef script,
-    JSStringRef sourceURL,
-    const char* cachePath = nullptr);
+    JSStringRef sourceURL);
 
 } }

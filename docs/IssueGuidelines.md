@@ -11,7 +11,7 @@ Examples: [#6378](https://github.com/facebook/react-native/issues/6378), [#6015]
 Feel free to also answer some [SO questions](stackoverflow.com/questions/tagged/react-native), you'll get rep :)
 
 ### An issue is a question that's been answered
-Sometimes and issue has been resolved in the comments. 
+Sometimes and issue has been resolved in the comments.
 Comment `@facebook-github-bot answered` to close it.
 Example: [#6045](https://github.com/facebook/react-native/issues/6045)
 
