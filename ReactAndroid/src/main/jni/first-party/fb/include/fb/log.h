@@ -44,13 +44,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-    
+
 #ifdef ANDROID
 #include <android/log.h>
 #else
     // These declarations are needed for our internal use even on non-Android builds.
     // (they are borrowed from <android/log.h>)
-    
+
     /*
      * Android log priority values, in ascending priority order.
      */
@@ -65,12 +65,12 @@ extern "C" {
         ANDROID_LOG_FATAL,
         ANDROID_LOG_SILENT,     /* only for SetMinPriority(); must be last */
     } android_LogPriority;
-    
+
     /*
      * Send a simple string to the log.
      */
     int __android_log_write(int prio, const char *tag, const char *text);
-    
+
     /*
      * Send a formatted string to the log, used like printf(fmt,...)
      */

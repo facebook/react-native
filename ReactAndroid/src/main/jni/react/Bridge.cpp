@@ -19,7 +19,7 @@ Bridge::Bridge(
     std::unique_ptr<ExecutorTokenFactory> executorTokenFactory,
     std::unique_ptr<BridgeCallback> callback) :
   m_callback(std::move(callback)),
-  m_destroyed(std::make_shared<bool>(false)),
+  m_destroyed(std::make_shared<std::atomic_bool>(false)),
   m_executorTokenFactory(std::move(executorTokenFactory)) {
   std::unique_ptr<JSExecutor> mainExecutor = jsExecutorFactory->createJSExecutor(this);
   // cached to avoid locked map lookup in the common case
@@ -31,7 +31,7 @@ Bridge::Bridge(
 
 // This must be called on the same thread on which the constructor was called.
 Bridge::~Bridge() {
-  CHECK(*m_destroyed) << "Bridge::destroy() must be called before deallocating the Bridge!";
+  CHECK(m_destroyed->load(std::memory_order_acquire)) << "Bridge::destroy() must be called before deallocating the Bridge!";
 }
 
 void Bridge::loadApplicationScript(const std::string& script, const std::string& sourceURL) {
@@ -216,14 +216,14 @@ ExecutorToken Bridge::getTokenForExecutor(JSExecutor& executor) {
 }
 
 void Bridge::destroy() {
-  *m_destroyed = true;
+  m_destroyed->store(true, std::memory_order_release);
   m_mainExecutor = nullptr;
   std::unique_ptr<JSExecutor> mainExecutor = unregisterExecutor(*m_mainExecutorToken);
   mainExecutor->destroy();
 }
 
 void Bridge::runOnExecutorQueue(ExecutorToken executorToken, std::function<void(JSExecutor*)> task) {
-  if (*m_destroyed) {
+  if (m_destroyed->load(std::memory_order_acquire)) {
     return;
   }
 
@@ -233,9 +233,9 @@ void Bridge::runOnExecutorQueue(ExecutorToken executorToken, std::function<void(
     return;
   }
 
-  std::shared_ptr<bool> isDestroyed = m_destroyed;
+  std::shared_ptr<std::atomic_bool> isDestroyed = m_destroyed;
   executorMessageQueueThread->runOnQueue([this, isDestroyed, executorToken, task=std::move(task)] {
-    if (*isDestroyed) {
+    if (isDestroyed->load(std::memory_order_acquire)) {
       return;
     }
 

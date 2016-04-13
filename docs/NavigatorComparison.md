@@ -40,6 +40,7 @@ between the two.
 - Small, limited API makes it much less customizable than `Navigator` in its current form.
 - Development belongs to open-source community - not used by the React Native team on their apps.
   - A result of this is that there is currently a backlog of unresolved bugs, nobody who uses this has stepped up to take ownership for it yet.
+  - You may find an alternative in the community project [react-native-navigation](https://github.com/wix/react-native-navigation) which replaces `NavigatorIOS`.
 - Wraps UIKit, so it works exactly the same as it would on another native app. Lives in Objective-C and JavaScript.
   - Consequently, you get the animations and behavior that Apple has developed.
 - iOS only.

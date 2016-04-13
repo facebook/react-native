@@ -103,7 +103,7 @@ function createStackEntry(props: any): any {
  *
  * For cases where using a component is not ideal, there is also an imperative
  * API exposed as static functions on the component. It is however not recommended
- * to use the static API and the compoment for the same prop because any value
+ * to use the static API and the component for the same prop because any value
  * set by the static API will get overriden by the one set by the component in
  * the next render.
  */
@@ -164,7 +164,7 @@ const StatusBar = React.createClass({
       StatusBarManager.setNetworkActivityIndicatorVisible(visible);
     },
 
-    setBackgroundColor(color, animated?: boolean) {
+    setBackgroundColor(color: string, animated?: boolean) {
       if (Platform.OS !== 'android') {
         console.warn('`setBackgroundColor` is only available on Android');
         return;

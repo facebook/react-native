@@ -2,9 +2,9 @@
 id: videos
 title: Videos
 layout: docs
-category: Quick Start
+category: Community Resources
 permalink: docs/videos.html
-next: style
+next: newsletter
 ---
 
 ### React.js Conf 2016
@@ -34,7 +34,7 @@ next: style
 <iframe width="650" height="315" src="//www.youtube.com/embed/Zoerbz5Mu5U" frameborder="0" allowfullscreen></iframe>
 
 
-### React.js Conf 2015 
+### React.js Conf 2015
 
 <iframe width="650" height="315" src="//www.youtube.com/embed/KVZ-P-ZI6W4" frameborder="0" allowfullscreen></iframe>
 

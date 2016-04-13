@@ -28,7 +28,8 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
 - (instancetype)initWithType:(RCTScrollEventType)type
                     reactTag:(NSNumber *)reactTag
                   scrollView:(UIScrollView *)scrollView
-                    userData:(NSDictionary *)userData NS_DESIGNATED_INITIALIZER;
+                    userData:(NSDictionary *)userData
+               coalescingKey:(uint16_t)coalescingKey NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -37,6 +38,7 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
   RCTScrollEventType _type;
   UIScrollView *_scrollView;
   NSDictionary *_userData;
+  uint16_t _coalescingKey;
 }
 
 @synthesize viewTag = _viewTag;
@@ -45,6 +47,7 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
                     reactTag:(NSNumber *)reactTag
                   scrollView:(UIScrollView *)scrollView
                     userData:(NSDictionary *)userData
+               coalescingKey:(uint16_t)coalescingKey
 {
   RCTAssertParam(reactTag);
 
@@ -53,11 +56,17 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
     _viewTag = reactTag;
     _scrollView = scrollView;
     _userData = userData;
+    _coalescingKey = coalescingKey;
   }
   return self;
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
+
+- (uint16_t)coalescingKey
+{
+  return _coalescingKey;
+}
 
 - (NSDictionary *)body
 {
@@ -383,6 +392,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSMutableArray<NSValue *> *_cachedChildFrames;
   BOOL _allowNextScrollNoMatterWhat;
   CGRect _lastClippedToRect;
+  uint16_t _coalescingKey;
+  RCTScrollEventType _lastEmittedEventType;
 }
 
 @synthesize nativeScrollDelegate = _nativeScrollDelegate;
@@ -568,7 +579,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 #define RCT_SCROLL_EVENT_HANDLER(delegateMethod, eventName) \
 - (void)delegateMethod:(UIScrollView *)scrollView           \
 {                                                           \
-  [_eventDispatcher sendScrollEventWithType:eventName reactTag:self.reactTag scrollView:scrollView userData:nil]; \
+  [self sendScrollEventWithType:eventName reactTag:self.reactTag scrollView:scrollView userData:nil]; \
   if ([_nativeScrollDelegate respondsToSelector:_cmd]) { \
     [_nativeScrollDelegate delegateMethod:scrollView]; \
   } \
@@ -604,7 +615,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
     NSArray<NSDictionary *> *childFrames = [self calculateChildFramesData];
 
     // Dispatch event
-    [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeMove
+    [self sendScrollEventWithType:RCTScrollEventTypeMove
                                      reactTag:self.reactTag
                                    scrollView:scrollView
                                      userData:@{@"updatedChildFrames": childFrames}];
@@ -651,7 +662,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
   _allowNextScrollNoMatterWhat = YES; // Ensure next scroll event is recorded, regardless of throttle
-  [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeStart reactTag:self.reactTag scrollView:scrollView userData:nil];
+  [self sendScrollEventWithType:RCTScrollEventTypeStart reactTag:self.reactTag scrollView:scrollView userData:nil];
   RCT_FORWARD_SCROLL_EVENT(scrollViewWillBeginDragging:scrollView);
 }
 
@@ -709,7 +720,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
       @"y": @(targetContentOffset->y)
     }
   };
-  [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeEnd reactTag:self.reactTag scrollView:scrollView userData:userData];
+  [self sendScrollEventWithType:RCTScrollEventTypeEnd reactTag:self.reactTag scrollView:scrollView userData:userData];
 
   RCT_FORWARD_SCROLL_EVENT(scrollViewWillEndDragging:scrollView withVelocity:velocity targetContentOffset:targetContentOffset);
 }
@@ -721,13 +732,13 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
 
 - (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view
 {
-  [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeStart reactTag:self.reactTag scrollView:scrollView userData:nil];
+  [self sendScrollEventWithType:RCTScrollEventTypeStart reactTag:self.reactTag scrollView:scrollView userData:nil];
   RCT_FORWARD_SCROLL_EVENT(scrollViewWillBeginZooming:scrollView withView:view);
 }
 
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale
 {
-  [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeEnd reactTag:self.reactTag scrollView:scrollView userData:nil];
+  [self sendScrollEventWithType:RCTScrollEventTypeEnd reactTag:self.reactTag scrollView:scrollView userData:nil];
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndZooming:scrollView withView:view atScale:scale);
 }
 
@@ -911,20 +922,35 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
   [_scrollView.refreshControl endRefreshing];
 }
 
-@end
-
-@implementation RCTEventDispatcher (RCTScrollView)
-
 - (void)sendScrollEventWithType:(RCTScrollEventType)type
                        reactTag:(NSNumber *)reactTag
                      scrollView:(UIScrollView *)scrollView
                        userData:(NSDictionary *)userData
 {
+  if (_lastEmittedEventType != type) {
+    _coalescingKey++;
+    _lastEmittedEventType = type;
+  }
   RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithType:type
                                                             reactTag:reactTag
                                                           scrollView:scrollView
-                                                            userData:userData];
-  [self sendEvent:scrollEvent];
+                                                            userData:userData
+                                                       coalescingKey:_coalescingKey];
+  [_eventDispatcher sendEvent:scrollEvent];
+}
+
+@end
+
+@implementation RCTEventDispatcher (RCTScrollView)
+
+- (void)sendFakeScrollEvent:(NSNumber *)reactTag
+{
+  RCTScrollEvent *fakeScrollEvent = [[RCTScrollEvent alloc] initWithType:RCTScrollEventTypeMove
+                                                            reactTag:reactTag
+                                                          scrollView:nil
+                                                            userData:nil
+                                                       coalescingKey:0];
+  [self sendEvent:fakeScrollEvent];
 }
 
 @end

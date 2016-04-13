@@ -227,13 +227,7 @@ var ClippingRectangle = React.createClass({
     var y = extractNumber(props.y, 0);
     var w = extractNumber(props.width, 0);
     var h = extractNumber(props.height, 0);
-    var clipping = new Path()
-      .moveTo(x, y)
-      .line(w, 0)
-      .line(0, h)
-      .line(w, 0)
-      .close()
-      .toJSON();
+    var clipping = [x, y, w, h];
     // The current clipping API requires x and y to be ignored in the transform
     var propsExcludingXAndY = merge(props);
     delete propsExcludingXAndY.x;

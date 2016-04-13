@@ -68,14 +68,41 @@ function getExample(componentName, componentPlatform) {
   };
 }
 
+// Add methods that should not appear in the components documentation.
+var methodsBlacklist = [
+  // Native methods mixin.
+  'getInnerViewNode',
+  'setNativeProps',
+  // Touchable mixin.
+  'touchableHandlePress' ,
+  'touchableHandleActivePressIn',
+  'touchableHandleActivePressOut',
+  'touchableHandleLongPress',
+  'touchableGetPressRectOffset',
+  'touchableGetHitSlop',
+  'touchableGetHighlightDelayMS',
+  'touchableGetLongPressDelayMS',
+  'touchableGetPressOutDelayMS',
+  // Scrollable mixin.
+  'getScrollableNode',
+  'getScrollResponder',
+];
+
+function filterMethods(method) {
+  return method.name[0] !== '_' && methodsBlacklist.indexOf(method.name) === -1;
+}
+
 // Determines whether a component should have a link to a runnable example
 
-function isRunnable(componentName) {
-  if (componentName === 'AlertIOS') {
-    return true;
+function isRunnable(componentName, componentPlatform) {
+  var path = '../Examples/UIExplorer/' + componentName + 'Example.js';
+  if (!fs.existsSync(path)) {
+    path = '../Examples/UIExplorer/' + componentName + 'Example.' + componentPlatform + '.js';
+    if (!fs.existsSync(path)) {
+      return false;
+    }
   }
-
-  return false;
+  return true;
 }
 
 // Hide a component from the sidebar by making it return false from
@@ -89,9 +116,6 @@ function shouldDisplayInSidebar(componentName) {
 }
 
 function getNextComponent(i) {
-  var next;
-  var filepath = all[i];
-
   if (all[i + 1]) {
     var nextComponentName = getNameFromPath(all[i + 1]);
 
@@ -122,6 +146,10 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
   }
   json.example = getExample(componentName, componentPlatform);
 
+  if (json.methods) {
+    json.methods = json.methods.filter(filterMethods);
+  }
+
   // Put Flexbox into the Polyfills category
   var category = (type === 'style' ? 'Polyfills' : type + 's');
   var next = getNextComponent(i);
@@ -136,7 +164,7 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
     'platform: ' + componentPlatform,
     'next: ' + next,
     'sidebar: ' + shouldDisplayInSidebar(componentName),
-    'runnable:' + isRunnable(componentName),
+    'runnable:' + isRunnable(componentName, componentPlatform),
     'path:' + json.filepath,
     '---',
     JSON.stringify(json, null, 2),
@@ -206,6 +234,7 @@ var components = [
   '../Libraries/Components/RefreshControl/RefreshControl.js',
   '../Libraries/Components/ScrollView/ScrollView.js',
   '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
+  '../Libraries/Components/Slider/Slider.js',
   '../Libraries/Components/SliderIOS/SliderIOS.ios.js',
   '../Libraries/Components/StatusBar/StatusBar.js',
   '../Libraries/Components/Switch/Switch.js',

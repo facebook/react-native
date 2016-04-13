@@ -13,6 +13,8 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 
+import java.util.ArrayList;
+
 /**
  * Implementation of a NativeArray that allows read-only access to its members. This will generally
  * be constructed and filled in native code so you shouldn't construct one yourself.
@@ -46,4 +48,34 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
   public native ReadableNativeMap getMap(int index);
   @Override
   public native ReadableType getType(int index);
+
+  public ArrayList<Object> toArrayList() {
+    ArrayList<Object> arrayList = new ArrayList<>();
+
+    for (int i = 0; i < this.size(); i++) {
+      switch (getType(i)) {
+        case Null:
+          arrayList.add(null);
+          break;
+        case Boolean:
+          arrayList.add(getBoolean(i));
+          break;
+        case Number:
+          arrayList.add(getDouble(i));
+          break;
+        case String:
+          arrayList.add(getString(i));
+          break;
+        case Map:
+          arrayList.add(getMap(i).toHashMap());
+          break;
+        case Array:
+          arrayList.add(getArray(i).toArrayList());
+          break;
+        default:
+          throw new IllegalArgumentException("Could not convert object at index: " + i + ".");
+      }
+    }
+    return arrayList;
+  }
 }

@@ -15,7 +15,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   AlertIOS,
   CameraRoll,
@@ -27,7 +28,7 @@ var {
   TextInput,
   TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 
 var XHRExampleHeaders = require('./XHRExampleHeaders');
 var XHRExampleFetch = require('./XHRExampleFetch');
@@ -146,7 +147,8 @@ class FormUploader extends React.Component {
 
   _fetchRandomPhoto() {
     CameraRoll.getPhotos(
-      {first: PAGE_SIZE},
+      {first: PAGE_SIZE}
+    ).then(
       (data) => {
         if (!this._isMounted) {
           return;

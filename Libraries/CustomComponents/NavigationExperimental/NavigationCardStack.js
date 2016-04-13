@@ -32,7 +32,6 @@
  */
 'use strict';
 
-const Animated = require('Animated');
 const NavigationAnimatedView = require('NavigationAnimatedView');
 const NavigationCard = require('NavigationCard');
 const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleInterpolator');
@@ -49,8 +48,6 @@ const {PropTypes} = React;
 const {Directions} = NavigationCardStackPanResponder;
 
 import type {
-  NavigationAnimatedValue,
-  NavigationAnimationSetter,
   NavigationParentState,
   NavigationSceneRenderer,
   NavigationSceneRendererProps,
@@ -65,18 +62,6 @@ type Props = {
   navigationState: NavigationParentState,
   renderOverlay: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
-};
-
-const propTypes = {
-  direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
-  navigationState: NavigationPropTypes.navigationParentState.isRequired,
-  renderOverlay: PropTypes.func,
-  renderScene: PropTypes.func.isRequired,
-};
-
-const defaultProps = {
-  direction: Directions.HORIZONTAL,
-  renderOverlay: emptyFunction.thatReturnsNull,
 };
 
 /**
@@ -94,15 +79,25 @@ const defaultProps = {
  *     +------------+
  */
 class NavigationCardStack extends React.Component {
-  _applyAnimation: NavigationAnimationSetter;
   _renderScene : NavigationSceneRenderer;
+
+  static propTypes = {
+    direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
+    navigationState: NavigationPropTypes.navigationParentState.isRequired,
+    renderOverlay: PropTypes.func,
+    renderScene: PropTypes.func.isRequired,
+  };
+
+  static defaultProps = {
+    direction: Directions.HORIZONTAL,
+    renderOverlay: emptyFunction.thatReturnsNull,
+  };
 
   constructor(props: Props, context: any) {
     super(props, context);
   }
 
   componentWillMount(): void {
-    this._applyAnimation = this._applyAnimation.bind(this);
     this._renderScene = this._renderScene.bind(this);
   }
 
@@ -120,7 +115,6 @@ class NavigationCardStack extends React.Component {
         navigationState={this.props.navigationState}
         renderOverlay={this.props.renderOverlay}
         renderScene={this._renderScene}
-        applyAnimation={this._applyAnimation}
         style={[styles.animatedView, this.props.style]}
       />
     );
@@ -147,23 +141,7 @@ class NavigationCardStack extends React.Component {
       />
     );
   }
-
-  _applyAnimation(
-    position: NavigationAnimatedValue,
-    navigationState: NavigationParentState,
-  ): void {
-    Animated.timing(
-      position,
-      {
-        duration: 500,
-        toValue: navigationState.index,
-      }
-    ).start();
-  }
 }
-
-NavigationCardStack.propTypes = propTypes;
-NavigationCardStack.defaultProps = defaultProps;
 
 const styles = StyleSheet.create({
   animatedView: {

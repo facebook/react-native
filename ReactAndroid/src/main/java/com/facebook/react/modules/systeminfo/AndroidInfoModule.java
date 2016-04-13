@@ -9,14 +9,14 @@
 
 package com.facebook.react.modules.systeminfo;
 
-import javax.annotation.Nullable;
+import android.os.Build;
+
+import com.facebook.react.bridge.BaseJavaModule;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import android.os.Build;
-
-import com.facebook.react.bridge.BaseJavaModule;
+import javax.annotation.Nullable;
 
 /**
  * Module that exposes Android Constants to JS.
@@ -32,6 +32,7 @@ public class AndroidInfoModule extends BaseJavaModule {
   public @Nullable Map<String, Object> getConstants() {
     HashMap<String, Object> constants = new HashMap<String, Object>();
     constants.put("Version", Build.VERSION.SDK_INT);
+    constants.put("ServerHost", AndroidInfoHelpers.getServerHost());
     return constants;
   }
 }

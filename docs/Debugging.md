@@ -34,7 +34,7 @@ You can use `console.error` to display a full screen error on a red background.
 These boxes only appear when you're running your app in dev mode.
 
 ### Chrome Developer Tools
-To debug the JavaScript code in Chrome, select `Debug in Chrome` from the developer menu. This will open a new tab at [http://localhost:8081/debugger-ui](http://localhost:8081/debugger-ui).
+To debug the JavaScript code in Chrome, select `Debug JS Remotely` from the developer menu. This will open a new tab at [http://localhost:8081/debugger-ui](http://localhost:8081/debugger-ui).
 
 In Chrome, press `⌘ + option + i` or select `View` → `Developer` → `Developer Tools` to toggle the developer tools console. Enable [Pause On Caught Exceptions](http://stackoverflow.com/questions/2233339/javascript-is-there-a-way-to-get-chrome-to-break-on-all-errors/17324511#17324511) for a better debugging experience.
 
@@ -42,6 +42,9 @@ To debug on a real device:
 
 1. On iOS - open the file `RCTWebSocketExecutor.m` and change `localhost` to the IP address of your computer. Shake the device to open the development menu with the option to start debugging.
 2. On Android, if you're running Android 5.0+ device connected via USB you can use `adb` command line tool to setup port forwarding from the device to your computer. For that run: `adb reverse tcp:8081 tcp:8081` (see [this link](http://developer.android.com/tools/help/adb.html) for help on `adb` command). Alternatively, you can [open dev menu](#debugging-react-native-apps) on the device and select `Dev Settings`, then update `Debug server host for device` setting to the IP address of your computer.
+
+### Custom JavaScript debugger
+To use a custom JavaScript debugger define the `REACT_DEBUGGER` environment variable to a command that will start your custom debugger. That variable will be read from the Packager process. If that environment variable is set, selecting `Debug JS Remotely` from the developer menu will execute that command instead of opening Chrome. The exact command to be executed is the contents of the REACT_DEBUGGER environment variable followed by the space separated paths of all project roots (e.g. If you set REACT_DEBUGGER="node /path/to/launchDebugger.js --port 2345 --type ReactNative" then the command "node /path/to/launchDebugger.js --port 2345 --type ReactNative /path/to/reactNative/app" will end up being executed). Custom debugger commands executed this way should be short-lived processes, and they shouldn't produce more than 200 kilobytes of output.
 
 ### Live Reload
 This option allows for your JS changes to trigger automatic reload on the connected device/emulator. To enable this option:

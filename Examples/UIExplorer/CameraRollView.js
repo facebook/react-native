@@ -16,7 +16,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   ActivityIndicatorIOS,
   CameraRoll,
@@ -25,7 +26,7 @@ var {
   Platform,
   StyleSheet,
   View,
-} = React;
+} = ReactNative;
 
 var groupByEveryN = require('groupByEveryN');
 var logError = require('logError');
@@ -148,7 +149,8 @@ var CameraRollView = React.createClass({
       fetchParams.after = this.state.lastCursor;
     }
 
-    CameraRoll.getPhotos(fetchParams, this._appendAssets, logError);
+    CameraRoll.getPhotos(fetchParams)
+      .then((data) => this._appendAssets(data), (e) => logError(e));
   },
 
   /**

@@ -41,7 +41,7 @@ void setCountableForJava(JNIEnv* env, jobject obj, RefPtr<Countable>&& countable
  *
  * This method deletes the corresponding native object on whatever thread the method is called
  * on. In the common case when this is called by Countable#finalize(), this will be called on the
- * system finalizer thread. If you manually call dispose on the Java object, the native object 
+ * system finalizer thread. If you manually call dispose on the Java object, the native object
  * will be deleted synchronously on that thread.
  */
 void dispose(JNIEnv* env, jobject obj) {
