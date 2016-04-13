@@ -391,7 +391,7 @@ var apps = [
   {
     name: 'hello dating',
     icon: 'http://a3.mzstatic.com/us/r30/Purple49/v4/54/29/59/54295932-f821-35db-8556-ba4006098ee9/icon175x175.png',
-    linkAppStore: 'https://itunes.apple.com/il/app/hello-dating/id1072062348?mt=8',
+    link: 'https://itunes.apple.com/us/app/apple-store/id1072062348?pt=815680&ct=reactshowcase&mt=8',
     author: 'Gertler Davidov communication'
   },
   {
