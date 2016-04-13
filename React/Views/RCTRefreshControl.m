@@ -68,7 +68,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // endRefreshing otherwise the next pull to refresh will not work properly.
   UIScrollView *scrollView = (UIScrollView *)self.superview;
   if (scrollView.contentOffset.y < 0) {
-    CGPoint offset = {scrollView.contentOffset.x, 0};
+    CGPoint offset = {scrollView.contentOffset.x, -scrollView.contentInset.top};
     [UIView animateWithDuration:0.25
                           delay:0
                         options:UIViewAnimationOptionBeginFromCurrentState
