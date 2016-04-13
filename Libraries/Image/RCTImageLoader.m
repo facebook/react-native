@@ -20,6 +20,9 @@
 #import "RCTNetworking.h"
 #import "RCTUtils.h"
 
+static NSString *const RCTErrorInvalidURI = @"E_INVALID_URI";
+static NSString *const RCTErrorPrefetchFailure = @"E_PREFETCH_FAILURE";
+
 @implementation UIImage (React)
 
 - (CAKeyframeAnimation *)reactKeyframeAnimation
@@ -632,6 +635,27 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                         }
                         completionBlock(error, size);
                       }];
+}
+
+#pragma mark - Bridged methods
+
+RCT_EXPORT_METHOD(prefetchImage:(NSString *)uri
+                        resolve:(RCTPromiseResolveBlock)resolve
+                         reject:(RCTPromiseRejectBlock)reject)
+{
+  if (!uri.length) {
+    reject(RCTErrorInvalidURI, @"Cannot prefetch an image for an empty URI", nil);
+    return;
+  }
+
+  [_bridge.imageLoader loadImageWithTag:uri callback:^(NSError *error, UIImage *image) {
+    if (error) {
+      reject(RCTErrorPrefetchFailure, nil, error);
+      return;
+    }
+
+    resolve(@YES);
+  }];
 }
 
 #pragma mark - RCTURLRequestHandler
