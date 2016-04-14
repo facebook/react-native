@@ -162,13 +162,17 @@ if (args.indexOf('--ios') !== -1) {
   if (exec('xctool -scheme EndToEndTest -sdk iphonesimulator test').code) {
     exit(cleanup(1));
   }
-  exec('cd ..');
+  cd('..');
 }
 
 if (args.indexOf('--js') !== -1) {
   // Check the packager produces a bundle (doesn't throw an error)
  if (exec('react-native bundle --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js').code) {
-   echo('Could not build package');
+   echo('Could not build android package');
+   exit(cleanup(1));
+ }
+ if (exec('react-native bundle --platform ios --dev true --entry-file index.ios.js --bundle-output ios-bundle.js').code) {
+   echo('Could not build ios package');
    exit(cleanup(1));
  }
  if (exec(`${ROOT}/node_modules/.bin/flow check`).code) {
