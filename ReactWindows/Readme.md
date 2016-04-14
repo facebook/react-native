@@ -12,7 +12,7 @@ Assuming you have [Visual Studio Community 2015](https://www.visualstudio.com/en
 
 Clone this repo onto your local machine.
 ```
-git clone https://github.com/CatalystCode/react-native.git
+git clone https://github.com/ReactWindows/react-native.git
 cd react-native
 git checkout ReactWindows
 git checkout -b "YOUR PERSONAL BRANCH"
