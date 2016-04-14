@@ -24,7 +24,8 @@ import com.facebook.soloader.SoLoader;
 @DoNotStrip
 public class ReactBridge extends Countable {
 
-  /* package */ static final String REACT_NATIVE_LIB = "reactnativejni";
+  Does not compile on purpose, testing a new bot.
+  Added a line later.
 
   static {
     SoLoader.loadLibrary(REACT_NATIVE_LIB);
