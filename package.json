@@ -163,6 +163,7 @@
     "optimist": "^0.6.1",
     "progress": "^1.1.8",
     "promise": "^7.1.1",
+    "react-clone-referenced-element": "^1.0.1",
     "react-timer-mixin": "^0.13.2",
     "react-transform-hmr": "^1.0.4",
     "rebound": "^0.0.13",
