@@ -13,6 +13,9 @@ This tutorial aims to get you up to speed with writing iOS and Android apps usin
 
 We assume you have experience writing applications with React. If not, you can learn about it on the [React website](http://facebook.github.io/react/).
 
+### Building a real-world app
+
+This tutorial explains how to build a simple app to get you started. If you're looking for a more advanced tutorial on building a real-world app, check out [makeitopen.com](http://makeitopen.com/).
 
 ## Setup
 
