@@ -16,6 +16,8 @@ import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.facebook.csslayout.CSSConstants;
+import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.csslayout.Spacing;
@@ -63,11 +65,17 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   }
 
   @Override
-  public void measure(CSSNode node, float width, float height, MeasureOutput measureOutput) {
+  public void measure(
+      CSSNode node,
+      float width,
+      CSSMeasureMode widthMode,
+      float height,
+      CSSMeasureMode heightMode,
+      MeasureOutput measureOutput) {
     // measure() should never be called before setThemedContext()
     EditText editText = Assertions.assertNotNull(mEditText);
 
-    measureOutput.width = width;
+    measureOutput.width = widthMode == CSSMeasureMode.UNDEFINED ? CSSConstants.UNDEFINED : width;
     editText.setTextSize(
         TypedValue.COMPLEX_UNIT_PX,
         mFontSize == UNSET ?

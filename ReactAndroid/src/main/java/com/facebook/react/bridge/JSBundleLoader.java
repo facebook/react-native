@@ -69,7 +69,7 @@ public abstract class JSBundleLoader {
    * This loader is used when proxy debugging is enabled. In that case there is no point in fetching
    * the bundle from device as remote executor will have to do it anyway.
    *
-   * @param proxySourceURL the URL to load the JS bundle from in Chrome
+   * @param proxySourceURL the URL to load the JS bundle from in the JavaScript proxy
    * @param realSourceURL the URL to report as the source URL, e.g. for asset loading
    */
   public static JSBundleLoader createRemoteDebuggerBundleLoader(

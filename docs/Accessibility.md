@@ -146,7 +146,7 @@ _onPress: function() {
   “radiobutton_unchecked” : “radiobutton_checked”;
   if (this.state.radioButton === “radiobutton_checked”) {
     RCTUIManager.sendAccessibilityEvent(
-      React.findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       RCTUIManager.AccessibilityEventTypes.typeViewClicked);
   }
 }

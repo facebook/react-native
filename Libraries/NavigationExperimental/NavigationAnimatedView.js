@@ -15,7 +15,7 @@ const Animated = require('Animated');
 const NavigationContainer = require('NavigationContainer');
 const NavigationPropTypes = require('NavigationPropTypes');
 const NavigationScenesReducer = require('NavigationScenesReducer');
-const React = require('react-native');
+const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 

@@ -13,14 +13,15 @@
 */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Text,
   PixelRatio,
   StyleSheet,
   View,
   TouchableHighlight,
-} = React;
+} = ReactNative;
 
 var NavigationExampleRow = React.createClass({
   render: function() {

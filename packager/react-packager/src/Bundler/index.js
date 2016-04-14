@@ -189,22 +189,23 @@ class Bundler {
     );
   }
 
-  _hmrURL(prefix, platform, extensionOverride, path) {
-    const matchingRoot = this._projectRoots.find(root => path.startsWith(root));
+  _hmrURL(prefix, platform, extensionOverride, filePath) {
+    const matchingRoot = this._projectRoots.find(root => filePath.startsWith(root));
 
     if (!matchingRoot) {
-      throw new Error('No matching project root for ', path);
+      throw new Error('No matching project root for ', filePath);
     }
 
-    const extensionStart = path.lastIndexOf('.');
-    let resource = path.substring(
+    // Replaces '\' with '/' for Windows paths.
+    if (path.sep === '\\') {
+      filePath = filePath.replace(/\\/g, '/');
+    }
+
+    const extensionStart = filePath.lastIndexOf('.');
+    let resource = filePath.substring(
       matchingRoot.length,
       extensionStart !== -1 ? extensionStart : undefined,
     );
-
-    const extension = extensionStart !== -1
-      ? path.substring(extensionStart + 1)
-      : null;
 
     return (
       prefix + resource +
@@ -389,10 +390,11 @@ class Bundler {
         const numModuleSystemDependencies =
           this._resolver.getModuleSystemDependencies({dev, unbundle}).length;
 
-        entryFilePath = response.dependencies[
-          (response.numPrependedDependencies || 0) +
-          numModuleSystemDependencies
-        ].path;
+
+        const dependencyIndex = (response.numPrependedDependencies || 0) + numModuleSystemDependencies;
+        if (dependencyIndex in response.dependencies) {
+          entryFilePath = response.dependencies[dependencyIndex].path;
+        }
       }
 
       const toModuleTransport = module =>
@@ -425,8 +427,33 @@ class Bundler {
     this._cache.invalidate(filePath);
   }
 
-  getShallowDependencies(entryFile) {
-    return this._resolver.getShallowDependencies(entryFile);
+  getShallowDependencies({
+    entryFile,
+    platform,
+    dev = true,
+    minify = !dev,
+    hot = false,
+    generateSourceMaps = false,
+  }) {
+    return this.getTransformOptions(
+      entryFile,
+      {
+        dev,
+        platform,
+        hot,
+        generateSourceMaps,
+        projectRoots: this._projectRoots,
+      },
+    ).then(transformSpecificOptions => {
+      const transformOptions = {
+        minify,
+        dev,
+        platform,
+        transform: transformSpecificOptions,
+      };
+
+      return this._resolver.getShallowDependencies(entryFile, transformOptions);
+    });
   }
 
   stat(filePath) {
@@ -611,10 +638,11 @@ class Bundler {
       };
 
       const json = JSON.stringify(asset);
+      const assetRegistryPath = 'react-native/Libraries/Image/AssetRegistry';
       const code =
-        `module.exports = require('AssetRegistry').registerAsset(${json});`;
-      const dependencies = ['AssetRegistry'];
-      const dependencyOffsets = [code.indexOf('AssetRegistry') - 1];
+        `module.exports = require(${JSON.stringify(assetRegistryPath)}).registerAsset(${json});`;
+      const dependencies = [assetRegistryPath];
+      const dependencyOffsets = [code.indexOf(assetRegistryPath) - 1];
 
       return {
         asset,

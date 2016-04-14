@@ -13,13 +13,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   DatePickerAndroid,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
-} = React;
+} = ReactNative;
 
 var UIExplorerBlock = require('./UIExplorerBlock');
 var UIExplorerPage = require('./UIExplorerPage');
@@ -46,7 +47,7 @@ var DatePickerAndroidExample = React.createClass({
   async showPicker(stateKey, options) {
     try {
       var newState = {};
-      const {action, year, month, day} = await DatePickerAndroid.open(options);      
+      const {action, year, month, day} = await DatePickerAndroid.open(options);
       if (action === DatePickerAndroid.dismissedAction) {
         newState[stateKey + 'Text'] = 'dismissed';
       } else {

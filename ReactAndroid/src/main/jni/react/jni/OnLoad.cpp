@@ -204,6 +204,8 @@ jni::local_ref<ReadableNativeArray::jhybridobject> ReadableNativeArray::getArray
   }
 }
 
+// Export getMap() so we can workaround constructing ReadableNativeMap
+__attribute__((visibility("default")))
 jobject ReadableNativeArray::getMap(jint index) {
   return createReadableNativeMapWithContents(Environment::current(), array.at(index));
 }

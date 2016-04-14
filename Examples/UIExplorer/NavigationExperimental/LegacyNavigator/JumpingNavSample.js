@@ -13,7 +13,8 @@
 */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   NavigationExperimental,
   StyleSheet,
@@ -22,7 +23,7 @@ var {
   Text,
   TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 
 var _getRandomRoute = function() {
   return {

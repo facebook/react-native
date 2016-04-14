@@ -254,8 +254,15 @@ class Server {
     return this._bundler.hmrBundle(modules, host, port);
   }
 
-  getShallowDependencies(entryFile) {
-    return this._bundler.getShallowDependencies(entryFile);
+  getShallowDependencies(options) {
+    return Promise.resolve().then(() => {
+      if (!options.platform) {
+        options.platform = getPlatformExtension(options.entryFile);
+      }
+
+      const opts = dependencyOpts(options);
+      return this._bundler.getShallowDependencies(opts);
+    });
   }
 
   getModuleForPath(entryFile) {

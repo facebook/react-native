@@ -22,6 +22,12 @@ var requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
 
+/**
+ * **Note:** SliderIOS is deprecated and will be removed in the future. Use the cross-platform
+ * Slider as a drop-in replacement with the same API.
+ *
+ * An iOS-specific component used to select a single value from a range of values.
+ */
 var SliderIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
@@ -120,6 +126,11 @@ var SliderIOS = React.createClass({
   },
 
   render: function() {
+    console.warn(
+      'SliderIOS is deprecated and will be removed in ' +
+      'future versions of React Native. Use the cross-platform Slider ' +
+      'as a drop-in replacement.');
+    
     let {style, onValueChange, onSlidingComplete, ...props} = this.props;
     props.style = [styles.slider, style];
 
@@ -131,7 +142,11 @@ var SliderIOS = React.createClass({
       onSlidingComplete && onSlidingComplete(event.nativeEvent.value);
     });
 
-    return <RCTSlider {...props}/>;
+    return <RCTSlider
+      {...props}
+      onStartShouldSetResponder={() => true}
+      onResponderTerminationRequest={() => false}
+    />;
   }
 });
 
