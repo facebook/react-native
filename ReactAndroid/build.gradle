@@ -271,7 +271,7 @@ dependencies {
     testCompile "org.easytesting:fest-assert-core:${FEST_ASSERT_CORE_VERSION}"
     testCompile "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
 
-    androidTestCompile "com.android.support.test:testing-support-lib:0.1"
+    androidTestCompile 'com.android.support.test:runner:0.3'
 }
 
 apply from: 'release.gradle'
