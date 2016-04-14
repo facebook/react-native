@@ -560,13 +560,6 @@ function Pattern(url, width, height, left, top) {
   this._brush = [PATTERN, url, +left || 0, +top || 0, +width, +height];
 }
 
-// This doesn't work on iOS and is just a placeholder to get Spectrum running.
-// I will try to eliminate this dependency in Spectrum and remove it from
-// ReactART proper.
-function CSSBackgroundPattern() {
-  return new Color('rgba(0,0,0,0)');
-}
-
 var ReactART = {
   LinearGradient: LinearGradient,
   RadialGradient: RadialGradient,
@@ -578,7 +571,6 @@ var ReactART = {
   ClippingRectangle: ClippingRectangle,
   Shape: Shape,
   Text: Text,
-  CSSBackgroundPattern: CSSBackgroundPattern
 };
 
 module.exports = ReactART;
