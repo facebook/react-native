@@ -85,10 +85,13 @@ var DrawerLayoutAndroid = React.createClass({
     /**
      * Specifies the background color of the drawer. The default value is white.
      * If you want to set the opacity of the drawer, use rgba. Example:
-     *   return (
-     *     <DrawerLayoutAndroid drawerBackgroundColor="rgba(0,0,0,0.5)">
-     *     </DrawerLayoutAndroid>
-     *   );
+     *
+     * ```
+     * return (
+     *   <DrawerLayoutAndroid drawerBackgroundColor="rgba(0,0,0,0.5)">
+     *   </DrawerLayoutAndroid>
+     * );
+     * ```
      */
     drawerBackgroundColor: ColorPropType,
     /**
@@ -150,6 +153,12 @@ var DrawerLayoutAndroid = React.createClass({
 
   mixins: [NativeMethodsMixin],
 
+  getDefaultProps: function(): Object {
+    return {
+      drawerBackgroundColor: 'white',
+    };
+  },
+
   getInitialState: function() {
     return {statusBarBackgroundColor: undefined};
   },
@@ -172,7 +181,7 @@ var DrawerLayoutAndroid = React.createClass({
       <View
         style={[
           styles.drawerSubview,
-          {width: this.props.drawerWidth, backgroundColor: this.props.drawerBackgroundColor || 'white'}
+          {width: this.props.drawerWidth, backgroundColor: this.props.drawerBackgroundColor }
         ]}
         collapsable={false}>
         {this.props.renderNavigationView()}
