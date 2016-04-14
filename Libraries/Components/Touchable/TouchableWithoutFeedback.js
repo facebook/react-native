@@ -12,18 +12,19 @@
  */
 'use strict';
 
-var EdgeInsetsPropType = require('EdgeInsetsPropType');
-var React = require('React');
-var TimerMixin = require('react-timer-mixin');
-var Touchable = require('Touchable');
-var View = require('View');
-var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-var invariant = require('fbjs/lib/invariant');
-var onlyChild = require('onlyChild');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const React = require('React');
+const TimerMixin = require('react-timer-mixin');
+const Touchable = require('Touchable');
+const View = require('View');
+
+const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+const onlyChild = require('onlyChild');
+const warning = require('warning');
 
 type Event = Object;
 
-var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
  * Do not use unless you have a very good reason. All the elements that
@@ -34,7 +35,7 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * >
  * > If you wish to have several child components, wrap them in a View.
  */
-var TouchableWithoutFeedback = React.createClass({
+const TouchableWithoutFeedback = React.createClass({
   mixins: [TimerMixin, Touchable.Mixin],
 
   propTypes: {
@@ -150,7 +151,23 @@ var TouchableWithoutFeedback = React.createClass({
 
   render: function(): ReactElement {
     // Note(avik): remove dynamic typecast once Flow has been upgraded
-    return (React: any).cloneElement(onlyChild(this.props.children), {
+    const child = onlyChild(this.props.children);
+    let children = child.props.children;
+    warning(
+      !child.type || child.type.displayName !== 'Text',
+      'TouchableWithoutFeedback does not work well with Text children. Wrap children in a View instead. See ' +
+        child._owner.getName()
+    );
+    if (Touchable.TOUCH_TARGET_DEBUG && child.type && child.type.displayName === 'View') {
+      if (!Array.isArray(children)) {
+        children = [children];
+      }
+      children.push(Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop}));
+    }
+    const style = (Touchable.TOUCH_TARGET_DEBUG && child.type && child.type.displayName === 'Text') ?
+      [child.props.style, {color: 'red'}] :
+      child.props.style;
+    return (React: any).cloneElement(child, {
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
       accessibilityComponentType: this.props.accessibilityComponentType,
@@ -163,7 +180,9 @@ var TouchableWithoutFeedback = React.createClass({
       onResponderGrant: this.touchableHandleResponderGrant,
       onResponderMove: this.touchableHandleResponderMove,
       onResponderRelease: this.touchableHandleResponderRelease,
-      onResponderTerminate: this.touchableHandleResponderTerminate
+      onResponderTerminate: this.touchableHandleResponderTerminate,
+      style,
+      children,
     });
   }
 });
