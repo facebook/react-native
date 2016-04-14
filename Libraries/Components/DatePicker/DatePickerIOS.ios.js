@@ -46,7 +46,10 @@ var DatePickerIOS = React.createClass({
     /**
      * The currently selected date.
      */
-    date: PropTypes.instanceOf(Date).isRequired,
+    date: PropTypes.oneOfType([
+       PropTypes.instanceOf(Date),
+       PropTypes.number,
+    ]).isRequired,
 
     /**
      * Date change handler.
@@ -62,14 +65,20 @@ var DatePickerIOS = React.createClass({
      *
      * Restricts the range of possible date/time values.
      */
-    maximumDate: PropTypes.instanceOf(Date),
+    maximumDate: PropTypes.oneOfType([
+       PropTypes.instanceOf(Date),
+       PropTypes.number,
+    ]),
 
     /**
      * Minimum date.
      *
      * Restricts the range of possible date/time values.
      */
-    minimumDate: PropTypes.instanceOf(Date),
+    minimumDate: PropTypes.oneOfType([
+       PropTypes.instanceOf(Date),
+       PropTypes.number,
+    ]),
 
     /**
      * The date picker mode.
