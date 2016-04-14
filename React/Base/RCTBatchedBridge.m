@@ -590,15 +590,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
   // Invalidate modules
   dispatch_group_t group = dispatch_group_create();
-  for (RCTModuleData *moduleData in _moduleDataByName.allValues) {
-    if (moduleData.instance == _javaScriptExecutor) {
+  for (RCTModuleData *moduleData in _moduleDataByID) {
+    // Be careful when grabbing an instance here, we don't want to instantiate
+    // any modules just to invalidate them.
+    id<RCTBridgeModule> instance = nil;
+    if ([moduleData hasInstance]) {
+      instance = moduleData.instance;
+    }
+
+    if (instance == _javaScriptExecutor) {
       continue;
     }
 
-    if ([moduleData.instance respondsToSelector:@selector(invalidate)]) {
+    if ([instance respondsToSelector:@selector(invalidate)]) {
       dispatch_group_enter(group);
       [self dispatchBlock:^{
-        [(id<RCTInvalidating>)moduleData.instance invalidate];
+        [(id<RCTInvalidating>)instance invalidate];
         dispatch_group_leave(group);
       } queue:moduleData.methodQueue];
     }
