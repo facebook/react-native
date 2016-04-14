@@ -22,7 +22,8 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const NavigationExampleRow = require('./NavigationExampleRow');
 const NavigationExampleTabBar = require('./NavigationExampleTabBar');
 
@@ -31,7 +32,7 @@ const {
   ScrollView,
   StyleSheet,
   View,
-} = React;
+} = ReactNative;
 
 const {
   CardStack: NavigationCardStack,

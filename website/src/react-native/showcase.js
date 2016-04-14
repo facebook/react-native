@@ -45,7 +45,8 @@ var featured = [
   {
     name: 'Discovery VR',
     icon: 'http://a2.mzstatic.com/us/r30/Purple6/v4/d1/d5/f4/d1d5f437-9f6b-b5aa-5fe7-47bd19f934bf/icon175x175.png',
-    link:  'https://itunes.apple.com/us/app/discovery-vr/id1030815031?mt=8',
+    linkAppStore: 'https://itunes.apple.com/us/app/discovery-vr/id1030815031?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.discovery.DiscoveryVR',
     author: 'Discovery Communications',
     blog: [
       "https://medium.com/ios-os-x-development/an-ios-developer-on-react-native-1f24786c29f0",
@@ -122,14 +123,24 @@ var featured = [
   {
     name: 'Squad',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/e8/5b/3f/e85b3f52-72f3-f427-a32e-a73efe2e9682/icon175x175.jpeg',
-    link: 'https://itunes.apple.com/us/app/squad-snaps-for-groups-friends/id1043626975?mt=8',
+    linkAppStore: 'https://itunes.apple.com/us/app/squad-snaps-for-groups-friends/id1043626975?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.tackk.squad',
     author: 'Tackk Inc.',
+    blogs: [
+      'https://medium.com/@rpastorelle/building-3-react-native-apps-in-one-summer-dcd0c31454ff#.z0fh9dehn',
+    ],
   },
   {
     name: 'Start - medication manager for depression',
     icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/de/9b/6f/de9b6fe8-84ea-7a12-ba2c-0a6d6c7b10b0/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/start-medication-manager-for/id1012099928?mt=8',
     author: 'Iodine Inc.',
+  },
+  {
+    name: 'Taxfyle - taxes filed on-demand via licensed CPA',
+    icon: 'https://s3.amazonaws.com/taxfyle-public/images/taxfyle-icon-1024px.png',
+    link: 'https://itunes.apple.com/us/app/taxfyle/id1058033104?mt=8',
+    author: 'Taxfyle',
   },
   {
     name: 'This AM',
@@ -384,7 +395,7 @@ var apps = [
   {
     name: 'hello dating',
     icon: 'http://a3.mzstatic.com/us/r30/Purple49/v4/54/29/59/54295932-f821-35db-8556-ba4006098ee9/icon175x175.png',
-    linkAppStore: 'https://itunes.apple.com/il/app/hello-dating/id1072062348?mt=8',
+    link: 'https://itunes.apple.com/us/app/apple-store/id1072062348?pt=815680&ct=reactshowcase&mt=8',
     author: 'Gertler Davidov communication'
   },
   {
@@ -695,6 +706,12 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/gb/app/wearvr/id1066288171?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.wearvr.app',
     author: 'WEARVR LLC',
+  },
+  {
+    name: 'wego concerts',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/03/91/2d/03912daa-fae7-6a25-5f11-e6b19290b3f4/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/wego-concerts-follow-friends/id869478093?mt=8',
+    author: 'Wego, LLC',
   },
   {
     name: 'Whammy',

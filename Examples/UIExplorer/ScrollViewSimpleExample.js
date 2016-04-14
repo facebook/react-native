@@ -15,13 +15,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity
-} = React;
+} = ReactNative;
 
 var NUM_ITEMS = 20;
 

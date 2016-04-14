@@ -80,7 +80,7 @@ public class ReactViewGroup extends ViewGroup implements
   // temporary optimization/hack that is mainly applicable to the large list of images. The way
   // it's implemented is that we store an additional array of children in view node. We selectively
   // remove some of the views (detach) from it while still storing them in that additional array.
-  // We override all possible add methods for {@link ViewGroup} so that we can controll this process
+  // We override all possible add methods for {@link ViewGroup} so that we can control this process
   // whenever the option is set. We also override {@link ViewGroup#getChildAt} and
   // {@link ViewGroup#getChildCount} so those methods may return views that are not attached.
   // This is risky but allows us to perform a correct cleanup in {@link NativeViewHierarchyManager}.

@@ -18,6 +18,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
@@ -26,6 +27,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
 import com.facebook.common.util.UriUtil;
+import com.facebook.csslayout.CSSConstants;
+import com.facebook.csslayout.FloatUtil;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.controller.ControllerListener;
@@ -48,6 +51,8 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 
+import java.util.Arrays;
+
 /**
  * Wrapper class around Fresco's GenericDraweeView, enabling persisting props across multiple view
  * update and consistent processing of both static and network images.
@@ -55,6 +60,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 public class ReactImageView extends GenericDraweeView {
 
   public static final int REMOTE_IMAGE_FADE_DURATION_MS = 300;
+
+  private static float[] sComputedCornerRadii = new float[4];
 
   /*
    * Implementation note re rounded corners:
@@ -72,7 +79,7 @@ public class ReactImageView extends GenericDraweeView {
 
   private class RoundedCornerPostprocessor extends BasePostprocessor {
 
-    float getRadius(Bitmap source) {
+    void getRadii(Bitmap source, float[] computedCornerRadii, float[] mappedRadii) {
         ScalingUtils.getTransform(
             sMatrix,
             new Rect(0, 0, source.getWidth(), source.getHeight()),
@@ -82,13 +89,29 @@ public class ReactImageView extends GenericDraweeView {
             0.0f,
             mScaleType);
         sMatrix.invert(sInverse);
-        return sInverse.mapRadius(mBorderRadius);
+
+        mappedRadii[0] = sInverse.mapRadius(computedCornerRadii[0]);
+        mappedRadii[1] = mappedRadii[0];
+
+        mappedRadii[2] = sInverse.mapRadius(computedCornerRadii[1]);
+        mappedRadii[3] = mappedRadii[2];
+
+        mappedRadii[4] = sInverse.mapRadius(computedCornerRadii[2]);
+        mappedRadii[5] = mappedRadii[4];
+
+        mappedRadii[6] = sInverse.mapRadius(computedCornerRadii[3]);
+        mappedRadii[7] = mappedRadii[6];
     }
 
     @Override
     public void process(Bitmap output, Bitmap source) {
+      cornerRadii(sComputedCornerRadii);
+
       output.setHasAlpha(true);
-      if (mBorderRadius < 0.01f) {
+      if (FloatUtil.floatsEqual(sComputedCornerRadii[0], 0f) &&
+          FloatUtil.floatsEqual(sComputedCornerRadii[1], 0f) &&
+          FloatUtil.floatsEqual(sComputedCornerRadii[2], 0f) &&
+          FloatUtil.floatsEqual(sComputedCornerRadii[3], 0f)) {
         super.process(output, source);
         return;
       }
@@ -96,12 +119,19 @@ public class ReactImageView extends GenericDraweeView {
       paint.setAntiAlias(true);
       paint.setShader(new BitmapShader(source, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
       Canvas canvas = new Canvas(output);
-      float radius = getRadius(source);
-      canvas.drawRoundRect(
+
+      float[] radii = new float[8];
+
+      getRadii(source, sComputedCornerRadii, radii);
+
+      Path pathForBorderRadius = new Path();
+
+      pathForBorderRadius.addRoundRect(
           new RectF(0, 0, source.getWidth(), source.getHeight()),
-          radius,
-          radius,
-          paint);
+          radii,
+          Path.Direction.CW);
+
+      canvas.drawPath(pathForBorderRadius, paint);
     }
   }
 
@@ -110,7 +140,8 @@ public class ReactImageView extends GenericDraweeView {
   private int mBorderColor;
   private int mOverlayColor;
   private float mBorderWidth;
-  private float mBorderRadius;
+  private float mBorderRadius = CSSConstants.UNDEFINED;
+  private @Nullable float[] mBorderCornerRadii;
   private ScalingUtils.ScaleType mScaleType;
   private boolean mIsDirty;
   private boolean mIsLocalImage;
@@ -198,8 +229,22 @@ public class ReactImageView extends GenericDraweeView {
   }
 
   public void setBorderRadius(float borderRadius) {
-    mBorderRadius = PixelUtil.toPixelFromDIP(borderRadius);
-    mIsDirty = true;
+    if (!FloatUtil.floatsEqual(mBorderRadius, borderRadius)) {
+      mBorderRadius = borderRadius;
+      mIsDirty = true;
+    }
+  }
+
+  public void setBorderRadius(float borderRadius, int position) {
+    if (mBorderCornerRadii == null) {
+      mBorderCornerRadii = new float[4];
+      Arrays.fill(mBorderCornerRadii, CSSConstants.UNDEFINED);
+    }
+
+    if (!FloatUtil.floatsEqual(mBorderCornerRadii[position], borderRadius)) {
+      mBorderCornerRadii[position] = borderRadius;
+      mIsDirty = true;
+    }
   }
 
   public void setScaleType(ScalingUtils.ScaleType scaleType) {
@@ -250,6 +295,15 @@ public class ReactImageView extends GenericDraweeView {
     // no worth marking as dirty if it already rendered..
   }
 
+  private void cornerRadii(float[] computedCorners) {
+    float defaultBorderRadius = !CSSConstants.isUndefined(mBorderRadius) ? mBorderRadius : 0;
+
+    computedCorners[0] = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[0]) ? mBorderCornerRadii[0] : defaultBorderRadius;
+    computedCorners[1] = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[1]) ? mBorderCornerRadii[1] : defaultBorderRadius;
+    computedCorners[2] = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[2]) ? mBorderCornerRadii[2] : defaultBorderRadius;
+    computedCorners[3] = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[3]) ? mBorderCornerRadii[3] : defaultBorderRadius;
+  }
+
   public void maybeUpdateView() {
     if (!mIsDirty) {
       return;
@@ -271,10 +325,17 @@ public class ReactImageView extends GenericDraweeView {
     boolean usePostprocessorScaling =
         mScaleType != ScalingUtils.ScaleType.CENTER_CROP &&
         mScaleType != ScalingUtils.ScaleType.FOCUS_CROP;
-    float hierarchyRadius = usePostprocessorScaling ? 0 : mBorderRadius;
 
     RoundingParams roundingParams = hierarchy.getRoundingParams();
-    roundingParams.setCornersRadius(hierarchyRadius);
+
+    if (usePostprocessorScaling) {
+      roundingParams.setCornersRadius(0);
+    } else {
+      cornerRadii(sComputedCornerRadii);
+
+      roundingParams.setCornersRadii(sComputedCornerRadii[0], sComputedCornerRadii[1], sComputedCornerRadii[2], sComputedCornerRadii[3]);
+    }
+
     roundingParams.setBorder(mBorderColor, mBorderWidth);
     if (mOverlayColor != Color.TRANSPARENT) {
         roundingParams.setOverlayColor(mOverlayColor);

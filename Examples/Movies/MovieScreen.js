@@ -15,14 +15,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Image,
   ScrollView,
   StyleSheet,
   Text,
   View,
-} = React;
+} = ReactNative;
 
 var getImageSource = require('./getImageSource');
 var getStyleFromScore = require('./getStyleFromScore');

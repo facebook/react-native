@@ -38,6 +38,7 @@ __NOTE__: The above instructions are for Ubuntu. If you're on a different distro
 Paste the following into your terminal to compile watchman from source and install it:
 
 ```sh
+sudo apt-get install -y automake python-dev
 git clone https://github.com/facebook/watchman.git
 cd watchman
 git checkout v4.5.0  # the latest stable release
@@ -46,6 +47,7 @@ git checkout v4.5.0  # the latest stable release
 make
 sudo make install
 ```
+__NOTE__: The above ```apt-get install``` line is for Ubuntu/Debian only. You might need to install required dependencies differently on other distributions.
 
 #### Installing Flow
 

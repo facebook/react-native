@@ -16,7 +16,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   CameraRoll,
   Image,
@@ -29,7 +30,7 @@ var {
   TouchableHighlight,
   UIManager,
   View,
-} = React;
+} = ReactNative;
 
 var PAGE_SIZE = 20;
 

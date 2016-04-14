@@ -23,7 +23,8 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const UIExplorerList = require('./UIExplorerList.ios');
 const UIExplorerExampleList = require('./UIExplorerExampleList');
 const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
@@ -36,7 +37,7 @@ const {
   SnapshotViewIOS,
   StyleSheet,
   View,
-} = React;
+} = ReactNative;
 
 const {
   CardStack: NavigationCardStack,
