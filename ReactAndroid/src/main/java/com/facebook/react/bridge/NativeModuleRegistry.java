@@ -144,6 +144,10 @@ public class NativeModuleRegistry {
     }
   }
 
+  public <T extends NativeModule> boolean hasModule(Class<T> moduleInterface) {
+    return mModuleInstances.containsKey(moduleInterface);
+  }
+
   public <T extends NativeModule> T getModule(Class<T> moduleInterface) {
     return (T) Assertions.assertNotNull(mModuleInstances.get(moduleInterface));
   }
