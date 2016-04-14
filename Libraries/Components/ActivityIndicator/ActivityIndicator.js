@@ -13,6 +13,7 @@
 
 const ColorPropType = require('ColorPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
+const Platform = require('Platform');
 const PropTypes = require('ReactPropTypes');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
@@ -39,10 +40,6 @@ const ActivityIndicator = React.createClass({
      */
     color: ColorPropType,
     /**
-     * Whether the indicator should hide when not animating (true by default).
-     */
-    hidesWhenStopped: PropTypes.bool,
-    /**
      * Size of the indicator. Small has a height of 20, large has a height of 36.
      * Other sizes can be obtained using a scale transform.
      */
@@ -50,6 +47,12 @@ const ActivityIndicator = React.createClass({
       'small',
       'large',
     ]),
+    /**
+     * Whether the indicator should hide when not animating (true by default).
+     *
+     * @platform ios
+     */
+    hidesWhenStopped: PropTypes.bool,
   },
 
   getDefaultProps() {
@@ -79,6 +82,8 @@ const ActivityIndicator = React.createClass({
         <RCTActivityIndicator
           {...props}
           style={sizeStyle}
+          styleAttr="Normal"
+          indeterminate
         />
       </View>
     );
@@ -100,11 +105,23 @@ const styles = StyleSheet.create({
   },
 });
 
-var RCTActivityIndicator = requireNativeComponent(
-  'RCTActivityIndicatorView',
-  ActivityIndicator,
-  {nativeOnly: {activityIndicatorViewStyle: true}},
-);
-
+if (Platform.OS === 'ios') {
+  var RCTActivityIndicator = requireNativeComponent(
+    'RCTActivityIndicatorView',
+    ActivityIndicator,
+    {nativeOnly: {activityIndicatorViewStyle: true}},
+  );
+} else if (Platform.OS === 'android') {
+  var RCTActivityIndicator = requireNativeComponent(
+    'AndroidProgressBar',
+    ActivityIndicator,
+    // Ignore props that are specific to non inderterminate ProgressBar.
+    {nativeOnly: {
+      indeterminate: true,
+      progress: true,
+      styleAttr: true,
+    }},
+  );
+}
 
 module.exports = ActivityIndicator;
