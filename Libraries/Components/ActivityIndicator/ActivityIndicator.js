@@ -11,24 +11,21 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var PropTypes = require('ReactPropTypes');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var View = require('View');
+const ColorPropType = require('ColorPropType');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const PropTypes = require('ReactPropTypes');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const View = require('View');
 
-var requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('requireNativeComponent');
 
-var GRAY = '#999999';
+const GRAY = '#999999';
 
-type DefaultProps = {
-  animating: boolean;
-  color: string;
-  hidesWhenStopped: boolean;
-  size: 'small' | 'large';
-};
-
-var ActivityIndicatorIOS = React.createClass({
+/**
+ * Displays a circular loading indicator.
+ */
+const ActivityIndicator = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
@@ -40,27 +37,22 @@ var ActivityIndicatorIOS = React.createClass({
     /**
      * The foreground color of the spinner (default is gray).
      */
-    color: PropTypes.string,
+    color: ColorPropType,
     /**
      * Whether the indicator should hide when not animating (true by default).
      */
     hidesWhenStopped: PropTypes.bool,
     /**
      * Size of the indicator. Small has a height of 20, large has a height of 36.
+     * Other sizes can be obtained using a scale transform.
      */
     size: PropTypes.oneOf([
       'small',
       'large',
     ]),
-    /**
-     * Invoked on mount and layout changes with
-     *
-     *   {nativeEvent: { layout: {x, y, width, height}}}.
-     */
-    onLayout: PropTypes.func,
   },
 
-  getDefaultProps: function(): DefaultProps {
+  getDefaultProps() {
     return {
       animating: true,
       color: GRAY,
@@ -69,20 +61,31 @@ var ActivityIndicatorIOS = React.createClass({
     };
   },
 
-  render: function() {
-    var {onLayout, style, ...props} = this.props;
-    var sizeStyle = (this.props.size === 'large') ? styles.sizeLarge : styles.sizeSmall;
+  render() {
+    const {onLayout, style, ...props} = this.props;
+    let sizeStyle;
+    switch (props.size) {
+      case 'small':
+        sizeStyle = styles.sizeSmall;
+        break;
+      case 'large':
+        sizeStyle = styles.sizeLarge;
+        break;
+    }
     return (
       <View
         onLayout={onLayout}
         style={[styles.container, style]}>
-        <RCTActivityIndicatorView {...props} style={sizeStyle} />
+        <RCTActivityIndicator
+          {...props}
+          style={sizeStyle}
+        />
       </View>
     );
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -94,13 +97,14 @@ var styles = StyleSheet.create({
   sizeLarge: {
     width: 36,
     height: 36,
-  }
+  },
 });
 
-var RCTActivityIndicatorView = requireNativeComponent(
+var RCTActivityIndicator = requireNativeComponent(
   'RCTActivityIndicatorView',
-  ActivityIndicatorIOS,
+  ActivityIndicator,
   {nativeOnly: {activityIndicatorViewStyle: true}},
 );
 
-module.exports = ActivityIndicatorIOS;
+
+module.exports = ActivityIndicator;
