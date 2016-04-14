@@ -157,6 +157,9 @@ if (args.indexOf('--ios') !== -1) {
     env: packagerEnv
   });
   SERVER_PID = packagerProcess.pid;
+  exec('sleep 15s');
+  // prepare cache to reduce chances of possible red screen "Can't fibd variable __fbBatchedBridge..."
+  exec('response=$(curl --write-out %{http_code} --silent --output /dev/null localhost:8081/index.ios.bundle?platform=ios&dev=true)');
   echo(`Starting packager server, ${SERVER_PID}`);
   echo('Executing ios e2e test');
   if (exec('xctool -scheme EndToEndTest -sdk iphonesimulator test').code) {
