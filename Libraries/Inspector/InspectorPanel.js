@@ -17,6 +17,7 @@ var Text = require('Text');
 var View = require('View');
 var ElementProperties = require('ElementProperties');
 var PerformanceOverlay = require('PerformanceOverlay');
+var Touchable = require('Touchable');
 var TouchableHighlight = require('TouchableHighlight');
 
 var PropTypes = React.PropTypes;
@@ -70,6 +71,9 @@ class InspectorPanel extends React.Component {
             onClick={this.props.setPerfing}
           />
         </View>
+        <Text style={styles.buttonText}>
+          {'Touchable.TOUCH_TARGET_DEBUG is ' + Touchable.TOUCH_TARGET_DEBUG}
+        </Text>
       </View>
     );
   }
@@ -126,6 +130,7 @@ var styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'center',
     marginVertical: 20,
+    color: 'white',
   },
 });
 
