@@ -66,6 +66,7 @@ public class ReactEditText extends EditText {
   private @Nullable ArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
+  private boolean mTextIsSelectable = true;
   private boolean mContainsImages;
   private boolean mBlurOnSubmit;
   private @Nullable SelectionWatcher mSelectionWatcher;
@@ -213,6 +214,12 @@ public class ReactEditText extends EditText {
     // accept all input from it
     mKeyListener.setInputType(type);
     setKeyListener(mKeyListener);
+  }
+
+  @Override
+  public void setTextIsSelectable(boolean selectable) {
+    mTextIsSelectable = selectable;
+    super.setTextIsSelectable(selectable);
   }
 
   // VisibleForTesting from {@link TextInputEventsTestCase}.
@@ -389,6 +396,7 @@ public class ReactEditText extends EditText {
   @Override
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
+    setTextIsSelectable(mTextIsSelectable);
     if (mContainsImages && getText() instanceof Spanned) {
       Spanned text = (Spanned) getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);

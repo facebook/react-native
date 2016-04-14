@@ -23,6 +23,7 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   private boolean mContainsImages;
   private int mDefaultGravityHorizontal;
   private int mDefaultGravityVertical;
+  private boolean mTextIsSelectable;
 
   public ReactTextView(Context context) {
     super(context);
@@ -82,6 +83,12 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   }
 
   @Override
+  public void setTextIsSelectable(boolean selectable) {
+    mTextIsSelectable = selectable;
+    super.setTextIsSelectable(selectable);
+  }
+
+  @Override
   protected boolean verifyDrawable(Drawable drawable) {
     if (mContainsImages && getText() instanceof Spanned) {
       Spanned text = (Spanned) getText();
@@ -136,6 +143,7 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   @Override
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
+    setTextIsSelectable(mTextIsSelectable);
     if (mContainsImages && getText() instanceof Spanned) {
       Spanned text = (Spanned) getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
