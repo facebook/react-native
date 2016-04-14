@@ -20,7 +20,7 @@ const View = require('View');
 
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 const onlyChild = require('onlyChild');
-const warning = require('warning');
+const warning = require('fbjs/lib/warning');
 
 type Event = Object;
 
@@ -156,7 +156,7 @@ const TouchableWithoutFeedback = React.createClass({
     warning(
       !child.type || child.type.displayName !== 'Text',
       'TouchableWithoutFeedback does not work well with Text children. Wrap children in a View instead. See ' +
-        child._owner.getName()
+        ((child._owner && child._owner.getName && child._owner.getName()) || '<unknown>')
     );
     if (Touchable.TOUCH_TARGET_DEBUG && child.type && child.type.displayName === 'View') {
       if (!Array.isArray(children)) {
