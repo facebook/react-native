@@ -36,6 +36,8 @@ var lastUsedTag = 0;
  * by the top-level `renderApplication`.
  */
 var Portal = React.createClass({
+  _modals: {},
+
   statics: {
     /**
      * Use this to create a new unique tag for your component that renders
@@ -95,7 +97,8 @@ var Portal = React.createClass({
   },
 
   getInitialState: function() {
-    return {modals: {}};
+    this._modals = {};
+    return {};
   },
 
   _showModal: function(tag: string, component: any) {
@@ -104,17 +107,13 @@ var Portal = React.createClass({
     if (this._getOpenModals().length === 0) {
       this.props.onModalVisibilityChanged(true);
     }
-    // This way state is chained through multiple calls to
-    // _showModal, _closeModal correctly.
-    this.setState((state) => {
-      var modals = state.modals;
-      modals[tag] = component;
-      return {modals};
-    });
+
+    this._modals[tag] = component;
+    this.forceUpdate();
   },
 
   _closeModal: function(tag: string) {
-    if (!this.state.modals.hasOwnProperty(tag)) {
+    if (!this._modals.hasOwnProperty(tag)) {
       return;
     }
     // We are about to close last modal, so Portal will disappear.
@@ -122,17 +121,13 @@ var Portal = React.createClass({
     if (this._getOpenModals().length === 1) {
       this.props.onModalVisibilityChanged(false);
     }
-    // This way state is chained through multiple calls to
-    // _showModal, _closeModal correctly.
-    this.setState((state) => {
-      var modals = state.modals;
-      delete modals[tag];
-      return {modals};
-    });
+
+    delete this._modals[tag];
+    this.forceUpdate();
   },
 
   _getOpenModals: function(): Array<string> {
-    return Object.keys(this.state.modals);
+    return Object.keys(this._modals);
   },
 
   _notifyAccessibilityService: function() {
@@ -151,12 +146,12 @@ var Portal = React.createClass({
 
   render: function() {
     _portalRef = this;
-    if (!this.state.modals) {
+    if (!this._modals) {
       return null;
     }
     var modals = [];
-    for (var tag in this.state.modals) {
-      modals.push(this.state.modals[tag]);
+    for (var tag in this._modals) {
+      modals.push(this._modals[tag]);
     }
     if (modals.length === 0) {
       return null;
