@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
+import java.net.SocketTimeoutException;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -172,7 +174,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
     Headers requestHeaders = extractHeaders(headers, data);
     if (requestHeaders == null) {
-      onRequestError(executorToken, requestId, "Unrecognized headers format");
+      onRequestError(executorToken, requestId, "Unrecognized headers format", null);
       return;
     }
     String contentType = requestHeaders.get(CONTENT_TYPE_HEADER_NAME);
@@ -186,7 +188,8 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
         onRequestError(
             executorToken,
             requestId,
-            "Payload is set but no content-type header specified");
+            "Payload is set but no content-type header specified",
+            null);
         return;
       }
       String body = data.getString(REQUEST_BODY_KEY_STRING);
@@ -194,7 +197,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       if (RequestBodyUtil.isGzipEncoding(contentEncoding)) {
         RequestBody requestBody = RequestBodyUtil.createGzip(contentMediaType, body);
         if (requestBody == null) {
-          onRequestError(executorToken, requestId, "Failed to gzip request body");
+          onRequestError(executorToken, requestId, "Failed to gzip request body", null);
           return;
         }
         requestBuilder.method(method, requestBody);
@@ -206,14 +209,15 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
         onRequestError(
             executorToken,
             requestId,
-            "Payload is set but no content-type header specified");
+            "Payload is set but no content-type header specified",
+            null);
         return;
       }
       String uri = data.getString(REQUEST_BODY_KEY_URI);
       InputStream fileInputStream =
           RequestBodyUtil.getFileInputStream(getReactApplicationContext(), uri);
       if (fileInputStream == null) {
-        onRequestError(executorToken, requestId, "Could not retrieve file for uri " + uri);
+        onRequestError(executorToken, requestId, "Could not retrieve file for uri " + uri, null);
         return;
       }
       requestBuilder.method(
@@ -242,7 +246,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
             if (mShuttingDown) {
               return;
             }
-            onRequestError(executorToken, requestId, e.getMessage());
+            onRequestError(executorToken, requestId, e.getMessage(), e);
           }
 
           @Override
@@ -264,7 +268,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
                 onRequestSuccess(executorToken, requestId);
               }
             } catch (IOException e) {
-              onRequestError(executorToken, requestId, e.getMessage());
+              onRequestError(executorToken, requestId, e.getMessage(), e);
             }
           }
         });
@@ -294,10 +298,14 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     getEventEmitter(ExecutorToken).emit("didReceiveNetworkData", args);
   }
 
-  private void onRequestError(ExecutorToken ExecutorToken, int requestId, String error) {
+  private void onRequestError(ExecutorToken ExecutorToken, int requestId, String error, IOException e) {
     WritableArray args = Arguments.createArray();
     args.pushInt(requestId);
     args.pushString(error);
+
+    if ((e != null) && (e.getClass() == SocketTimeoutException.class)) {
+      args.pushBoolean(true); // last argument is a time out boolean
+    }
 
     getEventEmitter(ExecutorToken).emit("didCompleteNetworkResponse", args);
   }
@@ -385,7 +393,8 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
         onRequestError(
             ExecutorToken,
             requestId,
-            "Missing or invalid header format for FormData part.");
+            "Missing or invalid header format for FormData part.",
+            null);
         return null;
       }
       MediaType partContentType = null;
@@ -405,7 +414,8 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
           onRequestError(
               ExecutorToken,
               requestId,
-              "Binary FormData part needs a content-type header.");
+              "Binary FormData part needs a content-type header.",
+              null);
           return null;
         }
         String fileContentUriStr = bodyPart.getString(REQUEST_BODY_KEY_URI);
@@ -415,12 +425,13 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
           onRequestError(
               ExecutorToken,
               requestId,
-              "Could not retrieve file for uri " + fileContentUriStr);
+              "Could not retrieve file for uri " + fileContentUriStr,
+              null);
           return null;
         }
         multipartBuilder.addPart(headers, RequestBodyUtil.create(partContentType, fileInputStream));
       } else {
-        onRequestError(ExecutorToken, requestId, "Unrecognized FormData part.");
+        onRequestError(ExecutorToken, requestId, "Unrecognized FormData part.", null);
       }
     }
     return multipartBuilder;
