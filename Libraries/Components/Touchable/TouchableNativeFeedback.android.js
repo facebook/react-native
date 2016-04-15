@@ -13,7 +13,6 @@
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactNative = require('ReactNative');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var UIManager = require('UIManager');
@@ -206,13 +205,22 @@ var TouchableNativeFeedback = React.createClass({
   },
 
   render: function() {
+    const child = onlyChild(this.props.children);
+    let children = child.props.children;
+    if (Touchable.TOUCH_TARGET_DEBUG && child.type.displayName === 'View') {
+      if (!Array.isArray(children)) {
+        children = [children];
+      }
+      children.push(Touchable.renderDebugView({color: 'brown', hitSlop: this.props.hitSlop}));
+    }
     var childProps = {
-      ...onlyChild(this.props.children).props,
+      ...child.props,
       nativeBackgroundAndroid: this.props.background,
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
       accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityTraits: this.props.accessibilityTraits,
+      children,
       testID: this.props.testID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,

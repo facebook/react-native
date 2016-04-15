@@ -572,6 +572,12 @@ var apps = [
     author: 'Posyt.com',
   },
   {
+    name: 'Project September',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple49/v4/88/0f/3b/880f3b7f-8aa0-de64-6b6f-f0ec6d6591e4/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/project-september/id1074075331?ls=1&mt=8',
+    author: 'ProjectSeptember.com',
+  },
+  {
     name: 'Raindrop.io',
     icon: 'http://a5.mzstatic.com/us/r30/Purple3/v4/f0/a4/57/f0a4574e-4a59-033f-05ff-5c421f0a0b00/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/raindrop.io-keep-your-favorites/id1021913807',

@@ -186,7 +186,7 @@
     "eslint": "^2.5.3",
     "eslint-plugin-flow-vars": "^0.2.1",
     "eslint-plugin-react": "^4.2.1",
-    "flow-bin": "0.22.0",
+    "flow-bin": "0.23.0",
     "jest-cli": "0.9.2",
     "portfinder": "0.4.0",
     "react": "^0.14.5",
