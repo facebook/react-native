@@ -13,6 +13,7 @@ machine:
 
 dependencies:
   pre:
+    # trigger OSX build
     - bash ./scripts/trigger-osx-build.sh
   override:
     # BUCK and android
