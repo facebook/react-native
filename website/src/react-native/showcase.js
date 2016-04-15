@@ -59,13 +59,6 @@ var featured = [
     author: 'Exponent',
   },
   {
-    name: 'Gank干货分享',
-    icon: 'https://github.com/zhongjie-chen/rn_rank/blob/master/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png',
-    linkJifengStore:  'http://apk.gfan.com/Product/App1099977.html',
-    github: 'https://github.com/zhongjie-chen/rn_rank',
-    author: 'zhongjie-chen',
-  },
-  {
     name: 'Lrn',
     icon: 'http://is4.mzstatic.com/image/pf/us/r30/Purple1/v4/41/a9/e9/41a9e9b6-7801-aef7-2400-2eca14923321/mzl.adyswxad.png',
     link: 'https://itunes.apple.com/us/app/lrn-learn-to-code-at-your/id1019622677',
@@ -382,10 +375,10 @@ var apps = [
     author: 'beijing qingfengyun Technology Co., Ltd.',
   },
   {
-    name: 'Gank干货分享',
+    name: 'Gank',
     icon: 'https://github.com/zhongjie-chen/rn_rank/blob/master/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png',
-    linkJifengStore:  'http://apk.gfan.com/Product/App1099977.html',
-    github: 'https://github.com/zhongjie-chen/rn_rank',
+    linkStore:  'http://apk.gfan.com/Product/App1099977.html',
+    source: 'https://github.com/zhongjie-chen/rn_rank',
     author: 'zhongjie-chen',
   },
   {
