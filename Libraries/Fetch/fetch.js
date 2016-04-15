@@ -283,6 +283,7 @@ var self = {};
     this.method = normalizeMethod(options.method || this.method || 'GET')
     this.mode = options.mode || this.mode || null
     this.referrer = null
+    this.timeout = options.timeout || null
 
     if ((this.method === 'GET' || this.method === 'HEAD') && body) {
       throw new TypeError('Body not allowed for GET or HEAD requests')
@@ -375,6 +376,12 @@ var self = {};
       }
 
       var xhr = new XMLHttpRequest()
+
+      if (request.timeout) {
+        // Only set XMLHttpRequest timeout if set in options to
+        // avoid overriding the XMLHttpRequest default timeout
+        xhr.timeout = request.timeout
+      }
 
       function responseURL() {
         if ('responseURL' in xhr) {

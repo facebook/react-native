@@ -35,6 +35,19 @@ fetch('https://mywebsite.com/endpoint/', {
 })
 ```
 
+A non-standardized timeout option is available in the React Native implementation of the fetch API:
+
+```js
+fetch('https://mywebsite.com/endpoint/', {
+  timeout: 30000
+})
+```
+
+Notes:
+ - The timeout is specified in milliseconds.
+ - The default if unspecified is **no timeout**.
+ - The returned Promise is rejected if the request timeout.
+
 #### Async
 
 `fetch` returns a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that can be processed in two ways:
