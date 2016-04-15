@@ -129,11 +129,13 @@ class Inspector extends React.Component {
     // if we inspect a stateless component we can't use the getPublicInstance method
     // therefore we use the internal _instance property directly.
     var publicInstance = instance['_instance'] || {};
+    var source = instance._currentElement && instance._currentElement._source;
     UIManager.measure(instance.getNativeNode(), (x, y, width, height, left, top) => {
       this.setState({
         inspected: {
           frame: {left, top, width, height},
           style: publicInstance.props ? publicInstance.props.style : {},
+          source,
         },
         selection: i,
       });
@@ -149,6 +151,7 @@ class Inspector extends React.Component {
     // therefore we use the internal _instance property directly.
     var publicInstance = instance._instance || {};
     var props = publicInstance.props || {};
+    var source = instance._currentElement && instance._currentElement._source;
     this.setState({
       panelPos: pointerY > Dimensions.get('window').height / 2 ? 'top' : 'bottom',
       selection: hierarchy.length - 1,
@@ -156,6 +159,7 @@ class Inspector extends React.Component {
       inspected: {
         style: props.style || {},
         frame,
+        source,
       },
     });
   }
