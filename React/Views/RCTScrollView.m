@@ -416,6 +416,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     _lastScrollDispatchTime = CACurrentMediaTime();
     _cachedChildFrames = [NSMutableArray new];
 
+    self.translationAlongAxis = 0;
+
     [self addSubview:_scrollView];
   }
   return self;
@@ -687,6 +689,12 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
     // Which direction is the scroll travelling?
     CGPoint translation = [scrollView.panGestureRecognizer translationInView:scrollView];
     CGFloat translationAlongAxis = isHorizontal ? translation.x : translation.y;
+
+    if (translationAlongAxis == 0) {
+      translationAlongAxis = self.translationAlongAxis;
+    } else {
+      self.translationAlongAxis = translationAlongAxis;
+    }
 
     // Offset based on desired alignment
     CGFloat frameLength = isHorizontal ? self.frame.size.width : self.frame.size.height;
