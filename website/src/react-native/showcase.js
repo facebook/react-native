@@ -797,7 +797,7 @@ var apps = [
   {
     name: 'ShareWis',
     icon: 'https://s3-ap-northeast-1.amazonaws.com/sw-misc/sharewis3_app.png',
-    linkAppStore: 'https://itunes.apple.com/jp/app/id585517208',
+    link: 'https://itunes.apple.com/jp/app/id585517208',
     author: 'ShareWis Inc.'
   }
 ];
