@@ -106,10 +106,6 @@ var DatePickerIOS = React.createClass({
     };
   },
 
-  _isDate: function(date: Object): boolean {
-    return (typeof date !== 'number');
-  },
-
   _onChange: function(event: Event) {
     var nativeTimeStamp = event.nativeEvent.timestamp;
     this.props.onDateChange && this.props.onDateChange(
@@ -122,7 +118,7 @@ var DatePickerIOS = React.createClass({
     // certain values. In other words, the embedder of this component should
     // be the source of truth, not the native component.
     const { date } = this.props;
-    var propsTimeStamp = ( date && this._isDate(date) ? date.getTime() : date );
+    var propsTimeStamp = ( date && typeof date !== 'number' ? date.getTime() : date );
     if (this._picker && nativeTimeStamp !== propsTimeStamp) {
       this._picker.setNativeProps({
         date: propsTimeStamp,
@@ -133,13 +129,13 @@ var DatePickerIOS = React.createClass({
   render: function() {
     var props = this.props;
 
-    if (props.date && this._isDate(props.date)) {
+    if (props.date && typeof props.date !== 'number') {
       props.date = props.date.getTime();
     }
-    if (props.minimumDate && this._isDate(props.minimumDate)) {
+    if (props.minimumDate && typeof props.minimumDate !== 'number') {
       props.minimumDate = props.minimumDate.getTime();
     }
-    if (props.maximumDate && this._isDate(props.maximumDate)) {
+    if (props.maximumDate && typeof props.maximumDate !== 'number') {
       props.maximumDate = props.maximumDate.getTime();
     }
 
