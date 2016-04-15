@@ -14,11 +14,11 @@ machine:
 dependencies:
   pre:
     # trigger OSX build
-    - "curl \
+    - curl \
       --header \"Content-Type: application/json\" \
-      --data '{\"build_parameters\": {\"LINUX_SHA1\": $CIRCLE_SHA1, \"PULL_ID\": $CIRCLE_PR_NUMBER}}' \
+      --data '{\"build_parameters\": {\"LINUX_SHA1\": \"$CIRCLE_SHA1\", \"PULL_ID\": \"$CIRCLE_PR_NUMBER\"}}' \
       --request POST \
-      https://circleci.com/api/v1/project/bestander/circle-ci-osx-test/tree/master?circle-token=655859fe09841c0b9b7029823d9c583d09816644"
+      https://circleci.com/api/v1/project/bestander/circle-ci-osx-test/tree/master?circle-token=655859fe09841c0b9b7029823d9c583d09816644
   override:
     # BUCK and android
     - if [[ ! -e /home/ubuntu/buck ]]; then git clone https://github.com/facebook/buck.git /home/ubuntu/buck; fi
