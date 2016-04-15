@@ -695,7 +695,7 @@ exports.examples = [
           <AutoExpandingTextInput
             placeholder="height increases with content"
             enablesReturnKeyAutomatically={true}
-            returnKeyType="done"
+            returnKeyType="default"
           />
         </View>
       );
