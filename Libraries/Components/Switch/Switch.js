@@ -86,16 +86,21 @@ var Switch = React.createClass({
 
   _rctSwitch: {},
   _onChange: function(event: Object) {
-    this.props.onChange && this.props.onChange(event);
-    this.props.onValueChange && this.props.onValueChange(event.nativeEvent.value);
-
-    // The underlying switch might have changed, but we're controlled,
+     // The underlying switch might have changed, but we're controlled,
     // and so want to ensure it represents our value.
+    // We want to change this before we propagate the value to the props
+    // because we might be called in a situation where the switch is removed
+    // say, we replace it with a loading spinner
     if (Platform.OS === 'android') {
       this._rctSwitch.setNativeProps({on: this.props.value});
     } else {
       this._rctSwitch.setNativeProps({value: this.props.value});
     }
+    
+    this.props.onChange && this.props.onChange(event);
+    this.props.onValueChange && this.props.onValueChange(event.nativeEvent.value);
+
+   
   },
 
   render: function() {
