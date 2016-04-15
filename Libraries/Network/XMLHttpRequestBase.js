@@ -61,6 +61,8 @@ class XMLHttpRequestBase {
   status: number;
   timeout: number;
   responseURL: ?string;
+  ontimeout: ?Function;
+  onerror: ?Function;
 
   upload: ?{
     onprogress?: (event: Object) => void;
@@ -79,6 +81,7 @@ class XMLHttpRequestBase {
   _responseType: ResponseType;
   _sent: boolean;
   _url: ?string;
+  _timedOut: boolean;
 
   constructor() {
     this.UNSENT = UNSENT;
@@ -91,11 +94,15 @@ class XMLHttpRequestBase {
     this.onload = null;
     this.upload = undefined; /* Upload not supported yet */
     this.timeout = 0;
+    this.ontimeout = null;
+    this.onerror = null;
 
     this._reset();
     this._method = null;
     this._url = null;
     this._aborted = false;
+    this._timedOut = false;
+    this._hasError = false;
   }
 
   _reset(): void {
@@ -115,6 +122,7 @@ class XMLHttpRequestBase {
     this._lowerCaseResponseHeaders = {};
 
     this._clearSubscriptions();
+    this._timedOut = false;
   }
 
   // $FlowIssue #10784535
@@ -249,11 +257,14 @@ class XMLHttpRequestBase {
     }
   }
 
-  _didCompleteResponse(requestId: number, error: string): void {
+  _didCompleteResponse(requestId: number, error: string, timeOutError: boolean): void {
     if (requestId === this._requestId) {
       if (error) {
         this.responseText = error;
         this._hasError = true;
+        if (timeOutError) {
+          this._timedOut = true;
+        }
       }
       this._clearSubscriptions();
       this._requestId = null;
@@ -362,17 +373,25 @@ class XMLHttpRequestBase {
       onreadystatechange.call(this, null);
     }
     if (newState === this.DONE && !this._aborted) {
-      this._sendLoad();
+      if (this._hasError) {
+        if (this._timedOut) {
+          this._sendEvent(this.ontimeout);
+        } else {
+          this._sendEvent(this.onerror);
+        }
+      }
+      else {
+        this._sendEvent(this.onload);
+      }
     }
   }
 
-  _sendLoad(): void {
+  _sendEvent(newEvent: ?Function): void {
     // TODO: workaround flow bug with nullable function checks
-    var onload = this.onload;
-    if (onload) {
+    if (newEvent) {
       // We should send an event to handler, but since we don't process that
       // event anywhere, let's leave it empty
-      onload(null);
+      newEvent(null);
     }
   }
 }
