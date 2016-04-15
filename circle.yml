@@ -14,7 +14,7 @@ machine:
 dependencies:
   pre:
     # trigger OSX build
-    - bash ./scripts/trigger-os-x-build.sh
+    - bash ./scripts/trigger-osx-build.sh
   override:
     # BUCK and android
     - if [[ ! -e /home/ubuntu/buck ]]; then git clone https://github.com/facebook/buck.git /home/ubuntu/buck; fi
