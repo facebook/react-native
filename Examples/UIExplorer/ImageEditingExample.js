@@ -16,7 +16,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   CameraRoll,
   Image,
@@ -29,7 +30,7 @@ var {
   TouchableHighlight,
   UIManager,
   View,
-} = React;
+} = ReactNative;
 
 var PAGE_SIZE = 20;
 
@@ -230,7 +231,7 @@ class ImageCropper extends React.Component {
     );
     this._minimumZoomScale = Math.max(
       this.props.size.width / this._scaledImageSize.width,
-      this.props.size.height / this._scaledImageSize.height 
+      this.props.size.height / this._scaledImageSize.height
     );
     this._updateTransformData(
       this._contentOffset,

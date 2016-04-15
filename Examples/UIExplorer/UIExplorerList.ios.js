@@ -50,8 +50,8 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ListViewPagingExample'),
   },
   {
-    key: 'MapViewExample',
-    module: require('./MapViewExample'),
+     key: 'MapViewExample',
+     module: require('./MapViewExample'),
   },
   {
     key: 'ModalExample',
@@ -90,8 +90,8 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./SegmentedControlIOSExample'),
   },
   {
-    key: 'SliderIOSExample',
-    module: require('./SliderIOSExample'),
+    key: 'SliderExample',
+    module: require('./SliderExample'),
   },
   {
     key: 'StatusBarExample',

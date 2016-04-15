@@ -34,6 +34,8 @@ import com.squareup.okhttp.ws.WebSocket;
 import com.squareup.okhttp.ws.WebSocketCall;
 import com.squareup.okhttp.ws.WebSocketListener;
 
+import java.net.URISyntaxException;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -63,8 +65,7 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void connect(final String url, @Nullable final ReadableArray protocols, @Nullable final ReadableMap options, final int id) {
-    // ignoring protocols, since OKHttp overrides them.
+  public void connect(final String url, @Nullable final ReadableArray protocols, @Nullable final ReadableMap headers, final int id) {
     OkHttpClient client = new OkHttpClient();
 
     client.setConnectTimeout(10, TimeUnit.SECONDS);
@@ -76,13 +77,39 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
         .tag(id)
         .url(url);
 
-    if (options != null && options.hasKey("origin")) {
-      if (ReadableType.String.equals(options.getType("origin"))) {
-        builder.addHeader("Origin", options.getString("origin"));
-      } else {
-        FLog.w(
-          ReactConstants.TAG,
-          "Ignoring: requested origin, value not a string");
+    if (headers != null) {
+      ReadableMapKeySetIterator iterator = headers.keySetIterator();
+
+      if (!headers.hasKey("origin")) {
+        builder.addHeader("origin", setDefaultOrigin(url));
+      }
+
+      while (iterator.hasNextKey()) {
+        String key = iterator.nextKey();
+        if (ReadableType.String.equals(headers.getType(key))) {
+          builder.addHeader(key, headers.getString(key));
+        } else {
+          FLog.w(
+            ReactConstants.TAG,
+            "Ignoring: requested " + key + ", value not a string");
+        }
+      }
+    } else {
+      builder.addHeader("origin", setDefaultOrigin(url));
+    }
+
+    if (protocols != null && protocols.size() > 0) {
+      StringBuilder protocolsValue = new StringBuilder("");
+      for (int i = 0; i < protocols.size(); i++) {
+        String v = protocols.getString(i).trim();
+        if (!v.isEmpty() && !v.contains(",")) {
+          protocolsValue.append(v);
+          protocolsValue.append(",");
+        }
+      }
+      if (protocolsValue.length() > 0) {
+        protocolsValue.replace(protocolsValue.length() - 1, protocolsValue.length(), "");
+        builder.addHeader("Sec-WebSocket-Protocol", protocolsValue.toString());
       }
     }
 
@@ -188,4 +215,37 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     params.putString("message", message);
     sendEvent("websocketFailed", params);
   }
+
+  /**
+   * Set a default origin
+   *
+   * @param Websocket connection endpoint
+   * @return A string of the endpoint converted to HTTP protocol
+   */
+
+  private static String setDefaultOrigin(String uri) {
+    try {
+      String defaultOrigin;
+      String scheme = "";
+
+      URI requestURI = new URI(uri);
+      if (requestURI.getScheme().equals("wss")) {
+        scheme += "https";
+      } else if (requestURI.getScheme().equals("ws")) {
+        scheme += "http";
+      }
+
+      if (requestURI.getPort() != -1) {
+        defaultOrigin = String.format("%s://%s:%s", scheme, requestURI.getHost(), requestURI.getPort());
+      } else {
+        defaultOrigin = String.format("%s://%s/", scheme, requestURI.getHost());
+      }
+
+      return defaultOrigin;
+
+    } catch(URISyntaxException e) {
+        throw new IllegalArgumentException("Unable to set " + uri + " as default origin header.");
+    }
+  }
+
 }

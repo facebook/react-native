@@ -119,7 +119,7 @@ afterEvaluate { project ->
         repositories.mavenDeployer {
             // Deploy to react-native/android, ready to publish to npm
             repository url: "file://${projectDir}/../android"
-            
+
             configureReactNativePom pom
         }
     }

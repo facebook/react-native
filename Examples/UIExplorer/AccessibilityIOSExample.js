@@ -15,11 +15,12 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Text,
   View,
-} = React;
+} = ReactNative;
 
 var AccessibilityIOSExample = React.createClass({
   render() {

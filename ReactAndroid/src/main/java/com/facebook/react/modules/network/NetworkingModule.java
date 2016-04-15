@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.facebook.react.bridge.Arguments;
@@ -28,7 +29,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.stetho.okhttp.StethoInterceptor;
 
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Headers;
@@ -54,10 +54,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private static final String REQUEST_BODY_KEY_FORMDATA = "formData";
   private static final String USER_AGENT_HEADER_NAME = "user-agent";
 
-  private static final int MIN_BUFFER_SIZE = 8 * 1024; // 8kb
-  private static final int MAX_BUFFER_SIZE = 512 * 1024; // 512kb
-
-  private static final int CHUNK_TIMEOUT_NS = 100 * 1000000; // 100ms
+  private static final int MAX_CHUNK_SIZE_BETWEEN_FLUSHES = 8 * 1024; // 8K
 
   private final OkHttpClient mClient;
   private final ForwardingCookieHandler mCookieHandler;
@@ -67,10 +64,15 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   /* package */ NetworkingModule(
       ReactApplicationContext reactContext,
       @Nullable String defaultUserAgent,
-      OkHttpClient client) {
+      OkHttpClient client,
+      @Nullable List<NetworkInterceptorCreator> networkInterceptorCreators) {
     super(reactContext);
     mClient = client;
-    mClient.networkInterceptors().add(new StethoInterceptor());
+    if (networkInterceptorCreators != null) {
+      for (NetworkInterceptorCreator networkInterceptorCreator : networkInterceptorCreators) {
+        mClient.networkInterceptors().add(networkInterceptorCreator.create());
+      }
+    }
     mCookieHandler = new ForwardingCookieHandler(reactContext);
     mShuttingDown = false;
     mDefaultUserAgent = defaultUserAgent;
@@ -78,9 +80,33 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
   /**
    * @param context the ReactContext of the application
+   * @param defaultUserAgent the User-Agent header that will be set for all requests where the
+   * caller does not provide one explicitly
+   * @param client the {@link OkHttpClient} to be used for networking
+   */
+  public NetworkingModule(
+    ReactApplicationContext context,
+    @Nullable String defaultUserAgent,
+    OkHttpClient client) {
+    this(context, defaultUserAgent, client, null);
+  }
+
+  /**
+   * @param context the ReactContext of the application
    */
   public NetworkingModule(final ReactApplicationContext context) {
-    this(context, null, OkHttpClientProvider.getOkHttpClient());
+    this(context, null, OkHttpClientProvider.getOkHttpClient(), null);
+  }
+
+  /**
+   * @param context the ReactContext of the application
+   * @param networkInterceptorCreators list of {@link NetworkInterceptorCreator}'s whose create()
+   * methods would be called to attach the interceptors to the client.
+   */
+  public NetworkingModule(
+    ReactApplicationContext context,
+    List<NetworkInterceptorCreator> networkInterceptorCreators) {
+    this(context, null, OkHttpClientProvider.getOkHttpClient(), networkInterceptorCreators);
   }
 
   /**
@@ -89,11 +115,11 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * caller does not provide one explicitly
    */
   public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
-    this(context, defaultUserAgent, OkHttpClientProvider.getOkHttpClient());
+    this(context, defaultUserAgent, OkHttpClientProvider.getOkHttpClient(), null);
   }
 
   public NetworkingModule(ReactApplicationContext reactContext, OkHttpClient client) {
-    this(reactContext, null, client);
+    this(reactContext, null, client, null);
   }
 
   @Override
@@ -250,38 +276,13 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       ResponseBody responseBody) throws IOException {
     Reader reader = responseBody.charStream();
     try {
-      StringBuilder sb = new StringBuilder(getBufferSize(responseBody));
-      char[] buffer = new char[MIN_BUFFER_SIZE];
+      char[] buffer = new char[MAX_CHUNK_SIZE_BETWEEN_FLUSHES];
       int read;
-      long last = System.nanoTime();
       while ((read = reader.read(buffer)) != -1) {
-        sb.append(buffer, 0, read);
-        long now = System.nanoTime();
-        if (shouldDispatch(now, last)) {
-          onDataReceived(executorToken, requestId, sb.toString());
-          sb.setLength(0);
-          last = now;
-        }
-      }
-
-      if (sb.length() > 0) {
-        onDataReceived(executorToken, requestId, sb.toString());
+        onDataReceived(executorToken, requestId, new String(buffer, 0, read));
       }
     } finally {
       reader.close();
-    }
-  }
-
-  private static boolean shouldDispatch(long now, long last) {
-    return last + CHUNK_TIMEOUT_NS < now;
-  }
-
-  private static int getBufferSize(ResponseBody responseBody) throws IOException {
-    long length = responseBody.contentLength();
-    if (length == -1) {
-      return MIN_BUFFER_SIZE;
-    } else {
-      return (int) min(length, MAX_BUFFER_SIZE);
     }
   }
 

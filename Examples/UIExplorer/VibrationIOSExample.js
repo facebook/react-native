@@ -15,14 +15,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   StyleSheet,
   View,
   Text,
   TouchableHighlight,
   VibrationIOS
-} = React;
+} = ReactNative;
 
 exports.framework = 'React';
 exports.title = 'VibrationIOS';

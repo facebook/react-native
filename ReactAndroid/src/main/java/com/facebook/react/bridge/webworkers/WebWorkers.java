@@ -51,7 +51,6 @@ public class WebWorkers {
    * NB: We write to a temp file instead of returning a String because, depending on the size of the
    * worker script, allocating the full script string on the Java heap can cause an OOM.
    */
-  @DoNotStrip
   public static void downloadScriptToFileSync(String url, String outFileName) {
     if (!ReactBuildConfig.DEBUG) {
       throw new RuntimeException(

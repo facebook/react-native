@@ -40,18 +40,36 @@ const HMRClient = {
 
     const activeWS = new WebSocket(wsUrl);
     activeWS.onerror = (e) => {
-      throw new Error(
+      let error = (
 `Hot loading isn't working because it cannot connect to the development server.
 
-Ensure the following:
-- Node server is running and available on the same network
-- run 'npm start' from react-native root
-- Node server URL is correctly set in AppDelegate
+Try the following to fix the issue:
+- Ensure that the packager server is running and available on the same network`
+      );
+
+      if (Platform.OS === 'ios') {
+        error += (
+`
+- Ensure that the Packager server URL is correctly set in AppDelegate`
+        );
+      } else {
+        error += (
+`
+- Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run 'adb devices' to see a list of connected devices
+- If you're on a physical device connected to the same machine, run 'adb reverse tcp:8081 tcp:8081' to forward requests from your device
+- If your device is on the same Wi-Fi network, set 'Debug server host & port for device' in 'Dev settings' to your machine's IP address and the port of the local dev server - e.g. 10.0.1.1:8081`
+        );
+      }
+
+      error += (
+`
 
 URL: ${host}:${port}
 
 Error: ${e.message}`
       );
+
+      throw new Error(error);
     };
     activeWS.onmessage = ({data}) => {
       // Moving to top gives errors due to NativeModules not being initialized
@@ -80,12 +98,20 @@ Error: ${e.message}`
             RCTExceptionsManager && RCTExceptionsManager.dismissRedbox && RCTExceptionsManager.dismissRedbox();
           }
 
-          modules.forEach(({name, code}, i) => {
+          let serverHost;
+
+          if (Platform.OS === 'android') {
+            serverHost = require('NativeModules').AndroidConstants.ServerHost;
+          } else {
+            serverHost = port ? `${host}:${port}` : host;
+          }
+
+          modules.forEach(({id, code}, i) => {
             code = code + '\n\n' + sourceMappingURLs[i];
 
             require('SourceMapsCache').fetch({
               text: code,
-              url: sourceURLs[i],
+              url: `http://${serverHost}${sourceURLs[i]}`,
               sourceMappingURL: sourceMappingURLs[i],
             });
 
@@ -96,15 +122,15 @@ Error: ${e.message}`
               ? global.nativeInjectHMRUpdate
               : eval;
 
-            // TODO: (martinb) yellow box if cannot accept module
-            code = `
-              __accept(
-                ${name},
-                function(global, require, module, exports) {
-                  ${code}
-                },
-                ${JSON.stringify(inverseDependencies)}
-              );`;
+            code = [
+              `__accept(`,
+                `${id},`,
+                `function(global,require,module,exports){`,
+                  `${code}`,
+                '\n},',
+                `${JSON.stringify(inverseDependencies)}`,
+              `);`,
+            ].join('');
 
             injectFunction(code, sourceURLs[i]);
           });

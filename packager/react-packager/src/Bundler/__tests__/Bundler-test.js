@@ -8,15 +8,24 @@
  */
 'use strict';
 
+jest.autoMockOff();
+
 jest
   .setMock('worker-farm', () => () => undefined)
-  .dontMock('node-haste/node_modules/throat')
-  .dontMock('lodash')
-  .dontMock('../../lib/ModuleTransport')
   .setMock('uglify-js')
-  .dontMock('../');
-
-jest.mock('fs');
+  .mock('image-size')
+  .mock('fs')
+  .mock('assert')
+  .mock('progress')
+  .mock('node-haste')
+  .mock('../../JSTransformer')
+  .mock('../../lib/declareOpts')
+  .mock('../../Resolver')
+  .mock('../Bundle')
+  .mock('../PrepackBundle')
+  .mock('../HMRBundle')
+  .mock('../../Activity')
+  .mock('../../lib/declareOpts');
 
 var Bundler = require('../');
 var Resolver = require('../../Resolver');
@@ -32,16 +41,18 @@ describe('Bundler', function() {
     isAsset,
     isAsset_DEPRECATED,
     isJSON,
+    isPolyfill,
     resolution,
   }) {
     return {
       path,
       resolution,
-      getDependencies() { return Promise.resolve(dependencies); },
-      getName() { return Promise.resolve(id); },
-      isJSON() { return isJSON; },
-      isAsset() { return isAsset; },
-      isAsset_DEPRECATED() { return isAsset_DEPRECATED; },
+      getDependencies: () => Promise.resolve(dependencies),
+      getName: () => Promise.resolve(id),
+      isJSON: () => isJSON,
+      isAsset: () => isAsset,
+      isAsset_DEPRECATED: () => isAsset_DEPRECATED,
+      isPolyfill: () => isPolyfill,
       read: () => ({
         code: 'arbitrary',
         source: 'arbitrary',

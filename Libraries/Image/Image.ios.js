@@ -15,23 +15,22 @@ var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var ImageResizeMode = require('ImageResizeMode');
 var ImageStylePropTypes = require('ImageStylePropTypes');
 var NativeMethodsMixin = require('NativeMethodsMixin');
+var NativeModules = require('NativeModules');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var View = require('View');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 
 var flattenStyle = require('flattenStyle');
-var invariant = require('fbjs/lib/invariant');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
-var warning = require('fbjs/lib/warning');
 
 var {
+  ImageLoader,
   ImageViewManager,
   NetworkImageViewManager,
-} = require('NativeModules');
+} = NativeModules;
 
 /**
  * A React component for displaying different types of images,
@@ -94,6 +93,11 @@ var Image = React.createClass({
      * @platform ios
      */
     accessibilityLabel: PropTypes.string,
+    /**
+    * blurRadius: the blur radius of the blur filter added to the image
+    * @platform ios
+    */
+    blurRadius: PropTypes.number,
     /**
      * When the image is resized, the corners of the size specified
      * by capInsets will stay a fixed size, but the center content and borders
@@ -176,7 +180,14 @@ var Image = React.createClass({
       ImageViewManager.getSize(uri, success, failure || function() {
         console.warn('Failed to get size for image: ' + uri);
       });
-    }
+    },
+    /**
+     * Prefetches a remote image for later use by downloading it to the disk
+     * cache
+     */
+    prefetch(url: string) {
+      return ImageLoader.prefetchImage(url);
+    },
   },
 
   mixins: [NativeMethodsMixin],
@@ -206,7 +217,7 @@ var Image = React.createClass({
 
     // This is a workaround for #8243665. RCTNetworkImageView does not support tintColor
     // TODO: Remove this hack once we have one image implementation #8389274
-    if (isNetwork && tintColor) {
+    if (isNetwork && (tintColor || this.props.blurRadius)) {
       RawImage = RCTImageView;
     }
 

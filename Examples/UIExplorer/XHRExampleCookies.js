@@ -15,13 +15,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 
 var RCTNetworking = require('RCTNetworking');
 

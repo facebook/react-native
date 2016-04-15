@@ -15,7 +15,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Image,
   ListView,
@@ -24,7 +25,7 @@ var {
   RecyclerViewBackedScrollView,
   Text,
   View,
-} = React;
+} = ReactNative;
 
 var UIExplorerPage = require('./UIExplorerPage');
 

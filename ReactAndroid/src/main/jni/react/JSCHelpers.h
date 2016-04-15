@@ -6,6 +6,7 @@
 #include <JavaScriptCore/JSObjectRef.h>
 #include <JavaScriptCore/JSValueRef.h>
 
+#include <alloca.h>
 #include <stdexcept>
 #include <algorithm>
 
@@ -41,7 +42,6 @@ JSValueRef makeJSCException(
 JSValueRef evaluateScript(
     JSContextRef ctx,
     JSStringRef script,
-    JSStringRef sourceURL,
-    const char* cachePath = nullptr);
+    JSStringRef sourceURL);
 
 } }

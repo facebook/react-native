@@ -75,12 +75,6 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 - (void)setIntrinsicContentSize:(CGSize)size;
 
 /**
- * Size flexibility type used to find size constraints.
- * Default to RCTRootViewSizeFlexibilityNone
- */
-@property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
-
-/**
  * Border. Defaults to { 0, 0, 0, 0 }.
  */
 @property (nonatomic, assign) CGFloat borderWidth;
@@ -138,12 +132,6 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  */
 - (NSDictionary<NSString *, id> *)processUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
                                           parentProperties:(NSDictionary<NSString *, id> *)parentProperties NS_REQUIRES_SUPER;
-
-/**
- * Calculate all views whose frame needs updating after layout has been calculated.
- * Returns a set contains the shadowviews that need updating.
- */
-- (NSSet<RCTShadowView *> *)collectRootUpdatedFrames;
 
 /**
  * Recursively apply layout to children.
