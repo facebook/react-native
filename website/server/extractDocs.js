@@ -251,7 +251,6 @@ function renderStyle(filepath) {
 
 const components = [
   '../Libraries/Components/ActivityIndicator/ActivityIndicator.js',
-  '../Libraries/Components/ActivityIndicatorIOS/ActivityIndicatorIOS.ios.js',
   '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
   '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
   '../Libraries/Image/Image.ios.js',
