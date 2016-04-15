@@ -106,7 +106,7 @@ var DatePickerIOS = React.createClass({
     };
   },
 
-  _isDate: function(date: Object) {
+  _isDate: function(date: Object): boolean {
     return (typeof date !== 'number');
   },
 
