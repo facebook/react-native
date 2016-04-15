@@ -805,6 +805,13 @@ var apps = [
     icon: 'https://s3-ap-northeast-1.amazonaws.com/sw-misc/sharewis3_app.png',
     link: 'https://itunes.apple.com/jp/app/id585517208',
     author: 'ShareWis Inc.'
+  },
+  {
+    name: 'Blueprint',
+    icon: 'http://blueprintalpha.com/static/blueprint_appicon.svg',
+    linkAppStore: 'https://itunes.apple.com/us/app/blueprint-alpha/id1058584745?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.blueprintnative',
+    author: 'Tom Hayden'
   }
 ];
 
