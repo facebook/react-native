@@ -106,6 +106,10 @@ var DatePickerIOS = React.createClass({
     };
   },
 
+  _isDate: function(date) {
+    return (date && date instanceof Date);
+  },
+
   _onChange: function(event: Event) {
     var nativeTimeStamp = event.nativeEvent.timestamp;
     this.props.onDateChange && this.props.onDateChange(
@@ -118,7 +122,7 @@ var DatePickerIOS = React.createClass({
     // certain values. In other words, the embedder of this component should
     // be the source of truth, not the native component.
     const { date } = this.props;
-    var propsTimeStamp = ( typeof date === 'number' ? date : date.getTime() );
+    var propsTimeStamp = ( this._isDate(date) ? date.getTime() : date );
     if (this._picker && nativeTimeStamp !== propsTimeStamp) {
       this._picker.setNativeProps({
         date: propsTimeStamp,
@@ -128,14 +132,15 @@ var DatePickerIOS = React.createClass({
 
   render: function() {
     var props = this.props;
-    let minimumDate = props.minimumDate;
-    let maximumDate = props.maximumDate;
 
-    if (typeof minimumDate === 'object') {
-      minimumDate = minimumDate.getTime();
+    if (this._isDate(props.date)) {
+      props.date = props.date.getTime();
     }
-    if (typeof maximumDate === 'object') {
-      maximumDate = maximumDate.getTime();
+    if (this._isDate(props.minimumDate)) {
+      props.minimumDate = props.minimumDate.getTime();
+    }
+    if (this._isDate(props.maximumDate)) {
+      props.maximumDate = props.maximumDate.getTime();
     }
 
     return (
@@ -143,9 +148,9 @@ var DatePickerIOS = React.createClass({
         <RCTDatePickerIOS
           ref={ picker => this._picker = picker }
           style={styles.datePickerIOS}
-          date={props.date.getTime()}
-          maximumDate={maximumDate}
-          minimumDate={minimumDate}
+          date={props.date}
+          maximumDate={props.maximumDate}
+          minimumDate={props.minimumDate}
           mode={props.mode}
           minuteInterval={props.minuteInterval}
           timeZoneOffsetInMinutes={props.timeZoneOffsetInMinutes}
