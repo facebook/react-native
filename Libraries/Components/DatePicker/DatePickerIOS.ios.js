@@ -155,6 +155,9 @@ var DatePickerIOS = React.createClass({
           minuteInterval={props.minuteInterval}
           timeZoneOffsetInMinutes={props.timeZoneOffsetInMinutes}
           onChange={this._onChange}
+          onDateChange={() => {
+            //Do nothing, just remove warn of unset function
+          }}
         />
       </View>
     );
