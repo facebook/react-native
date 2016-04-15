@@ -231,7 +231,7 @@ describe('Interpolation', () => {
     });
 
     expect(interpolation(0)).toBe('rgba(0, 34, 68, 1)');
-    expect(interpolation(0.5)).toBe('rgba(76.5, 110.5, 161.5, 1)');
+    expect(interpolation(0.5)).toBe('rgba(77, 111, 162, 1)');
     expect(interpolation(1)).toBe('rgba(153, 187, 255, 1)');
   });
 
@@ -242,7 +242,7 @@ describe('Interpolation', () => {
     });
 
     expect(interpolation(0)).toBe('rgba(255, 149, 0, 1)');
-    expect(interpolation(0.5)).toBe('rgba(195, 200.5, 56, 1)');
+    expect(interpolation(0.5)).toBe('rgba(195, 201, 56, 1)');
     expect(interpolation(1)).toBe('rgba(135, 252, 112, 1)');
   });
 
@@ -253,7 +253,7 @@ describe('Interpolation', () => {
     });
 
     expect(interpolation(0)).toBe('rgba(100, 120, 140, 0.4)');
-    expect(interpolation(0.5)).toBe('rgba(117.5, 186, 126, 0.7)');
+    expect(interpolation(0.5)).toBe('rgba(118, 186, 126, 0.7)');
     expect(interpolation(1)).toBe('rgba(135, 252, 112, 1)');
   });
 
@@ -284,7 +284,7 @@ describe('Interpolation', () => {
 
     expect(interpolation(0)).toBe('rgba(0, 100, 200, 0)');
     expect(interpolation(0.5)).toBe('rgba(25, 125, 225, 0.5)');
-    expect(interpolation(1.5)).toBe('rgba(152.5, 75, 125, 1)');
+    expect(interpolation(1.5)).toBe('rgba(153, 75, 125, 1)');
     expect(interpolation(2)).toBe('rgba(255, 0, 0, 1)');
   });
 
