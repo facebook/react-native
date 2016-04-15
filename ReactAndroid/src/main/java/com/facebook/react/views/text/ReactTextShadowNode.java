@@ -25,9 +25,12 @@ import android.text.TextPaint;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.StrikethroughSpan;
+import android.text.style.UnderlineSpan;
 import android.widget.TextView;
 
 import com.facebook.csslayout.CSSConstants;
+import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.infer.annotation.Assertions;
@@ -146,6 +149,12 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                     textCSSNode.mFontFamily,
                     textCSSNode.getThemedContext().getAssets())));
       }
+      if (textCSSNode.mIsUnderlineTextDecorationSet) {
+        ops.add(new SetSpanOperation(start, end, new UnderlineSpan()));
+      }
+      if (textCSSNode.mIsLineThroughTextDecorationSet) {
+        ops.add(new SetSpanOperation(start, end, new StrikethroughSpan()));
+      }
       if (textCSSNode.mTextShadowOffsetDx != 0 || textCSSNode.mTextShadowOffsetDy != 0) {
         ops.add(new SetSpanOperation(
                 start,
@@ -193,7 +202,13 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   private static final CSSNode.MeasureFunction TEXT_MEASURE_FUNCTION =
       new CSSNode.MeasureFunction() {
         @Override
-        public void measure(CSSNode node, float width, float height, MeasureOutput measureOutput) {
+        public void measure(
+            CSSNode node,
+            float width,
+            CSSMeasureMode widthMode,
+            float height,
+            CSSMeasureMode heightMode,
+            MeasureOutput measureOutput) {
           // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
           ReactTextShadowNode reactCSSNode = (ReactTextShadowNode) node;
           TextPaint textPaint = sTextPaintInstance;
@@ -206,8 +221,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
               Layout.getDesiredWidth(text, textPaint) : Float.NaN;
 
           // technically, width should never be negative, but there is currently a bug in
-          // LayoutEngine where a negative value can be passed.
-          boolean unconstrainedWidth = CSSConstants.isUndefined(width) || width < 0;
+          boolean unconstrainedWidth = widthMode == CSSMeasureMode.UNDEFINED || width < 0;
 
           if (boring == null &&
               (unconstrainedWidth ||
@@ -286,6 +300,9 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   private float mTextShadowOffsetDy = 0;
   private float mTextShadowRadius = 1;
   private int mTextShadowColor = DEFAULT_TEXT_SHADOW_COLOR;
+
+  private boolean mIsUnderlineTextDecorationSet = false;
+  private boolean mIsLineThroughTextDecorationSet = false;
 
   /**
    * mFontStyle can be {@link Typeface#NORMAL} or {@link Typeface#ITALIC}.
@@ -426,6 +443,22 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       mFontStyle = fontStyle;
       markUpdated();
     }
+  }
+
+  @ReactProp(name = ViewProps.TEXT_DECORATION_LINE)
+  public void setTextDecorationLine(@Nullable String textDecorationLineString) {
+    mIsUnderlineTextDecorationSet = false;
+    mIsLineThroughTextDecorationSet = false;
+    if (textDecorationLineString != null) {
+      for (String textDecorationLineSubString : textDecorationLineString.split(" ")) {
+        if ("underline".equals(textDecorationLineSubString)) {
+          mIsUnderlineTextDecorationSet = true;
+        } else if ("line-through".equals(textDecorationLineSubString)) {
+          mIsLineThroughTextDecorationSet = true;
+        }
+      }
+    }
+    markUpdated();
   }
 
   @ReactProp(name = PROP_SHADOW_OFFSET)
