@@ -89,7 +89,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setTitle:(NSString *)title
 {
-  self.attributedTitle = [[NSAttributedString alloc] initWithString:title];
+  NSRange range = NSMakeRange(0, self.attributedTitle.length);
+  NSDictionary *attrs = [self.attributedTitle attributesAtIndex:0 effectiveRange: &range];
+  self.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:attrs];
+}
+
+- (void)setTitleColor:(UIColor *)color
+{
+  NSRange range = NSMakeRange(0, self.attributedTitle.length);
+  NSDictionary *attrs = [self.attributedTitle attributesAtIndex:0 effectiveRange: &range];
+  NSMutableDictionary *attrsMutable = [attrs mutableCopy];
+  [attrsMutable setObject:color forKey:NSForegroundColorAttributeName];
+  self.attributedTitle = [[NSAttributedString alloc] initWithString:self.attributedTitle.string attributes:attrsMutable];
 }
 
 - (void)setRefreshing:(BOOL)refreshing
