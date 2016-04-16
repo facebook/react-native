@@ -236,6 +236,13 @@ var apps = [
     author: 'Bitt',
   },
   {
+    name: 'Blueprint',
+    icon: 'http://blueprintalpha.com/static/blueprint_appicon.svg',
+    linkAppStore: 'https://itunes.apple.com/us/app/blueprint-alpha/id1058584745?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.blueprintnative',
+    author: 'Tom Hayden'
+  },
+  {
     name: 'breathe Meditation Timer',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple49/v4/09/21/d2/0921d265-087a-98f0-58ce-bbf9d44b114d/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/de/app/breathe-meditation-timer/id1087354227?mt=8',
