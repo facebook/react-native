@@ -745,6 +745,13 @@ var apps = [
     author: 'Moritz Schwörer (@mosch)',
   },
   {
+    name: 'YAMU',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/a2/d0/08/a2d0089d-326e-4402-dba2-fd5385e3de65/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/yamu/id686819827?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=org.farook.yamu',
+    author: 'YAMU (Private) Limited (@yamulk)',
+  },
+  {
     name: 'Yoloci',
     icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/fa/e5/26/fae52635-b97c-bd53-2ade-89e2a4326745/icon175x175.jpeg',
     link: 'https://itunes.apple.com/de/app/yoloci/id991323225?mt=8',
