@@ -724,7 +724,7 @@ var TouchableMixin = {
 
 var Touchable = {
   Mixin: TouchableMixin,
-  TOUCH_TARGET_DEBUG: false, // Set this locally to help debug touch targets.
+  TOUCH_TARGET_DEBUG: false, // Highlights all touchable targets. Toggle with Inspector.
   /**
    * Renders a debugging overlay to visualize touch target with hitSlop (might not work on Android).
    */
