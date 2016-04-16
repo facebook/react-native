@@ -14,6 +14,7 @@
 var PixelRatio = require('PixelRatio');
 var StyleSheetRegistry = require('StyleSheetRegistry');
 var StyleSheetValidation = require('StyleSheetValidation');
+var Platform = require('Platform');
 
 var flatten = require('flattenStyle');
 
@@ -93,9 +94,19 @@ module.exports = {
    */
   create(obj: {[key: string]: any}): {[key: string]: number} {
     var result = {};
+
     for (var key in obj) {
-      StyleSheetValidation.validateStyle(key, obj);
-      result[key] = StyleSheetRegistry.registerStyle(obj[key]);
+
+      let {ios, android, ...style} = obj[key];
+      if (ios && Platform.OS === 'ios') {
+        style = {...style, ...ios};
+      }
+      if (android && Platform.OS === 'android') {
+        style = {...style, ...android};
+      }
+
+      StyleSheetValidation.validateStyle(key, style);
+      result[key] = StyleSheetRegistry.registerStyle(style);
     }
     return result;
   }
