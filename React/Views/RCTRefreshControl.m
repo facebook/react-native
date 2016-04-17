@@ -14,6 +14,7 @@
 @implementation RCTRefreshControl {
   BOOL _initialRefreshingState;
   BOOL _isInitialRender;
+  BOOL _currentRefreshingState;
 }
 
 - (instancetype)init
@@ -21,6 +22,7 @@
   if ((self = [super init])) {
     [self addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
     _isInitialRender = true;
+    _currentRefreshingState = false;
   }
   return self;
 }
@@ -105,7 +107,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setRefreshing:(BOOL)refreshing
 {
-  if (self.refreshing != refreshing) {
+  if (_currentRefreshingState != refreshing) {
+    _currentRefreshingState = refreshing;
+
     if (refreshing) {
       // If it is the initial render, beginRefreshing will get called
       // in layoutSubviews.
@@ -122,6 +126,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)refreshControlValueChanged
 {
+  _currentRefreshingState = super.refreshing;
+
   if (_onRefresh) {
     _onRefresh(nil);
   }
