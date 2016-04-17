@@ -20,6 +20,8 @@ var sharedBlacklist = [
   'downstream/core/invariant.js',
 
   /website\/node_modules\/.*/,
+  
+  /node_modules\/react-native-desktop\/.*/,
 
   // TODO(jkassens, #9876132): Remove this rule when it's no longer needed.
   'Libraries/Relay/relay/tools/relayUnstableBatchedUpdates.js',
