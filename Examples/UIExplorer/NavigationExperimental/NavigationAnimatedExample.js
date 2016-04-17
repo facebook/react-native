@@ -101,7 +101,7 @@ class NavigationAnimatedExample extends React.Component {
   _renderHeader(/*NavigationSceneRendererProps*/ props) {
     return (
       <NavigationHeader
-        {...props}
+        navigationProps={props}
         renderTitleComponent={this._renderTitleComponent}
       />
     );
