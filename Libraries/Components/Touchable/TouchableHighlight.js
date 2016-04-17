@@ -248,6 +248,7 @@ var TouchableHighlight = React.createClass({
             ref: CHILD_REF,
           }
         )}
+        {Touchable.renderDebugView({color: 'green', hitSlop: this.props.hitSlop})}
       </View>
     );
   }

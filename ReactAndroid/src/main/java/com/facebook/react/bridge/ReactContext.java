@@ -104,12 +104,21 @@ public class ReactContext extends ContextWrapper {
     return mCatalystInstance.getJSModule(executorToken, jsInterface);
   }
 
+  public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
+    if (mCatalystInstance == null) {
+      throw new RuntimeException(
+        "Trying to call native module before CatalystInstance has been set!");
+    }
+    return mCatalystInstance.hasNativeModule(nativeModuleInterface);
+  }
+
   /**
    * @return the instance of the specified module interface associated with this ReactContext.
    */
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     if (mCatalystInstance == null) {
-      throw new RuntimeException("Trying to invoke JS before CatalystInstance has been set!");
+      throw new RuntimeException(
+        "Trying to call native module before CatalystInstance has been set!");
     }
     return mCatalystInstance.getNativeModule(nativeModuleInterface);
   }
