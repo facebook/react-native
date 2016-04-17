@@ -181,7 +181,7 @@ var DrawerLayoutAndroid = React.createClass({
       <View
         style={[
           styles.drawerSubview,
-          {width: this.props.drawerWidth, backgroundColor: this.props.drawerBackgroundColor }
+          {width: this.props.drawerWidth, backgroundColor: this.props.drawerBackgroundColor}
         ]}
         collapsable={false}>
         {this.props.renderNavigationView()}
