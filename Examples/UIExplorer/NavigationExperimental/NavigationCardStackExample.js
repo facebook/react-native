@@ -59,7 +59,7 @@ function createReducer(initialState) {
 
 const ExampleReducer = createReducer({
   index: 0,
-  key: 'exmaple',
+  key: 'example',
   children: [{key: 'First Route'}],
 });
 
