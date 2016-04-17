@@ -129,6 +129,21 @@ var WebView = React.createClass({
     domStorageEnabled: PropTypes.bool,
 
     /**
+     * A callback that will be executed once the webview
+     * sends a message to RN.
+     * @platform android
+     */
+     onMessage: PropTypes.func,
+
+     /**
+      * A protocol that the webview can use to communicate with RN.
+      * When the WebView triggers requests to myProtocol://something
+      * the 'onMessage' callback passed to the webview will be called.
+      * @platform android
+      */
+     messageProtocol: PropTypes.string,
+
+    /**
      * Sets the JS to be injected when the webpage loads.
      */
     injectedJavaScript: PropTypes.string,
@@ -226,6 +241,8 @@ var WebView = React.createClass({
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         onLoadingStart={this.onLoadingStart}
+        onMessage={this.props.onMessage}
+        messageProtocol={this.props.messageProtocol}
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
         testID={this.props.testID}
