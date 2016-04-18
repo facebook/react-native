@@ -9,6 +9,8 @@
 
 package com.facebook.react.modules.websocket;
 
+import android.util.Base64;
+
 import java.io.IOException;
 import java.lang.IllegalStateException;
 import javax.annotation.Nullable;
@@ -145,7 +147,11 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       public void onMessage(BufferedSource bufferedSource, WebSocket.PayloadType payloadType) {
         String message;
         try {
-          message = bufferedSource.readUtf8();
+          if (payloadType == WebSocket.PayloadType.BINARY) {
+            message = Base64.encodeToString(bufferedSource.readByteArray(), Base64.NO_WRAP);
+          } else {
+            message = bufferedSource.readUtf8();
+          }
         } catch (IOException e) {
           notifyWebSocketFailed(id, e.getMessage());
           return;
@@ -162,6 +168,7 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
         WritableMap params = Arguments.createMap();
         params.putInt("id", id);
         params.putString("data", message);
+        params.putString("type", payloadType == WebSocket.PayloadType.BINARY ? "binary" : "text");
         sendEvent("websocketMessage", params);
       }
     });
