@@ -68,6 +68,49 @@ const AddRemoveExample = React.createClass({
   }
 });
 
+const GreenSquare = () =>
+  <View style={styles.greenSquare}>
+    <Text>Green square</Text>
+  </View>;
+
+const BlueSquare = () =>
+  <View style={styles.blueSquare}>
+    <Text>Blue square</Text>
+  </View>;
+
+const CrossFadeExample = React.createClass({
+
+  getInitialState() {
+    return {
+      toggled: false,
+    };
+  },
+
+  _onPressToggle() {
+    LayoutAnimation.easeInEaseOut();
+    this.setState({toggled: !this.state.toggled});
+  },
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity onPress={this._onPressToggle}>
+          <View style={styles.button}>
+            <Text>Toggle</Text>
+          </View>
+        </TouchableOpacity>
+        <View style={styles.viewContainer}>
+          {
+            this.state.toggled ?
+            <GreenSquare /> :
+            <BlueSquare />
+          }
+        </View>
+      </View>
+    );
+  }
+});
+
 var styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -94,6 +137,20 @@ var styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  greenSquare: {
+    width: 150,
+    height: 150,
+    backgroundColor: 'green',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  blueSquare: {
+    width: 150,
+    height: 150,
+    backgroundColor: 'blue',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 exports.title = 'Layout Animation';
@@ -104,4 +161,9 @@ exports.examples = [
   render(): ReactElement {
     return <AddRemoveExample />;
   },
+}, {
+  title: 'Cross fade views',
+  render(): ReactElement {
+    return <CrossFadeExample />;
+  }
 }];
