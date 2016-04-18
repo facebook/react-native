@@ -76,6 +76,8 @@ Sometimes commit messages might be really short / confusing - try rewording them
 
 Before posting the list of changes, consider asking one of contributors for their opinion. Once everything is ready, post the release notes: https://github.com/facebook/react-native/releases
 
+**Important**: For release candiate releases, make sure to check "This is a pre-release"
+
 #### Tweet about the rc release
 
 Tweet about it! Link to release notes and say "please report issues" and link to the master issue to track bugs you created.
