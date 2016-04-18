@@ -40,8 +40,8 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ModalExample'),
   },
   {
-    key: 'PickerAndroidExample',
-    module: require('./PickerAndroidExample'),
+    key: 'PickerExample',
+    module: require('./PickerExample'),
   },
   {
     key: 'ProgressBarAndroidExample',
