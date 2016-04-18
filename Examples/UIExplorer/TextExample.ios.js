@@ -156,19 +156,19 @@ exports.examples = [
     return (
       <View>
         <Text style={{fontSize: 20, fontWeight: '100'}}>
-          Be ultralight
+          Move fast and be ultralight
         </Text>
         <Text style={{fontSize: 20, fontWeight: '300'}}>
-          Be light
+          Move fast and be light
         </Text>
         <Text style={{fontSize: 20, fontWeight: 'normal'}}>
-          Be normal
+          Move fast and be normal
         </Text>
         <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-          Be bold
+          Move fast and be bold
         </Text>
         <Text style={{fontSize: 20, fontWeight: '900'}}>
-          Be ultrabold
+          Move fast and be ultrabold
         </Text>
       </View>
     );
