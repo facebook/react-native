@@ -137,7 +137,11 @@ namespace ReactNative.DevSupport
 
             HideRedboxDialog();
 
-            var progressDialog = new ProgressDialog("Please wait...", "Fetching JavaScript bundle.");
+            var message = !_isUsingJsProxy 
+                ? "Fetching JavaScript bundle." 
+                : "Connecting to remote debugger.";
+
+            var progressDialog = new ProgressDialog("Please wait...", message);
             var dialogOperation = progressDialog.ShowAsync();
 
             if (_isUsingJsProxy)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 
 namespace ReactNative.UIManager
 {
@@ -33,7 +32,7 @@ namespace ReactNative.UIManager
         /// <param name="node">The node.</param>
         public void AddRootNode(ReactShadowNode node)
         {
-            if (node == null)
+           if (node == null)
                 throw new ArgumentNullException(nameof(node));
 
             var tag = node.ReactTag;
