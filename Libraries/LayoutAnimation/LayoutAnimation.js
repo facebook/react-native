@@ -74,12 +74,6 @@ function configureNext(config: Config, onAnimationDidEnd?: Function) {
   UIManager.configureNextLayoutAnimation(
     config, onAnimationDidEnd || function() {}, function() { /* unused */ }
   );
-  // Clear the layout animation configuration after the current frame.
-  requestAnimationFrame(() => {
-    UIManager.configureNextLayoutAnimation(
-      null, function() { /* unused */ }, function() { /* unused */ }
-    );
-  });
 }
 
 function create(duration: number, type, creationProp): Config {
@@ -115,6 +109,10 @@ var Presets = {
     update: {
       type: Types.spring,
       springDamping: 0.4,
+    },
+    delete: {
+      type: Types.linear,
+      property: Properties.opacity,
     },
   },
 };

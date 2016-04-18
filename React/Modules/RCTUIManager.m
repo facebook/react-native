@@ -191,7 +191,6 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
   NSMutableArray<dispatch_block_t> *_pendingUIBlocks;
 
   // Animation
-  RCTLayoutAnimation *_nextLayoutAnimation; // RCT thread only
   RCTLayoutAnimation *_layoutAnimation; // Main thread only
 
   NSMutableDictionary<NSNumber *, RCTShadowView *> *_shadowViewRegistry; // RCT thread only
@@ -599,7 +598,7 @@ RCT_EXPORT_MODULE()
         completionsCalled++;
         if (layoutAnimation.callback && completionsCalled == frames.count) {
           layoutAnimation.callback(@[@(finished)]);
-          
+
           // It's unsafe to call this callback more than once, so we nil it out here
           // to make sure that doesn't happen.
           layoutAnimation.callback = nil;
@@ -656,6 +655,8 @@ RCT_EXPORT_MODULE()
         completion(YES);
       }
     }
+
+    _layoutAnimation = nil;
   };
 }
 
@@ -733,25 +734,25 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
 {
   RCTLayoutAnimation *layoutAnimation = _layoutAnimation;
   RCTAnimation *deleteAnimation = layoutAnimation.deleteAnimation;
-  
+
   __block NSUInteger completionsCalled = 0;
-  
+
   for (id<RCTComponent> removedChild in children) {
-    
+
     void (^completion)(BOOL) = ^(BOOL finished) {
       completionsCalled++;
 
       [container removeReactSubview:removedChild];
-      
+
       if (layoutAnimation.callback && completionsCalled == children.count) {
         layoutAnimation.callback(@[@(finished)]);
-        
+
         // It's unsafe to call this callback more than once, so we nil it out here
         // to make sure that doesn't happen.
         layoutAnimation.callback = nil;
       }
     };
-    
+
     if (permanent && deleteAnimation && [removedChild isKindOfClass: [UIView class]]) {
       UIView *view = (UIView *)removedChild;
       [deleteAnimation performAnimations:^{
@@ -1448,16 +1449,18 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
                   withCallback:(RCTResponseSenderBlock)callback
                   errorCallback:(__unused RCTResponseSenderBlock)errorCallback)
 {
-  if (_nextLayoutAnimation && ![config isEqualToDictionary:_nextLayoutAnimation.config]) {
-    RCTLogWarn(@"Warning: Overriding previous layout animation with new one before the first began:\n%@ -> %@.", _nextLayoutAnimation.config, config);
+  RCTLayoutAnimation *currentAnimation = _layoutAnimation;
+
+  if (currentAnimation && ![config isEqualToDictionary:currentAnimation.config]) {
+    RCTLogWarn(@"Warning: Overriding previous layout animation with new one before the first began:\n%@ -> %@.", currentAnimation.config, config);
   }
 
-  _nextLayoutAnimation = [[RCTLayoutAnimation alloc] initWithDictionary:config
+  RCTLayoutAnimation *nextLayoutAnimation = [[RCTLayoutAnimation alloc] initWithDictionary:config
                                                                callback:callback];
-  
+
   // Set up next layout animation
   [self addUIBlock:^(RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    uiManager->_layoutAnimation = _nextLayoutAnimation;
+    uiManager->_layoutAnimation = nextLayoutAnimation;
   }];
 }
 
