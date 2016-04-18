@@ -59,9 +59,7 @@ Go to [Circle CI](https://circleci.com/gh/facebook/react-native), look for your 
 
 #### Make sure we have release notes
 
-Write the release notes, or post in [React Native Core Contributors](https://www.facebook.com/groups/reactnativeoss/) that the RC is ready to find a voluteer. 
-
-You can also use [react-native-release-notes](https://github.com/knowbody/react-native-release-notes) to generate a draft of release notes.
+Write the release notes, or post in [React Native Core Contributors](https://www.facebook.com/groups/reactnativeoss/) that the RC is ready to find a voluteer. You can also use [react-native-release-notes](https://github.com/knowbody/react-native-release-notes) to generate a draft of release notes.
 
 To go through all the commits that went into a release, one way is to use the GitHub compare view:
 ```
@@ -72,13 +70,11 @@ https://github.com/facebook/react-native/compare/0.21-stable...0.22-stable
 
 When making a list of changes, ignore docs, showcase updates and minor typos. 
 
-Sometimes commit messages might be really short / confusing - try rewording them or explaining the exact feature they added where it makes sense. Examples:
+Sometimes commit messages might be really short / confusing - try rewording them where it makes sense. Below are few examples:
 - `Fix logging reported by RUN_JS_BUNDLE` -> `Fix systrace logging of RUN_JS_BUNDLE event`
 - `Fixes hot code reloading issue` -> `Fix an edge case in hot module reloading`
 
-Before posting the list of changes, consider asking one of contributors for their opinion. 
-
-Post the release notes: https://github.com/facebook/react-native/releases
+Before posting the list of changes, consider asking one of contributors for their opinion. Once everything is ready, post the release notes: https://github.com/facebook/react-native/releases
 
 #### Tweet about the rc release
 
