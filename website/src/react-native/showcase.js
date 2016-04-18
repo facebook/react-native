@@ -31,6 +31,12 @@ var featured = [
     ],
   },
   {
+    name: 'HireArt',
+    icon: 'https://www.filepicker.io/api/file/Yd7YXXoRWq98VF7TbPUg',
+    link: 'https://itunes.apple.com/us/app/id1056320926',
+    author: 'HireArt, Inc',
+  },
+  {
     name: 'AIGA Design Conference 2015',
     icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/b0/4b/29/b04b2939-88d2-f61f-dec9-24fae083d8b3/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/aiga-design-conference-2015/id1038145272?ls=1&mt=8',
