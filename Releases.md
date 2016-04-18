@@ -33,10 +33,10 @@ are green and then run
 
 This script runs end to end with a proxy npm repository on local PC and asks to check that Chrome Debugging works.
 
-#### Cut a release branch and push to github
-
-To cut a release branch and check that everything works, you'll need Mac OS with the
+**Note**: In order to run the e2e tests, you'll need Mac OS with the
 [Android dev environment set up](https://github.com/facebook/react-native/blob/master/ReactAndroid/README.md).
+
+#### Cut a release branch and push to github
 
 Run:
 
