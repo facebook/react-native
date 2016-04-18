@@ -59,6 +59,12 @@ var featured = [
     author: 'Exponent',
   },
   {
+    name: 'Helium',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/df/a6/22/dfa622c4-e29c-c720-f32e-3fec99d14337/icon175x175.png',
+    link:  'https://itunes.apple.com/app/id1071378510',
+    author: 'Helium',
+  },
+  {
     name: 'Lrn',
     icon: 'http://is4.mzstatic.com/image/pf/us/r30/Purple1/v4/41/a9/e9/41a9e9b6-7801-aef7-2400-2eca14923321/mzl.adyswxad.png',
     link: 'https://itunes.apple.com/us/app/lrn-learn-to-code-at-your/id1019622677',
