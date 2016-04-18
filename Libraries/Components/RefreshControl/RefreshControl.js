@@ -93,6 +93,11 @@ const RefreshControl = React.createClass({
      */
     tintColor: ColorPropType,
     /**
+     * Title color.
+     * @platform ios
+     */
+    titleColor: ColorPropType,
+    /**
      * The title displayed under the refresh indicator.
      * @platform ios
      */
