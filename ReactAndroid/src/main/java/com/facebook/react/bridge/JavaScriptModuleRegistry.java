@@ -59,10 +59,11 @@ public class JavaScriptModuleRegistry {
       return (T) module;
     }
 
-    JavaScriptModuleRegistration registration =
-        Assertions.assertNotNull(
-            mModuleRegistrations.get(moduleInterface),
-            "JS module " + moduleInterface.getSimpleName() + " hasn't been registered!");
+    JavaScriptModuleRegistration registration = mModuleRegistrations.get(moduleInterface);
+    if (registration == null) {
+      throw new IllegalArgumentException(
+        "JS module " + moduleInterface.getSimpleName() + " hasn't been registered!");
+    }
     JavaScriptModule interfaceProxy = (JavaScriptModule) Proxy.newProxyInstance(
         moduleInterface.getClassLoader(),
         new Class[]{moduleInterface},
