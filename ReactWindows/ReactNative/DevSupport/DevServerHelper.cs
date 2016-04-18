@@ -27,7 +27,6 @@ namespace ReactNative.DevSupport
         private const string PackagerStatusUrlFormat = "http://{0}/status";
         private const string PackagerOkStatus = "packager-status:running";
         private const int LongPollFailureDelayMs = 5000;
-        private const int HttpConnectTimeoutMs = 5000;
 
         private readonly DevInternalSettings _settings;
         private readonly HttpClient _client;
@@ -40,7 +39,6 @@ namespace ReactNative.DevSupport
         {
             _settings = settings;
             _client = new HttpClient();
-            _client.Timeout = TimeSpan.FromMilliseconds(HttpConnectTimeoutMs);
         }
 
         /// <summary>
