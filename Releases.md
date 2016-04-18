@@ -13,6 +13,7 @@ https://github.com/facebook/react-native/releases
 | 0.27.0  | week of May 16   | May 30         |
 | ...     | ...              | ...            |
 
+-------------------
 ## How to cut a new release branch
 
 #### Prerequisites
@@ -77,7 +78,7 @@ Tweet about it! Link to release notes and say "please report issues" and link to
 
 ## IMPORTANT: Track bug reports from the community during the following two weeks, ping owners to get them fixed
 
-A good way to do this is to create a github issue and post about it so people can report bugs. Examples: https://github.com/facebook/react-native/issues/6087, https://github.com/facebook/react-native/issues/5201
+A good way to do this is to create a github issue and post about it so people can report bugs. Examples: [#6087](https://github.com/facebook/react-native/issues/6087), [#5201](https://github.com/facebook/react-native/issues/5201)
 
 **Only cherry-pick small and non-risky bug fixes**. **Don't pick new features into the release** as this greatly increases the risk of something breaking. The main point of the RC is to let people to use it for two weeks and fix the most serious bugs.
 
@@ -117,7 +118,7 @@ git push origin version_you_are_releasing-stable --tags
 
 Roughly two weeks after the branch cut (see the release schedule above) it's time to promote the last RC to a real release.
 
-Once all bugfixes have been cherry-picked and you're sure the release is solid (example: https://github.com/facebook/react-native/issues/6087), do the release:
+Once all bugfixes have been cherry-picked and you're sure the release is solid (example: [#6087](https://github.com/facebook/react-native/issues/6087)), do the release:
 
 ```bash
 git checkout 0.version_you_are_releasing-stable
