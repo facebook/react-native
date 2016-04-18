@@ -158,7 +158,7 @@ exports.examples = [
         <Text style={{fontSize: 20, fontWeight: '100'}}>
           Move fast and be ultralight
         </Text>
-        <Text style={{fontSize: 20, fontWeight: '300'}}>
+        <Text style={{fontSize: 20, fontWeight: '200'}}>
           Move fast and be light
         </Text>
         <Text style={{fontSize: 20, fontWeight: 'normal'}}>
