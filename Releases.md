@@ -70,6 +70,14 @@ https://github.com/facebook/react-native/compare/0.21-stable...0.22-stable
 
 **Note**: This only shows **250** commits, if there are more use git.
 
+When making a list of changes, ignore docs, showcase updates and minor typos. 
+
+Sometimes commit messages might be really short / confusing - try rewording them or explaining the exact feature they added where it makes sense. Examples:
+- `Fix logging reported by RUN_JS_BUNDLE` -> `Fix systrace logging of RUN_JS_BUNDLE event`
+- `Fixes hot code reloading issue` -> `Fix an edge case in hot module reloading`
+
+Before posting the list of changes, consider asking one of contributors for their opinion. 
+
 Post the release notes: https://github.com/facebook/react-native/releases
 
 #### Tweet about the rc release
