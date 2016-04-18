@@ -155,20 +155,20 @@ exports.examples = [
   render: function() {
     return (
       <View>
-        <Text style={{fontWeight: '100'}}>
-          Move fast and be ultralight
+        <Text style={{fontSize: 20, fontWeight: '100'}}>
+          Be ultralight
         </Text>
-        <Text style={{fontWeight: '200'}}>
-          Move fast and be light
+        <Text style={{fontSize: 20, fontWeight: '300'}}>
+          Be light
         </Text>
-        <Text style={{fontWeight: 'normal'}}>
-          Move fast and be normal
+        <Text style={{fontSize: 20, fontWeight: 'normal'}}>
+          Be normal
         </Text>
-        <Text style={{fontWeight: 'bold'}}>
-          Move fast and be bold
+        <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+          Be bold
         </Text>
-        <Text style={{fontWeight: '900'}}>
-          Move fast and be ultrabold
+        <Text style={{fontSize: 20, fontWeight: '900'}}>
+          Be ultrabold
         </Text>
       </View>
     );
