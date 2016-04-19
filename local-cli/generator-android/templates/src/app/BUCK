@@ -5,7 +5,7 @@ import re
 # - install Buck
 # - `npm start` - to start the packager
 # - `cd android`
-# - `cp ~/.android/debug.keystore keystores/debug.keystore`
+# - `keytool -genkey -v -keystore keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US`
 # - `./gradlew :app:copyDownloadableDepsToLibs` - make all Gradle compile dependencies available to Buck
 # - `buck install -r android/app` - compile, install and run application
 #

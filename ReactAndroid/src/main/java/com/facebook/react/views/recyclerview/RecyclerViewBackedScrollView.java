@@ -26,7 +26,7 @@ import com.facebook.react.views.scroll.ScrollEventType;
  * will be rendered as a separate {@link RecyclerView} row.
  *
  * Currently supports only vertically positioned item. Views will not be automatically recycled but
- * they will be detache from native view hierarchy when scrolled offscreen.
+ * they will be detached from native view hierarchy when scrolled offscreen.
  *
  * It works by storing all child views in an array within adapter and binding appropriate views to
  * rows when requested.

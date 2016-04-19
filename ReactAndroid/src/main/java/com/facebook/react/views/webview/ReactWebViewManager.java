@@ -20,6 +20,7 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebChromeClient;
 
 import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
@@ -243,6 +244,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @Override
   protected WebView createViewInstance(ThemedReactContext reactContext) {
     ReactWebView webView = new ReactWebView(reactContext);
+    webView.setWebChromeClient(new WebChromeClient());
     reactContext.addLifecycleEventListener(webView);
     mWebViewConfig.configWebView(webView);
 

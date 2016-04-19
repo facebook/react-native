@@ -32,6 +32,7 @@ var {
 
 var XHRExampleHeaders = require('./XHRExampleHeaders');
 var XHRExampleFetch = require('./XHRExampleFetch');
+var XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
 
 class Downloader extends React.Component {
   state: any;
@@ -330,6 +331,11 @@ exports.examples = [{
   title: 'Headers',
   render() {
     return <XHRExampleHeaders/>;
+  }
+}, {
+  title: 'Time Out Test',
+  render() {
+    return <XHRExampleOnTimeOut/>;
   }
 }];
 

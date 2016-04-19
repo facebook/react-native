@@ -952,6 +952,12 @@ class AnimatedAddition extends AnimatedWithChildren {
     this._b = typeof b === 'number' ? new AnimatedValue(b) : b;
   }
 
+  __makeNative() {
+    super.__makeNative();
+    this._a.__makeNative();
+    this._b.__makeNative();
+  }
+
   __getValue(): number {
     return this._a.__getValue() + this._b.__getValue();
   }
@@ -968,6 +974,14 @@ class AnimatedAddition extends AnimatedWithChildren {
   __detach(): void {
     this._a.__removeChild(this);
     this._b.__removeChild(this);
+    super.__detach();
+  }
+
+  __getNativeConfig(): any {
+    return {
+      type: 'addition',
+      input: [this._a.__getNativeTag(), this._b.__getNativeTag()],
+    };
   }
 }
 
@@ -1394,7 +1408,7 @@ function createAnimatedComponent(Component: any): any {
 
       for (var key in ViewStylePropTypes) {
         if (!Component.propTypes[key] && props[key] !== undefined) {
-          console.error(
+          console.warn(
             'You are setting the style `{ ' + key + ': ... }` as a prop. You ' +
             'should nest it in a style object. ' +
             'E.g. `{ style: { ' + key + ': ... } }`'

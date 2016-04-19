@@ -41,6 +41,7 @@ Object.keys(RemoteModules).forEach((moduleName) => {
 const NativeModules = {};
 Object.keys(RemoteModules).forEach((moduleName) => {
   Object.defineProperty(NativeModules, moduleName, {
+    configurable: true,
     enumerable: true,
     get: () => {
       let module = RemoteModules[moduleName];
@@ -71,6 +72,7 @@ UIManager && Object.keys(UIManager).forEach(viewName => {
     let constants;
     /* $FlowFixMe - nice try. Flow doesn't like getters */
     Object.defineProperty(viewConfig, 'Constants', {
+      configurable: true,
       enumerable: true,
       get: () => {
         if (constants) {
@@ -90,6 +92,7 @@ UIManager && Object.keys(UIManager).forEach(viewName => {
     let commands;
     /* $FlowFixMe - nice try. Flow doesn't like getters */
     Object.defineProperty(viewConfig, 'Commands', {
+      configurable: true,
       enumerable: true,
       get: () => {
         if (commands) {

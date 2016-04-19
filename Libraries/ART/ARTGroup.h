@@ -14,4 +14,6 @@
 
 @interface ARTGroup : ARTNode <ARTContainer>
 
+@property (nonatomic, assign) CGRect clipping;
+
 @end

@@ -14,6 +14,7 @@ android_binary(
   deps = [
     react_native_integration_tests_target('java/com/facebook/react/tests:tests'),
     react_native_integration_tests_target('assets:assets'),
+    react_native_dep('third-party/java/testing-support-lib:exposed-instrumentation-api'),
     react_native_target('jni/prebuilt:reactnative-libs'),
     react_native_target('jni/prebuilt:android-jsc'),
     react_native_dep('libraries/soloader/java/com/facebook/soloader:soloader'),

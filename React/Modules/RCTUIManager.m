@@ -897,7 +897,14 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
   // the view, but it's the only way that makes sense given our threading model
   UIColor *backgroundColor = shadowView.backgroundColor;
 
-  [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
+  // Dispatch view creation directly to the main thread instead of adding to
+  // UIBlocks array. This way, it doesn't get deferred until after layout.
+  __weak RCTUIManager *weakManager = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    RCTUIManager *uiManager = weakManager;
+    if (!uiManager) {
+      return;
+    }
     UIView *view = [componentData createViewWithTag:reactTag];
     if (view) {
       [componentData setProps:props forView:view]; // Must be done before bgColor to prevent wrong default
@@ -907,13 +914,13 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
       if ([view respondsToSelector:@selector(reactBridgeDidFinishTransaction)]) {
         [uiManager->_bridgeTransactionListeners addObject:view];
       }
-      ((NSMutableDictionary<NSNumber *, UIView *> *)viewRegistry)[reactTag] = view;
+      uiManager->_viewRegistry[reactTag] = view;
 
 #if RCT_DEV
       [view _DEBUG_setReactShadowView:shadowView];
 #endif
     }
-  }];
+  });
 }
 
 RCT_EXPORT_METHOD(updateView:(nonnull NSNumber *)reactTag
@@ -1152,7 +1159,7 @@ static void RCTMeasureLayout(RCTShadowView *view,
   }
   CGRect result = [view measureLayoutRelativeToAncestor:ancestor];
   if (CGRectIsNull(result)) {
-    RCTLogError(@"view %@ (tag #%@) is not a decendant of %@ (tag #%@)",
+    RCTLogError(@"view %@ (tag #%@) is not a descendant of %@ (tag #%@)",
                 view, view.reactTag, ancestor, ancestor.reactTag);
     return;
   }
@@ -1224,7 +1231,7 @@ RCT_EXPORT_METHOD(measureViewsInRect:(CGRect)rect
    ^(RCTShadowView *childShadowView, NSUInteger idx, __unused BOOL *stop) {
     CGRect childLayout = [childShadowView measureLayoutRelativeToAncestor:shadowView];
     if (CGRectIsNull(childLayout)) {
-      RCTLogError(@"View %@ (tag #%@) is not a decendant of %@ (tag #%@)",
+      RCTLogError(@"View %@ (tag #%@) is not a descendant of %@ (tag #%@)",
                   childShadowView, childShadowView.reactTag, shadowView, shadowView.reactTag);
       return;
     }

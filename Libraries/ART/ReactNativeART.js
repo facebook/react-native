@@ -227,13 +227,7 @@ var ClippingRectangle = React.createClass({
     var y = extractNumber(props.y, 0);
     var w = extractNumber(props.width, 0);
     var h = extractNumber(props.height, 0);
-    var clipping = new Path()
-      .moveTo(x, y)
-      .line(w, 0)
-      .line(0, h)
-      .line(w, 0)
-      .close()
-      .toJSON();
+    var clipping = [x, y, w, h];
     // The current clipping API requires x and y to be ignored in the transform
     var propsExcludingXAndY = merge(props);
     delete propsExcludingXAndY.x;
@@ -566,13 +560,6 @@ function Pattern(url, width, height, left, top) {
   this._brush = [PATTERN, url, +left || 0, +top || 0, +width, +height];
 }
 
-// This doesn't work on iOS and is just a placeholder to get Spectrum running.
-// I will try to eliminate this dependency in Spectrum and remove it from
-// ReactART proper.
-function CSSBackgroundPattern() {
-  return new Color('rgba(0,0,0,0)');
-}
-
 var ReactART = {
   LinearGradient: LinearGradient,
   RadialGradient: RadialGradient,
@@ -584,7 +571,6 @@ var ReactART = {
   ClippingRectangle: ClippingRectangle,
   Shape: Shape,
   Text: Text,
-  CSSBackgroundPattern: CSSBackgroundPattern
 };
 
 module.exports = ReactART;
