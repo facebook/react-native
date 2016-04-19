@@ -67,7 +67,8 @@ var PullToRefreshViewAndroid = React.createClass({
   },
 
   setNativeProps: function(props) {
-    return this.refs[NATIVE_REF].setNativeProps(props);
+    let innerViewNode = this.getInnerViewNode();
+    return innerViewNode && innerViewNode.setNativeProps(props);
   },
 
   render: function() {
@@ -88,7 +89,7 @@ var PullToRefreshViewAndroid = React.createClass({
 
   _onRefresh: function() {
     this.props.onRefresh && this.props.onRefresh();
-    this.refs[NATIVE_REF].setNativeProps({refreshing: !!this.props.refreshing});
+    this.setNativeProps({refreshing: !!this.props.refreshing});
   }
 });
 

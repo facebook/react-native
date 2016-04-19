@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 /* eslint strict:0 */
 var modules = Object.create(null);
 var inGuard = false;
@@ -36,7 +45,7 @@ function requireImpl(id) {
     inGuard = true;
     var returnValue;
     try {
-      returnValue = requireImpl.apply(this, arguments);
+      returnValue = requireImpl(id);
     } catch (e) {
       global.ErrorUtils.reportFatalError(e);
     }
@@ -80,6 +89,7 @@ function requireImpl(id) {
     // keep args in sync with with defineModuleCode in
     // packager/react-packager/src/Resolver/index.js
     mod.factory.call(global, global, require, mod.module, mod.module.exports);
+    mod.factory = undefined;
 
     if (__DEV__) {
       Systrace.endEvent();
