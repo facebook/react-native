@@ -237,6 +237,38 @@ namespace ReactNative.Tests.UIManager
             Assert.AreEqual(true, instance.TestBooleanValue);
         }
 
+        [TestMethod]
+        public void PropertySetter_DefaultValue_Null()
+        {
+            var method = (MethodInfo)ReflectionHelpers.InfoOf((DefaultTest t) => t.TestBoolean(null, false));
+            var instance = new DefaultTest();
+            Assert.AreEqual(false, instance.TestBooleanValue);
+            var emptyMap = new ReactStylesDiffMap(new JObject
+            {
+                { "TestBoolean", null },
+            });
+
+            var setter = PropertySetter.CreateViewManagerSetters(method).Single();
+            setter.UpdateViewManagerProperty(instance, null, emptyMap);
+            Assert.AreEqual(true, instance.TestBooleanValue);
+        }
+
+        [TestMethod]
+        public void PropertySetter_DefaultValue_Undefined()
+        {
+            var method = (MethodInfo)ReflectionHelpers.InfoOf((DefaultTest t) => t.TestBoolean(null, false));
+            var instance = new DefaultTest();
+            Assert.AreEqual(false, instance.TestBooleanValue);
+            var emptyMap = new ReactStylesDiffMap(new JObject
+            {
+                { "TestBoolean", JValue.CreateUndefined() },
+            });
+
+            var setter = PropertySetter.CreateViewManagerSetters(method).Single();
+            setter.UpdateViewManagerProperty(instance, null, emptyMap);
+            Assert.AreEqual(true, instance.TestBooleanValue);
+        }
+
         class Test : MockViewManager
         {
             #region ViewManager Test Methods
