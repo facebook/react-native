@@ -51,9 +51,9 @@ namespace ReactNative.UIManager
         /// <param name="view">The view instance.</param>
         /// <param name="opacity">The opacity value.</param>
         [ReactProp(PROP_OPACITY, DefaultDouble = 1.0)]
-        public void SetOpacity(TFrameworkElement view, double? opacity)
+        public void SetOpacity(TFrameworkElement view, double opacity)
         {
-            view.Opacity = opacity ?? 1.0;
+            view.Opacity = opacity;
         }
 
         /// <summary>

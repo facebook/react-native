@@ -18,6 +18,20 @@ namespace ReactNative.Tests.UIManager
         }
 
         [TestMethod]
+        public void ReactStylesDiffMap_ContainsKey()
+        {
+            var json = new JObject
+            {
+                { "foo", 42 },
+            };
+
+            var props = new ReactStylesDiffMap(json);
+            Assert.IsTrue(props.ContainsKey("foo"));
+            Assert.IsFalse(props.ContainsKey("FOO"));
+            Assert.IsFalse(props.ContainsKey("bar"));
+        }
+
+        [TestMethod]
         public void ReactStylesDiffMap_Behavior()
         {
             var json = new JObject
@@ -29,8 +43,9 @@ namespace ReactNative.Tests.UIManager
             var props = new ReactStylesDiffMap(json);
             Assert.AreEqual(2, props.Keys.Count);
             Assert.IsTrue(new[] { "bar", "foo" }.SequenceEqual(props.Keys.OrderBy(k => k)));
-            Assert.IsInstanceOfType(props.GetProperty("foo", typeof(short)), typeof(short));
-            Assert.AreEqual(42, props.GetProperty("foo", typeof(int)));
+            Assert.IsNotNull(props.GetProperty("foo"));
+            Assert.IsNull(props.GetProperty("FOO"));
+            Assert.AreEqual((short)42, props.GetProperty("foo").ToObject(typeof(short)));
         }
     }
 }

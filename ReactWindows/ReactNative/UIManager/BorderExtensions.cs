@@ -6,32 +6,25 @@ namespace ReactNative.UIManager
 {
     static class BorderExtensions
     {
-        public static void SetBorderWidth(this Border border, CSSSpacingType kind, double? width)
+        public static void SetBorderWidth(this Border border, CSSSpacingType kind, double width)
         {
-            if (!width.HasValue)
-            {
-                border.BorderThickness = default(Thickness);
-                return;
-            }
-
-            var widthValue = width.Value;
             var thickness = border.BorderThickness;
             switch (kind)
             {
                 case CSSSpacingType.Left:
-                    thickness.Left = widthValue;
+                    thickness.Left = width;
                     break;
                 case CSSSpacingType.Top:
-                    thickness.Top = widthValue;
+                    thickness.Top = width;
                     break;
                 case CSSSpacingType.Right:
-                    thickness.Right = widthValue;
+                    thickness.Right = width;
                     break;
                 case CSSSpacingType.Bottom:
-                    thickness.Bottom = widthValue;
+                    thickness.Bottom = width;
                     break;
                 case CSSSpacingType.All:
-                    thickness = new Thickness(widthValue);
+                    thickness = new Thickness(width);
                     break;
             }
 

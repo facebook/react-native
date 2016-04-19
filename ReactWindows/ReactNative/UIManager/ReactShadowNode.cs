@@ -160,9 +160,7 @@ namespace ReactNative.UIManager
         {
             get
             {
-                return _nativeChildren != null
-                    ? _nativeChildren.Count
-                    : 0;
+                return _nativeChildren?.Count ?? 0;
             }
         }
 

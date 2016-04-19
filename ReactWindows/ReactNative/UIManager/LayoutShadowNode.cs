@@ -16,70 +16,70 @@ namespace ReactNative.UIManager
         /// Set the width of the shadow node.
         /// </summary>
         /// <param name="width">The width.</param>
-        [ReactProp(ViewProps.Width, DefaultFloat = Undefined)]
-        public void SetWidth(float? width)
+        [ReactProp(ViewProps.Width, DefaultSingle = Undefined)]
+        public void SetWidth(float width)
         {
-            Width = width ?? CSSConstants.Undefined;
+            Width = width;
         }
 
         /// <summary>
         /// Set the heigth of the shadow node.
         /// </summary>
         /// <param name="height">The height.</param>
-        [ReactProp(ViewProps.Height, DefaultFloat = Undefined)]
-        public void SetHeight(float? height)
+        [ReactProp(ViewProps.Height, DefaultSingle = Undefined)]
+        public void SetHeight(float height)
         {
-            Height = height ?? CSSConstants.Undefined;
+            Height = height;
         }
 
         /// <summary>
         /// Sets the left position of the shadow node.
         /// </summary>
         /// <param name="left">The left position.</param>
-        [ReactProp(ViewProps.Left, DefaultFloat = Undefined)]
-        public void SetLeft(float? left)
+        [ReactProp(ViewProps.Left, DefaultSingle = Undefined)]
+        public void SetLeft(float left)
         {
-            PositionLeft = left ?? CSSConstants.Undefined;
+            PositionLeft = left;
         }
 
         /// <summary>
         /// Sets the top position of the shadow node.
         /// </summary>
         /// <param name="top">The top position.</param>
-        [ReactProp(ViewProps.Top, DefaultFloat = Undefined)]
-        public void SetTop(float? top)
+        [ReactProp(ViewProps.Top, DefaultSingle = Undefined)]
+        public void SetTop(float top)
         {
-            PositionTop = top ?? CSSConstants.Undefined;
+            PositionTop = top;
         }
 
         /// <summary>
         /// Sets the bottom position of the shadow node.
         /// </summary>
         /// <param name="bottom">The bottom position.</param>
-        [ReactProp(ViewProps.Bottom, DefaultFloat = Undefined)]
-        public void SetBottom(float? bottom)
+        [ReactProp(ViewProps.Bottom, DefaultSingle = Undefined)]
+        public void SetBottom(float bottom)
         {
-            PositionBottom = bottom ?? CSSConstants.Undefined;
+            PositionBottom = bottom;
         }
 
         /// <summary>
         /// Sets the right position of the shadow node.
         /// </summary>
         /// <param name="right">The right position.</param>
-        [ReactProp(ViewProps.Right, DefaultFloat = Undefined)]
-        public void SetRight(float? right)
+        [ReactProp(ViewProps.Right, DefaultSingle = Undefined)]
+        public void SetRight(float right)
         {
-            PositionRight = right ?? CSSConstants.Undefined;
+            PositionRight = right;
         }
 
         /// <summary>
         /// Sets the flex of the shadow node.
         /// </summary>
         /// <param name="flex">The flex value.</param>
-        [ReactProp(ViewProps.Flex, DefaultFloat = 0f)]
-        public void SetFlex(float? flex)
+        [ReactProp(ViewProps.Flex, DefaultSingle = 0f)]
+        public void SetFlex(float flex)
         {
-            Flex = flex ?? CSSConstants.Undefined;
+            Flex = flex;
         }
 
         /// <summary>
@@ -89,9 +89,7 @@ namespace ReactNative.UIManager
         [ReactProp(ViewProps.FlexDirection)]
         public void SetFlexDirection(string flexDirection)
         {
-            FlexDirection = flexDirection != null
-                ? EnumHelpers.Parse<CSSFlexDirection>(flexDirection)
-                : CSSFlexDirection.Column;
+            FlexDirection = EnumHelpers.ParseNullable<CSSFlexDirection>(flexDirection) ?? CSSFlexDirection.Column;
         }
 
         /// <summary>
@@ -101,9 +99,7 @@ namespace ReactNative.UIManager
         [ReactProp(ViewProps.FlexWrap)]
         public void SetFlexWrap(string flexWrap)
         {
-            Wrap = flexWrap != null
-                ? EnumHelpers.Parse<CSSWrap>(flexWrap)
-                : CSSWrap.NoWrap;
+            Wrap = EnumHelpers.ParseNullable<CSSWrap>(flexWrap) ?? CSSWrap.NoWrap;
         }
 
         /// <summary>
@@ -113,9 +109,7 @@ namespace ReactNative.UIManager
         [ReactProp(ViewProps.AlignSelf)]
         public void SetAlignSelf(string alignSelf)
         {
-            AlignSelf = alignSelf != null
-                ? EnumHelpers.Parse<CSSAlign>(alignSelf)
-                : CSSAlign.Auto;
+            AlignSelf = EnumHelpers.ParseNullable<CSSAlign>(alignSelf) ?? CSSAlign.Auto;
         }
 
         /// <summary>
@@ -125,9 +119,7 @@ namespace ReactNative.UIManager
         [ReactProp(ViewProps.AlignItems)]
         public void SetAlignItems(string alignItems)
         {
-            AlignItems = alignItems != null
-                ? EnumHelpers.Parse<CSSAlign>(alignItems)
-                : CSSAlign.Stretch;
+            AlignItems = EnumHelpers.ParseNullable<CSSAlign>(alignItems) ?? CSSAlign.Stretch;
         }
 
         /// <summary>
@@ -137,9 +129,7 @@ namespace ReactNative.UIManager
         [ReactProp(ViewProps.JustifyContent)]
         public void SetJustifyContent(string justifyContent)
         {
-            JustifyContent = justifyContent != null
-                ? EnumHelpers.Parse<CSSJustify>(justifyContent)
-                : CSSJustify.FlexStart;
+            JustifyContent = EnumHelpers.ParseNullable<CSSJustify>(justifyContent) ?? CSSJustify.FlexStart;
         }
 
         /// <summary>
@@ -155,7 +145,7 @@ namespace ReactNative.UIManager
             ViewProps.MarginRight,
             ViewProps.MarginTop,
             ViewProps.MarginBottom,
-            DefaultFloat = Undefined)]
+            DefaultSingle = Undefined)]
         public void SetMargins(int index, float margin)
         {
             SetMargin(ViewProps.PaddingMarginSpacingTypes[index], margin);
@@ -174,7 +164,7 @@ namespace ReactNative.UIManager
             ViewProps.PaddingRight,
             ViewProps.PaddingTop,
             ViewProps.PaddingBottom,
-            DefaultFloat = Undefined)]
+            DefaultSingle = Undefined)]
         public void SetPaddings(int index, float padding)
         {
             SetPadding(ViewProps.PaddingMarginSpacingTypes[index], padding);
@@ -191,7 +181,7 @@ namespace ReactNative.UIManager
             ViewProps.BorderRightWidth,
             ViewProps.BorderTopWidth,
             ViewProps.BorderBottomWidth,
-            DefaultFloat = Undefined)]
+            DefaultSingle = Undefined)]
         public void SetBorderWidth(int index, float borderWidth)
         {
             SetBorder(ViewProps.BorderSpacingTypes[index], borderWidth);
@@ -204,9 +194,7 @@ namespace ReactNative.UIManager
         [ReactProp(ViewProps.Position)]
         public void SetPosition(string position)
         {
-            PositionType = position != null
-                ? EnumHelpers.Parse<CSSPositionType>(position)
-                : CSSPositionType.Relative;
+            PositionType = EnumHelpers.ParseNullable<CSSPositionType>(position) ?? CSSPositionType.Relative;
         }
 
         /// <summary>

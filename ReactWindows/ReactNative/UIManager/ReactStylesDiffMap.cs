@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using ReactNative.Collections;
 using System;
 using System.Collections.Generic;
 
@@ -35,17 +36,29 @@ namespace ReactNative.UIManager
         }
 
         /// <summary>
+        /// Checks if the property set contains the given key.
+        /// </summary>
+        /// <param name="name">The key.</param>
+        /// <returns>
+        /// <code>true</code> if the property set contains the key, 
+        /// <code>false</code> otherwise.
+        /// </returns>
+        public bool ContainsKey(string name)
+        {
+            return _props.ContainsKey(name);
+        }
+
+        /// <summary>
         /// Gets and deserializes the property using the given name and type.
         /// </summary>
         /// <param name="name">The property name.</param>
-        /// <param name="type">The property type.</param>
-        /// <returns></returns>
-        public object GetProperty(string name, Type type)
+        /// <returns>The property value.</returns>
+        public JToken GetProperty(string name)
         {
-            var token = default(JToken);
-            if (_props.TryGetValue(name, out token))
+            var result = default(JToken);
+            if (_props.TryGetValue(name, out result))
             {
-                return token.ToObject(type);
+                return result;
             }
 
             return null;

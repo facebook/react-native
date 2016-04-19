@@ -34,9 +34,9 @@ namespace ReactNative.UIManager.Annotations
         public byte DefaultByte { get; set; } = 0;
 
         /// <summary>
-        /// The default value for decimal properties.
+        /// The default value for signed byte properties.
         /// </summary>
-        public decimal DefaultDecimal { get; set; } = 0;
+        public sbyte DefaultSByte { get; set; } = 0;
 
         /// <summary>
         /// The default value for double properties.
@@ -46,21 +46,36 @@ namespace ReactNative.UIManager.Annotations
         /// <summary>
         /// The default value for float properties.
         /// </summary>
-        public float DefaultFloat { get; set; } = 0.0f;
+        public float DefaultSingle { get; set; } = 0.0f;
 
         /// <summary>
         /// The default value for integers.
         /// </summary>
-        public int DefaultInteger { get; set; } = 0;
+        public int DefaultInt32 { get; set; } = 0;
+
+        /// <summary>
+        /// The default value for unsigned integers.
+        /// </summary>
+        public uint DefaultUInt32 { get; set; } = 0;
 
         /// <summary>
         /// The default value for long integers.
         /// </summary>
-        public long DefaultLong { get; set; }
+        public long DefaultInt64 { get; set; }
+
+        /// <summary>
+        /// The default value for unsigned long integers.
+        /// </summary>
+        public ulong DefaultUInt64 { get; set; }
 
         /// <summary>
         /// The default value for short integers.
         /// </summary>
-        public short DefaultShort { get; set; } = 0;
+        public short DefaultInt16 { get; set; } = 0;
+
+        /// <summary>
+        /// The default value for unsigned short integers.
+        /// </summary>
+        public ushort DefaultUInt16 { get; set; } = 0;
     }
 }
