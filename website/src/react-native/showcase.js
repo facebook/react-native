@@ -328,6 +328,12 @@ var apps = [
     author: 'Emilio Rodriguez'
   },
   {
+    name: 'D.I.T.',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/1b/ad/7f/1bad7f52-85e6-3f49-5593-93ab73d15fc8/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/d.i.t./id1065482319?mt=8',
+    author: 'Pavlo Tkach & Mykhailo Kovalevskyi'
+  },
+  {
     name: 'DockMan',
     icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/91/b5/75/91b57552-d9bc-d8bc-10a1-617de920aaa6/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/app/dockman/id1061469696',
