@@ -720,6 +720,16 @@ var apps = [
     ],
   },
   {
+    name: 'Veckopengen – för barn och föräldrar',
+    icon: 'https://is5-ssl.mzstatic.com/image/thumb/Purple49/v4/0a/63/f1/0a63f16c-f0f3-6316-0f9d-1682b04c595d/mzl.sswtnsav.jpg/340x340bb-80.png',
+    linkAppStore: 'https://itunes.apple.com/se/app/veckopengen-for-barn-och-foraldrar/id935778197',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=se.veckopengen.app',
+    author: 'Barnpengar AB',
+    videos: [
+      'https://www.youtube.com/watch?v=tzsXFGmqJec',
+    ],
+  },
+  {
     name: 'Veggies in Season',
     icon: 'https://s3.amazonaws.com/veggies-assets/icon175x175.png',
     link: 'https://itunes.apple.com/es/app/veggies-in-season/id1088215278?mt=8',
