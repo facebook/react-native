@@ -124,6 +124,40 @@ describe('Animated', () => {
       .toBeCalledWith(additionCall[1].input[1], { type: 'value', value: 2 });
   });
 
+  it('sends a valid graph description for Animated.multiply nodes', () => {
+    var first = new Animated.Value(2);
+    var second = new Animated.Value(1);
+
+    var c = new Animated.View();
+    c.props = {
+      style: {
+        opacity: Animated.multiply(first, second),
+      },
+    };
+    c.componentWillMount();
+
+    Animated.timing(first, {toValue: 5, duration: 1000, useNativeDriver: true}).start();
+    Animated.timing(second, {toValue: -1, duration: 1000, useNativeDriver: true}).start();
+
+    var nativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
+    expect(nativeAnimatedModule.createAnimatedNode)
+      .toBeCalledWith(jasmine.any(Number), { type: 'multiplication', input: jasmine.any(Array) });
+    var multiplicationCalls = nativeAnimatedModule.createAnimatedNode.mock.calls.filter(
+      (call) => call[1].type === 'multiplication'
+    );
+    expect(multiplicationCalls.length).toBe(1);
+    var multiplicationCall = multiplicationCalls[0];
+    var multiplicationNodeTag = multiplicationCall[0];
+    var multiplicationConnectionCalls = nativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
+      (call) => call[1] === multiplicationNodeTag
+    );
+    expect(multiplicationConnectionCalls.length).toBe(2);
+    expect(nativeAnimatedModule.createAnimatedNode)
+      .toBeCalledWith(multiplicationCall[1].input[0], { type: 'value', value: 2 });
+    expect(nativeAnimatedModule.createAnimatedNode)
+      .toBeCalledWith(multiplicationCall[1].input[1], { type: 'value', value: 1 });
+  });
+
   it('sends a valid timing animation description', () => {
     var anim = new Animated.Value(0);
     Animated.timing(anim, {toValue: 10, duration: 1000, useNativeDriver: true}).start();
