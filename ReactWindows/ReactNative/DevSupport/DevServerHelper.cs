@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using Windows.System.Threading;
 using Windows.UI.Core;
 

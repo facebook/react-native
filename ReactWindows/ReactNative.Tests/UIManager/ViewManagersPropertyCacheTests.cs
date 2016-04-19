@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using Newtonsoft.Json.Linq;
 using ReactNative.UIManager;
+using ReactNative.UIManager.Annotations;
 using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
@@ -53,24 +54,24 @@ namespace ReactNative.Tests.UIManager
             var setters = ViewManagersPropertyCache.GetNativePropertySettersForViewManagerType(typeof(ViewManagerValueTest));
             Assert.AreEqual(3, setters.Count);
 
-            var properties = new ReactStylesDiffMap(new JObject
+            var props = new ReactStylesDiffMap(new JObject
             {
                 { "Foo", "v1" },
                 { "Bar1", "v2" },
                 { "Bar2", "v3" },
             });
 
-            AssertEx.Throws<NotSupportedException>(() => setters["Foo"].UpdateShadowNodeProperty(new ShadowNodeValueTest(), properties));
+            AssertEx.Throws<NotSupportedException>(() => setters["Foo"].UpdateShadowNodeProperty(new ShadowNodeValueTest(), props));
             AssertEx.Throws<ArgumentNullException>(
-                () => setters["Foo"].UpdateViewManagerProperty(null, null, properties),
+                () => setters["Foo"].UpdateViewManagerProperty(null, null, props),
                 ex => Assert.AreEqual("viewManager", ex.ParamName));
             AssertEx.Throws<ArgumentNullException>(
                 () => setters["Foo"].UpdateViewManagerProperty(instance, null, null),
-                ex => Assert.AreEqual("properties", ex.ParamName));
+                ex => Assert.AreEqual("props", ex.ParamName));
 
-            setters["Foo"].UpdateViewManagerProperty(instance, null, properties);
-            setters["Bar1"].UpdateViewManagerProperty(instance, null, properties);
-            setters["Bar2"].UpdateViewManagerProperty(instance, null, properties);
+            setters["Foo"].UpdateViewManagerProperty(instance, null, props);
+            setters["Bar1"].UpdateViewManagerProperty(instance, null, props);
+            setters["Bar2"].UpdateViewManagerProperty(instance, null, props);
 
             Assert.AreEqual("v1", instance.FooValue);
             Assert.AreEqual("v2", instance.BarValues[0]);
@@ -85,24 +86,24 @@ namespace ReactNative.Tests.UIManager
             var setters = ViewManagersPropertyCache.GetNativePropertySettersForShadowNodeType(typeof(ShadowNodeValueTest));
             Assert.AreEqual(3, setters.Count);
 
-            var properties = new ReactStylesDiffMap(new JObject
+            var props = new ReactStylesDiffMap(new JObject
             {
                 { "Foo", 42 },
                 { "Qux1", "v2" },
                 { "Qux2", "v3" },
             });
 
-            AssertEx.Throws<NotSupportedException>(() => setters["Foo"].UpdateViewManagerProperty(new ViewManagerValueTest(), null, properties));
+            AssertEx.Throws<NotSupportedException>(() => setters["Foo"].UpdateViewManagerProperty(new ViewManagerValueTest(), null, props));
             AssertEx.Throws<ArgumentNullException>(
-                () => setters["Foo"].UpdateShadowNodeProperty(null, properties),
+                () => setters["Foo"].UpdateShadowNodeProperty(null, props),
                 ex => Assert.AreEqual("shadowNode", ex.ParamName));
             AssertEx.Throws<ArgumentNullException>(
                 () => setters["Foo"].UpdateShadowNodeProperty(instance, null),
-                ex => Assert.AreEqual("properties", ex.ParamName));
+                ex => Assert.AreEqual("props", ex.ParamName));
 
-            setters["Foo"].UpdateShadowNodeProperty(instance, properties);
-            setters["Qux1"].UpdateShadowNodeProperty(instance, properties);
-            setters["Qux2"].UpdateShadowNodeProperty(instance, properties);
+            setters["Foo"].UpdateShadowNodeProperty(instance, props);
+            setters["Qux1"].UpdateShadowNodeProperty(instance, props);
+            setters["Qux2"].UpdateShadowNodeProperty(instance, props);
 
             Assert.AreEqual(42, instance.FooValue);
             Assert.AreEqual("v2", instance.QuxValues[0]);
@@ -112,13 +113,13 @@ namespace ReactNative.Tests.UIManager
         [TestMethod]
         public void ViewManagersPropertyCache_GetNativePropertiesForView()
         {
-            var properties = ViewManagersPropertyCache.GetNativePropertiesForView(typeof(ViewManagerValueTest), typeof(ShadowNodeValueTest));
-            Assert.AreEqual(5, properties.Count);
-            Assert.AreEqual("number", properties["Foo"]);
-            Assert.AreEqual("String", properties["Bar1"]);
-            Assert.AreEqual("String", properties["Bar2"]);
-            Assert.AreEqual("String", properties["Qux1"]);
-            Assert.AreEqual("String", properties["Qux2"]);
+            var props = ViewManagersPropertyCache.GetNativePropertiesForView(typeof(ViewManagerValueTest), typeof(ShadowNodeValueTest));
+            Assert.AreEqual(5, props.Count);
+            Assert.AreEqual("number", props["Foo"]);
+            Assert.AreEqual("String", props["Bar1"]);
+            Assert.AreEqual("String", props["Bar2"]);
+            Assert.AreEqual("String", props["Qux1"]);
+            Assert.AreEqual("String", props["Qux2"]);
         }
 
         [TestMethod]
@@ -127,7 +128,7 @@ namespace ReactNative.Tests.UIManager
             var instance = new DefaultsTest();
             var setters = ViewManagersPropertyCache.GetNativePropertySettersForViewManagerType(typeof(DefaultsTest));
 
-            var properties = new ReactStylesDiffMap(new JObject());
+            var props = new ReactStylesDiffMap(new JObject());
 
             instance.ByteValue = byte.MaxValue;
             instance.SByteValue = sbyte.MaxValue;
@@ -147,25 +148,25 @@ namespace ReactNative.Tests.UIManager
             instance.NullableValue = true;
             instance.GroupValue = new[] { "a", "b", "c" };
 
-            setters["TestByte"].UpdateViewManagerProperty(instance, null, properties);
-            setters["TestSByte"].UpdateViewManagerProperty(instance, null, properties);
-            setters["TestInt16"].UpdateViewManagerProperty(instance, null, properties);
-            setters["TestUInt16"].UpdateViewManagerProperty(instance, null, properties);
-            setters["TestInt32"].UpdateViewManagerProperty(instance, null, properties);
-            setters["TestUInt32"].UpdateViewManagerProperty(instance, null, properties);
-            setters["TestInt64"].UpdateViewManagerProperty(instance, null, properties);
-            setters["TestUInt64"].UpdateViewManagerProperty(instance, null, properties);
-            setters["TestSingle"].UpdateViewManagerProperty(instance, null, properties);
-            setters["TestDouble"].UpdateViewManagerProperty(instance, null, properties);
-            setters["TestDecimal"].UpdateViewManagerProperty(instance, null, properties);
-            setters["TestBoolean"].UpdateViewManagerProperty(instance, null, properties);
-            setters["TestString"].UpdateViewManagerProperty(instance, null, properties);
-            setters["TestArray"].UpdateViewManagerProperty(instance, null, properties);
-            setters["TestMap"].UpdateViewManagerProperty(instance, null, properties);
-            setters["TestNullable"].UpdateViewManagerProperty(instance, null, properties);
-            setters["foo"].UpdateViewManagerProperty(instance, null, properties);
-            setters["bar"].UpdateViewManagerProperty(instance, null, properties);
-            setters["baz"].UpdateViewManagerProperty(instance, null, properties);
+            setters["TestByte"].UpdateViewManagerProperty(instance, null, props);
+            setters["TestSByte"].UpdateViewManagerProperty(instance, null, props);
+            setters["TestInt16"].UpdateViewManagerProperty(instance, null, props);
+            setters["TestUInt16"].UpdateViewManagerProperty(instance, null, props);
+            setters["TestInt32"].UpdateViewManagerProperty(instance, null, props);
+            setters["TestUInt32"].UpdateViewManagerProperty(instance, null, props);
+            setters["TestInt64"].UpdateViewManagerProperty(instance, null, props);
+            setters["TestUInt64"].UpdateViewManagerProperty(instance, null, props);
+            setters["TestSingle"].UpdateViewManagerProperty(instance, null, props);
+            setters["TestDouble"].UpdateViewManagerProperty(instance, null, props);
+            setters["TestDecimal"].UpdateViewManagerProperty(instance, null, props);
+            setters["TestBoolean"].UpdateViewManagerProperty(instance, null, props);
+            setters["TestString"].UpdateViewManagerProperty(instance, null, props);
+            setters["TestArray"].UpdateViewManagerProperty(instance, null, props);
+            setters["TestMap"].UpdateViewManagerProperty(instance, null, props);
+            setters["TestNullable"].UpdateViewManagerProperty(instance, null, props);
+            setters["foo"].UpdateViewManagerProperty(instance, null, props);
+            setters["bar"].UpdateViewManagerProperty(instance, null, props);
+            setters["baz"].UpdateViewManagerProperty(instance, null, props);
 
             Assert.AreEqual(0, instance.ByteValue);
             Assert.AreEqual(0, instance.SByteValue);
@@ -196,7 +197,7 @@ namespace ReactNative.Tests.UIManager
         {
             public string FooValue;
 
-            [ReactProperty("Foo")]
+            [ReactProp("Foo")]
             public void Foo(FrameworkElement element, string value)
             {
                 FooValue = value;
@@ -204,7 +205,7 @@ namespace ReactNative.Tests.UIManager
 
             public string[] BarValues = new string[2];
 
-            [ReactPropertyGroup("Bar1", "Bar2")]
+            [ReactPropGroup("Bar1", "Bar2")]
             public void Bar(FrameworkElement element, int index, string value)
             {
                 BarValues[index] = value;
@@ -215,7 +216,7 @@ namespace ReactNative.Tests.UIManager
         {
             public int FooValue;
 
-            [ReactProperty("Foo")]
+            [ReactProp("Foo")]
             public void Foo(int value)
             {
                 FooValue = value;
@@ -223,7 +224,7 @@ namespace ReactNative.Tests.UIManager
 
             public string[] QuxValues = new string[2];
 
-            [ReactPropertyGroup("Qux1", "Qux2")]
+            [ReactPropGroup("Qux1", "Qux2")]
             public void Qux(int index, string value)
             {
                 QuxValues[index] = value;
@@ -252,103 +253,103 @@ namespace ReactNative.Tests.UIManager
             public bool? NullableValue;
             public string[] GroupValue = new string[3];
 
-            [ReactProperty("TestByte")]
+            [ReactProp("TestByte")]
             public void TestByte(FrameworkElement element, byte value)
             {
                 ByteValue = value;
             }
 
-            [ReactProperty("TestSByte")]
+            [ReactProp("TestSByte")]
             public void TestSByte(FrameworkElement element, sbyte value)
             {
                 SByteValue = value;
             }
 
-            [ReactProperty("TestInt16")]
+            [ReactProp("TestInt16")]
             public void TestInt16(FrameworkElement element, short value)
             {
                 Int16Value = value;
             }
 
-            [ReactProperty("TestUInt16")]
+            [ReactProp("TestUInt16")]
             public void TestUInt16(FrameworkElement element, ushort value)
             {
                 UInt16Value = value;
             }
 
-            [ReactProperty("TestInt32")]
+            [ReactProp("TestInt32")]
             public void TestInt32(FrameworkElement element, int value)
             {
                 Int32Value = value;
             }
 
-            [ReactProperty("TestUInt32")]
+            [ReactProp("TestUInt32")]
             public void TestUInt32(FrameworkElement element, uint value)
             {
                 UInt32Value = value;
             }
 
-            [ReactProperty("TestInt64")]
+            [ReactProp("TestInt64")]
             public void TestInt64(FrameworkElement element, long value)
             {
                 Int64Value = value;
             }
 
-            [ReactProperty("TestUInt64")]
+            [ReactProp("TestUInt64")]
             public void TestUInt64(FrameworkElement element, ulong value)
             {
                 UInt64Value = value;
             }
 
-            [ReactProperty("TestSingle")]
+            [ReactProp("TestSingle")]
             public void TestSingle(FrameworkElement element, float value)
             {
                 SingleValue = value;
             }
 
-            [ReactProperty("TestDouble")]
+            [ReactProp("TestDouble")]
             public void TestDouble(FrameworkElement element, double value)
             {
                 DoubleValue = value;
             }
 
-            [ReactProperty("TestDecimal")]
+            [ReactProp("TestDecimal")]
             public void TestDecimal(FrameworkElement element, decimal value)
             {
                 DecimalValue = value;
             }
 
-            [ReactProperty("TestBoolean")]
+            [ReactProp("TestBoolean")]
             public void TestBoolean(FrameworkElement element, bool value)
             {
                 BooleanValue = value;
             }
 
-            [ReactProperty("TestString")]
+            [ReactProp("TestString")]
             public void TestString(FrameworkElement element, string value)
             {
                 StringValue = value;
             }
 
-            [ReactProperty("TestArray")]
+            [ReactProp("TestArray")]
             public void TestArray(FrameworkElement element, int[] value)
             {
                 ArrayValue = value;
             }
 
-            [ReactProperty("TestNullable")]
+            [ReactProp("TestNullable")]
             public void TestNullable(FrameworkElement element, bool? value)
             {
                 NullableValue = value;
             }
 
-            [ReactProperty("TestMap")]
+            [ReactProp("TestMap")]
             public void TestMap(FrameworkElement element, object value)
             {
                 MapValue = value;
             }
 
-            [ReactPropertyGroup("foo", "bar", "baz")]
+            [ReactPropGroup("foo", "bar", "baz")]
             public void TestGroup(FrameworkElement element, int index, string value)
             {
                 GroupValue[index] = value;

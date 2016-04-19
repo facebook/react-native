@@ -1,6 +1,5 @@
 ﻿using ReactNative.UIManager.Events;
 using System;
-using System.Globalization;
 
 namespace ReactNative.Views.Image
 {

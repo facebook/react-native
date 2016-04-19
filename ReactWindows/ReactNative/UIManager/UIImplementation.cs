@@ -132,8 +132,8 @@ namespace ReactNative.UIManager
         /// <param name="tag">The view tag.</param>
         /// <param name="className">The class name.</param>
         /// <param name="rootViewTag">The root view tag.</param>
-        /// <param name="properties">The properties.</param>
-        public void CreateView(int tag, string className, int rootViewTag, JObject properties)
+        /// <param name="props">The properties.</param>
+        public void CreateView(int tag, string className, int rootViewTag, JObject props)
         {
             var cssNode = CreateShadowNode(className);
             var rootNode = _shadowNodeRegistry.GetNode(rootViewTag);
@@ -145,9 +145,9 @@ namespace ReactNative.UIManager
             _shadowNodeRegistry.AddNode(cssNode);
 
             var styles = default(ReactStylesDiffMap);
-            if (properties != null)
+            if (props != null)
             {
-                styles = new ReactStylesDiffMap(properties);
+                styles = new ReactStylesDiffMap(props);
                 cssNode.UpdateProperties(styles);
             }
 
@@ -171,8 +171,8 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="tag">The view tag.</param>
         /// <param name="className">The view class name.</param>
-        /// <param name="properties">The properties.</param>
-        public void UpdateView(int tag, string className, JObject properties)
+        /// <param name="props">The properties.</param>
+        public void UpdateView(int tag, string className, JObject props)
         {
             var viewManager = _viewManagers.Get(className);
             var cssNode = _shadowNodeRegistry.GetNode(tag);
@@ -182,9 +182,9 @@ namespace ReactNative.UIManager
                     $"Trying to update view with invalid tag '{tag}'.");
             }
 
-            if (properties != null)
+            if (props != null)
             {
-                var styles = new ReactStylesDiffMap(properties);
+                var styles = new ReactStylesDiffMap(props);
                 cssNode.UpdateProperties(styles);
                 HandleUpdateView(cssNode, className, styles);
             }

@@ -14,7 +14,7 @@ namespace ReactNative.Tests.UIManager
         {
             AssertEx.Throws<ArgumentNullException>(
                 () => new ReactStylesDiffMap(null),
-                ex => Assert.AreEqual("properties", ex.ParamName));
+                ex => Assert.AreEqual("props", ex.ParamName));
         }
 
         [TestMethod]
@@ -26,11 +26,11 @@ namespace ReactNative.Tests.UIManager
                 { "bar", "qux" },
             };
 
-            var properties = new ReactStylesDiffMap(json);
-            Assert.AreEqual(2, properties.Keys.Count);
-            Assert.IsTrue(new[] { "bar", "foo" }.SequenceEqual(properties.Keys.OrderBy(k => k)));
-            Assert.IsInstanceOfType(properties.GetProperty("foo", typeof(short)), typeof(short));
-            Assert.AreEqual(42, properties.GetProperty("foo", typeof(int)));
+            var props = new ReactStylesDiffMap(json);
+            Assert.AreEqual(2, props.Keys.Count);
+            Assert.IsTrue(new[] { "bar", "foo" }.SequenceEqual(props.Keys.OrderBy(k => k)));
+            Assert.IsInstanceOfType(props.GetProperty("foo", typeof(short)), typeof(short));
+            Assert.AreEqual(42, props.GetProperty("foo", typeof(int)));
         }
     }
 }

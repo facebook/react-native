@@ -321,11 +321,11 @@
     <Compile Include="UIManager\OnLayoutEvent.cs" />
     <Compile Include="UIManager\PointerEvents.cs" />
     <Compile Include="UIManager\PropertySetter.cs" />
-    <Compile Include="UIManager\ReactPropertyBaseAttribute.cs" />
-    <Compile Include="UIManager\ReactPropertyGroupAttribute.cs" />
+    <Compile Include="UIManager\Annotations\ReactPropBaseAttribute.cs" />
+    <Compile Include="UIManager\Annotations\ReactPropGroupAttribute.cs" />
     <Compile Include="UIManager\SizeMonitoringCanvas.cs" />
     <Compile Include="UIManager\NativeViewHierarchyManager.cs" />
-    <Compile Include="UIManager\ReactPropertyAttribute.cs" />
+    <Compile Include="UIManager\Annotations\ReactPropAttribute.cs" />
     <Compile Include="UIManager\ReactShadowNode.cs" />
     <Compile Include="UIManager\IRootView.cs" />
     <Compile Include="UIManager\ShadowNodeRegistry.cs" />
@@ -345,7 +345,7 @@
     <Compile Include="Views\Switch\ReactSwitchManager.cs" />
     <Compile Include="Views\Switch\ReactSwitchShadowNode.cs" />
     <Compile Include="Views\ViewManagersPropertyCache.cs" />
-    <Compile Include="UIManager\ViewProperties.cs" />
+    <Compile Include="UIManager\ViewProps.cs" />
     <Compile Include="Views\Text\ReactRawTextManager.cs" />
     <Compile Include="Views\Text\ReactTextShadowNode.cs" />
     <Compile Include="Views\Text\ReactTextViewManager.cs" />

@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using ReactNative.Reflection;
 using ReactNative.UIManager;
+using ReactNative.UIManager.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -189,87 +190,87 @@ namespace ReactNative.Tests.UIManager
         {
             #region ViewManager Test Methods
 
-            [ReactProperty("TestByte")]
+            [ReactProp("TestByte")]
             public void TestByte(FrameworkElement element, byte value)
             {
             }
 
-            [ReactProperty("TestSByte")]
+            [ReactProp("TestSByte")]
             public void TestSByte(FrameworkElement element, sbyte value)
             {
             }
 
-            [ReactProperty("TestInt16")]
+            [ReactProp("TestInt16")]
             public void TestInt16(FrameworkElement element, short value)
             {
             }
 
-            [ReactProperty("TestUInt16")]
+            [ReactProp("TestUInt16")]
             public void TestUInt16(FrameworkElement element, ushort value)
             {
             }
 
-            [ReactProperty("TestInt32")]
+            [ReactProp("TestInt32")]
             public void TestInt32(FrameworkElement element, int value)
             {
             }
 
-            [ReactProperty("TestUInt32")]
+            [ReactProp("TestUInt32")]
             public void TestUInt32(FrameworkElement element, uint value)
             {
             }
 
-            [ReactProperty("TestInt64")]
+            [ReactProp("TestInt64")]
             public void TestInt64(FrameworkElement element, long value)
             {
             }
 
-            [ReactProperty("TestUInt64")]
+            [ReactProp("TestUInt64")]
             public void TestUInt64(FrameworkElement element, ulong value)
             {
             }
 
-            [ReactProperty("TestSingle")]
+            [ReactProp("TestSingle")]
             public void TestSingle(FrameworkElement element, float value)
             {
             }
 
-            [ReactProperty("TestDouble")]
+            [ReactProp("TestDouble")]
             public void TestDouble(FrameworkElement element, double value)
             {
             }
 
-            [ReactProperty("TestDecimal")]
+            [ReactProp("TestDecimal")]
             public void TestDecimal(FrameworkElement element, decimal value)
             {
             }
 
-            [ReactProperty("TestBoolean")]
+            [ReactProp("TestBoolean")]
             public void TestBoolean(FrameworkElement element, bool value)
             {
             }
 
-            [ReactProperty("TestString")]
+            [ReactProp("TestString")]
             public void TestString(FrameworkElement element, string value)
             {
             }
 
-            [ReactProperty("TestArray")]
+            [ReactProp("TestArray")]
             public void TestArray(FrameworkElement element, int[] value)
             {
             }
 
-            [ReactProperty("TestNullable")]
+            [ReactProp("TestNullable")]
             public void TestNullable(FrameworkElement element, bool? value)
             {
             }
 
-            [ReactProperty("TestMap")]
+            [ReactProp("TestMap")]
             public void TestMap(FrameworkElement element, object value)
             {
             }
 
-            [ReactPropertyGroup("foo", "bar", "baz")]
+            [ReactPropGroup("foo", "bar", "baz")]
             public void TestGroup(FrameworkElement element, int index, string value)
             {
             }
@@ -281,17 +282,17 @@ namespace ReactNative.Tests.UIManager
         {
             #region ReactShadowNode Test Methods
 
-            [ReactProperty("TestArray")]
+            [ReactProp("TestArray")]
             public void TestArray(int[] value)
             {
             }
 
-            [ReactPropertyGroup("foo", "bar", "baz")]
+            [ReactPropGroup("foo", "bar", "baz")]
             public void TestGroup(int index, string value)
             {
             }
 
-            [ReactProperty("TestCustom", CustomType = "myInt")]
+            [ReactProp("TestCustom", CustomType = "myInt")]
             public void TestCustom(int value)
             {
             }

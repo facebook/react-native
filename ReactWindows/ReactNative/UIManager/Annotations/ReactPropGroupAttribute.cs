@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace ReactNative.UIManager
+namespace ReactNative.UIManager.Annotations
 {
     /// <summary>
     /// Annotates a group of properties of native views that should be exposed
     /// to JavaScript. It is a batched version of the 
-    /// <see cref="ReactPropertyAttribute"/> annotation.
+    /// <see cref="ReactPropAttribute"/> annotation.
     /// </summary>
     /// <remarks>
     /// This annotation is meant to be used of similar properties. That is why
@@ -18,17 +18,17 @@ namespace ReactNative.UIManager
     /// In cases when the property has been removed from the corresponding 
     /// react component, the annotated setter will be called and a default
     /// value will be provided as a value parameter. Default values can be
-    /// customized using, e.g., <see cref="ReactPropertyBaseAttribute.DefaultInteger"/>.
+    /// customized using, e.g., <see cref="ReactPropBaseAttribute.DefaultInteger"/>.
     /// In all other cases, <code>null</code> will be provided as a default.
     /// </remarks>
     [AttributeUsage(AttributeTargets.Method)]
-    public class ReactPropertyGroupAttribute : ReactPropertyBaseAttribute
+    public class ReactPropGroupAttribute : ReactPropBaseAttribute
     {        
         /// <summary>
-        /// Instantiates the <see cref="ReactPropertyGroupAttribute"/>.
+        /// Instantiates the <see cref="ReactPropGroupAttribute"/>.
         /// </summary>
         /// <param name="names">The property group names.</param>
-        public ReactPropertyGroupAttribute(params string[] names)
+        public ReactPropGroupAttribute(params string[] names)
         {
             Names = names;
         }

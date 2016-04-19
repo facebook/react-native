@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.UIManager;
+using ReactNative.UIManager.Annotations;
 using ReactNative.UIManager.Events;
 using System;
 using Windows.UI.Xaml;
@@ -34,7 +35,7 @@ namespace ReactNative.Views.Switch
         /// Set to <code>true</code> if the toggle switch should be enabled,
         /// otherwise, set to <code>false</code>.
         /// </param>
-        [ReactProperty(ViewProperties.Disabled)]
+        [ReactProp(ViewProps.Disabled)]
         public void SetDisabled(ToggleSwitch view, bool disabled)
         {
             view.IsEnabled = !disabled;
@@ -48,7 +49,7 @@ namespace ReactNative.Views.Switch
         /// Set to <code>true</code> if the toggle switch is toggled on,
         /// otherwise, set to <code>false</code>.
         /// </param>
-        [ReactProperty(ViewProperties.Value)]
+        [ReactProp(ViewProps.Value)]
         public void SetValue(ToggleSwitch view, bool on)
         {
             // Temporarily disable toggle event handler.

@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace ReactNative.UIManager
+namespace ReactNative.UIManager.Annotations
 {
     /// <summary>
-    /// A base class for common functionality across <see cref="ReactPropertyAttribute"/>
-    /// and <see cref="ReactPropertyGroupAttribute"/>.
+    /// A base class for common functionality across <see cref="ReactPropAttribute"/>
+    /// and <see cref="ReactPropGroupAttribute"/>.
     /// </summary>
-    public abstract class ReactPropertyBaseAttribute : Attribute
+    public abstract class ReactPropBaseAttribute : Attribute
     {
         /// <summary>
         /// A type handle that signals to use the default type.

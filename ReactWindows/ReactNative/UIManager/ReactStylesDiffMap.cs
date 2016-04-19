@@ -9,18 +9,18 @@ namespace ReactNative.UIManager
     /// </summary>
     public class ReactStylesDiffMap
     {
-        private readonly JObject _properties;
+        private readonly JObject _props;
 
         /// <summary>
         /// Instantiates the <see cref="ReactStylesDiffMap"/>.
         /// </summary>
-        /// <param name="properties">The property map.</param>
-        public ReactStylesDiffMap(JObject properties)
+        /// <param name="props">The property map.</param>
+        public ReactStylesDiffMap(JObject props)
         {
-            if (properties == null)
-                throw new ArgumentNullException(nameof(properties));
+            if (props == null)
+                throw new ArgumentNullException(nameof(props));
 
-            _properties = properties;
+            _props = props;
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace ReactNative.UIManager
         {
             get
             {
-                return ((IDictionary<string, JToken>)_properties).Keys;
+                return ((IDictionary<string, JToken>)_props).Keys;
             }
         }
 
@@ -43,7 +43,7 @@ namespace ReactNative.UIManager
         public object GetProperty(string name, Type type)
         {
             var token = default(JToken);
-            if (_properties.TryGetValue(name, out token))
+            if (_props.TryGetValue(name, out token))
             {
                 return token.ToObject(type);
             }

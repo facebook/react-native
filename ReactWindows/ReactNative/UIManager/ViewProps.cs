@@ -7,7 +7,7 @@ namespace ReactNative.UIManager
     /// <summary>
     /// Property keys for React views.
     /// </summary>
-    public static class ViewProperties
+    public static class ViewProps
     {
 #pragma warning disable CS1591
         public const string ViewClassName = "RCTView";

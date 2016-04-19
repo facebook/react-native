@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.Reflection;
 using ReactNative.UIManager;
+using ReactNative.UIManager.Annotations;
 using ReactNative.Views.Text;
 using System;
 using System.Collections.Generic;
@@ -124,7 +125,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="fontSize">The font size.</param>
-        [ReactProperty(ViewProperties.FontSize)]
+        [ReactProp(ViewProps.FontSize)]
         public void SetFontSize(ReactTextBox view, double fontSize)
         {
             view.FontSize = fontSize;
@@ -135,7 +136,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="color">The masked color value.</param>
-        [ReactProperty(ViewProperties.Color, CustomType = "Color")]
+        [ReactProp(ViewProps.Color, CustomType = "Color")]
         public void SetColor(ReactTextBox view, uint? color)
         {
             view.Foreground = color.HasValue
@@ -148,7 +149,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="familyName">The font family.</param>
-        [ReactProperty(ViewProperties.FontFamily)]
+        [ReactProp(ViewProps.FontFamily)]
         public void SetFontFamily(ReactTextBox view, string familyName)
         {
             view.FontFamily = familyName != null
@@ -161,7 +162,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="fontWeightString">The font weight string.</param>
-        [ReactProperty(ViewProperties.FontWeight)]
+        [ReactProp(ViewProps.FontWeight)]
         public void SetFontWeight(ReactTextBox view, string fontWeightString)
         {
             var fontWeight = FontStyleHelpers.ParseFontWeight(fontWeightString);
@@ -173,7 +174,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="fontStyleString">The font style string.</param>
-        [ReactProperty(ViewProperties.FontStyle)]
+        [ReactProp(ViewProps.FontStyle)]
         public void SetFontStyle(ReactTextBox view, string fontStyleString)
         {
             var fontStyle = EnumHelpers.ParseNullable<FontStyle>(fontStyleString);
@@ -185,7 +186,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="onSelectionChange">The indicator.</param>
-        [ReactProperty("onSelectionChange", DefaultBoolean = false)]
+        [ReactProp("onSelectionChange", DefaultBoolean = false)]
         public void SetSelectionChange(ReactTextBox view, bool? onSelectionChange)
         {
             if (onSelectionChange.HasValue && onSelectionChange.Value)
@@ -205,7 +206,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="placeholder">The placeholder text.</param>
-        [ReactProperty("placeholder")]
+        [ReactProp("placeholder")]
         public void SetPlaceholder(ReactTextBox view, string placeholder)
         {
             view.PlaceholderText = placeholder;
@@ -216,7 +217,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="color">The masked color value.</param>
-        [ReactProperty("selectionColor", CustomType = "Color")]
+        [ReactProp("selectionColor", CustomType = "Color")]
         public void SetSelectionColor(ReactTextBox view, uint color)
         {
             view.SelectionHighlightColor = new SolidColorBrush(ColorHelpers.Parse(color));
@@ -227,7 +228,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="alignment">The text alignment.</param>
-        [ReactProperty(ViewProperties.TextAlign)]
+        [ReactProp(ViewProps.TextAlign)]
         public void SetTextAlign(ReactTextBox view, string alignment)
         {
             view.TextAlignment = EnumHelpers.Parse<TextAlignment>(alignment);
@@ -238,7 +239,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="alignment">The text alignment.</param>
-        [ReactProperty(ViewProperties.TextAlignVertical)]
+        [ReactProp(ViewProps.TextAlignVertical)]
         public void SetTextVerticalAlign(ReactTextBox view, string alignment)
         {
             view.VerticalContentAlignment = EnumHelpers.Parse<VerticalAlignment>(alignment);
@@ -249,7 +250,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="editable">The editable flag.</param>
-        [ReactProperty("editable")]
+        [ReactProp("editable")]
         public void SetEditable(ReactTextBox view, bool editable)
         {
             view.IsEnabled = editable;
@@ -260,7 +261,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="maxCharLength">The max length.</param>
-        [ReactProperty("maxLength")]
+        [ReactProp("maxLength")]
         public void SetMaxLength(ReactTextBox view, int maxCharLength)
         {
             view.MaxLength = maxCharLength;
@@ -271,7 +272,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="autoCorrect">The autocorrect flag.</param>
-        [ReactProperty("autoCorrect")]
+        [ReactProp("autoCorrect")]
         public void SetAutoCorrect(ReactTextBox view, bool autoCorrect)
         {
             view.IsSpellCheckEnabled = autoCorrect;
@@ -282,7 +283,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="multiline">The multiline flag.</param>
-        [ReactProperty("multiline", DefaultBoolean = false)]
+        [ReactProp("multiline", DefaultBoolean = false)]
         public void SetMultiline(ReactTextBox view, bool multiline)
         {
             view.AcceptsReturn = multiline;
@@ -293,7 +294,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="keyboardType">The keyboard type.</param>
-        [ReactProperty("keyboardType")]
+        [ReactProp("keyboardType")]
         public void SetKeyboardType(ReactTextBox view, string keyboardType)
         {
             view.InputScope = null;
@@ -313,7 +314,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="width">The border width.</param>
-        [ReactProperty(ViewProperties.BorderWidth)]
+        [ReactProp(ViewProps.BorderWidth)]
         public void SetBorderWidth(ReactTextBox view, int width)
         {
             view.BorderThickness = new Thickness(width);
@@ -324,7 +325,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="clearTextOnFocus">The indicator.</param>
-        [ReactProperty("clearTextOnFocus")]
+        [ReactProp("clearTextOnFocus")]
         public void SetClearTextOnFocus(ReactTextBox view, bool clearTextOnFocus)
         {
             view.ClearTextOnFocus = clearTextOnFocus;
@@ -335,7 +336,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="selectTextOnFocus">The indicator.</param>
-        [ReactProperty("selectTextOnFocus")]
+        [ReactProp("selectTextOnFocus")]
         public void SetSelectTextOnFocus(ReactTextBox view, bool selectTextOnFocus)
         {
             view.SelectTextOnFocus = selectTextOnFocus;

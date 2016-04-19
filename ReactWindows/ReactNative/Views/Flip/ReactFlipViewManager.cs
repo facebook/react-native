@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.UIManager;
+using ReactNative.UIManager.Annotations;
 using ReactNative.UIManager.Events;
 using System;
 using System.Collections.Generic;
@@ -48,7 +49,7 @@ namespace ReactNative.Views.Flip
             }
         }
 
-        [ReactProperty("alwaysAnimate")]
+        [ReactProp("alwaysAnimate")]
         public void SetAlwaysAnimate(FlipView view, bool? alwaysAnimate)
         {
             view.UseTouchAnimationsForAllNavigation = alwaysAnimate ?? true;

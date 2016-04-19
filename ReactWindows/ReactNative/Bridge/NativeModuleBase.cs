@@ -3,7 +3,6 @@ using ReactNative.Reflection;
 using ReactNative.Tracing;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Reflection;
 
 namespace ReactNative.Bridge

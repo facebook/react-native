@@ -15,7 +15,7 @@ namespace ReactNative.UIManager
         /// <see cref="CreateShadowNodeInstance"/>.
         /// 
         /// This method will be used in the bridge initialization phase to
-        /// collect properties exposed using the <see cref="ReactPropertyAttribute"/>
+        /// collect properties exposed using the <see cref="Annotations.ReactPropAttribute"/>
         /// annotation from the <see cref="ReactShadowNode"/> subclass.
         /// </summary>
         public sealed override Type ShadowNodeType
