@@ -60,15 +60,25 @@ describe('code transformation worker:', () => {
     const result = {
       code: 'p.exports={a:1,b:2}',
     };
-    transform.mockImplementation((_, callback) =>
-      callback(null, result));
-
+    transform.mockImplementation((_, callback) => callback(null, result));
     transformCode(transform, 'aribtrary/file.json', 'b', {}, (_, data) => {
       expect(data.code).toBe('{a:1,b:2}');
       done();
     });
   });
-
+  
+  it('removes shebang when present', done => {
+    const shebang = '#!/usr/bin/env node';
+    const result = {
+      code: `${shebang} \n arbitrary(code)`,
+    };
+    transform.mockImplementation((_, callback) => callback(null, result));
+    transformCode(transform, 'arbitrary/file.js', 'b', {}, (_, data) => {
+      expect(data.code).not.toContain(shebang);
+      done();
+    });
+  });
+  
   it('calls back with any error yielded by the transform', done => {
     const error = Error('arbitrary error');
     transform.mockImplementation((_, callback) => callback(error));
