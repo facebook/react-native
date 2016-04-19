@@ -108,20 +108,14 @@ namespace ReactNative.UIManager
 
         protected object ExtractProperty(ReactStylesDiffMap props)
         {
-            var token = props.GetProperty(Name);
             var defaultFunc = default(Func<ReactPropBaseAttribute, object>);
-            if (token == null && s_defaultValues.TryGetValue(PropertyType, out defaultFunc))
+            if (props.IsNull(Name) && s_defaultValues.TryGetValue(PropertyType, out defaultFunc))
             {
                 return defaultFunc(_attribute);
             }
-            else if (token != null)
-            {
-                return token.ToObject(PropertyType);
-            }
-            else
-            {
-                return null;
-            }
+
+            return props.GetProperty(Name)?
+                .ToObject(PropertyType);
         }
 
         private void Invoke(object instance, object[] args)
