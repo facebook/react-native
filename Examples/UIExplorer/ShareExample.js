@@ -63,7 +63,7 @@ class ShareMessageExample extends React.Component {
         <TouchableHighlight style={styles.wrapper}
           onPress={this._shareText}>
           <View style={styles.button}>
-            <Text>Click to share message, URL and subject</Text>
+            <Text>Click to share message, URL and title</Text>
           </View>
         </TouchableHighlight>
         <Text>{this.state.result}</Text>
@@ -72,18 +72,24 @@ class ShareMessageExample extends React.Component {
   }
 
   _shareMessage() {
-    Share.shareText({
+    Share.share({
       message: 'React Native | A framework for building native apps using React'
     })
-    .then((result) => this.setState({result:result}))
-    .catch(()=> this.setState({result:'Canceled'}))
+    .then((result) => {
+      if(result && result.activityType) {
+        this.setState({result: 'success: shared with ' + result.activityType})
+      } else {
+        this.setState({result: 'success'})
+      }
+    })
+    .catch((error) => this.setState({result: 'error: ' + error.message}))
   }
 
   _shareText() {
-    Share.shareText({
+    Share.share({
       message: 'A framework for building native apps using React', 
       url: 'http://facebook.github.io/react-native/',
-      subject: 'React Native'
+      title: 'React Native'
     }, {
       dialogTitle: 'Share React Native website',
       excludedActivityTypes: [
@@ -91,8 +97,14 @@ class ShareMessageExample extends React.Component {
       ],
       tintColor: 'green'
     })
-    .then((result) => this.setState({result:result}))
-    .catch(()=> this.setState({result:'Canceled'}))
+    .then((result) => {
+      if(result && result.activityType) {
+        this.setState({result: 'success: shared with ' + result.activityType})
+      } else {
+        this.setState({result: 'success'})
+      }
+    })
+    .catch((error) => this.setState({result: 'error: ' + error.message}))
   }
 
 }

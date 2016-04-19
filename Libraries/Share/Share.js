@@ -19,6 +19,9 @@ const {
 const invariant = require('fbjs/lib/invariant');
 const processColor = require('processColor');
 
+type Content = { title: string, message: string } | { title: string, url: string };
+type Options = { dialogTitle?: string, excludeActivityTypes?: Array<string>, tintColor?: string };
+
 class Share {
   
   /**
@@ -28,7 +31,7 @@ class Share {
    * 
    *  - `message` - a message to share
    *  - `url` - an URL to share. In Android, this will overwrite message
-   *  - `subject` - subject of the message
+   *  - `title` - title of the message
    * 
    * At least one of URL and message is required.
    * 
@@ -43,7 +46,7 @@ class Share {
    * 
    * - `dialogTitle`
    */
-  static shareText(content: Object, options?: Object): Promise<boolean> {
+  static share(content: Content, options: ?Options): Promise<boolean> {
     invariant(
       typeof content === 'object' && content !== null,
       'Content must a valid object'
@@ -61,13 +64,13 @@ class Share {
       'Invalid url: url should be a string. Was: ' + content.url
     );
     invariant(
-      !content.subject || typeof content.subject === 'string',
-      'Invalid subject: subject should be a string. Was: ' + content.subject
+      !content.title || typeof content.title === 'string',
+      'Invalid title: title should be a string. Was: ' + content.title
     );
 
     if (Platform.OS === 'android') {
       let dialogTitle = typeof options === 'object' && options.dialogTitle ? options.dialogTitle : null;
-      return ShareModule.shareText(content, dialogTitle);
+      return ShareModule.share(content, dialogTitle);
     } else if (Platform.OS === 'ios') {
       return new Promise((resolve, reject) => {
         let actionSheetOptions = {...content, ...options};
@@ -76,18 +79,22 @@ class Share {
         }
         ActionSheetManager.showShareActionSheetWithOptions(
           actionSheetOptions,
-          console.error,
+          (error) => {
+            reject(new Error(error.message))
+          },
           (success, activityType) => {
             if (success) {
-              resolve(activityType)
+              resolve({
+                'activityType': activityType
+              })
             } else {
-              reject()
+              reject(new Error('User canceled'))
             }
           }
         );
       });
     } else {
-      console.warn('Share.shareText is not supported on this platform');
+      console.warn('Share.share is not supported on this platform');
       return Promise.reject();
     }
   }

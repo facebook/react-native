@@ -27,6 +27,9 @@ import com.facebook.react.common.ReactConstants;
  */
 public class ShareModule extends ReactContextBaseJavaModule {
 
+  private static final String ERROR_INVALID_CONTENT = "E_INVALID_CONTENT";
+  private static final String ERROR_UNABLE_TO_OPEN_DIALOG = "E_UNABLE_TO_OPEN_DIALOG";
+
   public ShareModule(ReactApplicationContext reactContext) {
     super(reactContext);
   }
@@ -42,12 +45,12 @@ public class ShareModule extends ReactContextBaseJavaModule {
    * Refer http://developer.android.com/intl/ko/training/sharing/send.html
    * 
    * @param content the data to send
-   * @param title the title of the chooser dialog
+   * @param dialogTitle the title of the chooser dialog
    */
   @ReactMethod
-  public void shareText(ReadableMap content, String title, Promise promise) {
+  public void share(ReadableMap content, String dialogTitle, Promise promise) {
     if (content == null) {
-      promise.reject("Invalid content");
+      promise.reject(ERROR_INVALID_CONTENT, "Content cannot be null");
       return;
     }
 
@@ -55,8 +58,8 @@ public class ShareModule extends ReactContextBaseJavaModule {
       Intent intent = new Intent(Intent.ACTION_SEND);
       intent.setTypeAndNormalize("text/plain");
       
-      if (content.hasKey("subject")) {
-        intent.putExtra(Intent.EXTRA_SUBJECT, content.getString("subject"));
+      if (content.hasKey("title")) {
+        intent.putExtra(Intent.EXTRA_SUBJECT, content.getString("title"));
       }
 
       if (content.hasKey("message")) {
@@ -67,8 +70,8 @@ public class ShareModule extends ReactContextBaseJavaModule {
         intent.putExtra(Intent.EXTRA_TEXT, content.getString("url")); // this will overwrite message
       }
 
-      //TODO: use createChooser (Intent target, CharSequence title, IntentSender sender) after API level 22 
-      Intent chooser = Intent.createChooser(intent, title); 
+      //TODO: use createChooser (Intent target, CharSequence dialogTitle, IntentSender sender) after API level 22 
+      Intent chooser = Intent.createChooser(intent, dialogTitle); 
 
       Activity currentActivity = getCurrentActivity();
       if (currentActivity != null) {
@@ -76,10 +79,10 @@ public class ShareModule extends ReactContextBaseJavaModule {
       } else {
         getReactApplicationContext().startActivity(chooser);
       }
-      promise.resolve(true);
+      promise.resolve(null);
     } catch (Exception e) {
       FLog.e(ReactConstants.TAG, "Failed to open share dialog", e);
-      promise.reject("Failed to open share dialog");
+      promise.reject(ERROR_UNABLE_TO_OPEN_DIALOG, "Failed to open share dialog");
     }
 
   }
