@@ -1,67 +1,82 @@
 The list of releases with notes can be found at:
 https://github.com/facebook/react-native/releases
 
-Release schedule:
+## Release schedule
 
-- **0.22 branch cut**, 0.22.0-rc - **week of Mar 7**
-- 0.22.0 - Mar 21
-- **0.23 branch cut**, 0.23.0-rc - **week of Mar 21**
-- 0.23.0 - Apr 4
-- **0.24 branch cut**, 0.24.0-rc - **week of Apr 4**
-- 0.24.0 - Apr 18
-- **0.25 branch cut**, 0.25.0-rc - **week of Apr 18**
-- 0.25.0 - May 2
-- **0.26 branch cut**, 0.26.0-rc - **week of May 2**
-- 0.26.0 - May 16
-- **0.27 branch cut**, 0.27.0-rc - **week of May 16**
-- 0.27.0 - May 30
-- ...
+| Version | RC release       | Stable release |
+| ------- | ---------------- | -------------- |
+| 0.22.0  | week of Mar 7    | Mar 21         |
+| 0.23.0  | week of Mar 21   | Apr 4          |
+| 0.24.0  | week of Apr 4    | Apr 18         |
+| 0.25.0  | week of Apr 18   | May 2          |
+| 0.26.0  | week of May 2    | May 16         |
+| 0.27.0  | week of May 16   | May 30         |
+| ...     | ...              | ...            |
 
 -------------------
-
 ## How to cut a new release branch
+
+#### Prerequisites
+
+The following are required for the local test suite to run:
+- Mac OS X with [Android dev environment set up](https://github.com/facebook/react-native/blob/master/ReactAndroid/README.md)
+- At least 0.2.0 [react-native-cli](https://www.npmjs.com/package/react-native-cli) installed globally
 
 #### Check everything works
 
-Make absolutely sure a basic iOS and Android workflow works on the commit you are going to use for release.
-Make sure CI systems [Travis](https://travis-ci.org/facebook/react-native) and [Circle](https://circleci.com/gh/facebook/react-native)
-are green and then run
+Before cutting a release branch, make sure CI systems [Travis](https://travis-ci.org/facebook/react-native) and [Circle](https://circleci.com/gh/facebook/react-native) are green.
 
-```
+Before executing the following script, make sure you have:
+- An Android emulator / Genymotion device running
+- No packager running in any of the projects 
+
+```bash
 ./scripts/test-manual-e2e.sh
 ```
 
-This script runs end to end with a proxy npm repository on local PC and asks to check that Chrome Debugging works.
+This script bundles a react-native package locally and passes it to the `react-native` cli that creates a test project inside `/tmp` folder using that version.
 
-**Note**: In order to run the e2e tests, you'll need Mac OS with the
-[Android dev environment set up](https://github.com/facebook/react-native/blob/master/ReactAndroid/README.md).
+After `npm install` completes, the script prints a set of manual checks you have to do to ensure the release you are preparing is working as expected on both platforms.
 
 #### Cut a release branch and push to github
 
 Run:
 
-```
-git checkout -b <version_you_are_releasing>-stable # e.g. git checkout -b 0.22-stable
-node ./scripts/bump-oss-version.js <exact-version_you_are_releasing> # e.g. git node ./scripts/bump-oss-version.js 0.22.0-rc
-# IMPORTANT: Test everything (Chrome debugging, Reload JS, Hot Module Reloading)
-./scripts/test-manual-e2e.sh
-git push origin <version_you_are_releasing>-stable --tags # e.g. git push origin 0.22-stable --tags
+```bash
+git checkout -b <version_you_are_releasing>-stable 
+# e.g. git checkout -b 0.22-stable
+
+node ./scripts/bump-oss-version.js <exact-version_you_are_releasing> 
+# e.g. node ./scripts/bump-oss-version.js 0.22.0-rc
+
+git push origin <version_you_are_releasing>-stable --tags
+# e.g. git push origin 0.22-stable --tags
 ```
 
-Circle CI will run the tests and publish to npm with version `0.22.0-rc` and tag `next` meaning that
-this version will not be installed for users by default.
+Circle CI will automatically run the tests and publish to npm with the version you have specified (e.g `0.22.0-rc`) and tag `next` meaning that this version will not be installed for users by default.
 
 Go to [Circle CI](https://circleci.com/gh/facebook/react-native), look for your branch on the left side and look the npm publish step.
 
-**Note** In order for the CI to publish to npm the **last** commit on the new branch must have the tag `v<branch-name-without-stable>.0-[rc]`.
-
 #### Make sure we have release notes
 
-Write the release notes, or post in [React Native Core Contributors](https://www.facebook.com/groups/reactnativeoss/) that the RC is ready to find a voluteer.
+Write the release notes, or post in [React Native Core Contributors](https://www.facebook.com/groups/reactnativeoss/) that the RC is ready to find a voluteer. You can also use [react-native-release-notes](https://github.com/knowbody/react-native-release-notes) to generate a draft of release notes.
 
-To go through all the commits that went into a release, one way is to use the GitHub compare view: https://github.com/facebook/react-native/compare/0.21-stable...0.22-stable (Note: This only shows **250** commits, if there are more use git.)
+To go through all the commits that went into a release, one way is to use the GitHub compare view:
+```
+https://github.com/facebook/react-native/compare/0.21-stable...0.22-stable
+```
 
-Post the release notes: https://github.com/facebook/react-native/releases
+**Note**: This only shows **250** commits, if there are more use git.
+
+When making a list of changes, ignore docs, showcase updates and minor typos. 
+
+Sometimes commit messages might be really short / confusing - try rewording them where it makes sense. Below are few examples:
+- `Fix logging reported by RUN_JS_BUNDLE` -> `Fix systrace logging of RUN_JS_BUNDLE event`
+- `Fixes hot code reloading issue` -> `Fix an edge case in hot module reloading`
+
+Before posting the list of changes, consider asking one of contributors for their opinion. Once everything is ready, post the release notes: https://github.com/facebook/react-native/releases
+
+**Important**: For release candiate releases, make sure to check "This is a pre-release"
 
 #### Tweet about the rc release
 
@@ -69,7 +84,7 @@ Tweet about it! Link to release notes and say "please report issues" and link to
 
 ## IMPORTANT: Track bug reports from the community during the following two weeks, ping owners to get them fixed
 
-A good way to do this is to create a github issue and post about it so people can report bugs. Examples: https://github.com/facebook/react-native/issues/6087, https://github.com/facebook/react-native/issues/5201
+A good way to do this is to create a github issue and post about it so people can report bugs. Examples: [#6087](https://github.com/facebook/react-native/issues/6087), [#5201](https://github.com/facebook/react-native/issues/5201)
 
 **Only cherry-pick small and non-risky bug fixes**. **Don't pick new features into the release** as this greatly increases the risk of something breaking. The main point of the RC is to let people to use it for two weeks and fix the most serious bugs.
 
@@ -79,9 +94,13 @@ A good way to do this is to create a github issue and post about it so people ca
 
 After cherry-picking 1-2 bug fixes, it is a good idea to do a new RC release so that people can test again. Having a few RC releases can also help people bisect in case we cherry-pick a bad commit by mistake.
 
-```
-git checkout 0.version_you_are_releasing-stable   # e.g. git checkout 0.22-stable
-git pull origin 0.version_you_are_releasing-stable  # e.g. git pull origin 0.22-stable
+```bash
+git checkout 0.version_you_are_releasing-stable
+# e.g. git checkout 0.22-stable
+
+git pull origin 0.version_you_are_releasing-stable
+# e.g. git pull origin 0.22-stable
+
 # Cherry-pick those commits
 git cherry-pick commitHash1
 
@@ -91,9 +110,12 @@ git cherry-pick commitHash1
 
 If everything worked:
 
-```
-node ./scripts/bump-oss-version.js <exact_version_you_are_releasing> # e.g. node ./scripts/bump-oss-version.js 0.22.0-rc1
-git push origin version_you_are_releasing-stable --tags  # e.g. git push origin 0.22-stable --tags
+```bash
+node ./scripts/bump-oss-version.js <exact_version_you_are_releasing> 
+# e.g. node ./scripts/bump-oss-version.js 0.22.0-rc1
+
+git push origin version_you_are_releasing-stable --tags 
+# e.g. git push origin 0.22-stable --tags
 ````
 
 -------------------
@@ -102,11 +124,15 @@ git push origin version_you_are_releasing-stable --tags  # e.g. git push origin 
 
 Roughly two weeks after the branch cut (see the release schedule above) it's time to promote the last RC to a real release.
 
-Once all bugfixes have been cherry-picked and you're sure the release is solid (example: https://github.com/facebook/react-native/issues/6087), do the release:
+Once all bugfixes have been cherry-picked and you're sure the release is solid (example: [#6087](https://github.com/facebook/react-native/issues/6087)), do the release:
 
-```
-git checkout 0.version_you_are_releasing-stable   # e.g. git checkout 0.22-stable
-git pull origin 0.version_you_are_releasing-stable  # e.g. git pull origin 0.22-stable
+```bash
+git checkout 0.version_you_are_releasing-stable
+# e.g. git checkout 0.22-stable
+
+git pull origin 0.version_you_are_releasing-stable
+# e.g. git pull origin 0.22-stable
+
 # Cherry-pick those commits, if any
 git cherry-pick commitHash1
 
@@ -116,12 +142,18 @@ git cherry-pick commitHash1
 
 If everything worked:
 
-```
-node ./scripts/bump-oss-version.js <exact_version_you_are_releasing> # e.g. node ./scripts/bump-oss-version.js 0.22.0
+```bash
+node ./scripts/bump-oss-version.js <exact_version_you_are_releasing> 
+# e.g. node ./scripts/bump-oss-version.js 0.22.0
+
 git tag -d latest
 git push origin :latest
-git tag latest # The latest tag marks when to regenerate the website.
-git push origin version_you_are_releasing-stable --tags  # e.g. git push origin 0.22-stable --tags
+
+git tag latest 
+# The latest tag marks when to regenerate the website.
+
+git push origin version_you_are_releasing-stable --tags  
+# e.g. git push origin 0.22-stable --tags
 ```
 
 #### Update the release notes
