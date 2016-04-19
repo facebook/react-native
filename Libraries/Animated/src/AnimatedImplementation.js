@@ -1394,7 +1394,7 @@ function createAnimatedComponent(Component: any): any {
 
       for (var key in ViewStylePropTypes) {
         if (!Component.propTypes[key] && props[key] !== undefined) {
-          console.error(
+          console.warn(
             'You are setting the style `{ ' + key + ': ... }` as a prop. You ' +
             'should nest it in a style object. ' +
             'E.g. `{ style: { ' + key + ': ... } }`'
