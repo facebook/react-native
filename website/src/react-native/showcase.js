@@ -351,6 +351,16 @@ var apps = [
     author: 'Sharath Prabhal',
   },
   {
+    name: 'Emoji Poetry',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/31/b5/09/31b509b2-aaec-760f-ccec-2ce72fe7134e/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/emoji-poetry/id1068972506?l=en&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.arzamasemoji',
+    author: 'forforce.com',
+    blogs: [
+      'http://arzamas.academy/special/emoji/english',
+    ],
+  },
+  {
     name: 'Fan of it',
     icon: 'http://a4.mzstatic.com/us/r30/Purple3/v4/c9/3f/e8/c93fe8fb-9332-e744-f04a-0f4f78e42aa8/icon350x350.png',
     link: 'https://itunes.apple.com/za/app/fan-of-it/id1017025530?mt=8',
