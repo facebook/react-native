@@ -76,7 +76,7 @@ namespace ReactNative.Views.Split
             }
         }
 
-        [ReactProp("panePosition", DefaultInteger = 0 /* SplitViewPanePlacement.Left */)]
+        [ReactProp("panePosition", DefaultInt32 = 0 /* SplitViewPanePlacement.Left */)]
         public void SetPanePosition(SplitView view, int panePosition)
         {
             var placement = (SplitViewPanePlacement)panePosition;
@@ -91,7 +91,7 @@ namespace ReactNative.Views.Split
             view.PanePlacement = placement;
         }
 
-        [ReactProp("paneWidth", DefaultFloat = float.NaN)]
+        [ReactProp("paneWidth", DefaultSingle = float.NaN)]
         public void SetPaneWidth(SplitView view, float width)
         {
             if (!float.IsNaN(width))
@@ -100,7 +100,7 @@ namespace ReactNative.Views.Split
             }
             else
             {
-                // TODO: default pane width?
+                view.OpenPaneLength = 320 /* default value */;
             }
         }
 

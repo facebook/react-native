@@ -483,7 +483,7 @@ namespace ReactNative.UIManager
                 return true;
             }
 
-            if (props.Keys.Contains(ViewProps.Collapsible) && !props.GetProperty<bool>(ViewProps.Collapsible))
+            if (props.ContainsKey(ViewProps.Collapsible) && !props.GetProperty<bool>(ViewProps.Collapsible))
             {
                 return false;
             }

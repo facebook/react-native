@@ -4,6 +4,8 @@ namespace ReactNative.UIManager
 {
     static class ColorHelpers
     {
+        public const uint Transparent = 0x00FFFFFF;
+
         public static Color Parse(uint value)
         {
             var color = value;

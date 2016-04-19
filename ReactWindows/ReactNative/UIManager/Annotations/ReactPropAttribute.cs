@@ -12,7 +12,7 @@ namespace ReactNative.UIManager.Annotations
     /// In cases when the property has been removed from the corresponding 
     /// react component, the annotated setter will be called and a default
     /// value will be provided as a value parameter. Default values can be
-    /// customized using, e.g., <see cref="ReactPropBaseAttribute.DefaultInteger"/>. 
+    /// customized using, e.g., <see cref="ReactPropBaseAttribute.DefaultInt32"/>. 
     /// In all other cases where the type is not a primitive, 
     /// <code>null</code> will be provided as a default.
     /// </remarks>

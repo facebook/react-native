@@ -81,12 +81,13 @@ namespace ReactNative.Views.Scroll
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="color">The masked color value.</param>
-        [ReactProp(ViewProps.BackgroundColor)]
-        public void SetBackgroundColor(ScrollViewer view, uint? color)
+        [ReactProp(
+            ViewProps.BackgroundColor,
+            CustomType = "Color", 
+            DefaultUInt32 = ColorHelpers.Transparent)]
+        public void SetBackgroundColor(ScrollViewer view, uint color)
         {
-            view.Background = color.HasValue
-                ? new SolidColorBrush(ColorHelpers.Parse(color.Value))
-                : null;
+            view.Background = new SolidColorBrush(ColorHelpers.Parse(color));
         }
 
         /// <summary>
@@ -108,9 +109,9 @@ namespace ReactNative.Views.Scroll
         /// The flag signaling whether horizontal scrolling is enabled.
         /// </param>
         [ReactProp("horizontal")]
-        public void SetHorizontal(ScrollViewer view, bool? horizontal)
+        public void SetHorizontal(ScrollViewer view, bool horizontal)
         {
-            view.HorizontalScrollMode = horizontal ?? false
+            view.HorizontalScrollMode = horizontal
                 ? ScrollMode.Auto
                 : ScrollMode.Disabled;
         }
@@ -123,12 +124,11 @@ namespace ReactNative.Views.Scroll
         /// The value to show the indicator or not.
         /// </param>
         [ReactProp("showsHorizontalScrollIndicator")]
-        public void SetShowsHorizontalScrollIndicator(ScrollViewer view, bool? showIndicator)
+        public void SetShowsHorizontalScrollIndicator(ScrollViewer view, bool showIndicator)
         {
-            view.HorizontalScrollBarVisibility =
-                showIndicator ?? false
-                    ? ScrollBarVisibility.Visible
-                    : ScrollBarVisibility.Hidden;
+            view.HorizontalScrollBarVisibility = showIndicator
+                ? ScrollBarVisibility.Visible
+                : ScrollBarVisibility.Hidden;
         }
 
         /// <summary>
@@ -139,12 +139,11 @@ namespace ReactNative.Views.Scroll
         /// The value to show the indicator or not.
         /// </param>
         [ReactProp("showsVerticalScrollIndicator")]
-        public void SetShowsVerticalScrollIndicator(ScrollViewer view, bool? showIndicator)
+        public void SetShowsVerticalScrollIndicator(ScrollViewer view, bool showIndicator)
         {
-            view.VerticalScrollBarVisibility =
-                showIndicator ?? false
-                    ? ScrollBarVisibility.Visible
-                    : ScrollBarVisibility.Hidden;
+            view.VerticalScrollBarVisibility = showIndicator
+                ? ScrollBarVisibility.Visible
+                : ScrollBarVisibility.Hidden;
         }
 
         /// <summary>
@@ -158,7 +157,7 @@ namespace ReactNative.Views.Scroll
             view.ViewChanging -= OnViewChanging;
             view.ChangeView(
                 contentOffset.Value<double?>("x"), 
-                contentOffset.Value<double>("y"), 
+                contentOffset.Value<double?>("y"), 
                 null,
                 true);
             view.ViewChanging += OnViewChanging;

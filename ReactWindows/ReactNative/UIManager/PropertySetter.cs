@@ -27,17 +27,16 @@ namespace ReactNative.UIManager
         private static readonly IDictionary<Type, Func<ReactPropBaseAttribute, object>> s_defaultValues =
             new Dictionary<Type, Func<ReactPropBaseAttribute, object>>
             {
-                { typeof(sbyte), a => (sbyte)a.DefaultByte },
+                { typeof(sbyte), a => a.DefaultSByte },
                 { typeof(byte), a => a.DefaultByte },
-                { typeof(short), a => a.DefaultShort },
-                { typeof(ushort), a => (ushort)a.DefaultShort },
-                { typeof(int), a => a.DefaultInteger },
-                { typeof(uint), a => (uint)a.DefaultInteger },
-                { typeof(long), a => a.DefaultLong },
-                { typeof(ulong), a => (ulong)a.DefaultLong },
-                { typeof(float), a => a.DefaultFloat },
+                { typeof(short), a => a.DefaultInt16 },
+                { typeof(ushort), a => a.DefaultUInt16 },
+                { typeof(int), a => a.DefaultInt32 },
+                { typeof(uint), a => a.DefaultUInt32 },
+                { typeof(long), a => a.DefaultInt64 },
+                { typeof(ulong), a => a.DefaultUInt64 },
+                { typeof(float), a => a.DefaultSingle },
                 { typeof(double), a => a.DefaultDouble },
-                { typeof(decimal), a => a.DefaultDecimal },
                 { typeof(bool), a => a.DefaultBoolean },
             };
 
@@ -109,14 +108,20 @@ namespace ReactNative.UIManager
 
         protected object ExtractProperty(ReactStylesDiffMap props)
         {
-            var result = props.GetProperty(Name, PropertyType);
+            var token = props.GetProperty(Name);
             var defaultFunc = default(Func<ReactPropBaseAttribute, object>);
-            if (result == null && s_defaultValues.TryGetValue(PropertyType, out defaultFunc))
+            if (token == null && s_defaultValues.TryGetValue(PropertyType, out defaultFunc))
             {
-                result = defaultFunc(_attribute);
+                return defaultFunc(_attribute);
             }
-
-            return result;
+            else if (token != null)
+            {
+                return token.ToObject(PropertyType);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private void Invoke(object instance, object[] args)
@@ -322,7 +327,7 @@ namespace ReactNative.UIManager
 
             protected override object[] GetShadowNodeArgs(ReactStylesDiffMap props)
             {
-                s_args[0] = props.GetProperty(Name, PropertyType);
+                s_args[0] = ExtractProperty(props);
                 return s_args;
             }
 

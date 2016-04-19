@@ -187,9 +187,9 @@ namespace ReactNative.Views.TextInput
         /// <param name="view">The view instance.</param>
         /// <param name="onSelectionChange">The indicator.</param>
         [ReactProp("onSelectionChange", DefaultBoolean = false)]
-        public void SetSelectionChange(ReactTextBox view, bool? onSelectionChange)
+        public void SetSelectionChange(ReactTextBox view, bool onSelectionChange)
         {
-            if (onSelectionChange.HasValue && onSelectionChange.Value)
+            if (onSelectionChange)
             {
                 _onSelectionChange = true;
                 view.SelectionChanged += OnSelectionChanged;

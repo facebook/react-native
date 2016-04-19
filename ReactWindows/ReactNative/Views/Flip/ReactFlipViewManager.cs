@@ -49,10 +49,10 @@ namespace ReactNative.Views.Flip
             }
         }
 
-        [ReactProp("alwaysAnimate")]
-        public void SetAlwaysAnimate(FlipView view, bool? alwaysAnimate)
+        [ReactProp("alwaysAnimate", DefaultBoolean = true)]
+        public void SetAlwaysAnimate(FlipView view, bool alwaysAnimate)
         {
-            view.UseTouchAnimationsForAllNavigation = alwaysAnimate ?? true;
+            view.UseTouchAnimationsForAllNavigation = alwaysAnimate;
         }
 
         public override void AddView(FlipView parent, FrameworkElement child, int index)

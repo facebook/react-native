@@ -20,11 +20,9 @@ namespace ReactNative.UIManager
         /// <param name="view">The view panel.</param>
         /// <param name="radius">The border radius value.</param>
         [ReactProp("borderRadius")]
-        public void SetBorderRadius(Border view, double? radius)
+        public void SetBorderRadius(Border view, double radius)
         {
-            view.CornerRadius = radius.HasValue
-                ? new CornerRadius(radius.Value)
-                : default(CornerRadius);
+            view.CornerRadius = new CornerRadius(radius);
         }
 
         /// <summary>
@@ -32,12 +30,13 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="view">The view panel.</param>
         /// <param name="color">The masked color value.</param>
-        [ReactProp(ViewProps.BackgroundColor)]
-        public void SetBackgroundColor(Border view, uint? color)
+        [ReactProp(
+            ViewProps.BackgroundColor,
+            CustomType = "Color",
+            DefaultUInt32 = ColorHelpers.Transparent)]
+        public void SetBackgroundColor(Border view, uint color)
         {
-            view.Background = color.HasValue
-                ? new SolidColorBrush(ColorHelpers.Parse(color.Value))
-                : null;
+            view.Background = new SolidColorBrush(ColorHelpers.Parse(color));
         }
 
         /// <summary>
@@ -64,9 +63,8 @@ namespace ReactNative.UIManager
             ViewProps.BorderLeftWidth,
             ViewProps.BorderRightWidth,
             ViewProps.BorderTopWidth,
-            ViewProps.BorderBottomWidth,
-            DefaultDouble = double.NaN)]
-        public void SetBorderWidth(Border view, int index, double? width)
+            ViewProps.BorderBottomWidth)]
+        public void SetBorderWidth(Border view, int index, double width)
         {
             view.SetBorderWidth(ViewProps.BorderSpacingTypes[index], width);
         }
