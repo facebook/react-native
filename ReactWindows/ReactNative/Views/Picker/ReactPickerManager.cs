@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.UIManager;
+using ReactNative.UIManager.Annotations;
 using ReactNative.UIManager.Events;
 using System;
 using Windows.UI.Xaml;
@@ -32,7 +33,7 @@ namespace ReactNative.Views.Picker
         /// Set to <code>true</code> if the picker should be enabled,
         /// otherwise, set to <code>false</code>.
         /// </param>
-        [ReactProperty("enabled")]
+        [ReactProp("enabled")]
         public void SetEnabled(ComboBox view, bool enabled)
         {
             view.IsEnabled = enabled;
@@ -43,7 +44,7 @@ namespace ReactNative.Views.Picker
         /// </summary>
         /// <param name="view">a combobox instance.</param>
         /// <param name="selected">The selected item.</param>
-        [ReactProperty("selected")]
+        [ReactProp("selected")]
         public void SetSelected(ComboBox view, int selected)
         {
             // Temporarily disable selection changed event handler.
@@ -64,7 +65,7 @@ namespace ReactNative.Views.Picker
         /// </summary>
         /// <param name="view">a combobox instance.</param>
         /// <param name="items">The picker items.</param>
-        [ReactProperty("items")]
+        [ReactProp("items")]
         public void SetItems(ComboBox view, JArray items)
         {
             // Temporarily disable selection changed event handler.

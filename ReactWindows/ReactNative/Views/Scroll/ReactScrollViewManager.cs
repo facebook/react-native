@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.UIManager;
+using ReactNative.UIManager.Annotations;
 using ReactNative.UIManager.Events;
 using System;
 using System.Collections.Generic;
@@ -80,7 +81,7 @@ namespace ReactNative.Views.Scroll
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="color">The masked color value.</param>
-        [ReactProperty(ViewProperties.BackgroundColor)]
+        [ReactProp(ViewProps.BackgroundColor)]
         public void SetBackgroundColor(ScrollViewer view, uint? color)
         {
             view.Background = color.HasValue
@@ -93,7 +94,7 @@ namespace ReactNative.Views.Scroll
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="enabled">The enabled value.</param>
-        [ReactProperty("scrollEnabled", DefaultBoolean = true)]
+        [ReactProp("scrollEnabled", DefaultBoolean = true)]
         public void SetEnabled(ScrollViewer view, bool enabled)
         {
             view.IsEnabled = enabled;
@@ -106,7 +107,7 @@ namespace ReactNative.Views.Scroll
         /// <param name="horizontal">
         /// The flag signaling whether horizontal scrolling is enabled.
         /// </param>
-        [ReactProperty("horizontal")]
+        [ReactProp("horizontal")]
         public void SetHorizontal(ScrollViewer view, bool? horizontal)
         {
             view.HorizontalScrollMode = horizontal ?? false
@@ -121,7 +122,7 @@ namespace ReactNative.Views.Scroll
         /// <param name="showIndicator">
         /// The value to show the indicator or not.
         /// </param>
-        [ReactProperty("showsHorizontalScrollIndicator")]
+        [ReactProp("showsHorizontalScrollIndicator")]
         public void SetShowsHorizontalScrollIndicator(ScrollViewer view, bool? showIndicator)
         {
             view.HorizontalScrollBarVisibility =
@@ -137,7 +138,7 @@ namespace ReactNative.Views.Scroll
         /// <param name="showIndicator">
         /// The value to show the indicator or not.
         /// </param>
-        [ReactProperty("showsVerticalScrollIndicator")]
+        [ReactProp("showsVerticalScrollIndicator")]
         public void SetShowsVerticalScrollIndicator(ScrollViewer view, bool? showIndicator)
         {
             view.VerticalScrollBarVisibility =
@@ -151,7 +152,7 @@ namespace ReactNative.Views.Scroll
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="contentOffset">The content offset.</param>
-        [ReactProperty("contentOffset")]
+        [ReactProp("contentOffset")]
         public void SetContentOffset(ScrollViewer view, JObject contentOffset)
         {
             view.ViewChanging -= OnViewChanging;

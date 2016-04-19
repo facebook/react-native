@@ -2,9 +2,9 @@
 {
     static class ReactStylesDiffMapExtensions
     {
-        public static T GetProperty<T>(this ReactStylesDiffMap properties, string name)
+        public static T GetProperty<T>(this ReactStylesDiffMap props, string name)
         {
-            return (T)properties.GetProperty(name, typeof(T));
+            return (T)props.GetProperty(name, typeof(T));
         }
     }
 }

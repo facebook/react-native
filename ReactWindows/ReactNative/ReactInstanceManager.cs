@@ -1,14 +1,13 @@
 ﻿using ReactNative.Bridge;
 using ReactNative.Bridge.Queue;
+using ReactNative.Chakra.Executor;
 using ReactNative.Common;
 using ReactNative.DevSupport;
-using ReactNative.Chakra.Executor;
 using ReactNative.Modules.Core;
 using ReactNative.Tracing;
 using ReactNative.UIManager;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Threading.Tasks;
 
 namespace ReactNative

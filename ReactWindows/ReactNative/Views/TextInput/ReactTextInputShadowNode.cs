@@ -1,6 +1,7 @@
 ﻿using Facebook.CSSLayout;
 using ReactNative.Bridge;
 using ReactNative.UIManager;
+using ReactNative.UIManager.Annotations;
 using ReactNative.Views.Text;
 using System;
 using Windows.Foundation;
@@ -41,7 +42,7 @@ namespace ReactNative.Views.TextInput
         /// Set the most recent event count in JavaScript.
         /// </summary>
         /// <param name="mostRecentEventCount">The event count.</param>
-        [ReactProperty("mostRecentEventCount")]
+        [ReactProp("mostRecentEventCount")]
         public void SetMostRecentEventCount(int mostRecentEventCount)
         {
             _jsEventCount = mostRecentEventCount;
@@ -51,7 +52,7 @@ namespace ReactNative.Views.TextInput
         /// Set the number of lines for the text input.
         /// </summary>
         /// <param name="numberOfLines">The event count.</param>
-        [ReactProperty("numberOfLines")]
+        [ReactProp("numberOfLines")]
         public void SetNumberOfLines(int numberOfLines)
         {
             _numberOfLines = numberOfLines;

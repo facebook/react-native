@@ -90,7 +90,7 @@ namespace ReactNative.Tests
             throw new NotImplementedException();
         }
 
-        public virtual void UpdateProperties(FrameworkElement viewToUpdate, ReactStylesDiffMap properties)
+        public virtual void UpdateProperties(FrameworkElement viewToUpdate, ReactStylesDiffMap props)
         {
             throw new NotImplementedException();
         }

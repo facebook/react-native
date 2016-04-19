@@ -1,5 +1,6 @@
 ﻿using Facebook.CSSLayout;
 using ReactNative.Reflection;
+using ReactNative.UIManager.Annotations;
 
 namespace ReactNative.UIManager
 {
@@ -15,7 +16,7 @@ namespace ReactNative.UIManager
         /// Set the width of the shadow node.
         /// </summary>
         /// <param name="width">The width.</param>
-        [ReactProperty(ViewProperties.Width, DefaultFloat = Undefined)]
+        [ReactProp(ViewProps.Width, DefaultFloat = Undefined)]
         public void SetWidth(float? width)
         {
             Width = width ?? CSSConstants.Undefined;
@@ -25,7 +26,7 @@ namespace ReactNative.UIManager
         /// Set the heigth of the shadow node.
         /// </summary>
         /// <param name="height">The height.</param>
-        [ReactProperty(ViewProperties.Height, DefaultFloat = Undefined)]
+        [ReactProp(ViewProps.Height, DefaultFloat = Undefined)]
         public void SetHeight(float? height)
         {
             Height = height ?? CSSConstants.Undefined;
@@ -35,7 +36,7 @@ namespace ReactNative.UIManager
         /// Sets the left position of the shadow node.
         /// </summary>
         /// <param name="left">The left position.</param>
-        [ReactProperty(ViewProperties.Left, DefaultFloat = Undefined)]
+        [ReactProp(ViewProps.Left, DefaultFloat = Undefined)]
         public void SetLeft(float? left)
         {
             PositionLeft = left ?? CSSConstants.Undefined;
@@ -45,7 +46,7 @@ namespace ReactNative.UIManager
         /// Sets the top position of the shadow node.
         /// </summary>
         /// <param name="top">The top position.</param>
-        [ReactProperty(ViewProperties.Top, DefaultFloat = Undefined)]
+        [ReactProp(ViewProps.Top, DefaultFloat = Undefined)]
         public void SetTop(float? top)
         {
             PositionTop = top ?? CSSConstants.Undefined;
@@ -55,7 +56,7 @@ namespace ReactNative.UIManager
         /// Sets the bottom position of the shadow node.
         /// </summary>
         /// <param name="bottom">The bottom position.</param>
-        [ReactProperty(ViewProperties.Bottom, DefaultFloat = Undefined)]
+        [ReactProp(ViewProps.Bottom, DefaultFloat = Undefined)]
         public void SetBottom(float? bottom)
         {
             PositionBottom = bottom ?? CSSConstants.Undefined;
@@ -65,7 +66,7 @@ namespace ReactNative.UIManager
         /// Sets the right position of the shadow node.
         /// </summary>
         /// <param name="right">The right position.</param>
-        [ReactProperty(ViewProperties.Right, DefaultFloat = Undefined)]
+        [ReactProp(ViewProps.Right, DefaultFloat = Undefined)]
         public void SetRight(float? right)
         {
             PositionRight = right ?? CSSConstants.Undefined;
@@ -75,7 +76,7 @@ namespace ReactNative.UIManager
         /// Sets the flex of the shadow node.
         /// </summary>
         /// <param name="flex">The flex value.</param>
-        [ReactProperty(ViewProperties.Flex, DefaultFloat = 0f)]
+        [ReactProp(ViewProps.Flex, DefaultFloat = 0f)]
         public void SetFlex(float? flex)
         {
             Flex = flex ?? CSSConstants.Undefined;
@@ -85,7 +86,7 @@ namespace ReactNative.UIManager
         /// Sets the flex direction of the shadow node.
         /// </summary>
         /// <param name="flexDirection">The flex direction.</param>
-        [ReactProperty(ViewProperties.FlexDirection)]
+        [ReactProp(ViewProps.FlexDirection)]
         public void SetFlexDirection(string flexDirection)
         {
             FlexDirection = flexDirection != null
@@ -97,7 +98,7 @@ namespace ReactNative.UIManager
         /// Sets the wrap property on the shadow node.
         /// </summary>
         /// <param name="flexWrap">The wrap.</param>
-        [ReactProperty(ViewProperties.FlexWrap)]
+        [ReactProp(ViewProps.FlexWrap)]
         public void SetFlexWrap(string flexWrap)
         {
             Wrap = flexWrap != null
@@ -109,7 +110,7 @@ namespace ReactNative.UIManager
         /// Sets the self alignment of the shadow node.
         /// </summary>
         /// <param name="alignSelf">The align self property.</param>
-        [ReactProperty(ViewProperties.AlignSelf)]
+        [ReactProp(ViewProps.AlignSelf)]
         public void SetAlignSelf(string alignSelf)
         {
             AlignSelf = alignSelf != null
@@ -121,7 +122,7 @@ namespace ReactNative.UIManager
         /// Sets the item alignment for the shadow node.
         /// </summary>
         /// <param name="alignItems">The item alignment.</param>
-        [ReactProperty(ViewProperties.AlignItems)]
+        [ReactProp(ViewProps.AlignItems)]
         public void SetAlignItems(string alignItems)
         {
             AlignItems = alignItems != null
@@ -133,7 +134,7 @@ namespace ReactNative.UIManager
         /// Sets the content justification.
         /// </summary>
         /// <param name="justifyContent">The content justification.</param>
-        [ReactProperty(ViewProperties.JustifyContent)]
+        [ReactProp(ViewProps.JustifyContent)]
         public void SetJustifyContent(string justifyContent)
         {
             JustifyContent = justifyContent != null
@@ -146,18 +147,18 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="index">The spacing type index.</param>
         /// <param name="margin">The margin value.</param>
-        [ReactPropertyGroup(
-            ViewProperties.Margin,
-            ViewProperties.MarginVertical,
-            ViewProperties.MarginHorizontal,
-            ViewProperties.MarginLeft,
-            ViewProperties.MarginRight,
-            ViewProperties.MarginTop,
-            ViewProperties.MarginBottom,
+        [ReactPropGroup(
+            ViewProps.Margin,
+            ViewProps.MarginVertical,
+            ViewProps.MarginHorizontal,
+            ViewProps.MarginLeft,
+            ViewProps.MarginRight,
+            ViewProps.MarginTop,
+            ViewProps.MarginBottom,
             DefaultFloat = Undefined)]
         public void SetMargins(int index, float margin)
         {
-            SetMargin(ViewProperties.PaddingMarginSpacingTypes[index], margin);
+            SetMargin(ViewProps.PaddingMarginSpacingTypes[index], margin);
         }
 
         /// <summary>
@@ -165,18 +166,18 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="index">The spacing type index.</param>
         /// <param name="padding">The padding value.</param>
-        [ReactPropertyGroup(
-            ViewProperties.Padding,
-            ViewProperties.PaddingVertical,
-            ViewProperties.PaddingHorizontal,
-            ViewProperties.PaddingLeft,
-            ViewProperties.PaddingRight,
-            ViewProperties.PaddingTop,
-            ViewProperties.PaddingBottom,
+        [ReactPropGroup(
+            ViewProps.Padding,
+            ViewProps.PaddingVertical,
+            ViewProps.PaddingHorizontal,
+            ViewProps.PaddingLeft,
+            ViewProps.PaddingRight,
+            ViewProps.PaddingTop,
+            ViewProps.PaddingBottom,
             DefaultFloat = Undefined)]
         public void SetPaddings(int index, float padding)
         {
-            SetPadding(ViewProperties.PaddingMarginSpacingTypes[index], padding);
+            SetPadding(ViewProps.PaddingMarginSpacingTypes[index], padding);
         }
 
         /// <summary>
@@ -184,23 +185,23 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="index">The border spacing type index.</param>
         /// <param name="borderWidth">The border width.</param>
-        [ReactPropertyGroup(
-            ViewProperties.BorderWidth,
-            ViewProperties.BorderLeftWidth,
-            ViewProperties.BorderRightWidth,
-            ViewProperties.BorderTopWidth,
-            ViewProperties.BorderBottomWidth,
+        [ReactPropGroup(
+            ViewProps.BorderWidth,
+            ViewProps.BorderLeftWidth,
+            ViewProps.BorderRightWidth,
+            ViewProps.BorderTopWidth,
+            ViewProps.BorderBottomWidth,
             DefaultFloat = Undefined)]
         public void SetBorderWidth(int index, float borderWidth)
         {
-            SetBorder(ViewProperties.BorderSpacingTypes[index], borderWidth);
+            SetBorder(ViewProps.BorderSpacingTypes[index], borderWidth);
         }
 
         /// <summary>
         /// Sets the position of the shadow node.
         /// </summary>
         /// <param name="position">The position.</param>
-        [ReactProperty(ViewProperties.Position)]
+        [ReactProp(ViewProps.Position)]
         public void SetPosition(string position)
         {
             PositionType = position != null
@@ -214,7 +215,7 @@ namespace ReactNative.UIManager
         /// <param name="shouldNotifyOnLayout">
         /// The flag signaling if the view should sent an event on layout.
         /// </param>
-        [ReactProperty("onLayout")]
+        [ReactProp("onLayout")]
         public void SetShouldNotifyOnLayout(bool shouldNotifyOnLayout)
         {
             ShouldNotifyOnLayout = shouldNotifyOnLayout;

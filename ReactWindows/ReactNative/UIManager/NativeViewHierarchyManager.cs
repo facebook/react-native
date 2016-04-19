@@ -81,13 +81,13 @@ namespace ReactNative.UIManager
         /// Updates the properties of the view with the given tag.
         /// </summary>
         /// <param name="tag">The view tag.</param>
-        /// <param name="properties">The properties.</param>
-        public void UpdateProperties(int tag, ReactStylesDiffMap properties)
+        /// <param name="props">The properties.</param>
+        public void UpdateProperties(int tag, ReactStylesDiffMap props)
         {
             DispatcherHelpers.AssertOnDispatcher();
             var viewManager = ResolveViewManager(tag);
             var viewToUpdate = ResolveView(tag);
-            viewManager.UpdateProperties(viewToUpdate, properties);
+            viewManager.UpdateProperties(viewToUpdate, props);
         }
 
         /// <summary>

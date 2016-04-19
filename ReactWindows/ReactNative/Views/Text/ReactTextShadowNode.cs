@@ -2,6 +2,7 @@
 using ReactNative.Bridge;
 using ReactNative.Reflection;
 using ReactNative.UIManager;
+using ReactNative.UIManager.Annotations;
 using System;
 using System.Collections.Generic;
 using Windows.Foundation;
@@ -124,7 +125,7 @@ namespace ReactNative.Views.Text
         /// Sets the text for the node.
         /// </summary>
         /// <param name="text">The text.</param>
-        [ReactProperty("text")]
+        [ReactProp("text")]
         public void SetText(string text)
         {
             Text = text;
@@ -135,7 +136,7 @@ namespace ReactNative.Views.Text
         /// Sets the font size for the node.
         /// </summary>
         /// <param name="fontSize">The font size.</param>
-        [ReactProperty(ViewProperties.FontSize, DefaultDouble = Unset)]
+        [ReactProp(ViewProps.FontSize, DefaultDouble = Unset)]
         public void SetFontSize(double fontSize)
         {
             _fontSize = (int)fontSize;
@@ -146,7 +147,7 @@ namespace ReactNative.Views.Text
         /// Sets the font color for the node.
         /// </summary>
         /// <param name="color">The masked color value.</param>
-        [ReactProperty(ViewProperties.Color, CustomType = "Color")]
+        [ReactProp(ViewProps.Color, CustomType = "Color")]
         public void SetColor(uint? color)
         {
             _color = color;
@@ -157,7 +158,7 @@ namespace ReactNative.Views.Text
         /// Sets the font family for the node.
         /// </summary>
         /// <param name="fontFamily">The font family.</param>
-        [ReactProperty(ViewProperties.FontFamily)]
+        [ReactProp(ViewProps.FontFamily)]
         public void SetFontFamily(string fontFamily)
         {
             _fontFamily = fontFamily;
@@ -168,7 +169,7 @@ namespace ReactNative.Views.Text
         /// Sets the font weight for the node.
         /// </summary>
         /// <param name="fontWeightString">The font weight string.</param>
-        [ReactProperty(ViewProperties.FontWeight)]
+        [ReactProp(ViewProps.FontWeight)]
         public void SetFontWeight(string fontWeightString)
         {
             var fontWeight = FontStyleHelpers.ParseFontWeight(fontWeightString);
@@ -185,7 +186,7 @@ namespace ReactNative.Views.Text
         /// Sets the font style for the node.
         /// </summary>
         /// <param name="fontStyleString">The font style string.</param>
-        [ReactProperty(ViewProperties.FontStyle)]
+        [ReactProp(ViewProps.FontStyle)]
         public void SetFontStyle(string fontStyleString)
         {
             var fontStyle = EnumHelpers.ParseNullable<FontStyle>(fontStyleString);
@@ -210,7 +211,7 @@ namespace ReactNative.Views.Text
         }
 
         /// <summary>
-        /// Formats an inline instance with shadow properties..
+        /// Formats an inline instance with shadow properties.
         /// </summary>
         /// <param name="textNode">The text shadow node.</param>
         /// <param name="inline">The inline.</param>

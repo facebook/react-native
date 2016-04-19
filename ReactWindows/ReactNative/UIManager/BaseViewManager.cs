@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using ReactNative.UIManager.Annotations;
 using System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Media3D;
@@ -31,7 +32,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="decomposedMatrix">The requested styling properties to set.</param>
-        [ReactProperty(PROP_DECOMPOSED_MATRIX)]
+        [ReactProp(PROP_DECOMPOSED_MATRIX)]
         public void SetDecomposedMatrix(TFrameworkElement view, JObject decomposedMatrix)
         {
             if (decomposedMatrix == null)
@@ -49,7 +50,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="opacity">The opacity value.</param>
-        [ReactProperty(PROP_OPACITY, DefaultDouble = 1.0)]
+        [ReactProp(PROP_OPACITY, DefaultDouble = 1.0)]
         public void SetOpacity(TFrameworkElement view, double? opacity)
         {
             view.Opacity = opacity ?? 1.0;
@@ -60,7 +61,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="factor">The scaling factor.</param>
-        [ReactProperty(PROP_DECOMPOSED_MATRIX_SCALE_X, DefaultDouble = 1.0)]
+        [ReactProp(PROP_DECOMPOSED_MATRIX_SCALE_X, DefaultDouble = 1.0)]
         public void SetScaleX(TFrameworkElement view, double factor)
         {
             var transform = EnsureTransform(view);
@@ -72,7 +73,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="factor">The scaling factor.</param>
-        [ReactProperty(PROP_DECOMPOSED_MATRIX_SCALE_Y, DefaultDouble = 1.0)]
+        [ReactProp(PROP_DECOMPOSED_MATRIX_SCALE_Y, DefaultDouble = 1.0)]
         public void SetScaleY(TFrameworkElement view, double factor)
         {
             var transform = EnsureTransform(view);
@@ -84,7 +85,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="distance">The translation distance.</param>
-        [ReactProperty(PROP_DECOMPOSED_MATRIX_TRANSLATE_X, DefaultDouble = 1.0)]
+        [ReactProp(PROP_DECOMPOSED_MATRIX_TRANSLATE_X, DefaultDouble = 1.0)]
         public void SetTranslationX(TFrameworkElement view, double distance)
         {
             var transform = EnsureTransform(view);
@@ -96,7 +97,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="distance">The translation distance.</param>
-        [ReactProperty(PROP_DECOMPOSED_MATRIX_TRANSLATE_Y, DefaultDouble = 1.0)]
+        [ReactProp(PROP_DECOMPOSED_MATRIX_TRANSLATE_Y, DefaultDouble = 1.0)]
         public void SetTranslationY(TFrameworkElement view, double distance)
         {
             var transform = EnsureTransform(view);
@@ -108,7 +109,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <param name="overflow">The overflow value.</param>
-        [ReactProperty("overflow")]
+        [ReactProp("overflow")]
         public void SetOverflow(TFrameworkElement view, string overflow)
         {
             if (overflow == "hidden")

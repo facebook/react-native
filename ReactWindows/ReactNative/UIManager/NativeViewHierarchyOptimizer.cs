@@ -87,7 +87,7 @@ namespace ReactNative.UIManager
                     node.ViewClass,
                     initialProperties);
 #else
-            var isLayoutOnly = node.ViewClass == ViewProperties.ViewClassName
+            var isLayoutOnly = node.ViewClass == ViewProps.ViewClassName
                 && IsLayoutOnlyAndCollapsible(initialProperties);
 
             node.IsLayoutOnly = isLayoutOnly;
@@ -112,20 +112,20 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="node">The node.</param>
         /// <param name="className">The class name.</param>
-        /// <param name="properties">The properties.</param>
-        public void HandleUpdateView(ReactShadowNode node, string className, ReactStylesDiffMap properties)
+        /// <param name="props">The properties.</param>
+        public void HandleUpdateView(ReactShadowNode node, string className, ReactStylesDiffMap props)
         {
 #if !ENABLED
-            _uiViewOperationQueue.EnqueueUpdateProperties(node.ReactTag, className, properties);
+            _uiViewOperationQueue.EnqueueUpdateProperties(node.ReactTag, className, props);
 #else
-            var needsToLeaveLayoutOnly = node.IsLayoutOnly && !IsLayoutOnlyAndCollapsible(properties);
+            var needsToLeaveLayoutOnly = node.IsLayoutOnly && !IsLayoutOnlyAndCollapsible(props);
             if (needsToLeaveLayoutOnly)
             {
-                TransitionLayoutOnlyViewToNativeView(node, properties);
+                TransitionLayoutOnlyViewToNativeView(node, props);
             }
             else if (!node.IsLayoutOnly)
             {
-                _uiViewOperationQueue.EnqueueUpdateProperties(node.ReactTag, className, properties);
+                _uiViewOperationQueue.EnqueueUpdateProperties(node.ReactTag, className, props);
             }
 #endif
         }
@@ -429,7 +429,7 @@ namespace ReactNative.UIManager
             }
         }
 
-        private void TransitionLayoutOnlyViewToNativeView(ReactShadowNode node, ReactStylesDiffMap properties)
+        private void TransitionLayoutOnlyViewToNativeView(ReactShadowNode node, ReactStylesDiffMap props)
         {
             var parent = node.Parent;
             if (parent == null)
@@ -452,7 +452,7 @@ namespace ReactNative.UIManager
                 node.RootNode.ThemedContext,
                 node.ReactTag,
                 node.ViewClass,
-                properties);
+                props);
 
             // Add the node and all its children as if adding new nodes.
             parent.AddChildAt(node, childIndex);
@@ -476,21 +476,21 @@ namespace ReactNative.UIManager
             _tagsWithLayoutVisited.Clear();
         }
 
-        private bool IsLayoutOnlyAndCollapsible(ReactStylesDiffMap properties)
+        private bool IsLayoutOnlyAndCollapsible(ReactStylesDiffMap props)
         {
-            if (properties == null)
+            if (props == null)
             {
                 return true;
             }
 
-            if (properties.Keys.Contains(ViewProperties.Collapsible) && !properties.GetProperty<bool>(ViewProperties.Collapsible))
+            if (props.Keys.Contains(ViewProps.Collapsible) && !props.GetProperty<bool>(ViewProps.Collapsible))
             {
                 return false;
             }
 
-            foreach (var key in properties.Keys)
+            foreach (var key in props.Keys)
             {
-                if (!ViewProperties.IsLayoutOnly(key))
+                if (!ViewProps.IsLayoutOnly(key))
                 {
                     return false;
                 }

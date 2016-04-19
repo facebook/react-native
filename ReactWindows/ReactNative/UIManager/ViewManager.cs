@@ -28,7 +28,7 @@ namespace ReactNative.UIManager
         /// <see cref="CreateShadowNodeInstance"/>.
         /// 
         /// This method will be used in the bridge initialization phase to
-        /// collect properties exposed using the <see cref="ReactPropertyAttribute"/>
+        /// collect properties exposed using the <see cref="Annotations.ReactPropAttribute"/>
         /// annotation from the <see cref="ReactShadowNode"/> subclass.
         /// </summary>
         public virtual Type ShadowNodeType
@@ -75,19 +75,19 @@ namespace ReactNative.UIManager
         /// Update the properties of the given view.
         /// </summary>
         /// <param name="viewToUpdate">The view to update.</param>
-        /// <param name="properties">The properties.</param>
-        public void UpdateProperties(TFrameworkElement viewToUpdate, ReactStylesDiffMap properties)
+        /// <param name="props">The properties.</param>
+        public void UpdateProperties(TFrameworkElement viewToUpdate, ReactStylesDiffMap props)
         {
             var propertySetters =
                 ViewManagersPropertyCache.GetNativePropertySettersForViewManagerType(GetType());
 
-            var keys = properties.Keys;
+            var keys = props.Keys;
             foreach (var key in keys)
             {
                 var setter = default(IPropertySetter);
                 if (propertySetters.TryGetValue(key, out setter))
                 {
-                    setter.UpdateViewManagerProperty(this, viewToUpdate, properties);
+                    setter.UpdateViewManagerProperty(this, viewToUpdate, props);
                 }
             }
 
@@ -183,7 +183,7 @@ namespace ReactNative.UIManager
 
         /// <summary>
         /// Callback that will be triggered after all properties are updated in
-        /// the current update transation (all <see cref="ReactPropertyAttribute"/> handlers
+        /// the current update transation (all <see cref="Annotations.ReactPropAttribute"/> handlers
         /// for properties updated in the current transaction have been called).
         /// </summary>
         /// <param name="view">The view.</param>
@@ -193,9 +193,9 @@ namespace ReactNative.UIManager
 
         #region IViewManager
 
-        void IViewManager.UpdateProperties(FrameworkElement viewToUpdate, ReactStylesDiffMap properties)
+        void IViewManager.UpdateProperties(FrameworkElement viewToUpdate, ReactStylesDiffMap props)
         {
-            UpdateProperties((TFrameworkElement)viewToUpdate, properties);
+            UpdateProperties((TFrameworkElement)viewToUpdate, props);
         }
 
         FrameworkElement IViewManager.CreateView(ThemedReactContext reactContext, JavaScriptResponderHandler jsResponderHandler)

@@ -1,9 +1,6 @@
 ﻿using Newtonsoft.Json;
-using ReactNative.Reflection;
-using ReactNative.UIManager;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Reflection;
 
 namespace ReactNative.Bridge

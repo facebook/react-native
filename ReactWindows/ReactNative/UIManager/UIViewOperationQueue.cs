@@ -144,18 +144,18 @@ namespace ReactNative.UIManager
         /// <param name="themedContext">The react context.</param>
         /// <param name="viewReactTag">The view react tag.</param>
         /// <param name="viewClassName">The view class name.</param>
-        /// <param name="initialProperties">The initial properties.</param>
+        /// <param name="initialProps">The initial properties.</param>
         public void EnqueueCreateView(
             ThemedReactContext themedContext,
             int viewReactTag,
             string viewClassName,
-            ReactStylesDiffMap initialProperties)
+            ReactStylesDiffMap initialProps)
         {
             EnqueueOperation(() => _nativeViewHierarchyManager.CreateView(
                 themedContext,
                 viewReactTag,
                 viewClassName,
-                initialProperties));
+                initialProps));
         }
 
         /// <summary>
@@ -182,11 +182,11 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="tag">The view tag.</param>
         /// <param name="className">The class name.</param>
-        /// <param name="properties">The properties.</param>
-        public void EnqueueUpdateProperties(int tag, string className, ReactStylesDiffMap properties)
+        /// <param name="props">The properties.</param>
+        public void EnqueueUpdateProperties(int tag, string className, ReactStylesDiffMap props)
         {
             EnqueueOperation(() =>
-                _nativeViewHierarchyManager.UpdateProperties(tag, properties));
+                _nativeViewHierarchyManager.UpdateProperties(tag, props));
         }
 
         /// <summary>

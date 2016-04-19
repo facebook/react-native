@@ -1,4 +1,5 @@
 ﻿using ReactNative.UIManager;
+using ReactNative.UIManager.Annotations;
 using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
@@ -69,7 +70,7 @@ namespace ReactNative.Views.Image
         /// </summary>
         /// <param name="view">The image view instance.</param>
         /// <param name="source">The source URI.</param>
-        [ReactProperty("src")]
+        [ReactProp("src")]
         public void SetSource(Border view, string source)
         {
             var imageBrush = (ImageBrush)view.Background;
@@ -89,7 +90,7 @@ namespace ReactNative.Views.Image
         /// </summary>
         /// <param name="view">The image view instance.</param>
         /// <param name="radius">The border radius value.</param>
-        [ReactProperty("borderRadius")]
+        [ReactProp("borderRadius")]
         public void SetBorderRadius(Border view, double radius)
         {
             view.CornerRadius = new CornerRadius(radius);
@@ -100,7 +101,7 @@ namespace ReactNative.Views.Image
         /// </summary>
         /// <param name="view">The image view instance.</param>
         /// <param name="color">The masked color value.</param>
-        [ReactProperty("borderColor", CustomType = "Color")]
+        [ReactProp("borderColor", CustomType = "Color")]
         public void SetBorderColor(Border view, uint? color)
         {
             view.BorderBrush = color.HasValue
@@ -114,16 +115,16 @@ namespace ReactNative.Views.Image
         /// <param name="view">The image view instance.</param>
         /// <param name="index">The property index.</param>
         /// <param name="width">The border width in pixels.</param>
-        [ReactPropertyGroup(
-            ViewProperties.BorderWidth,
-            ViewProperties.BorderLeftWidth,
-            ViewProperties.BorderRightWidth,
-            ViewProperties.BorderTopWidth,
-            ViewProperties.BorderBottomWidth,
+        [ReactPropGroup(
+            ViewProps.BorderWidth,
+            ViewProps.BorderLeftWidth,
+            ViewProps.BorderRightWidth,
+            ViewProps.BorderTopWidth,
+            ViewProps.BorderBottomWidth,
             DefaultDouble = double.NaN)]
         public void SetBorderWidth(Border view, int index, double width)
         {
-            view.SetBorderWidth(ViewProperties.BorderSpacingTypes[index], width);
+            view.SetBorderWidth(ViewProps.BorderSpacingTypes[index], width);
         }
 
         /// <summary>

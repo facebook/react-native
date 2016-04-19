@@ -2,12 +2,8 @@ using ReactNative.Bridge;
 using ReactNative.DevSupport;
 using ReactNative.Modules.Core;
 using ReactNative.UIManager;
-using ReactNative.Views;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Threading.Tasks;
-using Windows.UI.Xaml;
 
 namespace ReactNative
 {
