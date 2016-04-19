@@ -60,7 +60,9 @@ describe('code transformation worker:', () => {
     const result = {
       code: 'p.exports={a:1,b:2}',
     };
-    transform.mockImplementation((_, callback) => callback(null, result));
+    transform.mockImplementation((_, callback) =>
+      callback(null, result));
+    
     transformCode(transform, 'aribtrary/file.json', 'b', {}, (_, data) => {
       expect(data.code).toBe('{a:1,b:2}');
       done();
