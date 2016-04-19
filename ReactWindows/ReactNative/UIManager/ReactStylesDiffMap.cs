@@ -63,5 +63,21 @@ namespace ReactNative.UIManager
 
             return null;
         }
+
+        /// <summary>
+        /// Checks if the given property is null.
+        /// </summary>
+        /// <param name="name">The property name.</param>
+        /// <returns>
+        /// <code>true</code> if the property value is null, otherwise
+        /// <code>false</code>.
+        /// </returns>
+        public bool IsNull(string name)
+        {
+            var property = GetProperty(name);
+            return property == null
+                || property.Type == JTokenType.Null
+                || property.Type == JTokenType.Undefined;
+        }
     }
 }
