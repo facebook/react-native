@@ -90,6 +90,40 @@ describe('Animated', () => {
       .toBeCalledWith(jasmine.any(Number), { type: 'props', props: { style: jasmine.any(Number) }});
   });
 
+  it('sends a valid graph description for Animated.add nodes', () => {
+    var first = new Animated.Value(1);
+    var second = new Animated.Value(2);
+
+    var c = new Animated.View();
+    c.props = {
+      style: {
+        opacity: Animated.add(first, second),
+      },
+    };
+    c.componentWillMount();
+
+    Animated.timing(first, {toValue: 2, duration: 1000, useNativeDriver: true}).start();
+    Animated.timing(second, {toValue: 3, duration: 1000, useNativeDriver: true}).start();
+
+    var nativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
+    expect(nativeAnimatedModule.createAnimatedNode)
+      .toBeCalledWith(jasmine.any(Number), { type: 'addition', input: jasmine.any(Array) });
+    var additionCalls = nativeAnimatedModule.createAnimatedNode.mock.calls.filter(
+      (call) => call[1].type === 'addition'
+    );
+    expect(additionCalls.length).toBe(1);
+    var additionCall = additionCalls[0];
+    var additionNodeTag = additionCall[0];
+    var additionConnectionCalls = nativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
+      (call) => call[1] === additionNodeTag
+    );
+    expect(additionConnectionCalls.length).toBe(2);
+    expect(nativeAnimatedModule.createAnimatedNode)
+      .toBeCalledWith(additionCall[1].input[0], { type: 'value', value: 1 });
+    expect(nativeAnimatedModule.createAnimatedNode)
+      .toBeCalledWith(additionCall[1].input[1], { type: 'value', value: 2 });
+  });
+
   it('sends a valid timing animation description', () => {
     var anim = new Animated.Value(0);
     Animated.timing(anim, {toValue: 10, duration: 1000, useNativeDriver: true}).start();

@@ -28,7 +28,7 @@ var AppContainer = React.createClass({
   mixins: [Subscribable.Mixin],
 
   getInitialState: function() {
-    return { inspector: null };
+    return { inspector: null, mainKey: 1 };
   },
 
   toggleElementInspector: function() {
@@ -37,6 +37,12 @@ var AppContainer = React.createClass({
       : <Inspector
           rootTag={this.props.rootTag}
           inspectedViewTag={ReactNative.findNodeHandle(this.refs.main)}
+          onRequestRerenderApp={(updateInspectedViewTag) => {
+            this.setState(
+              (s) => ({mainKey: s.mainKey + 1}),
+              () => updateInspectedViewTag(ReactNative.findNodeHandle(this.refs.main))
+            );
+          }}
         />;
     this.setState({inspector});
   },
@@ -56,7 +62,10 @@ var AppContainer = React.createClass({
     }
     return (
       <View style={styles.appContainer}>
-        <View collapsible={false} style={styles.appContainer} ref="main">
+        <View
+          collapsible={false}
+          key={this.state.mainKey}
+          style={styles.appContainer} ref="main">
           {this.props.children}
         </View>
         {yellowBox}

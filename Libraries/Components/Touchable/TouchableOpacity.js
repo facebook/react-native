@@ -175,6 +175,7 @@ var TouchableOpacity = React.createClass({
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}>
         {this.props.children}
+        {Touchable.renderDebugView({color: 'cyan', hitSlop: this.props.hitSlop})}
       </Animated.View>
     );
   },
