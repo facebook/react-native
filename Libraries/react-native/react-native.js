@@ -29,6 +29,7 @@ var ReactNative = {
   // Components
   get ActivityIndicatorIOS() { return require('ActivityIndicatorIOS'); },
   get ART() { return require('ReactNativeART'); },
+  get CheckBoxAndroid() { return require('CheckBoxAndroid'); },
   get DatePickerIOS() { return require('DatePickerIOS'); },
   get DrawerLayoutAndroid() { return require('DrawerLayoutAndroid'); },
   get Image() { return require('Image'); },

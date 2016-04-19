@@ -24,6 +24,10 @@ export type UIExplorerExample = {
 
 var ComponentExamples: Array<UIExplorerExample> = [
   {
+    key: 'CheckBoxAndroidExample',
+    module: require('./CheckBoxAndroidExample'),
+  },
+  {
     key: 'SliderExample',
     module: require('./SliderExample'),
   },

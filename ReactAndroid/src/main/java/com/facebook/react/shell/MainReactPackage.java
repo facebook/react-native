@@ -39,6 +39,7 @@ import com.facebook.react.modules.websocket.WebSocketModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.art.ARTRenderableViewManager;
 import com.facebook.react.views.art.ARTSurfaceViewManager;
+import com.facebook.react.views.checkbox.ReactCheckBoxManager;
 import com.facebook.react.views.drawer.ReactDrawerLayoutManager;
 import com.facebook.react.views.image.ReactImageManager;
 import com.facebook.react.views.modal.ReactModalHostManager;
@@ -103,6 +104,7 @@ public class MainReactPackage implements ReactPackage {
       ARTRenderableViewManager.createARTShapeViewManager(),
       ARTRenderableViewManager.createARTTextViewManager(),
       new ARTSurfaceViewManager(),
+      new ReactCheckBoxManager(),
       new ReactDialogPickerManager(),
       new ReactDrawerLayoutManager(),
       new ReactDropdownPickerManager(),
