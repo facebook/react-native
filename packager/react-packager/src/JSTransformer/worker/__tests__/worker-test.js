@@ -77,6 +77,7 @@ describe('code transformation worker:', () => {
     transform.mockImplementation((_, callback) => callback(null, result));
     transformCode(transform, 'arbitrary/file.js', 'b', {}, (_, data) => {
       expect(data.code).not.toContain(shebang);
+      expect(data.code.split('\n').length).toEqual(result.code.split('\n').length);
       done();
     });
   });
