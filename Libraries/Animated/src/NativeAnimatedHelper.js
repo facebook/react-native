@@ -16,7 +16,7 @@ var NativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
 var invariant = require('fbjs/lib/invariant');
 
 var __nativeAnimatedNodeTagCount = 1; /* used for animated nodes */
-var __nativeAnimationTagCount = 1; /* used for started animations */
+var __nativeAnimationIdCount = 1; /* used for started animations */
 
 type EndResult = {finished: bool};
 type EndCallback = (result: EndResult) => void;
@@ -38,9 +38,13 @@ var API = {
     assertNativeAnimatedModule();
     NativeAnimatedModule.disconnectAnimatedNodes(parentTag, childTag);
   },
-  startAnimatingNode: function(animationTag: number, nodeTag: number, config: Object, endCallback: EndCallback): void {
+  startAnimatingNode: function(animationId: number, nodeTag: number, config: Object, endCallback: EndCallback): void {
     assertNativeAnimatedModule();
-    NativeAnimatedModule.startAnimatingNode(nodeTag, config, endCallback);
+    NativeAnimatedModule.startAnimatingNode(animationId, nodeTag, config, endCallback);
+  },
+  stopAnimation: function(animationId: number) {
+    assertNativeAnimatedModule();
+    NativeAnimatedModule.stopAnimation(animationId);
   },
   setAnimatedNodeValue: function(nodeTag: number, value: number): void {
     assertNativeAnimatedModule();
@@ -101,8 +105,8 @@ function generateNewNodeTag(): number {
   return __nativeAnimatedNodeTagCount++;
 }
 
-function generateNewAnimationTag(): number {
-  return __nativeAnimationTagCount++;
+function generateNewAnimationId(): number {
+  return __nativeAnimationIdCount++;
 }
 
 function assertNativeAnimatedModule(): void {
@@ -114,6 +118,6 @@ module.exports = {
   validateProps,
   validateStyles,
   generateNewNodeTag,
-  generateNewAnimationTag,
+  generateNewAnimationId,
   assertNativeAnimatedModule,
 };
