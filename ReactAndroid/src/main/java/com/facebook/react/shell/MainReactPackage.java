@@ -25,6 +25,7 @@ import com.facebook.react.modules.clipboard.ClipboardModule;
 import com.facebook.react.modules.datepicker.DatePickerDialogModule;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
+import com.facebook.react.modules.image.ImageLoaderModule;
 import com.facebook.react.modules.intent.IntentModule;
 import com.facebook.react.modules.location.LocationModule;
 import com.facebook.react.modules.netinfo.NetInfoModule;
@@ -47,6 +48,7 @@ import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
 import com.facebook.react.views.recyclerview.RecyclerViewBackedScrollViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
 import com.facebook.react.views.scroll.ReactScrollViewManager;
+import com.facebook.react.views.slider.ReactSliderManager;
 import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager;
 import com.facebook.react.views.switchview.ReactSwitchManager;
 import com.facebook.react.views.text.ReactRawTextManager;
@@ -75,6 +77,7 @@ public class MainReactPackage implements ReactPackage {
       new DialogModule(reactContext),
       new FrescoModule(reactContext),
       new ImageEditingManager(reactContext),
+      new ImageLoaderModule(reactContext),
       new ImageStoreManager(reactContext),
       new IntentModule(reactContext),
       new LocationModule(reactContext),
@@ -109,6 +112,7 @@ public class MainReactPackage implements ReactPackage {
       new ReactProgressBarViewManager(),
       new ReactRawTextManager(),
       new ReactScrollViewManager(),
+      new ReactSliderManager(),
       new ReactSwitchManager(),
       new FrescoBasedReactTextInlineImageViewManager(),
       new ReactTextInputManager(),

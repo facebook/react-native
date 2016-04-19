@@ -15,7 +15,7 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('React');
 
 export type UIExplorerExample = {
   key: string;
@@ -23,6 +23,10 @@ export type UIExplorerExample = {
 };
 
 var ComponentExamples: Array<UIExplorerExample> = [
+  {
+    key: 'SliderExample',
+    module: require('./SliderExample'),
+  },
   {
     key: 'ImageExample',
     module: require('./ImageExample'),
@@ -169,6 +173,10 @@ const APIExamples = [
   {
     key: 'VibrationExample',
     module: require('./VibrationExample'),
+  },
+  {
+    key: 'WebSocketExample',
+    module: require('./WebSocketExample'),
   },
   {
     key: 'XHRExample',

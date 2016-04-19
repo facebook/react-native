@@ -52,6 +52,7 @@ public interface CatalystInstance extends MemoryPressureListener {
 
   <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface);
   <T extends JavaScriptModule> T getJSModule(ExecutorToken executorToken, Class<T> jsInterface);
+  <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface);
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface);
   Collection<NativeModule> getNativeModules();
 

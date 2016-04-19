@@ -15,7 +15,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Image,
   ListView,
@@ -23,7 +24,7 @@ var {
   StyleSheet,
   Text,
   View,
-} = React;
+} = ReactNative;
 
 var THUMB_URLS = [
   require('./Thumbnails/like.png'),

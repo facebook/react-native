@@ -26,7 +26,7 @@
 
 #define RCTAssertJSThread() \
   RCTAssert(![NSStringFromClass([_javaScriptExecutor class]) isEqualToString:@"RCTJSCExecutor"] || \
-              [[[NSThread currentThread] name] isEqualToString:@"com.facebook.React.JavaScript"], \
+              [[[NSThread currentThread] name] isEqualToString:RCTJSCThreadName], \
             @"This method must be called on JS thread")
 
 /**
@@ -40,14 +40,6 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
 };
 
 RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
-
-@interface RCTBatchedBridge : RCTBridge
-
-@property (nonatomic, weak) RCTBridge *parentBridge;
-@property (nonatomic, weak) id<RCTJavaScriptExecutor> javaScriptExecutor;
-@property (nonatomic, assign) BOOL moduleSetupComplete;
-
-@end
 
 @implementation RCTBatchedBridge
 {
@@ -490,6 +482,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
 - (void)didFinishLoading
 {
+  RCTPerformanceLoggerEnd(RCTPLBridgeStartup);
   _loading = NO;
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
     for (dispatch_block_t call in _pendingCalls) {
@@ -597,15 +590,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
   // Invalidate modules
   dispatch_group_t group = dispatch_group_create();
-  for (RCTModuleData *moduleData in _moduleDataByName.allValues) {
-    if (moduleData.instance == _javaScriptExecutor) {
+  for (RCTModuleData *moduleData in _moduleDataByID) {
+    // Be careful when grabbing an instance here, we don't want to instantiate
+    // any modules just to invalidate them.
+    id<RCTBridgeModule> instance = nil;
+    if ([moduleData hasInstance]) {
+      instance = moduleData.instance;
+    }
+
+    if (instance == _javaScriptExecutor) {
       continue;
     }
 
-    if ([moduleData.instance respondsToSelector:@selector(invalidate)]) {
+    if ([instance respondsToSelector:@selector(invalidate)]) {
       dispatch_group_enter(group);
       [self dispatchBlock:^{
-        [(id<RCTInvalidating>)moduleData.instance invalidate];
+        [(id<RCTInvalidating>)instance invalidate];
         dispatch_group_leave(group);
       } queue:moduleData.methodQueue];
     }

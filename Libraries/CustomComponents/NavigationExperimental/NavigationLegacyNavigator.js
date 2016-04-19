@@ -45,7 +45,7 @@ const NavigationPagerStyleInterpolator = require('NavigationPagerStyleInterpolat
 const NavigatorBreadcrumbNavigationBar = require('NavigatorBreadcrumbNavigationBar');
 const NavigatorNavigationBar = require('NavigatorNavigationBar');
 const NavigatorSceneConfigs = require('NavigatorSceneConfigs');
-const React = require('react-native');
+const React = require('React');
 const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
 
 import type  {
@@ -189,7 +189,7 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
     return this._stack.toArray();
   }
 
-  // Lyfe cycle and private methods below.
+  // Life cycle and private methods below.
 
   shouldComponentUpdate(nextProps: Object, nextState: Object): boolean {
     return ReactComponentWithPureRenderMixin.shouldComponentUpdate.call(
@@ -254,7 +254,7 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   }
 
   _renderHeader(props: NavigationSceneRendererProps): ?ReactElement {
-    // `_renderHeader` is the always called before `_renderCard`. We should
+    // `_renderHeader` is always called before `_renderCard`. We should
     // subscribe to the position here.
     this._positionListener && this._positionListener.remove();
     this._positionListener = new NavigationAnimatedValueSubscription(

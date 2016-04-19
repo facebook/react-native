@@ -38,14 +38,16 @@ __NOTE__: The above instructions are for Ubuntu. If you're on a different distro
 Paste the following into your terminal to compile watchman from source and install it:
 
 ```sh
+sudo apt-get install -y automake python-dev
 git clone https://github.com/facebook/watchman.git
 cd watchman
-git checkout v4.1.0  # the latest stable release
+git checkout v4.5.0  # the latest stable release
 ./autogen.sh
 ./configure
 make
 sudo make install
 ```
+__NOTE__: The above ```apt-get install``` line is for Ubuntu/Debian only. You might need to install required dependencies differently on other distributions.
 
 #### Installing Flow
 
@@ -57,7 +59,7 @@ sudo npm install -g flow-bin
 
 ## Setting up an Android Device
 
-Let's set up an Android device to run our starter project. 
+Let's set up an Android device to run our starter project.
 
 First thing is to plug in your device and check the manufacturer code by using `lsusb`, which should output something like this:
 
@@ -65,7 +67,7 @@ First thing is to plug in your device and check the manufacturer code by using `
 $ lsusb
 Bus 002 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
 Bus 002 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-Bus 001 Device 003: ID 22b8:2e76 Motorola PCS 
+Bus 001 Device 003: ID 22b8:2e76 Motorola PCS
 Bus 001 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
 Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 Bus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
@@ -90,7 +92,7 @@ You'll see that after removing the phone, the line which has the phone model ("M
 
 From the above line, you want to grab the first four digits from the device ID:
 
-`22b8:2e76` 
+`22b8:2e76`
 
 In this case, it's `22b8`. That's the identifier for Motorola.
 

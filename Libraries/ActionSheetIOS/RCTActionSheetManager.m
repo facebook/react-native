@@ -70,7 +70,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   while (controller.presentedViewController) {
     controller = controller.presentedViewController;
   }
-    
+
   if (controller == nil) {
     RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", options);
     return;

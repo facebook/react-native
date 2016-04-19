@@ -291,6 +291,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   @Override
+  public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
+    return mJavaRegistry.hasModule(nativeModuleInterface);
+  }
+
+  @Override
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     return mJavaRegistry.getModule(nativeModuleInterface);
   }
@@ -404,6 +409,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
         listener.onTransitionToBridgeIdle();
       }
     }
+  }
+
+  @Override
+  protected void finalize() throws Throwable {
+    Assertions.assertCondition(mDestroyed, "Bridge was not destroyed before finalizer!");
+    super.finalize();
   }
 
   private class NativeModulesReactCallback implements ReactCallback {

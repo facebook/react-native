@@ -157,7 +157,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     if (!_methodQueue && _bridge.valid) {
 
       // Create new queue (store queueName, as it isn't retained by dispatch_queue)
-      _queueName = [NSString stringWithFormat:@"com.facebook.React.%@Queue", self.name];
+      _queueName = [NSString stringWithFormat:@"com.facebook.react.%@Queue", self.name];
       _methodQueue = dispatch_queue_create(_queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
 
       // assign it to the module

@@ -15,7 +15,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   StyleSheet,
   Text,
@@ -24,7 +25,7 @@ var {
   TouchableOpacity,
   View,
   WebView
-} = React;
+} = ReactNative;
 
 var HEADER = '#3b5998';
 var BGWASH = 'rgba(255,255,255,0.8)';

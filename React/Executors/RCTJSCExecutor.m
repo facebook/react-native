@@ -27,7 +27,7 @@
 #import "RCTRedBox.h"
 #import "RCTSourceCode.h"
 
-NSString *const RCTJSCThreadName = @"com.facebook.React.JavaScript";
+NSString *const RCTJSCThreadName = @"com.facebook.react.JavaScript";
 
 NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContextCreatedNotification";
 
@@ -193,7 +193,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     _javaScriptThread = [[NSThread alloc] initWithTarget:[self class]
                                                 selector:@selector(runRunLoopThread)
                                                   object:nil];
-    _javaScriptThread.name = @"com.facebook.React.JavaScript";
+    _javaScriptThread.name = RCTJSCThreadName;
 
     if ([_javaScriptThread respondsToSelector:@selector(setQualityOfService:)]) {
       [_javaScriptThread setQualityOfService:NSOperationQualityOfServiceUserInteractive];
@@ -380,11 +380,6 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
   _valid = NO;
 
-  if (_jsModules) {
-    CFRelease(_jsModules);
-    fclose(_bundle);
-  }
-
 #if RCT_DEV
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 #endif
@@ -399,6 +394,11 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
                  withObject:nil
               waitUntilDone:NO];
   _context = nil;
+
+  if (_jsModules) {
+    CFRelease(_jsModules);
+    fclose(_bundle);
+  }
 }
 
 - (void)flushedQueue:(RCTJavaScriptCallback)onComplete
@@ -678,6 +678,10 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
 
 - (void)registerNativeRequire
 {
+  RCTPerformanceLoggerSet(RCTPLRAMNativeRequires, 0);
+  RCTPerformanceLoggerSet(RCTPLRAMNativeRequiresCount, 0);
+  RCTPerformanceLoggerSet(RCTPLRAMNativeRequiresSize, 0);
+
   __weak RCTJSCExecutor *weakSelf = self;
   [self addSynchronousHookWithName:@"nativeRequire" usingBlock:^(NSString *moduleName) {
     RCTJSCExecutor *strongSelf = weakSelf;
@@ -685,7 +689,13 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
       return;
     }
 
+    RCTPerformanceLoggerAdd(RCTPLRAMNativeRequiresCount, 1);
+    RCTPerformanceLoggerAppendStart(RCTPLRAMNativeRequires);
+    RCT_PROFILE_BEGIN_EVENT(0, [@"nativeRequire_" stringByAppendingString:moduleName], nil);
+
     ModuleData *data = (ModuleData *)CFDictionaryGetValue(strongSelf->_jsModules, moduleName.UTF8String);
+    RCTPerformanceLoggerAdd(RCTPLRAMNativeRequiresSize, data->length);
+
     char bytes[data->length];
     if (readBundle(strongSelf->_bundle, data->offset, data->length, bytes) != 0) {
       RCTFatal(RCTErrorWithMessage(@"Error loading RAM module"));
@@ -698,6 +708,9 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
     CFDictionaryRemoveValue(strongSelf->_jsModules, moduleName.UTF8String);
     JSStringRelease(code);
 
+    RCT_PROFILE_END_EVENT(0, @"js_call", nil);
+    RCTPerformanceLoggerAppendEnd(RCTPLRAMNativeRequires);
+
     if (!result) {
       dispatch_async(dispatch_get_main_queue(), ^{
         RCTFatal(RCTNSErrorFromJSError(strongSelf->_context.ctx, jsError));
@@ -709,6 +722,7 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
 
 - (NSData *)loadRAMBundle:(NSURL *)sourceURL error:(NSError **)error
 {
+  RCTPerformanceLoggerStart(RCTPLRAMBundleLoad);
   _bundle = fopen(sourceURL.path.UTF8String, "r");
   if (!_bundle) {
     if (error) {
@@ -793,6 +807,8 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
     free(startupCode);
     return nil;
   }
+  RCTPerformanceLoggerEnd(RCTPLRAMBundleLoad);
+  RCTPerformanceLoggerSet(RCTPLRAMStartupCodeSize, startupData->length);
   return [NSData dataWithBytesNoCopy:startupCode length:startupData->length freeWhenDone:YES];
 }
 

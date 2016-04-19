@@ -14,6 +14,7 @@ var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var Platform = require('Platform');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var ReactPropTypes = require('ReactPropTypes');
 var StatusBar = require('StatusBar');
 var StyleSheet = require('StyleSheet');
@@ -82,6 +83,18 @@ var DrawerLayoutAndroid = React.createClass({
       'on-drag',
     ]),
     /**
+     * Specifies the background color of the drawer. The default value is white.
+     * If you want to set the opacity of the drawer, use rgba. Example:
+     *
+     * ```
+     * return (
+     *   <DrawerLayoutAndroid drawerBackgroundColor="rgba(0,0,0,0.5)">
+     *   </DrawerLayoutAndroid>
+     * );
+     * ```
+     */
+    drawerBackgroundColor: ColorPropType,
+    /**
      * Specifies the side of the screen from which the drawer will slide in.
      */
     drawerPosition: ReactPropTypes.oneOf([
@@ -140,6 +153,12 @@ var DrawerLayoutAndroid = React.createClass({
 
   mixins: [NativeMethodsMixin],
 
+  getDefaultProps: function(): Object {
+    return {
+      drawerBackgroundColor: 'white',
+    };
+  },
+
   getInitialState: function() {
     return {statusBarBackgroundColor: undefined};
   },
@@ -159,7 +178,12 @@ var DrawerLayoutAndroid = React.createClass({
   render: function() {
     var drawStatusBar = Platform.Version >= 21 && this.props.statusBarBackgroundColor;
     var drawerViewWrapper =
-      <View style={[styles.drawerSubview, {width: this.props.drawerWidth}]} collapsable={false}>
+      <View
+        style={[
+          styles.drawerSubview,
+          {width: this.props.drawerWidth, backgroundColor: this.props.drawerBackgroundColor}
+        ]}
+        collapsable={false}>
         {this.props.renderNavigationView()}
         {drawStatusBar && <View style={styles.drawerStatusBar} />}
       </View>;
@@ -222,6 +246,9 @@ var DrawerLayoutAndroid = React.createClass({
     }
   },
 
+  /**
+   * Opens the drawer.
+   */
   openDrawer: function() {
     UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
@@ -230,6 +257,9 @@ var DrawerLayoutAndroid = React.createClass({
     );
   },
 
+  /**
+   * Closes the drawer.
+   */
   closeDrawer: function() {
     UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
@@ -239,7 +269,7 @@ var DrawerLayoutAndroid = React.createClass({
   },
 
   _getDrawerLayoutHandle: function() {
-    return React.findNodeHandle(this.refs[RK_DRAWER_REF]);
+    return ReactNative.findNodeHandle(this.refs[RK_DRAWER_REF]);
   },
 
   // Update the StatusBar component background color one frame after creating the
@@ -276,7 +306,6 @@ var styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     bottom: 0,
-    backgroundColor: 'white',
   },
   statusBar: {
     height: StatusBar.currentHeight,

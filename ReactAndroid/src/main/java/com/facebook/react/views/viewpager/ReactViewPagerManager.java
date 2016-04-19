@@ -16,8 +16,10 @@ import android.view.View;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 import javax.annotation.Nullable;
 
@@ -106,5 +108,10 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
   @Override
   public void removeViewAt(ReactViewPager parent, int index) {
     parent.removeViewFromAdapter(index);
+  }
+
+  @ReactProp(name = "pageMargin", defaultFloat = 0)
+  public void setPageMargin(ReactViewPager pager, float margin) {
+    pager.setPageMargin((int) PixelUtil.toPixelFromDIP(margin));
   }
 }

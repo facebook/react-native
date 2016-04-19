@@ -13,13 +13,14 @@
 */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   AsyncStorage,
   ScrollView,
   StyleSheet,
   View,
-} = React;
+} = ReactNative;
 var NavigationExampleRow = require('./NavigationExampleRow');
 
 /*

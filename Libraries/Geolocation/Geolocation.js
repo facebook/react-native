@@ -50,6 +50,8 @@ var Geolocation = {
   /*
    * Invokes the success callback once with the latest location info.  Supported
    * options: timeout (ms), maximumAge (ms), enableHighAccuracy (bool)
+   * On Android, this can return almost immediately if the location is cached or
+   * request an update, which might take a while.
    */
   getCurrentPosition: function(
     geo_success: Function,
