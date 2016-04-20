@@ -19,7 +19,7 @@ const {
 const invariant = require('fbjs/lib/invariant');
 const processColor = require('processColor');
 
-type Content = { title: string, message: string } | { title: string, url: string };
+type Content = { title?: string, message: string } | { title?: string, url: string };
 type Options = { dialogTitle?: string, excludeActivityTypes?: Array<string>, tintColor?: string };
 
 class Share {
@@ -46,7 +46,7 @@ class Share {
    * 
    * - `dialogTitle`
    */
-  static share(content: Content, options: ?Options): Promise<boolean> {
+  static share(content: Content, options: ?Options): Promise<Object> {
     invariant(
       typeof content === 'object' && content !== null,
       'Content must a valid object'
@@ -57,24 +57,24 @@ class Share {
     );
     invariant(
       !content.message || typeof content.message === 'string',
-      'Invalid message: message should be a string. Was: ' + content.message
+      'Invalid message: message should be a string.'
     );
     invariant(
       !content.url || typeof content.url === 'string',
-      'Invalid url: url should be a string. Was: ' + content.url
+      'Invalid url: url should be a string.'
     );
     invariant(
       !content.title || typeof content.title === 'string',
-      'Invalid title: title should be a string. Was: ' + content.title
+      'Invalid title: title should be a string.'
     );
 
     if (Platform.OS === 'android') {
-      let dialogTitle = typeof options === 'object' && options.dialogTitle ? options.dialogTitle : null;
+      let dialogTitle = (options !== null && typeof options === 'object' && options.dialogTitle) ? options.dialogTitle : null;
       return ShareModule.share(content, dialogTitle);
     } else if (Platform.OS === 'ios') {
       return new Promise((resolve, reject) => {
         let actionSheetOptions = {...content, ...options};
-        if (typeof options === 'object' && options.tintColor) {
+        if (options !== null && typeof options === 'object' && options.tintColor) {
           actionSheetOptions.tintColor = processColor(options.tintColor);
         }
         ActionSheetManager.showShareActionSheetWithOptions(
