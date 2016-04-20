@@ -246,12 +246,14 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
           float r = data[i++] * mScale;
           float start = (float) Math.toDegrees(data[i++]);
           float end = (float) Math.toDegrees(data[i++]);
-          float normalizedStart = modulus(start, 360);
-          float normalizedEnd = modulus(end, 360);
           boolean clockwise = data[i++] == 1f;
-          float sweep = modulus(normalizedEnd - normalizedStart, 360);
-
-          if (!clockwise) {
+          float sweep = end - start;
+          if (Math.abs(sweep) > 360) {
+            sweep = 360;
+          } else {
+            sweep = modulus(sweep, 360);
+          }
+          if (!clockwise && sweep < 360) {
             start = end;
             sweep = 360 - sweep;
           }
