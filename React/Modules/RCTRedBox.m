@@ -17,6 +17,7 @@
 #if RCT_DEBUG
 
 @interface RCTRedBoxWindow : UIWindow <UITableViewDelegate, UITableViewDataSource>
+@property (nonatomic, copy) NSURL *bundleURL;
 @end
 
 @implementation RCTRedBoxWindow
@@ -91,10 +92,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)openStackFrameInEditor:(NSDictionary *)stackFrame
 {
+  if (![_bundleURL.scheme hasPrefix:@"http"]) {
+    RCTLogWarn(@"Cannot open stack frame in editor because you're not connected to the packager.");
+    return;
+  }
+
   NSData *stackFrameJSON = [RCTJSONStringify(stackFrame, NULL) dataUsingEncoding:NSUTF8StringEncoding];
   NSString *postLength = [NSString stringWithFormat:@"%tu", stackFrameJSON.length];
   NSMutableURLRequest *request = [NSMutableURLRequest new];
-  request.URL = [RCTConvert NSURL:@"http://localhost:8081/open-stack-frame"];
+  request.URL = [NSURL URLWithString:@"/open-stack-frame" relativeToURL:_bundleURL];
   request.HTTPMethod = @"POST";
   request.HTTPBody = stackFrameJSON;
   [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
@@ -269,6 +275,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   RCTRedBoxWindow *_window;
 }
 
+@synthesize bridge = _bridge;
+
 RCT_EXPORT_MODULE()
 
 - (void)showError:(NSError *)error
@@ -305,6 +313,7 @@ RCT_EXPORT_MODULE()
   dispatch_async(dispatch_get_main_queue(), ^{
     if (!_window) {
       _window = [[RCTRedBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+      _window.bundleURL = _bridge.bundleURL;
     }
     [_window showErrorMessage:message withStack:stack isUpdate:isUpdate];
   });
