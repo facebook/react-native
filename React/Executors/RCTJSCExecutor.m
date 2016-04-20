@@ -140,9 +140,55 @@ static NSString *RCTJSValueToJSONString(JSContextRef context, JSValueRef value, 
 
 static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 {
-  NSString *errorMessage = jsError ? RCTJSValueToNSString(context, jsError, NULL) : @"Unknown JS error";
-  NSString *details = jsError ? RCTJSValueToJSONString(context, jsError, NULL, 2) : @"No details";
-  return [NSError errorWithDomain:@"JS" code:1 userInfo:@{NSLocalizedDescriptionKey: errorMessage, NSLocalizedFailureReasonErrorKey: details}];
+  NSMutableDictionary *errorInfo = [NSMutableDictionary new];
+
+  NSString *description = jsError ? RCTJSValueToNSString(context, jsError, NULL) : @"Unknown JS error";
+  errorInfo[NSLocalizedDescriptionKey] = [@"Unhandled JS Exception: " stringByAppendingString:description];
+
+  NSString *details = jsError ? RCTJSValueToJSONString(context, jsError, NULL, 0) : nil;
+  if (details) {
+    errorInfo[NSLocalizedFailureReasonErrorKey] = details;
+
+    // Format stack as used in RCTFormatError
+    id json = RCTJSONParse(details, NULL);
+    if ([json isKindOfClass:[NSDictionary class]]) {
+      if (json[@"stack"]) {
+        NSError *regexError;
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^([^@]+)@(.*):(\\d+):(\\d+)$" options:0 error:&regexError];
+        if (regexError) {
+          RCTLogError(@"Failed to build regex: %@", [regexError localizedDescription]);
+        }
+
+        NSMutableArray *stackTrace = [NSMutableArray array];
+        for (NSString *stackLine in [json[@"stack"] componentsSeparatedByString:@"\n"]) {
+          NSTextCheckingResult *result = [regex firstMatchInString:stackLine options:0 range:NSMakeRange(0, stackLine.length)];
+          if (result) {
+            [stackTrace addObject:@{
+              @"methodName": [stackLine substringWithRange:[result rangeAtIndex:1]],
+              @"file": [stackLine substringWithRange:[result rangeAtIndex:2]],
+              @"lineNumber": [stackLine substringWithRange:[result rangeAtIndex:3]],
+              @"column": [stackLine substringWithRange:[result rangeAtIndex:4]]
+            }];
+          }
+        }
+        if ([stackTrace count]) {
+          errorInfo[RCTJSStackTraceKey] = stackTrace;
+        }
+      }
+
+      // Fall back to just logging the line number
+      if (!errorInfo[RCTJSStackTraceKey] && json[@"line"]) {
+        errorInfo[RCTJSStackTraceKey] = @[@{
+          @"methodName": @"",
+          @"file": RCTNullIfNil(json[@"sourceURL"]),
+          @"lineNumber": RCTNullIfNil(json[@"line"]),
+          @"column": @0,
+        }];
+      }
+    }
+  }
+
+  return [NSError errorWithDomain:RCTErrorDomain code:1 userInfo:errorInfo];
 }
 
 #if RCT_DEV
@@ -630,7 +676,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       RCTLogError(@"%@", errorDesc);
 
       if (onComplete) {
-        NSError *error = [NSError errorWithDomain:@"JS" code:2 userInfo:@{NSLocalizedDescriptionKey: errorDesc}];
+        NSError *error = [NSError errorWithDomain:RCTErrorDomain code:2 userInfo:@{NSLocalizedDescriptionKey: errorDesc}];
         onComplete(error);
       }
       return;
