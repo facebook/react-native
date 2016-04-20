@@ -39,6 +39,7 @@ type Props = {
 };
 
 type State = {
+  layout: NavigationLayout,
   position: NavigationAnimatedValue,
   scenes: Array<NavigationScene>,
 };
@@ -61,7 +62,6 @@ function applyDefaultAnimation(
 class NavigationAnimatedView
   extends React.Component<any, Props, State> {
 
-  _layout: NavigationLayout;
   _onLayout: (event: any) => void;
   _onProgressChange: (data: {value: number}) => void;
   _positionListener: any;
@@ -84,14 +84,18 @@ class NavigationAnimatedView
   constructor(props: Props, context: any) {
     super(props, context);
 
-    this._layout = {
-      initWidth: 0,
-      initHeight: 0,
-      width: new Animated.Value(0),
+    // The initial layout isn't measured. Measured layout will be only available
+    // when the component is mounted.
+    const layout = {
       height: new Animated.Value(0),
+      initHeight: 0,
+      initWidth: 0,
+      isMeasured: false,
+      width: new Animated.Value(0),
     };
 
     this.state = {
+      layout,
       position: new Animated.Value(this.props.navigationState.index),
       scenes: NavigationScenesReducer([], this.props.navigationState),
     };
@@ -180,7 +184,7 @@ class NavigationAnimatedView
     } = this.state;
 
     return renderScene({
-      layout: this._layout,
+      layout: this.state.layout,
       navigationState,
       onNavigate,
       position,
@@ -203,7 +207,7 @@ class NavigationAnimatedView
       } = this.state;
 
       return renderOverlay({
-        layout: this._layout,
+        layout: this.state.layout,
         navigationState,
         onNavigate,
         position,
@@ -218,15 +222,16 @@ class NavigationAnimatedView
     const {height, width} = event.nativeEvent.layout;
 
     const layout = {
-      ...this._layout,
+      ...this.state.layout,
       initHeight: height,
       initWidth: width,
+      isMeasured: true,
     };
-
-    this._layout = layout;
 
     layout.height.setValue(height);
     layout.width.setValue(width);
+
+    this.setState({ layout });
   }
 }
 

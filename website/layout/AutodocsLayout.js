@@ -498,8 +498,8 @@ var Modal = React.createClass({
     var appParams = {route: metadata.title};
     var encodedParams = encodeURIComponent(JSON.stringify(appParams));
     var url = metadata.platform === 'android'
-      ? `https://appetize.io/embed/q7wkvt42v6bkr0pzt1n0gmbwfr?device=nexus5&scale=65&autoplay=false&orientation=portrait&osVersion=6.0&deviceColor=white&params=${encodedParams}`
-      : `https://appetize.io/embed/7vdfm9h3e6vuf4gfdm7r5rgc48?device=iphone6s&scale=60&autoplay=false&orientation=portrait&osVersion=9.2&deviceColor=white&params=${encodedParams}`;
+      ? `https://appetize.io/embed/q7wkvt42v6bkr0pzt1n0gmbwfr?device=nexus5&scale=65&autoplay=false&orientation=portrait&deviceColor=white&params=${encodedParams}`
+      : `https://appetize.io/embed/7vdfm9h3e6vuf4gfdm7r5rgc48?device=iphone6s&scale=60&autoplay=false&orientation=portrait&deviceColor=white&params=${encodedParams}`;
 
     return (
       <div>

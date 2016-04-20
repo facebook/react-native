@@ -328,6 +328,12 @@ var apps = [
     author: 'Emilio Rodriguez'
   },
   {
+    name: 'D.I.T.',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/1b/ad/7f/1bad7f52-85e6-3f49-5593-93ab73d15fc8/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/d.i.t./id1065482319?mt=8',
+    author: 'Pavlo Tkach & Mykhailo Kovalevskyi'
+  },
+  {
     name: 'DockMan',
     icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/91/b5/75/91b57552-d9bc-d8bc-10a1-617de920aaa6/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/app/dockman/id1061469696',
@@ -349,6 +355,16 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/us/app/eat-or-not/id1054565697?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.eon',
     author: 'Sharath Prabhal',
+  },
+  {
+    name: 'Emoji Poetry',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/31/b5/09/31b509b2-aaec-760f-ccec-2ce72fe7134e/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/emoji-poetry/id1068972506?l=en&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.arzamasemoji',
+    author: 'forforce.com',
+    blogs: [
+      'http://arzamas.academy/special/emoji/english',
+    ],
   },
   {
     name: 'Fan of it',
@@ -717,6 +733,16 @@ var apps = [
     author: 'uSwitch Ltd',
     videos: [
       'https://www.youtube.com/watch?v=YgJtAEZJN28',
+    ],
+  },
+  {
+    name: 'Veckopengen – för barn och föräldrar',
+    icon: 'https://is5-ssl.mzstatic.com/image/thumb/Purple49/v4/0a/63/f1/0a63f16c-f0f3-6316-0f9d-1682b04c595d/mzl.sswtnsav.jpg/340x340bb-80.png',
+    linkAppStore: 'https://itunes.apple.com/se/app/veckopengen-for-barn-och-foraldrar/id935778197',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=se.veckopengen.app',
+    author: 'Barnpengar AB',
+    videos: [
+      'https://www.youtube.com/watch?v=tzsXFGmqJec',
     ],
   },
   {

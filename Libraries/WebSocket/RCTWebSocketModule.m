@@ -67,6 +67,12 @@ RCT_EXPORT_METHOD(send:(NSString *)message socketID:(nonnull NSNumber *)socketID
   [_sockets[socketID] send:message];
 }
 
+RCT_EXPORT_METHOD(sendBinary:(NSString *)base64String socketID:(nonnull NSNumber *)socketID)
+{
+  NSData *message = [[NSData alloc] initWithBase64EncodedString:base64String options:0];
+  [_sockets[socketID] send:message];
+}
+
 RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
 {
   [_sockets[socketID] close];
