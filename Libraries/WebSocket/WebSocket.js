@@ -21,6 +21,18 @@ const base64 = require('base64-js');
 
 import type EventSubscription from 'EventSubscription';
 
+type ArrayBufferView =
+  Int8Array |
+  Uint8Array |
+  Uint8ClampedArray |
+  Int16Array |
+  Uint16Array |
+  Int32Array |
+  Uint32Array |
+  Float32Array |
+  Float64Array |
+  DataView;
+
 const CONNECTING = 0;
 const OPEN = 1;
 const CLOSING = 2;
@@ -94,18 +106,31 @@ class WebSocket extends EventTarget(WEBSOCKET_EVENTS) {
     this._close(code, reason);
   }
 
-  send(data: any): void {
+  send(data: string | ArrayBuffer | ArrayBufferView): void {
     if (this.readyState === this.CONNECTING) {
       throw new Error('INVALID_STATE_ERR');
     }
 
     if (typeof data === 'string') {
       RCTWebSocketModule.send(data, this._socketId);
-    } else if (data instanceof ArrayBuffer) {
-      console.warn('Sending ArrayBuffers is not yet supported');
-    } else {
-      throw new Error('Not supported data type');
+      return;
     }
+
+    // Maintain iOS 7 compatibility which doesn't have JS typed arrays.
+    if (typeof ArrayBuffer !== 'undefined' &&
+        typeof Uint8Array !== 'undefined') {
+      if (ArrayBuffer.isView(data)) {
+        // $FlowFixMe: no way to assert that 'data' is indeed an ArrayBufferView now
+        data = data.buffer;
+      }
+      if (data instanceof ArrayBuffer) {
+        data = base64.fromByteArray(new Uint8Array(data));
+        RCTWebSocketModule.sendBinary(data, this._socketId);
+        return;
+      }
+    }
+
+    throw new Error('Unsupported data type');
   }
 
   _close(code?: number, reason?: string): void {
