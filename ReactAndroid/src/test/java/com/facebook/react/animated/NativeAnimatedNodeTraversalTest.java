@@ -341,4 +341,64 @@ public class NativeAnimatedNodeTraversalTest {
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
     verifyNoMoreInteractions(mUIImplementationMock);
   }
+
+  @Test
+  public void testMultiplicationNode() {
+    mNativeAnimatedNodesManager.createAnimatedNode(
+      1,
+      JavaOnlyMap.of("type", "value", "value", 1d));
+    mNativeAnimatedNodesManager.createAnimatedNode(
+      2,
+      JavaOnlyMap.of("type", "value", "value", 5d));
+
+    mNativeAnimatedNodesManager.createAnimatedNode(
+      3,
+      JavaOnlyMap.of("type", "multiplication", "input", JavaOnlyArray.of(1, 2)));
+
+    mNativeAnimatedNodesManager.createAnimatedNode(
+      4,
+      JavaOnlyMap.of("type", "style", "style", JavaOnlyMap.of("translateX", 3)));
+    mNativeAnimatedNodesManager.createAnimatedNode(
+      5,
+      JavaOnlyMap.of("type", "props", "props", JavaOnlyMap.of("style", 4)));
+    mNativeAnimatedNodesManager.connectAnimatedNodes(1, 3);
+    mNativeAnimatedNodesManager.connectAnimatedNodes(2, 3);
+    mNativeAnimatedNodesManager.connectAnimatedNodes(3, 4);
+    mNativeAnimatedNodesManager.connectAnimatedNodes(4, 5);
+    mNativeAnimatedNodesManager.connectAnimatedNodeToView(5, 50);
+
+    Callback animationCallback = mock(Callback.class);
+    JavaOnlyArray frames = JavaOnlyArray.of(0d, 1d);
+    mNativeAnimatedNodesManager.startAnimatingNode(
+      1,
+      JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 2d),
+      animationCallback);
+
+    mNativeAnimatedNodesManager.startAnimatingNode(
+      2,
+      JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 10d),
+      animationCallback);
+
+    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+
+    reset(mUIImplementationMock);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("translateX", Double.NaN)).isEqualTo(5d);
+
+    reset(mUIImplementationMock);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("translateX", Double.NaN)).isEqualTo(5d);
+
+    reset(mUIImplementationMock);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("translateX", Double.NaN)).isEqualTo(20d);
+
+    reset(mUIImplementationMock);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verifyNoMoreInteractions(mUIImplementationMock);
+  }
 }
