@@ -21,6 +21,7 @@ const NavigationReducer = require('NavigationReducer');
 const NavigationRootContainer = require('NavigationRootContainer');
 const NavigationStateUtils = require('NavigationStateUtils');
 const NavigationView = require('NavigationView');
+const NavigationPropTypes = require('NavigationPropTypes');
 
 const NavigationExperimental = {
   // Core
@@ -40,6 +41,9 @@ const NavigationExperimental = {
   CardStack: NavigationCardStack,
   Header: NavigationHeader,
   LegacyNavigator: NavigationLegacyNavigator,
+
+  // Props
+  PropTypes: NavigationPropTypes,
 };
 
 module.exports = NavigationExperimental;
