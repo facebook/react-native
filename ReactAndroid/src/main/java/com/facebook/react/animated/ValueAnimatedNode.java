@@ -15,11 +15,15 @@ import com.facebook.react.bridge.ReadableMap;
  * Basic type of animated node that maps directly from {@code Animated.Value(x)} of Animated.js
  * library.
  */
-class ValueAnimatedNode extends AnimatedNode {
+/*package*/ class ValueAnimatedNode extends AnimatedNode {
 
   /*package*/ double mValue = Double.NaN;
 
-  ValueAnimatedNode(ReadableMap config) {
+  public ValueAnimatedNode() {
+    // empty constructor that can be used by subclasses
+  }
+
+  public ValueAnimatedNode(ReadableMap config) {
     mValue = config.getDouble("value");
   }
 }

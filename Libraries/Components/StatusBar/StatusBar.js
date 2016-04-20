@@ -164,7 +164,7 @@ const StatusBar = React.createClass({
       StatusBarManager.setNetworkActivityIndicatorVisible(visible);
     },
 
-    setBackgroundColor(color, animated?: boolean) {
+    setBackgroundColor(color: string, animated?: boolean) {
       if (Platform.OS !== 'android') {
         console.warn('`setBackgroundColor` is only available on Android');
         return;

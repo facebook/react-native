@@ -443,8 +443,7 @@ class WindowedListView extends React.Component {
           rowIndex={idx}
           onNewLayout={this._onNewLayout}
           onWillUnmount={this._onWillUnmountCell}
-          includeInLayout={this.props.disableIncrementalRendering ||
-            (this._rowFrames[idx] && this._rowFrames[idx].offscreenLayoutDone)}
+          includeInLayout={this._rowFrames[idx] && this._rowFrames[idx].offscreenLayoutDone}
           onProgressChange={this._onProgressChange}
           asyncRowPerfEventName={this.props.asyncRowPerfEventName}
           data={this.props.data[idx]}
@@ -457,7 +456,9 @@ class WindowedListView extends React.Component {
         lastRow === this.props.data.length - 1;
     if (this.props.renderFooter) {
       rows.push(
-        <View style={showFooter ? styles.include : styles.remove}>
+        <View
+          key="ind-footer"
+          style={showFooter ? styles.include : styles.remove}>
           {this.props.renderFooter()}
         </View>
       );

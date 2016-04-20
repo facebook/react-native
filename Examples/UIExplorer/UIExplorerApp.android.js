@@ -16,7 +16,8 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const {
   AppRegistry,
   BackAndroid,
@@ -27,7 +28,7 @@ const {
   ToolbarAndroid,
   View,
   StatusBar,
-} = React;
+} = ReactNative;
 const {
   RootContainer: NavigationRootContainer,
 } = NavigationExperimental;
@@ -217,6 +218,7 @@ const styles = StyleSheet.create({
     height: 56,
   },
   drawerContentWrapper: {
+    flex: 1,
     paddingTop: StatusBar.currentHeight,
     backgroundColor: 'white',
   },
