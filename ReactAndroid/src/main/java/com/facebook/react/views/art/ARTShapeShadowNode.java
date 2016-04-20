@@ -101,10 +101,10 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
         throw new JSApplicationIllegalArgumentException(
             "Shapes should have a valid path (d) prop");
       }
-      if (setupStrokePaint(paint, opacity)) {
+      if (setupFillPaint(paint, opacity)) {
         canvas.drawPath(mPath, paint);
       }
-      if (setupFillPaint(paint, opacity)) {
+      if (setupStrokePaint(paint, opacity)) {
         canvas.drawPath(mPath, paint);
       }
       restoreCanvas(canvas);
