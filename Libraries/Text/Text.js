@@ -138,13 +138,13 @@ const Text = React.createClass({
   touchableGetPressRectOffset: (null: ?Function),
   render(): ReactElement {
     let newProps = this.props;
-    if (this.props.onStartShouldSetResponder || this.props.onPress) {
+    if (this.props.onStartShouldSetResponder || this.props.onPress || this.props.onLongPress) {
       if (!this._handlers) {
         this._handlers = {
           onStartShouldSetResponder: (): bool => {
             const shouldSetFromProps = this.props.onStartShouldSetResponder &&
                 this.props.onStartShouldSetResponder();
-            const setResponder = shouldSetFromProps || !!this.props.onPress;
+            const setResponder = shouldSetFromProps || !!this.props.onPress || !!this.props.onLongPress;
             if (setResponder && !this.touchableHandleActivePressIn) {
               // Attach and bind all the other handlers only the first time a touch
               // actually happens.
@@ -154,7 +154,7 @@ const Text = React.createClass({
                 }
               }
               this.touchableHandleActivePressIn = () => {
-                if (this.props.suppressHighlighting || !this.props.onPress) {
+                if (this.props.suppressHighlighting || !this.props.onPress && !this.props.onLongPress) {
                   return;
                 }
                 this.setState({
@@ -163,7 +163,7 @@ const Text = React.createClass({
               };
 
               this.touchableHandleActivePressOut = () => {
-                if (this.props.suppressHighlighting || !this.props.onPress) {
+                if (this.props.suppressHighlighting || !this.props.onPress && !this.props.onLongPress) {
                   return;
                 }
                 this.setState({
@@ -173,6 +173,10 @@ const Text = React.createClass({
 
               this.touchableHandlePress = () => {
                 this.props.onPress && this.props.onPress();
+              };
+
+              this.touchableHandleLongPress = () => {
+                this.props.onLongPress && this.props.onLongPress();
               };
 
               this.touchableGetPressRectOffset = function(): RectOffset {
