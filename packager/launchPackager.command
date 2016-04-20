@@ -16,5 +16,4 @@ pushd "$THIS_DIR"
 source packager.sh
 popd
 
-echo "Process terminated. Press <enter> to close the window"
-read
+
