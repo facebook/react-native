@@ -23,6 +23,8 @@ _Note: Remember to keep your keystore file private and never commit it to versio
 
 ### Setting up gradle variables
 
+_Note: This is a global way that will work for any platform, if you are not keen on storing your passwords in plaintext and you are running OSX, you can also [store your credentials in the Keychain Access app](https://pilloxa.gitlab.io/posts/safer-passwords-in-gradle/). Then you can skip the two last rows in `~/.gradle/gradle.properties`._ 
+
 1. Place the `my-release-key.keystore` file under the `android/app` directory in your project folder.
 2. Edit the file `~/.gradle/gradle.properties` and add the following (replace `*****` with the correct keystore password, alias and key password),
 
