@@ -44,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 
 import okio.Buffer;
 import okio.BufferedSource;
+import okio.ByteString;
 
 public class WebSocketModule extends ReactContextBaseJavaModule {
 
@@ -211,6 +212,22 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       client.sendMessage(
         WebSocket.PayloadType.TEXT,
         new Buffer().writeUtf8(message));
+    } catch (IOException | IllegalStateException e) {
+      notifyWebSocketFailed(id, e.getMessage());
+    }
+  }
+
+  @ReactMethod
+  public void sendBinary(String base64String, int id) {
+    WebSocket client = mWebSocketConnections.get(id);
+    if (client == null) {
+      // This is a programmer error
+      throw new RuntimeException("Cannot send a message. Unknown WebSocket id " + id);
+    }
+    try {
+      client.sendMessage(
+        WebSocket.PayloadType.BINARY,
+        new Buffer().write(ByteString.decodeBase64(base64String)));
     } catch (IOException | IllegalStateException e) {
       notifyWebSocketFailed(id, e.getMessage());
     }
