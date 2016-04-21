@@ -10,10 +10,7 @@
  */
 'use strict';
 
-var ReactInstanceHandles = require('ReactInstanceHandles');
-var ReactInstanceMap = require('ReactInstanceMap');
-var ReactNativeMount = require('ReactNativeMount');
-var ReactNativeTagHandles = require('ReactNativeTagHandles');
+var ReactNativeComponentTree = require('ReactNativeComponentTree');
 
 function traverseOwnerTreeUp(hierarchy, instance) {
   if (instance) {
@@ -22,38 +19,8 @@ function traverseOwnerTreeUp(hierarchy, instance) {
   }
 }
 
-function findInstance(component, targetID) {
-  if (targetID === findRootNodeID(component)) {
-    return component;
-  }
-  if (component._renderedComponent) {
-    return findInstance(component._renderedComponent, targetID);
-  } else {
-    for (var key in component._renderedChildren) {
-      var child = component._renderedChildren[key];
-      if (ReactInstanceHandles.isAncestorIDOf(findRootNodeID(child), targetID)) {
-        var instance = findInstance(child, targetID);
-        if (instance) {
-          return instance;
-        }
-      }
-    }
-  }
-}
-
-function findRootNodeID(component) {
-  var internalInstance = ReactInstanceMap.get(component);
-  return internalInstance ? internalInstance._rootNodeID : component._rootNodeID;
-}
-
 function findInstanceByNativeTag(rootTag, nativeTag) {
-  var containerID = ReactNativeTagHandles.tagToRootNodeID[rootTag];
-  var rootInstance = ReactNativeMount._instancesByContainerID[containerID];
-  var targetID = ReactNativeTagHandles.tagToRootNodeID[nativeTag];
-  if (!targetID) {
-    return undefined;
-  }
-  return findInstance(rootInstance, targetID);
+  return ReactNativeComponentTree.getInstanceFromNode(nativeTag);
 }
 
 function getOwnerHierarchy(instance) {

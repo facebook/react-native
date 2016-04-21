@@ -16,28 +16,8 @@
 'use strict';
 
 var BatchedBridge = require('BatchedBridge');
-var DebugComponentOwnershipModule = require('NativeModules').DebugComponentOwnershipModule;
-var InspectorUtils = require('InspectorUtils');
-var ReactNativeTagHandles = require('ReactNativeTagHandles');
-
-function componentToString(component) {
-  return component.getName ? component.getName() : 'Unknown';
-}
-
-function getRootTagForTag(tag: number): ?number {
-  var rootNodeID = ReactNativeTagHandles.tagToRootNodeID[tag];
-  if (!rootNodeID) {
-    return null;
-  }
-  var rootID = ReactNativeTagHandles.getNativeTopRootIDFromNodeID(rootNodeID);
-  if (!rootID) {
-    return null;
-  }
-  return ReactNativeTagHandles.rootNodeIDToTag[rootID];
-}
 
 var RCTDebugComponentOwnership = {
-
   /**
    * Asynchronously returns the owner hierarchy as an array of strings. Request id is
    * passed along to the native module so that the native module can identify the
@@ -46,12 +26,10 @@ var RCTDebugComponentOwnership = {
    * Example returned owner hierarchy: ['RootView', 'Dialog', 'TitleView', 'Text']
    */
   getOwnerHierarchy: function(requestID: number, tag: number) {
-    var rootTag = getRootTagForTag(tag);
-    var instance = InspectorUtils.findInstanceByNativeTag(rootTag, tag);
-    var ownerHierarchy = instance ?
-        InspectorUtils.getOwnerHierarchy(instance).map(componentToString) :
-        null;
-    DebugComponentOwnershipModule.receiveOwnershipHierarchy(requestID, tag, ownerHierarchy);
+    // Consider cleaning up these unused modules in a separate diff.
+    throw new Error(
+      'This seems to be unused. Will disable until it is needed again.'
+    );
   },
 };
 
