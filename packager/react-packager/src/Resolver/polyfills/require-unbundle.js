@@ -27,13 +27,16 @@ function define(moduleId, factory) {
   modules[moduleId] = {
     factory,
     hasError: false,
+    isInitialized: false,
     exports: undefined,
   };
 }
 
 function require(moduleId) {
   const module = modules[moduleId];
-  return module && module.exports || loadModule(moduleId, module);
+  return module && module.isInitialized
+    ? module.exports
+    : loadModule(moduleId, module);
 }
 
 function guardedLoadModule(moduleId, module) {
@@ -68,6 +71,7 @@ function loadModuleImplementation(moduleId, module) {
   }
 
   const exports = module.exports = {};
+  module.isInitialized = true;
   const {factory} = module;
   try {
     if (__DEV__) {
@@ -83,6 +87,7 @@ function loadModuleImplementation(moduleId, module) {
     }
     return (module.exports = moduleObject.exports);
   } catch (e) {
+    module.isInitialized = false;
     module.hasError = true;
     module.exports = undefined;
   }
