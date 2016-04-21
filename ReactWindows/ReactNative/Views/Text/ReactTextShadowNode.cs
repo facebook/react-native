@@ -19,11 +19,11 @@ namespace ReactNative.Views.Text
     /// </summary>
     public class ReactTextShadowNode : LayoutShadowNode
     {
-        private const int Unset = -1;
+        private const double FontSizeUnset = -1;
 
         private uint? _color;
 
-        private int _fontSize = Unset;
+        private double _fontSize = FontSizeUnset;
 
         private FontStyle? _fontStyle;
         private FontWeight? _fontWeight;
@@ -136,10 +136,10 @@ namespace ReactNative.Views.Text
         /// Sets the font size for the node.
         /// </summary>
         /// <param name="fontSize">The font size.</param>
-        [ReactProp(ViewProps.FontSize, DefaultDouble = Unset)]
+        [ReactProp(ViewProps.FontSize, DefaultDouble = FontSizeUnset)]
         public void SetFontSize(double fontSize)
         {
-            _fontSize = (int)fontSize;
+            _fontSize = fontSize;
             MarkUpdated();
         }
 
@@ -223,7 +223,7 @@ namespace ReactNative.Views.Text
                 inline.Foreground = new SolidColorBrush(ColorHelpers.Parse(textNode._color.Value));
             }
 
-            if (textNode._fontSize != Unset)
+            if (textNode._fontSize != FontSizeUnset)
             {
                 var fontSize = textNode._fontSize;
                 inline.FontSize = fontSize;

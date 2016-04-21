@@ -30,6 +30,10 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ImageExample'),
   },
   {
+    key: 'PickerWindowsExample',
+    module: require('./PickerWindowsExample'),
+  },
+  {
     key: 'ScrollViewSimpleExample',
     module: require('./ScrollViewSimpleExample'),
   },
@@ -38,8 +42,20 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./StatusBarExample'),
   },
   {
+    key: 'SwitchExample',
+    module: require('./SwitchExample'),
+  },
+  {
+    key: 'TextExample',
+    module: require('./TextExample'),
+  },
+  {
     key: 'TextInputExample',
     module: require('./TextInputExample'),
+  },
+  {
+    key: 'TouchableExample',
+    module: require('./TouchableExample'),
   },
   {
     key: 'ViewExample',
@@ -65,20 +81,36 @@ const APIExamples = [
     module: require('./ClipboardExample'),
   },
   {
-    key: 'LinkingExample',
-    module: require('./LinkingExample'),
-  },
-  {
     key: 'LayoutExample',
     module: require('./LayoutExample'),
+  },
+  {
+    key: 'LayoutEventsExample',
+    module: require('./LayoutEventsExample'),
   },
   {
     key: 'NavigationExperimentalExample',
     module: require('./NavigationExperimental/NavigationExperimentalExample'),
   },
   {
+    key: 'NetInfoExample',
+    module: require('./NetInfoExample'),
+  },
+  {
+    key: 'PanResponderExample',
+    module: require('./PanResponderExample'),
+  },
+  {
     key: 'PointerEventsExample',
     module: require('./PointerEventsExample'),
+  },
+  {
+    key: 'TimerExample',
+    module: require('./TimerExample'),
+  },
+  {
+    key: 'WebSocketExample',
+    module: require('./WebSocketExample'),
   },
 ];
 

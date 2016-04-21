@@ -40,12 +40,18 @@ var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
 
     getBlock: function(example: Example, i) {
       // Filter platform-specific examples
-      var {title, description, platform} = example;
+      var {title, description, platform, platforms} = example;
       if (platform) {
         if (Platform.OS !== platform) {
           return null;
         }
         title += ' (' + platform + ' only)';
+      }
+      else if (platforms) {
+        if (platforms.indexOf(Platform.OS) < 0) {
+          return null;
+        }
+        title += ' (' + platforms.join(', ') + ' only)';
       }
       // Hack warning: This is a hack because the www UI explorer used to
       // require render to be called. It should just return elements now.

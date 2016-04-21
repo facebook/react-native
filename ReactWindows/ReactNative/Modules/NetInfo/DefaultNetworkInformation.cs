@@ -19,6 +19,7 @@ namespace ReactNative.Modules.NetInfo
         public IConnectionProfile GetInternetConnectionProfile()
         {
             var profile = NetworkInformation.GetInternetConnectionProfile();
+            var connectivity = profile.GetNetworkConnectivityLevel();
             return profile != null
                 ? new ConnectionProfileImpl(profile)
                 : null;
@@ -26,11 +27,7 @@ namespace ReactNative.Modules.NetInfo
 
         private void OnNetworkStatusChanged(object sender)
         {
-            var networkStatusChanged = NetworkStatusChanged;
-            if (networkStatusChanged != null)
-            {
-                networkStatusChanged(sender);
-            }
+            NetworkStatusChanged?.Invoke(sender);
         }
 
         class ConnectionProfileImpl : IConnectionProfile
@@ -42,19 +39,11 @@ namespace ReactNative.Modules.NetInfo
                 _profile = profile;
             }
 
-            public bool IsWlanConnectionProfile
+            public NetworkConnectivityLevel ConnectivityLevel
             {
                 get
                 {
-                    return _profile.IsWlanConnectionProfile;
-                }
-            }
-
-            public bool IsWwanConnectionProfile
-            {
-                get
-                {
-                    return _profile.IsWwanConnectionProfile;
+                    return _profile.GetNetworkConnectivityLevel();
                 }
             }
         }

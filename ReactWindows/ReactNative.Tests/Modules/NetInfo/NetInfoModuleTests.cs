@@ -24,19 +24,23 @@ namespace ReactNative.Tests.Modules.NetInfo
             var promise = new MockPromise(value => state = (JObject)value);
 
             netInfo.getCurrentConnectivity(promise);
-            Assert.AreEqual(CreateNetworkInfo("none").ToString(Formatting.None), state.ToString(Formatting.None));
+            Assert.AreEqual(CreateNetworkInfo(NetworkConnectivityLevel.None.ToString()).ToString(Formatting.None), state.ToString(Formatting.None));
 
-            networkInfo.CurrentConnectionProfile = new MockConnectionProfile(true, false);
+            networkInfo.CurrentConnectionProfile = new MockConnectionProfile(NetworkConnectivityLevel.None);
             netInfo.getCurrentConnectivity(promise);
-            Assert.AreEqual(CreateNetworkInfo("wifi").ToString(Formatting.None), state.ToString(Formatting.None));
+            Assert.AreEqual(CreateNetworkInfo(NetworkConnectivityLevel.None.ToString()).ToString(Formatting.None), state.ToString(Formatting.None));
 
-            networkInfo.CurrentConnectionProfile = new MockConnectionProfile(false, true);
+            networkInfo.CurrentConnectionProfile = new MockConnectionProfile(NetworkConnectivityLevel.LocalAccess);
             netInfo.getCurrentConnectivity(promise);
-            Assert.AreEqual(CreateNetworkInfo("cell").ToString(Formatting.None), state.ToString(Formatting.None));
+            Assert.AreEqual(CreateNetworkInfo(NetworkConnectivityLevel.LocalAccess.ToString()).ToString(Formatting.None), state.ToString(Formatting.None));
 
-            networkInfo.CurrentConnectionProfile = new MockConnectionProfile(false, false);
+            networkInfo.CurrentConnectionProfile = new MockConnectionProfile(NetworkConnectivityLevel.ConstrainedInternetAccess);
             netInfo.getCurrentConnectivity(promise);
-            Assert.AreEqual(CreateNetworkInfo("unknown").ToString(Formatting.None), state.ToString(Formatting.None));
+            Assert.AreEqual(CreateNetworkInfo(NetworkConnectivityLevel.ConstrainedInternetAccess.ToString()).ToString(Formatting.None), state.ToString(Formatting.None));
+
+            networkInfo.CurrentConnectionProfile = new MockConnectionProfile(NetworkConnectivityLevel.InternetAccess);
+            netInfo.getCurrentConnectivity(promise);
+            Assert.AreEqual(CreateNetworkInfo(NetworkConnectivityLevel.InternetAccess.ToString()).ToString(Formatting.None), state.ToString(Formatting.None));
         }
 
         [Microsoft.VisualStudio.TestPlatform.UnitTestFramework.AppContainer.UITestMethod]
@@ -59,10 +63,10 @@ namespace ReactNative.Tests.Modules.NetInfo
             netInfo.Initialize();
             context.OnResume();
 
-            networkInfo.CurrentConnectionProfile = new MockConnectionProfile(true, false);
+            networkInfo.CurrentConnectionProfile = new MockConnectionProfile(NetworkConnectivityLevel.InternetAccess);
             networkInfo.OnNetworkStatusChanged();
             Assert.IsTrue(emitted.WaitOne());
-            Assert.AreEqual(CreateNetworkInfo("wifi").ToString(Formatting.None), state.ToString(Formatting.None));
+            Assert.AreEqual(CreateNetworkInfo("InternetAccess").ToString(Formatting.None), state.ToString(Formatting.None));
         }
 
         [Microsoft.VisualStudio.TestPlatform.UnitTestFramework.AppContainer.UITestMethod]
@@ -172,28 +176,18 @@ namespace ReactNative.Tests.Modules.NetInfo
 
             public void OnNetworkStatusChanged()
             {
-                var networkStatusChanged = NetworkStatusChanged;
-                if (networkStatusChanged != null)
-                {
-                    networkStatusChanged(this);
-                }
+                NetworkStatusChanged?.Invoke(this);
             }
         }
 
         class MockConnectionProfile : IConnectionProfile
         {
-            public MockConnectionProfile(bool isWlan, bool isWwan)
+            public MockConnectionProfile(NetworkConnectivityLevel connectivityLevel)
             {
-                IsWlanConnectionProfile = isWlan;
-                IsWwanConnectionProfile = isWwan;
+                ConnectivityLevel = connectivityLevel;
             }
 
-            public bool IsWlanConnectionProfile
-            {
-                get;
-            }
-
-            public bool IsWwanConnectionProfile
+            public NetworkConnectivityLevel ConnectivityLevel
             {
                 get;
             }

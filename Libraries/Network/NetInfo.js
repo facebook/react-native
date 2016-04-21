@@ -54,6 +54,12 @@ type ConnectivityStateAndroid = $Enum<{
   UNKNOWN: string;
 }>;
 
+type ConnectivityStateWindows = $Enum<{
+  None: string;
+  LocalAccess: string;
+  ConstrainedInternetAccess: string;
+  InternetAccess: string;
+}>;
 
 const _subscriptions = new Map();
 
@@ -70,6 +76,12 @@ if (Platform.OS === 'ios') {
     ): bool {
     return connectionType !== 'NONE' && connectionType !== 'UNKNOWN';
   };
+} else if (Platform.OS === 'windows') {
+  _isConnected = function(
+      connectionType: ConnectivityStateWindows,
+    ): bool {
+    return connectionType !== 'None' && connectionType !== 'LocalAccess';
+  }
 }
 
 const _isConnectedSubscriptions = new Map();
@@ -128,6 +140,17 @@ const _isConnectedSubscriptions = new Map();
  * - `UNKNOWN` - Unknown data connection.
  *
  * The rest ConnectivityStates are hidden by the Android API, but can be used if necessary.
+ *
+ * ### Windows
+ * 
+ * Asynchronously determine if the device is connected and details about that connection.
+ * 
+ * Windows Connectivity Types.
+ *
+ * - `None` - No connectivity.
+ * - `LocalAccess` - Local network access only.
+ * - `ConstrainedInternetAccess` - Limited internet access.
+ * - `InternetAccess` - Local and Internet access.
  *
  * ### isConnectionExpensive
  *

@@ -10,11 +10,22 @@ namespace ReactNative.Views.Text
                 ? ParseNumericFontWeight(fontWeightString)
                 : -1;
 
-            if (fontWeightNumeric >= 500 || fontWeightString == "bold")
+            if (fontWeightNumeric > ushort.MaxValue)
+            {
+                return FontWeights.ExtraBold;
+            }
+            else if (fontWeightNumeric > 0)
+            {
+                return new FontWeight
+                {
+                    Weight = (ushort)fontWeightNumeric,
+                };
+            }
+            else if (fontWeightString == "bold")
             {
                 return FontWeights.Bold;
             }
-            else if (fontWeightString == "normal" || (fontWeightNumeric != -1 && fontWeightNumeric < 500))
+            else if (fontWeightString == "normal")
             {
                 return FontWeights.Normal;
             }
@@ -24,10 +35,13 @@ namespace ReactNative.Views.Text
 
         private static int ParseNumericFontWeight(string fontWeightString)
         {
-            return fontWeightString.Length == 3 && fontWeightString.EndsWith("00") &&
-                fontWeightString[0] <= '9' && fontWeightString[0] >= '1'
-                ? 100 * (fontWeightString[0] - '0')
-                : -1;
+            var result = default(int);
+            if (int.TryParse(fontWeightString, out result))
+            {
+                return result;
+            }
+
+            return -1;
         }
     }
 }

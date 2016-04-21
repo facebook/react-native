@@ -22,8 +22,6 @@ namespace ReactNative
         private bool _wasMeasured;
         private bool _attachScheduled;
 
-        private TouchHandler _touchHandler;
-
         /// <summary>
         /// Gets the JavaScript module name.
         /// </summary>
@@ -33,6 +31,15 @@ namespace ReactNative
             {
                 return _jsModuleName;
             }
+        }
+
+        /// <summary>
+        /// The touch handler for the root view.
+        /// </summary>
+        internal TouchHandler TouchHandler
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -71,7 +78,6 @@ namespace ReactNative
             if (_wasMeasured)
             {
                 _reactInstanceManager.AttachMeasuredRootView(this);
-                _touchHandler = new TouchHandler(this);
             }
             else
             {
@@ -98,7 +104,6 @@ namespace ReactNative
             {
                 _attachScheduled = false;
                 reactInstanceManager.AttachMeasuredRootView(this);
-                _touchHandler = new TouchHandler(this);
             }
 
             return result;

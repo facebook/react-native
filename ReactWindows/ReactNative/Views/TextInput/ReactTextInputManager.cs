@@ -6,7 +6,6 @@ using ReactNative.Views.Text;
 using System;
 using System.Collections.Generic;
 using Windows.System;
-using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -364,10 +363,6 @@ namespace ReactNative.Views.TextInput
         {
             if (commandId == FocusTextInput)
             {
-                // Sometimes, the focus command is received before the view
-                // is actually rendered on screen. In this case, we defer
-                // the focus command until after the view is ready.
-                // TODO: (#271) resolve issues with focus.
                 view.Focus(FocusState.Programmatic);
             }
             else if (commandId == BlurTextInput)

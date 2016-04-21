@@ -7,6 +7,7 @@
 'use strict';
 
 var React = require('React');
+var ReactNative = require('react-native');
 var ReactElement = require('ReactElement');
 var ReactPropTypes = require('ReactPropTypes');
 var UIManager = require('UIManager');
@@ -133,7 +134,7 @@ var FlipViewWindows = React.createClass({
    */
   setPage: function(selectedPage: number) {
     UIManager.dispatchViewManagerCommand(
-      React.findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       UIManager.WindowsFlipView.Commands.setPage,
       [selectedPage],
     );

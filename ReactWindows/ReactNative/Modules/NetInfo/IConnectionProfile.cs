@@ -1,4 +1,6 @@
-﻿namespace ReactNative.Modules.NetInfo
+﻿using Windows.Networking.Connectivity;
+
+namespace ReactNative.Modules.NetInfo
 {
     /// <summary>
     /// An interface for network connection profiles.
@@ -6,15 +8,8 @@
     public interface IConnectionProfile
     {
         /// <summary>
-        /// A value that indicates if connection profile is a WLAN (WiFi)
-        /// connection.
+        /// A value that indicates the network connectivity level.
         /// </summary>
-        bool IsWlanConnectionProfile { get; }
-
-        /// <summary>
-        /// A value that indicates if connection profile is a WWAN (mobile)
-        /// connection.
-        /// </summary>
-        bool IsWwanConnectionProfile { get; }
+        NetworkConnectivityLevel ConnectivityLevel { get; }
     }
 }

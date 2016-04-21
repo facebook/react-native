@@ -98,22 +98,7 @@ namespace ReactNative.Modules.NetInfo
         private string GetConnnectivityType()
         {
             var profile = _networkInfo.GetInternetConnectionProfile();
-            if (profile == null)
-            {
-                return "none";
-            }
-            else if (profile.IsWlanConnectionProfile)
-            {
-                return "wifi";
-            }
-            else if (profile.IsWwanConnectionProfile)
-            {
-                return "cell";
-            }
-            else
-            {
-                return "unknown";
-            }
+            return profile?.ConnectivityLevel.ToString() ?? "None";
         }
 
         private void OnStatusChanged(object ignored)

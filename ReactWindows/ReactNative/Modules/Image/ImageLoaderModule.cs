@@ -16,7 +16,7 @@ namespace ReactNative.Modules.Image
         public void prefetchImage(string uriString, IPromise promise)
         {
             // TODO: (#366) Implement prefetch mechanism.
-            promise.Reject("Prefect is not yet supported.");
+            promise.Reject("Prefetch is not yet supported.");
         }
     }
 }

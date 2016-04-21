@@ -4,6 +4,7 @@ using ReactNative.Chakra.Executor;
 using ReactNative.Common;
 using ReactNative.DevSupport;
 using ReactNative.Modules.Core;
+using ReactNative.Touch;
 using ReactNative.Tracing;
 using ReactNative.UIManager;
 using System;
@@ -484,11 +485,13 @@ namespace ReactNative
 
             // Reset view content as it's going to be populated by the 
             // application content from JavaScript
+            rootView.TouchHandler?.Dispose();
             rootView.Children.Clear();
             rootView.Tag = null;
 
             var uiManagerModule = reactInstance.GetNativeModule<UIManagerModule>();
             var rootTag = uiManagerModule.AddMeasuredRootView(rootView);
+            rootView.TouchHandler = new TouchHandler(rootView);
 
             var jsAppModuleName = rootView.JavaScriptModuleName;
             var appParameters = new Dictionary<string, object>
