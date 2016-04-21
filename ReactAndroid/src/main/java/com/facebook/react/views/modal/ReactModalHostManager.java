@@ -60,6 +60,11 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
     view.setAnimated(animated);
   }
 
+  @ReactProp(name = "animationType")
+  public void setAnimationType(ReactModalHostView view, String animationType) {
+    view.setAnimationType(animationType);
+  }
+
   @ReactProp(name = "transparent")
   public void setTransparent(ReactModalHostView view, boolean transparent) {
     view.setTransparent(transparent);
