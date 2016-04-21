@@ -196,12 +196,6 @@ var featured = [
 
 var apps = [
   {
-    name: ':nth',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/d1/92/de/d192decd-ff97-e108-eaa0-c51be79261c6/icon175x175.jpeg',
-    link:  'https://itunes.apple.com/us/app/nth/id1102663176?mt=8',
-    author: 'Omar Carpinteyro',
-  },
-  {
     name: 'Accio',
     icon: 'http://a3.mzstatic.com/us/r30/Purple3/v4/03/a1/5b/03a15b9f-04d7-a70a-620a-9c9850a859aa/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/accio-on-demand-delivery/id1047060673?mt=8',
@@ -577,6 +571,12 @@ var apps = [
     icon: 'http://is3.mzstatic.com/image/pf/us/r30/Purple7/v4/5f/50/5f/5f505fe5-0a30-6bbf-6ed9-81ef09351aba/mzl.lkeqxyeo.png',
     link: 'https://itunes.apple.com/gb/app/night-light-feeding-light/id1016843582?mt=8',
     author: 'Tian Yuan',
+  },
+  {
+    name: ':nth',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/d1/92/de/d192decd-ff97-e108-eaa0-c51be79261c6/icon175x175.jpeg',
+    link:  'https://itunes.apple.com/us/app/nth/id1102663176?mt=8',
+    author: 'Omar Carpinteyro',
   },
   {
     name: 'Okanagan News',
