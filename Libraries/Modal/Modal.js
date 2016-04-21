@@ -20,6 +20,8 @@ const View = require('View');
 const requireNativeComponent = require('requireNativeComponent');
 const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
 
+const STATUS_BAR_HEIGHT = 24;
+
 /**
  * A Modal component covers the native view (e.g. UIViewController, Activity)
  * that contains the React Native root.
@@ -56,7 +58,7 @@ class Modal extends React.Component {
     };
 
     const containerTopValue = {
-      top: this.props.translucentStatusBar ? 24 : 0,
+      top: this.props.translucentStatusBar ? STATUS_BAR_HEIGHT : 0,
     };
 
     return (
