@@ -11,6 +11,7 @@
 
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
+#import "RCTShadowText.h"
 #import "RCTText.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
@@ -110,6 +111,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     }
     _richTextView = (RCTText *)subview;
     [_subviews insertObject:_richTextView atIndex:index];
+
+    // If this <TextInput> is in rich text editing mode, and the child <Text> node providing rich text
+    // styling has a backgroundColor, then the attributedText produced by the child <Text> node will have an
+    // NSBackgroundColor attribute. We need to forward this attribute to the text view manually because the text view
+    // always has a clear background color in -initWithEventDispatcher:.
+    //
+    // TODO: This should be removed when the related hack in -performPendingTextUpdate is removed.
+    if (subview.backgroundColor) {
+      NSMutableDictionary<NSString *, id> *attrs = [_textView.typingAttributes mutableCopy];
+      attrs[NSBackgroundColorAttributeName] = subview.backgroundColor;
+      _textView.typingAttributes = attrs;
+    }
   } else {
     [_subviews insertObject:subview atIndex:index];
     [self insertSubview:subview atIndex:index];
@@ -149,11 +162,30 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
+{
+  if (string.length == 0) {
+    return string;
+  } else {
+    NSMutableAttributedString *mutableString = [[NSMutableAttributedString alloc] initWithAttributedString:string];
+    [mutableString removeAttribute:RCTReactTagAttributeName range:NSMakeRange(0, mutableString.length)];
+    return mutableString;
+  }
+}
+
 - (void)performPendingTextUpdate
 {
   if (!_pendingAttributedText || _mostRecentEventCount < _nativeEventCount) {
     return;
   }
+
+  // The underlying <Text> node that produces _pendingAttributedText has a react tag attribute on it that causes the
+  // -isEqualToAttributedString: comparison below to spuriously fail. We don't want that comparison to fail unless it
+  // needs to because when the comparison fails, we end up setting attributedText on the text view, which clears
+  // autocomplete state for CKJ text input.
+  //
+  // TODO: Kill this after we finish passing all style/attribute info into JS.
+  _pendingAttributedText = removeReactTagFromString(_pendingAttributedText);
 
   if ([_textView.attributedText isEqualToAttributedString:_pendingAttributedText]) {
     _pendingAttributedText = nil; // Don't try again.
