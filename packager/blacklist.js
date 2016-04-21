@@ -14,8 +14,6 @@ var path = require('path');
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
   /node_modules[/\\]react[/\\]dist[/\\].*/,
-  'node_modules/react/lib/React.js',
-  'node_modules/react/lib/ReactDOM.js',
 
   'downstream/core/invariant.js',
 

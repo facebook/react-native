@@ -92,7 +92,7 @@ RCT_EXPORT_MODULE()
 {
   _socketOpenSemaphore = dispatch_semaphore_create(0);
   [_socket open];
-  long connected = dispatch_semaphore_wait(_socketOpenSemaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2));
+  long connected = dispatch_semaphore_wait(_socketOpenSemaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 10));
   return connected == 0;
 }
 

@@ -16,6 +16,11 @@ import org.apache.tools.ant.filters.ReplaceTokens
 def downloadsDir = new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 
+// The Boost library is a very large download (>100MB).
+// If Boost is already present on your system, define the REACT_NATIVE_BOOST_PATH env variable
+// and the build will use that.
+def boostPath = System.getenv("REACT_NATIVE_BOOST_PATH")
+
 task createNativeDepsDirectories {
     downloadsDir.mkdirs()
     thirdPartyNdkDir.mkdirs()
@@ -31,8 +36,8 @@ task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
     dest new File(downloadsDir, 'boost_1_57_0.zip')
 }
 
-task prepareBoost(dependsOn: downloadBoost, type: Copy) {
-    from zipTree(downloadBoost.dest)
+task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
+    from boostPath ? boostPath : zipTree(downloadBoost.dest)
     from 'src/main/jni/third-party/boost/Android.mk'
     include 'boost_1_57_0/boost/**/*.hpp', 'Android.mk'
     into "$thirdPartyNdkDir/boost"
@@ -77,7 +82,7 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
     dest new File(downloadsDir, 'glog-0.3.3.tar.gz')
 }
 
-// Prepare glog sources to be compiled, this task will perform steps that normally shoudl've been
+// Prepare glog sources to be compiled, this task will perform steps that normally should've been
 // executed by automake. This way we can avoid dependencies on make/automake
 task prepareGlog(dependsOn: downloadGlog, type: Copy) {
     from tarTree(downloadGlog.dest)

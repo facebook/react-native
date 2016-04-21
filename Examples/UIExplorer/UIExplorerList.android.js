@@ -175,6 +175,10 @@ const APIExamples = [
     module: require('./VibrationExample'),
   },
   {
+    key: 'WebSocketExample',
+    module: require('./WebSocketExample'),
+  },
+  {
     key: 'XHRExample',
     module: require('./XHRExample'),
   },

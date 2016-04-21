@@ -64,12 +64,27 @@ function setupDevtools() {
       console.error('Failed to eval: ' + e.message);
       return;
     }
+    // This is breaking encapsulation of the React package. Move plz.
+    var ReactNativeComponentTree = require('ReactNativeComponentTree');
     window.__REACT_DEVTOOLS_GLOBAL_HOOK__.inject({
-      CurrentOwner: require('ReactCurrentOwner'),
-      InstanceHandles: require('ReactInstanceHandles'),
+      ComponentTree: {
+        getClosestInstanceFromNode: function (node) {
+          return ReactNativeComponentTree.getClosestInstanceFromNode(node);
+        },
+        getNodeFromInstance: function (inst) {
+          // inst is an internal instance (but could be a composite)
+          while (inst._renderedComponent) {
+            inst = inst._renderedComponent;
+          }
+          if (inst) {
+            return ReactNativeComponentTree.getNodeFromInstance(inst);
+          } else {
+            return null;
+          }
+        }
+      },
       Mount: require('ReactNativeMount'),
-      Reconciler: require('ReactReconciler'),
-      TextComponent: require('ReactNativeTextComponent'),
+      Reconciler: require('ReactReconciler')
     });
     ws.onmessage = handleMessage;
   }
