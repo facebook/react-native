@@ -25,6 +25,7 @@ if (__DEV__) {
 }
 
 var runnables = {};
+var runCount = 1;
 
 type ComponentProvider = () => ReactClass<any>;
 
@@ -88,7 +89,7 @@ var AppRegistry = {
       ', performance optimizations are ' + (__DEV__ ? 'OFF' : 'ON');
     console.log(msg);
     BugReporting.init();
-    BugReporting.addSource('AppRegistry.runApplication', () => msg);
+    BugReporting.addSource('AppRegistry.runApplication' + runCount++, () => msg);
     invariant(
       runnables[appKey] && runnables[appKey].run,
       'Application ' + appKey + ' has not been registered. This ' +

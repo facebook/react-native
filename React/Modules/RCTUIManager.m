@@ -26,7 +26,6 @@
 #import "RCTModuleData.h"
 #import "RCTModuleMethod.h"
 #import "RCTProfile.h"
-#import "RCTRootView.h"
 #import "RCTRootShadowView.h"
 #import "RCTRootViewInternal.h"
 #import "RCTScrollableProtocol.h"
@@ -336,7 +335,7 @@ RCT_EXPORT_MODULE()
   return _shadowQueue;
 }
 
-- (void)registerRootView:(UIView *)rootView
+- (void)registerRootView:(UIView *)rootView withSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
 {
   RCTAssertMainThread();
 
@@ -364,6 +363,7 @@ RCT_EXPORT_MODULE()
     shadowView.frame = frame;
     shadowView.backgroundColor = rootView.backgroundColor;
     shadowView.viewName = NSStringFromClass([rootView class]);
+    shadowView.sizeFlexibility = sizeFlexibility;
     strongSelf->_shadowViewRegistry[shadowView.reactTag] = shadowView;
     [strongSelf->_rootViewTags addObject:reactTag];
   });
