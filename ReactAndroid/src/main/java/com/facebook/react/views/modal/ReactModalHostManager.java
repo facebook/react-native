@@ -65,6 +65,11 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
     view.setTransparent(transparent);
   }
 
+  @ReactProp(name = "translucentStatusBar")
+  public void setTranslucentStatusBar(ReactModalHostView view, boolean translucentStatusBar) {
+    view.setTranslucentStatusBar(translucentStatusBar);
+  }
+
   @Override
   protected void addEventEmitters(
       ThemedReactContext reactContext,
