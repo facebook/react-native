@@ -112,6 +112,12 @@ var featured = [
     ],
   },
   {
+    name: 'Samanage',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/ed/e9/ff/ede9ff34-a9f6-5eb6-2a23-fcb014b326f2/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/samanage/id1033018362',
+    author: 'Samanage'
+  },
+  {
     name: 'SoundCloud Pulse',
     icon: 'https://i1.sndcdn.com/artworks-000149203716-k5je96-original.jpg',
     link: 'https://itunes.apple.com/us/app/soundcloud-pulse-for-creators/id1074278256?mt=8',
