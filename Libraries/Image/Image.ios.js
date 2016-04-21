@@ -221,7 +221,7 @@ var Image = React.createClass({
       RawImage = RCTImageView;
     }
 
-    if (this.props.src) {
+    if (!this.props.source && this.props.src) {
       console.warn('The <Image> component requires a `source` property rather than `src`.');
     }
 
