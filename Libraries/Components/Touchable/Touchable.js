@@ -360,10 +360,10 @@ var TouchableMixin = {
   /**
    * Place as callback for a DOM element's `onResponderGrant` event.
    * @param {SyntheticEvent} e Synthetic event from event system.
-   * @param {string} dispatchID ID of node that e was dispatched to.
    *
    */
-  touchableHandleResponderGrant: function(e, dispatchID) {
+  touchableHandleResponderGrant: function(e) {
+    var dispatchID = e.currentTarget;
     // Since e is used in a callback invoked on another event loop
     // (as in setTimeout etc), we need to call e.persist() on the
     // event to make sure it doesn't get reused in the event object pool.
