@@ -469,7 +469,7 @@ namespace ReactNative.UIManager
             }
 
             _nativeViewHierarchyOptimizer.OnBatchComplete();
-            _operationsQueue.ExecuteOperations(batchId);
+            _operationsQueue.DispatchViewUpdates(batchId);
         }
 
         /// <summary>

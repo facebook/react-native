@@ -66,6 +66,33 @@ namespace ReactNative.Views.Image
         }
 
         /// <summary>
+        /// Set the scaling mode of the image.
+        /// </summary>
+        /// <param name="view">The image view instance.</param>
+        /// <param name="resizeMode">The scaling mode.</param>
+        [ReactProp("resizeMode")]
+        public void SetResizeMode(Border view, string resizeMode)
+        {
+            if (resizeMode !=  null)
+            {
+                var imageBrush = (ImageBrush)view.Background;
+
+                if (resizeMode.Equals("cover"))
+                {
+                    imageBrush.Stretch = Stretch.UniformToFill;
+                }
+                else if (resizeMode.Equals("contain"))
+                {
+                    imageBrush.Stretch = Stretch.Uniform;
+                }
+                else
+                {
+                    imageBrush.Stretch = Stretch.Fill;
+                }
+            }
+        }
+
+        /// <summary>
         /// Set the source URI of the image.
         /// </summary>
         /// <param name="view">The image view instance.</param>

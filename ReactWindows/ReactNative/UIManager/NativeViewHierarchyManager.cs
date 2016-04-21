@@ -370,7 +370,7 @@ namespace ReactNative.UIManager
                     $"Could not find view with tag '{reactTag}'.");
             }
 
-            throw new NotImplementedException();
+            // TODO: (#306) Finish JS responder implementation. 
         }
 
         /// <summary>
