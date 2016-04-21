@@ -17,6 +17,7 @@ var jsDocs = require('../jsdocs/jsdocs.js');
 var ANDROID_SUFFIX = 'android';
 var CROSS_SUFFIX = 'cross';
 var IOS_SUFFIX = 'ios';
+var WINDOWS_SUFFIX = 'windows';
 
 function endsWith(str, suffix) {
   return str.indexOf(suffix, str.length - suffix.length) !== -1;
@@ -50,6 +51,8 @@ function getPlatformFromPath(filepath) {
     return ANDROID_SUFFIX;
   } else if (endsWith(filepath, 'IOS')) {
     return IOS_SUFFIX;
+  } else if (endsWith(filepath, 'Windows')) {
+    return WINDOWS_SUFFIX;
   }
   return CROSS_SUFFIX;
 }

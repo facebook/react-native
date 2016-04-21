@@ -251,6 +251,13 @@ if (Platform.OS === 'android') {
     }),
     uiViewClassName: 'RCTVirtualText',
   });
+} else if (Platform.OS === 'windows') {
+  RCTVirtualText = createReactNativeComponentClass({
+    validAttributes: merge(ReactNativeViewAttributes.UIView, {
+      isHighlighted: true,
+    }),
+    uiViewClassName: 'RCTVirtualText',
+  });   
 }
 
 module.exports = Text;

@@ -15,6 +15,7 @@
 var ColorPropType = require('ColorPropType');
 var PickerIOS = require('PickerIOS');
 var PickerAndroid = require('PickerAndroid');
+var PickerWindows = require('PickerWindows');
 var Platform = require('Platform');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
@@ -112,6 +113,8 @@ var Picker = React.createClass({
         return <PickerIOS {...this.props}>{this.props.children}</PickerIOS>;
       } else if (Platform.OS === 'android') {
         return <PickerAndroid {...this.props}>{this.props.children}</PickerAndroid>;
+      } else if (Platform.OS === 'windows') {
+        return <PickerWindows {...this.props}>{this.props.children}</PickerWindows>;
       } else {
         return <UnimplementedView />;
       }

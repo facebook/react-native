@@ -36,6 +36,14 @@ var Vibration = {
       } else {
         throw new Error('Vibration pattern should be a number or array');
       }
+    } else if (Platform.OS === 'windows') {
+      if (typeof pattern === 'number') {
+        RCTVibration.vibrate(pattern);
+      } else if (Array.isArray(pattern)) {
+        console.warn('Vibration patterns are not supported on Windows');
+      } else {
+        throw new Error('Vibration pattern should be a number or array');
+      }      
     } else {
       if (typeof pattern === 'number') {
         RCTVibration.vibrate();
