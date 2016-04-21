@@ -112,12 +112,6 @@ var featured = [
     ],
   },
   {
-    name: 'Samanage',
-    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/ed/e9/ff/ede9ff34-a9f6-5eb6-2a23-fcb014b326f2/icon175x175.jpeg',
-    link: 'https://itunes.apple.com/us/app/samanage/id1033018362',
-    author: 'Samanage'
-  },
-  {
     name: 'SoundCloud Pulse',
     icon: 'https://i1.sndcdn.com/artworks-000149203716-k5je96-original.jpg',
     link: 'https://itunes.apple.com/us/app/soundcloud-pulse-for-creators/id1074278256?mt=8',
@@ -668,6 +662,12 @@ var apps = [
     icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/a8/c0/b1/a8c0b130-e44b-742d-6458-0c89fcc15b6b/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/rwpodplayer/id1053885042?mt=8',
     author: 'Alexey Vasiliev aka leopard',
+  },
+  {
+    name: 'Samanage',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/ed/e9/ff/ede9ff34-a9f6-5eb6-2a23-fcb014b326f2/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/samanage/id1033018362',
+    author: 'Samanage'
   },
   {
     name: 'SG Toto 4d',
