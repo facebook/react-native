@@ -1,10 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
-using ReactNative.Animation;
 using ReactNative.Bridge;
 using ReactNative.Tracing;
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using Windows.UI.Xaml.Media;
 
 namespace ReactNative.UIManager
 {
@@ -18,14 +17,14 @@ namespace ReactNative.UIManager
     /// </summary>
     public class UIViewOperationQueue
     {
-        private readonly object _operationsLock = new object();
+        private readonly object _gate = new object();
         private readonly int[] _measureBuffer = new int[4];
 
         private readonly NativeViewHierarchyManager _nativeViewHierarchyManager;
         private readonly ReactContext _reactContext;
 
         private IList<Action> _operations = new List<Action>();
-        private bool _isRunning;
+        private IList<Action> _batches = new List<Action>();
 
         /// <summary>
         /// Instantiates the <see cref="UIViewOperationQueue"/>.
@@ -61,8 +60,8 @@ namespace ReactNative.UIManager
         /// <param name="rootView">The root view.</param>
         /// <param name="themedRootContext">The react context.</param>
         public void AddRootView(
-            int tag, 
-            SizeMonitoringCanvas rootView, 
+            int tag,
+            SizeMonitoringCanvas rootView,
             ThemedReactContext themedRootContext)
         {
             DispatcherHelpers.AssertOnDispatcher();
@@ -176,7 +175,7 @@ namespace ReactNative.UIManager
         {
             EnqueueOperation(() => _nativeViewHierarchyManager.ConfigureLayoutAnimation(config, success, error));
         }
-        
+
         /// <summary>
         /// Enqueues an operation to update the properties of a view.
         /// </summary>
@@ -316,10 +315,7 @@ namespace ReactNative.UIManager
         /// </summary>
         public void OnSuspend()
         {
-            lock (_operationsLock)
-            {
-                _isRunning = false;
-            }
+            CompositionTarget.Rendering -= OnRendering;
         }
 
         /// <summary>
@@ -327,10 +323,7 @@ namespace ReactNative.UIManager
         /// </summary>
         public void OnResume()
         {
-            lock (_operationsLock)
-            {
-                _isRunning = true;
-            }
+            CompositionTarget.Rendering += OnRendering;
         }
 
         /// <summary>
@@ -344,44 +337,53 @@ namespace ReactNative.UIManager
         /// Dispatches the view updates.
         /// </summary>
         /// <param name="batchId">The batch identifier.</param>
-        internal void ExecuteOperations(int batchId)
+        internal void DispatchViewUpdates(int batchId)
         {
-            var operations = default(IList<Action>);
-            lock (_operationsLock)
+            var operations = _operations.Count == 0 ? null : _operations;
+            if (operations != null)
             {
-                if (_isRunning)
-                {
-                    operations = _operations.Count == 0 ? null : _operations;
-                    if (operations != null)
-                    {
-                        _operations = new List<Action>();
-                    }
-                }
+                _operations = new List<Action>();
             }
 
-            _reactContext.RunOnDispatcherQueueThread(() =>
+            lock (_gate)
             {
-                using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "DispatchUI")
-                    .With("BatchId", batchId))
+                _batches.Add(() =>
                 {
-                    if (operations != null)
+                    using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "DispatchUI")
+                        .With("BatchId", batchId))
                     {
-                        foreach (var operation in operations)
+                        if (operations != null)
                         {
-                            operation();
+                            foreach (var operation in operations)
+                            {
+                                operation();
+                            }
                         }
-                    }
-                }
 
-                _nativeViewHierarchyManager.ClearLayoutAnimation();
-            });
+                        _nativeViewHierarchyManager.ClearLayoutAnimation();
+                    }
+                });
+            }
         }
 
         private void EnqueueOperation(Action action)
         {
-            lock (_operationsLock)
+            lock (_gate)
             {
                 _operations.Add(action);
+            }
+        }
+
+        private void OnRendering(object sender, object e)
+        {
+            lock (_gate)
+            {
+                foreach (var batch in _batches)
+                {
+                    batch();
+                }
+
+                _batches.Clear();
             }
         }
     }

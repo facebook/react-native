@@ -51,7 +51,7 @@ var SplitViewValidAttributes = {
  *     <SplitViewWindows
  *       paneWidth={300}
  *       panePosition={SplitViewWindows.positions.Left}
- *       renderNavigationView={() => navigationView}>
+ *       renderPaneView={() => paneView}>
  *       <View style={{flex: 1, alignItems: 'center'}}>
  *         <Text style={{margin: 10, fontSize: 15, textAlign: 'right'}}>Hello</Text>
  *         <Text style={{margin: 10, fontSize: 15, textAlign: 'right'}}>World!</Text>

@@ -2,6 +2,7 @@
 
 var blacklist = require('../packager/blacklist');
 var path = require('path');
+var os = require('os');
 
 /**
  * Default configuration for the CLI.
@@ -38,15 +39,20 @@ function getRoots() {
   if (root) {
     return [path.resolve(root)];
   }
-  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]local-cli$/)) {
+  var dirname = __dirname;
+  // Temporary workaround for case sensitivity. See: https://github.com/ReactWindows/react-native/issues/221
+  if (os.platform() === 'win32') {
+    dirname = __dirname.replace(__dirname.substr(0,1),__dirname.substr(0,1).toLowerCase());
+  }
+  if (dirname.match(/node_modules[\/\\]react-native[\/\\]local-cli$/)) {
     // Packager is running from node_modules.
     // This is the default case for all projects created using 'react-native init'.
-    return [path.resolve(__dirname, '../../..')];
-  } else if (__dirname.match(/Pods[\/\\]React[\/\\]packager$/)) {
+    return [path.resolve(dirname, '../../..')];
+  } else if (dirname.match(/Pods[\/\\]React[\/\\]packager$/)) {
      // React Native was installed using CocoaPods.
-    return [path.resolve(__dirname, '../../..')];
+    return [path.resolve(dirname, '../../..')];
   } else {
-    return [path.resolve(__dirname, '..')];
+    return [path.resolve(dirname, '..')];
   }
 }
 
