@@ -296,9 +296,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
           }
         });
     options.put(
-        mDevSettings.isElementInspectorEnabled()
-          ? mApplicationContext.getString(R.string.catalyst_element_inspector_off)
-          : mApplicationContext.getString(R.string.catalyst_element_inspector),
+        mApplicationContext.getString(R.string.catalyst_element_inspector),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
