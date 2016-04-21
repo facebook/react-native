@@ -52,6 +52,7 @@ const layout = PropTypes.shape({
   height: animatedValue,
   initHeight: PropTypes.number.isRequired,
   initWidth: PropTypes.number.isRequired,
+  isMeasured: PropTypes.bool.isRequired,
   width: animatedValue,
 });
 

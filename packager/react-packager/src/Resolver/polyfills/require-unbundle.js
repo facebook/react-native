@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 'use strict';
 
 const {ErrorUtils, nativeRequire} = global;
@@ -18,13 +27,16 @@ function define(moduleId, factory) {
   modules[moduleId] = {
     factory,
     hasError: false,
+    isInitialized: false,
     exports: undefined,
   };
 }
 
 function require(moduleId) {
   const module = modules[moduleId];
-  return module && module.exports || loadModule(moduleId, module);
+  return module && module.isInitialized
+    ? module.exports
+    : loadModule(moduleId, module);
 }
 
 function guardedLoadModule(moduleId, module) {
@@ -59,6 +71,7 @@ function loadModuleImplementation(moduleId, module) {
   }
 
   const exports = module.exports = {};
+  module.isInitialized = true;
   const {factory} = module;
   try {
     if (__DEV__) {
@@ -67,12 +80,14 @@ function loadModuleImplementation(moduleId, module) {
 
     const moduleObject = {exports};
     factory(global, require, moduleObject, exports);
+    module.factory = undefined;
 
     if (__DEV__) {
       Systrace.endEvent();
     }
     return (module.exports = moduleObject.exports);
   } catch (e) {
+    module.isInitialized = false;
     module.hasError = true;
     module.exports = undefined;
   }

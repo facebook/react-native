@@ -443,8 +443,7 @@ class WindowedListView extends React.Component {
           rowIndex={idx}
           onNewLayout={this._onNewLayout}
           onWillUnmount={this._onWillUnmountCell}
-          includeInLayout={this.props.disableIncrementalRendering ||
-            (this._rowFrames[idx] && this._rowFrames[idx].offscreenLayoutDone)}
+          includeInLayout={this._rowFrames[idx] && this._rowFrames[idx].offscreenLayoutDone}
           onProgressChange={this._onProgressChange}
           asyncRowPerfEventName={this.props.asyncRowPerfEventName}
           data={this.props.data[idx]}

@@ -37,6 +37,7 @@ export type NavigationLayout = {
   height: NavigationAnimatedValue,
   initHeight: number,
   initWidth: number,
+  isMeasured: boolean,
   width: NavigationAnimatedValue,
 };
 

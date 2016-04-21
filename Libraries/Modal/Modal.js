@@ -11,14 +11,14 @@
  */
 'use strict';
 
-var Platform = require('Platform');
-var PropTypes = require('ReactPropTypes');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var View = require('View');
+const Platform = require('Platform');
+const PropTypes = require('ReactPropTypes');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const View = require('View');
 
-var requireNativeComponent = require('requireNativeComponent');
-var RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
+const requireNativeComponent = require('requireNativeComponent');
+const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
 
 /**
  * A Modal component covers the native view (e.g. UIViewController, Activity)
@@ -39,9 +39,9 @@ class Modal extends React.Component {
       return null;
     }
 
-    if (this.props.transparent) {
-      var containerBackgroundColor = {backgroundColor: 'transparent'};
-    }
+    const containerBackgroundColor = {
+      backgroundColor: this.props.transparent ? 'transparent' : 'white',
+    };
 
     return (
       <RCTModalHostView
@@ -49,12 +49,19 @@ class Modal extends React.Component {
         transparent={this.props.transparent}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
-        style={styles.modal}>
+        style={styles.modal}
+        onStartShouldSetResponder={this._shouldSetResponder}
+        >
         <View style={[styles.container, containerBackgroundColor]}>
           {this.props.children}
         </View>
       </RCTModalHostView>
     );
+  }
+
+  // We don't want any responder events bubbling out of the modal.
+  _shouldSetResponder(): boolean {
+    return true;
   }
 }
 
@@ -70,7 +77,7 @@ Modal.defaultProps = {
   visible: true,
 };
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   modal: {
     position: 'absolute',
   },
