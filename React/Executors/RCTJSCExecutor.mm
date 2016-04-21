@@ -11,6 +11,11 @@
 
 #import <pthread.h>
 
+#ifdef WITH_FB_JSC_TUNING
+#include <string>
+#include <fbjsc/jsc_config_ios.h>
+#endif
+
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <UIKit/UIDevice.h>
 
@@ -280,12 +285,29 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 - (void)setUp
 {
   __weak RCTJSCExecutor *weakSelf = self;
+
+#ifdef WITH_FB_JSC_TUNING
+  [self executeBlockOnJavaScriptQueue:^{
+    RCTJSCExecutor *strongSelf = weakSelf;
+    if (!strongSelf.valid) {
+      return;
+    }
+
+    NSString *cachesPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
+    RCTAssert(cachesPath != nil, @"cachesPath should not be nil");
+    if (cachesPath) {
+      std::string path = std::string([cachesPath UTF8String]);
+      configureJSContextForIOS(strongSelf.context.ctx, path);
+    }
+  }];
+#endif
+
   [self addSynchronousHookWithName:@"noop" usingBlock:^{}];
 
   [self addSynchronousHookWithName:@"nativeLoggingHook" usingBlock:^(NSString *message, NSNumber *logLevel) {
     RCTLogLevel level = RCTLogLevelInfo;
     if (logLevel) {
-      level = MAX(level, logLevel.integerValue);
+      level = MAX(level, (RCTLogLevel)logLevel.integerValue);
     }
 
     _RCTLogJavaScriptInternal(level, message);
@@ -620,7 +642,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     RCTPerformanceLoggerStart(RCTPLScriptExecution);
 
     JSValueRef jsError = NULL;
-    JSStringRef execJSString = JSStringCreateWithUTF8CString(script.bytes);
+    JSStringRef execJSString = JSStringCreateWithUTF8CString((const char *)script.bytes);
     JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, _bundleURL, 0, &jsError);
     JSStringRelease(execJSString);
     RCTPerformanceLoggerEnd(RCTPLScriptExecution);
@@ -702,7 +724,8 @@ static void freeModule(__unused CFAllocatorRef allocator, void *ptr)
   free(ptr);
 }
 
-static uint32_t readUint32(const void **ptr) {
+static uint32_t readUint32(const char **ptr)
+{
   uint32_t data;
   memcpy(&data, *ptr, sizeof(uint32_t));
   data = NSSwapLittleIntToHost(data);
@@ -710,7 +733,8 @@ static uint32_t readUint32(const void **ptr) {
   return data;
 }
 
-static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
+static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr)
+{
   if (fseek(fd, offset, SEEK_SET) != 0) {
    return 1;
   }
@@ -808,12 +832,12 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
     return nil;
   }
 
-  void *tableCursor = tableStart;
-  void *endOfTable = tableCursor + tableLength;
+  char *tableCursor = tableStart;
+  char *endOfTable = tableCursor + tableLength;
 
   while (tableCursor < endOfTable) {
     uint32_t nameLength = strlen((const char *)tableCursor);
-    char *name = malloc(nameLength + 1);
+    char *name = (char *)malloc(nameLength + 1);
 
     if (!name) {
       if (error) {
@@ -825,13 +849,13 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
     strcpy(name, tableCursor);
 
     // the space allocated for each module's metada gets freed when the module is injected into JSC on `nativeRequire`
-    ModuleData *moduleData = malloc(sizeof(ModuleData));
+    ModuleData *moduleData = (ModuleData *)malloc(sizeof(ModuleData));
 
     tableCursor += nameLength + 1; // null byte terminator
 
-    moduleData->offset = baseOffset + readUint32((const void **)&tableCursor);
-    moduleData->length = readUint32((const void **)&tableCursor);
-    moduleData->lineNo = readUint32((const void **)&tableCursor);
+    moduleData->offset = baseOffset + readUint32((const char **)&tableCursor);
+    moduleData->length = readUint32((const char **)&tableCursor);
+    moduleData->lineNo = readUint32((const char **)&tableCursor);
 
     CFDictionarySetValue(_jsModules, name, moduleData);
   }
