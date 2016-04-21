@@ -128,6 +128,9 @@ const Text = React.createClass({
   contextTypes: {
     isInAParentText: React.PropTypes.bool
   },
+  hasPressHandler(): boolean {
+    return !!this.props.onPress || !!this.props.onLongPress;
+  },
   /**
    * Only assigned if touch is needed.
    */
@@ -148,7 +151,7 @@ const Text = React.createClass({
           onStartShouldSetResponder: (): bool => {
             const shouldSetFromProps = this.props.onStartShouldSetResponder &&
                 this.props.onStartShouldSetResponder();
-            const setResponder = shouldSetFromProps || !!this.props.onPress || !!this.props.onLongPress;
+            const setResponder = shouldSetFromProps || this.hasPressHandler();
             if (setResponder && !this.touchableHandleActivePressIn) {
               // Attach and bind all the other handlers only the first time a touch
               // actually happens.
@@ -158,7 +161,7 @@ const Text = React.createClass({
                 }
               }
               this.touchableHandleActivePressIn = () => {
-                if (this.props.suppressHighlighting || !this.props.onPress && !this.props.onLongPress) {
+                if (this.props.suppressHighlighting || !this.hasPressHandler()) {
                   return;
                 }
                 this.setState({
@@ -167,7 +170,7 @@ const Text = React.createClass({
               };
 
               this.touchableHandleActivePressOut = () => {
-                if (this.props.suppressHighlighting || !this.props.onPress && !this.props.onLongPress) {
+                if (this.props.suppressHighlighting || !this.hasPressHandler()) {
                   return;
                 }
                 this.setState({
