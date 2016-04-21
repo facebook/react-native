@@ -756,8 +756,5 @@ var Touchable = {
     );
   }
 };
-if (Touchable.TOUCH_TARGET_DEBUG) {
-  console.warn('Touchable.TOUCH_TARGET_DEBUG is enabled');
-}
 
 module.exports = Touchable;
