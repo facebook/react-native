@@ -12,6 +12,7 @@
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var ReactPropTypes = require('ReactPropTypes');
 var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');
@@ -162,7 +163,7 @@ var SplitViewWindows = React.createClass({
   },
 
   _getPaneLayoutHandle: function() {
-    return React.findNodeHandle(this.refs[RK_PANE_REF]);
+    return ReactNative.findNodeHandle(this.refs[RK_PANE_REF]);
   },
 });
 

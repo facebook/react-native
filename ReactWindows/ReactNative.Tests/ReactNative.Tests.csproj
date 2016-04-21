@@ -110,6 +110,7 @@
     <Compile Include="Internal\JavaScriptHelpers.cs" />
     <Compile Include="Internal\DispatcherHelpers.cs" />
     <Compile Include="Internal\MockCallback.cs" />
+    <Compile Include="Internal\MockPromise.cs" />
     <Compile Include="Internal\MockReactInstance.cs" />
     <Compile Include="Internal\MockInvocationHandler.cs" />
     <Compile Include="Internal\MockJavaScriptExecutor.cs" />
@@ -121,6 +122,7 @@
     <Compile Include="Modules\Core\RCTDeviceEventEmitterTests.cs" />
     <Compile Include="Modules\Core\RCTNativeAppEventEmitterTests.cs" />
     <Compile Include="Modules\Core\TimingTests.cs" />
+    <Compile Include="Modules\NetInfo\NetInfoModuleTests.cs" />
     <Compile Include="Modules\Network\NetworkingModuleTests.cs" />
     <Compile Include="Modules\Network\TaskCancellationManagerTests.cs" />
     <Compile Include="Modules\StatusBar\StatusBarModuleTests.cs" />
@@ -145,7 +147,6 @@
     <Compile Include="UnitTestApp.xaml.cs">
       <DependentUpon>UnitTestApp.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\TextInput\ReactTextBoxPropertiesTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="UnitTestApp.xaml">

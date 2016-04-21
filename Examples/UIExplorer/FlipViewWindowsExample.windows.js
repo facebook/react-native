@@ -14,7 +14,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Image,
   StyleSheet,
@@ -23,7 +24,7 @@ var {
   TouchableOpacity,
   View,
   FlipViewWindows,
-} = React;
+} = ReactNative;
 
 var PAGES = 5;
 var BGCOLOR = ['#fdc08e', '#fff6b9', '#99d1b7', '#dde5fe', '#f79273'];

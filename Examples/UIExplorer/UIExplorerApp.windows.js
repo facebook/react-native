@@ -16,7 +16,8 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const {
   AppRegistry,
   BackAndroid,
@@ -26,7 +27,7 @@ const {
   StyleSheet,
   View,
   StatusBar,
-} = React;
+} = ReactNative;
 const {
   RootContainer: NavigationRootContainer,
 } = NavigationExperimental;
