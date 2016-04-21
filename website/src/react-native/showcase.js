@@ -31,6 +31,19 @@ var featured = [
     ],
   },
   {
+    name: 'F8',
+    icon: 'https://raw.githubusercontent.com/fbsamples/f8app/master/ios/F8v2/Images.xcassets/AppIcon.appiconset/AppIcon%402x.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/f8/id853467066?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.facebook.f8',
+    author: 'Facebook',
+    blogs: [
+      "http://makeitopen.com/tutorials/building-the-f8-app/planning/",
+      "http://makeitopen.com/tutorials/building-the-f8-app/design/",
+      "http://makeitopen.com/tutorials/building-the-f8-app/data/",
+      "http://makeitopen.com/tutorials/building-the-f8-app/testing/",
+    ],
+  },
+  {
     name: 'AIGA Design Conference 2015',
     icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/b0/4b/29/b04b2939-88d2-f61f-dec9-24fae083d8b3/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/aiga-design-conference-2015/id1038145272?ls=1&mt=8',
