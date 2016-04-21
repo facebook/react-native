@@ -3,6 +3,7 @@ using ReactNative.Modules.AppState;
 using ReactNative.Modules.Clipboard;
 using ReactNative.Modules.Core;
 using ReactNative.Modules.Dialog;
+using ReactNative.Modules.Image;
 using ReactNative.Modules.Launch;
 using ReactNative.Modules.NetInfo;
 using ReactNative.Modules.Network;
@@ -45,6 +46,7 @@ namespace ReactNative.Shell
                 //new CameraRollManager(reactContext),
                 new ClipboardModule(),
                 new DialogModule(reactContext),
+                new ImageLoaderModule(),
                 new LauncherModule(),
                 //new LocationModule(reactContext),
                 new NetworkingModule(reactContext),
@@ -87,7 +89,6 @@ namespace ReactNative.Shell
                 new ReactSwitchManager(),
                 new ReactTextInputManager(),
                 new ReactTextViewManager(),
-                //new ReactToolbarManager(),
                 new ReactViewManager(),
                 //new ReactTextInlineImageViewManager(),
                 new ReactVirtualTextViewManager(),

@@ -170,7 +170,7 @@ const StatusBar = React.createClass({
       if (Platform.OS === 'ios') {
         console.warn('`setBackgroundColor` is only available on Android and Windows');
       }
-      else if {
+      else if (Platform.OS === 'android') {
         animated = animated || false;
         StatusBar._defaultProps.backgroundColor.value = color;
         StatusBarManager.setColor(processColor(color), animated);

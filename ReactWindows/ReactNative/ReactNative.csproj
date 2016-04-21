@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -195,6 +195,7 @@
     <Compile Include="Modules\Core\JSTimersExecution.cs" />
     <Compile Include="Modules\Core\SourceCodeModule.cs" />
     <Compile Include="Modules\Dialog\DialogModule.cs" />
+    <Compile Include="Modules\Image\ImageLoaderModule.cs" />
     <Compile Include="Modules\Launch\LauncherModule.cs" />
     <Compile Include="Modules\NetInfo\DefaultNetworkInformation.cs" />
     <Compile Include="Modules\NetInfo\IConnectionProfile.cs" />
@@ -261,6 +262,7 @@
     <Compile Include="Touch\JavaScriptResponderHandler.cs" />
     <Compile Include="Animation\ReactAnimationRegistry.cs" />
     <Compile Include="UIManager\BaseViewManager.cs" />
+    <Compile Include="UIManager\ILayoutManager.cs" />
     <Compile Include="UIManager\IViewManager.cs" />
     <Compile Include="UIManager\IViewParentManager.cs" />
     <Compile Include="UIManager\LayoutAnimation\BaseLayoutAnimation.cs" />
@@ -340,10 +342,10 @@
     <Compile Include="UIManager\ViewManager.cs" />
     <Compile Include="UIManager\ViewManagerRegistry.cs" />
     <Compile Include="Views\Scroll\ReactScrollViewManager.cs" />
-    <Compile Include="Views\TextInput\ReactTextBoxProperties.cs" />
     <Compile Include="Views\TextInput\ReactTextInputShadowNode.cs" />
     <Compile Include="Views\Switch\ReactSwitchManager.cs" />
     <Compile Include="Views\Switch\ReactSwitchShadowNode.cs" />
+    <Compile Include="UIManager\CSSNodeVisitor.cs" />
     <Compile Include="Views\ViewManagersPropertyCache.cs" />
     <Compile Include="UIManager\ViewProps.cs" />
     <Compile Include="Views\Text\ReactRawTextManager.cs" />
