@@ -55,16 +55,21 @@ class Modal extends React.Component {
       backgroundColor: this.props.transparent ? 'transparent' : 'white',
     };
 
+    const containerTopValue = {
+    	top: this.props.translucentStatusBar ? 24 : 0,
+    };
+
     return (
       <RCTModalHostView
         animated={this.props.animated}
         transparent={this.props.transparent}
+        translucentStatusBar={this.props.translucentStatusBar}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
         style={styles.modal}
         onStartShouldSetResponder={this._shouldSetResponder}
         >
-        <View style={[styles.container, containerBackgroundColor]}>
+        <View style={[styles.container, containerBackgroundColor, containerTopValue]}>
           {this.props.children}
         </View>
       </RCTModalHostView>
@@ -76,6 +81,22 @@ class Modal extends React.Component {
     return true;
   }
 }
+
+Modal.propTypes = {
+  animated: PropTypes.bool,
+  transparent: PropTypes.bool,
+  /**
+    * @platform android
+    */
+  translucentStatusBar: PropTypes.bool,
+  visible: PropTypes.bool,
+  onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
+  onShow: PropTypes.func,
+};
+
+Modal.defaultProps = {
+  visible: true,
+};
 
 const styles = StyleSheet.create({
   modal: {
