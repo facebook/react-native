@@ -261,4 +261,3 @@ public class ReactModalHostView extends ViewGroup {
     }
   }
 }
-

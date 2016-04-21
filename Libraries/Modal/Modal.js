@@ -58,7 +58,7 @@ class Modal extends React.Component {
     };
 
     const containerTopValue = {
-    	top: this.props.translucentStatusBar ? STATUS_BAR_HEIGHT : 0,
+      top: this.props.translucentStatusBar ? STATUS_BAR_HEIGHT : 0,
     };
 
     return (
@@ -84,7 +84,6 @@ class Modal extends React.Component {
   }
 }
 
-<<<<<<< 06b4d0aad93382838ff703783fb36fb63bbebf14
 Modal.propTypes = {
   animated: PropTypes.bool,
   transparent: PropTypes.bool,
@@ -101,8 +100,6 @@ Modal.defaultProps = {
   visible: true,
 };
 
-=======
->>>>>>> Fix or suppress errors in react-native
 const styles = StyleSheet.create({
   modal: {
     position: 'absolute',
