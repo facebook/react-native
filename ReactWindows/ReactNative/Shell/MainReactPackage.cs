@@ -21,7 +21,7 @@ using ReactNative.Views.Switch;
 using ReactNative.Views.Text;
 using ReactNative.Views.TextInput;
 using ReactNative.Views.View;
-using ReactNative.Views.WebView;
+using ReactNative.Views.Web;
 using System;
 using System.Collections.Generic;
 

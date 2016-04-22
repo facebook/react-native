@@ -111,28 +111,17 @@ var WebView = React.createClass({
      * @platform android
      */
     javaScriptEnabled: PropTypes.bool,
-
+    
     /**
-     * Used on Android only, controls whether DOM Storage is enabled or not
-     * @platform android
+     * Used on Windows only, controls whether Indexed DB is enabled or not
+     * @platform windows
      */
-    domStorageEnabled: PropTypes.bool,
+    indexedDbEnabled: PropTypes.bool,
 
     /**
      * Sets the JS to be injected when the webpage loads.
      */
     injectedJavaScript: PropTypes.string,
-
-    /**
-     * Sets whether the webpage scales to fit the view and the user can change the scale.
-     */
-    scalesPageToFit: PropTypes.bool,
-
-    /**
-     * Sets the user-agent for this WebView. The user-agent can also be set in native using
-     * WebViewConfig. This prop will overwrite that config.
-     */
-    userAgent: PropTypes.string,
 
     /**
      * Used to locate this view in end-to-end tests.
@@ -170,7 +159,7 @@ var WebView = React.createClass({
   render: function() {
     var otherView = null;
 
-   if (this.state.viewState === WebViewState.LOADING) {
+    if (this.state.viewState === WebViewState.LOADING) {
       otherView = this.props.renderLoading && this.props.renderLoading();
     } else if (this.state.viewState === WebViewState.ERROR) {
       var errorEvent = this.state.lastErrorEvent;
@@ -196,30 +185,21 @@ var WebView = React.createClass({
       source.uri = this.props.url;
     }
 
-    if (source.method === 'POST' && source.headers) {
-      console.warn('WebView: `source.headers` is not supported when using POST.');
-    } else if (source.method === 'GET' && source.body) {
-      console.warn('WebView: `source.body` is not supported when using GET.');
-    }
-
     var webView =
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
         style={webViewStyles}
         source={resolveAssetSource(source)}
-        scalesPageToFit={this.props.scalesPageToFit}
         injectedJavaScript={this.props.injectedJavaScript}
-        userAgent={this.props.userAgent}
         javaScriptEnabled={this.props.javaScriptEnabled}
-        domStorageEnabled={this.props.domStorageEnabled}
+        indexedDbEnabled={this.props.indexedDbEnabled}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         onLoadingStart={this.onLoadingStart}
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
         testID={this.props.testID}
-        mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
       />;
 
     return (
