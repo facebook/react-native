@@ -12,7 +12,8 @@ jest
   .autoMockOff()
   .setMock('Text', {})
   .setMock('View', {})
-  .setMock('Image', {});
+  .setMock('Image', {})
+  .setMock('react', {Component: class {}});
 
 var Animated = require('Animated');
 
