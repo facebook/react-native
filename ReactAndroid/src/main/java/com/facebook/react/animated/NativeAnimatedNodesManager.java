@@ -98,6 +98,7 @@ import javax.annotation.Nullable;
   }
 
   public void startAnimatingNode(
+    int animationId,
     int animatedNodeTag,
     ReadableMap animationConfig,
     Callback endCallback) {
@@ -117,9 +118,32 @@ import javax.annotation.Nullable;
     } else {
       throw new JSApplicationIllegalArgumentException("Unsupported animation type: " + type);
     }
+    animation.mId = animationId;
     animation.mEndCallback = endCallback;
     animation.mAnimatedValue = (ValueAnimatedNode) node;
     mActiveAnimations.add(animation);
+  }
+
+  public void stopAnimation(int animationId) {
+    // in most of the cases there should never be more than a few active animations running at the
+    // same time. Therefore it does not make much sense to create an animationId -> animation
+    // object map that would require additional memory just to support the use-case of stopping
+    // an animation
+    for (int i = 0; i < mActiveAnimations.size(); i++) {
+      AnimationDriver animation = mActiveAnimations.get(i);
+      if (animation.mId == animationId) {
+        // Invoke animation end callback with {finished: false}
+        WritableMap endCallbackResponse = Arguments.createMap();
+        endCallbackResponse.putBoolean("finished", false);
+        animation.mEndCallback.invoke(endCallbackResponse);
+        mActiveAnimations.remove(i);
+        return;
+      }
+    }
+    // Do not throw an error in the case animation could not be found. We only keep "active"
+    // animations in the registry and there is a chance that Animated.js will enqueue a
+    // stopAnimation call after the animation has ended or the call will reach native thread only
+    // when the animation is already over.
   }
 
   public void connectAnimatedNodes(int parentNodeTag, int childNodeTag) {
