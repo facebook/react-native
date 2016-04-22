@@ -20,7 +20,7 @@ const View = require('View');
 const requireNativeComponent = require('requireNativeComponent');
 const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
 
-const STATUS_BAR_HEIGHT = 24;
+const STATUS_BAR_HEIGHT = StatusBar.currentHeight;
 
 /**
  * A Modal component covers the native view (e.g. UIViewController, Activity)
