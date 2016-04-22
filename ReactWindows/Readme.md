@@ -26,11 +26,10 @@ This setup has only been tested on the following:
 
 ## Installation
 
-First, clone the repository to your local machine:
+First, clone the repository to your local machine which should default to the `ReactWindows` branch:
 ```bash
 git clone https://github.com/ReactWindows/react-native.git
 cd react-native
-git checkout WindowsStore
 ```
 
 Next, install the NPM dependencies.  Note that this will not work using MSYS such as the Git Bash, so launch a regular command prompt if you do not have Git in your `PATH` environment variable.  This will cause a failure for installing `fsevents` which is not supported on Windows.  If you have Git installed in your `PATH` environment variable and use the command prompt, then it will work properly.  If you are using the Git Bash, it may error on installing `fsevents`, so use the regular command prompt instead.
@@ -47,12 +46,21 @@ Note that `fsevents` will not install as it is not compatible with Windows.
 - If this is your first time using UWP, you will have to install the SDK. Right click on the solution file in the solution explorer and select the option labeled "Install Missing Components". You may have to shutdown Visual Studio to continue the installation.
 - Build the solution once all the packages are installed Build => Rebuild Solution. 
 
+## Running the Playground
+
+In order to run the Playground, you must start the React Native environment by launching the following at the command prompt:
+```
+node local-cli\cli.js start
+```
+
+Then you can Run and Deploy as above when you built the solution.  By default, the Playground will run the UIExplorer App which can be found in `Examples/UIExplorer/UIExplorerApp.windows`.  This allows you to test out each feature of React Native as they are added for UWP.
+
 ## Running the Unit Tests
 
-Currently, the unit tests are written using MSTest, but the intention is to move to [xUnit.net](http://xunit.github.io/) shortly.  If you have MSTest, you can run the unit tests by doing the following:
+To run the unit tests, do the following:
 
 - Open up the Test Explorer Tests->Windows->Test Explorer, then select Run All. 
 
 ## Contributing
 
-For more information about contributing PRs and issues, see our [Contribution Guidelines](https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md).
+If you wish to contribute, we have [help wanted tags](https://github.com/ReactWindows/react-native/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) in our issue tracker which contains items that are open pull requests, first come, first serve.  In order to contribute, you must sign the [Microsoft CLA](https://cla.microsoft.com/) before we can accept your commits.
