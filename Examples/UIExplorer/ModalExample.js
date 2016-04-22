@@ -97,7 +97,7 @@ var ModalExample = React.createClass({
       ? {backgroundColor: '#fff', padding: 20}
       : null;
     var activeButtonStyle = {
-    	backgroundColor: '#ddd'
+      backgroundColor: '#ddd'
     };
 
     return (
@@ -127,14 +127,14 @@ var ModalExample = React.createClass({
         </View>
 
         {
-        	this.state.animated &&
+          this.state.animated &&
 	        <View style={styles.row}>
 	          <Text style={styles.rowTitle}>Animtion Type</Text>
 	          <Button onPress={this._setAnimationType.bind(this, 'slide')} style={this.state.animationType === 'slide' ? activeButtonStyle : {}}>
-	          	slide
+              slide
 	          </Button>
 	          <Button onPress={this._setAnimationType.bind(this, 'fade')} style={this.state.animationType === 'fade' ? activeButtonStyle : {}}>
-	          	fade
+              fade
 	          </Button>
 	        </View>
         }
