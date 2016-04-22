@@ -9,7 +9,7 @@
 
 var React = require('React');
 var Site = require('Site');
-var center = require('center');http://www.noodler-app.com/
+var center = require('center');
 
 var featured = [
   {
