@@ -12,6 +12,25 @@
 #import "RCTBridge.h"
 #import "RCTModalHostView.h"
 #import "RCTTouchHandler.h"
+#import "RCTShadowView.h"
+#import "RCTUtils.h"
+
+@interface RCTModalHostShadowView : RCTShadowView
+
+@end
+
+@implementation RCTModalHostShadowView
+
+- (void)insertReactSubview:(id<RCTComponent>)subview atIndex:(NSInteger)atIndex
+{
+  [super insertReactSubview:subview atIndex:atIndex];
+  if ([subview isKindOfClass:[RCTShadowView class]]) {
+    CGRect frame = {.origin = CGPointZero, .size = RCTScreenSize()};
+    [(RCTShadowView *)subview setFrame:frame];
+  }
+}
+
+@end
 
 @implementation RCTModalHostViewManager
 {
@@ -28,6 +47,11 @@ RCT_EXPORT_MODULE()
   }
   [_hostViews addObject:view];
   return view;
+}
+
+- (RCTShadowView *)shadowView
+{
+  return [RCTModalHostShadowView new];
 }
 
 - (void)invalidate

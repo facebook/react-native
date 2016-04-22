@@ -11,14 +11,14 @@
  */
 'use strict';
 
-var Platform = require('Platform');
-var PropTypes = require('ReactPropTypes');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var View = require('View');
+const Platform = require('Platform');
+const PropTypes = require('ReactPropTypes');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const View = require('View');
 
-var requireNativeComponent = require('requireNativeComponent');
-var RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
+const requireNativeComponent = require('requireNativeComponent');
+const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
 
 /**
  * A Modal component covers the native view (e.g. UIViewController, Activity)
@@ -34,14 +34,26 @@ var RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  * configureScene property.
  */
 class Modal extends React.Component {
+  static propTypes = {
+    animated: PropTypes.bool,
+    transparent: PropTypes.bool,
+    visible: PropTypes.bool,
+    onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
+    onShow: PropTypes.func,
+  };
+
+  static defaultProps = {
+    visible: true,
+  };
+
   render(): ?ReactElement {
     if (this.props.visible === false) {
       return null;
     }
 
-    if (this.props.transparent) {
-      var containerBackgroundColor = {backgroundColor: 'transparent'};
-    }
+    const containerBackgroundColor = {
+      backgroundColor: this.props.transparent ? 'transparent' : 'white',
+    };
 
     return (
       <RCTModalHostView
@@ -65,19 +77,7 @@ class Modal extends React.Component {
   }
 }
 
-Modal.propTypes = {
-  animated: PropTypes.bool,
-  transparent: PropTypes.bool,
-  visible: PropTypes.bool,
-  onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
-  onShow: PropTypes.func,
-};
-
-Modal.defaultProps = {
-  visible: true,
-};
-
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   modal: {
     position: 'absolute',
   },

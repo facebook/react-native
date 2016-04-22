@@ -28,6 +28,7 @@ describe('Animated', () => {
     nativeAnimatedModule.connectAnimatedNodes = jest.genMockFunction();
     nativeAnimatedModule.disconnectAnimatedNodes = jest.genMockFunction();
     nativeAnimatedModule.startAnimatingNode = jest.genMockFunction();
+    nativeAnimatedModule.stopAnimation = jest.genMockFunction();
     nativeAnimatedModule.setAnimatedNodeValue = jest.genMockFunction();
     nativeAnimatedModule.connectAnimatedNodeToView = jest.genMockFunction();
     nativeAnimatedModule.disconnectAnimatedNodeFromView = jest.genMockFunction();
@@ -59,6 +60,7 @@ describe('Animated', () => {
     expect(nativeAnimatedModule.connectAnimatedNodes.mock.calls.length).toBe(2);
 
     expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
+      jasmine.any(Number),
       jasmine.any(Number),
       {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number)},
       jasmine.any(Function)
@@ -165,6 +167,7 @@ describe('Animated', () => {
     var nativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
     expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
       jasmine.any(Number),
+      jasmine.any(Number),
       {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number)},
       jasmine.any(Function)
     );
@@ -267,6 +270,24 @@ describe('Animated', () => {
       .toBeCalledWith(jasmine.any(Number), { type: 'style', style: { opacity: jasmine.any(Number) }});
     expect(nativeAnimatedModule.createAnimatedNode)
       .toBeCalledWith(jasmine.any(Number), { type: 'props', props: { style: jasmine.any(Number) }});
+  });
+
+  it('send stopAnimation command to native', () => {
+    var value = new Animated.Value(0);
+    var animation = Animated.timing(value, {toValue: 10, duration: 50, useNativeDriver: true});
+    var nativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
+
+    animation.start();
+    expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
+      jasmine.any(Number),
+      jasmine.any(Number),
+      {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number)},
+      jasmine.any(Function)
+    );
+    var animationId = nativeAnimatedModule.startAnimatingNode.mock.calls[0][0];
+
+    animation.stop();
+    expect(nativeAnimatedModule.stopAnimation).toBeCalledWith(animationId);
   });
 
 });

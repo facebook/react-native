@@ -43,11 +43,17 @@ var Button = React.createClass({
 
 class NotificationExample extends React.Component {
   componentWillMount() {
+    // Add listener for push notifications
     PushNotificationIOS.addEventListener('notification', this._onNotification);
+    // Add listener for local notifications
+    PushNotificationIOS.addEventListener('localNotification', this._onLocalNotification);
   }
 
   componentWillUnmount() {
+    // Remove listener for push notifications
     PushNotificationIOS.removeEventListener('notification', this._onNotification);
+    // Remove listener for local notifications
+    PushNotificationIOS.removeEventListener('localNotification', this._onLocalNotification);
   }
 
   render() {
@@ -56,6 +62,11 @@ class NotificationExample extends React.Component {
         <Button
           onPress={this._sendNotification}
           label="Send fake notification"
+        />
+
+        <Button
+          onPress={this._sendLocalNotification}
+          label="Send fake local notification"
         />
       </View>
     );
@@ -72,9 +83,31 @@ class NotificationExample extends React.Component {
     });
   }
 
+  _sendLocalNotification() {
+    require('RCTDeviceEventEmitter').emit('localNotificationReceived', {
+      aps: {
+        alert: 'Sample local notification',
+        badge: '+1',
+        sound: 'default',
+        category: 'REACT_NATIVE'
+      },
+    });
+  }
+
   _onNotification(notification) {
     AlertIOS.alert(
-      'Notification Received',
+      'Push Notification Received',
+      'Alert message: ' + notification.getMessage(),
+      [{
+        text: 'Dismiss',
+        onPress: null,
+      }]
+    );
+  }
+
+  _onLocalNotification(notification){
+    AlertIOS.alert(
+      'Local Notification Received',
       'Alert message: ' + notification.getMessage(),
       [{
         text: 'Dismiss',

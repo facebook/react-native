@@ -82,7 +82,7 @@ type AnimationConfig = {
 class Animation {
   __active: bool;
   __isInteraction: bool;
-  __nativeTag: number;
+  __nativeId: number;
   __onEnd: ?EndCallback;
   start(
     fromValue: number,
@@ -91,7 +91,11 @@ class Animation {
     previousAnimation: ?Animation,
     animatedValue: AnimatedValue
   ): void {}
-  stop(): void {}
+  stop(): void {
+    if (this.__nativeId) {
+      NativeAnimatedAPI.stopAnimation(this.__nativeId);
+    }
+  }
   _getNativeAnimationConfig(): any {
     // Subclasses that have corresponding animation implementation done in native
     // should override this method
@@ -105,9 +109,9 @@ class Animation {
   }
   __startNativeAnimation(animatedValue: AnimatedValue): void {
     animatedValue.__makeNative();
-    this.__nativeTag = NativeAnimatedHelper.generateNewAnimationTag();
+    this.__nativeId = NativeAnimatedHelper.generateNewAnimationId();
     NativeAnimatedAPI.startAnimatingNode(
-      this.__nativeTag,
+      this.__nativeId,
       animatedValue.__getNativeTag(),
       this._getNativeAnimationConfig(),
       this.__debouncedOnEnd.bind(this)
@@ -311,6 +315,7 @@ class TimingAnimation extends Animation {
   }
 
   stop(): void {
+    super.stop();
     this.__active = false;
     clearTimeout(this._timeout);
     window.cancelAnimationFrame(this._animationFrame);
@@ -381,6 +386,7 @@ class DecayAnimation extends Animation {
   }
 
   stop(): void {
+    super.stop();
     this.__active = false;
     window.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
@@ -595,6 +601,7 @@ class SpringAnimation extends Animation {
   }
 
   stop(): void {
+    super.stop();
     this.__active = false;
     window.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
