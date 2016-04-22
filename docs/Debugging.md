@@ -31,7 +31,16 @@ Using `console.warn` will display an on-screen log on a yellow background. Click
 
 You can use `console.error` to display a full screen error on a red background.
 
-These boxes only appear when you're running your app in dev mode.
+By default, the warning box is enabled in `__DEV__`. Set the following flag to disable it:
+```js
+console.disableYellowBox = true;
+console.warn('YellowBox is disabled.');
+```
+Specific warnings can be ignored programmatically by setting the array:
+```js
+console.ignoredYellowBox = ['Warning: ...'];
+```
+Strings in `console.ignoredYellowBox` can be a prefix of the warning that should be ignored.
 
 ### Chrome Developer Tools
 To debug the JavaScript code in Chrome, select `Debug JS Remotely` from the developer menu. This will open a new tab at [http://localhost:8081/debugger-ui](http://localhost:8081/debugger-ui).

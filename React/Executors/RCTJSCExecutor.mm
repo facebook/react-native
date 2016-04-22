@@ -110,6 +110,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 {
   RCTJavaScriptContext *_context;
   NSThread *_javaScriptThread;
+  CFMutableDictionaryRef _cookieMap;
 
   FILE *_bundle;
   JSStringRef _bundleURL;
@@ -347,16 +348,24 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     [self addSynchronousHookWithName:@"__RCTProfileIsProfiling" usingBlock:@YES];
   }
 
-  CFMutableDictionaryRef cookieMap = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
+  _cookieMap = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
   [self addSynchronousHookWithName:@"nativeTraceBeginAsyncSection" usingBlock:^(uint64_t tag, NSString *name, NSUInteger cookie) {
+    RCTJSCExecutor *strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
     NSUInteger newCookie = RCTProfileBeginAsyncEvent(tag, name, nil);
-    CFDictionarySetValue(cookieMap, (const void *)cookie, (const void *)newCookie);
+    CFDictionarySetValue(strongSelf->_cookieMap, (const void *)cookie, (const void *)newCookie);
   }];
 
   [self addSynchronousHookWithName:@"nativeTraceEndAsyncSection" usingBlock:^(uint64_t tag, NSString *name, NSUInteger cookie) {
-    NSUInteger newCookie = (NSUInteger)CFDictionaryGetValue(cookieMap, (const void *)cookie);
+    RCTJSCExecutor *strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    NSUInteger newCookie = (NSUInteger)CFDictionaryGetValue(strongSelf->_cookieMap, (const void *)cookie);
     RCTProfileEndAsyncEvent(tag, @"js,async", newCookie, name, @"JS async", nil);
-    CFDictionaryRemoveValue(cookieMap, (const void *)cookie);
+    CFDictionaryRemoveValue(strongSelf->_cookieMap, (const void *)cookie);
   }];
 
   [self addSynchronousHookWithName:@"nativeTraceBeginSection" usingBlock:^(NSNumber *tag, NSString *profileName){
@@ -466,6 +475,10 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   if (_jsModules) {
     CFRelease(_jsModules);
     fclose(_bundle);
+  }
+
+  if (_cookieMap) {
+    CFRelease(_cookieMap);
   }
 }
 

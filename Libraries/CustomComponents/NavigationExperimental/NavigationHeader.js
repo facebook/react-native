@@ -244,10 +244,10 @@ const styles = StyleSheet.create({
   },
 });
 
-NavigationHeader = NavigationContainer.create(NavigationHeader);
+const NavigationHeaderContainer = NavigationContainer.create(NavigationHeader);
 
-NavigationHeader.HEIGHT = APPBAR_HEIGHT + STATUSBAR_HEIGHT;
-NavigationHeader.Title = NavigationHeaderTitle;
-NavigationHeader.BackButton = NavigationHeaderBackButton;
+NavigationHeaderContainer.HEIGHT = APPBAR_HEIGHT + STATUSBAR_HEIGHT;
+NavigationHeaderContainer.Title = NavigationHeaderTitle;
+NavigationHeaderContainer.BackButton = NavigationHeaderBackButton;
 
-module.exports = NavigationHeader;
+module.exports = NavigationHeaderContainer;

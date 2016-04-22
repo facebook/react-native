@@ -32,9 +32,12 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -111,6 +114,7 @@ public class NativeAnimatedNodeTraversalTest {
     Callback animationCallback = mock(Callback.class);
     mNativeAnimatedNodesManager.startAnimatingNode(
       1,
+      1,
       JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 1d),
       animationCallback);
 
@@ -143,6 +147,7 @@ public class NativeAnimatedNodeTraversalTest {
     JavaOnlyArray frames = JavaOnlyArray.of(0d, 1d);
     Callback animationCallback = mock(Callback.class);
     mNativeAnimatedNodesManager.startAnimatingNode(
+      1,
       1,
       JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 1d),
       animationCallback);
@@ -210,10 +215,12 @@ public class NativeAnimatedNodeTraversalTest {
     JavaOnlyArray frames = JavaOnlyArray.of(0d, 1d);
     mNativeAnimatedNodesManager.startAnimatingNode(
       1,
+      1,
       JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 101d),
       animationCallback);
 
     mNativeAnimatedNodesManager.startAnimatingNode(
+      2,
       2,
       JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 1010d),
       animationCallback);
@@ -258,6 +265,7 @@ public class NativeAnimatedNodeTraversalTest {
     Callback animationCallback = mock(Callback.class);
     JavaOnlyArray frames = JavaOnlyArray.of(0d, 1d);
     mNativeAnimatedNodesManager.startAnimatingNode(
+      1,
       1,
       JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 101d),
       animationCallback);
@@ -305,12 +313,14 @@ public class NativeAnimatedNodeTraversalTest {
     JavaOnlyArray firstFrames = JavaOnlyArray.of(0d, 1d);
     mNativeAnimatedNodesManager.startAnimatingNode(
       1,
+      1,
       JavaOnlyMap.of("type", "frames", "frames", firstFrames, "toValue", 200d),
       animationCallback);
 
     // Start animating for the first addition input node, will have 6 frames
     JavaOnlyArray secondFrames = JavaOnlyArray.of(0d, 0.2d, 0.4d, 0.6d, 0.8d, 1d);
     mNativeAnimatedNodesManager.startAnimatingNode(
+      2,
       2,
       JavaOnlyMap.of("type", "frames", "frames", secondFrames, "toValue", 1010d),
       animationCallback);
@@ -371,10 +381,12 @@ public class NativeAnimatedNodeTraversalTest {
     JavaOnlyArray frames = JavaOnlyArray.of(0d, 1d);
     mNativeAnimatedNodesManager.startAnimatingNode(
       1,
+      1,
       JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 2d),
       animationCallback);
 
     mNativeAnimatedNodesManager.startAnimatingNode(
+      2,
       2,
       JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 10d),
       animationCallback);
@@ -400,5 +412,54 @@ public class NativeAnimatedNodeTraversalTest {
     reset(mUIImplementationMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
     verifyNoMoreInteractions(mUIImplementationMock);
+  }
+
+  /**
+   * This test verifies that when {@link NativeAnimatedModule#stopAnimation} is called the animation
+   * will no longer be updating the nodes it has been previously attached to and that the animation
+   * callback will be triggered with {@code {finished: false}}
+   */
+  @Test
+  public void testHandleStoppingAnimation() {
+    createSimpleAnimatedViewWithOpacity(1000, 0d);
+
+    JavaOnlyArray frames = JavaOnlyArray.of(0d, 0.2d, 0.4d, 0.6d, 0.8d, 1.0d);
+    Callback animationCallback = mock(Callback.class);
+    mNativeAnimatedNodesManager.startAnimatingNode(
+      404,
+      1,
+      JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 1d),
+      animationCallback);
+
+    ArgumentCaptor<ReadableMap> callbackResponseCaptor = ArgumentCaptor.forClass(ReadableMap.class);
+
+    reset(animationCallback);
+    reset(mUIImplementationMock);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verify(mUIImplementationMock, times(2))
+      .synchronouslyUpdateViewOnUIThread(anyInt(), any(ReactStylesDiffMap.class));
+    verifyNoMoreInteractions(animationCallback);
+
+    reset(animationCallback);
+    reset(mUIImplementationMock);
+    mNativeAnimatedNodesManager.stopAnimation(404);
+    verify(animationCallback).invoke(callbackResponseCaptor.capture());
+    verifyNoMoreInteractions(animationCallback);
+    verifyNoMoreInteractions(mUIImplementationMock);
+
+    assertThat(callbackResponseCaptor.getValue().hasKey("finished")).isTrue();
+    assertThat(callbackResponseCaptor.getValue().getBoolean("finished")).isFalse();
+
+    reset(animationCallback);
+    reset(mUIImplementationMock);
+    // Run "update" loop a few more times -> we expect no further updates nor callback calls to be
+    // triggered
+    for (int i = 0; i < 5; i++) {
+      mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    }
+
+    verifyNoMoreInteractions(mUIImplementationMock);
+    verifyNoMoreInteractions(animationCallback);
   }
 }
