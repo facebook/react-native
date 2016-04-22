@@ -51,9 +51,9 @@ namespace ReactNative.Views.TextInput
         /// <summary>
         /// Set the number of lines for the text input.
         /// </summary>
-        /// <param name="numberOfLines">The event count.</param>
+        /// <param name="numberOfLines">The number of lines.</param>
         [ReactProp("numberOfLines")]
-        public void SetNumberOfLines(int numberOfLines)
+        public override void SetNumberOfLines(int numberOfLines)
         {
             _numberOfLines = numberOfLines;
         }

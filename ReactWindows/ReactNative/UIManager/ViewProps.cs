@@ -54,6 +54,7 @@ namespace ReactNative.UIManager
         public const string FontWeight = "fontWeight";
         public const string FontStyle = "fontStyle";
         public const string FontFamily = "fontFamily";
+        public const string LetterSpacing = "letterSpacing";
         public const string LineHeight = "lineHeight";
         public const string NeedsOffscreenAlphaCompositing = "needsOffscreenAlphaCompositing";
         public const string NumberOfLines = "numberOfLines";
@@ -61,6 +62,7 @@ namespace ReactNative.UIManager
         public const string ResizeMode = "resizeMode";
         public const string TextAlign = "textAlign";
         public const string TextAlignVertical = "textAlignVertical";
+        public const string TextDecorationLine = "textDecorationLine";
 
         public const string BorderWidth = "borderWidth";
         public const string BorderLeftWidth = "borderLeftWidth";

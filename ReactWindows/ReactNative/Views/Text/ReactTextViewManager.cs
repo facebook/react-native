@@ -1,4 +1,5 @@
 ﻿using ReactNative.UIManager;
+using System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
@@ -39,9 +40,16 @@ namespace ReactNative.Views.Text
         /// <param name="extraData">The aggregated virtual node changes.</param>
         public override void UpdateExtraData(TextBlock root, object extraData)
         {
-            var inline = (Inline)extraData;
+            var textUpdate = (Tuple<Inline, TextAlignment, double, int, int>)extraData;
+            var inline = textUpdate.Item1;
+
             root.Inlines.Clear();
             root.Inlines.Add(inline);
+
+            root.TextAlignment = textUpdate.Item2;
+            root.LineHeight = textUpdate.Item3;
+            root.MaxLines = textUpdate.Item4;
+            root.CharacterSpacing = textUpdate.Item5;     
         }
 
         /// <summary>
@@ -54,6 +62,8 @@ namespace ReactNative.Views.Text
             return new TextBlock
             {
                 TextWrapping = TextWrapping.Wrap,
+                TextAlignment = TextAlignment.DetectFromContent,
+                TextTrimming = TextTrimming.CharacterEllipsis,
             };
         }
     }

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -163,6 +163,48 @@ exports.examples = [
     );
   },
 }, {
+  title: 'Background color',
+  render: function() {
+    return (
+      <View>
+        <Text style={{backgroundColor: '#ffaaaa'}}>
+          Red background,
+          <Text style={{backgroundColor: '#aaaaff'}}>
+            {' '}blue background,
+            <Text>
+              {' '}inherited blue background,
+              <Text style={{backgroundColor: '#aaffaa'}}>
+                {' '}nested green background.
+              </Text>
+            </Text>
+          </Text>
+        </Text>
+        <View flexDirection={'row'}>
+          <View flexDirection={'row'} style={{backgroundColor: '#ffaaaa'}}>
+            <Text>
+              Red background,
+            </Text>
+            <View flexDirection={'row'} style={{backgroundColor: '#aaaaff'}}>
+              <Text>
+                {' '}blue background,
+              </Text>
+              <View flexDirection={'row'}>
+                <Text>
+                  {' '}inherited blue background,
+                </Text>
+                <View flexDirection={'row'} style={{backgroundColor: '#aaffaa'}}>
+                  <Text>
+                    {' '}nested green background.
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
+    );
+  },
+}, {
   title: 'Font Weight',
   render: function() {
     return (
@@ -240,6 +282,72 @@ exports.examples = [
     );
   },
 }, {
+  title: 'Text Decoration',
+  render: function() {
+    return (
+      <View>
+        <Text style={{textDecorationLine: 'underline'}}>
+          Solid underline
+        </Text>
+        <Text style={{textDecorationLine: 'none'}}>
+          None textDecoration
+        </Text>
+        <Text style={{textDecorationLine: 'line-through', textDecorationStyle: 'solid'}}>
+          Solid line-through
+        </Text>
+        <Text style={{textDecorationLine: 'underline line-through'}}>
+          Both underline and line-through
+        </Text>
+        <Text>
+          Mixed text with <Text style={{textDecorationLine: 'underline'}}>underline</Text> and <Text style={{textDecorationLine: 'line-through'}}>line-through</Text> text nodes
+        </Text>
+      </View>
+    );
+  },
+}, {
+  title: 'Text Align',
+  render: function() {
+    return (
+      <View>
+        <Text>
+          auto (default) - english LTR
+        </Text>
+        <Text>
+          أحب اللغة العربية auto (default) - arabic RTL
+        </Text>
+        <Text style={{textAlign: 'left'}}>
+          left left left left left left left left left left left left left left left
+        </Text>
+        <Text style={{textAlign: 'center'}}>
+          center center center center center center center center center center center
+        </Text>
+        <Text style={{textAlign: 'right'}}>
+          right right right right right right right right right right right right right
+        </Text>
+      </View>
+    );
+  },
+}, {
+  title: 'Letter Spacing',
+  render: function() {
+    return (
+      <View>
+        <Text style={{letterSpacing: 0}}>
+          letterSpacing = 0
+        </Text>
+        <Text style={{letterSpacing: 2, marginTop: 5}}>
+          letterSpacing = 2
+        </Text>
+        <Text style={{letterSpacing: 9, marginTop: 5}}>
+          letterSpacing = 9
+        </Text>
+        <Text style={{letterSpacing: -1, marginTop: 5}}>
+          letterSpacing = -1
+        </Text>
+      </View>
+    );
+  },
+}, {
   title: 'Unicode',
   render: function() {
     return (
@@ -277,6 +385,26 @@ exports.examples = [
     );
   },
 }, {
+  title: 'Line Height',
+  render: function() {
+    return (
+      <View>
+        <Text style={{lineHeight: 35}}>
+          35 - Holisticly formulate inexpensive ideas before best-of-breed benefits. <Text style={{fontSize: 20}}>Continually</Text> expedite magnetic potentialities rather than client-focused interfaces.
+        </Text>
+        <Text style={{lineHeight: 35}}>
+          35 - Holisticly formulate inexpensive ideas before best-of-breed benefits. <Text style={{fontSize: 20}}>Continually</Text> expedite magnetic potentialities rather than client-focused interfaces.
+        </Text>
+        <Text style={{lineHeight: 100}}>
+          100 - Holisticly formulate inexpensive ideas before best-of-breed benefits. <Text style={{fontSize: 20}}>Continually</Text> expedite magnetic potentialities rather than client-focused interfaces.
+        </Text>
+        <Text style={{lineHeight: 100}}>
+          100 - Holisticly formulate inexpensive ideas before best-of-breed benefits. <Text style={{fontSize: 20}}>Continually</Text> expedite magnetic potentialities rather than client-focused interfaces.
+        </Text>
+      </View>
+    );
+  },
+}, {
   title: 'Empty Text',
   description: 'It\'s ok to have Text with zero or null children.',
   render: function() {
@@ -284,6 +412,37 @@ exports.examples = [
       <Text />
     );
   },
+}, {
+  title: 'numberOfLines attribute',
+  render: function() {
+    return (
+      <View>
+        <Text numberOfLines={1}>
+          Maximum of one line no matter now much I write here. 
+          Maximum of one line no matter now much I write here. 
+          Maximum of one line no matter now much I write here.  
+          If I keep writing it{"'"}ll just truncate after one line
+        </Text>
+        <Text numberOfLines={2} style={{marginTop: 20}}>
+          Maximum of two lines no matter now much I write here. 
+          Maximum of two lines no matter now much I write here. 
+          Maximum of two lines no matter now much I write here. 
+          Maximum of two lines no matter now much I write here. 
+          If I keep writing it{"'"}ll just truncate after two lines
+        </Text>
+        <Text style={{marginTop: 20}}>
+          No maximum lines specified no matter now much I write here. 
+          No maximum lines specified no matter now much I write here. 
+          No maximum lines specified no matter now much I write here. 
+          No maximum lines specified no matter now much I write here. 
+          No maximum lines specified no matter now much I write here. 
+          No maximum lines specified no matter now much I write here. 
+          No maximum lines specified no matter now much I write here. 
+          If I keep writing it{"'"}ll just keep going and going
+        </Text>
+      </View>
+    );
+  },  
 }, {
   title: 'Toggling Attributes',
   render: function(): ReactElement {

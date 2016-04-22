@@ -20,19 +20,23 @@ namespace ReactNative.Views.Text
     public class ReactTextShadowNode : LayoutShadowNode
     {
         private const double FontSizeUnset = -1;
+        private readonly bool _isVirtual;
 
+        private bool _underline;
         private uint? _color;
 
+        private int _letterSpacing;
+        private int _numberOfLines;
+
         private double _fontSize = FontSizeUnset;
+        private double _lineHeight;
 
         private FontStyle? _fontStyle;
         private FontWeight? _fontWeight;
+        private TextAlignment _textAlignment = TextAlignment.DetectFromContent;
 
         private string _fontFamily;
-
         private Inline _inline;
-
-        private readonly bool _isVirtual;
 
         /// <summary>
         /// Instantiates the <see cref="ReactTextShadowNode"/>.
@@ -117,7 +121,14 @@ namespace ReactNative.Views.Text
 
             if (_inline != null)
             {
-                uiViewOperationQueue.EnqueueUpdateExtraData(ReactTag, _inline);
+                var args = Tuple.Create(
+                    _inline,
+                    _textAlignment,
+                    _lineHeight,
+                    _numberOfLines,
+                    _letterSpacing);
+
+                uiViewOperationQueue.EnqueueUpdateExtraData(ReactTag, args);
             }
         }
 
@@ -139,8 +150,11 @@ namespace ReactNative.Views.Text
         [ReactProp(ViewProps.FontSize, DefaultDouble = FontSizeUnset)]
         public void SetFontSize(double fontSize)
         {
-            _fontSize = fontSize;
-            MarkUpdated();
+            if (_fontSize != fontSize)
+            {
+                _fontSize = fontSize;
+                MarkUpdated();
+            }
         }
 
         /// <summary>
@@ -150,8 +164,11 @@ namespace ReactNative.Views.Text
         [ReactProp(ViewProps.Color, CustomType = "Color")]
         public void SetColor(uint? color)
         {
-            _color = color;
-            MarkUpdated();
+            if (_color != color)
+            {
+                _color = color;
+                MarkUpdated();
+            }
         }
 
         /// <summary>
@@ -161,8 +178,11 @@ namespace ReactNative.Views.Text
         [ReactProp(ViewProps.FontFamily)]
         public void SetFontFamily(string fontFamily)
         {
-            _fontFamily = fontFamily;
-            MarkUpdated();
+            if (_fontFamily != fontFamily)
+            {
+                _fontFamily = fontFamily;
+                MarkUpdated();
+            }
         }
 
         /// <summary>
@@ -195,6 +215,104 @@ namespace ReactNative.Views.Text
                 _fontStyle = fontStyle;
                 MarkUpdated();
             }
+        }
+
+        /// <summary>
+        /// Sets the letter spacing for the node.
+        /// </summary>
+        /// <param name="letterSpacing">The letter spacing.</param>
+        [ReactProp(ViewProps.LetterSpacing)]
+        public void SetLetterSpacing(int letterSpacing)
+        {
+            if (_isVirtual)
+            {
+                ThrowException("letterSpacing");
+            }
+
+            var spacing = 50 * letterSpacing; // TODO: Find exact multiplier (50) to match iOS
+
+            if (_letterSpacing != spacing)
+            {
+                _letterSpacing = spacing;
+                MarkUpdated();
+            }
+        }
+
+        /// <summary>
+        /// Sets the line height.
+        /// </summary>
+        /// <param name="lineHeight">The line height.</param>
+        [ReactProp(ViewProps.LineHeight)]
+        public virtual void SetLineHeight(double lineHeight)
+        {
+            if (_isVirtual)
+            {
+                ThrowException("lineHeight");
+            }
+
+            if (_lineHeight != lineHeight)
+            {
+                _lineHeight = lineHeight;
+                MarkUpdated();
+            }
+        }
+
+        /// <summary>
+        /// Sets the maximum number of lines.
+        /// </summary>
+        /// <param name="numberOfLines">Max number of lines.</param>
+        [ReactProp(ViewProps.NumberOfLines)]
+        public virtual void SetNumberOfLines(int numberOfLines)
+        {
+            if (_isVirtual)
+            {
+                ThrowException("numberOfLines");
+            }
+
+            if (_numberOfLines != numberOfLines)
+            {
+                _numberOfLines = numberOfLines;
+                MarkUpdated();
+            }
+        }
+
+        /// <summary>
+        /// Sets the text alignment.
+        /// </summary>
+        /// <param name="textAlign">The text alignment string.</param>
+        [ReactProp(ViewProps.TextAlign)]
+        public void SetTextAlign(string textAlign)
+        {
+            if (_isVirtual)
+            {
+                ThrowException("textAlign");
+            }
+
+            var textAlignment = textAlign == "auto" || textAlign == null ? 
+                TextAlignment.DetectFromContent :
+                EnumHelpers.Parse<TextAlignment>(textAlign);
+
+            if (_textAlignment != textAlignment)
+            {
+                _textAlignment = textAlignment;
+                MarkUpdated();
+            }
+        }
+
+        /// <summary>
+        /// Sets the text decoration.
+        /// </summary>
+        /// <param name="textDecoration">The text decoration string.</param>
+        [ReactProp(ViewProps.TextDecorationLine)]
+        public void SetTextDecoration(string textDecoration)
+        {
+            var underline = textDecoration?.Contains("underline") ?? false;
+
+            if (_underline != underline)
+            {
+                _underline = underline;
+                MarkUpdated();
+            }       
         }
 
         /// <summary>
@@ -248,6 +366,11 @@ namespace ReactNative.Views.Text
             }
         }
 
+        private static void ThrowException(string property)
+        {
+            throw new InvalidOperationException("Property "  + property + " is supported only on the outermost text block.");
+        }
+
         private static MeasureOutput MeasureText(CSSNode node, float width, float height)
         {
             // This is not a terribly efficient way of projecting the height of
@@ -262,7 +385,16 @@ namespace ReactNative.Views.Text
                 var textBlock = new TextBlock
                 {
                     TextWrapping = TextWrapping.Wrap,
+                    TextAlignment = TextAlignment.DetectFromContent,
+                    TextTrimming = TextTrimming.CharacterEllipsis,
                 };
+
+                var textNode = (ReactTextShadowNode)node;
+
+                textBlock.CharacterSpacing = textNode._letterSpacing;
+                textBlock.LineHeight = textNode._lineHeight;
+                textBlock.MaxLines = textNode._numberOfLines;
+                textBlock.TextAlignment = (TextAlignment)textNode._textAlignment;
 
                 textBlock.Inlines.Add(ReactTextShadowNodeInlineVisitor.Apply(node));
 
@@ -310,6 +442,17 @@ namespace ReactNative.Views.Text
                 {
                     var inline = new Run();
                     inline.Text = text;
+                    FormatInline(textNode, inline, false);
+                    return inline;              
+                }
+                else if (textNode._underline)
+                {
+                    var inline = new Underline();
+                    foreach (var child in children)
+                    {
+                        inline.Inlines.Add(child);
+                    }
+
                     FormatInline(textNode, inline, false);
                     return inline;
                 }
