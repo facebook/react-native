@@ -56,7 +56,7 @@ class Modal extends React.Component {
     };
 
     const containerTopValue = {
-    	top: this.props.translucentStatusBar ? 24 : 0,
+      top: this.props.translucentStatusBar ? 24 : 0,
     };
 
     return (
