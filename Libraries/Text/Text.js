@@ -128,13 +128,13 @@ const Text = React.createClass({
   contextTypes: {
     isInAParentText: React.PropTypes.bool
   },
-  hasPressHandler(): boolean {
-    return !!this.props.onPress || !!this.props.onLongPress;
-  },
   /**
    * Only assigned if touch is needed.
    */
   _handlers: (null: ?Object),
+  _hasPressHandler(): boolean {
+    return !!this.props.onPress || !!this.props.onLongPress;
+  },
   /**
    * These are assigned lazily the first time the responder is set to make plain
    * text nodes as cheap as possible.
@@ -145,13 +145,13 @@ const Text = React.createClass({
   touchableGetPressRectOffset: (null: ?Function),
   render(): ReactElement {
     let newProps = this.props;
-    if (this.props.onStartShouldSetResponder || this.hasPressHandler()) {
+    if (this.props.onStartShouldSetResponder || this._hasPressHandler()) {
       if (!this._handlers) {
         this._handlers = {
           onStartShouldSetResponder: (): bool => {
             const shouldSetFromProps = this.props.onStartShouldSetResponder &&
                 this.props.onStartShouldSetResponder();
-            const setResponder = shouldSetFromProps || this.hasPressHandler();
+            const setResponder = shouldSetFromProps || this._hasPressHandler();
             if (setResponder && !this.touchableHandleActivePressIn) {
               // Attach and bind all the other handlers only the first time a touch
               // actually happens.
@@ -161,7 +161,7 @@ const Text = React.createClass({
                 }
               }
               this.touchableHandleActivePressIn = () => {
-                if (this.props.suppressHighlighting || !this.hasPressHandler()) {
+                if (this.props.suppressHighlighting || !this._hasPressHandler()) {
                   return;
                 }
                 this.setState({
@@ -170,7 +170,7 @@ const Text = React.createClass({
               };
 
               this.touchableHandleActivePressOut = () => {
-                if (this.props.suppressHighlighting || !this.hasPressHandler()) {
+                if (this.props.suppressHighlighting || !this._hasPressHandler()) {
                   return;
                 }
                 this.setState({
