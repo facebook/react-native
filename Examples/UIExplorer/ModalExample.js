@@ -67,6 +67,7 @@ var ModalExample = React.createClass({
   getInitialState() {
     return {
       animated: true,
+      animationType: 'slide',
       modalVisible: false,
       transparent: false,
     };
@@ -80,6 +81,10 @@ var ModalExample = React.createClass({
     this.setState({animated: !this.state.animated});
   },
 
+  _setAnimationType(type) {
+    this.setState({animationType: type});
+  },
+
   _toggleTransparent() {
     this.setState({transparent: !this.state.transparent});
   },
@@ -91,11 +96,19 @@ var ModalExample = React.createClass({
     var innerContainerTransparentStyle = this.state.transparent
       ? {backgroundColor: '#fff', padding: 20}
       : null;
+    var activeButtonStyle = {
+<<<<<<< HEAD
+      backgroundColor: '#ddd'
+=======
+    	backgroundColor: '#ddd'
+>>>>>>> c93cb75ff2f5d8d75b0488befafe17b4313e2967
+    };
 
     return (
       <View>
         <Modal
           animated={this.state.animated}
+          animationType={this.state.animationType}
           transparent={this.state.transparent}
           visible={this.state.modalVisible}
           onRequestClose={() => {this._setModalVisible(false)}}
@@ -116,6 +129,19 @@ var ModalExample = React.createClass({
           <Text style={styles.rowTitle}>Animated</Text>
           <Switch value={this.state.animated} onValueChange={this._toggleAnimated} />
         </View>
+
+        {
+          this.state.animated &&
+	        <View style={styles.row}>
+	          <Text style={styles.rowTitle}>Animtion Type</Text>
+	          <Button onPress={this._setAnimationType.bind(this, 'slide')} style={this.state.animationType === 'slide' ? activeButtonStyle : {}}>
+              slide
+	          </Button>
+	          <Button onPress={this._setAnimationType.bind(this, 'fade')} style={this.state.animationType === 'fade' ? activeButtonStyle : {}}>
+              fade
+	          </Button>
+	        </View>
+        }
 
         <View style={styles.row}>
           <Text style={styles.rowTitle}>Transparent</Text>

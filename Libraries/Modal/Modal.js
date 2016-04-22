@@ -58,6 +58,7 @@ class Modal extends React.Component {
     return (
       <RCTModalHostView
         animated={this.props.animated}
+        animationType={this.props.animationType}
         transparent={this.props.transparent}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
@@ -76,6 +77,20 @@ class Modal extends React.Component {
     return true;
   }
 }
+
+Modal.propTypes = {
+  animated: PropTypes.bool,
+  animationType: PropTypes.oneOf(['slide', 'fade']),
+  transparent: PropTypes.bool,
+  visible: PropTypes.bool,
+  onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
+  onShow: PropTypes.func,
+};
+
+Modal.defaultProps = {
+  visible: true,
+  animationType: 'slide'
+};
 
 const styles = StyleSheet.create({
   modal: {

@@ -93,6 +93,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 
   if (!_isPresented && self.window) {
     RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
+    _modalViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    if ([self.animationType isEqualToString:@"fade"]) {
+      _modalViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    }
     [self.reactViewController presentViewController:_modalViewController animated:self.animated completion:^{
       if (_onShow) {
         _onShow(nil);
