@@ -129,7 +129,7 @@ class AssetServer {
   _findRoot(roots, dir) {
     return Promise.all(
       roots.map(root => {
-        const absRoot = fs.resolve(root);
+        const absRoot = path.resolve(root);
         // important: we want to resolve root + dir
         // to ensure the requested path doesn't traverse beyond root
         const absPath = path.resolve(root, dir);
