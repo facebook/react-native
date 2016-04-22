@@ -33,7 +33,6 @@ public class AlertFragment extends DialogFragment implements DialogInterface.OnC
   private final @Nullable DialogModule.AlertFragmentListener mListener;
 
   public AlertFragment() {
-    mListener = null;
   }
 
   public AlertFragment(@Nullable DialogModule.AlertFragmentListener listener, Bundle arguments) {
