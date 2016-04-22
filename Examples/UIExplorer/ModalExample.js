@@ -66,8 +66,7 @@ var Button = React.createClass({
 var ModalExample = React.createClass({
   getInitialState() {
     return {
-      animated: true,
-      animationType: 'slide',
+      animationType: 'none',
       modalVisible: false,
       transparent: false,
     };
@@ -75,10 +74,6 @@ var ModalExample = React.createClass({
 
   _setModalVisible(visible) {
     this.setState({modalVisible: visible});
-  },
-
-  _toggleAnimated() {
-    this.setState({animated: !this.state.animated});
   },
 
   _setAnimationType(type) {
@@ -103,7 +98,6 @@ var ModalExample = React.createClass({
     return (
       <View>
         <Modal
-          animated={this.state.animated}
           animationType={this.state.animationType}
           transparent={this.state.transparent}
           visible={this.state.modalVisible}
@@ -111,7 +105,7 @@ var ModalExample = React.createClass({
           >
           <View style={[styles.container, modalBackgroundStyle]}>
             <View style={[styles.innerContainer, innerContainerTransparentStyle]}>
-              <Text>This modal was presented {this.state.animated ? 'with' : 'without'} animation.</Text>
+              <Text>This modal was presented {this.state.animationType === 'none' ? 'without' : 'with'} animation.</Text>
               <Button
                 onPress={this._setModalVisible.bind(this, false)}
                 style={styles.modalButton}>
@@ -120,24 +114,18 @@ var ModalExample = React.createClass({
             </View>
           </View>
         </Modal>
-
         <View style={styles.row}>
-          <Text style={styles.rowTitle}>Animated</Text>
-          <Switch value={this.state.animated} onValueChange={this._toggleAnimated} />
+          <Text style={styles.rowTitle}>Animation Type</Text>
+          <Button onPress={this._setAnimationType.bind(this, 'none')} style={this.state.animationType === 'none' ? activeButtonStyle : {}}>
+            none
+          </Button>
+          <Button onPress={this._setAnimationType.bind(this, 'slide')} style={this.state.animationType === 'slide' ? activeButtonStyle : {}}>
+            slide
+          </Button>
+          <Button onPress={this._setAnimationType.bind(this, 'fade')} style={this.state.animationType === 'fade' ? activeButtonStyle : {}}>
+            fade
+          </Button>
         </View>
-
-        {
-          this.state.animated &&
-	        <View style={styles.row}>
-	          <Text style={styles.rowTitle}>Animtion Type</Text>
-	          <Button onPress={this._setAnimationType.bind(this, 'slide')} style={this.state.animationType === 'slide' ? activeButtonStyle : {}}>
-              slide
-	          </Button>
-	          <Button onPress={this._setAnimationType.bind(this, 'fade')} style={this.state.animationType === 'fade' ? activeButtonStyle : {}}>
-              fade
-	          </Button>
-	        </View>
-        }
 
         <View style={styles.row}>
           <Text style={styles.rowTitle}>Transparent</Text>

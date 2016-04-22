@@ -162,9 +162,11 @@ public class ReactModalHostView extends ViewGroup {
     int theme = R.style.Theme_FullScreenDialog;
     if (mAnimated) {
       theme = R.style.Theme_FullScreenDialogAnimatedSlide;
-      if (mAnimationType.equals("fade")) {
-        theme = R.style.Theme_FullScreenDialogAnimatedFade;
-      }
+    }
+    if (mAnimationType.equals("fade")) {
+      theme = R.style.Theme_FullScreenDialogAnimatedFade;
+    } else if (mAnimationType.equals("slide")) {
+      theme = R.style.Theme_FullScreenDialogAnimatedSlide;
     }
     mDialog = new Dialog(getContext(), theme);
 

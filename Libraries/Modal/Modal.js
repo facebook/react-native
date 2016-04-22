@@ -35,7 +35,7 @@ const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  */
 class Modal extends React.Component {
   static propTypes = {
-    animated: PropTypes.bool,
+    animationType: PropTypes.oneOf(['none', 'slide', 'fade']),
     transparent: PropTypes.bool,
     visible: PropTypes.bool,
     onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
@@ -44,6 +44,7 @@ class Modal extends React.Component {
 
   static defaultProps = {
     visible: true,
+    animationType: 'none'
   };
 
   render(): ?ReactElement {
@@ -79,8 +80,7 @@ class Modal extends React.Component {
 }
 
 Modal.propTypes = {
-  animated: PropTypes.bool,
-  animationType: PropTypes.oneOf(['slide', 'fade']),
+  animationType: PropTypes.oneOf(['none', 'slide', 'fade']),
   transparent: PropTypes.bool,
   visible: PropTypes.bool,
   onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
@@ -89,7 +89,7 @@ Modal.propTypes = {
 
 Modal.defaultProps = {
   visible: true,
-  animationType: 'slide'
+  animationType: 'none'
 };
 
 const styles = StyleSheet.create({
