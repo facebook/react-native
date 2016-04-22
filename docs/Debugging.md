@@ -36,7 +36,7 @@ By default, the warning box is enabled in `__DEV__`. Set the following flag to d
 console.disableYellowBox = true;
 console.warn('YellowBox is disabled.');
 ```
-Warnings can be ignored programmatically by setting the array:
+Specific warnings can be ignored programmatically by setting the array:
 ```js
 console.ignoredYellowBox = ['Warning: ...'];
 ```
