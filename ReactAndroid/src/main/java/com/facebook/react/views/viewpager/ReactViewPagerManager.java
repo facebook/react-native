@@ -43,6 +43,12 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
     return new ReactViewPager(reactContext);
   }
 
+
+  @ReactProp(name = "scrollEnabled", defaultBoolean = true)
+  public void setScrollEnabled(ReactViewPager viewPager, boolean value) {
+    viewPager.setScrollEnabled(value);
+  }
+
   @Override
   public boolean needsCustomLayoutForChildren() {
     return true;
