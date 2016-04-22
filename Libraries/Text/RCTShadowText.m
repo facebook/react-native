@@ -87,6 +87,10 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
 - (NSDictionary<NSString *, id> *)processUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
                                           parentProperties:(NSDictionary<NSString *, id> *)parentProperties
 {
+  if ([[self reactSuperview] isKindOfClass:[RCTShadowText class]]) {
+    return parentProperties;
+  }
+
   parentProperties = [super processUpdatedProperties:applierBlocks
                                     parentProperties:parentProperties];
 
