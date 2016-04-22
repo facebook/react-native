@@ -974,7 +974,7 @@ var AppList = React.createClass({
   _renderLinks: function(app) {
     return (
       <p>
-        <a href={app.linkAppStore} target="_blank">iOS</a> -
+        <a href={app.linkAppStore} target="_blank">iOS</a> -&nbsp;
         <a href={app.linkPlayStore} target="_blank">Android</a>
       </p>
     );
