@@ -14,6 +14,7 @@
 const Platform = require('Platform');
 const PropTypes = require('ReactPropTypes');
 const React = require('React');
+const StatusBar = require('StatusBar');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
