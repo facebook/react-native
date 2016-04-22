@@ -91,9 +91,9 @@ static BOOL RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *so
 @implementation RCTAsyncLocalStorage
 {
   BOOL _haveSetup;
-  // The manifest is a dictionary of all keys with small values inlined.  Null values indicate values that are stored
-  // in separate files (as opposed to nil values which don't exist).  The manifest is read off disk at startup, and
-  // written to disk after all mutations.
+  // The manifest is a dictionary of all keys with small values inlined.  Null values indicate
+  // values that are stored in separate files (as opposed to nil values which don't exist).  The
+  // manifest is read off disk at startup, and written to disk after all mutations.
   NSMutableDictionary<NSString *, NSString *> *_manifest;
 }
 
@@ -154,20 +154,19 @@ static const NSUInteger RCTInlineValueThreshold = 1024;
 
 static BOOL RCTHasCreatedStorageDirectory = NO;
 
-- (NSError *)_createStorageDirectory
+- (BOOL)_createStorageDirectory:(NSError **)error
 {
   if (!RCTHasCreatedStorageDirectory) {
-    NSError *error = nil;
-    [[NSFileManager defaultManager] createDirectoryAtPath:[self _storageDirectory]
-                              withIntermediateDirectories:YES
-                                               attributes:nil
-                                                    error:&error];
-    if (error) {
-      return error;
+    BOOL success = [[NSFileManager defaultManager] createDirectoryAtPath:[self _storageDirectory]
+                                             withIntermediateDirectories:YES
+                                                              attributes:nil
+                                                                   error:error];
+    if (!success) {
+      return NO;
     }
     RCTHasCreatedStorageDirectory = YES;
   }
-  return nil;
+  return YES;
 }
 
 - (NSDictionary *)_deleteStorageDirectory
@@ -180,7 +179,7 @@ static BOOL RCTHasCreatedStorageDirectory = NO;
 
 - (void)clearAllData
 {
-  dispatch_async([self methodQueue], ^{
+  dispatch_async(self.methodQueue, ^{
     [_manifest removeAllObjects];
     [[self _cache] removeAllObjects];
     [self _deleteStorageDirectory];
@@ -216,10 +215,11 @@ static BOOL RCTHasCreatedStorageDirectory = NO;
 
 - (NSDictionary *)_ensureSetup
 {
-  RCTAssertThread([self methodQueue], @"Must be executed on storage thread");
+  RCTAssertThread(self.methodQueue, @"Must be executed on storage thread");
 
-  NSError *error = [self _createStorageDirectory];
-  if (error) {
+  NSError *error;
+  BOOL didCreateDirectory = [self _createStorageDirectory:&error];
+  if (!didCreateDirectory) {
     return RCTMakeError(@"Failed to create storage directory.", error, nil);
   }
   if (!_haveSetup) {
