@@ -123,6 +123,12 @@ var ViewPagerAndroid = React.createClass({
       'none', // default
       'on-drag',
     ]),
+
+    /**
+    * When false, the content does not scroll.
+    * The default value is true.
+    */
+    scrollEnabled: React.PropTypes.bool,
   },
 
   componentDidMount: function() {

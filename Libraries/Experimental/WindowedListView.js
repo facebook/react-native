@@ -89,7 +89,7 @@ type Props = {
    * return a row.
    */
   renderRow: (
-    data: mixed, sectionIdx: number, rowIdx: number, key: string
+    data: mixed, sectionIdx: number, rowIdx: number, key?: string
   ) => ?ReactElement;
   /**
    * Rendered when the list is scrolled faster than rows can be rendered.
@@ -160,16 +160,6 @@ type Props = {
    */
   onMountedRowsWillChange: (firstIdx: number, count: number) => void;
 };
-const defaultProps = {
-  enableDangerousRecycling: false,
-  initialNumToRender: 10,
-  maxNumToRender: 30,
-  numToRenderAhead: 10,
-  viewablePercentThreshold: 50,
-  renderScrollComponent: (props) => <ScrollView {...props} />,
-  disableIncrementalRendering: false,
-  recomputeRowsBatchingPeriod: 100,
-};
 class WindowedListView extends React.Component {
   props: Props;
   state: {
@@ -189,6 +179,18 @@ class WindowedListView extends React.Component {
   _viewableRows: Array<number> = [];
   _cellsInProgress: Set<number> = new Set();
   _scrollRef: ?Object;
+
+  static defaultProps = {
+    enableDangerousRecycling: false,
+    initialNumToRender: 10,
+    maxNumToRender: 30,
+    numToRenderAhead: 10,
+    viewablePercentThreshold: 50,
+    renderScrollComponent: (props) => <ScrollView {...props} />,
+    disableIncrementalRendering: false,
+    recomputeRowsBatchingPeriod: 100,
+  };
+
   constructor(props: Props) {
     super(props);
     invariant(
@@ -495,7 +497,6 @@ class WindowedListView extends React.Component {
     );
   }
 }
-WindowedListView.defaultProps = defaultProps;
 
 // performance testing id, unique for each component mount cycle
 let g_perf_update_id = 0;
@@ -530,7 +531,7 @@ type CellProps = {
    * Updates the parent with the latest layout. Only called when incremental rendering is done and triggers the parent
    * to re-render this row with includeInLayout true.
    */
-  onNewLayout: (params: {rowIndex: number, layout: ?Object}) => void;
+  onNewLayout: (params: {rowIndex: number, layout: Object}) => void;
   /**
    * Used to track when rendering is in progress so the parent can avoid wastedful re-renders that are just going to be
    * invalidated once the cell finishes.
