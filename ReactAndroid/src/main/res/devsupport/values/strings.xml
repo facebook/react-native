@@ -16,8 +16,7 @@
   <string name="catalyst_jsload_error" project="catalyst" translatable="false">Unable to download JS bundle. Did you forget to start the development server or connect your device?</string>
   <string name="catalyst_remotedbg_message" project="catalyst" translatable="false">Connecting to remote debugger</string>
   <string name="catalyst_remotedbg_error" project="catalyst" translatable="false">Unable to connect with remote debugger</string>
-  <string name="catalyst_element_inspector" project="catalyst" translatable="false">Show Inspector</string>
-  <string name="catalyst_element_inspector_off" project="catalyst" translatable="false">Hide Inspector</string>
+  <string name="catalyst_element_inspector" project="catalyst" translatable="false">Toggle Inspector</string>
   <string name="catalyst_start_profile" project="catalyst" translatable="false">Start Profile</string>
   <string name="catalyst_stop_profile" project="catalyst" translatable="false">Stop Profile</string>
 </resources>

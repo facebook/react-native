@@ -23,6 +23,7 @@
 #import "RCTProfile.h"
 #import "RCTSourceCode.h"
 #import "RCTUtils.h"
+#import "RCTRedBox.h"
 
 #define RCTAssertJSThread() \
   RCTAssert(![NSStringFromClass([_javaScriptExecutor class]) isEqualToString:@"RCTJSCExecutor"] || \
@@ -506,6 +507,10 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
    postNotificationName:RCTJavaScriptDidFailToLoadNotification
    object:_parentBridge userInfo:@{@"bridge": self, @"error": error}];
 
+  if ([error userInfo][RCTJSStackTraceKey]) {
+    [self.redBox showErrorMessage:[error localizedDescription]
+                        withStack:[error userInfo][RCTJSStackTraceKey]];
+  }
   RCTFatal(error);
 }
 
@@ -776,21 +781,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertJSThread();
 
-  RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
-    if (error) {
-      RCTFatal(error);
-    }
-
-    if (!_valid) {
-      return;
-    }
-    [self handleBuffer:json batchEnded:YES];
-  };
-
+  __weak typeof(self) weakSelf = self;
   [_javaScriptExecutor callFunctionOnModule:module
                                      method:method
                                   arguments:args
-                                   callback:processResponse];
+                                   callback:^(id json, NSError *error) {
+                                     [weakSelf _processResponse:json error:error];
+                                   }];
 }
 
 - (void)_actuallyInvokeCallback:(NSNumber *)cbID
@@ -798,20 +795,28 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertJSThread();
 
-  RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
-    if (error) {
-      RCTFatal(error);
-    }
-
-    if (!_valid) {
-      return;
-    }
-    [self handleBuffer:json batchEnded:YES];
-  };
-
+  __weak typeof(self) weakSelf = self;
   [_javaScriptExecutor invokeCallbackID:cbID
                               arguments:args
-                               callback:processResponse];
+                               callback:^(id json, NSError *error) {
+                                 [weakSelf _processResponse:json error:error];
+                               }];
+}
+
+- (void)_processResponse:(id)json error:(NSError *)error
+{
+  if (error) {
+    if ([error userInfo][RCTJSStackTraceKey]) {
+      [self.redBox showErrorMessage:[error localizedDescription]
+                          withStack:[error userInfo][RCTJSStackTraceKey]];
+    }
+    RCTFatal(error);
+  }
+
+  if (!_valid) {
+    return;
+  }
+  [self handleBuffer:json batchEnded:YES];
 }
 
 #pragma mark - Payload Processing
