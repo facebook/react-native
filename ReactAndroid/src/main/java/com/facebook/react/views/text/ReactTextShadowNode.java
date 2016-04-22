@@ -67,11 +67,10 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   public static final String PROP_TEXT = "text";
 
   public static final String PROP_SHADOW_OFFSET = "textShadowOffset";
+  public static final String PROP_SHADOW_OFFSET_WIDTH = "width";
+  public static final String PROP_SHADOW_OFFSET_HEIGHT = "height";
   public static final String PROP_SHADOW_RADIUS = "textShadowRadius";
   public static final String PROP_SHADOW_COLOR = "textShadowColor";
-
-  public static final String ARG_WIDTH = "width";
-  public static final String ARG_HEIGHT = "height";
 
   public static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
 
@@ -471,11 +470,15 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     mTextShadowOffsetDy = 0;
 
     if (offsetMap != null) {
-      if (offsetMap.hasKey(ARG_WIDTH) && !offsetMap.isNull(ARG_WIDTH)) {
-        mTextShadowOffsetDx = PixelUtil.toPixelFromDIP(offsetMap.getDouble(ARG_WIDTH));
+      if (offsetMap.hasKey(PROP_SHADOW_OFFSET_WIDTH) &&
+          !offsetMap.isNull(PROP_SHADOW_OFFSET_WIDTH)) {
+        mTextShadowOffsetDx =
+            PixelUtil.toPixelFromDIP(offsetMap.getDouble(PROP_SHADOW_OFFSET_WIDTH));
       }
-      if (offsetMap.hasKey(ARG_HEIGHT) && !offsetMap.isNull(ARG_HEIGHT)) {
-        mTextShadowOffsetDy = PixelUtil.toPixelFromDIP(offsetMap.getDouble(ARG_HEIGHT));
+      if (offsetMap.hasKey(PROP_SHADOW_OFFSET_HEIGHT) &&
+          !offsetMap.isNull(PROP_SHADOW_OFFSET_HEIGHT)) {
+        mTextShadowOffsetDy =
+            PixelUtil.toPixelFromDIP(offsetMap.getDouble(PROP_SHADOW_OFFSET_HEIGHT));
       }
     }
 
