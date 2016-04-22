@@ -97,7 +97,16 @@ namespace ReactNative.Touch
                 UpdatePointerForEvent(pointer, e);
                 DispatchTouchEvent(touchEventType, _pointers, pointerIndex);
 
-                --_activePointers;
+                if (_activePointers == pointerIndex + 1)
+                {
+                    --_activePointers;
+                }
+
+                if (_pointers.Count == 1)
+                {
+                    _activePointers = 0;
+                }
+
                 _pointers.RemoveAt(pointerIndex);
 
                 _view.ReleasePointerCapture(e.Pointer);
