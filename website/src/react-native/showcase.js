@@ -9,7 +9,7 @@
 
 var React = require('React');
 var Site = require('Site');
-var center = require('center');
+var center = require('center');http://www.noodler-app.com/
 
 var featured = [
   {
@@ -925,7 +925,7 @@ var AppList = React.createClass({
   _renderLinks: function(app) {
     return (
       <p>
-        <a href={app.linkAppStore} target="_blank">iOS</a> -
+        <a href={app.linkAppStore} target="_blank">iOS</a> -&nbsp;
         <a href={app.linkPlayStore} target="_blank">Android</a>
       </p>
     );
