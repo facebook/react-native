@@ -9,14 +9,10 @@
 
 'use strict';
 
-const {ErrorUtils, nativeRequire} = global;
 global.require = require;
 global.__d = define;
 
 const modules = Object.create(null);
-
-const loadModule = ErrorUtils ?
-  guardedLoadModule : loadModuleImplementation;
 
 function define(moduleId, factory) {
   if (moduleId in modules) {
@@ -36,20 +32,29 @@ function require(moduleId) {
   const module = modules[moduleId];
   return module && module.isInitialized
     ? module.exports
-    : loadModule(moduleId, module);
+    : guardedLoadModule(moduleId, module);
 }
 
+var inGuard = false;
 function guardedLoadModule(moduleId, module) {
-  try {
+  if (global.ErrorUtils && !inGuard) {
+    inGuard = true;
+    var returnValue;
+    try {
+      returnValue = loadModuleImplementation(moduleId, module);
+    } catch (e) {
+      global.ErrorUtils.reportFatalError(e);
+    }
+    inGuard = false;
+    return returnValue;
+  } else {
     return loadModuleImplementation(moduleId, module);
-  } catch (e) {
-    ErrorUtils.reportFatalError(e);
   }
 }
 
 function loadModuleImplementation(moduleId, module) {
   if (!module) {
-    nativeRequire(moduleId);
+    global.nativeRequire(moduleId);
     module = modules[moduleId];
   }
 
@@ -90,6 +95,7 @@ function loadModuleImplementation(moduleId, module) {
     module.isInitialized = false;
     module.hasError = true;
     module.exports = undefined;
+    throw e;
   }
 }
 
