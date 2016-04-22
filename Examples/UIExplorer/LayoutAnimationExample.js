@@ -32,14 +32,16 @@ const AddRemoveExample = React.createClass({
     };
   },
 
-  _onPressAddView() {
+  componentWillUpdate() {
     LayoutAnimation.easeInEaseOut();
-    this.setState({views: [...this.state.views, {}]});
+  },
+
+  _onPressAddView() {
+    this.setState((state) => ({views: [...state.views, {}]}));
   },
 
   _onPressRemoveView() {
-    LayoutAnimation.easeInEaseOut();
-    this.setState({views: this.state.views.slice(0, -1)});
+    this.setState((state) => ({views: state.views.slice(0, -1)}));
   },
 
   render() {
@@ -65,7 +67,7 @@ const AddRemoveExample = React.createClass({
         </View>
       </View>
     );
-  }
+  },
 });
 
 const GreenSquare = () =>
@@ -88,7 +90,7 @@ const CrossFadeExample = React.createClass({
 
   _onPressToggle() {
     LayoutAnimation.easeInEaseOut();
-    this.setState({toggled: !this.state.toggled});
+    this.setState((state) => ({toggled: !state.toggled}));
   },
 
   render() {
@@ -108,10 +110,10 @@ const CrossFadeExample = React.createClass({
         </View>
       </View>
     );
-  }
+  },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -155,8 +157,7 @@ var styles = StyleSheet.create({
 
 exports.title = 'Layout Animation';
 exports.description = 'Layout animation';
-exports.examples = [
-{
+exports.examples = [{
   title: 'Add and remove views',
   render(): ReactElement {
     return <AddRemoveExample />;
@@ -165,5 +166,5 @@ exports.examples = [
   title: 'Cross fade views',
   render(): ReactElement {
     return <CrossFadeExample />;
-  }
+  },
 }];

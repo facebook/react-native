@@ -755,6 +755,11 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
 
     if (permanent && deleteAnimation && [removedChild isKindOfClass: [UIView class]]) {
       UIView *view = (UIView *)removedChild;
+
+      // Disable user interaction while the view is animating since JS won't receive
+      // the view events anyway.
+      view.userInteractionEnabled = NO;
+
       [deleteAnimation performAnimations:^{
         if ([deleteAnimation.property isEqual:@"scaleXY"]) {
           view.layer.transform = CATransform3DMakeScale(0, 0, 0);
@@ -884,8 +889,8 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
     [self _childrenToRemoveFromContainer:container atIndices:removeAtIndices];
   NSArray<id<RCTComponent>> *temporarilyRemovedChildren =
     [self _childrenToRemoveFromContainer:container atIndices:moveFromIndices];
-  [self _removeChildren:permanentlyRemovedChildren fromContainer:container permanent: true];
-  [self _removeChildren:temporarilyRemovedChildren fromContainer:container permanent: false];
+  [self _removeChildren:permanentlyRemovedChildren fromContainer:container permanent:true];
+  [self _removeChildren:temporarilyRemovedChildren fromContainer:container permanent:false];
 
   [self _purgeChildren:permanentlyRemovedChildren fromRegistry:registry];
 
