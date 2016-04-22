@@ -123,7 +123,6 @@ var ReactNative = Object.assign(Object.create(require('react')), {
     TestModule: require('NativeModules').TestModule,
     TestUtils: undefined,
     batchedUpdates: require('ReactUpdates').batchedUpdates,
-    cloneWithProps: require('cloneWithProps'),
     createFragment: require('ReactFragment').create,
     update: require('update'),
   },

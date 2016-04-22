@@ -34,6 +34,18 @@ const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  * configureScene property.
  */
 class Modal extends React.Component {
+  static propTypes = {
+    animated: PropTypes.bool,
+    transparent: PropTypes.bool,
+    visible: PropTypes.bool,
+    onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
+    onShow: PropTypes.func,
+  };
+
+  static defaultProps = {
+    visible: true,
+  };
+
   render(): ?ReactElement {
     if (this.props.visible === false) {
       return null;
@@ -64,18 +76,6 @@ class Modal extends React.Component {
     return true;
   }
 }
-
-Modal.propTypes = {
-  animated: PropTypes.bool,
-  transparent: PropTypes.bool,
-  visible: PropTypes.bool,
-  onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
-  onShow: PropTypes.func,
-};
-
-Modal.defaultProps = {
-  visible: true,
-};
 
 const styles = StyleSheet.create({
   modal: {
