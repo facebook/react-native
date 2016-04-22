@@ -44,7 +44,7 @@ Running it for the first time creates a default config file. Open `~/.config/sin
 
     max_body_size: '50mb'
 
-Remember to restart synopia afterwards!
+Remember to restart synopia afterwards.
 
 ### Publishing to sinopia
 
