@@ -681,6 +681,12 @@ var apps = [
     author: 'Alexey Vasiliev aka leopard',
   },
   {
+    name: 'Samanage',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/ed/e9/ff/ede9ff34-a9f6-5eb6-2a23-fcb014b326f2/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/samanage/id1033018362',
+    author: 'Samanage'
+  },
+  {
     name: 'SG Toto 4d',
     icon: 'http://a4.mzstatic.com/us/r30/Purple7/v4/d2/bc/46/d2bc4696-84d6-9681-a49f-7f660d6b04a7/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/sg-toto-4d/id1006371481?mt=8',
