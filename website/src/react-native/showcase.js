@@ -425,8 +425,12 @@ var apps = [
   {
     name: 'HackerWeb',
     icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/5a/bd/39/5abd3951-782c-ef12-8e40-33ebe1e43768/icon175x175.png',
-    link: 'https://itunes.apple.com/us/app/hackerweb/id1084209377?mt=8',
+    linkAppStore: 'https://itunes.apple.com/us/app/id1084209377',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=cheeaun.hackerweb',
     author: 'Lim Chee Aun',
+    blogs: [
+      'http://cheeaun.com/blog/2016/03/building-hackerweb-ios/',
+    ],
   },
   {
     name: 'Harmonizome',
