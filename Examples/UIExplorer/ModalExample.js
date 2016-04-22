@@ -97,7 +97,11 @@ var ModalExample = React.createClass({
       ? {backgroundColor: '#fff', padding: 20}
       : null;
     var activeButtonStyle = {
+<<<<<<< HEAD
       backgroundColor: '#ddd'
+=======
+    	backgroundColor: '#ddd'
+>>>>>>> c93cb75ff2f5d8d75b0488befafe17b4313e2967
     };
 
     return (
