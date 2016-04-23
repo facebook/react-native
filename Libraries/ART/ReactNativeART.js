@@ -220,7 +220,7 @@ class Group extends React.Component {
     var props = this.props;
     invariant(
       this.context.isInSurface,
-      '<Group /> must be a child of a <Surface />'
+      'ART: <Group /> must be a child of a <Surface />'
     );
     return (
       <NativeGroup
