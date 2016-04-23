@@ -203,8 +203,15 @@
     UIFont *expected = [UIFont systemFontOfSize:14 weight:UIFontWeightBold];
     UIFont *baseFont = [RCTConvert UIFont:@{@"fontFamily": @"System"}];
     UIFont *resultOne = [RCTConvert UIFont:baseFont withSize:@"14"];
-    UIFont *resultTwo = [RCTConvert UIFont:resultOne withWeight:@"bold"];
-    RCTAssertEqualFonts(expected, resultTwo);
+    UIFont *final = [RCTConvert UIFont:resultOne withWeight:@"bold"];
+    RCTAssertEqualFonts(expected, final);
+  }
+  {
+    UIFont *expected = [RCTConvert UIFont:@{@"fontFamily": @"Times New Roman", @"fontWeight": @"bold"}];
+    UIFont *resultOne = [UIFont systemFontOfSize:14 weight:UIFontWeightRegular];
+    UIFont *resultTwo = [RCTConvert UIFont:resultOne withFamily:@"Times New Roman"];
+    UIFont *final = [RCTConvert UIFont:resultTwo withWeight:@"bold"];
+    RCTAssertEqualFonts(expected, final);
   }
 }
 
