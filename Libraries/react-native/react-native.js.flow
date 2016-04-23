@@ -16,14 +16,14 @@
  */
 'use strict';
 
-// Export React, plus some native additions.
+// Export ReactNative, plus some native additions.
 //
 // The use of Object.create/assign is to work around a Flow bug (#6560135).
 // Once that is fixed, change this back to
 //
 //   var ReactNative = {...require('React'), /* additions */}
 //
-var ReactNative = Object.assign(Object.create(require('react')), {
+var ReactNative = Object.assign(Object.create(require('ReactNative')), {
   // Components
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
   ART: require('ReactNativeART'),
@@ -114,23 +114,6 @@ var ReactNative = Object.assign(Object.create(require('react')), {
   ColorPropType: require('ColorPropType'),
   EdgeInsetsPropType: require('EdgeInsetsPropType'),
   PointPropType: require('PointPropType'),
-
-  // See http://facebook.github.io/react/docs/addons.html
-  addons: {
-    LinkedStateMixin: require('LinkedStateMixin'),
-    Perf: undefined,
-    PureRenderMixin: require('ReactComponentWithPureRenderMixin'),
-    TestModule: require('NativeModules').TestModule,
-    TestUtils: undefined,
-    batchedUpdates: require('ReactUpdates').batchedUpdates,
-    createFragment: require('ReactFragment').create,
-    update: require('update'),
-  },
 });
-
-if (__DEV__) {
-  ReactNative.addons.Perf = require('ReactDefaultPerf');
-  ReactNative.addons.TestUtils = require('ReactTestUtils');
-}
 
 module.exports = ReactNative;
