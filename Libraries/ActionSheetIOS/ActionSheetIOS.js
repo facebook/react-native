@@ -16,6 +16,11 @@ var RCTActionSheetManager = require('NativeModules').ActionSheetManager;
 var invariant = require('fbjs/lib/invariant');
 var processColor = require('processColor');
 
+type ShareSheetResponse = {
+  completed: boolean,
+  activityType: ?string,
+};
+
 var ActionSheetIOS = {
   /**
    * Display an iOS action sheet. The `options` object must contain one or more
@@ -26,20 +31,31 @@ var ActionSheetIOS = {
    * - `destructiveButtonIndex` (int) - index of destructive button in `options`
    * - `title` (string) - a title to show above the action sheet
    * - `message` (string) - a message to show below the title
+   *
+   * Promise is resolved with a index of button in `options` that was selected
    */
-  showActionSheetWithOptions(options: Object, callback: Function) {
+  showActionSheetWithOptions(options: Object, callback?: Function): Promise<number> {
     invariant(
       typeof options === 'object' && options !== null,
       'Options must be a valid object'
     );
-    invariant(
-      typeof callback === 'function',
-      'Must provide a valid callback'
-    );
-    RCTActionSheetManager.showActionSheetWithOptions(
-      {...options, tintColor: processColor(options.tintColor)},
-      callback
-    );
+
+    const promise = RCTActionSheetManager.showActionSheetWithOptions({
+      ...options,
+      tintColor: processColor(options.tintColor)
+    });
+
+    if (typeof callback === 'function') {
+      console.warn(
+        'ActionSheetIOS.showActionSheetWithOptions returns a Promise ' +
+        'and callback function has been deprecated. ' +
+        'Use showActionSheetWithOptions(opts).then() instead.'
+      );
+      promise.then(callback);
+      return;
+    }
+
+    return promise;
   },
 
   /**
@@ -55,26 +71,40 @@ var ActionSheetIOS = {
    */
   showShareActionSheetWithOptions(
     options: Object,
-    failureCallback: Function,
-    successCallback: Function
-  ) {
+    failureCallback?: Function,
+    successCallback?: Function
+  ): Promise<ShareSheetResponse> {
     invariant(
       typeof options === 'object' && options !== null,
       'Options must be a valid object'
     );
-    invariant(
-      typeof failureCallback === 'function',
-      'Must provide a valid failureCallback'
-    );
-    invariant(
-      typeof successCallback === 'function',
-      'Must provide a valid successCallback'
-    );
-    RCTActionSheetManager.showShareActionSheetWithOptions(
-      {...options, tintColor: processColor(options.tintColor)},
-      failureCallback,
-      successCallback
-    );
+
+    const promise = RCTActionSheetManager.showShareActionSheetWithOptions({
+      ...options,
+      tintColor: processColor(options.tintColor)
+    });
+
+    if (typeof failureCallback === 'function' || typeof successCallback === 'function') {
+      invariant(
+        typeof failureCallback === 'function',
+        'Must provide a valid failureCallback'
+      );
+      invariant(
+        typeof successCallback === 'function',
+        'Must provide a valid successCallback'
+      );
+      console.warn(
+        'ActionSheetIOS.showShareActionSheetWithOptions returns a Promise ' +
+        'and successCallback function and failureCallback function have been deprecated. ' +
+        'Use showShareActionSheetWithOptions(opts).then().catch() instead.'
+      );
+      promise
+        .then((res: ShareSheetResponse) => successCallback(res.completed, res.activityType))
+        .catch(failureCallback);
+      return;
+    }
+
+    return promise;
   }
 };
 
