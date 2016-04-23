@@ -656,8 +656,9 @@ static BOOL RCTFontIsCondensed(UIFont *font)
       isItalic = style ? isItalic : RCTFontIsItalic(font);
       isCondensed = RCTFontIsCondensed(font);
     } else {
-      // Not a valid font or family
+      // Not a valid font or family, fallback with system one
       RCTLogError(@"Unrecognized font family '%@'", familyName);
+      return [self UIFont:nil withFamily:nil size:size weight:weight style:style scaleMultiplier:scaleMultiplier];
     }
   }
 

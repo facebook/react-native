@@ -207,10 +207,11 @@
     RCTAssertEqualFonts(expected, final);
   }
   {
-    UIFont *expected = [RCTConvert UIFont:@{@"fontFamily": @"Times New Roman", @"fontWeight": @"bold"}];
+    UIFont *expected = [RCTConvert UIFont:@{@"fontFamily": @"Times New Roman", @"fontStyle": @"italic", @"fontWeight": @"bold"}];
     UIFont *resultOne = [UIFont systemFontOfSize:14 weight:UIFontWeightRegular];
     UIFont *resultTwo = [RCTConvert UIFont:resultOne withFamily:@"Times New Roman"];
-    UIFont *final = [RCTConvert UIFont:resultTwo withWeight:@"bold"];
+    UIFont *resultThree = [RCTConvert UIFont:resultTwo withStyle:@"italic"];
+    UIFont *final = [RCTConvert UIFont:resultThree withWeight:@"bold"];
     RCTAssertEqualFonts(expected, final);
   }
 }
