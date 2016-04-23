@@ -72,6 +72,8 @@ import javax.annotation.Nullable;
       mUpdatedNodes.add(node);
     } else if ("props".equals(type)) {
       node = new PropsAnimatedNode(config, this);
+    } else if ("interpolation".equals(type)) {
+      node = new InterpolationAnimatedNode(config);
     } else if ("addition".equals(type)) {
       node = new AdditionAnimatedNode(config, this);
     } else if ("multiplication".equals(type)) {
