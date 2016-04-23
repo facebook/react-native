@@ -7,7 +7,7 @@ install:
   - export NVM_DIR="/Users/travis/build/facebook/.nvm"
   - source $(brew --prefix nvm)/nvm.sh
   # testing with npm@2 for diversity, Circle tests with npm@3
-  - nvm install 4.4.0
+  - nvm install 4.4.3
   - rm -Rf "${TMPDIR}/jest_preprocess_cache"
   - npm config set spin=false
   - npm config set progress=false
