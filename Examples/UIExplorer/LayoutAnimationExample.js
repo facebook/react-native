@@ -15,14 +15,15 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const {
   LayoutAnimation,
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
-} = React;
+} = ReactNative;
 
 const AddRemoveExample = React.createClass({
 
