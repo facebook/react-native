@@ -13,7 +13,7 @@ jest
   .setMock('Text', {})
   .setMock('View', {})
   .setMock('Image', {})
-  .setMock('React', {Component: class {}})
+  .setMock('react', {Component: class {}})
   .setMock('NativeModules', {
     NativeAnimatedModule: {},
   });

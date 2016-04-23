@@ -14,7 +14,7 @@ jest
  .dontMock('NavigationStackReducer')
  .dontMock('NavigationStateUtils');
 
-jest.setMock('React', {Component() {}, PropTypes: {}});
+jest.setMock('react', {Component() {}, PropTypes: {}});
 
 const NavigationStackReducer = require('NavigationStackReducer');
 const NavigationRootContainer = require('NavigationRootContainer');
