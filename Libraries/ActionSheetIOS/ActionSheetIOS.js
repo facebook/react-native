@@ -49,9 +49,8 @@ var ActionSheetIOS = {
 
     if (typeof callback === 'function') {
       console.warn(
-        'ActionSheetIOS.showActionSheetWithOptions returns a Promise ' +
-        'and callback function has been deprecated. ' +
-        'Use showActionSheetWithOptions(opts).then() instead.'
+        'ActionSheetIOS.showActionSheetWithOptions(options, cb) is deprecated. ' +
+        'Use the returned Promise instead.'
       );
       promise.then(callback);
     }
@@ -103,9 +102,8 @@ var ActionSheetIOS = {
         'Must provide a valid successCallback'
       );
       console.warn(
-        'ActionSheetIOS.showShareActionSheetWithOptions returns a Promise ' +
-        'and successCallback function and failureCallback function have been deprecated. ' +
-        'Use showShareActionSheetWithOptions(opts).then().catch() instead.'
+        'ActionSheetIOS.showShareActionSheetWithOptions(opts, cb, cb) is deprecated. ' +
+        'Use the returned Promise instead.'
       );
       promise
         // $FlowFixMe: Ignores invariants and reports possible undefined value
