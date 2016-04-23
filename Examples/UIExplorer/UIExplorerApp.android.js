@@ -37,8 +37,11 @@ const UIExplorerExampleList = require('./UIExplorerExampleList');
 const UIExplorerList = require('./UIExplorerList');
 const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
 const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
+const UIManager = require('UIManager');
 const URIActionMap = require('./URIActionMap');
 const View = require('View');
+
+UIManager.setLayoutAnimationEnabledExperimental(true);
 
 const DRAWER_WIDTH_LEFT = 56;
 

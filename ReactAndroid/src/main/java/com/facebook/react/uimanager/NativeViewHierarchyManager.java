@@ -295,7 +295,7 @@ public class NativeViewHierarchyManager {
       @Nullable ViewAtIndex[] viewsToAdd,
       @Nullable int[] tagsToDelete) {
     ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
-    ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
+    final ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
     if (viewToManage == null) {
       throw new IllegalViewOperationException("Trying to manageChildren view with tag " + tag +
         " which doesn't exist\n detail: " +
@@ -344,7 +344,14 @@ public class NativeViewHierarchyManager {
                       viewsToAdd,
                       tagsToDelete));
         }
-        viewManager.removeViewAt(viewToManage, indicesToRemove[i]);
+
+        View viewToRemove = viewToManage.getChildAt(indexToRemove);
+
+        // Don't remove the view from it's parent if it is going to be deleted with a layout animation.
+        if (!mLayoutAnimator.shouldAnimateLayout(viewToRemove) || !isViewDeleted(viewToRemove, tagsToDelete)) {
+          viewManager.removeViewAt(viewToManage, indexToRemove);
+        }
+
         lastIndexToRemove = indexToRemove;
       }
     }
@@ -371,7 +378,7 @@ public class NativeViewHierarchyManager {
     if (tagsToDelete != null) {
       for (int i = 0; i < tagsToDelete.length; i++) {
         int tagToDelete = tagsToDelete[i];
-        View viewToDestroy = mTagsToViews.get(tagToDelete);
+        final View viewToDestroy = mTagsToViews.get(tagToDelete);
         if (viewToDestroy == null) {
           throw new IllegalViewOperationException(
               "Trying to destroy unknown view tag: "
@@ -383,7 +390,48 @@ public class NativeViewHierarchyManager {
                       viewsToAdd,
                       tagsToDelete));
         }
-        dropView(viewToDestroy);
+
+        if (mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
+          disableUserInteractions(viewToDestroy);
+          mLayoutAnimator.deleteView(viewToDestroy, new Callback() {
+            @Override
+            public void invoke(Object... args) {
+              ViewGroup parent = (ViewGroup)viewToDestroy.getParent();
+              if (parent != null) {
+                viewManager.removeView(parent, viewToDestroy);
+              }
+              dropView(viewToDestroy);
+            }
+          });
+        } else {
+          dropView(viewToDestroy);
+        }
+      }
+    }
+  }
+
+  /**
+   * Checks if a view's tag is contained in the tagsToDelete array.
+   */
+  private boolean isViewDeleted(View view, int[] tagsToDelete) {
+    int viewTag = view.getId();
+    for (int tag : tagsToDelete) {
+      if (tag == viewTag) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Disables user interactions for a view and all it's subviews.
+   */
+  private void disableUserInteractions(View view) {
+    view.setClickable(false);
+    if (view instanceof ViewGroup) {
+      ViewGroup viewGroup = (ViewGroup)view;
+      for (int i = 0; i < viewGroup.getChildCount(); i++) {
+        disableUserInteractions(viewGroup.getChildAt(i));
       }
     }
   }
