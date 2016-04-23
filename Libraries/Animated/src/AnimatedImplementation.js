@@ -18,7 +18,9 @@ var React = require('React');
 var Set = require('Set');
 var SpringConfig = require('SpringConfig');
 var ViewStylePropTypes = require('ViewStylePropTypes');
+var NativeAnimatedHelper = require('NativeAnimatedHelper');
 
+var findNodeHandle = require('findNodeHandle');
 var flattenStyle = require('flattenStyle');
 var invariant = require('fbjs/lib/invariant');
 var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
@@ -28,20 +30,50 @@ import type { InterpolationConfigType } from 'Interpolation';
 type EndResult = {finished: bool};
 type EndCallback = (result: EndResult) => void;
 
+var NativeAnimatedAPI = NativeAnimatedHelper.API;
+
 // Note(vjeux): this would be better as an interface but flow doesn't
 // support them yet
 class Animated {
   __attach(): void {}
-  __detach(): void {}
+  __detach(): void {
+    if (this.__isNative && this.__nativeTag != null) {
+      NativeAnimatedAPI.dropAnimatedNode(this.__nativeTag);
+      this.__nativeTag = undefined;
+    }
+  }
   __getValue(): any {}
   __getAnimatedValue(): any { return this.__getValue(); }
   __addChild(child: Animated) {}
   __removeChild(child: Animated) {}
   __getChildren(): Array<Animated> { return []; }
+
+  /* Methods and props used by native Animated impl */
+  __isNative: bool;
+  __nativeTag: ?number;
+  __makeNative() {
+    if (!this.__isNative) {
+      throw new Error('This node cannot be made a "native" animated node');
+    }
+  }
+  __getNativeTag(): number {
+    NativeAnimatedHelper.assertNativeAnimatedModule();
+    invariant(this.__isNative, 'Attempt to get native tag from node not marked as "native"');
+    if (this.__nativeTag == null) {
+      var nativeTag: number = NativeAnimatedHelper.generateNewNodeTag();
+      NativeAnimatedAPI.createAnimatedNode(nativeTag, this.__getNativeConfig());
+      this.__nativeTag = nativeTag;
+    }
+    return this.__nativeTag;
+  }
+  __getNativeConfig(): Object {
+    throw new Error('This JS animated node type cannot be used as native animated node');
+  }
 }
 
 type AnimationConfig = {
   isInteraction?: bool;
+  useNativeDriver?: bool;
 };
 
 // Important note: start() and stop() will only be called at most once.
@@ -50,19 +82,40 @@ type AnimationConfig = {
 class Animation {
   __active: bool;
   __isInteraction: bool;
+  __nativeId: number;
   __onEnd: ?EndCallback;
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
     onEnd: ?EndCallback,
     previousAnimation: ?Animation,
+    animatedValue: AnimatedValue
   ): void {}
-  stop(): void {}
+  stop(): void {
+    if (this.__nativeId) {
+      NativeAnimatedAPI.stopAnimation(this.__nativeId);
+    }
+  }
+  _getNativeAnimationConfig(): any {
+    // Subclasses that have corresponding animation implementation done in native
+    // should override this method
+    throw new Error('This animation type cannot be offloaded to native');
+  }
   // Helper function for subclasses to make sure onEnd is only called once.
-  __debouncedOnEnd(result: EndResult) {
+  __debouncedOnEnd(result: EndResult): void {
     var onEnd = this.__onEnd;
     this.__onEnd = null;
     onEnd && onEnd(result);
+  }
+  __startNativeAnimation(animatedValue: AnimatedValue): void {
+    animatedValue.__makeNative();
+    this.__nativeId = NativeAnimatedHelper.generateNewAnimationId();
+    NativeAnimatedAPI.startAnimatingNode(
+      this.__nativeId,
+      animatedValue.__getNativeTag(),
+      this._getNativeAnimationConfig(),
+      this.__debouncedOnEnd.bind(this)
+    );
   }
 }
 
@@ -74,11 +127,26 @@ class AnimatedWithChildren extends Animated {
     this._children = [];
   }
 
+  __makeNative() {
+    if (!this.__isNative) {
+      this.__isNative = true;
+      for (var child of this._children) {
+        child.__makeNative();
+        NativeAnimatedAPI.connectAnimatedNodes(this.__getNativeTag(), child.__getNativeTag());
+      }
+    }
+  }
+
   __addChild(child: Animated): void {
     if (this._children.length === 0) {
       this.__attach();
     }
     this._children.push(child);
+    if (this.__isNative) {
+      // Only accept "native" animated nodes as children
+      child.__makeNative();
+      NativeAnimatedAPI.connectAnimatedNodes(this.__getNativeTag(), child.__getNativeTag());
+    }
   }
 
   __removeChild(child: Animated): void {
@@ -86,6 +154,9 @@ class AnimatedWithChildren extends Animated {
     if (index === -1) {
       console.warn('Trying to remove a child that doesn\'t exist');
       return;
+    }
+    if (this.__isNative && child.__isNative) {
+      NativeAnimatedAPI.disconnectAnimatedNodes(this.__getNativeTag(), child.__getNativeTag());
     }
     this._children.splice(index, 1);
     if (this._children.length === 0) {
@@ -130,6 +201,7 @@ function _flush(rootNode: AnimatedValue): void {
     }
   }
   findAnimatedStyles(rootNode);
+  /* $FlowFixMe */
   animatedStyles.forEach(animatedStyle => animatedStyle.update());
 }
 
@@ -159,6 +231,7 @@ class TimingAnimation extends Animation {
   _onUpdate: (value: number) => void;
   _animationFrame: any;
   _timeout: any;
+  _useNativeDriver: bool;
 
   constructor(
     config: TimingAnimationConfigSingle,
@@ -169,12 +242,28 @@ class TimingAnimation extends Animation {
     this._duration = config.duration !== undefined ? config.duration : 500;
     this._delay = config.delay !== undefined ? config.delay : 0;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
+    this._useNativeDriver = !!config.useNativeDriver;
+  }
+
+  _getNativeAnimationConfig(): any {
+    var frameDuration = 1000.0 / 60.0;
+    var frames = [];
+    for (var dt = 0.0; dt <= this._duration; dt += frameDuration) {
+      frames.push(this._easing(dt / this._duration));
+    }
+    return {
+      type: 'frames',
+      frames,
+      toValue: this._toValue,
+    };
   }
 
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
     onEnd: ?EndCallback,
+    previousAnimation: ?Animation,
+    animatedValue: AnimatedValue
   ): void {
     this.__active = true;
     this._fromValue = fromValue;
@@ -187,7 +276,11 @@ class TimingAnimation extends Animation {
         this.__debouncedOnEnd({finished: true});
       } else {
         this._startTime = Date.now();
-        this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
+        if (this._useNativeDriver) {
+          this.__startNativeAnimation(animatedValue);
+        } else {
+          this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
+        }
       }
     };
     if (this._delay) {
@@ -222,6 +315,7 @@ class TimingAnimation extends Animation {
   }
 
   stop(): void {
+    super.stop();
     this.__active = false;
     clearTimeout(this._timeout);
     window.cancelAnimationFrame(this._animationFrame);
@@ -292,6 +386,7 @@ class DecayAnimation extends Animation {
   }
 
   stop(): void {
+    super.stop();
     this.__active = false;
     window.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
@@ -506,6 +601,7 @@ class SpringAnimation extends Animation {
   }
 
   stop(): void {
+    super.stop();
     this.__active = false;
     window.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
@@ -524,6 +620,7 @@ var _uniqueId = 1;
  */
 class AnimatedValue extends AnimatedWithChildren {
   _value: number;
+  _startingValue: number;
   _offset: number;
   _animation: ?Animation;
   _tracking: ?Animated;
@@ -531,7 +628,7 @@ class AnimatedValue extends AnimatedWithChildren {
 
   constructor(value: number) {
     super();
-    this._value = value;
+    this._startingValue = this._value = value;
     this._offset = 0;
     this._animation = null;
     this._listeners = {};
@@ -539,6 +636,7 @@ class AnimatedValue extends AnimatedWithChildren {
 
   __detach() {
     this.stopAnimation();
+    super.__detach();
   }
 
   __getValue(): number {
@@ -555,6 +653,9 @@ class AnimatedValue extends AnimatedWithChildren {
       this._animation = null;
     }
     this._updateValue(value);
+    if (this.__isNative) {
+      NativeAnimatedAPI.setAnimatedNodeValue(this.__getNativeTag(), value);
+    }
   }
 
   /**
@@ -611,7 +712,7 @@ class AnimatedValue extends AnimatedWithChildren {
    * 0-10.
    */
   interpolate(config: InterpolationConfigType): AnimatedInterpolation {
-    return new AnimatedInterpolation(this, Interpolation.create(config));
+    return new AnimatedInterpolation(this, config);
   }
 
   /**
@@ -639,6 +740,7 @@ class AnimatedValue extends AnimatedWithChildren {
         callback && callback(result);
       },
       previousAnimation,
+      this
     );
   }
 
@@ -664,6 +766,13 @@ class AnimatedValue extends AnimatedWithChildren {
     for (var key in this._listeners) {
       this._listeners[key]({value: this.__getValue()});
     }
+  }
+
+  __getNativeConfig(): Object {
+    return {
+      type: 'value',
+      value: this._startingValue,
+    };
   }
 }
 
@@ -810,12 +919,14 @@ class AnimatedValueXY extends AnimatedWithChildren {
 
 class AnimatedInterpolation extends AnimatedWithChildren {
   _parent: Animated;
+  _config: InterpolationConfigType;
   _interpolation: (input: number) => number | string;
 
-  constructor(parent: Animated, interpolation: (input: number) => number | string) {
+  constructor(parent: Animated, config: InterpolationConfigType) {
     super();
     this._parent = parent;
-    this._interpolation = interpolation;
+    this._config = config;
+    this._interpolation = Interpolation.create(config);
   }
 
   __getValue(): number | string {
@@ -828,7 +939,7 @@ class AnimatedInterpolation extends AnimatedWithChildren {
   }
 
   interpolate(config: InterpolationConfigType): AnimatedInterpolation {
-    return new AnimatedInterpolation(this, Interpolation.create(config));
+    return new AnimatedInterpolation(this, config);
   }
 
   __attach(): void {
@@ -837,6 +948,15 @@ class AnimatedInterpolation extends AnimatedWithChildren {
 
   __detach(): void {
     this._parent.__removeChild(this);
+    super.__detach();
+  }
+
+  __getNativeConfig(): any {
+    NativeAnimatedHelper.validateInterpolation(this._config);
+    return {
+      ...this._config,
+      type: 'interpolation',
+    };
   }
 }
 
@@ -850,12 +970,18 @@ class AnimatedAddition extends AnimatedWithChildren {
     this._b = typeof b === 'number' ? new AnimatedValue(b) : b;
   }
 
+  __makeNative() {
+    this._a.__makeNative();
+    this._b.__makeNative();
+    super.__makeNative();
+  }
+
   __getValue(): number {
     return this._a.__getValue() + this._b.__getValue();
   }
 
   interpolate(config: InterpolationConfigType): AnimatedInterpolation {
-    return new AnimatedInterpolation(this, Interpolation.create(config));
+    return new AnimatedInterpolation(this, config);
   }
 
   __attach(): void {
@@ -866,6 +992,14 @@ class AnimatedAddition extends AnimatedWithChildren {
   __detach(): void {
     this._a.__removeChild(this);
     this._b.__removeChild(this);
+    super.__detach();
+  }
+
+  __getNativeConfig(): any {
+    return {
+      type: 'addition',
+      input: [this._a.__getNativeTag(), this._b.__getNativeTag()],
+    };
   }
 }
 
@@ -879,12 +1013,18 @@ class AnimatedMultiplication extends AnimatedWithChildren {
     this._b = typeof b === 'number' ? new AnimatedValue(b) : b;
   }
 
+  __makeNative() {
+    super.__makeNative();
+    this._a.__makeNative();
+    this._b.__makeNative();
+  }
+
   __getValue(): number {
     return this._a.__getValue() * this._b.__getValue();
   }
 
   interpolate(config: InterpolationConfigType): AnimatedInterpolation {
-    return new AnimatedInterpolation(this, Interpolation.create(config));
+    return new AnimatedInterpolation(this, config);
   }
 
   __attach(): void {
@@ -895,6 +1035,14 @@ class AnimatedMultiplication extends AnimatedWithChildren {
   __detach(): void {
     this._a.__removeChild(this);
     this._b.__removeChild(this);
+    super.__detach();
+  }
+
+  __getNativeConfig(): any {
+    return {
+      type: 'multiplication',
+      input: [this._a.__getNativeTag(), this._b.__getNativeTag()],
+    };
   }
 }
 
@@ -913,7 +1061,7 @@ class AnimatedModulo extends AnimatedWithChildren {
   }
 
   interpolate(config: InterpolationConfigType): AnimatedInterpolation {
-    return new AnimatedInterpolation(this, Interpolation.create(config));
+    return new AnimatedInterpolation(this, config);
   }
 
   __attach(): void {
@@ -1007,7 +1155,11 @@ class AnimatedStyle extends AnimatedWithChildren {
     for (var key in this._style) {
       var value = this._style[key];
       if (value instanceof Animated) {
-        style[key] = value.__getValue();
+        if (!value.__isNative) {
+          // We cannot use value of natively driven nodes this way as the value we have access from JS
+          // may not be up to date
+          style[key] = value.__getValue();
+        }
       } else {
         style[key] = value;
       }
@@ -1043,10 +1195,37 @@ class AnimatedStyle extends AnimatedWithChildren {
       }
     }
   }
+
+  __makeNative() {
+    super.__makeNative();
+    for (var key in this._style) {
+      var value = this._style[key];
+      if (value instanceof Animated) {
+        value.__makeNative();
+      }
+    }
+  }
+
+  __getNativeConfig(): Object {
+    var styleConfig = {};
+    for (let styleKey in this._style) {
+      if (this._style[styleKey] instanceof Animated) {
+        styleConfig[styleKey] = this._style[styleKey].__getNativeTag();
+      }
+      // Non-animated styles are set using `setNativeProps`, no need
+      // to pass those as a part of the node config
+    }
+    NativeAnimatedHelper.validateStyles(styleConfig);
+    return {
+      type: 'style',
+      style: styleConfig,
+    };
+  }
 }
 
 class AnimatedProps extends Animated {
   _props: Object;
+  _animatedView: any;
   _callback: () => void;
 
   constructor(
@@ -1070,7 +1249,11 @@ class AnimatedProps extends Animated {
     for (var key in this._props) {
       var value = this._props[key];
       if (value instanceof Animated) {
-        props[key] = value.__getValue();
+        if (!value.__isNative) {
+          // We cannot use value of natively driven nodes this way as the value we have access from JS
+          // may not be up to date
+          props[key] = value.__getValue();
+        }
       } else {
         props[key] = value;
       }
@@ -1099,16 +1282,72 @@ class AnimatedProps extends Animated {
   }
 
   __detach(): void {
+    if (this.__isNative && this._animatedView) {
+      this.__disconnectAnimatedView();
+    }
     for (var key in this._props) {
       var value = this._props[key];
       if (value instanceof Animated) {
         value.__removeChild(this);
       }
     }
+    super.__detach();
   }
 
   update(): void {
     this._callback();
+  }
+
+  __makeNative(): void {
+    if (!this.__isNative) {
+      this.__isNative = true;
+      for (var key in this._props) {
+        var value = this._props[key];
+        if (value instanceof Animated) {
+          value.__makeNative();
+        }
+      }
+      if (this._animatedView) {
+        this.__connectAnimatedView();
+      }
+    }
+  }
+
+  setNativeView(animatedView: any): void {
+    invariant(this._animatedView === undefined, 'Animated view already set.');
+    this._animatedView = animatedView;
+    if (this.__isNative) {
+      this.__connectAnimatedView();
+    }
+  }
+
+  __connectAnimatedView(): void {
+    invariant(this.__isNative, 'Expected node to be marked as "native"');
+    var nativeViewTag: ?number = findNodeHandle(this._animatedView);
+    invariant(nativeViewTag != null, 'Unable to locate attached view in the native tree');
+    NativeAnimatedAPI.connectAnimatedNodeToView(this.__getNativeTag(), nativeViewTag);
+  }
+
+  __disconnectAnimatedView(): void {
+    invariant(this.__isNative, 'Expected node to be marked as "native"');
+    var nativeViewTag: ?number = findNodeHandle(this._animatedView);
+    invariant(nativeViewTag != null, 'Unable to locate attached view in the native tree');
+    NativeAnimatedAPI.disconnectAnimatedNodeFromView(this.__getNativeTag(), nativeViewTag);
+  }
+
+  __getNativeConfig(): Object {
+    var propsConfig = {};
+    for (let propKey in this._props) {
+      var value = this._props[propKey];
+      if (value instanceof Animated) {
+        propsConfig[propKey] = value.__getNativeTag();
+      }
+    }
+    NativeAnimatedHelper.validateProps(propsConfig);
+    return {
+      type: 'props',
+      props: propsConfig,
+    };
   }
 }
 
@@ -1130,6 +1369,10 @@ function createAnimatedComponent(Component: any): any {
       this.attachProps(this.props);
     }
 
+    componentDidMount() {
+      this._propsAnimated.setNativeView(this.refs[refName]);
+    }
+
     attachProps(nextProps) {
       var oldPropsAnimated = this._propsAnimated;
 
@@ -1141,8 +1384,15 @@ function createAnimatedComponent(Component: any): any {
       // forceUpdate.
       var callback = () => {
         if (this.refs[refName].setNativeProps) {
-          var value = this._propsAnimated.__getAnimatedValue();
-          this.refs[refName].setNativeProps(value);
+          if (!this._propsAnimated.__isNative) {
+            this.refs[refName].setNativeProps(
+              this._propsAnimated.__getAnimatedValue()
+            );
+          } else {
+            throw new Error('Attempting to run JS driven animation on animated '
+              + 'node that has been moved to "native" earlier by starting an '
+              + 'animation with `useNativeDriver: true`');
+          }
         } else {
           this.forceUpdate();
         }
@@ -1152,6 +1402,11 @@ function createAnimatedComponent(Component: any): any {
         nextProps,
         callback,
       );
+
+
+      if (this.refs && this.refs[refName]) {
+        this._propsAnimated.setNativeView(this.refs[refName]);
+      }
 
       // When you call detach, it removes the element from the parent list
       // of children. If it goes to 0, then the parent also detaches itself
@@ -1185,7 +1440,7 @@ function createAnimatedComponent(Component: any): any {
 
       for (var key in ViewStylePropTypes) {
         if (!Component.propTypes[key] && props[key] !== undefined) {
-          console.error(
+          console.warn(
             'You are setting the style `{ ' + key + ': ... }` as a prop. You ' +
             'should nest it in a style object. ' +
             'E.g. `{ style: { ' + key + ': ... } }`'
@@ -1231,6 +1486,7 @@ class AnimatedTracking extends Animated {
 
   __detach(): void {
     this._parent.__removeChild(this);
+    super.__detach();
   }
 
   update(): void {
@@ -1535,7 +1791,7 @@ var event = function(
  *    componentDidMount() {
  *      Animated.timing(          // Uses easing functions
  *        this.state.fadeAnim,    // The value to drive
- *        {toValue: 1},           // Configuration
+ *        {toValue: 1}            // Configuration
  *      ).start();                // Don't forget start!
  *    }
  *    render() {

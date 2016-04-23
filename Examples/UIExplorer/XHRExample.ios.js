@@ -15,7 +15,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   AlertIOS,
   CameraRoll,
@@ -27,10 +28,11 @@ var {
   TextInput,
   TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 
 var XHRExampleHeaders = require('./XHRExampleHeaders');
 var XHRExampleFetch = require('./XHRExampleFetch');
+var XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
 
 class Downloader extends React.Component {
   state: any;
@@ -146,7 +148,8 @@ class FormUploader extends React.Component {
 
   _fetchRandomPhoto() {
     CameraRoll.getPhotos(
-      {first: PAGE_SIZE},
+      {first: PAGE_SIZE}
+    ).then(
       (data) => {
         if (!this._isMounted) {
           return;
@@ -328,6 +331,11 @@ exports.examples = [{
   title: 'Headers',
   render() {
     return <XHRExampleHeaders/>;
+  }
+}, {
+  title: 'Time Out Test',
+  render() {
+    return <XHRExampleOnTimeOut/>;
   }
 }];
 

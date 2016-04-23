@@ -21,6 +21,7 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -77,6 +78,10 @@ public class UIImplementation {
 
   protected final ViewManager resolveViewManager(String className) {
     return mViewManagers.get(className);
+  }
+
+  /*package*/ UIViewOperationQueue getUIViewOperationQueue() {
+    return mOperationsQueue;
   }
 
   /**
@@ -177,6 +182,17 @@ public class UIImplementation {
       cssNode.updateProperties(styles);
       handleUpdateView(cssNode, className, styles);
     }
+  }
+
+  /**
+   * Used by native animated module to bypass the process of updating the values through the shadow
+   * view hierarchy. This method will directly update native views, which means that updates for
+   * layout-related propertied won't be handled properly.
+   * Make sure you know what you're doing before calling this method :)
+   */
+  public void synchronouslyUpdateViewOnUIThread(int tag, ReactStylesDiffMap props) {
+    UiThreadUtil.assertOnUiThread();
+    mOperationsQueue.getNativeViewHierarchyManager().updateProperties(tag, props);
   }
 
   protected void handleUpdateView(
@@ -446,6 +462,12 @@ public class UIImplementation {
    * Invoked at the end of the transaction to commit any updates to the node hierarchy.
    */
   public void dispatchViewUpdates(EventDispatcher eventDispatcher, int batchId) {
+    updateViewHierarchy(eventDispatcher);
+    mNativeViewHierarchyOptimizer.onBatchComplete();
+    mOperationsQueue.dispatchViewUpdates(batchId);
+  }
+
+  protected void updateViewHierarchy(EventDispatcher eventDispatcher) {
     for (int i = 0; i < mShadowNodeRegistry.getRootNodeCount(); i++) {
       int tag = mShadowNodeRegistry.getRootTag(i);
       ReactShadowNode cssRoot = mShadowNodeRegistry.getNode(tag);
@@ -454,9 +476,6 @@ public class UIImplementation {
       calculateRootLayout(cssRoot);
       applyUpdatesRecursive(cssRoot, 0f, 0f, eventDispatcher);
     }
-
-    mNativeViewHierarchyOptimizer.onBatchComplete();
-    mOperationsQueue.dispatchViewUpdates(batchId);
   }
 
   /**
@@ -712,7 +731,7 @@ public class UIImplementation {
           absoluteY,
           mOperationsQueue,
           mNativeViewHierarchyOptimizer);
-      
+
       // notify JS about layout event if requested
       if (cssNode.shouldNotifyOnLayout()) {
         eventDispatcher.dispatchEvent(

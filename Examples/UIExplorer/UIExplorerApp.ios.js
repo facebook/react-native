@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -16,68 +23,41 @@
  */
 'use strict';
 
-const React = require('react-native');
-const UIExplorerActions = require('./UIExplorerActions');
+const React = require('react');
+const ReactNative = require('react-native');
 const UIExplorerList = require('./UIExplorerList.ios');
 const UIExplorerExampleList = require('./UIExplorerExampleList');
 const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
 const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
+const URIActionMap = require('./URIActionMap');
 
 const {
-  Alert,
-  Animated,
   AppRegistry,
   NavigationExperimental,
   SnapshotViewIOS,
   StyleSheet,
-  Text,
-  TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 
 const {
-  AnimatedView: NavigationAnimatedView,
-  Card: NavigationCard,
+  CardStack: NavigationCardStack,
   Header: NavigationHeader,
-  Reducer: NavigationReducer,
   RootContainer: NavigationRootContainer,
 } = NavigationExperimental;
 
-import type { Value } from 'Animated';
-
-import type { NavigationStateRendererProps } from 'NavigationAnimatedView';
+import type { NavigationSceneRendererProps } from 'NavigationTypeDefinition';
 
 import type { UIExplorerNavigationState } from './UIExplorerNavigationReducer';
 
 import type { UIExplorerExample } from './UIExplorerList.ios';
 
-function PathActionMap(path: string): ?Object {
-  // Warning! Hacky parsing for example code. Use a library for this!
-  const exampleParts = path.split('/example/');
-  const exampleKey = exampleParts[1];
-  if (exampleKey) {
-    if (!UIExplorerList.Modules[exampleKey]) {
-      Alert.alert(`${exampleKey} example could not be found!`);
-      return null;
-    }
-    return UIExplorerActions.ExampleAction(exampleKey);
-  }
-  return null;
-}
+type Props = {
+  exampleFromAppetizeParams: string,
+};
 
-function URIActionMap(uri: ?string): ?Object {
-  // Warning! Hacky parsing for example code. Use a library for this!
-  if (!uri) {
-    return null;
-  }
-  const parts = uri.split('rnuiexplorer:/');
-  if (!parts[1]) {
-    return null;
-  }
-  const path = parts[1];
-  return PathActionMap(path);
-}
-
+type State = {
+  initialExampleUri: ?string,
+};
 
 class UIExplorerApp extends React.Component {
   _navigationRootRef: ?NavigationRootContainer;
@@ -85,11 +65,29 @@ class UIExplorerApp extends React.Component {
   _renderOverlay: Function;
   _renderScene: Function;
   _renderCard: Function;
+  _renderTitleComponent: Function;
+  _handleOpenInitialExample: Function;
+  state: State;
+  constructor(props: Props) {
+    super(props);
+    this._handleOpenInitialExample = this._handleOpenInitialExample.bind(this);
+    this.state = {
+      initialExampleUri: props.exampleFromAppetizeParams,
+    };
+  }
   componentWillMount() {
     this._renderNavigation = this._renderNavigation.bind(this);
     this._renderOverlay = this._renderOverlay.bind(this);
     this._renderScene = this._renderScene.bind(this);
-    this._renderCard = this._renderCard.bind(this);
+    this._renderTitleComponent = this._renderTitleComponent.bind(this);
+  }
+  componentDidMount() {
+    // There's a race condition if we try to navigate to the specified example
+    // from the initial props at the same time the navigation logic is setting
+    // up the initial navigation state. This hack adds a delay to avoid this
+    // scenario. So after the initial example list is shown, we then transition
+    // to the initial example.
+    setTimeout(this._handleOpenInitialExample, 500);
   }
   render() {
     return (
@@ -101,6 +99,15 @@ class UIExplorerApp extends React.Component {
         linkingActionMap={URIActionMap}
       />
     );
+  }
+  _handleOpenInitialExample() {
+    if (this.state.initialExampleUri) {
+      const exampleAction = URIActionMap(this.state.initialExampleUri);
+      if (exampleAction && this._navigationRootRef) {
+        this._navigationRootRef.handleNavigation(exampleAction);
+      }
+    }
+    this.setState({initialExampleUri: null});
   }
   _renderNavigation(navigationState: UIExplorerNavigationState, onNavigate: Function) {
     if (!navigationState) {
@@ -118,39 +125,34 @@ class UIExplorerApp extends React.Component {
     }
     const {stack} = navigationState;
     return (
-      <NavigationAnimatedView
+      <NavigationCardStack
         navigationState={stack}
         style={styles.container}
         renderOverlay={this._renderOverlay}
-        renderScene={this._renderCard}
+        renderScene={this._renderScene}
       />
     );
   }
 
-  _renderOverlay(props: NavigationStateRendererProps): ReactElement {
+  _renderOverlay(props: NavigationSceneRendererProps): ReactElement {
     return (
       <NavigationHeader
-        navigationState={props.navigationParentState}
-        position={props.position}
-        getTitle={UIExplorerStateTitleMap}
+        {...props}
+        renderTitleComponent={this._renderTitleComponent}
       />
     );
   }
 
-  _renderCard(props: NavigationStateRendererProps): ReactElement {
+  _renderTitleComponent(props: NavigationSceneRendererProps): ReactElement {
     return (
-      <NavigationCard
-        index={props.index}
-        key={props.navigationState.key}
-        layout={props.layout}
-        navigationState={props.navigationParentState}
-        position={props.position}>
-        {this._renderScene(props.navigationState)}
-      </NavigationCard>
+      <NavigationHeader.Title>
+        {UIExplorerStateTitleMap(props.scene.navigationState)}
+      </NavigationHeader.Title>
     );
   }
 
-  _renderScene(state: Object): ?ReactElement {
+  _renderScene(props: NavigationSceneRendererProps): ?ReactElement {
+    const state = props.scene.navigationState;
     if (state.key === 'AppList') {
       return (
         <UIExplorerExampleList
@@ -180,7 +182,7 @@ const styles = StyleSheet.create({
   },
   exampleContainer: {
     flex: 1,
-    paddingTop: 60,
+    paddingTop: NavigationHeader.HEIGHT,
   },
 });
 

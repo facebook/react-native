@@ -9,6 +9,9 @@
  * @providesModule Inspector
  * @flow
  */
+
+/* eslint-disable dot-notation, no-dimensions-get-window */
+
 'use strict';
 
 var Dimensions = require('Dimensions');
@@ -17,6 +20,7 @@ var InspectorPanel = require('InspectorPanel');
 var InspectorUtils = require('InspectorUtils');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
+var Touchable = require('Touchable');
 var UIManager = require('NativeModules').UIManager;
 var View = require('View');
 
@@ -26,6 +30,23 @@ if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
 }
 
 class Inspector extends React.Component {
+  props: {
+    inspectedViewTag: ?number,
+    rootTag: ?number,
+    onRequestRerenderApp: (callback: (tag: ?number) => void) => void
+  };
+
+  state: {
+    devtoolsAgent: ?Object,
+    hierarchy: any,
+    panelPos: string,
+    inspecting: bool,
+    selection: ?number,
+    perfing: bool,
+    inspected: any,
+    inspectedViewTag: any,
+  };
+
   _subs: ?Array<() => void>;
 
   constructor(props: Object) {
@@ -33,16 +54,19 @@ class Inspector extends React.Component {
 
     this.state = {
       devtoolsAgent: null,
+      hierarchy: null,
       panelPos: 'bottom',
       inspecting: true,
       perfing: false,
       inspected: null,
+      selection: null,
+      inspectedViewTag: this.props.inspectedViewTag,
     };
   }
 
   componentDidMount() {
     if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
-      this.attachToDevtools = this.attachToDevtools.bind(this);
+      (this : any).attachToDevtools = this.attachToDevtools.bind(this);
       window.__REACT_DEVTOOLS_GLOBAL_HOOK__.on('react-devtools', this.attachToDevtools);
       // if devtools is already started
       if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) {
@@ -58,6 +82,10 @@ class Inspector extends React.Component {
     if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
       window.__REACT_DEVTOOLS_GLOBAL_HOOK__.off('react-devtools', this.attachToDevtools);
     }
+  }
+
+  componentWillReceiveProps(newProps: Object) {
+    this.setState({inspectedViewTag: newProps.inspectedViewTag});
   }
 
   attachToDevtools(agent: Object) {
@@ -100,8 +128,8 @@ class Inspector extends React.Component {
     var instance = this.state.hierarchy[i];
     // if we inspect a stateless component we can't use the getPublicInstance method
     // therefore we use the internal _instance property directly.
-    var publicInstance = instance._instance || {};
-    UIManager.measure(React.findNodeHandle(instance), (x, y, width, height, left, top) => {
+    var publicInstance = instance['_instance'] || {};
+    UIManager.measure(instance.getNativeNode(), (x, y, width, height, left, top) => {
       this.setState({
         inspected: {
           frame: {left, top, width, height},
@@ -147,6 +175,13 @@ class Inspector extends React.Component {
     });
   }
 
+  setTouchTargetting(val: bool) {
+    Touchable.TOUCH_TARGET_DEBUG = val;
+    this.props.onRequestRerenderApp((inspectedViewTag) => {
+      this.setState({inspectedViewTag});
+    });
+  }
+
   render() {
     var panelContainerStyle = (this.state.panelPos === 'bottom') ? {bottom: 0} : {top: 0};
     return (
@@ -155,7 +190,7 @@ class Inspector extends React.Component {
           <InspectorOverlay
             rootTag={this.props.rootTag}
             inspected={this.state.inspected}
-            inspectedViewTag={this.props.inspectedViewTag}
+            inspectedViewTag={this.state.inspectedViewTag}
             onTouchInstance={this.onTouchInstance.bind(this)}
           />}
         <View style={[styles.panelContainer, panelContainerStyle]}>
@@ -169,6 +204,8 @@ class Inspector extends React.Component {
             hierarchy={this.state.hierarchy}
             selection={this.state.selection}
             setSelection={this.setSelection.bind(this)}
+            touchTargetting={Touchable.TOUCH_TARGET_DEBUG}
+            setTouchTargetting={this.setTouchTargetting.bind(this)}
           />
         </View>
       </View>

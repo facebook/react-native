@@ -15,7 +15,8 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const UIExplorerActions = require('./UIExplorerActions');
 const {
   ListView,
@@ -25,7 +26,7 @@ const {
   TextInput,
   TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 const createExamplePage = require('./createExamplePage');
 const {
   Container: NavigationContainer,
@@ -157,7 +158,7 @@ class UIExplorerExampleList extends React.Component {
   }
 }
 
-function makeRenderable(example: any): ReactClass<any, any, any> {
+function makeRenderable(example: any): ReactClass<any> {
   return example.examples ?
     createExamplePage(null, example) :
     example;

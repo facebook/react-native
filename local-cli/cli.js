@@ -10,7 +10,8 @@
 
 require('../packager/babelRegisterOnly')([
   /private-cli\/src/,
-  /local-cli/
+  /local-cli/,
+  /react-packager\/src/
 ]);
 
 var bundle = require('./bundle/bundle');
@@ -71,7 +72,7 @@ function run() {
     printUsage();
   }
 
-  const setupEnvScript = /^win/.test(process.platform)
+  var setupEnvScript = /^win/.test(process.platform)
     ? 'setup_env.bat'
     : 'setup_env.sh';
   childProcess.execFileSync(path.join(__dirname, setupEnvScript));

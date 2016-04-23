@@ -31,9 +31,6 @@ import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.TraceListener;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-
 /**
  * This provides an implementation of the public CatalystInstance instance.  It is public because
  * it is built by ReactInstanceManager which is in a different package.
@@ -53,8 +50,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final TraceListener mTraceListener;
   private final JavaScriptModuleRegistry mJSModuleRegistry;
   private final JSBundleLoader mJSBundleLoader;
-  private final Object mTeardownLock = new Object();
   private @Nullable ExecutorToken mMainExecutorToken;
+
+  // These locks prevent additional calls from going JS<->Java after the bridge has been torn down.
+  // There are separate ones for each direction because a JS to Java call can trigger a Java to JS
+  // call: this would cause a deadlock with a traditional mutex (maybe we should be using a reader-
+  // writer lock but then we'd have to worry about starving the destroy call).
+  private final Object mJSToJavaCallsTeardownLock = new Object();
+  private final Object mJavaToJSCallsTeardownLock = new Object();
 
   // Access from native modules thread
   private final NativeModuleRegistry mJavaRegistry;
@@ -166,13 +169,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
     }
   }
 
-  /* package */ void callFunction(
+  @Override
+  public void callFunction(
       ExecutorToken executorToken,
       int moduleId,
       int methodId,
       NativeArray arguments,
       String tracingName) {
-    synchronized (mTeardownLock) {
+    synchronized (mJavaToJSCallsTeardownLock) {
       if (mDestroyed) {
         FLog.w(ReactConstants.TAG, "Calling JS function after bridge has been destroyed.");
         return;
@@ -189,7 +193,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @DoNotStrip
   @Override
   public void invokeCallback(ExecutorToken executorToken, int callbackID, NativeArray arguments) {
-    synchronized (mTeardownLock) {
+    synchronized (mJavaToJSCallsTeardownLock) {
       if (mDestroyed) {
         FLog.w(ReactConstants.TAG, "Invoking JS callback after bridge has been destroyed.");
         return;
@@ -210,18 +214,22 @@ public class CatalystInstanceImpl implements CatalystInstance {
   public void destroy() {
     UiThreadUtil.assertOnUiThread();
 
-    synchronized (mTeardownLock) {
-      if (mDestroyed) {
-        return;
+    // This ordering is important. A JS to Java call that triggers a Java to JS call will also
+    // acquire these locks in the same order
+    synchronized (mJSToJavaCallsTeardownLock) {
+      synchronized (mJavaToJSCallsTeardownLock) {
+        if (mDestroyed) {
+          return;
+        }
+
+        // TODO: tell all APIs to shut down
+        mDestroyed = true;
+        mJavaRegistry.notifyCatalystInstanceDestroy();
+
+        Systrace.unregisterListener(mTraceListener);
+
+        synchronouslyDisposeBridgeOnJSThread();
       }
-
-      // TODO: tell all APIs to shut down
-      mDestroyed = true;
-      mJavaRegistry.notifyCatalystInstanceDestroy();
-
-      Systrace.unregisterListener(mTraceListener);
-
-      synchronouslyDisposeBridgeOnJSThread();
     }
 
     mReactQueueConfiguration.destroy();
@@ -280,6 +288,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   public <T extends JavaScriptModule> T getJSModule(ExecutorToken executorToken, Class<T> jsInterface) {
     return Assertions.assertNotNull(mJSModuleRegistry).getJavaScriptModule(executorToken, jsInterface);
+  }
+
+  @Override
+  public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
+    return mJavaRegistry.hasModule(nativeModuleInterface);
   }
 
   @Override
@@ -347,21 +360,24 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private String buildModulesConfigJSONProperty(
       NativeModuleRegistry nativeModuleRegistry,
       JavaScriptModulesConfig jsModulesConfig) {
-    JsonFactory jsonFactory = new JsonFactory();
-    StringWriter writer = new StringWriter();
+    StringWriter stringWriter = new StringWriter();
+    JsonWriter writer = new JsonWriter(stringWriter);
     try {
-      JsonGenerator jg = jsonFactory.createGenerator(writer);
-      jg.writeStartObject();
-      jg.writeFieldName("remoteModuleConfig");
-      nativeModuleRegistry.writeModuleDescriptions(jg);
-      jg.writeFieldName("localModulesConfig");
-      jsModulesConfig.writeModuleDescriptions(jg);
-      jg.writeEndObject();
-      jg.close();
+      writer.beginObject();
+      writer.name("remoteModuleConfig");
+      nativeModuleRegistry.writeModuleDescriptions(writer);
+      writer.name("localModulesConfig");
+      jsModulesConfig.writeModuleDescriptions(writer);
+      writer.endObject();
+      return stringWriter.toString();
     } catch (IOException ioe) {
       throw new RuntimeException("Unable to serialize JavaScript module declaration", ioe);
+    } finally {
+      try {
+        writer.close();
+      } catch (IOException ignored) {
+      }
     }
-    return writer.getBuffer().toString();
   }
 
   private void incrementPendingJSCalls() {
@@ -395,13 +411,19 @@ public class CatalystInstanceImpl implements CatalystInstance {
     }
   }
 
+  @Override
+  protected void finalize() throws Throwable {
+    Assertions.assertCondition(mDestroyed, "Bridge was not destroyed before finalizer!");
+    super.finalize();
+  }
+
   private class NativeModulesReactCallback implements ReactCallback {
 
     @Override
     public void call(ExecutorToken executorToken, int moduleId, int methodId, ReadableNativeArray parameters) {
       mReactQueueConfiguration.getNativeModulesQueueThread().assertIsOnThread();
 
-      synchronized (mTeardownLock) {
+      synchronized (mJSToJavaCallsTeardownLock) {
         // Suppress any callbacks if destroyed - will only lead to sadness.
         if (mDestroyed) {
           return;
@@ -419,7 +441,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       // native modules could be in a bad state so we don't want to call anything on them. We
       // still want to trigger the debug listener since it allows instrumentation tests to end and
       // check their assertions without waiting for a timeout.
-      synchronized (mTeardownLock) {
+      synchronized (mJSToJavaCallsTeardownLock) {
         if (!mDestroyed) {
           Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "onBatchComplete");
           try {
@@ -440,7 +462,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       // Since onCatalystInstanceDestroy happens on the UI thread, we don't want to also execute
       // this callback on the native modules thread at the same time. Longer term, onCatalystInstanceDestroy
       // should probably be executed on the native modules thread as well instead.
-      synchronized (mTeardownLock) {
+      synchronized (mJSToJavaCallsTeardownLock) {
         if (!mDestroyed) {
           Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "onExecutorUnregistered");
           try {

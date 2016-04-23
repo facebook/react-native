@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
@@ -80,7 +81,7 @@ public class ReactViewGroup extends ViewGroup implements
   // temporary optimization/hack that is mainly applicable to the large list of images. The way
   // it's implemented is that we store an additional array of children in view node. We selectively
   // remove some of the views (detach) from it while still storing them in that additional array.
-  // We override all possible add methods for {@link ViewGroup} so that we can controll this process
+  // We override all possible add methods for {@link ViewGroup} so that we can control this process
   // whenever the option is set. We also override {@link ViewGroup#getChildAt} and
   // {@link ViewGroup#getChildCount} so those methods may return views that are not attached.
   // This is risky but allows us to perform a correct cleanup in {@link NativeViewHierarchyManager}.
@@ -94,6 +95,7 @@ public class ReactViewGroup extends ViewGroup implements
   private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
   private boolean mNeedsOffscreenAlphaCompositing = false;
+  private @Nullable ReadableMap mNativeBackground;
 
   public ReactViewGroup(Context context) {
     super(context);
@@ -134,7 +136,21 @@ public class ReactViewGroup extends ViewGroup implements
         "This method is not supported for ReactViewGroup instances");
   }
 
-  public void setTranslucentBackgroundDrawable(@Nullable Drawable background) {
+  public void setNativeBackground(@Nullable ReadableMap nativeBackground) {
+    mNativeBackground = nativeBackground;
+    refreshTranslucentBackgroundDrawable();
+  }
+
+  private void refreshTranslucentBackgroundDrawable() {
+    Drawable background = null;
+    if (mNativeBackground != null) {
+      float[] cornerRadii = null;
+      if (mReactBackgroundDrawable != null) {
+        cornerRadii = mReactBackgroundDrawable.getBorderRadii();
+      }
+      background = ReactDrawableHelper.createDrawableFromJSDescription(getContext(), mNativeBackground, cornerRadii);
+    }
+
     // it's required to call setBackground to null, as in some of the cases we may set new
     // background to be a layer drawable that contains a drawable that has been previously setup
     // as a background previously. This will not work correctly as the drawable callback logic is
@@ -207,10 +223,12 @@ public class ReactViewGroup extends ViewGroup implements
 
   public void setBorderRadius(float borderRadius) {
     getOrCreateReactViewBackground().setRadius(borderRadius);
+    refreshTranslucentBackgroundDrawable();
   }
 
   public void setBorderRadius(float borderRadius, int position) {
     getOrCreateReactViewBackground().setRadius(borderRadius, position);
+    refreshTranslucentBackgroundDrawable();
   }
 
   public void setBorderStyle(@Nullable String style) {
@@ -375,6 +393,12 @@ public class ReactViewGroup extends ViewGroup implements
   @Override
   public PointerEvents getPointerEvents() {
     return mPointerEvents;
+  }
+
+  @Override
+  protected void dispatchSetPressed(boolean pressed) {
+    // Prevents the ViewGroup from dispatching the pressed state
+    // to it's children.
   }
 
   /*package*/ void setPointerEvents(PointerEvents pointerEvents) {

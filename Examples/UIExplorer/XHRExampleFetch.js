@@ -15,14 +15,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   StyleSheet,
   Text,
   TextInput,
   View,
   Platform,
-} = React;
+} = ReactNative;
 
 
 class XHRExampleFetch extends React.Component {

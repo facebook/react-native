@@ -50,9 +50,9 @@ React Native Android use [gradle](https://docs.gradle.org) as a build system. We
 ### Configure your SDK
 
 1. Open the Android SDK Manager (**on Mac** start a new shell and run `android`); in the window that appears make sure you check:
-  * Android SDK Build-tools version 23.0.1
+  * Android SDK Build-tools version 23.0.**1**
   * Android 6.0 (API 23)
-  * Android Support Repository
+  * Local Maven repository for Support Libraries (this is called Android Support Repository in older versions)
 2. Click "Install Packages"
 
 ![SDK Manager window](img/AndroidSDK1.png) ![SDK Manager window](img/AndroidSDK2.png)
@@ -78,7 +78,8 @@ Genymotion is much easier to set up than stock Google emulators. However, it's o
   1. Run `android avd` and click on **Create...**
   ![Create AVD dialog](img/CreateAVD.png)
   2. With the new AVD selected, click `Start...`
-5. To bring up the developer menu press F2 (or install [Frappé](http://getfrappe.com))
+5. To bring up the developer menu press F2 (or ⌘+M for Android Studio 2.0 or newer)
+6. Install [Frappé](http://getfrappe.com) (OSX only)
 
 ### Windows Hyper-V Alternative
 
@@ -100,3 +101,14 @@ Then restart the emulator and when it runs you can just do `react-native run-and
 ### Editing your app's Java code in Android Studio
 
 You can use any editor to edit JavaScript. If you want to use Android Studio to work on native code, from the Welcome screen of Android Studio choose "Import project" and select the `android` folder of your app.
+
+### Troubleshooting
+
+In case you encounter
+
+```
+Execution failed for task ':app:installDebug'.
+  com.android.builder.testing.api.DeviceException: com.android.ddmlib.ShellCommandUnresponsiveException
+```
+
+try downgrading your Gradle version to 1.2.3 in `<project-name>/android/build.gradle` (https://github.com/facebook/react-native/issues/2720)

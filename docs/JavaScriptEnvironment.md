@@ -67,7 +67,7 @@ Browser
 * [XMLHttpRequest, fetch](/react-native/docs/network.html#content)
 * [{set, clear}{Timeout, Interval, Immediate}, {request, cancel}AnimationFrame](/react-native/docs/timers.html#content)
 * [navigator.geolocation](/react-native/docs/geolocation.html#content)
- 
+
 ES6
 
 * [Object.assign](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)

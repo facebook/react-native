@@ -133,7 +133,7 @@
 {
   if ((self = [super init])) {
     _sockets = [NSMutableDictionary new];
-    _queue = dispatch_queue_create("com.facebook.React.WebSocketManager", DISPATCH_QUEUE_SERIAL);
+    _queue = dispatch_queue_create("com.facebook.react.WebSocketManager", DISPATCH_QUEUE_SERIAL);
   }
   return self;
 }

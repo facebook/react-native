@@ -15,9 +15,11 @@
 #import <XCTest/XCTest.h>
 
 #import "RCTShadowView.h"
+#import "RCTRootShadowView.h"
+
 
 @interface RCTShadowViewTests : XCTestCase
-@property (nonatomic, strong) RCTShadowView *parentView;
+@property (nonatomic, strong) RCTRootShadowView *parentView;
 @end
 
 @implementation RCTShadowViewTests
@@ -25,7 +27,7 @@
 - (void)setUp
 {
   [super setUp];
-  
+
   self.parentView = [self _shadowViewWithStyle:^(css_style_t *style) {
     style->flex_direction = CSS_FLEX_DIRECTION_COLUMN;
     style->dimensions[0] = 440;
@@ -90,7 +92,7 @@
   [self.parentView insertReactSubview:mainView atIndex:1];
   [self.parentView insertReactSubview:footerView atIndex:2];
 
-  [self.parentView collectRootUpdatedFrames];
+  [self.parentView collectViewsWithUpdatedFrames];
 
   XCTAssertTrue(CGRectEqualToRect([self.parentView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(0, 0, 440, 440)));
   XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets([self.parentView paddingAsInsets], UIEdgeInsetsMake(10, 10, 10, 10)));
@@ -156,7 +158,7 @@
   RCTShadowView *view = [self _shadowViewWithStyle:styleBlock];
   [self.parentView insertReactSubview:view atIndex:0];
   view.intrinsicContentSize = contentSize;
-  [self.parentView collectRootUpdatedFrames];
+  [self.parentView collectViewsWithUpdatedFrames];
   CGRect actualRect = [view measureLayoutRelativeToAncestor:self.parentView];
   XCTAssertTrue(CGRectEqualToRect(expectedRect, actualRect),
                 @"Expected layout to be %@, got %@",
@@ -164,9 +166,9 @@
                 NSStringFromCGRect(actualRect));
 }
 
-- (RCTShadowView *)_shadowViewWithStyle:(void(^)(css_style_t *style))styleBlock
+- (RCTRootShadowView *)_shadowViewWithStyle:(void(^)(css_style_t *style))styleBlock
 {
-  RCTShadowView *shadowView = [RCTShadowView new];
+  RCTRootShadowView *shadowView = [RCTRootShadowView new];
 
   css_style_t style = shadowView.cssNode->style;
   styleBlock(&style);

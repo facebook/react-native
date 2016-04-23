@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -15,26 +22,33 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
+const NavigationExampleRow = require('./NavigationExampleRow');
+const NavigationExampleTabBar = require('./NavigationExampleTabBar');
+
 const {
   NavigationExperimental,
   ScrollView,
   StyleSheet,
   View,
-} = React;
+} = ReactNative;
+
 const {
-  AnimatedView: NavigationAnimatedView,
-  Card: NavigationCard,
+  CardStack: NavigationCardStack,
   Container: NavigationContainer,
-  RootContainer: NavigationRootContainer,
   Header: NavigationHeader,
   Reducer: NavigationReducer,
+  RootContainer: NavigationRootContainer,
   View: NavigationView,
 } = NavigationExperimental;
-const NavigationExampleRow = require('./NavigationExampleRow');
-const NavigationExampleTabBar = require('./NavigationExampleTabBar');
 
-import type {NavigationParentState} from 'NavigationStateUtils';
+
+import type {
+  NavigationParentState,
+  NavigationSceneRenderer,
+  NavigationSceneRendererProps,
+} from 'NavigationTypeDefinition';
 
 type Action = {
   isExitAction?: boolean,
@@ -43,6 +57,7 @@ type Action = {
 const ExampleExitAction = () => ({
   isExitAction: true,
 });
+
 ExampleExitAction.match = (action: Action) => (
   action && action.isExitAction === true
 );
@@ -51,6 +66,7 @@ const PageAction = (type) => ({
   type,
   isPageAction: true,
 });
+
 PageAction.match = (action) => (
   action && action.isPageAction === true
 );
@@ -59,6 +75,7 @@ const ExampleProfilePageAction = (type) => ({
   ...PageAction(type),
   isProfilePageAction: true,
 });
+
 ExampleProfilePageAction.match = (action) => (
   action && action.isProfilePageAction === true
 );
@@ -68,7 +85,9 @@ const ExampleInfoAction = () => PageAction('InfoPage');
 const ExampleNotifProfileAction = () => ExampleProfilePageAction('NotifProfilePage');
 
 const _jsInstanceUniqueId = '' + Date.now();
+
 let _uniqueIdCount = 0;
+
 function pageStateActionMap(action) {
   return {
     key: 'page-' + _jsInstanceUniqueId + '-' + (_uniqueIdCount++),
@@ -128,7 +147,7 @@ const ExampleAppReducer = NavigationReducer.TabsReducer({
   ],
 });
 
-function stateTypeTitleMap(pageState) {
+function stateTypeTitleMap(pageState: any) {
   switch (pageState.type) {
     case 'ProfilePage':
       return 'Profile Page';
@@ -144,55 +163,65 @@ function stateTypeTitleMap(pageState) {
 }
 
 class ExampleTabScreen extends React.Component {
+  _renderCard: NavigationSceneRenderer;
+  _renderHeader: NavigationSceneRenderer;
+  _renderScene: NavigationSceneRenderer;
+
+  componentWillMount() {
+    this._renderHeader = this._renderHeader.bind(this);
+    this._renderScene = this._renderScene.bind(this);
+  }
+
   render() {
     return (
-      <NavigationAnimatedView
+      <NavigationCardStack
         style={styles.tabContent}
         navigationState={this.props.navigationState}
-        renderOverlay={this._renderHeader.bind(this)}
-        renderScene={this._renderScene.bind(this)}
+        renderOverlay={this._renderHeader}
+        renderScene={this._renderScene}
       />
     );
   }
-  _renderHeader(props) {
+  _renderHeader(props: NavigationSceneRendererProps) {
     return (
       <NavigationHeader
-        navigationState={props.navigationParentState}
-        position={props.position}
-        layout={props.layout}
-        getTitle={state => stateTypeTitleMap(state)}
+        {...props}
+        renderTitleComponent={this._renderTitleComponent}
       />
     );
   }
-  _renderScene(props) {
+
+  _renderTitleComponent(props: NavigationSceneRendererProps) {
     return (
-      <NavigationCard
-        key={props.navigationState.key}
-        index={props.index}
-        navigationState={props.navigationParentState}
-        position={props.position}
-        layout={props.layout}>
-        <ScrollView style={styles.scrollView}>
-          <NavigationExampleRow
-            text="Open page"
-            onPress={() => {
-              this.props.onNavigate(ExampleInfoAction());
-            }}
-          />
-          <NavigationExampleRow
-            text="Open a page in the profile tab"
-            onPress={() => {
-              this.props.onNavigate(ExampleNotifProfileAction());
-            }}
-          />
-          <NavigationExampleRow
-            text="Exit Composition Example"
-            onPress={() => {
-              this.props.onNavigate(ExampleExitAction());
-            }}
-          />
-        </ScrollView>
-      </NavigationCard>
+      <NavigationHeader.Title>
+        {stateTypeTitleMap(props.scene.navigationState)}
+      </NavigationHeader.Title>
+    );
+  }
+
+  _renderScene(props: NavigationSceneRendererProps) {
+    const {onNavigate} = props;
+    return (
+      <ScrollView style={styles.scrollView}>
+        <NavigationExampleRow
+          text="Open page"
+          onPress={() => {
+            onNavigate(ExampleInfoAction());
+          }}
+        />
+        <NavigationExampleRow
+          text="Open a page in the profile tab"
+          onPress={() => {
+            onNavigate(ExampleNotifProfileAction());
+          }}
+        />
+        <NavigationExampleRow
+          text="Exit Composition Example"
+          onPress={() => {
+            onNavigate(ExampleExitAction());
+          }}
+        />
+      </ScrollView>
     );
   }
 }
@@ -237,21 +266,33 @@ class NavigationCompositionExample extends React.Component {
 }
 
 class ExampleMainView extends React.Component {
+  _renderScene: NavigationSceneRenderer;
+
+  componentWillMount() {
+    this._renderScene = this._renderScene.bind(this);
+  }
+
   render() {
     return (
       <NavigationView
         navigationState={this.props.navigationState}
         style={styles.tabsContent}
-        renderScene={(tabState, index) => (
-          <ExampleTabScreen
-            key={tabState.key}
-            navigationState={tabState}
-            onNavigate={this._handleNavigation.bind(this, tabState.key)}
-          />
-        )}
+        renderScene={this._renderScene}
       />
     );
   }
+
+  _renderScene(props: NavigationSceneRendererProps): ReactElement {
+    const {scene} = props;
+    return (
+      <ExampleTabScreen
+        key={'tab_screen' + scene.key}
+        navigationState={scene.navigationState}
+        onNavigate={this._handleNavigation.bind(this, scene.key)}
+      />
+    );
+  }
+
   _handleNavigation(tabKey, action) {
     if (ExampleExitAction.match(action)) {
       this.props.onExampleExit();
@@ -260,6 +301,7 @@ class ExampleMainView extends React.Component {
     this.props.onNavigate(action);
   }
 }
+
 ExampleMainView = NavigationContainer.create(ExampleMainView);
 
 const styles = StyleSheet.create({
@@ -270,7 +312,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollView: {
-    marginTop: 64
+    marginTop: NavigationHeader.HEIGHT
   },
   tabContent: {
     flex: 1,

@@ -15,7 +15,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   PixelRatio,
   Image,
@@ -27,7 +28,7 @@ var {
   Platform,
   TouchableNativeFeedback,
   View,
-} = React;
+} = ReactNative;
 
 exports.displayName = (undefined: ?string);
 exports.description = 'Touchable and onPress examples.';
@@ -108,6 +109,14 @@ exports.examples = [
      'any interaction with component',
    render: function(): ReactElement {
      return <TouchableDisabled />;
+   },
+ }, {
+   title: 'TouchableNativeFeedback with Border Radius',
+   description: 'The ripples from <TouchableNativeFeedback> should follow borderRadius. ' +
+     'This only works with a non-borderless background from TouchableNativeFeedback.Ripple',
+   platform: 'android',
+   render: function(): ReactElement {
+     return <TouchableNativeFeedbackBorderRadius />;
    },
  }];
 
@@ -367,6 +376,25 @@ var TouchableDisabled = React.createClass({
   }
 });
 
+var TouchableNativeFeedbackBorderRadius = React.createClass({
+  render: function() {
+    return (
+      <View>
+        <TouchableNativeFeedback
+          style={[styles.row, styles.block]}
+          onPress={() => console.log('TouchableNativeFeedback Ripple with Border Radius has been clicked')}
+          background={TouchableNativeFeedback.Ripple('#ccc')}>
+          <View style={[styles.tnfBorderRadiusView]}>
+            <Text style={[styles.button, styles.nativeFeedbackButton]}>
+              TouchableNativeFeedback.Ripple with Border Radius
+            </Text>
+          </View>
+        </TouchableNativeFeedback>
+      </View>
+    );
+  }
+});
+
 var heartImage = {uri: 'https://pbs.twimg.com/media/BlXBfT3CQAA6cVZ.png:small'};
 
 var styles = StyleSheet.create({
@@ -440,4 +468,10 @@ var styles = StyleSheet.create({
     fontWeight: '500',
     color: 'blue',
   },
+  tnfBorderRadiusView: {
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 5,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 20
+  }
 });

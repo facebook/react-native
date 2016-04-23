@@ -29,14 +29,14 @@ import com.facebook.react.common.ReactConstants;
  * to the bridge using the corresponding module and method ids so the proper function is executed in
  * JavaScript.
  */
-/*package*/ class JavaScriptModuleRegistry {
+public class JavaScriptModuleRegistry {
 
-  private final CatalystInstanceImpl mCatalystInstance;
+  private final CatalystInstance mCatalystInstance;
   private final WeakHashMap<ExecutorToken, HashMap<Class<? extends JavaScriptModule>, JavaScriptModule>> mModuleInstances;
   private final HashMap<Class<? extends JavaScriptModule>, JavaScriptModuleRegistration> mModuleRegistrations;
 
   public JavaScriptModuleRegistry(
-      CatalystInstanceImpl instance,
+      CatalystInstance instance,
       JavaScriptModulesConfig config) {
     mCatalystInstance = instance;
     mModuleInstances = new WeakHashMap<>();
@@ -74,12 +74,12 @@ import com.facebook.react.common.ReactConstants;
   private static class JavaScriptModuleInvocationHandler implements InvocationHandler {
 
     private final WeakReference<ExecutorToken> mExecutorToken;
-    private final CatalystInstanceImpl mCatalystInstance;
+    private final CatalystInstance mCatalystInstance;
     private final JavaScriptModuleRegistration mModuleRegistration;
 
     public JavaScriptModuleInvocationHandler(
         ExecutorToken executorToken,
-        CatalystInstanceImpl catalystInstance,
+        CatalystInstance catalystInstance,
         JavaScriptModuleRegistration moduleRegistration) {
       mExecutorToken = new WeakReference<>(executorToken);
       mCatalystInstance = catalystInstance;

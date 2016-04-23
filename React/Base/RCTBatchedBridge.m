@@ -14,8 +14,8 @@
 #import "RCTBridge+Private.h"
 #import "RCTBridgeMethod.h"
 #import "RCTConvert.h"
+#import "RCTDisplayLink.h"
 #import "RCTJSCExecutor.h"
-#import "RCTFrameUpdate.h"
 #import "RCTJavaScriptLoader.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
@@ -23,10 +23,11 @@
 #import "RCTProfile.h"
 #import "RCTSourceCode.h"
 #import "RCTUtils.h"
+#import "RCTRedBox.h"
 
 #define RCTAssertJSThread() \
   RCTAssert(![NSStringFromClass([_javaScriptExecutor class]) isEqualToString:@"RCTJSCExecutor"] || \
-              [[[NSThread currentThread] name] isEqualToString:@"com.facebook.React.JavaScript"], \
+              [[[NSThread currentThread] name] isEqualToString:RCTJSCThreadName], \
             @"This method must be called on JS thread")
 
 /**
@@ -41,14 +42,6 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
 
 RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
-@interface RCTBatchedBridge : RCTBridge
-
-@property (nonatomic, weak) RCTBridge *parentBridge;
-@property (nonatomic, weak) id<RCTJavaScriptExecutor> javaScriptExecutor;
-@property (nonatomic, assign) BOOL moduleSetupComplete;
-
-@end
-
 @implementation RCTBatchedBridge
 {
   BOOL _wasBatchActive;
@@ -56,18 +49,17 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   NSMutableDictionary<NSString *, RCTModuleData *> *_moduleDataByName;
   NSArray<RCTModuleData *> *_moduleDataByID;
   NSArray<Class> *_moduleClassesByID;
-  CADisplayLink *_jsDisplayLink;
-  NSMutableSet<RCTModuleData *> *_frameUpdateObservers;
+  RCTDisplayLink *_displayLink;
 }
 
 @synthesize flowID = _flowID;
 @synthesize flowIDMap = _flowIDMap;
+@synthesize flowIDMapLock = _flowIDMapLock;
 @synthesize loading = _loading;
 @synthesize valid = _valid;
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge
 {
-  RCTAssertMainThread();
   RCTAssertParam(bridge);
 
   if ((self = [super initWithBundleURL:bridge.bundleURL
@@ -82,8 +74,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     _valid = YES;
     _loading = YES;
     _pendingCalls = [NSMutableArray new];
-    _frameUpdateObservers = [NSMutableSet new];
-    _jsDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_jsThreadUpdate:)];
+    _displayLink = [RCTDisplayLink new];
 
     [RCTBridge setCurrentBridge:self];
 
@@ -132,7 +123,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
     // Asynchronously initialize the JS executor
     dispatch_group_async(setupJSExecutorAndModuleConfig, bridgeQueue, ^{
+      RCTPerformanceLoggerStart(RCTPLJSCExecutorSetup);
       [weakSelf setUpExecutor];
+      RCTPerformanceLoggerEnd(RCTPLJSCExecutorSetup);
     });
 
     // Asynchronously gather the module config
@@ -161,7 +154,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     });
   });
 
-  dispatch_group_notify(initModulesAndLoadSource, dispatch_get_main_queue(), ^{
+  dispatch_group_notify(initModulesAndLoadSource, bridgeQueue, ^{
     RCTBatchedBridge *strongSelf = weakSelf;
     if (sourceCode && strongSelf.loading) {
       [strongSelf executeSourceCode:sourceCode];
@@ -172,13 +165,8 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 - (void)loadSource:(RCTSourceLoadBlock)_onSourceLoad
 {
   RCTPerformanceLoggerStart(RCTPLScriptDownload);
-  NSUInteger cookie = RCTProfileBeginAsyncEvent(0, @"JavaScript download", nil);
-
-  // Suppress a warning if RCTProfileBeginAsyncEvent gets compiled out
-  (void)cookie;
 
   RCTSourceLoadBlock onSourceLoad = ^(NSError *error, NSData *source) {
-    RCTProfileEndAsyncEvent(0, @"native", cookie, @"JavaScript download", @"JS async", nil);
     RCTPerformanceLoggerEnd(RCTPLScriptDownload);
 
     _onSourceLoad(error, source);
@@ -222,6 +210,11 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   return _moduleDataByName[moduleName].instance;
 }
 
+- (BOOL)moduleIsInitialized:(Class)moduleClass
+{
+  return _moduleDataByName[RCTBridgeModuleNameForClass(moduleClass)].hasInstance;
+}
+
 - (NSArray *)configForModuleName:(NSString *)moduleName
 {
   RCTModuleData *moduleData = _moduleDataByName[moduleName];
@@ -236,7 +229,6 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
 - (void)initModulesWithDispatchGroup:(dispatch_group_t)dispatchGroup
 {
-  RCTAssertMainThread();
   RCTPerformanceLoggerStart(RCTPLNativeModuleInit);
 
   NSArray<id<RCTBridgeModule>> *extraModules = nil;
@@ -329,7 +321,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
                     moduleClass, moduleName, moduleData.moduleClass);
       }
     }
-    
+
     // Instantiate moduleData (TODO: can we defer this until config generation?)
     moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass
                                                      bridge:self];
@@ -356,27 +348,49 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
       // trigger the lazy initialization process.
       (void)[moduleData instance];
     }
-    if (moduleData.requiresMainThreadSetup) {
-      // Modules that need to be set up on the main thread cannot be initialized
-      // lazily when required without doing a dispatch_sync to the main thread,
-      // which can result in deadlock. To avoid this, we initialize all of these
-      // modules on the main thread in parallel with loading the JS code, so that
-      // they will already be available before they are ever required.
-      __weak RCTBatchedBridge *weakSelf = self;
-      dispatch_group_async(dispatchGroup, dispatch_get_main_queue(), ^{
-        if (weakSelf.valid) {
-          (void)[moduleData instance];
-          [moduleData gatherConstants];
-        }
-      });
-    }
   }
 
   // From this point on, RCTDidInitializeModuleNotification notifications will
   // be sent the first time a module is accessed.
   _moduleSetupComplete = YES;
 
+  // Set up modules that require main thread init or constants export
+  RCTPerformanceLoggerSet(RCTPLNativeModuleMainThread, 0);
+  NSUInteger modulesOnMainThreadCount = 0;
+  for (RCTModuleData *moduleData in _moduleDataByID) {
+    __weak RCTBatchedBridge *weakSelf = self;
+    if (moduleData.requiresMainThreadSetup) {
+      // Modules that need to be set up on the main thread cannot be initialized
+      // lazily when required without doing a dispatch_sync to the main thread,
+      // which can result in deadlock. To avoid this, we initialize all of these
+      // modules on the main thread in parallel with loading the JS code, so that
+      // they will already be available before they are ever required.
+      dispatch_group_async(dispatchGroup, dispatch_get_main_queue(), ^{
+        if (weakSelf.valid) {
+          RCTPerformanceLoggerAppendStart(RCTPLNativeModuleMainThread);
+          (void)[moduleData instance];
+          [moduleData gatherConstants];
+          RCTPerformanceLoggerAppendEnd(RCTPLNativeModuleMainThread);
+        }
+      });
+      modulesOnMainThreadCount++;
+    } else if (moduleData.hasConstantsToExport) {
+      // Constants must be exported on the main thread, but module setup can
+      // be done on any queue
+      (void)[moduleData instance];
+      dispatch_group_async(dispatchGroup, dispatch_get_main_queue(), ^{
+        if (weakSelf.valid) {
+          RCTPerformanceLoggerAppendStart(RCTPLNativeModuleMainThread);
+          [moduleData gatherConstants];
+          RCTPerformanceLoggerAppendEnd(RCTPLNativeModuleMainThread);
+        }
+      });
+      modulesOnMainThreadCount++;
+    }
+  }
+
   RCTPerformanceLoggerEnd(RCTPLNativeModuleInit);
+  RCTPerformanceLoggerSet(RCTPLNativeModuleMainThreadUsesCount, modulesOnMainThreadCount);
 }
 
 - (void)setUpExecutor
@@ -387,20 +401,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 - (void)registerModuleForFrameUpdates:(id<RCTBridgeModule>)module
                        withModuleData:(RCTModuleData *)moduleData
 {
-  if (![_frameUpdateObservers containsObject:moduleData]) {
-    if ([moduleData.moduleClass conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
-      [_frameUpdateObservers addObject:moduleData];
-      // Don't access the module instance via moduleData, as this will cause deadlock
-      id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)module;
-      __weak typeof(self) weakSelf = self;
-      __weak typeof(_javaScriptExecutor) weakJavaScriptExecutor = _javaScriptExecutor;
-      observer.pauseCallback = ^{
-        [weakJavaScriptExecutor executeBlockOnJavaScriptQueue:^{
-          [weakSelf updateJSDisplayLinkState];
-        }];
-      };
-    }
-  }
+  [_displayLink registerModuleForFrameUpdates:module withModuleData:moduleData];
 }
 
 - (NSString *)moduleConfig
@@ -417,21 +418,6 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   return RCTJSONStringify(@{
     @"remoteModuleConfig": config,
   }, NULL);
-}
-
-- (void)updateJSDisplayLinkState
-{
-  RCTAssertJSThread();
-
-  BOOL pauseDisplayLink = YES;
-  for (RCTModuleData *moduleData in _frameUpdateObservers) {
-    id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
-    if (!observer.paused) {
-      pauseDisplayLink = NO;
-      break;
-    }
-  }
-  _jsDisplayLink.paused = pauseDisplayLink;
 }
 
 - (void)injectJSONConfiguration:(NSString *)configJSON
@@ -470,7 +456,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
     // Register the display link to start sending js calls after everything is setup
     NSRunLoop *targetRunLoop = [_javaScriptExecutor isKindOfClass:[RCTJSCExecutor class]] ? [NSRunLoop currentRunLoop] : [NSRunLoop mainRunLoop];
-    [_jsDisplayLink addToRunLoop:targetRunLoop forMode:NSRunLoopCommonModes];
+    [_displayLink addToRunLoop:targetRunLoop];
 
     // Perform the state update and notification on the main thread, so we can't run into
     // timing issues with RCTRootView
@@ -497,6 +483,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
 - (void)didFinishLoading
 {
+  RCTPerformanceLoggerEnd(RCTPLBridgeStartup);
   _loading = NO;
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
     for (dispatch_block_t call in _pendingCalls) {
@@ -520,6 +507,10 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
    postNotificationName:RCTJavaScriptDidFailToLoadNotification
    object:_parentBridge userInfo:@{@"bridge": self, @"error": error}];
 
+  if ([error userInfo][RCTJSStackTraceKey]) {
+    [self.redBox showErrorMessage:[error localizedDescription]
+                        withStack:[error userInfo][RCTJSStackTraceKey]];
+  }
   RCTFatal(error);
 }
 
@@ -604,15 +595,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
   // Invalidate modules
   dispatch_group_t group = dispatch_group_create();
-  for (RCTModuleData *moduleData in _moduleDataByName.allValues) {
-    if (moduleData.instance == _javaScriptExecutor) {
+  for (RCTModuleData *moduleData in _moduleDataByID) {
+    // Be careful when grabbing an instance here, we don't want to instantiate
+    // any modules just to invalidate them.
+    id<RCTBridgeModule> instance = nil;
+    if ([moduleData hasInstance]) {
+      instance = moduleData.instance;
+    }
+
+    if (instance == _javaScriptExecutor) {
       continue;
     }
 
-    if ([moduleData.instance respondsToSelector:@selector(invalidate)]) {
+    if ([instance respondsToSelector:@selector(invalidate)]) {
       dispatch_group_enter(group);
       [self dispatchBlock:^{
-        [(id<RCTInvalidating>)moduleData.instance invalidate];
+        [(id<RCTInvalidating>)instance invalidate];
         dispatch_group_leave(group);
       } queue:moduleData.methodQueue];
     }
@@ -621,8 +619,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
   dispatch_group_notify(group, dispatch_get_main_queue(), ^{
     [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
-      [_jsDisplayLink invalidate];
-      _jsDisplayLink = nil;
+      [_displayLink invalidate];
+      _displayLink = nil;
 
       [_javaScriptExecutor invalidate];
       _javaScriptExecutor = nil;
@@ -634,7 +632,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       _moduleDataByName = nil;
       _moduleDataByID = nil;
       _moduleClassesByID = nil;
-      _frameUpdateObservers = nil;
       _pendingCalls = nil;
 
       if (_flowIDMap != NULL) {
@@ -784,21 +781,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertJSThread();
 
-  RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
-    if (error) {
-      RCTFatal(error);
-    }
-
-    if (!_valid) {
-      return;
-    }
-    [self handleBuffer:json batchEnded:YES];
-  };
-
+  __weak typeof(self) weakSelf = self;
   [_javaScriptExecutor callFunctionOnModule:module
                                      method:method
                                   arguments:args
-                                   callback:processResponse];
+                                   callback:^(id json, NSError *error) {
+                                     [weakSelf _processResponse:json error:error];
+                                   }];
 }
 
 - (void)_actuallyInvokeCallback:(NSNumber *)cbID
@@ -806,20 +795,28 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertJSThread();
 
-  RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
-    if (error) {
-      RCTFatal(error);
-    }
-
-    if (!_valid) {
-      return;
-    }
-    [self handleBuffer:json batchEnded:YES];
-  };
-
+  __weak typeof(self) weakSelf = self;
   [_javaScriptExecutor invokeCallbackID:cbID
                               arguments:args
-                               callback:processResponse];
+                               callback:^(id json, NSError *error) {
+                                 [weakSelf _processResponse:json error:error];
+                               }];
+}
+
+- (void)_processResponse:(id)json error:(NSError *)error
+{
+  if (error) {
+    if ([error userInfo][RCTJSStackTraceKey]) {
+      [self.redBox showErrorMessage:[error localizedDescription]
+                          withStack:[error userInfo][RCTJSStackTraceKey]];
+    }
+    RCTFatal(error);
+  }
+
+  if (!_valid) {
+    return;
+  }
+  [self handleBuffer:json batchEnded:YES];
 }
 
 #pragma mark - Payload Processing
@@ -894,10 +891,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       @autoreleasepool {
         for (NSNumber *indexObj in calls) {
           NSUInteger index = indexObj.unsignedIntegerValue;
-          if (callID != -1 && _flowIDMap != NULL) {
+          if (RCT_DEV && callID != -1 && _flowIDMap != NULL && RCTProfileIsProfiling()) {
+            [self.flowIDMapLock lock];
             int64_t newFlowID = (int64_t)CFDictionaryGetValue(_flowIDMap, (const void *)(_flowID + index));
             _RCTProfileEndFlowEvent(@(newFlowID));
             CFDictionaryRemoveValue(_flowIDMap, (const void *)(_flowID + index));
+            [self.flowIDMapLock unlock];
           }
           [self _handleRequestNumber:index
                             moduleID:[moduleIDs[index] integerValue]
@@ -986,30 +985,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 
   return YES;
-}
-
-- (void)_jsThreadUpdate:(CADisplayLink *)displayLink
-{
-  RCTAssertJSThread();
-  RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBatchedBridge _jsThreadUpdate:]", nil);
-
-  RCTFrameUpdate *frameUpdate = [[RCTFrameUpdate alloc] initWithDisplayLink:displayLink];
-  for (RCTModuleData *moduleData in _frameUpdateObservers) {
-    id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
-    if (!observer.paused) {
-      RCTProfileBeginFlowEvent();
-      [self dispatchBlock:^{
-        RCTProfileEndFlowEvent();
-        [observer didUpdateFrame:frameUpdate];
-      } queue:moduleData.methodQueue];
-    }
-  }
-
-  [self updateJSDisplayLinkState];
-
-  RCTProfileImmediateEvent(0, @"JS Thread Tick", displayLink.timestamp, 'g');
-
-  RCT_PROFILE_END_EVENT(0, @"objc_call", nil);
 }
 
 - (void)startProfiling

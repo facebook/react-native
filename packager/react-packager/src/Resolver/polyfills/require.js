@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 /* eslint strict:0 */
 var modules = Object.create(null);
 var inGuard = false;
@@ -36,7 +45,7 @@ function requireImpl(id) {
     inGuard = true;
     var returnValue;
     try {
-      returnValue = requireImpl.apply(this, arguments);
+      returnValue = requireImpl(id);
     } catch (e) {
       global.ErrorUtils.reportFatalError(e);
     }
@@ -59,18 +68,32 @@ function requireImpl(id) {
     );
   }
 
+  // `require` calls int  the require polyfill itself are not analyzed and
+  // replaced so that they use numeric module IDs.
+  // The systrace module will expose itself on the require function so that
+  // it can be used here.
+  // TODO(davidaurelio) Scan polyfills for dependencies, too (t9759686)
+  if (__DEV__) {
+    var {Systrace} = require;
+  }
+
   try {
     // We must optimistically mark mod as initialized before running the factory to keep any
     // require cycles inside the factory from causing an infinite require loop.
     mod.isInitialized = true;
 
-    __DEV__ && Systrace().beginEvent('JS_require_' + id);
+    if (__DEV__) {
+      Systrace.beginEvent('JS_require_' + id);
+    }
 
     // keep args in sync with with defineModuleCode in
     // packager/react-packager/src/Resolver/index.js
     mod.factory.call(global, global, require, mod.module, mod.module.exports);
+    mod.factory = undefined;
 
-    __DEV__ && Systrace().endEvent();
+    if (__DEV__) {
+      Systrace.endEvent();
+    }
   } catch (e) {
     mod.hasError = true;
     mod.isInitialized = false;
@@ -80,15 +103,9 @@ function requireImpl(id) {
   return mod.module.exports;
 }
 
-const Systrace = __DEV__ && (() => {
-  var _Systrace;
-  try {
-    _Systrace = require('Systrace');
-  } catch (e) {}
-
-  return _Systrace && _Systrace.beginEvent ?
-    _Systrace : { beginEvent: () => {}, endEvent: () => {} };
-});
+if (__DEV__) {
+  require.Systrace = { beginEvent: () => {}, endEvent: () => {} };
+}
 
 global.__d = define;
 global.require = require;
@@ -132,7 +149,7 @@ if (__DEV__) { // HMR
   }
 
   function acceptAll(modules, inverseDependencies) {
-    if (modules.length === 0) {
+    if (!modules || modules.length === 0) {
       return true;
     }
 

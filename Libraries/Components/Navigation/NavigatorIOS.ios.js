@@ -16,6 +16,7 @@ var Image = require('Image');
 var NavigationContext = require('NavigationContext');
 var RCTNavigatorManager = require('NativeModules').NavigatorManager;
 var React = require('React');
+var ReactNative = require('ReactNative');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
@@ -37,7 +38,7 @@ function getuid() {
 var NavigatorTransitionerIOS = React.createClass({
   requestSchedulingNavigation: function(cb) {
     RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
-      React.findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       logError,
       cb
     );
@@ -141,20 +142,6 @@ type Event = Object;
  *   ...
  * });
  * ```
- *
- * A navigation object contains the following functions:
- *
- *  - `push(route)` - Navigate forward to a new route
- *  - `pop()` - Go back one page
- *  - `popN(n)` - Go back N pages at once. When N=1, behavior matches `pop()`
- *  - `replace(route)` - Replace the route for the current page and immediately
- *    load the view for the new route
- *  - `replacePrevious(route)` - Replace the route/view for the previous page
- *  - `replacePreviousAndPop(route)` - Replaces the previous route/view and
- *    transitions back to it
- *  - `resetTo(route)` - Replaces the top item and popToTop
- *  - `popToRoute(route)` - Go back to the item for a particular route object
- *  - `popToTop()` - Go back to the top item
  *
  * Navigator functions are also available on the NavigatorIOS component:
  *
@@ -491,6 +478,9 @@ var NavigatorIOS = React.createClass({
     this.navigationContext.emit('willfocus', {route: route});
   },
 
+  /**
+   * Navigate forward to a new route
+   */
   push: function(route: Route) {
     invariant(!!route, 'Must supply route to push');
     // Make sure all previous requests are caught up first. Otherwise reject.
@@ -513,6 +503,9 @@ var NavigatorIOS = React.createClass({
     }
   },
 
+  /**
+   * Go back N pages at once. When N=1, behavior matches `pop()`
+   */
   popN: function(n: number) {
     if (n === 0) {
       return;
@@ -534,6 +527,9 @@ var NavigatorIOS = React.createClass({
     }
   },
 
+  /**
+   * Go back one page
+   */
   pop: function() {
     this.popN(1);
   },
@@ -573,23 +569,30 @@ var NavigatorIOS = React.createClass({
   },
 
   /**
-   * Replaces the top of the navigation stack.
+   * Replace the route for the current page and immediately
+   * load the view for the new route.
    */
   replace: function(route: Route) {
     this.replaceAtIndex(route, -1);
   },
 
   /**
-   * Replace the current route's parent.
+   * Replace the route/view for the previous page.
    */
   replacePrevious: function(route: Route) {
     this.replaceAtIndex(route, -2);
   },
 
+  /**
+   * Go back to the top item
+   */
   popToTop: function() {
     this.popToRoute(this.state.routeStack[0]);
   },
 
+  /**
+   * Go back to the item for a particular route object
+   */
   popToRoute: function(route: Route) {
     var indexOfRoute = this.state.routeStack.indexOf(route);
     invariant(
@@ -600,6 +603,9 @@ var NavigatorIOS = React.createClass({
     this.popN(numToPop);
   },
 
+  /**
+   * Replaces the previous route/view and transitions back to it.
+   */
   replacePreviousAndPop: function(route: Route) {
     // Make sure all previous requests are caught up first. Otherwise reject.
     if (this.state.requestedTopOfStack !== this.state.observedTopOfStack) {
@@ -617,6 +623,9 @@ var NavigatorIOS = React.createClass({
     });
   },
 
+  /**
+   * Replaces the top item and popToTop
+   */
   resetTo: function(route: Route) {
     invariant(!!route, 'Must supply route to push');
     // Make sure all previous requests are caught up first. Otherwise reject.
@@ -627,7 +636,7 @@ var NavigatorIOS = React.createClass({
     this.popToRoute(route);
   },
 
-  handleNavigationComplete: function(e: Event) {
+  _handleNavigationComplete: function(e: Event) {
     if (this._toFocusOnNavigationComplete) {
       this._getFocusEmitter().emit('focus', this._toFocusOnNavigationComplete);
       this._toFocusOnNavigationComplete = null;
@@ -662,7 +671,7 @@ var NavigatorIOS = React.createClass({
     );
   },
 
-  renderNavigationStackItems: function() {
+  _renderNavigationStackItems: function() {
     var shouldRecurseToNavigator =
       this.state.makingNavigatorRequest ||
       this.state.updatingAllIndicesAtOrBeyond !== null;
@@ -677,7 +686,7 @@ var NavigatorIOS = React.createClass({
           style={styles.transitioner}
           vertical={this.props.vertical}
           requestedTopOfStack={this.state.requestedTopOfStack}
-          onNavigationComplete={this.handleNavigationComplete}>
+          onNavigationComplete={this._handleNavigationComplete}>
           {items}
         </NavigatorTransitionerIOS>
       </StaticContainer>
@@ -687,7 +696,7 @@ var NavigatorIOS = React.createClass({
   render: function() {
     return (
       <View style={this.props.style}>
-        {this.renderNavigationStackItems()}
+        {this._renderNavigationStackItems()}
       </View>
     );
   },

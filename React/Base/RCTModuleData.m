@@ -13,6 +13,7 @@
 #import "RCTBridge+Private.h"
 #import "RCTModuleMethod.h"
 #import "RCTLog.h"
+#import "RCTProfile.h"
 #import "RCTUtils.h"
 
 @implementation RCTModuleData
@@ -43,13 +44,16 @@
     setBridgeSelector = NSSelectorFromString(@"setBridge:");
   });
 
-  // If a module overrides `init`, `setBridge:`, or `constantsToExport` then we
-  // must assume that it expects for both of those methods to be called on the
-  // main thread, because those methods often need to access UIKit.
-  _requiresMainThreadSetup = _instance ||
+  // If a module overrides `init`, `setBridge:` then we must assume that it
+  // expects for both of those methods to be called on the main thread, because
+  // they may need to access UIKit.
+  _requiresMainThreadSetup =
   [_moduleClass instancesRespondToSelector:setBridgeSelector] ||
-  RCTClassOverridesInstanceMethod(_moduleClass, @selector(constantsToExport)) ||
-  [_moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
+  (!_instance && [_moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod);
+
+  // If a module overrides `constantsToExport` then we must assume that it
+  // must be called on the main thread, because it may need to access UIKit.
+  _hasConstantsToExport = RCTClassOverridesInstanceMethod(_moduleClass, @selector(constantsToExport));
 }
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
@@ -145,15 +149,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (void)setUpMethodQueue
 {
-  if (_instance && !_methodQueue) {
+  if (_instance && !_methodQueue && _bridge.valid) {
     BOOL implementsMethodQueue = [_instance respondsToSelector:@selector(methodQueue)];
-    if (implementsMethodQueue) {
+    if (implementsMethodQueue && _bridge.valid) {
       _methodQueue = _instance.methodQueue;
     }
-    if (!_methodQueue) {
+    if (!_methodQueue && _bridge.valid) {
 
       // Create new queue (store queueName, as it isn't retained by dispatch_queue)
-      _queueName = [NSString stringWithFormat:@"com.facebook.React.%@Queue", self.name];
+      _queueName = [NSString stringWithFormat:@"com.facebook.react.%@Queue", self.name];
       _methodQueue = dispatch_queue_create(_queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
 
       // assign it to the module
@@ -182,6 +186,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 - (id<RCTBridgeModule>)instance
 {
   if (!_setupComplete) {
+    RCT_PROFILE_BEGIN_EVENT(0, [NSString stringWithFormat:@"[RCTModuleData instanceForClass:%@]", _moduleClass], nil);
     if (_requiresMainThreadSetup) {
       // The chances of deadlock here are low, because module init very rarely
       // calls out to other threads, however we can't control when a module might
@@ -193,6 +198,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     } else {
       [self setUpInstanceAndBridge];
     }
+    RCT_PROFILE_END_EVENT(0, @"", nil);
   }
   return _instance;
 }
@@ -240,15 +246,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (void)gatherConstants
 {
-  if (!_constantsToExport) {
-    if (RCTClassOverridesInstanceMethod(_moduleClass, @selector(constantsToExport))) {
-      RCTExecuteOnMainThread(^{
-        [self setUpInstanceAndBridge];
-        _constantsToExport = [_instance constantsToExport] ?: @{};
-      }, YES);
-    } else {
-      _constantsToExport = @{};
-    }
+  if (_hasConstantsToExport && !_constantsToExport) {
+    (void)[self instance];
+    RCTExecuteOnMainThread(^{
+      _constantsToExport = [_instance constantsToExport] ?: @{};
+    }, YES);
   }
 }
 

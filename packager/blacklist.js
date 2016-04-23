@@ -14,12 +14,6 @@ var path = require('path');
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
   /node_modules[/\\]react[/\\]dist[/\\].*/,
-  'node_modules/react/lib/React.js',
-  'node_modules/react/lib/ReactDOM.js',
-
-  // fbjs forks:
-  'node_modules/fbjs/lib/Map.js',
-  'node_modules/fbjs/lib/isEmpty.js',
 
   'downstream/core/invariant.js',
 

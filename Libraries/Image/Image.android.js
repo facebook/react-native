@@ -23,10 +23,13 @@ var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
 
 var flattenStyle = require('flattenStyle');
-var invariant = require('fbjs/lib/invariant');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
+
+var {
+  ImageLoader,
+} = NativeModules;
 
 /**
  * <Image> - A react component for displaying different types of images,
@@ -110,6 +113,13 @@ var Image = React.createClass({
 
   statics: {
     resizeMode: ImageResizeMode,
+    /**
+     * Prefetches a remote image for later use by downloading it to the disk
+     * cache
+     */
+    prefetch(url: string) {
+      return ImageLoader.prefetchImage(url);
+    },
   },
 
   mixins: [NativeMethodsMixin],
@@ -159,6 +169,10 @@ var Image = React.createClass({
 
     if (source && source.uri === '') {
       console.warn('source.uri should not be an empty string');
+    }
+
+    if (this.props.src) {
+      console.warn('The <Image> component requires a `source` property rather than `src`.');
     }
 
     if (source && source.uri) {

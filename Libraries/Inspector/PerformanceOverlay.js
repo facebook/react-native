@@ -26,7 +26,7 @@ var PerformanceOverlay = React.createClass({
       if (perfLogs[key].totalTime) {
         var unit = (key === 'BundleSize') ? 'b' : 'ms';
         items.push(
-          <View style={styles.row}>
+          <View style={styles.row} key={key}>
             <Text style={[styles.text, styles.label]}>{key}</Text>
             <Text style={[styles.text, styles.totalTime]}>
               {perfLogs[key].totalTime + unit}

@@ -16,6 +16,7 @@
 // Used for the profiler flow events between JS and native
 @property (nonatomic, assign) int64_t flowID;
 @property (nonatomic, assign) CFMutableDictionaryRef flowIDMap;
+@property (nonatomic, strong) NSLock *flowIDMapLock;
 
 + (instancetype)currentBridge;
 + (void)setCurrentBridge:(RCTBridge *)bridge;
@@ -114,5 +115,15 @@
  * Allow super fast, one time, timers to skip the queue and be directly executed
  */
 - (void)_immediatelyCallTimer:(NSNumber *)timer;
+
+@end
+
+@interface RCTBatchedBridge : RCTBridge <RCTInvalidating>
+
+@property (nonatomic, weak) RCTBridge *parentBridge;
+@property (nonatomic, weak) id<RCTJavaScriptExecutor> javaScriptExecutor;
+@property (nonatomic, assign) BOOL moduleSetupComplete;
+
+- (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
 @end

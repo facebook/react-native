@@ -16,6 +16,16 @@ function parse(code) {
   return babel.transform(code, {code: false, babelrc: false, compact: true});
 }
 
+const babelOptions = {
+  babelrc: false,
+  compact: true,
+  retainLines: false,
+};
+
+function normalize({code}) {
+  return babel.transform(code, babelOptions).code;
+}
+
 describe('constant expressions', () => {
   it('can optimize conditional expressions with constant conditions', () => {
     const code = `
@@ -29,7 +39,7 @@ describe('constant expressions', () => {
         'foo'==='bar' ? b : c,
         f() ? g() : h()
       );`;
-    expect(constantFolding('arbitrary.js', parse(code)).code)
+    expect(normalize(constantFolding('arbitrary.js', parse(code))))
       .toEqual(`a(true,true,2,true,{},{a:1},c,f()?g():h());`);
   });
 
@@ -39,7 +49,7 @@ describe('constant expressions', () => {
        var b = 'android' == 'android'
          ? ('production' != 'production' ? 'a' : 'A')
          : 'i';`;
-    expect(constantFolding('arbitrary.js', parse(code)).code)
+    expect(normalize(constantFolding('arbitrary.js', parse(code))))
       .toEqual(`var a=1;var b='A';`);
   });
 
@@ -48,7 +58,7 @@ describe('constant expressions', () => {
       var a = true || 1;
       var b = 'android' == 'android' &&
         'production' != 'production' || null || "A";`;
-    expect(constantFolding('arbitrary.js', parse(code)).code)
+    expect(normalize(constantFolding('arbitrary.js', parse(code))))
       .toEqual(`var a=true;var b="A";`);
   });
 
@@ -60,7 +70,7 @@ describe('constant expressions', () => {
       var d = null || z();
       var e = !1 && z();
     `;
-    expect(constantFolding('arbitrary.js', parse(code)).code)
+    expect(normalize(constantFolding('arbitrary.js', parse(code))))
       .toEqual(`var a="truthy";var b=z();var c=null;var d=z();var e=false;`);
   });
 
@@ -70,7 +80,7 @@ describe('constant expressions', () => {
         var a = 1;
       }
     `;
-    expect(constantFolding('arbitrary.js', parse(code)).code)
+    expect(normalize(constantFolding('arbitrary.js', parse(code))))
       .toEqual(``);
   });
 
@@ -86,7 +96,7 @@ describe('constant expressions', () => {
         var a = 'b';
       }
     `;
-    expect(constantFolding('arbitrary.js', parse(code)).code)
+    expect(normalize(constantFolding('arbitrary.js', parse(code))))
       .toEqual(`{var a=3;var b=a+4;}`);
   });
 
@@ -106,7 +116,7 @@ describe('constant expressions', () => {
         }
       }
     `;
-    expect(constantFolding('arbitrary.js', parse(code)).code)
+    expect(normalize(constantFolding('arbitrary.js', parse(code))))
       .toEqual(`{{require('c');}}`);
   });
 });

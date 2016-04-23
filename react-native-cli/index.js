@@ -42,6 +42,19 @@ var spawn = require('child_process').spawn;
 var chalk = require('chalk');
 var prompt = require('prompt');
 var semver = require('semver');
+/**
+ * Used arguments:
+ *   -v --version - to print current version of react-native-cli and react-native dependency
+ *   if you are in a RN app folder
+ * init - to create a new project and npm install it
+ *   --verbose - to print logs while init
+ *   --version <alternative react-native package> - override default (https://registry.npmjs.org/react-native@latest),
+ *      package to install, examples:
+ *     - "0.22.0-rc1" - A new app will be created using a specific version of React Native from npm repo
+ *     - "https://registry.npmjs.org/react-native/-/react-native-0.20.0.tgz" - a .tgz archive from any npm repo
+ *     - "/Users/home/react-native/react-native-0.22.0.tgz" - for package prepared with `npm pack`, useful for e2e tests
+ */
+var argv = require('minimist')(process.argv.slice(2));
 
 var CLI_MODULE_PATH = function() {
   return path.resolve(
@@ -69,34 +82,34 @@ if (fs.existsSync(cliPath)) {
   cli = require(cliPath);
 }
 
+// minimist api
+var commands = argv._;
 if (cli) {
   cli.run();
 } else {
-  var args = process.argv.slice(2);
-  if (args.length === 0) {
+  if (commands.length === 0) {
     console.error(
       'You did not pass any commands, did you mean to run `react-native init`?'
     );
     process.exit(1);
   }
 
-  switch (args[0]) {
+  switch (commands[0]) {
   case 'init':
-    if (args[1]) {
-      var verbose = process.argv.indexOf('--verbose') >= 0;
-      init(args[1], verbose);
-    } else {
+    if (!commands[1]) {
       console.error(
         'Usage: react-native init <ProjectName> [--verbose]'
       );
       process.exit(1);
+    } else {
+      init(commands[1], argv.verbose, argv.version);
     }
     break;
   default:
     console.error(
       'Command `%s` unrecognized. ' +
       'Did you mean to run this inside a react-native project?',
-      args[0]
+      commands[0]
     );
     process.exit(1);
     break;
@@ -123,17 +136,17 @@ function validatePackageName(name) {
   }
 }
 
-function init(name, verbose) {
+function init(name, verbose, rnPackage) {
   validatePackageName(name);
 
   if (fs.existsSync(name)) {
-    createAfterConfirmation(name, verbose);
+    createAfterConfirmation(name, verbose, rnPackage);
   } else {
-    createProject(name, verbose);
+    createProject(name, verbose, rnPackage);
   }
 }
 
-function createAfterConfirmation(name, verbose) {
+function createAfterConfirmation(name, verbose, rnPackage) {
   prompt.start();
 
   var property = {
@@ -146,7 +159,7 @@ function createAfterConfirmation(name, verbose) {
 
   prompt.get(property, function (err, result) {
     if (result.yesno[0] === 'y') {
-      createProject(name, verbose);
+      createProject(name, verbose, rnPackage);
     } else {
       console.log('Project initialization canceled');
       process.exit();
@@ -154,7 +167,7 @@ function createAfterConfirmation(name, verbose) {
   });
 }
 
-function createProject(name, verbose) {
+function createProject(name, verbose, rnPackage) {
   var root = path.resolve(name);
   var projectName = path.basename(root);
 
@@ -181,14 +194,26 @@ function createProject(name, verbose) {
   console.log('Installing react-native package from npm...');
 
   if (verbose) {
-    runVerbose(root, projectName);
+    runVerbose(root, projectName, rnPackage);
   } else {
-    run(root, projectName);
+    run(root, projectName, rnPackage);
   }
 }
 
-function run(root, projectName) {
-  exec('npm install --save react-native', function(e, stdout, stderr) {
+function getInstallPackage(rnPackage) {
+  var packageToInstall = 'react-native';
+  var valideSemver = semver.valid(rnPackage);
+  if (valideSemver) {
+    packageToInstall += '@' + valideSemver;
+  } else if (rnPackage) {
+    // for tar.gz or alternative paths
+    packageToInstall = rnPackage;
+  }
+  return packageToInstall;
+}
+
+function run(root, projectName, rnPackage) {
+  exec('npm install --save ' + getInstallPackage(rnPackage), function(e, stdout, stderr) {
     if (e) {
       console.log(stdout);
       console.error(stderr);
@@ -203,8 +228,8 @@ function run(root, projectName) {
   });
 }
 
-function runVerbose(root, projectName) {
-  var proc = spawn('npm', ['install', '--verbose', '--save', 'react-native'], {stdio: 'inherit'});
+function runVerbose(root, projectName, rnPackage) {
+  var proc = spawn('npm', ['install', '--verbose', '--save', getInstallPackage(rnPackage)], {stdio: 'inherit'});
   proc.on('close', function (code) {
     if (code !== 0) {
       console.error('`npm install --save react-native` failed');
@@ -233,7 +258,7 @@ function checkNodeVersion() {
 }
 
 function checkForVersionArgument() {
-  if (process.argv.indexOf('-v') >= 0 || process.argv.indexOf('--version') >= 0) {
+  if (argv._.length === 0 && (argv.v || argv.version)) {
     console.log('react-native-cli: ' + require('./package.json').version);
     try {
       console.log('react-native: ' + require(REACT_NATIVE_PACKAGE_JSON_PATH()).version);
