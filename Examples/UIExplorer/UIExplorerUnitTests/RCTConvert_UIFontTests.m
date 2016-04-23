@@ -29,6 +29,11 @@
 - (void)testWeight
 {
   {
+    UIFont *expected = [UIFont fontWithName:@"Cochin" size:14];
+    UIFont *result = [RCTConvert UIFont:[UIFont fontWithName:@"Cochin" size:10] withSize:@"14"];
+    RCTAssertEqualFonts(expected, result);
+  }
+  {
     UIFont *expected = [UIFont systemFontOfSize:14 weight:UIFontWeightBold];
     UIFont *result = [RCTConvert UIFont:@{@"fontWeight": @"bold"}];
     RCTAssertEqualFonts(expected, result);
@@ -189,6 +194,22 @@
     UIFont *expected = [UIFont systemFontOfSize:14 weight:UIFontWeightBold];
     UIFont *result = [RCTConvert UIFont:@{@"fontFamily": @"foobar", @"fontWeight": @"bold"}];
     RCTAssertEqualFonts(expected, result);
+  }
+}
+
+- (void)testFontMerging
+{
+  {
+    UIFont *expected = [UIFont systemFontOfSize:14 weight:UIFontWeightBold];
+    UIFont *result = [RCTConvert UIFont:[RCTConvert UIFont:@{@"fontSize": @"14"}] withWeight:@"bold"];
+    RCTAssertEqualFonts(expected, result);
+  }
+  {
+    UIFont *expected = [UIFont systemFontOfSize:14 weight:UIFontWeightBold];
+    UIFont *baseFont = [RCTConvert UIFont:@{@"fontFamily": @"System"}];
+    UIFont *resultOne = [RCTConvert UIFont:baseFont withSize:@"14"];
+    UIFont *resultTwo = [RCTConvert UIFont:resultOne withWeight:@"bold"];
+    RCTAssertEqualFonts(expected, resultTwo);
   }
 }
 
