@@ -712,7 +712,7 @@ class AnimatedValue extends AnimatedWithChildren {
    * 0-10.
    */
   interpolate(config: InterpolationConfigType): AnimatedInterpolation {
-    return new AnimatedInterpolation(this, Interpolation.create(config));
+    return new AnimatedInterpolation(this, config);
   }
 
   /**
@@ -919,12 +919,14 @@ class AnimatedValueXY extends AnimatedWithChildren {
 
 class AnimatedInterpolation extends AnimatedWithChildren {
   _parent: Animated;
+  _config: InterpolationConfigType;
   _interpolation: (input: number) => number | string;
 
-  constructor(parent: Animated, interpolation: (input: number) => number | string) {
+  constructor(parent: Animated, config: InterpolationConfigType) {
     super();
     this._parent = parent;
-    this._interpolation = interpolation;
+    this._config = config;
+    this._interpolation = Interpolation.create(config);
   }
 
   __getValue(): number | string {
@@ -937,7 +939,7 @@ class AnimatedInterpolation extends AnimatedWithChildren {
   }
 
   interpolate(config: InterpolationConfigType): AnimatedInterpolation {
-    return new AnimatedInterpolation(this, Interpolation.create(config));
+    return new AnimatedInterpolation(this, config);
   }
 
   __attach(): void {
@@ -946,6 +948,15 @@ class AnimatedInterpolation extends AnimatedWithChildren {
 
   __detach(): void {
     this._parent.__removeChild(this);
+    super.__detach();
+  }
+
+  __getNativeConfig(): any {
+    NativeAnimatedHelper.validateInterpolation(this._config);
+    return {
+      ...this._config,
+      type: 'interpolation',
+    };
   }
 }
 
@@ -960,9 +971,9 @@ class AnimatedAddition extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
     this._b.__makeNative();
+    super.__makeNative();
   }
 
   __getValue(): number {
@@ -970,7 +981,7 @@ class AnimatedAddition extends AnimatedWithChildren {
   }
 
   interpolate(config: InterpolationConfigType): AnimatedInterpolation {
-    return new AnimatedInterpolation(this, Interpolation.create(config));
+    return new AnimatedInterpolation(this, config);
   }
 
   __attach(): void {
@@ -1013,7 +1024,7 @@ class AnimatedMultiplication extends AnimatedWithChildren {
   }
 
   interpolate(config: InterpolationConfigType): AnimatedInterpolation {
-    return new AnimatedInterpolation(this, Interpolation.create(config));
+    return new AnimatedInterpolation(this, config);
   }
 
   __attach(): void {
@@ -1050,7 +1061,7 @@ class AnimatedModulo extends AnimatedWithChildren {
   }
 
   interpolate(config: InterpolationConfigType): AnimatedInterpolation {
-    return new AnimatedInterpolation(this, Interpolation.create(config));
+    return new AnimatedInterpolation(this, config);
   }
 
   __attach(): void {
