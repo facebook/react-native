@@ -36,7 +36,7 @@ var ActionSheetIOS = {
    *
    * NOTE: `callback` is now deprecated in favour of a promise
    */
-  showActionSheetWithOptions(options: Object, callback?: Function): ?Promise<number> {
+  showActionSheetWithOptions(options: Object, callback?: Function): Promise<number> {
     invariant(
       typeof options === 'object' && options !== null,
       'Options must be a valid object'
@@ -54,7 +54,6 @@ var ActionSheetIOS = {
         'Use showActionSheetWithOptions(opts).then() instead.'
       );
       promise.then(callback);
-      return;
     }
 
     return promise;
@@ -83,7 +82,7 @@ var ActionSheetIOS = {
     options: Object,
     failureCallback?: Function,
     successCallback?: Function
-  ): ?Promise<ShareSheetResponse> {
+  ): Promise<ShareSheetResponse> {
     invariant(
       typeof options === 'object' && options !== null,
       'Options must be a valid object'
@@ -112,7 +111,6 @@ var ActionSheetIOS = {
         // $FlowFixMe: Ignores invariants and reports possible undefined value
         .then((res: ShareSheetResponse) => successCallback(res.completed, res.activityType))
         .catch(failureCallback);
-      return;
     }
 
     return promise;
