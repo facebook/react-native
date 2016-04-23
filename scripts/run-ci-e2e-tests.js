@@ -151,7 +151,7 @@ if (args.indexOf('--ios') !== -1) {
   // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
   let packagerEnv = Object.create(process.env);
   packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
-  const packagerProcess = spawn('npm', ['start', '--', '--non-persistent'], 
+  const packagerProcess = spawn('npm', ['start', '--', '--non-persistent'],
   {
     stdio: 'inherit',
     env: packagerEnv
@@ -162,7 +162,7 @@ if (args.indexOf('--ios') !== -1) {
   exec('response=$(curl --write-out %{http_code} --silent --output /dev/null localhost:8081/index.ios.bundle?platform=ios&dev=true)');
   echo(`Starting packager server, ${SERVER_PID}`);
   echo('Executing ios e2e test');
-  if (exec('xctool -scheme EndToEndTest -sdk iphonesimulator test').code) {
+  if (exec('xcodebuild -scheme EndToEndTest -sdk iphonesimulator test | xcpretty').code) {
     exit(cleanup(1));
   }
   cd('..');
