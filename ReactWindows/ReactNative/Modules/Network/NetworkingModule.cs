@@ -112,7 +112,7 @@ namespace ReactNative.Modules.Network
                 {
                     if (headerData.ContentType == null)
                     {
-                        OnRequestError(requestId, "Payload is set but no 'content-type' header specified.");
+                        OnRequestError(requestId, "Payload is set but no 'content-type' header specified.", false);
                         return;
                     }
 
@@ -124,14 +124,16 @@ namespace ReactNative.Modules.Network
                 }
                 else if ((formData = data.Value<JArray>("formData")) != null)
                 {
+                    // TODO: (#388) Add support for form data.
                     throw new NotImplementedException("HTTP handling for FormData not yet implemented.");
                 }
             }
 
             _tasks.Add(requestId, token => ProcessRequestAsync(
-                requestId, 
-                useIncrementalUpdates, 
-                request, 
+                requestId,
+                useIncrementalUpdates,
+                timeout,
+                request,
                 token));
         }
 
@@ -154,53 +156,71 @@ namespace ReactNative.Modules.Network
         }
 
         private async Task ProcessRequestAsync(
-            int requestId, 
-            bool useIncrementalUpdates, 
+            int requestId,
+            bool useIncrementalUpdates,
+            int timeout,
             HttpRequestMessage request,
             CancellationToken token)
         {
-            try
-            {
-                using (var response = await _client.SendRequestAsync(request, token))
-                {
-                    OnResponseReceived(requestId, response);
+            var timeoutSource = timeout > 0
+                ? new CancellationTokenSource(timeout)
+                : new CancellationTokenSource();
 
-                    if (useIncrementalUpdates)
+            using (timeoutSource)
+            {
+                try
+                {
+                    using (token.Register(timeoutSource.Cancel))
+                    using (var response = await _client.SendRequestAsync(request, timeoutSource.Token))
                     {
-                        using (var inputStream = await response.Content.ReadAsInputStreamAsync())
-                        using (var stream = inputStream.AsStreamForRead())
+                        OnResponseReceived(requestId, response);
+
+                        if (useIncrementalUpdates)
                         {
-                            await ProcessResponseIncrementalAsync(requestId, stream, token);
+                            using (var inputStream = await response.Content.ReadAsInputStreamAsync())
+                            using (var stream = inputStream.AsStreamForRead())
+                            {
+                                await ProcessResponseIncrementalAsync(requestId, stream, timeoutSource.Token);
+                                OnRequestSuccess(requestId);
+                            }
+                        }
+                        else
+                        {
+                            if (response.Content != null)
+                            {
+                                var responseBody = await response.Content.ReadAsStringAsync();
+                                if (responseBody != null)
+                                {
+                                    OnDataReceived(requestId, responseBody);
+                                }
+                            }
+
                             OnRequestSuccess(requestId);
                         }
                     }
-                    else
+                }
+                catch (OperationCanceledException ex)
+                when (ex.CancellationToken == timeoutSource.Token)
+                {
+                    // Cancellation was due to timeout
+                    if (!token.IsCancellationRequested)
                     {
-                        if (response.Content != null)
-                        {
-                            var responseBody = await response.Content.ReadAsStringAsync();
-                            if (responseBody != null)
-                            {
-                                OnDataReceived(requestId, responseBody);
-                            }
-                        }
-
-                        OnRequestSuccess(requestId);
+                        OnRequestError(requestId, ex.Message, true);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                if (_shuttingDown)
+                catch (Exception ex)
                 {
-                    return;
-                }
+                    if (_shuttingDown)
+                    {
+                        return;
+                    }
 
-                OnRequestError(requestId, ex.Message);
-            }
-            finally
-            {
-                request.Dispose();
+                    OnRequestError(requestId, ex.Message, false);
+                }
+                finally
+                {
+                    request.Dispose();
+                }
             }
         }
 
@@ -264,12 +284,13 @@ namespace ReactNative.Modules.Network
             });
         }
 
-        private void OnRequestError(int requestId, string message)
+        private void OnRequestError(int requestId, string message, bool timeout)
         {
             EventEmitter.emit("didCompleteNetworkResponse", new JArray
             {
                 requestId,
                 message,
+                timeout
             });
         }
 

@@ -112,6 +112,10 @@ const APIExamples = [
     key: 'WebSocketExample',
     module: require('./WebSocketExample'),
   },
+  {
+    key: 'XHRExample',
+    module: require('./XHRExample'),
+  },
 ];
 
 const Modules = {};
