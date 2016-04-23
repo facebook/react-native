@@ -147,13 +147,18 @@ function setUpXHR() {
   polyfillGlobal('Response', fetchPolyfill.Response);
 }
 
-function setUpGeolocation() {
+function setUpNavigator() {
   polyfillIfNeeded('navigator', {}, GLOBAL, {
     writable: true,
     enumerable: true,
     configurable: true,
   });
+
   polyfillGlobal('geolocation', require('Geolocation'), GLOBAL.navigator);
+
+  const Intl = require('Intl');
+  polyfillGlobal('language', Intl.language, GLOBAL.navigator);
+  polyfillGlobal('languages', Intl.languages, GLOBAL.navigator);
 }
 
 function setUpMapAndSet() {
@@ -207,7 +212,7 @@ setUpAlert();
 setUpPromise();
 setUpErrorHandler();
 setUpXHR();
-setUpGeolocation();
+setUpNavigator();
 setUpMapAndSet();
 setUpProduct();
 setUpWebSockets();
