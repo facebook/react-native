@@ -211,7 +211,6 @@ NSNumber *RCTConvertEnumValue(const char *typeName, NSDictionary *mapping, NSNum
   if (RCT_DEBUG && !value && [json description].length > 0) {
     RCTLogError(@"Invalid %s '%@'. should be one of: %@", typeName, json, [[mapping allKeys] sortedArrayUsingSelector: @selector(caseInsensitiveCompare:)]);
   }
-  NSLog(@"%@", json);
   return value ?: defaultValue;
 }
 

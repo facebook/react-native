@@ -29,11 +29,6 @@
 - (void)testWeight
 {
   {
-    UIFont *expected = [UIFont fontWithName:@"Cochin" size:14];
-    UIFont *result = [RCTConvert UIFont:[UIFont fontWithName:@"Cochin" size:10] withSize:@"14"];
-    RCTAssertEqualFonts(expected, result);
-  }
-  {
     UIFont *expected = [UIFont systemFontOfSize:14 weight:UIFontWeightBold];
     UIFont *result = [RCTConvert UIFont:@{@"fontWeight": @"bold"}];
     RCTAssertEqualFonts(expected, result);
