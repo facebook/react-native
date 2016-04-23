@@ -162,7 +162,7 @@ if (args.indexOf('--ios') !== -1) {
   exec('response=$(curl --write-out %{http_code} --silent --output /dev/null localhost:8081/index.ios.bundle?platform=ios&dev=true)');
   echo(`Starting packager server, ${SERVER_PID}`);
   echo('Executing ios e2e test');
-  if (exec('xcodebuild -scheme EndToEndTest -sdk iphonesimulator test | xcpretty').code) {
+  if (exec('xcodebuild -scheme EndToEndTest -sdk iphonesimulator test | xcpretty && exit ${PIPESTATUS[0]}').code) {
     exit(cleanup(1));
   }
   cd('..');
