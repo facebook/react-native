@@ -83,13 +83,13 @@ type Props = {
    * A simple array of data blobs that are passed to the renderRow function in
    * order. Note there is no dataSource like in the standard `ListView`.
    */
-  data: Array<mixed>;
+  data: Array<any>;
   /**
    * Takes a data blob from the `data` array prop plus some meta info and should
    * return a row.
    */
   renderRow: (
-    data: mixed, sectionIdx: number, rowIdx: number, key?: string
+    data: any, sectionIdx: number, rowIdx: number, key?: string
   ) => ?ReactElement;
   /**
    * Rendered when the list is scrolled faster than rows can be rendered.
@@ -140,7 +140,7 @@ type Props = {
   /**
    * Used to log perf events for async row rendering.
    */
-  asyncRowPerfEventName: ?string;
+  asyncRowPerfEventName?: string;
   /**
    * A function that returns the scrollable component in which the list rows
    * are rendered. Defaults to returning a ScrollView with the given props.
@@ -158,17 +158,19 @@ type Props = {
    * Called when rows will be mounted/unmounted. Mounted rows always form a contiguous block so it is expressed as a
    * range of start plus count.
    */
-  onMountedRowsWillChange: (firstIdx: number, count: number) => void;
+  onMountedRowsWillChange?: (firstIdx: number, count: number) => void;
+};
+
+type State = {
+  boundaryIndicatorHeight?: number;
+  firstRow: number;
+  lastRow: number;
+  firstVisible: number;
+  lastVisible: number;
 };
 class WindowedListView extends React.Component {
   props: Props;
-  state: {
-    boundaryIndicatorHeight?: number;
-    firstRow: number;
-    lastRow: number;
-    firstVisible: number;
-    lastVisible: number;
-  };
+  state: State;
   _scrollOffsetY: number = 0;
   _frameHeight: number = 0;
   _rowFrames: Array<Object> = [];
@@ -247,7 +249,7 @@ class WindowedListView extends React.Component {
       const layoutPrev = this._rowFrames[rowIndex] || {};
       console.log(
         'record layout for row: ',
-        {i: rowIndex, h: layout.height, y: layout.y, hp: layoutPrev.height, yp: layoutPrev.y}
+        {i: rowIndex, h: layout.height, y: layout.y, x: layout.x, hp: layoutPrev.height, yp: layoutPrev.y}
       );
     }
     this._rowFrames[rowIndex] = {...layout, offscreenLayoutDone: true};
@@ -374,20 +376,25 @@ class WindowedListView extends React.Component {
         this._hasCalledOnEndReached = this.state.lastRow === lastRow;
       }
     }
-    if (this.state.firstRow !== firstRow || this.state.lastRow !== lastRow) {
+    this.setState({firstRow, lastRow});
+  }
+  componentDidUpdate(prevProps: Props, prevState: State) {
+    const {firstRow, lastRow} = this.state;
+    if (firstRow !== prevState.firstRow || lastRow !== prevState.lastRow) {
       this.props.onMountedRowsWillChange && this.props.onMountedRowsWillChange(firstRow, lastRow - firstRow + 1);
       console.log('WLV: row render range changed:', {firstRow, lastRow});
     }
-    this.setState({firstRow, lastRow});
+    if (this.props.onVisibleRowsChanged) {
+      const {firstVisible, lastVisible} = this.state;
+      if (firstVisible !== prevState.firstVisible ||
+          lastVisible !== prevState.lastVisible) {
+        this.props.onVisibleRowsChanged(firstVisible, lastVisible - lastVisible + 1);
+      }
+    }
   }
   _updateVisibleRows(newFirstVisible: number, newLastVisible: number) {
     if (this.state.firstVisible !== newFirstVisible ||
         this.state.lastVisible !== newLastVisible) {
-      if (this.props.onVisibleRowsChanged) {
-        this.props.onVisibleRowsChanged(
-          newFirstVisible,
-          newLastVisible - newFirstVisible + 1);
-      }
       this.setState({
         firstVisible: newFirstVisible,
         lastVisible: newLastVisible,
