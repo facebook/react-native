@@ -1096,7 +1096,7 @@ var Navigator = React.createClass({
         key={'scene_' + getRouteID(route)}
         ref={'scene_' + i}
         onStartShouldSetResponderCapture={() => {
-          return (this.state.transitionFromIndex != null) || (this.state.transitionFromIndex != null);
+          return (this.state.transitionFromIndex != null) || (this.state.activeGesture != null);
         }}
         pointerEvents={disabledScenePointerEvents}
         style={[styles.baseScene, this.props.sceneStyle, disabledSceneStyle]}>
