@@ -33,8 +33,10 @@ var ActionSheetIOS = {
    * - `message` (string) - a message to show below the title
    *
    * Promise is resolved with a index of button in `options` that was selected
+   *
+   * NOTE: `callback` is now deprecated in favour of a promise
    */
-  showActionSheetWithOptions(options: Object, callback?: Function): Promise<number> {
+  showActionSheetWithOptions(options: Object, callback?: Function): ?Promise<number> {
     invariant(
       typeof options === 'object' && options !== null,
       'Options must be a valid object'
@@ -65,6 +67,14 @@ var ActionSheetIOS = {
    * - `message` (string) - a message to share
    * - `url` (string) - a URL to share
    *
+   * Returns a Promise that is resolved with an object:
+   *
+   * - `completed` (boolean) - true if share action was completed
+   * - `activityType` (?string) - type of share activity user selected
+   *
+   * NOTE: `failureCallback` and `successCallback` are now deprecated in favour
+   * of promise
+   *
    * NOTE: if `url` points to a local file, or is a base64-encoded
    * uri, the file it points to will be loaded and shared directly.
    * In this way, you can share images, videos, PDF files, etc.
@@ -73,7 +83,7 @@ var ActionSheetIOS = {
     options: Object,
     failureCallback?: Function,
     successCallback?: Function
-  ): Promise<ShareSheetResponse> {
+  ): ?Promise<ShareSheetResponse> {
     invariant(
       typeof options === 'object' && options !== null,
       'Options must be a valid object'
@@ -99,6 +109,7 @@ var ActionSheetIOS = {
         'Use showShareActionSheetWithOptions(opts).then().catch() instead.'
       );
       promise
+        // $FlowFixMe: Ignores invariants and reports possible undefined value
         .then((res: ShareSheetResponse) => successCallback(res.completed, res.activityType))
         .catch(failureCallback);
       return;
