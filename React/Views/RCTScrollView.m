@@ -436,6 +436,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   } else {
     RCTAssert(_contentView == nil, @"RCTScrollView may only contain a single subview");
     _contentView = view;
+    view.clipsToBounds = self.clipsToBounds;
     [_scrollView addSubview:view];
   }
 }

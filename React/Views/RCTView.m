@@ -307,7 +307,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (void)mountOrUnmountSubview:(UIView *)view withClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView
 {
-  if (view.clipsToBounds) {
+  if (self.clipsToBounds) {
 
     // View has cliping enabled, so we can easily test if it is partially
     // or completely within the clipRect, and mount or unmount it accordingly
