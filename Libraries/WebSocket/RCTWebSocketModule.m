@@ -56,10 +56,10 @@ RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols headers:(N
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
   
   // We load cookies from sharedHTTPCookieStorage (shared with XHR and
-  // fetch). To get HTTPS-only cookies for wss URLs, replace wss with https
+  // fetch). To get secure cookies for wss URLs, replace wss with https
   // in the URL.
   NSURLComponents *components = [NSURLComponents componentsWithURL:URL resolvingAgainstBaseURL:true];
-  if ([components.scheme isEqualToString:@"wss"]) {
+  if ([[components.scheme lowercaseString] isEqualToString:@"wss"]) {
     components.scheme = @"https";
   }
   // Load and set the cookie header.
