@@ -613,7 +613,7 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   // We are dealing with a system font if it's familyName equals to `System`
   // (either provided by React or set above) or to the real system font family
   // if we have passed it as a first argument
-  bool isSystemFont = [familyName isEqualToString:RCTDefaultFontFamily];
+  bool isSystemFont = [familyName isEqual:RCTDefaultFontFamily];
   if (RCTHasSystemSelector && !isSystemFont) {
     UIFont *systemFont = [UIFont systemFontOfSize:fontSize weight:fontWeight];
     isSystemFont = [familyName isEqualToString:systemFont.familyName];
