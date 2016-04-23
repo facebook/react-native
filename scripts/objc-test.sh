@@ -26,7 +26,11 @@ trap cleanup EXIT
 
 ./packager/packager.sh --nonPersistent &
 SERVER_PID=$!
-xctool \
+# TODO: We use xcodebuild because xctool would stall when collecting info about
+# the tests before running them. Switch back when this issue with xctool has
+# been resolved.
+xcodebuild \
   -project Examples/UIExplorer/UIExplorer.xcodeproj \
   -scheme UIExplorer -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 5,OS=9.3' \
-  test
+  test \
+| xcpretty
