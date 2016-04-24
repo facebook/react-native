@@ -33,4 +33,4 @@ xcodebuild \
   -project Examples/UIExplorer/UIExplorer.xcodeproj \
   -scheme UIExplorer -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 5,OS=9.3' \
   test \
-| xcpretty
+| xcpretty && exit ${PIPESTATUS[0]}
