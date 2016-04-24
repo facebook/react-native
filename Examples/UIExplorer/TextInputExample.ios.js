@@ -552,13 +552,13 @@ exports.examples = [
     }
   },
   {
-    title: 'Bolded and italicized input text',
+    title: 'fontWeight and fontStyle',
     render: function() {
       return (
         <View>
           <TextInput
             style={[styles.default, {fontWeight: 'bold', fontStyle: 'italic'}]}
-            defaultValue="Bolded"
+            defaultValue="Bolded and italicized"
           />
         </View>
       );
