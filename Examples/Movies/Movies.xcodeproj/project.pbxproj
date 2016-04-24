@@ -357,7 +357,10 @@
 				INFOPLIST_FILE = "$(SRCROOT)/Movies/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lc++",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Movies;
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Libraries/**";
@@ -376,7 +379,10 @@
 				INFOPLIST_FILE = "$(SRCROOT)/Movies/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lc++",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Movies;
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Libraries/**";

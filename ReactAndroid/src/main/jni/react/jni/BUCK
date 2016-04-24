@@ -22,15 +22,6 @@ def jni_library(**kwargs):
     **kwargs
   )
 
-  cxx_library(
-    name='jni-internal',
-    visibility = [INTERNAL_APP],
-    deps = DEPS + JSC_INTERNAL_DEPS + [
-      react_native_target('jni/react:react-internal'),
-    ],
-    **kwargs
-  )
-
 jni_library(
   soname = 'libreactnativejni.so',
   header_namespace = 'react/jni',

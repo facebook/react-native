@@ -87,17 +87,30 @@ export type Props = {
   * Tags instances and associated tasks for easier debugging.
   */
  name: string;
- children: any;
+ children?: any;
 };
-class Incremental extends React.Component {
+type DefaultProps = {
+  name: string,
+};
+type State = {
+  doIncrementalRender: boolean,
+};
+class Incremental extends React.Component<DefaultProps, Props, State> {
   props: Props;
-  state: {
-    doIncrementalRender: boolean;
-  };
+  state: State;
   context: Context;
   _incrementId: number;
   _mounted: boolean;
   _rendered: boolean;
+
+  static defaultProps = {
+    name: '',
+  };
+
+  static contextTypes = {
+    incrementalGroup: React.PropTypes.object,
+    incrementalGroupEnabled: React.PropTypes.bool,
+  };
 
   constructor(props: Props, context: Context) {
     super(props, context);
@@ -159,13 +172,6 @@ class Incremental extends React.Component {
     this._mounted = false;
   }
 }
-Incremental.defaultProps = {
-  name: '',
-};
-Incremental.contextTypes = {
-  incrementalGroup: React.PropTypes.object,
-  incrementalGroupEnabled: React.PropTypes.bool,
-};
 
 export type Context = {
   incrementalGroupEnabled: boolean;

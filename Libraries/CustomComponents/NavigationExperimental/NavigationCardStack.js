@@ -64,6 +64,11 @@ type Props = {
   renderScene: NavigationSceneRenderer,
 };
 
+type DefaultProps = {
+  direction: NavigationGestureDirection,
+  renderOverlay: ?NavigationSceneRenderer,
+};
+
 /**
  * A controlled navigation view that renders a stack of cards.
  *
@@ -78,7 +83,7 @@ type Props = {
  *   +-+            |
  *     +------------+
  */
-class NavigationCardStack extends React.Component {
+class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   _renderScene : NavigationSceneRenderer;
 
   static propTypes = {
@@ -88,7 +93,7 @@ class NavigationCardStack extends React.Component {
     renderScene: PropTypes.func.isRequired,
   };
 
-  static defaultProps = {
+  static defaultProps: DefaultProps = {
     direction: Directions.HORIZONTAL,
     renderOverlay: emptyFunction.thatReturnsNull,
   };
@@ -101,7 +106,7 @@ class NavigationCardStack extends React.Component {
     this._renderScene = this._renderScene.bind(this);
   }
 
-  shouldComponentUpdate(nextProps: Object, nextState: Object): boolean {
+  shouldComponentUpdate(nextProps: Object, nextState: void): boolean {
     return ReactComponentWithPureRenderMixin.shouldComponentUpdate.call(
       this,
       nextProps,
@@ -115,6 +120,7 @@ class NavigationCardStack extends React.Component {
         navigationState={this.props.navigationState}
         renderOverlay={this.props.renderOverlay}
         renderScene={this._renderScene}
+        // $FlowFixMe - style should be declared
         style={[styles.animatedView, this.props.style]}
       />
     );
