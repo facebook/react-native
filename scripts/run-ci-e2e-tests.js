@@ -65,7 +65,7 @@ try {
   cd('..');
 
   // can skip cli install for non sudo mode
-  if (argv['skip-cli-install']) {
+  if (!argv['skip-cli-install']) {
     if (exec(`npm install -g ${CLI_PACKAGE}`).code) {
       echo('Could not install react-native-cli globally, please run in su mode');
       echo('Or with --skip-cli-install to skip this step');
