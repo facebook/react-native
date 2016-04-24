@@ -236,25 +236,6 @@ import com.facebook.csslayout.Spacing;
     }
   }
 
-  /* package */ float[] getBorderRadii() {
-    float defaultBorderRadius = !CSSConstants.isUndefined(mBorderRadius) ? mBorderRadius : 0;
-    float topLeftRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[0]) ? mBorderCornerRadii[0] : defaultBorderRadius;
-    float topRightRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[1]) ? mBorderCornerRadii[1] : defaultBorderRadius;
-    float bottomRightRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[2]) ? mBorderCornerRadii[2] : defaultBorderRadius;
-    float bottomLeftRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[3]) ? mBorderCornerRadii[3] : defaultBorderRadius;
-
-    return new float[] {
-      topLeftRadius,
-      topLeftRadius,
-      topRightRadius,
-      topRightRadius,
-      bottomRightRadius,
-      bottomRightRadius,
-      bottomLeftRadius,
-      bottomLeftRadius
-    };
-  }
-
   private void updatePath() {
     if (!mNeedUpdatePathForBorderRadius) {
       return;
@@ -277,10 +258,25 @@ import com.facebook.csslayout.Spacing;
       mTempRectForBorderRadius.inset(fullBorderWidth * 0.5f, fullBorderWidth * 0.5f);
     }
 
-    float[] borderRadii = getBorderRadii();
+    float defaultBorderRadius = !CSSConstants.isUndefined(mBorderRadius) ? mBorderRadius : 0;
+    float topLeftRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[0]) ? mBorderCornerRadii[0] : defaultBorderRadius;
+    float topRightRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[1]) ? mBorderCornerRadii[1] : defaultBorderRadius;
+    float bottomRightRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[2]) ? mBorderCornerRadii[2] : defaultBorderRadius;
+    float bottomLeftRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[3]) ? mBorderCornerRadii[3] : defaultBorderRadius;
+
+
     mPathForBorderRadius.addRoundRect(
         mTempRectForBorderRadius,
-        borderRadii,
+        new float[] {
+          topLeftRadius,
+          topLeftRadius,
+          topRightRadius,
+          topRightRadius,
+          bottomRightRadius,
+          bottomRightRadius,
+          bottomLeftRadius,
+          bottomLeftRadius
+        },
         Path.Direction.CW);
 
     float extraRadiusForOutline = 0;
@@ -292,14 +288,14 @@ import com.facebook.csslayout.Spacing;
     mPathForBorderRadiusOutline.addRoundRect(
       mTempRectForBorderRadiusOutline,
       new float[] {
-        borderRadii[0] + extraRadiusForOutline,
-        borderRadii[1] + extraRadiusForOutline,
-        borderRadii[2] + extraRadiusForOutline,
-        borderRadii[3] + extraRadiusForOutline,
-        borderRadii[4] + extraRadiusForOutline,
-        borderRadii[5] + extraRadiusForOutline,
-        borderRadii[6] + extraRadiusForOutline,
-        borderRadii[7] + extraRadiusForOutline
+        topLeftRadius + extraRadiusForOutline,
+        topLeftRadius + extraRadiusForOutline,
+        topRightRadius + extraRadiusForOutline,
+        topRightRadius + extraRadiusForOutline,
+        bottomRightRadius + extraRadiusForOutline,
+        bottomRightRadius + extraRadiusForOutline,
+        bottomLeftRadius + extraRadiusForOutline,
+        bottomLeftRadius + extraRadiusForOutline
       },
       Path.Direction.CW);
 
