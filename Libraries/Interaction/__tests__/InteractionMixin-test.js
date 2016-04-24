@@ -3,7 +3,7 @@
  */
 'use strict';
 
-jest.dontMock('InteractionMixin');
+jest.unmock('InteractionMixin');
 
 describe('InteractionMixin', () => {
   var InteractionManager;
@@ -19,9 +19,8 @@ describe('InteractionMixin', () => {
   });
 
   it('should start interactions', () => {
-    var timeout = 123;
-    component.createInteractionHandle(timeout);
-    expect(InteractionManager.createInteractionHandle).toBeCalled(timeout);
+    component.createInteractionHandle();
+    expect(InteractionManager.createInteractionHandle).toBeCalled();
   });
 
   it('should end interactions', () => {
