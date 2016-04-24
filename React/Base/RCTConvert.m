@@ -583,7 +583,7 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   NSString *const RCTIOS8SystemFontFamily = @"Helvetica Neue";
   const RCTFontWeight RCTDefaultFontWeight = UIFontWeightRegular;
   const CGFloat RCTDefaultFontSize = 14;
-  const bool RCTHasSystemSelector = [UIFont respondsToSelector:@selector(systemFontOfSize:weight:)];
+  const bool HasSystemFontWeightSelector = [UIFont respondsToSelector:@selector(systemFontOfSize:weight:)];
 
   // Initialize properties to defaults
   CGFloat fontSize = RCTDefaultFontSize;
@@ -599,7 +599,7 @@ static BOOL RCTFontIsCondensed(UIFont *font)
     isItalic = RCTFontIsItalic(font);
     isCondensed = RCTFontIsCondensed(font);
   }
-  
+
 
   // Get font attributes
   fontSize = [self CGFloat:size] ?: fontSize;
@@ -609,20 +609,20 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   familyName = [self NSString:family] ?: familyName;
   isItalic = style ? [self RCTFontStyle:style] : isItalic;
   fontWeight = weight ? [self RCTFontWeight:weight] : fontWeight;
-  
+
   // We are dealing with a system font if it's familyName equals to `System`
   // (either provided by React or set above) or to the real system font family
   // if we have passed it as a first argument
   bool isSystemFont = [familyName isEqual:RCTDefaultFontFamily];
-  if (RCTHasSystemSelector && !isSystemFont) {
+  if (HasSystemFontWeightSelector && !isSystemFont) {
     UIFont *systemFont = [UIFont systemFontOfSize:fontSize weight:fontWeight];
     isSystemFont = [familyName isEqualToString:systemFont.familyName];
   }
-  
+
   // Handle system font as special case. This ensures that we preserve
   // the specific metrics of the standard system font as closely as possible.
   if (isSystemFont) {
-    if (RCTHasSystemSelector) {
+    if (HasSystemFontWeightSelector) {
       font = [UIFont systemFontOfSize:fontSize weight:fontWeight];
       if (isItalic || isCondensed) {
         UIFontDescriptor *fontDescriptor = [font fontDescriptor];
