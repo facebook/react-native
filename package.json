@@ -37,7 +37,6 @@
     "modulePathIgnorePatterns": [
       "/node_modules/(?!react|fbjs|react-native|parse|react-transform-hmr|core-js|promise)/",
       "node_modules/react/node_modules/fbjs/",
-      "node_modules/react/lib/React.js",
       "node_modules/react/lib/ReactDOM.js",
       "node_modules/fbjs/lib/Map.js",
       "node_modules/fbjs/lib/Promise.js",
