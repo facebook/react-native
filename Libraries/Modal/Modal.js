@@ -36,6 +36,10 @@ const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  */
 class Modal extends React.Component {
   static propTypes = {
+    animated: deprecatedPropType(
+      PropTypes.bool,
+      'Use the `animationType` prop instead.'
+    ),
     animationType: PropTypes.oneOf(['none', 'slide', 'fade']),
     transparent: PropTypes.bool,
     visible: PropTypes.bool,
