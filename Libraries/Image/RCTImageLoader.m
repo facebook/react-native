@@ -659,7 +659,7 @@ RCT_EXPORT_METHOD(getMetadata:(NSString *)uri
                        reject:(RCTPromiseRejectBlock)reject)
 {
   if (!uri.length) {
-    reject(RCTErrorInvalidURI, @"Cannot prefetch an image for an empty URI", nil);
+    reject(RCTErrorInvalidURI, @"Cannot get metadata for an empty URI", nil);
     return;
   }
 
