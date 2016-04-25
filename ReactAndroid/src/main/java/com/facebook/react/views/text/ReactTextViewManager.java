@@ -65,6 +65,9 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
       view.setGravityHorizontal(Gravity.RIGHT);
     } else if ("center".equals(textAlign)) {
       view.setGravityHorizontal(Gravity.CENTER_HORIZONTAL);
+    } else if ("justify".equals(textAlign)) {
+      // Fallback gracefully for cross-platform compat instead of error
+      view.setGravityHorizontal(Gravity.LEFT);
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
     }

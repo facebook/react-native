@@ -107,12 +107,13 @@ function isRunnable(componentName, componentPlatform) {
 
 // Hide a component from the sidebar by making it return false from
 // this function
-function shouldDisplayInSidebar(componentName) {
-  if (componentName === 'Transforms') {
-    return false;
-  }
+var HIDDEN_COMPONENTS = [
+  'Transforms',
+  'ListViewDataSource',
+];
 
-  return true;
+function shouldDisplayInSidebar(componentName) {
+  return HIDDEN_COMPONENTS.indexOf(componentName) === -1;
 }
 
 function getNextComponent(i) {
@@ -271,9 +272,10 @@ var apis = [
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/Linking/Linking.js',
   '../Libraries/LinkingIOS/LinkingIOS.js',
-  '../Libraries/ReactIOS/NativeMethodsMixin.js',
+  '../Libraries/CustomComponents/ListView/ListViewDataSource.js',
+  '../node_modules/react/lib/NativeMethodsMixin.js',
   '../Libraries/Network/NetInfo.js',
-  '../Libraries/vendor/react/browser/eventPlugins/PanResponder.js',
+  '../node_modules/react/lib/PanResponder.js',
   '../Libraries/Utilities/PixelRatio.js',
   '../Libraries/PushNotificationIOS/PushNotificationIOS.js',
   '../Libraries/Components/StatusBar/StatusBarIOS.ios.js',

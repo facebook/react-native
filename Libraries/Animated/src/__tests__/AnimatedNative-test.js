@@ -28,6 +28,7 @@ describe('Animated', () => {
     nativeAnimatedModule.connectAnimatedNodes = jest.genMockFunction();
     nativeAnimatedModule.disconnectAnimatedNodes = jest.genMockFunction();
     nativeAnimatedModule.startAnimatingNode = jest.genMockFunction();
+    nativeAnimatedModule.stopAnimation = jest.genMockFunction();
     nativeAnimatedModule.setAnimatedNodeValue = jest.genMockFunction();
     nativeAnimatedModule.connectAnimatedNodeToView = jest.genMockFunction();
     nativeAnimatedModule.disconnectAnimatedNodeFromView = jest.genMockFunction();
@@ -59,6 +60,7 @@ describe('Animated', () => {
     expect(nativeAnimatedModule.connectAnimatedNodes.mock.calls.length).toBe(2);
 
     expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
+      jasmine.any(Number),
       jasmine.any(Number),
       {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number)},
       jasmine.any(Function)
@@ -158,12 +160,46 @@ describe('Animated', () => {
       .toBeCalledWith(multiplicationCall[1].input[1], { type: 'value', value: 1 });
   });
 
+  it('sends a valid graph description for interpolate() nodes', () => {
+    var node = new Animated.Value(10);
+
+    var c = new Animated.View();
+    c.props = {
+      style: {
+        opacity: node.interpolate({
+          inputRange: [10, 20],
+          outputRange: [0, 1],
+        }),
+      },
+    };
+    c.componentWillMount();
+
+    Animated.timing(node, {toValue: 20, duration: 1000, useNativeDriver: true}).start();
+
+    var nativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
+    expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(jasmine.any(Number), { type: 'value', value: 10 });
+    expect(nativeAnimatedModule.createAnimatedNode)
+      .toBeCalledWith(jasmine.any(Number), {
+        type: 'interpolation',
+        inputRange: [10, 20],
+        outputRange: [0, 1],
+      });
+    var interpolationNodeTag = nativeAnimatedModule.createAnimatedNode.mock.calls.find(
+      (call) => call[1].type === 'interpolation'
+    )[0];
+    var valueNodeTag = nativeAnimatedModule.createAnimatedNode.mock.calls.find(
+      (call) => call[1].type === 'value'
+    )[0];
+    expect(nativeAnimatedModule.connectAnimatedNodes).toBeCalledWith(valueNodeTag, interpolationNodeTag);
+  });
+
   it('sends a valid timing animation description', () => {
     var anim = new Animated.Value(0);
     Animated.timing(anim, {toValue: 10, duration: 1000, useNativeDriver: true}).start();
 
     var nativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
     expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
+      jasmine.any(Number),
       jasmine.any(Number),
       {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number)},
       jasmine.any(Function)
@@ -247,6 +283,25 @@ describe('Animated', () => {
     expect(animation.start).toThrowError(/left/);
   });
 
+  it('fails for unsupported interpolation parameters', () => {
+    var anim = new Animated.Value(0);
+
+    var c = new Animated.View();
+    c.props = {
+      style: {
+        opacity: anim.interpolate({
+          inputRange: [0, 100],
+          outputRange: [0, 1],
+          extrapolate: 'clamp',
+        }),
+      },
+    };
+    c.componentWillMount();
+
+    var animation = Animated.timing(anim, {toValue: 100, duration: 50, useNativeDriver: true});
+    expect(animation.start).toThrowError(/extrapolate/);
+  });
+
   it('works for any `static` props and styles', () => {
     // Passing "unsupported" props should work just fine as long as they are not animated
     var anim = new Animated.Value(0);
@@ -267,6 +322,24 @@ describe('Animated', () => {
       .toBeCalledWith(jasmine.any(Number), { type: 'style', style: { opacity: jasmine.any(Number) }});
     expect(nativeAnimatedModule.createAnimatedNode)
       .toBeCalledWith(jasmine.any(Number), { type: 'props', props: { style: jasmine.any(Number) }});
+  });
+
+  it('send stopAnimation command to native', () => {
+    var value = new Animated.Value(0);
+    var animation = Animated.timing(value, {toValue: 10, duration: 50, useNativeDriver: true});
+    var nativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
+
+    animation.start();
+    expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
+      jasmine.any(Number),
+      jasmine.any(Number),
+      {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number)},
+      jasmine.any(Function)
+    );
+    var animationId = nativeAnimatedModule.startAnimatingNode.mock.calls[0][0];
+
+    animation.stop();
+    expect(nativeAnimatedModule.stopAnimation).toBeCalledWith(animationId);
   });
 
 });

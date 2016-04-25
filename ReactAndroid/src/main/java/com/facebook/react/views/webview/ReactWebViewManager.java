@@ -75,6 +75,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public static final int COMMAND_GO_BACK = 1;
   public static final int COMMAND_GO_FORWARD = 2;
   public static final int COMMAND_RELOAD = 3;
+  public static final int COMMAND_STOP_LOADING = 4;
 
   // Use `webView.loadUrl("about:blank")` to reliably reset the view
   // state and release page resources (including any running JavaScript).
@@ -350,7 +351,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     return MapBuilder.of(
         "goBack", COMMAND_GO_BACK,
         "goForward", COMMAND_GO_FORWARD,
-        "reload", COMMAND_RELOAD);
+        "reload", COMMAND_RELOAD,
+        "stopLoading", COMMAND_STOP_LOADING);
   }
 
   @Override
@@ -364,6 +366,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         break;
       case COMMAND_RELOAD:
         root.reload();
+        break;
+      case COMMAND_STOP_LOADING:
+        root.stopLoading();
         break;
     }
   }

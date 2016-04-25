@@ -179,7 +179,8 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   }
 
   MKAnnotationView *annotationView;
-  if (annotation.viewIndex != NSNotFound) {
+  if (annotation.viewIndex != NSNotFound &&
+      annotation.viewIndex < mapView.reactSubviews.count) {
 
     NSString *reuseIdentifier = NSStringFromClass([RCTMapAnnotationView class]);
     annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:reuseIdentifier];

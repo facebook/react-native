@@ -11,8 +11,10 @@
  */
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
 const BugReportingNativeModule = require('NativeModules').BugReporting;
+const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+
+import type {EmitterSubscription} from 'EventEmitter';
 
 type ExtraData = { [key: string]: string };
 type SourceCallback = () => string;
@@ -26,15 +28,16 @@ type SourceCallback = () => string;
 class BugReporting {
 
   static _sources: Map<string, SourceCallback> = new Map();
+  static _subscription: EmitterSubscription = null;
 
   /**
    * `init` is called in `AppRegistry.runApplication`, so you shouldn't have to worry about it.
    */
   static init() {
-    BatchedBridge.registerCallableModule( // idempotent
-      'BugReporting',
-      BugReporting,
-    );
+    if (!BugReporting._subscription) {
+      BugReporting._subscription = RCTDeviceEventEmitter
+          .addListener('collectBugExtraData', BugReporting.collectExtraData, null);
+    }
   }
 
   /**

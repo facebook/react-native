@@ -31,6 +31,19 @@ var featured = [
     ],
   },
   {
+    name: 'F8',
+    icon: 'https://raw.githubusercontent.com/fbsamples/f8app/master/ios/F8v2/Images.xcassets/AppIcon.appiconset/AppIcon%402x.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/f8/id853467066?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.facebook.f8',
+    author: 'Facebook',
+    blogs: [
+      "http://makeitopen.com/tutorials/building-the-f8-app/planning/",
+      "http://makeitopen.com/tutorials/building-the-f8-app/design/",
+      "http://makeitopen.com/tutorials/building-the-f8-app/data/",
+      "http://makeitopen.com/tutorials/building-the-f8-app/testing/",
+    ],
+  },
+  {
     name: 'AIGA Design Conference 2015',
     icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/b0/4b/29/b04b2939-88d2-f61f-dec9-24fae083d8b3/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/aiga-design-conference-2015/id1038145272?ls=1&mt=8',
@@ -412,8 +425,12 @@ var apps = [
   {
     name: 'HackerWeb',
     icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/5a/bd/39/5abd3951-782c-ef12-8e40-33ebe1e43768/icon175x175.png',
-    link: 'https://itunes.apple.com/us/app/hackerweb/id1084209377?mt=8',
+    linkAppStore: 'https://itunes.apple.com/us/app/id1084209377',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=cheeaun.hackerweb',
     author: 'Lim Chee Aun',
+    blogs: [
+      'http://cheeaun.com/blog/2016/03/building-hackerweb-ios/',
+    ],
   },
   {
     name: 'Harmonizome',
@@ -476,6 +493,12 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/gb/app/kakapo/id1046673139?ls=1&mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.kakaponative',
     author: 'Daniel Levitt',
+  },
+  {
+    name: 'Kiwiship',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple4/v4/c2/92/d0/c292d053-72fd-c429-dd58-5b0ae9d75af1/icon175x175.jpeg',
+    link: 'https://www.kiwiship.com',
+    author: 'Kiwiship'
   },
   {
     name: 'Koza Gujarati Dictionary',
@@ -589,6 +612,12 @@ var apps = [
     author: 'Tian Yuan',
   },
   {
+    name: ':nth',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/d1/92/de/d192decd-ff97-e108-eaa0-c51be79261c6/icon175x175.jpeg',
+    link:  'https://itunes.apple.com/us/app/nth/id1102663176?mt=8',
+    author: 'Omar Carpinteyro',
+  },
+  {
     name: 'Okanagan News',
     icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/aa/93/17/aa93171e-d0ed-7e07-54a1-be27490e210c/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/okanagan-news-reader-for-viewing/id1049147148?mt=8',
@@ -662,6 +691,12 @@ var apps = [
     icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/a8/c0/b1/a8c0b130-e44b-742d-6458-0c89fcc15b6b/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/rwpodplayer/id1053885042?mt=8',
     author: 'Alexey Vasiliev aka leopard',
+  },
+  {
+    name: 'Samanage',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/ed/e9/ff/ede9ff34-a9f6-5eb6-2a23-fcb014b326f2/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/samanage/id1033018362',
+    author: 'Samanage'
   },
   {
     name: 'SG Toto 4d',
@@ -951,7 +986,7 @@ var AppList = React.createClass({
   _renderLinks: function(app) {
     return (
       <p>
-        <a href={app.linkAppStore} target="_blank">iOS</a> -
+        <a href={app.linkAppStore} target="_blank">iOS</a> -&nbsp;
         <a href={app.linkPlayStore} target="_blank">Android</a>
       </p>
     );
