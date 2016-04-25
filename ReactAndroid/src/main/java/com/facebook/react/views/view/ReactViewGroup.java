@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
@@ -95,7 +94,6 @@ public class ReactViewGroup extends ViewGroup implements
   private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
   private boolean mNeedsOffscreenAlphaCompositing = false;
-  private @Nullable ReadableMap mNativeBackground;
 
   public ReactViewGroup(Context context) {
     super(context);
@@ -136,21 +134,7 @@ public class ReactViewGroup extends ViewGroup implements
         "This method is not supported for ReactViewGroup instances");
   }
 
-  public void setNativeBackground(@Nullable ReadableMap nativeBackground) {
-    mNativeBackground = nativeBackground;
-    refreshTranslucentBackgroundDrawable();
-  }
-
-  private void refreshTranslucentBackgroundDrawable() {
-    Drawable background = null;
-    if (mNativeBackground != null) {
-      float[] cornerRadii = null;
-      if (mReactBackgroundDrawable != null) {
-        cornerRadii = mReactBackgroundDrawable.getBorderRadii();
-      }
-      background = ReactDrawableHelper.createDrawableFromJSDescription(getContext(), mNativeBackground, cornerRadii);
-    }
-
+  public void setTranslucentBackgroundDrawable(@Nullable Drawable background) {
     // it's required to call setBackground to null, as in some of the cases we may set new
     // background to be a layer drawable that contains a drawable that has been previously setup
     // as a background previously. This will not work correctly as the drawable callback logic is
@@ -223,12 +207,10 @@ public class ReactViewGroup extends ViewGroup implements
 
   public void setBorderRadius(float borderRadius) {
     getOrCreateReactViewBackground().setRadius(borderRadius);
-    refreshTranslucentBackgroundDrawable();
   }
 
   public void setBorderRadius(float borderRadius, int position) {
     getOrCreateReactViewBackground().setRadius(borderRadius, position);
-    refreshTranslucentBackgroundDrawable();
   }
 
   public void setBorderStyle(@Nullable String style) {

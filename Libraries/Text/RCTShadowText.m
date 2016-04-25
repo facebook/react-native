@@ -217,12 +217,10 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
       RCTShadowRawText *shadowRawText = (RCTShadowRawText *)child;
       [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:shadowRawText.text ?: @""]];
     } else if ([child conformsToProtocol:@protocol(RCTImageComponent)]) {
-      UIImage *image = ((id<RCTImageComponent>)child).image;
-      if (image) {
-        NSTextAttachment *imageAttachment = [NSTextAttachment new];
-        imageAttachment.image = image;
-        [attributedString appendAttributedString:[NSAttributedString attributedStringWithAttachment:imageAttachment]];
-      }
+      NSTextAttachment *imageAttachment = [NSTextAttachment new];
+      imageAttachment.image = ((id<RCTImageComponent>)child).image;
+      imageAttachment.bounds = (CGRect){CGPointZero, {RCTZeroIfNaN(child.width), RCTZeroIfNaN(child.height)}};
+      [attributedString appendAttributedString:[NSAttributedString attributedStringWithAttachment:imageAttachment]];
     } else {
       RCTLogError(@"<Text> can't have any children except <Text>, <Image> or raw strings");
     }

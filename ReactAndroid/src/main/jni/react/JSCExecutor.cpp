@@ -156,7 +156,7 @@ void JSCExecutor::destroy() {
 }
 
 void JSCExecutor::initOnJSVMThread() {
-  #if defined(WITH_FB_JSC_TUNING) && !defined(WITH_JSC_INTERNAL)
+  #if defined(WITH_FB_JSC_TUNING)
   configureJSCForAndroid(m_jscConfig);
   #endif
   m_context = JSGlobalContextCreateInGroup(nullptr, nullptr);
@@ -169,10 +169,6 @@ void JSCExecutor::initOnJSVMThread() {
   installGlobalFunction(m_context, "nativeInjectHMRUpdate", nativeInjectHMRUpdate);
 
   installGlobalFunction(m_context, "nativeLoggingHook", JSLogging::nativeHook);
-
-  #if defined(WITH_JSC_INTERNAL) && defined(WITH_FB_JSC_TUNING)
-  configureJSCForAndroid();
-  #endif
 
   #ifdef WITH_JSC_EXTRA_TRACING
   addNativeTracingHooks(m_context);
@@ -188,7 +184,7 @@ void JSCExecutor::initOnJSVMThread() {
   addJSCPerfStatsHooks(m_context);
   #endif
 
-  #if defined(WITH_FB_JSC_TUNING) && !defined(WITH_JSC_INTERNAL)
+  #if defined(WITH_FB_JSC_TUNING)
   configureJSContextForAndroid(m_context, m_jscConfig, m_deviceCacheDir);
   #endif
 }
@@ -345,7 +341,7 @@ bool JSCExecutor::supportsProfiling() {
 void JSCExecutor::startProfiler(const std::string &titleString) {
   #ifdef WITH_JSC_EXTRA_TRACING
   JSStringRef title = JSStringCreateWithUTF8CString(titleString.c_str());
-  #if WITH_JSC_INTERNAL
+  #if WITH_REACT_INTERNAL_SETTINGS
   JSStartProfiling(m_context, title, false);
   #else
   JSStartProfiling(m_context, title);

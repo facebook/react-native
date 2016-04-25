@@ -9,12 +9,10 @@
 
 package com.facebook.react.views.view;
 
-import javax.annotation.Nullable;
-
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.PaintDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
@@ -36,13 +34,6 @@ public class ReactDrawableHelper {
   public static Drawable createDrawableFromJSDescription(
       Context context,
       ReadableMap drawableDescriptionDict) {
-    return createDrawableFromJSDescription(context, drawableDescriptionDict, null);
-  }
-
-  public static Drawable createDrawableFromJSDescription(
-      Context context,
-      ReadableMap drawableDescriptionDict,
-      @Nullable float[] cornerRadii) {
     String type = drawableDescriptionDict.getString("type");
     if ("ThemeAttrAndroid".equals(type)) {
       String attr = drawableDescriptionDict.getString("attribute");
@@ -84,14 +75,11 @@ public class ReactDrawableHelper {
               "couldn't be resolved into a drawable");
         }
       }
-      PaintDrawable mask = null;
+      Drawable mask = null;
       if (!drawableDescriptionDict.hasKey("borderless") ||
           drawableDescriptionDict.isNull("borderless") ||
           !drawableDescriptionDict.getBoolean("borderless")) {
-        mask = new PaintDrawable(Color.WHITE);
-        if (cornerRadii != null) {
-          mask.setCornerRadii(cornerRadii);
-        }
+        mask = new ColorDrawable(Color.WHITE);
       }
       ColorStateList colorStateList = new ColorStateList(
           new int[][] {new int[]{}},
