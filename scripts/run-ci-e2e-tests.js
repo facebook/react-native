@@ -170,11 +170,6 @@ try {
         exitCode = 1;
         throw Error(exitCode);
     }
-
-    if (exec('').code) {
-      exitCode = 1;
-      throw Error(exitCode);
-    }
   }
 
   if (argv['ios']) {
