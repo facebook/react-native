@@ -236,6 +236,7 @@ try {
   exitCode = 0;
   
 } finally {
+  cd(ROOT);
   rm(MARKER_IOS);
   rm(MARKER_ANDROID);
 
