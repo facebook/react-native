@@ -16,7 +16,6 @@
 
 @interface RCTModalHostView : UIView <RCTInvalidating>
 
-@property (nonatomic, assign, getter=isAnimated) BOOL animated;
 @property (nonatomic, strong) NSString *animationType;
 @property (nonatomic, assign, getter=isTransparent) BOOL transparent;
 

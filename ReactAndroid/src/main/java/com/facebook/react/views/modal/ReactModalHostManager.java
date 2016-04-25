@@ -55,11 +55,6 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
     view.dismiss();
   }
 
-  @ReactProp(name = "animated")
-  public void setAnimated(ReactModalHostView view, boolean animated) {
-    view.setAnimated(animated);
-  }
-
   @ReactProp(name = "animationType")
   public void setAnimationType(ReactModalHostView view, String animationType) {
     view.setAnimationType(animationType);

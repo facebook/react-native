@@ -54,7 +54,6 @@ public class ReactModalHostView extends ViewGroup {
   private DialogRootViewGroup mHostView;
   private @Nullable Dialog mDialog;
   private boolean mTransparent;
-  private boolean mAnimated;
   private String mAnimationType;
   // Set this flag to true if changing a particular property on the view requires a new Dialog to
   // be created.  For instance, animation does since it affects Dialog creation through the theme
@@ -124,11 +123,6 @@ public class ReactModalHostView extends ViewGroup {
     mTransparent = transparent;
   }
 
-  protected void setAnimated(boolean animated) {
-    mAnimated = animated;
-    mPropertyRequiresNewDialog = true;
-  }
-
   protected void setAnimationType(String animationType) {
     mAnimationType = animationType;
     mPropertyRequiresNewDialog = true;
@@ -160,9 +154,6 @@ public class ReactModalHostView extends ViewGroup {
     // Reset the flag since we are going to create a new dialog
     mPropertyRequiresNewDialog = false;
     int theme = R.style.Theme_FullScreenDialog;
-    if (mAnimated) {
-      theme = R.style.Theme_FullScreenDialogAnimatedSlide;
-    }
     if (mAnimationType.equals("fade")) {
       theme = R.style.Theme_FullScreenDialogAnimatedFade;
     } else if (mAnimationType.equals("slide")) {
