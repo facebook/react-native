@@ -142,6 +142,7 @@ var TouchableBounce = React.createClass({
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}>
         {this.props.children}
+        {Touchable.renderDebugView({color: 'orange', hitSlop: this.props.hitSlop})}
       </Animated.View>
     );
   }

@@ -10,8 +10,8 @@
 const log = require('../util/log').out('bundle');
 const outputBundle = require('./output/bundle');
 const Promise = require('promise');
-const ReactPackager = require('../../packager/react-packager');
 const saveAssets = require('./saveAssets');
+const Server = require('../../packager/react-packager/src/Server');
 
 function saveBundle(output, bundle, args) {
   return Promise.resolve(
@@ -32,7 +32,7 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
       blacklistRE: config.getBlacklistRE(args.platform),
       getTransformOptionsModulePath: config.getTransformOptionsModulePath,
       transformModulePath: args.transformer,
-      verbose: args.verbose,
+      nonPersistent: true,
     };
 
     const requestOpts = {
@@ -43,28 +43,21 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
       platform: args.platform,
     };
 
-    var bundlePromise;
-    if (packagerInstance) {
-      bundlePromise = output.build(packagerInstance, requestOpts)
-        .then(bundle => saveBundle(output, bundle, args));
-    } else {
-      const clientPromise = ReactPackager.createClientFor(options);
-
-      // Build and save the bundle
-      bundlePromise = clientPromise
-        .then(client => {
-          log('Created ReactPackager');
-          return output.build(client, requestOpts);
-        })
-        .then(bundle => saveBundle(output, bundle, args));
-
-      // When we're done bundling, close the client
-      Promise.all([clientPromise, bundlePromise])
-        .then(([client]) => {
-          log('Closing client');
-          client.close();
-        });
+    // If a packager instance was not provided, then just create one for this
+    // bundle command and close it down afterwards.
+    var shouldClosePackager = false;
+    if (!packagerInstance) {
+      packagerInstance = new Server(options);
+      shouldClosePackager = true;
     }
+
+    const bundlePromise = output.build(packagerInstance, requestOpts)
+      .then(bundle => {
+        if (shouldClosePackager) {
+          packagerInstance.end();
+        }
+        return saveBundle(output, bundle, args);
+      });
 
     // Save the assets of the bundle
     const assets = bundlePromise

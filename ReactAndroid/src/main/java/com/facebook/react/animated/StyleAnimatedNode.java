@@ -16,6 +16,8 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 /**
  * Native counterpart of style animated node (see AnimatedStyle class in AnimatedImplementation.js)
  */
@@ -38,7 +40,7 @@ import java.util.Map;
 
   public void collectViewUpdates(JavaOnlyMap propsMap) {
     for (Map.Entry<String, Integer> entry : mPropMapping.entrySet()) {
-      AnimatedNode node = mNativeAnimatedNodesManager.getNodeById(entry.getValue());
+      @Nullable AnimatedNode node = mNativeAnimatedNodesManager.getNodeById(entry.getValue());
       if (node == null) {
         throw new IllegalArgumentException("Mapped style node does not exists");
       } else if (node instanceof ValueAnimatedNode) {

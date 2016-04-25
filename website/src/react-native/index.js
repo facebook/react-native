@@ -50,8 +50,10 @@ var index = React.createClass({
 
 import React, {
   Component,
+} from 'react';
+import {
   TabBarIOS,
-  NavigatorIOS
+  NavigatorIOS,
 } from 'react-native';
 
 class App extends Component {
@@ -72,9 +74,11 @@ class App extends Component {
 
 import React, {
   Component,
+} from 'react';
+import {
   DrawerLayoutAndroid,
   ProgressBarAndroid,
-  Text
+  Text,
 } from 'react-native';
 
 class App extends Component {
@@ -107,9 +111,11 @@ class App extends Component {
 
 import React, {
   Component,
+} from 'react';
+import {
   ScrollView,
   TouchableHighlight,
-  Text
+  Text,
 } from 'react-native';
 
 class TouchDemo extends Component {
@@ -132,12 +138,14 @@ class TouchDemo extends Component {
           <Prism>
 {`// iOS & Android
 
-var React, {
+import React, {
   Component,
+} from 'react';
+import {
   Image,
   StyleSheet,
   Text,
-  View
+  View,
 } from 'react-native';
 
 class ReactNative extends Component {
@@ -178,7 +186,9 @@ var styles = StyleSheet.create({
 
 import React, {
   Component,
-  Text
+} from 'react';
+import {
+  Text,
 } from 'react-native';
 
 class GeoInfo extends Component {
@@ -234,8 +244,10 @@ RCT_EXPORT_METHOD(processString:(NSString *)input callback:(RCTResponseSenderBlo
 
 import React, {
   Component,
+} from 'react';
+import {
   NativeModules,
-  Text
+  Text,
 } from 'react-native';
 
 class Message extends Component {
@@ -285,7 +297,9 @@ RCT_EXPORT_VIEW_PROPERTY(myCustomProperty, NSString);
 
 import React, {
   Component,
-  requireNativeComponent
+} from 'react';
+import {
+  requireNativeComponent,
 } from 'react-native';
 
 var NativeMyCustomView = requireNativeComponent('MyCustomView', MyCustomView);
@@ -327,8 +341,10 @@ public class MyCustomModule extends ReactContextBaseJavaModule {
 
 import React, {
   Component,
+} from 'react';
+import {
   NativeModules,
-  Text
+  Text,
 } from 'react-native';
 class Message extends Component {
   constructor(props) {
@@ -379,7 +395,9 @@ public class MyCustomViewManager extends SimpleViewManager<MyCustomView> {
 
 import React, {
   Component,
-  requireNativeComponent
+} from 'react';
+import {
+  requireNativeComponent,
 } from 'react-native';
 
 var NativeMyCustomView = requireNativeComponent('MyCustomView', MyCustomView);

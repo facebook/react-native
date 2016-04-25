@@ -83,6 +83,18 @@ var DrawerLayoutAndroid = React.createClass({
       'on-drag',
     ]),
     /**
+     * Specifies the background color of the drawer. The default value is white.
+     * If you want to set the opacity of the drawer, use rgba. Example:
+     *
+     * ```
+     * return (
+     *   <DrawerLayoutAndroid drawerBackgroundColor="rgba(0,0,0,0.5)">
+     *   </DrawerLayoutAndroid>
+     * );
+     * ```
+     */
+    drawerBackgroundColor: ColorPropType,
+    /**
      * Specifies the side of the screen from which the drawer will slide in.
      */
     drawerPosition: ReactPropTypes.oneOf([
@@ -141,6 +153,12 @@ var DrawerLayoutAndroid = React.createClass({
 
   mixins: [NativeMethodsMixin],
 
+  getDefaultProps: function(): Object {
+    return {
+      drawerBackgroundColor: 'white',
+    };
+  },
+
   getInitialState: function() {
     return {statusBarBackgroundColor: undefined};
   },
@@ -160,7 +178,12 @@ var DrawerLayoutAndroid = React.createClass({
   render: function() {
     var drawStatusBar = Platform.Version >= 21 && this.props.statusBarBackgroundColor;
     var drawerViewWrapper =
-      <View style={[styles.drawerSubview, {width: this.props.drawerWidth}]} collapsable={false}>
+      <View
+        style={[
+          styles.drawerSubview,
+          {width: this.props.drawerWidth, backgroundColor: this.props.drawerBackgroundColor}
+        ]}
+        collapsable={false}>
         {this.props.renderNavigationView()}
         {drawStatusBar && <View style={styles.drawerStatusBar} />}
       </View>;
@@ -283,7 +306,6 @@ var styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     bottom: 0,
-    backgroundColor: 'white',
   },
   statusBar: {
     height: StatusBar.currentHeight,

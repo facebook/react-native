@@ -20,6 +20,8 @@ import com.facebook.react.uimanager.UIManagerModule;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 /**
  * Animated node that represents view properties. There is a special handling logic implemented for
  * the nodes of this type in {@link NativeAnimatedNodesManager} that is responsible for extracting
@@ -50,7 +52,7 @@ import java.util.Map;
     }
     JavaOnlyMap propsMap = new JavaOnlyMap();
     for (Map.Entry<String, Integer> entry : mPropMapping.entrySet()) {
-      AnimatedNode node = mNativeAnimatedNodesManager.getNodeById(entry.getValue());
+      @Nullable AnimatedNode node = mNativeAnimatedNodesManager.getNodeById(entry.getValue());
       if (node == null) {
         throw new IllegalArgumentException("Mapped property node does not exists");
       } else if (node instanceof StyleAnimatedNode) {

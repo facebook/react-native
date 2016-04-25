@@ -103,4 +103,56 @@ describe('NavigationStackReducer', () => {
     expect(state3).toBe(state2);
   });
 
+  it('allows inner reducers to handle back actions', () => {
+    const subReducer = NavigationStackReducer({
+      getPushedReducerForAction: () => {},
+      initialState: {
+        children: [
+          {key: 'first'},
+          {key: 'second'},
+        ],
+        index: 1,
+        key: 'myInnerStack'
+      },
+    });
+
+    const reducer = NavigationStackReducer({
+      getPushedReducerForAction: (action) => {
+        if (action.type === 'TestPushAction') {
+          return subReducer;
+        }
+
+        return null;
+      },
+      getReducerForState: (state) => {
+        if (state.key === 'myInnerStack') {
+          return subReducer;
+        }
+        return () => state;
+      },
+      initialState: {
+        children: [
+          {key: 'a'},
+        ],
+        index: 0,
+        key: 'myStack'
+      }
+    });
+
+    const state1 = reducer(null, {type: 'MyDefaultAction'});
+    const state2 = reducer(state1, {type: 'TestPushAction'});
+    expect(state2.children.length).toBe(2);
+    expect(state2.children[0].key).toBe('a');
+    expect(state2.children[1].key).toBe('myInnerStack');
+    expect(state2.children[1].children.length).toBe(2);
+    expect(state2.children[1].children[0].key).toBe('first');
+    expect(state2.children[1].children[1].key).toBe('second');
+
+    const state3 = reducer(state2, NavigationRootContainer.getBackAction());
+    expect(state3.children.length).toBe(2);
+    expect(state3.children[0].key).toBe('a');
+    expect(state3.children[1].key).toBe('myInnerStack');
+    expect(state3.children[1].children.length).toBe(1);
+    expect(state3.children[1].children[0].key).toBe('first');
+  });
 });

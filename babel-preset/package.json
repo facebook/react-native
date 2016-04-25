@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-react-native",
-  "version": "1.5.6",
+  "version": "1.5.7",
   "description": "Babel preset for React Native applications",
   "main": "index.js",
   "repository": "https://github.com/facebook/react-native/tree/master/babel-preset",
@@ -22,6 +22,7 @@
     "babel-plugin-syntax-jsx": "^6.5.0",
     "babel-plugin-syntax-trailing-function-commas": "^6.5.0",
     "babel-plugin-transform-class-properties": "^6.5.0",
+    "babel-plugin-transform-es2015-function-name": "^6.5.0",
     "babel-plugin-transform-es2015-arrow-functions": "^6.5.0",
     "babel-plugin-transform-es2015-block-scoping": "^6.5.0",
     "babel-plugin-transform-es2015-classes": "^6.5.0",

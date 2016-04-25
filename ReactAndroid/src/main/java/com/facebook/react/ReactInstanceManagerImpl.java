@@ -370,7 +370,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     Assertions.assertCondition(
         !mHasStartedCreatingInitialContext,
         "createReactContextInBackground should only be called when creating the react " +
-            "application for the first time. When reloading JS, e.g. from a new file, explicitly" +
+            "application for the first time. When reloading JS, e.g. from a new file, explicitly " +
             "use recreateReactContextInBackground");
 
     mHasStartedCreatingInitialContext = true;

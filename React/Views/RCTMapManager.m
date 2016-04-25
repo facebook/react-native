@@ -226,7 +226,8 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   }
   annotationView.canShowCallout = (annotation.title.length > 0);
 
-  if (annotation.leftCalloutViewIndex != NSNotFound) {
+  if (annotation.leftCalloutViewIndex != NSNotFound &&
+      annotation.leftCalloutViewIndex < mapView.reactSubviews.count) {
     annotationView.leftCalloutAccessoryView =
       mapView.reactSubviews[annotation.leftCalloutViewIndex];
   } else if (annotation.hasLeftCallout) {
@@ -236,7 +237,8 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
     annotationView.leftCalloutAccessoryView = nil;
   }
 
-  if (annotation.rightCalloutViewIndex != NSNotFound) {
+  if (annotation.rightCalloutViewIndex != NSNotFound &&
+      annotation.rightCalloutViewIndex < mapView.reactSubviews.count) {
     annotationView.rightCalloutAccessoryView =
       mapView.reactSubviews[annotation.rightCalloutViewIndex];
   } else if (annotation.hasRightCallout) {
@@ -248,7 +250,8 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 
   //http://stackoverflow.com/questions/32581049/mapkit-ios-9-detailcalloutaccessoryview-usage
   if ([annotationView respondsToSelector:@selector(detailCalloutAccessoryView)]) {
-    if (annotation.detailCalloutViewIndex != NSNotFound) {
+    if (annotation.detailCalloutViewIndex != NSNotFound &&
+        annotation.detailCalloutViewIndex < mapView.reactSubviews.count) {
       UIView *calloutView = mapView.reactSubviews[annotation.detailCalloutViewIndex];
       NSLayoutConstraint *widthConstraint =
         [NSLayoutConstraint constraintWithItem:calloutView

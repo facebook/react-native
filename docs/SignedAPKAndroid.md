@@ -35,7 +35,10 @@ MYAPP_RELEASE_KEY_PASSWORD=*****
 
 These are going to be global gradle variables, which we can later use in our gradle config to sign our app.
 
-_Note: Once you publish the app on the Play Store, you will need to republish your app under a different package name (losing all downloads and ratings) if you want to change the signing key at any point. So backup your keystore and don't forget the passwords._
+_Note about saving the keystore: Once you publish the app on the Play Store, you will need to republish your app under a different package name (losing all downloads and ratings) if you want to change the signing key at any point. So backup your keystore and don't forget the passwords._
+
+_Note about security: If you are not keen on storing your passwords in plaintext and you are running OSX, you can also [store your credentials in the Keychain Access app](https://pilloxa.gitlab.io/posts/safer-passwords-in-gradle/). Then you can skip the two last rows in `~/.gradle/gradle.properties`._ 
+
 
 ### Adding signing config to your app's gradle config
 

@@ -9,7 +9,7 @@
 
 package com.facebook.react.animated;
 
-import android.support.annotation.Nullable;
+import javax.annotation.Nullable;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
@@ -20,7 +20,6 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.GuardedChoreographerFrameCallback;
-import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.ReactChoreographer;
 import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerModule;

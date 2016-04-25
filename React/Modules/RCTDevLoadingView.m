@@ -77,7 +77,6 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
       _label.textAlignment = NSTextAlignmentCenter;
 
       [_window addSubview:_label];
-      [_window makeKeyAndVisible];
     }
 
     _label.text = message;
