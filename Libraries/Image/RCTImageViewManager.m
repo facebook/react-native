@@ -44,18 +44,4 @@ RCT_CUSTOM_VIEW_PROPERTY(tintColor, UIColor, RCTImageView)
   view.renderingMode = json ? UIImageRenderingModeAlwaysTemplate : defaultView.renderingMode;
 }
 
-RCT_EXPORT_METHOD(getSize:(NSURL *)imageURL
-                  successBlock:(RCTResponseSenderBlock)successBlock
-                  errorBlock:(RCTResponseErrorBlock)errorBlock)
-{
-  [self.bridge.imageLoader getImageSize:imageURL.absoluteString
-                                  block:^(NSError *error, CGSize size) {
-                                    if (error) {
-                                      errorBlock(error);
-                                    } else {
-                                      successBlock(@[@(size.width), @(size.height)]);
-                                    }
-                                  }];
-}
-
 @end

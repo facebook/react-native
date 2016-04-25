@@ -32,6 +32,11 @@ var {
   NetworkImageViewManager,
 } = NativeModules;
 
+type ImageMetadata = {
+  width: number,
+  height: number,
+};
+
 /**
  * A React component for displaying different types of images,
  * including network images, static resources, temporary local images, and
@@ -160,16 +165,7 @@ var Image = React.createClass({
   statics: {
     resizeMode: ImageResizeMode,
     /**
-     * Retrieve the width and height (in pixels) of an image prior to displaying it.
-     * This method can fail if the image cannot be found, or fails to download.
-     *
-     * In order to retrieve the image dimensions, the image may first need to be
-     * loaded or downloaded, after which it will be cached. This means that in
-     * principle you could use this method to preload images, however it is not
-     * optimized for that purpose, and may in future be implemented in a way that
-     * does not fully load/download the image data. A proper, supported way to
-     * preload images will be provided as a separate API.
-     *
+     * @deprecated Use `Image.getMetadata` instead
      * @platform ios
      */
     getSize: function(
@@ -177,15 +173,34 @@ var Image = React.createClass({
       success: (width: number, height: number) => void,
       failure: (error: any) => void,
     ) {
-      ImageViewManager.getSize(uri, success, failure || function() {
-        console.warn('Failed to get size for image: ' + uri);
-      });
+      console.warn('Image.getSize is deprecated. Use Image.getMetadata instead');
+
+      Image.getMetadata(uri)
+        .then(meta => success(meta.width, meta.height))
+        .catch(failure || function () {
+          console.warn('Failed to get size for image: ' + uri);
+        });
+    },
+    /**
+     * Retrieve the metadata of an image prior to displaying it.
+     * This method can fail if the image cannot be found, or fails to download.
+     *
+     * In order to retrieve the image metadata, the image may first need to be
+     * loaded or downloaded, after which it will be cached. This means that in
+     * principle you could use this method to preload images, however it is not
+     * optimized for that purpose, and may in future be implemented in a way that
+     * does not fully load/download the image data. Use `Image.prefetch` instead.
+     *
+     * @platform ios
+     */
+    getMetadata(uri: string): Promise<ImageMetadata> {
+      return ImageLoader.getMetadata(uri);
     },
     /**
      * Prefetches a remote image for later use by downloading it to the disk
-     * cache
+     * cache and returns image metadata.
      */
-    prefetch(url: string) {
+    prefetch(url: string): Promise<ImageMetadata> {
       return ImageLoader.prefetchImage(url);
     },
   },
