@@ -91,10 +91,6 @@ try {
       throw Error(exitCode);
     }
   }
-  // TODO break init command
-  pack = JSON.parse('package.json');
-  pack.dependencies['yargs'] = '18.0.0';
-  pack.to('package.json');
 
   if (exec('npm pack').code) {
     echo('Failed to pack react-native');
