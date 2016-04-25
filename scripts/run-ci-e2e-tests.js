@@ -77,7 +77,7 @@ try {
       echo('Could not install react-native-cli globally, please run in su mode');
       echo('Or with --skip-cli-install to skip this step');
       exitCode = 1;
-      throw exitCode;
+      throw Error(exitCode);
     }
   }
 
@@ -85,27 +85,30 @@ try {
     if (exec('./gradlew :ReactAndroid:installArchives -Pjobs=1 -Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"').code) {
       echo('Failed to compile Android binaries');
       exitCode = 1;
-      throw exitCode;
+      throw Error(exitCode);
     }
   }
 
   if (exec('npm pack').code) {
     echo('Failed to pack react-native');
     exitCode = 1;
-    throw exitCode;
+    throw Error(exitCode);
   }
 
   const PACKAGE = path.join(ROOT, 'react-native-*.tgz');
   cd(TEMP);
   if (tryExecNTimes(
-    () => exec(`react-native init EndToEndTest --version ${PACKAGE}`).code,
+    () => {
+      exec('sleep 10s');
+      return exec(`react-native init EndToEndTest --version ${PACKAGE}`).code;
+    },
     retries, 
     0, 
     () => rm('-rf', 'EndToEndTest'))) {
       echo('Failed to execute react-native init');
       echo('Most common reason is npm registry connectivity, try again');
       exitCode = 1;
-      throw exitCode;
+      throw Error(exitCode);
   }
 
   cd('EndToEndTest');
@@ -120,7 +123,7 @@ try {
       echo('Failed to install appium');
       echo('Most common reason is npm registry connectivity, try again');
       exitCode = 1;
-      throw exitCode;
+      throw Error(exitCode);
     }
     cp(`${SCRIPTS}/android-e2e-test.js`, 'android-e2e-test.js');
     cd('android');
@@ -130,7 +133,7 @@ try {
     if (!test('-e', path.basename(MARKER_ANDROID))) {
       echo('Android marker was not found, react native init command failed?');
       exitCode = 1;
-      throw exitCode;
+      throw Error(exitCode);
     }
     cd('..');
     exec('keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"');
@@ -143,7 +146,7 @@ try {
     if (exec('buck build android/app').code) {
       echo('could not execute Buck build, is it installed and in PATH?');
       exitCode = 1;
-      throw exitCode;
+      throw Error(exitCode);
     }
     let packagerEnv = Object.create(process.env);
     packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
@@ -157,18 +160,21 @@ try {
     exec('sleep 5s');
     echo('Executing android e2e test');
     if (tryExecNTimes(
-      () => exec('node node_modules/.bin/_mocha android-e2e-test.js').code,
+      () => {
+        exec('sleep 10s');
+        return exec('node node_modules/.bin/_mocha android-e2e-test.js').code;
+      },
       retries, 
       0)) {
       echo('Failed to run Android e2e tests');
       echo('Most likely the code is broken');
       exitCode = 1;
-      throw exitCode;
+      throw Error(exitCode);
     }
 
     if (exec('').code) {
       exitCode = 1;
-      throw exitCode;
+      throw Error(exitCode);
     }
   }
 
@@ -179,7 +185,7 @@ try {
     if (!test('-e', path.join('EndToEndTest', path.basename(MARKER_IOS)))) {
       echo('iOS marker was not found, `react-native init` command failed?');
       exitCode = 1;
-      throw exitCode;
+      throw Error(exitCode);
     }
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     let packagerEnv = Object.create(process.env);
@@ -196,13 +202,16 @@ try {
     echo(`Starting packager server, ${SERVER_PID}`);
     echo('Executing ios e2e test');
     if (tryExecNTimes(
-      () => exec('xcodebuild -scheme EndToEndTest -sdk iphonesimulator test | xcpretty && exit ${PIPESTATUS[0]}').code,
+      () => {
+        exec('sleep 10s');
+        return exec('xcodebuild -scheme EndToEndTest -sdk iphonesimulator test | xcpretty && exit ${PIPESTATUS[0]}').code;
+      },
       retries, 
       0)) {
       echo('Failed to run iOS e2e tests');
       echo('Most likely the code is broken');
       exitCode = 1;
-      throw exitCode;
+      throw Error(exitCode);
     }
     cd('..');
   }
@@ -212,17 +221,17 @@ try {
     if (exec('react-native bundle --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js').code) {
       echo('Could not build android package');
       exitCode = 1;
-      throw exitCode;
+      throw Error(exitCode);
     }
     if (exec('react-native bundle --platform ios --dev true --entry-file index.ios.js --bundle-output ios-bundle.js').code) {
       echo('Could not build ios package');
       exitCode = 1;
-      throw exitCode;
+      throw Error(exitCode);
     }
     if (exec(`${ROOT}/node_modules/.bin/flow check`).code) {
       echo('Flow check does not pass');
       exitCode = 1;
-      throw exitCode;
+      throw Error(exitCode);
     }
   }
   exitCode = 0;
