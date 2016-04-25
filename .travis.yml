@@ -15,7 +15,7 @@ install:
 
 script:
   - if [[ "$TEST_TYPE" = objc ]]; then travis_retry ./scripts/objc-test.sh; fi
-  - if [[ "$TEST_TYPE" = e2e-objc ]]; then travis_retry node ./scripts/run-ci-e2e-tests.js --ios --js; fi
+  - if [[ "$TEST_TYPE" = e2e-objc ]]; then node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3; fi
   - if [[ "$TEST_TYPE" = js ]]; then npm run flow check; fi
   - if [[ "$TEST_TYPE" = js ]]; then npm test -- --maxWorkers=1; fi
 
