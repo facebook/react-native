@@ -53,7 +53,6 @@ function tryExecNTimes(funcToRetry, retriesLeft, onEveryError) {
   if (code === 0) {
     return code;
   } else {
-    console.log('------', onEveryError)
     if(onEveryError) {
       onEveryError();
     }
