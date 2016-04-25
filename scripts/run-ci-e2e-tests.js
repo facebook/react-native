@@ -34,33 +34,36 @@ const TEMP = exec('mktemp -d /tmp/react-native-XXXXXXXX').stdout.trim();
 // and check that it exists after `react-native init
 const MARKER_IOS = exec(`mktemp ${ROOT}/local-cli/generator-ios/templates/app/XXXXXXXX`).stdout.trim();
 const MARKER_ANDROID = exec(`mktemp ${ROOT}/local-cli/generator-android/templates/src/XXXXXXXX`).stdout.trim();
-const retries = argv.retries || 1;
+const numberOfRetries = argv.retries || 1;
 let SERVER_PID;
 let APPIUM_PID;
 let exitCode;
+
 
 /**
  * Try executing a function n times recursively.
  * Return 0 the first time it succeeds
  * Return code of the last failed commands if not more retries left
  * @funcToRetry - function that gets retried
- * @numLeft - number of retries to execute funcToRetry
- * @previousAttemptErrorCode - error code frome previous attempt
+ * @retriesLeft - number of retries to execute funcToRetry
  * @onEveryError - func to execute if funcToRetry returns non 0 
  */
-function tryExecNTimes(funcToRetry, numLeft, previousAttemptErrorCode, onEveryError) {
-  if (numLeft === 0) {
-    return previousAttemptErrorCode;
-  }
+function tryExecNTimes(funcToRetry, retriesLeft, onEveryError) {
   const code = funcToRetry();
   if (code === 0) {
-    return 0;
+    return code;
   } else {
+    console.log('------', onEveryError)
     if(onEveryError) {
       onEveryError();
     }
-    echo(`Command failed, ${numLeft - 1} retries left`);
-    return tryExecNTimes(funcToRetry, --numLeft, code);
+    retriesLeft--;
+    echo(`Command failed, ${retriesLeft} retries left`);
+    if (retriesLeft === 0) {
+      return code;
+    } else {
+      return tryExecNTimes(funcToRetry, retriesLeft, onEveryError);
+    }
   }
 }
 
@@ -88,6 +91,10 @@ try {
       throw Error(exitCode);
     }
   }
+  // TODO break init command
+  pack = JSON.parse('package.json');
+  pack.dependencies['yargs'] = '18.0.0';
+  pack.to('package.json');
 
   if (exec('npm pack').code) {
     echo('Failed to pack react-native');
@@ -102,8 +109,7 @@ try {
       exec('sleep 10s');
       return exec(`react-native init EndToEndTest --version ${PACKAGE}`).code;
     },
-    retries, 
-    0, 
+    numberOfRetries, 
     () => rm('-rf', 'EndToEndTest'))) {
       echo('Failed to execute react-native init');
       echo('Most common reason is npm registry connectivity, try again');
@@ -118,12 +124,11 @@ try {
     echo('Installing e2e framework');
     if (tryExecNTimes(
       () => exec('npm install --save-dev appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3 pretty-data2@0.40.1', { silent: true }).code,
-      retries, 
-      0)) {
-      echo('Failed to install appium');
-      echo('Most common reason is npm registry connectivity, try again');
-      exitCode = 1;
-      throw Error(exitCode);
+      numberOfRetries)) {
+        echo('Failed to install appium');
+        echo('Most common reason is npm registry connectivity, try again');
+        exitCode = 1;
+        throw Error(exitCode);
     }
     cp(`${SCRIPTS}/android-e2e-test.js`, 'android-e2e-test.js');
     cd('android');
@@ -164,12 +169,11 @@ try {
         exec('sleep 10s');
         return exec('node node_modules/.bin/_mocha android-e2e-test.js').code;
       },
-      retries, 
-      0)) {
-      echo('Failed to run Android e2e tests');
-      echo('Most likely the code is broken');
-      exitCode = 1;
-      throw Error(exitCode);
+      numberOfRetries)) {
+        echo('Failed to run Android e2e tests');
+        echo('Most likely the code is broken');
+        exitCode = 1;
+        throw Error(exitCode);
     }
 
     if (exec('').code) {
@@ -206,12 +210,11 @@ try {
         exec('sleep 10s');
         return exec('xcodebuild -scheme EndToEndTest -sdk iphonesimulator test | xcpretty && exit ${PIPESTATUS[0]}').code;
       },
-      retries, 
-      0)) {
-      echo('Failed to run iOS e2e tests');
-      echo('Most likely the code is broken');
-      exitCode = 1;
-      throw Error(exitCode);
+      numberOfRetries)) {
+        echo('Failed to run iOS e2e tests');
+        echo('Most likely the code is broken');
+        exitCode = 1;
+        throw Error(exitCode);
     }
     cd('..');
   }
