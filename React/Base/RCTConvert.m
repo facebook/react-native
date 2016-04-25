@@ -583,7 +583,7 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   NSString *const RCTIOS8SystemFontFamily = @"Helvetica Neue";
   const RCTFontWeight RCTDefaultFontWeight = UIFontWeightRegular;
   const CGFloat RCTDefaultFontSize = 14;
-  const bool HasSystemFontWeightSelector = [UIFont respondsToSelector:@selector(systemFontOfSize:weight:)];
+  const BOOL hasSystemFontWeightSelector = [UIFont respondsToSelector:@selector(systemFontOfSize:weight:)];
 
   // Initialize properties to defaults
   CGFloat fontSize = RCTDefaultFontSize;
@@ -612,8 +612,8 @@ static BOOL RCTFontIsCondensed(UIFont *font)
 
   // Font is a systemFont if its familyName is either equal to `System` or
   // real system font family determined by systemFontOfSize selector
-  bool isSystemFont = [familyName isEqual:RCTDefaultFontFamily];
-  if (HasSystemFontWeightSelector && !isSystemFont) {
+  BOOL isSystemFont = [familyName isEqual:RCTDefaultFontFamily];
+  if (hasSystemFontWeightSelector && !isSystemFont) {
     UIFont *systemFont = [UIFont systemFontOfSize:fontSize weight:fontWeight];
     isSystemFont = [familyName isEqualToString:systemFont.familyName];
   }
@@ -621,7 +621,7 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   // Handle system font as special case. This ensures that we preserve
   // the specific metrics of the standard system font as closely as possible.
   if (isSystemFont) {
-    if (HasSystemFontWeightSelector) {
+    if (hasSystemFontWeightSelector) {
       font = [UIFont systemFontOfSize:fontSize weight:fontWeight];
       if (isItalic || isCondensed) {
         UIFontDescriptor *fontDescriptor = [font fontDescriptor];
