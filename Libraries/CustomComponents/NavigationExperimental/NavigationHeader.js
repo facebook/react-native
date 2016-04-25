@@ -187,7 +187,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     if (subView === null) {
       return null;
     }
-    
+
     const { subviewStyle } = this.props;
     const pointerEvents = offset !== 0 || isStale ? 'none' : 'box-none';
     return (
