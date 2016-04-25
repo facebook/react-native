@@ -107,8 +107,9 @@ var WebView = React.createClass({
     ]),
 
     /**
-     * Used on Android only, JS is enabled by default for WebView on iOS
+     * Used on Android and Windows only, JS is enabled by default for WebView on iOS
      * @platform android
+     * @platform windows
      */
     javaScriptEnabled: PropTypes.bool,
     
@@ -146,7 +147,6 @@ var WebView = React.createClass({
   getDefaultProps: function() {
     return {
       javaScriptEnabled : true,
-      scalesPageToFit: true,
     };
   },
 

@@ -6,13 +6,7 @@ namespace ReactNative.Views.Web.Events
 {
     class WebViewLoadingEvent : Event
     {
-        public enum LoadingEventType
-        {
-            Start,
-            Finish,
-        };
-
-        private readonly LoadingEventType _type;
+        private readonly string _type;
 
         private readonly string _url;
         private readonly bool _loading;
@@ -22,7 +16,7 @@ namespace ReactNative.Views.Web.Events
 
         public WebViewLoadingEvent(
             int viewTag, 
-            LoadingEventType type, 
+            string type, 
             string url, 
             bool loading, 
             string title, 
@@ -42,7 +36,7 @@ namespace ReactNative.Views.Web.Events
         {
             get
             {
-                if (_type == LoadingEventType.Start)
+                if (_type.Equals("Start"))
                 {
                     return "topLoadingStart";
                 }

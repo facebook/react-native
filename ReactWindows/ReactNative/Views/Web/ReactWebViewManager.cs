@@ -4,9 +4,8 @@ using ReactNative.UIManager.Annotations;
 using ReactNative.Views.Web.Events;
 using System;
 using System.Collections.Generic;
-using Windows.ApplicationModel.Core;
-using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
+using Windows.Web;
 using Windows.Web.Http;
 
 namespace ReactNative.Views.Web
@@ -52,9 +51,9 @@ namespace ReactNative.Views.Web
         }
 
         /// <summary>
-        /// Sets whether JavaScript is enabled or not.
+        /// Sets flag signaling whether JavaScript is enabled.
         /// </summary>
-        /// <param name="view">a webview instance.</param>
+        /// <param name="view">A webview instance.</param>
         /// <param name="enabled"></param>
         [ReactProp("javaScriptEnabled")]
         public void SetJavaScriptEnabled(WebView view, bool enabled)
@@ -63,9 +62,9 @@ namespace ReactNative.Views.Web
         }
 
         /// <summary>
-        /// CSets whether Indexed DB is enabled or not.
+        /// Sets flag signaling whether Indexed DB is enabled.
         /// </summary>
-        /// <param name="view">a webview instance.</param>
+        /// <param name="view">A webview instance.</param>
         /// <param name="enabled"></param>
         [ReactProp("indexedDbEnabled")]
         public void SetIndexedDbEnabled(WebView view, bool enabled)
@@ -74,27 +73,20 @@ namespace ReactNative.Views.Web
         }
 
         /// <summary>
-        /// Sets the JS to be injected when the webpage loads.
+        /// Sets the JavaScript to be injected when the webpage loads.
         /// </summary>
-        /// <param name="view">a webview instance.</param>
+        /// <param name="view">A webview instance.</param>
         /// <param name="injectedJavaScript"></param>
         [ReactProp("injectedJavaScript")]
         public void SetInjectedJavaScript(WebView view, string injectedJavaScript)
         {
-            if (_injectedJS.ContainsKey(view.GetTag()))
-            {
-                _injectedJS[view.GetTag()] = injectedJavaScript;
-            }
-            else
-            {
-                _injectedJS.Add(view.GetTag(), injectedJavaScript);
-            }           
+            _injectedJS[view.GetTag()] = injectedJavaScript;         
         }
 
         /// <summary>
         /// Sets webview source.
         /// </summary>
-        /// <param name="view">a webview instance.</param>
+        /// <param name="view">A webview instance.</param>
         /// <param name="source"></param>
         [ReactProp("source")]
         public void SetSource(WebView view, JObject source)
@@ -133,7 +125,8 @@ namespace ReactNative.Views.Web
                         }
                         else
                         {
-                            return;
+                            throw new InvalidOperationException(
+                                $"Unsupported method '{method}' received by '{typeof(ReactWebViewManager)}'.");
                         }
                     }
                     else
@@ -141,7 +134,7 @@ namespace ReactNative.Views.Web
                         request.Method = HttpMethod.Get;
                     }
 
-                    var headers = source.Value<string>("headers");
+                    var headers = source.Value<JObject>("headers");
                     if (headers != null)
                     {
                         IEnumerator<KeyValuePair<string, JToken>> enumerator = ((JObject)headers).GetEnumerator();
@@ -228,10 +221,10 @@ namespace ReactNative.Views.Web
             view.NavigationStarting += OnNavigationStarting;
         }
 
-        private void OnNavigationCompleted(object sender, WebViewNavigationCompletedEventArgs e)
+        private async void OnNavigationCompleted(object sender, WebViewNavigationCompletedEventArgs e)
         {
             var webView = (WebView)sender;
-            var reactContext = webView.GetReactContext();
+            LoadFinished(webView, e.Uri?.ToString());
 
             if (e.IsSuccess)
             {
@@ -240,67 +233,64 @@ namespace ReactNative.Views.Web
                 if (_injectedJS.TryGetValue(webView.GetTag(), out script) && script.Length > 0)
                 {
                     string[] args = { script };
-                    RunOnDispatcher(async () =>
+                    try
                     {
-                        try
-                        {
-                            await webView.InvokeScriptAsync("eval", args);
-                        }
-                        catch (Exception)
-                        {
-                            // Invalid script
-                        }
-                    });
-                }
-
-                var uri = e.Uri?.ToString();
-
-                reactContext.GetNativeModule<UIManagerModule>()
-                    .EventDispatcher
-                    .DispatchEvent(
-                         new WebViewLoadingEvent(
-                            webView.GetTag(),
-                            WebViewLoadingEvent.LoadingEventType.Finish,
-                            uri,
-                            false,
-                            webView.DocumentTitle,
-                            webView.CanGoBack,
-                            webView.CanGoForward));
+                        await webView.InvokeScriptAsync("eval", args);
+                    }
+                    catch (Exception ex)
+                    {    
+                        LoadFailed(webView, e.WebErrorStatus, ex.Message);
+                    }
+                }  
             }
             else
             {
-                reactContext.GetNativeModule<UIManagerModule>()
-                .EventDispatcher
-                .DispatchEvent(
-                    new WebViewLoadingErrorEvent(
-                        webView.GetTag(),
-                        e.WebErrorStatus));
+                LoadFailed(webView, e.WebErrorStatus, null);
             }      
         }
 
         private void OnNavigationStarting(object sender, WebViewNavigationStartingEventArgs e)
         {
             var webView = (WebView)sender;
-            var reactContext = webView.GetReactContext();
 
-            var uri = e.Uri?.ToString();
-
-            reactContext.GetNativeModule<UIManagerModule>()
+            webView.GetReactContext().GetNativeModule<UIManagerModule>()
                 .EventDispatcher
                 .DispatchEvent(
                     new WebViewLoadingEvent(
                          webView.GetTag(),
-                         WebViewLoadingEvent.LoadingEventType.Start,
-                         uri, 
+                         "Start",
+                         e.Uri?.ToString(), 
                          true, 
                          webView.DocumentTitle, 
                          webView.CanGoBack, 
                          webView.CanGoForward));
         }
 
-        private static async void RunOnDispatcher(DispatchedHandler action)
+        private void LoadFinished(WebView webView, string uri)
         {
-            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, action);
+            webView.GetReactContext().GetNativeModule<UIManagerModule>()
+                    .EventDispatcher
+                    .DispatchEvent(
+                         new WebViewLoadingEvent(
+                            webView.GetTag(),
+                            "Finish",
+                            uri,
+                            false,
+                            webView.DocumentTitle,
+                            webView.CanGoBack,
+                            webView.CanGoForward));
+        }
+
+        private void LoadFailed(WebView webView, WebErrorStatus status, string message)
+        {
+            var reactContext = webView.GetReactContext();
+            reactContext.GetNativeModule<UIManagerModule>()
+                .EventDispatcher
+                .DispatchEvent(
+                    new WebViewLoadingErrorEvent(
+                        webView.GetTag(),
+                        status,
+                        message));
         }
     }
 }

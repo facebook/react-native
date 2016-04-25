@@ -10,11 +10,18 @@ namespace ReactNative.Views.Web.Events
         private readonly double _code;
         private readonly string _description;
 
-        public WebViewLoadingErrorEvent(int viewTag, WebErrorStatus error)
+        public WebViewLoadingErrorEvent(int viewTag, WebErrorStatus error, string description)
             : base(viewTag, TimeSpan.FromTicks(Environment.TickCount))
         {
             _code = (double)error;
-            _description = ErrorString(error);
+            if (description == null)
+            {
+                _description = ErrorString(error);
+            }
+            else
+            {
+                _description = description;
+            }
         }
 
         public override string EventName
