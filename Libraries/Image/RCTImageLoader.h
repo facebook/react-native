@@ -100,13 +100,6 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
                                                        resizeMode:(RCTResizeMode)resizeMode
                                                   completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
 
-/**
- * Get image size, in pixels. This method will do the least work possible to get
- * the information, and won't decode the image if it doesn't have to.
- */
-- (RCTImageLoaderCancellationBlock)getImageSize:(NSString *)imageTag
-                                          block:(void(^)(NSError *error, CGSize size))completionBlock;
-
 @end
 
 @interface RCTBridge (RCTImageLoader)

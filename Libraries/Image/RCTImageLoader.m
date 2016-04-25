@@ -22,6 +22,7 @@
 
 static NSString *const RCTErrorInvalidURI = @"E_INVALID_URI";
 static NSString *const RCTErrorPrefetchFailure = @"E_PREFETCH_FAILURE";
+static NSString *const RCTErrorGetMetadataFailure = @"E_GETMETADATA_FAILURE";
 
 @implementation UIImage (React)
 
@@ -610,31 +611,26 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   }
 }
 
-- (RCTImageLoaderCancellationBlock)getImageSize:(NSString *)imageTag
-                                          block:(void(^)(NSError *error, CGSize size))completionBlock
-{
-  return [self loadImageOrDataWithTag:imageTag
-                                 size:CGSizeZero
-                                scale:1
-                           resizeMode:RCTResizeModeStretch
-                        progressBlock:nil
-                      completionBlock:^(NSError *error, id imageOrData) {
-                        CGSize size;
-                        if ([imageOrData isKindOfClass:[NSData class]]) {
-                          NSDictionary *meta = RCTGetImageMetadata(imageOrData);
-                          size = (CGSize){
-                            [meta[(id)kCGImagePropertyPixelWidth] doubleValue],
-                            [meta[(id)kCGImagePropertyPixelHeight] doubleValue],
-                          };
-                        } else {
-                          UIImage *image = imageOrData;
-                          size = (CGSize){
-                            image.size.width * image.scale,
-                            image.size.height * image.scale,
-                          };
-                        }
-                        completionBlock(error, size);
-                      }];
+- (NSDictionary<NSString *, id>*)getMetadataForImage:(id)imageOrData {
+  CGSize size;
+  if ([imageOrData isKindOfClass:[NSData class]]) {
+    NSDictionary *meta = RCTGetImageMetadata(imageOrData);
+    size = (CGSize){
+      [meta[(id)kCGImagePropertyPixelWidth] doubleValue],
+      [meta[(id)kCGImagePropertyPixelHeight] doubleValue],
+    };
+  } else {
+    UIImage *image = imageOrData;
+    size = (CGSize){
+      image.size.width * image.scale,
+      image.size.height * image.scale,
+    };
+  }
+
+  return @{
+    @"width": @(size.width),
+    @"height": @(size.height)
+  };
 }
 
 #pragma mark - Bridged methods
@@ -648,14 +644,38 @@ RCT_EXPORT_METHOD(prefetchImage:(NSString *)uri
     return;
   }
 
-  [_bridge.imageLoader loadImageWithTag:uri callback:^(NSError *error, UIImage *image) {
+  [self loadImageWithTag:uri callback:^(NSError *error, UIImage *image) {
     if (error) {
       reject(RCTErrorPrefetchFailure, nil, error);
       return;
     }
 
-    resolve(@YES);
+    resolve([self getMetadataForImage:image]);
   }];
+}
+
+RCT_EXPORT_METHOD(getMetadata:(NSString *)uri
+                      resolve:(RCTPromiseResolveBlock)resolve
+                       reject:(RCTPromiseRejectBlock)reject)
+{
+  if (!uri.length) {
+    reject(RCTErrorInvalidURI, @"Cannot prefetch an image for an empty URI", nil);
+    return;
+  }
+
+  [self loadImageOrDataWithTag:uri
+                          size:CGSizeZero
+                         scale:1
+                    resizeMode:RCTResizeModeStretch
+                 progressBlock:nil
+               completionBlock:^(NSError *error, id imageOrData) {
+                 if (error) {
+                   reject(RCTErrorGetMetadataFailure, [error localizedDescription], error);
+                   return;
+                 }
+
+                 resolve([self getMetadataForImage:imageOrData]);
+               }];
 }
 
 #pragma mark - RCTURLRequestHandler
