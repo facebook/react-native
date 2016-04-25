@@ -150,6 +150,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _tabController.tabBar.translucent = translucent;
 }
 
+- (UITabBarItemPositioning)itemPositoning {
+  return _tabController.tabBar.itemPositioning;
+}
+
+- (void)setItemPositioning:(UITabBarItemPositioning)itemPositioning {
+  _tabController.tabBar.itemPositioning = itemPositioning;
+}
+
 #pragma mark - UITabBarControllerDelegate
 
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController
