@@ -872,8 +872,7 @@ var apps = [
 	{
 		"name": "婚格",
 		"desc": "婚格-让结婚更简单",
-		"ios": "https://itunes.apple.com/cn/app/hun-ge-rang-jie-hun-geng-jian/id1062457289?mt=8",
-		"android": "http://7xsmao.com2.z0.glb.qiniucdn.com/app-release.apk",
+		"link": "https://itunes.apple.com/cn/app/hun-ge-rang-jie-hun-geng-jian/id1062457289?mt=8",
 		"icon": "http://a1.mzstatic.com/us/r30/Purple49/v4/d2/fc/4b/d2fc4bfb-34c8-8b78-1126-6e81fc95a520/icon175x175.png"
 	}
 ];
