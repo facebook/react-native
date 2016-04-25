@@ -159,10 +159,10 @@ class NavigationAnimatedView
       <View
         onLayout={this._onLayout}
         style={this.props.style}>
+        {overlay}
         <View style={styles.scenes} key="scenes">
           {scenes}
         </View>
-        {overlay}
       </View>
     );
   }
