@@ -49,17 +49,17 @@ let exitCode;
  * @onEveryError - func to execute if funcToRetry returns non 0 
  */
 function tryExecNTimes(funcToRetry, retriesLeft, onEveryError) {
-  const code = funcToRetry();
-  if (code === 0) {
-    return code;
+  const exitCode = funcToRetry();
+  if (exitCode === 0) {
+    return exitCode;
   } else {
-    if(onEveryError) {
+    if (onEveryError) {
       onEveryError();
     }
     retriesLeft--;
     echo(`Command failed, ${retriesLeft} retries left`);
     if (retriesLeft === 0) {
-      return code;
+      return exitCode;
     } else {
       return tryExecNTimes(funcToRetry, retriesLeft, onEveryError);
     }
