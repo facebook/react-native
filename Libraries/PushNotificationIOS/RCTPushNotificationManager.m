@@ -260,38 +260,38 @@ RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTResponseSenderBlock)callbac
 
   for (UILocalNotification *notification in scheduledLocalNotifications) {
 
-    NSMutableDictionary* formattedScheduledLocalNotification = [NSMutableDictionary dictionary];
+    NSMutableDictionary *formattedScheduledLocalNotification = [NSMutableDictionary dictionary];
 
     if (notification.fireDate) {
       NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
       [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"];
       NSString *fireDateString = [formatter stringFromDate:notification.fireDate];
 
-      [formattedScheduledLocalNotification setObject: fireDateString forKey:@"fireDate"];
+      formattedScheduledLocalNotification[@"fireDate"] = fireDateString;
     }
 
     if (notification.alertBody) {
-      [formattedScheduledLocalNotification setObject: notification.alertBody forKey:@"alertBody"];
+      formattedScheduledLocalNotification[@"alertBody"] = notification.alertBody;
     }
 
     if (notification.alertAction) {
-      [formattedScheduledLocalNotification setObject: notification.alertAction forKey:@"alertAction"];
+      formattedScheduledLocalNotification[@"alertAction"] = notification.alertAction;
     }
 
     if (notification.soundName) {
-      [formattedScheduledLocalNotification setObject: notification.soundName forKey:@"soundName"];
+      formattedScheduledLocalNotification[@"soundName"] = notification.soundName;
     }
 
     if (notification.category) {
-      [formattedScheduledLocalNotification setObject: notification.category forKey:@"category"];
+      formattedScheduledLocalNotification[@"category"] = notification.category;
     }
 
     if (notification.applicationIconBadgeNumber) {
-      [formattedScheduledLocalNotification setObject: [NSNumber numberWithInteger:notification.applicationIconBadgeNumber] forKey:@"applicationIconBadgeNumber"];
+      formattedScheduledLocalNotification[@"applicationIconBadgeNumber"] = @(notification.applicationIconBadgeNumber);
     }
 
     if (notification.userInfo) {
-      [formattedScheduledLocalNotification setObject: notification.userInfo forKey:@"userInfo"];
+      formattedScheduledLocalNotification[@"userInfo"] = RCTJSONClean(notification.userInfo);
     }
 
     [formattedScheduledLocalNotifications addObject:formattedScheduledLocalNotification];
