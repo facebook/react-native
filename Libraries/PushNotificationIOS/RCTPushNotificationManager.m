@@ -40,7 +40,13 @@ NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegister
   notification.soundName = [RCTConvert NSString:details[@"soundName"]] ?: UILocalNotificationDefaultSoundName;
   notification.userInfo = [RCTConvert NSDictionary:details[@"userInfo"]];
   notification.category = [RCTConvert NSString:details[@"category"]];
-  notification.repeatInterval = [RCTConvert NSInteger:details[@"repeatInterval"]];
+  
+  NSNumber *repeatInterval = details[@"repeatInterval"];
+
+  if (repeatInterval) {
+    notification.repeatInterval = [RCTConvert NSInteger:repeatInterval];
+  }
+
   return notification;
 }
 
