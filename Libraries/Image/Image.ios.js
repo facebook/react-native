@@ -182,7 +182,7 @@ var Image = React.createClass({
         });
     },
     /**
-     * Retrieve the ImageMetadata of an image prior to displaying it.
+     * Retrieve the metadata of an image prior to displaying it.
      * This method can fail if the image cannot be found, or fails to download.
      *
      * In order to retrieve the image metadata, the image may first need to be
@@ -198,7 +198,7 @@ var Image = React.createClass({
     },
     /**
      * Prefetches a remote image for later use by downloading it to the disk
-     * cache
+     * cache and returns image metadata.
      */
     prefetch(url: string): Promise<ImageMetadata> {
       return ImageLoader.prefetchImage(url);
