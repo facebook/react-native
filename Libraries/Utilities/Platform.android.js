@@ -12,9 +12,22 @@
 
 'use strict';
 
+var invariant = require('invariant');
+
 var Platform = {
   OS: 'android',
   get Version() { return require('NativeModules').AndroidConstants.Version; },
+  select: (obj: Object) => {
+    invariant(
+      obj && typeof obj === 'object',
+      'Platform.select: Must be called with an object'
+    );
+    invariant(
+      obj.android,
+      'Platform.select: You must provide a value for `android` to select'
+    );
+    return obj.android;
+  },
 };
 
 module.exports = Platform;

@@ -12,8 +12,21 @@
 
 'use strict';
 
+var invariant = require('invariant');
+
 var Platform = {
   OS: 'ios',
+  select: (obj: Object) => {
+    invariant(
+      obj && typeof obj === 'object',
+      'Platform.select: Must be called with an object'
+    );
+    invariant(
+      obj.ios,
+      'Platform.select: You must provide a value for `ios` to select'
+    );
+    return obj.ios;
+  },
 };
 
 module.exports = Platform;
