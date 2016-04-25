@@ -43,8 +43,12 @@ let exitCode;
  * Try executing a function n times recursively.
  * Return 0 the first time it succeeds
  * Return code of the last failed commands if not more retries left
+ * @funcToRetry - function that gets retried
+ * @numLeft - number of retries to execute funcToRetry
+ * @previousAttemptErrorCode - error code frome previous attempt
+ * @onEveryError - func to execute if funcToRetry returns non 0 
  */
-function tryExecNTimes(funcToRetry, numLeft, previousAttemptErrorCode) {
+function tryExecNTimes(funcToRetry, numLeft, previousAttemptErrorCode, onEveryError) {
   if (numLeft === 0) {
     return previousAttemptErrorCode;
   }
@@ -52,6 +56,9 @@ function tryExecNTimes(funcToRetry, numLeft, previousAttemptErrorCode) {
   if (code === 0) {
     return 0;
   } else {
+    if(onEveryError) {
+      onEveryError();
+    }
     echo(`Command failed, ${numLeft - 1} retries left`);
     return tryExecNTimes(funcToRetry, --numLeft, code);
   }
@@ -69,32 +76,36 @@ try {
     if (exec(`npm install -g ${CLI_PACKAGE}`).code) {
       echo('Could not install react-native-cli globally, please run in su mode');
       echo('Or with --skip-cli-install to skip this step');
-      throw 1;
+      exitCode = 1;
+      throw exitCode;
     }
   }
 
   if (argv['android']) {
     if (exec('./gradlew :ReactAndroid:installArchives -Pjobs=1 -Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"').code) {
       echo('Failed to compile Android binaries');
-      throw 1;
+      exitCode = 1;
+      throw exitCode;
     }
   }
 
   if (exec('npm pack').code) {
     echo('Failed to pack react-native');
-    throw 1;
+    exitCode = 1;
+    throw exitCode;
   }
 
-  // test begins
   const PACKAGE = path.join(ROOT, 'react-native-*.tgz');
   cd(TEMP);
   if (tryExecNTimes(
     () => exec(`react-native init EndToEndTest --version ${PACKAGE}`).code,
     retries, 
-    0)) {
-    echo('Failed to execute react-native init');
-    echo('Most common reason is npm registry connectivity, try again');
-    throw 1;
+    0, 
+    () => rm('-rf', 'EndToEndTest'))) {
+      echo('Failed to execute react-native init');
+      echo('Most common reason is npm registry connectivity, try again');
+      exitCode = 1;
+      throw exitCode;
   }
 
   cd('EndToEndTest');
@@ -108,7 +119,8 @@ try {
       0)) {
       echo('Failed to install appium');
       echo('Most common reason is npm registry connectivity, try again');
-      throw 1;
+      exitCode = 1;
+      throw exitCode;
     }
     cp(`${SCRIPTS}/android-e2e-test.js`, 'android-e2e-test.js');
     cd('android');
@@ -117,7 +129,8 @@ try {
     // Make sure we installed local version of react-native
     if (!test('-e', path.basename(MARKER_ANDROID))) {
       echo('Android marker was not found, react native init command failed?');
-      throw 1;
+      exitCode = 1;
+      throw exitCode;
     }
     cd('..');
     exec('keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"');
@@ -129,7 +142,8 @@ try {
     echo('Building app');
     if (exec('buck build android/app').code) {
       echo('could not execute Buck build, is it installed and in PATH?');
-      throw 1;
+      exitCode = 1;
+      throw exitCode;
     }
     let packagerEnv = Object.create(process.env);
     packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
@@ -148,11 +162,13 @@ try {
       0)) {
       echo('Failed to run Android e2e tests');
       echo('Most likely the code is broken');
-      throw 1;
+      exitCode = 1;
+      throw exitCode;
     }
 
     if (exec('').code) {
-      throw 1;
+      exitCode = 1;
+      throw exitCode;
     }
   }
 
@@ -162,7 +178,8 @@ try {
     // Make sure we installed local version of react-native
     if (!test('-e', path.join('EndToEndTest', path.basename(MARKER_IOS)))) {
       echo('iOS marker was not found, `react-native init` command failed?');
-      throw 1;
+      exitCode = 1;
+      throw exitCode;
     }
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     let packagerEnv = Object.create(process.env);
@@ -184,7 +201,8 @@ try {
       0)) {
       echo('Failed to run iOS e2e tests');
       echo('Most likely the code is broken');
-      throw 1;
+      exitCode = 1;
+      throw exitCode;
     }
     cd('..');
   }
@@ -193,21 +211,22 @@ try {
     // Check the packager produces a bundle (doesn't throw an error)
     if (exec('react-native bundle --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js').code) {
       echo('Could not build android package');
-      throw 1;
+      exitCode = 1;
+      throw exitCode;
     }
     if (exec('react-native bundle --platform ios --dev true --entry-file index.ios.js --bundle-output ios-bundle.js').code) {
       echo('Could not build ios package');
-      throw 1;
+      exitCode = 1;
+      throw exitCode;
     }
     if (exec(`${ROOT}/node_modules/.bin/flow check`).code) {
       echo('Flow check does not pass');
-      throw 1;
+      exitCode = 1;
+      throw exitCode;
     }
   }
   exitCode = 0;
   
-} catch (errorCode) {
-  exitCode = errorCode;
 } finally {
   rm(MARKER_IOS);
   rm(MARKER_ANDROID);
