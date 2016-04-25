@@ -12,7 +12,7 @@
 
 'use strict';
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 var Platform = {
   OS: 'android',
@@ -21,10 +21,6 @@ var Platform = {
     invariant(
       obj && typeof obj === 'object',
       'Platform.select: Must be called with an object'
-    );
-    invariant(
-      obj.android,
-      'Platform.select: You must provide a value for `android` to select'
     );
     return obj.android;
   },
