@@ -91,7 +91,7 @@ describe('Android Test App', function () {
     const androidAppCode = fs.readFileSync('index.android.js', 'utf-8');
     let intervalToUpdate;
     return driver
-      .waitForElementByXPath('//android.widget.TextView[starts-with(@text, "1Welcome to React Native!")]')
+      .waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]')
       // http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU
       .pressDeviceKey(82)
       .elementByXPath('//android.widget.TextView[starts-with(@text, "Enable Hot Reloading")]')
