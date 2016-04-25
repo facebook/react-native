@@ -23,6 +23,15 @@ var DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
 var NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
 var DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
 
+const REPEAT_INTERVAL = {
+   year: 4,
+   month: 8,
+   week: 8192,
+   day: 16,
+   hour: 32,
+   minute: 64
+};
+
 /**
  * Handle push notifications for your app, including permission handling and
  * icon badge number.
@@ -99,8 +108,13 @@ class PushNotificationIOS {
    * - `soundName` : The sound played when the notification is fired (optional).
    * - `category`  : The category of this notification, required for actionable notifications (optional).
    * - `userInfo` : An optional object containing additional notification data.
+   * - `repeatInterval` : The interval to repeat as a string.  Possible values: `minute`, `hour`, `day`, `week`, `month`, `year`.
    */
   static scheduleLocalNotification(details: Object) {
+    if (details) {
+      details.repeatInterval = REPEAT_INTERVAL[details.repeatInterval] || 0;
+    }
+
     RCTPushNotificationManager.scheduleLocalNotification(details);
   }
 
