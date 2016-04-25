@@ -82,14 +82,12 @@ on Android.
 Since it accepts `any` value, you can also use it to return platform specific component, like below:
 
 ```javascript
-module.exports = class App extends React.Component {
-  render() {
-    return Platform.select({
-      ios: <ViewIOS />,
-      android: <ViewAndroid />,
-    });
-  }
-}
+var Component = Platform.select({
+  ios: () => require('ComponentIOS'),
+  android: () => require('ComponentAndroid'),
+})();
+
+<Component />;
 ```
 
 ###Detecting Android version

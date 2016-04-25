@@ -12,17 +12,9 @@
 
 'use strict';
 
-var invariant = require('fbjs/lib/invariant');
-
 var Platform = {
   OS: 'ios',
-  select: (obj: Object) => {
-    invariant(
-      obj && typeof obj === 'object',
-      'Platform.select: Must be called with an object'
-    );
-    return obj.ios;
-  },
+  select: (obj: Object) => obj.ios,
 };
 
 module.exports = Platform;

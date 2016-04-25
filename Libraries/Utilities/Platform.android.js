@@ -12,18 +12,10 @@
 
 'use strict';
 
-var invariant = require('fbjs/lib/invariant');
-
 var Platform = {
   OS: 'android',
   get Version() { return require('NativeModules').AndroidConstants.Version; },
-  select: (obj: Object) => {
-    invariant(
-      obj && typeof obj === 'object',
-      'Platform.select: Must be called with an object'
-    );
-    return obj.android;
-  },
+  select: (obj: Object) => obj.android,
 };
 
 module.exports = Platform;
