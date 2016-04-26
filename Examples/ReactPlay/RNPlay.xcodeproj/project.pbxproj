@@ -174,7 +174,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		004D289E1AAF61C70097A701 /* UIExplorerUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UIExplorerUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		004D289E1AAF61C70097A701 /* RNPlay.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNPlay.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1300627E1B59179B0043FE5A /* RCTGzipTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTGzipTests.m; sourceTree = "<group>"; };
 		13129DD31C85F87C007D611C /* RCTModuleInitNotificationRaceTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModuleInitNotificationRaceTests.m; sourceTree = "<group>"; };
 		13417FE31AA91428003F314A /* RCTImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTImage.xcodeproj; path = ../../Libraries/Image/RCTImage.xcodeproj; sourceTree = "<group>"; };
@@ -187,7 +187,7 @@
 		138DEE021B9EDDDB007F4EA5 /* RCTCameraRoll.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTCameraRoll.xcodeproj; path = ../../Libraries/CameraRoll/RCTCameraRoll.xcodeproj; sourceTree = "<group>"; };
 		1393D0371B68CD1300E1B601 /* RCTModuleMethodTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModuleMethodTests.m; sourceTree = "<group>"; };
 		139FDECA1B0651EA00C62182 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = ../../Libraries/WebSocket/RCTWebSocket.xcodeproj; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* UIExplorer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UIExplorer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* RNPlay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RNPlay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = UIExplorer/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = UIExplorer/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -206,7 +206,7 @@
 		143BC5841B21E18100462512 /* testTabBarExampleSnapshot_1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "testTabBarExampleSnapshot_1@2x.png"; sourceTree = "<group>"; };
 		143BC5851B21E18100462512 /* testTextExampleSnapshot_1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "testTextExampleSnapshot_1@2x.png"; sourceTree = "<group>"; };
 		143BC5861B21E18100462512 /* testViewExampleSnapshot_1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "testViewExampleSnapshot_1@2x.png"; sourceTree = "<group>"; };
-		143BC5951B21E3E100462512 /* UIExplorerIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UIExplorerIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		143BC5951B21E3E100462512 /* RNPlay.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNPlay.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		143BC5981B21E3E100462512 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		143BC5A01B21E45C00462512 /* UIExplorerSnapshotTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIExplorerSnapshotTests.m; sourceTree = "<group>"; };
 		144D21231B2204C5006DB32B /* RCTImageUtilTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageUtilTests.m; sourceTree = "<group>"; };
@@ -567,9 +567,9 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* UIExplorer.app */,
-				004D289E1AAF61C70097A701 /* UIExplorerUnitTests.xctest */,
-				143BC5951B21E3E100462512 /* UIExplorerIntegrationTests.xctest */,
+				13B07F961A680F5B00A75B9A /* RNPlay.app */,
+				004D289E1AAF61C70097A701 /* RNPlay.xctest */,
+				143BC5951B21E3E100462512 /* RNPlay.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -585,9 +585,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		004D289D1AAF61C70097A701 /* UIExplorerUnitTests */ = {
+		004D289D1AAF61C70097A701 /* RNPlayUnitTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 004D28AD1AAF61C70097A701 /* Build configuration list for PBXNativeTarget "UIExplorerUnitTests" */;
+			buildConfigurationList = 004D28AD1AAF61C70097A701 /* Build configuration list for PBXNativeTarget "RNPlayUnitTests" */;
 			buildPhases = (
 				004D289A1AAF61C70097A701 /* Sources */,
 				004D289B1AAF61C70097A701 /* Frameworks */,
@@ -597,14 +597,14 @@
 			);
 			dependencies = (
 			);
-			name = UIExplorerUnitTests;
+			name = RNPlayUnitTests;
 			productName = UIExplorerTests;
-			productReference = 004D289E1AAF61C70097A701 /* UIExplorerUnitTests.xctest */;
+			productReference = 004D289E1AAF61C70097A701 /* RNPlay.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		13B07F861A680F5B00A75B9A /* UIExplorer */ = {
+		13B07F861A680F5B00A75B9A /* RNPlay */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "UIExplorer" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "RNPlay" */;
 			buildPhases = (
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
@@ -614,14 +614,14 @@
 			);
 			dependencies = (
 			);
-			name = UIExplorer;
+			name = RNPlay;
 			productName = "Hello World";
-			productReference = 13B07F961A680F5B00A75B9A /* UIExplorer.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* RNPlay.app */;
 			productType = "com.apple.product-type.application";
 		};
-		143BC5941B21E3E100462512 /* UIExplorerIntegrationTests */ = {
+		143BC5941B21E3E100462512 /* RNPlayIntegrationTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 143BC59D1B21E3E100462512 /* Build configuration list for PBXNativeTarget "UIExplorerIntegrationTests" */;
+			buildConfigurationList = 143BC59D1B21E3E100462512 /* Build configuration list for PBXNativeTarget "RNPlayIntegrationTests" */;
 			buildPhases = (
 				143BC5911B21E3E100462512 /* Sources */,
 				143BC5921B21E3E100462512 /* Frameworks */,
@@ -632,9 +632,9 @@
 			dependencies = (
 				143BC59C1B21E3E100462512 /* PBXTargetDependency */,
 			);
-			name = UIExplorerIntegrationTests;
+			name = RNPlayIntegrationTests;
 			productName = UIExplorerIntegrationTests;
-			productReference = 143BC5951B21E3E100462512 /* UIExplorerIntegrationTests.xctest */;
+			productReference = 143BC5951B21E3E100462512 /* RNPlay.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -655,7 +655,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "UIExplorer" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "RNPlay" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -726,9 +726,9 @@
 			);
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* UIExplorer */,
-				004D289D1AAF61C70097A701 /* UIExplorerUnitTests */,
-				143BC5941B21E3E100462512 /* UIExplorerIntegrationTests */,
+				13B07F861A680F5B00A75B9A /* RNPlay */,
+				004D289D1AAF61C70097A701 /* RNPlayUnitTests */,
+				143BC5941B21E3E100462512 /* RNPlayIntegrationTests */,
 			);
 		};
 /* End PBXProject section */
@@ -914,7 +914,7 @@
 /* Begin PBXTargetDependency section */
 		143BC59C1B21E3E100462512 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 13B07F861A680F5B00A75B9A /* UIExplorer */;
+			target = 13B07F861A680F5B00A75B9A /* RNPlay */;
 			targetProxy = 143BC59B1B21E3E100462512 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -949,7 +949,7 @@
 					"$(PROJECT_DIR)/UIExplorerUnitTests",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RNPlay;
 			};
 			name = Debug;
 		};
@@ -969,7 +969,7 @@
 					"$(PROJECT_DIR)/UIExplorerUnitTests",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RNPlay;
 			};
 			name = Release;
 		};
@@ -987,8 +987,8 @@
 				INFOPLIST_FILE = "$(SRCROOT)/UIExplorer/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
-				PRODUCT_NAME = UIExplorer;
+				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.rnplay;
+				PRODUCT_NAME = RNPlay;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = (
 					"-Wextra",
@@ -1012,8 +1012,8 @@
 				INFOPLIST_FILE = "$(SRCROOT)/UIExplorer/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
-				PRODUCT_NAME = UIExplorer;
+				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.rnplay;
+				PRODUCT_NAME = RNPlay;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = (
 					"-Wextra",
@@ -1038,8 +1038,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.React.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/UIExplorer.app/UIExplorer";
+				PRODUCT_NAME = RNPlay;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RNPlay.app/RNPlay";
 			};
 			name = Debug;
 		};
@@ -1054,8 +1054,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.React.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/UIExplorer.app/UIExplorer";
+				PRODUCT_NAME = RNPlay;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RNPlay.app/RNPlay";
 			};
 			name = Release;
 		};
@@ -1195,7 +1195,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		004D28AD1AAF61C70097A701 /* Build configuration list for PBXNativeTarget "UIExplorerUnitTests" */ = {
+		004D28AD1AAF61C70097A701 /* Build configuration list for PBXNativeTarget "RNPlayUnitTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				004D28A61AAF61C70097A701 /* Debug */,
@@ -1204,7 +1204,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "UIExplorer" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "RNPlay" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -1213,7 +1213,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		143BC59D1B21E3E100462512 /* Build configuration list for PBXNativeTarget "UIExplorerIntegrationTests" */ = {
+		143BC59D1B21E3E100462512 /* Build configuration list for PBXNativeTarget "RNPlayIntegrationTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				143BC59E1B21E3E100462512 /* Debug */,
@@ -1222,7 +1222,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "UIExplorer" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "RNPlay" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,

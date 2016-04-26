@@ -16,8 +16,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
                BuildableName = "UIExplorer.app"
-               BlueprintName = "UIExplorer"
-               ReferencedContainer = "container:UIExplorer.xcodeproj">
+               BlueprintName = "RNPlay"
+               ReferencedContainer = "container:RNPlay.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -29,9 +29,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "004D289D1AAF61C70097A701"
-               BuildableName = "UIExplorerUnitTests.xctest"
-               BlueprintName = "UIExplorerUnitTests"
-               ReferencedContainer = "container:UIExplorer.xcodeproj">
+               BuildableName = "RNPlay.xctest"
+               BlueprintName = "RNPlayUnitTests"
+               ReferencedContainer = "container:RNPlay.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -43,9 +43,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "143BC5941B21E3E100462512"
-               BuildableName = "UIExplorerIntegrationTests.xctest"
-               BlueprintName = "UIExplorerIntegrationTests"
-               ReferencedContainer = "container:UIExplorer.xcodeproj">
+               BuildableName = "RNPlay.xctest"
+               BlueprintName = "RNPlayIntegrationTests"
+               ReferencedContainer = "container:RNPlay.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -61,9 +61,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "004D289D1AAF61C70097A701"
-               BuildableName = "UIExplorerUnitTests.xctest"
-               BlueprintName = "UIExplorerUnitTests"
-               ReferencedContainer = "container:UIExplorer.xcodeproj">
+               BuildableName = "RNPlay.xctest"
+               BlueprintName = "RNPlayUnitTests"
+               ReferencedContainer = "container:RNPlay.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -71,9 +71,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "143BC5941B21E3E100462512"
-               BuildableName = "UIExplorerIntegrationTests.xctest"
-               BlueprintName = "UIExplorerIntegrationTests"
-               ReferencedContainer = "container:UIExplorer.xcodeproj">
+               BuildableName = "RNPlay.xctest"
+               BlueprintName = "RNPlayIntegrationTests"
+               ReferencedContainer = "container:RNPlay.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -82,8 +82,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "UIExplorer.app"
-            BlueprintName = "UIExplorer"
-            ReferencedContainer = "container:UIExplorer.xcodeproj">
+            BlueprintName = "RNPlay"
+            ReferencedContainer = "container:RNPlay.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -105,8 +105,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "UIExplorer.app"
-            BlueprintName = "UIExplorer"
-            ReferencedContainer = "container:UIExplorer.xcodeproj">
+            BlueprintName = "RNPlay"
+            ReferencedContainer = "container:RNPlay.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -124,8 +124,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "UIExplorer.app"
-            BlueprintName = "UIExplorer"
-            ReferencedContainer = "container:UIExplorer.xcodeproj">
+            BlueprintName = "RNPlay"
+            ReferencedContainer = "container:RNPlay.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
