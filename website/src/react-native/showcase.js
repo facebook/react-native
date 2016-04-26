@@ -869,13 +869,13 @@ var apps = [
     link: 'https://itunes.apple.com/jp/app/id585517208',
     author: 'ShareWis Inc.'
   },
-	{
+  {
 		name: '婚格',
 		icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/d2/fc/4b/d2fc4bfb-34c8-8b78-1126-6e81fc95a520/icon175x175.png',
 		linkAppStore: 'https://itunes.apple.com/cn/app/hun-ge-rang-jie-hun-geng-jian/id1062457289?mt=8',
 		linkPlayStore: 'https://play.google.com/store/apps/details?id=com.marryguard_v2',
 		author: 'Shanghai Jingyi Network Co'
-	}
+  }
 ];
 
 var AppList = React.createClass({
