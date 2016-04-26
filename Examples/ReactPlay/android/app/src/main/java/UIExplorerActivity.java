@@ -12,12 +12,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.facebook.react.uiapp;
+package com.facebook.react.rnplay;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
-import com.facebook.react.uiapp.R;
+import com.facebook.react.rnplay.R;
 
 import java.util.Arrays;
 import java.util.List;
@@ -51,17 +51,17 @@ public class UIExplorerActivity extends ReactActivity {
 
   @Override
   protected String getMainComponentName() {
-      return "UIExplorerApp";
+      return "RNPlay";
   }
 
   @Override
   protected @Nullable String getBundleAssetName() {
-    return "UIExplorerApp.android.bundle";
+    return "index.android.bundle";
   };
 
   @Override
   protected String getJSMainModuleName() {
-    return "Examples/UIExplorer/UIExplorerApp.android";
+    return "index.android";
   }
 
   @Override

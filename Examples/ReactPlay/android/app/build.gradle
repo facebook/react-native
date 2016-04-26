@@ -58,8 +58,8 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    bundleAssetName: "UIExplorerApp.android.bundle",
-    entryFile: file("../../UIExplorerApp.android.js"),
+    bundleAssetName: "index.android.bundle",
+    entryFile: file("index.android.js"),
     root: "../../../../",
     inputExcludes: ["android/**", "./**"]
 ]
@@ -87,7 +87,7 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "com.facebook.react.uiapp"
+        applicationId "com.facebook.react.rnplay"
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 1

@@ -27,5 +27,5 @@ android_library(
 android_resource(
   name = 'res',
   res = 'src/main/res',
-  package = 'com.facebook.react.uiapp',
+  package = 'com.facebook.react.rnplay',
 )
