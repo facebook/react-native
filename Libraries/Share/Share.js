@@ -46,42 +46,31 @@ class Share {
    * 
    * - `dialogTitle`
    */
-  static share(content: Content, options: ?Options): Promise<Object> {
+  static share(content: Content, options: Options = {}): Promise<Object> {
     invariant(
       typeof content === 'object' && content !== null,
       'Content must a valid object'
     );
     invariant(
-      content.url || content.message,
-      'At least one of URL and message is required'
+       typeof content.url === 'string' || typeof content.message === 'string',
+       'At least one of URL and message is required'
     );
     invariant(
-      !content.message || typeof content.message === 'string',
-      'Invalid message: message should be a string.'
-    );
-    invariant(
-      !content.url || typeof content.url === 'string',
-      'Invalid url: url should be a string.'
-    );
-    invariant(
-      !content.title || typeof content.title === 'string',
-      'Invalid title: title should be a string.'
+      typeof options === 'object' && options !== null,
+      'Options must be a valid object'
     );
 
     if (Platform.OS === 'android') {
-      let dialogTitle = (options !== null && typeof options === 'object' && options.dialogTitle) ? options.dialogTitle : null;
-      return ShareModule.share(content, dialogTitle);
+      invariant(
+        !content.title || typeof content.title === 'string',
+        'Invalid title: title should be a string.'
+      );
+      return ShareModule.share(content, options.dialogTitle);
     } else if (Platform.OS === 'ios') {
       return new Promise((resolve, reject) => {
-        let actionSheetOptions = {...content, ...options};
-        if (options !== null && typeof options === 'object' && options.tintColor) {
-          actionSheetOptions.tintColor = processColor(options.tintColor);
-        }
         ActionSheetManager.showShareActionSheetWithOptions(
-          actionSheetOptions,
-          (error) => {
-            reject(new Error(error.message))
-          },
+          {...content, ...options, tintColor: processColor(options.tintColor)},
+          (error) => reject(error),
           (success, activityType) => {
             if (success) {
               resolve({
@@ -95,7 +84,7 @@ class Share {
       });
     } else {
       console.warn('Share.share is not supported on this platform');
-      return Promise.reject();
+      return Promise.reject(new Error('Unsupported platform'));
     }
   }
 
