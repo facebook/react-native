@@ -16,7 +16,6 @@
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
-var RCTDatePickerIOSConsts = require('UIManager').RCTDatePicker.Constants;
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
@@ -142,8 +141,8 @@ var DatePickerIOS = React.createClass({
 
 var styles = StyleSheet.create({
   datePickerIOS: {
-    height: RCTDatePickerIOSConsts.ComponentHeight,
-    width: RCTDatePickerIOSConsts.ComponentWidth,
+    height: 216,
+    width: 320,
   },
 });
 

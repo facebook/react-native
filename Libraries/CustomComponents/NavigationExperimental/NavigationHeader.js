@@ -65,7 +65,6 @@ type Props = NavigationSceneRendererProps & {
   renderRightComponent: NavigationSceneRenderer,
   renderTitleComponent: NavigationSceneRenderer,
   style?: any;
-  subviewStyle?: any;
   viewProps?: any;
 };
 
@@ -101,7 +100,6 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     renderRightComponent: PropTypes.func,
     renderTitleComponent: PropTypes.func,
     style: View.propTypes.style,
-    subviewStyle: View.propTypes.style,
     viewProps: PropTypes.shape(View.propTypes),
   };
 
@@ -188,7 +186,6 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
       return null;
     }
 
-    const { subviewStyle } = this.props;
     const pointerEvents = offset !== 0 || isStale ? 'none' : 'box-none';
     return (
       <Animated.View
@@ -197,7 +194,6 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
         style={[
           styles[name],
           styleInterpolator(props),
-          subviewStyle[name],
         ]}>
         {subView}
       </Animated.View>

@@ -80,7 +80,8 @@ This isn't very well documented though - in order to know what properties are av
 
 ```javascript
 // MapView.js
-import React, { requireNativeComponent } from 'react-native';
+import React from 'react';
+import { requireNativeComponent } from 'react-native';
 
 class MapView extends React.Component {
   render() {
