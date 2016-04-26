@@ -155,7 +155,7 @@ const StatusBar = React.createClass({
       }
       StatusBar._defaultProps.barStyle = style;
       if (animated === undefined) {
-        animated = mergePropsStack(StatusBar._propsStack, StatusBar._defaultProps).animated
+        animated = mergePropsStack(StatusBar._propsStack, StatusBar._defaultProps).animated;
       }
       StatusBarManager.setStyle(style, animated);
     },
@@ -176,7 +176,7 @@ const StatusBar = React.createClass({
       }
       StatusBar._defaultProps.backgroundColor = color;
       if (animated === undefined) {
-        animated = mergePropsStack(StatusBar._propsStack, StatusBar._defaultProps).animated
+        animated = mergePropsStack(StatusBar._propsStack, StatusBar._defaultProps).animated;
       }
       StatusBarManager.setColor(processColor(color), animated);
     },
