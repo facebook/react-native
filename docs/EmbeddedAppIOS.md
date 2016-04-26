@@ -66,12 +66,15 @@ Copy & paste following starter code for `index.ios.js` – it’s a barebones Re
 ```
 'use strict';
 
-import React, {
+import React from 'react';
+import {
+  AppRegistry,
+  StyleSheet,
   Text,
   View
 } from 'react-native';
 
-var styles = React.StyleSheet.create({
+var styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'red'
@@ -88,7 +91,7 @@ class SimpleApp extends React.Component {
   }
 }
 
-React.AppRegistry.registerComponent('SimpleApp', () => SimpleApp);
+AppRegistry.registerComponent('SimpleApp', () => SimpleApp);
 ```
 
 `SimpleApp` will be your **module name**, which will be used later on.
