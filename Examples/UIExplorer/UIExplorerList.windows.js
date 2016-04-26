@@ -109,6 +109,10 @@ const APIExamples = [
     module: require('./TimerExample'),
   },
   {
+    key: 'VibrationExample',
+    module: require('./VibrationExample'),
+  },  
+  {
     key: 'WebSocketExample',
     module: require('./WebSocketExample'),
   },
