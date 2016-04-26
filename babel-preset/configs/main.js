@@ -18,6 +18,7 @@ module.exports = {
     'syntax-class-properties',
     'syntax-trailing-function-commas',
     'transform-class-properties',
+    'transform-es2015-function-name',
     'transform-es2015-arrow-functions',
     'transform-es2015-block-scoping',
     'transform-es2015-classes',

@@ -12,7 +12,6 @@
 'use strict';
 
 var Inspector = require('Inspector');
-var Portal = require('Portal');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
 var ReactNative = require('ReactNative');
@@ -32,10 +31,10 @@ var AppContainer = React.createClass({
 
   getInitialState: function() {
     return {
-      enabled: __DEV__,
       inspectorVisible: false,
       rootNodeHandle: null,
       rootImportanceForAccessibility: 'auto',
+      mainKey: 1,
     };
   },
 
@@ -61,6 +60,12 @@ var AppContainer = React.createClass({
       <Inspector
         rootTag={this.props.rootTag}
         inspectedViewTag={this.state.rootNodeHandle}
+        onRequestRerenderApp={(updateInspectedViewTag) => {
+          this.setState(
+            (s) => ({mainKey: s.mainKey + 1}),
+            () => updateInspectedViewTag(ReactNative.findNodeHandle(this.refs.main))
+          );
+        }}
       /> :
       null;
   },
@@ -69,38 +74,23 @@ var AppContainer = React.createClass({
     this._unmounted = true;
   },
 
-  setRootAccessibility: function(modalVisible) {
-    if (this._unmounted) {
-      return;
-    }
-
-    this.setState({
-      rootImportanceForAccessibility: modalVisible ? 'no-hide-descendants' : 'auto',
-    });
-  },
-
   render: function() {
     var RootComponent = this.props.rootComponent;
     var appView =
       <View
         ref="main"
+        key={this.state.mainKey}
         collapsable={!this.state.inspectorVisible}
         style={styles.appContainer}>
         <RootComponent
           {...this.props.initialProps}
           rootTag={this.props.rootTag}
           importantForAccessibility={this.state.rootImportanceForAccessibility}/>
-        <Portal
-          onModalVisibilityChanged={this.setRootAccessibility}/>
       </View>;
-    let yellowBox = null;
-    if (__DEV__) {
-      yellowBox = <YellowBox />;
-    }
-    return this.state.enabled ?
+    return __DEV__ ?
       <View style={styles.appContainer}>
         {appView}
-        {yellowBox}
+        <YellowBox />
         {this.renderInspector()}
       </View> :
       appView;
@@ -126,8 +116,6 @@ function renderApplication<D, P, S>(
 }
 
 var styles = StyleSheet.create({
-  // This is needed so the application covers the whole screen
-  // and therefore the contents of the Portal are not clipped.
   appContainer: {
     position: 'absolute',
     left: 0,
