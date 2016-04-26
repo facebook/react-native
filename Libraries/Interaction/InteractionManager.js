@@ -119,6 +119,56 @@ var InteractionManager = {
     _deleteInteractionSet.add(handle);
   },
 
+  /**
+   * Can be used to turn a regular repsonder into one that holds interaction handles
+   * when the responder is granted. This makes it easier to acheive 60fps responder
+   * interactions in JS, e.g. for drag-and-drop gestures with PanResponder.
+   */
+  createResponderFactory(baseResponderFactory: {create: (config: Object) => Object}) {
+    function clearInteractionHandle(
+      interactionState: {handle: ?Handle},
+      callback: Function,
+      event: Object,
+      gestureState: Object
+    ) {
+      if (interactionState.handle) {
+        InteractionManager.clearInteractionHandle(interactionState.handle);
+        interactionState.handle = null;
+      }
+      if (callback) {
+        callback(event, gestureState);
+      }
+    }
+    return {
+      create: function(config: Object) {
+        const interactionState = {
+          handle: (null: ?Handle),
+        };
+        const newConfig = {
+          ...config,
+          onPanResponderGrant: function (e, gestureState) {
+            if (!interactionState.handle) {
+              interactionState.handle = InteractionManager.createInteractionHandle();
+            }
+            if (config.onPanResponderGrant) {
+              config.onPanResponderGrant(e, gestureState);
+            }
+          },
+          onPanResponderReject: function (e, gestureState) {
+            clearInteractionHandle(interactionState, config.onPanResponderReject, e, gestureState);
+          },
+          onPanResponderRelease: function (e, gestureState) {
+            clearInteractionHandle(interactionState, config.onPanResponderRelease, e, gestureState);
+          },
+          onPanResponderTerminate: function (e, gestureState) {
+            clearInteractionHandle(interactionState, config.onPanResponderTerminate, e, gestureState);
+          },
+        };
+        return baseResponderFactory.create(newConfig);
+      }
+    };
+  },
+
   addListener: _emitter.addListener.bind(_emitter),
 
   /**
