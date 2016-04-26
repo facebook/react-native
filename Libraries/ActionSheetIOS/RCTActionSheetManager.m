@@ -196,7 +196,10 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   }
 
   UIViewController *controller = RCTKeyWindow().rootViewController;
-
+  while (controller.presentedViewController) {
+    controller = controller.presentedViewController;
+  }
+  
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 
   if (![UIActivityViewController instancesRespondToSelector:@selector(setCompletionWithItemsHandler:)]) {
