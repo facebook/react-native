@@ -151,13 +151,19 @@ class Resolver {
   }
 
   getModuleSystemDependencies(options) {
+    var dirname = __dirname;
+    // Temporary workaround for case sensitivity. See: https://github.com/ReactWindows/react-native/issues/221
+    if (require('os').platform() === 'win32') {
+      dirname = __dirname.replace(__dirname.substr(0,1),__dirname.substr(0,1).toLowerCase());
+    }    
+
     const opts = getDependenciesValidateOpts(options);
 
     const prelude = opts.dev
-        ? path.join(__dirname, 'polyfills/prelude_dev.js')
-        : path.join(__dirname, 'polyfills/prelude.js');
+        ? path.join(dirname, 'polyfills/prelude_dev.js')
+        : path.join(dirname, 'polyfills/prelude.js');
 
-    const moduleSystem = path.join(__dirname, 'polyfills/require.js');
+    const moduleSystem = path.join(dirname, 'polyfills/require.js');
 
     return [
       prelude,
@@ -170,16 +176,22 @@ class Resolver {
   }
 
   _getPolyfillDependencies() {
+    var dirname = __dirname;
+    // Temporary workaround for case sensitivity. See: https://github.com/ReactWindows/react-native/issues/221
+    if (require('os').platform() === 'win32') {
+      dirname = __dirname.replace(__dirname.substr(0,1),__dirname.substr(0,1).toLowerCase());
+    }
+        
     const polyfillModuleNames = [
-      path.join(__dirname, 'polyfills/polyfills.js'),
-      path.join(__dirname, 'polyfills/console.js'),
-      path.join(__dirname, 'polyfills/error-guard.js'),
-      path.join(__dirname, 'polyfills/Number.es6.js'),
-      path.join(__dirname, 'polyfills/String.prototype.es6.js'),
-      path.join(__dirname, 'polyfills/Array.prototype.es6.js'),
-      path.join(__dirname, 'polyfills/Array.es6.js'),
-      path.join(__dirname, 'polyfills/Object.es7.js'),
-      path.join(__dirname, 'polyfills/babelHelpers.js'),
+      path.join(dirname, 'polyfills/polyfills.js'),
+      path.join(dirname, 'polyfills/console.js'),
+      path.join(dirname, 'polyfills/error-guard.js'),
+      path.join(dirname, 'polyfills/Number.es6.js'),
+      path.join(dirname, 'polyfills/String.prototype.es6.js'),
+      path.join(dirname, 'polyfills/Array.prototype.es6.js'),
+      path.join(dirname, 'polyfills/Array.es6.js'),
+      path.join(dirname, 'polyfills/Object.es7.js'),
+      path.join(dirname, 'polyfills/babelHelpers.js'),
     ].concat(this._polyfillModuleNames);
 
     return polyfillModuleNames.map(
