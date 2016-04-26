@@ -108,8 +108,7 @@ var WebView = React.createClass({
 
     /**
      * Used on Android and Windows only, JS is enabled by default for WebView on iOS
-     * @platform android
-     * @platform windows
+     * @platform android, windows
      */
     javaScriptEnabled: PropTypes.bool,
     

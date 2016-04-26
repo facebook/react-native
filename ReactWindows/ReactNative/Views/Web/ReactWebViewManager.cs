@@ -51,10 +51,10 @@ namespace ReactNative.Views.Web
         }
 
         /// <summary>
-        /// Sets flag signaling whether JavaScript is enabled.
+        /// Sets whether JavaScript is enabled or not.
         /// </summary>
         /// <param name="view">A webview instance.</param>
-        /// <param name="enabled"></param>
+        /// <param name="enabled">A flag signaling whether JavaScript is enabled.</param>
         [ReactProp("javaScriptEnabled")]
         public void SetJavaScriptEnabled(WebView view, bool enabled)
         {
@@ -62,10 +62,10 @@ namespace ReactNative.Views.Web
         }
 
         /// <summary>
-        /// Sets flag signaling whether Indexed DB is enabled.
+        /// Sets whether Indexed DB is enabled or not.
         /// </summary>
         /// <param name="view">A webview instance.</param>
-        /// <param name="enabled"></param>
+        /// <param name="enabled">A flag signaling whether Indexed DB is enabled.</param>
         [ReactProp("indexedDbEnabled")]
         public void SetIndexedDbEnabled(WebView view, bool enabled)
         {
@@ -76,7 +76,7 @@ namespace ReactNative.Views.Web
         /// Sets the JavaScript to be injected when the webpage loads.
         /// </summary>
         /// <param name="view">A webview instance.</param>
-        /// <param name="injectedJavaScript"></param>
+        /// <param name="injectedJavaScript">An injected JavaScript.</param>
         [ReactProp("injectedJavaScript")]
         public void SetInjectedJavaScript(WebView view, string injectedJavaScript)
         {
@@ -87,7 +87,7 @@ namespace ReactNative.Views.Web
         /// Sets webview source.
         /// </summary>
         /// <param name="view">A webview instance.</param>
-        /// <param name="source"></param>
+        /// <param name="source">A source for the webview (either static html or an uri).</param>
         [ReactProp("source")]
         public void SetSource(WebView view, JObject source)
         {
@@ -137,11 +137,9 @@ namespace ReactNative.Views.Web
                     var headers = source.Value<JObject>("headers");
                     if (headers != null)
                     {
-                        IEnumerator<KeyValuePair<string, JToken>> enumerator = ((JObject)headers).GetEnumerator();
-                        enumerator.Reset();
-                        while (enumerator.MoveNext())
+                        foreach (var header in headers)
                         {
-                            request.Headers.Append(enumerator.Current.Key, enumerator.Current.Value.Value<string>());
+                            request.Headers.Append(header.Key, header.Value.Value<string>());
                         }
                     }
 
