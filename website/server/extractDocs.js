@@ -275,7 +275,7 @@ var apis = [
   '../Libraries/CustomComponents/ListView/ListViewDataSource.js',
   '../node_modules/react/lib/NativeMethodsMixin.js',
   '../Libraries/Network/NetInfo.js',
-  '../node_modules/react/lib/PanResponder.js',
+  '../Libraries/Interaction/PanResponder.js',
   '../Libraries/Utilities/PixelRatio.js',
   '../Libraries/PushNotificationIOS/PushNotificationIOS.js',
   '../Libraries/Components/StatusBar/StatusBarIOS.ios.js',
