@@ -289,7 +289,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           }
         }
         if (!list.isEmpty()) {
-          newFilters = (InputFilter[]) list.toArray();
+          newFilters = (InputFilter[]) list.toArray(new InputFilter[list.size()]);
         }
       }
     } else {
