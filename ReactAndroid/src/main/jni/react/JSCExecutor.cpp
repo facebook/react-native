@@ -80,7 +80,7 @@ static std::string executeJSCallWithJSC(
 
   // Evaluate script with JSC
   folly::dynamic jsonArgs(arguments.begin(), arguments.end());
-  auto js = folly::to<folly::fbstring>(
+  auto js = folly::to<std::string>(
       "__fbBatchedBridge.", methodName, ".apply(null, ",
       folly::toJson(jsonArgs), ")");
   auto result = evaluateScript(ctx, String(js.c_str()), nullptr);
