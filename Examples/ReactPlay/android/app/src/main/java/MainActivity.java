@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 
 import android.os.Bundle;
 
-public class UIExplorerActivity extends ReactActivity {
+public class MainActivity extends ReactActivity {
   private final String PARAM_ROUTE = "route";
   private Bundle mInitialProps = null;
 
