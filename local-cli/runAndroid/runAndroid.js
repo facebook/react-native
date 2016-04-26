@@ -39,11 +39,22 @@ function _runAndroid(argv, config, resolve, reject) {
     command: 'flavor',
     type: 'string',
     required: false,
+  }, {
+    command: 'play',
+    type: 'boolean',
+    required: false,
   }], argv);
+
+  if (args.play) {
+    console.log("Using ReactPlay to run application...");
+    // console.log(path.join(__dirname, "../../Examples/ReactPlay"))
+    args.root = path.join(__dirname, "../../Examples/ReactPlay");
+    args["install-debug"] = ":Examples:ReactPlay:android:app:installDebug";
+  }
 
   args.root = args.root || '';
 
-  if (!checkAndroid(args)) {
+  if (!args.play && !checkAndroid(args)) {
     console.log(chalk.red('Android project not found. Maybe run react-native android first?'));
     return;
   }
@@ -71,21 +82,23 @@ function checkAndroid(args) {
 function buildAndRun(args, reject) {
   process.chdir(path.join(args.root, 'android'));
   try {
-    const cmd = process.platform.startsWith('win')
+    let cmd = process.platform.startsWith('win')
       ? 'gradlew.bat'
       : './gradlew';
 
     const gradleArgs = [];
-    if (args['flavor']) {
+
+    if(args.play) {
+      cmd = path.join(__dirname, "../..", cmd);
+      gradleArgs.push(":Examples:ReactPlay:android:app:installDebug");
+    } else {
+      if (args['flavor']) {
         gradleArgs.push('install' +
           args['flavor'][0].toUpperCase() + args['flavor'].slice(1)
         );
-    } else {
+      } else {
         gradleArgs.push('installDebug');
-    }
-
-    if (args['install-debug']) {
-      gradleArgs.push(args['install-debug']);
+      }
     }
 
     console.log(chalk.bold(
