@@ -330,4 +330,13 @@ public class ReactTextInputPropertyTest {
       buildStyles("textAlign", null, "textAlignVertical", null));
     assertThat(view.getGravity()).isEqualTo(defaultGravity);
   }
+  
+  @Test
+  public void testMaxLength() {
+    ReactEditText view = mManager.createViewInstance(mThemedContext);
+    InputFilter[] filters = new InputFilter[] { new InputFilter.AllCaps() };
+    view.setFilters(filters);
+    mManager.setMaxLength(view, null);
+    assertThat(view.getFilters()).isEqualTo(filters);
+  }
 }
