@@ -382,7 +382,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		13B07FAE1A68108700A75B9A /* UIExplorer */ = {
+		13B07FAE1A68108700A75B9A /* RNPlay */ = {
 			isa = PBXGroup;
 			children = (
 				272E6B3A1BEA846C001FCF37 /* NativeExampleViews */,
@@ -393,10 +393,10 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				1323F18D1C04ABAC0091BED0 /* Supporting Files */,
 			);
-			name = UIExplorer;
+			name = RNPlay;
 			sourceTree = "<group>";
 		};
-		143BC57C1B21E18100462512 /* UIExplorerUnitTests */ = {
+		143BC57C1B21E18100462512 /* RNPlayUnitTests */ = {
 			isa = PBXGroup;
 			children = (
 				13B6C1A21C34225900D3FAF5 /* RCTURLUtilsTests.m */,
@@ -424,6 +424,7 @@
 				14D6D7011B220AE3001FB087 /* OCMock */,
 				143BC57F1B21E18100462512 /* ReferenceImages */,
 			);
+			name = RNPlayUnitTests;
 			path = UIExplorerUnitTests;
 			sourceTree = "<group>";
 		};
@@ -448,7 +449,7 @@
 			path = "Examples-UIExplorer-UIExplorerApp";
 			sourceTree = "<group>";
 		};
-		143BC5961B21E3E100462512 /* UIExplorerIntegrationTests */ = {
+		143BC5961B21E3E100462512 /* RNPlayIntegrationTests */ = {
 			isa = PBXGroup;
 			children = (
 				27B885551BED29AF00008352 /* RCTRootViewIntegrationTests.m */,
@@ -457,6 +458,7 @@
 				83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */,
 				143BC5971B21E3E100462512 /* Supporting Files */,
 			);
+			name = RNPlayIntegrationTests;
 			path = UIExplorerIntegrationTests;
 			sourceTree = "<group>";
 		};
@@ -553,10 +555,10 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				13B07FAE1A68108700A75B9A /* UIExplorer */,
+				13B07FAE1A68108700A75B9A /* RNPlay */,
 				1316A21D1AA397F400C0188E /* Libraries */,
-				143BC57C1B21E18100462512 /* UIExplorerUnitTests */,
-				143BC5961B21E3E100462512 /* UIExplorerIntegrationTests */,
+				143BC57C1B21E18100462512 /* RNPlayUnitTests */,
+				143BC5961B21E3E100462512 /* RNPlayIntegrationTests */,
 				14D6D6EA1B2205C0001FB087 /* OCMock */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 			);

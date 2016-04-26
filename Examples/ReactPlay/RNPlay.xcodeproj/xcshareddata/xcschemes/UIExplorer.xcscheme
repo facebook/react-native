@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "UIExplorer.app"
+               BuildableName = "RNPlay.app"
                BlueprintName = "RNPlay"
                ReferencedContainer = "container:RNPlay.xcodeproj">
             </BuildableReference>
@@ -81,7 +81,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "UIExplorer.app"
+            BuildableName = "RNPlay.app"
             BlueprintName = "RNPlay"
             ReferencedContainer = "container:RNPlay.xcodeproj">
          </BuildableReference>
@@ -104,7 +104,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "UIExplorer.app"
+            BuildableName = "RNPlay.app"
             BlueprintName = "RNPlay"
             ReferencedContainer = "container:RNPlay.xcodeproj">
          </BuildableReference>
@@ -123,7 +123,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "UIExplorer.app"
+            BuildableName = "RNPlay.app"
             BlueprintName = "RNPlay"
             ReferencedContainer = "container:RNPlay.xcodeproj">
          </BuildableReference>
