@@ -12,7 +12,7 @@ Assuming you have [Visual Studio 2015 Enterprise](\\products\PUBLIC\Products\Dev
 
 Clone this repo onto your local machine.
 ```
-git clone https://github.com/CatalystCode/react-native.git
+git clone https://github.com/ReactWindows/react-native.git
 cd react-native
 git fetch
 git checkout ReactWindows
