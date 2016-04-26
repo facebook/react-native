@@ -121,7 +121,8 @@
     "start": "/usr/bin/env bash -c './packager/packager.sh \"$@\" || true' --"
   },
   "bin": {
-    "react-native": "local-cli/wrong-react-native.js"
+    "react-native": "local-cli/wrong-react-native.js",
+    "react-native-global": "local-cli/global-cli.js"
   },
   "peerDependencies": {
     "react": "15.0.2-alpha.3"
