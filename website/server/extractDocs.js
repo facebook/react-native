@@ -7,27 +7,34 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-var docgen = require('react-docgen');
-var docgenHelpers = require('./docgenHelpers');
-var fs = require('fs');
-var path = require('path');
-var slugify = require('../core/slugify');
-var jsDocs = require('../jsdocs/jsdocs.js');
+'use strict';
 
-var ANDROID_SUFFIX = 'android';
-var CROSS_SUFFIX = 'cross';
-var IOS_SUFFIX = 'ios';
+const docgen = require('react-docgen');
+const docgenHelpers = require('./docgenHelpers');
+const fs = require('fs');
+const jsDocs = require('../jsdocs/jsdocs.js');
+const path = require('path');
+const slugify = require('../core/slugify');
+
+const ANDROID_SUFFIX = 'android';
+const CROSS_SUFFIX = 'cross';
+const IOS_SUFFIX = 'ios';
 
 function endsWith(str, suffix) {
   return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
-function getNameFromPath(filepath) {
-  var ext = null;
-  while (ext = path.extname(filepath)) {
+function removeExtName(filepath) {
+  let ext = path.extname(filepath);
+  while (ext) {
     filepath = path.basename(filepath, ext);
+    ext = path.extname(filepath);
   }
+  return filepath;
+}
 
+function getNameFromPath(filepath) {
+  filepath = removeExtName(filepath);
   if (filepath === 'LayoutPropTypes') {
     return 'Flexbox';
   } else if (filepath === 'TransformPropTypes') {
@@ -41,11 +48,7 @@ function getNameFromPath(filepath) {
 }
 
 function getPlatformFromPath(filepath) {
-  var ext = null;
-  while (ext = path.extname(filepath)) {
-    filepath = path.basename(filepath, ext);
-  }
-
+  filepath = removeExtName(filepath);
   if (endsWith(filepath, 'Android')) {
     return ANDROID_SUFFIX;
   } else if (endsWith(filepath, 'IOS')) {
@@ -55,21 +58,21 @@ function getPlatformFromPath(filepath) {
 }
 
 function getExample(componentName, componentPlatform) {
-  var path = '../Examples/UIExplorer/' + componentName + 'Example.js';
-  if (!fs.existsSync(path)) {
-    path = '../Examples/UIExplorer/' + componentName + 'Example.'+ componentPlatform +'.js';
-    if (!fs.existsSync(path)) {
+  let exPath = '../Examples/UIExplorer/' + componentName + 'Example.js';
+  if (!fs.existsSync(exPath)) {
+    exPath = '../Examples/UIExplorer/' + componentName + 'Example.' + componentPlatform + '.js';
+    if (!fs.existsSync(exPath)) {
       return;
     }
   }
   return {
-    path: path.replace(/^\.\.\//, ''),
-    content: fs.readFileSync(path).toString(),
+    path: exPath.replace(/^\.\.\//, ''),
+    content: fs.readFileSync(exPath).toString(),
   };
 }
 
 // Add methods that should not appear in the components documentation.
-var methodsBlacklist = [
+const methodsBlacklist = [
   // Native methods mixin.
   'getInnerViewNode',
   'setNativeProps',
@@ -95,10 +98,10 @@ function filterMethods(method) {
 // Determines whether a component should have a link to a runnable example
 
 function isRunnable(componentName, componentPlatform) {
-  var path = '../Examples/UIExplorer/' + componentName + 'Example.js';
-  if (!fs.existsSync(path)) {
-    path = '../Examples/UIExplorer/' + componentName + 'Example.' + componentPlatform + '.js';
-    if (!fs.existsSync(path)) {
+  let exPath = '../Examples/UIExplorer/' + componentName + 'Example.js';
+  if (!fs.existsSync(exPath)) {
+    exPath = '../Examples/UIExplorer/' + componentName + 'Example.' + componentPlatform + '.js';
+    if (!fs.existsSync(exPath)) {
       return false;
     }
   }
@@ -107,7 +110,7 @@ function isRunnable(componentName, componentPlatform) {
 
 // Hide a component from the sidebar by making it return false from
 // this function
-var HIDDEN_COMPONENTS = [
+const HIDDEN_COMPONENTS = [
   'Transforms',
   'ListViewDataSource',
 ];
@@ -116,24 +119,24 @@ function shouldDisplayInSidebar(componentName) {
   return HIDDEN_COMPONENTS.indexOf(componentName) === -1;
 }
 
-function getNextComponent(i) {
-  if (all[i + 1]) {
-    var nextComponentName = getNameFromPath(all[i + 1]);
+function getNextComponent(idx) {
+  if (all[idx + 1]) {
+    const nextComponentName = getNameFromPath(all[idx + 1]);
 
     if (shouldDisplayInSidebar(nextComponentName)) {
       return slugify(nextComponentName);
     } else {
-      return getNextComponent(i + 1);
+      return getNextComponent(idx + 1);
     }
   } else {
     return 'network';
   }
 }
 
-function componentsToMarkdown(type, json, filepath, i, styles) {
-  var componentName = getNameFromPath(filepath);
-  var componentPlatform = getPlatformFromPath(filepath);
-  var docFilePath = '../docs/' + componentName + '.md';
+function componentsToMarkdown(type, json, filepath, idx, styles) {
+  const componentName = getNameFromPath(filepath);
+  const componentPlatform = getPlatformFromPath(filepath);
+  const docFilePath = '../docs/' + componentName + '.md';
 
   if (fs.existsSync(docFilePath)) {
     json.fullDescription = fs.readFileSync(docFilePath).toString();
@@ -152,10 +155,10 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
   }
 
   // Put Flexbox into the Polyfills category
-  var category = (type === 'style' ? 'Polyfills' : type + 's');
-  var next = getNextComponent(i);
+  const category = (type === 'style' ? 'Polyfills' : type + 's');
+  const next = getNextComponent(idx);
 
-  var res = [
+  const res = [
     '---',
     'id: ' + slugify(componentName),
     'title: ' + componentName,
@@ -173,10 +176,10 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
   return res;
 }
 
-var n;
+let componentCount;
 
 function renderComponent(filepath) {
-  var json = docgen.parse(
+  const json = docgen.parse(
     fs.readFileSync(filepath),
     docgenHelpers.findExportedOrFirst,
     docgen.defaultHandlers.concat([
@@ -185,40 +188,40 @@ function renderComponent(filepath) {
     ])
   );
 
-  return componentsToMarkdown('component', json, filepath, n++, styleDocs);
+  return componentsToMarkdown('component', json, filepath, componentCount++, styleDocs);
 }
 
 function renderAPI(type) {
   return function(filepath) {
-    var json;
+    let json;
     try {
       json = jsDocs(fs.readFileSync(filepath).toString());
-    } catch(e) {
+    } catch (e) {
       console.error('Cannot parse file', filepath, e);
       json = {};
     }
-    return componentsToMarkdown(type, json, filepath, n++);
+    return componentsToMarkdown(type, json, filepath, componentCount++);
   };
 }
 
 function renderStyle(filepath) {
-  var json = docgen.parse(
+  const json = docgen.parse(
     fs.readFileSync(filepath),
     docgenHelpers.findExportedObject,
     [docgen.handlers.propTypeHandler]
   );
 
   // Remove deprecated transform props from docs
-  if (filepath === "../Libraries/StyleSheet/TransformPropTypes.js") {
+  if (filepath === '../Libraries/StyleSheet/TransformPropTypes.js') {
     ['rotation', 'scaleX', 'scaleY', 'translateX', 'translateY'].forEach(function(key) {
-      delete json['props'][key];
+      delete json.props[key];
     });
   }
 
-  return componentsToMarkdown('style', json, filepath, n++);
+  return componentsToMarkdown('style', json, filepath, componentCount++);
 }
 
-var components = [
+const components = [
   '../Libraries/Components/ActivityIndicatorIOS/ActivityIndicatorIOS.ios.js',
   '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
   '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
@@ -228,7 +231,7 @@ var components = [
   '../Libraries/Modal/Modal.js',
   '../Libraries/CustomComponents/Navigator/Navigator.js',
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
-  '../Libraries/Picker/PickerIOS.ios.js',
+  '../Libraries/Components/Picker/PickerIOS.ios.js',
   '../Libraries/Components/Picker/Picker.js',
   '../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.android.js',
   '../Libraries/Components/ProgressViewIOS/ProgressViewIOS.ios.js',
@@ -253,7 +256,7 @@ var components = [
   '../Libraries/Components/WebView/WebView.ios.js',
 ];
 
-var apis = [
+const apis = [
   '../Libraries/ActionSheetIOS/ActionSheetIOS.js',
   '../Libraries/Utilities/Alert.js',
   '../Libraries/Utilities/AlertIOS.js',
@@ -286,28 +289,28 @@ var apis = [
   '../Libraries/Vibration/Vibration.js',
 ];
 
-var stylesWithPermalink = [
+const stylesWithPermalink = [
   '../Libraries/StyleSheet/LayoutPropTypes.js',
   '../Libraries/StyleSheet/TransformPropTypes.js',
   '../Libraries/Components/View/ShadowPropTypesIOS.js',
 ];
 
-var stylesForEmbed = [
+const stylesForEmbed = [
   '../Libraries/Components/View/ViewStylePropTypes.js',
   '../Libraries/Text/TextStylePropTypes.js',
   '../Libraries/Image/ImageStylePropTypes.js',
 ];
 
-var polyfills = [
+const polyfills = [
   '../Libraries/Geolocation/Geolocation.js',
 ];
 
-var all = components
+const all = components
   .concat(apis)
   .concat(stylesWithPermalink)
   .concat(polyfills);
 
-var styleDocs = stylesForEmbed.reduce(function(docs, filepath) {
+const styleDocs = stylesForEmbed.reduce(function(docs, filepath) {
   docs[path.basename(filepath).replace(path.extname(filepath), '')] =
     docgen.parse(
       fs.readFileSync(filepath),
@@ -323,7 +326,7 @@ var styleDocs = stylesForEmbed.reduce(function(docs, filepath) {
 }, {});
 
 module.exports = function() {
-  n = 0;
+  componentCount = 0;
   return [].concat(
     components.map(renderComponent),
     apis.map(renderAPI('api')),
