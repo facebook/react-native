@@ -31,7 +31,8 @@ public class <span class="token class-name">ReactImageManager</span> extends <sp
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span></div><h2><a class="anchor" name="5-implement-the-javascript-module"></a>5. Implement the JavaScript module <a class="hash-link" href="docs/native-components-android.html#5-implement-the-javascript-module">#</a></h2><p>The very final step is to create the JavaScript module that defines the interface layer between Java and JavaScript for the users of your new view. Much of the effort is handled by internal React code in Java and JavaScript and all that is left for you is to describe the <code>propTypes</code>.</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// ImageView.js
 </span>
-import <span class="token punctuation">{</span> requireNativeComponent<span class="token punctuation">,</span> PropTypes <span class="token punctuation">}</span> from <span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">;</span>
+import <span class="token punctuation">{</span> PropTypes <span class="token punctuation">}</span> from <span class="token string">&#x27;react&#x27;</span><span class="token punctuation">;</span>
+import <span class="token punctuation">{</span> requireNativeComponent <span class="token punctuation">}</span> from <span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> iface <span class="token operator">=</span> <span class="token punctuation">{</span>
   name<span class="token punctuation">:</span> <span class="token string">&#x27;ImageView&#x27;</span><span class="token punctuation">,</span>
