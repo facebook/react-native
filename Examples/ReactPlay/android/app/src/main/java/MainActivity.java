@@ -51,7 +51,7 @@ public class MainActivity extends ReactActivity {
 
   @Override
   protected String getMainComponentName() {
-      return "RNPlay";
+      return "SampleApp";
   }
 
   @Override

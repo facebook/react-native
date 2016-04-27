@@ -38,7 +38,7 @@
   }
   
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_bridge
-                                                   moduleName:@"RNPlay"
+                                                   moduleName:@"SampleApp"
                                             initialProperties:initProps];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
