@@ -233,6 +233,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       if (multipartBuilder == null) {
         return;
       }
+      System.out.println("here");
       requestBuilder.method(method, RequestBodyUtil.createProgressRequest(multipartBuilder.build(),new ProgressRequestListener(){
         @Override
         public void onRequestProgress(long bytesWritten, long contentLength, boolean done){
