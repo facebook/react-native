@@ -11,7 +11,6 @@ package com.facebook.react.bridge;
 
 import javax.annotation.Nullable;
 
-import java.lang.Class;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -87,19 +86,20 @@ public class JavaScriptModuleRegistry {
     }
 
     @Override
-    public @Nullable Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public @Nullable Object invoke(Object proxy, Method method, @Nullable Object[] args) throws Throwable {
       ExecutorToken executorToken = mExecutorToken.get();
       if (executorToken == null) {
         FLog.w(ReactConstants.TAG, "Dropping JS call, ExecutorToken went away...");
         return null;
       }
       String tracingName = mModuleRegistration.getTracingName(method);
+      NativeArray jsArgs = args != null ? Arguments.fromJavaArgs(args) : new WritableNativeArray();
       mCatalystInstance.callFunction(
         executorToken,
-          mModuleRegistration.getModuleId(),
-          mModuleRegistration.getMethodId(method),
-          Arguments.fromJavaArgs(args),
-          tracingName);
+        mModuleRegistration.getModuleId(),
+        mModuleRegistration.getMethodId(method),
+        jsArgs,
+        tracingName);
       return null;
     }
   }
