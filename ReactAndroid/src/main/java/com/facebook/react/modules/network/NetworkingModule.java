@@ -233,7 +233,12 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       if (multipartBuilder == null) {
         return;
       }
-      requestBuilder.method(method, multipartBuilder.build());
+      requestBuilder.method(method, RequestBodyUtil.createProgressRequest(multipartBuilder.build(),new ProgressRequestListener(){
+        @Override
+        public void onRequestProgress(long bytesWritten, long contentLength, boolean done){
+          onDataSend(executorToken,requestId,bytesWritten,contentLength);
+        }
+      }));
     } else {
       // Nothing in data payload, at least nothing we could understand anyway.
       requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
@@ -288,6 +293,14 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     } finally {
       reader.close();
     }
+  }
+
+  private void onDataSend(ExecutorToken ExecutorToken, int requestId, long progress, long total) {
+    WritableArray args = Arguments.createArray();
+    args.pushInt(requestId);
+    args.pushInt((int)progress);
+    args.pushInt((int)total);
+    getEventEmitter(ExecutorToken).emit("didSendNetworkData", args);
   }
 
   private void onDataReceived(ExecutorToken ExecutorToken, int requestId, String data) {

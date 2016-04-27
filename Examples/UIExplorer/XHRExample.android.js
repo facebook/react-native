@@ -201,9 +201,10 @@ class FormUploader extends React.Component {
     this.state.textParams.forEach(
       (param) => formdata.append(param.name, param.value)
     );
+
     if (xhr.upload) {
       xhr.upload.onprogress = (event) => {
-        console.log('upload onprogress', event);
+        console.warn('upload onprogress', event);
         if (event.lengthComputable) {
           this.setState({uploadProgress: event.loaded / event.total});
         }
