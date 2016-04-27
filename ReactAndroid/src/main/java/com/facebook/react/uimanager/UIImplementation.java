@@ -755,14 +755,14 @@ public class UIImplementation {
 
     int tag = cssNode.getReactTag();
     if (!mShadowNodeRegistry.isRootNode(tag)) {
-      cssNode.dispatchUpdates(
+      boolean frameDidChange = cssNode.dispatchUpdates(
           absoluteX,
           absoluteY,
           mOperationsQueue,
           mNativeViewHierarchyOptimizer);
 
       // notify JS about layout event if requested
-      if (cssNode.shouldNotifyOnLayout()) {
+      if (frameDidChange && cssNode.shouldNotifyOnLayout()) {
         eventDispatcher.dispatchEvent(
             OnLayoutEvent.obtain(
                 tag,

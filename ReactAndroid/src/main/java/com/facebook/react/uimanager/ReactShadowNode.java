@@ -191,7 +191,7 @@ public class ReactShadowNode extends CSSNode {
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
   }
 
-  /* package */ void dispatchUpdates(
+  /* package */ boolean dispatchUpdates(
       float absoluteX,
       float absoluteY,
       UIViewOperationQueue uiViewOperationQueue,
@@ -201,12 +201,27 @@ public class ReactShadowNode extends CSSNode {
     }
 
     if (hasNewLayout()) {
-      mAbsoluteLeft = Math.round(absoluteX + getLayoutX());
-      mAbsoluteTop = Math.round(absoluteY + getLayoutY());
-      mAbsoluteRight = Math.round(absoluteX + getLayoutX() + getLayoutWidth());
-      mAbsoluteBottom = Math.round(absoluteY + getLayoutY() + getLayoutHeight());
+      float newLeft = Math.round(absoluteX + getLayoutX());
+      float newTop = Math.round(absoluteY + getLayoutY());
+      float newRight = Math.round(absoluteX + getLayoutX() + getLayoutWidth());
+      float newBottom = Math.round(absoluteY + getLayoutY() + getLayoutHeight());
+
+      if (newLeft == mAbsoluteLeft &&
+          newRight == mAbsoluteRight &&
+          newTop == mAbsoluteTop &&
+          newBottom == mAbsoluteBottom) {
+        return false;
+      }
+
+      mAbsoluteLeft = newLeft;
+      mAbsoluteTop = newTop;
+      mAbsoluteRight = newRight;
+      mAbsoluteBottom = newBottom;
 
       nativeViewHierarchyOptimizer.handleUpdateLayout(this);
+      return true;
+    } else {
+      return false;
     }
   }
 
