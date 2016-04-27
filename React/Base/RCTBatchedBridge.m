@@ -299,6 +299,27 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     moduleDataByName[moduleName] = moduleData;
     [moduleClassesByID addObject:moduleClass];
     [moduleDataByID addObject:moduleData];
+
+    // Set executor instance
+    if (moduleClass == self.executorClass) {
+      _javaScriptExecutor = (id<RCTJavaScriptExecutor>)module;
+    }
+  }
+
+  // The executor is a bridge module, but we want it to be instantiated before
+  // any other module has access to the bridge, in case they need the JS thread.
+  // TODO: once we have more fine-grained control of init (D3175632) we can
+  // probably just replace this with [self moduleForClass:self.executorClass]
+  if (!_javaScriptExecutor) {
+    id<RCTJavaScriptExecutor> executorModule = [self.executorClass new];
+    RCTModuleData *moduleData = [[RCTModuleData alloc] initWithModuleInstance:executorModule
+                                                                       bridge:self];
+    moduleDataByName[moduleData.name] = moduleData;
+    [moduleClassesByID addObject:self.executorClass];
+    [moduleDataByID addObject:moduleData];
+
+    // NOTE: _javaScriptExecutor is a weak reference
+    _javaScriptExecutor = executorModule;
   }
 
   // Set up moduleData for automatically-exported modules
@@ -335,17 +356,16 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   _moduleDataByName = [moduleDataByName copy];
   _moduleClassesByID = [moduleClassesByID copy];
 
-  // The executor is a bridge module, wait for it to be created and set it up
-  // before any other module has access to the bridge.
-  _javaScriptExecutor = [self moduleForClass:self.executorClass];
-
-  // Dispatch module init onto main thead for those modules that require it
+  // Synchronously set up the pre-initialized modules
   for (RCTModuleData *moduleData in _moduleDataByID) {
-    if (moduleData.hasInstance) {
-      // Modules that were pre-initialized need to be set up before bridge init
-      // has finished, otherwise the caller may try to access the module
-      // directly rather than via `[bridge moduleForClass:]`, which won't
-      // trigger the lazy initialization process.
+    if (moduleData.hasInstance &&
+        (!moduleData.requiresMainThreadSetup || [NSThread isMainThread])) {
+      // Modules that were pre-initialized should ideally be set up before
+      // bridge init has finished, otherwise the caller may try to access the
+      // module directly rather than via `[bridge moduleForClass:]`, which won't
+      // trigger the lazy initialization process. If the module cannot safely be
+      // set up on the current thread, it will instead be async dispatched
+      // to the main thread to be set up in the loop below.
       (void)[moduleData instance];
     }
   }
@@ -359,28 +379,16 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   NSUInteger modulesOnMainThreadCount = 0;
   for (RCTModuleData *moduleData in _moduleDataByID) {
     __weak RCTBatchedBridge *weakSelf = self;
-    if (moduleData.requiresMainThreadSetup) {
+    if (moduleData.requiresMainThreadSetup || moduleData.hasConstantsToExport) {
       // Modules that need to be set up on the main thread cannot be initialized
       // lazily when required without doing a dispatch_sync to the main thread,
       // which can result in deadlock. To avoid this, we initialize all of these
-      // modules on the main thread in parallel with loading the JS code, so that
+      // modules on the main thread in parallel with loading the JS code, so
       // they will already be available before they are ever required.
       dispatch_group_async(dispatchGroup, dispatch_get_main_queue(), ^{
         if (weakSelf.valid) {
           RCTPerformanceLoggerAppendStart(RCTPLNativeModuleMainThread);
           (void)[moduleData instance];
-          [moduleData gatherConstants];
-          RCTPerformanceLoggerAppendEnd(RCTPLNativeModuleMainThread);
-        }
-      });
-      modulesOnMainThreadCount++;
-    } else if (moduleData.hasConstantsToExport) {
-      // Constants must be exported on the main thread, but module setup can
-      // be done on any queue
-      (void)[moduleData instance];
-      dispatch_group_async(dispatchGroup, dispatch_get_main_queue(), ^{
-        if (weakSelf.valid) {
-          RCTPerformanceLoggerAppendStart(RCTPLNativeModuleMainThread);
           [moduleData gatherConstants];
           RCTPerformanceLoggerAppendEnd(RCTPLNativeModuleMainThread);
         }
