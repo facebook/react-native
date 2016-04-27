@@ -45,8 +45,19 @@ function _runIOS(argv, config, resolve, reject) {
       type: 'string',
       required: false,
       default: 'ios',
+    },
+    {
+      command: 'play',
+      description: 'Use the ReactPlay container app to run application',
+      type: 'boolean',
+      required: false,
+      default: false,
     }
   ], argv);
+
+  if(args.play) {
+    args["project-path"] = path.join(__dirname, "../..", "Examples/ReactPlay");
+  }
 
   process.chdir(args['project-path']);
   const xcodeProject = findXcodeProject(fs.readdirSync('.'));
@@ -69,6 +80,7 @@ function _runIOS(argv, config, resolve, reject) {
   const simulatorFullName = `${selectedSimulator.name} (${selectedSimulator.version})`;
   console.log(`Launching ${simulatorFullName}...`);
   try {
+    // NOTE: Simulator fails to launch (timeout) if in tmux.
     child_process.spawnSync('xcrun', ['instruments', '-w', simulatorFullName]);
   } catch(e) {
     // instruments always fail with 255 because it expects more arguments,
