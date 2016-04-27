@@ -102,18 +102,24 @@ namespace ReactNative.UIManager
             var context = new ThemedReactContext(Context);
             _uiImplementation.RegisterRootView(rootView, tag, width, height, context);
 
+            var resizeCount = 0;
+
             rootView.SetOnSizeChangedListener((sender, args) =>
             {
+                var currentCount = ++resizeCount;
                 var newWidth = args.NewSize.Width;
                 var newHeight = args.NewSize.Height;
 
                 Context.RunOnNativeModulesQueueThread(() =>
                 {
-                    Context.AssertOnNativeModulesQueueThread();
-                    _uiImplementation.UpdateRootNodeSize(tag, newWidth, newHeight, _eventDispatcher);
+                    if (currentCount == resizeCount)
+                    {
+                        Context.AssertOnNativeModulesQueueThread();
+                        _uiImplementation.UpdateRootNodeSize(tag, newWidth, newHeight, _eventDispatcher);
+                    }
                 });
             });
-            
+
             return tag;
         }
 
