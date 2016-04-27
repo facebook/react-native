@@ -13,15 +13,15 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Image,
   StyleSheet,
   View
 } = ReactNative;
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   box: {
     width: 100,
     height: 100,

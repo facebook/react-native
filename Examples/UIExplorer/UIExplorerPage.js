@@ -16,17 +16,17 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   ScrollView,
   StyleSheet,
   View,
 } = ReactNative;
 
-var UIExplorerTitle = require('./UIExplorerTitle');
+const UIExplorerTitle = require('./UIExplorerTitle');
 
-var UIExplorerPage = React.createClass({
+const UIExplorerPage = React.createClass({
 
   propTypes: {
     keyboardShouldPersistTaps: React.PropTypes.bool,
@@ -45,10 +45,10 @@ var UIExplorerPage = React.createClass({
       wrapperProps.keyboardShouldPersistTaps = true;
       wrapperProps.keyboardDismissMode = 'interactive';
     }
-    var title = this.props.title ?
+    const title = this.props.title ?
       <UIExplorerTitle title={this.props.title} /> :
       null;
-    var spacer = this.props.noSpacer ? null : <View style={styles.spacer} />;
+    const spacer = this.props.noSpacer ? null : <View style={styles.spacer} />;
     return (
       <View style={styles.container}>
         {title}
@@ -63,7 +63,7 @@ var UIExplorerPage = React.createClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     backgroundColor: '#e9eaed',
     flex: 1,

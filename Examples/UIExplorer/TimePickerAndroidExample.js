@@ -13,19 +13,19 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   TimePickerAndroid,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
 } = ReactNative;
 
-var UIExplorerBlock = require('./UIExplorerBlock');
-var UIExplorerPage = require('./UIExplorerPage');
+const UIExplorerBlock = require('./UIExplorerBlock');
+const UIExplorerPage = require('./UIExplorerPage');
 
-var TimePickerAndroidExample = React.createClass({
+const TimePickerAndroidExample = React.createClass({
 
   statics: {
     title: 'TimePickerAndroid',
@@ -48,7 +48,7 @@ var TimePickerAndroidExample = React.createClass({
   async showPicker(stateKey, options) {
     try {
       const {action, minute, hour} = await TimePickerAndroid.open(options);
-      var newState = {};
+      const newState = {};
       if (action === TimePickerAndroid.timeSetAction) {
         newState[stateKey + 'Text'] = _formatTime(hour, minute);
         newState[stateKey + 'Hour'] = hour;
@@ -103,7 +103,7 @@ function _formatTime(hour, minute) {
   return hour + ':' + (minute < 10 ? '0' + minute : minute);
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   text: {
     color: 'black',
   },

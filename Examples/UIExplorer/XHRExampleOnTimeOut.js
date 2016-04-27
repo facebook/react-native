@@ -15,9 +15,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -39,7 +39,7 @@ class XHRExampleOnTimeOut extends React.Component {
   loadTimeOutRequest() {
     this.xhr && this.xhr.abort();
 
-    var xhr = this.xhr || new XMLHttpRequest();
+    const xhr = this.xhr || new XMLHttpRequest();
 
     xhr.onerror = ()=> {
       console.log('Status ', xhr.status);
@@ -71,7 +71,7 @@ class XHRExampleOnTimeOut extends React.Component {
   }
 
   render() {
-    var button = this.state.loading ? (
+    const button = this.state.loading ? (
       <View style={styles.wrapper}>
         <View style={styles.button}>
           <Text>Loading...</Text>
@@ -96,7 +96,7 @@ class XHRExampleOnTimeOut extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,

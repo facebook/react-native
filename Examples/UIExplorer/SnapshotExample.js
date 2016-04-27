@@ -15,9 +15,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Image,
   StyleSheet,
   Text,
@@ -25,7 +25,7 @@ var {
   View,
 } = ReactNative;
 
-var ScreenshotExample = React.createClass({
+const ScreenshotExample = React.createClass({
   getInitialState() {
     return {
       uri: undefined,
@@ -51,7 +51,7 @@ var ScreenshotExample = React.createClass({
   }
 });
 
-var style = StyleSheet.create({
+const style = StyleSheet.create({
   button: {
     marginBottom: 10,
     fontWeight: '500',

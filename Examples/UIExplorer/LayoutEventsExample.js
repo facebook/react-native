@@ -15,9 +15,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Image,
   LayoutAnimation,
   StyleSheet,
@@ -47,7 +47,7 @@ type State = {
   viewStyle: { margin: number },
 };
 
-var LayoutEventExample = React.createClass({
+const LayoutEventExample = React.createClass({
   getInitialState(): State {
     return {
       viewStyle: {
@@ -91,9 +91,9 @@ var LayoutEventExample = React.createClass({
     this.setState({imageLayout: e.nativeEvent.layout});
   },
   render: function() {
-    var viewStyle = [styles.view, this.state.viewStyle];
-    var textLayout = this.state.textLayout || {width: '?', height: '?'};
-    var imageLayout = this.state.imageLayout || {x: '?', y: '?'};
+    const viewStyle = [styles.view, this.state.viewStyle];
+    const textLayout = this.state.textLayout || {width: '?', height: '?'};
+    const imageLayout = this.state.imageLayout || {x: '?', y: '?'};
     return (
       <View style={this.state.containerStyle}>
         <Text>
@@ -126,7 +126,7 @@ var LayoutEventExample = React.createClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   view: {
     padding: 12,
     borderColor: 'black',

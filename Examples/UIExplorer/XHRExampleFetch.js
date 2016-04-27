@@ -15,9 +15,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   StyleSheet,
   Text,
   TextInput,
@@ -49,14 +49,14 @@ class XHRExampleFetch extends React.Component {
 
   render() {
 
-    var responseURL = this.responseURL ? (
+    const responseURL = this.responseURL ? (
       <View style={{marginTop: 10}}>
         <Text style={styles.label}>Server response URL:</Text>
         <Text>{this.responseURL}</Text>
       </View>
     ) : null;
 
-    var response = this.state.responseText ? (
+    const response = this.state.responseText ? (
       <View style={{marginTop: 10}}>
         <Text style={styles.label}>Server response:</Text>
         <TextInput
@@ -86,7 +86,7 @@ class XHRExampleFetch extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     borderRadius: 3,

@@ -15,9 +15,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   PixelRatio,
   Image,
   StyleSheet,
@@ -112,7 +112,7 @@ exports.examples = [
    },
  }];
 
-var TextOnPressBox = React.createClass({
+const TextOnPressBox = React.createClass({
   getInitialState: function() {
     return {
       timesPressed: 0,
@@ -148,7 +148,7 @@ var TextOnPressBox = React.createClass({
   }
 });
 
-var TouchableFeedbackEvents = React.createClass({
+const TouchableFeedbackEvents = React.createClass({
   getInitialState: function() {
     return {
       eventLog: [],
@@ -180,14 +180,14 @@ var TouchableFeedbackEvents = React.createClass({
     );
   },
   _appendEvent: function(eventName) {
-    var limit = 6;
-    var eventLog = this.state.eventLog.slice(0, limit - 1);
+    const limit = 6;
+    const eventLog = this.state.eventLog.slice(0, limit - 1);
     eventLog.unshift(eventName);
     this.setState({eventLog});
   },
 });
 
-var TouchableDelayEvents = React.createClass({
+const TouchableDelayEvents = React.createClass({
   getInitialState: function() {
     return {
       eventLog: [],
@@ -219,14 +219,14 @@ var TouchableDelayEvents = React.createClass({
     );
   },
   _appendEvent: function(eventName) {
-    var limit = 6;
-    var eventLog = this.state.eventLog.slice(0, limit - 1);
+    const limit = 6;
+    const eventLog = this.state.eventLog.slice(0, limit - 1);
     eventLog.unshift(eventName);
     this.setState({eventLog});
   },
 });
 
-var ForceTouchExample = React.createClass({
+const ForceTouchExample = React.createClass({
   getInitialState: function() {
     return {
       force: 0,
@@ -260,7 +260,7 @@ var ForceTouchExample = React.createClass({
   },
 });
 
-var TouchableHitSlop = React.createClass({
+const TouchableHitSlop = React.createClass({
   getInitialState: function() {
     return {
       timesPressed: 0,
@@ -302,7 +302,7 @@ var TouchableHitSlop = React.createClass({
   }
 });
 
-var TouchableDisabled = React.createClass({
+const TouchableDisabled = React.createClass({
   render: function() {
     return (
       <View>
@@ -368,9 +368,9 @@ var TouchableDisabled = React.createClass({
   }
 });
 
-var heartImage = {uri: 'https://pbs.twimg.com/media/BlXBfT3CQAA6cVZ.png:small'};
+const heartImage = {uri: 'https://pbs.twimg.com/media/BlXBfT3CQAA6cVZ.png:small'};
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   row: {
     justifyContent: 'center',
     flexDirection: 'row',

@@ -15,9 +15,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -25,7 +25,7 @@ var {
   WebView,
 } = ReactNative;
 
-var RCTNetworking = require('RCTNetworking');
+const RCTNetworking = require('RCTNetworking');
 
 class XHRExampleCookies extends React.Component {
   state: any;
@@ -42,8 +42,8 @@ class XHRExampleCookies extends React.Component {
   }
 
   setCookie(domain: string) {
-    var {a, b} = this.state;
-    var url = `https://${domain}/cookies/set?a=${a}&b=${b}`;
+    const {a, b} = this.state;
+    const url = `https://${domain}/cookies/set?a=${a}&b=${b}`;
     fetch(url).then((response) => {
       this.setStatus(`Cookies a=${a}, b=${b} set`);
       this.refreshWebview();
@@ -138,7 +138,7 @@ class XHRExampleCookies extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,

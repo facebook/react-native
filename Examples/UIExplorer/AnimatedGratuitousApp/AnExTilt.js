@@ -16,9 +16,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Animated,
   Image,
   PanResponder,
@@ -64,7 +64,7 @@ class AnExTilt extends React.Component {
           friction: 3,
         }).start();
         this.state.panX.removeAllListeners();
-        var id = this.state.panX.addListener(({value}) => { // listen until offscreen
+        const id = this.state.panX.addListener(({value}) => { // listen until offscreen
           if (Math.abs(value) > 400) {
             this.state.panX.removeListener(id);             // offscreen, so stop listening
             Animated.timing(this.state.opacity, {
@@ -125,7 +125,7 @@ class AnExTilt extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   tilt: {
     overflow: 'hidden',
     height: 200,
@@ -137,6 +137,6 @@ var styles = StyleSheet.create({
   },
 });
 
-var NATURE_IMAGE = {uri: 'http://www.deshow.net/d/file/travel/2009-04/scenic-beauty-of-nature-photography-2-504-4.jpg'};
+const NATURE_IMAGE = {uri: 'http://www.deshow.net/d/file/travel/2009-04/scenic-beauty-of-nature-photography-2-504-4.jpg'};
 
 module.exports = AnExTilt;

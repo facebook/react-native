@@ -15,9 +15,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Modal,
   StyleSheet,
   Switch,
@@ -31,7 +31,7 @@ exports.framework = 'React';
 exports.title = '<Modal>';
 exports.description = 'Component for presenting modal views.';
 
-var Button = React.createClass({
+const Button = React.createClass({
   getInitialState() {
     return {
       active: false,
@@ -47,7 +47,7 @@ var Button = React.createClass({
   },
 
   render() {
-    var colorStyle = {
+    const colorStyle = {
       color: this.state.active ? '#fff' : '#000',
     };
     return (
@@ -63,7 +63,7 @@ var Button = React.createClass({
   }
 });
 
-var ModalExample = React.createClass({
+const ModalExample = React.createClass({
   getInitialState() {
     return {
       animated: true,
@@ -85,10 +85,10 @@ var ModalExample = React.createClass({
   },
 
   render() {
-    var modalBackgroundStyle = {
+    const modalBackgroundStyle = {
       backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : '#f5fcff',
     };
-    var innerContainerTransparentStyle = this.state.transparent
+    const innerContainerTransparentStyle = this.state.transparent
       ? {backgroundColor: '#fff', padding: 20}
       : null;
 
@@ -138,7 +138,7 @@ exports.examples = [
   },
 ];
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',

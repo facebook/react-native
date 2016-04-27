@@ -15,16 +15,16 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Image,
   StyleSheet,
   View,
   ScrollView
 } = ReactNative;
 
-var AssetScaledImageExample = React.createClass({
+const AssetScaledImageExample = React.createClass({
 
   getInitialState() {
     return {
@@ -33,7 +33,7 @@ var AssetScaledImageExample = React.createClass({
   },
 
   render() {
-    var image = this.state.asset.node.image;
+    const image = this.state.asset.node.image;
     return (
       <ScrollView>
         <View style={styles.row}>
@@ -53,7 +53,7 @@ var AssetScaledImageExample = React.createClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   row: {
     padding: 5,
     flex: 1,

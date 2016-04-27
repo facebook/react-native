@@ -15,16 +15,16 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Text,
   TextInput,
   View,
   StyleSheet,
 } = ReactNative;
 
-var TextEventsExample = React.createClass({
+const TextEventsExample = React.createClass({
   getInitialState: function() {
     return {
       curText: '<No Event>',
@@ -102,9 +102,9 @@ class RewriteExample extends React.Component {
     this.state = {text: ''};
   }
   render() {
-    var limit = 20;
-    var remainder = limit - this.state.text.length;
-    var remainderColor = remainder > 5 ? 'blue' : 'red';
+    const limit = 20;
+    const remainder = limit - this.state.text.length;
+    const remainderColor = remainder > 5 ? 'blue' : 'red';
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
@@ -179,7 +179,7 @@ class TokenizedTextExample extends React.Component {
   }
 }
 
-var BlurOnSubmitExample = React.createClass({
+const BlurOnSubmitExample = React.createClass({
   focusNextField(nextField) {
     this.refs[nextField].focus();
   },
@@ -233,7 +233,7 @@ var BlurOnSubmitExample = React.createClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   multiline: {
     height: 60,
     fontSize: 16,
@@ -281,13 +281,13 @@ exports.examples = [
   {
     title: 'Auto-capitalize',
     render: function() {
-      var autoCapitalizeTypes = [
+      const autoCapitalizeTypes = [
         'none',
         'sentences',
         'words',
         'characters',
       ];
-      var examples = autoCapitalizeTypes.map((type) => {
+      const examples = autoCapitalizeTypes.map((type) => {
         return (
           <TextInput
             key={type}
@@ -322,13 +322,13 @@ exports.examples = [
   {
     title: 'Keyboard types',
     render: function() {
-      var keyboardTypes = [
+      const keyboardTypes = [
         'default',
         'email-address',
         'numeric',
         'phone-pad',
       ];
-      var examples = keyboardTypes.map((type) => {
+      const examples = keyboardTypes.map((type) => {
         return (
           <TextInput
             key={type}

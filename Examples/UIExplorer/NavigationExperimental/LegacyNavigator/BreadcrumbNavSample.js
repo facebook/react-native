@@ -13,9 +13,9 @@
 */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   NavigationExperimental,
   StyleSheet,
   ScrollView,
@@ -24,13 +24,13 @@ var {
   TouchableOpacity
 } = ReactNative;
 
-var _getRandomRoute = function() {
+const _getRandomRoute = function() {
   return {
     title: '#' + Math.ceil(Math.random() * 1000),
   };
 };
 
-var Navigator = NavigationExperimental.LegacyNavigator;
+const Navigator = NavigationExperimental.LegacyNavigator;
 
 class NavButton extends React.Component {
   render() {
@@ -45,7 +45,7 @@ class NavButton extends React.Component {
   }
 }
 
-var BreadcrumbNavSample = React.createClass({
+const BreadcrumbNavSample = React.createClass({
 
   componentWillMount: function() {
     this._navBarRouteMapper = {
@@ -125,7 +125,7 @@ var BreadcrumbNavSample = React.createClass({
 
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   scene: {
     paddingTop: 50,
     flex: 1,

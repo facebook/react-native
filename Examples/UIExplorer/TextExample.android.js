@@ -15,18 +15,18 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Image,
   StyleSheet,
   Text,
   View,
 } = ReactNative;
-var UIExplorerBlock = require('./UIExplorerBlock');
-var UIExplorerPage = require('./UIExplorerPage');
+const UIExplorerBlock = require('./UIExplorerBlock');
+const UIExplorerPage = require('./UIExplorerPage');
 
-var Entity = React.createClass({
+const Entity = React.createClass({
   render: function() {
     return (
       <Text style={{fontWeight: 'bold', color: '#527fe4'}}>
@@ -36,7 +36,7 @@ var Entity = React.createClass({
   }
 });
 
-var AttributeToggler = React.createClass({
+const AttributeToggler = React.createClass({
   getInitialState: function() {
     return {fontWeight: 'bold', fontSize: 15};
   },
@@ -51,7 +51,7 @@ var AttributeToggler = React.createClass({
     });
   },
   render: function() {
-    var curStyle = {fontWeight: this.state.fontWeight, fontSize: this.state.fontSize};
+    const curStyle = {fontWeight: this.state.fontWeight, fontSize: this.state.fontSize};
     return (
       <View>
         <Text style={curStyle}>
@@ -72,7 +72,7 @@ var AttributeToggler = React.createClass({
   }
 });
 
-var TextExample = React.createClass({
+const TextExample = React.createClass({
   statics: {
     title: '<Text>',
     description: 'Base component for rendering styled text.',
@@ -393,7 +393,7 @@ var TextExample = React.createClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   backgroundColorText: {
     left: 5,
     backgroundColor: 'rgba(100, 100, 100, 0.3)'

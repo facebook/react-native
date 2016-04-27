@@ -16,9 +16,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   NavigationExperimental,
   StyleSheet,
   Text,
@@ -60,13 +60,13 @@ function playTurn(game: string, row: number, col: number): string {
 
 function getWinner(gameString: string): ?string {
   const game = parseGame(gameString);
-  for (var i = 0; i < 3; i++) {
+  for (const i = 0; i < 3; i++) {
     if (game[i][0] !== null && game[i][0] === game[i][1] &&
         game[i][0] === game[i][2]) {
       return game[i][0];
     }
   }
-  for (var i = 0; i < 3; i++) {
+  for (const i = 0; i < 3; i++) {
     if (game[0][i] !== null && game[0][i] === game[1][i] &&
         game[0][i] === game[2][i]) {
       return game[0][i];
@@ -88,8 +88,8 @@ function isGameOver(gameString: string): boolean {
     return true;
   }
   const game = parseGame(gameString);
-  for (var i = 0; i < 3; i++) {
-    for (var j = 0; j < 3; j++) {
+  for (const i = 0; i < 3; i++) {
+    for (const j = 0; j < 3; j++) {
       if (game[i][j] === null) {
         return false;
       }
@@ -160,7 +160,7 @@ function GameEndOverlay(props) {
 GameEndOverlay = NavigationContainer.create(GameEndOverlay);
 
 function TicTacToeGame(props) {
-  var rows = parseGame(props.game).map((cells, row) =>
+  const rows = parseGame(props.game).map((cells, row) =>
     <View key={'row' + row} style={styles.row}>
       {cells.map((player, col) =>
         <Cell

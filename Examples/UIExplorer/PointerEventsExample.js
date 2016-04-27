@@ -15,15 +15,15 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   StyleSheet,
   Text,
   View,
 } = ReactNative;
 
-var ExampleBox = React.createClass({
+const ExampleBox = React.createClass({
   getInitialState: function() {
     return {
       log: [],
@@ -62,7 +62,7 @@ var ExampleBox = React.createClass({
 });
 
 
-var NoneExample = React.createClass({
+const NoneExample = React.createClass({
   render: function() {
     return (
       <View
@@ -95,7 +95,7 @@ var NoneExample = React.createClass({
  * Special demo text that makes itself untouchable so that it doesn't destroy
  * the experiment and confuse the output.
  */
-var DemoText = React.createClass({
+const DemoText = React.createClass({
   render: function() {
     return (
       <View pointerEvents="none">
@@ -108,7 +108,7 @@ var DemoText = React.createClass({
   }
 });
 
-var BoxNoneExample = React.createClass({
+const BoxNoneExample = React.createClass({
   render: function() {
     return (
       <View
@@ -145,7 +145,7 @@ var BoxNoneExample = React.createClass({
   }
 });
 
-var BoxOnlyExample = React.createClass({
+const BoxOnlyExample = React.createClass({
   render: function() {
     return (
       <View
@@ -188,7 +188,7 @@ type ExampleClass = {
   description: string,
 };
 
-var exampleClasses: Array<ExampleClass> = [
+const exampleClasses: Array<ExampleClass> = [
   {
     Component: NoneExample,
     title: '`none`',
@@ -206,7 +206,7 @@ var exampleClasses: Array<ExampleClass> = [
   }
 ];
 
-var infoToExample = (info) => {
+const infoToExample = (info) => {
   return {
     title: info.title,
     description: info.description,
@@ -216,7 +216,7 @@ var infoToExample = (info) => {
   };
 };
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   text: {
     fontSize: 10,
     color: '#5577cc',

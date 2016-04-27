@@ -130,7 +130,7 @@ const PickerExample = React.createClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   picker: {
     width: 100,
   },

@@ -15,9 +15,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   DatePickerIOS,
   StyleSheet,
   Text,
@@ -25,7 +25,7 @@ var {
   View,
 } = ReactNative;
 
-var DatePickerExample = React.createClass({
+const DatePickerExample = React.createClass({
   getDefaultProps: function () {
     return {
       date: new Date(),
@@ -45,7 +45,7 @@ var DatePickerExample = React.createClass({
   },
 
   onTimezoneChange: function(event) {
-    var offset = parseInt(event.nativeEvent.text, 10);
+    const offset = parseInt(event.nativeEvent.text, 10);
     if (isNaN(offset)) {
       return;
     }
@@ -99,7 +99,7 @@ var DatePickerExample = React.createClass({
   },
 });
 
-var WithLabel = React.createClass({
+const WithLabel = React.createClass({
   render: function() {
     return (
       <View style={styles.labelContainer}>
@@ -114,7 +114,7 @@ var WithLabel = React.createClass({
   }
 });
 
-var Heading = React.createClass({
+const Heading = React.createClass({
   render: function() {
     return (
       <View style={styles.headingContainer}>
@@ -137,7 +137,7 @@ exports.examples = [
   },
 }];
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   textinput: {
     height: 26,
     width: 50,

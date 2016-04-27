@@ -167,7 +167,7 @@ function makeRenderable(example: any): ReactClass<any> {
 UIExplorerExampleList = NavigationContainer.create(UIExplorerExampleList);
 UIExplorerExampleList.makeRenderable = makeRenderable;
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
   },

@@ -15,9 +15,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Alert,
   StyleSheet,
   Text,
@@ -25,16 +25,16 @@ var {
   View,
 } = ReactNative;
 
-var UIExplorerBlock = require('./UIExplorerBlock');
+const UIExplorerBlock = require('./UIExplorerBlock');
 
 // corporate ipsum > lorem ipsum
-var alertMessage = 'Credibly reintermediate next-generation potentialities after goal-oriented ' +
+const alertMessage = 'Credibly reintermediate next-generation potentialities after goal-oriented ' +
                    'catalysts for change. Dynamically revolutionize.';
 
 /**
  * Simple alert examples.
  */
-var SimpleAlertExampleBlock = React.createClass({
+const SimpleAlertExampleBlock = React.createClass({
 
   render: function() {
     return (
@@ -105,7 +105,7 @@ var SimpleAlertExampleBlock = React.createClass({
   },
 });
 
-var AlertExample = React.createClass({
+const AlertExample = React.createClass({
   statics: {
     title: 'Alert',
     description: 'Alerts display a concise and informative message ' +
@@ -120,7 +120,7 @@ var AlertExample = React.createClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,

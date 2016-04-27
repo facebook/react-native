@@ -14,16 +14,16 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Animated,
   StyleSheet,
   Text,
   View,
 } = ReactNative;
 
-var Flip = React.createClass({
+const Flip = React.createClass({
   getInitialState() {
     return {
       theta: new Animated.Value(45),
@@ -78,7 +78,7 @@ var Flip = React.createClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     height: 500,
   },

@@ -16,9 +16,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Animated,
   Image,
   ScrollView,
@@ -31,7 +31,7 @@ class AnExScroll extends React.Component {
   state: any = { scrollX: new Animated.Value(0) };
 
   render() {
-    var width = this.props.panelWidth;
+    const width = this.props.panelWidth;
     return (
       <View style={styles.container}>
         <ScrollView
@@ -82,7 +82,7 @@ class AnExScroll extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     backgroundColor: 'transparent',
     flex: 1,
@@ -106,7 +106,7 @@ var styles = StyleSheet.create({
   },
 });
 
-var HAWK_PIC = {uri: 'https://scontent-sea1-1.xx.fbcdn.net/hphotos-xfa1/t39.1997-6/10734304_1562225620659674_837511701_n.png'};
-var BUNNY_PIC = {uri: 'https://scontent-sea1-1.xx.fbcdn.net/hphotos-xaf1/t39.1997-6/851564_531111380292237_1898871086_n.png'};
+const HAWK_PIC = {uri: 'https://scontent-sea1-1.xx.fbcdn.net/hphotos-xfa1/t39.1997-6/10734304_1562225620659674_837511701_n.png'};
+const BUNNY_PIC = {uri: 'https://scontent-sea1-1.xx.fbcdn.net/hphotos-xaf1/t39.1997-6/851564_531111380292237_1898871086_n.png'};
 
 module.exports = AnExScroll;

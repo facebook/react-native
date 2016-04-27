@@ -15,17 +15,17 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   PickerIOS,
   Text,
   View,
 } = ReactNative;
 
-var PickerItemIOS = PickerIOS.Item;
+const PickerItemIOS = PickerIOS.Item;
 
-var CAR_MAKES_AND_MODELS = {
+const CAR_MAKES_AND_MODELS = {
   amc: {
     name: 'AMC',
     models: ['AMX', 'Concord', 'Eagle', 'Gremlin', 'Matador', 'Pacer'],
@@ -66,7 +66,7 @@ var CAR_MAKES_AND_MODELS = {
   },
 };
 
-var PickerExample = React.createClass({
+const PickerExample = React.createClass({
   getInitialState: function() {
     return {
       carMake: 'cadillac',
@@ -75,8 +75,8 @@ var PickerExample = React.createClass({
   },
 
   render: function() {
-    var make = CAR_MAKES_AND_MODELS[this.state.carMake];
-    var selectionString = make.name + ' ' + make.models[this.state.modelIndex];
+    const make = CAR_MAKES_AND_MODELS[this.state.carMake];
+    const selectionString = make.name + ' ' + make.models[this.state.modelIndex];
     return (
       <View>
         <Text>Please choose a make for your car:</Text>
@@ -110,7 +110,7 @@ var PickerExample = React.createClass({
   },
 });
 
-var PickerStyleExample = React.createClass({
+const PickerStyleExample = React.createClass({
   getInitialState: function() {
     return {
       carMake: 'cadillac',
@@ -119,8 +119,8 @@ var PickerStyleExample = React.createClass({
   },
 
   render: function() {
-    var make = CAR_MAKES_AND_MODELS[this.state.carMake];
-    var selectionString = make.name + ' ' + make.models[this.state.modelIndex];
+    const make = CAR_MAKES_AND_MODELS[this.state.carMake];
+    const selectionString = make.name + ' ' + make.models[this.state.modelIndex];
     return (
       <PickerIOS
         itemStyle={{fontSize: 25, color: 'red', textAlign: 'left', fontWeight: 'bold'}}

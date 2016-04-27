@@ -15,9 +15,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   StyleSheet,
   View,
   Text,
@@ -25,7 +25,7 @@ var {
   AlertIOS,
 } = ReactNative;
 
-var { SimpleAlertExampleBlock } = require('./AlertExample');
+const { SimpleAlertExampleBlock } = require('./AlertExample');
 
 exports.framework = 'React';
 exports.title = 'AlertIOS';
@@ -167,7 +167,7 @@ class PromptOptions extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,

@@ -16,9 +16,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Image,
   LayoutAnimation,
   ListView,
@@ -28,12 +28,12 @@ var {
   View,
 } = ReactNative;
 
-var NativeModules = require('NativeModules');
-var {
+const NativeModules = require('NativeModules');
+const {
   UIManager,
 } = NativeModules;
 
-var THUMB_URLS = [
+const THUMB_URLS = [
   require('./Thumbnails/like.png'),
   require('./Thumbnails/dislike.png'),
   require('./Thumbnails/call.png'),
@@ -47,10 +47,10 @@ var THUMB_URLS = [
   require('./Thumbnails/superlike.png'),
   require('./Thumbnails/victory.png'),
 ];
-var NUM_SECTIONS = 100;
-var NUM_ROWS_PER_SECTION = 10;
+const NUM_SECTIONS = 100;
+const NUM_ROWS_PER_SECTION = 10;
 
-var Thumb = React.createClass({
+const Thumb = React.createClass({
   getInitialState: function() {
     return {thumbIndex: this._getThumbIdx(), dir: 'row'};
   },
@@ -62,7 +62,7 @@ var Thumb = React.createClass({
     return Math.floor(Math.random() * THUMB_URLS.length);
   },
   _onPressThumb: function() {
-    var config = layoutAnimationConfigs[this.state.thumbIndex % layoutAnimationConfigs.length];
+    const config = layoutAnimationConfigs[this.state.thumbIndex % layoutAnimationConfigs.length];
     LayoutAnimation.configureNext(config);
     this.setState({
       thumbIndex: this._getThumbIdx(),
@@ -89,38 +89,38 @@ var Thumb = React.createClass({
   }
 });
 
-var ListViewPagingExample = React.createClass({
+const ListViewPagingExample = React.createClass({
   statics: {
     title: '<ListView> - Paging',
     description: 'Floating headers & layout animations.'
   },
 
   getInitialState: function() {
-    var getSectionData = (dataBlob, sectionID) => {
+    const getSectionData = (dataBlob, sectionID) => {
       return dataBlob[sectionID];
     };
-    var getRowData = (dataBlob, sectionID, rowID) => {
+    const getRowData = (dataBlob, sectionID, rowID) => {
       return dataBlob[rowID];
     };
 
-    var dataSource = new ListView.DataSource({
+    const dataSource = new ListView.DataSource({
       getRowData: getRowData,
       getSectionHeaderData: getSectionData,
       rowHasChanged: (row1, row2) => row1 !== row2,
       sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
     });
 
-    var dataBlob = {};
-    var sectionIDs = [];
-    var rowIDs = [];
-    for (var ii = 0; ii < NUM_SECTIONS; ii++) {
-      var sectionName = 'Section ' + ii;
+    const dataBlob = {};
+    const sectionIDs = [];
+    const rowIDs = [];
+    for (const ii = 0; ii < NUM_SECTIONS; ii++) {
+      const sectionName = 'Section ' + ii;
       sectionIDs.push(sectionName);
       dataBlob[sectionName] = sectionName;
       rowIDs[ii] = [];
 
-      for (var jj = 0; jj < NUM_ROWS_PER_SECTION; jj++) {
-        var rowName = 'S' + ii + ', R' + jj;
+      for (const jj = 0; jj < NUM_ROWS_PER_SECTION; jj++) {
+        const rowName = 'S' + ii + ', R' + jj;
         rowIDs[ii].push(rowName);
         dataBlob[rowName] = rowName;
       }
@@ -146,7 +146,7 @@ var ListViewPagingExample = React.createClass({
   },
 
   renderHeader: function() {
-    var headerLikeText = this.state.headerPressCount % 2 ?
+    const headerLikeText = this.state.headerPressCount % 2 ?
       <View><Text style={styles.text}>1 Like</Text></View> :
       null;
     return (
@@ -189,14 +189,14 @@ var ListViewPagingExample = React.createClass({
   },
 
   _onPressHeader: function() {
-    var config = layoutAnimationConfigs[Math.floor(this.state.headerPressCount / 2) % layoutAnimationConfigs.length];
+    const config = layoutAnimationConfigs[Math.floor(this.state.headerPressCount / 2) % layoutAnimationConfigs.length];
     LayoutAnimation.configureNext(config);
     this.setState({headerPressCount: this.state.headerPressCount + 1});
   },
 
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   listview: {
     backgroundColor: '#B0C4DE',
   },
@@ -244,7 +244,7 @@ var styles = StyleSheet.create({
   },
 });
 
-var animations = {
+const animations = {
   layout: {
     spring: {
       duration: 750,
@@ -272,7 +272,7 @@ var animations = {
   },
 };
 
-var layoutAnimationConfigs = [
+const layoutAnimationConfigs = [
   animations.layout.spring,
   animations.layout.easeInEaseOut,
 ];

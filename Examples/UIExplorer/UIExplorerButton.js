@@ -15,15 +15,15 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   StyleSheet,
   Text,
   TouchableHighlight,
 } = ReactNative;
 
-var UIExplorerButton = React.createClass({
+const UIExplorerButton = React.createClass({
   propTypes: {
     onPress: React.PropTypes.func,
   },
@@ -41,7 +41,7 @@ var UIExplorerButton = React.createClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   button: {
     borderColor: '#696969',
     borderRadius: 8,

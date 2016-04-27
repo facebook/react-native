@@ -15,14 +15,14 @@
  */
 'use strict';
 
-var ProgressBar = require('ProgressBarAndroid');
-var React = require('React');
-var UIExplorerBlock = require('UIExplorerBlock');
-var UIExplorerPage = require('UIExplorerPage');
+const ProgressBar = require('ProgressBarAndroid');
+const React = require('React');
+const UIExplorerBlock = require('UIExplorerBlock');
+const UIExplorerPage = require('UIExplorerPage');
 
-var TimerMixin = require('react-timer-mixin');
+const TimerMixin = require('react-timer-mixin');
 
-var MovingBar = React.createClass({
+const MovingBar = React.createClass({
   mixins: [TimerMixin],
 
   getInitialState: function() {
@@ -34,7 +34,7 @@ var MovingBar = React.createClass({
   componentDidMount: function() {
     this.setInterval(
       () => {
-        var progress = (this.state.progress + 0.02) % 1;
+        const progress = (this.state.progress + 0.02) % 1;
         this.setState({progress: progress});
       }, 50
     );
@@ -45,7 +45,7 @@ var MovingBar = React.createClass({
   },
 });
 
-var ProgressBarAndroidExample = React.createClass({
+const ProgressBarAndroidExample = React.createClass({
 
   statics: {
     title: '<ProgressBarAndroid>',

@@ -15,16 +15,16 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Platform,
   Switch,
   Text,
   View
 } = ReactNative;
 
-var BasicSwitchExample = React.createClass({
+const BasicSwitchExample = React.createClass({
   getInitialState() {
     return {
       trueSwitchIsOn: true,
@@ -46,7 +46,7 @@ var BasicSwitchExample = React.createClass({
   }
 });
 
-var DisabledSwitchExample = React.createClass({
+const DisabledSwitchExample = React.createClass({
   render() {
     return (
       <View>
@@ -62,7 +62,7 @@ var DisabledSwitchExample = React.createClass({
   },
 });
 
-var ColorSwitchExample = React.createClass({
+const ColorSwitchExample = React.createClass({
   getInitialState() {
     return {
       colorTrueSwitchIsOn: true,
@@ -90,7 +90,7 @@ var ColorSwitchExample = React.createClass({
   },
 });
 
-var EventSwitchExample = React.createClass({
+const EventSwitchExample = React.createClass({
   getInitialState() {
     return {
       eventSwitchIsOn: false,
@@ -127,7 +127,7 @@ var EventSwitchExample = React.createClass({
   }
 });
 
-var examples = [
+const examples = [
   {
     title: 'Switches can be set to true or false',
     render(): ReactElement { return <BasicSwitchExample />; }

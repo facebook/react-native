@@ -15,9 +15,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   AdSupportIOS,
   StyleSheet,
   Text,
@@ -37,7 +37,7 @@ exports.examples = [
   }
 ];
 
-var AdSupportIOSExample = React.createClass({
+const AdSupportIOSExample = React.createClass({
   getInitialState: function() {
     return {
       deviceID: 'No IDFA yet',
@@ -97,7 +97,7 @@ var AdSupportIOSExample = React.createClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   title: {
     fontWeight: '500',
   },

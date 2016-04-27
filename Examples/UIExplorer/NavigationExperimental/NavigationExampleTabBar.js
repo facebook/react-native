@@ -13,9 +13,9 @@
 */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   NavigationExperimental,
   StyleSheet,
   Text,
@@ -30,7 +30,7 @@ const {
   JumpToAction,
 } = NavigationReducer.TabsReducer;
 
-var NavigationExampleTabBar = React.createClass({
+const NavigationExampleTabBar = React.createClass({
   render: function() {
     return (
       <View style={styles.tabBar}>
@@ -39,7 +39,7 @@ var NavigationExampleTabBar = React.createClass({
     );
   },
   _renderTab: function(tab, index) {
-    var textStyle = [styles.tabButtonText];
+    const textStyle = [styles.tabButtonText];
     if (this.props.index === index) {
       textStyle.push(styles.selectedTabButtonText);
     }

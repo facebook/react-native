@@ -122,7 +122,7 @@ const NavigatorIOSExamplePage = React.createClass({
       return null;
     }
     return this._renderRow('Replace here', () => {
-      var prevRoute = this.props.route;
+      const prevRoute = this.props.route;
       this.props.navigator.replace({
         title: 'New Navigation',
         component: EmptyPage,

@@ -15,20 +15,20 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   StyleSheet,
   Text,
   View,
 } = ReactNative;
-var UIExplorerBlock = require('./UIExplorerBlock');
-var UIExplorerPage = require('./UIExplorerPage');
+const UIExplorerBlock = require('./UIExplorerBlock');
+const UIExplorerPage = require('./UIExplorerPage');
 
-var SwitchAndroid = require('SwitchAndroid');
-var ToolbarAndroid = require('ToolbarAndroid');
+const SwitchAndroid = require('SwitchAndroid');
+const ToolbarAndroid = require('ToolbarAndroid');
 
-var ToolbarAndroidExample = React.createClass({
+const ToolbarAndroidExample = React.createClass({
   statics: {
     title: '<ToolbarAndroid>',
     description: 'Examples of using the Android toolbar.'
@@ -118,13 +118,13 @@ var ToolbarAndroidExample = React.createClass({
   },
 });
 
-var toolbarActions = [
+const toolbarActions = [
   {title: 'Create', icon: require('image!ic_create_black_48dp'), show: 'always'},
   {title: 'Filter'},
   {title: 'Settings', icon: require('image!ic_settings_black_48dp'), show: 'always'},
 ];
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   toolbar: {
     backgroundColor: '#e9eaed',
     height: 56,

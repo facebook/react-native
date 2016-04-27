@@ -15,18 +15,18 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   AlertIOS,
   Platform,
   ToastAndroid,
   View,
 } = ReactNative;
-var TimerMixin = require('react-timer-mixin');
-var UIExplorerButton = require('./UIExplorerButton');
+const TimerMixin = require('react-timer-mixin');
+const UIExplorerButton = require('./UIExplorerButton');
 
-var TimerTester = React.createClass({
+const TimerTester = React.createClass({
   mixins: [TimerMixin],
 
   _ii: 0,
@@ -36,7 +36,7 @@ var TimerTester = React.createClass({
   _handle: (null : any),
 
   render: function() {
-    var args = 'fn' + (this.props.dt !== undefined ? ', ' + this.props.dt : '');
+    const args = 'fn' + (this.props.dt !== undefined ? ', ' + this.props.dt : '');
     return (
       <UIExplorerButton onPress={this._run}>
         Measure: {this.props.type}({args}) - {this._ii || 0}
@@ -46,7 +46,7 @@ var TimerTester = React.createClass({
 
   _run: function() {
     if (!this._start) {
-      var d = new Date();
+      const d = new Date();
       this._start = d.getTime();
       this._iters = 100;
       this._ii = 0;
@@ -69,9 +69,9 @@ var TimerTester = React.createClass({
       }
     }
     if (this._ii >= this._iters && !this._handle) {
-      var d = new Date();
-      var e = (d.getTime() - this._start);
-      var msg = 'Finished ' + this._ii + ' ' + this.props.type + ' calls.\n' +
+      const d = new Date();
+      const e = (d.getTime() - this._start);
+      const msg = 'Finished ' + this._ii + ' ' + this.props.type + ' calls.\n' +
         'Elapsed time: ' + e + ' ms\n' + (e / this._ii) + ' ms / iter';
       console.log(msg);
       if (Platform.OS === 'ios') {
@@ -150,7 +150,7 @@ exports.examples = [
     description: 'Execute function fn every t milliseconds until cancelled ' +
       'or component is unmounted.',
     render: function(): ReactElement {
-      var IntervalExample = React.createClass({
+      const IntervalExample = React.createClass({
         getInitialState: function() {
           return {
             showTimer: true,
@@ -159,16 +159,14 @@ exports.examples = [
 
         render: function() {
           if (this.state.showTimer) {
-            var timer = [
+            const timer = [
               <TimerTester ref="interval" dt={25} type="setInterval" />,
               <UIExplorerButton onPress={() => this.refs.interval.clear() }>
                 Clear interval
               </UIExplorerButton>
             ];
-            var toggleText = 'Unmount timer';
           } else {
-            var timer = null;
-            var toggleText = 'Mount new timer';
+            const timer = null;
           }
           return (
             <View>

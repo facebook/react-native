@@ -15,17 +15,17 @@
  */
 'use strict';
 
-var Platform = require('Platform');
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const Platform = require('Platform');
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   StyleSheet,
   Text,
   View,
 } = ReactNative;
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   box: {
     backgroundColor: '#527FE4',
     borderColor: '#000033',
@@ -33,7 +33,7 @@ var styles = StyleSheet.create({
   }
 });
 
-var ViewBorderStyleExample = React.createClass({
+const ViewBorderStyleExample = React.createClass({
   getInitialState() {
     return {
       showBorder: true

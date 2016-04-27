@@ -15,25 +15,25 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity
 } = ReactNative;
 
-var NUM_ITEMS = 20;
+const NUM_ITEMS = 20;
 
-var ScrollViewSimpleExample = React.createClass({
+const ScrollViewSimpleExample = React.createClass({
   statics: {
     title: '<ScrollView>',
     description: 'Component that enables scrolling through child components.'
   },
   makeItems: function(nItems: number, styles): Array<any> {
-    var items = [];
-    for (var i = 0; i < nItems; i++) {
+    const items = [];
+    for (const i = 0; i < nItems; i++) {
        items[i] = (
          <TouchableOpacity key={i} style={styles}>
            <Text>{'Item ' + i}</Text>
@@ -45,14 +45,14 @@ var ScrollViewSimpleExample = React.createClass({
 
   render: function() {
     // One of the items is a horizontal scroll view
-    var items = this.makeItems(NUM_ITEMS, styles.itemWrapper);
+    const items = this.makeItems(NUM_ITEMS, styles.itemWrapper);
     items[4] = (
       <ScrollView key={'scrollView'} horizontal={true}>
         {this.makeItems(NUM_ITEMS, [styles.itemWrapper, styles.horizontalItemWrapper])}
       </ScrollView>
     );
 
-    var verticalScrollView = (
+    const verticalScrollView = (
       <ScrollView style={styles.verticalScrollView}>
         {items}
       </ScrollView>
@@ -62,7 +62,7 @@ var ScrollViewSimpleExample = React.createClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   verticalScrollView: {
     margin: 10,
   },

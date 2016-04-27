@@ -15,16 +15,16 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   ProgressViewIOS,
   StyleSheet,
   View,
 } = ReactNative;
-var TimerMixin = require('react-timer-mixin');
+const TimerMixin = require('react-timer-mixin');
 
-var ProgressViewExample = React.createClass({
+const ProgressViewExample = React.createClass({
   mixins: [TimerMixin],
 
   getInitialState() {
@@ -38,13 +38,13 @@ var ProgressViewExample = React.createClass({
   },
 
   updateProgress() {
-    var progress = this.state.progress + 0.01;
+    const progress = this.state.progress + 0.01;
     this.setState({ progress });
     this.requestAnimationFrame(() => this.updateProgress());
   },
 
   getProgress(offset) {
-    var progress = this.state.progress + offset;
+    const progress = this.state.progress + offset;
     return Math.sin(progress % Math.PI) % 1;
   },
 
@@ -74,7 +74,7 @@ exports.examples = [{
   }
 }];
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     marginTop: -20,
     backgroundColor: 'transparent',

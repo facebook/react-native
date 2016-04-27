@@ -15,9 +15,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Image,
   ListView,
   TouchableHighlight,
@@ -27,16 +27,16 @@ var {
   View,
 } = ReactNative;
 
-var UIExplorerPage = require('./UIExplorerPage');
+const UIExplorerPage = require('./UIExplorerPage');
 
-var ListViewSimpleExample = React.createClass({
+const ListViewSimpleExample = React.createClass({
   statics: {
     title: '<ListView>',
     description: 'Performant, scrollable list of data.'
   },
 
   getInitialState: function() {
-    var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     return {
       dataSource: ds.cloneWithRows(this._genRows({})),
     };
@@ -65,8 +65,8 @@ var ListViewSimpleExample = React.createClass({
   },
 
   _renderRow: function(rowData: string, sectionID: number, rowID: number) {
-    var rowHash = Math.abs(hashCode(rowData));
-    var imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
+    const rowHash = Math.abs(hashCode(rowData));
+    const imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
     return (
       <TouchableHighlight onPress={() => this._pressRow(rowID)}>
         <View>
@@ -82,9 +82,9 @@ var ListViewSimpleExample = React.createClass({
   },
 
   _genRows: function(pressData: {[key: number]: boolean}): Array<string> {
-    var dataBlob = [];
+    const dataBlob = [];
     for (var ii = 0; ii < 100; ii++) {
-      var pressedText = pressData[ii] ? ' (pressed)' : '';
+      const pressedText = pressData[ii] ? ' (pressed)' : '';
       dataBlob.push('Row ' + ii + pressedText);
     }
     return dataBlob;
@@ -98,7 +98,7 @@ var ListViewSimpleExample = React.createClass({
   },
 });
 
-var THUMB_URLS = [
+const THUMB_URLS = [
   require('./Thumbnails/like.png'),
   require('./Thumbnails/dislike.png'),
   require('./Thumbnails/call.png'),
@@ -112,18 +112,18 @@ var THUMB_URLS = [
   require('./Thumbnails/superlike.png'),
   require('./Thumbnails/victory.png'),
   ];
-var LOREM_IPSUM = 'Lorem ipsum dolor sit amet, ius ad pertinax oportere accommodare, an vix civibus corrumpit referrentur. Te nam case ludus inciderint, te mea facilisi adipiscing. Sea id integre luptatum. In tota sale consequuntur nec. Erat ocurreret mei ei. Eu paulo sapientem vulputate est, vel an accusam intellegam interesset. Nam eu stet pericula reprimique, ea vim illud modus, putant invidunt reprehendunt ne qui.';
+const LOREM_IPSUM = 'Lorem ipsum dolor sit amet, ius ad pertinax oportere accommodare, an vix civibus corrumpit referrentur. Te nam case ludus inciderint, te mea facilisi adipiscing. Sea id integre luptatum. In tota sale consequuntur nec. Erat ocurreret mei ei. Eu paulo sapientem vulputate est, vel an accusam intellegam interesset. Nam eu stet pericula reprimique, ea vim illud modus, putant invidunt reprehendunt ne qui.';
 
 /* eslint no-bitwise: 0 */
-var hashCode = function(str) {
+const hashCode = function(str) {
   var hash = 15;
-  for (var ii = str.length - 1; ii >= 0; ii--) {
+  for (const ii = str.length - 1; ii >= 0; ii--) {
     hash = ((hash << 5) - hash) + str.charCodeAt(ii);
   }
   return hash;
 };
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'center',

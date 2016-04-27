@@ -15,15 +15,15 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Clipboard,
   View,
   Text,
 } = ReactNative;
 
-var ClipboardExample = React.createClass({
+const ClipboardExample = React.createClass({
   getInitialState() {
     return {
       content: 'Content will appear here'
@@ -33,7 +33,7 @@ var ClipboardExample = React.createClass({
   async _setClipboardContent(){
     Clipboard.setString('Hello World');
     try {
-      var content = await Clipboard.getString();
+      const content = await Clipboard.getString();
       this.setState({content});
     } catch (e) {
       this.setState({content:e.message});
