@@ -105,13 +105,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _tabController.viewControllers = viewControllers;
     _tabsChanged = NO;
   }
-  
-  [[UITabBarItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:_unselectedTintColor, NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
-  [[UITabBarItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:self.tintColor, NSForegroundColorAttributeName, nil] forState:UIControlStateSelected];
 
   [_tabViews enumerateObjectsUsingBlock:
    ^(RCTTabBarItem *tab, NSUInteger index, __unused BOOL *stop) {
     UIViewController *controller = _tabController.viewControllers[index];
+       
+    [tab.barItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:_unselectedTintColor, NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
+    [tab.barItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:self.tintColor, NSForegroundColorAttributeName, nil] forState:UIControlStateSelected];
+    
     controller.tabBarItem = tab.barItem;
     if (tab.selected) {
       _tabController.selectedViewController = controller;
