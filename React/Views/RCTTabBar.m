@@ -105,6 +105,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _tabController.viewControllers = viewControllers;
     _tabsChanged = NO;
   }
+  
+  [[UITabBarItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:_unselectedTintColor, NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
+  [[UITabBarItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:self.tintColor, NSForegroundColorAttributeName, nil] forState:UIControlStateSelected];
 
   [_tabViews enumerateObjectsUsingBlock:
    ^(RCTTabBarItem *tab, NSUInteger index, __unused BOOL *stop) {
