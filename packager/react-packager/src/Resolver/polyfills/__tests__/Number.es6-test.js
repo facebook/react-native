@@ -12,6 +12,40 @@
 jest.autoMockOff();
 
 describe('Number (ES6)', () => {
+  describe('EPSILON', () => {
+    beforeEach(() => {
+      delete Number.EPSILON;
+      jest.resetModuleRegistry();
+      require('../Number.es6');
+    });
+    it('is 2^(-52)', () => {
+      expect(Number.EPSILON).toBe(Math.pow(2, -52));
+    });
+    it('can be used to test equality', () => {
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/EPSILON#Testing_equality
+      expect(Number.EPSILON).toBeGreaterThan(Math.abs(0.2 - 0.3 + 0.1));
+    });
+  });
+  describe('MAX_SAFE_INTEGER', () => {
+    beforeEach(() => {
+      delete Number.MAX_SAFE_INTEGER;
+      jest.resetModuleRegistry();
+      require('../Number.es6');
+    });
+    it('is 2^53 - 1', () => {
+      expect(Number.MAX_SAFE_INTEGER).toBe(Math.pow(2, 53) - 1);
+    });
+  });
+  describe('MIN_SAFE_INTEGER', () => {
+    beforeEach(() => {
+      delete Number.MIN_SAFE_INTEGER;
+      jest.resetModuleRegistry();
+      require('../Number.es6');
+    });
+    it('is -(2^53 - 1)', () => {
+      expect(Number.MIN_SAFE_INTEGER).toBe(-(Math.pow(2, 53) - 1));
+    });
+  });
   describe('isNaN()', () => {
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN#Examples
     beforeEach(() => {
