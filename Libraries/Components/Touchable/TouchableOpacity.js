@@ -55,7 +55,7 @@ var TouchableOpacity = React.createClass({
     ...TouchableWithoutFeedback.propTypes,
     /**
      * Determines what the opacity of the wrapped view should be when touch is
-     * active.
+     * active. Defaults to 0.2.
      */
     activeOpacity: React.PropTypes.number,
   },
