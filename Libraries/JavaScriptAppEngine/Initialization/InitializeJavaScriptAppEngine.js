@@ -70,6 +70,29 @@ function polyfillGlobal(name, newValue, scope = GLOBAL) {
   Object.defineProperty(scope, name, {...descriptor, value: newValue});
 }
 
+function polyfillLazyGlobal(name, valueFn, scope = GLOBAL) {
+  if (scope[name] !== undefined) {
+    const descriptor = Object.getOwnPropertyDescriptor(scope, name);
+    const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
+    Object.defineProperty(scope, backupName, {...descriptor, value: scope[name]});
+  }
+
+  Object.defineProperty(scope, name, {
+    configurable: true,
+    enumerable: true,
+    get() {
+      return this[name] = valueFn();
+    },
+    set(value) {
+      Object.defineProperty(this, name, {
+        configurable: true,
+        enumerable: true,
+        value
+      });
+    }
+  });
+}
+
 /**
  * Polyfill a module if it is not already defined in `scope`.
  */
@@ -104,18 +127,17 @@ function setUpErrorHandler() {
  * unexplainably dropped timing signals.
  */
 function setUpTimers() {
-  var JSTimers = require('JSTimers');
-  GLOBAL.setTimeout = JSTimers.setTimeout;
-  GLOBAL.setInterval = JSTimers.setInterval;
-  GLOBAL.setImmediate = JSTimers.setImmediate;
-  GLOBAL.clearTimeout = JSTimers.clearTimeout;
-  GLOBAL.clearInterval = JSTimers.clearInterval;
-  GLOBAL.clearImmediate = JSTimers.clearImmediate;
-  GLOBAL.cancelAnimationFrame = JSTimers.clearInterval;
-  GLOBAL.requestAnimationFrame = function(cb) {
-    /*requestAnimationFrame() { [native code] };*/  // Trick scroller library
-    return JSTimers.requestAnimationFrame(cb);      // into thinking it's native
+  const defineLazyTimer = (name) => {
+    polyfillLazyGlobal(name, () => require('JSTimers')[name]);
   };
+  defineLazyTimer('setTimeout');
+  defineLazyTimer('setInterval');
+  defineLazyTimer('setImmediate');
+  defineLazyTimer('clearTimeout');
+  defineLazyTimer('clearInterval');
+  defineLazyTimer('clearImmediate');
+  defineLazyTimer('requestAnimationFrame');
+  defineLazyTimer('cancelAnimationFrame');
 }
 
 function setUpAlert() {
@@ -131,20 +153,19 @@ function setUpAlert() {
 function setUpPromise() {
   // The native Promise implementation throws the following error:
   // ERROR: Event loop not supported.
-  GLOBAL.Promise = require('Promise');
+  polyfillLazyGlobal('Promise', () => require('Promise'));
 }
 
 function setUpXHR() {
   // The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
   // let you fetch anything from the internet
-  polyfillGlobal('XMLHttpRequest', require('XMLHttpRequest'));
-  polyfillGlobal('FormData', require('FormData'));
+  polyfillLazyGlobal('XMLHttpRequest', () => require('XMLHttpRequest'));
+  polyfillLazyGlobal('FormData', () => require('FormData'));
 
-  var fetchPolyfill = require('fetch');
-  polyfillGlobal('fetch', fetchPolyfill.fetch);
-  polyfillGlobal('Headers', fetchPolyfill.Headers);
-  polyfillGlobal('Request', fetchPolyfill.Request);
-  polyfillGlobal('Response', fetchPolyfill.Response);
+  polyfillLazyGlobal('fetch', () => require('fetch').fetch);
+  polyfillLazyGlobal('Headers', () => require('fetch').Headers);
+  polyfillLazyGlobal('Request', () => require('fetch').Request);
+  polyfillLazyGlobal('Response', () => require('fetch').Response);
 }
 
 function setUpGeolocation() {
@@ -153,10 +174,12 @@ function setUpGeolocation() {
     enumerable: true,
     configurable: true,
   });
-  polyfillGlobal('geolocation', require('Geolocation'), GLOBAL.navigator);
+  polyfillLazyGlobal('geolocation', () => require('Geolocation'), GLOBAL.navigator);
 }
 
 function setUpMapAndSet() {
+  // We can't make these lazy as Map checks the global.Map to see if it's
+  // available but in our case it'll be a lazy getter.
   polyfillGlobal('Map', require('Map'));
   polyfillGlobal('Set', require('Set'));
 }
@@ -166,7 +189,7 @@ function setUpProduct() {
 }
 
 function setUpWebSockets() {
-  polyfillGlobal('WebSocket', require('WebSocket'));
+  polyfillLazyGlobal('WebSocket', () => require('WebSocket'));
 }
 
 function setUpProfile() {
