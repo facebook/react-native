@@ -106,15 +106,15 @@ namespace ReactNative.Modules.Core
             double jsSchedulingTime,
             bool repeat)
         {
-            var period = TimeSpan.FromMilliseconds(duration);
-            var scheduledTime = DateTimeOffset.FromUnixTimeMilliseconds((long)jsSchedulingTime);
-            var initialTargetTime = (scheduledTime + period);
-
-            if (DateTimeOffset.Now > initialTargetTime && !repeat)
+            if (duration == 0 && !repeat)
             {
                 _jsTimersModule.callTimers(new[] { callbackId });
                 return;
             }
+
+            var period = TimeSpan.FromMilliseconds(duration);
+            var scheduledTime = DateTimeOffset.FromUnixTimeMilliseconds((long)jsSchedulingTime);
+            var initialTargetTime = (scheduledTime + period);
 
             var timer = new TimerData(callbackId, initialTargetTime, period, repeat);
             lock (_gate)
