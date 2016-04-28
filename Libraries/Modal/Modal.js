@@ -58,8 +58,13 @@ class Modal extends React.Component {
       backgroundColor: this.props.transparent ? 'transparent' : 'white',
     };
 
+    let topValue = 0;
+    if (this.props.translucentStatusBar && !(Platform.OS === 'android' && Platform.Version < 19)) {
+      topValue = STATUS_BAR_HEIGHT;
+    }
+
     const containerTopValue = {
-      top: this.props.translucentStatusBar ? STATUS_BAR_HEIGHT : 0,
+      top: topValue
     };
 
     return (
