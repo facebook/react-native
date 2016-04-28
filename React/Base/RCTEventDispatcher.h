@@ -103,3 +103,9 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 - (void)sendEvent:(id<RCTEvent>)event;
 
 @end
+
+@interface RCTBridge (RCTEventDispatcher)
+
+- (RCTEventDispatcher *)eventDispatcher;
+
+@end
