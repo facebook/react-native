@@ -54,6 +54,10 @@ const validateOpts = declareOpts({
   transformCode: {
     type: 'function',
   },
+  extraNodeModules: {
+    type: 'object',
+    required: false,
+  },
   minifyCode: {
     type: 'function',
   },
@@ -107,6 +111,7 @@ class Resolver {
       cache: opts.cache,
       shouldThrowOnUnresolvedErrors: (_, platform) => platform === 'ios',
       transformCode: opts.transformCode,
+      extraNodeModules: opts.extraNodeModules,
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
     });
 
