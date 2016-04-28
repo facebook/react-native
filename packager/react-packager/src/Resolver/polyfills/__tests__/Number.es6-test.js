@@ -9,7 +9,7 @@
  * @emails oncall+jsinfra
  */
 
-jest.autoMockOff();
+jest.disableAutomock();
 
 describe('Number (ES6)', () => {
   describe('EPSILON', () => {
