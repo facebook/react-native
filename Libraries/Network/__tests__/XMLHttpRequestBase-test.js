@@ -1,8 +1,8 @@
 'use strict';
 
 jest
-	.autoMockOff()
-	.dontMock('XMLHttpRequestBase');
+	.disableAutomock()
+	.unmock('XMLHttpRequestBase');
 
 const XMLHttpRequestBase = require('XMLHttpRequestBase');
 

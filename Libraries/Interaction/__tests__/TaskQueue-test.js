@@ -4,7 +4,7 @@
 
 'use strict';
 
-jest.dontMock('TaskQueue');
+jest.unmock('TaskQueue');
 
 function expectToBeCalledOnce(fn) {
   expect(fn.mock.calls.length).toBe(1);
@@ -23,13 +23,13 @@ describe('TaskQueue', () => {
   let onMoreTasks;
   let sequenceId;
   function createSequenceTask(expectedSequenceId) {
-    return jest.genMockFunction().mockImplementation(() => {
+    return jest.fn(() => {
       expect(++sequenceId).toBe(expectedSequenceId);
     });
   }
   beforeEach(() => {
     jest.resetModuleRegistry();
-    onMoreTasks = jest.genMockFunction();
+    onMoreTasks = jest.fn();
     const TaskQueue = require('TaskQueue');
     taskQueue = new TaskQueue({onMoreTasks});
     sequenceId = 0;
@@ -45,7 +45,7 @@ describe('TaskQueue', () => {
   });
 
   it('should handle blocking promise task', () => {
-    const task1 = jest.genMockFunction().mockImplementation(() => {
+    const task1 = jest.fn(() => {
       return new Promise(resolve => {
         setTimeout(() => {
           expect(++sequenceId).toBe(1);
@@ -71,7 +71,7 @@ describe('TaskQueue', () => {
   });
 
   it('should handle nested simple tasks', () => {
-    const task1 = jest.genMockFunction().mockImplementation(() => {
+    const task1 = jest.fn(() => {
       expect(++sequenceId).toBe(1);
       taskQueue.enqueue({run: task3, name: 'run3'});
     });
@@ -88,7 +88,7 @@ describe('TaskQueue', () => {
   });
 
   it('should handle nested promises', () => {
-    const task1 = jest.genMockFunction().mockImplementation(() => {
+    const task1 = jest.fn(() => {
       return new Promise(resolve => {
         setTimeout(() => {
           expect(++sequenceId).toBe(1);
@@ -97,7 +97,7 @@ describe('TaskQueue', () => {
         }, 1);
       });
     });
-    const task2 = jest.genMockFunction().mockImplementation(() => {
+    const task2 = jest.fn(() => {
       return new Promise(resolve => {
         setTimeout(() => {
           expect(++sequenceId).toBe(2);

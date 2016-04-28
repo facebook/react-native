@@ -408,6 +408,31 @@ exports.examples = [
     }
   },
   {
+    title: 'fontFamily, fontWeight and fontStyle',
+    render: function() {
+      return (
+        <View>
+          <TextInput 
+            style={[styles.singleLine, {fontFamily: 'sans-serif'}]}
+            placeholder="Custom fonts like Sans-Serif are supported"
+          />
+          <TextInput 
+            style={[styles.singleLine, {fontFamily: 'sans-serif', fontWeight: 'bold'}]}
+            placeholder="Sans-Serif bold"
+          />
+          <TextInput 
+            style={[styles.singleLine, {fontFamily: 'sans-serif', fontStyle: 'italic'}]}
+            placeholder="Sans-Serif italic"
+          />
+          <TextInput 
+            style={[styles.singleLine, {fontFamily: 'serif'}]}
+            placeholder="Serif"
+          />
+        </View>
+      );
+    }
+  },
+  {
     title: 'Passwords',
     render: function() {
       return (

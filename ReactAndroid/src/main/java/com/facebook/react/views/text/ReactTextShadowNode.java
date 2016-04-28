@@ -279,6 +279,9 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   /**
    * Return -1 if the input string is not a valid numeric fontWeight (100, 200, ..., 900), otherwise
    * return the weight.
+   * 
+   * This code is duplicated in ReactTextInputManager 
+   * TODO: Factor into a common place they can both use
    */
   private static int parseNumericFontWeight(String fontWeightString) {
     // This should be much faster than using regex to verify input and Integer.parseInt
@@ -407,13 +410,17 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       markUpdated();
     }
   }
-
+    
   @ReactProp(name = ViewProps.FONT_FAMILY)
   public void setFontFamily(@Nullable String fontFamily) {
     mFontFamily = fontFamily;
     markUpdated();
   }
-
+    
+  /**
+  /* This code is duplicated in ReactTextInputManager 
+  /* TODO: Factor into a common place they can both use
+  */
   @ReactProp(name = ViewProps.FONT_WEIGHT)
   public void setFontWeight(@Nullable String fontWeightString) {
     int fontWeightNumeric = fontWeightString != null ?
@@ -430,7 +437,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       markUpdated();
     }
   }
-
+  
+  /**
+  /* This code is duplicated in ReactTextInputManager 
+  /* TODO: Factor into a common place they can both use
+  */
   @ReactProp(name = ViewProps.FONT_STYLE)
   public void setFontStyle(@Nullable String fontStyleString) {
     int fontStyle = UNSET;
