@@ -76,9 +76,7 @@ test:
     - ./gradlew :ReactAndroid:assembleDebugAndroidTest
 
     # Android e2e test
-    # TODO t10955118, temporary until master is fixed
-    #- source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android --js
-    - node ./scripts/run-ci-e2e-tests.js --android --js
+    - node ./scripts/run-ci-e2e-tests.js --android --js --retries 3
 
     # testing docs generation is not broken
     - cd website && node ./server/generate.js

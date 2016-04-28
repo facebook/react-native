@@ -26,6 +26,7 @@ import type {Task} from 'TaskQueue';
 const _emitter = new EventEmitter();
 
 const DEBUG_DELAY = 0;
+const DEBUG = false;
 
 /**
  * InteractionManager allows long-running work to be scheduled after any
@@ -100,6 +101,7 @@ var InteractionManager = {
    * Notify manager that an interaction has started.
    */
   createInteractionHandle(): Handle {
+    DEBUG && console.log('create interaction handle');
     _scheduleUpdate();
     var handle = ++_inc;
     _addInteractionSet.add(handle);
@@ -110,6 +112,7 @@ var InteractionManager = {
    * Notify manager that an interaction has completed.
    */
   clearInteractionHandle(handle: Handle) {
+    DEBUG && console.log('clear interaction handle');
     invariant(
       !!handle,
       'Must provide a handle to clear.'

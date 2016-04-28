@@ -8,10 +8,10 @@
  */
 'use strict';
 
-jest.autoMockOff();
+jest.disableAutomock();
 
 const uglify = {
-  minify: jest.genMockFunction().mockImplementation(code => {
+  minify: jest.fn(code => {
     return {
       code: code.replace(/(^|\W)\s+/g, '$1'),
       map: {},

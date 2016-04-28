@@ -128,7 +128,10 @@ Copy & paste the following code to `index.android.js` in your root folder — it
 ```js
 'use strict';
 
-import React, {
+import React from 'react';
+import {
+  AppRegistry,
+  StyleSheet,
   Text,
   View
 } from 'react-native';
@@ -142,7 +145,7 @@ class MyAwesomeApp extends React.Component {
     )
   }
 }
-var styles = React.StyleSheet.create({
+var styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -154,7 +157,7 @@ var styles = React.StyleSheet.create({
   },
 });
 
-React.AppRegistry.registerComponent('MyAwesomeApp', () => MyAwesomeApp);
+AppRegistry.registerComponent('MyAwesomeApp', () => MyAwesomeApp);
 ```
 
 ## Run your app

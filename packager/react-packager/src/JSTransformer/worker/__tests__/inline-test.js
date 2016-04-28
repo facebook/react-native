@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.autoMockOff();
+jest.disableAutomock();
 const inline = require('../inline');
 const {transform, transformFromAst} = require('babel-core');
 

@@ -563,7 +563,11 @@ var styles = StyleSheet.create({
 });
 
 if (Platform.OS === 'android') {
-  var nativeOnlyProps = { nativeOnly : { 'sendMomentumEvents' : true } };
+  var nativeOnlyProps = {
+    nativeOnly: {
+      sendMomentumEvents: true,
+    }
+  };
   var AndroidScrollView = requireNativeComponent('RCTScrollView', ScrollView, nativeOnlyProps);
   var AndroidHorizontalScrollView = requireNativeComponent(
     'AndroidHorizontalScrollView',
@@ -571,7 +575,15 @@ if (Platform.OS === 'android') {
     nativeOnlyProps
   );
 } else if (Platform.OS === 'ios') {
-  var RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView);
+  var nativeOnlyProps = {
+    nativeOnly: {
+      onMomentumScrollBegin: true,
+      onMomentumScrollEnd : true,
+      onScrollBeginDrag: true,
+      onScrollEndDrag: true,
+    }
+  };
+  var RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView, nativeOnlyProps);
 }
 
 module.exports = ScrollView;

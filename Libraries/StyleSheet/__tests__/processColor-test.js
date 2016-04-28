@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.autoMockOff();
+jest.disableAutomock();
 
 var processColor = require('processColor');
 
