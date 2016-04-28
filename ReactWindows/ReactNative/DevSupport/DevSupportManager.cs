@@ -200,6 +200,15 @@ namespace ReactNative.DevSupport
                             HandleReloadJavaScript();
                         }),
                     new DevOptionHandler(
+                        _devSettings.IsHotModuleReplacementEnabled
+                            ? "Disable Hot Reloading"
+                            : "Enable Hot Reloading",
+                        () =>
+                        {
+                            _devSettings.IsHotModuleReplacementEnabled = !_devSettings.IsHotModuleReplacementEnabled;
+                            HandleReloadJavaScript();
+                        }),
+                    new DevOptionHandler(
                         _devSettings.IsReloadOnJavaScriptChangeEnabled
                             ? "Disable Live Reload"
                             : "Enable Live Reload",
@@ -324,7 +333,7 @@ namespace ReactNative.DevSupport
                 try
                 {
                     var uri = new Uri(SourceUrl);
-                    var path = uri.PathAndQuery.Substring(1); // strip initial slash in path
+                    var path = uri.LocalPath.Substring(1); // strip initial slash in path
                     var host = uri.Host;
                     var port = uri.Port;
                     context.GetJavaScriptModule<HMRClient>().enable("windows", path, host, port);

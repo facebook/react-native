@@ -13,6 +13,7 @@ namespace ReactNative.Chakra.Executor
     {
         private readonly JavaScriptRuntime _runtime;
 
+        private JavaScriptNativeFunction _consoleInfo;
         private JavaScriptNativeFunction _consoleLog;
         private JavaScriptNativeFunction _consoleWarn;
         private JavaScriptNativeFunction _consoleError;
@@ -158,10 +159,12 @@ namespace ReactNative.Chakra.Executor
             var consoleObject = JavaScriptValue.CreateObject();
             EnsureGlobalObject().SetProperty(consolePropertyId, consoleObject, true);
 
+            _consoleInfo = ConsoleInfo;
             _consoleLog = ConsoleLog;
             _consoleWarn = ConsoleWarn;
             _consoleError = ConsoleError;
 
+            DefineHostCallback(consoleObject, "info", _consoleInfo);
             DefineHostCallback(consoleObject, "log", _consoleLog);
             DefineHostCallback(consoleObject, "warn", _consoleWarn);
             DefineHostCallback(consoleObject, "error", _consoleError);
@@ -217,6 +220,16 @@ namespace ReactNative.Chakra.Executor
             obj.SetProperty(propertyId, function, true);
         }
 
+        private JavaScriptValue ConsoleInfo(
+            JavaScriptValue callee,
+            bool isConstructCall,
+            JavaScriptValue[] arguments,
+            ushort argumentCount,
+            IntPtr callbackData)
+        {
+            return ConsoleCallback("Info", callee, isConstructCall, arguments, argumentCount, callbackData);
+        }
+
         private JavaScriptValue ConsoleLog(
             JavaScriptValue callee,
             bool isConstructCall,
@@ -257,7 +270,7 @@ namespace ReactNative.Chakra.Executor
         {
             try
             {
-                Debug.Write("Chakra " + kind + ">");
+                Debug.Write($"[JS {kind}]");
 
                 // First argument is this-context, ignore...
                 for (var i = 1; i < argumentCount; ++i)
