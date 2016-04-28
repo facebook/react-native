@@ -48,6 +48,7 @@
 @property (nonatomic, copy) NSString *snapToAlignment;
 @property (nonatomic, copy) NSIndexSet *stickyHeaderIndices;
 @property (nonatomic, copy) RCTDirectEventBlock onRefreshStart;
+@property (nonatomic) CGFloat translationAlongAxis;
 
 - (void)endRefreshing;
 
