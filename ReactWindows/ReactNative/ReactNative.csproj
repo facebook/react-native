@@ -358,6 +358,8 @@
     <Compile Include="UIManager\BorderedCanvasManager.cs" />
     <Compile Include="Views\View\ReactViewManager.cs" />
     <Compile Include="Views\TextInput\ReactTextInputManager.cs" />
+    <Compile Include="Modules\Toast\ToastHelper.cs" />
+    <Compile Include="Modules\Toast\ToastModule.cs" />
     <Compile Include="UIManager\BorderedViewParentManager.cs" />
     <Compile Include="Views\Web\Events\WebViewLoadingErrorEvent.cs" />
     <Compile Include="Views\Web\Events\WebViewLoadingEvent.cs" />
