@@ -57,6 +57,10 @@ const validateOpts = declareOpts({
     type:'string',
     required: false,
   },
+  extraNodeModules: {
+    type: 'object',
+    required: false,
+  },
   nonPersistent: {
     type: 'boolean',
     default: false,
@@ -141,6 +145,7 @@ class Bundler {
       transformCode:
         (module, code, options) =>
           this._transformer.transformFile(module.path, code, options),
+      extraNodeModules: opts.extraNodeModules,
       minifyCode: this._transformer.minify,
     });
 

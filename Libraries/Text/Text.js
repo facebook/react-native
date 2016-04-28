@@ -86,6 +86,10 @@ const Text = React.createClass({
      */
     onPress: React.PropTypes.func,
     /**
+     * This function is called on long press.
+     */
+    onLongPress: React.PropTypes.func,
+    /**
      * When true, no visual change is made when text is pressed down. By
      * default, a gray oval highlights the text on press down.
      * @platform ios
@@ -128,6 +132,9 @@ const Text = React.createClass({
    * Only assigned if touch is needed.
    */
   _handlers: (null: ?Object),
+  _hasPressHandler(): boolean {
+    return !!this.props.onPress || !!this.props.onLongPress;
+  },
   /**
    * These are assigned lazily the first time the responder is set to make plain
    * text nodes as cheap as possible.
@@ -135,16 +142,17 @@ const Text = React.createClass({
   touchableHandleActivePressIn: (null: ?Function),
   touchableHandleActivePressOut: (null: ?Function),
   touchableHandlePress: (null: ?Function),
+  touchableHandleLongPress: (null: ?Function),
   touchableGetPressRectOffset: (null: ?Function),
   render(): ReactElement {
     let newProps = this.props;
-    if (this.props.onStartShouldSetResponder || this.props.onPress) {
+    if (this.props.onStartShouldSetResponder || this._hasPressHandler()) {
       if (!this._handlers) {
         this._handlers = {
           onStartShouldSetResponder: (): bool => {
             const shouldSetFromProps = this.props.onStartShouldSetResponder &&
                 this.props.onStartShouldSetResponder();
-            const setResponder = shouldSetFromProps || !!this.props.onPress;
+            const setResponder = shouldSetFromProps || this._hasPressHandler();
             if (setResponder && !this.touchableHandleActivePressIn) {
               // Attach and bind all the other handlers only the first time a touch
               // actually happens.
@@ -154,7 +162,7 @@ const Text = React.createClass({
                 }
               }
               this.touchableHandleActivePressIn = () => {
-                if (this.props.suppressHighlighting || !this.props.onPress) {
+                if (this.props.suppressHighlighting || !this._hasPressHandler()) {
                   return;
                 }
                 this.setState({
@@ -163,7 +171,7 @@ const Text = React.createClass({
               };
 
               this.touchableHandleActivePressOut = () => {
-                if (this.props.suppressHighlighting || !this.props.onPress) {
+                if (this.props.suppressHighlighting || !this._hasPressHandler()) {
                   return;
                 }
                 this.setState({
@@ -173,6 +181,10 @@ const Text = React.createClass({
 
               this.touchableHandlePress = () => {
                 this.props.onPress && this.props.onPress();
+              };
+
+              this.touchableHandleLongPress = () => {
+                this.props.onLongPress && this.props.onLongPress();
               };
 
               this.touchableGetPressRectOffset = function(): RectOffset {

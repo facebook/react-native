@@ -9,7 +9,7 @@
 'use strict';
 
 jest
-  .autoMockOff()
+  .disableAutomock()
   .setMock('Text', {})
   .setMock('View', {})
   .setMock('Image', {})
@@ -22,7 +22,7 @@ describe('Animated', () => {
   it('works end to end', () => {
     var anim = new Animated.Value(0);
 
-    var callback = jest.genMockFunction();
+    var callback = jest.fn();
 
     var node = new Animated.__PropsOnlyForTests({
       style: {
@@ -75,7 +75,7 @@ describe('Animated', () => {
 
   it('does not detach on updates', () => {
     var anim = new Animated.Value(0);
-    anim.__detach = jest.genMockFunction();
+    anim.__detach = jest.fn();
 
     var c = new Animated.View();
     c.props = {
@@ -101,11 +101,11 @@ describe('Animated', () => {
   it('stops animation when detached', () => {
     // jest environment doesn't have cancelAnimationFrame :(
     if (!window.cancelAnimationFrame) {
-      window.cancelAnimationFrame = jest.genMockFunction();
+      window.cancelAnimationFrame = jest.fn();
     }
 
     var anim = new Animated.Value(0);
-    var callback = jest.genMockFunction();
+    var callback = jest.fn();
 
     var c = new Animated.View();
     c.props = {
@@ -125,14 +125,14 @@ describe('Animated', () => {
 
   it('triggers callback when spring is at rest', () => {
     var anim = new Animated.Value(0);
-    var callback = jest.genMockFunction();
+    var callback = jest.fn();
     Animated.spring(anim, {toValue: 0, velocity: 0}).start(callback);
     expect(callback).toBeCalled();
   });
 
   it('send toValue when a spring stops', () => {
     var anim = new Animated.Value(0);
-    var listener = jest.genMockFunction();
+    var listener = jest.fn();
     anim.addListener(listener);
     Animated.spring(anim, {toValue: 15}).start();
     jest.runAllTimers();
@@ -148,15 +148,15 @@ describe('Animated', () => {
 describe('Animated Sequence', () => {
 
   it('works with an empty sequence', () => {
-    var cb = jest.genMockFunction();
+    var cb = jest.fn();
     Animated.sequence([]).start(cb);
     expect(cb).toBeCalledWith({finished: true});
   });
 
   it('sequences well', () => {
-    var anim1 = {start: jest.genMockFunction()};
-    var anim2 = {start: jest.genMockFunction()};
-    var cb = jest.genMockFunction();
+    var anim1 = {start: jest.fn()};
+    var anim2 = {start: jest.fn()};
+    var cb = jest.fn();
 
     var seq = Animated.sequence([anim1, anim2]);
 
@@ -179,9 +179,9 @@ describe('Animated Sequence', () => {
   });
 
   it('supports interrupting sequence', () => {
-    var anim1 = {start: jest.genMockFunction()};
-    var anim2 = {start: jest.genMockFunction()};
-    var cb = jest.genMockFunction();
+    var anim1 = {start: jest.fn()};
+    var anim2 = {start: jest.fn()};
+    var cb = jest.fn();
 
     Animated.sequence([anim1, anim2]).start(cb);
 
@@ -193,9 +193,9 @@ describe('Animated Sequence', () => {
   });
 
   it('supports stopping sequence', () => {
-    var anim1 = {start: jest.genMockFunction(), stop: jest.genMockFunction()};
-    var anim2 = {start: jest.genMockFunction(), stop: jest.genMockFunction()};
-    var cb = jest.genMockFunction();
+    var anim1 = {start: jest.fn(), stop: jest.fn()};
+    var anim2 = {start: jest.fn(), stop: jest.fn()};
+    var cb = jest.fn();
 
     var seq = Animated.sequence([anim1, anim2]);
     seq.start(cb);
@@ -215,14 +215,14 @@ describe('Animated Sequence', () => {
 describe('Animated Parallel', () => {
 
   it('works with an empty parallel', () => {
-    var cb = jest.genMockFunction();
+    var cb = jest.fn();
     Animated.parallel([]).start(cb);
     expect(cb).toBeCalledWith({finished: true});
   });
 
   it('works with an empty element in array', () => {
-    var anim1 = {start: jest.genMockFunction()};
-    var cb = jest.genMockFunction();
+    var anim1 = {start: jest.fn()};
+    var cb = jest.fn();
     Animated.parallel([null, anim1]).start(cb);
 
     expect(anim1.start).toBeCalled();
@@ -232,9 +232,9 @@ describe('Animated Parallel', () => {
   });
 
   it('parellelizes well', () => {
-    var anim1 = {start: jest.genMockFunction()};
-    var anim2 = {start: jest.genMockFunction()};
-    var cb = jest.genMockFunction();
+    var anim1 = {start: jest.fn()};
+    var anim2 = {start: jest.fn()};
+    var cb = jest.fn();
 
     var par = Animated.parallel([anim1, anim2]);
 
@@ -255,9 +255,9 @@ describe('Animated Parallel', () => {
   });
 
   it('supports stopping parallel', () => {
-    var anim1 = {start: jest.genMockFunction(), stop: jest.genMockFunction()};
-    var anim2 = {start: jest.genMockFunction(), stop: jest.genMockFunction()};
-    var cb = jest.genMockFunction();
+    var anim1 = {start: jest.fn(), stop: jest.fn()};
+    var anim2 = {start: jest.fn(), stop: jest.fn()};
+    var cb = jest.fn();
 
     var seq = Animated.parallel([anim1, anim2]);
     seq.start(cb);
@@ -276,10 +276,10 @@ describe('Animated Parallel', () => {
 
 
   it('does not call stop more than once when stopping', () => {
-    var anim1 = {start: jest.genMockFunction(), stop: jest.genMockFunction()};
-    var anim2 = {start: jest.genMockFunction(), stop: jest.genMockFunction()};
-    var anim3 = {start: jest.genMockFunction(), stop: jest.genMockFunction()};
-    var cb = jest.genMockFunction();
+    var anim1 = {start: jest.fn(), stop: jest.fn()};
+    var anim2 = {start: jest.fn(), stop: jest.fn()};
+    var anim3 = {start: jest.fn(), stop: jest.fn()};
+    var cb = jest.fn();
 
     var seq = Animated.parallel([anim1, anim2, anim3]);
     seq.start(cb);
@@ -306,8 +306,8 @@ describe('Animated Parallel', () => {
 
 describe('Animated delays', () => {
   it('should call anim after delay in sequence', () => {
-    var anim = {start: jest.genMockFunction(), stop: jest.genMockFunction()};
-    var cb = jest.genMockFunction();
+    var anim = {start: jest.fn(), stop: jest.fn()};
+    var cb = jest.fn();
     Animated.sequence([
       Animated.delay(1000),
       anim,
@@ -319,7 +319,7 @@ describe('Animated delays', () => {
     expect(cb).toBeCalledWith({finished: true});
   });
   it('should run stagger to end', () => {
-    var cb = jest.genMockFunction();
+    var cb = jest.fn();
     Animated.stagger(1000, [
       Animated.delay(1000),
       Animated.delay(1000),
@@ -341,7 +341,7 @@ describe('Animated Events', () => {
   });
   it('should call listeners', () => {
     var value = new Animated.Value(0);
-    var listener = jest.genMockFunction();
+    var listener = jest.fn();
     var handler = Animated.event(
       [{foo: value}],
       {listener},
@@ -366,14 +366,14 @@ describe('Animated Interactions', () => {
   });
 
   afterEach(()=> {
-    jest.dontMock('InteractionManager');
+    jest.unmock('InteractionManager');
   });
 
   it('registers an interaction by default', () => {
     InteractionManager.createInteractionHandle.mockReturnValue(777);
 
     var value = new Animated.Value(0);
-    var callback = jest.genMockFunction();
+    var callback = jest.fn();
     Animated.timing(value, {
       toValue: 100,
       duration: 100,
@@ -387,7 +387,7 @@ describe('Animated Interactions', () => {
 
   it('does not register an interaction when specified', () => {
     var value = new Animated.Value(0);
-    var callback = jest.genMockFunction();
+    var callback = jest.fn();
     Animated.timing(value, {
       toValue: 100,
       duration: 100,
@@ -451,7 +451,7 @@ describe('Animated Vectors', () => {
   it('should animate vectors', () => {
     var vec = new Animated.ValueXY();
 
-    var callback = jest.genMockFunction();
+    var callback = jest.fn();
 
     var node = new Animated.__PropsOnlyForTests({
       style: {
@@ -536,7 +536,7 @@ describe('Animated Vectors', () => {
 describe('Animated Listeners', () => {
   it('should get updates', () => {
     var value1 = new Animated.Value(0);
-    var listener = jest.genMockFunction();
+    var listener = jest.fn();
     var id = value1.addListener(listener);
     value1.setValue(42);
     expect(listener.mock.calls.length).toBe(1);
@@ -554,7 +554,7 @@ describe('Animated Listeners', () => {
 
   it('should removeAll', () => {
     var value1 = new Animated.Value(0);
-    var listener = jest.genMockFunction();
+    var listener = jest.fn();
     [1,2,3,4].forEach(() => value1.addListener(listener));
     value1.setValue(42);
     expect(listener.mock.calls.length).toBe(4);

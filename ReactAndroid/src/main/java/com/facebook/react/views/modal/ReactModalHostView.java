@@ -11,6 +11,8 @@ package com.facebook.react.views.modal;
 
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -97,6 +99,12 @@ public class ReactModalHostView extends ViewGroup {
   public void removeViewAt(int index) {
     View child = getChildAt(index);
     mHostView.removeView(child);
+  }
+
+  @Override
+  public void addChildrenForAccessibility(ArrayList<View> outChildren) {
+    // Explicitly override this to prevent accessibility events being passed down to children
+    // Those will be handled by the mHostView which lives in the dialog
   }
 
   public void dismiss() {
