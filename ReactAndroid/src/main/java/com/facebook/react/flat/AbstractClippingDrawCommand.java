@@ -62,8 +62,6 @@ import android.graphics.Canvas;
     // shows up during screenshot testing. Note that checking one side is enough, since if one side
     // is infinite, all sides will be infinite, since we only set infinite for all sides at the
     // same time - conversely, if one side is finite, all sides will be finite.
-    if (mNeedsClipping) {
-      canvas.clipRect(mClipLeft, mClipTop, mClipRight, mClipBottom);
-    }
+    canvas.clipRect(mClipLeft, mClipTop, mClipRight, mClipBottom);
   }
 }

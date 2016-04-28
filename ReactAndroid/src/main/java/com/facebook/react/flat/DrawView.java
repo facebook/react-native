@@ -22,7 +22,7 @@ import android.graphics.Canvas;
   @Override
   public void draw(FlatViewGroup parent, Canvas canvas) {
     if (mNeedsClipping) {
-      canvas.save();
+      canvas.save(Canvas.CLIP_SAVE_FLAG);
       applyClipping(canvas);
       parent.drawNextChild(canvas);
       canvas.restore();

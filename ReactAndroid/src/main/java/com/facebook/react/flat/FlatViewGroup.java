@@ -346,7 +346,7 @@ import com.facebook.react.views.image.ImageLoadEvent;
       super.drawChild(canvas, child, getDrawingTime());
     } else {
       // Make sure non-React Views clip properly.
-      canvas.save();
+      canvas.save(Canvas.CLIP_SAVE_FLAG);
       child.getHitRect(VIEW_BOUNDS);
       canvas.clipRect(VIEW_BOUNDS);
       super.drawChild(canvas, child, getDrawingTime());

@@ -31,7 +31,7 @@ import android.graphics.Canvas;
   public final void draw(FlatViewGroup parent, Canvas canvas) {
     onPreDraw(parent, canvas);
     if (shouldClip()) {
-      canvas.save();
+      canvas.save(Canvas.CLIP_SAVE_FLAG);
       applyClipping(canvas);
       onDraw(canvas);
       canvas.restore();
