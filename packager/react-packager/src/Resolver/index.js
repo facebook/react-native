@@ -177,6 +177,7 @@ class Resolver {
       path.join(__dirname, 'polyfills/polyfills.js'),
       path.join(__dirname, 'polyfills/console.js'),
       path.join(__dirname, 'polyfills/error-guard.js'),
+      path.join(__dirname, 'polyfills/Number.es6.js'),
       path.join(__dirname, 'polyfills/String.prototype.es6.js'),
       path.join(__dirname, 'polyfills/Array.prototype.es6.js'),
       path.join(__dirname, 'polyfills/Array.es6.js'),

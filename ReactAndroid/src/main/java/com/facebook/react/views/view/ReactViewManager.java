@@ -101,7 +101,8 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
 
   @ReactProp(name = "nativeBackgroundAndroid")
   public void setNativeBackground(ReactViewGroup view, @Nullable ReadableMap bg) {
-    view.setNativeBackground(bg);
+    view.setTranslucentBackgroundDrawable(bg == null ?
+            null : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), bg));
   }
 
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)

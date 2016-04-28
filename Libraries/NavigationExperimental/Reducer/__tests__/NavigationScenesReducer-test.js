@@ -9,7 +9,7 @@
  */
 'use strict';
 
-jest.dontMock('NavigationScenesReducer');
+jest.unmock('NavigationScenesReducer');
 
 const NavigationScenesReducer = require('NavigationScenesReducer');
 

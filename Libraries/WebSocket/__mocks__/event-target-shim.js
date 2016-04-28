@@ -8,9 +8,9 @@
 'use strict';
 
 function EventTarget() {
-  // Support both EventTarget and EventTarget([list, of, events])
+  // Support both EventTarget and EventTarget(...)
   // as a super class, just like the original module does.
-  if (arguments.length === 1 && Array.isArray(arguments[0])) {
+  if (arguments.length > 0) {
     return EventTarget;
   }
 }

@@ -14,8 +14,7 @@ PREPROCESSOR_FLAGS = [
   '-DLOG_TAG="ReactNative"',
   '-DWITH_JSC_EXTRA_TRACING=1',
   '-DWITH_FBSYSTRACE=1',
-  '-DWITH_JSC_MEMORY_PRESSURE=1',
-  # '-DWITH_JSC_INTERNAL=1',  # Taken care of in D3163295
+  '-DWITH_REACT_INTERNAL_SETTINGS=1',
 ]
 
 def react_library(**kwargs):
