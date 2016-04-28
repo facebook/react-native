@@ -192,20 +192,6 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
   }
 
   /**
-   * Returns the floor modulus of the float arguments. Java modulus will return a negative remainder
-   * when the divisor is negative. Modulus should always be positive. This mimics the behavior of
-   * Math.floorMod, introduced in Java 8.
-   */
-  private float modulus(float x, float y) {
-    float remainder = x % y;
-    float modulus = remainder;
-    if (remainder < 0) {
-      modulus += y;
-    }
-    return modulus;
-  }
-
-  /**
    * Creates a {@link Path} from an array of instructions constructed by JS
    * (see ARTSerializablePath.js). Each instruction starts with a type (see PATH_TYPE_*) followed
    * by arguments for that instruction. For example, to create a line the instruction will be
@@ -246,18 +232,11 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
           float r = data[i++] * mScale;
           float start = (float) Math.toDegrees(data[i++]);
           float end = (float) Math.toDegrees(data[i++]);
-          boolean clockwise = data[i++] == 1f;
-          float sweep = end - start;
-          if (Math.abs(sweep) > 360) {
-            sweep = 360;
-          } else {
-            sweep = modulus(sweep, 360);
+          boolean clockwise = data[i++] == 0f;
+          if (!clockwise) {
+            end = 360 - end;
           }
-          if (!clockwise && sweep < 360) {
-            start = end;
-            sweep = 360 - sweep;
-          }
-
+          float sweep = start - end;
           RectF oval = new RectF(x - r, y - r, x + r, y + r);
           path.addArc(oval, start, sweep);
           break;
