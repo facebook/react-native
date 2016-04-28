@@ -55,7 +55,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private static final String REQUEST_BODY_KEY_URI = "uri";
   private static final String REQUEST_BODY_KEY_FORMDATA = "formData";
   private static final String USER_AGENT_HEADER_NAME = "user-agent";
-
+  private static final int CHUNK_TIMEOUT_NS = 100 * 1000000; // 100ms
   private static final int MAX_CHUNK_SIZE_BETWEEN_FLUSHES = 8 * 1024; // 8K
 
   private final OkHttpClient mClient;
@@ -233,11 +233,17 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       if (multipartBuilder == null) {
         return;
       }
-      System.out.println("here");
+
       requestBuilder.method(method, RequestBodyUtil.createProgressRequest(multipartBuilder.build(),new ProgressRequestListener(){
+        long last = System.nanoTime();
+
         @Override
         public void onRequestProgress(long bytesWritten, long contentLength, boolean done){
-          onDataSend(executorToken,requestId,bytesWritten,contentLength);
+          long now = System.nanoTime();
+          if (done || shouldDispatch(now, last)) {
+            onDataSend(executorToken,requestId,bytesWritten,contentLength);
+            last = now;
+          }
         }
       }));
     } else {
@@ -294,6 +300,10 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     } finally {
       reader.close();
     }
+  }
+
+  private static boolean shouldDispatch(long now, long last) {
+    return last + CHUNK_TIMEOUT_NS < now;
   }
 
   private void onDataSend(ExecutorToken ExecutorToken, int requestId, long progress, long total) {
