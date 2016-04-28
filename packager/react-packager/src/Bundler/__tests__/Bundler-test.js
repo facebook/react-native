@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.autoMockOff();
+jest.disableAutomock();
 
 jest
   .setMock('worker-farm', () => () => undefined)
@@ -68,8 +68,8 @@ describe('Bundler', function() {
   var projectRoots;
 
   beforeEach(function() {
-    getDependencies = jest.genMockFn();
-    getModuleSystemDependencies = jest.genMockFn();
+    getDependencies = jest.fn();
+    getModuleSystemDependencies = jest.fn();
     projectRoots = ['/root'];
 
     Resolver.mockImpl(function() {
@@ -90,7 +90,7 @@ describe('Bundler', function() {
     });
 
     assetServer = {
-      getAssetData: jest.genMockFn(),
+      getAssetData: jest.fn(),
     };
 
     bundler = new Bundler({

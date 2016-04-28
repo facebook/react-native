@@ -5,7 +5,7 @@
 'use strict';
 
 jest
-  .autoMockOff()
+  .disableAutomock()
   .mock('ErrorUtils')
   .mock('BatchedBridge');
 
@@ -22,8 +22,8 @@ describe('InteractionManager', () => {
     jest.resetModuleRegistry();
     InteractionManager = require('InteractionManager');
 
-    interactionStart = jest.genMockFunction();
-    interactionComplete = jest.genMockFunction();
+    interactionStart = jest.fn();
+    interactionComplete = jest.fn();
 
     InteractionManager.addListener(
       InteractionManager.Events.interactionStart,
@@ -84,7 +84,7 @@ describe('InteractionManager', () => {
   });
 
   it('runs tasks asynchronously when there are interactions', () => {
-    var task = jest.genMockFunction();
+    var task = jest.fn();
     InteractionManager.runAfterInteractions(task);
     expect(task).not.toBeCalled();
 
@@ -93,7 +93,7 @@ describe('InteractionManager', () => {
   });
 
   it('runs tasks when interactions complete', () => {
-    var task = jest.genMockFunction();
+    var task = jest.fn();
     var handle = InteractionManager.createInteractionHandle();
     InteractionManager.runAfterInteractions(task);
 
@@ -106,8 +106,8 @@ describe('InteractionManager', () => {
   });
 
   it('does not run tasks twice', () => {
-    var task1 = jest.genMockFunction();
-    var task2 = jest.genMockFunction();
+    var task1 = jest.fn();
+    var task2 = jest.fn();
     InteractionManager.runAfterInteractions(task1);
     jest.runAllTimers();
 
@@ -118,10 +118,10 @@ describe('InteractionManager', () => {
   });
 
   it('runs tasks added while processing previous tasks', () => {
-    var task1 = jest.genMockFunction().mockImplementation(() => {
+    var task1 = jest.fn(() => {
       InteractionManager.runAfterInteractions(task2);
     });
-    var task2 = jest.genMockFunction();
+    var task2 = jest.fn();
 
     InteractionManager.runAfterInteractions(task1);
     expect(task2).not.toBeCalled();
@@ -138,7 +138,7 @@ describe('promise tasks', () => {
   let BatchedBridge;
   let sequenceId;
   function createSequenceTask(expectedSequenceId) {
-    return jest.genMockFunction().mockImplementation(() => {
+    return jest.fn(() => {
       expect(++sequenceId).toBe(expectedSequenceId);
     });
   }
@@ -151,7 +151,7 @@ describe('promise tasks', () => {
 
 
   it('should run a basic promise task', () => {
-    const task1 = jest.genMockFunction().mockImplementation(() => {
+    const task1 = jest.fn(() => {
       expect(++sequenceId).toBe(1);
       return new Promise(resolve => resolve());
     });
@@ -161,14 +161,14 @@ describe('promise tasks', () => {
   });
 
   it('should handle nested promises', () => {
-    const task1 = jest.genMockFunction().mockImplementation(() => {
+    const task1 = jest.fn(() => {
       expect(++sequenceId).toBe(1);
       return new Promise(resolve => {
         InteractionManager.runAfterInteractions({gen: task2, name: 'gen2'})
           .then(resolve);
       });
     });
-    const task2 = jest.genMockFunction().mockImplementation(() => {
+    const task2 = jest.fn(() => {
       expect(++sequenceId).toBe(2);
       return new Promise(resolve => resolve());
     });
@@ -180,7 +180,7 @@ describe('promise tasks', () => {
 
   it('should pause promise tasks during interactions then resume', () => {
     const task1 = createSequenceTask(1);
-    const task2 = jest.genMockFunction().mockImplementation(() => {
+    const task2 = jest.fn(() => {
       expect(++sequenceId).toBe(2);
       return new Promise(resolve => {
         setTimeout(() => {
@@ -238,7 +238,7 @@ describe('promise tasks', () => {
 
   const bigAsyncTest = () => {
     const task1 = createSequenceTask(1);
-    const task2 = jest.genMockFunction().mockImplementation(() => {
+    const task2 = jest.fn(() => {
       expect(++sequenceId).toBe(2);
       return new Promise(resolve => {
         InteractionManager.runAfterInteractions(task3);
@@ -249,7 +249,7 @@ describe('promise tasks', () => {
       });
     });
     const task3 = createSequenceTask(3);
-    const task4 = jest.genMockFunction().mockImplementation(() => {
+    const task4 = jest.fn(() => {
       expect(++sequenceId).toBe(4);
       return new Promise(resolve => {
         InteractionManager.runAfterInteractions(task5).then(resolve);

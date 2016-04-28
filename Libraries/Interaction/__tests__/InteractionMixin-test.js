@@ -9,7 +9,7 @@
  */
 'use strict';
 
-jest.dontMock('InteractionMixin');
+jest.unmock('InteractionMixin');
 
 describe('InteractionMixin', () => {
   var InteractionManager;
@@ -36,7 +36,7 @@ describe('InteractionMixin', () => {
   });
 
   it('should schedule tasks', () => {
-    var task = jest.genMockFunction();
+    var task = jest.fn();
     component.runAfterInteractions(task);
     expect(InteractionManager.runAfterInteractions).toBeCalledWith(task);
   });
