@@ -26,6 +26,11 @@ function convertHeadersMapToArray(headers: Object): Array<Header> {
 }
 
 class XMLHttpRequest extends XMLHttpRequestBase {
+  constructor() {
+    super();
+    this.upload = {};
+  }
+
   sendImpl(method: ?string, url: ?string, headers: Object, data: any, timeout: number): void {
     var body;
     if (typeof data === 'string') {
