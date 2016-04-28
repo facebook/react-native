@@ -9,7 +9,6 @@ using ReactNative.Modules.NetInfo;
 using ReactNative.Modules.Network;
 using ReactNative.Modules.StatusBar;
 using ReactNative.Modules.Storage;
-using ReactNative.Modules.Toast;
 using ReactNative.Modules.Vibration;
 using ReactNative.Modules.WebSocket;
 using ReactNative.UIManager;
@@ -54,7 +53,6 @@ namespace ReactNative.Shell
                 new NetworkingModule(reactContext),
                 new NetInfoModule(reactContext),
                 new StatusBarModule(),
-                new ToastModule(reactContext),
                 new VibrationModule(),
                 new WebSocketModule(reactContext),
             };
