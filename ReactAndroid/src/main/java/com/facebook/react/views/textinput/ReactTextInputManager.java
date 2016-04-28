@@ -177,10 +177,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = ViewProps.FONT_FAMILY)
   public void setFontFamily(ReactEditText view, String fontFamily) {
     int style = Typeface.NORMAL;
-    if(view.getTypeface() != null) {
+    if (view.getTypeface() != null) {
       style = view.getTypeface().getStyle();
     }
-    Typeface  newTypeface = Typeface.create(fontFamily, style);
+    Typeface newTypeface = Typeface.create(fontFamily, style);
     view.setTypeface(newTypeface);
   }
 
@@ -218,7 +218,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
 
     Typeface currentTypeface = view.getTypeface();
-    if(currentTypeface == null){
+    if (currentTypeface == null) {
       currentTypeface = Typeface.DEFAULT;
     }
     if (fontStyle != currentTypeface.getStyle()) {
