@@ -82,7 +82,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 - (void)dismissModalViewController
 {
   if (_isPresented) {
-    [_modalViewController dismissViewControllerAnimated:self.animated completion:nil];
+    [_modalViewController dismissViewControllerAnimated:[self hasAnimationType] completion:nil];
     _isPresented = NO;
   }
 }
@@ -93,7 +93,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 
   if (!_isPresented && self.window) {
     RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
-    [self.reactViewController presentViewController:_modalViewController animated:self.animated completion:^{
+
+    if ([self.animationType isEqualToString:@"fade"]) {
+      _modalViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    } else if ([self.animationType isEqualToString:@"slide"]) {
+      _modalViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    }
+    [self.reactViewController presentViewController:_modalViewController animated:[self hasAnimationType] completion:^{
       if (_onShow) {
         _onShow(nil);
       }
@@ -121,6 +127,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 - (BOOL)isTransparent
 {
   return _modalViewController.modalPresentationStyle == UIModalPresentationCustom;
+}
+
+- (BOOL)hasAnimationType
+{
+  return ![self.animationType isEqualToString:@"none"];
 }
 
 - (void)setTransparent:(BOOL)transparent
