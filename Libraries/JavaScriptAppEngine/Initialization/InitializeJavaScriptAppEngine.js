@@ -81,7 +81,7 @@ function polyfillLazyGlobal(name, valueFn, scope = GLOBAL) {
     configurable: true,
     enumerable: true,
     get() {
-      return this[name] = valueFn();
+      return (this[name] = valueFn());
     },
     set(value) {
       Object.defineProperty(this, name, {
@@ -199,12 +199,14 @@ function setUpProfile() {
   }
 }
 
-function setUpProcessEnv() {
+function setUpProcess() {
   GLOBAL.process = GLOBAL.process || {};
   GLOBAL.process.env = GLOBAL.process.env || {};
   if (!GLOBAL.process.env.NODE_ENV) {
     GLOBAL.process.env.NODE_ENV = __DEV__ ? 'development' : 'production';
   }
+
+  polyfillLazyGlobal('platform', () => require('Platform').OS, GLOBAL.process);
 }
 
 function setUpDevTools() {
@@ -217,7 +219,7 @@ function setUpDevTools() {
   }
 }
 
-setUpProcessEnv();
+setUpProcess();
 setUpConsole();
 setUpTimers();
 setUpAlert();
