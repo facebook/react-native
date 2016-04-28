@@ -8,8 +8,8 @@
  */
 'use strict';
 
-jest.dontMock('../Platform.ios');
-jest.dontMock('../Platform.android');
+jest.unmock('../Platform.ios');
+jest.unmock('../Platform.android');
 
 var PlatformIOS = require('../Platform.ios');
 var PlatformAndroid = require('../Platform.android');

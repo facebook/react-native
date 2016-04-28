@@ -209,11 +209,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge moduleIsInitialized:moduleClass];
 }
 
-- (RCTEventDispatcher *)eventDispatcher
-{
-  return [self moduleForClass:[RCTEventDispatcher class]];
-}
-
 - (void)reload
 {
   /**

@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.autoMockOff();
+jest.disableAutomock();
 jest.mock('../constant-folding');
 jest.mock('../extract-dependencies');
 jest.mock('../inline');
@@ -22,7 +22,7 @@ describe('code transformation worker:', () => {
   beforeEach(() => {
     extractDependencies =
       require('../extract-dependencies').mockReturnValue({});
-    transform = jest.genMockFunction();
+    transform = jest.fn();
   });
 
   it('calls the transform with file name, source code, and transform options', function() {
