@@ -127,7 +127,6 @@
     <Compile Include="Modules\Network\TaskCancellationManagerTests.cs" />
     <Compile Include="Modules\StatusBar\StatusBarModuleTests.cs" />
     <Compile Include="Modules\Storage\AsyncStorageModuleTests.cs" />
-    <Compile Include="Modules\Toast\ToastNotificationTests.cs" />
     <Compile Include="Modules\WebSocket\WebSocketModuleTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReactInstanceManagerTests.cs" />
