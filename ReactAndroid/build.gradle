@@ -229,6 +229,7 @@ android {
         }
 
         buildConfigField 'boolean', 'IS_INTERNAL_BUILD', 'false'
+        buildConfigField 'int', 'EXOPACKAGE_FLAGS', '0'
         testApplicationId "com.facebook.react.tests.gradle"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

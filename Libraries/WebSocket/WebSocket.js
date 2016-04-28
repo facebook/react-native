@@ -55,7 +55,7 @@ let nextWebSocketId = 0;
  * See https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
  * See https://github.com/websockets/ws
  */
-class WebSocket extends EventTarget(WEBSOCKET_EVENTS) {
+class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
   static CONNECTING = CONNECTING;
   static OPEN = OPEN;
   static CLOSING = CLOSING;
