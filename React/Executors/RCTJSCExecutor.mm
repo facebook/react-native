@@ -144,7 +144,7 @@ static NSString *RCTJSValueToJSONString(JSContextRef context, JSValueRef value, 
   return (__bridge_transfer NSString *)string;
 }
 
-static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
+NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 {
   NSMutableDictionary *errorInfo = [NSMutableDictionary new];
 
