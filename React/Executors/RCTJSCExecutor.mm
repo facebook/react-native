@@ -517,16 +517,11 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return;
     }
     NSError *error;
-    NSString *argsString = (arguments.count == 1) ? RCTJSONStringify(arguments[0], &error) : RCTJSONStringify(arguments, &error);
-    if (!argsString) {
-      RCTLogError(@"Cannot convert argument to string: %@", error);
-      onComplete(nil, error);
-      return;
-    }
 
     JSValueRef errorJSRef = NULL;
     JSValueRef resultJSRef = NULL;
     JSGlobalContextRef contextJSRef = JSContextGetGlobalContext(strongSelf->_context.ctx);
+    JSContext *context = strongSelf->_context.context;
     JSObjectRef globalObjectJSRef = JSContextGetGlobalObject(strongSelf->_context.ctx);
 
     // get the BatchedBridge object
@@ -541,37 +536,11 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       JSStringRelease(methodNameJSStringRef);
 
       if (methodJSRef != NULL && errorJSRef == NULL && !JSValueIsUndefined(contextJSRef, methodJSRef)) {
-        // direct method invoke with no arguments
-        if (arguments.count == 0) {
-          resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 0, NULL, &errorJSRef);
+        JSValueRef jsArgs[arguments.count];
+        for (NSUInteger i = 0; i < arguments.count; i++) {
+          jsArgs[i] = [JSValue valueWithObject:arguments[i] inContext:context].JSValueRef;
         }
-
-        // direct method invoke with 1 argument
-        else if(arguments.count == 1) {
-          JSStringRef argsJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)argsString);
-          JSValueRef argsJSRef = JSValueMakeFromJSONString(contextJSRef, argsJSStringRef);
-          resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 1, &argsJSRef, &errorJSRef);
-          JSStringRelease(argsJSStringRef);
-
-        } else {
-          // apply invoke with array of arguments
-          JSStringRef applyNameJSStringRef = JSStringCreateWithUTF8CString("apply");
-          JSValueRef applyJSRef = JSObjectGetProperty(contextJSRef, (JSObjectRef)methodJSRef, applyNameJSStringRef, &errorJSRef);
-          JSStringRelease(applyNameJSStringRef);
-
-          if (applyJSRef != NULL && errorJSRef == NULL) {
-            // invoke apply
-            JSStringRef argsJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)argsString);
-            JSValueRef argsJSRef = JSValueMakeFromJSONString(contextJSRef, argsJSStringRef);
-
-            JSValueRef args[2];
-            args[0] = JSValueMakeNull(contextJSRef);
-            args[1] = argsJSRef;
-
-            resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)applyJSRef, (JSObjectRef)methodJSRef, 2, args, &errorJSRef);
-            JSStringRelease(argsJSStringRef);
-          }
-        }
+        resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, arguments.count, jsArgs, &errorJSRef);
       } else {
         if (!errorJSRef && JSValueIsUndefined(contextJSRef, methodJSRef)) {
           error = RCTErrorWithMessage([NSString stringWithFormat:@"Unable to execute JS call: method %@ is undefined", method]);
@@ -598,13 +567,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     // We often return `null` from JS when there is nothing for native side. JSONKit takes an extra hundred microseconds
     // to handle this simple case, so we are adding a shortcut to make executeJSCall method even faster
     if (!JSValueIsNull(contextJSRef, resultJSRef)) {
-      JSStringRef jsJSONString = JSValueCreateJSONString(contextJSRef, resultJSRef, 0, nil);
-      if (jsJSONString) {
-        NSString *objcJSONString = (__bridge_transfer NSString *)JSStringCopyCFString(kCFAllocatorDefault, jsJSONString);
-        JSStringRelease(jsJSONString);
-
-        objcValue = RCTJSONParse(objcJSONString, NULL);
-      }
+      objcValue = [[JSValue valueWithJSValueRef:resultJSRef inContext:context] toObject];
     }
 
     onComplete(objcValue, nil);

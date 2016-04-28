@@ -9,7 +9,7 @@
 'use strict';
 
 jest
-  .autoMockOff()
+  .disableAutomock()
   .setMock('Text', {})
   .setMock('View', {})
   .setMock('Image', {})
@@ -24,19 +24,19 @@ describe('Animated', () => {
 
   beforeEach(() => {
     var nativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
-    nativeAnimatedModule.createAnimatedNode = jest.genMockFunction();
-    nativeAnimatedModule.connectAnimatedNodes = jest.genMockFunction();
-    nativeAnimatedModule.disconnectAnimatedNodes = jest.genMockFunction();
-    nativeAnimatedModule.startAnimatingNode = jest.genMockFunction();
-    nativeAnimatedModule.stopAnimation = jest.genMockFunction();
-    nativeAnimatedModule.setAnimatedNodeValue = jest.genMockFunction();
-    nativeAnimatedModule.connectAnimatedNodeToView = jest.genMockFunction();
-    nativeAnimatedModule.disconnectAnimatedNodeFromView = jest.genMockFunction();
-    nativeAnimatedModule.dropAnimatedNode = jest.genMockFunction();
+    nativeAnimatedModule.createAnimatedNode = jest.fn();
+    nativeAnimatedModule.connectAnimatedNodes = jest.fn();
+    nativeAnimatedModule.disconnectAnimatedNodes = jest.fn();
+    nativeAnimatedModule.startAnimatingNode = jest.fn();
+    nativeAnimatedModule.stopAnimation = jest.fn();
+    nativeAnimatedModule.setAnimatedNodeValue = jest.fn();
+    nativeAnimatedModule.connectAnimatedNodeToView = jest.fn();
+    nativeAnimatedModule.disconnectAnimatedNodeFromView = jest.fn();
+    nativeAnimatedModule.dropAnimatedNode = jest.fn();
 
     // jest environment doesn't have cancelAnimationFrame :(
     if (!window.cancelAnimationFrame) {
-      window.cancelAnimationFrame = jest.genMockFunction();
+      window.cancelAnimationFrame = jest.fn();
     }
   });
 
