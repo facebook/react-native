@@ -15,7 +15,7 @@ namespace ReactNative
 {
     /// <summary>
     /// This interface manages instances of <see cref="IReactInstance" />. 
-    /// It exposes a way to configure react instances using 
+    /// It exposes a way to configure React instances using 
     /// <see cref="IReactPackage"/> and keeps track of the lifecycle of that
     /// instance. It also sets up a connection between the instance and the
     /// developer support functionality of the framework.
@@ -53,7 +53,7 @@ namespace ReactNative
         private Action _defaultBackButtonHandler;
 
         /// <summary>
-        /// Event triggered when a react context has been initialized.
+        /// Event triggered when a React context has been initialized.
         /// </summary>
         public event EventHandler<ReactContextInitializedEventArgs> ReactContextInitialized;
 
@@ -124,7 +124,7 @@ namespace ReactNative
         }
 
         /// <summary>
-        /// Gets the current react context instance.
+        /// Gets the current React context instance.
         /// </summary>
         public ReactContext CurrentReactContext
         {
@@ -135,7 +135,7 @@ namespace ReactNative
         }
 
         /// <summary>
-        /// Trigger the react context initialization asynchronously in a 
+        /// Trigger the React context initialization asynchronously in a 
         /// background task. This enables applications to pre-load the
         /// application JavaScript, and execute global core code before the
         /// <see cref="ReactRootView"/> is available and measure. This should
@@ -270,14 +270,14 @@ namespace ReactNative
         }
 
         /// <summary>
-        /// Attach given <paramref name="rootView"/> to a react instance
+        /// Attach given <paramref name="rootView"/> to a React instance
         /// manager and start the JavaScript application using the JavaScript
         /// module provided by the <see cref="ReactRootView.JavaScriptModuleName"/>. If
-        /// the react context is currently being (re-)created, or if the react
+        /// the React context is currently being (re-)created, or if the react
         /// context has not been created yet, the JavaScript application
         /// associated with the provided root view will be started
         /// asynchronously. This view will then be tracked by this manager and
-        /// in case of react instance restart, it will be re-attached.
+        /// in case of React instance restart, it will be re-attached.
         /// </summary>
         /// <param name="rootView">The root view.</param>
         public void AttachMeasuredRootView(ReactRootView rootView)
@@ -289,7 +289,7 @@ namespace ReactNative
 
             _attachedRootViews.Add(rootView);
 
-            // If the react context is being created in the background, the
+            // If the React context is being created in the background, the
             // JavaScript application will be started automatically when
             // creation completes, as root view is part of the attached root
             // view list.
@@ -373,12 +373,7 @@ namespace ReactNative
         private void InvokeDefaultOnBackPressed()
         {
             DispatcherHelpers.AssertOnDispatcher();
-
-            var defaultBackButtonHandler = _defaultBackButtonHandler;
-            if (defaultBackButtonHandler != null)
-            {
-                defaultBackButtonHandler();
-            }
+            _defaultBackButtonHandler?.Invoke();
         }
 
         private void OnReloadWithJavaScriptDebugger(Func<IJavaScriptExecutor> javaScriptExecutorFactory)
@@ -396,7 +391,7 @@ namespace ReactNative
                 () => new ChakraJavaScriptExecutor(),
                 JavaScriptBundleLoader.CreateCachedBundleFromNetworkLoader(
                     _devSupportManager.SourceUrl,
-                    _devSupportManager.CachedJavaScriptBundleFile));
+                    _devSupportManager.DownloadedJavaScriptBundleFile));
         }
 
         private void RecreateReactContextInBackground(
@@ -464,9 +459,8 @@ namespace ReactNative
 
             _currentReactContext = reactContext;
             var reactInstance = reactContext.ReactInstance;
-            
-            // TODO: set up dev support and memory pressure hooks
-
+            _devSupportManager.OnNewReactContextCreated(reactContext);
+            // TODO: set up memory pressure hooks
             MoveReactContextToCurrentLifecycleState(reactContext);
 
             foreach (var rootView in _attachedRootViews)
@@ -524,14 +518,15 @@ namespace ReactNative
             }
 
             reactContext.Dispose();
-            // TODO: add dev manager and memory pressure hooks
+            _devSupportManager.OnReactContextDestroyed(reactContext);
+            // TODO: add memory pressure hooks
         }
 
         private async Task<ReactContext> CreateReactContextAsync(
             Func<IJavaScriptExecutor> jsExecutorFactory, 
             JavaScriptBundleLoader jsBundleLoader)
         {
-            Tracer.Write(ReactConstants.Tag, "Creating react context.");
+            Tracer.Write(ReactConstants.Tag, "Creating React context.");
 
             _sourceUrl = jsBundleLoader.SourceUrl;
 
@@ -633,11 +628,15 @@ namespace ReactNative
 
         private void OnReactContextInitialized(ReactContext reactContext)
         {
-            var reactContextInitialized = ReactContextInitialized;
-            if (reactContextInitialized != null)
-            {
-                reactContextInitialized(this, new ReactContextInitializedEventArgs(reactContext));
-            }
+            ReactContextInitialized?
+                .Invoke(this, new ReactContextInitializedEventArgs(reactContext));
+        }
+
+        private void ToggleElementInspector()
+        {
+            _currentReactContext?
+                .GetJavaScriptModule<RCTDeviceEventEmitter>()
+                .emit("toggleElementInspector", null);
         }
 
         /// <summary>
@@ -739,7 +738,7 @@ namespace ReactNative
             /// <summary>
             /// Instantiates a new <see cref="ReactInstanceManager"/>.
             /// </summary>
-            /// <returns>A react instance manager.</returns>
+            /// <returns>A React instance manager.</returns>
             public ReactInstanceManager Build()
             {
                 AssertNotNull(_initialLifecycleState, nameof(InitialLifecycleState));
@@ -751,7 +750,7 @@ namespace ReactNative
 
                 if (_jsBundleFile == null && _jsMainModuleName == null)
                 {
-                    throw new InvalidOperationException("Either the main module name of the JavaScript bundle file must be provided.");
+                    throw new InvalidOperationException("Either the main module name or the JavaScript bundle file must be provided.");
                 }
 
                 if (_uiImplementationProvider == null)
@@ -798,6 +797,11 @@ namespace ReactNative
             public void OnReloadWithJavaScriptDebugger(Func<IJavaScriptExecutor> javaScriptExecutorFactory)
             {
                 _parent.OnReloadWithJavaScriptDebugger(javaScriptExecutorFactory);
+            }
+
+            public void ToggleElementInspector()
+            {
+                _parent.ToggleElementInspector();
             }
         }
     }

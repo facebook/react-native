@@ -5,10 +5,12 @@ using ReactNative.Tracing;
 using ReactNative.UIManager.LayoutAnimation;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Windows.Foundation;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace ReactNative.UIManager
 {
@@ -344,7 +346,18 @@ namespace ReactNative.UIManager
                     $"Could not find view with tag '{reactTag}'.");
             }
 
-            return TouchTargetHelper.FindTargetTagForTouch(touchX, touchY, (Panel)view);
+            var target = VisualTreeHelper.FindElementsInHostCoordinates(new Point(touchX, touchY), view)
+                .OfType<FrameworkElement>()
+                .Where(e => e.HasTag())
+                .FirstOrDefault();
+
+            if (target == null)
+            {
+                throw new InvalidOperationException(
+                    $"Could not find React view at coordinates '{touchX},{touchY}'.");
+            }
+
+            return target.GetTag();
         }
 
         /// <summary>

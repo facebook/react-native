@@ -1,6 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
+using ReactNative.Bridge;
+using ReactNative.Modules.DevSupport;
 using System;
 using System.Runtime.ExceptionServices;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 
@@ -8,7 +11,15 @@ namespace ReactNative.DevSupport
 {
     class DisabledDevSupportManager : IDevSupportManager
     {
-        public string CachedJavaScriptBundleFile
+        public IDeveloperSettings DevSettings
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public string DownloadedJavaScriptBundleFile
         {
             get
             {
@@ -59,6 +70,19 @@ namespace ReactNative.DevSupport
         }
 
         public void HideRedboxDialog()
+        {
+        }
+
+        public Task<bool> IsPackagerRunningAsync()
+        {
+            return Task.FromResult(false);
+        }
+
+        public void OnNewReactContextCreated(ReactContext context)
+        {
+        }
+
+        public void OnReactContextDestroyed(ReactContext context)
         {
         }
 

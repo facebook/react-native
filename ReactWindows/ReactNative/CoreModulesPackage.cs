@@ -1,5 +1,7 @@
 ﻿using ReactNative.Bridge;
+using ReactNative.DevSupport;
 using ReactNative.Modules.Core;
+using ReactNative.Modules.DevSupport;
 using ReactNative.Tracing;
 using ReactNative.UIManager;
 using ReactNative.UIManager.Events;
@@ -71,6 +73,7 @@ namespace ReactNative
                 typeof(RCTNativeAppEventEmitter),
                 typeof(AppRegistry),
                 // TODO: some tracing module
+                typeof(HMRClient),
                 //typeof(RCTDebugComponentOwnership),
             };
         }

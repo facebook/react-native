@@ -169,6 +169,7 @@
     <Compile Include="DevSupport\DevServerHelper.cs" />
     <Compile Include="DevSupport\DevSupportManager.cs" />
     <Compile Include="DevSupport\DisabledDevSupportManager.cs" />
+    <Compile Include="DevSupport\HMRClient.cs" />
     <Compile Include="DevSupport\IReactInstanceDevCommandsHandler.cs" />
     <Compile Include="DevSupport\IStackFrame.cs" />
     <Compile Include="DevSupport\ProgressDialog.xaml.cs">
@@ -194,7 +195,8 @@
     <Compile Include="Modules\Clipboard\ClipboardModule.cs" />
     <Compile Include="Modules\Core\JavaScriptException.cs" />
     <Compile Include="Modules\Core\JSTimersExecution.cs" />
-    <Compile Include="Modules\Core\SourceCodeModule.cs" />
+    <Compile Include="Modules\DevSupport\SourceCodeModule.cs" />
+    <Compile Include="Modules\DevSupport\IDeveloperSettings.cs" />
     <Compile Include="Modules\Dialog\DialogModule.cs" />
     <Compile Include="Modules\Image\ImageLoaderModule.cs" />
     <Compile Include="Modules\Launch\LauncherModule.cs" />
@@ -317,7 +319,6 @@
     <Compile Include="UIManager\RootViewHelper.cs" />
     <Compile Include="UIManager\RootViewManager.cs" />
     <Compile Include="UIManager\SimpleViewManager.cs" />
-    <Compile Include="UIManager\TouchTargetHelper.cs" />
     <Compile Include="UIManager\FrameworkElementExtensions.cs" />
     <Compile Include="UIManager\IPropertySetter.cs" />
     <Compile Include="UIManager\LayoutShadowNode.cs" />

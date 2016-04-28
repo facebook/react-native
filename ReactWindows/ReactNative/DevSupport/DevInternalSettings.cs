@@ -1,13 +1,27 @@
-﻿using Windows.Storage;
+﻿using ReactNative.Modules.DevSupport;
+using System.Collections.Generic;
+using Windows.Storage;
 
 namespace ReactNative.DevSupport
 {
-    class DevInternalSettings
+    class DevInternalSettings : IDeveloperSettings
     {
-        private const string JSDevModeDebugKey = "js_dev_mode_debug";
+        private const string FpsDebugKey = "fps_debug";
         private const string DebugServerHostKey = "debug_http_host";
+        private const string JsDevModeDebugKey = "js_dev_mode_debug";
+        private const string AnimationsDebugKey = "animations_debug";
+        private const string JsMinifyDebugKey = "js_minify_debug";
+        private const string ElementInspectorKey = "inspector_debug";
         private const string ReloadOnJSChangeKey = "reload_on_js_change";
         private const string HotModuleReplacementKey = "hot_module_replacement";
+
+        private static readonly HashSet<string> s_triggerReload = new HashSet<string>
+        {
+            FpsDebugKey,
+            ReloadOnJSChangeKey,
+            JsDevModeDebugKey,
+            JsMinifyDebugKey,
+        };
 
         private readonly IDevSupportManager _debugManager;
 
@@ -21,14 +35,14 @@ namespace ReactNative.DevSupport
             get
             {
 #if DEBUG
-                return GetSetting(JSDevModeDebugKey, true);
+                return GetSetting(JsDevModeDebugKey, true);
 #else
                 return GetSetting(JSDevModeDebugKey, false);
 #endif
             }
             set
             {
-                SetSetting(JSDevModeDebugKey, value);
+                SetSetting(JsDevModeDebugKey, value);
             }
         }
 
@@ -44,6 +58,42 @@ namespace ReactNative.DevSupport
             }
         }
 
+        public bool IsAnimationFpsDebugEnabled
+        {
+            get
+            {
+                return GetSetting(ReloadOnJSChangeKey, false);
+            }
+            set
+            {
+                SetSetting(ReloadOnJSChangeKey, value);
+            }
+        }
+
+        public bool IsElementInspectorEnabled
+        {
+            get
+            {
+                return GetSetting(ElementInspectorKey, false);
+            }
+            set
+            {
+                SetSetting(ElementInspectorKey, value);
+            }
+        }
+
+        public bool IsFpsDebugEnabled
+        {
+            get
+            {
+                return GetSetting(FpsDebugKey, false);
+            }
+            set
+            {
+                SetSetting(FpsDebugKey, value);
+            }
+        }
+
         public bool IsHotModuleReplacementEnabled
         {
             get
@@ -53,6 +103,18 @@ namespace ReactNative.DevSupport
             set
             {
                 SetSetting(HotModuleReplacementKey, value);
+            }
+        }
+
+        public bool IsJavaScriptMinifyEnabled
+        {
+            get
+            {
+                return GetSetting(JsMinifyDebugKey, false);
+            }
+            set
+            {
+                SetSetting(JsMinifyDebugKey, value);
             }
         }
 
@@ -87,7 +149,11 @@ namespace ReactNative.DevSupport
         {
             var values = ApplicationData.Current.LocalSettings.Values;
             values[key] = value;
-            _debugManager.ReloadSettings();
+
+            if (s_triggerReload.Contains(key))
+            {
+                _debugManager.ReloadSettings();
+            }
         }
     }
 }

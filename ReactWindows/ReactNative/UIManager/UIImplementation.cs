@@ -30,7 +30,7 @@ namespace ReactNative.UIManager
         /// <summary>
         /// Instantiates the <see cref="UIImplementation"/>.
         /// </summary>
-        /// <param name="reactContext">The react context.</param>
+        /// <param name="reactContext">The React context.</param>
         /// <param name="viewManagers">The view managers.</param>
         public UIImplementation(ReactContext reactContext, IReadOnlyList<IViewManager> viewManagers)
             : this(reactContext, new ViewManagerRegistry(viewManagers))
@@ -383,6 +383,26 @@ namespace ReactNative.UIManager
             }
 
             ManageChildren(containerTag, null, null, null, null, indicesToRemove);
+        }
+
+        /// <summary>
+        /// Find the touch target child native view in the supplied root view
+        /// hierarchy, given a react target location.
+        /// </summary>
+        /// <param name="reactTag">The root tag to traverse.</param>
+        /// <param name="targetX">The target X-coordinate.</param>
+        /// <param name="targetY">The target Y-coordinate.</param>
+        /// <param name="callback">
+        /// Callback invoked with the identified child view react ID and
+        /// measurement information. If no view was found, callback will be
+        /// invoked with no data.
+        /// </param>
+        /// <remarks>
+        /// This method is currently used only by the Element Inspector dev tool.
+        /// </remarks>
+        public void FindSubviewIn(int reactTag, double targetX, double targetY, ICallback callback)
+        {
+            _operationsQueue.EnqueueFindTargetForTouch(reactTag, targetX, targetY, callback);
         }
 
         /// <summary>

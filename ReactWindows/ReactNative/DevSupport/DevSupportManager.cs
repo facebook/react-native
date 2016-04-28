@@ -2,6 +2,7 @@
 using ReactNative.Bridge;
 using ReactNative.Common;
 using ReactNative.Modules.Core;
+using ReactNative.Modules.DevSupport;
 using ReactNative.Tracing;
 using System;
 using System.IO;
@@ -32,10 +33,11 @@ namespace ReactNative.DevSupport
         private bool _isShakeDetectorRegistered;
         private bool _isUsingJsProxy;
 
+        private ReactContext _currentContext;
         private RedBoxDialog _redBoxDialog;
         private Action _dismissRedBoxDialog;
         private bool _redBoxDialogOpen;
-        private DevOptionDialog _devOptionDialog;
+        private DevOptionDialog _devOptionsDialog;
 
         public DevSupportManager(
             IReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
@@ -50,7 +52,15 @@ namespace ReactNative.DevSupport
             ReloadSettings();
         }
 
-        public string CachedJavaScriptBundleFile
+        public IDeveloperSettings DevSettings
+        {
+            get
+            {
+                return _devSettings;
+            }
+        }
+
+        public string DownloadedJavaScriptBundleFile
         {
             get
             {
@@ -113,22 +123,134 @@ namespace ReactNative.DevSupport
 
             if (IsEnabled)
             {
-                var javaScriptException = exception as JavaScriptException;
-                if (javaScriptException != null && javaScriptException.JavaScriptStackTrace != null)
-                {
-                    var stackTrace = StackTraceHelper.ConvertChakraStackTrace(javaScriptException.JavaScriptStackTrace);
-                    ShowNewError(exception.Message, stackTrace, NativeErrorCookie);
-                }
-                else
-                {
-                    Tracer.Error(ReactConstants.Tag, "Exception in native call from JavaScript.", exception);
-                    ShowNewNativeError(exception.Message, exception);
-                }
+                ShowNewNativeError(exception.Message, exception);
             }
             else
             {
                 ExceptionDispatchInfo.Capture(exception).Throw();
             }
+        }
+
+        public void ShowNewNativeError(string message, Exception exception)
+        {
+            var javaScriptException = exception as JavaScriptException;
+            if (javaScriptException != null && javaScriptException.JavaScriptStackTrace != null)
+            {
+                var stackTrace = StackTraceHelper.ConvertChakraStackTrace(javaScriptException.JavaScriptStackTrace);
+                ShowNewError(exception.Message, stackTrace, NativeErrorCookie);
+            }
+            else
+            {
+                Tracer.Error(ReactConstants.Tag, "Exception in native call from JavaScript.", exception);
+                ShowNewError(message, StackTraceHelper.ConvertNativeStackTrace(exception), NativeErrorCookie);
+            }
+        }
+
+        public void ShowNewJavaScriptError(string title, JArray details, int errorCookie)
+        {
+            ShowNewError(title, StackTraceHelper.ConvertJavaScriptStackTrace(details), errorCookie);
+        }
+
+        public void UpdateJavaScriptError(string message, JArray details, int errorCookie)
+        {
+            DispatcherHelpers.RunOnDispatcher(() =>
+            {
+                if (_redBoxDialog == null
+                    || !_redBoxDialogOpen
+                    || errorCookie != _redBoxDialog.ErrorCookie)
+                {
+                    return;
+                }
+
+                _redBoxDialog.Message = message;
+                _redBoxDialog.StackTrace = StackTraceHelper.ConvertJavaScriptStackTrace(details);
+            });
+        }
+
+        public void HideRedboxDialog()
+        {
+            var dismissRedBoxDialog = _dismissRedBoxDialog;
+            if (_redBoxDialogOpen && dismissRedBoxDialog != null)
+            {
+                dismissRedBoxDialog();
+            }
+        }
+
+        public void ShowDevOptionsDialog()
+        {
+            if (_devOptionsDialog != null || !IsEnabled)
+            {
+                return;
+            }
+
+            DispatcherHelpers.RunOnDispatcher(() =>
+            {
+                var options = new[]
+                {
+                    new DevOptionHandler(
+                        "Reload JavaScript",
+                        HandleReloadJavaScript),
+                    new DevOptionHandler(
+                        _isUsingJsProxy
+                            ? "Stop JS Remote Debugging"
+                            : "Start JS Remote Debugging",
+                        () =>
+                        {
+                            _isUsingJsProxy = !_isUsingJsProxy;
+                            HandleReloadJavaScript();
+                        }),
+                    new DevOptionHandler(
+                        _devSettings.IsReloadOnJavaScriptChangeEnabled
+                            ? "Disable Live Reload"
+                            : "Enable Live Reload",
+                        () =>
+                            _devSettings.IsReloadOnJavaScriptChangeEnabled =
+                                !_devSettings.IsReloadOnJavaScriptChangeEnabled),
+                    new DevOptionHandler(
+                        "Toggle Inspector",
+                        () =>
+                        {
+                            _devSettings.IsElementInspectorEnabled = !_devSettings.IsElementInspectorEnabled;
+                            _reactInstanceCommandsHandler.ToggleElementInspector();
+                        }),
+                };
+
+                _devOptionsDialog = new DevOptionDialog();
+                _devOptionsDialog.Closed += (_, __) =>
+                {
+                    _devOptionsDialog = null;
+                };
+
+                foreach (var option in options)
+                {
+                    _devOptionsDialog.Add(option.Name, option.OnSelect);
+                }
+
+                var asyncInfo = _devOptionsDialog.ShowAsync();
+
+                foreach (var option in options)
+                {
+                    option.AsyncInfo = asyncInfo;
+                }
+            });
+        }
+
+        public void OnNewReactContextCreated(ReactContext context)
+        {
+            ResetCurrentContext(context);
+        }
+
+        public void OnReactContextDestroyed(ReactContext context)
+        {
+            if (context == _currentContext)
+            {
+                ResetCurrentContext(null);
+            }
+        }
+
+        public Task<bool> IsPackagerRunningAsync()
+        {
+            return _devServerHelper.IsPackagerRunningAsync();
         }
 
         public async void HandleReloadJavaScript()
@@ -159,21 +281,12 @@ namespace ReactNative.DevSupport
             }
         }
 
-        public void HideRedboxDialog()
-        {
-            var dismissRedBoxDialog = _dismissRedBoxDialog;
-            if (_redBoxDialogOpen && dismissRedBoxDialog != null)
-            {
-                dismissRedBoxDialog();
-            }
-        }
-
         public void ReloadSettings()
         {
             if (_isDevSupportEnabled)
             {
                 RegisterDevOptionsMenuTriggers();
-                if (_devSettings.IsJavaScriptDevModeEnabled)
+                if (_devSettings.IsReloadOnJavaScriptChangeEnabled)
                 {
                     _pollingDisposable.Disposable =
                         _devServerHelper.StartPollingOnChangeEndpoint(HandleReloadJavaScript);
@@ -187,86 +300,40 @@ namespace ReactNative.DevSupport
             else
             {
                 UnregisterDevOptionsMenuTriggers();
+
+                if (_redBoxDialog != null)
+                {
+                    _dismissRedBoxDialog();
+                }
+
                 _pollingDisposable.Disposable = Disposable.Empty;
             }
         }
 
-        public void ShowDevOptionsDialog()
+        private void ResetCurrentContext(ReactContext context)
         {
-            DispatcherHelpers.RunOnDispatcher(() =>
+            if (_currentContext == context)
             {
-                if (_devOptionDialog != null || !IsEnabled)
-                {
-                    return;
-                }
+                return;
+            }
 
-                _devOptionDialog = new DevOptionDialog();
-                _devOptionDialog.Closed += (_, __) =>
-                {
-                    _devOptionDialog = null;
-                };
+            _currentContext = context;
 
-                var options = new[]
-                {
-                    new DevOptionHandler(
-                        "Reload JavaScript",
-                        HandleReloadJavaScript),
-                    new DevOptionHandler(
-                        _isUsingJsProxy
-                            ? "Stop Chrome Debugging"
-                            : "Debug in Chrome",
-                        () =>
-                        {
-                            _isUsingJsProxy = !_isUsingJsProxy;
-                            HandleReloadJavaScript();
-                        }),
-                    new DevOptionHandler(
-                        _devSettings.IsReloadOnJavaScriptChangeEnabled
-                            ? "Disable Live Reload"
-                            : "Enable Live Reload", 
-                        () => 
-                            _devSettings.IsReloadOnJavaScriptChangeEnabled = 
-                                !_devSettings.IsReloadOnJavaScriptChangeEnabled),
-                };
-
-                foreach (var option in options)
-                {
-                    _devOptionDialog.Add(option.Name, option.OnSelect);
-                }
-
-                var asyncInfo = _devOptionDialog.ShowAsync();
-
-                foreach (var option in options)
-                {
-                    option.AsyncInfo = asyncInfo;
-                }
-            });
-        }
-
-        public void ShowNewJavaScriptError(string title, JArray details, int exceptionId)
-        {
-            ShowNewError(title, StackTraceHelper.ConvertJavaScriptStackTrace(details), exceptionId);
-        }
-
-        public void ShowNewNativeError(string message, Exception exception)
-        {
-            ShowNewError(message, StackTraceHelper.ConvertNativeStackTrace(exception), NativeErrorCookie);
-        }
-
-        public void UpdateJavaScriptError(string message, JArray details, int errorCookie)
-        {
-            DispatcherHelpers.RunOnDispatcher(() =>
+            if (_devSettings.IsHotModuleReplacementEnabled && context != null)
             {
-                if (_redBoxDialog == null
-                    || !_redBoxDialogOpen
-                    || errorCookie != _redBoxDialog.ErrorCookie)
+                try
                 {
-                    return;
+                    var uri = new Uri(SourceUrl);
+                    var path = uri.PathAndQuery.Substring(1); // strip initial slash in path
+                    var host = uri.Host;
+                    var port = uri.Port;
+                    context.GetJavaScriptModule<HMRClient>().enable("windows", path, host, port);
                 }
-
-                _redBoxDialog.Message = message;
-                _redBoxDialog.StackTrace = StackTraceHelper.ConvertJavaScriptStackTrace(details);
-            });
+                catch (Exception ex)
+                {
+                    HandleException(ex);
+                }
+            }
         }
 
         private void ShowNewError(string message, IStackFrame[] stack, int errorCookie)

@@ -30,5 +30,10 @@ namespace ReactNative.DevSupport
         /// The JavaScript executor factory.
         /// </param>
         void OnReloadWithJavaScriptDebugger(Func<IJavaScriptExecutor> javaScriptExecutorFactory);
+
+        /// <summary>
+        /// Toggles the element inspector.
+        /// </summary>
+        void ToggleElementInspector();
     }
 }

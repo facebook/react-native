@@ -1,5 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
+using ReactNative.Bridge;
+using ReactNative.Modules.DevSupport;
 using System;
+using System.Threading.Tasks;
 
 namespace ReactNative.DevSupport
 {
@@ -11,9 +14,14 @@ namespace ReactNative.DevSupport
     public interface IDevSupportManager
     {
         /// <summary>
+        /// The developer settings.
+        /// </summary>
+        IDeveloperSettings DevSettings { get; }
+
+        /// <summary>
         /// The cached JavaScript bundle.
         /// </summary>
-        string CachedJavaScriptBundleFile { get; }
+        string DownloadedJavaScriptBundleFile { get; }
 
         /// <summary>
         /// Enables or disables the instance.
@@ -50,6 +58,26 @@ namespace ReactNative.DevSupport
         /// Dismisses the red box exception dialog.
         /// </summary>
         void HideRedboxDialog();
+
+        /// <summary>
+        /// Checks if the packager is running.
+        /// </summary>
+        /// <returns>
+        /// <code>true</code> if the packager is running, otherwise <code>false</code>.
+        /// </returns>
+        Task<bool> IsPackagerRunningAsync();
+
+        /// <summary>
+        /// Notify when a new React context is created.
+        /// </summary>
+        /// <param name="context">The React context.</param>
+        void OnNewReactContextCreated(ReactContext context);
+
+        /// <summary>
+        /// Notify when a new React context is destroyed.
+        /// </summary>
+        /// <param name="context">The React context.</param>
+        void OnReactContextDestroyed(ReactContext context);
 
         /// <summary>
         /// Reload developer settings.

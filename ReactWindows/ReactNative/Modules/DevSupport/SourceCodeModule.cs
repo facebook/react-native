@@ -2,7 +2,7 @@
 using ReactNative.Bridge;
 using System.Collections.Generic;
 
-namespace ReactNative.Modules.Core
+namespace ReactNative.Modules.DevSupport
 {
     /// <summary>
     /// Module that exposes the URL to the source code map (used for exception
