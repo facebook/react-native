@@ -48,7 +48,7 @@ class Modal extends React.Component {
   };
 
   static defaultProps = {
-    visible: true
+    visible: true,
   };
 
   render(): ?ReactElement {
@@ -65,7 +65,7 @@ class Modal extends React.Component {
       // manually setting default prop here to keep support for the deprecated 'animated' prop
       animationType = 'none';
       if (this.props.animated) {
-        animationType = this.props.animated ? 'slide' : 'none';
+        animationType = 'slide';
       }
     }
 
@@ -90,22 +90,6 @@ class Modal extends React.Component {
     return true;
   }
 }
-
-Modal.propTypes = {
-  animated: deprecatedPropType(
-    PropTypes.bool,
-    'Use the `animationType` prop instead.'
-  ),
-  animationType: PropTypes.oneOf(['none', 'slide', 'fade']),
-  transparent: PropTypes.bool,
-  visible: PropTypes.bool,
-  onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
-  onShow: PropTypes.func,
-};
-
-Modal.defaultProps = {
-  visible: true
-};
 
 const styles = StyleSheet.create({
   modal: {

@@ -16,7 +16,7 @@
 
 @interface RCTModalHostView : UIView <RCTInvalidating>
 
-@property (nonatomic, strong) NSString *animationType;
+@property (nonatomic, copy) NSString *animationType;
 @property (nonatomic, assign, getter=isTransparent) BOOL transparent;
 
 @property (nonatomic, copy) RCTDirectEventBlock onShow;
