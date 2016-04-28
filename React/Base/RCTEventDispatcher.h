@@ -11,22 +11,14 @@
 
 #import "RCTBridge.h"
 
-typedef NS_ENUM(NSInteger, RCTTextEventType) {
+typedef NS_ENUM(NSInteger, RCTTextEventType)
+{
   RCTTextEventTypeFocus,
   RCTTextEventTypeBlur,
   RCTTextEventTypeChange,
   RCTTextEventTypeSubmit,
   RCTTextEventTypeEnd,
   RCTTextEventTypeKeyPress
-};
-
-typedef NS_ENUM(NSInteger, RCTScrollEventType) {
-  RCTScrollEventTypeStart,
-  RCTScrollEventTypeMove,
-  RCTScrollEventTypeEnd,
-  RCTScrollEventTypeStartDeceleration,
-  RCTScrollEventTypeEndDeceleration,
-  RCTScrollEventTypeEndAnimation,
 };
 
 /**
