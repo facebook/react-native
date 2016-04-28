@@ -28,8 +28,16 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule {
   private static final String ERROR_INVALID_URI = "E_INVALID_URI";
   private static final String ERROR_PREFETCH_FAILURE = "E_PREFETCH_FAILURE";
 
+  private final Object mCallerContext;
+
   public ImageLoaderModule(ReactApplicationContext reactContext) {
     super(reactContext);
+    mCallerContext = this;
+  }
+
+  public ImageLoaderModule(ReactApplicationContext reactContext, Object callerContext) {
+    super(reactContext);
+    mCallerContext = callerContext;
   }
 
   @Override
@@ -54,7 +62,8 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule {
     Uri uri = Uri.parse(uriString);
     ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri).build();
 
-    DataSource<Void> prefetchSource = Fresco.getImagePipeline().prefetchToDiskCache(request, this);
+    DataSource<Void> prefetchSource =
+      Fresco.getImagePipeline().prefetchToDiskCache(request, mCallerContext);
     DataSubscriber<Void> prefetchSubscriber = new BaseDataSubscriber<Void>() {
       @Override
       protected void onNewResultImpl(DataSource<Void> dataSource) {
