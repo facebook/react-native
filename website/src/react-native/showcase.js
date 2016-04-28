@@ -209,6 +209,12 @@ var featured = [
 
 var apps = [
   {
+    name: 'HireArt',
+    icon: 'https://www.filepicker.io/api/file/Yd7YXXoRWq98VF7TbPUg',
+    link: 'https://itunes.apple.com/us/app/id1056320926',
+    author: 'HireArt, Inc',
+  },
+  {
     name: 'Accio',
     icon: 'http://a3.mzstatic.com/us/r30/Purple3/v4/03/a1/5b/03a15b9f-04d7-a70a-620a-9c9850a859aa/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/accio-on-demand-delivery/id1047060673?mt=8',
@@ -598,7 +604,7 @@ var apps = [
     link: 'https://play.google.com/store/apps/details?id=com.rhyble.nalathekerala',
     author: 'Rhyble',
   },
-	{
+  {
     name: 'No Fluff: Hiragana',
     icon: 'https://lh3.googleusercontent.com/kStXwjpbPsu27E1nIEU1gfG0I8j9t5bAR_20OMhGZvu0j2vab3EbBV7O_KNZChjflZ_O',
     link: 'https://play.google.com/store/apps/details?id=com.hiragana',
@@ -907,7 +913,7 @@ var AppList = React.createClass({
         {app.linkAppStore && app.linkPlayStore ? this._renderLinks(app) : null}
         <p>By {app.author}</p>
         {this._renderBlogPosts(app)}
-				{this._renderSourceLink(app)}
+        {this._renderSourceLink(app)}
         {this._renderVideos(app)}
       </div>
     );
@@ -949,7 +955,7 @@ var AppList = React.createClass({
     );
   },
 
-	_renderSourceLink: function(app) {
+  _renderSourceLink: function(app) {
     if (!app.source) {
       return;
     }
