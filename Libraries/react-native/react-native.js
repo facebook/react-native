@@ -44,6 +44,7 @@ var ReactNative = {
   get PickerIOS() { return require('PickerIOS'); },
   get ProgressBarAndroid() { return require('ProgressBarAndroid'); },
   get ProgressViewIOS() { return require('ProgressViewIOS'); },
+  get ProgressBarWindows() {return require('ProgressBarWindows');},
   get ScrollView() { return require('ScrollView'); },
   get SegmentedControlIOS() { return require('SegmentedControlIOS'); },
   get Slider() { return require('Slider'); },

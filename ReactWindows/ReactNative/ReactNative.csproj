@@ -295,6 +295,8 @@
     <Compile Include="UIManager\LayoutAnimation\LayoutAnimationController.cs" />
     <Compile Include="UIManager\LayoutAnimation\LayoutUpdateAnimation.cs" />
     <Compile Include="Views\Flip\ReactFlipViewManager.cs" />
+    <Compile Include="Views\Progress\ReactProgressBarViewManager.cs" />
+    <Compile Include="Views\Progress\ProgressBarShadowNode.cs" />
     <Compile Include="Views\Split\Events\SplitViewClosedEvent.cs" />
     <Compile Include="UIManager\LayoutAnimation\InterpolationType.cs" />
     <Compile Include="UIManager\UIImplementationProvider.cs" />

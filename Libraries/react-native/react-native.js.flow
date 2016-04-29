@@ -42,6 +42,7 @@ var ReactNative = Object.assign(Object.create(require('ReactNative')), {
   PickerIOS: require('PickerIOS'),
   ProgressBarAndroid: require('ProgressBarAndroid'),
   ProgressViewIOS: require('ProgressViewIOS'),
+  ProgressBarWindows: require('ProgressBarWindows'),
   ScrollView: require('ScrollView'),
   SegmentedControlIOS: require('SegmentedControlIOS'),
   SliderIOS: require('SliderIOS'),

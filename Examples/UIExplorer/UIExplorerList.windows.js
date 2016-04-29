@@ -34,6 +34,10 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./PickerWindowsExample'),
   },
   {
+    key: 'ProgressBarWindowsExample',
+    module: require('./ProgressBarWindowsExample'),
+  },
+  {
     key: 'ScrollViewSimpleExample',
     module: require('./ScrollViewSimpleExample'),
   },
