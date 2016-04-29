@@ -39,6 +39,10 @@ function _runAndroid(argv, config, resolve, reject) {
     command: 'flavor',
     type: 'string',
     required: false,
+  }, {
+    command: 'variant',
+    type: 'string',
+    required: false,
   }], argv);
 
   args.root = args.root || '';
@@ -76,7 +80,14 @@ function buildAndRun(args, reject) {
       : './gradlew';
 
     const gradleArgs = [];
-    if (args['flavor']) {
+    if (args['variant']) {
+        gradleArgs.push('install' +
+          args['variant'][0].toUpperCase() + args['variant'].slice(1)
+        );
+    } else if (args['flavor']) {
+        console.warn(chalk.yellow(
+          `--flavor has been deprecated. Use --variant instead`
+        ));
         gradleArgs.push('install' +
           args['flavor'][0].toUpperCase() + args['flavor'].slice(1)
         );
