@@ -95,14 +95,10 @@ import com.facebook.csslayout.Spacing;
 
   @Override
   public void draw(Canvas canvas) {
-    updatePathEffect();
-    boolean roundedBorders = mBorderCornerRadii != null ||
-        (!CSSConstants.isUndefined(mBorderRadius) && mBorderRadius > 0);
-
-    if ((mBorderStyle == null || mBorderStyle == BorderStyle.SOLID) && !roundedBorders) {
-      drawRectangularBackgroundWithBorders(canvas);
-    } else {
+    if ((!CSSConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) || mBorderCornerRadii != null) {
       drawRoundedBackgroundWithBorders(canvas);
+    } else {
+      drawRectangularBackgroundWithBorders(canvas);
     }
   }
 
@@ -235,6 +231,7 @@ import com.facebook.csslayout.Spacing;
       mPaint.setColor(ColorUtil.multiplyColorAlpha(borderColor, mAlpha));
       mPaint.setStyle(Paint.Style.STROKE);
       mPaint.setStrokeWidth(fullBorderWidth);
+      mPaint.setPathEffect(mPathEffectForBorderStyle);
       canvas.drawPath(mPathForBorderRadius, mPaint);
     }
   }
@@ -301,17 +298,10 @@ import com.facebook.csslayout.Spacing;
         bottomLeftRadius + extraRadiusForOutline
       },
       Path.Direction.CW);
-  }
 
-  /**
-   * Set type of border
-   */
-  private void updatePathEffect() {
     mPathEffectForBorderStyle = mBorderStyle != null
         ? mBorderStyle.getPathEffect(getFullBorderWidth())
         : null;
-
-    mPaint.setPathEffect(mPathEffectForBorderStyle);
   }
 
   /**
