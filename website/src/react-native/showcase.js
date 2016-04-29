@@ -598,6 +598,12 @@ var apps = [
     link: 'https://play.google.com/store/apps/details?id=com.rhyble.nalathekerala',
     author: 'Rhyble',
   },
+  {
+    name: 'New Music - keep track of the latest album releases',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple49/v4/6f/4f/39/6f4f39db-e0ca-c80a-73e7-68830675e11b/icon175x175.png',
+    link: 'https://itunes.apple.com/app/new-music-keep-track-latest/id1104646834',
+    author: 'Alexey Ledak',
+  },
 	{
     name: 'No Fluff: Hiragana',
     icon: 'https://lh3.googleusercontent.com/kStXwjpbPsu27E1nIEU1gfG0I8j9t5bAR_20OMhGZvu0j2vab3EbBV7O_KNZChjflZ_O',
