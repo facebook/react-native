@@ -12,8 +12,10 @@ package com.facebook.react.views.image;
 import javax.annotation.Nullable;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -51,6 +53,7 @@ import com.facebook.imagepipeline.request.Postprocessor;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -160,12 +163,27 @@ public class ReactImageView extends GenericDraweeView {
   private final @Nullable Object mCallerContext;
   private int mFadeDurationMs = -1;
   private boolean mProgressiveRenderingEnabled;
+  private @Nullable Map<String, String> mHeaders;
 
   // We can't specify rounding in XML, so have to do so here
   private static GenericDraweeHierarchy buildHierarchy(Context context) {
     return new GenericDraweeHierarchyBuilder(context.getResources())
         .setRoundingParams(RoundingParams.fromCornersRadius(0))
         .build();
+  }
+
+  private static @Nullable Map<String, String> headersAsMap(ReadableMap readableMap) {
+    if (readableMap == null) {
+      return null;
+    }
+    ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
+    Map<String, String> map = new HashMap<>();
+    while (iterator.hasNextKey()) {
+      String key = iterator.nextKey();
+      String value = readableMap.getString(key);
+      map.put(key, value);
+    }
+    return map;
   }
 
   public ReactImageView(
@@ -305,6 +323,10 @@ public class ReactImageView extends GenericDraweeView {
     computedCorners[2] = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[2]) ? mBorderCornerRadii[2] : defaultBorderRadius;
     computedCorners[3] = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[3]) ? mBorderCornerRadii[3] : defaultBorderRadius;
   }
+  
+  public void setHeaders(ReadableMap headers) {
+    mHeaders = headersAsMap(headers);
+  }
 
   public void maybeUpdateView() {
     if (!mIsDirty) {
@@ -369,6 +391,7 @@ public class ReactImageView extends GenericDraweeView {
         .setPostprocessor(postprocessor)
         .setResizeOptions(resizeOptions)
         .setAutoRotateEnabled(true)
+        .setHeaders(mHeaders)
         .setProgressiveRenderingEnabled(mProgressiveRenderingEnabled)
         .build();
 

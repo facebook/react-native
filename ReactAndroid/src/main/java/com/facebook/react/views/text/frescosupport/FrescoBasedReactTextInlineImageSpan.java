@@ -25,7 +25,12 @@ import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.DraweeHolder;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.views.text.TextInlineImageSpan;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * FrescoBasedTextInlineImageSpan is a span for Images that are inside <Text/>. It computes
@@ -48,14 +53,30 @@ public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
   private int mHeight;
   private Uri mUri;
   private int mWidth;
+  private @Nullable Map<String, String> mHeaders;
 
   private @Nullable TextView mTextView;
+
+  private static @Nullable Map<String, String> headersAsMap(ReadableMap readableMap) {
+    if (readableMap == null) {
+      return null;
+    }
+    ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
+    Map<String, String> map = new HashMap<>();
+    while (iterator.hasNextKey()) {
+      String key = iterator.nextKey();
+      String value = readableMap.getString(key);
+      map.put(key, value);
+    }
+    return map;
+  }
 
   public FrescoBasedReactTextInlineImageSpan(
       Resources resources,
       int height,
       int width,
       @Nullable Uri uri,
+      ReadableMap headers,
       AbstractDraweeControllerBuilder draweeControllerBuilder,
       @Nullable Object callerContext) {
     mDraweeHolder = new DraweeHolder(
@@ -68,6 +89,7 @@ public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
     mHeight = height;
     mWidth = width;
     mUri = (uri != null) ? uri : Uri.EMPTY;
+    mHeaders = headersAsMap(headers);
   }
 
   /**
@@ -127,6 +149,7 @@ public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
       Paint paint) {
     if (mDrawable == null) {
       ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(mUri)
+          .setHeaders(mHeaders)
           .build();
 
       DraweeController draweeController = mDraweeControllerBuilder
