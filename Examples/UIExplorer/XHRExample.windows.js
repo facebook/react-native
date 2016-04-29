@@ -18,6 +18,7 @@
 var React = require('react');
 var ReactNative = require('react-native');
 var {
+  ProgressBarWindows,
   StyleSheet,
   Text,
   TextInput,
@@ -118,6 +119,8 @@ class Downloader extends React.Component {
     return (
       <View>
         {button}
+        <ProgressBarWindows progress={(this.state.downloaded / this.state.contentSize * 100)}
+          indeterminate={false} />
         <Text>{this.state.status}</Text>
       </View>
     );

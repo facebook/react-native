@@ -18,10 +18,7 @@ namespace ReactNative.Modules.Network
     /// </summary>
     public class NetworkingModule : ReactContextNativeModuleBase
     {
-        private const int MinimumBufferSize = 8 * 1024; // 8kb
-
-        private static readonly TimeSpan ChunkTimeout = TimeSpan.FromMilliseconds(100);
-
+        private const int MaxChunkSizeBetweenFlushes = 8 * 1024; // 8kb
         private readonly IHttpClient _client;
         private readonly TaskCancellationManager<int> _tasks;
 
@@ -226,30 +223,13 @@ namespace ReactNative.Modules.Network
 
         private async Task ProcessResponseIncrementalAsync(int requestId, Stream stream, CancellationToken token)
         {
-            using (var reader = new StreamReader(stream, Encoding.UTF8, true, MinimumBufferSize, true))
+            using (var reader = new StreamReader(stream, Encoding.UTF8, true, MaxChunkSizeBetweenFlushes, true))
             {
-                var stringBuilder = new StringBuilder();
-                var buffer = new char[MinimumBufferSize];
-                var readCount = await reader.ReadAsync(buffer, 0, buffer.Length);
-                var last = TimeSpan.FromTicks(Environment.TickCount);
-                while (readCount > 0)
+                var buffer = new char[MaxChunkSizeBetweenFlushes];
+                var read = default(int);
+                while ((read = await reader.ReadAsync(buffer, 0, buffer.Length)) > 0)
                 {
-                    stringBuilder.Append(buffer, 0, readCount);
-
-                    var now = TimeSpan.FromTicks(Environment.TickCount);
-                    if (now - last > ChunkTimeout)
-                    {
-                        OnDataReceived(requestId, stringBuilder.ToString());
-                        stringBuilder.Clear();
-                        last = now;
-                    }
-
-                    readCount = await reader.ReadAsync(buffer, 0, buffer.Length);
-                }
-
-                if (stringBuilder.Length > 0)
-                {
-                    OnDataReceived(requestId, stringBuilder.ToString());
+                    OnDataReceived(requestId, new string(buffer, 0, read));
                 }
             }
         }
