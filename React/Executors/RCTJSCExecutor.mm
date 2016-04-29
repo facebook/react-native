@@ -144,7 +144,7 @@ static NSString *RCTJSValueToJSONString(JSContextRef context, JSValueRef value, 
   return (__bridge_transfer NSString *)string;
 }
 
-static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
+NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 {
   NSMutableDictionary *errorInfo = [NSMutableDictionary new];
 
@@ -270,6 +270,9 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   if (!_context) {
     JSContext *context = [JSContext new];
     _context = [[RCTJavaScriptContext alloc] initWithJSContext:context onThread:_javaScriptThread];
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptContextCreatedNotification
+                                                        object:context];
   }
 
   return _context;
@@ -413,9 +416,6 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
     JSContext *context = strongSelf.context.context;
     RCTInstallJSCProfiler(_bridge, context.JSGlobalContextRef);
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptContextCreatedNotification
-                                                        object:context];
   }];
 
   for (NSString *event in @[RCTProfileDidStartProfiling, RCTProfileDidEndProfiling]) {

@@ -471,6 +471,7 @@ function setupConsole(global) {
     log: getNativeLogFunction(LOG_LEVELS.info),
     warn: getNativeLogFunction(LOG_LEVELS.warn),
     trace: getNativeLogFunction(LOG_LEVELS.trace),
+    debug: getNativeLogFunction(LOG_LEVELS.trace),
     table: consoleTablePolyfill
   };
 

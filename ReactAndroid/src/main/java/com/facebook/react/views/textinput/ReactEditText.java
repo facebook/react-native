@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
@@ -206,9 +207,12 @@ public class ReactEditText extends EditText {
 
   @Override
   public void setInputType(int type) {
+    Typeface tf = super.getTypeface();
     super.setInputType(type);
     mStagedInputType = type;
-
+    // Input type password defaults to monospace font, so we need to re-apply the font
+    super.setTypeface(tf);
+    
     // We override the KeyListener so that all keys on the soft input keyboard as well as hardware
     // keyboards work. Some KeyListeners like DigitsKeyListener will display the keyboard but not
     // accept all input from it

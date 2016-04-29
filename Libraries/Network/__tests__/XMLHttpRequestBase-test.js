@@ -2,47 +2,118 @@
 
 jest
 	.disableAutomock()
-	.unmock('XMLHttpRequestBase');
+	.dontMock('event-target-shim')
+	.dontMock('XMLHttpRequestBase');
 
 const XMLHttpRequestBase = require('XMLHttpRequestBase');
 
+class XMLHttpRequest extends XMLHttpRequestBase {}
+
 describe('XMLHttpRequestBase', function(){
 	var xhr;
+	var handleTimeout;
+	var handleError;
+	var handleLoad;
+	var handleReadyStateChange;
 
 	beforeEach(() => {
-		xhr = new XMLHttpRequestBase();
+		xhr = new XMLHttpRequest();
+
 		xhr.ontimeout = jest.fn();
 		xhr.onerror = jest.fn();
 		xhr.onload = jest.fn();
+		xhr.onreadystatechange = jest.fn();
+
+		handleTimeout = jest.fn();
+		handleError = jest.fn();
+		handleLoad = jest.fn();
+		handleReadyStateChange = jest.fn();
+
+		xhr.addEventListener('timeout', handleTimeout);
+		xhr.addEventListener('error', handleError);
+		xhr.addEventListener('load', handleLoad);
+		xhr.addEventListener('readystatechange', handleReadyStateChange);
+
 		xhr.didCreateRequest(1);
 	});
 
 	afterEach(() => {
 		xhr = null;
+		handleTimeout = null;
+		handleError = null;
+		handleLoad = null;
 	});
+
+    it('should transition readyState correctly', function() {
+		expect(xhr.readyState).toBe(xhr.UNSENT);
+
+		xhr.open('GET', 'blabla');
+
+		expect(xhr.onreadystatechange.mock.calls.length).toBe(1);
+		expect(handleReadyStateChange.mock.calls.length).toBe(1);
+		expect(xhr.readyState).toBe(xhr.OPENED);
+    });
 
 	it('should call ontimeout function when the request times out', function(){
 		xhr._didCompleteResponse(1, 'Timeout', true);
 
-		expect(xhr.ontimeout).toBeCalledWith(null);
+		expect(xhr.readyState).toBe(xhr.DONE);
+
+		expect(xhr.ontimeout.mock.calls.length).toBe(1);
 		expect(xhr.onerror).not.toBeCalled();
 		expect(xhr.onload).not.toBeCalled();
+
+		expect(handleTimeout.mock.calls.length).toBe(1);
+		expect(handleError).not.toBeCalled();
+		expect(handleLoad).not.toBeCalled();
 	});
 
 	it('should call onerror function when the request times out', function(){
 		xhr._didCompleteResponse(1, 'Generic error');
 
-		expect(xhr.onerror).toBeCalledWith(null);
+		expect(xhr.readyState).toBe(xhr.DONE);
+
+		expect(xhr.onreadystatechange.mock.calls.length).toBe(1);
+		expect(xhr.onerror.mock.calls.length).toBe(1);
 		expect(xhr.ontimeout).not.toBeCalled();
 		expect(xhr.onload).not.toBeCalled();
+
+		expect(handleReadyStateChange.mock.calls.length).toBe(1);
+		expect(handleError.mock.calls.length).toBe(1);
+		expect(handleTimeout).not.toBeCalled();
+		expect(handleLoad).not.toBeCalled();
 	});
 
 	it('should call onload function when there is no error', function(){
 		xhr._didCompleteResponse(1, null);
 
-		expect(xhr.onload).toBeCalledWith(null);
+		expect(xhr.readyState).toBe(xhr.DONE);
+
+		expect(xhr.onreadystatechange.mock.calls.length).toBe(1);
+		expect(xhr.onload.mock.calls.length).toBe(1);
 		expect(xhr.onerror).not.toBeCalled();
 		expect(xhr.ontimeout).not.toBeCalled();
+
+		expect(handleReadyStateChange.mock.calls.length).toBe(1);
+		expect(handleLoad.mock.calls.length).toBe(1);
+		expect(handleError).not.toBeCalled();
+		expect(handleTimeout).not.toBeCalled();
+	});
+
+	it('should call onload function when there is no error', function() {
+		xhr.upload.onprogress = jest.fn();
+		var handleProgress = jest.fn();
+		xhr.upload.addEventListener('progress', handleProgress);
+
+		xhr._didUploadProgress(1, 42, 100);
+
+		expect(xhr.upload.onprogress.mock.calls.length).toBe(1);
+		expect(handleProgress.mock.calls.length).toBe(1);
+
+		expect(xhr.upload.onprogress.mock.calls[0][0].loaded).toBe(42);
+		expect(xhr.upload.onprogress.mock.calls[0][0].total).toBe(100);
+		expect(handleProgress.mock.calls[0][0].loaded).toBe(42);
+		expect(handleProgress.mock.calls[0][0].total).toBe(100);
 	});
 
 });
