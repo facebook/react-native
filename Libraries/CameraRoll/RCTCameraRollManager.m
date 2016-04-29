@@ -86,7 +86,8 @@ RCT_EXPORT_METHOD(saveImageWithTag:(NSString *)imageTag
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  [_bridge.imageLoader loadImageWithTag:imageTag callback:^(NSError *loadError, UIImage *loadedImage) {
+  [_bridge.imageLoader loadImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageTag]]
+                                      callback:^(NSError *loadError, UIImage *loadedImage) {
     if (loadError) {
       reject(RCTErrorUnableToLoad, nil, loadError);
       return;

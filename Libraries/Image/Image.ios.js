@@ -63,10 +63,22 @@ var Image = React.createClass({
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or the name of a static image
      * resource (which should be wrapped in the `require('./path/to/image.png')` function).
+     *
+     * `method` is the HTTP Method to use. Defaults to GET if not specified.
+     * 
+     * `headers` is an object representing the HTTP headers to send along with the request
+     * for a remote image.
+     * 
+     * `body` is the HTTP body to send with the request. This must be a valid
+     * UTF-8 string, and will be sent exactly as specified, with no
+     * additional encoding (e.g. URL-escaping or base64) applied.
      */
     source: PropTypes.oneOfType([
       PropTypes.shape({
         uri: PropTypes.string,
+        method: PropTypes.string,
+        headers: PropTypes.objectOf(PropTypes.string),
+        body: PropTypes.string,
       }),
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
@@ -216,7 +228,11 @@ var Image = React.createClass({
     if (isNetwork && (tintColor || this.props.blurRadius)) {
       RawImage = RCTImageView;
     }
-
+    
+    if (source && source.uri === '') {
+      console.warn('source.uri should not be an empty string');
+    }
+    
     if (this.props.src) {
       console.warn('The <Image> component requires a `source` property rather than `src`.');
     }

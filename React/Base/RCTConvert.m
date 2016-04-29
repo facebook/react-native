@@ -133,6 +133,22 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
     if ([method isEqualToString:@"GET"] && headers == nil && body == nil) {
       return [NSURLRequest requestWithURL:URL];
     }
+    
+    if (headers) {
+      BOOL allHeadersAreStrings = YES;
+      for (NSString *key in headers) {
+        if (![[headers objectForKey:key] isKindOfClass:[NSString class]]) {
+          RCTLogError(@"Values of HTTP headers passed must be"
+                      " of type string. Value of header '%@' is not a string.", key);
+          allHeadersAreStrings = NO;
+        }
+      }
+      if (!allHeadersAreStrings) {
+        // Set headers to nil here to avoid crashing later.
+        headers = nil;
+      }
+    }
+    
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
     request.HTTPBody = body;
     request.HTTPMethod = method;
@@ -878,7 +894,7 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
     return image;
   }
 
-  NSURL *URL = imageSource.imageURL;
+  NSURL *URL = imageSource.imageURLRequest.URL;
   NSString *scheme = URL.scheme.lowercaseString;
   if ([scheme isEqualToString:@"file"]) {
     NSString *assetName = RCTBundlePathForURL(URL);

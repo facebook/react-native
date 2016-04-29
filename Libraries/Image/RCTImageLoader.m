@@ -220,10 +220,10 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   return image;
 }
 
-- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
                                            callback:(RCTImageLoaderCompletionBlock)callback
 {
-  return [self loadImageWithTag:imageTag
+  return [self loadImageWithURLRequest:imageURLRequest
                            size:CGSizeZero
                           scale:1
                      resizeMode:RCTResizeModeStretch
@@ -280,7 +280,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
  * path taken. This is useful if you want to skip decoding, e.g. when preloading
  * the image, or retrieving metadata.
  */
-- (RCTImageLoaderCancellationBlock)loadImageOrDataWithTag:(NSString *)imageTag
+- (RCTImageLoaderCancellationBlock)loadImageOrDataWithURLRequest:(NSURLRequest *)imageURLRequest
                                                      size:(CGSize)size
                                                     scale:(CGFloat)scale
                                                resizeMode:(RCTResizeMode)resizeMode
@@ -306,11 +306,6 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     }
   };
 
-  if (imageTag.length == 0) {
-    completionHandler(RCTErrorWithMessage(@"source.uri should not be an empty string"), nil);
-    return ^{};
-  }
-
   // All access to URL cache must be serialized
   if (!_URLCacheQueue) {
     [self setUp];
@@ -329,7 +324,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     }
 
     // Find suitable image URL loader
-    NSURLRequest *request = [RCTConvert NSURLRequest:imageTag];
+    NSURLRequest *request = imageURLRequest; // Use a local variable so we can reassign it in this block
     id<RCTImageURLLoader> loadHandler = [strongSelf imageURLLoaderForURL:request.URL];
     if (loadHandler) {
       cancelLoad = [loadHandler loadImageForURL:request.URL
@@ -345,13 +340,13 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     if (RCT_DEBUG && ![_bridge respondsToSelector:@selector(networking)]) {
       RCTLogError(@"No suitable image URL loader found for %@. You may need to "
                   " import the RCTNetwork library in order to load images.",
-                  imageTag);
+                  request.URL.absoluteString);
       return;
     }
 
     // Check if networking module can load image
     if (RCT_DEBUG && ![_bridge.networking canHandleRequest:request]) {
-      RCTLogError(@"No suitable image URL loader found for %@", imageTag);
+      RCTLogError(@"No suitable image URL loader found for %@", request.URL.absoluteString);
       return;
     }
 
@@ -405,7 +400,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
           }
 
           NSURL *redirectURL = [NSURL URLWithString: location];
-          request = [NSURLRequest requestWithURL: redirectURL];
+          request = [NSURLRequest requestWithURL:redirectURL];
           cachedResponse = [_URLCache cachedResponseForRequest:request];
           continue;
         }
@@ -470,14 +465,14 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   };
 }
 
-- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
                                                size:(CGSize)size
                                               scale:(CGFloat)scale
                                          resizeMode:(RCTResizeMode)resizeMode
                                       progressBlock:(RCTImageLoaderProgressBlock)progressHandler
                                     completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
 {
-  return [self loadImageWithoutClipping:imageTag
+  return [self loadImageWithURLRequestWithoutClipping:imageURLRequest
                                    size:size
                                   scale:scale
                              resizeMode:resizeMode
@@ -487,7 +482,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                         }];
 }
 
-- (RCTImageLoaderCancellationBlock)loadImageWithoutClipping:(NSString *)imageTag
+- (RCTImageLoaderCancellationBlock)loadImageWithURLRequestWithoutClipping:(NSURLRequest *)imageURLRequest
                                                        size:(CGSize)size
                                                       scale:(CGFloat)scale
                                                  resizeMode:(RCTResizeMode)resizeMode
@@ -499,7 +494,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   __weak RCTImageLoader *weakSelf = self;
 
   // Check decoded image cache
-  NSString *cacheKey = RCTCacheKeyForImage(imageTag, size, scale, resizeMode);
+  NSString *cacheKey = RCTCacheKeyForImage(imageURLRequest.URL.absoluteString, size, scale, resizeMode);
   {
     UIImage *image = [_decodedImageCache objectForKey:cacheKey];
     if (image) {
@@ -536,7 +531,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     }
   };
 
-  cancelLoad = [self loadImageOrDataWithTag:imageTag
+  cancelLoad = [self loadImageOrDataWithURLRequest:imageURLRequest
                                        size:size
                                       scale:scale
                                  resizeMode:resizeMode
@@ -675,10 +670,10 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   }
 }
 
-- (RCTImageLoaderCancellationBlock)getImageSize:(NSString *)imageTag
+- (RCTImageLoaderCancellationBlock)getImageSizeForURLRequest:(NSURLRequest *)imageURLRequest
                                           block:(void(^)(NSError *error, CGSize size))completionBlock
 {
-  return [self loadImageOrDataWithTag:imageTag
+  return [self loadImageOrDataWithURLRequest:imageURLRequest
                                  size:CGSizeZero
                                 scale:1
                            resizeMode:RCTResizeModeStretch
@@ -713,7 +708,7 @@ RCT_EXPORT_METHOD(prefetchImage:(NSString *)uri
     return;
   }
 
-  [_bridge.imageLoader loadImageWithTag:uri callback:^(NSError *error, UIImage *image) {
+  [_bridge.imageLoader loadImageWithURLRequest:[RCTConvert NSURLRequest:uri] callback:^(NSError *error, UIImage *image) {
     if (error) {
       reject(RCTErrorPrefetchFailure, nil, error);
       return;
@@ -743,7 +738,7 @@ RCT_EXPORT_METHOD(prefetchImage:(NSString *)uri
 - (id)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
   __block RCTImageLoaderCancellationBlock requestToken;
-  requestToken = [self loadImageWithTag:request.URL.absoluteString callback:^(NSError *error, UIImage *image) {
+  requestToken = [self loadImageWithURLRequest:request callback:^(NSError *error, UIImage *image) {
     if (error) {
       [delegate URLRequest:requestToken didCompleteWithError:error];
       return;
@@ -777,6 +772,58 @@ RCT_EXPORT_METHOD(prefetchImage:(NSString *)uri
   if (requestToken) {
     ((RCTImageLoaderCancellationBlock)requestToken)();
   }
+}
+
+@end
+
+@implementation RCTImageLoader (Deprecated)
+
+- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+                                           callback:(RCTImageLoaderCompletionBlock)callback
+{
+  RCTLogWarn(@"[RCTImageLoader loadImageWithTag:callback:] is deprecated. Instead use [RCTImageLoader loadImageWithURLRequest:callback:]");
+  return [self loadImageWithURLRequest:[RCTConvert NSURLRequest:imageTag]
+                              callback:callback];
+}
+
+- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+                                               size:(CGSize)size
+                                              scale:(CGFloat)scale
+                                         resizeMode:(RCTResizeMode)resizeMode
+                                      progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
+{
+  RCTLogWarn(@"[RCTImageLoader loadImageWithTag:size:scale:resizeMode:progressBlock:completionBlock:] is deprecated. Instead use [RCTImageLoader loadImageWithURLRequest:size:scale:resizeMode:progressBlock:completionBlock:]");
+  return [self loadImageWithURLRequest:[RCTConvert NSURLRequest:imageTag]
+                           size:size
+                          scale:scale
+                     resizeMode:resizeMode
+                  progressBlock:progressBlock
+                completionBlock:completionBlock];
+}
+
+- (RCTImageLoaderCancellationBlock)loadImageWithoutClipping:(NSString *)imageTag
+                                                       size:(CGSize)size
+                                                      scale:(CGFloat)scale
+                                                 resizeMode:(RCTResizeMode)resizeMode
+                                              progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                            completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
+{
+  RCTLogWarn(@"[RCTImageLoader loadImageWithoutClipping:size:scale:resizeMode:progressBlock:completionBlock:] is deprecated. Instead use [RCTImageLoader loadImageWithURLRequestWithoutClipping:size:scale:resizeMode:progressBlock:completionBlock:]");
+  return [self loadImageWithURLRequestWithoutClipping:[RCTConvert NSURLRequest:imageTag]
+                                   size:size
+                                  scale:scale
+                             resizeMode:resizeMode
+                          progressBlock:progressBlock
+                        completionBlock:completionBlock];
+}
+
+- (RCTImageLoaderCancellationBlock)getImageSize:(NSString *)imageTag
+                                          block:(void(^)(NSError *error, CGSize size))completionBlock
+{
+  RCTLogWarn(@"[RCTImageLoader getImageSize:block:] is deprecated. Instead use [RCTImageLoader getImageSizeForURLRequest:block:]");
+  return [self getImageSizeForURLRequest:[RCTConvert NSURLRequest:imageTag]
+                                   block:completionBlock];
 }
 
 @end
