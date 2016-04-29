@@ -222,6 +222,10 @@ public class UIImplementation {
       @Nullable ReadableArray removeFrom) {
     ReactShadowNode cssNodeToManage = mShadowNodeRegistry.getNode(viewTag);
 
+    if (null == cssNodeToManage) {
+      return;
+    }
+
     int numToMove = moveFrom == null ? 0 : moveFrom.size();
     int numToAdd = addChildTags == null ? 0 : addChildTags.size();
     int numToRemove = removeFrom == null ? 0 : removeFrom.size();
