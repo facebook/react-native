@@ -37,7 +37,7 @@ ES6
 * [Constants](https://babeljs.io/docs/learn-es2015/#let-const): `const answer = 42;`
 * [Destructuring](http://babeljs.io/docs/learn-es2015/#destructuring): `var {isActive, style} = this.props;`
 * [for...of](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of): `for (var num of [1, 2, 3]) {}`
-* [Modules](http://babeljs.io/docs/learn-es2015/#modules): `import { Component } from 'react-native';`
+* [Modules](http://babeljs.io/docs/learn-es2015/#modules): `import React, { Component } from 'react';`
 * [Computed Properties](http://babeljs.io/docs/learn-es2015/#enhanced-object-literals): `var key = 'abc'; var obj = {[key]: 10};`
 * Object Consise Method: `var obj = { method() { return 10; } };`
 * [Object Short Notation](http://babeljs.io/docs/learn-es2015/#enhanced-object-literals): `var name = 'vjeux'; var obj = { name };`
