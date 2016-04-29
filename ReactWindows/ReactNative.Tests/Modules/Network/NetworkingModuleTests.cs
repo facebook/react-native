@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -281,6 +282,53 @@ namespace ReactNative.Tests.Modules.Network
             onReceived.WaitOne();
             Assert.AreEqual(42, onReceivedData[0].Value<int>());
             Assert.AreEqual("Hello World", onReceivedData[1].Value<string>());
+        }
+
+        [TestMethod]
+        public void NetworkingModule_Response_Content_UseIncremental()
+        {
+            var onReceived = new AutoResetEvent(false);
+            var builder = new StringBuilder();
+            var size = 32 * 1027;
+            var expected = new string(Enumerable.Repeat('a', size).ToArray());
+
+            var module = CreateNetworkingModule(new MockHttpClient(request =>
+            {
+                var response = new HttpResponseMessage(HttpStatusCode.Ok);
+                response.RequestMessage = request;
+
+                var stream = new MemoryStream();
+
+                response.Content = new HttpStreamContent(stream.AsInputStream());
+                using (var streamWriter = new StreamWriter(stream, Encoding.UTF8, 1024, true))
+                {
+                    streamWriter.Write(expected);
+                }
+
+                stream.Position = 0;
+                return response;
+            }),
+            new MockInvocationHandler((name, args) =>
+            {
+                if (name == "emit" && args.Length == 2)
+                {
+                    var eventName = args[0] as string;
+                    if (eventName == "didReceiveNetworkData")
+                    {
+                        builder.Append(((JArray)args[1])[1].Value<string>());
+                    }
+                    else if (eventName == "didCompleteNetworkResponse")
+                    {
+                        onReceived.Set();
+                    }
+                }
+            }));
+
+            var uri = new Uri("http://example.com");
+            module.sendRequest("get", uri, 0, null, null, true, 1000);
+
+            onReceived.WaitOne();
+            Assert.AreEqual(expected, builder.ToString());
         }
 
         private static NetworkingModule CreateNetworkingModule(IHttpClient httpClient, IInvocationHandler handler)
