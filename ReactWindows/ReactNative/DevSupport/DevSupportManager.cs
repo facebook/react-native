@@ -216,7 +216,9 @@ namespace ReactNative.DevSupport
                             _devSettings.IsReloadOnJavaScriptChangeEnabled =
                                 !_devSettings.IsReloadOnJavaScriptChangeEnabled),
                     new DevOptionHandler(
-                        "Toggle Inspector",
+                        _devSettings.IsElementInspectorEnabled
+                            ? "Hide Inspector"
+                            : "Show Inspector",
                         () =>
                         {
                             _devSettings.IsElementInspectorEnabled = !_devSettings.IsElementInspectorEnabled;
