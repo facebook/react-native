@@ -68,9 +68,9 @@ React Native Android depends on [Fresco](https://github.com/facebook/fresco) for
 
 Try running `react-native init` with `--verbose` and see [#2797](https://github.com/facebook/react-native/issues/2797) for common causes.
 
-### Moving after compile
+### Moving folder after iOS build
 
-Moving a React Native project after it has been compiled in iOS can sometimes cause errors with pre-compiled headers. This results in a message resembling: `error: PCH was compiled with module cache path ...`.  If you were compiling using Xcode you can [hold option when you clean the build](http://stackoverflow.com/a/15463219/3110982).  If you're using `react-native run-ios` you can manually clean the header cache by deleting the contents of your ModuleCache folder. _e.g._ `rm -rf ios/build/ModuleCache/*`
+Moving a React Native project after it has been compiled in iOS can sometimes cause errors with pre-compiled headers e.g. `mv MyAwesomeProject/ newDir/MyAwesomeProject`. This results in a message resembling: `error: PCH was compiled with module cache path ...`.  If you were compiling using Xcode you can [hold option when you clean the build](http://stackoverflow.com/a/15463219/3110982).  If you're using `react-native run-ios` you can manually clean the header cache by deleting the contents of your ModuleCache folder. _e.g._ `rm -rf ios/build/ModuleCache/*`
 
 ### Text Input Border
 
