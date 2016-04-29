@@ -166,6 +166,19 @@ public class FlatUIImplementation extends UIImplementation {
   }
 
   @Override
+  public void setChildren(
+      int viewTag,
+      ReadableArray children) {
+
+    ReactShadowNode parentNode = resolveShadowNode(viewTag);
+
+    for (int i = 0; i < children.size(); i++) {
+      ReactShadowNode addToChild = resolveShadowNode(children.getInt(i));
+      addChildAt(parentNode, addToChild, i, i - 1);
+    }
+  }
+
+  @Override
   public void measure(int reactTag, Callback callback) {
     FlatShadowNode node = (FlatShadowNode) resolveShadowNode(reactTag);
     if (node.mountsToView()) {
