@@ -128,14 +128,29 @@ MapView<span class="token punctuation">.</span>propTypes <span class="token oper
     <span class="token keyword">return</span> &lt;MapView region<span class="token operator">=</span><span class="token punctuation">{</span>region<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span></div><p>Here you can see that the shape of the region is explicit in the JS documentation - ideally we could codegen some of this stuff, but that&#x27;s not happening yet.</p><p>Sometimes you&#x27;ll have some special properties that you need to expose for the native component, but don&#x27;t actually want them as part of the API for the associated React component.  For example, <code>Switch</code> has a custom <code>onChange</code> handler for the raw native event, and exposes an <code>onValueChange</code> handler property that is invoked with just the boolean value rather than the raw event.  Since you don&#x27;t want these native only properties to be part of the API, you don&#x27;t want to put them in <code>propTypes</code>, but if you don&#x27;t you&#x27;ll get an error.  The solution is simply to call them out via the <code>nativeOnly</code> option, e.g.</p><div class="prism language-javascript"><span class="token keyword">var</span> RCTSwitch <span class="token operator">=</span> <span class="token function">requireNativeComponent<span class="token punctuation">(</span></span><span class="token string">&#x27;RCTSwitch&#x27;</span><span class="token punctuation">,</span> Switch<span class="token punctuation">,</span> <span class="token punctuation">{</span>
   nativeOnly<span class="token punctuation">:</span> <span class="token punctuation">{</span> onChange<span class="token punctuation">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></div><h2><a class="anchor" name="events"></a>Events <a class="hash-link" href="docs/native-components-ios.html#events">#</a></h2><p>So now we have a native map component that we can control easily from JS, but how do we deal with events from the user, like pinch-zooms or panning to change the visible region?  The key is to make the <code>RCTMapManager</code> a delegate for all the views it vends, and forward the events to JS via the event dispatcher.  This looks like so (simplified from the full implementation):</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// RCTMapManager.m
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></div><h2><a class="anchor" name="events"></a>Events <a class="hash-link" href="docs/native-components-ios.html#events">#</a></h2><p>So now we have a native map component that we can control easily from JS, but how do we deal with events from the user, like pinch-zooms or panning to change the visible region?  The key is to declare an event handler property on <code>RCTMapManager</code>, make it a delegate for all the views it vends, and forward events to JS by calling the event handler block from the native view.  This looks like so (simplified from the full implementation):</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// RCTMap.h
+</span>
+#import &lt;MapKit<span class="token operator">/</span>MapKit<span class="token punctuation">.</span>h<span class="token operator">&gt;</span>
+
+#import <span class="token string">&quot;RCTComponent.h&quot;</span>
+
+@interface <span class="token class-name">RCTMap</span><span class="token punctuation">:</span> MKMapView
+
+@property <span class="token punctuation">(</span>nonatomic<span class="token punctuation">,</span> copy<span class="token punctuation">)</span> RCTBubblingEventBlock onChange<span class="token punctuation">;</span>
+
+@end</div><div class="prism language-javascript"><span class="token comment" spellcheck="true">// RCTMap.m
+</span>
+#import <span class="token string">&quot;RCTMap.h&quot;</span>
+
+@implementation RCTMap
+
+@end</div><div class="prism language-javascript"><span class="token comment" spellcheck="true">// RCTMapManager.m
 </span>
 #import <span class="token string">&quot;RCTMapManager.h&quot;</span>
 
 #import &lt;MapKit<span class="token operator">/</span>MapKit<span class="token punctuation">.</span>h<span class="token operator">&gt;</span>
 
-#import <span class="token string">&quot;RCTBridge.h&quot;</span>
-#import <span class="token string">&quot;RCTEventDispatcher.h&quot;</span>
+#import <span class="token string">&quot;RCTMap.h&quot;</span>
 #import <span class="token string">&quot;UIView+React.h&quot;</span>
 
 @interface <span class="token class-name">RCTMapManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span> &lt;MKMapViewDelegate<span class="token operator">&gt;</span>
@@ -145,9 +160,11 @@ MapView<span class="token punctuation">.</span>propTypes <span class="token oper
 
 <span class="token function">RCT_EXPORT_MODULE<span class="token punctuation">(</span></span><span class="token punctuation">)</span>
 
+<span class="token function">RCT_EXPORT_VIEW_PROPERTY<span class="token punctuation">(</span></span>onChange<span class="token punctuation">,</span> RCTBubblingEventBlock<span class="token punctuation">)</span>
+
 <span class="token operator">-</span> <span class="token punctuation">(</span>UIView <span class="token operator">*</span><span class="token punctuation">)</span>view
 <span class="token punctuation">{</span>
-  MKMapView <span class="token operator">*</span>map <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">[</span>MKMapView alloc<span class="token punctuation">]</span> init<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  RCTMap <span class="token operator">*</span>map <span class="token operator">=</span> <span class="token punctuation">[</span>RCTMap <span class="token keyword">new</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
   map<span class="token punctuation">.</span>delegate <span class="token operator">=</span> self<span class="token punctuation">;</span>
   <span class="token keyword">return</span> map<span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
@@ -156,18 +173,20 @@ MapView<span class="token punctuation">.</span>propTypes <span class="token oper
 
 <span class="token operator">-</span> <span class="token punctuation">(</span>void<span class="token punctuation">)</span>mapView<span class="token punctuation">:</span><span class="token punctuation">(</span>RCTMap <span class="token operator">*</span><span class="token punctuation">)</span>mapView regionDidChangeAnimated<span class="token punctuation">:</span><span class="token punctuation">(</span>BOOL<span class="token punctuation">)</span>animated
 <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>mapView<span class="token punctuation">.</span>onChange<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
   MKCoordinateRegion region <span class="token operator">=</span> mapView<span class="token punctuation">.</span>region<span class="token punctuation">;</span>
-  NSDictionary <span class="token operator">*</span>event <span class="token operator">=</span> @<span class="token punctuation">{</span>
-    @<span class="token string">&quot;target&quot;</span><span class="token punctuation">:</span> mapView<span class="token punctuation">.</span>reactTag<span class="token punctuation">,</span>
+  mapView<span class="token punctuation">.</span><span class="token function">onChange<span class="token punctuation">(</span></span>@<span class="token punctuation">{</span>
     @<span class="token string">&quot;region&quot;</span><span class="token punctuation">:</span> @<span class="token punctuation">{</span>
       @<span class="token string">&quot;latitude&quot;</span><span class="token punctuation">:</span> @<span class="token punctuation">(</span>region<span class="token punctuation">.</span>center<span class="token punctuation">.</span>latitude<span class="token punctuation">)</span><span class="token punctuation">,</span>
       @<span class="token string">&quot;longitude&quot;</span><span class="token punctuation">:</span> @<span class="token punctuation">(</span>region<span class="token punctuation">.</span>center<span class="token punctuation">.</span>longitude<span class="token punctuation">)</span><span class="token punctuation">,</span>
       @<span class="token string">&quot;latitudeDelta&quot;</span><span class="token punctuation">:</span> @<span class="token punctuation">(</span>region<span class="token punctuation">.</span>span<span class="token punctuation">.</span>latitudeDelta<span class="token punctuation">)</span><span class="token punctuation">,</span>
       @<span class="token string">&quot;longitudeDelta&quot;</span><span class="token punctuation">:</span> @<span class="token punctuation">(</span>region<span class="token punctuation">.</span>span<span class="token punctuation">.</span>longitudeDelta<span class="token punctuation">)</span><span class="token punctuation">,</span>
     <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span><span class="token punctuation">;</span>
-  <span class="token punctuation">[</span>self<span class="token punctuation">.</span>bridge<span class="token punctuation">.</span>eventDispatcher sendInputEventWithName<span class="token punctuation">:</span>@<span class="token string">&quot;topChange&quot;</span> body<span class="token punctuation">:</span>event<span class="token punctuation">]</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span></div><p>You can see we&#x27;re setting the manager as the delegate for every view that it vends, then in the delegate method <code>-mapView:regionDidChangeAnimated:</code> the region is combined with the <code>reactTag</code> target to make an event that is dispatched to the corresponding React component instance in your application via <code>sendInputEventWithName:body:</code>.  The event name <code>@&quot;topChange&quot;</code> maps to the <code>onChange</code> callback prop in JavaScript.  This callback is invoked with the raw event, which we typically process in the wrapper component to make a simpler API:</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// MapView.js
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></div><p>You can see we&#x27;re adding an event handler property to the view by subclassing <code>MKMapView</code>.  Then we&#x27;re exposing the <code>onChange</code> event handler property and setting the manager as the delegate for every view that it vends. Finally, in the delegate method <code>-mapView:regionDidChangeAnimated:</code> the event handler block is called on the corresponding view with the region data.  Calling the <code>onChange</code> event handler block results in calling the same callback prop in JavaScript.  This callback is invoked with the raw event, which we typically process in the wrapper component to make a simpler API:</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// MapView.js
 </span>
 class <span class="token class-name">MapView</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
   <span class="token function">constructor<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
