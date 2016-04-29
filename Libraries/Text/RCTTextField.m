@@ -20,9 +20,7 @@
 
 static NSMutableDictionary *textFieldAccessoryMapping;
 
-// input View Accessory Handle definition
 
-typedef UIView * (^KeyboardAccessory)(UITextField *);
 
 @implementation RCTTextField
 {
@@ -270,7 +268,7 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
   
   // This fragment was added to let application inject input accessory view if needed
   //
-  KeyboardAccessory handler = [RCTTextField getAcessoryMapping][[NSNumber numberWithInt:self.keyboardType]];
+  RCTTextFieldKeyboardAccessory handler = [RCTTextField accessoryMapping][[NSNumber numberWithInt:self.keyboardType]];
   if (handler) {
     self.inputAccessoryView = handler(self);
   }
@@ -297,10 +295,10 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 }
 
 
-+(NSMutableDictionary*)getAcessoryMapping {
-  static dispatch_once_t onceToken = 0;
++(NSMutableDictionary*)accessoryMapping {
+  static dispatch_once_t onceAccessoryToken = 0;
   
-  dispatch_once(&onceToken, ^{
+  dispatch_once(&onceAccessoryToken, ^{
     textFieldAccessoryMapping = [[NSMutableDictionary alloc] init];
   });
   
@@ -312,9 +310,9 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
  * handler presents instancdispatch_oncee of KeyboardAccessory type
  */
 
-+(void) registerForKeyboardType:(NSNumber *)type handler:(KeyboardAccessory)handler{
++(void) registerKeyboardTypeAccessoryHandler:(UIKeyboardType)type handler:(RCTTextFieldKeyboardAccessory)handler{
   
-  [RCTTextField getAcessoryMapping][type] = handler;
+  [RCTTextField accessoryMapping][[NSNumber numberWithInt:type]] = handler;
   
 
 }
