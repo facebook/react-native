@@ -159,8 +159,12 @@ function buildAndRun(args, reject) {
 function startServerInNewWindow() {
   var yargV = require('yargs').argv;
 
+  const scriptFile = /^win/.test(process.platform) ?
+    'launchPackager.bat' :
+    'launchPackager.command';
+
   const launchPackagerScript = path.resolve(
-    __dirname, '..', '..', 'packager', 'launchPackager.command'
+    __dirname, '..', '..', 'packager', scriptFile
   );
 
   if (process.platform === 'darwin') {
@@ -176,13 +180,9 @@ function startServerInNewWindow() {
     return child_process.spawn('sh', [launchPackagerScript],{detached: true});
 
   } else if (/^win/.test(process.platform)) {
-    console.log(chalk.yellow('Starting the packager in a new window ' +
-      'is not supported on Windows yet.\nPlease start it manually using ' +
-      '\'react-native start\'.'));
-    console.log('We believe the best Windows ' +
-      'support will come from a community of people\nusing React Native on ' +
-      'Windows on a daily basis.\n' +
-      'Would you be up for sending a pull request?');
+    return child_process.spawn(
+      'cmd.exe', ['/C', 'start', launchPackagerScript], {detached: true, stdio: 'ignore'}
+    );
   } else {
     console.log(chalk.red(`Cannot start the packager. Unknown platform ${process.platform}`));
   }
