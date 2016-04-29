@@ -324,6 +324,35 @@ public class UIImplementation {
   }
 
   /**
+   * An optimized version of manageChildren that is used for initial setting of child views.
+   * The children are assumed to be in index order
+   *
+   * @param viewTag tag of the parent
+   * @param childrenTags tags of the children
+   */
+  public void setChildren(
+    int viewTag,
+    ReadableArray childrenTags) {
+
+    ReactShadowNode cssNodeToManage = mShadowNodeRegistry.getNode(viewTag);
+
+    for (int i = 0; i < childrenTags.size(); i++) {
+      ReactShadowNode cssNodeToAdd = mShadowNodeRegistry.getNode(childrenTags.getInt(i));
+      if (cssNodeToAdd == null) {
+        throw new IllegalViewOperationException("Trying to add unknown view tag: "
+          + childrenTags.getInt(i));
+      }
+      cssNodeToManage.addChildAt(cssNodeToAdd, i);
+    }
+
+    if (!cssNodeToManage.isVirtual() && !cssNodeToManage.isVirtualAnchor()) {
+      mNativeViewHierarchyOptimizer.handleSetChildren(
+        cssNodeToManage,
+        childrenTags);
+    }
+  }
+
+  /**
    * Replaces the View specified by oldTag with the View specified by newTag within oldTag's parent.
    */
   public void replaceExistingNonRootView(int oldTag, int newTag) {

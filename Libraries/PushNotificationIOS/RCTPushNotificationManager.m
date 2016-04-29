@@ -40,6 +40,9 @@ NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegister
   notification.soundName = [RCTConvert NSString:details[@"soundName"]] ?: UILocalNotificationDefaultSoundName;
   notification.userInfo = [RCTConvert NSDictionary:details[@"userInfo"]];
   notification.category = [RCTConvert NSString:details[@"category"]];
+  if (details[@"applicationIconBadgeNumber"]) {
+    notification.applicationIconBadgeNumber = [RCTConvert NSInteger:details[@"applicationIconBadgeNumber"]];
+  }
   return notification;
 }
 

@@ -14,8 +14,7 @@ PREPROCESSOR_FLAGS = [
   '-DLOG_TAG="ReactNative"',
   '-DWITH_JSC_EXTRA_TRACING=1',
   '-DWITH_FBSYSTRACE=1',
-  '-DWITH_JSC_MEMORY_PRESSURE=1',
-  # '-DWITH_JSC_INTERNAL=1',  # Taken care of in D3163295
+  '-DWITH_REACT_INTERNAL_SETTINGS=1',
 ]
 
 def react_library(**kwargs):
@@ -25,7 +24,9 @@ def react_library(**kwargs):
       react_native_target('jni/react/jni:jni'),
     ],
     deps = DEPS + JSC_DEPS,
-    preprocessor_flags = PREPROCESSOR_FLAGS,
+    preprocessor_flags = PREPROCESSOR_FLAGS + [
+      '-DWITH_FB_MEMORY_PROFILING=1',
+    ],
     **kwargs
   )
 
