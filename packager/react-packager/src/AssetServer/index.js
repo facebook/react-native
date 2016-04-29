@@ -129,13 +129,14 @@ class AssetServer {
   _findRoot(roots, dir) {
     return Promise.all(
       roots.map(root => {
+        const absRoot = path.resolve(root);
         // important: we want to resolve root + dir
         // to ensure the requested path doesn't traverse beyond root
         const absPath = path.resolve(root, dir);
         return stat(absPath).then(fstat => {
           // keep asset requests from traversing files
           // up from the root (e.g. ../../../etc/hosts)
-          if (!absPath.startsWith(root)) {
+          if (!absPath.startsWith(absRoot)) {
             return {path: absPath, isValid: false};
           }
           return {path: absPath, isValid: fstat.isDirectory()};

@@ -177,7 +177,7 @@ function startServerInNewWindow() {
     if (yargV.open){
       return child_process.spawn(yargV.open,['-e', 'sh', launchPackagerScript], {detached: true});
     }
-    return child_process.spawn('xterm',['-e', 'sh', launchPackagerScript],{detached: true});
+    return child_process.spawn('sh', [launchPackagerScript],{detached: true});
 
   } else if (/^win/.test(process.platform)) {
     return child_process.spawn(

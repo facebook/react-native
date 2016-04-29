@@ -93,11 +93,4 @@ RCT_EXTERN UIImage *__nullable RCTTransformImage(UIImage *image,
  */
 RCT_EXTERN BOOL RCTImageHasAlpha(CGImageRef image);
 
-/**
- * Create a solid placeholder image of the specified size and color to display
- * while loading an image. If color is not specified, image will be transparent.
- */
-RCT_EXTERN UIImage *__nullable RCTGetPlaceholderImage(CGSize size,
-                                                      UIColor *__nullable color);
-
 NS_ASSUME_NONNULL_END

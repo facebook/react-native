@@ -45,7 +45,11 @@ const validateOpts = declareOpts({
     default: false,
   },
   transformModulePath: {
-    type:'string',
+    type: 'string',
+    required: false,
+  },
+  extraNodeModules: {
+    type: 'object',
     required: false,
   },
   nonPersistent: {

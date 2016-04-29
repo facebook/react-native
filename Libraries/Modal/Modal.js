@@ -16,6 +16,7 @@ const PropTypes = require('ReactPropTypes');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
+const deprecatedPropType = require('deprecatedPropType');
 
 const requireNativeComponent = require('requireNativeComponent');
 const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
@@ -35,7 +36,11 @@ const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  */
 class Modal extends React.Component {
   static propTypes = {
-    animated: PropTypes.bool,
+    animated: deprecatedPropType(
+      PropTypes.bool,
+      'Use the `animationType` prop instead.'
+    ),
+    animationType: PropTypes.oneOf(['none', 'slide', 'fade']),
     transparent: PropTypes.bool,
     visible: PropTypes.bool,
     onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
@@ -55,9 +60,18 @@ class Modal extends React.Component {
       backgroundColor: this.props.transparent ? 'transparent' : 'white',
     };
 
+    let animationType = this.props.animationType;
+    if (!animationType) {
+      // manually setting default prop here to keep support for the deprecated 'animated' prop
+      animationType = 'none';
+      if (this.props.animated) {
+        animationType = 'slide';
+      }
+    }
+
     return (
       <RCTModalHostView
-        animated={this.props.animated}
+        animationType={animationType}
         transparent={this.props.transparent}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
