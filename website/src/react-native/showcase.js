@@ -892,6 +892,12 @@ var apps = [
     icon: 'https://s3-ap-northeast-1.amazonaws.com/sw-misc/sharewis3_app.png',
     link: 'https://itunes.apple.com/jp/app/id585517208',
     author: 'ShareWis Inc.'
+  },
+  {
+    name: '找找',
+    icon: 'https://lh3.googleusercontent.com/H0SILVHcDUxSMoSQwMb2QYtLjTBCqvK5ZEjOEwKQQ-2qnRV6Hd9Hn-gtSGPaoIOPwA=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.biideal.biichat',
+    author: 'biideal Inc.'
   }
 ];
 
