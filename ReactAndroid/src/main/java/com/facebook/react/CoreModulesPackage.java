@@ -16,6 +16,7 @@ import java.util.List;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.devsupport.JSCHeapCapture;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
@@ -84,6 +85,7 @@ import com.facebook.systrace.Systrace;
             mReactInstanceManager.getSourceUrl(),
             mReactInstanceManager.getDevSupportManager().getSourceMapUrl()),
         uiManagerModule,
+        new JSCHeapCapture(catalystApplicationContext),
         new DebugComponentOwnershipModule(catalystApplicationContext));
   }
 
@@ -97,6 +99,7 @@ import com.facebook.systrace.Systrace;
         AppRegistry.class,
         com.facebook.react.bridge.Systrace.class,
         HMRClient.class,
+        JSCHeapCapture.HeapCapture.class,
         DebugComponentOwnershipModule.RCTDebugComponentOwnership.class);
   }
 
