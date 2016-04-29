@@ -30,6 +30,7 @@ var TerminalAdapter = require('yeoman-environment/lib/adapter.js');
 var yeoman = require('yeoman-environment');
 var unbundle = require('./bundle/unbundle');
 var upgrade = require('./upgrade/upgrade');
+var version = require('./version/version');
 
 var fs = require('fs');
 var gracefulFs = require('graceful-fs');
@@ -56,6 +57,7 @@ Object.keys(documentedCommands).forEach(function(command) {
 });
 
 var undocumentedCommands = {
+  '--version': [version, ''],
   'init': [printInitWarning, ''],
 };
 
