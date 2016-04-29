@@ -529,12 +529,15 @@ RCT_EXPORT_MODULE()
     [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
   NSMutableDictionary<NSNumber *, RCTViewManagerUIBlock> *updateBlocks =
     [NSMutableDictionary new];
+  NSMutableArray<NSNumber *> *areHidden =
+    [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
 
   for (RCTShadowView *shadowView in viewsWithNewFrames) {
     [frameReactTags addObject:shadowView.reactTag];
     [frames addObject:[NSValue valueWithCGRect:shadowView.frame]];
     [areNew addObject:@(shadowView.isNewView)];
     [parentsAreNew addObject:@(shadowView.superview.isNewView)];
+    [areHidden addObject:@(shadowView.isHidden)];
   }
 
   for (RCTShadowView *shadowView in viewsWithNewFrames) {
@@ -589,6 +592,7 @@ RCT_EXPORT_MODULE()
       UIView *view = viewRegistry[reactTag];
       CGRect frame = [frames[ii] CGRectValue];
 
+      BOOL isHidden = [areHidden[ii] boolValue];
       BOOL isNew = [areNew[ii] boolValue];
       RCTAnimation *updateAnimation = isNew ? nil : layoutAnimation.updateAnimation;
       BOOL shouldAnimateCreation = isNew && ![parentsAreNew[ii] boolValue];
@@ -604,6 +608,10 @@ RCT_EXPORT_MODULE()
           layoutAnimation.callback = nil;
         }
       };
+      
+      if (view.isHidden != isHidden) {
+        view.hidden = isHidden;
+      }
 
       // Animate view creation
       if (createAnimation) {
