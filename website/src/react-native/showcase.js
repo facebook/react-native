@@ -151,12 +151,6 @@ var featured = [
     author: 'Townske PTY LTD',
   },
   {
-    name: 'Trump Blocker - That Filters Every Link',
-    icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/e7/91/4c/e7914cbd-c405-8411-2173-e8ed59a901bd/icon175x175.jpeg',
-    link: 'https://itunes.apple.com/us/app/trump-blocker-that-filters/id1071733244?mt=8',    
-    author: 'Footbits, Inc.',
-  },
-  {
     name: 'Tucci',
     icon: 'http://a3.mzstatic.com/us/r30/Purple3/v4/c0/0c/95/c00c95ce-4cc5-e516-db77-5c5164b89189/icon175x175.jpeg',
     link: 'https://itunes.apple.com/app/apple-store/id1039661754?mt=8',
@@ -685,6 +679,12 @@ var apps = [
     icon: 'http://a3.mzstatic.com/us/r30/Purple1/v4/7d/52/a7/7d52a71f-9532-82a5-b92f-87076624fdb2/icon175x175.jpeg',
     link: 'https://itunes.apple.com/cn/app/tong-xing-wang/id914254459?mt=8',
     author: 'Ho Yin Tsun Eugene',
+  },
+  {
+    name: 'Trump Blocker - That Filters Every Link',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/e7/91/4c/e7914cbd-c405-8411-2173-e8ed59a901bd/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/trump-blocker-that-filters/id1071733244?mt=8',    
+    author: 'Footbits, Inc.',
   },
   {
     name: 'uSwitch - Energy switching app',
