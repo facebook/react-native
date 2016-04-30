@@ -159,6 +159,11 @@ type Props = {
    * range of start plus count.
    */
   onMountedRowsWillChange?: (firstIdx: number, count: number) => void;
+  /**
+   * Change this when you want to make sure the WindowedListView will re-render, for example when the result of
+   * `renderScrollComponent` might change. It will be compared in `shouldComponentUpdate`.
+   */
+  shouldUpdateToken?: string;
 };
 
 type State = {
