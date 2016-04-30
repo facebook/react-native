@@ -161,7 +161,9 @@ namespace ReactNative.Touch
             var changedIndices = new JArray();
             changedIndices.Add(JToken.FromObject(pointerIndex));
 
-            var touchEvent = new TouchEvent(touchEventType, touches, changedIndices);
+            var coalescingKey = activePointers[pointerIndex].PointerId;
+
+            var touchEvent = new TouchEvent(touchEventType, touches, changedIndices, coalescingKey);
 
             _view.GetReactContext()
                 .GetNativeModule<UIManagerModule>()
@@ -169,24 +171,20 @@ namespace ReactNative.Touch
                 .DispatchEvent(touchEvent);
         }
 
-        /// <summary>
-        /// Simple touch event.
-        /// </summary>
-        /// <remarks>
-        /// TODO: revisit how to capture active pointers and coalesce efficiently.
-        /// </remarks>
         class TouchEvent : Event
         {
             private readonly TouchEventType _touchEventType;
             private readonly JArray _touches;
             private readonly JArray _changedIndices;
+            private readonly uint _coalescingKey;
 
-            public TouchEvent(TouchEventType touchEventType, JArray touches, JArray changedIndices)
+            public TouchEvent(TouchEventType touchEventType, JArray touches, JArray changedIndices, uint coalescingKey)
                 : base(-1, TimeSpan.FromTicks(Environment.TickCount))
             {
                 _touchEventType = touchEventType;
                 _touches = touches;
                 _changedIndices = changedIndices;
+                _coalescingKey = coalescingKey;
             }
 
             public override string EventName
@@ -201,7 +199,18 @@ namespace ReactNative.Touch
             {
                 get
                 {
-                    return false;
+                    return _touchEventType == TouchEventType.Move;
+                }
+            }
+
+            public override short CoalescingKey
+            {
+                get
+                {
+                    unchecked
+                    {
+                        return (short)_coalescingKey;
+                    }
                 }
             }
 
