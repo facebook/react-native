@@ -12,6 +12,7 @@ package com.facebook.react.views.textinput;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.text.InputType;
+import android.text.InputFilter;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.widget.EditText;
@@ -329,5 +330,14 @@ public class ReactTextInputPropertyTest {
       view,
       buildStyles("textAlign", null, "textAlignVertical", null));
     assertThat(view.getGravity()).isEqualTo(defaultGravity);
+  }
+  
+  @Test
+  public void testMaxLength() {
+    ReactEditText view = mManager.createViewInstance(mThemedContext);
+    InputFilter[] filters = new InputFilter[] { new InputFilter.AllCaps() };
+    view.setFilters(filters);
+    mManager.setMaxLength(view, null);
+    assertThat(view.getFilters()).isEqualTo(filters);
   }
 }

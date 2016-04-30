@@ -24,6 +24,7 @@ const JSTimersExecution = require('JSTimersExecution');
 
 BatchedBridge.registerCallableModule('Systrace', Systrace);
 BatchedBridge.registerCallableModule('JSTimersExecution', JSTimersExecution);
+BatchedBridge.registerCallableModule('HeapCapture', require('HeapCapture'));
 
 if (__DEV__) {
   BatchedBridge.registerCallableModule('HMRClient', require('HMRClient'));

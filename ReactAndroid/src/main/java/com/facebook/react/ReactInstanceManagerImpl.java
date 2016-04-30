@@ -268,6 +268,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
 
   /* package */ ReactInstanceManagerImpl(
       Context applicationContext,
+      @Nullable Activity currentActivity,
+      @Nullable DefaultHardwareBackBtnHandler defaultHardwareBackBtnHandler,
       @Nullable String jsBundleFile,
       @Nullable String jsMainModuleName,
       List<ReactPackage> packages,
@@ -284,6 +286,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     setDisplayMetrics(applicationContext);
 
     mApplicationContext = applicationContext;
+    mCurrentActivity = currentActivity;
+    mDefaultBackButtonImpl = defaultHardwareBackBtnHandler;
     mJSBundleFile = jsBundleFile;
     mJSMainModuleName = jsMainModuleName;
     mPackages = packages;
@@ -370,7 +374,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     Assertions.assertCondition(
         !mHasStartedCreatingInitialContext,
         "createReactContextInBackground should only be called when creating the react " +
-            "application for the first time. When reloading JS, e.g. from a new file, explicitly" +
+            "application for the first time. When reloading JS, e.g. from a new file, explicitly " +
             "use recreateReactContextInBackground");
 
     mHasStartedCreatingInitialContext = true;

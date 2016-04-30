@@ -93,6 +93,16 @@ static RCTNullability RCTParseNullability(const char **input)
   return RCTNullabilityUnspecified;
 }
 
+static RCTNullability RCTParseNullabilityPostfix(const char **input)
+{
+  if (RCTReadString(input, "_Nullable")) {
+    return RCTNullable;
+  } else if (RCTReadString(input, "_Nonnull")) {
+    return RCTNonnullable;
+  }
+  return RCTNullabilityUnspecified;
+}
+
 SEL RCTParseMethodSignature(NSString *, NSArray<RCTMethodArgument *> **);
 SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument *> **arguments)
 {
@@ -117,6 +127,10 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
       RCTSkipWhitespace(&input);
 
       NSString *type = RCTParseType(&input);
+      RCTSkipWhitespace(&input);
+      if (nullability == RCTNullabilityUnspecified) {
+        nullability = RCTParseNullabilityPostfix(&input);
+      }
       [args addObject:[[RCTMethodArgument alloc] initWithType:type
                                                   nullability:nullability
                                                        unused:unused]];

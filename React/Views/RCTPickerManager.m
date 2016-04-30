@@ -43,13 +43,4 @@ RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTPicker)
   view.font = [RCTConvert UIFont:view.font withFamily:json ?: defaultView.font.familyName];
 }
 
-- (NSDictionary<NSString *, id> *)constantsToExport
-{
-  UIPickerView *view = [UIPickerView new];
-  return @{
-    @"ComponentHeight": @(view.intrinsicContentSize.height),
-    @"ComponentWidth": @(view.intrinsicContentSize.width)
-  };
-}
-
 @end

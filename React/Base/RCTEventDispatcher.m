@@ -189,3 +189,12 @@ RCT_EXPORT_MODULE()
 }
 
 @end
+
+@implementation RCTBridge (RCTEventDispatcher)
+
+- (RCTEventDispatcher *)eventDispatcher
+{
+  return [self moduleForClass:[RCTEventDispatcher class]];
+}
+
+@end

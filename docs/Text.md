@@ -2,7 +2,7 @@
 
 ## Nested Text
 
-In iOS, the way to display formatted text is by using `NSAttributedString`: you give the text that you want to display and annotate ranges with some specific formatting. In practice, this is very tedious. For React Native, we decided to use web paradigm for this where you can nest text to achieve the same effect.
+Both iOS and Android allow you to display formatted text by annotating ranges of a string with specific formatting like bold or colored text (`NSAttributedString` on iOS, `SpannableString` on Android). In practice, this is very tedious. For React Native, we decided to use web paradigm for this where you can nest text to achieve the same effect.
 
 ```javascript
 <Text style={{fontWeight: 'bold'}}>
@@ -13,7 +13,7 @@ In iOS, the way to display formatted text is by using `NSAttributedString`: you 
 </Text>
 ```
 
-Behind the scenes, this is going to be converted to a flat `NSAttributedString` that contains the following information
+Behind the scenes, React Native converts this to a flat `NSAttributedString` or `SpannableString` that contains the following information:
 
 ```javascript
 "I am bold and red"

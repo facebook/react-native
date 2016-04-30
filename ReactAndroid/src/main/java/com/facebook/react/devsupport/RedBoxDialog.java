@@ -123,7 +123,9 @@ import org.json.JSONObject;
         StackFrame frame = mStack[position - 1];
         FrameViewHolder holder = (FrameViewHolder) convertView.getTag();
         holder.mMethodView.setText(frame.getMethod());
-        holder.mFileView.setText(frame.getFileName() + ":" + frame.getLine());
+        final int column = frame.getColumn();
+        final String columnString = column < 0 ? "" : ":" + column;
+        holder.mFileView.setText(frame.getFileName() + ":" + frame.getLine() + columnString);
         return convertView;
       }
     }

@@ -39,6 +39,10 @@ function _runAndroid(argv, config, resolve, reject) {
     command: 'flavor',
     type: 'string',
     required: false,
+  }, {
+    command: 'variant',
+    type: 'string',
+    required: false,
   }], argv);
 
   args.root = args.root || '';
@@ -76,7 +80,14 @@ function buildAndRun(args, reject) {
       : './gradlew';
 
     const gradleArgs = [];
-    if (args['flavor']) {
+    if (args['variant']) {
+        gradleArgs.push('install' +
+          args['variant'][0].toUpperCase() + args['variant'].slice(1)
+        );
+    } else if (args['flavor']) {
+        console.warn(chalk.yellow(
+          `--flavor has been deprecated. Use --variant instead`
+        ));
         gradleArgs.push('install' +
           args['flavor'][0].toUpperCase() + args['flavor'].slice(1)
         );
@@ -159,8 +170,12 @@ function buildAndRun(args, reject) {
 function startServerInNewWindow() {
   var yargV = require('yargs').argv;
 
+  const scriptFile = /^win/.test(process.platform) ?
+    'launchPackager.bat' :
+    'launchPackager.command';
+
   const launchPackagerScript = path.resolve(
-    __dirname, '..', '..', 'packager', 'launchPackager.command'
+    __dirname, '..', '..', 'packager', scriptFile
   );
 
   if (process.platform === 'darwin') {
@@ -173,16 +188,12 @@ function startServerInNewWindow() {
     if (yargV.open){
       return child_process.spawn(yargV.open,['-e', 'sh', launchPackagerScript], {detached: true});
     }
-    return child_process.spawn('xterm',['-e', 'sh', launchPackagerScript],{detached: true});
+    return child_process.spawn('sh', [launchPackagerScript],{detached: true});
 
   } else if (/^win/.test(process.platform)) {
-    console.log(chalk.yellow('Starting the packager in a new window ' +
-      'is not supported on Windows yet.\nPlease start it manually using ' +
-      '\'react-native start\'.'));
-    console.log('We believe the best Windows ' +
-      'support will come from a community of people\nusing React Native on ' +
-      'Windows on a daily basis.\n' +
-      'Would you be up for sending a pull request?');
+    return child_process.spawn(
+      'cmd.exe', ['/C', 'start', launchPackagerScript], {detached: true, stdio: 'ignore'}
+    );
   } else {
     console.log(chalk.red(`Cannot start the packager. Unknown platform ${process.platform}`));
   }

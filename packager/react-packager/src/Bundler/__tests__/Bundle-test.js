@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.autoMockOff();
+jest.disableAutomock();
 
 const Bundle = require('../Bundle');
 const ModuleTransport = require('../../lib/ModuleTransport');
@@ -21,7 +21,7 @@ describe('Bundle', () => {
 
   beforeEach(() => {
     bundle = new Bundle({sourceMapUrl: 'test_url'});
-    bundle.getSourceMap = jest.genMockFn().mockImpl(() => {
+    bundle.getSourceMap = jest.fn(() => {
       return 'test-source-map';
     });
   });

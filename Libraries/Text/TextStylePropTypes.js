@@ -41,7 +41,8 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   letterSpacing: ReactPropTypes.number,
   lineHeight: ReactPropTypes.number,
   /**
-   * Specifies text alignment. The value 'justify' is only supported on iOS.
+   * Specifies text alignment. The value 'justify' is only supported on iOS and
+   * fallbacks to `left` on Android.
    */
   textAlign: ReactPropTypes.oneOf(
     ['auto' /*default*/, 'left', 'right', 'center', 'justify']

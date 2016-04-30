@@ -193,6 +193,10 @@ var APIExamples: Array<UIExplorerExample> = [
     module: require('./ImageEditingExample'),
   },
   {
+    key: 'LayoutAnimationExample',
+    module: require('./LayoutAnimationExample'),
+  },
+  {
     key: 'LayoutExample',
     module: require('./LayoutExample'),
   },
@@ -247,6 +251,10 @@ var APIExamples: Array<UIExplorerExample> = [
   {
     key: 'VibrationExample',
     module: require('./VibrationExample'),
+  },
+  {
+    key: 'WebSocketExample',
+    module: require('./WebSocketExample'),
   },
   {
     key: 'XHRExample',
