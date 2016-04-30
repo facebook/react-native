@@ -110,6 +110,7 @@ type Event = Object;
  * render: function() {
  *   return (
  *     <NavigatorIOS
+ *       style={{flex: 1}}
  *       initialRoute={{
  *         component: MyView,
  *         title: 'My View Title',
@@ -125,6 +126,8 @@ type Event = Object;
  * `passProps`.
  *
  * See the initialRoute propType for a complete definition of a route.
+ * 
+ * > It may seem like your component isn't working if you don't have `flex: 1` on the NavigatorIOS
  *
  * #### Navigator
  *
