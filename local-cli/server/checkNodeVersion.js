@@ -8,17 +8,17 @@
  */
 'use strict';
 
-var chalk = require('chalk');
-var formatBanner = require('./formatBanner');
-var semver = require('semver');
+const chalk = require('chalk');
+const formatBanner = require('./formatBanner');
+const semver = require('semver');
 
 module.exports = function() {
   if (!semver.satisfies(process.version, '>=4')) {
-    var engine = semver.satisfies(process.version, '<1')
+    const engine = semver.satisfies(process.version, '<1 >=4')
       ? 'Node'
       : 'io.js';
 
-    var message = 'You are currently running ' + engine + ' ' +
+    const message = 'You are currently running ' + engine + ' ' +
       process.version + '.\n' +
       '\n' +
       'React Native runs on Node 4.0 or newer. There are several ways to ' +

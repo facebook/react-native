@@ -9,6 +9,7 @@
 'use strict';
 
 const chalk = require('chalk');
+const checkNodeVersion = require('./checkNodeVersion');
 const formatBanner = require('./formatBanner');
 const parseCommandLine = require('../util/parseCommandLine');
 const path = require('path');
@@ -86,6 +87,8 @@ function _server(argv, config, resolve, reject) {
       path.resolve(process.cwd(), dir)
     )
     : config.getAssetRoots();
+
+  checkNodeVersion();
 
   console.log(formatBanner(
     'Running packager on port ' + args.port + '.\n\n' +
