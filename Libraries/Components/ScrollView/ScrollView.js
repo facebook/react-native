@@ -210,8 +210,11 @@ var ScrollView = React.createClass({
      */
     onScrollAnimationEnd: PropTypes.func,
     /**
-     * Called when scrollable content view of the ScrollView changes. It's
-     * implemented using onLayout handler attached to the content container
+     * Called when scrollable content view of the ScrollView changes.
+     *
+     * Handler function is passed the content width and content height as parameters: `(contentWidth, contentHeight)`
+     *
+     * It's implemented using onLayout handler attached to the content container
      * which this ScrollView renders.
      */
     onContentSizeChange: PropTypes.func,
