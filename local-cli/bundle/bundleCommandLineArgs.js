@@ -57,5 +57,9 @@ module.exports = [
     command: 'verbose',
     description: 'Enables logging',
     default: false,
+  }, {
+    command: 'reset-cache',
+    description: 'Removes cached files',
+    default: false
   }
 ];

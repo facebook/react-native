@@ -7,6 +7,7 @@ android_library(
     react_native_integration_tests_target('java/com/facebook/react/testing:testing'),
     react_native_target('java/com/facebook/react/bridge:bridge'),
     react_native_target('java/com/facebook/react/uimanager:uimanager'),
+    react_native_target('java/com/facebook/react/views/picker:picker'),
   ],
   visibility = [
     'PUBLIC',
