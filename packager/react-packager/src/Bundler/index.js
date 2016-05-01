@@ -57,6 +57,10 @@ const validateOpts = declareOpts({
     type:'string',
     required: false,
   },
+  extraNodeModules: {
+    type: 'object',
+    required: false,
+  },
   nonPersistent: {
     type: 'boolean',
     default: false,
@@ -141,6 +145,7 @@ class Bundler {
       transformCode:
         (module, code, options) =>
           this._transformer.transformFile(module.path, code, options),
+      extraNodeModules: opts.extraNodeModules,
       minifyCode: this._transformer.minify,
     });
 
@@ -551,12 +556,11 @@ class Bundler {
     ]).then((
       [name, {code, dependencies, dependencyOffsets, map, source}]
     ) => {
+      const {preloadedModules} = transformOptions.transform;
       const preloaded =
         module.path === entryFilePath ||
-        module.isPolyfill() || (
-          transformOptions.transform.preloadedModules &&
-          transformOptions.transform.preloadedModules.hasOwnProperty(module.path)
-        );
+        module.isPolyfill() ||
+        preloadedModules && preloadedModules.hasOwnProperty(module.path);
 
       return new ModuleTransport({
         name,
@@ -566,7 +570,7 @@ class Bundler {
         meta: {dependencies, dependencyOffsets, preloaded},
         sourceCode: source,
         sourcePath: module.path
-      })
+      });
     });
   }
 

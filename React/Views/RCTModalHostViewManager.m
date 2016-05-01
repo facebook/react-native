@@ -62,7 +62,7 @@ RCT_EXPORT_MODULE()
   [_hostViews removeAllObjects];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(animated, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(animationType, NSString)
 RCT_EXPORT_VIEW_PROPERTY(transparent, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onShow, RCTDirectEventBlock)
 

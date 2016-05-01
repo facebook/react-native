@@ -17,13 +17,14 @@ var RCTNetworking = require('RCTNetworking');
 var XMLHttpRequestBase = require('XMLHttpRequestBase');
 
 class XMLHttpRequest extends XMLHttpRequestBase {
-  constructor() {
-    super();
-    // iOS supports upload
-    this.upload = {};
-  }
-
-  sendImpl(method: ?string, url: ?string, headers: Object, data: any, timeout: number): void {
+  sendImpl(
+    method: ?string,
+    url: ?string,
+    headers: Object,
+    data: any,
+    incrementalUpdates: boolean,
+    timeout: number,
+  ): void {
     if (typeof data === 'string') {
       data = {string: data};
     } else if (data instanceof FormData) {
@@ -35,7 +36,7 @@ class XMLHttpRequest extends XMLHttpRequestBase {
         url,
         data,
         headers,
-        incrementalUpdates: this.onreadystatechange ? true : false,
+        incrementalUpdates,
         timeout
       },
       this.didCreateRequest.bind(this)
