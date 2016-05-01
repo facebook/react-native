@@ -26,8 +26,8 @@
 'use strict';
 
 jest
-  .dontMock('NavigationEvent')
-  .dontMock('fbjs/lib/invariant');
+  .unmock('NavigationEvent')
+  .unmock('fbjs/lib/invariant');
 
 var NavigationEvent = require('NavigationEvent');
 

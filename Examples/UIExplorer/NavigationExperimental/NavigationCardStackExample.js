@@ -21,13 +21,14 @@
 'use strict';
 
 const NavigationExampleRow = require('./NavigationExampleRow');
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 
 const {
   NavigationExperimental,
   StyleSheet,
   ScrollView,
-} = React;
+} = ReactNative;
 
 const {
   CardStack: NavigationCardStack,
@@ -142,11 +143,6 @@ class NavigationCardStackExample extends React.Component {
     });
   }
 
-  _onNavigate(action) {
-    if (action && action.type === 'back') {
-      this._pop();
-    }
-  }
 }
 
 const styles = StyleSheet.create({

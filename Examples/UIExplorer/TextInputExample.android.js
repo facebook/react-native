@@ -15,13 +15,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Text,
   TextInput,
   View,
   StyleSheet,
-} = React;
+} = ReactNative;
 
 var TextEventsExample = React.createClass({
   getInitialState: function() {
@@ -403,6 +404,31 @@ exports.examples = [
           placeholder="If you set height, beware of padding set from themes"
           style={[styles.singleLineWithHeightTextInput]}
         />
+      );
+    }
+  },
+  {
+    title: 'fontFamily, fontWeight and fontStyle',
+    render: function() {
+      return (
+        <View>
+          <TextInput 
+            style={[styles.singleLine, {fontFamily: 'sans-serif'}]}
+            placeholder="Custom fonts like Sans-Serif are supported"
+          />
+          <TextInput 
+            style={[styles.singleLine, {fontFamily: 'sans-serif', fontWeight: 'bold'}]}
+            placeholder="Sans-Serif bold"
+          />
+          <TextInput 
+            style={[styles.singleLine, {fontFamily: 'sans-serif', fontStyle: 'italic'}]}
+            placeholder="Sans-Serif italic"
+          />
+          <TextInput 
+            style={[styles.singleLine, {fontFamily: 'serif'}]}
+            placeholder="Serif"
+          />
+        </View>
       );
     }
   },

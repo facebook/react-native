@@ -1,13 +1,18 @@
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 'use strict';
 
-const {ErrorUtils, nativeRequire} = global;
 global.require = require;
 global.__d = define;
 
 const modules = Object.create(null);
-
-const loadModule = ErrorUtils ?
-  guardedLoadModule : loadModuleImplementation;
 
 function define(moduleId, factory) {
   if (moduleId in modules) {
@@ -18,26 +23,38 @@ function define(moduleId, factory) {
   modules[moduleId] = {
     factory,
     hasError: false,
+    isInitialized: false,
     exports: undefined,
   };
 }
 
 function require(moduleId) {
   const module = modules[moduleId];
-  return module && module.exports || loadModule(moduleId, module);
+  return module && module.isInitialized
+    ? module.exports
+    : guardedLoadModule(moduleId, module);
 }
 
+var inGuard = false;
 function guardedLoadModule(moduleId, module) {
-  try {
+  if (global.ErrorUtils && !inGuard) {
+    inGuard = true;
+    var returnValue;
+    try {
+      returnValue = loadModuleImplementation(moduleId, module);
+    } catch (e) {
+      global.ErrorUtils.reportFatalError(e);
+    }
+    inGuard = false;
+    return returnValue;
+  } else {
     return loadModuleImplementation(moduleId, module);
-  } catch (e) {
-    ErrorUtils.reportFatalError(e);
   }
 }
 
 function loadModuleImplementation(moduleId, module) {
   if (!module) {
-    nativeRequire(moduleId);
+    global.nativeRequire(moduleId);
     module = modules[moduleId];
   }
 
@@ -59,6 +76,7 @@ function loadModuleImplementation(moduleId, module) {
   }
 
   const exports = module.exports = {};
+  module.isInitialized = true;
   const {factory} = module;
   try {
     if (__DEV__) {
@@ -67,14 +85,17 @@ function loadModuleImplementation(moduleId, module) {
 
     const moduleObject = {exports};
     factory(global, require, moduleObject, exports);
+    module.factory = undefined;
 
     if (__DEV__) {
       Systrace.endEvent();
     }
     return (module.exports = moduleObject.exports);
   } catch (e) {
+    module.isInitialized = false;
     module.hasError = true;
     module.exports = undefined;
+    throw e;
   }
 }
 

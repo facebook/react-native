@@ -73,14 +73,6 @@ function NavigationStackReducer({initialState, getReducerForState, getPushedRedu
     if (!lastParentState) {
       return lastState;
     }
-    switch (action.type) {
-      case 'back':
-      case 'BackAction':
-        if (lastParentState.index === 0 || lastParentState.children.length === 1) {
-          return lastParentState;
-        }
-        return NavigationStateUtils.pop(lastParentState);
-    }
 
     const activeSubState = lastParentState.children[lastParentState.index];
     const activeSubReducer = getReducerForStateWithDefault(activeSubState);
@@ -101,6 +93,16 @@ function NavigationStackReducer({initialState, getReducerForState, getPushedRedu
         subReducerToPush(null, action)
       );
     }
+
+    switch (action.type) {
+      case 'back':
+      case 'BackAction':
+        if (lastParentState.index === 0 || lastParentState.children.length === 1) {
+          return lastParentState;
+        }
+        return NavigationStateUtils.pop(lastParentState);
+    }
+
     return lastParentState;
   };
 }

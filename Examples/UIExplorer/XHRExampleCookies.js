@@ -15,13 +15,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
-} = React;
+  WebView,
+} = ReactNative;
 
 var RCTNetworking = require('RCTNetworking');
 
@@ -44,6 +46,7 @@ class XHRExampleCookies extends React.Component {
     var url = `https://${domain}/cookies/set?a=${a}&b=${b}`;
     fetch(url).then((response) => {
       this.setStatus(`Cookies a=${a}, b=${b} set`);
+      this.refreshWebview();
     });
 
     this.setState({
@@ -58,6 +61,7 @@ class XHRExampleCookies extends React.Component {
       return response.json();
     }).then((data) => {
       this.setStatus(`Got cookies ${JSON.stringify(data.cookies)} from server`);
+      this.refreshWebview();
     });
 
     this.setStatus('Getting cookies...');
@@ -66,7 +70,12 @@ class XHRExampleCookies extends React.Component {
   clearCookies() {
     RCTNetworking.clearCookies((cleared) => {
       this.setStatus('Cookies cleared, had cookies=' + cleared);
+      this.refreshWebview();
     });
+  }
+
+  refreshWebview() {
+    this.refs.webview.reload();
   }
 
   setStatus(status: string) {
@@ -112,6 +121,18 @@ class XHRExampleCookies extends React.Component {
           </View>
         </TouchableHighlight>
         <Text>{this.state.status}</Text>
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={this.refreshWebview.bind(this)}>
+          <View style={styles.button}>
+            <Text>Refresh Webview</Text>
+          </View>
+        </TouchableHighlight>
+        <WebView
+          ref="webview"
+          source={{uri: 'http://httpbin.org/cookies'}}
+          style={{height: 100}}
+        />
       </View>
     );
   }

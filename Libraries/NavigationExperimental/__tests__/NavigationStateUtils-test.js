@@ -11,7 +11,7 @@
 'use strict';
 
 jest
- .dontMock('NavigationStateUtils');
+ .unmock('NavigationStateUtils');
 
 var NavigationStateUtils = require('NavigationStateUtils');
 

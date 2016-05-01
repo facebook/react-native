@@ -11,22 +11,14 @@
 
 #import "RCTBridge.h"
 
-typedef NS_ENUM(NSInteger, RCTTextEventType) {
+typedef NS_ENUM(NSInteger, RCTTextEventType)
+{
   RCTTextEventTypeFocus,
   RCTTextEventTypeBlur,
   RCTTextEventTypeChange,
   RCTTextEventTypeSubmit,
   RCTTextEventTypeEnd,
   RCTTextEventTypeKeyPress
-};
-
-typedef NS_ENUM(NSInteger, RCTScrollEventType) {
-  RCTScrollEventTypeStart,
-  RCTScrollEventTypeMove,
-  RCTScrollEventTypeEnd,
-  RCTScrollEventTypeStartDeceleration,
-  RCTScrollEventTypeEndDeceleration,
-  RCTScrollEventTypeEndAnimation,
 };
 
 /**
@@ -101,5 +93,11 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
  * If an event can be coalesced and there is another compatible event waiting, the coalescing will happen immediately.
  */
 - (void)sendEvent:(id<RCTEvent>)event;
+
+@end
+
+@interface RCTBridge (RCTEventDispatcher)
+
+- (RCTEventDispatcher *)eventDispatcher;
 
 @end

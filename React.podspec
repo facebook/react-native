@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
   s.preserve_paths      = "cli.js", "Libraries/**/*.js", "lint", "linter.js", "node_modules", "package.json", "packager", "PATENTS", "react-native-cli"
 
   s.subspec 'Core' do |ss|
-    ss.source_files     = "React/**/*.{c,h,m,S}"
+    ss.source_files     = "React/**/*.{c,h,m,mm,S}"
     ss.exclude_files    = "**/__tests__/*", "IntegrationTests/*"
     ss.frameworks       = "JavaScriptCore"
   end
@@ -54,6 +54,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'RCTCameraRoll' do |ss|
     ss.dependency         'React/Core'
+    ss.dependency         'React/RCTImage'
     ss.source_files     = "Libraries/CameraRoll/*.{h,m}"
     ss.preserve_paths   = "Libraries/CameraRoll/*.js"
   end
@@ -114,9 +115,9 @@ Pod::Spec.new do |s|
   end
 
   s.subspec 'RCTTest' do |ss|
+    ss.dependency         'React/Core'
     ss.source_files     = "Libraries/RCTTest/**/*.{h,m}"
     ss.preserve_paths   = "Libraries/RCTTest/**/*.js"
     ss.frameworks       = "XCTest"
   end
-
 end

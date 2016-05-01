@@ -16,7 +16,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   ActivityIndicatorIOS,
   CameraRoll,
@@ -25,7 +26,7 @@ var {
   Platform,
   StyleSheet,
   View,
-} = React;
+} = ReactNative;
 
 var groupByEveryN = require('groupByEveryN');
 var logError = require('logError');

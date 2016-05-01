@@ -15,13 +15,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Text,
   TextInput,
   View,
   StyleSheet,
-} = React;
+} = ReactNative;
 
 var WithLabel = React.createClass({
   render: function() {
@@ -694,7 +695,7 @@ exports.examples = [
           <AutoExpandingTextInput
             placeholder="height increases with content"
             enablesReturnKeyAutomatically={true}
-            returnKeyType="done"
+            returnKeyType="default"
           />
         </View>
       );

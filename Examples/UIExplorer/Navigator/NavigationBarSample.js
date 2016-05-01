@@ -14,7 +14,8 @@
 'use strict';
 
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Navigator,
   ScrollView,
@@ -22,7 +23,7 @@ var {
   Text,
   TouchableHighlight,
   TouchableOpacity,
-} = React;
+} = ReactNative;
 
 class NavButton extends React.Component {
   render() {

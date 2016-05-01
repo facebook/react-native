@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.autoMockOff();
+jest.disableAutomock();
 jest.mock('../constant-folding');
 jest.mock('../extract-dependencies');
 jest.mock('../inline');
@@ -22,7 +22,7 @@ describe('code transformation worker:', () => {
   beforeEach(() => {
     extractDependencies =
       require('../extract-dependencies').mockReturnValue({});
-    transform = jest.genMockFunction();
+    transform = jest.fn();
   });
 
   it('calls the transform with file name, source code, and transform options', function() {
@@ -68,7 +68,20 @@ describe('code transformation worker:', () => {
       done();
     });
   });
-
+  
+  it('removes shebang when present', done => {
+    const shebang = '#!/usr/bin/env node';
+    const result = {
+      code: `${shebang} \n arbitrary(code)`,
+    };
+    transform.mockImplementation((_, callback) => callback(null, result));
+    transformCode(transform, 'arbitrary/file.js', 'b', {}, (_, data) => {
+      expect(data.code).not.toContain(shebang);
+      expect(data.code.split('\n').length).toEqual(result.code.split('\n').length);
+      done();
+    });
+  });
+  
   it('calls back with any error yielded by the transform', done => {
     const error = Error('arbitrary error');
     transform.mockImplementation((_, callback) => callback(error));

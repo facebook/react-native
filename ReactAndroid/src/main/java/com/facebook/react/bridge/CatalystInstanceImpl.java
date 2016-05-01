@@ -291,6 +291,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   @Override
+  public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
+    return mJavaRegistry.hasModule(nativeModuleInterface);
+  }
+
+  @Override
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     return mJavaRegistry.getModule(nativeModuleInterface);
   }

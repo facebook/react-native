@@ -319,6 +319,9 @@ var TextInput = React.createClass({
         AndroidTextInput.viewConfig :
         {})) : Object),
 
+  /**
+   * Returns if the input is currently focused.
+   */
   isFocused: function(): boolean {
     return TextInputState.currentlyFocusedField() ===
       ReactNative.findNodeHandle(this.refs.input);
@@ -368,6 +371,9 @@ var TextInput = React.createClass({
     isInAParentText: React.PropTypes.bool
   },
 
+  /**
+   * Removes all text from the input.
+   */
   clear: function() {
     this.setNativeProps({text: ''});
   },
@@ -437,8 +443,8 @@ var TextInput = React.createClass({
         !(props.value && childCount),
         'Cannot specify both value and children.'
       );
-      if (childCount > 1) {
-        children = <Text>{children}</Text>;
+      if (childCount >= 1) {
+        children = <Text style={props.style}>{children}</Text>;
       }
       if (props.inputView) {
         children = [children, props.inputView];

@@ -63,7 +63,7 @@ var ScrollView = React.createClass({
     automaticallyAdjustContentInsets: PropTypes.bool,
     /**
      * The amount by which the scroll view content is inset from the edges
-     * of the scroll view. Defaults to `{0, 0, 0, 0}`.
+     * of the scroll view. Defaults to `{top: 0, left: 0, bottom: 0, right: 0}`.
      * @platform ios
      */
     contentInset: EdgeInsetsPropType,
@@ -210,8 +210,11 @@ var ScrollView = React.createClass({
      */
     onScrollAnimationEnd: PropTypes.func,
     /**
-     * Called when scrollable content view of the ScrollView changes. It's
-     * implemented using onLayout handler attached to the content container
+     * Called when scrollable content view of the ScrollView changes.
+     *
+     * Handler function is passed the content width and content height as parameters: `(contentWidth, contentHeight)`
+     *
+     * It's implemented using onLayout handler attached to the content container
      * which this ScrollView renders.
      */
     onContentSizeChange: PropTypes.func,
@@ -341,6 +344,9 @@ var ScrollView = React.createClass({
     this.refs[SCROLLVIEW].setNativeProps(props);
   },
 
+  /**
+   * Deprecated. Use `RefreshControl` instead.
+   */
   endRefreshing: function() {
     RCTScrollViewManager.endRefreshing(
       ReactNative.findNodeHandle(this)
@@ -367,9 +373,10 @@ var ScrollView = React.createClass({
 
   /**
    * Scrolls to a given x, y offset, either immediately or with a smooth animation.
+   *
    * Syntax:
    *
-   * scrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})
+   * `scrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})`
    *
    * Note: The weird argument signature is due to the fact that, for historical reasons,
    * the function also accepts separate arguments as as alternative to the options object.
@@ -397,7 +404,7 @@ var ScrollView = React.createClass({
     this.scrollTo({x, y, animated: false});
   },
 
-  handleScroll: function(e: Object) {
+  _handleScroll: function(e: Object) {
     if (__DEV__) {
       if (this.props.onScroll && !this.props.scrollEventThrottle && Platform.OS === 'ios') {
         console.log(
@@ -480,7 +487,7 @@ var ScrollView = React.createClass({
       onStartShouldSetResponder: this.scrollResponderHandleStartShouldSetResponder,
       onStartShouldSetResponderCapture: this.scrollResponderHandleStartShouldSetResponderCapture,
       onScrollShouldSetResponder: this.scrollResponderHandleScrollShouldSetResponder,
-      onScroll: this.handleScroll,
+      onScroll: this._handleScroll,
       onResponderGrant: this.scrollResponderHandleResponderGrant,
       onResponderTerminationRequest: this.scrollResponderHandleTerminationRequest,
       onResponderTerminate: this.scrollResponderHandleTerminate,
@@ -559,7 +566,11 @@ var styles = StyleSheet.create({
 });
 
 if (Platform.OS === 'android') {
-  var nativeOnlyProps = { nativeOnly : { 'sendMomentumEvents' : true } };
+  var nativeOnlyProps = {
+    nativeOnly: {
+      sendMomentumEvents: true,
+    }
+  };
   var AndroidScrollView = requireNativeComponent('RCTScrollView', ScrollView, nativeOnlyProps);
   var AndroidHorizontalScrollView = requireNativeComponent(
     'AndroidHorizontalScrollView',
@@ -567,7 +578,15 @@ if (Platform.OS === 'android') {
     nativeOnlyProps
   );
 } else if (Platform.OS === 'ios') {
-  var RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView);
+  var nativeOnlyProps = {
+    nativeOnly: {
+      onMomentumScrollBegin: true,
+      onMomentumScrollEnd : true,
+      onScrollBeginDrag: true,
+      onScrollEndDrag: true,
+    }
+  };
+  var RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView, nativeOnlyProps);
 }
 
 module.exports = ScrollView;

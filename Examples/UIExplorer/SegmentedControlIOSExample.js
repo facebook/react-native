@@ -15,13 +15,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   SegmentedControlIOS,
   Text,
   View,
   StyleSheet
-} = React;
+} = ReactNative;
 
 var BasicSegmentedControlExample = React.createClass({
   render() {

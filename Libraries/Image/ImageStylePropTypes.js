@@ -55,6 +55,12 @@ var ImageStylePropTypes = {
    * @platform android
   */
   overlayColor: ReactPropTypes.string,
+
+  // Android-Specific styles
+  borderTopLeftRadius: ReactPropTypes.number,
+  borderTopRightRadius: ReactPropTypes.number,
+  borderBottomLeftRadius: ReactPropTypes.number,
+  borderBottomRightRadius: ReactPropTypes.number,
 };
 
 module.exports = ImageStylePropTypes;

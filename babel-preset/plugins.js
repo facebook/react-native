@@ -14,6 +14,7 @@ module.exports = {
   'babel-plugin-syntax-class-properties': require('babel-plugin-syntax-class-properties'),
   'babel-plugin-syntax-trailing-function-commas': require('babel-plugin-syntax-trailing-function-commas'),
   'babel-plugin-transform-class-properties': require('babel-plugin-transform-class-properties'),
+  'babel-plugin-transform-es2015-function-name': require('babel-plugin-transform-es2015-function-name'),
   'babel-plugin-transform-es2015-arrow-functions': require('babel-plugin-transform-es2015-arrow-functions'),
   'babel-plugin-transform-es2015-block-scoping': require('babel-plugin-transform-es2015-block-scoping'),
   'babel-plugin-transform-es2015-classes': require('babel-plugin-transform-es2015-classes'),

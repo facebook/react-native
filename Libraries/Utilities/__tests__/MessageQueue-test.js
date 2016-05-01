@@ -8,8 +8,8 @@
  */
 'use strict';
 
-jest.dontMock('MessageQueue')
-  .dontMock('fbjs/lib/keyMirror');
+jest.unmock('MessageQueue')
+  .unmock('fbjs/lib/keyMirror');
 var MessageQueue = require('MessageQueue');
 
 let MODULE_IDS = 0;

@@ -56,7 +56,7 @@ _Note: If you are using an iOS device, see the [Running on iOS Device page](docs
 - `$ cd AwesomeProject`
 - `$ react-native run-android`
 - Open `index.android.js` in your text editor of choice and edit some lines.
-- Press the menu button (F2 by default, or ⌘-M in Genymotion) and select *Reload JS* to see your change!
+- Press the menu button (F2/⌘-M by default, depending on AVD version, or ⌘-M in Genymotion) and select *Reload JS*  (or press R twice) to see your change!
 - Run `adb logcat *:S ReactNative:V ReactNativeJS:V` in a terminal to see your app's logs
 
 _Note: If you are using an Android device, see the [Running on Android Device page](docs/running-on-device-android.html#content)._
