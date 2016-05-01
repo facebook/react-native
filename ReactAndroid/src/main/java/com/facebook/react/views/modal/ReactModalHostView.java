@@ -57,7 +57,6 @@ public class ReactModalHostView extends ViewGroup {
   private @Nullable Dialog mDialog;
   private boolean mTransparent;
   private boolean mAnimated;
-  private boolean mTranslucentStatusBar;
   // Set this flag to true if changing a particular property on the view requires a new Dialog to
   // be created.  For instance, animation does since it affects Dialog creation through the theme
   // but transparency does not since we can access the window to update the property.
@@ -137,10 +136,6 @@ public class ReactModalHostView extends ViewGroup {
     mPropertyRequiresNewDialog = true;
   }
 
-  protected void setTranslucentStatusBar(boolean translucentStatusBar) {
-    mTranslucentStatusBar = translucentStatusBar;
-  }
-
   @VisibleForTesting
   public @Nullable Dialog getDialog() {
     return mDialog;
@@ -208,6 +203,8 @@ public class ReactModalHostView extends ViewGroup {
   private void updateProperties() {
     Assertions.assertNotNull(mDialog, "mDialog must exist when we call updateProperties");
 
+    mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
     if (mTransparent) {
       mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
     } else {
@@ -215,11 +212,6 @@ public class ReactModalHostView extends ViewGroup {
       mDialog.getWindow().setFlags(
           WindowManager.LayoutParams.FLAG_DIM_BEHIND,
           WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-    }
-    if (mTranslucentStatusBar) {
-      mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-    } else {
-      mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
     }
   }
 

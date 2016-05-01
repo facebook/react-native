@@ -68,8 +68,7 @@ var ModalExample = React.createClass({
     return {
       animated: true,
       modalVisible: false,
-      transparent: false,
-      translucentStatusBar: false,
+      transparent: false
     };
   },
 
@@ -85,10 +84,6 @@ var ModalExample = React.createClass({
     this.setState({transparent: !this.state.transparent});
   },
 
-  _toggleTranslucentStatusBar() {
-    this.setState({translucentStatusBar: !this.state.translucentStatusBar});
-  },
-
   render() {
     var modalBackgroundStyle = {
       backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : '#f5fcff',
@@ -102,7 +97,6 @@ var ModalExample = React.createClass({
         <Modal
           animated={this.state.animated}
           transparent={this.state.transparent}
-          translucentStatusBar={this.state.translucentStatusBar}
           visible={this.state.modalVisible}
           onRequestClose={() => {this._setModalVisible(false)}}
           >
@@ -126,11 +120,6 @@ var ModalExample = React.createClass({
         <View style={styles.row}>
           <Text style={styles.rowTitle}>Transparent</Text>
           <Switch value={this.state.transparent} onValueChange={this._toggleTransparent} />
-        </View>
-
-        <View style={styles.row}>
-          <Text style={styles.rowTitle}>Translucent StatusBar</Text>
-          <Switch value={this.state.translucentStatusBar} onValueChange={this._toggleTranslucentStatusBar} />
         </View>
 
         <Button onPress={this._setModalVisible.bind(this, true)}>

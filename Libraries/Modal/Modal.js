@@ -59,7 +59,7 @@ class Modal extends React.Component {
     };
 
     let topValue = 0;
-    if (this.props.translucentStatusBar && !(Platform.OS === 'android' && Platform.Version < 19)) {
+    if (Platform.OS === 'android' && Platform.Version >= 19) {
       topValue = STATUS_BAR_HEIGHT;
     }
 
@@ -71,7 +71,6 @@ class Modal extends React.Component {
       <RCTModalHostView
         animated={this.props.animated}
         transparent={this.props.transparent}
-        translucentStatusBar={this.props.translucentStatusBar}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
         style={styles.modal}
@@ -93,10 +92,6 @@ class Modal extends React.Component {
 Modal.propTypes = {
   animated: PropTypes.bool,
   transparent: PropTypes.bool,
-  /**
-    * @platform android
-    */
-  translucentStatusBar: PropTypes.bool,
   visible: PropTypes.bool,
   onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
   onShow: PropTypes.func,
