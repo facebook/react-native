@@ -115,10 +115,9 @@ RCT_EXPORT_SHADOW_PROPERTY(textShadowColor, UIColor)
 
   /**
    * NOTE: this logic is included to support rich text editing inside multiline
-   * `<TextInput>` controls, a feature which is not yet supported in open source.
-   * It is required in order to ensure that the textStorage (aka attributed
-   * string) is copied over from the RCTShadowText to the RCTText view in time
-   * to be used to update the editable text content.
+   * `<TextInput>` controls. It is required in order to ensure that the
+   * textStorage (aka attributed string) is copied over from the RCTShadowText
+   * to the RCTText view in time to be used to update the editable text content.
    */
   if (textViewTagsToUpdate.count) {
 
@@ -136,9 +135,7 @@ RCT_EXPORT_SHADOW_PROPERTY(textShadowColor, UIColor)
       UIEdgeInsets padding = shadowText.paddingAsInsets;
       CGFloat width = shadowText.frame.size.width - (padding.left + padding.right);
 
-      // HACK (t10802067)
-      NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width widthMode:isnan(width) ? CSS_MEASURE_MODE_UNDEFINED : CSS_MEASURE_MODE_EXACTLY];
-
+      NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width widthMode:CSS_MEASURE_MODE_EXACTLY];
       [uiBlocks addObject:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTTextView *> *viewRegistry) {
         RCTTextView *textView = viewRegistry[reactTag];
         RCTText *text;

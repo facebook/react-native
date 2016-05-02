@@ -296,14 +296,29 @@ public class DevSupportManagerImpl implements DevSupportManager {
           }
         });
     options.put(
-        mDevSettings.isElementInspectorEnabled()
-          ? mApplicationContext.getString(R.string.catalyst_element_inspector_off)
-          : mApplicationContext.getString(R.string.catalyst_element_inspector),
+        mApplicationContext.getString(R.string.catalyst_element_inspector),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
             mDevSettings.setElementInspectorEnabled(!mDevSettings.isElementInspectorEnabled());
             mReactInstanceCommandsHandler.toggleElementInspector();
+          }
+        });
+    options.put(
+        mApplicationContext.getString(R.string.catalyst_heap_capture),
+        new DevOptionHandler() {
+          @Override
+          public void onOptionSelected() {
+            try {
+              String heapDumpPath = mApplicationContext.getCacheDir() + "/heapdump.json";
+              JSCHeapCapture.captureHeap(heapDumpPath, 60000);
+              Toast.makeText(
+                mCurrentContext,
+                "Heap captured to " + heapDumpPath,
+                Toast.LENGTH_LONG).show();
+            } catch (JSCHeapCapture.CaptureException e) {
+              showNewJavaError(e.getMessage(), e);
+            }
           }
         });
     options.put(

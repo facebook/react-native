@@ -31,6 +31,19 @@ var featured = [
     ],
   },
   {
+    name: 'F8',
+    icon: 'https://raw.githubusercontent.com/fbsamples/f8app/master/ios/F8v2/Images.xcassets/AppIcon.appiconset/AppIcon%402x.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/f8/id853467066?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.facebook.f8',
+    author: 'Facebook',
+    blogs: [
+      "http://makeitopen.com/tutorials/building-the-f8-app/planning/",
+      "http://makeitopen.com/tutorials/building-the-f8-app/design/",
+      "http://makeitopen.com/tutorials/building-the-f8-app/data/",
+      "http://makeitopen.com/tutorials/building-the-f8-app/testing/",
+    ],
+  },
+  {
     name: 'AIGA Design Conference 2015',
     icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/b0/4b/29/b04b2939-88d2-f61f-dec9-24fae083d8b3/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/aiga-design-conference-2015/id1038145272?ls=1&mt=8',
@@ -57,6 +70,12 @@ var featured = [
     icon: 'http://a4.mzstatic.com/us/r30/Purple2/v4/3a/d3/c9/3ad3c96c-5e14-f988-4bdd-0fdc95efd140/icon175x175.png',
     link:  'http://exponentjs.com/',
     author: 'Exponent',
+  },
+  {
+    name: 'Helium',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/df/a6/22/dfa622c4-e29c-c720-f32e-3fec99d14337/icon175x175.png',
+    link:  'https://itunes.apple.com/app/id1071378510',
+    author: 'Helium',
   },
   {
     name: 'Lrn',
@@ -257,6 +276,12 @@ var apps = [
     author: 'Macellan.net',
   },
   {
+    name: 'Calor - Field Pro',
+    icon: 'http://rnfdigital.com/wp-content/uploads/2016/04/FieldProIcon.png',
+    link: 'http://rnfdigital.com/react-native-a-game-changer-for-enterprise-mobile-development/',
+    author: 'RNF Digital',
+  },
+  {
     name: 'CANDDi',
     icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/c4/e4/85/c4e48546-7127-a133-29f2-3e2e1aa0f9af/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/gb/app/canddi/id1018168131?mt=8',
@@ -322,6 +347,12 @@ var apps = [
     author: 'Emilio Rodriguez'
   },
   {
+    name: 'D.I.T.',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/1b/ad/7f/1bad7f52-85e6-3f49-5593-93ab73d15fc8/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/d.i.t./id1065482319?mt=8',
+    author: 'Pavlo Tkach & Mykhailo Kovalevskyi'
+  },
+  {
     name: 'DockMan',
     icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/91/b5/75/91b57552-d9bc-d8bc-10a1-617de920aaa6/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/app/dockman/id1061469696',
@@ -330,6 +361,13 @@ var apps = [
       'http://www.s21g.com/DockMan.html',
     ],
     author: 'Genki Takiuchi (s21g Inc.)',
+  },
+  {
+    name: 'DONUT chatrooms for communities',
+    icon: 'http://a2.mzstatic.com/eu/r30/Purple49/v4/d4/2d/e5/d42de510-6802-2694-1b60-ca80ffa1e2cb/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/fr/app/donut-chat/id1067579321',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=me.donut.mobile',
+    author: 'Damien Brugne',
   },
   {
     name: 'Due',
@@ -343,6 +381,16 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/us/app/eat-or-not/id1054565697?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.eon',
     author: 'Sharath Prabhal',
+  },
+  {
+    name: 'Emoji Poetry',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/31/b5/09/31b509b2-aaec-760f-ccec-2ce72fe7134e/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/emoji-poetry/id1068972506?l=en&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.arzamasemoji',
+    author: 'forforce.com',
+    blogs: [
+      'http://arzamas.academy/special/emoji/english',
+    ],
   },
   {
     name: 'Fan of it',
@@ -390,8 +438,12 @@ var apps = [
   {
     name: 'HackerWeb',
     icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/5a/bd/39/5abd3951-782c-ef12-8e40-33ebe1e43768/icon175x175.png',
-    link: 'https://itunes.apple.com/us/app/hackerweb/id1084209377?mt=8',
+    linkAppStore: 'https://itunes.apple.com/us/app/id1084209377',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=cheeaun.hackerweb',
     author: 'Lim Chee Aun',
+    blogs: [
+      'http://cheeaun.com/blog/2016/03/building-hackerweb-ios/',
+    ],
   },
   {
     name: 'Harmonizome',
@@ -454,6 +506,12 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/gb/app/kakapo/id1046673139?ls=1&mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.kakaponative',
     author: 'Daniel Levitt',
+  },
+  {
+    name: 'Kiwiship',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple4/v4/c2/92/d0/c292d053-72fd-c429-dd58-5b0ae9d75af1/icon175x175.jpeg',
+    link: 'https://www.kiwiship.com',
+    author: 'Kiwiship'
   },
   {
     name: 'Koza Gujarati Dictionary',
@@ -553,6 +611,12 @@ var apps = [
     link: 'https://play.google.com/store/apps/details?id=com.rhyble.nalathekerala',
     author: 'Rhyble',
   },
+  {
+    name: 'New Music - keep track of the latest album releases',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple49/v4/6f/4f/39/6f4f39db-e0ca-c80a-73e7-68830675e11b/icon175x175.png',
+    link: 'https://itunes.apple.com/app/new-music-keep-track-latest/id1104646834',
+    author: 'Alexey Ledak',
+  },
 	{
     name: 'No Fluff: Hiragana',
     icon: 'https://lh3.googleusercontent.com/kStXwjpbPsu27E1nIEU1gfG0I8j9t5bAR_20OMhGZvu0j2vab3EbBV7O_KNZChjflZ_O',
@@ -565,6 +629,12 @@ var apps = [
     icon: 'http://is3.mzstatic.com/image/pf/us/r30/Purple7/v4/5f/50/5f/5f505fe5-0a30-6bbf-6ed9-81ef09351aba/mzl.lkeqxyeo.png',
     link: 'https://itunes.apple.com/gb/app/night-light-feeding-light/id1016843582?mt=8',
     author: 'Tian Yuan',
+  },
+  {
+    name: ':nth',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/d1/92/de/d192decd-ff97-e108-eaa0-c51be79261c6/icon175x175.jpeg',
+    link:  'https://itunes.apple.com/us/app/nth/id1102663176?mt=8',
+    author: 'Omar Carpinteyro',
   },
   {
     name: 'Okanagan News',
@@ -642,13 +712,19 @@ var apps = [
     author: 'Alexey Vasiliev aka leopard',
   },
   {
+    name: 'Samanage',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/ed/e9/ff/ede9ff34-a9f6-5eb6-2a23-fcb014b326f2/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/samanage/id1033018362',
+    author: 'Samanage'
+  },
+  {
     name: 'SG Toto 4d',
     icon: 'http://a4.mzstatic.com/us/r30/Purple7/v4/d2/bc/46/d2bc4696-84d6-9681-a49f-7f660d6b04a7/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/sg-toto-4d/id1006371481?mt=8',
     author: 'Steve Ng'
   },
   {
-    name: 'ShareHows',
+    name: '쉐어하우스',
     icon: 'http://a4.mzstatic.com/us/r30/Purple5/v4/78/1c/83/781c8325-a1e1-4afc-f106-a629bcf3c6ef/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/kr/app/sweeohauseu-sesang-ui-modeun/id1060914858?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=kr.dobbit.sharehows',
@@ -704,6 +780,12 @@ var apps = [
     author: 'Ho Yin Tsun Eugene',
   },
   {
+    name: 'Trump Blocker - That Filters Every Link',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/e7/91/4c/e7914cbd-c405-8411-2173-e8ed59a901bd/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/trump-blocker-that-filters/id1071733244?mt=8',    
+    author: 'Footbits, Inc.',
+  },
+  {
     name: 'uSwitch - Energy switching app',
     icon: 'https://lh3.googleusercontent.com/NpkGlwFWdj7VsK2ueVwlgdrrBrNJ-yN-4TkEHjjSjDUu7NpMcfyAp10p97f0zci0CSFQ=w300-rw',
     linkAppStore: 'https://itunes.apple.com/gb/app/uswitch-compare-switch-save/id935325621?mt=8&ct=react',
@@ -711,6 +793,16 @@ var apps = [
     author: 'uSwitch Ltd',
     videos: [
       'https://www.youtube.com/watch?v=YgJtAEZJN28',
+    ],
+  },
+  {
+    name: 'Veckopengen – för barn och föräldrar',
+    icon: 'https://is5-ssl.mzstatic.com/image/thumb/Purple49/v4/0a/63/f1/0a63f16c-f0f3-6316-0f9d-1682b04c595d/mzl.sswtnsav.jpg/340x340bb-80.png',
+    linkAppStore: 'https://itunes.apple.com/se/app/veckopengen-for-barn-och-foraldrar/id935778197',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=se.veckopengen.app',
+    author: 'Barnpengar AB',
+    videos: [
+      'https://www.youtube.com/watch?v=tzsXFGmqJec',
     ],
   },
   {
@@ -819,6 +911,12 @@ var apps = [
     icon: 'https://s3-ap-northeast-1.amazonaws.com/sw-misc/sharewis3_app.png',
     link: 'https://itunes.apple.com/jp/app/id585517208',
     author: 'ShareWis Inc.'
+  },
+  {
+    name: '找找',
+    icon: 'https://lh3.googleusercontent.com/H0SILVHcDUxSMoSQwMb2QYtLjTBCqvK5ZEjOEwKQQ-2qnRV6Hd9Hn-gtSGPaoIOPwA=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.biideal.biichat',
+    author: 'biideal Inc.'
   }
 ];
 
@@ -919,7 +1017,7 @@ var AppList = React.createClass({
   _renderLinks: function(app) {
     return (
       <p>
-        <a href={app.linkAppStore} target="_blank">iOS</a> -
+        <a href={app.linkAppStore} target="_blank">iOS</a> -&nbsp;
         <a href={app.linkPlayStore} target="_blank">Android</a>
       </p>
     );

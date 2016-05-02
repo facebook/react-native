@@ -96,7 +96,7 @@ if (!CI_PULL_REQUEST && CIRCLE_PROJECT_USERNAME === `facebook`) {
   if (currentCommit === latestTagCommit) {
     echo(`------------ DEPLOYING latest`);
     // leave only releases and blog folder
-    rm(`-rf`, ls(`*`).filter(name => (name !== 'releases') || (name !== 'blog')));
+    rm(`-rf`, ls(`*`).filter(name => (name !== 'releases') && (name !== 'blog')));
     cd(`../..`);
     if (exec(`RN_VERSION=${version} RN_LATEST_VERSION=${latestVersion} \
     RN_AVAILABLE_DOCS_VERSIONS=${versions} node server/generate.js`).code !== 0) {

@@ -25,7 +25,7 @@
 'use strict';
 
 jest
-  .autoMockOff()
+  .disableAutomock()
   .mock('ErrorUtils');
 
 var NavigationContext = require('NavigationContext');

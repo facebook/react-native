@@ -11,17 +11,43 @@
  */
 'use strict';
 
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTWebSocketModule = require('NativeModules').WebSocketModule;
+const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const RCTWebSocketModule = require('NativeModules').WebSocketModule;
+const Platform = require('Platform');
+const WebSocketEvent = require('WebSocketEvent');
 
-var Platform = require('Platform');
-var WebSocketBase = require('WebSocketBase');
-var WebSocketEvent = require('WebSocketEvent');
+const EventTarget = require('event-target-shim');
+const base64 = require('base64-js');
 
-var base64 = require('base64-js');
+import type EventSubscription from 'EventSubscription';
 
-var WebSocketId = 0;
-var CLOSE_NORMAL = 1000;
+type ArrayBufferView =
+  Int8Array |
+  Uint8Array |
+  Uint8ClampedArray |
+  Int16Array |
+  Uint16Array |
+  Int32Array |
+  Uint32Array |
+  Float32Array |
+  Float64Array |
+  DataView;
+
+const CONNECTING = 0;
+const OPEN = 1;
+const CLOSING = 2;
+const CLOSED = 3;
+
+const CLOSE_NORMAL = 1000;
+
+const WEBSOCKET_EVENTS = [
+  'close',
+  'error',
+  'message',
+  'open',
+];
+
+let nextWebSocketId = 0;
 
 /**
  * Browser-compatible WebSockets implementation.
@@ -29,96 +55,143 @@ var CLOSE_NORMAL = 1000;
  * See https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
  * See https://github.com/websockets/ws
  */
-class WebSocket extends WebSocketBase {
+class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
+  static CONNECTING = CONNECTING;
+  static OPEN = OPEN;
+  static CLOSING = CLOSING;
+  static CLOSED = CLOSED;
+
+  CONNECTING: number = CONNECTING;
+  OPEN: number = OPEN;
+  CLOSING: number = CLOSING;
+  CLOSED: number = CLOSED;
+
   _socketId: number;
-  _subs: any;
+  _subscriptions: Array<EventSubscription>;
 
-  connectToSocketImpl(url: string, protocols: ?Array<string>, headers: ?Object): void {
-    this._socketId = WebSocketId++;
+  onclose: ?Function;
+  onerror: ?Function;
+  onmessage: ?Function;
+  onopen: ?Function;
 
-    RCTWebSocketModule.connect(url, protocols, headers, this._socketId);
+  binaryType: ?string;
+  bufferedAmount: number;
+  extension: ?string;
+  protocol: ?string;
+  readyState: number = CONNECTING;
+  url: ?string;
 
-    this._registerEvents(this._socketId);
+  constructor(url: string, protocols: ?string | ?Array<string>, options: ?{origin?: string}) {
+    super();
+    if (typeof protocols === 'string') {
+      protocols = [protocols];
+    }
+
+    if (!Array.isArray(protocols)) {
+      protocols = null;
+    }
+
+    this._socketId = nextWebSocketId++;
+    RCTWebSocketModule.connect(url, protocols, options, this._socketId);
+    this._registerEvents();
   }
 
-  closeConnectionImpl(code?: number, reason?: string): void {
-    this._closeWebSocket(this._socketId, code, reason);
+  close(code?: number, reason?: string): void {
+    if (this.readyState === this.CLOSING ||
+        this.readyState === this.CLOSED) {
+      return;
+    }
+
+    this.readyState = this.CLOSING;
+    this._close(code, reason);
   }
 
-  cancelConnectionImpl(): void {
-    this._closeWebSocket(this._socketId);
+  send(data: string | ArrayBuffer | ArrayBufferView): void {
+    if (this.readyState === this.CONNECTING) {
+      throw new Error('INVALID_STATE_ERR');
+    }
+
+    if (typeof data === 'string') {
+      RCTWebSocketModule.send(data, this._socketId);
+      return;
+    }
+
+    // Maintain iOS 7 compatibility which doesn't have JS typed arrays.
+    if (typeof ArrayBuffer !== 'undefined' &&
+        typeof Uint8Array !== 'undefined') {
+      if (ArrayBuffer.isView(data)) {
+        // $FlowFixMe: no way to assert that 'data' is indeed an ArrayBufferView now
+        data = data.buffer;
+      }
+      if (data instanceof ArrayBuffer) {
+        data = base64.fromByteArray(new Uint8Array(data));
+        RCTWebSocketModule.sendBinary(data, this._socketId);
+        return;
+      }
+    }
+
+    throw new Error('Unsupported data type');
   }
 
-  sendStringImpl(message: string): void {
-    RCTWebSocketModule.send(message, this._socketId);
-  }
-
-  sendArrayBufferImpl(): void {
-    // TODO
-    console.warn('Sending ArrayBuffers is not yet supported');
-  }
-
-  _closeWebSocket(id: number, code?: number, reason?: string): void {
+  _close(code?: number, reason?: string): void {
     if (Platform.OS === 'android') {
-      /*
-       * See https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
-       */
+      // See https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
       var statusCode = typeof code === 'number' ? code : CLOSE_NORMAL;
       var closeReason = typeof reason === 'string' ? reason : '';
-      RCTWebSocketModule.close(statusCode, closeReason, id);
+      RCTWebSocketModule.close(statusCode, closeReason, this._socketId);
     } else {
-      RCTWebSocketModule.close(id);
+      RCTWebSocketModule.close(this._socketId);
     }
   }
 
   _unregisterEvents(): void {
-    this._subs.forEach(e => e.remove());
-    this._subs = [];
+    this._subscriptions.forEach(e => e.remove());
+    this._subscriptions = [];
   }
 
-  _registerEvents(id: number): void {
-    this._subs = [
+  _registerEvents(): void {
+    this._subscriptions = [
       RCTDeviceEventEmitter.addListener('websocketMessage', ev => {
-        if (ev.id !== id) {
+        if (ev.id !== this._socketId) {
           return;
         }
         var event = new WebSocketEvent('message', {
           data: (ev.type === 'binary') ? base64.toByteArray(ev.data).buffer : ev.data
         });
-        this.onmessage && this.onmessage(event);
         this.dispatchEvent(event);
       }),
       RCTDeviceEventEmitter.addListener('websocketOpen', ev => {
-        if (ev.id !== id) {
+        if (ev.id !== this._socketId) {
           return;
         }
         this.readyState = this.OPEN;
         var event = new WebSocketEvent('open');
-        this.onopen && this.onopen(event);
         this.dispatchEvent(event);
       }),
       RCTDeviceEventEmitter.addListener('websocketClosed', ev => {
-        if (ev.id !== id) {
+        if (ev.id !== this._socketId) {
           return;
         }
         this.readyState = this.CLOSED;
         var event = new WebSocketEvent('close');
         event.code = ev.code;
         event.reason = ev.reason;
-        this.onclose && this.onclose(event);
         this.dispatchEvent(event);
         this._unregisterEvents();
         this.close();
       }),
       RCTDeviceEventEmitter.addListener('websocketFailed', ev => {
-        if (ev.id !== id) {
+        if (ev.id !== this._socketId) {
           return;
         }
         var event = new WebSocketEvent('error');
         event.message = ev.message;
-        this.onerror && this.onerror(event);
-        this.onclose && this.onclose(event);
         this.dispatchEvent(event);
+
+        event = new WebSocketEvent('close');
+        event.message = ev.message;
+        this.dispatchEvent(event);
+
         this._unregisterEvents();
         this.close();
       })

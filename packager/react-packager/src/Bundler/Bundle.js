@@ -107,59 +107,21 @@ class Bundle extends BundleBase {
   }
 
   getUnbundle(type) {
-    if (this._ramBundle) {
-      return this._ramBundle;
-    }
+    this.assertFinalized();
+    if (!this._ramBundle) {
+      const modules = this.getModules().slice();
 
-    switch (type) {
-      case 'INDEX':
-        this._ramBundle = this._getAsIndexedFileUnbundle();
-        break;
-      case 'ASSETS':
-        this._ramBundle = this._getAsAssetsUnbundle();
-        break;
-      default:
-        throw new Error('Unkown RAM Bundle type:', type);
+      // separate modules we need to preload from the ones we don't
+      const [startupModules, lazyModules] = partition(modules, shouldPreload);
+
+      this._ramBundle = {
+        startupModules,
+        lazyModules,
+        allModules: modules,
+      };
     }
 
     return this._ramBundle;
-  }
-
-  _getAsIndexedFileUnbundle() {
-    const modules = this.getModules();
-
-    // separate modules we need to preload from the ones we don't
-    const shouldPreload = (module) => module.meta && module.meta.preloaded;
-    const preloaded = modules.filter(module => shouldPreload(module));
-    const notPreloaded = modules.filter(module => !shouldPreload(module));
-
-    // code that will be executed on bridge start up
-    const startupCode = preloaded.map(({code}) => code).join('\n');
-
-    return {
-      // include copy of all modules on the order they're writen on the bundle:
-      // polyfills, preloaded, additional requires, non preloaded
-      allModules: preloaded.concat(notPreloaded),
-      startupCode,  // no entries on the index for these modules, only the code
-      modules: notPreloaded, // we include both the code and entries on the index
-    };
-  }
-
-  _getAsAssetsUnbundle() {
-    const allModules = this.getModules().slice();
-    const prependedModules = this._numPrependedModules;
-    const requireCalls = this._numRequireCalls;
-
-    const modules =
-      allModules
-        .splice(prependedModules, allModules.length - requireCalls - prependedModules);
-    const startupCode = allModules.map(({code}) => code).join('\n');
-
-    return {
-      startupCode,
-      startupModules: allModules,
-      modules,
-    };
   }
 
   /**
@@ -349,6 +311,17 @@ function generateSourceMapForVirtualModule(module) {
     file: module.sourcePath,
     sourcesContent: [ module.sourceCode ],
   };
+}
+
+function shouldPreload({meta}) {
+  return meta && meta.preloaded;
+}
+
+function partition(array, predicate) {
+  const included = [];
+  const excluded = [];
+  array.forEach(item => (predicate(item) ? included : excluded).push(item));
+  return [included, excluded];
 }
 
 module.exports = Bundle;

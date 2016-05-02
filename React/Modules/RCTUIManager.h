@@ -13,6 +13,7 @@
 #import "RCTBridgeModule.h"
 #import "RCTInvalidating.h"
 #import "RCTViewManager.h"
+#import "RCTRootView.h"
 
 /**
  * Posted right before re-render happens. This is a chance for views to invalidate their state so
@@ -47,7 +48,7 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 /**
  * Register a root view with the RCTUIManager.
  */
-- (void)registerRootView:(UIView *)rootView;
+- (void)registerRootView:(UIView *)rootView withSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility;
 
 /**
  * Gets the view associated with a reactTag.

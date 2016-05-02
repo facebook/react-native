@@ -57,4 +57,11 @@ function combineSourceMaps({modules, withCustomOffsets}) {
   return sourceMap;
 }
 
-module.exports = {countLines, lineToLineSourceMap, combineSourceMaps};
+const joinModules = modules => modules.map(m => m.code).join('\n');
+
+module.exports = {
+  countLines,
+  lineToLineSourceMap,
+  combineSourceMaps,
+  joinModules,
+};

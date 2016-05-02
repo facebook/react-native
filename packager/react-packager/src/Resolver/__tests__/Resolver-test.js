@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.dontMock('../');
+jest.unmock('../');
 jest.mock('path');
 
 const Promise = require('promise');
@@ -16,7 +16,7 @@ const Resolver = require('../');
 
 const path = require('path');
 
-let DependencyGraph = jest.genMockFn();
+let DependencyGraph = jest.fn();
 jest.setMock('node-haste', DependencyGraph);
 let Module;
 let Polyfill;
@@ -24,26 +24,26 @@ let Polyfill;
 describe('Resolver', function() {
   beforeEach(function() {
     DependencyGraph.mockClear();
-    Module = jest.genMockFn().mockImpl(function() {
-      this.getName = jest.genMockFn();
-      this.getDependencies = jest.genMockFn();
-      this.isPolyfill = jest.genMockFn().mockReturnValue(false);
-      this.isJSON = jest.genMockFn().mockReturnValue(false);
+    Module = jest.fn(function() {
+      this.getName = jest.fn();
+      this.getDependencies = jest.fn();
+      this.isPolyfill = jest.fn().mockReturnValue(false);
+      this.isJSON = jest.fn().mockReturnValue(false);
     });
-    Polyfill = jest.genMockFn().mockImpl(function() {
+    Polyfill = jest.fn(function() {
       var polyfill = new Module();
       polyfill.isPolyfill.mockReturnValue(true);
       return polyfill;
     });
 
     DependencyGraph.replacePatterns = require.requireActual('node-haste/lib/lib/replacePatterns');
-    DependencyGraph.prototype.createPolyfill = jest.genMockFn();
-    DependencyGraph.prototype.getDependencies = jest.genMockFn();
+    DependencyGraph.prototype.createPolyfill = jest.fn();
+    DependencyGraph.prototype.getDependencies = jest.fn();
 
     // For the polyfillDeps
-    path.join = jest.genMockFn().mockImpl((a, b) => b);
+    path.join = jest.fn((a, b) => b);
 
-    DependencyGraph.prototype.load = jest.genMockFn().mockImpl(() => Promise.resolve());
+    DependencyGraph.prototype.load = jest.fn(() => Promise.resolve());
   });
 
   class ResolutionResponseMock {
@@ -81,9 +81,9 @@ describe('Resolver', function() {
 
   function createPolyfill(id, dependencies) {
     var polyfill = new Polyfill({});
-    polyfill.getName = jest.genMockFn().mockImpl(() => Promise.resolve(id));
+    polyfill.getName = jest.fn(() => Promise.resolve(id));
     polyfill.getDependencies =
-      jest.genMockFn().mockImpl(() => Promise.resolve(dependencies));
+      jest.fn(() => Promise.resolve(dependencies));
     return polyfill;
   }
 
@@ -143,12 +143,21 @@ describe('Resolver', function() {
                 'polyfills/console.js'
               ],
             },
+            { id: 'polyfills/Number.es6.js',
+              file: 'polyfills/Number.es6.js',
+              dependencies: [
+                'polyfills/polyfills.js',
+                'polyfills/console.js',
+                'polyfills/error-guard.js'
+              ],
+            },
             { id: 'polyfills/String.prototype.es6.js',
               file: 'polyfills/String.prototype.es6.js',
               dependencies: [
                 'polyfills/polyfills.js',
                 'polyfills/console.js',
-                'polyfills/error-guard.js'
+                'polyfills/error-guard.js',
+                'polyfills/Number.es6.js',
               ],
             },
             { id: 'polyfills/Array.prototype.es6.js',
@@ -157,6 +166,7 @@ describe('Resolver', function() {
                 'polyfills/polyfills.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
+                'polyfills/Number.es6.js',
                 'polyfills/String.prototype.es6.js',
               ],
             },
@@ -166,6 +176,7 @@ describe('Resolver', function() {
                 'polyfills/polyfills.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
+                'polyfills/Number.es6.js',
                 'polyfills/String.prototype.es6.js',
                 'polyfills/Array.prototype.es6.js',
               ],
@@ -176,6 +187,7 @@ describe('Resolver', function() {
                 'polyfills/polyfills.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
+                'polyfills/Number.es6.js',
                 'polyfills/String.prototype.es6.js',
                 'polyfills/Array.prototype.es6.js',
                 'polyfills/Array.es6.js',
@@ -187,6 +199,7 @@ describe('Resolver', function() {
                 'polyfills/polyfills.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
+                'polyfills/Number.es6.js',
                 'polyfills/String.prototype.es6.js',
                 'polyfills/Array.prototype.es6.js',
                 'polyfills/Array.es6.js',
@@ -251,6 +264,7 @@ describe('Resolver', function() {
                 'polyfills/polyfills.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
+                'polyfills/Number.es6.js',
                 'polyfills/String.prototype.es6.js',
                 'polyfills/Array.prototype.es6.js',
                 'polyfills/Array.es6.js',
@@ -401,7 +415,7 @@ describe('Resolver', function() {
       let depResolver, minifyCode, module, resolutionResponse, sourceMap;
 
       beforeEach(() => {
-        minifyCode = jest.genMockFn().mockImpl((filename, code, map) =>
+        minifyCode = jest.fn((filename, code, map) =>
           Promise.resolve({code, map}));
         depResolver = new Resolver({
           projectRoot: '/root',

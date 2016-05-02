@@ -95,6 +95,9 @@ class NavigationRootContainer extends React.Component<any, Props, State> {
     onNavigate: PropTypes.func,
   };
 
+
+  static getBackAction = getBackAction;
+
   constructor(props: Props) {
     super(props);
 
@@ -108,8 +111,8 @@ class NavigationRootContainer extends React.Component<any, Props, State> {
   }
 
   componentWillMount(): void {
-    this.handleNavigation = this.handleNavigation.bind(this);
-    this._handleOpenURLEvent = this._handleOpenURLEvent.bind(this);
+    (this: any).handleNavigation = this.handleNavigation.bind(this);
+    (this: any)._handleOpenURLEvent = this._handleOpenURLEvent.bind(this);
   }
 
   componentDidMount(): void {
@@ -121,6 +124,7 @@ class NavigationRootContainer extends React.Component<any, Props, State> {
       AsyncStorage.getItem(this.props.persistenceKey, (err, storedString) => {
         if (err || !storedString) {
           this.setState({
+            // $FlowFixMe - navState is missing properties :(
             navState: this.props.reducer(null, this.props.initialAction),
           });
           return;
@@ -164,6 +168,7 @@ class NavigationRootContainer extends React.Component<any, Props, State> {
       return false;
     }
     this.setState({
+      // $FlowFixMe - navState is missing properties :(
       navState,
     });
 
@@ -182,7 +187,5 @@ class NavigationRootContainer extends React.Component<any, Props, State> {
     return navigation;
   }
 }
-
-NavigationRootContainer.getBackAction = getBackAction;
 
 module.exports = NavigationRootContainer;

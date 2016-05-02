@@ -37,6 +37,7 @@ export type NavigationLayout = {
   height: NavigationAnimatedValue,
   initHeight: number,
   initWidth: number,
+  isMeasured: boolean,
   width: NavigationAnimatedValue,
 };
 
@@ -111,4 +112,3 @@ export type NavigationSceneRenderer = (
 export type NavigationStyleInterpolator = (
   props: NavigationSceneRendererProps,
 ) => Object;
-

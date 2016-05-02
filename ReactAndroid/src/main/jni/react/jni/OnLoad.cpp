@@ -853,7 +853,7 @@ static void handleMemoryPressureCritical(JNIEnv* env, jobject obj) {
 
 namespace executors {
 
-std::string getDeviceCacheDir() {
+static std::string getApplicationDir(const char* methodName) {
   // Get the Application Context object
   auto getApplicationClass = findClassLocal(
                               "com/facebook/react/common/ApplicationHolder");
@@ -864,23 +864,32 @@ std::string getDeviceCacheDir() {
   auto application = getApplicationMethod(getApplicationClass);
 
   // Get getCacheDir() from the context
-  auto getCacheDirMethod = findClassLocal("android/app/Application")
-                            ->getMethod<jobject()>("getCacheDir",
-                                                   "()Ljava/io/File;"
+  auto getDirMethod = findClassLocal("android/app/Application")
+                       ->getMethod<jobject()>(methodName,
+                                              "()Ljava/io/File;"
                                                   );
-  auto cacheDirObj = getCacheDirMethod(application);
+  auto dirObj = getDirMethod(application);
 
   // Call getAbsolutePath() on the returned File object
   auto getAbsolutePathMethod = findClassLocal("java/io/File")
                                 ->getMethod<jstring()>("getAbsolutePath");
-  return getAbsolutePathMethod(cacheDirObj)->toStdString();
+  return getAbsolutePathMethod(dirObj)->toStdString();
+}
+
+static std::string getApplicationCacheDir() {
+  return getApplicationDir("getCacheDir");
+}
+
+static std::string getApplicationPersistentDir() {
+  return getApplicationDir("getFilesDir");
 }
 
 struct CountableJSCExecutorFactory : CountableJSExecutorFactory  {
 public:
   CountableJSCExecutorFactory(folly::dynamic jscConfig) : m_jscConfig(jscConfig) {}
   virtual std::unique_ptr<JSExecutor> createJSExecutor(Bridge *bridge) override {
-    return JSCExecutorFactory(getDeviceCacheDir(), m_jscConfig).createJSExecutor(bridge);
+    m_jscConfig["PersistentDirectory"] = getApplicationPersistentDir();
+    return JSCExecutorFactory(getApplicationCacheDir(), m_jscConfig).createJSExecutor(bridge);
   }
 
 private:

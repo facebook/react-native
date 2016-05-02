@@ -13,6 +13,8 @@
 
 var RCTNetworking = require('RCTNetworking');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+
+const EventTarget = require('event-target-shim');
 const invariant = require('fbjs/lib/invariant');
 const utf8 = require('utf8');
 const warning = require('fbjs/lib/warning');
@@ -35,74 +37,81 @@ const SUPPORTED_RESPONSE_TYPES = {
   '': true,
 };
 
+const REQUEST_EVENTS = [
+  'abort',
+  'error',
+  'load',
+  'loadstart',
+  'progress',
+  'timeout',
+  'loadend',
+];
+
+const XHR_EVENTS = REQUEST_EVENTS.concat('readystatechange');
+
+class XMLHttpRequestEventTarget extends EventTarget(...REQUEST_EVENTS) {
+  onload: ?Function;
+  onloadstart: ?Function;
+  onprogress: ?Function;
+  ontimeout: ?Function;
+  onerror: ?Function;
+  onloadend: ?Function;
+}
+
 /**
  * Shared base for platform-specific XMLHttpRequest implementations.
  */
-class XMLHttpRequestBase {
+class XMLHttpRequestBase extends EventTarget(...XHR_EVENTS) {
 
-  static UNSENT: number;
-  static OPENED: number;
-  static HEADERS_RECEIVED: number;
-  static LOADING: number;
-  static DONE: number;
+  static UNSENT: number = UNSENT;
+  static OPENED: number = OPENED;
+  static HEADERS_RECEIVED: number = HEADERS_RECEIVED;
+  static LOADING: number = LOADING;
+  static DONE: number = DONE;
 
-  UNSENT: number;
-  OPENED: number;
-  HEADERS_RECEIVED: number;
-  LOADING: number;
-  DONE: number;
+  UNSENT: number = UNSENT;
+  OPENED: number = OPENED;
+  HEADERS_RECEIVED: number = HEADERS_RECEIVED;
+  LOADING: number = LOADING;
+  DONE: number = DONE;
 
-  onreadystatechange: ?Function;
+  // EventTarget automatically initializes these to `null`.
   onload: ?Function;
-  upload: any;
-  readyState: number;
-  responseHeaders: ?Object;
-  responseText: string;
-  status: number;
-  timeout: number;
-  responseURL: ?string;
+  onloadstart: ?Function;
+  onprogress: ?Function;
   ontimeout: ?Function;
   onerror: ?Function;
+  onloadend: ?Function;
+  onreadystatechange: ?Function;
 
-  upload: ?{
-    onprogress?: (event: Object) => void;
-  };
+  readyState: number = UNSENT;
+  responseHeaders: ?Object;
+  responseText: string = '';
+  status: number = 0;
+  timeout: number = 0;
+  responseURL: ?string;
+
+  upload: XMLHttpRequestEventTarget = new XMLHttpRequestEventTarget();
 
   _requestId: ?number;
   _subscriptions: [any];
 
-  _aborted: boolean;
+  _aborted: boolean = false;
   _cachedResponse: Response;
-  _hasError: boolean;
+  _hasError: boolean = false;
   _headers: Object;
   _lowerCaseResponseHeaders: Object;
-  _method: ?string;
+  _method: ?string = null;
   _response: string | ?Object;
   _responseType: ResponseType;
   _sent: boolean;
-  _url: ?string;
-  _timedOut: boolean;
+  _url: ?string = null;
+  _timedOut: boolean = false;
+  _incrementalEvents: boolean = false;
 
   constructor() {
-    this.UNSENT = UNSENT;
-    this.OPENED = OPENED;
-    this.HEADERS_RECEIVED = HEADERS_RECEIVED;
-    this.LOADING = LOADING;
-    this.DONE = DONE;
-
-    this.onreadystatechange = null;
-    this.onload = null;
-    this.upload = undefined; /* Upload not supported yet */
-    this.timeout = 0;
-    this.ontimeout = null;
-    this.onerror = null;
-
+    super();
     this._reset();
-    this._method = null;
-    this._url = null;
-    this._aborted = false;
-    this._timedOut = false;
-    this._hasError = false;
   }
 
   _reset(): void {
@@ -205,30 +214,30 @@ class XMLHttpRequestBase {
     this._requestId = requestId;
     this._subscriptions.push(RCTDeviceEventEmitter.addListener(
       'didSendNetworkData',
-      (args) => this._didUploadProgress.call(this, ...args)
+      (args) => this._didUploadProgress(...args)
     ));
     this._subscriptions.push(RCTDeviceEventEmitter.addListener(
       'didReceiveNetworkResponse',
-      (args) => this._didReceiveResponse.call(this, ...args)
+      (args) => this._didReceiveResponse(...args)
     ));
     this._subscriptions.push(RCTDeviceEventEmitter.addListener(
       'didReceiveNetworkData',
-      (args) =>  this._didReceiveData.call(this, ...args)
+      (args) =>  this._didReceiveData(...args)
     ));
     this._subscriptions.push(RCTDeviceEventEmitter.addListener(
       'didCompleteNetworkResponse',
-      (args) => this._didCompleteResponse.call(this, ...args)
+      (args) => this._didCompleteResponse(...args)
     ));
   }
 
   _didUploadProgress(requestId: number, progress: number, total: number): void {
-    if (requestId === this._requestId && this.upload && this.upload.onprogress) {
-      var event = {
+    if (requestId === this._requestId) {
+      this.upload.dispatchEvent({
+        type: 'progress',
         lengthComputable: true,
         loaded: progress,
         total,
-      };
-      this.upload.onprogress(event);
+      });
     }
   }
 
@@ -321,7 +330,14 @@ class XMLHttpRequestBase {
     this.setReadyState(this.OPENED);
   }
 
-  sendImpl(method: ?string, url: ?string, headers: Object, data: any, timeout: number): void {
+  sendImpl(
+    method: ?string,
+    url: ?string,
+    headers: Object,
+    data: any,
+    incrementalEvents: boolean,
+    timeout: number
+  ): void {
     throw new Error('Subclass must define sendImpl method');
   }
 
@@ -333,7 +349,15 @@ class XMLHttpRequestBase {
       throw new Error('Request has already been sent');
     }
     this._sent = true;
-    this.sendImpl(this._method, this._url, this._headers, data, this.timeout);
+    const incrementalEvents = this._incrementalEvents || !!this.onreadystatechange;
+    this.sendImpl(
+      this._method,
+      this._url,
+      this._headers,
+      data,
+      incrementalEvents,
+      this.timeout
+    );
   }
 
   abort(): void {
@@ -365,42 +389,33 @@ class XMLHttpRequestBase {
 
   setReadyState(newState: number): void {
     this.readyState = newState;
-    // TODO: workaround flow bug with nullable function checks
-    var onreadystatechange = this.onreadystatechange;
-    if (onreadystatechange) {
-      // We should send an event to handler, but since we don't process that
-      // event anywhere, let's leave it empty
-      onreadystatechange.call(this, null);
-    }
+    this.dispatchEvent({type: 'readystatechange'});
     if (newState === this.DONE && !this._aborted) {
       if (this._hasError) {
         if (this._timedOut) {
-          this._sendEvent(this.ontimeout);
+          this.dispatchEvent({type: 'timeout'});
         } else {
-          this._sendEvent(this.onerror);
+          this.dispatchEvent({type: 'error'});
         }
-      }
-      else {
-        this._sendEvent(this.onload);
+      } else {
+        this.dispatchEvent({type: 'load'});
       }
     }
   }
 
-  _sendEvent(newEvent: ?Function): void {
-    // TODO: workaround flow bug with nullable function checks
-    if (newEvent) {
-      // We should send an event to handler, but since we don't process that
-      // event anywhere, let's leave it empty
-      newEvent(null);
+  /* global EventListener */
+  addEventListener(type: string, listener: EventListener): void {
+    // If we dont' have a 'readystatechange' event handler, we don't
+    // have to send repeated LOADING events with incremental updates
+    // to responseText, which will avoid a bunch of native -> JS
+    // bridge traffic.
+    if (type === 'readystatechange') {
+      this._incrementalEvents = true;
     }
+    super.addEventListener(type, listener);
   }
 }
 
-XMLHttpRequestBase.UNSENT = UNSENT;
-XMLHttpRequestBase.OPENED = OPENED;
-XMLHttpRequestBase.HEADERS_RECEIVED = HEADERS_RECEIVED;
-XMLHttpRequestBase.LOADING = LOADING;
-XMLHttpRequestBase.DONE = DONE;
 
 function toArrayBuffer(text: string, contentType: string): ArrayBuffer {
   const {length} = text;
