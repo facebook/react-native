@@ -14,7 +14,7 @@ var warning = require('fbjs/lib/warning');
 
 if (__DEV__) {
   var warningDedupe = {};
-  var addonWarn = function addonWarn(prevName, newPackageName) {
+  var addonWarn = function(prevName, newPackageName) {
     warning(
       warningDedupe[prevName],
       'React.addons.' + prevName + ' is deprecated. Please import the "' +
@@ -155,12 +155,6 @@ var ReactNative = {
         warningDedupe.batchedUpdates = true;
       }
       return require('ReactUpdates').batchedUpdates;
-    },
-    get cloneWithProps() {
-      if (__DEV__) {
-        addonWarn('cloneWithProps', 'react-addons-clone-with-props');
-      }
-      return require('cloneWithProps');
     },
     get createFragment() {
       if (__DEV__) {

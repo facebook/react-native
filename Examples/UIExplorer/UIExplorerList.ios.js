@@ -193,6 +193,10 @@ var APIExamples: Array<UIExplorerExample> = [
     module: require('./ImageEditingExample'),
   },
   {
+    key: 'LayoutAnimationExample',
+    module: require('./LayoutAnimationExample'),
+  },
+  {
     key: 'LayoutExample',
     module: require('./LayoutExample'),
   },

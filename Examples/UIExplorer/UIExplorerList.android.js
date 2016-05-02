@@ -139,6 +139,10 @@ const APIExamples = [
     module: require('./LinkingExample'),
   },
   {
+    key: 'LayoutAnimationExample',
+    module: require('./LayoutAnimationExample'),
+  },
+  {
     key: 'LayoutExample',
     module: require('./LayoutExample'),
   },

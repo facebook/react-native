@@ -52,10 +52,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     RCTZeroIfNaN(self.height),
   };
 
-  if (!_image) {
-    _image = RCTGetPlaceholderImage(imageSize, nil);
-  }
-
   __weak RCTShadowVirtualImage *weakSelf = self;
   _cancellationBlock = [_bridge.imageLoader loadImageWithTag:_source.imageURL.absoluteString
                                                         size:imageSize

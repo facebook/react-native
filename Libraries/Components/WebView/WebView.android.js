@@ -264,6 +264,14 @@ var WebView = React.createClass({
     );
   },
 
+  stopLoading: function() {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.stopLoading,
+      null
+    );
+  },
+
   /**
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward

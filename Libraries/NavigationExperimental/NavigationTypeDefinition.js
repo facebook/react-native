@@ -112,4 +112,3 @@ export type NavigationSceneRenderer = (
 export type NavigationStyleInterpolator = (
   props: NavigationSceneRendererProps,
 ) => Object;
-
