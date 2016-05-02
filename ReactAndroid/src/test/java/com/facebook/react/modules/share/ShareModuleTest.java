@@ -36,10 +36,74 @@ public class ShareModuleTest {
   private Activity mActivity;
   private ShareModule mShareModule;
 
+  final static class SimplePromise implements Promise {
+    private static final String DEFAULT_ERROR = "EUNSPECIFIED";
+
+    private int mResolved;
+    private int mRejected;
+    private Object mValue;
+    private String mErrorCode;
+    private String mErrorMessage;
+
+    public int getResolved() {
+      return mResolved;
+    }
+
+    public int getRejected() {
+      return mRejected;
+    }
+    
+    public Object getValue() {
+      return mValue;
+    }
+
+    public String getErrorCode() {
+      return mErrorCode;
+    }
+
+    public String getErrorMessage() {
+      return mErrorMessage;
+    }
+
+    @Override
+    public void resolve(Object value) {
+      mResolved++;
+      mValue = value;
+    }
+
+    @Override
+    public void reject(String code, String message) {
+      reject(code, message, /*Throwable*/null);
+    }
+
+    @Override
+    @Deprecated
+    public void reject(String message) {
+      reject(DEFAULT_ERROR, message, /*Throwable*/null);
+    }
+
+    @Override
+    public void reject(String code, Throwable e) {
+      reject(code, e.getMessage(), e);
+    }
+
+    @Override
+    public void reject(Throwable e) {
+      reject(DEFAULT_ERROR, e.getMessage(), e);
+    }
+
+    @Override
+    public void reject(String code, String message, @Nullable Throwable e) {
+      mRejected++;
+      mErrorCode = code;
+      mErrorMessage = message;
+    }
+  }
+
   @Before
   public void setUp() throws Exception {
     mActivity = Robolectric.setupActivity(Activity.class);
-    final ReactApplicationContext context = PowerMockito.mock(ReactApplicationContext.class);
+    ReactApplicationContext context = PowerMockito.mock(ReactApplicationContext.class);
     PowerMockito.when(context, "getCurrentActivity").thenReturn(mActivity);
     mShareModule = new ShareModule(context);
   }
@@ -60,7 +124,9 @@ public class ShareModuleTest {
     content.putString("title", title);
     content.putString("message", message);
 
-    mShareModule.share(content, dialogTitle, PowerMockito.mock(Promise.class));
+    final SimplePromise promise = new SimplePromise();
+
+    mShareModule.share(content, dialogTitle, promise);
 
     final Intent chooserIntent = Shadows.shadowOf(mActivity).getNextStartedActivity();
     assertNotNull("Dialog was not displayed", chooserIntent);
@@ -72,6 +138,20 @@ public class ShareModuleTest {
     assertEquals(Intent.ACTION_SEND, contentIntent.getAction());
     assertEquals(title, contentIntent.getExtras().get(Intent.EXTRA_SUBJECT));
     assertEquals(message, contentIntent.getExtras().get(Intent.EXTRA_TEXT));
+
+    assertEquals(1, promise.getResolved());
+  }
+
+  @Test
+  public void testInvalidContent() {
+    final String dialogTitle = "Dialog Title";
+
+    final SimplePromise promise = new SimplePromise();
+
+    mShareModule.share(null, dialogTitle, promise);
+
+    assertEquals(1, promise.getRejected());
+    assertEquals(ShareModule.ERROR_INVALID_CONTENT, promise.getErrorCode());
   }
 
 }
