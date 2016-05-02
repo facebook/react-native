@@ -367,7 +367,7 @@ var apps = [
     icon: 'http://a2.mzstatic.com/eu/r30/Purple49/v4/d4/2d/e5/d42de510-6802-2694-1b60-ca80ffa1e2cb/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/fr/app/donut-chat/id1067579321',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=me.donut.mobile',
-    author: 'Damien Brugne'
+    author: 'Damien Brugne',
   },
   {
     name: 'Due',
