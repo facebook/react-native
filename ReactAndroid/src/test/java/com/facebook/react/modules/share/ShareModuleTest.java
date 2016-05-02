@@ -24,9 +24,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.robolectric.internal.ShadowExtractor;
 import org.robolectric.Robolectric;
-import org.robolectric.Shadows;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.shadows.ShadowActivity;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -130,7 +131,7 @@ public class ShareModuleTest {
 
     mShareModule.share(content, dialogTitle, promise);
 
-    final Intent chooserIntent = Shadows.shadowOf(mActivity).getNextStartedActivity();
+    final Intent chooserIntent = ((ShadowActivity)ShadowExtractor.extract(mActivity)).getNextStartedActivity();
     assertNotNull("Dialog was not displayed", chooserIntent);
     assertEquals(Intent.ACTION_CHOOSER, chooserIntent.getAction());
     assertEquals(dialogTitle, chooserIntent.getExtras().get(Intent.EXTRA_TITLE));
