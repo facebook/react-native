@@ -25,7 +25,6 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.util.ActivityController;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -34,31 +33,20 @@ import static org.junit.Assert.assertNotNull;
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 public class ShareModuleTest {
 
-  private ActivityController<Activity> mActivityController;
   private Activity mActivity;
   private ShareModule mShareModule;
 
   @Before
   public void setUp() throws Exception {
-    mActivityController = Robolectric.buildActivity(Activity.class);
-    mActivity = mActivityController
-        .create()
-        .start()
-        .resume()
-        .get();
-
+    mActivity = Robolectric.setupActivity(Activity.class);
     final ReactApplicationContext context = PowerMockito.mock(ReactApplicationContext.class);
-    PowerMockito.when(context.hasActiveCatalystInstance()).thenReturn(true);
     PowerMockito.when(context, "getCurrentActivity").thenReturn(mActivity);
-
     mShareModule = new ShareModule(context);
   }
 
   @After
   public void tearDown() {
-    mActivityController.pause().stop().destroy();
-
-    mActivityController = null;
+    mActivity = null;
     mShareModule = null;
   }
 
@@ -74,7 +62,7 @@ public class ShareModuleTest {
 
     mShareModule.share(content, dialogTitle, PowerMockito.mock(Promise.class));
 
-    final Intent chooserIntent = Shadows.shadowOf(mActivity).peekNextStartedActivity();
+    final Intent chooserIntent = Shadows.shadowOf(mActivity).getNextStartedActivity();
     assertNotNull("Dialog was not displayed", chooserIntent);
     assertEquals(Intent.ACTION_CHOOSER, chooserIntent.getAction());
     assertEquals(dialogTitle, chooserIntent.getExtras().get(Intent.EXTRA_TITLE));
