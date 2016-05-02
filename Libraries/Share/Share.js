@@ -52,8 +52,8 @@ class Share {
       'Content must a valid object'
     );
     invariant(
-       typeof content.url === 'string' || typeof content.message === 'string',
-       'At least one of URL and message is required'
+      typeof content.url === 'string' || typeof content.message === 'string',
+      'At least one of URL and message is required'
     );
     invariant(
       typeof options === 'object' && options !== null,
