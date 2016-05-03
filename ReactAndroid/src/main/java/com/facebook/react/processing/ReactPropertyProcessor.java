@@ -23,6 +23,7 @@ import javax.lang.model.util.Types;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -63,7 +64,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
   private static final Set<TypeName> BOXED_PRIMITIVES;
 
   private static final TypeName PROPS_TYPE =
-      ClassName.get("com.facebook.react.uimanager", "CatalystStylesDiffMap");
+      ClassName.get("com.facebook.react.uimanager", "ReactStylesDiffMap");
   private static final TypeName STRING_TYPE = TypeName.get(String.class);
   private static final TypeName READABLE_MAP_TYPE = TypeName.get(ReadableMap.class);
   private static final TypeName READABLE_ARRAY_TYPE = TypeName.get(ReadableArray.class);
@@ -88,11 +89,6 @@ public class ReactPropertyProcessor extends AbstractProcessor {
       ParameterizedTypeName.get(Map.class, String.class, String.class);
   private static final TypeName CONCRETE_PROPERTY_MAP_TYPE =
       ParameterizedTypeName.get(HashMap.class, String.class, String.class);
-
-  private static final TypeName MAPPINGS_MAP_TYPE =
-      ParameterizedTypeName.get(Map.class, String.class, Integer.class);
-  private static final TypeName CONCRETE_MAPPINGS_MAP_TYPE =
-      ParameterizedTypeName.get(HashMap.class, String.class, Integer.class);
 
   private final Map<ClassName, ClassInfo> mClasses;
 
@@ -162,6 +158,14 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     for (ClassInfo classInfo : mClasses.values()) {
       try {
         if (!shouldIgnoreClass(classInfo)) {
+          // Sort by name
+          Collections.sort(
+              classInfo.mProperties, new Comparator<PropertyInfo>() {
+                @Override
+                public int compare(PropertyInfo a, PropertyInfo b) {
+                  return a.mProperty.name().compareTo(b.mProperty.name());
+                }
+              });
           generateCode(classInfo, classInfo.mProperties);
         } else if (shouldWarnClass(classInfo)) {
           warning(classInfo.mElement, "Class was skipped. Classes need to be non-private.");
@@ -183,29 +187,40 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     TypeName viewType = targetType.equals(SHADOW_NODE_TYPE) ? null : targetType;
 
     ClassInfo classInfo = new ClassInfo(className, typeElement, viewType);
+    findProperties(classInfo, typeElement);
 
-    PropertyInfo.Builder propertyBuilder = new PropertyInfo.Builder(mTypes, mElements, classInfo);
-    for (Element element : mElements.getAllMembers(typeElement)) {
-      ReactProp prop = element.getAnnotation(ReactProp.class);
-      ReactPropGroup propGroup = element.getAnnotation(ReactPropGroup.class);
-
-      try {
-        if (prop != null || propGroup != null) {
-          checkElement(element);
-        }
-
-        if (prop != null) {
-          classInfo.addProperty(propertyBuilder.build(element, new RegularProperty(prop)));
-        } else if (propGroup != null) {
-          for (int i = 0, size = propGroup.names().length; i < size; i++) {
-            classInfo.addProperty(propertyBuilder.build(element, new GroupProperty(propGroup, i)));
-          }
-        }
-      } catch (ReactPropertyException e) {
-        error(e.element, e.getMessage());
-      }
-    }
     return classInfo;
+  }
+
+  private void findProperties(ClassInfo classInfo, TypeElement typeElement) {
+    PropertyInfo.Builder propertyBuilder = new PropertyInfo.Builder(mTypes, mElements, classInfo);
+
+    // Recursively search class hierarchy
+    while (typeElement != null) {
+      for (Element element : typeElement.getEnclosedElements()) {
+        ReactProp prop = element.getAnnotation(ReactProp.class);
+        ReactPropGroup propGroup = element.getAnnotation(ReactPropGroup.class);
+
+        try {
+          if (prop != null || propGroup != null) {
+            checkElement(element);
+          }
+
+          if (prop != null) {
+            classInfo.addProperty(propertyBuilder.build(element, new RegularProperty(prop)));
+          } else if (propGroup != null) {
+            for (int i = 0, size = propGroup.names().length; i < size; i++) {
+              classInfo
+                  .addProperty(propertyBuilder.build(element, new GroupProperty(propGroup, i)));
+            }
+          }
+        } catch (ReactPropertyException e) {
+          error(e.element, e.getMessage());
+        }
+      }
+
+      typeElement = (TypeElement) mTypes.asElement(typeElement.getSuperclass());
+    }
   }
 
   private TypeName getTargetType(TypeMirror mirror) {
@@ -242,8 +257,6 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     TypeSpec holderClass = TypeSpec.classBuilder(holderClassName)
         .addSuperinterface(superType)
         .addModifiers(PUBLIC)
-        .addField(MAPPINGS_MAP_TYPE, "mappings", PRIVATE, STATIC, FINAL)
-        .addStaticBlock(generatePropertyMappings(properties))
         .addMethod(generateSetPropertySpec(classInfo, properties))
         .addMethod(getMethods)
         .build();
@@ -272,24 +285,6 @@ public class ReactPropertyProcessor extends AbstractProcessor {
       default:
         throw new IllegalArgumentException();
     }
-  }
-
-  private static CodeBlock generatePropertyMappings(List<PropertyInfo> properties) {
-    if (properties.isEmpty()) {
-      return CodeBlock.builder()
-          .addStatement("mappings = $T.emptyMap()", Collections.class)
-          .build();
-    }
-
-    CodeBlock.Builder builder = CodeBlock.builder()
-        .addStatement("mappings = new $T($L)", CONCRETE_MAPPINGS_MAP_TYPE, properties.size());
-
-    for (int i = 0, size = properties.size(); i < size; i++) {
-      PropertyInfo propertyInfo = properties.get(i);
-      builder.addStatement("mappings.put($S, $L)", propertyInfo.mProperty.name(), i);
-    }
-
-    return builder.build();
   }
 
   private static MethodSpec generateSetPropertySpec(
@@ -324,15 +319,13 @@ public class ReactPropertyProcessor extends AbstractProcessor {
       return CodeBlock.builder().build();
     }
 
-    CodeBlock.Builder builder = CodeBlock.builder()
-        .addStatement("Integer id = mappings.get(name)")
-        .addStatement("if (id == null) return");
+    CodeBlock.Builder builder = CodeBlock.builder();
 
-    builder.add("switch (id) {\n").indent();
+    builder.add("switch (name) {\n").indent();
     for (int i = 0, size = properties.size(); i < size; i++) {
       PropertyInfo propertyInfo = properties.get(i);
       builder
-          .add("case $L:\n", i)
+          .add("case \"$L\":\n", propertyInfo.mProperty.name())
           .indent();
 
       switch (info.getType()) {
@@ -585,7 +578,8 @@ public class ReactPropertyProcessor extends AbstractProcessor {
       if (checkPropertyExists(name)) {
         throw new ReactPropertyException(
             "Module " + mClassName + " has already registered a property named \"" +
-                name + '"', propertyInfo);
+                name + "\". If you want to override a property, don't add" +
+                "the @ReactProp annotation to the property in the subclass", propertyInfo);
       }
 
       mProperties.add(propertyInfo);

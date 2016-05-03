@@ -35,6 +35,8 @@ And `button.js` code contains
 
 Packager will bundle and serve the image corresponding to device's screen density, e.g. on iPhone 5s `check@2x.png` will be used, on Nexus 5 – `check@3x.png`. If there is no image matching the screen density, the closest best option will be selected.
 
+On Windows, you might need to restart the packager if you add new images to your project.
+
 Here are some benefits that you get:
 
 1. Same system on iOS and Android.
@@ -59,6 +61,8 @@ var icon = this.props.active ? 'my-icon-active' : 'my-icon-inactive';
 var icon = this.props.active ? require('./my-icon-active.png') : require('./my-icon-inactive.png');
 <Image source={icon} />
 ```
+
+Note that image sources required this way include size (width, height) info for the Image. If you need to scale the image dynamically (i.e. via flex), you may need to manually set { width: undefined, height: undefined } on the style attribute.
 
 **Available React Native 0.14+**. If you've generated your project with 0.13 or earlier, read this. The new asset system relies on build hooks for [Xcode](https://github.com/facebook/react-native/pull/3523) and [Gradle](https://github.com/facebook/react-native/commit/9dc036d2b99e6233297c55a3490bfc308e34e75f) that are included in new projects generated with `react-native init`. If you generated your projects before that, you'll have to manually add them to your projects to use the new images asset system. See [Upgrading](/react-native/docs/upgrading.html) for instructions on how to do this.
 
@@ -88,7 +92,7 @@ Many of the images you will display in your app will not be available at compile
 
 ## Local Filesystem Images
 
-See [CameraRoll](/react-native/docs/cameraroll.html) for an example of
+See [CameraRoll](docs/cameraroll.html) for an example of
 using local resources that are outside of `Images.xcassets`.
 
 ### Best Camera Roll Image

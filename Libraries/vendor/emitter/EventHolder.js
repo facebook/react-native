@@ -17,7 +17,7 @@
  */
 'use strict';
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 class EventHolder {
   constructor() {

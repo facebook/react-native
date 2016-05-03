@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -16,133 +23,189 @@
  */
 'use strict';
 
-var React = require('react-native');
-var UIExplorerList = require('./UIExplorerList.ios');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const UIExplorerList = require('./UIExplorerList.ios');
+const UIExplorerExampleList = require('./UIExplorerExampleList');
+const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
+const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
+const URIActionMap = require('./URIActionMap');
+
+const {
   AppRegistry,
-  NavigatorIOS,
+  NavigationExperimental,
+  SnapshotViewIOS,
   StyleSheet,
-  Text,
-  TouchableHighlight,
-  View
-} = React;
+  View,
+} = ReactNative;
 
-var UIExplorerApp = React.createClass({
+const {
+  CardStack: NavigationCardStack,
+  Header: NavigationHeader,
+  RootContainer: NavigationRootContainer,
+} = NavigationExperimental;
 
-  getInitialState: function() {
-    return {
-      openExternalExample: (null: ?React.Component),
+import type { NavigationSceneRendererProps } from 'NavigationTypeDefinition';
+
+import type { UIExplorerNavigationState } from './UIExplorerNavigationReducer';
+
+import type { UIExplorerExample } from './UIExplorerList.ios';
+
+type Props = {
+  exampleFromAppetizeParams: string,
+};
+
+type State = {
+  initialExampleUri: ?string,
+};
+
+class UIExplorerApp extends React.Component {
+  _navigationRootRef: ?NavigationRootContainer;
+  _renderNavigation: Function;
+  _renderOverlay: Function;
+  _renderScene: Function;
+  _renderCard: Function;
+  _renderTitleComponent: Function;
+  _handleOpenInitialExample: Function;
+  state: State;
+  constructor(props: Props) {
+    super(props);
+    this._handleOpenInitialExample = this._handleOpenInitialExample.bind(this);
+    this.state = {
+      initialExampleUri: props.exampleFromAppetizeParams,
     };
-  },
-
-  render: function() {
-    if (this.state.openExternalExample) {
-      var Example = this.state.openExternalExample;
+  }
+  componentWillMount() {
+    this._renderNavigation = this._renderNavigation.bind(this);
+    this._renderOverlay = this._renderOverlay.bind(this);
+    this._renderScene = this._renderScene.bind(this);
+    this._renderTitleComponent = this._renderTitleComponent.bind(this);
+  }
+  componentDidMount() {
+    // There's a race condition if we try to navigate to the specified example
+    // from the initial props at the same time the navigation logic is setting
+    // up the initial navigation state. This hack adds a delay to avoid this
+    // scenario. So after the initial example list is shown, we then transition
+    // to the initial example.
+    setTimeout(this._handleOpenInitialExample, 500);
+  }
+  render() {
+    return (
+      <NavigationRootContainer
+        persistenceKey="UIExplorerState"
+        reducer={UIExplorerNavigationReducer}
+        ref={navRootRef => { this._navigationRootRef = navRootRef; }}
+        renderNavigation={this._renderNavigation}
+        linkingActionMap={URIActionMap}
+      />
+    );
+  }
+  _handleOpenInitialExample() {
+    if (this.state.initialExampleUri) {
+      const exampleAction = URIActionMap(this.state.initialExampleUri);
+      if (exampleAction && this._navigationRootRef) {
+        this._navigationRootRef.handleNavigation(exampleAction);
+      }
+    }
+    this.setState({initialExampleUri: null});
+  }
+  _renderNavigation(navigationState: UIExplorerNavigationState, onNavigate: Function) {
+    if (!navigationState) {
+      return null;
+    }
+    if (navigationState.externalExample) {
+      var Component = UIExplorerList.Modules[navigationState.externalExample];
       return (
-        <Example
+        <Component
           onExampleExit={() => {
-            this.setState({ openExternalExample: null, });
+            onNavigate(NavigationRootContainer.getBackAction());
           }}
         />
       );
     }
-
+    const {stack} = navigationState;
     return (
-      <NavigatorIOS
+      <NavigationCardStack
+        navigationState={stack}
         style={styles.container}
-        initialRoute={{
-          title: 'UIExplorer',
-          component: UIExplorerList,
-          passProps: {
-            onExternalExampleRequested: (example) => {
-              this.setState({ openExternalExample: example, });
-            },
-          }
-        }}
-        itemWrapperStyle={styles.itemWrapper}
-        tintColor="#008888"
+        renderOverlay={this._renderOverlay}
+        renderScene={this._renderScene}
       />
     );
   }
-});
 
-var styles = StyleSheet.create({
+  _renderOverlay(props: NavigationSceneRendererProps): ReactElement {
+    return (
+      <NavigationHeader
+        {...props}
+        renderTitleComponent={this._renderTitleComponent}
+      />
+    );
+  }
+
+  _renderTitleComponent(props: NavigationSceneRendererProps): ReactElement {
+    return (
+      <NavigationHeader.Title>
+        {UIExplorerStateTitleMap(props.scene.navigationState)}
+      </NavigationHeader.Title>
+    );
+  }
+
+  _renderScene(props: NavigationSceneRendererProps): ?ReactElement {
+    const state = props.scene.navigationState;
+    if (state.key === 'AppList') {
+      return (
+        <UIExplorerExampleList
+          list={UIExplorerList}
+          style={styles.exampleContainer}
+          {...state}
+        />
+      );
+    }
+
+    const Example = UIExplorerList.Modules[state.key];
+    if (Example) {
+      const Component = UIExplorerExampleList.makeRenderable(Example);
+      return (
+        <View style={styles.exampleContainer}>
+          <Component />
+        </View>
+      );
+    }
+    return null;
+  }
+}
+
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  itemWrapper: {
-    backgroundColor: '#eaeaea',
-  },
-  bigContainer: {
+  exampleContainer: {
     flex: 1,
-    height: 60,
-    backgroundColor: 'gray',
+    paddingTop: NavigationHeader.HEIGHT,
   },
-  smallContainer: {
-    flex: 1,
-    height: 40,
-    backgroundColor: 'gray',
-  },
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  whiteText: {
-    color: 'white',
+});
+
+AppRegistry.registerComponent('SetPropertiesExampleApp', () => require('./SetPropertiesExampleApp'));
+AppRegistry.registerComponent('RootViewSizeFlexibilityExampleApp', () => require('./RootViewSizeFlexibilityExampleApp'));
+AppRegistry.registerComponent('UIExplorerApp', () => UIExplorerApp);
+
+// Register suitable examples for snapshot tests
+UIExplorerList.ComponentExamples.concat(UIExplorerList.APIExamples).forEach((Example: UIExplorerExample) => {
+  const ExampleModule = Example.module;
+  if (ExampleModule.displayName) {
+    var Snapshotter = React.createClass({
+      render: function() {
+        var Renderable = UIExplorerExampleList.makeRenderable(ExampleModule);
+        return (
+          <SnapshotViewIOS>
+            <Renderable />
+          </SnapshotViewIOS>
+        );
+      },
+    });
+    AppRegistry.registerComponent(ExampleModule.displayName, () => Snapshotter);
   }
 });
-
-var SetPropertiesExampleApp = React.createClass({
-
-  render: function() {
-    var wrapperStyle = {
-      backgroundColor: this.props.color,
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center'
-    };
-
-    return (
-      <View style={wrapperStyle}>
-        <Text>
-          Embedded React Native view
-        </Text>
-      </View>
-    );
-  },
-});
-
-var RootViewSizeFlexibilityExampleApp = React.createClass({
-
-  getInitialState: function () {
-    return { toggled: false };
-  },
-
-  _onPressButton: function() {
-    this.setState({ toggled: !this.state.toggled });
-  },
-
-  render: function() {
-    var viewStyle = this.state.toggled ? styles.bigContainer : styles.smallContainer;
-
-    return (
-      <TouchableHighlight onPress={this._onPressButton}>
-        <View style={viewStyle}>
-          <View style={styles.center}>
-            <Text style={styles.whiteText}>
-              React Native Button
-            </Text>
-          </View>
-        </View>
-      </TouchableHighlight>
-    );
-  },
-});
-
-AppRegistry.registerComponent('SetPropertiesExampleApp', () => SetPropertiesExampleApp);
-AppRegistry.registerComponent('RootViewSizeFlexibilityExampleApp', () => RootViewSizeFlexibilityExampleApp);
-AppRegistry.registerComponent('UIExplorerApp', () => UIExplorerApp);
-UIExplorerList.registerComponents();
 
 module.exports = UIExplorerApp;

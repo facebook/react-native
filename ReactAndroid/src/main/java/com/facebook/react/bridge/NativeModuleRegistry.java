@@ -20,8 +20,6 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.systrace.Systrace;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-
 /**
   * A set of Java APIs to expose to a particular JavaScript instance.
   */
@@ -30,6 +28,7 @@ public class NativeModuleRegistry {
   private final List<ModuleDefinition> mModuleTable;
   private final Map<Class<? extends NativeModule>, NativeModule> mModuleInstances;
   private final ArrayList<OnBatchCompleteListener> mBatchCompleteListenerModules;
+  private final ArrayList<OnExecutorUnregisteredListener> mOnExecutorUnregisteredListenerModules;
 
   private NativeModuleRegistry(
       List<ModuleDefinition> moduleTable,
@@ -37,17 +36,22 @@ public class NativeModuleRegistry {
     mModuleTable = moduleTable;
     mModuleInstances = moduleInstances;
 
-    mBatchCompleteListenerModules = new ArrayList<OnBatchCompleteListener>(mModuleTable.size());
+    mBatchCompleteListenerModules = new ArrayList<>(mModuleTable.size());
+    mOnExecutorUnregisteredListenerModules = new ArrayList<>(mModuleTable.size());
     for (int i = 0; i < mModuleTable.size(); i++) {
       ModuleDefinition definition = mModuleTable.get(i);
       if (definition.target instanceof OnBatchCompleteListener) {
         mBatchCompleteListenerModules.add((OnBatchCompleteListener) definition.target);
+      }
+      if (definition.target instanceof OnExecutorUnregisteredListener) {
+        mOnExecutorUnregisteredListenerModules.add((OnExecutorUnregisteredListener) definition.target);
       }
     }
   }
 
   /* package */ void call(
       CatalystInstance catalystInstance,
+      ExecutorToken executorToken,
       int moduleId,
       int methodId,
       ReadableNativeArray parameters) {
@@ -55,29 +59,30 @@ public class NativeModuleRegistry {
     if (definition == null) {
       throw new RuntimeException("Call to unknown module: " + moduleId);
     }
-    definition.call(catalystInstance, methodId, parameters);
+    definition.call(catalystInstance, executorToken, methodId, parameters);
   }
 
-  /* package */ void writeModuleDescriptions(JsonGenerator jg) throws IOException {
+  /* package */ void writeModuleDescriptions(JsonWriter writer) throws IOException {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateJSON");
     try {
-      jg.writeStartObject();
+      writer.beginObject();
       for (ModuleDefinition moduleDef : mModuleTable) {
-        jg.writeObjectFieldStart(moduleDef.name);
-        jg.writeNumberField("moduleID", moduleDef.id);
-        jg.writeObjectFieldStart("methods");
+        writer.name(moduleDef.name).beginObject();
+        writer.name("moduleID").value(moduleDef.id);
+        writer.name("supportsWebWorkers").value(moduleDef.target.supportsWebWorkers());
+        writer.name("methods").beginObject();
         for (int i = 0; i < moduleDef.methods.size(); i++) {
           MethodRegistration method = moduleDef.methods.get(i);
-          jg.writeObjectFieldStart(method.name);
-          jg.writeNumberField("methodID", i);
-          jg.writeStringField("type", method.method.getType());
-          jg.writeEndObject();
+          writer.name(method.name).beginObject();
+          writer.name("methodID").value(i);
+          writer.name("type").value(method.method.getType());
+          writer.endObject();
         }
-        jg.writeEndObject();
-        moduleDef.target.writeConstantsField(jg, "constants");
-        jg.writeEndObject();
+        writer.endObject();
+        moduleDef.target.writeConstantsField(writer, "constants");
+        writer.endObject();
       }
-      jg.writeEndObject();
+      writer.endObject();
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
@@ -114,10 +119,33 @@ public class NativeModuleRegistry {
     }
   }
 
+  /* package */ void notifyReactBridgeInitialized(ReactBridge bridge) {
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "NativeModuleRegistry_notifyReactBridgeInitialized");
+    try {
+      for (NativeModule nativeModule : mModuleInstances.values()) {
+        nativeModule.onReactBridgeInitialized(bridge);
+      }
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
+  }
+
   public void onBatchComplete() {
     for (int i = 0; i < mBatchCompleteListenerModules.size(); i++) {
       mBatchCompleteListenerModules.get(i).onBatchComplete();
     }
+  }
+
+  public void onExecutorUnregistered(ExecutorToken executorToken) {
+    for (int i = 0; i < mOnExecutorUnregisteredListenerModules.size(); i++) {
+      mOnExecutorUnregisteredListenerModules.get(i).onExecutorDestroyed(executorToken);
+    }
+  }
+
+  public <T extends NativeModule> boolean hasModule(Class<T> moduleInterface) {
+    return mModuleInstances.containsKey(moduleInterface);
   }
 
   public <T extends NativeModule> T getModule(Class<T> moduleInterface) {
@@ -150,12 +178,13 @@ public class NativeModuleRegistry {
 
     public void call(
         CatalystInstance catalystInstance,
+        ExecutorToken executorToken,
         int methodId,
         ReadableNativeArray parameters) {
       MethodRegistration method = this.methods.get(methodId);
       Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, method.tracingName);
       try {
-        this.methods.get(methodId).method.invoke(catalystInstance, parameters);
+        this.methods.get(methodId).method.invoke(catalystInstance, executorToken, parameters);
       } finally {
         Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       }

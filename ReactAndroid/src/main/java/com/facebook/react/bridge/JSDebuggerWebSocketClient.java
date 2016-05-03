@@ -103,7 +103,7 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
     }
   }
 
-  public void executeApplicationScript(
+  public void loadApplicationScript(
       String sourceURL,
       HashMap<String, String> injectedObjects,
       JSDebuggerCallback callback) {

@@ -25,7 +25,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_DECOMPOSED_MATRIX_SCALE_Y = "scaleY";
   private static final String PROP_DECOMPOSED_MATRIX_TRANSLATE_X = "translateX";
   private static final String PROP_DECOMPOSED_MATRIX_TRANSLATE_Y = "translateY";
+  private static final String PROP_TRANSFORM = "transform";
   private static final String PROP_OPACITY = "opacity";
+  private static final String PROP_ELEVATION = "elevation";
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
   private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
   private static final String PROP_ACCESSIBILITY_COMPONENT_TYPE = "accessibilityComponentType";
@@ -50,8 +52,18 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setBackgroundColor(backgroundColor);
   }
 
+  // TODO: t11041683 Remove this duplicate property name.
   @ReactProp(name = PROP_DECOMPOSED_MATRIX)
   public void setDecomposedMatrix(T view, ReadableMap decomposedMatrix) {
+    if (decomposedMatrix == null) {
+      resetTransformMatrix(view);
+    } else {
+      setTransformMatrix(view, decomposedMatrix);
+    }
+  }
+
+  @ReactProp(name = PROP_TRANSFORM)
+  public void setTransform(T view, ReadableMap decomposedMatrix) {
     if (decomposedMatrix == null) {
       resetTransformMatrix(view);
     } else {
@@ -62,6 +74,14 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = PROP_OPACITY, defaultFloat = 1.f)
   public void setOpacity(T view, float opacity) {
     view.setAlpha(opacity);
+  }
+
+  @ReactProp(name = PROP_ELEVATION)
+  public void setElevation(T view, float elevation) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      view.setElevation(PixelUtil.toPixelFromDIP(elevation));
+    }
+    // Do nothing on API < 21
   }
 
   @ReactProp(name = PROP_RENDER_TO_HARDWARE_TEXTURE)

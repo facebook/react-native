@@ -79,12 +79,23 @@ public class ReactBridge extends Countable {
    */
   public native void loadScriptFromAssets(AssetManager assetManager, String assetName);
   public native void loadScriptFromFile(@Nullable String fileName, @Nullable String sourceURL);
-  public native void callFunction(int moduleId, int methodId, NativeArray arguments);
-  public native void invokeCallback(int callbackID, NativeArray arguments);
+  public native void callFunction(ExecutorToken executorToken, int moduleId, int methodId, NativeArray arguments, String tracingName);
+  public native void invokeCallback(ExecutorToken executorToken, int callbackID, NativeArray arguments);
   public native void setGlobalVariable(String propertyName, String jsonEncodedArgument);
   public native boolean supportsProfiling();
   public native void startProfiler(String title);
   public native void stopProfiler(String title, String filename);
+  public native ExecutorToken getMainExecutorToken();
   private native void handleMemoryPressureModerate();
   private native void handleMemoryPressureCritical();
+  public native void destroy();
+
+  /**
+   * This method will return a long representing the underlying JSGlobalContextRef pointer or
+   * 0 (representing NULL) when in Chrome debug mode, and is only useful if passed back through
+   * the JNI to native code that will use it with the JavaScriptCore C API.
+   * **WARNING:** This method is *experimental* and should only be used when no other option is
+   * available. It will likely change in a future release!
+   */
+  public native long getJavaScriptContextNativePtrExperimental();
 }

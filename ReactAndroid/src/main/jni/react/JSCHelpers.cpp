@@ -3,10 +3,13 @@
 #include "JSCHelpers.h"
 
 #include <JavaScriptCore/JSStringRef.h>
-#include <fb/log.h>
-#include <jni/fbjni/Exceptions.h>
+#include <glog/logging.h>
 
 #include "Value.h"
+
+#if WITH_FBJSCEXTENSIONS
+#include <jsc_preparsing_cache.h>
+#endif
 
 namespace facebook {
 namespace react {
@@ -33,21 +36,22 @@ JSValueRef makeJSCException(
 }
 
 JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef source) {
-  JSValueRef exn;
-  auto result = JSEvaluateScript(context, script, NULL, source, 0, &exn);
+  JSValueRef exn, result;
+  result = JSEvaluateScript(context, script, NULL, source, 0, &exn);
   if (result == nullptr) {
     Value exception = Value(context, exn);
     std::string exceptionText = exception.toString().str();
-    FBLOGE("Got JS Exception: %s", exceptionText.c_str());
+    LOG(ERROR) << "Got JS Exception: " << exceptionText;
     auto line = exception.asObject().getProperty("line");
 
-    std::ostringstream lineInfo;
+    std::ostringstream locationInfo;
+    std::string file = source != nullptr ? String::ref(source).str() : "";
+    locationInfo << "(" << (file.length() ? file : "<unknown file>");
     if (line != nullptr && line.isNumber()) {
-      lineInfo << " (line " << line.asInteger() << " in the generated bundle)";
-    } else {
-      lineInfo << " (no line info)";
+      locationInfo << ":" << line.asInteger();
     }
-    throwJSExecutionException("%s%s", exceptionText.c_str(), lineInfo.str().c_str());
+    locationInfo << ")";
+    throwJSExecutionException("%s %s", exceptionText.c_str(), locationInfo.str().c_str());
   }
   return result;
 }

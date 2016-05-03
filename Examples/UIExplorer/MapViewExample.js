@@ -15,17 +15,18 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
+var { PropTypes } = React;
 var {
   Image,
   MapView,
-  PropTypes,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-} = React;
+} = ReactNative;
 
 var regionText = {
   latitude: '0',
@@ -313,10 +314,24 @@ exports.examples = [
             }}>
             <Image
               style={{width:30, height:30}}
-              source={require('image!uie_thumb_selected')}
+              source={require('./uie_thumb_selected.png')}
             />
           </TouchableOpacity>
         ),
+      }}/>;
+    }
+  },
+  {
+    title: 'Annotation focus example',
+    render() {
+      return <AnnotationExample style={styles.map} annotation={{
+        title: 'More Info...',
+        onFocus: () => {
+          alert('Annotation gets focus');
+        },
+        onBlur: () => {
+          alert('Annotation lost focus');
+        }
       }}/>;
     }
   },

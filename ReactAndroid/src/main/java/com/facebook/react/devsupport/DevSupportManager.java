@@ -25,6 +25,7 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   void addCustomDevOption(String optionName, DevOptionHandler optionHandler);
   void showNewJSError(String message, ReadableArray details, int errorCookie);
   void updateJSError(final String message, final ReadableArray details, final int errorCookie);
+  void hideRedboxDialog();
   void showDevOptionsDialog();
   void setDevSupportEnabled(boolean isDevSupportEnabled);
   boolean getDevSupportEnabled();

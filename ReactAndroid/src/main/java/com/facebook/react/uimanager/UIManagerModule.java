@@ -11,16 +11,10 @@ package com.facebook.react.uimanager;
 
 import javax.annotation.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import android.util.DisplayMetrics;
-
-import com.facebook.csslayout.CSSLayoutContext;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.OnBatchCompleteListener;
@@ -29,7 +23,6 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -40,7 +33,7 @@ import com.facebook.systrace.SystraceMessage;
  *
  * <p>
  * <h2>== Transactional Requirement ==</h2>
- * A requirement of this class is to make sure that transactional UI updates occur all at, meaning
+ * A requirement of this class is to make sure that transactional UI updates occur all at once, meaning
  * that no intermediate state is ever rendered to the screen. For example, if a JS application
  * update changes the background of View A to blue and the width of View B to 100, both need to
  * appear at once. Practically, this means that all UI update code related to a single transaction
@@ -84,12 +77,18 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       UIImplementation uiImplementation) {
     super(reactContext);
     mEventDispatcher = new EventDispatcher(reactContext);
-    DisplayMetrics displayMetrics = reactContext.getResources().getDisplayMetrics();
-    DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
-    mModuleConstants = createConstants(displayMetrics, viewManagerList);
+    mModuleConstants = createConstants(viewManagerList);
     mUIImplementation = uiImplementation;
 
     reactContext.addLifecycleEventListener(this);
+  }
+
+  /**
+   * This method gives an access to the {@link UIImplementation} object that can be used to execute
+   * operations on the view hierarchy.
+   */
+  public UIImplementation getUIImplementation() {
+    return mUIImplementation;
   }
 
   @Override
@@ -123,14 +122,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mEventDispatcher.onCatalystInstanceDestroyed();
   }
 
-  private static Map<String, Object> createConstants(
-      DisplayMetrics displayMetrics,
-      List<ViewManager> viewManagerList) {
+  private static Map<String, Object> createConstants(List<ViewManager> viewManagerList) {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants");
     try {
-      return UIManagerModuleConstantsHelper.createConstants(
-          displayMetrics,
-          viewManagerList);
+      return UIManagerModuleConstantsHelper.createConstants(viewManagerList);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
@@ -237,6 +232,20 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   /**
+   * Interface for fast tracking the initial adding of views.  Children view tags are assumed to be
+   * in order
+   *
+   * @param viewTag the view tag of the parent view
+   * @param childrenTags An array of tags to add to the parent in order
+   */
+  @ReactMethod
+  public void setChildren(
+    int viewTag,
+    ReadableArray childrenTags) {
+    mUIImplementation.setChildren(viewTag, childrenTags);
+  }
+
+  /**
    * Replaces the View specified by oldTag with the View specified by newTag within oldTag's parent.
    * This resolves to a simple {@link #manageChildren} call, but React doesn't have enough info in
    * JS to formulate it itself.
@@ -264,6 +273,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void measure(int reactTag, Callback callback) {
     mUIImplementation.measure(reactTag, callback);
+  }
+
+  /**
+   * Determines the location on screen, width, and height of the given view relative to the device
+   * screen and returns the values via an async callback.  This is the absolute position including
+   * things like the status bar
+   */
+  @ReactMethod
+  public void measureInWindow(int reactTag, Callback callback) {
+    mUIImplementation.measureInWindow(reactTag, callback);
   }
 
   /**

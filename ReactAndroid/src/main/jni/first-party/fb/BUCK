@@ -1,0 +1,28 @@
+include_defs('//ReactAndroid/DEFS')
+
+cxx_library(
+  name = 'fb',
+  soname = 'libfb.so',
+  srcs = [
+    'assert.cpp',
+    'log.cpp',
+  ],
+  header_namespace='fb',
+  exported_headers=subdir_glob([
+    ('', '*.h'),
+    ('include/fb', '*.h'),
+  ]),
+  preprocessor_flags=[
+    '-DLOG_TAG="libfb"',
+  ],
+  # We want to use this library during bootstrap
+  can_be_asset = False,
+  deps = [
+    react_native_target('jni/third-party/android-ndk:android'),
+    react_native_target('jni/third-party/android-ndk:log'),
+    react_native_target('jni/third-party/glibc:dl'),
+  ],
+  visibility = [
+    'PUBLIC'
+  ],
+)

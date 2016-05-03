@@ -23,7 +23,8 @@ import android.view.ViewGroup;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.touch.CatalystInterceptingViewGroup;
+import com.facebook.react.touch.ReactHitSlopView;
+import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PointerEvents;
@@ -34,7 +35,7 @@ import com.facebook.react.uimanager.ReactPointerEventsView;
  * initializes most of the storage needed for them.
  */
 public class ReactViewGroup extends ViewGroup implements
-    CatalystInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView {
+    ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
@@ -79,7 +80,7 @@ public class ReactViewGroup extends ViewGroup implements
   // temporary optimization/hack that is mainly applicable to the large list of images. The way
   // it's implemented is that we store an additional array of children in view node. We selectively
   // remove some of the views (detach) from it while still storing them in that additional array.
-  // We override all possible add methods for {@link ViewGroup} so that we can controll this process
+  // We override all possible add methods for {@link ViewGroup} so that we can control this process
   // whenever the option is set. We also override {@link ViewGroup#getChildAt} and
   // {@link ViewGroup#getChildCount} so those methods may return views that are not attached.
   // This is risky but allows us to perform a correct cleanup in {@link NativeViewHierarchyManager}.
@@ -87,6 +88,7 @@ public class ReactViewGroup extends ViewGroup implements
   private @Nullable View[] mAllChildren = null;
   private int mAllChildrenCount;
   private @Nullable Rect mClippingRect;
+  private @Nullable Rect mHitSlopRect;
   private PointerEvents mPointerEvents = PointerEvents.AUTO;
   private @Nullable ChildrenLayoutChangeListener mChildrenLayoutChangeListener;
   private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
@@ -205,6 +207,10 @@ public class ReactViewGroup extends ViewGroup implements
 
   public void setBorderRadius(float borderRadius) {
     getOrCreateReactViewBackground().setRadius(borderRadius);
+  }
+
+  public void setBorderRadius(float borderRadius, int position) {
+    getOrCreateReactViewBackground().setRadius(borderRadius, position);
   }
 
   public void setBorderStyle(@Nullable String style) {
@@ -353,12 +359,28 @@ public class ReactViewGroup extends ViewGroup implements
   @Override
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
     super.onSizeChanged(w, h, oldw, oldh);
-    updateClippingRect();
+    if (mRemoveClippedSubviews) {
+      updateClippingRect();
+    }
+  }
+
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    if (mRemoveClippedSubviews) {
+      updateClippingRect();
+    }
   }
 
   @Override
   public PointerEvents getPointerEvents() {
     return mPointerEvents;
+  }
+
+  @Override
+  protected void dispatchSetPressed(boolean pressed) {
+    // Prevents the ViewGroup from dispatching the pressed state
+    // to it's children.
   }
 
   /*package*/ void setPointerEvents(PointerEvents pointerEvents) {
@@ -497,6 +519,15 @@ public class ReactViewGroup extends ViewGroup implements
       }
     }
     return mReactBackgroundDrawable;
+  }
+
+  @Override
+  public @Nullable Rect getHitSlopRect() {
+    return mHitSlopRect;
+  }
+
+  public void setHitSlopRect(@Nullable Rect rect) {
+    mHitSlopRect = rect;
   }
 
 }

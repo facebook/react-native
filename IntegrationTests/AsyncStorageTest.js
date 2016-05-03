@@ -10,13 +10,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   AsyncStorage,
   Text,
   View,
-} = React;
-var { TestModule } = React.NativeModules;
+} = ReactNative;
+var { TestModule } = ReactNative.NativeModules;
 
 var deepDiffer = require('deepDiffer');
 
@@ -142,11 +143,29 @@ function testMerge() {
         expectAsyncNoError('testMerge/setItem', err3);
         expectEqual(JSON.parse(result), VAL_MERGE_EXPECT, 'testMerge');
         updateMessage('objects deeply merged\nDone!');
+        runTestCase('multi set and get', testOptimizedMultiGet);
+      });
+    });
+  });
+}
+
+function testOptimizedMultiGet() {
+  let batch = [[KEY_1, VAL_1], [KEY_2, VAL_2]];
+  let keys = batch.map(([key, value]) => key);
+  AsyncStorage.multiSet(batch, (err1) => {
+    // yes, twice on purpose
+    ;[1, 2].forEach((i) => {
+      expectAsyncNoError(`${i} testOptimizedMultiGet/multiSet`, err1);
+      AsyncStorage.multiGet(keys, (err2, result) => {
+        expectAsyncNoError(`${i} testOptimizedMultiGet/multiGet`, err2);
+        expectEqual(result, batch, `${i} testOptimizedMultiGet multiGet`);
+        updateMessage('multiGet([key_1, key_2]) correctly returned ' + JSON.stringify(result));
         done();
       });
     });
   });
 }
+
 
 var AsyncStorageTest = React.createClass({
   getInitialState() {

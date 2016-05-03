@@ -30,7 +30,6 @@
 var AnimationsDebugModule = require('NativeModules').AnimationsDebugModule;
 var Dimensions = require('Dimensions');
 var InteractionMixin = require('InteractionMixin');
-var Map = require('Map');
 var NavigationContext = require('NavigationContext');
 var NavigatorBreadcrumbNavigationBar = require('NavigatorBreadcrumbNavigationBar');
 var NavigatorNavigationBar = require('NavigatorNavigationBar');
@@ -44,7 +43,7 @@ var View = require('View');
 
 var clamp = require('clamp');
 var flattenStyle = require('flattenStyle');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var rebound = require('rebound');
 
 var PropTypes = React.PropTypes;
@@ -159,41 +158,32 @@ var GESTURE_ACTIONS = [
  *     }
  *   />
  * ```
- *
- * ### Navigator Methods
- *
- * If you have a ref to the Navigator element, you can invoke several methods
- * on it to trigger navigation:
- *
- *  - `getCurrentRoutes()` - returns the current list of routes
- *  - `jumpBack()` - Jump backward without unmounting the current scene
- *  - `jumpForward()` - Jump forward to the next scene in the route stack
- *  - `jumpTo(route)` - Transition to an existing scene without unmounting
- *  - `push(route)` - Navigate forward to a new scene, squashing any scenes
- *     that you could `jumpForward` to
- *  - `pop()` - Transition back and unmount the current scene
- *  - `replace(route)` - Replace the current scene with a new route
- *  - `replaceAtIndex(route, index)` - Replace a scene as specified by an index
- *  - `replacePrevious(route)` - Replace the previous scene
- *  - `immediatelyResetRouteStack(routeStack)` - Reset every scene with an
- *     array of routes
- *  - `popToRoute(route)` - Pop to a particular scene, as specified by its
- *     route. All scenes after it will be unmounted
- *  - `popToTop()` - Pop to the first scene in the stack, unmounting every
- *     other scene
- *
  */
 var Navigator = React.createClass({
 
   propTypes: {
     /**
      * Optional function that allows configuration about scene animations and
-     * gestures. Will be invoked with the route and should return a scene
-     * configuration object
+     * gestures. Will be invoked with the route and the routeStack and should
+     * return a scene configuration object
      *
      * ```
-     * (route) => Navigator.SceneConfigs.FloatFromRight
+     * (route, routeStack) => Navigator.SceneConfigs.FloatFromRight
      * ```
+     *
+     * Available options are:
+     *
+     *  - Navigator.SceneConfigs.PushFromRight (default)
+     *  - Navigator.SceneConfigs.FloatFromRight
+     *  - Navigator.SceneConfigs.FloatFromLeft
+     *  - Navigator.SceneConfigs.FloatFromBottom
+     *  - Navigator.SceneConfigs.FloatFromBottomAndroid
+     *  - Navigator.SceneConfigs.FadeAndroid
+     *  - Navigator.SceneConfigs.HorizontalSwipeJump
+     *  - Navigator.SceneConfigs.HorizontalSwipeJumpFromRight
+     *  - Navigator.SceneConfigs.VerticalUpSwipeJump
+     *  - Navigator.SceneConfigs.VerticalDownSwipeJump
+     *
      */
     configureScene: PropTypes.func,
 
@@ -224,25 +214,20 @@ var Navigator = React.createClass({
     initialRouteStack: PropTypes.arrayOf(PropTypes.object),
 
     /**
-     * @deprecated
-     * Use `navigationContext.addListener('willfocus', callback)` instead.
-     *
      * Will emit the target route upon mounting and before each nav transition
      */
     onWillFocus: PropTypes.func,
 
     /**
-     * @deprecated
-     * Use `navigationContext.addListener('didfocus', callback)` instead.
-     *
      * Will be called with the new route of each scene after the transition is
      * complete or after the initial mounting
      */
     onDidFocus: PropTypes.func,
 
     /**
-     * Optionally provide a navigation bar that persists across scene
-     * transitions
+     * Optionally provide a component as navigation bar that persists across scene
+     * transitions. The component will receive two props: `navigator` and `navState`.
+     * It will be rerendered when the routes change.
      */
     navigationBar: PropTypes.node,
 
@@ -292,7 +277,7 @@ var Navigator = React.createClass({
     }
     return {
       sceneConfigStack: routeStack.map(
-        (route) => this.props.configureScene(route)
+        (route) => this.props.configureScene(route, routeStack)
       ),
       routeStack,
       presentedIndex: initialRouteIndex,
@@ -356,6 +341,8 @@ var Navigator = React.createClass({
   },
 
   /**
+   * Reset every scene with an array of routes.
+   *
    * @param {RouteStack} nextRouteStack Next route stack to reinitialize. This
    * doesn't accept stack item `id`s, which implies that all existing items are
    * destroyed, and then potentially recreated according to `routeStack`. Does
@@ -367,7 +354,7 @@ var Navigator = React.createClass({
     this.setState({
       routeStack: nextRouteStack,
       sceneConfigStack: nextRouteStack.map(
-        this.props.configureScene
+        route => this.props.configureScene(route, nextRouteStack)
       ),
       presentedIndex: destIndex,
       activeGesture: null,
@@ -376,6 +363,7 @@ var Navigator = React.createClass({
     }, () => {
       this._handleSpringUpdate();
       this._navBar && this._navBar.immediatelyRefresh();
+      this._emitDidFocus(this.state.routeStack[this.state.presentedIndex]);
     });
   },
 
@@ -781,7 +769,7 @@ var Navigator = React.createClass({
   },
 
   _matchGestureAction: function(eligibleGestures, gestures, gestureState) {
-    if (!gestures) {
+    if (!gestures || !eligibleGestures || !eligibleGestures.some) {
       return null;
     }
     var matchedGesture = null;
@@ -796,12 +784,14 @@ var Navigator = React.createClass({
       }
       var isTravelVertical = gesture.direction === 'top-to-bottom' || gesture.direction === 'bottom-to-top';
       var isTravelInverted = gesture.direction === 'right-to-left' || gesture.direction === 'bottom-to-top';
+      var startedLoc = isTravelVertical ? gestureState.y0 : gestureState.x0;
       var currentLoc = isTravelVertical ? gestureState.moveY : gestureState.moveX;
       var travelDist = isTravelVertical ? gestureState.dy : gestureState.dx;
       var oppositeAxisTravelDist =
         isTravelVertical ? gestureState.dx : gestureState.dy;
       var edgeHitWidth = gesture.edgeHitWidth;
       if (isTravelInverted) {
+        startedLoc = -startedLoc;
         currentLoc = -currentLoc;
         travelDist = -travelDist;
         oppositeAxisTravelDist = -oppositeAxisTravelDist;
@@ -809,8 +799,11 @@ var Navigator = React.createClass({
           -(SCREEN_HEIGHT - edgeHitWidth) :
           -(SCREEN_WIDTH - edgeHitWidth);
       }
+      if (startedLoc === 0) {
+        startedLoc = currentLoc;
+      }
       var moveStartedInRegion = gesture.edgeHitWidth == null ||
-        currentLoc < edgeHitWidth;
+        startedLoc < edgeHitWidth;
       if (!moveStartedInRegion) {
         return false;
       }
@@ -887,6 +880,9 @@ var Navigator = React.createClass({
     this._transitionTo(destIndex);
   },
 
+  /**
+   * Transition to an existing scene without unmounting
+   */
   jumpTo: function(route) {
     var destIndex = this.state.routeStack.indexOf(route);
     invariant(
@@ -896,14 +892,24 @@ var Navigator = React.createClass({
     this._jumpN(destIndex - this.state.presentedIndex);
   },
 
+  /**
+   * Jump forward to the next scene in the route stack.
+   */
   jumpForward: function() {
     this._jumpN(1);
   },
 
+  /**
+   * Jump backward without unmounting the current scene.
+   */
   jumpBack: function() {
     this._jumpN(-1);
   },
 
+  /**
+   * Navigate forward to a new scene, squashing any scenes that you could
+   * `jumpForward` to.
+   */
   push: function(route) {
     invariant(!!route, 'Must supply route to push');
     var activeLength = this.state.presentedIndex + 1;
@@ -912,7 +918,7 @@ var Navigator = React.createClass({
     var nextStack = activeStack.concat([route]);
     var destIndex = nextStack.length - 1;
     var nextAnimationConfigStack = activeAnimationConfigStack.concat([
-      this.props.configureScene(route),
+      this.props.configureScene(route, nextStack),
     ]);
     this._emitWillFocus(nextStack[destIndex]);
     this.setState({
@@ -945,6 +951,9 @@ var Navigator = React.createClass({
     );
   },
 
+  /**
+   * Transition back and unmount the current scene.
+   */
   pop: function() {
     if (this.state.transitionQueue.length) {
       // This is the workaround to prevent user from firing multiple `pop()`
@@ -962,7 +971,7 @@ var Navigator = React.createClass({
   },
 
   /**
-   * Replace a route in the navigation stack.
+   * Replace a scene as specified by an index
    *
    * `index` specifies the route in the stack that should be replaced.
    * If it's negative, it counts from the back.
@@ -980,7 +989,7 @@ var Navigator = React.createClass({
     var nextRouteStack = this.state.routeStack.slice();
     var nextAnimationModeStack = this.state.sceneConfigStack.slice();
     nextRouteStack[index] = route;
-    nextAnimationModeStack[index] = this.props.configureScene(route);
+    nextAnimationModeStack[index] = this.props.configureScene(route, nextRouteStack);
 
     if (index === this.state.presentedIndex) {
       this._emitWillFocus(route);
@@ -997,23 +1006,30 @@ var Navigator = React.createClass({
   },
 
   /**
-   * Replaces the current scene in the stack.
+   * Replace the current scene with a new route.
    */
   replace: function(route) {
     this.replaceAtIndex(route, this.state.presentedIndex);
   },
 
   /**
-   * Replace the current route's parent.
+   * Replace the previous scene.
    */
   replacePrevious: function(route) {
     this.replaceAtIndex(route, this.state.presentedIndex - 1);
   },
 
+  /**
+   * Pop to the first scene in the stack, unmounting every other scene.
+   */
   popToTop: function() {
     this.popToRoute(this.state.routeStack[0]);
   },
 
+  /**
+   * Pop to a particular scene, as specified by its route.
+   * All scenes after it will be unmounted.
+   */
   popToRoute: function(route) {
     var indexOfRoute = this.state.routeStack.indexOf(route);
     invariant(
@@ -1024,6 +1040,9 @@ var Navigator = React.createClass({
     this._popN(numToPop);
   },
 
+  /**
+   * Replace the previous scene and pop to it.
+   */
   replacePreviousAndPop: function(route) {
     if (this.state.routeStack.length < 2) {
       return;
@@ -1032,6 +1051,9 @@ var Navigator = React.createClass({
     this.pop();
   },
 
+  /**
+   * Navigate to a new scene and reset route stack.
+   */
   resetTo: function(route) {
     invariant(!!route, 'Must supply route to push');
     this.replaceAtIndex(route, 0, () => {
@@ -1043,6 +1065,9 @@ var Navigator = React.createClass({
     });
   },
 
+  /**
+   * Returns the current list of routes.
+   */
   getCurrentRoutes: function() {
     // Clone before returning to avoid caller mutating the stack
     return this.state.routeStack.slice();

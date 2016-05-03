@@ -10,10 +10,10 @@
  */
 'use strict';
 
-var invariant = require('invariant');
-var keyMirror = require('keyMirror');
-var performanceNow = require('performanceNow');
-var warning = require('warning');
+var invariant = require('fbjs/lib/invariant');
+var keyMirror = require('fbjs/lib/keyMirror');
+var performanceNow = require('fbjs/lib/performanceNow');
+var warning = require('fbjs/lib/warning');
 var Systrace = require('Systrace');
 
 /**

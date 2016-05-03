@@ -12,10 +12,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @providesModule AnExScroll
+ * @flow
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Animated,
   Image,
@@ -23,15 +25,10 @@ var {
   StyleSheet,
   Text,
   View,
-} = React;
+} = ReactNative;
 
 class AnExScroll extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      scrollX: new Animated.Value(0),
-    };
-  }
+  state: any = { scrollX: new Animated.Value(0) };
 
   render() {
     var width = this.props.panelWidth;

@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
@@ -35,14 +35,14 @@ public class SourceCodeModule extends BaseJavaModule {
 
   @Override
   public String getName() {
-    return "RKSourceCode";
+    return "RCTSourceCode";
   }
 
   @ReactMethod
-  public void getScriptText(final Callback onSuccess, final Callback onError) {
+  public void getScriptText(final Promise promise) {
     WritableMap map = new WritableNativeMap();
     map.putString("fullSourceMappingURL", mSourceMapUrl);
-    onSuccess.invoke(map);
+    promise.resolve(map);
   }
 
   @Override

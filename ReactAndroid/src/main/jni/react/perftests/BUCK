@@ -1,0 +1,21 @@
+include_defs('//ReactAndroid/DEFS')
+
+cxx_library(
+  name = 'perftests',
+  srcs = [ 'OnLoad.cpp' ],
+  soname = 'libreactnativetests.so',
+  preprocessor_flags = [
+    '-DLOG_TAG=\"ReactPerftests\"',
+  ],
+  deps = [
+    '//native:base',
+    '//native/jni:jni',
+  ],
+  visibility = [
+    '//instrumentation_tests/com/facebook/catalyst/...',
+  ],
+)
+
+project_config(
+  src_target = ':perftests',
+)

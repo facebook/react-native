@@ -10,6 +10,7 @@
 #import "RCTShadowView.h"
 #import "RCTImageComponent.h"
 #import "RCTImageSource.h"
+#import "RCTResizeMode.h"
 
 @class RCTBridge;
 
@@ -22,5 +23,6 @@
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
 @property (nonatomic, strong) RCTImageSource *source;
+@property (nonatomic, assign) RCTResizeMode resizeMode;
 
 @end

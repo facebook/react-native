@@ -24,7 +24,7 @@ var processColor = require('processColor');
 var resolveAssetSource = require('resolveAssetSource');
 var sizesDiffer = require('sizesDiffer');
 var verifyPropTypes = require('verifyPropTypes');
-var warning = require('warning');
+var warning = require('fbjs/lib/warning');
 
 /**
  * Used to create React components that directly wrap native component
@@ -106,17 +106,22 @@ var TypeToDifferMap = {
   // (not yet implemented)
 };
 
+function processColorArray(colors: []): [] {
+  return colors && colors.map(processColor);
+}
+
 var TypeToProcessorMap = {
   // iOS Types
   CGColor: processColor,
-  CGColorArray: processColor,
+  CGColorArray: processColorArray,
   UIColor: processColor,
-  UIColorArray: processColor,
+  UIColorArray: processColorArray,
   CGImage: resolveAssetSource,
   UIImage: resolveAssetSource,
   RCTImageSource: resolveAssetSource,
   // Android Types
   Color: processColor,
+  ColorArray: processColorArray,
 };
 
 module.exports = requireNativeComponent;

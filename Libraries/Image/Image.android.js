@@ -23,10 +23,13 @@ var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
 
 var flattenStyle = require('flattenStyle');
-var invariant = require('invariant');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
+
+var {
+  ImageLoader,
+} = NativeModules;
 
 /**
  * <Image> - A react component for displaying different types of images,
@@ -38,7 +41,7 @@ var resolveAssetSource = require('resolveAssetSource');
  *       <View>
  *         <Image
  *           style={styles.icon}
- *           source={require('image!myIcon')}
+ *           source={require('./myIcon.png')}
  *         />
  *         <Image
  *           style={styles.logo}
@@ -63,11 +66,11 @@ var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
 var Image = React.createClass({
   propTypes: {
     ...View.propTypes,
-    style: StyleSheetPropType(ImageStylePropTypes), 
+    style: StyleSheetPropType(ImageStylePropTypes),
    /**
      * `uri` is a string representing the resource identifier for the image, which
-     * could be an http address, a local file path, or the name of a static image
-     * resource (which should be wrapped in the `require('image!name')` function).
+     * could be an http address, a local file path, or a static image
+     * resource (which should be wrapped in the `require('./path/to/image.png')` function).
      */
     source: PropTypes.oneOfType([
       PropTypes.shape({
@@ -75,7 +78,7 @@ var Image = React.createClass({
       }),
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
-    ]).isRequired,
+    ]),
     /**
      * similarly to `source`, this property represents the resource used to render
      * the loading indicator for the image, displayed until image is ready to be
@@ -110,6 +113,13 @@ var Image = React.createClass({
 
   statics: {
     resizeMode: ImageResizeMode,
+    /**
+     * Prefetches a remote image for later use by downloading it to the disk
+     * cache
+     */
+    prefetch(url: string) {
+      return ImageLoader.prefetchImage(url);
+    },
   },
 
   mixins: [NativeMethodsMixin],
@@ -121,14 +131,14 @@ var Image = React.createClass({
    */
   viewConfig: {
     uiViewClassName: 'RCTView',
-    validAttributes: ReactNativeViewAttributes.RKView
+    validAttributes: ReactNativeViewAttributes.RCTView,
   },
 
   _updateViewConfig: function(props) {
     if (props.children) {
       this.viewConfig = {
         uiViewClassName: 'RCTView',
-        validAttributes: ReactNativeViewAttributes.RKView,
+        validAttributes: ReactNativeViewAttributes.RCTView,
       };
     } else {
       this.viewConfig = {
@@ -159,6 +169,10 @@ var Image = React.createClass({
 
     if (source && source.uri === '') {
       console.warn('source.uri should not be an empty string');
+    }
+
+    if (this.props.src) {
+      console.warn('The <Image> component requires a `source` property rather than `src`.');
     }
 
     if (source && source.uri) {

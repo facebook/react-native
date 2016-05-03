@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import android.util.SparseBooleanArray;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
 /**
@@ -70,7 +71,7 @@ public class NativeViewHierarchyOptimizer {
   public void handleCreateView(
       ReactShadowNode node,
       ThemedReactContext themedContext,
-      @Nullable CatalystStylesDiffMap initialProps) {
+      @Nullable ReactStylesDiffMap initialProps) {
     if (!ENABLED) {
       int tag = node.getReactTag();
       mUIViewOperationQueue.enqueueCreateView(
@@ -109,7 +110,7 @@ public class NativeViewHierarchyOptimizer {
   public void handleUpdateView(
       ReactShadowNode node,
       String className,
-      CatalystStylesDiffMap props) {
+      ReactStylesDiffMap props) {
     if (!ENABLED) {
       mUIViewOperationQueue.enqueueUpdateProperties(node.getReactTag(), className, props);
       return;
@@ -168,6 +169,27 @@ public class NativeViewHierarchyOptimizer {
       ViewAtIndex toAdd = viewsToAdd[i];
       ReactShadowNode nodeToAdd = mShadowNodeRegistry.getNode(toAdd.mTag);
       addNodeToNode(nodeToManage, nodeToAdd, toAdd.mIndex);
+    }
+  }
+
+  /**
+   * Handles a setChildren call.  This is a simplification of handleManagerChildren that only adds
+   * children in index order of the childrenTags array
+   */
+  public void handleSetChildren(
+    ReactShadowNode nodeToManage,
+    ReadableArray childrenTags
+  ) {
+    if (!ENABLED) {
+      mUIViewOperationQueue.enqueueSetChildren(
+        nodeToManage.getReactTag(),
+        childrenTags);
+      return;
+    }
+
+    for (int i = 0; i < childrenTags.size(); i++) {
+      ReactShadowNode nodeToAdd = mShadowNodeRegistry.getNode(childrenTags.getInt(i));
+      addNodeToNode(nodeToManage, nodeToAdd, i);
     }
   }
 
@@ -377,7 +399,7 @@ public class NativeViewHierarchyOptimizer {
 
   private void transitionLayoutOnlyViewToNativeView(
       ReactShadowNode node,
-      @Nullable CatalystStylesDiffMap props) {
+      @Nullable ReactStylesDiffMap props) {
     ReactShadowNode parent = node.getParent();
     if (parent == null) {
       node.setIsLayoutOnly(false);
@@ -419,7 +441,7 @@ public class NativeViewHierarchyOptimizer {
     mTagsWithLayoutVisited.clear();
   }
 
-  private static boolean isLayoutOnlyAndCollapsable(@Nullable CatalystStylesDiffMap props) {
+  private static boolean isLayoutOnlyAndCollapsable(@Nullable ReactStylesDiffMap props) {
     if (props == null) {
       return true;
     }

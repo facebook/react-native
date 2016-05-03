@@ -16,14 +16,17 @@ const EventEmitter = require('EventEmitter');
 const Set = require('Set');
 const TaskQueue = require('TaskQueue');
 
-const invariant = require('invariant');
-const keyMirror = require('keyMirror');
+const invariant = require('fbjs/lib/invariant');
+const keyMirror = require('fbjs/lib/keyMirror');
 const setImmediate = require('setImmediate');
 
 type Handle = number;
 import type {Task} from 'TaskQueue';
 
 const _emitter = new EventEmitter();
+
+const DEBUG_DELAY = 0;
+const DEBUG = false;
 
 /**
  * InteractionManager allows long-running work to be scheduled after any
@@ -98,6 +101,7 @@ var InteractionManager = {
    * Notify manager that an interaction has started.
    */
   createInteractionHandle(): Handle {
+    DEBUG && console.log('create interaction handle');
     _scheduleUpdate();
     var handle = ++_inc;
     _addInteractionSet.add(handle);
@@ -108,6 +112,7 @@ var InteractionManager = {
    * Notify manager that an interaction has completed.
    */
   clearInteractionHandle(handle: Handle) {
+    DEBUG && console.log('clear interaction handle');
     invariant(
       !!handle,
       'Must provide a handle to clear.'
@@ -143,7 +148,7 @@ let _deadline = -1;
 function _scheduleUpdate() {
   if (!_nextUpdateHandle) {
     if (_deadline > 0) {
-      _nextUpdateHandle = setTimeout(_processUpdate, 0);
+      _nextUpdateHandle = setTimeout(_processUpdate, 0 + DEBUG_DELAY);
     } else {
       _nextUpdateHandle = setImmediate(_processUpdate);
     }

@@ -13,6 +13,8 @@ import javax.annotation.Nullable;
 
 import java.util.Map;
 
+import android.graphics.Color;
+
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -42,6 +44,11 @@ public class ReactScrollViewManager
     return new ReactScrollView(context);
   }
 
+  @ReactProp(name = "scrollEnabled", defaultBoolean = true)
+  public void setScrollEnabled(ReactScrollView view, boolean value) {
+    view.setScrollEnabled(value);
+  }
+
   @ReactProp(name = "showsVerticalScrollIndicator")
   public void setShowsVerticalScrollIndicator(ReactScrollView view, boolean value) {
     view.setVerticalScrollBarEnabled(value);
@@ -65,6 +72,17 @@ public class ReactScrollViewManager
     view.setSendMomentumEvents(sendMomentumEvents);
   }
 
+  /**
+   * When set, fills the rest of the scrollview with a color to avoid setting a background and
+   * creating unnecessary overdraw.
+   * @param view
+   * @param color
+   */
+  @ReactProp(name = "endFillColor", defaultInt = Color.TRANSPARENT, customType = "Color")
+  public void setBottomFillColor(ReactScrollView view, int color) {
+    view.setEndFillColor(color);
+  }
+
   @Override
   public @Nullable Map<String, Integer> getCommandsMap() {
     return ReactScrollViewCommandHelper.getCommandsMap();
@@ -82,14 +100,11 @@ public class ReactScrollViewManager
   public void scrollTo(
       ReactScrollView scrollView,
       ReactScrollViewCommandHelper.ScrollToCommandData data) {
-    scrollView.smoothScrollTo(data.mDestX, data.mDestY);
-  }
-
-  @Override
-  public void scrollWithoutAnimationTo(
-      ReactScrollView scrollView,
-      ReactScrollViewCommandHelper.ScrollToCommandData data) {
-    scrollView.scrollTo(data.mDestX, data.mDestY);
+    if (data.mAnimated) {
+      scrollView.smoothScrollTo(data.mDestX, data.mDestY);
+    } else {
+      scrollView.scrollTo(data.mDestX, data.mDestY);
+    }
   }
 
   @Override

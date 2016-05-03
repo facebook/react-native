@@ -17,27 +17,24 @@ namespace jni {
 
 namespace detail {
 
-// convert to HybridClass* from jhybridobject
-template <typename T>
-struct Convert<
-  T, typename std::enable_if<
-    std::is_base_of<BaseHybridClass, typename std::remove_pointer<T>::type>::value>::type> {
-  typedef typename std::remove_pointer<T>::type::jhybridobject jniType;
-  static T fromJni(jniType t) {
-    if (t == nullptr) {
-      return nullptr;
-    }
-    return facebook::jni::cthis(wrap_alias(t));
-  }
-  // There is no automatic return conversion for objects.
-};
+#ifdef __i386__
+// X86 ABI forces 16 byte stack allignment on calls. Unfortunately
+// sometimes Dalvik chooses not to obey the ABI:
+// - https://code.google.com/p/android/issues/detail?id=61012
+// - https://android.googlesource.com/platform/ndk/+/81696d2%5E!/
+// Therefore, we tell the compiler to re-align the stack on entry
+// to our JNI functions.
+#define JNI_ENTRY_POINT __attribute__((force_align_arg_pointer))
+#else
+#define JNI_ENTRY_POINT
+#endif
 
 // registration wrapper for legacy JNI-style functions
 
 template<typename F, F func, typename C, typename... Args>
 inline NativeMethodWrapper* exceptionWrapJNIMethod(void (*)(JNIEnv*, C, Args... args)) {
   struct funcWrapper {
-    static void call(JNIEnv* env, jobject obj, Args... args) {
+    JNI_ENTRY_POINT static void call(JNIEnv* env, jobject obj, Args... args) {
       // Note that if func was declared noexcept, then both gcc and clang are smart
       // enough to elide the try/catch.
       try {
@@ -55,9 +52,9 @@ inline NativeMethodWrapper* exceptionWrapJNIMethod(void (*)(JNIEnv*, C, Args... 
 template<typename F, F func, typename C, typename R, typename... Args>
 inline NativeMethodWrapper* exceptionWrapJNIMethod(R (*)(JNIEnv*, C, Args... args)) {
   struct funcWrapper {
-    static R call(JNIEnv* env, jobject obj, Args... args) {
+    JNI_ENTRY_POINT static R call(JNIEnv* env, jobject obj, Args... args) {
       try {
-        return (*func)(env, static_cast<C>(obj), args...);
+        return (*func)(env, static_cast<JniType<C>>(obj), args...);
       } catch (...) {
         translatePendingCppExceptionToJavaException();
         return R{};
@@ -74,10 +71,10 @@ inline NativeMethodWrapper* exceptionWrapJNIMethod(R (*)(JNIEnv*, C, Args... arg
 template<typename F, F func, typename C, typename... Args>
 inline NativeMethodWrapper* exceptionWrapJNIMethod(void (*)(alias_ref<C>, Args... args)) {
   struct funcWrapper {
-    static void call(JNIEnv*, jobject obj,
-                     typename Convert<typename std::decay<Args>::type>::jniType... args) {
+    JNI_ENTRY_POINT static void call(JNIEnv*, jobject obj,
+                                     typename Convert<typename std::decay<Args>::type>::jniType... args) {
       try {
-        (*func)(static_cast<C>(obj), Convert<typename std::decay<Args>::type>::fromJni(args)...);
+        (*func)(static_cast<JniType<C>>(obj), Convert<typename std::decay<Args>::type>::fromJni(args)...);
       } catch (...) {
         translatePendingCppExceptionToJavaException();
       }
@@ -93,11 +90,11 @@ inline NativeMethodWrapper* exceptionWrapJNIMethod(R (*)(alias_ref<C>, Args... a
   struct funcWrapper {
     typedef typename Convert<typename std::decay<R>::type>::jniType jniRet;
 
-    static jniRet call(JNIEnv*, jobject obj,
-                       typename Convert<typename std::decay<Args>::type>::jniType... args) {
+    JNI_ENTRY_POINT static jniRet call(JNIEnv*, jobject obj,
+                                       typename Convert<typename std::decay<Args>::type>::jniType... args) {
       try {
         return Convert<typename std::decay<R>::type>::toJniRet(
-          (*func)(static_cast<C>(obj), Convert<typename std::decay<Args>::type>::fromJni(args)...));
+          (*func)(static_cast<JniType<C>>(obj), Convert<typename std::decay<Args>::type>::fromJni(args)...));
       } catch (...) {
         translatePendingCppExceptionToJavaException();
         return jniRet{};
@@ -114,8 +111,8 @@ inline NativeMethodWrapper* exceptionWrapJNIMethod(R (*)(alias_ref<C>, Args... a
 template<typename M, M method, typename C, typename... Args>
 inline NativeMethodWrapper* exceptionWrapJNIMethod(void (C::*method0)(Args... args)) {
   struct funcWrapper {
-    static void call(JNIEnv* env, jobject obj,
-                     typename Convert<typename std::decay<Args>::type>::jniType... args) {
+    JNI_ENTRY_POINT static void call(JNIEnv* env, jobject obj,
+                                     typename Convert<typename std::decay<Args>::type>::jniType... args) {
       try {
         try {
           auto aref = wrap_alias(static_cast<typename C::jhybridobject>(obj));
@@ -143,8 +140,8 @@ inline NativeMethodWrapper* exceptionWrapJNIMethod(R (C::*method0)(Args... args)
   struct funcWrapper {
     typedef typename Convert<typename std::decay<R>::type>::jniType jniRet;
 
-    static jniRet call(JNIEnv* env, jobject obj,
-                       typename Convert<typename std::decay<Args>::type>::jniType... args) {
+    JNI_ENTRY_POINT static jniRet call(JNIEnv* env, jobject obj,
+                                       typename Convert<typename std::decay<Args>::type>::jniType... args) {
       try {
         try {
           auto aref = wrap_alias(static_cast<typename C::jhybridobject>(obj));
@@ -176,16 +173,12 @@ inline std::string makeDescriptor(R (*)(JNIEnv*, C, Args... args)) {
 
 template<typename R, typename C, typename... Args>
 inline std::string makeDescriptor(R (*)(alias_ref<C>, Args... args)) {
-  typedef typename Convert<typename std::decay<R>::type>::jniType jniRet;
-  return jmethod_traits<jniRet(typename Convert<typename std::decay<Args>::type>::jniType...)>
-    ::descriptor();
+  return jmethod_traits_from_cxx<R(Args...)>::descriptor();
 }
 
 template<typename R, typename C, typename... Args>
 inline std::string makeDescriptor(R (C::*)(Args... args)) {
-  typedef typename Convert<typename std::decay<R>::type>::jniType jniRet;
-  return jmethod_traits<jniRet(typename Convert<typename std::decay<Args>::type>::jniType...)>
-    ::descriptor();
+  return jmethod_traits_from_cxx<R(Args...)>::descriptor();
 }
 
 }

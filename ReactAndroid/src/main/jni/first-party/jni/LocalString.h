@@ -20,6 +20,7 @@ void utf8ToModifiedUTF8(const uint8_t* bytes, size_t len, uint8_t* modified, siz
 size_t modifiedLength(const std::string& str);
 size_t modifiedLength(const uint8_t* str, size_t* length);
 std::string modifiedUTF8ToUTF8(const uint8_t* modified, size_t len);
+std::string utf16toUTF8(const uint16_t* utf16Bytes, size_t len);
 
 }
 
@@ -52,6 +53,34 @@ public:
   ~LocalString();
 private:
   jstring m_string;
+};
+
+// JString to UTF16 extractor using RAII idiom
+class JStringUtf16Extractor {
+public:
+  JStringUtf16Extractor(JNIEnv* env, jstring javaString)
+  : env_(env)
+  , javaString_(javaString)
+  , utf16String_(nullptr) {
+    if (env_ && javaString_) {
+      utf16String_ = env_->GetStringCritical(javaString_, nullptr);
+    }
+  }
+
+  ~JStringUtf16Extractor() {
+    if (utf16String_) {
+      env_->ReleaseStringCritical(javaString_, utf16String_);
+    }
+  }
+
+  operator const jchar* () const {
+    return utf16String_;
+  }
+
+private:
+  JNIEnv* env_;
+  jstring javaString_;
+  const jchar* utf16String_;
 };
 
 // The string from JNI is converted to standard UTF-8 if the string contains supplementary

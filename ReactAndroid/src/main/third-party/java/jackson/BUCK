@@ -1,0 +1,46 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_library(
+  name = 'jackson',
+  exported_deps = [
+    ':databind',
+    ':annotations',
+  ],
+  visibility = ['//ReactAndroid/...',],
+)
+
+prebuilt_jar(
+    name = 'core',
+    binary_jar = ':jackson-core-binary-jar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'jackson-core-binary-jar',
+    url = 'mvn:com.fasterxml.jackson.core:jackson-core:jar:2.2.3',
+    sha1 = '1a0113da2cab5f4c216b4e5e7c1dbfaa67087e14',
+)
+
+prebuilt_jar(
+    name = 'databind',
+    binary_jar = ':jackson-databind-jar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'jackson-databind-jar',
+    url = 'mvn:com.fasterxml.jackson.core:jackson-databind:jar:2.2.3',
+    sha1 = '03ae380888029daefb91d3ecdca3a37d8cb92bc9',
+)
+
+prebuilt_jar(
+    name = 'annotations',
+    binary_jar = ':jackson-annotations-jar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'jackson-annotations-jar',
+    url = 'mvn:com.fasterxml.jackson.core:jackson-annotations:jar:2.2.3',
+    sha1 = '0527fece4f23a457070a36c371a26d6c0208e1c3',
+)

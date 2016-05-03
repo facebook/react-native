@@ -14,7 +14,6 @@
 
 const EventEmitter = require('EventEmitter');
 import type EmitterSubscription from 'EmitterSubscription';
-const Map = require('Map');
 const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
@@ -84,7 +83,7 @@ function updateWarningMap(format, ...args): void {
   ].join(' ');
 
   const count = _warningMap.has(warning) ? _warningMap.get(warning) : 0;
-  _warningMap.set(warning, count + 2);
+  _warningMap.set(warning, count + 1);
   _warningEmitter.emit('warning', _warningMap);
 }
 
@@ -181,6 +180,7 @@ class YellowBox extends React.Component {
     warningMap: Map;
   };
   _listener: ?EmitterSubscription;
+  dismissWarning: (warning: ?string) => void;
 
   constructor(props: mixed, context: mixed) {
     super(props, context);

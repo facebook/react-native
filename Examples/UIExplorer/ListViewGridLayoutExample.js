@@ -15,7 +15,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Image,
   ListView,
@@ -23,7 +24,7 @@ var {
   StyleSheet,
   Text,
   View,
-} = React;
+} = ReactNative;
 
 var THUMB_URLS = [
   require('./Thumbnails/like.png'),
@@ -67,6 +68,9 @@ var ListViewGridLayoutExample = React.createClass({
       <ListView
         contentContainerStyle={styles.list}
         dataSource={this.state.dataSource}
+        initialListSize={21}
+        pageSize={3} // should be a multiple of the no. of visible cells per row
+        scrollRenderAheadDistance={500}
         renderRow={this._renderRow}
       />
     );

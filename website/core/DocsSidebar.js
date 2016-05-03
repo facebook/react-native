@@ -72,7 +72,7 @@ var DocsSidebar = React.createClass({
     if (metadata.permalink.match(/^https?:/)) {
       return metadata.permalink;
     }
-    return '/react-native/' + metadata.permalink + '#content';
+    return metadata.permalink + '#content';
   },
 
   render: function() {

@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -14,7 +21,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Image,
   StyleSheet,
@@ -23,7 +31,9 @@ var {
   TouchableOpacity,
   View,
   ViewPagerAndroid,
-} = React;
+} = ReactNative;
+
+import type { ViewPagerScrollState } from 'ViewPagerAndroid';
 
 var PAGES = 5;
 var BGCOLOR = ['#fdc08e', '#fff6b9', '#99d1b7', '#dde5fe', '#f79273'];
@@ -114,6 +124,10 @@ var ViewPagerAndroidExample = React.createClass({
     this.setState({progress: e.nativeEvent});
   },
 
+  onPageScrollStateChanged: function(state : ViewPagerScrollState) {
+    this.setState({scrollState: state});
+  },
+
   move: function(delta) {
     var page = this.state.page + delta;
     this.go(page);
@@ -155,6 +169,8 @@ var ViewPagerAndroidExample = React.createClass({
           initialPage={0}
           onPageScroll={this.onPageScroll}
           onPageSelected={this.onPageSelected}
+          onPageScrollStateChanged={this.onPageScrollStateChanged}
+          pageMargin={10}
           ref={viewPager => { this.viewPager = viewPager; }}>
           {pages}
         </ViewPagerAndroid>
@@ -170,6 +186,7 @@ var ViewPagerAndroidExample = React.createClass({
               enabled={true}
               onPress={() => this.setState({animationsAreEnabled: true})}
             /> }
+          <Text style={styles.scrollStateText}>ScrollState[ {this.state.scrollState} ]</Text>
         </View>
         <View style={styles.buttons}>
           <Button text="Start" enabled={page > 0} onPress={() => this.go(0)}/>
@@ -206,6 +223,9 @@ var styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
+  },
+  scrollStateText: {
+    color: '#99d1b7',
   },
   container: {
     flex: 1,

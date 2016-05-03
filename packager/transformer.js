@@ -11,53 +11,102 @@
 'use strict';
 
 const babel = require('babel-core');
+const externalHelpersPlugin = require('babel-plugin-external-helpers');
 const fs = require('fs');
-const inlineRequires = require('fbjs-scripts/babel-6/inline-requires');
+const makeHMRConfig = require('babel-preset-react-native/configs/hmr');
+const resolvePlugins = require('babel-preset-react-native/lib/resolvePlugins');
+const inlineRequiresPlugin = require('fbjs-scripts/babel-6/inline-requires');
 const json5 = require('json5');
 const path = require('path');
-const ReactPackager = require('./react-packager');
 
-const babelRC =
-  json5.parse(
-    fs.readFileSync(
-      path.resolve(__dirname, 'react-packager', '.babelrc')));
+/**
+ * Return a memoized function that checks for the existence of a
+ * project level .babelrc file, and if it doesn't exist, reads the
+ * default RN babelrc file and uses that.
+ */
+const getBabelRC = (function() {
+  let babelRC = null;
 
-function transform(src, filename, options) {
-  options = options || {};
+  return function _getBabelRC(projectRoots) {
+    if (babelRC !== null) {
+      return babelRC;
+    }
 
-  const extraPlugins = ['external-helpers-2'];
+    babelRC = { plugins: [] }; // empty babelrc
+
+    // Let's look for the .babelrc in the first project root.
+    // In the future let's look into adding a command line option to specify
+    // this location.
+    //
+    // NOTE: we're not reading the project's .babelrc here. We leave it up to
+    // Babel to do that automatically and apply the transforms accordingly
+    // (which works because we pass in `filename` and `sourceFilename` to
+    // Babel when we transform).
+    let projectBabelRCPath;
+    if (projectRoots && projectRoots.length > 0) {
+      projectBabelRCPath = path.resolve(projectRoots[0], '.babelrc');
+    }
+
+    // If a .babelrc file doesn't exist in the project,
+    // use the Babel config provided with react-native.
+    if (!projectBabelRCPath || !fs.existsSync(projectBabelRCPath)) {
+      babelRC = json5.parse(
+        fs.readFileSync(
+          path.resolve(__dirname, 'react-packager', 'rn-babelrc.json'))
+        );
+
+      // Require the babel-preset's listed in the default babel config
+      babelRC.presets = babelRC.presets.map((preset) => require('babel-preset-' + preset));
+      babelRC.plugins = resolvePlugins(babelRC.plugins);
+    }
+
+    return babelRC;
+  };
+})();
+
+/**
+ * Given a filename and options, build a Babel
+ * config object with the appropriate plugins.
+ */
+function buildBabelConfig(filename, options) {
+  const babelRC = getBabelRC(options.projectRoots);
+
   const extraConfig = {
     filename,
     sourceFileName: filename,
   };
 
-  const config = Object.assign({}, babelRC, extraConfig);
+  let config = Object.assign({}, babelRC, extraConfig);
 
-  if (options.inlineRequires) {
-    extraPlugins.push(inlineRequires);
+  // Add extra plugins
+  const extraPlugins = [externalHelpersPlugin];
+
+  var inlineRequires = options.inlineRequires;
+  var blacklist = inlineRequires && inlineRequires.blacklist;
+  if (inlineRequires && !(blacklist && filename in blacklist)) {
+    extraPlugins.push(inlineRequiresPlugin);
   }
+
   config.plugins = extraPlugins.concat(config.plugins);
 
-  // Manually resolve all default Babel plugins. babel.transform will attempt to resolve
-  // all base plugins relative to the file it's compiling. This makes sure that we're
-  // using the plugins installed in the react-native package.
-  config.plugins = config.plugins.map(function(plugin) {
-    // Normalise plugin to an array.
-    if (!Array.isArray(plugin)) {
-      plugin = [plugin];
-    }
-    // Only resolve the plugin if it's a string reference.
-    if (typeof plugin[0] === 'string') {
-      plugin[0] = require(`babel-plugin-${plugin[0]}`);
-      plugin[0] = plugin[0].__esModule ? plugin[0].default : plugin[0];
-    }
-    return plugin;
-  });
+  if (options.hot) {
+    const hmrConfig = makeHMRConfig(options, filename);
+    config = Object.assign({}, config, hmrConfig);
+  }
 
-  const result = babel.transform(src, Object.assign({}, babelRC, config));
+  return Object.assign({}, babelRC, config);
+}
+
+function transform(src, filename, options) {
+  options = options || {};
+
+  const babelConfig = buildBabelConfig(filename, options);
+  const result = babel.transform(src, babelConfig);
 
   return {
+    ast: result.ast,
     code: result.code,
+    map: result.map,
     filename: filename,
   };
 }

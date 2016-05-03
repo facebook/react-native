@@ -16,12 +16,13 @@
 
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const {
   StyleSheet,
   Text,
   View,
-} = React;
+} = ReactNative;
 
 const requireNativeComponent = require('requireNativeComponent');
 
@@ -82,7 +83,7 @@ exports.description = 'Examples that show useful methods when embedding React Na
 exports.examples = [
 {
   title: 'Updating app properties in runtime',
-  render(): React.Component {
+  render(): ReactElement {
     return (
       <AppPropertiesUpdateExample/>
     );
@@ -90,7 +91,7 @@ exports.examples = [
 },
 {
   title: 'RCTRootView\'s size flexibility',
-  render(): React.Component {
+  render(): ReactElement {
     return (
       <RootViewSizeFlexibilityExample/>
     );

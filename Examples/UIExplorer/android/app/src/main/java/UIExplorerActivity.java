@@ -14,76 +14,65 @@
 
 package com.facebook.react.uiapp;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.view.KeyEvent;
-
-import com.facebook.react.LifecycleState;
-import com.facebook.react.ReactInstanceManager;
-import com.facebook.react.ReactRootView;
-import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.facebook.react.ReactActivity;
+import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
+import com.facebook.react.uiapp.R;
 
-public class UIExplorerActivity extends Activity implements DefaultHardwareBackBtnHandler {
+import java.util.Arrays;
+import java.util.List;
+import javax.annotation.Nullable;
 
-  private ReactInstanceManager mReactInstanceManager;
+import android.os.Bundle;
+
+public class UIExplorerActivity extends ReactActivity {
+  private final String PARAM_ROUTE = "route";
+  private Bundle mInitialProps = null;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
-
-    mReactInstanceManager = ReactInstanceManager.builder()
-        .setApplication(getApplication())
-        .setBundleAssetName("UIExplorerApp.android.bundle")
-        .setJSMainModuleName("Examples/UIExplorer/UIExplorerApp.android")
-        .addPackage(new MainReactPackage())
-        .setUseDeveloperSupport(true)
-        .setInitialLifecycleState(LifecycleState.RESUMED)
-        .build();
-
-    ((ReactRootView) findViewById(R.id.react_root_view))
-        .startReactApplication(mReactInstanceManager, "UIExplorerApp", null);
+      // Get remote param before calling super which uses it
+      Bundle bundle = getIntent().getExtras();
+      if (bundle != null && bundle.containsKey(PARAM_ROUTE)) {
+          String routeUri = new StringBuilder("rnuiexplorer://example/")
+            .append(bundle.getString(PARAM_ROUTE))
+            .append("Example")
+            .toString();
+          mInitialProps = new Bundle();
+          mInitialProps.putString("exampleFromAppetizeParams", routeUri);
+      }
+      super.onCreate(savedInstanceState);
   }
 
   @Override
-  public boolean onKeyUp(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_MENU && mReactInstanceManager != null) {
-      mReactInstanceManager.showDevOptionsDialog();
+  protected Bundle getLaunchOptions() {
+      return mInitialProps;
+  }
+
+  @Override
+  protected String getMainComponentName() {
+      return "UIExplorerApp";
+  }
+
+  @Override
+  protected @Nullable String getBundleAssetName() {
+    return "UIExplorerApp.android.bundle";
+  };
+
+  @Override
+  protected String getJSMainModuleName() {
+    return "Examples/UIExplorer/UIExplorerApp.android";
+  }
+
+  @Override
+  protected boolean getUseDeveloperSupport() {
       return true;
-    }
-    return super.onKeyUp(keyCode, event);
   }
 
   @Override
-  protected void onPause() {
-    super.onPause();
-
-    if (mReactInstanceManager != null) {
-      mReactInstanceManager.onPause();
-    }
-  }
-
-  @Override
-  protected void onResume() {
-    super.onResume();
-
-    if (mReactInstanceManager != null) {
-      mReactInstanceManager.onResume(this, this);
-    }
-  }
-
-  @Override
-  public void onBackPressed() {
-    if (mReactInstanceManager != null) {
-      mReactInstanceManager.onBackPressed();
-    } else {
-      super.onBackPressed();
-    }
-  }
-
-  @Override
-  public void invokeDefaultOnBackPressed() {
-    super.onBackPressed();
+  protected List<ReactPackage> getPackages() {
+    return Arrays.<ReactPackage>asList(
+      new MainReactPackage()
+    );
   }
 }

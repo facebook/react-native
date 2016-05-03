@@ -1,0 +1,19 @@
+android_library(
+  name = 'sqlite',
+  exported_deps = [
+      ':sqlite4java'
+  ],
+  visibility = ['//ReactAndroid/...',],
+)
+
+prebuilt_jar(
+  name = 'sqlite4java',
+  binary_jar = ':download-sqlite4java',
+  visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+  name = 'download-sqlite4java',
+  url = 'mvn:com.almworks.sqlite4java:sqlite4java:jar:0.282',
+  sha1 = '745a7e2f35fdbe6336922e0d492c979dbbfa74fb',
+)

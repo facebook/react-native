@@ -7,21 +7,26 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule WebView
- * @flow
+ * @noflow
  */
 'use strict';
 
 var ActivityIndicatorIOS = require('ActivityIndicatorIOS');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var UIManager = require('UIManager');
 var View = require('View');
+var ScrollView = require('ScrollView');
 
-var invariant = require('invariant');
-var keyMirror = require('keyMirror');
+var deprecatedPropType = require('deprecatedPropType');
+var invariant = require('fbjs/lib/invariant');
+var keyMirror = require('fbjs/lib/keyMirror');
+var processDecelerationRate = require('processDecelerationRate');
 var requireNativeComponent = require('requireNativeComponent');
+var resolveAssetSource = require('resolveAssetSource');
 
 var PropTypes = React.PropTypes;
 var RCTWebViewManager = require('NativeModules').WebViewManager;
@@ -35,16 +40,16 @@ var WebViewState = keyMirror({
   ERROR: null,
 });
 
-var NavigationType = {
-  click: RCTWebViewManager.NavigationType.LinkClicked,
-  formsubmit: RCTWebViewManager.NavigationType.FormSubmitted,
-  backforward: RCTWebViewManager.NavigationType.BackForward,
-  reload: RCTWebViewManager.NavigationType.Reload,
-  formresubmit: RCTWebViewManager.NavigationType.FormResubmitted,
-  other: RCTWebViewManager.NavigationType.Other,
-};
+const NavigationType = keyMirror({
+  click: true,
+  formsubmit: true,
+  backforward: true,
+  reload: true,
+  formresubmit: true,
+  other: true,
+});
 
-var JSNavigationScheme = RCTWebViewManager.JSNavigationScheme;
+const JSNavigationScheme = 'react-js-navigation';
 
 type ErrorEvent = {
   domain: any;
@@ -87,8 +92,60 @@ var WebView = React.createClass({
 
   propTypes: {
     ...View.propTypes,
-    url: PropTypes.string,
-    html: PropTypes.string,
+
+    html: deprecatedPropType(
+      PropTypes.string,
+      'Use the `source` prop instead.'
+    ),
+
+    url: deprecatedPropType(
+      PropTypes.string,
+      'Use the `source` prop instead.'
+    ),
+
+    /**
+     * Loads static html or a uri (with optional headers) in the WebView.
+     */
+    source: PropTypes.oneOfType([
+      PropTypes.shape({
+        /*
+         * The URI to load in the WebView. Can be a local or remote file.
+         */
+        uri: PropTypes.string,
+        /*
+         * The HTTP Method to use. Defaults to GET if not specified.
+         * NOTE: On Android, only GET and POST are supported.
+         */
+        method: PropTypes.string,
+        /*
+         * Additional HTTP headers to send with the request.
+         * NOTE: On Android, this can only be used with GET requests.
+         */
+        headers: PropTypes.object,
+        /*
+         * The HTTP body to send with the request. This must be a valid
+         * UTF-8 string, and will be sent exactly as specified, with no
+         * additional encoding (e.g. URL-escaping or base64) applied.
+         * NOTE: On Android, this can only be used with POST requests.
+         */
+        body: PropTypes.string,
+      }),
+      PropTypes.shape({
+        /*
+         * A static HTML page to display in the WebView.
+         */
+        html: PropTypes.string,
+        /*
+         * The base URL to be used for any relative links in the HTML.
+         */
+        baseUrl: PropTypes.string,
+      }),
+      /*
+       * Used internally by packager.
+       */
+      PropTypes.number,
+    ]),
+
     /**
      * Function that returns a view to show if there's an error.
      */
@@ -98,9 +155,36 @@ var WebView = React.createClass({
      */
     renderLoading: PropTypes.func,
     /**
+     * Invoked when load finish
+     */
+    onLoad: PropTypes.func,
+    /**
+     * Invoked when load either succeeds or fails
+     */
+    onLoadEnd: PropTypes.func,
+    /**
+     * Invoked on load start
+     */
+    onLoadStart: PropTypes.func,
+    /**
+     * Invoked when load fails
+     */
+    onError: PropTypes.func,
+    /**
      * @platform ios
      */
     bounces: PropTypes.bool,
+    /**
+     * A floating-point number that determines how quickly the scroll view
+     * decelerates after the user lifts their finger. You may also use string
+     * shortcuts `"normal"` and `"fast"` which match the underlying iOS settings
+     * for `UIScrollViewDecelerationRateNormal` and
+     * `UIScrollViewDecelerationRateFast` respectively.
+     *   - normal: 0.998
+     *   - fast: 0.99 (the default for iOS WebView)
+     * @platform ios
+     */
+    decelerationRate: ScrollView.propTypes.decelerationRate,
     /**
      * @platform ios
      */
@@ -130,7 +214,6 @@ var WebView = React.createClass({
 
     /**
      * Sets whether the webpage scales to fit the view and the user can change the scale.
-     * @platform ios
      */
     scalesPageToFit: PropTypes.bool,
 
@@ -151,6 +234,12 @@ var WebView = React.createClass({
      * @platform ios
      */
     allowsInlineMediaPlayback: PropTypes.bool,
+
+    /**
+     * Determines whether HTML5 audio & videos require the user to tap before they can
+     * start playing. The default value is `false`.
+     */
+    mediaPlaybackRequiresUserAction: PropTypes.bool,
   },
 
   getInitialState: function() {
@@ -202,14 +291,13 @@ var WebView = React.createClass({
       RCTWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
     });
 
-    var {javaScriptEnabled, domStorageEnabled} = this.props;
-    if (this.props.javaScriptEnabledAndroid) {
-      console.warn('javaScriptEnabledAndroid is deprecated. Use javaScriptEnabled instead');
-      javaScriptEnabled = this.props.javaScriptEnabledAndroid;
-    }
-    if (this.props.domStorageEnabledAndroid) {
-      console.warn('domStorageEnabledAndroid is deprecated. Use domStorageEnabled instead');
-      domStorageEnabled = this.props.domStorageEnabledAndroid;
+    var decelerationRate = processDecelerationRate(this.props.decelerationRate);
+
+    var source = this.props.source || {};
+    if (this.props.html) {
+      source.html = this.props.html;
+    } else if (this.props.url) {
+      source.uri = this.props.url;
     }
 
     var webView =
@@ -217,19 +305,20 @@ var WebView = React.createClass({
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
         style={webViewStyles}
-        url={this.props.url}
-        html={this.props.html}
+        source={resolveAssetSource(source)}
         injectedJavaScript={this.props.injectedJavaScript}
         bounces={this.props.bounces}
         scrollEnabled={this.props.scrollEnabled}
+        decelerationRate={decelerationRate}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
-        onLoadingStart={this.onLoadingStart}
-        onLoadingFinish={this.onLoadingFinish}
-        onLoadingError={this.onLoadingError}
+        onLoadingStart={this._onLoadingStart}
+        onLoadingFinish={this._onLoadingFinish}
+        onLoadingError={this._onLoadingError}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         scalesPageToFit={this.props.scalesPageToFit}
         allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
+        mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
       />;
 
     return (
@@ -240,6 +329,9 @@ var WebView = React.createClass({
     );
   },
 
+  /**
+   * Go forward one page in the webview's history.
+   */
   goForward: function() {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
@@ -248,6 +340,9 @@ var WebView = React.createClass({
     );
   },
 
+  /**
+   * Go back one page in the webview's history.
+   */
   goBack: function() {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
@@ -256,6 +351,9 @@ var WebView = React.createClass({
     );
   },
 
+  /**
+   * Reloads the current page.
+   */
   reload: function() {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
@@ -264,26 +362,42 @@ var WebView = React.createClass({
     );
   },
 
+  stopLoading: function() {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.stopLoading,
+      null
+    );
+  },
+
   /**
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
    */
-  updateNavigationState: function(event: Event) {
+  _updateNavigationState: function(event: Event) {
     if (this.props.onNavigationStateChange) {
       this.props.onNavigationStateChange(event.nativeEvent);
     }
   },
 
+  /**
+   * Returns the native webview node.
+   */
   getWebViewHandle: function(): any {
-    return React.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
+    return ReactNative.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
   },
 
-  onLoadingStart: function(event: Event) {
-    this.updateNavigationState(event);
+  _onLoadingStart: function(event: Event) {
+    var onLoadStart = this.props.onLoadStart;
+    onLoadStart && onLoadStart(event);
+    this._updateNavigationState(event);
   },
 
-  onLoadingError: function(event: Event) {
+  _onLoadingError: function(event: Event) {
     event.persist(); // persist this event because we need to store it
+    var {onError, onLoadEnd} = this.props;
+    onError && onError(event);
+    onLoadEnd && onLoadEnd(event);
     console.warn('Encountered an error loading page', event.nativeEvent);
 
     this.setState({
@@ -292,11 +406,14 @@ var WebView = React.createClass({
     });
   },
 
-  onLoadingFinish: function(event: Event) {
+  _onLoadingFinish: function(event: Event) {
+    var {onLoad, onLoadEnd} = this.props;
+    onLoad && onLoad(event);
+    onLoadEnd && onLoadEnd(event);
     this.setState({
       viewState: WebViewState.IDLE,
     });
-    this.updateNavigationState(event);
+    this._updateNavigationState(event);
   },
 });
 
@@ -337,6 +454,7 @@ var styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    height: 100,
   },
   webView: {
     backgroundColor: '#ffffff',

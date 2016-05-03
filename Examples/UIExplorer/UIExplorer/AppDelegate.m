@@ -16,6 +16,7 @@
 
 #import "RCTBridge.h"
 #import "RCTJavaScriptLoader.h"
+#import "RCTLinkingManager.h"
 #import "RCTRootView.h"
 
 @interface AppDelegate() <RCTBridgeDelegate>
@@ -23,15 +24,22 @@
 @end
 
 @implementation AppDelegate
-
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   _bridge = [[RCTBridge alloc] initWithDelegate:self
                                   launchOptions:launchOptions];
-
+  
+  // Appetizer.io params check
+  NSDictionary *initProps = nil;
+  NSString *_routeUri = [[NSUserDefaults standardUserDefaults] stringForKey:@"route"];
+  if (_routeUri) {
+    initProps = @{@"exampleFromAppetizeParams":
+                    [NSString stringWithFormat:@"rnuiexplorer://example/%@Example", _routeUri]};
+  }
+  
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_bridge
                                                    moduleName:@"UIExplorerApp"
-                                            initialProperties:nil];
+                                            initialProperties:initProps];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
@@ -78,6 +86,14 @@
   #endif
 
   return sourceURL;
+}
+
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+  return [RCTLinkingManager application:application openURL:url
+                      sourceApplication:sourceApplication annotation:annotation];
 }
 
 - (void)loadSourceForBridge:(RCTBridge *)bridge

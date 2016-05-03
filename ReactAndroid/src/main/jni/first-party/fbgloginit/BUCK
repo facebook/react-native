@@ -1,0 +1,19 @@
+cxx_library(
+  name = 'fbgloginit',
+  srcs = [
+    'glog_init.cpp',
+  ],
+  exported_headers = ['fb/glog_init.h'],
+  compiler_flags = [
+    '-fexceptions',
+    '-fno-omit-frame-pointer',
+  ],
+  linker_flags = [
+    '-llog',
+  ],
+  deps=[
+    '//xplat/third-party/glog:glog',
+  ],
+  visibility=['PUBLIC'],
+)
+

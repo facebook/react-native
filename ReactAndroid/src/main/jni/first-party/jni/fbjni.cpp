@@ -16,36 +16,33 @@
 namespace facebook {
 namespace jni {
 
-template<typename... Args>
-static void log(Args... args) {
-// TODO (7623232) Migrate to glog
-#ifdef __ANDROID__
-  facebook::alog::loge("fbjni", args...);
-#endif
-}
+jint initialize(JavaVM* vm, std::function<void()>&& init_fn) noexcept {
+  static std::once_flag flag{};
+  // TODO (t7832883): DTRT when we have exception pointers
+  static auto error_msg = std::string{"Failed to initialize fbjni"};
+  static auto error_occured = false;
 
-jint initialize(JavaVM* vm, void(*init_fn)()) noexcept {
-  static std::once_flag init_flag;
-  static auto failed = false;
-
-  std::call_once(init_flag, [vm] {
+  std::call_once(flag, [vm] {
     try {
       Environment::initialize(vm);
       internal::initExceptionHelpers();
     } catch (std::exception& ex) {
-      log("Failed to initialize fbjni: %s", ex.what());
-      failed = true;
+      error_occured = true;
+      try {
+        error_msg = std::string{"Failed to initialize fbjni: "} + ex.what();
+      } catch (...) {
+        // Ignore, we already have a fall back message
+      }
     } catch (...) {
-      log("Failed to initialize fbjni");
-      failed = true;
+      error_occured = true;
     }
   });
 
-  if (failed) {
-    return JNI_ERR;
-  }
-
   try {
+    if (error_occured) {
+      throw std::runtime_error(error_msg);
+    }
+
     init_fn();
   } catch (...) {
     translatePendingCppExceptionToJavaException();
@@ -55,7 +52,7 @@ jint initialize(JavaVM* vm, void(*init_fn)()) noexcept {
   return JNI_VERSION_1_6;
 }
 
-alias_ref<jclass> findClassStatic(const char* name) {
+alias_ref<JClass> findClassStatic(const char* name) {
   const auto env = internal::getEnv();
   auto cls = env->FindClass(name);
   FACEBOOK_JNI_THROW_EXCEPTION_IF(!cls);
@@ -64,7 +61,7 @@ alias_ref<jclass> findClassStatic(const char* name) {
   return wrap_alias(leaking_ref);
 }
 
-local_ref<jclass> findClassLocal(const char* name) {
+local_ref<JClass> findClassLocal(const char* name) {
   const auto env = internal::getEnv();
   auto cls = env->FindClass(name);
   FACEBOOK_JNI_THROW_EXCEPTION_IF(!cls);
@@ -74,16 +71,14 @@ local_ref<jclass> findClassLocal(const char* name) {
 
 // jstring /////////////////////////////////////////////////////////////////////////////////////////
 
-std::string JObjectWrapper<jstring>::toStdString() const {
+std::string JString::toStdString() const {
   const auto env = internal::getEnv();
-  auto modified = env->GetStringUTFChars(self(), nullptr);
-  auto length = env->GetStringUTFLength(self());
-  auto string = detail::modifiedUTF8ToUTF8(reinterpret_cast<const uint8_t*>(modified), length);
-  env->ReleaseStringUTFChars(self(), modified);
-  return string;
+  auto utf16String = JStringUtf16Extractor(env, self());
+  auto length = env->GetStringLength(self());
+  return detail::utf16toUTF8(utf16String, length);
 }
 
-local_ref<jstring> make_jstring(const char* utf8) {
+local_ref<JString> make_jstring(const char* utf8) {
   if (!utf8) {
     return {};
   }
@@ -111,96 +106,76 @@ local_ref<jstring> make_jstring(const char* utf8) {
 }
 
 
-// PinnedPrimitiveArray ///////////////////////////////////////////////////////////////////////////
+// JniPrimitiveArrayFunctions //////////////////////////////////////////////////////////////////////
 
-// TODO(T7847300): Allow array to be specified as constant so that JNI_ABORT can be passed
-// on release, as opposed to 0, which results in unnecessary copying.
 #pragma push_macro("DEFINE_PRIMITIVE_METHODS")
 #undef DEFINE_PRIMITIVE_METHODS
-#define DEFINE_PRIMITIVE_METHODS(TYPE, NAME)                                                \
-template<>                                                                                  \
-TYPE* PinnedPrimitiveArray<TYPE>::get() {                                                   \
-  FACEBOOK_JNI_THROW_EXCEPTION_IF(array_.get() == nullptr);                                 \
-  const auto env = internal::getEnv();                                                      \
-  elements_ = env->Get ## NAME ## ArrayElements(                                            \
-      static_cast<TYPE ## Array>(array_.get()), &isCopy_);                                  \
-  size_ = array_->size();                                                                   \
-  return elements_;                                                                         \
-}                                                                                           \
-template<>                                                                                  \
-void PinnedPrimitiveArray<TYPE>::release() {                                                \
-  FACEBOOK_JNI_THROW_EXCEPTION_IF(array_.get() == nullptr);                                 \
-  const auto env = internal::getEnv();                                                      \
-  env->Release ## NAME ## ArrayElements(                                                    \
-      static_cast<TYPE ## Array>(array_.get()), elements_, 0);                              \
-  elements_ = nullptr;                                                                      \
-  size_ = 0;                                                                                \
-}
+#define DEFINE_PRIMITIVE_METHODS(TYPE, NAME, SMALLNAME)                        \
+                                                                               \
+template<>                                                                     \
+TYPE* JPrimitiveArray<TYPE ## Array>::getElements(jboolean* isCopy) {          \
+  auto env = internal::getEnv();                                               \
+  TYPE* res =  env->Get ## NAME ## ArrayElements(self(), isCopy);              \
+  FACEBOOK_JNI_THROW_PENDING_EXCEPTION();                                      \
+  return res;                                                                  \
+}                                                                              \
+                                                                               \
+template<>                                                                     \
+void JPrimitiveArray<TYPE ## Array>::releaseElements(                          \
+    TYPE* elements, jint mode) {                                               \
+  auto env = internal::getEnv();                                               \
+  env->Release ## NAME ## ArrayElements(self(), elements, mode);               \
+  FACEBOOK_JNI_THROW_PENDING_EXCEPTION();                                      \
+}                                                                              \
+                                                                               \
+template<>                                                                     \
+void JPrimitiveArray<TYPE ## Array>::getRegion(                                \
+    jsize start, jsize length, TYPE* buf) {                                    \
+  auto env = internal::getEnv();                                               \
+  env->Get ## NAME ## ArrayRegion(self(), start, length, buf);                 \
+  FACEBOOK_JNI_THROW_PENDING_EXCEPTION();                                      \
+}                                                                              \
+                                                                               \
+template<>                                                                     \
+void JPrimitiveArray<TYPE ## Array>::setRegion(                                \
+    jsize start, jsize length, const TYPE* elements) {                         \
+  auto env = internal::getEnv();                                               \
+  env->Set ## NAME ## ArrayRegion(self(), start, length, elements);            \
+  FACEBOOK_JNI_THROW_PENDING_EXCEPTION();                                      \
+}                                                                              \
+                                                                               \
+local_ref<TYPE ## Array> make_ ## SMALLNAME ## _array(jsize size) {            \
+  auto array = internal::getEnv()->New ## NAME ## Array(size);                 \
+  FACEBOOK_JNI_THROW_EXCEPTION_IF(!array);                                     \
+  return adopt_local(array);                                                   \
+}                                                                              \
+                                                                               \
+template<>                                                                     \
+local_ref<TYPE ## Array> JArray ## NAME::newArray(size_t count) {              \
+  return make_ ## SMALLNAME ## _array(count);                                  \
+}                                                                              \
+                                                                               \
 
-DEFINE_PRIMITIVE_METHODS(jboolean, Boolean)
-DEFINE_PRIMITIVE_METHODS(jbyte, Byte)
-DEFINE_PRIMITIVE_METHODS(jchar, Char)
-DEFINE_PRIMITIVE_METHODS(jshort, Short)
-DEFINE_PRIMITIVE_METHODS(jint, Int)
-DEFINE_PRIMITIVE_METHODS(jlong, Long)
-DEFINE_PRIMITIVE_METHODS(jfloat, Float)
-DEFINE_PRIMITIVE_METHODS(jdouble, Double)
+DEFINE_PRIMITIVE_METHODS(jboolean, Boolean, boolean)
+DEFINE_PRIMITIVE_METHODS(jbyte, Byte, byte)
+DEFINE_PRIMITIVE_METHODS(jchar, Char, char)
+DEFINE_PRIMITIVE_METHODS(jshort, Short, short)
+DEFINE_PRIMITIVE_METHODS(jint, Int, int)
+DEFINE_PRIMITIVE_METHODS(jlong, Long, long)
+DEFINE_PRIMITIVE_METHODS(jfloat, Float, float)
+DEFINE_PRIMITIVE_METHODS(jdouble, Double, double)
 #pragma pop_macro("DEFINE_PRIMITIVE_METHODS")
-
-
-#define DEFINE_PRIMITIVE_ARRAY_UTILS(TYPE, NAME)                                                \
-                                                                                                \
-local_ref<j ## TYPE ## Array> make_ ## TYPE ## _array(jsize size) {                             \
-  auto array = internal::getEnv()->New ## NAME ## Array(size);                                  \
-  FACEBOOK_JNI_THROW_EXCEPTION_IF(!array);                                                      \
-  return adopt_local(array);                                                                    \
-}                                                                                               \
-                                                                                                \
-local_ref<j ## TYPE ## Array> JArray ## NAME::newArray(size_t count) {                          \
-  return make_ ## TYPE ## _array(count);                                                        \
-}                                                                                               \
-                                                                                                \
-j ## TYPE* JArray ## NAME::getRegion(jsize start, jsize length, j ## TYPE* buf) {               \
-  internal::getEnv()->Get ## NAME ## ArrayRegion(self(), start, length, buf);                   \
-  FACEBOOK_JNI_THROW_PENDING_EXCEPTION();                                                       \
-  return buf;                                                                                   \
-}                                                                                               \
-                                                                                                \
-std::unique_ptr<j ## TYPE[]> JArray ## NAME::getRegion(jsize start, jsize length) {             \
-  auto buf = std::unique_ptr<j ## TYPE[]>{new j ## TYPE[length]};                               \
-  internal::getEnv()->Get ## NAME ## ArrayRegion(self(), start, length, buf.get());             \
-  FACEBOOK_JNI_THROW_PENDING_EXCEPTION();                                                       \
-  return buf;                                                                                   \
-}                                                                                               \
-                                                                                                \
-void JArray ## NAME::setRegion(jsize start, jsize length, const j ## TYPE* buf) {               \
-  internal::getEnv()->Set ## NAME ## ArrayRegion(self(), start, length, buf);                   \
-  FACEBOOK_JNI_THROW_PENDING_EXCEPTION();                                                       \
-}                                                                                               \
-                                                                                                \
-PinnedPrimitiveArray<j ## TYPE> JArray ## NAME::pin() {                                         \
-  return PinnedPrimitiveArray<j ## TYPE>{self()};                                               \
-}                                                                                               \
-
-DEFINE_PRIMITIVE_ARRAY_UTILS(boolean, Boolean)
-DEFINE_PRIMITIVE_ARRAY_UTILS(byte, Byte)
-DEFINE_PRIMITIVE_ARRAY_UTILS(char, Char)
-DEFINE_PRIMITIVE_ARRAY_UTILS(short, Short)
-DEFINE_PRIMITIVE_ARRAY_UTILS(int, Int)
-DEFINE_PRIMITIVE_ARRAY_UTILS(long, Long)
-DEFINE_PRIMITIVE_ARRAY_UTILS(float, Float)
-DEFINE_PRIMITIVE_ARRAY_UTILS(double, Double)
-
 
 // Internal debug /////////////////////////////////////////////////////////////////////////////////
 
 namespace internal {
+
 ReferenceStats g_reference_stats;
 
 void facebook::jni::internal::ReferenceStats::reset() noexcept {
   locals_deleted = globals_deleted = weaks_deleted = 0;
 }
+
 }
 
 }}
-

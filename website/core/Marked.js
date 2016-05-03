@@ -595,6 +595,13 @@ InlineLexer.prototype.output = function(src) {
     // tag
     if (cap = this.rules.tag.exec(src)) {
       src = src.substring(cap[0].length);
+
+      var color = cap[0].match('<color ([^ ]+) />');
+      if (color) {
+        out.push(React.DOM.span({className: 'color', style: {backgroundColor: color[1]}}));
+        continue;
+      }
+
       // TODO(alpert): Don't escape if sanitize is false
       out.push(cap[0]);
       continue;

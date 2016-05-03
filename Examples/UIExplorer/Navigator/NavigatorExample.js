@@ -10,18 +10,20 @@
  * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ *
+ * @providesModule NavigatorExample
+ */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Navigator,
-  PixelRatio,
   ScrollView,
   StyleSheet,
   Text,
   TouchableHighlight,
-} = React;
+} = ReactNative;
 var BreadcrumbNavSample = require('./BreadcrumbNavSample');
 var NavigationBarSample = require('./NavigationBarSample');
 var JumpingNavSample = require('./JumpingNavSample');
@@ -190,7 +192,7 @@ var styles = StyleSheet.create({
   button: {
     backgroundColor: 'white',
     padding: 15,
-    borderBottomWidth: 1 / PixelRatio.get(),
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#CDCDCD',
   },
   buttonText: {

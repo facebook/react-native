@@ -12,9 +12,10 @@ package com.facebook.react.modules.timing;
 import android.view.Choreographer;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.SimpleArray;
+import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.uimanager.ReactChoreographer;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.modules.core.JSTimersExecution;
@@ -54,6 +55,7 @@ public class TimingModuleTest {
   private PostFrameCallbackHandler mPostFrameCallbackHandler;
   private long mCurrentTimeNs;
   private JSTimersExecution mJSTimersMock;
+  private ExecutorToken mExecutorTokenMock;
 
   @Rule
   public PowerMockRule rule = new PowerMockRule();
@@ -65,7 +67,7 @@ public class TimingModuleTest {
         new Answer<Object>() {
           @Override
           public Object answer(InvocationOnMock invocation) throws Throwable {
-            return new SimpleArray();
+            return new JavaOnlyArray();
           }
         });
 
@@ -92,7 +94,8 @@ public class TimingModuleTest {
 
     mTiming = new Timing(reactContext);
     mJSTimersMock = mock(JSTimersExecution.class);
-    when(reactInstance.getJSModule(JSTimersExecution.class)).thenReturn(mJSTimersMock);
+    mExecutorTokenMock = mock(ExecutorToken.class);
+    when(reactContext.getJSModule(mExecutorTokenMock, JSTimersExecution.class)).thenReturn(mJSTimersMock);
     mTiming.initialize();
   }
 
@@ -107,9 +110,9 @@ public class TimingModuleTest {
   @Test
   public void testSimpleTimer() {
     mTiming.onHostResume();
-    mTiming.createTimer(1, 0, 0, false);
+    mTiming.createTimer(mExecutorTokenMock, 1, 1, 0, false);
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(SimpleArray.of(1));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(1));
     reset(mJSTimersMock);
     stepChoreographerFrame();
     verifyNoMoreInteractions(mJSTimersMock);
@@ -117,26 +120,26 @@ public class TimingModuleTest {
 
   @Test
   public void testSimpleRecurringTimer() {
-    mTiming.createTimer(100, 0, 0, true);
+    mTiming.createTimer(mExecutorTokenMock, 100, 1, 0, true);
     mTiming.onHostResume();
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(SimpleArray.of(100));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100));
 
     reset(mJSTimersMock);
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(SimpleArray.of(100));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100));
   }
 
   @Test
   public void testCancelRecurringTimer() {
     mTiming.onHostResume();
-    mTiming.createTimer(105, 0, 0, true);
+    mTiming.createTimer(mExecutorTokenMock, 105, 1, 0, true);
 
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(SimpleArray.of(105));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(105));
 
     reset(mJSTimersMock);
-    mTiming.deleteTimer(105);
+    mTiming.deleteTimer(mExecutorTokenMock, 105);
     stepChoreographerFrame();
     verifyNoMoreInteractions(mJSTimersMock);
   }
@@ -144,10 +147,10 @@ public class TimingModuleTest {
   @Test
   public void testPausingAndResuming() {
     mTiming.onHostResume();
-    mTiming.createTimer(41, 0, 0, true);
+    mTiming.createTimer(mExecutorTokenMock, 41, 1, 0, true);
 
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(SimpleArray.of(41));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
 
     reset(mJSTimersMock);
     mTiming.onHostPause();
@@ -157,7 +160,13 @@ public class TimingModuleTest {
     reset(mJSTimersMock);
     mTiming.onHostResume();
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(SimpleArray.of(41));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
+  }
+
+  @Test
+  public void testSetTimeoutZero() {
+    mTiming.createTimer(mExecutorTokenMock, 100, 0, 0, false);
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100));
   }
 
   private static class PostFrameCallbackHandler implements Answer<Void> {

@@ -15,13 +15,14 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const {
   NetInfo,
   Text,
   View,
   TouchableWithoutFeedback,
-} = React;
+} = ReactNative;
 
 const ConnectionInfoSubscription = React.createClass({
   getInitialState() {
@@ -134,8 +135,8 @@ const IsConnectionExpensive = React.createClass({
     };
   },
   _checkIfExpensive() {
-    NetInfo.isConnectionExpensive(
-        (isConnectionExpensive) => { this.setState({isConnectionExpensive}); }
+    NetInfo.isConnectionExpensive().then(
+        isConnectionExpensive => { this.setState({isConnectionExpensive}); }
     );
   },
   render() {

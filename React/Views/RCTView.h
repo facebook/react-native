@@ -90,4 +90,9 @@
  */
 @property (nonatomic, assign) RCTBorderStyle borderStyle;
 
+/**
+ *  Insets used when hit testing inside this view.
+ */
+@property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
+
 @end

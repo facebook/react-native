@@ -13,17 +13,17 @@
 */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Navigator,
-  PixelRatio,
   StyleSheet,
   ScrollView,
   TabBarIOS,
   Text,
   TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 
 var _getRandomRoute = function() {
   return {
@@ -185,7 +185,7 @@ var styles = StyleSheet.create({
   button: {
     backgroundColor: 'white',
     padding: 15,
-    borderBottomWidth: 1 / PixelRatio.get(),
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#CDCDCD',
   },
   buttonText: {

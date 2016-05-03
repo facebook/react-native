@@ -14,16 +14,14 @@
 var Dimensions = require('Dimensions');
 var Platform = require('Platform');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var React = require('React');
+var ReactNative = require('ReactNative');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
+var UIManager = require('UIManager');
 
-var { UIManager, ScrollViewManager } = require('NativeModules');
+var { ScrollViewManager } = require('NativeModules');
 
-var invariant = require('invariant');
-var warning = require('warning');
-
-import type ReactComponent from 'ReactComponent';
+var invariant = require('fbjs/lib/invariant');
 
 /**
  * Mixin that can be integrated in order to handle scrolling that plays well
@@ -201,7 +199,6 @@ var ScrollResponderMixin = {
    * a touch has already started.
    */
   scrollResponderHandleResponderReject: function() {
-    warning(false, "ScrollView doesn't take rejection well - scrolls anyway");
   },
 
   /**
@@ -347,53 +344,71 @@ var ScrollResponderMixin = {
   },
 
   /**
-   * A helper function to scroll to a specific point  in the scrollview.
-   * This is currently used to help focus on child textview's, but this
-   * can also be used to quickly scroll to any element we want to focus
+   * Returns the node that represents native view that can be scrolled.
+   * Components can pass what node to use by defining a `getScrollableNode`
+   * function otherwise `this` is used.
    */
-  scrollResponderScrollTo: function(offsetX: number, offsetY: number) {
-    if (Platform.OS === 'android') {
-      UIManager.dispatchViewManagerCommand(
-        React.findNodeHandle(this),
-        UIManager.RCTScrollView.Commands.scrollTo,
-        [Math.round(offsetX), Math.round(offsetY)],
-      );
-    } else {
-      ScrollViewManager.scrollTo(
-        React.findNodeHandle(this),
-        { x: offsetX, y: offsetY }
-      );
-    }
+  scrollResponderGetScrollableNode: function(): any {
+    return this.getScrollableNode ?
+      this.getScrollableNode() :
+      ReactNative.findNodeHandle(this);
   },
 
   /**
-   * Like `scrollResponderScrollTo` but immediately scrolls to the given
-   * position
+   * A helper function to scroll to a specific point  in the scrollview.
+   * This is currently used to help focus on child textviews, but can also
+   * be used to quickly scroll to any element we want to focus. Syntax:
+   *
+   * scrollResponderScrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})
+   *
+   * Note: The weird argument signature is due to the fact that, for historical reasons,
+   * the function also accepts separate arguments as as alternative to the options object.
+   * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
+   */
+  scrollResponderScrollTo: function(
+    x?: number | { x?: number; y?: number; animated?: boolean },
+    y?: number,
+    animated?: boolean
+  ) {
+    if (typeof x === 'number') {
+      console.warn('`scrollResponderScrollTo(x, y, animated)` is deprecated. Use `scrollResponderScrollTo({x: 5, y: 5, animated: true})` instead.');
+    } else {
+      ({x, y, animated} = x || {});
+    }
+    UIManager.dispatchViewManagerCommand(
+      this.scrollResponderGetScrollableNode(),
+      UIManager.RCTScrollView.Commands.scrollTo,
+      [x || 0, y || 0, animated !== false],
+    );
+  },
+
+  /**
+   * Deprecated, do not use.
    */
   scrollResponderScrollWithoutAnimationTo: function(offsetX: number, offsetY: number) {
-    if (Platform.OS === 'android') {
-      UIManager.dispatchViewManagerCommand(
-        React.findNodeHandle(this),
-        UIManager.RCTScrollView.Commands.scrollWithoutAnimationTo,
-        [offsetX, offsetY],
-      );
-    } else {
-      ScrollViewManager.scrollWithoutAnimationTo(
-        React.findNodeHandle(this),
-        { x: offsetX, y: offsetY }
-      );
-    }
+    console.warn('`scrollResponderScrollWithoutAnimationTo` is deprecated. Use `scrollResponderScrollTo` instead');
+    this.scrollResponderScrollTo({x: offsetX, y: offsetY, animated: false});
   },
 
   /**
-   * A helper function to zoom to a specific rect in the scrollview.
-   * @param {object} rect Should have shape {x, y, width, height}
+   * A helper function to zoom to a specific rect in the scrollview. The argument has the shape
+   * {x: number; y: number; width: number; height: number; animated: boolean = true}
+   *
+   * @platform ios
    */
-  scrollResponderZoomTo: function(rect: { x: number; y: number; width: number; height: number; }) {
+  scrollResponderZoomTo: function(
+    rect: { x: number; y: number; width: number; height: number; animated?: boolean },
+    animated?: boolean // deprecated, put this inside the rect argument instead
+  ) {
     if (Platform.OS === 'android') {
       invariant('zoomToRect is not implemented');
     } else {
-      ScrollViewManager.zoomToRect(React.findNodeHandle(this), rect);
+      if ('animated' in rect) {
+        var { animated, ...rect } = rect;
+      } else if (typeof animated !== 'undefined') {
+        console.warn('`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead');
+      }
+      ScrollViewManager.zoomToRect(this.scrollResponderGetScrollableNode(), rect, animated !== false);
     }
   },
 
@@ -412,7 +427,7 @@ var ScrollResponderMixin = {
     this.preventNegativeScrollOffset = !!preventNegativeScrollOffset;
     UIManager.measureLayout(
       nodeHandle,
-      React.findNodeHandle(this.getInnerViewNode()),
+      ReactNative.findNodeHandle(this.getInnerViewNode()),
       this.scrollResponderTextInputFocusError,
       this.scrollResponderInputMeasureAndScrollToKeyboard
     );
@@ -442,7 +457,7 @@ var ScrollResponderMixin = {
     if (this.preventNegativeScrollOffset) {
       scrollOffsetY = Math.max(0, scrollOffsetY);
     }
-    this.scrollResponderScrollTo(0, scrollOffsetY);
+    this.scrollResponderScrollTo({x: 0, y: scrollOffsetY, animated: true});
 
     this.additionalOffset = 0;
     this.preventNegativeScrollOffset = false;

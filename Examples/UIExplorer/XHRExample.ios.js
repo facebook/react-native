@@ -15,25 +15,27 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   AlertIOS,
   CameraRoll,
   Image,
   LinkingIOS,
-  PixelRatio,
   ProgressViewIOS,
   StyleSheet,
   Text,
   TextInput,
   TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 
 var XHRExampleHeaders = require('./XHRExampleHeaders');
 var XHRExampleFetch = require('./XHRExampleFetch');
+var XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
 
 class Downloader extends React.Component {
+  state: any;
 
   xhr: XMLHttpRequest;
   cancelled: boolean;
@@ -121,6 +123,7 @@ class Downloader extends React.Component {
 var PAGE_SIZE = 20;
 
 class FormUploader extends React.Component {
+  state: any;
 
   _isMounted: boolean;
   _fetchRandomPhoto: () => void;
@@ -145,7 +148,8 @@ class FormUploader extends React.Component {
 
   _fetchRandomPhoto() {
     CameraRoll.getPhotos(
-      {first: PAGE_SIZE},
+      {first: PAGE_SIZE}
+    ).then(
       (data) => {
         if (!this._isMounted) {
           return;
@@ -328,6 +332,11 @@ exports.examples = [{
   render() {
     return <XHRExampleHeaders/>;
   }
+}, {
+  title: 'Time Out Test',
+  render() {
+    return <XHRExampleOnTimeOut/>;
+  }
 }];
 
 var styles = StyleSheet.create({
@@ -343,7 +352,7 @@ var styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 8,
     alignItems: 'center',
-    borderBottomWidth: 1 / PixelRatio.get(),
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'grey',
   },
   photoLabel: {

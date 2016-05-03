@@ -1,0 +1,5 @@
+prebuilt_jar(
+    name = 'infer-annotations',
+    binary_jar = 'infer-annotations-1.5.jar',
+    visibility = ['//ReactAndroid/...'],
+)

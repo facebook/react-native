@@ -11,7 +11,7 @@
 
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
-#import "RCTSRWebSocket.h"
+#import "RCTConvert.h"
 #import "RCTUtils.h"
 
 @implementation RCTSRWebSocket (React)
@@ -25,10 +25,6 @@
 {
   objc_setAssociatedObject(self, @selector(reactTag), reactTag, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
-
-@end
-
-@interface RCTWebSocketModule () <RCTSRWebSocketDelegate>
 
 @end
 
@@ -49,9 +45,14 @@ RCT_EXPORT_MODULE()
   }
 }
 
-RCT_EXPORT_METHOD(connect:(NSURL *)URL socketID:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols headers:(NSDictionary *)headers socketID:(nonnull NSNumber *)socketID)
 {
-  RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURL:URL];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+  [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
+    [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
+  }];
+
+  RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURLRequest:request protocols:protocols];
   webSocket.delegate = self;
   webSocket.reactTag = socketID;
   if (!_sockets) {
@@ -63,6 +64,12 @@ RCT_EXPORT_METHOD(connect:(NSURL *)URL socketID:(nonnull NSNumber *)socketID)
 
 RCT_EXPORT_METHOD(send:(NSString *)message socketID:(nonnull NSNumber *)socketID)
 {
+  [_sockets[socketID] send:message];
+}
+
+RCT_EXPORT_METHOD(sendBinary:(NSString *)base64String socketID:(nonnull NSNumber *)socketID)
+{
+  NSData *message = [[NSData alloc] initWithBase64EncodedString:base64String options:0];
   [_sockets[socketID] send:message];
 }
 

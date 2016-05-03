@@ -1,0 +1,20 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_library(
+  name = 'datepicker',
+  srcs = glob(['**/*.java']),
+  deps = [
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/common:common'),
+    react_native_dep('third-party/android/support/v4:lib-support-v4'),
+    react_native_dep('third-party/java/infer-annotations:infer-annotations'),
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+project_config(
+  src_target = ':datepicker',
+)

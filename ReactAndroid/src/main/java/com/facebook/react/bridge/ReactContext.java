@@ -11,6 +11,7 @@ package com.facebook.react.bridge;
 
 import javax.annotation.Nullable;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import android.app.Activity;
@@ -21,8 +22,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.queue.CatalystQueueConfiguration;
 import com.facebook.react.bridge.queue.MessageQueueThread;
+import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 
 /**
  * Abstract ContextWrapper for Android applicaiton or activity {@link Context} and
@@ -41,7 +42,7 @@ public class ReactContext extends ContextWrapper {
   private @Nullable MessageQueueThread mNativeModulesMessageQueueThread;
   private @Nullable MessageQueueThread mJSMessageQueueThread;
   private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
-  private @Nullable Activity mCurrentActivity;
+  private @Nullable WeakReference<Activity> mCurrentActivity;
 
   public ReactContext(Context base) {
     super(base);
@@ -60,7 +61,7 @@ public class ReactContext extends ContextWrapper {
 
     mCatalystInstance = catalystInstance;
 
-    CatalystQueueConfiguration queueConfig = catalystInstance.getCatalystQueueConfiguration();
+    ReactQueueConfiguration queueConfig = catalystInstance.getReactQueueConfiguration();
     mUiMessageQueueThread = queueConfig.getUIQueueThread();
     mNativeModulesMessageQueueThread = queueConfig.getNativeModulesQueueThread();
     mJSMessageQueueThread = queueConfig.getJSQueueThread();
@@ -96,12 +97,28 @@ public class ReactContext extends ContextWrapper {
     return mCatalystInstance.getJSModule(jsInterface);
   }
 
+  public <T extends JavaScriptModule> T getJSModule(ExecutorToken executorToken, Class<T> jsInterface) {
+    if (mCatalystInstance == null) {
+      throw new RuntimeException("Trying to invoke JS before CatalystInstance has been set!");
+    }
+    return mCatalystInstance.getJSModule(executorToken, jsInterface);
+  }
+
+  public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
+    if (mCatalystInstance == null) {
+      throw new RuntimeException(
+        "Trying to call native module before CatalystInstance has been set!");
+    }
+    return mCatalystInstance.hasNativeModule(nativeModuleInterface);
+  }
+
   /**
    * @return the instance of the specified module interface associated with this ReactContext.
    */
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     if (mCatalystInstance == null) {
-      throw new RuntimeException("Trying to invoke JS before CatalystInstance has been set!");
+      throw new RuntimeException(
+        "Trying to call native module before CatalystInstance has been set!");
     }
     return mCatalystInstance.getNativeModule(nativeModuleInterface);
   }
@@ -133,9 +150,9 @@ public class ReactContext extends ContextWrapper {
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onResume}
    */
-  public void onResume(@Nullable Activity activity) {
+  public void onHostResume(@Nullable Activity activity) {
     UiThreadUtil.assertOnUiThread();
-    mCurrentActivity = activity;
+    mCurrentActivity = new WeakReference(activity);
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostResume();
     }
@@ -144,25 +161,33 @@ public class ReactContext extends ContextWrapper {
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onPause}
    */
-  public void onPause() {
+  public void onHostPause() {
     UiThreadUtil.assertOnUiThread();
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostPause();
     }
+    mCurrentActivity = null;
   }
 
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onDestroy}
    */
-  public void onDestroy() {
+  public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostDestroy();
     }
+  }
+
+  /**
+   * Destroy this instance, making it unusable.
+   */
+  public void destroy() {
+    UiThreadUtil.assertOnUiThread();
+
     if (mCatalystInstance != null) {
       mCatalystInstance.destroy();
     }
-    mCurrentActivity = null;
   }
 
   /**
@@ -226,7 +251,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   public boolean hasCurrentActivity() {
-    return mCurrentActivity != null;
+    return mCurrentActivity != null && mCurrentActivity.get() != null;
   }
 
   /**
@@ -235,8 +260,9 @@ public class ReactContext extends ContextWrapper {
    * was called before the context is in the right state.
    */
   public boolean startActivityForResult(Intent intent, int code, Bundle bundle) {
-    Assertions.assertNotNull(mCurrentActivity);
-    mCurrentActivity.startActivityForResult(intent, code, bundle);
+    Activity activity = getCurrentActivity();
+    Assertions.assertNotNull(activity);
+    activity.startActivityForResult(intent, code, bundle);
     return true;
   }
 
@@ -246,6 +272,9 @@ public class ReactContext extends ContextWrapper {
    * MEMORY LEAKS.
    */
   /* package */ @Nullable Activity getCurrentActivity() {
-    return mCurrentActivity;
+    if (mCurrentActivity == null) {
+      return null;
+    }
+    return mCurrentActivity.get();
   }
 }

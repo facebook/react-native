@@ -11,6 +11,9 @@ package com.facebook.react.views.progressbar;
 
 import javax.annotation.Nullable;
 
+import android.content.Context;
+import android.widget.ProgressBar;
+
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -32,6 +35,19 @@ public class ReactProgressBarViewManager extends
 
   /* package */ static final String REACT_CLASS = "AndroidProgressBar";
   /* package */ static final String DEFAULT_STYLE = "Normal";
+
+  private static Object sProgressBarCtorLock = new Object();
+
+  /**
+   * We create ProgressBars on both the UI and shadow threads. There is a race condition in the
+   * ProgressBar constructor that may cause crashes when two ProgressBars are constructed at the
+   * same time on two different threads. This static ctor wrapper protects against that.
+   */
+  public static ProgressBar createProgressBar(Context context, int style) {
+    synchronized (sProgressBarCtorLock) {
+      return new ProgressBar(context, null, style);
+    }
+  }
 
   @Override
   public String getName() {

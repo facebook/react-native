@@ -11,10 +11,11 @@ package com.facebook.react.views.textinput;
 
 import javax.annotation.Nullable;
 
+import java.util.LinkedList;
 import java.util.Map;
 
 import android.graphics.PorterDuff;
-import android.os.SystemClock;
+import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -28,26 +29,28 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
-import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.react.views.text.ReactTextUpdate;
 
 /**
  * Manages instances of TextInput.
  */
-public class ReactTextInputManager extends
-    BaseViewManager<ReactEditText, ReactTextInputShadowNode> {
+public class ReactTextInputManager extends BaseViewManager<ReactEditText, LayoutShadowNode> {
 
   /* package */ static final String REACT_CLASS = "AndroidTextInput";
 
@@ -60,8 +63,10 @@ public class ReactTextInputManager extends
 
   private static final String KEYBOARD_TYPE_EMAIL_ADDRESS = "email-address";
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
+  private static final String KEYBOARD_TYPE_PHONE_PAD = "phone-pad";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
-
+  private static final int UNSET = -1;
+  
   @Override
   public String getName() {
     return REACT_CLASS;
@@ -80,12 +85,12 @@ public class ReactTextInputManager extends
   }
 
   @Override
-  public ReactTextInputShadowNode createShadowNodeInstance() {
+  public LayoutShadowNode createShadowNodeInstance() {
     return new ReactTextInputShadowNode();
   }
 
   @Override
-  public Class<ReactTextInputShadowNode> getShadowNodeClass() {
+  public Class<? extends LayoutShadowNode> getShadowNodeClass() {
     return ReactTextInputShadowNode.class;
   }
 
@@ -169,6 +174,58 @@ public class ReactTextInputManager extends
         (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize)));
   }
 
+  @ReactProp(name = ViewProps.FONT_FAMILY)
+  public void setFontFamily(ReactEditText view, String fontFamily) {
+    int style = Typeface.NORMAL;
+    if (view.getTypeface() != null) {
+      style = view.getTypeface().getStyle();
+    }
+    Typeface newTypeface = Typeface.create(fontFamily, style);
+    view.setTypeface(newTypeface);
+  }
+
+  /**
+  /* This code was taken from the method setFontWeight of the class ReactTextShadowNode
+  /* TODO: Factor into a common place they can both use
+  */
+  @ReactProp(name = ViewProps.FONT_WEIGHT)
+  public void setFontWeight(ReactEditText view, @Nullable String fontWeightString) {
+    int fontWeightNumeric = fontWeightString != null ?
+            parseNumericFontWeight(fontWeightString) : -1;
+    int fontWeight = UNSET;
+    if (fontWeightNumeric >= 500 || "bold".equals(fontWeightString)) {
+      fontWeight = Typeface.BOLD;
+    } else if ("normal".equals(fontWeightString) ||
+            (fontWeightNumeric != -1 && fontWeightNumeric < 500)) {
+      fontWeight = Typeface.NORMAL;
+    }
+    if (fontWeight != view.getTypeface().getStyle()) {
+      view.setTypeface(view.getTypeface(), fontWeight);
+    }
+  }
+
+  /**
+  /* This code was taken from the method setFontStyle of the class ReactTextShadowNode
+  /* TODO: Factor into a common place they can both use
+  */
+  @ReactProp(name = ViewProps.FONT_STYLE)
+  public void setFontStyle(ReactEditText view, @Nullable String fontStyleString) {
+    int fontStyle = UNSET;
+    if ("italic".equals(fontStyleString)) {
+      fontStyle = Typeface.ITALIC;
+    } else if ("normal".equals(fontStyleString)) {
+      fontStyle = Typeface.NORMAL;
+    }
+
+    Typeface currentTypeface = view.getTypeface();
+    if (currentTypeface == null) {
+      currentTypeface = Typeface.DEFAULT;
+    }
+    if (fontStyle != currentTypeface.getStyle()) {
+      view.setTypeface(currentTypeface, fontStyle);
+    }
+  }
+
   @ReactProp(name = "onSelectionChange", defaultBoolean = false)
   public void setOnSelectionChange(final ReactEditText view, boolean onSelectionChange) {
     if (onSelectionChange) {
@@ -176,6 +233,11 @@ public class ReactTextInputManager extends
     } else {
       view.setSelectionWatcher(null);
     }
+  }
+
+  @ReactProp(name = "blurOnSubmit", defaultBoolean = true)
+  public void setBlurOnSubmit(ReactEditText view, boolean blurOnSubmit) {
+    view.setBlurOnSubmit(blurOnSubmit);
   }
 
   @ReactProp(name = "placeholder")
@@ -192,6 +254,29 @@ public class ReactTextInputManager extends
     }
   }
 
+  @ReactProp(name = "selectionColor", customType = "Color")
+  public void setSelectionColor(ReactEditText view, @Nullable Integer color) {
+    if (color == null) {
+      view.setHighlightColor(DefaultStyleValuesUtil.getDefaultTextColorHighlight(view.getContext()));
+    } else {
+      view.setHighlightColor(color);
+    }
+  }
+
+  @ReactProp(name = "selectTextOnFocus", defaultBoolean = false)
+  public void setSelectTextOnFocus(ReactEditText view, boolean selectTextOnFocus) {
+    view.setSelectAllOnFocus(selectTextOnFocus);
+  }
+
+  @ReactProp(name = ViewProps.COLOR, customType = "Color")
+  public void setColor(ReactEditText view, @Nullable Integer color) {
+    if (color == null) {
+      view.setTextColor(DefaultStyleValuesUtil.getDefaultTextColor(view.getContext()));
+    } else {
+      view.setTextColor(color);
+    }
+  }
+
   @ReactProp(name = "underlineColorAndroid", customType = "Color")
   public void setUnderlineColor(ReactEditText view, @Nullable Integer underlineColor) {
     if (underlineColor == null) {
@@ -201,14 +286,37 @@ public class ReactTextInputManager extends
     }
   }
 
-  @ReactProp(name = "textAlign")
-  public void setTextAlign(ReactEditText view, int gravity) {
-    view.setGravityHorizontal(gravity);
+  @ReactProp(name = ViewProps.TEXT_ALIGN)
+  public void setTextAlign(ReactEditText view, @Nullable String textAlign) {
+    if (textAlign == null || "auto".equals(textAlign)) {
+      view.setGravityHorizontal(Gravity.NO_GRAVITY);
+    } else if ("left".equals(textAlign)) {
+      view.setGravityHorizontal(Gravity.LEFT);
+    } else if ("right".equals(textAlign)) {
+      view.setGravityHorizontal(Gravity.RIGHT);
+    } else if ("center".equals(textAlign)) {
+      view.setGravityHorizontal(Gravity.CENTER_HORIZONTAL);
+    } else if ("justify".equals(textAlign)) {
+      // Fallback gracefully for cross-platform compat instead of error
+      view.setGravityHorizontal(Gravity.LEFT);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
+    }
   }
 
-  @ReactProp(name = "textAlignVertical")
-  public void setTextAlignVertical(ReactEditText view, int gravity) {
-    view.setGravityVertical(gravity);
+  @ReactProp(name = ViewProps.TEXT_ALIGN_VERTICAL)
+  public void setTextAlignVertical(ReactEditText view, @Nullable String textAlignVertical) {
+    if (textAlignVertical == null || "auto".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.NO_GRAVITY);
+    } else if ("top".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.TOP);
+    } else if ("bottom".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.BOTTOM);
+    } else if ("center".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.CENTER_VERTICAL);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textAlignVertical: " + textAlignVertical);
+    }
   }
 
   @ReactProp(name = "editable", defaultBoolean = true)
@@ -223,13 +331,43 @@ public class ReactTextInputManager extends
 
   @ReactProp(name = "maxLength")
   public void setMaxLength(ReactEditText view, @Nullable Integer maxLength) {
+    InputFilter [] currentFilters = view.getFilters();
+    InputFilter[] newFilters = EMPTY_FILTERS;
+
     if (maxLength == null) {
-      view.setFilters(EMPTY_FILTERS);
+      if (currentFilters.length > 0) {
+        LinkedList<InputFilter> list = new LinkedList<>();
+        for (int i = 0; i < currentFilters.length; i++) {
+          if (!(currentFilters[i] instanceof InputFilter.LengthFilter)) {
+            list.add(currentFilters[i]);
+          }
+        }
+        if (!list.isEmpty()) {
+          newFilters = (InputFilter[]) list.toArray(new InputFilter[list.size()]);
+        }
+      }
     } else {
-      InputFilter[] filterArray = new InputFilter[1];
-      filterArray[0] = new InputFilter.LengthFilter(maxLength);
-      view.setFilters(filterArray);
+      if (currentFilters.length > 0) {
+        newFilters = currentFilters;
+        boolean replaced = false;
+        for (int i = 0; i < currentFilters.length; i++) {
+          if (currentFilters[i] instanceof InputFilter.LengthFilter) {
+            currentFilters[i] = new InputFilter.LengthFilter(maxLength);
+            replaced = true;
+          }
+        }
+        if (!replaced) {
+          newFilters = new InputFilter[currentFilters.length + 1];
+          System.arraycopy(currentFilters, 0, newFilters, 0, currentFilters.length);
+          currentFilters[currentFilters.length] = new InputFilter.LengthFilter(maxLength);
+        }
+      } else {
+        newFilters = new InputFilter[1];
+        newFilters[0] = new InputFilter.LengthFilter(maxLength);
+      }
     }
+
+    view.setFilters(newFilters);
   }
 
   @ReactProp(name = "autoCorrect")
@@ -278,6 +416,8 @@ public class ReactTextInputManager extends
       flagsToSet = INPUT_TYPE_KEYBOARD_NUMBERED;
     } else if (KEYBOARD_TYPE_EMAIL_ADDRESS.equalsIgnoreCase(keyboardType)) {
       flagsToSet = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS | InputType.TYPE_CLASS_TEXT;
+    } else if (KEYBOARD_TYPE_PHONE_PAD.equalsIgnoreCase(keyboardType)) {
+      flagsToSet = InputType.TYPE_CLASS_PHONE;
     }
     updateStagedInputTypeFlag(
         view,
@@ -303,6 +443,20 @@ public class ReactTextInputManager extends
           InputType.TYPE_TEXT_VARIATION_PASSWORD,
           InputType.TYPE_NUMBER_VARIATION_PASSWORD);
     }
+  }
+
+  /**
+   * This code was taken from the method parseNumericFontWeight of the class ReactTextShadowNode
+   * TODO: Factor into a common place they can both use
+   *
+   * Return -1 if the input string is not a valid numeric fontWeight (100, 200, ..., 900), otherwise
+   * return the weight.
+   */
+  private static int parseNumericFontWeight(String fontWeightString) {
+    // This should be much faster than using regex to verify input and Integer.parseInt
+    return fontWeightString.length() == 3 && fontWeightString.endsWith("00")
+            && fontWeightString.charAt(0) <= '9' && fontWeightString.charAt(0) >= '1' ?
+            100 * (fontWeightString.charAt(0) - '0') : -1;
   }
 
   private static void updateStagedInputTypeFlag(
@@ -363,7 +517,7 @@ public class ReactTextInputManager extends
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
               mEditText.getId(),
-              SystemClock.uptimeMillis(),
+              SystemClock.nanoTime(),
               s.toString(),
               (int) PixelUtil.toDIPFromPixel(contentWidth),
               (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -372,7 +526,7 @@ public class ReactTextInputManager extends
       mEventDispatcher.dispatchEvent(
           new ReactTextInputEvent(
               mEditText.getId(),
-              SystemClock.uptimeMillis(),
+              SystemClock.nanoTime(),
               newText,
               oldText,
               start,
@@ -398,17 +552,17 @@ public class ReactTextInputManager extends
               eventDispatcher.dispatchEvent(
                   new ReactTextInputFocusEvent(
                       editText.getId(),
-                      SystemClock.uptimeMillis()));
+                      SystemClock.nanoTime()));
             } else {
               eventDispatcher.dispatchEvent(
                   new ReactTextInputBlurEvent(
                       editText.getId(),
-                      SystemClock.uptimeMillis()));
+                      SystemClock.nanoTime()));
 
               eventDispatcher.dispatchEvent(
                   new ReactTextInputEndEditingEvent(
                       editText.getId(),
-                      SystemClock.uptimeMillis(),
+                      SystemClock.nanoTime(),
                       editText.getText().toString()));
             }
           }
@@ -426,10 +580,10 @@ public class ReactTextInputManager extends
               eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
                       editText.getId(),
-                      SystemClock.uptimeMillis(),
+                      SystemClock.nanoTime(),
                       editText.getText().toString()));
             }
-            return false;
+            return !editText.getBlurOnSubmit();
           }
         });
   }
@@ -456,7 +610,7 @@ public class ReactTextInputManager extends
         mEventDispatcher.dispatchEvent(
             new ReactTextInputSelectionEvent(
                 mReactEditText.getId(),
-                SystemClock.uptimeMillis(),
+                SystemClock.nanoTime(),
                 start,
                 end
             )
@@ -471,16 +625,6 @@ public class ReactTextInputManager extends
   @Override
   public @Nullable Map getExportedViewConstants() {
     return MapBuilder.of(
-        "TextAlign",
-        MapBuilder.of(
-            "start", Gravity.START,
-            "center", Gravity.CENTER_HORIZONTAL,
-            "end", Gravity.END),
-        "TextAlignVertical",
-        MapBuilder.of(
-            "top", Gravity.TOP,
-            "center", Gravity.CENTER_VERTICAL,
-            "bottom", Gravity.BOTTOM),
         "AutoCapitalizationType",
         MapBuilder.of(
             "none",

@@ -1,15 +1,25 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * @providesModule Touchable
  */
 
 'use strict';
 
-var BoundingDimensions = require('BoundingDimensions');
-var Position = require('Position');
-var TouchEventUtils = require('TouchEventUtils');
+const BoundingDimensions = require('BoundingDimensions');
+const Position = require('Position');
+const React = require('React'); // eslint-disable-line no-unused-vars
+const TouchEventUtils = require('fbjs/lib/TouchEventUtils');
+const View = require('View');
 
-var keyMirror = require('keyMirror');
-var queryLayoutByID = require('queryLayoutByID');
+const keyMirror = require('fbjs/lib/keyMirror');
+const normalizeColor = require('normalizeColor');
+const queryLayoutByID = require('queryLayoutByID');
 
 /**
  * `Touchable`: Taps done right.
@@ -49,24 +59,24 @@ var queryLayoutByID = require('queryLayoutByID');
  *
  * - Choose the rendered component who's touches should start the interactive
  *   sequence. On that rendered node, forward all `Touchable` responder
- *   handlers. You can choose any rendered node you like. Choose a node who's
+ *   handlers. You can choose any rendered node you like. Choose a node whose
  *   hit target you'd like to instigate the interaction sequence:
  *
  *   // In render function:
  *   return (
- *     <div
+ *     <View
  *       onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
  *       onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
  *       onResponderGrant={this.touchableHandleResponderGrant}
  *       onResponderMove={this.touchableHandleResponderMove}
  *       onResponderRelease={this.touchableHandleResponderRelease}
  *       onResponderTerminate={this.touchableHandleResponderTerminate}>
- *       <div>
+ *       <View>
  *         Even though the hit detection/interactions are triggered by the
  *         wrapping (typically larger) node, we usually end up implementing
  *         custom logic that highlights this inner one.
- *       </div>
- *     </div>
+ *       </View>
+ *     </View>
  *   );
  *
  * - You may set up your own handlers for each of these events, so long as you
@@ -337,7 +347,7 @@ var TouchableMixin = {
    * Must return true to start the process of `Touchable`.
    */
   touchableHandleStartShouldSetResponder: function() {
-    return true;
+    return !this.props.disabled;
   },
 
   /**
@@ -350,10 +360,10 @@ var TouchableMixin = {
   /**
    * Place as callback for a DOM element's `onResponderGrant` event.
    * @param {SyntheticEvent} e Synthetic event from event system.
-   * @param {string} dispatchID ID of node that e was dispatched to.
    *
    */
-  touchableHandleResponderGrant: function(e, dispatchID) {
+  touchableHandleResponderGrant: function(e) {
+    var dispatchID = e.currentTarget;
     // Since e is used in a callback invoked on another event loop
     // (as in setTimeout etc), we need to call e.persist() on the
     // event to make sure it doesn't get reused in the event object pool.
@@ -431,6 +441,16 @@ var TouchableMixin = {
     var pressExpandTop = pressRectOffset.top;
     var pressExpandRight = pressRectOffset.right;
     var pressExpandBottom = pressRectOffset.bottom;
+
+    var hitSlop = this.touchableGetHitSlop ?
+      this.touchableGetHitSlop() : null;
+
+    if (hitSlop) {
+      pressExpandLeft += hitSlop.left;
+      pressExpandTop += hitSlop.top;
+      pressExpandRight += hitSlop.right;
+      pressExpandBottom += hitSlop.bottom;
+    }
 
     var touch = TouchEventUtils.extractSingleTouch(e.nativeEvent);
     var pageX = touch && touch.pageX;
@@ -589,18 +609,22 @@ var TouchableMixin = {
    * @sideeffects
    */
   _receiveSignal: function(signal, e) {
+    var responderID = this.state.touchable.responderID;
     var curState = this.state.touchable.touchState;
     var nextState = Transitions[curState] && Transitions[curState][signal];
+    if (!responderID && signal === Signals.RESPONDER_RELEASE) {
+      return;
+    }
     if (!nextState) {
       throw new Error(
         'Unrecognized signal `' + signal + '` or state `' + curState +
-        '` for Touchable responder `' + this.state.touchable.responderID + '`'
+        '` for Touchable responder `' + responderID + '`'
       );
     }
     if (nextState === States.ERROR) {
       throw new Error(
         'Touchable cannot transition from `' + curState + '` to `' + signal +
-        '` for responder `' + this.state.touchable.responderID + '`'
+        '` for responder `' + responderID + '`'
       );
     }
     if (curState !== nextState) {
@@ -623,7 +647,9 @@ var TouchableMixin = {
     var touch = TouchEventUtils.extractSingleTouch(e.nativeEvent);
     var pageX = touch && touch.pageX;
     var pageY = touch && touch.pageY;
-    this.pressInLocation = {pageX: pageX, pageY: pageY};
+    var locationX = touch && touch.locationX;
+    var locationY = touch && touch.locationY;
+    this.pressInLocation = {pageX, pageY, locationX, locationY};
   },
 
   _getDistanceBetweenPoints: function (aX, aY, bX, bY) {
@@ -668,7 +694,7 @@ var TouchableMixin = {
       this.touchableHandleActivePressIn && this.touchableHandleActivePressIn(e);
     } else if (!newIsHighlight && curIsHighlight && this.touchableHandleActivePressOut) {
       if (this.touchableGetPressOutDelayMS && this.touchableGetPressOutDelayMS()) {
-        this.pressOutDelayTimeout = this.setTimeout(function() {
+        this.pressOutDelayTimeout = setTimeout(() => {
           this.touchableHandleActivePressOut(e);
         }, this.touchableGetPressOutDelayMS());
       } else {
@@ -697,7 +723,38 @@ var TouchableMixin = {
 };
 
 var Touchable = {
-  Mixin: TouchableMixin
+  Mixin: TouchableMixin,
+  TOUCH_TARGET_DEBUG: false, // Highlights all touchable targets. Toggle with Inspector.
+  /**
+   * Renders a debugging overlay to visualize touch target with hitSlop (might not work on Android).
+   */
+  renderDebugView: ({color, hitSlop}) => {
+    if (!Touchable.TOUCH_TARGET_DEBUG) {
+      return null;
+    }
+    if (!__DEV__) {
+      throw Error('Touchable.TOUCH_TARGET_DEBUG should not be enabled in prod!');
+    }
+    const debugHitSlopStyle = {};
+    hitSlop = hitSlop || {top: 0, bottom: 0, left: 0, right: 0};
+    for (const key in hitSlop) {
+      debugHitSlopStyle[key] = -hitSlop[key];
+    }
+    const hexColor = '#' + ('00000000' + normalizeColor(color).toString(16)).substr(-8);
+    return (
+      <View
+        pointerEvents="none"
+        style={{
+          position: 'absolute',
+          borderColor: hexColor.slice(0, -2) + '55', // More opaque
+          borderWidth: 1,
+          borderStyle: 'dashed',
+          backgroundColor: hexColor.slice(0, -2) + '0F', // Less opaque
+          ...debugHitSlopStyle
+        }}
+      />
+    );
+  }
 };
 
 module.exports = Touchable;

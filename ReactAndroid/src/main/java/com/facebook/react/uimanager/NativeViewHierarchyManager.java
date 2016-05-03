@@ -12,6 +12,7 @@ package com.facebook.react.uimanager;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import android.content.res.Resources;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
@@ -106,7 +107,7 @@ public class NativeViewHierarchyManager {
     mLayoutAnimationEnabled = enabled;
   }
 
-  public void updateProperties(int tag, CatalystStylesDiffMap props) {
+  public void updateProperties(int tag, ReactStylesDiffMap props) {
     UiThreadUtil.assertOnUiThread();
 
     ViewManager viewManager = resolveViewManager(tag);
@@ -190,7 +191,7 @@ public class NativeViewHierarchyManager {
       ThemedReactContext themedContext,
       int tag,
       String className,
-      @Nullable CatalystStylesDiffMap initialProps) {
+      @Nullable ReactStylesDiffMap initialProps) {
     UiThreadUtil.assertOnUiThread();
     SystraceMessage.beginSection(
         Systrace.TRACE_TAG_REACT_VIEW,
@@ -388,6 +389,51 @@ public class NativeViewHierarchyManager {
   }
 
   /**
+   * Simplified version of constructManageChildrenErrorMessage that only deals with adding children
+   * views
+   */
+  private static String constructSetChildrenErrorMessage(
+    ViewGroup viewToManage,
+    ViewGroupManager viewManager,
+    ReadableArray childrenTags) {
+    ViewAtIndex[] viewsToAdd = new ViewAtIndex[childrenTags.size()];
+    for (int i = 0; i < childrenTags.size(); i++) {
+      viewsToAdd[i] = new ViewAtIndex(childrenTags.getInt(i), i);
+    }
+    return constructManageChildrenErrorMessage(
+      viewToManage,
+      viewManager,
+      null,
+      viewsToAdd,
+      null
+    );
+  }
+
+  /**
+   * Simplified version of manageChildren that only deals with adding children views
+   */
+  public void setChildren(
+    int tag,
+    ReadableArray childrenTags) {
+    ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
+    ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
+
+    for (int i = 0; i < childrenTags.size(); i++) {
+      View viewToAdd = mTagsToViews.get(childrenTags.getInt(i));
+      if (viewToAdd == null) {
+        throw new IllegalViewOperationException(
+          "Trying to add unknown view tag: "
+            + childrenTags.getInt(i) + "\n detail: " +
+            constructSetChildrenErrorMessage(
+              viewToManage,
+              viewManager,
+              childrenTags));
+      }
+      viewManager.addView(viewToManage, viewToAdd, i);
+    }
+  }
+
+  /**
    * See {@link UIManagerModule#addMeasuredRootView}.
    *
    * Must be called from the UI thread.
@@ -478,6 +524,37 @@ public class NativeViewHierarchyManager {
 
     outputBuffer[0] = outputBuffer[0] - rootX;
     outputBuffer[1] = outputBuffer[1] - rootY;
+    outputBuffer[2] = v.getWidth();
+    outputBuffer[3] = v.getHeight();
+  }
+
+  /**
+   * Returns the coordinates of a view relative to the window (not just the RootView
+   * which is what measure will return)
+   *
+   * @param tag - the tag for the view
+   * @param outputBuffer - output buffer that contains [x,y,width,height] of the view in coordinates
+   *  relative to the device window
+   */
+  public void measureInWindow(int tag, int[] outputBuffer) {
+    UiThreadUtil.assertOnUiThread();
+    View v = mTagsToViews.get(tag);
+    if (v == null) {
+      throw new NoSuchNativeViewException("No native view for " + tag + " currently exists");
+    }
+
+    v.getLocationOnScreen(outputBuffer);
+
+    // We need to remove the status bar from the height.  getLocationOnScreen will include the
+    // status bar.
+    Resources resources = v.getContext().getResources();
+    int statusBarId = resources.getIdentifier("status_bar_height", "dimen", "android");
+    if (statusBarId > 0) {
+      int height = (int) resources.getDimension(statusBarId);
+      outputBuffer[1] -= height;
+    }
+
+    // outputBuffer[0,1] already contain what we want
     outputBuffer[2] = v.getWidth();
     outputBuffer[3] = v.getHeight();
   }

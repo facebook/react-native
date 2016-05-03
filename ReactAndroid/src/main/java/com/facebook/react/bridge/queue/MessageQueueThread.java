@@ -36,11 +36,21 @@ public interface MessageQueueThread {
   /**
    * @return whether the current Thread is also the Thread associated with this MessageQueueThread.
    */
+  @DoNotStrip
   boolean isOnThread();
 
   /**
    * Asserts {@link #isOnThread()}, throwing a {@link AssertionException} (NOT an
    * {@link AssertionError}) if the assertion fails.
    */
+  @DoNotStrip
   void assertIsOnThread();
+
+  /**
+   * Quits this MessageQueueThread. If called from this MessageQueueThread, this will be the last
+   * thing the thread runs. If called from a separate thread, this will block until the thread can
+   * be quit and joined.
+   */
+  @DoNotStrip
+  void quitSynchronous();
 }

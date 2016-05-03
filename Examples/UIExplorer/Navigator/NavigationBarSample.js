@@ -14,18 +14,16 @@
 'use strict';
 
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
-  PixelRatio,
   Navigator,
   ScrollView,
   StyleSheet,
   Text,
   TouchableHighlight,
   TouchableOpacity,
-} = React;
-
-var cssVar = require('cssVar');
+} = ReactNative;
 
 class NavButton extends React.Component {
   render() {
@@ -164,7 +162,7 @@ var styles = StyleSheet.create({
   button: {
     backgroundColor: 'white',
     padding: 15,
-    borderBottomWidth: 1 / PixelRatio.get(),
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#CDCDCD',
   },
   buttonText: {
@@ -179,7 +177,7 @@ var styles = StyleSheet.create({
     marginVertical: 10,
   },
   navBarTitleText: {
-    color: cssVar('fbui-bluegray-60'),
+    color: '#373E4D',
     fontWeight: '500',
     marginVertical: 9,
   },
@@ -190,7 +188,7 @@ var styles = StyleSheet.create({
     paddingRight: 10,
   },
   navBarButtonText: {
-    color: cssVar('fbui-accent-blue'),
+    color: '#5890FF',
   },
   scene: {
     flex: 1,

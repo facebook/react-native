@@ -47,7 +47,7 @@
   return _canLoadImageURLHandler(requestURL);
 }
 
-- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode progressHandler:(RCTImageLoaderProgressBlock)progressHandler completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
+- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL size:(CGSize)size scale:(CGFloat)scale resizeMode:(RCTResizeMode)resizeMode progressHandler:(RCTImageLoaderProgressBlock)progressHandler completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   return _loadImageURLHandler(imageURL, size, scale, resizeMode, progressHandler, completionHandler);
 }
@@ -92,7 +92,7 @@
   return _canDecodeImageDataHandler(imageData);
 }
 
-- (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
+- (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData size:(CGSize)size scale:(CGFloat)scale resizeMode:(RCTResizeMode)resizeMode completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   return _decodeImageDataHandler(imageData, size, scale, resizeMode, completionHandler);
 }

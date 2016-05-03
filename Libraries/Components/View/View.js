@@ -11,20 +11,21 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var PropTypes = require('ReactPropTypes');
-var React = require('React');
-var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var StyleSheetPropType = require('StyleSheetPropType');
-var UIManager = require('UIManager');
-var ViewStylePropTypes = require('ViewStylePropTypes');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const PropTypes = require('ReactPropTypes');
+const React = require('React');
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+const StyleSheetPropType = require('StyleSheetPropType');
+const UIManager = require('UIManager');
+const ViewStylePropTypes = require('ViewStylePropTypes');
 
-var requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('requireNativeComponent');
 
-var stylePropType = StyleSheetPropType(ViewStylePropTypes);
+const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
-var AccessibilityTraits = [
+const AccessibilityTraits = [
   'none',
   'button',
   'link',
@@ -44,12 +45,25 @@ var AccessibilityTraits = [
   'pageTurn',
 ];
 
-var AccessibilityComponentType = [
+const AccessibilityComponentType = [
   'none',
   'button',
   'radiobutton_checked',
   'radiobutton_unchecked',
 ];
+
+const forceTouchAvailable = (UIManager.RCTView.Constants &&
+  UIManager.RCTView.Constants.forceTouchAvailable) || false;
+
+const statics = {
+  AccessibilityTraits,
+  AccessibilityComponentType,
+  /**
+   * Is 3D Touch / Force Touch available (i.e. will touch events include `force`)
+   * @platform ios
+   */
+  forceTouchAvailable,
+};
 
 /**
  * The most fundamental component for building UI, `View` is a
@@ -71,7 +85,7 @@ var AccessibilityComponentType = [
  * `View`s are designed to be used with `StyleSheet`s for clarity and
  * performance, although inline styles are also supported.
  */
-var View = React.createClass({
+const View = React.createClass({
   mixins: [NativeMethodsMixin],
 
   /**
@@ -84,8 +98,7 @@ var View = React.createClass({
   },
 
   statics: {
-    AccessibilityTraits,
-    AccessibilityComponentType,
+    ...statics,
   },
 
   propTypes: {
@@ -190,6 +203,19 @@ var View = React.createClass({
     onMoveShouldSetResponderCapture: PropTypes.func,
 
     /**
+     * This defines how far a touch event can start away from the view.
+     * Typical interface guidelines recommend touch targets that are at least
+     * 30 - 40 points/density-independent pixels. If a Touchable view has a
+     * height of 20 the touchable height can be extended to 40 with
+     * `hitSlop={{top: 10, bottom: 10, left: 0, right: 0}}`
+     * ** NOTE **
+     * The touch area never extends past the parent view bounds and the Z-index
+     * of sibling views always takes precedence if a touch hits two overlapping
+     * views.
+     */
+    hitSlop: EdgeInsetsPropType,
+
+    /**
      * Invoked on mount and layout changes with
      *
      *   {nativeEvent: { layout: {x, y, width, height}}}.
@@ -201,35 +227,38 @@ var View = React.createClass({
     onLayout: PropTypes.func,
 
     /**
-     * In the absence of `auto` property, `none` is much like `CSS`'s `none`
-     * value. `box-none` is as if you had applied the `CSS` class:
+     * Controls whether the View can be the target of touch events.
      *
+     *   - 'auto': The View can be the target of touch events.
+     *   - 'none': The View is never the target of touch events.
+     *   - 'box-none': The View is never the target of touch events but it's
+     *     subviews can be. It behaves like if the view had the following classes
+     *     in CSS:
      * ```
      * .box-none {
-     *   pointer-events: none;
+     * 		pointer-events: none;
      * }
      * .box-none * {
-     *   pointer-events: all;
+     * 		pointer-events: all;
      * }
      * ```
-     *
-     * `box-only` is the equivalent of
-     *
+     *   - 'box-only': The view can be the target of touch events but it's
+     *     subviews cannot be. It behaves like if the view had the following classes
+     *     in CSS:
      * ```
      * .box-only {
-     *   pointer-events: all;
+     * 		pointer-events: all;
      * }
      * .box-only * {
-     *   pointer-events: none;
+     * 		pointer-events: none;
      * }
      * ```
-     *
-     * But since `pointerEvents` does not affect layout/appearance, and we are
-     * already deviating from the spec by adding additional modes, we opt to not
-     * include `pointerEvents` on `style`. On some platforms, we would need to
-     * implement it as a `className` anyways. Using `style` or not is an
-     * implementation detail of the platform.
      */
+    // Since `pointerEvents` does not affect layout/appearance, and we are
+    // already deviating from the spec by adding additional modes, we opt to not
+    // include `pointerEvents` on `style`. On some platforms, we would need to
+    // implement it as a `className` anyways. Using `style` or not is an
+    // implementation detail of the platform.
     pointerEvents: PropTypes.oneOf([
       'box-none',
       'none',
@@ -320,16 +349,16 @@ var View = React.createClass({
   },
 });
 
-var RCTView = requireNativeComponent('RCTView', View, {
+const RCTView = requireNativeComponent('RCTView', View, {
   nativeOnly: {
     nativeBackgroundAndroid: true,
   }
 });
 
 if (__DEV__) {
-  var viewConfig = UIManager.viewConfigs && UIManager.viewConfigs.RCTView || {};
-  for (var prop in viewConfig.nativeProps) {
-    var viewAny: any = View; // Appease flow
+  const viewConfig = UIManager.viewConfigs && UIManager.viewConfigs.RCTView || {};
+  for (const prop in viewConfig.nativeProps) {
+    const viewAny: any = View; // Appease flow
     if (!viewAny.propTypes[prop] && !ReactNativeStyleAttributes[prop]) {
       throw new Error(
         'View is missing propType for native prop `' + prop + '`'
@@ -338,9 +367,11 @@ if (__DEV__) {
   }
 }
 
-var ViewToExport = RCTView;
+let ViewToExport = RCTView;
 if (__DEV__) {
   ViewToExport = View;
+} else {
+  Object.assign(RCTView, statics);
 }
 
 module.exports = ViewToExport;

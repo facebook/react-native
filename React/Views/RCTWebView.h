@@ -31,13 +31,15 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 
 @property (nonatomic, weak) id<RCTWebViewDelegate> delegate;
 
-@property (nonatomic, strong) NSURL *URL;
+@property (nonatomic, copy) NSDictionary *source;
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, copy) NSString *injectedJavaScript;
+@property (nonatomic, assign) BOOL scalesPageToFit;
 
 - (void)goForward;
 - (void)goBack;
 - (void)reload;
+- (void)stopLoading;
 
 @end

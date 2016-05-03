@@ -33,8 +33,8 @@
 
 "use strict";
 
-var invariant = require('invariant');
-var keyMirror = require('keyMirror');
+var invariant = require('fbjs/lib/invariant');
+var keyMirror = require('fbjs/lib/keyMirror');
 
 /**
  * Maximum number of levels to traverse. Will catch circular structures.

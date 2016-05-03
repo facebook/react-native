@@ -17,8 +17,8 @@ Make sure you have the following installed:
 
 1. Android SDK version 23 (compileSdkVersion in [`build.gradle`](https://github.com/facebook/react-native/blob/master/ReactAndroid/build.gradle))
 2. SDK build tools version 23.0.1 (buildToolsVersion in [`build.gradle`](https://github.com/facebook/react-native/blob/master/ReactAndroid/build.gradle))
-3. Android Support Repository >= 17 (for Android Support Library)
-4. Android NDK (download & extraction instructions [here](http://developer.android.com/ndk/downloads/index.html))
+3. Local Maven repository for Support Libraries (formerly `Android Support Repository`) >= 17 (for Android Support Library)
+4. Android NDK (download links and installation instructions below)
 
 Point Gradle to your Android SDK: either have `$ANDROID_SDK` and `$ANDROID_NDK ` defined, or create a local.properties file in the root of your react-native checkout with the following contents:
 
@@ -34,6 +34,14 @@ sdk.dir=/Users/your_unix_name/android-sdk-macosx
 ndk.dir=/Users/your_unix_name/android-ndk/android-ndk-r10e
 ```
 
+### Download links for Android NDK
+
+1. Mac OS (64-bit) - http://dl.google.com/android/repository/android-ndk-r10e-darwin-x86_64.zip
+2. Linux (64-bit) - http://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip
+3. Windows (64-bit) - http://dl.google.com/android/repository/android-ndk-r10e-windows-x86_64.zip
+4. Windows (32-bit) - http://dl.google.com/android/repository/android-ndk-r10e-windows-x86.zip
+
+You can find further instructions on the [official page](http://developer.android.com/ndk/downloads/index.html).
 
 ## Building the source
 
@@ -76,7 +84,6 @@ project(':ReactAndroid').projectDir = new File(
 ...
 ```
 
-
 Modify your `android/app/build.gradle` to use the `:ReactAndroid` project instead of the pre-compiled library, e.g. - replace `compile 'com.facebook.react:react-native:0.16.+'` with `compile project(':ReactAndroid')`:
 
 ```gradle
@@ -92,7 +99,6 @@ dependencies {
 ...
 ```
 
-
 #### 4. Making 3rd-party modules use your fork
 
 If you use 3rd-party React Native modules, you need to override their dependencies so that they don't bundle the pre-compiled library. Otherwise you'll get an error while compiling - `Error: more than one library with package name 'com.facebook.react'`.
@@ -105,6 +111,11 @@ compile(project(':react-native-custom-module')) {
 }
 ```
 
+## Building from Android Studio
+
+From the Welcome screen of Android Studio choose "Import project" and select the `android` folder of your app.
+
+You should be able to use the _Run_ button to run your app on a device. Android Studio won't start the packager automatically, you'll need to start it by running `npm start` on the command line.
 
 ## Additional notes
 
@@ -117,3 +128,7 @@ gradle.projectsLoaded {
     }
 }
 ```
+
+## Troubleshooting
+
+Gradle build fails in `ndk-build`. See the section about `local.properties` file above.

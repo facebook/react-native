@@ -16,14 +16,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Animated,
   PanResponder,
   StyleSheet,
   Text,
   View,
-} = React;
+} = ReactNative;
 
 var AnExBobble = require('./AnExBobble');
 var AnExChained = require('./AnExChained');
@@ -31,6 +32,8 @@ var AnExScroll = require('./AnExScroll');
 var AnExTilt = require('./AnExTilt');
 
 class AnExSet extends React.Component {
+  state: any;
+
   constructor(props: Object) {
     super(props);
     function randColor() {

@@ -1,0 +1,78 @@
+include_defs('//ReactAndroid/DEFS')
+
+# We depend on JSC, support the same platforms
+SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
+
+DEPS = [
+  '//native/third-party/android-ndk:android',
+  '//xplat/fbsystrace:fbsystrace',
+  '//xplat/folly:molly',
+  '//xplat/third-party/glog:glog',
+]
+
+PREPROCESSOR_FLAGS = [
+  '-DLOG_TAG="ReactNative"',
+  '-DWITH_JSC_EXTRA_TRACING=1',
+  '-DWITH_FBSYSTRACE=1',
+  '-DWITH_REACT_INTERNAL_SETTINGS=1',
+]
+
+def react_library(**kwargs):
+  cxx_library(
+    name = 'react',
+    visibility = [
+      react_native_target('jni/react/jni:jni'),
+    ],
+    deps = DEPS + JSC_DEPS,
+    preprocessor_flags = PREPROCESSOR_FLAGS + [
+      '-DWITH_FB_MEMORY_PROFILING=1',
+    ],
+    **kwargs
+  )
+
+react_library(
+  soname = 'libreactnative.so',
+  header_namespace = 'react',
+  supported_platforms_regex = SUPPORTED_PLATFORMS,
+  force_static = True,
+  srcs = [
+    'Bridge.cpp',
+    'Value.cpp',
+    'MethodCall.cpp',
+    'JSCHelpers.cpp',
+    'JSCExecutor.cpp',
+    'JSCPerfStats.cpp',
+    'JSCTracing.cpp',
+    'JSCMemory.cpp',
+    'JSCLegacyProfiler.cpp',
+    'Platform.cpp',
+  ],
+  headers = [
+    'JSCTracing.h',
+    'JSCLegacyProfiler.h',
+    'JSCMemory.h',
+    'JSCPerfStats.h',
+  ],
+  exported_headers = [
+    'Bridge.h',
+    'ExecutorToken.h',
+    'ExecutorTokenFactory.h',
+    'Executor.h',
+    'JSCExecutor.h',
+    'JSCHelpers.h',
+    'MessageQueueThread.h',
+    'MethodCall.h',
+    'JSModulesUnbundle.h',
+    'Value.h',
+    'Platform.h',
+    'noncopyable.h',
+  ],
+  compiler_flags = [
+    '-Wall',
+    '-std=c++11',
+    '-fexceptions',
+    '-fvisibility=hidden',
+    '-frtti',
+    '-Wno-pessimizing-move',
+  ],
+)

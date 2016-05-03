@@ -10,11 +10,12 @@
 package com.facebook.react.modules.intent;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
 
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -36,10 +37,10 @@ public class IntentModule extends ReactContextBaseJavaModule {
   /**
    * Return the URL the activity was started with
    *
-   * @param callback a callback which is called with the initial URL
+   * @param promise a promise which is resolved with the initial URL
    */
   @ReactMethod
-  public void getInitialURL(Callback callback) {
+  public void getInitialURL(Promise promise) {
     try {
       Activity currentActivity = getCurrentActivity();
       String initialURL = null;
@@ -54,10 +55,10 @@ public class IntentModule extends ReactContextBaseJavaModule {
         }
       }
 
-      callback.invoke(initialURL);
+      promise.resolve(initialURL);
     } catch (Exception e) {
-      throw new JSApplicationIllegalArgumentException(
-          "Could not get the initial URL : " + e.getMessage());
+      promise.reject(new JSApplicationIllegalArgumentException(
+          "Could not get the initial URL : " + e.getMessage()));
     }
   }
 
@@ -70,24 +71,37 @@ public class IntentModule extends ReactContextBaseJavaModule {
    * @param url the URL to open
    */
   @ReactMethod
-  public void openURL(String url) {
+  public void openURL(String url, Promise promise) {
     if (url == null || url.isEmpty()) {
-      throw new JSApplicationIllegalArgumentException("Invalid URL: " + url);
+      promise.reject(new JSApplicationIllegalArgumentException("Invalid URL: " + url));
+      return;
     }
 
     try {
       Activity currentActivity = getCurrentActivity();
       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 
+      String selfPackageName = getReactApplicationContext().getPackageName();
+      ComponentName componentName = intent.resolveActivity(
+        getReactApplicationContext().getPackageManager());
+      String otherPackageName = (componentName != null ? componentName.getPackageName() : "");
+
+      // If there is no currentActivity or we are launching to a different package we need to set
+      // the FLAG_ACTIVITY_NEW_TASK flag
+      if (currentActivity == null || !selfPackageName.equals(otherPackageName)) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      }
+
       if (currentActivity != null) {
         currentActivity.startActivity(intent);
       } else {
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         getReactApplicationContext().startActivity(intent);
       }
+
+      promise.resolve(true);
     } catch (Exception e) {
-      throw new JSApplicationIllegalArgumentException(
-          "Could not open URL '" + url + "': " + e.getMessage());
+      promise.reject(new JSApplicationIllegalArgumentException(
+          "Could not open URL '" + url + "': " + e.getMessage()));
     }
   }
 
@@ -95,12 +109,13 @@ public class IntentModule extends ReactContextBaseJavaModule {
    * Determine whether or not an installed app can handle a given URL.
    *
    * @param url the URL to open
-   * @param callback a callback that is always called with a boolean argument
+   * @param promise a promise that is always resolved with a boolean argument
    */
   @ReactMethod
-  public void canOpenURL(String url, Callback callback) {
+  public void canOpenURL(String url, Promise promise) {
     if (url == null || url.isEmpty()) {
-      throw new JSApplicationIllegalArgumentException("Invalid URL: " + url);
+      promise.reject(new JSApplicationIllegalArgumentException("Invalid URL: " + url));
+      return;
     }
 
     try {
@@ -110,10 +125,10 @@ public class IntentModule extends ReactContextBaseJavaModule {
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       boolean canOpen =
           intent.resolveActivity(getReactApplicationContext().getPackageManager()) != null;
-      callback.invoke(canOpen);
+      promise.resolve(canOpen);
     } catch (Exception e) {
-      throw new JSApplicationIllegalArgumentException(
-          "Could not check if URL '" + url + "' can be opened: " + e.getMessage());
+      promise.reject(new JSApplicationIllegalArgumentException(
+          "Could not check if URL '" + url + "' can be opened: " + e.getMessage()));
     }
   }
 }

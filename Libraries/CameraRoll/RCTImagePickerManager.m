@@ -104,26 +104,24 @@ RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
 - (void)imagePickerController:(UIImagePickerController *)picker
 didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
 {
-  // Image from PhotoLibrary
-  NSString *imageUri = [info[UIImagePickerControllerReferenceURL] absoluteString];
-  if (imageUri) {
-    [self _dismissPicker:picker args:@[imageUri]];
-
-  } else {
-    // Image from CameraRoll hasn't uri.
-    // We need to save it to the store first.
-    UIImage *originalImage = info[UIImagePickerControllerOriginalImage];
-
-    // WARNING: Using imageStoreManager causes memory leak
-    // because image isn't removed from store once we're done using it
-    [_bridge.imageStoreManager storeImage:originalImage withBlock:^(NSString *tempImageTag) {
-      if (!tempImageTag) {
-        [self _dismissPicker:picker args:nil];
-        return;
-      }
-      [self _dismissPicker:picker args:@[tempImageTag]];
-    }];
+  NSString *mediaType = info[UIImagePickerControllerMediaType];
+  BOOL isMovie = [mediaType isEqualToString:(NSString *)kUTTypeMovie];
+  NSString *key = isMovie ? UIImagePickerControllerMediaURL : UIImagePickerControllerReferenceURL;
+  NSURL *imageURL = info[key];
+  if (imageURL) {
+    [self _dismissPicker:picker args:@[imageURL.absoluteString]];
+    return;
   }
+
+  // This is a newly taken image, and doesn't have a URL yet.
+  // We need to save it to the image store first.
+  UIImage *originalImage = info[UIImagePickerControllerOriginalImage];
+
+  // WARNING: Using ImageStoreManager may cause a memory leak because the
+  // image isn't automatically removed from store once we're done using it.
+  [_bridge.imageStoreManager storeImage:originalImage withBlock:^(NSString *tempImageTag) {
+    [self _dismissPicker:picker args:tempImageTag ? @[tempImageTag] : nil];
+  }];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker

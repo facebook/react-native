@@ -1,0 +1,11 @@
+android_library(
+  name = 'identifiers',
+  srcs = glob(['*.java']),
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+project_config(
+  src_target = ':identifiers',
+)

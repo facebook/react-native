@@ -10,13 +10,14 @@
  */
 'use strict';
 
-var requestAnimationFrame = require('requestAnimationFrame');
-var React = require('react-native');
+var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Text,
   View,
-} = React;
-var { TestModule } = React.NativeModules;
+} = ReactNative;
+var { TestModule } = ReactNative.NativeModules;
 
 var IntegrationTestHarnessTest = React.createClass({
   propTypes: {

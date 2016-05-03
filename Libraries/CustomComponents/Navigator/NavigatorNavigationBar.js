@@ -145,6 +145,7 @@ var NavigatorNavigationBar = React.createClass({
       var component = this._components[componentName].get(this.props.navState.routeStack[index]);
       var props = this._getReusableProps(componentName, index);
       if (component && interpolate[componentName](props.style, amount)) {
+        props.pointerEvents = props.style.opacity === 0 ? 'none' : 'box-none';
         component.setNativeProps(props);
       }
     }, this);
@@ -203,7 +204,8 @@ var NavigatorNavigationBar = React.createClass({
       return null;
     }
 
-    var initialStage = index === navStatePresentedIndex(this.props.navState) ?
+    var componentIsActive = index === navStatePresentedIndex(this.props.navState);
+    var initialStage = componentIsActive ?
       this.props.navigationStyles.Stages.Center :
       this.props.navigationStyles.Stages.Left;
     rendered = (
@@ -211,7 +213,7 @@ var NavigatorNavigationBar = React.createClass({
         ref={(ref) => {
           this._components[componentName] = this._components[componentName].set(route, ref);
         }}
-        pointerEvents="box-none"
+        pointerEvents={componentIsActive ? 'box-none' : 'none'}
         style={initialStage[componentName]}>
         {content}
       </View>

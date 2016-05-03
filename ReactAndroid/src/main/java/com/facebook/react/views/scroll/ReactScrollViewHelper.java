@@ -9,11 +9,11 @@
 
 package com.facebook.react.views.scroll;
 
-import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.UIManagerModule;
 
 /**
@@ -48,11 +48,16 @@ public class ReactScrollViewHelper {
 
   private static void emitScrollEvent(ViewGroup scrollView, ScrollEventType scrollEventType) {
     View contentView = scrollView.getChildAt(0);
+
+    if (contentView == null) {
+      return;
+    }
+
     ReactContext reactContext = (ReactContext) scrollView.getContext();
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
         ScrollEvent.obtain(
             scrollView.getId(),
-            SystemClock.uptimeMillis(),
+            SystemClock.nanoTime(),
             scrollEventType,
             scrollView.getScrollX(),
             scrollView.getScrollY(),

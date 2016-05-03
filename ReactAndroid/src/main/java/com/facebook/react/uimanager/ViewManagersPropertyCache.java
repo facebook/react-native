@@ -69,7 +69,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
     public void updateViewProp(
         ViewManager viewManager,
         View viewToUpdate,
-        CatalystStylesDiffMap props) {
+        ReactStylesDiffMap props) {
       try {
         if (mIndex == null) {
           VIEW_MGR_ARGS[0] = viewToUpdate;
@@ -92,7 +92,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
     public void updateShadowNodeProp(
         ReactShadowNode nodeToUpdate,
-        CatalystStylesDiffMap props) {
+        ReactStylesDiffMap props) {
       try {
         if (mIndex == null) {
           SHADOW_ARGS[0] = extractProperty(props);
@@ -111,7 +111,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
       }
     }
 
-    protected abstract @Nullable Object extractProperty(CatalystStylesDiffMap props);
+    protected abstract @Nullable Object extractProperty(ReactStylesDiffMap props);
   }
 
   private static class IntPropSetter extends PropSetter {
@@ -129,7 +129,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
     }
 
     @Override
-    protected Object extractProperty(CatalystStylesDiffMap props) {
+    protected Object extractProperty(ReactStylesDiffMap props) {
       return props.getInt(mPropName, mDefaultValue);
     }
   }
@@ -149,7 +149,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
     }
 
     @Override
-    protected Object extractProperty(CatalystStylesDiffMap props) {
+    protected Object extractProperty(ReactStylesDiffMap props) {
       return props.getDouble(mPropName, mDefaultValue);
     }
   }
@@ -164,7 +164,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
     }
 
     @Override
-    protected Object extractProperty(CatalystStylesDiffMap props) {
+    protected Object extractProperty(ReactStylesDiffMap props) {
       return props.getBoolean(mPropName, mDefaultValue) ? Boolean.TRUE : Boolean.FALSE;
     }
   }
@@ -184,7 +184,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
     }
 
     @Override
-    protected Object extractProperty(CatalystStylesDiffMap props) {
+    protected Object extractProperty(ReactStylesDiffMap props) {
       return props.getFloat(mPropName, mDefaultValue);
     }
   }
@@ -196,7 +196,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
     }
 
     @Override
-    protected @Nullable Object extractProperty(CatalystStylesDiffMap props) {
+    protected @Nullable Object extractProperty(ReactStylesDiffMap props) {
       return props.getArray(mPropName);
     }
   }
@@ -208,7 +208,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
     }
 
     @Override
-    protected @Nullable Object extractProperty(CatalystStylesDiffMap props) {
+    protected @Nullable Object extractProperty(ReactStylesDiffMap props) {
       return props.getMap(mPropName);
     }
   }
@@ -220,7 +220,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
     }
 
     @Override
-    protected @Nullable Object extractProperty(CatalystStylesDiffMap props) {
+    protected @Nullable Object extractProperty(ReactStylesDiffMap props) {
       return props.getString(mPropName);
     }
   }
@@ -232,7 +232,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
     }
 
     @Override
-    protected @Nullable Object extractProperty(CatalystStylesDiffMap props) {
+    protected @Nullable Object extractProperty(ReactStylesDiffMap props) {
       if (!props.isNull(mPropName)) {
         return props.getBoolean(mPropName, /* ignored */ false) ? Boolean.TRUE : Boolean.FALSE;
       }
@@ -251,7 +251,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
     }
 
     @Override
-    protected @Nullable Object extractProperty(CatalystStylesDiffMap props) {
+    protected @Nullable Object extractProperty(ReactStylesDiffMap props) {
       if (!props.isNull(mPropName)) {
         return props.getInt(mPropName, /* ignored */ 0);
       }

@@ -37,11 +37,10 @@ type Buttons = Array<{
  * ## iOS
  *
  * On iOS you can specify any number of buttons. Each button can optionally
- * specify a style and you can also specify type of the alert. Refer to
- * `AlertIOS` for details.
+ * specify a style, which is one of 'default', 'cancel' or 'destructive'.
  *
  * ## Android
- * 
+ *
  * On Android at most three buttons can be specified. Android has a concept
  * of a neutral, negative and a positive button:
  *
@@ -68,10 +67,15 @@ class Alert {
     title: ?string,
     message?: ?string,
     buttons?: Buttons,
-    type?: AlertType
+    type?: AlertType,
   ): void {
     if (Platform.OS === 'ios') {
-      AlertIOS.alert(title, message, buttons, type);
+      if (typeof type !== 'undefined') {
+        console.warn('Alert.alert() with a 4th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.');
+        AlertIOS.alert(title, message, buttons, type);
+        return;
+      }
+      AlertIOS.alert(title, message, buttons);
     } else if (Platform.OS === 'android') {
       AlertAndroid.alert(title, message, buttons);
     }

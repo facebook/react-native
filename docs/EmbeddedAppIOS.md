@@ -14,7 +14,6 @@ Since React makes no assumptions about the rest of your technology stack – it�
 - [CocoaPods](http://cocoapods.org/) – `gem install cocoapods`
 - [Node.js](http://nodejs.org)
   - Install **nvm** with [its setup instructions here](https://github.com/creationix/nvm#installation). Then run `nvm install node && nvm alias default node`, which installs the latest version of Node.js and sets up your terminal so you can run it by typing `node`.  With nvm you can install multiple versions of Node.js and easily switch between them.
-  - If you are using Node 5.0 or newer, we recommend installing npm 2, which is much faster than npm 3. After installing Node, run `npm install -g npm@2`
 - Install the `react-native` package from npm by running the following command in the root directory of your project:
   - `npm install react-native`
 
@@ -67,13 +66,15 @@ Copy & paste following starter code for `index.ios.js` – it’s a barebones Re
 ```
 'use strict';
 
-var React = require('react-native');
-var {
+import React from 'react';
+import {
+  AppRegistry,
+  StyleSheet,
   Text,
   View
-} = React;
+} from 'react-native';
 
-var styles = React.StyleSheet.create({
+var styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'red'
@@ -90,7 +91,7 @@ class SimpleApp extends React.Component {
   }
 }
 
-React.AppRegistry.registerComponent('SimpleApp', () => SimpleApp);
+AppRegistry.registerComponent('SimpleApp', () => SimpleApp);
 ```
 
 `SimpleApp` will be your **module name**, which will be used later on.
@@ -99,7 +100,7 @@ React.AppRegistry.registerComponent('SimpleApp', () => SimpleApp);
 
 You should now add a container view for the React Native component. It can be any `UIView` in your app.
 
-![Container view example](/react-native/img/EmbeddedAppContainerViewExample.png)
+![Container view example](img/EmbeddedAppContainerViewExample.png)
 
 However, let's subclass `UIView` for the sake of clean code. Let's name it `ReactView`. Open up `Yourproject.xcworkspace` and create a new class `ReactView` (You can name it whatever you like :)).
 
@@ -120,6 +121,7 @@ In a view controller that wants to manage this view, go ahead and add an outlet 
 @property (weak, nonatomic) IBOutlet ReactView *reactView;
 @end
 ```
+__NOTE__ For Swift apps there is no need for that.
 
 Here I disabled **AutoLayout** for simplicity. In real production world, you should turn on AutoLayout and setup constraints by yourself.
 
@@ -151,6 +153,34 @@ Then add it as a subview of the `ReactView`.
 rootView.frame = self.bounds;
 ```
 
+### Swift apps
+
+Add the following to ReactView.swift file:
+
+```
+import UIKit
+import React
+
+class ReactView: UIView {
+
+  let rootView: RCTRootView = RCTRootView(bundleURL: NSURL(string: "http://localhost:8081/index.ios.bundle?platform=ios"),
+    moduleName: "SimpleApp", initialProperties: nil, launchOptions: nil)
+
+  override func layoutSubviews() {
+    super.layoutSubviews()
+
+    loadReact()
+  }
+
+  func loadReact () {
+        addSubview(rootView)
+        rootView.frame = self.bounds
+  }
+}
+```
+
+And then make sure your view is added in a ViewContainer or story board file.
+
 ## Start Development Server
 
 In root directory, we need to start React Native development server.
@@ -159,13 +189,35 @@ In root directory, we need to start React Native development server.
 (JS_DIR=`pwd`/ReactComponent; cd node_modules/react-native; npm run start -- --root $JS_DIR)
 ```
 
-This command will start up a React Native development server within our CocoaPods dependency to build our bundled script. The `--root` option indicates the root of your React Native apps – this will be our `ReactComponents` directory containing the single `index.ios.js` file. This running server will package up the `index.ios.bundle` file accessible via `http://localhost:8081/index.ios.bundle`.
+This command will start up a React Native development server within our CocoaPods dependency to build our bundled script. The `--root` option indicates the root of your React Native apps – this will be our `ReactComponent` directory containing the single `index.ios.js` file. This running server will package up the `index.ios.bundle` file accessible via `http://localhost:8081/index.ios.bundle`.
+
+## Update App Transport Security
+
+On iOS 9 and above the app won't be a able to connect over http to localhost unless specifically told so. See this thread for alternatives and instructions: http://stackoverflow.com/questions/31254725/transport-security-has-blocked-a-cleartext-http.
+
+It is recommended that you add an App Transport Security exception for `localhost` in your app's `Info.plist` file:
+
+```xml
+<key>NSAppTransportSecurity</key>
+<dict>
+    <key>NSExceptionDomains</key>
+    <dict>
+        <key>localhost</key>
+        <dict>
+            <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+            <true/>
+        </dict>
+    </dict>
+</dict>
+```
+
+If you don't do this, you will see the error - `Could not connect to development server.` when connecting to your server over http.
 
 ## Compile And Run
 
 Now compile and run your app. You shall now see your React Native app running inside of the `ReactView`.
 
-![Example](/react-native/img/EmbeddedAppExample.png)
+![Example](img/EmbeddedAppExample.png)
 
 Live reload and all of the debugging tools will work from the simulator (make sure that DEBUG=1 is set under Build Settings -> Preprocessor Macros).  You've got a simple React component totally encapsulated behind an Objective-C `UIView` subclass.
 
@@ -173,4 +225,4 @@ Live reload and all of the debugging tools will work from the simulator (make su
 
 So under the hood, when `RCTRootView` is initialized, it will try to download, parse and run the bundle file from React Native development server. This means all you need to do is to implement your own container view or view controller for the `RCTRootView` – the `RCTRootView` ingests your bundled JS and renders your React components. Bravo!
 
-You can checkout full source code of a sample application [here](https://github.com/tjwudi/EmbededReactNativeExample).
+You can checkout full source code of a sample application [here](https://github.com/hfossli/ReactNativeIntegration).

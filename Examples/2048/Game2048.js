@@ -16,13 +16,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   AppRegistry,
   StyleSheet,
   Text,
   View,
-} = React;
+} = ReactNative;
 
 var Animated = require('Animated');
 var GameBoard = require('GameBoard');
@@ -53,6 +54,8 @@ class Board extends React.Component {
 }
 
 class Tile extends React.Component {
+  state: any;
+
   static _getPosition(index): number {
     return BOARD_PADDING + (index * (CELL_SIZE + CELL_MARGIN * 2) + CELL_MARGIN);
   }
@@ -147,6 +150,7 @@ class GameEndOverlay extends React.Component {
 class Game2048 extends React.Component {
   startX: number;
   startY: number;
+  state: any;
 
   constructor(props: {}) {
     super(props);

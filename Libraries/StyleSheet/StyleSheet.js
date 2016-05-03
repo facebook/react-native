@@ -11,9 +11,16 @@
  */
 'use strict';
 
-var StyleSheetRegistry = require('StyleSheetRegistry');
+var PixelRatio = require('PixelRatio');
+var ReactNativePropRegistry = require('ReactNativePropRegistry');
 var StyleSheetValidation = require('StyleSheetValidation');
-var flattenStyle = require('flattenStyle');
+
+var flatten = require('flattenStyle');
+
+var hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
+if (hairlineWidth === 0) {
+  hairlineWidth = 1 / PixelRatio.get();
+}
 
 /**
  * A StyleSheet is an abstraction similar to CSS StyleSheets
@@ -59,20 +66,76 @@ var flattenStyle = require('flattenStyle');
  *  - It also allows to send the style only once through the bridge. All
  * subsequent uses are going to refer an id (not implemented yet).
  */
-class StyleSheet {
-  static flatten: typeof flattenStyle;
+module.exports = {
+  /**
+   * This is defined as the width of a thin line on the platform. It can be
+   * used as the thickness of a border or division between two elements.
+   * Example:
+   * ```
+   *   {
+   *     borderBottomColor: '#bbb',
+   *     borderBottomWidth: StyleSheet.hairlineWidth
+   *   }
+   * ```
+   *
+   * This constant will always be a round number of pixels (so a line defined
+   * by it look crisp) and will try to match the standard width of a thin line
+   * on the underlying platform. However, you should not rely on it being a
+   * constant size, because on different platforms and screen densities its
+   * value may be calculated differently.
+   */
+  hairlineWidth,
 
-  static create(obj: {[key: string]: any}): {[key: string]: number} {
+  /**
+   * Flattens an array of style objects, into one aggregated style object.
+   * Alternatively, this method can be used to lookup IDs, returned by
+   * StyleSheet.register.
+   *
+   * > **NOTE**: Exercise caution as abusing this can tax you in terms of
+   * > optimizations.
+   * >
+   * > IDs enable optimizations through the bridge and memory in general. Refering
+   * > to style objects directly will deprive you of these optimizations.
+   *
+   * Example:
+   * ```
+   * var styles = StyleSheet.create({
+   *   listItem: {
+   *     flex: 1,
+   *     fontSize: 16,
+   *     color: 'white'
+   *   },
+   *   selectedListItem: {
+   *     color: 'green'
+   *   }
+   * });
+   *
+   * StyleSheet.flatten([styles.listItem, styles.selectedListItem])
+   * // returns { flex: 1, fontSize: 16, color: 'green' }
+   * ```
+   * Alternative use:
+   * ```
+   * StyleSheet.flatten(styles.listItem);
+   * // return { flex: 1, fontSize: 16, color: 'white' }
+   * // Simply styles.listItem would return its ID (number)
+   * ```
+   * This method internally uses `StyleSheetRegistry.getStyleByID(style)`
+   * to resolve style objects represented by IDs. Thus, an array of style
+   * objects (instances of StyleSheet.create), are individually resolved to,
+   * their respective objects, merged as one and then returned. This also explains
+   * the alternative use.
+   */
+  flatten,
+
+  /**
+   * Creates a StyleSheet style reference from the given object.
+   */
+  create(obj: {[key: string]: any}): {[key: string]: number} {
     var result = {};
     for (var key in obj) {
       StyleSheetValidation.validateStyle(key, obj);
-      result[key] = StyleSheetRegistry.registerStyle(obj[key]);
+      result[key] = ReactNativePropRegistry.register(obj[key]);
     }
     return result;
   }
-}
-
-/* TODO(brentvatne) docs are needed for this */
-StyleSheet.flatten = flattenStyle;
-
-module.exports = StyleSheet;
+};

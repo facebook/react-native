@@ -15,27 +15,29 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.SystemClock;
 
 import com.facebook.common.util.UriUtil;
+import com.facebook.csslayout.CSSConstants;
+import com.facebook.csslayout.FloatUtil;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
-import com.facebook.drawee.drawable.AutoRotateDrawable;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.controller.ForwardingControllerListener;
+import com.facebook.drawee.drawable.AutoRotateDrawable;
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.generic.RoundingParams;
-import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.GenericDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.image.ImageInfo;
@@ -44,9 +46,12 @@ import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.imagepipeline.request.Postprocessor;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+
+import java.util.Arrays;
 
 /**
  * Wrapper class around Fresco's GenericDraweeView, enabling persisting props across multiple view
@@ -54,7 +59,9 @@ import com.facebook.react.uimanager.events.EventDispatcher;
  */
 public class ReactImageView extends GenericDraweeView {
 
-  private static final int REMOTE_IMAGE_FADE_DURATION_MS = 300;
+  public static final int REMOTE_IMAGE_FADE_DURATION_MS = 300;
+
+  private static float[] sComputedCornerRadii = new float[4];
 
   /*
    * Implementation note re rounded corners:
@@ -72,7 +79,7 @@ public class ReactImageView extends GenericDraweeView {
 
   private class RoundedCornerPostprocessor extends BasePostprocessor {
 
-    float getRadius(Bitmap source) {
+    void getRadii(Bitmap source, float[] computedCornerRadii, float[] mappedRadii) {
         ScalingUtils.getTransform(
             sMatrix,
             new Rect(0, 0, source.getWidth(), source.getHeight()),
@@ -82,13 +89,29 @@ public class ReactImageView extends GenericDraweeView {
             0.0f,
             mScaleType);
         sMatrix.invert(sInverse);
-        return sInverse.mapRadius(mBorderRadius);
+
+        mappedRadii[0] = sInverse.mapRadius(computedCornerRadii[0]);
+        mappedRadii[1] = mappedRadii[0];
+
+        mappedRadii[2] = sInverse.mapRadius(computedCornerRadii[1]);
+        mappedRadii[3] = mappedRadii[2];
+
+        mappedRadii[4] = sInverse.mapRadius(computedCornerRadii[2]);
+        mappedRadii[5] = mappedRadii[4];
+
+        mappedRadii[6] = sInverse.mapRadius(computedCornerRadii[3]);
+        mappedRadii[7] = mappedRadii[6];
     }
 
     @Override
     public void process(Bitmap output, Bitmap source) {
+      cornerRadii(sComputedCornerRadii);
+
       output.setHasAlpha(true);
-      if (mBorderRadius < 0.01f) {
+      if (FloatUtil.floatsEqual(sComputedCornerRadii[0], 0f) &&
+          FloatUtil.floatsEqual(sComputedCornerRadii[1], 0f) &&
+          FloatUtil.floatsEqual(sComputedCornerRadii[2], 0f) &&
+          FloatUtil.floatsEqual(sComputedCornerRadii[3], 0f)) {
         super.process(output, source);
         return;
       }
@@ -96,20 +119,29 @@ public class ReactImageView extends GenericDraweeView {
       paint.setAntiAlias(true);
       paint.setShader(new BitmapShader(source, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
       Canvas canvas = new Canvas(output);
-      float radius = getRadius(source);
-      canvas.drawRoundRect(
+
+      float[] radii = new float[8];
+
+      getRadii(source, sComputedCornerRadii, radii);
+
+      Path pathForBorderRadius = new Path();
+
+      pathForBorderRadius.addRoundRect(
           new RectF(0, 0, source.getWidth(), source.getHeight()),
-          radius,
-          radius,
-          paint);
+          radii,
+          Path.Direction.CW);
+
+      canvas.drawPath(pathForBorderRadius, paint);
     }
   }
 
   private @Nullable Uri mUri;
   private @Nullable Drawable mLoadingImageDrawable;
   private int mBorderColor;
+  private int mOverlayColor;
   private float mBorderWidth;
-  private float mBorderRadius;
+  private float mBorderRadius = CSSConstants.UNDEFINED;
+  private @Nullable float[] mBorderCornerRadii;
   private ScalingUtils.ScaleType mScaleType;
   private boolean mIsDirty;
   private boolean mIsLocalImage;
@@ -150,7 +182,7 @@ public class ReactImageView extends GenericDraweeView {
         @Override
         public void onSubmit(String id, Object callerContext) {
           mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), SystemClock.uptimeMillis(), ImageLoadEvent.ON_LOAD_START)
+              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_START)
           );
         }
 
@@ -161,10 +193,10 @@ public class ReactImageView extends GenericDraweeView {
             @Nullable Animatable animatable) {
           if (imageInfo != null) {
             mEventDispatcher.dispatchEvent(
-                new ImageLoadEvent(getId(), SystemClock.uptimeMillis(), ImageLoadEvent.ON_LOAD_END)
+                new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_END)
             );
             mEventDispatcher.dispatchEvent(
-                new ImageLoadEvent(getId(), SystemClock.uptimeMillis(), ImageLoadEvent.ON_LOAD)
+                new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD)
             );
           }
         }
@@ -172,7 +204,7 @@ public class ReactImageView extends GenericDraweeView {
         @Override
         public void onFailure(String id, Throwable throwable) {
           mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), SystemClock.uptimeMillis(), ImageLoadEvent.ON_LOAD_END)
+              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_END)
           );
         }
       };
@@ -186,14 +218,33 @@ public class ReactImageView extends GenericDraweeView {
     mIsDirty = true;
   }
 
+  public void setOverlayColor(int overlayColor) {
+    mOverlayColor = overlayColor;
+    mIsDirty = true;
+  }
+
   public void setBorderWidth(float borderWidth) {
     mBorderWidth = PixelUtil.toPixelFromDIP(borderWidth);
     mIsDirty = true;
   }
 
   public void setBorderRadius(float borderRadius) {
-    mBorderRadius = PixelUtil.toPixelFromDIP(borderRadius);
-    mIsDirty = true;
+    if (!FloatUtil.floatsEqual(mBorderRadius, borderRadius)) {
+      mBorderRadius = borderRadius;
+      mIsDirty = true;
+    }
+  }
+
+  public void setBorderRadius(float borderRadius, int position) {
+    if (mBorderCornerRadii == null) {
+      mBorderCornerRadii = new float[4];
+      Arrays.fill(mBorderCornerRadii, CSSConstants.UNDEFINED);
+    }
+
+    if (!FloatUtil.floatsEqual(mBorderCornerRadii[position], borderRadius)) {
+      mBorderCornerRadii[position] = borderRadius;
+      mIsDirty = true;
+    }
   }
 
   public void setScaleType(ScalingUtils.ScaleType scaleType) {
@@ -201,7 +252,9 @@ public class ReactImageView extends GenericDraweeView {
     mIsDirty = true;
   }
 
-  public void setSource(@Nullable String source) {
+  public void setSource(
+      @Nullable String source,
+      ResourceDrawableIdHelper resourceDrawableIdHelper) {
     mUri = null;
     if (source != null) {
       try {
@@ -214,7 +267,7 @@ public class ReactImageView extends GenericDraweeView {
         // ignore malformed uri, then attempt to extract resource ID.
       }
       if (mUri == null) {
-        mUri = getResourceDrawableUri(getContext(), source);
+        mUri = resourceDrawableIdHelper.getResourceDrawableUri(getContext(), source);
         mIsLocalImage = true;
       } else {
         mIsLocalImage = false;
@@ -223,8 +276,10 @@ public class ReactImageView extends GenericDraweeView {
     mIsDirty = true;
   }
 
-  public void setLoadingIndicatorSource(@Nullable String name) {
-    Drawable drawable = getResourceDrawable(getContext(), name);
+  public void setLoadingIndicatorSource(
+      @Nullable String name,
+      ResourceDrawableIdHelper resourceDrawableIdHelper) {
+    Drawable drawable = resourceDrawableIdHelper.getResourceDrawable(getContext(), name);
     mLoadingImageDrawable =
         drawable != null ? (Drawable) new AutoRotateDrawable(drawable, 1000) : null;
     mIsDirty = true;
@@ -238,6 +293,15 @@ public class ReactImageView extends GenericDraweeView {
   public void setFadeDuration(int durationMs) {
     mFadeDurationMs = durationMs;
     // no worth marking as dirty if it already rendered..
+  }
+
+  private void cornerRadii(float[] computedCorners) {
+    float defaultBorderRadius = !CSSConstants.isUndefined(mBorderRadius) ? mBorderRadius : 0;
+
+    computedCorners[0] = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[0]) ? mBorderCornerRadii[0] : defaultBorderRadius;
+    computedCorners[1] = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[1]) ? mBorderCornerRadii[1] : defaultBorderRadius;
+    computedCorners[2] = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[2]) ? mBorderCornerRadii[2] : defaultBorderRadius;
+    computedCorners[3] = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[3]) ? mBorderCornerRadii[3] : defaultBorderRadius;
   }
 
   public void maybeUpdateView() {
@@ -261,11 +325,24 @@ public class ReactImageView extends GenericDraweeView {
     boolean usePostprocessorScaling =
         mScaleType != ScalingUtils.ScaleType.CENTER_CROP &&
         mScaleType != ScalingUtils.ScaleType.FOCUS_CROP;
-    float hierarchyRadius = usePostprocessorScaling ? 0 : mBorderRadius;
 
     RoundingParams roundingParams = hierarchy.getRoundingParams();
-    roundingParams.setCornersRadius(hierarchyRadius);
+
+    if (usePostprocessorScaling) {
+      roundingParams.setCornersRadius(0);
+    } else {
+      cornerRadii(sComputedCornerRadii);
+
+      roundingParams.setCornersRadii(sComputedCornerRadii[0], sComputedCornerRadii[1], sComputedCornerRadii[2], sComputedCornerRadii[3]);
+    }
+
     roundingParams.setBorder(mBorderColor, mBorderWidth);
+    if (mOverlayColor != Color.TRANSPARENT) {
+        roundingParams.setOverlayColor(mOverlayColor);
+    } else {
+        // make sure the default rounding method is used.
+        roundingParams.setRoundingMethod(RoundingParams.RoundingMethod.BITMAP_ONLY);
+    }
     hierarchy.setRoundingParams(roundingParams);
     hierarchy.setFadeDuration(
         mFadeDurationMs >= 0
@@ -279,6 +356,7 @@ public class ReactImageView extends GenericDraweeView {
     ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(mUri)
         .setPostprocessor(postprocessor)
         .setResizeOptions(resizeOptions)
+        .setAutoRotateEnabled(true)
         .setProgressiveRenderingEnabled(mProgressiveRenderingEnabled)
         .build();
 
@@ -334,28 +412,5 @@ public class ReactImageView extends GenericDraweeView {
     // We resize here only for images likely to be from the device's camera, where the app developer
     // has no control over the original size
     return uri != null && (UriUtil.isLocalContentUri(uri) || UriUtil.isLocalFileUri(uri));
-  }
-
-  private static int getResourceDrawableId(Context context, @Nullable String name) {
-    if (name == null || name.isEmpty()) {
-      return 0;
-    }
-    return context.getResources().getIdentifier(
-        name.toLowerCase().replace("-", "_"),
-        "drawable",
-        context.getPackageName());
-  }
-
-  private static @Nullable Drawable getResourceDrawable(Context context, @Nullable String name) {
-    int resId = getResourceDrawableId(context, name);
-    return resId > 0 ? context.getResources().getDrawable(resId) : null;
-  }
-
-  private static @Nullable Uri getResourceDrawableUri(Context context, @Nullable String name) {
-    int resId = getResourceDrawableId(context, name);
-    return resId > 0 ? new Uri.Builder()
-        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-        .path(String.valueOf(resId))
-        .build() : null;
   }
 }

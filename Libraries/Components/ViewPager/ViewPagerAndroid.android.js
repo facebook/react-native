@@ -1,15 +1,19 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ViewPagerAndroid
  * @flow
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var ReactElement = require('ReactElement');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var ReactPropTypes = require('ReactPropTypes');
 var UIManager = require('UIManager');
 var View = require('View');
@@ -18,6 +22,14 @@ var dismissKeyboard = require('dismissKeyboard');
 var requireNativeComponent = require('requireNativeComponent');
 
 var VIEWPAGER_REF = 'viewPager';
+
+type Event = Object;
+
+export type ViewPagerScrollState = $Enum<{
+  idle: string;
+  dragging: string;
+  settling: string;
+}>;
 
 /**
  * Container that allows to flip left and right between child views. Each
@@ -79,12 +91,28 @@ var ViewPagerAndroid = React.createClass({
     onPageScroll: ReactPropTypes.func,
 
     /**
+     * Function called when the page scrolling state has changed.
+     * The page scrolling state can be in 3 states:
+     * - idle, meaning there is no interaction with the page scroller happening at the time
+     * - dragging, meaning there is currently an interaction with the page scroller
+     * - settling, meaning that there was an interaction with the page scroller, and the
+     *   page scroller is now finishing it's closing or opening animation
+     */
+    onPageScrollStateChanged: ReactPropTypes.func,
+
+    /**
      * This callback will be called once ViewPager finish navigating to selected page
      * (when user swipes between pages). The `event.nativeEvent` object passed to this
      * callback will have following fields:
      *  - position - index of page that has been selected
      */
     onPageSelected: ReactPropTypes.func,
+
+    /**
+     * Blank space to show between pages. This is only visible while scrolling, pages are still
+     * edge-to-edge.
+     */
+    pageMargin: ReactPropTypes.number,
 
     /**
      * Determines whether the keyboard gets dismissed in response to a drag.
@@ -95,6 +123,12 @@ var ViewPagerAndroid = React.createClass({
       'none', // default
       'on-drag',
     ]),
+
+    /**
+    * When false, the content does not scroll.
+    * The default value is true.
+    */
+    scrollEnabled: React.PropTypes.bool,
   },
 
   componentDidMount: function() {
@@ -112,6 +146,9 @@ var ViewPagerAndroid = React.createClass({
     // will handle positioning of elements, so it's not important to offset
     // them correctly.
     return React.Children.map(this.props.children, function(child) {
+      if (!child) {
+        return null;
+      }
       var newProps = {
         ...child.props,
         style: [child.props.style, {
@@ -144,6 +181,12 @@ var ViewPagerAndroid = React.createClass({
     }
   },
 
+  _onPageScrollStateChanged: function(e: Event) {
+    if (this.props.onPageScrollStateChanged) {
+      this.props.onPageScrollStateChanged(e.nativeEvent.pageScrollState);
+    }
+  },
+
   _onPageSelected: function(e: Event) {
     if (this.props.onPageSelected) {
       this.props.onPageSelected(e);
@@ -156,7 +199,7 @@ var ViewPagerAndroid = React.createClass({
    */
   setPage: function(selectedPage: number) {
     UIManager.dispatchViewManagerCommand(
-      React.findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       UIManager.AndroidViewPager.Commands.setPage,
       [selectedPage],
     );
@@ -168,7 +211,7 @@ var ViewPagerAndroid = React.createClass({
    */
   setPageWithoutAnimation: function(selectedPage: number) {
     UIManager.dispatchViewManagerCommand(
-      React.findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       UIManager.AndroidViewPager.Commands.setPageWithoutAnimation,
       [selectedPage],
     );
@@ -177,9 +220,11 @@ var ViewPagerAndroid = React.createClass({
   render: function() {
     return (
       <NativeAndroidViewPager
+        {...this.props}
         ref={VIEWPAGER_REF}
         style={this.props.style}
         onPageScroll={this._onPageScroll}
+        onPageScrollStateChanged={this._onPageScrollStateChanged}
         onPageSelected={this._onPageSelected}
         children={this._childrenWithOverridenStyle()}
       />

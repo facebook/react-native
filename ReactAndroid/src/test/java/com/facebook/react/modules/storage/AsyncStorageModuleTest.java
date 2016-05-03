@@ -21,8 +21,8 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
-import com.facebook.react.bridge.SimpleArray;
-import com.facebook.react.bridge.SimpleMap;
+import com.facebook.react.bridge.JavaOnlyArray;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.storage.ReactDatabaseSupplier;
 
@@ -58,7 +58,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public class AsyncStorageModuleTest {
 
   private AsyncStorageModule mStorage;
-  private SimpleArray mEmptyArray;
+  private JavaOnlyArray mEmptyArray;
 
   @Rule
   public PowerMockRule rule = new PowerMockRule();
@@ -70,7 +70,7 @@ public class AsyncStorageModuleTest {
         new Answer<Object>() {
      @Override
      public Object answer(InvocationOnMock invocation) throws Throwable {
-       return new SimpleArray();
+       return new JavaOnlyArray();
      }
    });
 
@@ -78,13 +78,13 @@ public class AsyncStorageModuleTest {
         new Answer<Object>() {
        @Override
        public Object answer(InvocationOnMock invocation) throws Throwable {
-         return new SimpleMap();
+         return new JavaOnlyMap();
        }
      });
 
     // don't use Robolectric before initializing mocks
     mStorage = new AsyncStorageModule(ReactTestHelper.createCatalystContextForTest());
-    mEmptyArray = new SimpleArray();
+    mEmptyArray = new JavaOnlyArray();
   }
 
   @After
@@ -100,7 +100,7 @@ public class AsyncStorageModuleTest {
     final String fakeKey = "fakeKey";
     final String value1 = "bar1";
     final String value2 = "bar2";
-    SimpleArray keyValues = new SimpleArray();
+    JavaOnlyArray keyValues = new JavaOnlyArray();
     keyValues.pushArray(getArray(key1, value1));
     keyValues.pushArray(getArray(key2, value2));
 
@@ -108,7 +108,7 @@ public class AsyncStorageModuleTest {
     mStorage.multiSet(keyValues, setCallback);
     Mockito.verify(setCallback, Mockito.times(1)).invoke();
 
-    SimpleArray keys = new SimpleArray();
+    JavaOnlyArray keys = new JavaOnlyArray();
     keys.pushString(key1);
     keys.pushString(key2);
 
@@ -117,7 +117,7 @@ public class AsyncStorageModuleTest {
     Mockito.verify(getCallback, Mockito.times(1)).invoke(null, keyValues);
 
     keys.pushString(fakeKey);
-    SimpleArray row3 = new SimpleArray();
+    JavaOnlyArray row3 = new JavaOnlyArray();
     row3.pushString(fakeKey);
     row3.pushString(null);
     keyValues.pushArray(row3);
@@ -134,12 +134,12 @@ public class AsyncStorageModuleTest {
     final String value1 = "bar1";
     final String value2 = "bar2";
 
-    SimpleArray keyValues = new SimpleArray();
+    JavaOnlyArray keyValues = new JavaOnlyArray();
     keyValues.pushArray(getArray(key1, value1));
     keyValues.pushArray(getArray(key2, value2));
     mStorage.multiSet(keyValues, mock(Callback.class));
 
-    SimpleArray keys = new SimpleArray();
+    JavaOnlyArray keys = new JavaOnlyArray();
     keys.pushString(key1);
     keys.pushString(key2);
 
@@ -173,12 +173,12 @@ public class AsyncStorageModuleTest {
     value.put("foo3", 1001);
     value.put("foo4", createJSONObject("key1", "randomValueThatWillNeverBeUsed"));
 
-    mStorage.multiSet(SimpleArray.of(getArray(mergeKey, value.toString())), mock(Callback.class));
+    mStorage.multiSet(JavaOnlyArray.of(getArray(mergeKey, value.toString())), mock(Callback.class));
     {
       Callback callback = mock(Callback.class);
       mStorage.multiGet(getArray(mergeKey), callback);
       Mockito.verify(callback, Mockito.times(1))
-          .invoke(null, SimpleArray.of(getArray(mergeKey, value.toString())));
+          .invoke(null, JavaOnlyArray.of(getArray(mergeKey, value.toString())));
     }
 
     value.put("foo1", 1001);
@@ -193,29 +193,29 @@ public class AsyncStorageModuleTest {
     newValue2.put("foo2", createJSONObject("key1", "val3"));
 
     mStorage.multiMerge(
-        SimpleArray.of(
-            SimpleArray.of(mergeKey, value.toString()),
-            SimpleArray.of(mergeKey, newValue.toString()),
-            SimpleArray.of(mergeKey, newValue2.toString())),
+        JavaOnlyArray.of(
+            JavaOnlyArray.of(mergeKey, value.toString()),
+            JavaOnlyArray.of(mergeKey, newValue.toString()),
+            JavaOnlyArray.of(mergeKey, newValue2.toString())),
         mock(Callback.class));
 
     value.put("foo2", createJSONObject("key1", "val3", "key2", "val2"));
     Callback callback = mock(Callback.class);
     mStorage.multiGet(getArray(mergeKey), callback);
     Mockito.verify(callback, Mockito.times(1))
-        .invoke(null, SimpleArray.of(getArray(mergeKey, value.toString())));
+        .invoke(null, JavaOnlyArray.of(getArray(mergeKey, value.toString())));
   }
 
   @Test
   public void testGetAllKeys() {
     final String[] keys = {"foo", "foo2"};
     final String[] values = {"bar", "bar2"};
-    SimpleArray keyValues = new SimpleArray();
+    JavaOnlyArray keyValues = new JavaOnlyArray();
     keyValues.pushArray(getArray(keys[0], values[0]));
     keyValues.pushArray(getArray(keys[1], values[1]));
     mStorage.multiSet(keyValues, mock(Callback.class));
 
-    SimpleArray storedKeys = new SimpleArray();
+    JavaOnlyArray storedKeys = new JavaOnlyArray();
     storedKeys.pushString(keys[0]);
     storedKeys.pushString(keys[1]);
 
@@ -237,7 +237,7 @@ public class AsyncStorageModuleTest {
 
   @Test
   public void testClear() {
-    SimpleArray keyValues = new SimpleArray();
+    JavaOnlyArray keyValues = new JavaOnlyArray();
     keyValues.pushArray(getArray("foo", "foo2"));
     keyValues.pushArray(getArray("bar", "bar2"));
     mStorage.multiSet(keyValues, mock(Callback.class));
@@ -259,14 +259,14 @@ public class AsyncStorageModuleTest {
     // and returns null for missing keys
     final int magicalNumber = 343;
 
-    SimpleArray keyValues = new SimpleArray();
+    JavaOnlyArray keyValues = new JavaOnlyArray();
     for (int i = 0; i < keyCount; i++) {
       if (i % magicalNumber > 0) {
         keyValues.pushArray(getArray("key" + i, "value" + i));
       }
     }
     mStorage.multiSet(keyValues, mock(Callback.class));
-    SimpleArray keys = new SimpleArray();
+    JavaOnlyArray keys = new JavaOnlyArray();
     for (int i = 0; i < keyCount; i++) {
       keys.pushString("key" + i);
     }
@@ -275,7 +275,7 @@ public class AsyncStorageModuleTest {
           @Override
           public void invoke(Object... args) {
             assertThat(args.length).isEqualTo(2);
-            SimpleArray resultArray = (SimpleArray) args[1];
+            JavaOnlyArray resultArray = (JavaOnlyArray) args[1];
 
             assertThat(resultArray.size()).isEqualTo(keyCount);
             boolean keyReceived[] = new boolean[keyCount];
@@ -297,7 +297,7 @@ public class AsyncStorageModuleTest {
 
     // Test removal in same test, since it's costly to set up the test again.
     // Remove only odd keys
-    SimpleArray keyRemoves = new SimpleArray();
+    JavaOnlyArray keyRemoves = new JavaOnlyArray();
     for (int i = 0; i < keyCount; i++) {
       if (i % 2 > 0) {
         keyRemoves.pushString("key" + i);
@@ -308,7 +308,7 @@ public class AsyncStorageModuleTest {
         new Callback() {
           @Override
           public void invoke(Object... args) {
-            SimpleArray resultArray = (SimpleArray) args[1];
+            JavaOnlyArray resultArray = (JavaOnlyArray) args[1];
             assertThat(resultArray.size()).isEqualTo(499);
             for (int i = 0; i < resultArray.size(); i++) {
               String key = resultArray.getString(i).substring(3);
@@ -334,8 +334,8 @@ public class AsyncStorageModuleTest {
     return new JSONObject(map);
   }
 
-  private SimpleArray getArray(String... values) {
-    SimpleArray array = new SimpleArray();
+  private JavaOnlyArray getArray(String... values) {
+    JavaOnlyArray array = new JavaOnlyArray();
     for (String value : values) {
       array.pushString(value);
     }

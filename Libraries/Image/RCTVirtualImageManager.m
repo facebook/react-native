@@ -20,5 +20,6 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_SHADOW_PROPERTY(source, RCTImageSource)
+RCT_EXPORT_SHADOW_PROPERTY(resizeMode, UIViewContentMode)
 
 @end

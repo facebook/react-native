@@ -41,29 +41,34 @@ fetch('https://mywebsite.com/endpoint/', {
 
 1.  Using `then` and `catch` in synchronous code:
 
-```js
-fetch('https://mywebsite.com/endpoint.php')
-  .then((response) => response.text())
-  .then((responseText) => {
-    console.log(responseText);
-  })
-  .catch((error) => {
-    console.warn(error);
-  });
-```
-
+  ```js
+  fetch('https://mywebsite.com/endpoint.php')
+    .then((response) => response.text())
+    .then((responseText) => {
+      console.log(responseText);
+    })
+    .catch((error) => {
+      console.warn(error);
+    });
+  ```
 2.  Called within an asynchronous function using ES7 `async`/`await` syntax:
 
-```js
-async getUsersFromApi() {
-  try {
-    let response = await fetch('https://mywebsite.com/endpoint/');
-    return response.users;
-  } catch(error) {
-    throw error;
+  ```js
+  class MyComponent extends React.Component {
+    ...
+    async getUsersFromApi() {
+      try {
+        let response = await fetch('https://mywebsite.com/endpoint/');
+        let responseJson = await response.json();
+        return responseJson.users;
+      } catch(error) {
+        // Handle error
+        console.error(error);
+      }
+    }
+    ...
   }
-}
-```
+  ```
 
 - Note: Errors thrown by rejected Promises need to be caught, or they will be swallowed silently
 
@@ -117,6 +122,34 @@ request.open('GET', 'https://mywebsite.com/endpoint.php');
 request.send();
 ```
 
+You can also use - 
+
+```js
+var request = new XMLHttpRequest();
+
+function onLoad() {
+    console.log(request.status);
+    console.log(request.responseText);
+};
+
+function onTimeout() {
+    console.log('Timeout');
+    console.log(request.responseText);
+};
+
+function onError() {
+    console.log('General network error');
+    console.log(request.responseText);
+};
+
+request.onload = onLoad;
+request.ontimeout = onTimeout;
+request.onerror = onError;
+request.open('GET', 'https://mywebsite.com/endpoint.php');
+request.send();
+```
+
+
 Please follow the [MDN Documentation](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) for a complete description of the API.
 
-As a developer, you're probably not going to use XMLHttpRequest directly as its API is very tedious to work with. But the fact that it is implemented and compatible with the browser API gives you the ability to use third-party libraries such as [Parse](https://parse.com/products/javascript), [frisbee](https://github.com/niftylettuce/frisbee), or [axios](https://github.com/mzabriskie/axios) directly from npm.
+As a developer, you're probably not going to use XMLHttpRequest directly as its API is very tedious to work with. But the fact that it is implemented and compatible with the browser API gives you the ability to use third-party libraries such as [frisbee](https://github.com/niftylettuce/frisbee) or [axios](https://github.com/mzabriskie/axios) directly from npm.

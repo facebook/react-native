@@ -4,11 +4,16 @@
 
 #include <memory>
 #include <sstream>
+#include <unordered_map>
+#include <vector>
+
 #include <JavaScriptCore/JSObjectRef.h>
 #include <JavaScriptCore/JSRetainPtr.h>
 #include <JavaScriptCore/JSStringRef.h>
 #include <JavaScriptCore/JSValueRef.h>
-#include <fb/noncopyable.h>
+
+#include "noncopyable.h"
+
 #if WITH_FBJSCEXTENSIONS
 #include <jsc_stringref.h>
 #endif
@@ -24,9 +29,11 @@ public:
   explicit String(const char* utf8) :
     m_string(Adopt, JSStringCreateWithUTF8CString(utf8))
   {}
+
   String(String&& other) :
     m_string(Adopt, other.m_string.leakRef())
   {}
+
   String(const String& other) :
     m_string(other.m_string)
   {}
@@ -111,14 +118,22 @@ public:
     return m_obj;
   }
 
+  operator Value() const;
+
   bool isFunction() const {
     return JSObjectIsFunction(m_context, m_obj);
   }
 
   Value callAsFunction(int nArgs, JSValueRef args[]);
+  Value callAsFunction();
 
-  Value getProperty(String propName) const;
+  Value getProperty(const String& propName) const;
   Value getProperty(const char *propName) const;
+  Value getPropertyAtIndex(unsigned index) const;
+  void setProperty(const String& propName, const Value& value) const;
+  void setProperty(const char *propName, const Value& value) const;
+  std::vector<std::string> getPropertyNames() const;
+  std::unordered_map<std::string, std::string> toJSONMap() const;
 
   void makeProtected() {
     if (!m_isProtected && m_obj) {
@@ -131,6 +146,11 @@ public:
     auto globalObj = JSContextGetGlobalObject(ctx);
     return Object(ctx, globalObj);
   }
+
+  /**
+   * Creates an instance of the default object class.
+   */
+  static Object create(JSContextRef ctx);
 
 private:
   JSContextRef m_context;

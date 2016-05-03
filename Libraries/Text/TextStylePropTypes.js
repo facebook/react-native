@@ -41,14 +41,18 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   letterSpacing: ReactPropTypes.number,
   lineHeight: ReactPropTypes.number,
   /**
-   * Specifies text alignment. The value 'justify' is only supported on iOS.
+   * Specifies text alignment. The value 'justify' is only supported on iOS and
+   * fallbacks to `left` on Android.
    */
   textAlign: ReactPropTypes.oneOf(
     ['auto' /*default*/, 'left', 'right', 'center', 'justify']
   ),
   /**
-   * @platform ios
+   * @platform android
    */
+  textAlignVertical: ReactPropTypes.oneOf(
+    ['auto' /*default*/, 'top', 'bottom', 'center']
+  ),
   textDecorationLine: ReactPropTypes.oneOf(
     ['none' /*default*/, 'underline', 'line-through', 'underline line-through']
   ),
@@ -69,20 +73,5 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
     ['auto' /*default*/, 'ltr', 'rtl']
   ),
 });
-
-// Text doesn't support padding correctly (#4841912)
-var unsupportedProps = Object.keys({
-  padding: null,
-  paddingTop: null,
-  paddingLeft: null,
-  paddingRight: null,
-  paddingBottom: null,
-  paddingVertical: null,
-  paddingHorizontal: null,
-});
-
-for (var ii = 0; ii < unsupportedProps.length; ii++) {
-  delete TextStylePropTypes[unsupportedProps[ii]];
-}
 
 module.exports = TextStylePropTypes;

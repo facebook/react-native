@@ -33,7 +33,7 @@ TEST(JSCExecutor, CallFunction) {
   "function require() { return Bridge; }"
   "";
   JSCExecutor e;
-  e.executeApplicationScript(jsText, "");
+  e.loadApplicationScript(jsText, "");
   std::vector<MethodArgument> args;
   args.emplace_back(true);
   args.emplace_back(0.4);
@@ -62,7 +62,7 @@ TEST(JSCExecutor, CallFunctionWithMap) {
   "function require() { return Bridge; }"
   "";
   JSCExecutor e;
-  e.executeApplicationScript(jsText, "");
+  e.loadApplicationScript(jsText, "");
   std::vector<MethodArgument> args;
   std::map<std::string, MethodArgument> map {
     { "foo", MethodArgument("hello") },
@@ -89,7 +89,7 @@ TEST(JSCExecutor, CallFunctionReturningMap) {
   "function require() { return Bridge; }"
   "";
   JSCExecutor e;
-  e.executeApplicationScript(jsText, "");
+  e.loadApplicationScript(jsText, "");
   auto returnedCalls = executeForMethodCalls(e, 10, 9);
   ASSERT_EQ(1, returnedCalls.size());
   auto returnedCall = returnedCalls[0];
@@ -115,7 +115,7 @@ TEST(JSCExecutor, CallFunctionWithArray) {
   "function require() { return Bridge; }"
   "";
   JSCExecutor e;
-  e.executeApplicationScript(jsText, "");
+  e.loadApplicationScript(jsText, "");
   std::vector<MethodArgument> args;
   std::vector<MethodArgument> array {
     MethodArgument("hello"),
@@ -142,7 +142,7 @@ TEST(JSCExecutor, CallFunctionReturningNumberArray) {
   "function require() { return Bridge; }"
   "";
   JSCExecutor e;
-  e.executeApplicationScript(jsText, "");
+  e.loadApplicationScript(jsText, "");
   auto returnedCalls = executeForMethodCalls(e, 10, 9);
   ASSERT_EQ(1, returnedCalls.size());
   auto returnedCall = returnedCalls[0];
@@ -165,7 +165,7 @@ TEST(JSCExecutor, SetSimpleGlobalVariable) {
   "function require() { return Bridge; }"
   "";
   JSCExecutor e;
-  e.executeApplicationScript(jsText, "");
+  e.loadApplicationScript(jsText, "");
   e.setGlobalVariable("__foo", "42");
   auto returnedCalls = executeForMethodCalls(e, 10, 9);
   ASSERT_EQ(1, returnedCalls.size());
@@ -185,7 +185,7 @@ TEST(JSCExecutor, SetObjectGlobalVariable) {
   "function require() { return Bridge; }"
   "";
   JSCExecutor e;
-  e.executeApplicationScript(jsText, "");
+  e.loadApplicationScript(jsText, "");
   auto jsonObject = ""
   "{"
   "  \"foo\": \"hello\","

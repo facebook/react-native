@@ -10,12 +10,12 @@
 
 const Activity = require('../Activity');
 const AssetServer = require('../AssetServer');
-const FileWatcher = require('../DependencyResolver/FileWatcher');
-const getPlatformExtension = require('../DependencyResolver/lib/getPlatformExtension');
+const FileWatcher = require('node-haste').FileWatcher;
+const getPlatformExtension = require('node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const Promise = require('promise');
 
-const _ = require('underscore');
+const _ = require('lodash');
 const declareOpts = require('../lib/declareOpts');
 const path = require('path');
 const url = require('url');
@@ -45,7 +45,11 @@ const validateOpts = declareOpts({
     default: false,
   },
   transformModulePath: {
-    type:'string',
+    type: 'string',
+    required: false,
+  },
+  extraNodeModules: {
+    type: 'object',
     required: false,
   },
   nonPersistent: {
@@ -58,7 +62,12 @@ const validateOpts = declareOpts({
   },
   assetExts: {
     type: 'array',
-    default: ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp'],
+    default: [
+      'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'svg', 'webp', // Image formats
+      'm4v', 'mov', 'mp4', 'mpeg', 'mpg', 'webm', // Video formats
+      'aac', 'aiff', 'caf', 'm4a', 'mp3', 'wav', // Audio formats
+      'html', 'pdf', // Document formats
+    ],
   },
   transformTimeoutInterval: {
     type: 'number',
@@ -68,7 +77,7 @@ const validateOpts = declareOpts({
     type: 'string',
     required: false,
   },
-  disableInternalTransforms: {
+  silent: {
     type: 'boolean',
     default: false,
   },
@@ -118,6 +127,10 @@ const bundleOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
+  entryModuleOnly: {
+    type: 'boolean',
+    default: false,
+  },
 });
 
 const dependencyOpts = declareOpts({
@@ -132,6 +145,14 @@ const dependencyOpts = declareOpts({
   entryFile: {
     type: 'string',
     required: true,
+  },
+  recursive: {
+    type: 'boolean',
+    default: true,
+  },
+  hot: {
+    type: 'boolean',
+    default: false,
   },
 });
 
@@ -169,7 +190,7 @@ class Server {
 
     this._fileWatcher = options.nonPersistent
       ? FileWatcher.createDummyWatcher()
-      : new FileWatcher(watchRootConfigs);
+      : new FileWatcher(watchRootConfigs, {useWatchman: true});
 
     this._assetServer = new AssetServer({
       projectRoots: opts.projectRoots,
@@ -184,23 +205,8 @@ class Server {
     this._fileWatcher.on('all', this._onFileChange.bind(this));
 
     this._debouncedFileChangeHandler = _.debounce(filePath => {
-      const onFileChange = () => {
-        this._rebuildBundles(filePath);
-        this._informChangeWatchers();
-      };
-
-      // if Hot Loading is enabled avoid rebuilding bundles and sending live
-      // updates. Instead, send the HMR updates right away and once that
-      // finishes, invoke any other file change listener.
-      if (this._hmrFileChangeListener) {
-        this._hmrFileChangeListener(
-          filePath,
-          this._bundler.stat(filePath),
-        ).then(onFileChange).done();
-        return;
-      }
-
-      onFileChange();
+      this._clearBundles();
+      this._informChangeWatchers();
     }, 50);
   }
 
@@ -213,6 +219,12 @@ class Server {
 
   setHMRFileChangeListener(listener) {
     this._hmrFileChangeListener = listener;
+  }
+
+  addFileChangeListener(listener) {
+    if (this._fileChangeListeners.indexOf(listener) === -1) {
+      this._fileChangeListeners.push(listener);
+    }
   }
 
   buildBundle(options) {
@@ -242,12 +254,19 @@ class Server {
     return this.buildBundle(options);
   }
 
-  buildBundleForHMR(modules) {
-    return this._bundler.bundleForHMR(modules);
+  buildBundleForHMR(modules, host, port) {
+    return this._bundler.hmrBundle(modules, host, port);
   }
 
-  getShallowDependencies(entryFile) {
-    return this._bundler.getShallowDependencies(entryFile);
+  getShallowDependencies(options) {
+    return Promise.resolve().then(() => {
+      if (!options.platform) {
+        options.platform = getPlatformExtension(options.entryFile);
+      }
+
+      const opts = dependencyOpts(options);
+      return this._bundler.getShallowDependencies(opts);
+    });
   }
 
   getModuleForPath(entryFile) {
@@ -261,11 +280,7 @@ class Server {
       }
 
       const opts = dependencyOpts(options);
-      return this._bundler.getDependencies(
-        opts.entryFile,
-        opts.dev,
-        opts.platform,
-      );
+      return this._bundler.getDependencies(opts);
     });
   }
 
@@ -279,33 +294,33 @@ class Server {
   _onFileChange(type, filepath, root) {
     const absPath = path.join(root, filepath);
     this._bundler.invalidateFile(absPath);
+
+    // If Hot Loading is enabled avoid rebuilding bundles and sending live
+    // updates. Instead, send the HMR updates right away and clear the bundles
+    // cache so that if the user reloads we send them a fresh bundle
+    if (this._hmrFileChangeListener) {
+      // Clear cached bundles in case user reloads
+      this._clearBundles();
+      this._hmrFileChangeListener(absPath, this._bundler.stat(absPath));
+      return;
+    }
+
+    Promise.all(
+      this._fileChangeListeners.map(listener => listener(absPath))
+    ).then(
+      () => this._onFileChangeComplete(absPath),
+      () => this._onFileChangeComplete(absPath)
+    );
+  }
+
+  _onFileChangeComplete(absPath) {
     // Make sure the file watcher event runs through the system before
     // we rebuild the bundles.
     this._debouncedFileChangeHandler(absPath);
   }
 
-  _rebuildBundles() {
-    const buildBundle = this.buildBundle.bind(this);
-    const bundles = this._bundles;
-
-    Object.keys(bundles).forEach(function(optionsJson) {
-      const options = JSON.parse(optionsJson);
-      // Wait for a previous build (if exists) to finish.
-      bundles[optionsJson] = (bundles[optionsJson] || Promise.resolve()).finally(function() {
-        // With finally promise callback we can't change the state of the promise
-        // so we need to reassign the promise.
-        bundles[optionsJson] = buildBundle(options).then(function(p) {
-          // Make a throwaway call to getSource to cache the source string.
-          p.getSource({
-            inlineSourceMap: options.inlineSourceMap,
-            minify: options.minify,
-            dev: options.dev,
-          });
-          return p;
-        });
-      });
-      return bundles[optionsJson];
-    });
+  _clearBundles() {
+    this._bundles = Object.create(null);
   }
 
   _informChangeWatchers() {
@@ -429,7 +444,13 @@ class Server {
             dev: options.dev,
           });
           res.setHeader('Content-Type', 'application/javascript');
-          res.end(bundleSource);
+          res.setHeader('ETag', p.getEtag());
+          if (req.headers['if-none-match'] === res.getHeader('ETag')){
+            res.statusCode = 304;
+            res.end();
+          } else {
+            res.end(bundleSource);
+          }
           Activity.endEvent(startReqEventId);
         } else if (requestType === 'map') {
           var sourceMap = p.getSourceMap({
@@ -501,7 +522,7 @@ class Server {
       return true;
     }).join('.') + '.js';
 
-    const sourceMapUrlObj = _.clone(urlObj);
+    const sourceMapUrlObj = Object.assign({}, urlObj);
     sourceMapUrlObj.pathname = pathname.replace(/\.bundle$/, '.map');
 
     // try to get the platform from the url
@@ -521,6 +542,11 @@ class Server {
         false
       ),
       platform: platform,
+      entryModuleOnly: this._getBoolOptionFromQuery(
+        urlObj.query,
+        'entryModuleOnly',
+        false,
+      ),
     };
   }
 

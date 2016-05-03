@@ -28,7 +28,7 @@ import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.shell.MainReactPackage;
-
+import com.facebook.react.uimanager.UIImplementationProvider;
 
 public class ReactAppTestActivity extends FragmentActivity implements
     DefaultHardwareBackBtnHandler
@@ -75,7 +75,7 @@ public class ReactAppTestActivity extends FragmentActivity implements
     overridePendingTransition(0, 0);
 
     if (mReactInstanceManager != null) {
-      mReactInstanceManager.onPause();
+      mReactInstanceManager.onHostPause();
     }
   }
 
@@ -86,7 +86,7 @@ public class ReactAppTestActivity extends FragmentActivity implements
     mLifecycleState = LifecycleState.RESUMED;
 
     if (mReactInstanceManager != null) {
-      mReactInstanceManager.onResume(this, this);
+      mReactInstanceManager.onHostResume(this, this);
     }
   }
 
@@ -96,7 +96,7 @@ public class ReactAppTestActivity extends FragmentActivity implements
     mDestroyCountDownLatch.countDown();
 
     if (mReactInstanceManager != null) {
-      mReactInstanceManager.onDestroy();
+      mReactInstanceManager.destroy();
     }
   }
 
@@ -112,9 +112,17 @@ public class ReactAppTestActivity extends FragmentActivity implements
     loadApp(appKey, spec, null, bundleName, false /* = useDevSupport */);
   }
 
+  public void loadApp(
+    String appKey,
+    ReactInstanceSpecForTest spec,
+    String bundleName,
+    UIImplementationProvider uiImplementationProvider) {
+    loadApp(appKey, spec, null, bundleName, false /* = useDevSupport */, uiImplementationProvider);
+  }
+
   public void resetRootViewForScreenshotTests() {
     if (mReactInstanceManager != null) {
-      mReactInstanceManager.onDestroy();
+      mReactInstanceManager.destroy();
       mReactInstanceManager = null;
     }
     mReactRootView = new ReactRootView(this);
@@ -128,11 +136,22 @@ public class ReactAppTestActivity extends FragmentActivity implements
       @Nullable Bundle initialProps,
       String bundleName,
       boolean useDevSupport) {
+    loadApp(appKey, spec, initialProps, bundleName, useDevSupport, null);
+  }
+
+  public void loadApp(
+    String appKey,
+    ReactInstanceSpecForTest spec,
+    @Nullable Bundle initialProps,
+    String bundleName,
+    boolean useDevSupport,
+    UIImplementationProvider uiImplementationProvider) {
 
     final CountDownLatch currentLayoutEvent = mLayoutEvent = new CountDownLatch(1);
     mBridgeIdleSignaler = new ReactBridgeIdleSignaler();
 
-    ReactInstanceManager.Builder builder = ReactInstanceManager.builder()
+    ReactInstanceManager.Builder builder =
+      ReactTestHelper.getReactTestFactory().getReactInstanceManagerBuilder()
         .setApplication(getApplication())
         .setBundleAssetName(bundleName)
         // By not setting a JS module name, we force the bundle to be always loaded from
@@ -144,10 +163,11 @@ public class ReactAppTestActivity extends FragmentActivity implements
         .addPackage(new InstanceSpecForTestPackage(spec))
         .setUseDeveloperSupport(useDevSupport)
         .setBridgeIdleDebugListener(mBridgeIdleSignaler)
-        .setInitialLifecycleState(mLifecycleState);
+        .setInitialLifecycleState(mLifecycleState)
+        .setUIImplementationProvider(uiImplementationProvider);
 
     mReactInstanceManager = builder.build();
-    mReactInstanceManager.onResume(this, this);
+    mReactInstanceManager.onHostResume(this, this);
 
     Assertions.assertNotNull(mReactRootView).getViewTreeObserver().addOnGlobalLayoutListener(
         new ViewTreeObserver.OnGlobalLayoutListener() {

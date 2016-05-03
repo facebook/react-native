@@ -106,6 +106,12 @@ function launchEditor(fileName, lineNumber) {
     return;
   }
 
+  // Sanitize lineNumber to prevent malicious use on win32
+  // via: https://github.com/nodejs/node/blob/c3bb4b1aa5e907d489619fb43d233c3336bfc03d/lib/child_process.js#L333
+  if (lineNumber && isNaN(lineNumber)) {
+    return;
+  }
+
   var editor = guessEditor();
   if (!editor) {
     printInstructions('PRO TIP');
@@ -125,7 +131,13 @@ function launchEditor(fileName, lineNumber) {
     _childProcess.kill('SIGKILL');
   }
 
-  _childProcess = child_process.spawn(editor, args, {stdio: 'inherit'});
+  if (process.platform === 'win32') {
+    // On Windows, launch the editor in a shell because spawn can only
+    // launch .exe files.
+    _childProcess = child_process.spawn('cmd.exe', ['/C', editor].concat(args), {stdio: 'inherit'});
+  } else {
+    _childProcess = child_process.spawn(editor, args, {stdio: 'inherit'});
+  }
   _childProcess.on('exit', function(errorCode) {
     _childProcess = null;
 

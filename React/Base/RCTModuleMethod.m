@@ -93,6 +93,16 @@ static RCTNullability RCTParseNullability(const char **input)
   return RCTNullabilityUnspecified;
 }
 
+static RCTNullability RCTParseNullabilityPostfix(const char **input)
+{
+  if (RCTReadString(input, "_Nullable")) {
+    return RCTNullable;
+  } else if (RCTReadString(input, "_Nonnull")) {
+    return RCTNonnullable;
+  }
+  return RCTNullabilityUnspecified;
+}
+
 SEL RCTParseMethodSignature(NSString *, NSArray<RCTMethodArgument *> **);
 SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument *> **arguments)
 {
@@ -117,6 +127,10 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
       RCTSkipWhitespace(&input);
 
       NSString *type = RCTParseType(&input);
+      RCTSkipWhitespace(&input);
+      if (nullability == RCTNullabilityUnspecified) {
+        nullability = RCTParseNullabilityPostfix(&input);
+      }
       [args addObject:[[RCTMethodArgument alloc] initWithType:type
                                                   nullability:nullability
                                                        unused:unused]];
@@ -335,8 +349,8 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
           return NO;
         }
 
-        RCT_BLOCK_ARGUMENT(^(NSError *error) {
-          NSDictionary *errorJSON = RCTJSErrorFromNSError(error);
+        RCT_BLOCK_ARGUMENT(^(NSString *code, NSString *message, NSError *error) {
+          NSDictionary *errorJSON = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
           [bridge enqueueCallback:json args:@[errorJSON]];
         });
       )
@@ -448,7 +462,10 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
         expectedCount -= 2;
       }
 
-      RCTLogError(@"%@.%@ was called with %zd arguments, but expects %zd",
+      RCTLogError(@"%@.%@ was called with %zd arguments, but expects %zd. \
+                  If you haven\'t changed this method yourself, this usually means that \
+                  your versions of the native code and JavaScript code are out of sync. \
+                  Updating both should make this error go away.",
                   RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName,
                   actualCount, expectedCount);
       return;

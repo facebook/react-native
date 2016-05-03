@@ -18,7 +18,7 @@ import android.view.ViewParent;
 /**
  * This class coordinates JSResponder commands for {@link UIManagerModule}. It should be set as
  * OnInterceptTouchEventListener for all newly created native views that implements
- * {@link CatalystInterceptingViewGroup} and thanks to the information whether JSResponder is set
+ * {@link ReactInterceptingViewGroup} and thanks to the information whether JSResponder is set
  * and to which view it will correctly coordinate the return values of
  * {@link OnInterceptTouchEventListener} such that touch events will be dispatched to the view
  * selected by JS gesture recognizer.

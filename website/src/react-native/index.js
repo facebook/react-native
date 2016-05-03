@@ -48,11 +48,16 @@ var index = React.createClass({
           <Prism>
 {`// iOS
 
-var React = require('react-native');
-var { TabBarIOS, NavigatorIOS } = React;
+import React, {
+  Component,
+} from 'react';
+import {
+  TabBarIOS,
+  NavigatorIOS,
+} from 'react-native';
 
-var App = React.createClass({
-  render: function() {
+class App extends Component {
+  render() {
     return (
       <TabBarIOS>
         <TabBarIOS.Item title="React Native" selected={true}>
@@ -60,26 +65,32 @@ var App = React.createClass({
         </TabBarIOS.Item>
       </TabBarIOS>
     );
-  },
-});`}
+  }
+}`}
           </Prism>
 
 <Prism>
 {`// Android
 
-var React = require('react-native');
-var { DrawerLayoutAndroid, ProgressBarAndroid } = React;
+import React, {
+  Component,
+} from 'react';
+import {
+  DrawerLayoutAndroid,
+  ProgressBarAndroid,
+  Text,
+} from 'react-native';
 
-var App = React.createClass({
-  render: function() {
+class App extends Component {
+  render() {
     return (
       <DrawerLayoutAndroid
         renderNavigationView={() => <Text>React Native</Text>}>
         <ProgressBarAndroid />
       </DrawerLayoutAndroid>
     );
-  },
-});`}
+  }
+}`}
           </Prism>
 
           <h2>Asynchronous Execution</h2>
@@ -89,7 +100,7 @@ var App = React.createClass({
           <p>
             See <a href="docs/debugging.html#content">Debugging</a>.
           </p>
-          <img src="/react-native/img/chrome_breakpoint.png" width="800" height="443" />
+          <img src="img/chrome_breakpoint.png" width="800" height="443" />
 
           <h2>Touch Handling</h2>
           <p>
@@ -98,11 +109,17 @@ var App = React.createClass({
           <Prism>
 {`// iOS & Android
 
-var React = require('react-native');
-var { ScrollView, TouchableHighlight, Text } = React;
+import React, {
+  Component,
+} from 'react';
+import {
+  ScrollView,
+  TouchableHighlight,
+  Text,
+} from 'react-native';
 
-var TouchDemo = React.createClass({
-  render: function() {
+class TouchDemo extends Component {
+  render() {
     return (
       <ScrollView>
         <TouchableHighlight onPress={() => console.log('pressed')}>
@@ -110,8 +127,8 @@ var TouchDemo = React.createClass({
         </TouchableHighlight>
       </ScrollView>
     );
-  },
-});`}
+  }
+}`}
           </Prism>
 
           <h2>Flexbox and Styling</h2>
@@ -121,11 +138,18 @@ var TouchDemo = React.createClass({
           <Prism>
 {`// iOS & Android
 
-var React = require('react-native');
-var { Image, StyleSheet, Text, View } = React;
+import React, {
+  Component,
+} from 'react';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
-var ReactNative = React.createClass({
-  render: function() {
+class ReactNative extends Component {
+  render() {
     return (
       <View style={styles.row}>
         <Image
@@ -142,8 +166,8 @@ var ReactNative = React.createClass({
         </View>
       </View>
     );
-  },
-});
+  }
+}
 var styles = StyleSheet.create({
   row: { flexDirection: 'row', margin: 40 },
   image: { width: 40, height: 40, marginRight: 10 },
@@ -158,29 +182,34 @@ var styles = StyleSheet.create({
             React Native is focused on changing the way view code is written.  For the rest, we look to the web for universal standards and polyfill those APIs where appropriate. You can use npm to install JavaScript libraries that work on top of the functionality baked into React Native, such as XMLHttpRequest, window.requestAnimationFrame, and navigator.geolocation.  We are working on expanding the available APIs, and are excited for the Open Source community to contribute as well.
           </p>
           <Prism>
-{`// iOS (Android support for geolocation coming)
+{`// iOS & Android
 
-var React = require('react-native');
-var { Text } = React;
+import React, {
+  Component,
+} from 'react';
+import {
+  Text,
+} from 'react-native';
 
-var GeoInfo = React.createClass({
-  getInitialState: function() {
-    return { position: 'unknown' };
+class GeoInfo extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { position: 'unknown' };
   },
-  componentDidMount: function() {
+  componentDidMount() {
     navigator.geolocation.getCurrentPosition(
       (position) => this.setState({position}),
       (error) => console.error(error)
     );
-  },
-  render: function() {
+  }
+  render() {
     return (
       <Text>
         Position: {JSON.stringify(this.state.position)}
       </Text>
     );
-  },
-});`}
+  }
+}`}
           </Prism>
 
           <h2>Extensibility</h2>
@@ -213,24 +242,30 @@ RCT_EXPORT_METHOD(processString:(NSString *)input callback:(RCTResponseSenderBlo
           <Prism>
 {`// JavaScript
 
-var React = require('react-native');
-var { NativeModules, Text } = React;
+import React, {
+  Component,
+} from 'react';
+import {
+  NativeModules,
+  Text,
+} from 'react-native';
 
-var Message = React.createClass({
-  getInitialState() {
-    return { text: 'Goodbye World.' };
-  },
+class Message extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { text: 'Goodbye World.' };
+  }
   componentDidMount() {
     NativeModules.MyCustomModule.processString(this.state.text, (text) => {
       this.setState({text});
     });
-  },
-  render: function() {
+  }
+  render() {
     return (
       <Text>{this.state.text}</Text>
     );
   }
-});`}
+}`}
           </Prism>
 
           <h3>Creating iOS views</h3>
@@ -260,20 +295,24 @@ RCT_EXPORT_VIEW_PROPERTY(myCustomProperty, NSString);
           <Prism>
 {`// JavaScript
 
-var React = require('react-native');
-var { requireNativeComponent } = React;
+import React, {
+  Component,
+} from 'react';
+import {
+  requireNativeComponent,
+} from 'react-native';
 
-class MyCustomView extends React.Component {
+var NativeMyCustomView = requireNativeComponent('MyCustomView', MyCustomView);
+
+export default class MyCustomView extends Component {
+  static propTypes = {
+    myCustomProperty: React.PropTypes.oneOf(['a', 'b']),
+  };
   render() {
     return <NativeMyCustomView {...this.props} />;
   }
 }
-MyCustomView.propTypes = {
-  myCustomProperty: React.PropTypes.oneOf(['a', 'b']),
-};
-
-var NativeMyCustomView = requireNativeComponent('MyCustomView', MyCustomView);
-module.exports = MyCustomView;`}
+`}
           </Prism>
 
           <h3>Creating Android modules</h3>
@@ -300,43 +339,43 @@ public class MyCustomModule extends ReactContextBaseJavaModule {
 <Prism>
 {`// JavaScript
 
-var React = require('react-native');
-var { NativeModules, Text } = React;
-var Message = React.createClass({
-  getInitialState() {
-    return { text: 'Goodbye World.' };
+import React, {
+  Component,
+} from 'react';
+import {
+  NativeModules,
+  Text,
+} from 'react-native';
+class Message extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { text: 'Goodbye World.' };
   },
   componentDidMount() {
     NativeModules.MyCustomModule.processString(this.state.text, (text) => {
       this.setState({text});
     });
-  },
-  render: function() {
+  }
+  render() {
     return (
       <Text>{this.state.text}</Text>
     );
   }
-});
+}
 `}
           </Prism>
 
           <h3>Creating Android views</h3>
           <p>
-          Custom Android views can be exposed by extending SimpleViewManager, implementing a createViewInstance and getName methods, and exporting properties with the @UIProp annotation. Then a simple JavaScript file connects the dots.
+          Custom Android views can be exposed by extending SimpleViewManager, implementing a createViewInstance and getName methods, and exporting properties with the @ReactProp annotation. Then a simple JavaScript file connects the dots.
           </p>
           <Prism>
 {`// Java
 
 public class MyCustomViewManager extends SimpleViewManager<MyCustomView> {
-
-  private static final String REACT_CLASS = "MyCustomView";
-
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_MY_CUSTOM_PROPERTY = "myCustomProperty";
-
   @Override
   public String getName() {
-    return REACT_CLASS;
+    return "MyCustomView";
   }
 
   @Override
@@ -344,13 +383,9 @@ public class MyCustomViewManager extends SimpleViewManager<MyCustomView> {
     return new MyCustomView(reactContext);
   }
 
-  @Override
-  public void updateView(MyCustomView view, CatalystStylesDiffMap props) {
-    super.updateView(view, props);
-
-    if (props.hasKey(PROP_MY_CUSTOM_PROPERTY)) {
-      view.setMyCustomProperty(props.getString(PROP_MY_CUSTOM_PROPERTY));
-    }
+  @ReactProp(name = "myCustomProperty")
+  public void setMyCustomProperty(MyCustomView view, String value) {
+    view.setMyCustomProperty(value);
   }
 }
 `}
@@ -358,20 +393,23 @@ public class MyCustomViewManager extends SimpleViewManager<MyCustomView> {
           <Prism>
 {`// JavaScript
 
-var React = require('react-native');
-var { requireNativeComponent } = React;
+import React, {
+  Component,
+} from 'react';
+import {
+  requireNativeComponent,
+} from 'react-native';
 
-class MyCustomView extends React.Component {
+var NativeMyCustomView = requireNativeComponent('MyCustomView', MyCustomView);
+
+export default class MyCustomView extends Component {
+  static propTypes = {
+    myCustomProperty: React.PropTypes.oneOf(['a', 'b']),
+  };
   render() {
     return <NativeMyCustomView {...this.props} />;
   }
 }
-MyCustomView.propTypes = {
-  myCustomProperty: React.PropTypes.oneOf(['a', 'b']),
-};
-
-var NativeMyCustomView = requireNativeComponent('MyCustomView', MyCustomView);
-module.exports = MyCustomView;
 `}
           </Prism>
           </div>
@@ -387,4 +425,3 @@ module.exports = MyCustomView;
 });
 
 module.exports = index;
-

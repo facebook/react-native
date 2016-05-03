@@ -23,7 +23,7 @@ properties directly on a DOM node.
 > and stores state in the native layer (DOM, UIView, etc.) and not
 > within your React components, which makes your code more difficult to
 > reason about. Before you use it, try to solve your problem with `setState`
-> and [shouldComponentUpdate](react-native/docs/direct-manipulation.html#setnativeprops-shouldcomponentupdate).
+> and [shouldComponentUpdate](http://facebook.github.io/react/docs/advanced-performance.html#shouldcomponentupdate-in-action).
 
 ## setNativeProps with TouchableOpacity
 
@@ -156,7 +156,7 @@ view using `{...this.props}`. The reason for this is that
 `TouchableOpacity` is actually a composite component, and so in addition
 to depending on `setNativeProps` on its child, it also requires that the
 child perform touch handling. To do this, it passes on [various
-props](https://facebook.github.io/react-native/docs/view.html#onmoveshouldsetresponder)
+props](docs/view.html#onmoveshouldsetresponder)
 that call back to the `TouchableOpacity` component.
 `TouchableHighlight`, in contrast, is backed by a native view and only
 requires that we implement `setNativeProps`.

@@ -9,9 +9,9 @@
 
 package com.facebook.react.bridge;
 
-import com.facebook.react.bridge.queue.CatalystQueueConfiguration;
-import com.facebook.react.bridge.queue.CatalystQueueConfigurationImpl;
-import com.facebook.react.bridge.queue.CatalystQueueConfigurationSpec;
+import com.facebook.react.bridge.queue.ReactQueueConfiguration;
+import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
+import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.bridge.queue.MessageQueueThreadSpec;
 import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -38,14 +38,14 @@ public class ReactTestHelper {
   }
 
   /**
-   * @return a CatalystInstance mock that has a default working CatalystQueueConfiguration.
+   * @return a CatalystInstance mock that has a default working ReactQueueConfiguration.
    */
   public static CatalystInstance createMockCatalystInstance() {
-    CatalystQueueConfigurationSpec spec = CatalystQueueConfigurationSpec.builder()
+    ReactQueueConfigurationSpec spec = ReactQueueConfigurationSpec.builder()
         .setJSQueueThreadSpec(MessageQueueThreadSpec.mainThreadSpec())
         .setNativeModulesQueueThreadSpec(MessageQueueThreadSpec.mainThreadSpec())
         .build();
-    CatalystQueueConfiguration catalystQueueConfiguration = CatalystQueueConfigurationImpl.create(
+    ReactQueueConfiguration ReactQueueConfiguration = ReactQueueConfigurationImpl.create(
         spec,
         new QueueThreadExceptionHandler() {
           @Override
@@ -55,7 +55,7 @@ public class ReactTestHelper {
         });
 
     CatalystInstance reactInstance = mock(CatalystInstance.class);
-    when(reactInstance.getCatalystQueueConfiguration()).thenReturn(catalystQueueConfiguration);
+    when(reactInstance.getReactQueueConfiguration()).thenReturn(ReactQueueConfiguration);
     when(reactInstance.getNativeModule(UIManagerModule.class))
         .thenReturn(mock(UIManagerModule.class));
 

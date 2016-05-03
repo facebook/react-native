@@ -15,15 +15,17 @@ package com.facebook.react.bridge;
 public final class CallbackImpl implements Callback {
 
   private final CatalystInstance mCatalystInstance;
+  private final ExecutorToken mExecutorToken;
   private final int mCallbackId;
 
-  public CallbackImpl(CatalystInstance bridge, int callbackId) {
+  public CallbackImpl(CatalystInstance bridge, ExecutorToken executorToken, int callbackId) {
     mCatalystInstance = bridge;
+    mExecutorToken = executorToken;
     mCallbackId = callbackId;
   }
 
   @Override
   public void invoke(Object... args) {
-    mCatalystInstance.invokeCallback(mCallbackId, Arguments.fromJavaArgs(args));
+    mCatalystInstance.invokeCallback(mExecutorToken, mCallbackId, Arguments.fromJavaArgs(args));
   }
 }

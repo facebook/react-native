@@ -7,7 +7,7 @@ permalink: docs/android-setup.html
 next: linux-windows-support
 ---
 
-This guide describes basic steps of the Android development environment setup that are required to run React Native android apps on an android emulator. We don't discuss developer tool configuration such as IDEs here.
+This guide describes basic steps of the Android development environment setup that are required to run React Native android apps on an android emulator.
 
 ### Install Git
 
@@ -19,7 +19,7 @@ This guide describes basic steps of the Android development environment setup th
 
   - **On Windows**, download and install [Git for Windows](https://git-for-windows.github.io/). During the setup process, choose "Run Git from Windows Command Prompt", which will add Git to your `PATH` environment variable.
 
-### Install the Android SDK (unless you have it)
+### Install the Android SDK (unless you already have it)
 
 1. [Install the latest JDK](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 2. Install the Android SDK:
@@ -50,12 +50,12 @@ React Native Android use [gradle](https://docs.gradle.org) as a build system. We
 ### Configure your SDK
 
 1. Open the Android SDK Manager (**on Mac** start a new shell and run `android`); in the window that appears make sure you check:
-  * Android SDK Build-tools version 23.0.1
+  * Android SDK Build-tools version 23.0.**1**
   * Android 6.0 (API 23)
-  * Android Support Repository
+  * Local Maven repository for Support Libraries (this is called Android Support Repository in older versions)
 2. Click "Install Packages"
 
-![SDK Manager window](/react-native/img/AndroidSDK1.png) ![SDK Manager window](/react-native/img/AndroidSDK2.png)
+![SDK Manager window](img/AndroidSDK1.png) ![SDK Manager window](img/AndroidSDK2.png)
 
 ### Install Genymotion
 
@@ -72,12 +72,14 @@ Genymotion is much easier to set up than stock Google emulators. However, it's o
   * Intel x86 Atom System Image (for Android 5.1.1 - API 22)
   * Intel x86 Emulator Accelerator (HAXM installer)
 2. Click "Install Packages".
-3. [Configure hardware acceleration (HAXM)](http://developer.android.com/tools/devices/emulator.html#vm-mac), otherwise the emulator is going to be slow.
+3. [Configure hardware acceleration (HAXM)](http://developer.android.com/tools/devices/emulator.html#vm-mac), otherwise the emulator is going to be slow (or may not run at all).
+  * On a mac this is typically requires opening: `/usr/local/opt/android-sdk/extras/intel/Hardware_Accelerated_Execution_Manager/IntelHAXM_<version>.dmg` and installing the package within.
 4. Create an Android Virtual Device (AVD):
   1. Run `android avd` and click on **Create...**
-  ![Create AVD dialog](/react-native/img/CreateAVD.png)
+  ![Create AVD dialog](img/CreateAVD.png)
   2. With the new AVD selected, click `Start...`
-5. To bring up the developer menu press F2 (or install [Frappé](http://getfrappe.com))
+5. To bring up the developer menu press F2 (or ⌘+M for Android Studio 2.0 or newer)
+6. Install [Frappé](http://getfrappe.com) (OSX only)
 
 ### Windows Hyper-V Alternative
 
@@ -95,3 +97,18 @@ To use it with react-native you just have to add a key and value to your registr
 You will also need to run the command `adb reverse tcp:8081 tcp:8081` with this emulator.
 
 Then restart the emulator and when it runs you can just do `react-native run-android` as usual.
+
+### Editing your app's Java code in Android Studio
+
+You can use any editor to edit JavaScript. If you want to use Android Studio to work on native code, from the Welcome screen of Android Studio choose "Import project" and select the `android` folder of your app.
+
+### Troubleshooting
+
+In case you encounter
+
+```
+Execution failed for task ':app:installDebug'.
+  com.android.builder.testing.api.DeviceException: com.android.ddmlib.ShellCommandUnresponsiveException
+```
+
+try downgrading your Gradle version to 1.2.3 in `<project-name>/android/build.gradle` (https://github.com/facebook/react-native/issues/2720)

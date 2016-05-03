@@ -11,37 +11,37 @@
  */
 'use strict';
 
-var sourceMapPromise;
-
-var exceptionID = 0;
+let exceptionID = 0;
 
 /**
  * Handles the developer-visible aspect of errors and exceptions
  */
 function reportException(e: Error, isFatal: bool) {
-  var loadSourceMap = require('loadSourceMap');
-  var parseErrorStack = require('parseErrorStack');
-  var RCTExceptionsManager = require('NativeModules').ExceptionsManager;
+  const parseErrorStack = require('parseErrorStack');
+  const RCTExceptionsManager = require('NativeModules').ExceptionsManager;
 
-  var currentExceptionID = ++exceptionID;
+  const currentExceptionID = ++exceptionID;
   if (RCTExceptionsManager) {
-    var stack = parseErrorStack(e);
+    const stack = parseErrorStack(e);
     if (isFatal) {
       RCTExceptionsManager.reportFatalException(e.message, stack, currentExceptionID);
     } else {
       RCTExceptionsManager.reportSoftException(e.message, stack, currentExceptionID);
     }
     if (__DEV__) {
-      (sourceMapPromise = sourceMapPromise || loadSourceMap())
-        .then(map => {
-          var prettyStack = parseErrorStack(e, map);
-          RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack, currentExceptionID);
-        })
-        .catch(error => {
-          // This can happen in a variety of normal situations, such as
-          // Network module not being available, or when running locally
-          console.warn('Unable to load source map: ' + error.message);
-        });
+      require('SourceMapsCache').getSourceMaps().then(sourceMaps => {
+        const prettyStack = parseErrorStack(e, sourceMaps);
+        RCTExceptionsManager.updateExceptionMessage(
+          e.message,
+          prettyStack,
+          currentExceptionID,
+        );
+      })
+      .catch(error => {
+        // This can happen in a variety of normal situations, such as
+        // Network module not being available, or when running locally
+        console.warn('Unable to load source map: ' + error.message);
+      });
     }
   }
 }
@@ -81,15 +81,15 @@ function installConsoleErrorReporter() {
     if (arguments[0] && arguments[0].stack) {
       reportException(arguments[0], /* isFatal */ false);
     } else {
-      var stringifySafe = require('stringifySafe');
-      var str = Array.prototype.map.call(arguments, stringifySafe).join(', ');
+      const stringifySafe = require('stringifySafe');
+      const str = Array.prototype.map.call(arguments, stringifySafe).join(', ');
       if (str.slice(0, 10) === '"Warning: ') {
         // React warnings use console.error so that a stack trace is shown, but
         // we don't (currently) want these to show a redbox
         // (Note: Logic duplicated in polyfills/console.js.)
         return;
       }
-      var error : any = new Error('console.error: ' + str);
+      const error : any = new Error('console.error: ' + str);
       error.framesToPop = 1;
       reportException(error, /* isFatal */ false);
     }

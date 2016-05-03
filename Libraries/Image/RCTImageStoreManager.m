@@ -217,6 +217,7 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
   dispatch_async(_methodQueue, ^{
     NSData *imageData = _store[imageTag];
     dispatch_async(dispatch_get_main_queue(), ^{
+      // imageWithData: is not thread-safe, so we can't do this on methodQueue
       block([UIImage imageWithData:imageData]);
     });
   });

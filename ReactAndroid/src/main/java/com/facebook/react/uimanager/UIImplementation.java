@@ -21,6 +21,7 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -77,6 +78,10 @@ public class UIImplementation {
 
   protected final ViewManager resolveViewManager(String className) {
     return mViewManagers.get(className);
+  }
+
+  /*package*/ UIViewOperationQueue getUIViewOperationQueue() {
+    return mOperationsQueue;
   }
 
   /**
@@ -141,9 +146,9 @@ public class UIImplementation {
 
     mShadowNodeRegistry.addNode(cssNode);
 
-    CatalystStylesDiffMap styles = null;
+    ReactStylesDiffMap styles = null;
     if (props != null) {
-      styles = new CatalystStylesDiffMap(props);
+      styles = new ReactStylesDiffMap(props);
       cssNode.updateProperties(styles);
     }
 
@@ -153,7 +158,7 @@ public class UIImplementation {
   protected void handleCreateView(
       ReactShadowNode cssNode,
       int rootViewTag,
-      @Nullable CatalystStylesDiffMap styles) {
+      @Nullable ReactStylesDiffMap styles) {
     if (!cssNode.isVirtual()) {
       mNativeViewHierarchyOptimizer.handleCreateView(cssNode, cssNode.getThemedContext(), styles);
     }
@@ -173,16 +178,27 @@ public class UIImplementation {
     }
 
     if (props != null) {
-      CatalystStylesDiffMap styles = new CatalystStylesDiffMap(props);
+      ReactStylesDiffMap styles = new ReactStylesDiffMap(props);
       cssNode.updateProperties(styles);
       handleUpdateView(cssNode, className, styles);
     }
   }
 
+  /**
+   * Used by native animated module to bypass the process of updating the values through the shadow
+   * view hierarchy. This method will directly update native views, which means that updates for
+   * layout-related propertied won't be handled properly.
+   * Make sure you know what you're doing before calling this method :)
+   */
+  public void synchronouslyUpdateViewOnUIThread(int tag, ReactStylesDiffMap props) {
+    UiThreadUtil.assertOnUiThread();
+    mOperationsQueue.getNativeViewHierarchyManager().updateProperties(tag, props);
+  }
+
   protected void handleUpdateView(
       ReactShadowNode cssNode,
       String className,
-      CatalystStylesDiffMap styles) {
+      ReactStylesDiffMap styles) {
     if (!cssNode.isVirtual()) {
       mNativeViewHierarchyOptimizer.handleUpdateView(cssNode, className, styles);
     }
@@ -308,6 +324,35 @@ public class UIImplementation {
   }
 
   /**
+   * An optimized version of manageChildren that is used for initial setting of child views.
+   * The children are assumed to be in index order
+   *
+   * @param viewTag tag of the parent
+   * @param childrenTags tags of the children
+   */
+  public void setChildren(
+    int viewTag,
+    ReadableArray childrenTags) {
+
+    ReactShadowNode cssNodeToManage = mShadowNodeRegistry.getNode(viewTag);
+
+    for (int i = 0; i < childrenTags.size(); i++) {
+      ReactShadowNode cssNodeToAdd = mShadowNodeRegistry.getNode(childrenTags.getInt(i));
+      if (cssNodeToAdd == null) {
+        throw new IllegalViewOperationException("Trying to add unknown view tag: "
+          + childrenTags.getInt(i));
+      }
+      cssNodeToManage.addChildAt(cssNodeToAdd, i);
+    }
+
+    if (!cssNodeToManage.isVirtual() && !cssNodeToManage.isVirtualAnchor()) {
+      mNativeViewHierarchyOptimizer.handleSetChildren(
+        cssNodeToManage,
+        childrenTags);
+    }
+  }
+
+  /**
    * Replaces the View specified by oldTag with the View specified by newTag within oldTag's parent.
    */
   public void replaceExistingNonRootView(int oldTag, int newTag) {
@@ -380,8 +425,8 @@ public class UIImplementation {
   }
 
   /**
-   * Determines the location on screen, width, and height of the given view and returns the values
-   * via an async callback.
+   * Determines the location on screen, width, and height of the given view relative to the root
+   * view and returns the values via an async callback.
    */
   public void measure(int reactTag, Callback callback) {
     // This method is called by the implementation of JS touchable interface (see Touchable.js for
@@ -389,6 +434,15 @@ public class UIImplementation {
     // a touchable view with a given reactTag, or when user drag finger back into the press
     // activation area of a touchable view that have been activated before.
     mOperationsQueue.enqueueMeasure(reactTag, callback);
+  }
+
+  /**
+   * Determines the location on screen, width, and height of the given view relative to the device
+   * screen and returns the values via an async callback.  This is the absolute position including
+   * things like the status bar
+   */
+  public void measureInWindow(int reactTag, Callback callback) {
+    mOperationsQueue.enqueueMeasureInWindow(reactTag, callback);
   }
 
   /**
@@ -437,6 +491,12 @@ public class UIImplementation {
    * Invoked at the end of the transaction to commit any updates to the node hierarchy.
    */
   public void dispatchViewUpdates(EventDispatcher eventDispatcher, int batchId) {
+    updateViewHierarchy(eventDispatcher);
+    mNativeViewHierarchyOptimizer.onBatchComplete();
+    mOperationsQueue.dispatchViewUpdates(batchId);
+  }
+
+  protected void updateViewHierarchy(EventDispatcher eventDispatcher) {
     for (int i = 0; i < mShadowNodeRegistry.getRootNodeCount(); i++) {
       int tag = mShadowNodeRegistry.getRootTag(i);
       ReactShadowNode cssRoot = mShadowNodeRegistry.getNode(tag);
@@ -445,9 +505,6 @@ public class UIImplementation {
       calculateRootLayout(cssRoot);
       applyUpdatesRecursive(cssRoot, 0f, 0f, eventDispatcher);
     }
-
-    mNativeViewHierarchyOptimizer.onBatchComplete();
-    mOperationsQueue.dispatchViewUpdates(batchId);
   }
 
   /**
@@ -703,7 +760,7 @@ public class UIImplementation {
           absoluteY,
           mOperationsQueue,
           mNativeViewHierarchyOptimizer);
-      
+
       // notify JS about layout event if requested
       if (cssNode.shouldNotifyOnLayout()) {
         eventDispatcher.dispatchEvent(

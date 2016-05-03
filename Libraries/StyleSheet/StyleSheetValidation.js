@@ -16,7 +16,7 @@ var ReactPropTypeLocations = require('ReactPropTypeLocations');
 var TextStylePropTypes = require('TextStylePropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 class StyleSheetValidation {
   static validateStyleProp(prop, style, caller) {

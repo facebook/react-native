@@ -11,6 +11,7 @@
 
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
+#import "RCTShadowText.h"
 #import "RCTText.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
@@ -61,6 +62,8 @@
   NSMutableArray<UIView *> *_subviews;
   BOOL _blockTextShouldChange;
   UITextRange *_previousSelectionRange;
+  NSUInteger _previousTextLength;
+  CGFloat _previousContentHeight;
   UIScrollView *_scrollView;
 }
 
@@ -108,6 +111,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     }
     _richTextView = (RCTText *)subview;
     [_subviews insertObject:_richTextView atIndex:index];
+
+    // If this <TextInput> is in rich text editing mode, and the child <Text> node providing rich text
+    // styling has a backgroundColor, then the attributedText produced by the child <Text> node will have an
+    // NSBackgroundColor attribute. We need to forward this attribute to the text view manually because the text view
+    // always has a clear background color in -initWithEventDispatcher:.
+    //
+    // TODO: This should be removed when the related hack in -performPendingTextUpdate is removed.
+    if (subview.backgroundColor) {
+      NSMutableDictionary<NSString *, id> *attrs = [_textView.typingAttributes mutableCopy];
+      attrs[NSBackgroundColorAttributeName] = subview.backgroundColor;
+      _textView.typingAttributes = attrs;
+    }
   } else {
     [_subviews insertObject:subview atIndex:index];
     [self insertSubview:subview atIndex:index];
@@ -147,11 +162,30 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
+{
+  if (string.length == 0) {
+    return string;
+  } else {
+    NSMutableAttributedString *mutableString = [[NSMutableAttributedString alloc] initWithAttributedString:string];
+    [mutableString removeAttribute:RCTReactTagAttributeName range:NSMakeRange(0, mutableString.length)];
+    return mutableString;
+  }
+}
+
 - (void)performPendingTextUpdate
 {
   if (!_pendingAttributedText || _mostRecentEventCount < _nativeEventCount) {
     return;
   }
+
+  // The underlying <Text> node that produces _pendingAttributedText has a react tag attribute on it that causes the
+  // -isEqualToAttributedString: comparison below to spuriously fail. We don't want that comparison to fail unless it
+  // needs to because when the comparison fails, we end up setting attributedText on the text view, which clears
+  // autocomplete state for CKJ text input.
+  //
+  // TODO: Kill this after we finish passing all style/attribute info into JS.
+  _pendingAttributedText = removeReactTagFromString(_pendingAttributedText);
 
   if ([_textView.attributedText isEqualToAttributedString:_pendingAttributedText]) {
     _pendingAttributedText = nil; // Don't try again.
@@ -289,7 +323,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (textView.textWasPasted) {
     textView.textWasPasted = NO;
   } else {
-    
+
     [_eventDispatcher sendTextEventWithType:RCTTextEventTypeKeyPress
                                    reactTag:self.reactTag
                                        text:nil
@@ -437,12 +471,36 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [self updateContentSize];
   [self _setPlaceholderVisibility];
   _nativeEventCount++;
-  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeChange
-                                 reactTag:self.reactTag
-                                     text:textView.text
-                                      key:nil
-                               eventCount:_nativeEventCount];
 
+  if (!self.reactTag) {
+    return;
+  }
+
+  // When the context size increases, iOS updates the contentSize twice; once
+  // with a lower height, then again with the correct height. To prevent a
+  // spurious event from being sent, we track the previous, and only send the
+  // update event if it matches our expectation that greater text length
+  // should result in increased height. This assumption is, of course, not
+  // necessarily true because shorter text might include more linebreaks, but
+  // in practice this works well enough.
+  NSUInteger textLength = textView.text.length;
+  CGFloat contentHeight = textView.contentSize.height;
+  if (textLength >= _previousTextLength) {
+    contentHeight = MAX(contentHeight, _previousContentHeight);
+  }
+  _previousTextLength = textLength;
+  _previousContentHeight = contentHeight;
+
+  NSDictionary *event = @{
+    @"text": self.text,
+    @"contentSize": @{
+      @"height": @(contentHeight),
+      @"width": @(textView.contentSize.width)
+    },
+    @"target": self.reactTag,
+    @"eventCount": @(_nativeEventCount),
+  };
+  [_eventDispatcher sendInputEventWithName:@"change" body:event];
 }
 
 - (void)textViewDidEndEditing:(UITextView *)textView

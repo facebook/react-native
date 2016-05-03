@@ -14,9 +14,9 @@
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var RCTLocationObserver = require('NativeModules').LocationObserver;
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var logError = require('logError');
-var warning = require('warning');
+var warning = require('fbjs/lib/warning');
 
 var subscriptions = [];
 
@@ -26,6 +26,7 @@ type GeoOptions = {
   timeout: number;
   maximumAge: number;
   enableHighAccuracy: bool;
+  distanceFilter: number;
 }
 
 /**
@@ -49,6 +50,8 @@ var Geolocation = {
   /*
    * Invokes the success callback once with the latest location info.  Supported
    * options: timeout (ms), maximumAge (ms), enableHighAccuracy (bool)
+   * On Android, this can return almost immediately if the location is cached or
+   * request an update, which might take a while.
    */
   getCurrentPosition: function(
     geo_success: Function,
@@ -68,7 +71,7 @@ var Geolocation = {
 
   /*
    * Invokes the success callback whenever the location changes.  Supported
-   * options: timeout (ms), maximumAge (ms), enableHighAccuracy (bool)
+   * options: timeout (ms), maximumAge (ms), enableHighAccuracy (bool), distanceFilter(m)
    */
   watchPosition: function(success: Function, error?: Function, options?: GeoOptions): number {
     if (!updatesEnabled) {

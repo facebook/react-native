@@ -1,0 +1,11 @@
+prebuilt_jar(
+    name = 'jsr-305',
+    binary_jar = ':jsr305-binary-jar',
+    visibility = ['PUBLIC'],
+)
+
+remote_file(
+    name = 'jsr305-binary-jar',
+    url = 'mvn:com.google.code.findbugs:jsr305:jar:3.0.0',
+    sha1 = '5871fb60dc68d67da54a663c3fd636a10a532948',
+)

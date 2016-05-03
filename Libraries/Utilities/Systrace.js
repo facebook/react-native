@@ -23,7 +23,6 @@ type RelayProfiler = {
   ): void,
 };
 
-var GLOBAL = GLOBAL || this;
 var TRACE_TAG_REACT_APPS = 1 << 17;
 var TRACE_TAG_JSC_CALLS = 1 << 27;
 
@@ -201,5 +200,13 @@ var Systrace = {
 };
 
 Systrace.setEnabled(global.__RCTProfileIsProfiling || false);
+
+if (__DEV__) {
+  // This is needed, because require callis in polyfills are not processed as
+  // other files. Therefore, calls to `require('moduleId')` are not replaced
+  // with numeric IDs
+  // TODO(davidaurelio) Scan polyfills for dependencies, too (t9759686)
+  require.Systrace = Systrace;
+}
 
 module.exports = Systrace;

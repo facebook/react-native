@@ -51,18 +51,18 @@ RCT_EXPORT_MODULE()
   if (!_url) {
     NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
     NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"] ?: 8081;
-    NSString *URLString = [NSString stringWithFormat:@"http://localhost:%zd/debugger-proxy", port];
+    NSString *URLString = [NSString stringWithFormat:@"http://localhost:%zd/debugger-proxy?role=client", port];
     _url = [RCTConvert NSURL:URLString];
   }
 
-  _jsQueue = dispatch_queue_create("com.facebook.React.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
+  _jsQueue = dispatch_queue_create("com.facebook.react.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
   _socket = [[RCTSRWebSocket alloc] initWithURL:_url];
   _socket.delegate = self;
   _callbacks = [NSMutableDictionary new];
   _injectedObjects = [NSMutableDictionary new];
   [_socket setDelegateDispatchQueue:_jsQueue];
 
-  NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-chrome-devtools" relativeToURL:_url];
+  NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-js-devtools" relativeToURL:_url];
   [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:startDevToolsURL] delegate:nil];
 
   if (![self connectToProxy]) {
@@ -80,8 +80,9 @@ RCT_EXPORT_MODULE()
     retries--;
   }
   if (!runtimeIsReady) {
-    RCTLogError(@"Runtime is not ready. Make sure Chrome is running and not "
-                 "paused on a breakpoint or exception and try reloading again.");
+    RCTLogError(@"Runtime is not ready for debugging.\n "
+                 "- Make sure Packager server is running.\n"
+                 "- Make sure the JavaScript Debugger is running and not paused on a breakpoint or exception and try reloading again.");
     [self invalidate];
     return;
   }
@@ -91,7 +92,7 @@ RCT_EXPORT_MODULE()
 {
   _socketOpenSemaphore = dispatch_semaphore_create(0);
   [_socket open];
-  long connected = dispatch_semaphore_wait(_socketOpenSemaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2));
+  long connected = dispatch_semaphore_wait(_socketOpenSemaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 10));
   return connected == 0;
 }
 
@@ -139,7 +140,7 @@ RCT_EXPORT_MODULE()
   dispatch_async(_jsQueue, ^{
     if (!self.valid) {
       NSError *error = [NSError errorWithDomain:@"WS" code:1 userInfo:@{
-        NSLocalizedDescriptionKey: @"socket closed"
+        NSLocalizedDescriptionKey: @"Runtime is not ready for debugging. Make sure Packager server is running."
       }];
       callback(error, nil);
       return;
