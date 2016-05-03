@@ -21,7 +21,7 @@ See [Android Setup](/react-native/docs/android-setup.html) for details.
 
 The first thing you need to do is to install NodeJS, a popular Javascript implementation.
 
-Fire up the Terminal and paste the following commands to install NodeJS from the [NodeSource](https://nodesource.com/) repository:
+Fire up the Terminal and type the following commands to install NodeJS from the [NodeSource](https://nodesource.com/) repository:
 
 ```sh
 sudo apt-get install -y build-essential
@@ -35,7 +35,7 @@ __NOTE__: The above instructions are for Ubuntu. If you're on a different distro
 
 [watchman](https://facebook.github.io/watchman/docs/install.html) is a tool by Facebook for watching changes in the filesystem. You need to install it for better performance and avoid a node file-watching bug.
 
-Paste the following into your terminal to compile watchman from source and install it:
+Type the following into your terminal to compile watchman from source and install it:
 
 ```sh
 sudo apt-get install -y automake python-dev
@@ -51,10 +51,10 @@ __NOTE__: The above ```apt-get install``` line is for Ubuntu/Debian only. You mi
 
 #### Installing Flow
 
-Flow is a static type checker for JavaScript. To install it, paste the following in the terminal:
+Flow is a static type checker for JavaScript. To install it, type the following in the terminal:
 
 ```sh
-sudo npm install -g flow-bin
+npm install -g flow-bin
 ```
 
 ## Setting up an Android Device
