@@ -10,7 +10,7 @@
  */
 'use strict';
 
-require('regenerator/runtime');
+require('regenerator/node_modules/regenerator-runtime/runtime');
 
 var React = require('react');
 var ReactNative = require('react-native');
