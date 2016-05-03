@@ -9,7 +9,12 @@
  * @flow
  */
 
+var path = require('path');
 const child_process = require('child_process');
+
+const adbPath = process.env.ANDROID_HOME
+  ? path.join(process.env.ANDROID_HOME, '/platform-tools/adb')
+    : 'adb';
 
 /**
  * Parses the output of the 'adb devices' command
@@ -37,13 +42,11 @@ function parseDevicesResult(result: string): Array<string> {
  */
 function getDevices(): Array<string> {
   try {
-    const devicesResult = child_process.execSync('adb devices');
-    return parseDevicesResult(devicesResult.toString());
+    const devicesResult = child_process.spawnSync(adbPath, ['devices']);
+    return parseDevicesResult(devicesResult.stdout.toString());
   } catch (e) {
     return [];
   }
-
-
 }
 
 module.exports = {
