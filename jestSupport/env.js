@@ -17,6 +17,6 @@ global.__fbBatchedBridgeConfig = {
 };
 
 global.Promise = require('promise');
-global.regeneratorRuntime = require.requireActual('regenerator/node_modules/regenerator-runtime/runtime');
+global.regeneratorRuntime = require.requireActual('regenerator-runtime/runtime');
 
 jest.setMock('ErrorUtils', require('ErrorUtils'));
