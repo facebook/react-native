@@ -232,6 +232,20 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   /**
+   * Interface for fast tracking the initial adding of views.  Children view tags are assumed to be
+   * in order
+   *
+   * @param viewTag the view tag of the parent view
+   * @param childrenTags An array of tags to add to the parent in order
+   */
+  @ReactMethod
+  public void setChildren(
+    int viewTag,
+    ReadableArray childrenTags) {
+    mUIImplementation.setChildren(viewTag, childrenTags);
+  }
+
+  /**
    * Replaces the View specified by oldTag with the View specified by newTag within oldTag's parent.
    * This resolves to a simple {@link #manageChildren} call, but React doesn't have enough info in
    * JS to formulate it itself.

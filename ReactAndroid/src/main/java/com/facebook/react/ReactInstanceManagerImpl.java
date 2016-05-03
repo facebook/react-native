@@ -268,6 +268,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
 
   /* package */ ReactInstanceManagerImpl(
       Context applicationContext,
+      @Nullable Activity currentActivity,
+      @Nullable DefaultHardwareBackBtnHandler defaultHardwareBackBtnHandler,
       @Nullable String jsBundleFile,
       @Nullable String jsMainModuleName,
       List<ReactPackage> packages,
@@ -284,6 +286,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     setDisplayMetrics(applicationContext);
 
     mApplicationContext = applicationContext;
+    mCurrentActivity = currentActivity;
+    mDefaultBackButtonImpl = defaultHardwareBackBtnHandler;
     mJSBundleFile = jsBundleFile;
     mJSMainModuleName = jsMainModuleName;
     mPackages = packages;

@@ -25,11 +25,11 @@
 require('regenerator/runtime');
 
 if (typeof GLOBAL === 'undefined') {
-  global.GLOBAL = this;
+  global.GLOBAL = global;
 }
 
 if (typeof window === 'undefined') {
-  global.window = GLOBAL;
+  global.window = global;
 }
 
 function setUpConsole() {
@@ -53,7 +53,7 @@ function setUpConsole() {
  * For more info on that particular case, see:
  * https://github.com/facebook/react-native/issues/934
  */
-function polyfillGlobal(name, newValue, scope = GLOBAL) {
+function polyfillGlobal(name, newValue, scope = global) {
   var descriptor = Object.getOwnPropertyDescriptor(scope, name) || {
     // jest for some bad reasons runs the polyfill code multiple times. In jest
     // environment, XmlHttpRequest doesn't exist so getOwnPropertyDescriptor
@@ -70,7 +70,7 @@ function polyfillGlobal(name, newValue, scope = GLOBAL) {
   Object.defineProperty(scope, name, {...descriptor, value: newValue});
 }
 
-function polyfillLazyGlobal(name, valueFn, scope = GLOBAL) {
+function polyfillLazyGlobal(name, valueFn, scope = global) {
   if (scope[name] !== undefined) {
     const descriptor = Object.getOwnPropertyDescriptor(scope, name);
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
@@ -96,7 +96,7 @@ function polyfillLazyGlobal(name, valueFn, scope = GLOBAL) {
 /**
  * Polyfill a module if it is not already defined in `scope`.
  */
-function polyfillIfNeeded(name, polyfill, scope = GLOBAL, descriptor = {}) {
+function polyfillIfNeeded(name, polyfill, scope = global, descriptor = {}) {
   if (scope[name] === undefined) {
     Object.defineProperty(scope, name, {...descriptor, value: polyfill});
   }
@@ -141,8 +141,8 @@ function setUpTimers() {
 }
 
 function setUpAlert() {
-  if (!GLOBAL.alert) {
-    GLOBAL.alert = function(text) {
+  if (!global.alert) {
+    global.alert = function(text) {
       // Require Alert on demand. Requiring it too early can lead to issues
       // with things like Platform not being fully initialized.
       require('Alert').alert('Alert', '' + text);
@@ -169,12 +169,12 @@ function setUpXHR() {
 }
 
 function setUpGeolocation() {
-  polyfillIfNeeded('navigator', {}, GLOBAL, {
+  polyfillIfNeeded('navigator', {}, global, {
     writable: true,
     enumerable: true,
     configurable: true,
   });
-  polyfillLazyGlobal('geolocation', () => require('Geolocation'), GLOBAL.navigator);
+  polyfillLazyGlobal('geolocation', () => require('Geolocation'), global.navigator);
 }
 
 function setUpMapAndSet() {
@@ -185,7 +185,7 @@ function setUpMapAndSet() {
 }
 
 function setUpProduct() {
-  Object.defineProperty(GLOBAL.navigator, 'product', {value: 'ReactNative'});
+  Object.defineProperty(global.navigator, 'product', {value: 'ReactNative'});
 }
 
 function setUpWebSockets() {
@@ -200,13 +200,13 @@ function setUpProfile() {
 }
 
 function setUpProcess() {
-  GLOBAL.process = GLOBAL.process || {};
-  GLOBAL.process.env = GLOBAL.process.env || {};
-  if (!GLOBAL.process.env.NODE_ENV) {
-    GLOBAL.process.env.NODE_ENV = __DEV__ ? 'development' : 'production';
+  global.process = global.process || {};
+  global.process.env = global.process.env || {};
+  if (!global.process.env.NODE_ENV) {
+    global.process.env.NODE_ENV = __DEV__ ? 'development' : 'production';
   }
 
-  polyfillLazyGlobal('platform', () => require('Platform').OS, GLOBAL.process);
+  polyfillLazyGlobal('platform', () => require('Platform').OS, global.process);
 }
 
 function setUpDevTools() {

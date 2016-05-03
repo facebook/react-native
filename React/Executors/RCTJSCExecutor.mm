@@ -41,7 +41,6 @@ static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnable
 typedef struct ModuleData {
   uint32_t offset;
   uint32_t length;
-  uint32_t lineNo;
 } ModuleData;
 
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
@@ -749,10 +748,13 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr)
     }
     JSStringRef code = JSStringCreateWithUTF8CString(bytes);
     JSValueRef jsError = NULL;
-    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, code, NULL, strongSelf->_bundleURL, data->lineNo, NULL);
+    JSStringRef sourceURL = JSStringCreateWithUTF8CString([moduleName stringByAppendingPathExtension:@"js"].UTF8String);
+
+    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, code, NULL, sourceURL, 0, NULL);
 
     CFDictionaryRemoveValue(strongSelf->_jsModules, moduleName.UTF8String);
     JSStringRelease(code);
+    JSStringRelease(sourceURL);
 
     RCT_PROFILE_END_EVENT(0, @"js_call", nil);
     RCTPerformanceLoggerAppendEnd(RCTPLRAMNativeRequires);
@@ -831,7 +833,6 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr)
 
     moduleData->offset = baseOffset + readUint32((const char **)&tableCursor);
     moduleData->length = readUint32((const char **)&tableCursor);
-    moduleData->lineNo = readUint32((const char **)&tableCursor);
 
     CFDictionarySetValue(_jsModules, name, moduleData);
   }

@@ -63,7 +63,7 @@ var ScrollView = React.createClass({
     automaticallyAdjustContentInsets: PropTypes.bool,
     /**
      * The amount by which the scroll view content is inset from the edges
-     * of the scroll view. Defaults to `{0, 0, 0, 0}`.
+     * of the scroll view. Defaults to `{top: 0, left: 0, bottom: 0, right: 0}`.
      * @platform ios
      */
     contentInset: EdgeInsetsPropType,
@@ -210,8 +210,11 @@ var ScrollView = React.createClass({
      */
     onScrollAnimationEnd: PropTypes.func,
     /**
-     * Called when scrollable content view of the ScrollView changes. It's
-     * implemented using onLayout handler attached to the content container
+     * Called when scrollable content view of the ScrollView changes.
+     *
+     * Handler function is passed the content width and content height as parameters: `(contentWidth, contentHeight)`
+     *
+     * It's implemented using onLayout handler attached to the content container
      * which this ScrollView renders.
      */
     onContentSizeChange: PropTypes.func,
