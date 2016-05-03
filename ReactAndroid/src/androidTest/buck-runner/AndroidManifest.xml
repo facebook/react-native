@@ -8,12 +8,7 @@
   <!-- needed for screenshot tests -->
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-  <application
-    android:allowBackup="true"           
-    android:vmSafeMode="true"       
-    android:allowClearUserData="true"
-    android:hardwareAccelerated="true"
-    >
+  <application>
     <uses-library android:name="android.test.runner" />
     <activity
       android:name="com.facebook.react.testing.ReactAppTestActivity"
