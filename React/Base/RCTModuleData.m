@@ -37,19 +37,15 @@
   _instanceLock = [NSLock new];
 
   static IMP objectInitMethod;
-  static SEL setBridgeSelector;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     objectInitMethod = [NSObject instanceMethodForSelector:@selector(init)];
-    setBridgeSelector = NSSelectorFromString(@"setBridge:");
   });
 
-  // If a module overrides `init`, `setBridge:` then we must assume that it
-  // expects for both of those methods to be called on the main thread, because
-  // they may need to access UIKit.
-  _requiresMainThreadSetup =
-  [_moduleClass instancesRespondToSelector:setBridgeSelector] ||
-  (!_instance && [_moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod);
+  // If a module overrides `init` then we must assume that it expects to be
+  // initialized on the main thread, because it may need to access UIKit.
+  _requiresMainThreadSetup = !_instance &&
+  [_moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
 
   // If a module overrides `constantsToExport` then we must assume that it
   // must be called on the main thread, because it may need to access UIKit.
