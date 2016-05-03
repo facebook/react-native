@@ -26,6 +26,7 @@ var {
   Platform,
   StyleSheet,
   View,
+  Dimensions
 } = ReactNative;
 
 var groupByEveryN = require('groupByEveryN');
@@ -255,6 +256,7 @@ var styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    height: Dimensions.get('window').height/2,
   },
 });
 
