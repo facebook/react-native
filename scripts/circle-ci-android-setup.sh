@@ -2,13 +2,11 @@
 
 function getAndroidSDK {
   export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH"
-  
-  echo y | android update sdk -u -a -t android-23
 
   DEPS="$ANDROID_HOME/installed-dependencies"
 
   if [ ! -e $DEPS ]; then
-    echo no | android create avd -n testAVD -f -t android-23 --abi default/armeabi-v7a &&
+    echo no | android create avd -n testAVD -f -t android-19 --abi default/armeabi-v7a &&
     touch $DEPS
   fi
 }
