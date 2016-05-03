@@ -376,7 +376,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
 
       final Intent chooserIntent = Intent.createChooser(galleryIntent, "Pick an image");
 
-      currentActivity.startActivityForResult(chooserIntent, PICK_IMAGE);
+      currentActivity.startActivityForResult(chooserIntent, IMAGE_PICKER_REQUEST);
     } catch (Exception e) {
       mPickerPromise.reject(E_FAILED_TO_SHOW_PICKER, e);
       mPickerPromise = null;
