@@ -53,10 +53,20 @@ RCT_EXPORT_MODULE()
 
       ALAssetRepresentation *representation = [asset defaultRepresentation];
       NSInteger length = (NSInteger)representation.size;
+      
+      NSString *mimeType = nil;
+      switch (CGImageGetAlphaInfo([representation CGImageWithOptions:nil])) {
+        case kCGImageAlphaNone:
+        case kCGImageAlphaNoneSkipLast:
+        case kCGImageAlphaNoneSkipFirst:
+          mimeType = @"image/jpeg";
+        default:
+          mimeType = @"image/png";
+      }
 
       NSURLResponse *response =
       [[NSURLResponse alloc] initWithURL:request.URL
-                                MIMEType:representation.UTI
+                                MIMEType:mimeType
                    expectedContentLength:length
                         textEncodingName:nil];
 
