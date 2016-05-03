@@ -10,6 +10,7 @@
 #import "RCTAssetsLibraryRequestHandler.h"
 
 #import <libkern/OSAtomic.h>
+#import <MobileCoreServices/MobileCoreServices.h>
 
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <MobileCoreServices/MobileCoreServices.h>
@@ -56,19 +57,12 @@ RCT_EXPORT_MODULE()
       ALAssetRepresentation *representation = [asset defaultRepresentation];
       NSInteger length = (NSInteger)representation.size;
       
-      NSString *mimeType = nil;
-      switch (CGImageGetAlphaInfo([representation CGImageWithOptions:nil])) {
-        case kCGImageAlphaNone:
-        case kCGImageAlphaNoneSkipLast:
-        case kCGImageAlphaNoneSkipFirst:
-          mimeType = @"image/jpeg";
-        default:
-          mimeType = @"image/png";
-      }
+        
+      CFStringRef MIMEType = UTTypeCopyPreferredTagWithClass((__bridge CFStringRef _Nonnull)(representation.UTI), kUTTagClassMIMEType);
 
       NSURLResponse *response =
       [[NSURLResponse alloc] initWithURL:request.URL
-                                MIMEType:mimeType
+                                MIMEType:(__bridge NSString *)(MIMEType)
                    expectedContentLength:length
                         textEncodingName:nil];
 
