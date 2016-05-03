@@ -22,6 +22,7 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_VIEW_PROPERTY(badge, id /* NSString or NSNumber */)
+RCT_EXPORT_VIEW_PROPERTY(renderAsOriginal, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(selected, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(icon, UIImage)
 RCT_REMAP_VIEW_PROPERTY(selectedIcon, barItem.selectedImage, UIImage)

@@ -730,7 +730,7 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
 
 - (void)_removeChildren:(NSArray<id<RCTComponent>> *)children
           fromContainer:(id<RCTComponent>)container
-              permanent: (BOOL)permanent
+              permanent:(BOOL)permanent
 {
   RCTLayoutAnimation *layoutAnimation = _layoutAnimation;
   RCTAnimation *deleteAnimation = layoutAnimation.deleteAnimation;

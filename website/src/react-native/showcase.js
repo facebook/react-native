@@ -363,6 +363,13 @@ var apps = [
     author: 'Genki Takiuchi (s21g Inc.)',
   },
   {
+    name: 'DONUT chatrooms for communities',
+    icon: 'http://a2.mzstatic.com/eu/r30/Purple49/v4/d4/2d/e5/d42de510-6802-2694-1b60-ca80ffa1e2cb/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/fr/app/donut-chat/id1067579321',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=me.donut.mobile',
+    author: 'Damien Brugne',
+  },
+  {
     name: 'Due',
     icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/a2/41/5d/a2415d5f-407a-c565-ffb4-4f27f23d8ac2/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/due-countdown-reminders-for/id1050909468?mt=8',
@@ -717,7 +724,7 @@ var apps = [
     author: 'Steve Ng'
   },
   {
-    name: 'ShareHows',
+    name: '쉐어하우스',
     icon: 'http://a4.mzstatic.com/us/r30/Purple5/v4/78/1c/83/781c8325-a1e1-4afc-f106-a629bcf3c6ef/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/kr/app/sweeohauseu-sesang-ui-modeun/id1060914858?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=kr.dobbit.sharehows',
