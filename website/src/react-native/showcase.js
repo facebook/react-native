@@ -451,6 +451,7 @@ var apps = [
     author: 'Lim Chee Aun',
     blogs: [
       'http://cheeaun.com/blog/2016/03/building-hackerweb-ios/',
+      'http://cheeaun.com/blog/2016/05/building-hackerweb-android/',
     ],
   },
   {
