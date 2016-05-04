@@ -43,7 +43,7 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   // We're only overriding this to ensure the module gets created at startup
-  // TODO (D3175632): Remove once we have more declarative control over module setup.
+  // TODO (t11106126): Remove once we have more declarative control over module setup.
   return [super init];
 }
 

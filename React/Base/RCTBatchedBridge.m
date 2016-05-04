@@ -303,7 +303,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
   // The executor is a bridge module, but we want it to be instantiated before
   // any other module has access to the bridge, in case they need the JS thread.
-  // TODO: once we have more fine-grained control of init (D3175632) we can
+  // TODO: once we have more fine-grained control of init (t11106126) we can
   // probably just replace this with [self moduleForClass:self.executorClass]
   if (!_javaScriptExecutor) {
     id<RCTJavaScriptExecutor> executorModule = [self.executorClass new];
