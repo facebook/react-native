@@ -128,6 +128,15 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
 
   _renderScene(props: NavigationSceneRendererProps): ReactElement {
     const isVertical = this.props.direction === 'vertical';
+    const { navigationState } = this.props;
+
+    // if the scene is stale and has the same index than
+    // current navigation state index, the navigation card
+    // shouldn't be rendered
+    if(props.scene.isStale && props.scene.index === navigationState.index)
+    {
+      return null;
+    }
 
     const style = isVertical ?
       NavigationCardStackStyleInterpolator.forVertical(props) :
