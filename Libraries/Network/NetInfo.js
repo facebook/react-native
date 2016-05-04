@@ -168,6 +168,9 @@ const _isConnectedSubscriptions = new Map();
  * ```
  */
 const NetInfo = {
+  /*
+   * Invokes the handler whenever the network info changes. The handler is passed with any of the connectivity types listed above.
+   */
   addEventListener(
     eventName: ChangeEventName,
     handler: Function
@@ -184,6 +187,9 @@ const NetInfo = {
     };
   },
 
+  /*
+   * Stop listening to network info changes.
+   */
   removeEventListener(
     eventName: ChangeEventName,
     handler: Function
@@ -196,11 +202,18 @@ const NetInfo = {
     _subscriptions.delete(handler);
   },
 
+  /*
+   * Returns a promise that returns any of the connectivity types listed above.
+   */
   fetch(): Promise {
     return RCTNetInfo.getCurrentConnectivity().then(resp => resp.network_info);
   },
 
   isConnected: {
+    /*
+     * Invokes the handler whenever the internet connectivity changes. The handler is passed with a bool indicating the internet connectivity.
+     * Use this if you are only interested with whether the device has internect connectivity.
+     */
     addEventListener(
       eventName: ChangeEventName,
       handler: Function
@@ -218,6 +231,9 @@ const NetInfo = {
       };
     },
 
+    /*
+     * Stop listening to internet connectivity changes.
+     */
     removeEventListener(
       eventName: ChangeEventName,
       handler: Function
@@ -231,6 +247,9 @@ const NetInfo = {
       _isConnectedSubscriptions.delete(handler);
     },
 
+    /*
+     * Returns a promise that returns a bool indicating the internet connectivity.
+     */
     fetch(): Promise {
       return NetInfo.fetch().then(
         (connection) => _isConnected(connection)
