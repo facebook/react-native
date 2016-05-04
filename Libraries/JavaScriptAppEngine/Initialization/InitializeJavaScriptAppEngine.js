@@ -32,10 +32,27 @@ if (typeof window === 'undefined') {
   global.window = global;
 }
 
+function setUpProfile() {
+  if (__DEV__) {
+    const Systrace = require('Systrace');
+    Systrace.swizzleReactPerf();
+  }
+}
+
+function setUpProcess() {
+  GLOBAL.process = GLOBAL.process || {};
+  GLOBAL.process.env = GLOBAL.process.env || {};
+  if (!GLOBAL.process.env.NODE_ENV) {
+    GLOBAL.process.env.NODE_ENV = __DEV__ ? 'development' : 'production';
+  }
+}
+
 function setUpConsole() {
   // ExceptionsManager transitively requires Promise so we install it after
-  var ExceptionsManager = require('ExceptionsManager');
+  const ExceptionsManager = require('ExceptionsManager');
   ExceptionsManager.installConsoleErrorReporter();
+
+  require('RCTLog');
 }
 
 /**
@@ -54,7 +71,7 @@ function setUpConsole() {
  * https://github.com/facebook/react-native/issues/934
  */
 function polyfillGlobal(name, newValue, scope = global) {
-  var descriptor = Object.getOwnPropertyDescriptor(scope, name) || {
+  const descriptor = Object.getOwnPropertyDescriptor(scope, name) || {
     // jest for some bad reasons runs the polyfill code multiple times. In jest
     // environment, XmlHttpRequest doesn't exist so getOwnPropertyDescriptor
     // returns undefined and defineProperty default for writable is false.
@@ -63,7 +80,7 @@ function polyfillGlobal(name, newValue, scope = global) {
   };
 
   if (scope[name] !== undefined) {
-    var backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
+    const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
     Object.defineProperty(scope, backupName, {...descriptor, value: scope[name]});
   }
 
@@ -115,7 +132,7 @@ function setUpErrorHandler() {
     }
   }
 
-  var ErrorUtils = require('ErrorUtils');
+  const ErrorUtils = require('ErrorUtils');
   ErrorUtils.setGlobalHandler(handleError);
 }
 
@@ -166,6 +183,8 @@ function setUpXHR() {
   polyfillLazyGlobal('Headers', () => require('fetch').Headers);
   polyfillLazyGlobal('Request', () => require('fetch').Request);
   polyfillLazyGlobal('Response', () => require('fetch').Response);
+
+  polyfillLazyGlobal('WebSocket', () => require('WebSocket'));
 }
 
 function setUpGeolocation() {
@@ -174,6 +193,8 @@ function setUpGeolocation() {
     enumerable: true,
     configurable: true,
   });
+  Object.defineProperty(global.navigator, 'product', {value: 'ReactNative'});
+
   polyfillLazyGlobal('geolocation', () => require('Geolocation'), global.navigator);
 }
 
@@ -184,39 +205,20 @@ function setUpMapAndSet() {
   polyfillGlobal('Set', require('Set'));
 }
 
-function setUpProduct() {
-  Object.defineProperty(global.navigator, 'product', {value: 'ReactNative'});
-}
-
-function setUpWebSockets() {
-  polyfillLazyGlobal('WebSocket', () => require('WebSocket'));
-}
-
-function setUpProfile() {
-  if (__DEV__) {
-    var Systrace = require('Systrace');
-    Systrace.swizzleReactPerf();
-  }
-}
-
-function setUpProcess() {
-  global.process = global.process || {};
-  global.process.env = global.process.env || {};
-  if (!global.process.env.NODE_ENV) {
-    global.process.env.NODE_ENV = __DEV__ ? 'development' : 'production';
-  }
-}
-
 function setUpDevTools() {
-  // not when debugging in chrome
-  if (__DEV__) { // TODO(9123099) Strip `__DEV__ &&`
+  if (__DEV__) {
+    // not when debugging in chrome
     if (!window.document && require('Platform').OS === 'ios') {
-      var setupDevtools = require('setupDevtools');
+      const setupDevtools = require('setupDevtools');
       setupDevtools();
     }
+
+    require('RCTDebugComponentOwnership');
+    require('react-transform-hmr');
   }
 }
 
+setUpProfile();
 setUpProcess();
 setUpConsole();
 setUpTimers();
@@ -226,21 +228,10 @@ setUpErrorHandler();
 setUpXHR();
 setUpGeolocation();
 setUpMapAndSet();
-setUpProduct();
-setUpWebSockets();
-setUpProfile();
 setUpDevTools();
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has
 // been initialized before requiring them.
-if (__DEV__) {
-  require('RCTDebugComponentOwnership');
-}
 require('RCTDeviceEventEmitter');
 require('RCTNativeAppEventEmitter');
 require('PerformanceLogger');
-
-if (__DEV__) {
-  // include this transform and it's dependencies on the bundle on dev mode
-  require('react-transform-hmr');
-}
