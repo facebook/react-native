@@ -168,8 +168,9 @@ const _isConnectedSubscriptions = new Map();
  * ```
  */
 const NetInfo = {
-  /*
-   * Invokes the handler whenever the network info changes. The handler is passed with any of the connectivity types listed above.
+  /**
+   * Invokes the listener whenever network status changes.
+   * The listener receives one of the connectivity types listed above.
    */
   addEventListener(
     eventName: ChangeEventName,
@@ -187,8 +188,8 @@ const NetInfo = {
     };
   },
 
-  /*
-   * Stop listening to network info changes.
+  /**
+   * Removes the listener for network status changes.
    */
   removeEventListener(
     eventName: ChangeEventName,
@@ -202,18 +203,20 @@ const NetInfo = {
     _subscriptions.delete(handler);
   },
 
-  /*
-   * Returns a promise that returns any of the connectivity types listed above.
+  /**
+   * Returns a promise that returns one of the connectivity types listed above.
    */
   fetch(): Promise {
     return RCTNetInfo.getCurrentConnectivity().then(resp => resp.network_info);
   },
 
+  /**
+   * An object with similar methods above but the listener receives a boolean
+   * which represents the internet connectivity.
+   * Use this if you are only interested with whether the device has internet
+   * connectivity.
+   */
   isConnected: {
-    /*
-     * Invokes the handler whenever the internet connectivity changes. The handler is passed with a bool indicating the internet connectivity.
-     * Use this if you are only interested with whether the device has internect connectivity.
-     */
     addEventListener(
       eventName: ChangeEventName,
       handler: Function
@@ -231,9 +234,6 @@ const NetInfo = {
       };
     },
 
-    /*
-     * Stop listening to internet connectivity changes.
-     */
     removeEventListener(
       eventName: ChangeEventName,
       handler: Function
@@ -247,9 +247,6 @@ const NetInfo = {
       _isConnectedSubscriptions.delete(handler);
     },
 
-    /*
-     * Returns a promise that returns a bool indicating the internet connectivity.
-     */
     fetch(): Promise {
       return NetInfo.fetch().then(
         (connection) => _isConnected(connection)
