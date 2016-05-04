@@ -111,11 +111,6 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   // Synchronously initialize all native modules that cannot be loaded lazily
   [self initModulesWithDispatchGroup:initModulesAndLoadSource];
 
-  if (RCTProfileIsProfiling()) {
-    // Depends on moduleDataByID being loaded
-    RCTProfileHookModules(self);
-  }
-
   __block NSString *config;
   dispatch_group_enter(initModulesAndLoadSource);
   dispatch_async(bridgeQueue, ^{
