@@ -30,8 +30,8 @@ public interface CatalystInstance extends MemoryPressureListener {
   @DoNotStrip
   void callFunction(
       ExecutorToken executorToken,
-      int moduleId,
-      int methodId,
+      String module,
+      String method,
       NativeArray arguments,
       String tracingName);
   /**

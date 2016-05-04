@@ -42,11 +42,11 @@ public class JavaScriptModulesConfig {
   private void appendJSModuleToJSONObject(
       JsonWriter writer,
       JavaScriptModuleRegistration registration) throws IOException {
-    writer.name("moduleID").value(registration.getModuleId());
+    writer.name("moduleID").value(registration.getName());
     writer.name("methods").beginObject();
     for (Method method : registration.getMethods()) {
       writer.name(method.getName()).beginObject();
-      writer.name("methodID").value(registration.getMethodId(method));
+      writer.name("methodID").value(method.getName());
       writer.endObject();
     }
     writer.endObject();
@@ -56,14 +56,11 @@ public class JavaScriptModulesConfig {
   }
 
   public static class Builder {
-
-    private int mLastJSModuleId = 0;
     private List<JavaScriptModuleRegistration> mModules =
         new ArrayList<JavaScriptModuleRegistration>();
 
     public Builder add(Class<? extends JavaScriptModule> moduleInterfaceClass) {
-      int moduleId = mLastJSModuleId++;
-      mModules.add(new JavaScriptModuleRegistration(moduleId, moduleInterfaceClass));
+      mModules.add(new JavaScriptModuleRegistration(moduleInterfaceClass));
       return this;
     }
 

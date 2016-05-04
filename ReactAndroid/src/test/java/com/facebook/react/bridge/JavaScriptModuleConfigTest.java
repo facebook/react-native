@@ -49,11 +49,11 @@ public class JavaScriptModuleConfigTest {
 
     JsonNode intMethodNode = methods.get("intMethod");
     assertThat(intMethodNode).isNotNull();
-    assertThat(intMethodNode.get("methodID").asInt()).isEqualTo(0);
+    assertThat(intMethodNode.get("methodID").asText()).isEqualTo("intMethod");
 
     JsonNode stringMethod = methods.get("stringMethod");
     assertThat(stringMethod).isNotNull();
-    assertThat(stringMethod.get("methodID").asInt()).isEqualTo(1);
+    assertThat(stringMethod.get("methodID").asText()).isEqualTo("stringMethod");
   }
 
   @Test
@@ -69,11 +69,11 @@ public class JavaScriptModuleConfigTest {
 
     JsonNode someModuleNode = node.get("SomeModule");
     assertThat(someModuleNode).isNotNull();
-    int someModuleID = someModuleNode.get("moduleID").asInt();
+    String someModuleID = someModuleNode.get("moduleID").asText();
 
     JsonNode otherModuleNode = node.get("OtherModule");
     assertThat(otherModuleNode).isNotNull();
-    int otherModuleID = otherModuleNode.get("moduleID").asInt();
+    String otherModuleID = otherModuleNode.get("moduleID").asText();
     assertThat(otherModuleID)
         .isNotEqualTo(someModuleID);
   }
