@@ -11,7 +11,6 @@ namespace ReactNative.DevSupport
         private const string JsDevModeDebugKey = "js_dev_mode_debug";
         private const string AnimationsDebugKey = "animations_debug";
         private const string JsMinifyDebugKey = "js_minify_debug";
-        private const string ElementInspectorKey = "inspector_debug";
         private const string ReloadOnJSChangeKey = "reload_on_js_change";
         private const string HotModuleReplacementKey = "hot_module_replacement";
 
@@ -70,17 +69,7 @@ namespace ReactNative.DevSupport
             }
         }
 
-        public bool IsElementInspectorEnabled
-        {
-            get
-            {
-                return GetSetting(ElementInspectorKey, false);
-            }
-            set
-            {
-                SetSetting(ElementInspectorKey, value);
-            }
-        }
+        public bool IsElementInspectorEnabled { get; set; }
 
         public bool IsFpsDebugEnabled
         {
