@@ -165,18 +165,6 @@ describe('inline constants', () => {
       normalize(code.replace(/process\.env\.NODE_ENV/, '"development"')));
   });
 
-  it('replaces process.platform in the code', () => {
-    const code = `function a() {
-      if (process.platform === 'android') {
-        return require('./android');
-      }
-      return require('./ios');
-    }`;
-    const {ast} = inline('arbitrary.js', {code}, {platform: 'ios'});
-    expect(toString(ast)).toEqual(
-      normalize(code.replace(/process\.platform\b/, '"ios"')));
-  });
-
   it('accepts an AST as input', function() {
     const code = 'function ifDev(a,b){return __DEV__?a:b;}';
     const {ast} = inline('arbitrary.hs', {ast: toAst(code)}, {dev: false});
