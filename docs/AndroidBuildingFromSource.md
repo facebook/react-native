@@ -129,6 +129,10 @@ gradle.projectsLoaded {
 }
 ```
 
+## Testing
+
+If you made changes to React Native and submit a pull request, all tests will run on your pull request automatically. To run the tests locally, see [Testing](/react-native/docs/testing.html).
+
 ## Troubleshooting
 
 Gradle build fails in `ndk-build`. See the section about `local.properties` file above.
