@@ -69,7 +69,7 @@ test:
     # build test APK
     - buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
     # run installed apk with tests
-    - source scripts/circle-ci-android-setup.sh && retry3 ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests
+    - node ./scripts/run-ci-android-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
 
     - ./gradlew :ReactAndroid:testDebugUnitTest
     # Deprecated: these tests are executed using Buck above, while we support Gradle we just make sure the test code compiles
