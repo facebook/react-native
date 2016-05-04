@@ -12,7 +12,7 @@
 /**
  * This script runs instrumentation tests one by one with retries
  * Instrumentation tests tend to be flaky, so rerunning them individually increases
- * chances for success and total average execution time.
+ * chances for success and reduces total average execution time.
  *
  * We assume that all instrumentation tests are flat in one folder
  * Available arguments:
