@@ -28,6 +28,7 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.network.ForwardingCookieHandler;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -39,6 +40,7 @@ import com.squareup.okhttp.ws.WebSocketListener;
 import java.net.URISyntaxException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -50,10 +52,12 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
 
   private Map<Integer, WebSocket> mWebSocketConnections = new HashMap<>();
   private ReactContext mReactContext;
+  private ForwardingCookieHandler cookieHandler;
 
   public WebSocketModule(ReactApplicationContext context) {
     super(context);
     mReactContext = context;
+    cookieHandler = new ForwardingCookieHandler(context);
   }
 
   private void sendEvent(String eventName, WritableMap params) {
@@ -80,6 +84,11 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
         .tag(id)
         .url(url);
 
+    String cookie = getCookie(url);
+    if (cookie != null) {
+      builder.addHeader("Cookie", getCookie(url));
+    }
+    
     if (headers != null) {
       ReadableMapKeySetIterator iterator = headers.keySetIterator();
 
@@ -269,6 +278,27 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
 
     } catch(URISyntaxException e) {
         throw new IllegalArgumentException("Unable to set " + uri + " as default origin header.");
+    }
+  }
+
+  /**
+   * Get cookie if exists
+   *
+   * @param websocket uri
+   * @return A cookie / null
+   */
+
+  private String getCookie(String uri){
+    try {
+      Map<String, List<String>> cookieMap = cookieHandler.get(new URI(setDefaultOrigin(uri)), new HashMap());
+      List<String> cookieList = cookieMap.get("Cookie");
+      if (cookieList != null) {
+        return cookieList.get(0);
+      } else {
+        return null;
+      }
+    } catch(URISyntaxException | IOException  e) {
+      throw new IllegalArgumentException("Unable to get cookie from the " + uri);
     }
   }
 
