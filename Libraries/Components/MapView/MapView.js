@@ -309,7 +309,6 @@ const MapView = React.createClass({
     onAnnotationPress: React.PropTypes.func,
 
     /**
-     * Unused - Android version of MapView not currently available.
      * @platform android
      */
     active: React.PropTypes.bool,
