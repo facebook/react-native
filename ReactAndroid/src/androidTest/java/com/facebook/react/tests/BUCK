@@ -1,8 +1,29 @@
 include_defs('//ReactAndroid/DEFS')
 
+# Tests that are too flaky to run on SandCastle
+# TODO t11057216 stabilise them
+SANDCASTLE_FLAKY = [
+  'ReactHorizontalScrollViewTestCase.java',
+  'ReactScrollViewTestCase.java',
+]
+
 android_library(
   name = 'tests',
   srcs = glob(['**/*.java']),
+  deps = [
+    react_native_integration_tests_target('java/com/facebook/react/testing:testing'),
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/uimanager:uimanager'),
+    react_native_target('java/com/facebook/react/views/picker:picker'),
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+android_library(
+  name = 'stable-tests',
+  srcs = glob(['**/*.java'], excludes=SANDCASTLE_FLAKY),
   deps = [
     react_native_integration_tests_target('java/com/facebook/react/testing:testing'),
     react_native_target('java/com/facebook/react/bridge:bridge'),

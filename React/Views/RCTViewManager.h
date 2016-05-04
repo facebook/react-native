@@ -30,7 +30,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
  * allowing the manager (or the views that it manages) to manipulate the view
  * hierarchy and send events back to the JS context.
  */
-@property (nonatomic, weak, readonly) RCTBridge *bridge;
+@property (nonatomic, weak) RCTBridge *bridge;
 
 /**
  * This method instantiates a native view to be managed by the module. Override

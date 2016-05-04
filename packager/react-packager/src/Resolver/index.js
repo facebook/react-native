@@ -163,9 +163,7 @@ class Resolver {
         ? path.join(__dirname, 'polyfills/prelude_dev.js')
         : path.join(__dirname, 'polyfills/prelude.js');
 
-    const moduleSystem = opts.unbundle
-        ? path.join(__dirname, 'polyfills/require-unbundle.js')
-        : path.join(__dirname, 'polyfills/require.js');
+    const moduleSystem = path.join(__dirname, 'polyfills/require.js');
 
     return [
       prelude,

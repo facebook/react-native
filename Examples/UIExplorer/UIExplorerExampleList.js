@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -15,26 +22,21 @@
  */
 'use strict';
 
+const ListView = require('ListView');
 const React = require('react');
-const ReactNative = require('react-native');
+const StyleSheet = require('StyleSheet');
+const Text = require('Text');
+const TextInput = require('TextInput');
+const NavigationContainer = require('NavigationContainer');
+const TouchableHighlight = require('TouchableHighlight');
+const View = require('View');
 const UIExplorerActions = require('./UIExplorerActions');
-const {
-  ListView,
-  NavigationExperimental,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableHighlight,
-  View,
-} = ReactNative;
+
 const createExamplePage = require('./createExamplePage');
-const {
-  Container: NavigationContainer,
-} = NavigationExperimental;
 
 import type {
   UIExplorerExample,
-} from './UIExplorerList.ios'
+} from './UIExplorerList.ios';
 
 const ds = new ListView.DataSource({
   rowHasChanged: (r1, r2) => r1 !== r2,
@@ -154,7 +156,7 @@ class UIExplorerExampleList extends React.Component {
   }
 
   _handleRowPress(exampleKey: string): void {
-    this.props.onNavigate(UIExplorerActions.ExampleAction(exampleKey))
+    this.props.onNavigate(UIExplorerActions.ExampleAction(exampleKey));
   }
 }
 
@@ -167,7 +169,7 @@ function makeRenderable(example: any): ReactClass<any> {
 UIExplorerExampleList = NavigationContainer.create(UIExplorerExampleList);
 UIExplorerExampleList.makeRenderable = makeRenderable;
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
   },
