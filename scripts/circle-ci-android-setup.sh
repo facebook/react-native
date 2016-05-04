@@ -6,6 +6,9 @@ function getAndroidSDK {
   DEPS="$ANDROID_HOME/installed-dependencies"
 
   if [ ! -e $DEPS ]; then
+    # between android-19 and android-23 we often experience random native crashes
+    # Fatal signal 11 (SIGSEGV) at 0xa7afc290 (code=2)
+    # android-17 proved to be quite stable
     echo no | android create avd -n testAVD -f -t android-17 --abi default/armeabi-v7a &&
     touch $DEPS
   fi
