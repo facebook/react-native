@@ -165,7 +165,7 @@
     "react-timer-mixin": "^0.13.2",
     "react-transform-hmr": "^1.0.4",
     "rebound": "^0.0.13",
-    "regenerator": "^0.8.36",
+    "regenerator-runtime": "^0.9.5",
     "sane": "^1.2.0",
     "semver": "^5.0.3",
     "source-map": "^0.4.4",
