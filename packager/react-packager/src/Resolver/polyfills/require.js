@@ -13,6 +13,9 @@ global.require = require;
 global.__d = define;
 
 const modules = Object.create(null);
+if (__DEV__) {
+  var verboseNamesToModuleIds = Object.create(null);
+}
 
 function define(moduleId, factory) {
   if (moduleId in modules) {
@@ -26,8 +29,14 @@ function define(moduleId, factory) {
     isInitialized: false,
     exports: undefined,
   };
-  if (__DEV__) { // HMR
+  if (__DEV__) {
+    // HMR
     modules[moduleId].hot = createHotReloadingObject();
+
+    // DEBUGGABLE MODULES NAMES
+    // avoid unnecessary parameter in prod
+    const verboseName = modules[moduleId].verboseName = arguments[2];
+    verboseNamesToModuleIds[verboseName] = moduleId;
   }
 }
 
@@ -62,6 +71,17 @@ function loadModuleImplementation(moduleId, module) {
     module = modules[moduleId];
   }
 
+  if (__DEV__ && !module) {
+    // allow verbose module names to be passed as module ID
+    module = modules[verboseNamesToModuleIds[moduleId]];
+    if (module) {
+      console.warn(
+        `Requiring module '${moduleId}' by name is only supported for ` +
+        'debugging purposes and will break in production'
+      );
+    }
+  }
+
   if (!module) {
     throw unknownModuleError(moduleId);
   }
@@ -87,7 +107,7 @@ function loadModuleImplementation(moduleId, module) {
   const {factory} = module;
   try {
     if (__DEV__) {
-      Systrace.beginEvent('JS_require_' + moduleId);
+      Systrace.beginEvent('JS_require_' + (module.verboseName || moduleId));
     }
 
     const moduleObject = {exports};

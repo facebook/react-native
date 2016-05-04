@@ -241,6 +241,7 @@ class Resolver {
     map,
     code,
     meta = {},
+    dev = true,
     minify = false
   }) {
     if (module.isJSON()) {
@@ -257,7 +258,7 @@ class Resolver {
         code,
         meta.dependencyOffsets
       );
-      code = defineModuleCode(moduleId, code, name);
+      code = defineModuleCode(moduleId, code, name, dev);
     }
 
 
@@ -275,13 +276,15 @@ class Resolver {
   }
 }
 
-function defineModuleCode(moduleName, code, verboseName = '') {
+function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
   return [
-    `__d(`,
+    '__d(',
     `${JSON.stringify(moduleName)} /* ${verboseName} */, `,
-    `function(global, require, module, exports) {`,
-      `${code}`,
-    '\n});',
+    'function(global, require, module, exports) {',
+      code,
+    '\n}',
+    dev ? `, ${JSON.stringify(verboseName)}` : '',
+    ');',
   ].join('');
 }
 
