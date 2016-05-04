@@ -192,13 +192,6 @@ function setUpWebSockets() {
   polyfillLazyGlobal('WebSocket', () => require('WebSocket'));
 }
 
-function setUpProfile() {
-  if (__DEV__) {
-    var Systrace = require('Systrace');
-    Systrace.swizzleReactPerf();
-  }
-}
-
 function setUpProcess() {
   global.process = global.process || {};
   global.process.env = global.process.env || {};
@@ -228,7 +221,6 @@ setUpGeolocation();
 setUpMapAndSet();
 setUpProduct();
 setUpWebSockets();
-setUpProfile();
 setUpDevTools();
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has
