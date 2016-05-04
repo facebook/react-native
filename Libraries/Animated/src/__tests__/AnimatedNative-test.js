@@ -210,10 +210,27 @@ describe('Animated', () => {
     var anim = new Animated.Value(0);
     Animated.timing(anim, {toValue: 10, duration: 1000, useNativeDriver: true}).start();
 
-    anim.setValue(5);
+    var c = new Animated.View();
+    c.props = {
+      style: {
+        opacity: anim,
+      },
+    };
+    c.componentWillMount();
+
+    // We expect `setValue` not to propagate down to `setNativeProps`, otherwise it may try to access `setNativeProps`
+    // via component refs table that we override here.
+    c.refs = {
+      node: {
+        setNativeProps: jest.genMockFunction(),
+      },
+    };
+
+    anim.setValue(0.5);
 
     var nativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
-    expect(nativeAnimatedModule.setAnimatedNodeValue).toBeCalledWith(jasmine.any(Number), 5);
+    expect(nativeAnimatedModule.setAnimatedNodeValue).toBeCalledWith(jasmine.any(Number), 0.5);
+    expect(c.refs.node.setNativeProps.mock.calls.length).toBe(0);
   });
 
   it('doesn\'t call into native API if useNativeDriver is set to false', () => {
