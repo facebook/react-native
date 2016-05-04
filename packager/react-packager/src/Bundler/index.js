@@ -169,7 +169,7 @@ class Bundler {
     const moduleSystemDeps =
       this._resolver.getModuleSystemDependencies({dev, unbundle});
     return this._bundle({
-      bundle: new Bundle({minify, sourceMapUrl: options.sourceMapUrl}),
+      bundle: new Bundle({dev, minify, sourceMapUrl: options.sourceMapUrl}),
       moduleSystemDeps,
       ...options,
     });
