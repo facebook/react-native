@@ -82,8 +82,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 - (void)dismissModalViewController
 {
   if (_isPresented) {
-    [_modalViewController dismissViewControllerAnimated:[self hasAnimationType] completion:nil];
-    _isPresented = NO;
+    [_modalViewController dismissViewControllerAnimated:[self hasAnimationType] completion:^{
+        _isPresented = NO;
+    }];
   }
 }
 
