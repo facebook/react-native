@@ -22,7 +22,7 @@
 /* eslint strict: 0 */
 /* globals GLOBAL: true, window: true */
 
-require('regenerator/runtime');
+require('regenerator-runtime/runtime');
 
 if (typeof GLOBAL === 'undefined') {
   global.GLOBAL = global;
