@@ -317,7 +317,7 @@ componentWillMount: function() {
 
 ### Getting activity result from `startActivityForResult`
 
-You'll need to listen to `onActivityResult` if you want to get results from an activity you started with `startActivityForResult`. To to do this, the module must implement `ActivityEventListener`. Then, you need to register a listener in the module's constructor,
+You'll need to listen to `onActivityResult` if you want to get results from an activity you started with `startActivityForResult`. To do this, the module must implement `ActivityEventListener`. Then, you need to register a listener in the module's constructor,
 
 ```java
 reactContext.addActivityEventListener(this);
