@@ -2,7 +2,7 @@
 <resources>
   <string name="catalyst_reloadjs" project="catalyst" translatable="false">Reload JS</string>
   <string name="catalyst_debugjs" project="catalyst" translatable="false">Debug JS Remotely</string>
-  <string name="catalyst_debugjs_off" project="catalyst" translatable="false">Stop JS Remotely Debugging</string>
+  <string name="catalyst_debugjs_off" project="catalyst" translatable="false">Stop Remote JS Debugging</string>
   <string name="catalyst_hot_module_replacement" project="catalyst" translatable="false">Enable Hot Reloading</string>
   <string name="catalyst_hot_module_replacement_off" project="catalyst" translatable="false">Disable Hot Reloading</string>
   <string name="catalyst_live_reload" project="catalyst" translatable="false">Enable Live Reload</string>

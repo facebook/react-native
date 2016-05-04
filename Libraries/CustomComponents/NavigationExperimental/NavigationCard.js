@@ -51,6 +51,11 @@ import type  {
   NavigationSceneRendererProps,
 } from 'NavigationTypeDefinition';
 
+type SceneViewProps =  {
+  sceneRenderer: NavigationSceneRenderer,
+  sceneRendererProps: NavigationSceneRendererProps,
+};
+
 type Props = NavigationSceneRendererProps & {
   onComponentRef: (ref: any) => void,
   panHandlers: ?NavigationPanPanHandlers,
@@ -60,6 +65,25 @@ type Props = NavigationSceneRendererProps & {
 };
 
 const {PropTypes} = React;
+
+class SceneView extends React.Component<any, SceneViewProps, any> {
+
+  static propTypes = {
+    sceneRenderer: PropTypes.func.isRequired,
+    sceneRendererProps: NavigationPropTypes.SceneRenderer,
+  };
+
+  shouldComponentUpdate(nextProps: SceneViewProps, nextState: any): boolean {
+    return (
+      nextProps.sceneRendererProps.scene.navigationState !==
+        this.props.sceneRendererProps.scene.navigationState
+    );
+  }
+
+  render(): ?ReactElement {
+    return this.props.sceneRenderer(this.props.sceneRendererProps);
+  }
+}
 
 /**
  * Component that renders the scene as card for the <NavigationCardStack />.
@@ -107,7 +131,10 @@ class NavigationCard extends React.Component<any, Props, any> {
         pointerEvents={pointerEvents}
         ref={this.props.onComponentRef}
         style={[styles.main, viewStyle]}>
-        {renderScene(props)}
+        <SceneView
+          sceneRenderer={renderScene}
+          sceneRendererProps={props}
+        />
       </Animated.View>
     );
   }
