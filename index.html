@@ -1,9 +1,11 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><title>React Native | A framework for building native apps using React</title><meta name="viewport" content="width=device-width"><meta property="og:title" content="React Native | A framework for building native apps using React"><meta property="og:type" content="website"><meta property="og:url" content="http://facebook.github.io/react-native/index.html"><meta property="og:image" content="http://facebook.github.io/react-native/img/opengraph.png?2"><meta property="og:description" content="A framework for building native apps using React"><base href="/react-native/"><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"><link rel="shortcut icon" href="img/favicon.png?2"><link rel="stylesheet" href="css/react-native.css"><script type="text/javascript" src="//use.typekit.net/vqa1hcx.js"></script><script type="text/javascript">try{Typekit.load();}catch(e){}</script></head><body><div class="container"><div class="nav-main"><div class="wrap"><a class="nav-home" href=""><img src="img/header_logo.png">React Native</a><a class="nav-version" href="/react-native/versions.html">0.24</a><div class="nav-site-wrapper"><ul class="nav-site nav-site-internal"><li><a href="docs/getting-started.html" class="">Docs</a></li><li><a href="support.html" class="">Support</a></li><li><a href="showcase.html" class="">Showcase</a></li><li><a href="blog/" class="">Blog</a></li></ul><div class="algolia-search-wrapper"><input id="algolia-doc-search" type="text" placeholder="Search docs..."></div><ul class="nav-site nav-site-external"><li><a href="https://github.com/facebook/react-native" class="">GitHub</a></li><li><a href="http://facebook.github.io/react" class="">React</a></li></ul></div></div></div><div class="hero"><div class="wrap"><div class="text"><strong>React Native</strong></div><div class="minitext">A framework for building native apps using React</div></div></div><section class="content wrap"><div style="margin:40px auto;max-width:800px;"><p>React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and <a href="http://facebook.github.io/react/">React</a>. The focus of React Native is on developer efficiency across all the platforms you care about — learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native.</p></div><div class="buttons-unit"><a href="docs/getting-started.html#content" class="button">Get started with React Native</a></div><div style="margin:40px auto;max-width:800px;"><h2>Native Components</h2><p>With React Native, you can use the standard platform components such as UITabBar on iOS and Drawer on Android.  This gives your app a consistent look and feel with the rest of the platform ecosystem, and keeps the quality bar high.  These components are easily incorporated into your app using their React component counterparts, such as TabBarIOS and DrawerLayoutAndroid.</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// iOS
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><title>React Native | A framework for building native apps using React</title><meta name="viewport" content="width=device-width"><meta property="og:title" content="React Native | A framework for building native apps using React"><meta property="og:type" content="website"><meta property="og:url" content="http://facebook.github.io/react-native/index.html"><meta property="og:image" content="http://facebook.github.io/react-native/img/opengraph.png?2"><meta property="og:description" content="A framework for building native apps using React"><base href="/react-native/"><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"><link rel="shortcut icon" href="img/favicon.png?2"><link rel="stylesheet" href="css/react-native.css"><script type="text/javascript" src="//use.typekit.net/vqa1hcx.js"></script><script type="text/javascript">try{Typekit.load();}catch(e){}</script></head><body><div class="container"><div class="nav-main"><div class="wrap"><a class="nav-home" href=""><img src="img/header_logo.png">React Native</a><a class="nav-version" href="/react-native/versions.html">0.25</a><div class="nav-site-wrapper"><ul class="nav-site nav-site-internal"><li><a href="docs/getting-started.html" class="">Docs</a></li><li><a href="support.html" class="">Support</a></li><li><a href="showcase.html" class="">Showcase</a></li><li><a href="blog/" class="">Blog</a></li></ul><div class="algolia-search-wrapper"><input id="algolia-doc-search" type="text" placeholder="Search docs..."></div><ul class="nav-site nav-site-external"><li><a href="https://github.com/facebook/react-native" class="">GitHub</a></li><li><a href="http://facebook.github.io/react" class="">React</a></li></ul></div></div></div><div class="hero"><div class="wrap"><div class="text"><strong>React Native</strong></div><div class="minitext">A framework for building native apps using React</div></div></div><section class="content wrap"><div style="margin:40px auto;max-width:800px;"><p>React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and <a href="http://facebook.github.io/react/">React</a>. The focus of React Native is on developer efficiency across all the platforms you care about — learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native.</p></div><div class="buttons-unit"><a href="docs/getting-started.html#content" class="button">Get started with React Native</a></div><div style="margin:40px auto;max-width:800px;"><h2>Native Components</h2><p>With React Native, you can use the standard platform components such as UITabBar on iOS and Drawer on Android.  This gives your app a consistent look and feel with the rest of the platform ecosystem, and keeps the quality bar high.  These components are easily incorporated into your app using their React component counterparts, such as TabBarIOS and DrawerLayoutAndroid.</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// iOS
 </span>
-import React<span class="token punctuation">,</span> <span class="token punctuation">{</span> 
+import React<span class="token punctuation">,</span> <span class="token punctuation">{</span>
   Component<span class="token punctuation">,</span>
-  TabBarIOS<span class="token punctuation">,</span> 
-  NavigatorIOS 
+<span class="token punctuation">}</span> from <span class="token string">&#x27;react&#x27;</span><span class="token punctuation">;</span>
+import <span class="token punctuation">{</span>
+  TabBarIOS<span class="token punctuation">,</span>
+  NavigatorIOS<span class="token punctuation">,</span>
 <span class="token punctuation">}</span> from <span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">;</span>
 
 class <span class="token class-name">App</span> extends <span class="token class-name">Component</span> <span class="token punctuation">{</span>
@@ -18,11 +20,13 @@ class <span class="token class-name">App</span> extends <span class="token class
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span></div><div class="prism language-javascript"><span class="token comment" spellcheck="true">// Android
 </span>
-import React<span class="token punctuation">,</span> <span class="token punctuation">{</span> 
+import React<span class="token punctuation">,</span> <span class="token punctuation">{</span>
   Component<span class="token punctuation">,</span>
-  DrawerLayoutAndroid<span class="token punctuation">,</span> 
-  ProgressBarAndroid<span class="token punctuation">,</span> 
-  Text 
+<span class="token punctuation">}</span> from <span class="token string">&#x27;react&#x27;</span><span class="token punctuation">;</span>
+import <span class="token punctuation">{</span>
+  DrawerLayoutAndroid<span class="token punctuation">,</span>
+  ProgressBarAndroid<span class="token punctuation">,</span>
+  Text<span class="token punctuation">,</span>
 <span class="token punctuation">}</span> from <span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">;</span>
 
 class <span class="token class-name">App</span> extends <span class="token class-name">Component</span> <span class="token punctuation">{</span>
@@ -36,11 +40,13 @@ class <span class="token class-name">App</span> extends <span class="token class
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span></div><h2>Asynchronous Execution</h2><p>All operations between the JavaScript application code and the native platform are performed asynchronously, and the native modules can also make use of additional threads as well.  This means we can decode images off of the main thread, save to disk in the background, measure text and compute layouts without blocking the UI, and more.  As a result, React Native apps are naturally fluid and responsive.  The communication is also fully serializable, which allows us to leverage Chrome Developer Tools to debug the JavaScript while running the complete app, either in the simulator or on a physical device.</p><p>See <a href="docs/debugging.html#content">Debugging</a>.</p><img src="img/chrome_breakpoint.png" width="800" height="443"><h2>Touch Handling</h2><p>React Native implements a powerful system to negotiate touches in complex view hierarchies and provides high level components such as TouchableHighlight that integrate properly with scroll views and other elements without any additional configuration.</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// iOS &amp; Android
 </span>
-import React<span class="token punctuation">,</span> <span class="token punctuation">{</span> 
+import React<span class="token punctuation">,</span> <span class="token punctuation">{</span>
   Component<span class="token punctuation">,</span>
+<span class="token punctuation">}</span> from <span class="token string">&#x27;react&#x27;</span><span class="token punctuation">;</span>
+import <span class="token punctuation">{</span>
   ScrollView<span class="token punctuation">,</span>
   TouchableHighlight<span class="token punctuation">,</span>
-  Text
+  Text<span class="token punctuation">,</span>
 <span class="token punctuation">}</span> from <span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">;</span>
 
 class <span class="token class-name">TouchDemo</span> extends <span class="token class-name">Component</span> <span class="token punctuation">{</span>
@@ -55,12 +61,14 @@ class <span class="token class-name">TouchDemo</span> extends <span class="token
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span></div><h2>Flexbox and Styling</h2><p>Laying out views should be easy, which is why we brought the flexbox layout model from the web to React Native.  Flexbox makes it simple to build the most common UI layouts, such as stacked and nested boxes with margin and padding.  React Native also supports common web styles, such as fontWeight, and the StyleSheet abstraction provides an optimized mechanism to declare all your styles and layout right along with the components that use them and apply them inline.</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// iOS &amp; Android
 </span>
-<span class="token keyword">var</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+import React<span class="token punctuation">,</span> <span class="token punctuation">{</span>
   Component<span class="token punctuation">,</span>
-  Image<span class="token punctuation">,</span> 
-  StyleSheet<span class="token punctuation">,</span> 
-  Text<span class="token punctuation">,</span> 
-  View 
+<span class="token punctuation">}</span> from <span class="token string">&#x27;react&#x27;</span><span class="token punctuation">;</span>
+import <span class="token punctuation">{</span>
+  Image<span class="token punctuation">,</span>
+  StyleSheet<span class="token punctuation">,</span>
+  Text<span class="token punctuation">,</span>
+  View<span class="token punctuation">,</span>
 <span class="token punctuation">}</span> from <span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">;</span>
 
 class <span class="token class-name">ReactNative</span> extends <span class="token class-name">Component</span> <span class="token punctuation">{</span>
@@ -91,9 +99,11 @@ class <span class="token class-name">ReactNative</span> extends <span class="tok
   subtitle<span class="token punctuation">:</span> <span class="token punctuation">{</span> fontSize<span class="token punctuation">:</span> <span class="token number">10</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></div><h2>Polyfills</h2><p>React Native is focused on changing the way view code is written.  For the rest, we look to the web for universal standards and polyfill those APIs where appropriate. You can use npm to install JavaScript libraries that work on top of the functionality baked into React Native, such as XMLHttpRequest, window.requestAnimationFrame, and navigator.geolocation.  We are working on expanding the available APIs, and are excited for the Open Source community to contribute as well.</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// iOS &amp; Android
 </span>
-import React<span class="token punctuation">,</span> <span class="token punctuation">{</span> 
+import React<span class="token punctuation">,</span> <span class="token punctuation">{</span>
   Component<span class="token punctuation">,</span>
-  Text 
+<span class="token punctuation">}</span> from <span class="token string">&#x27;react&#x27;</span><span class="token punctuation">;</span>
+import <span class="token punctuation">{</span>
+  Text<span class="token punctuation">,</span>
 <span class="token punctuation">}</span> from <span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">;</span>
 
 class <span class="token class-name">GeoInfo</span> extends <span class="token class-name">Component</span> <span class="token punctuation">{</span>
@@ -134,8 +144,10 @@ class <span class="token class-name">GeoInfo</span> extends <span class="token c
 </span>
 import React<span class="token punctuation">,</span> <span class="token punctuation">{</span>
   Component<span class="token punctuation">,</span>
+<span class="token punctuation">}</span> from <span class="token string">&#x27;react&#x27;</span><span class="token punctuation">;</span>
+import <span class="token punctuation">{</span>
   NativeModules<span class="token punctuation">,</span>
-  Text
+  Text<span class="token punctuation">,</span>
 <span class="token punctuation">}</span> from <span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">;</span>
 
 class <span class="token class-name">Message</span> extends <span class="token class-name">Component</span> <span class="token punctuation">{</span>
@@ -172,9 +184,11 @@ class <span class="token class-name">Message</span> extends <span class="token c
 <span class="token function">RCT_EXPORT_VIEW_PROPERTY<span class="token punctuation">(</span></span>myCustomProperty<span class="token punctuation">,</span> NSString<span class="token punctuation">)</span><span class="token punctuation">;</span>
 @end</div><div class="prism language-javascript"><span class="token comment" spellcheck="true">// JavaScript
 </span>
-import React<span class="token punctuation">,</span> <span class="token punctuation">{</span> 
+import React<span class="token punctuation">,</span> <span class="token punctuation">{</span>
   Component<span class="token punctuation">,</span>
-  requireNativeComponent
+<span class="token punctuation">}</span> from <span class="token string">&#x27;react&#x27;</span><span class="token punctuation">;</span>
+import <span class="token punctuation">{</span>
+  requireNativeComponent<span class="token punctuation">,</span>
 <span class="token punctuation">}</span> from <span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> NativeMyCustomView <span class="token operator">=</span> <span class="token function">requireNativeComponent<span class="token punctuation">(</span></span><span class="token string">&#x27;MyCustomView&#x27;</span><span class="token punctuation">,</span> MyCustomView<span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -201,8 +215,10 @@ public class <span class="token class-name">MyCustomModule</span> extends <span 
 </span>
 import React<span class="token punctuation">,</span> <span class="token punctuation">{</span>
   Component<span class="token punctuation">,</span>
+<span class="token punctuation">}</span> from <span class="token string">&#x27;react&#x27;</span><span class="token punctuation">;</span>
+import <span class="token punctuation">{</span>
   NativeModules<span class="token punctuation">,</span>
-  Text
+  Text<span class="token punctuation">,</span>
 <span class="token punctuation">}</span> from <span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">;</span>
 class <span class="token class-name">Message</span> extends <span class="token class-name">Component</span> <span class="token punctuation">{</span>
   <span class="token function">constructor<span class="token punctuation">(</span></span>props<span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -242,7 +258,9 @@ public class <span class="token class-name">MyCustomViewManager</span> extends <
 </span>
 import React<span class="token punctuation">,</span> <span class="token punctuation">{</span>
   Component<span class="token punctuation">,</span>
-  requireNativeComponent 
+<span class="token punctuation">}</span> from <span class="token string">&#x27;react&#x27;</span><span class="token punctuation">;</span>
+import <span class="token punctuation">{</span>
+  requireNativeComponent<span class="token punctuation">,</span>
 <span class="token punctuation">}</span> from <span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> NativeMyCustomView <span class="token operator">=</span> <span class="token function">requireNativeComponent<span class="token punctuation">(</span></span><span class="token string">&#x27;MyCustomView&#x27;</span><span class="token punctuation">,</span> MyCustomView<span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -271,6 +289,6 @@ export default class <span class="token class-name">MyCustomView</span> extends 
               apiKey: '2c98749b4a1e588efec53b2acec13025',
               indexName: 'react-native-versions',
               inputSelector: '#algolia-doc-search',
-              algoliaOptions: { facetFilters: [ "tags:0.24" ], hitsPerPage: 5 }
+              algoliaOptions: { facetFilters: [ "tags:0.25" ], hitsPerPage: 5 }
             });
           </script><script src="js/scripts.js"></script></body></html>
