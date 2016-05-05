@@ -18,6 +18,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import android.app.Activity;
 import android.app.Application;
@@ -799,7 +801,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     NativeModuleRegistry.Builder nativeRegistryBuilder = new NativeModuleRegistry.Builder();
     JavaScriptModulesConfig.Builder jsModulesBuilder = new JavaScriptModulesConfig.Builder();
 
-    ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
+    final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
     if (mUseDeveloperSupport) {
       reactContext.setNativeModuleCallExceptionHandler(mDevSupportManager);
     }
@@ -862,7 +864,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
 
     ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstance");
-    CatalystInstance catalystInstance;
+    final CatalystInstance catalystInstance;
     try {
       catalystInstance = catalystInstanceBuilder.build();
     } finally {
@@ -874,16 +876,37 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
     }
 
-    reactContext.initializeWithInstance(catalystInstance);
-
-    ReactMarker.logMarker(RUN_JS_BUNDLE_START);
-    // RUN_JS_BUNDLE_END is in JSCExecutor.cpp
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "runJSBundle");
     try {
-      catalystInstance.runJSBundle();
-    } finally {
-      // This will actually finish when `JSCExecutor#loadApplicationScript()` finishes
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      catalystInstance.getReactQueueConfiguration().getJSQueueThread().callOnQueue(
+        new Callable<Void>() {
+          @Override
+          public Void call() {
+            // We want to ensure that any code that checks ReactContext#hasActiveCatalystInstance
+            // can be sure that it's safe to call a JS module function. As JS module function calls
+            // execute on the JS thread, and this Runnable runs on the JS thread, at this point we
+            // know that no JS module function calls will be executed until after this Runnable completes.
+            //
+            // This means it is now safe to say the instance is initialized.
+            //
+            // The reason we call this here instead of after this Runnable completes is so that we can
+            // reduce the amount of time until the React instance is able to start accepting JS calls,
+            // and so that any native module calls that result from runJSBundle can access JS modules.
+            reactContext.initializeWithInstance(catalystInstance);
+
+            ReactMarker.logMarker(RUN_JS_BUNDLE_START);
+            // RUN_JS_BUNDLE_END is in JSCExecutor.cpp
+            Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "runJSBundle");
+            try {
+              catalystInstance.runJSBundle();
+            } finally {
+              // This will actually finish when `JSCExecutor#loadApplicationScript()` finishes
+              Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+            }
+            return null;
+          }
+        }).get();
+    } catch (InterruptedException | ExecutionException e) {
+      throw new RuntimeException(e);
     }
 
     return reactContext;

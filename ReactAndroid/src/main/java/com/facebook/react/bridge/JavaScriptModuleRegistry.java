@@ -96,8 +96,8 @@ public class JavaScriptModuleRegistry {
       NativeArray jsArgs = args != null ? Arguments.fromJavaArgs(args) : new WritableNativeArray();
       mCatalystInstance.callFunction(
         executorToken,
-        mModuleRegistration.getModuleId(),
-        mModuleRegistration.getMethodId(method),
+        mModuleRegistration.getName(),
+        method.getName(),
         jsArgs,
         tracingName);
       return null;

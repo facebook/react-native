@@ -17,13 +17,14 @@ const crypto = require('crypto');
 const SOURCEMAPPING_URL = '\n\/\/# sourceMappingURL=';
 
 class Bundle extends BundleBase {
-  constructor({sourceMapUrl, minify} = {}) {
+  constructor({sourceMapUrl, dev, minify} = {}) {
     super();
     this._sourceMap = false;
     this._sourceMapUrl = sourceMapUrl;
     this._shouldCombineSourceMaps = false;
     this._numPrependedModules = 0;
     this._numRequireCalls = 0;
+    this._dev = dev;
     this._minify = minify;
 
     this._ramBundle = null; // cached RAM Bundle
@@ -39,6 +40,7 @@ class Bundle extends BundleBase {
       map: moduleTransport.map,
       meta: moduleTransport.meta,
       minify: this._minify,
+      dev: this._dev,
     }).then(({code, map}) => {
       // If we get a map from the transformer we'll switch to a mode
       // were we're combining the source maps as opposed to
