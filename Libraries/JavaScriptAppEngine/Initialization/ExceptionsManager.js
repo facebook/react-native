@@ -14,6 +14,16 @@
 let exceptionID = 0;
 
 /**
+ * Creates a error stack from the prettyStack array
+ */
+function generateStackTrace(prettyStack) {
+  return prettyStack.map(line => (
+    '    at ' + line.methodName +
+    ' (http://localhost:8081' + line.file + ':' + line.lineNumber + ':' + line.column + ')'
+  )).join('\n');
+}
+
+/**
  * Handles the developer-visible aspect of errors and exceptions
  */
 function reportException(e: Error, isFatal: bool) {
@@ -29,19 +39,23 @@ function reportException(e: Error, isFatal: bool) {
       RCTExceptionsManager.reportSoftException(e.message, stack, currentExceptionID);
     }
     if (__DEV__) {
-      require('SourceMapsCache').getSourceMaps().then(sourceMaps => {
+      require('SourceMapsCache').getSourceMaps()
+      .then(sourceMaps => {
         const prettyStack = parseErrorStack(e, sourceMaps);
         RCTExceptionsManager.updateExceptionMessage(
           e.message,
           prettyStack,
           currentExceptionID,
         );
+
+        e.stack = generateStackTrace(prettyStack);
       })
       .catch(error => {
         // This can happen in a variety of normal situations, such as
         // Network module not being available, or when running locally
         console.warn('Unable to load source map: ' + error.message);
-      });
+      })
+      .then(() => (console._errorOriginal || console.error)(e));
     }
   }
 }
@@ -58,7 +72,7 @@ function handleException(e: Error, isFatal: boolean) {
     e = new Error(e);
   }
 
-  (console._errorOriginal || console.error)(e.message);
+  console.log('%cError: ' + e.message + '%c (Loading sourcemaps…)', 'color: #F00;', 'color: #000');
   reportException(e, isFatal);
 }
 

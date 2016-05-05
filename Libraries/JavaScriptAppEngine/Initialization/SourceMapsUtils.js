@@ -72,9 +72,9 @@ var SourceMapsUtils = {
       .then(SourceMapsUtils.extractSourceMapURL)
       .then((url) => {
         if (url === null) {
-          return Promise.reject(new Error('No source map URL found. May be running from bundled file.'));
+          throw new Error('No source map URL found. May be running from bundled file.');
         }
-        return Promise.resolve(url);
+        return url;
       });
   },
 };
