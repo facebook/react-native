@@ -59,18 +59,10 @@ class Modal extends React.Component {
       return null;
     }
 
-    const containerBackgroundColor = {
+    const containerStyles = {
       backgroundColor: this.props.transparent ? 'transparent' : 'white',
-    };
-
-    let topValue = 0;
-    if (Platform.OS === 'android' && Platform.Version >= 19) {
-      topValue = STATUS_BAR_HEIGHT;
+      top: Platform.OS === 'android' && Platform.Version >= 19 ? STATUS_BAR_HEIGHT : 0,
     }
-
-    const containerTopValue = {
-      top: topValue
-    };
 
     let animationType = this.props.animationType;
     if (!animationType) {
@@ -90,7 +82,7 @@ class Modal extends React.Component {
         style={styles.modal}
         onStartShouldSetResponder={this._shouldSetResponder}
         >
-        <View style={[styles.container, containerBackgroundColor, containerTopValue]}>
+        <View style={[styles.container, containerStyles]}>
           {this.props.children}
         </View>
       </RCTModalHostView>
@@ -102,18 +94,6 @@ class Modal extends React.Component {
     return true;
   }
 }
-
-Modal.propTypes = {
-  animated: PropTypes.bool,
-  transparent: PropTypes.bool,
-  visible: PropTypes.bool,
-  onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
-  onShow: PropTypes.func,
-};
-
-Modal.defaultProps = {
-  visible: true,
-};
 
 const styles = StyleSheet.create({
   modal: {

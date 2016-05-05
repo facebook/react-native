@@ -68,7 +68,7 @@ var ModalExample = React.createClass({
     return {
       animationType: 'none',
       modalVisible: false,
-      transparent: false
+      transparent: false,
     };
   },
 
