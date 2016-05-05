@@ -45,7 +45,7 @@ def run():
       % (test_app), shell=True, stdout=sp.PIPE, stderr=sp.PIPE, stdin=sp.PIPE)
   return p.communicate()
 
-success = re.compile(r'OK \(\d+ tests\)')
+success = re.compile(r'OK \(\d+ test(s)?\)')
 stdout, stderr = run()
 
 done = True
