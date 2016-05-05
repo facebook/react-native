@@ -51,9 +51,10 @@ at the bottom of the list, and header at the top, on every render pass.</p></div
 a renderable component to be rendered as the row.  By default the data
 is exactly what was put into the data source, but it&#x27;s also possible to
 provide custom extractors. ListView can be notified when a row is
-being highlighted by calling highlightRow function. The separators above and
-below will be hidden when a row is highlighted. The highlighted state of
-a row can be reset by calling highlightRow(null).</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="renderscrollcomponent"></a>renderScrollComponent <span class="propType">function</span> <a class="hash-link" href="docs/listview.html#renderscrollcomponent">#</a></h4><div><p>(props) =&gt; renderable</p><p>A function that returns the scrollable component in which the list rows
+being highlighted by calling <code>highlightRow(sectionID, rowID)</code>. This
+sets a boolean value of adjacentRowHighlighted in renderSeparator, allowing you
+to control the separators above and below the highlighted row. The highlighted
+state of a row can be reset by calling highlightRow(null).</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="renderscrollcomponent"></a>renderScrollComponent <span class="propType">function</span> <a class="hash-link" href="docs/listview.html#renderscrollcomponent">#</a></h4><div><p>(props) =&gt; renderable</p><p>A function that returns the scrollable component in which the list rows
 are rendered. Defaults to returning a ScrollView with the given props.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="rendersectionheader"></a>renderSectionHeader <span class="propType">function</span> <a class="hash-link" href="docs/listview.html#rendersectionheader">#</a></h4><div><p>(sectionData, sectionID) =&gt; renderable</p><p>If provided, a sticky header is rendered for this section.  The sticky
 behavior means that it will scroll with the content at the top of the
 section until it reaches the top of the screen, at which point it will
@@ -111,17 +112,20 @@ with <code>horizontal={true}</code>.</p></div></div></div><span><h3><a class="an
           dataSource<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>dataSource<span class="token punctuation">}</span>
           renderRow<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_renderRow<span class="token punctuation">}</span>
           renderScrollComponent<span class="token operator">=</span><span class="token punctuation">{</span>props <span class="token operator">=</span><span class="token operator">&gt;</span> &lt;RecyclerViewBackedScrollView <span class="token punctuation">{</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>props<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">}</span>
-          renderSeparator<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span>sectionID<span class="token punctuation">,</span> rowID<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> &lt;View key<span class="token operator">=</span><span class="token punctuation">{</span>`$<span class="token punctuation">{</span>sectionID<span class="token punctuation">}</span><span class="token operator">-</span>$<span class="token punctuation">{</span>rowID<span class="token punctuation">}</span>`<span class="token punctuation">}</span> style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>separator<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">}</span>
+          renderSeparator<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_renderSeperator<span class="token punctuation">}</span>
         <span class="token operator">/</span><span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>UIExplorerPage<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
-  _renderRow<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>rowData<span class="token punctuation">:</span> string<span class="token punctuation">,</span> sectionID<span class="token punctuation">:</span> number<span class="token punctuation">,</span> rowID<span class="token punctuation">:</span> number<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  _renderRow<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>rowData<span class="token punctuation">:</span> string<span class="token punctuation">,</span> sectionID<span class="token punctuation">:</span> number<span class="token punctuation">,</span> rowID<span class="token punctuation">:</span> number<span class="token punctuation">,</span> highlightRow<span class="token punctuation">:</span> <span class="token punctuation">(</span>sectionID<span class="token punctuation">:</span> number<span class="token punctuation">,</span> rowID<span class="token punctuation">:</span> number<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> void<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">var</span> rowHash <span class="token operator">=</span> Math<span class="token punctuation">.</span><span class="token function">abs<span class="token punctuation">(</span></span><span class="token function">hashCode<span class="token punctuation">(</span></span>rowData<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">var</span> imgSource <span class="token operator">=</span> THUMB_URLS<span class="token punctuation">[</span>rowHash <span class="token operator">%</span> THUMB_URLS<span class="token punctuation">.</span>length<span class="token punctuation">]</span><span class="token punctuation">;</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
-      &lt;TouchableHighlight onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_pressRow<span class="token punctuation">(</span></span>rowID<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+      &lt;TouchableHighlight onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+          <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_pressRow<span class="token punctuation">(</span></span>rowID<span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token function">highlightRow<span class="token punctuation">(</span></span>sectionID<span class="token punctuation">,</span> rowID<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
         &lt;View<span class="token operator">&gt;</span>
           &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>row<span class="token punctuation">}</span><span class="token operator">&gt;</span>
             &lt;Image style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>thumb<span class="token punctuation">}</span> source<span class="token operator">=</span><span class="token punctuation">{</span>imgSource<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
@@ -149,6 +153,18 @@ with <code>horizontal={true}</code>.</p></div></div></div><span><h3><a class="an
       <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_genRows<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">.</span>_pressData<span class="token punctuation">)</span>
     <span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  _renderSeperator<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>sectionID<span class="token punctuation">:</span> number<span class="token punctuation">,</span> rowID<span class="token punctuation">:</span> number<span class="token punctuation">,</span> adjacentRowHighlighted<span class="token punctuation">:</span> bool<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      &lt;View
+        key<span class="token operator">=</span><span class="token punctuation">{</span>`$<span class="token punctuation">{</span>sectionID<span class="token punctuation">}</span><span class="token operator">-</span>$<span class="token punctuation">{</span>rowID<span class="token punctuation">}</span>`<span class="token punctuation">}</span>
+        style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>
+          height<span class="token punctuation">:</span> adjacentRowHighlighted <span class="token operator">?</span> <span class="token number">4</span> <span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+          backgroundColor<span class="token punctuation">:</span> adjacentRowHighlighted <span class="token operator">?</span> <span class="token string">&#x27;#3B5998&#x27;</span> <span class="token punctuation">:</span> <span class="token string">&#x27;#CCCCCC&#x27;</span><span class="token punctuation">,</span>
+        <span class="token punctuation">}</span><span class="token punctuation">}</span>
+      <span class="token operator">/</span><span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> THUMB_URLS <span class="token operator">=</span> <span class="token punctuation">[</span>
@@ -182,10 +198,6 @@ with <code>horizontal={true}</code>.</p></div></div></div><span><h3><a class="an
     justifyContent<span class="token punctuation">:</span> <span class="token string">&#x27;center&#x27;</span><span class="token punctuation">,</span>
     padding<span class="token punctuation">:</span> <span class="token number">10</span><span class="token punctuation">,</span>
     backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;#F6F6F6&#x27;</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  separator<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    height<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
-    backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;#CCCCCC&#x27;</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   thumb<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     width<span class="token punctuation">:</span> <span class="token number">64</span><span class="token punctuation">,</span>
