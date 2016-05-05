@@ -12,7 +12,6 @@
 'use strict';
 
 const Animated = require('Animated');
-const NavigationContainer = require('NavigationContainer');
 const NavigationPropTypes = require('NavigationPropTypes');
 const NavigationScenesReducer = require('NavigationScenesReducer');
 const React = require('React');
@@ -242,7 +241,5 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-NavigationAnimatedView = NavigationContainer.create(NavigationAnimatedView);
 
 module.exports = NavigationAnimatedView;

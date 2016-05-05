@@ -14,10 +14,8 @@
 const NavigationAnimatedView = require('NavigationAnimatedView');
 const NavigationCard = require('NavigationCard');
 const NavigationCardStack = require('NavigationCardStack');
-const NavigationContainer = require('NavigationContainer');
 const NavigationHeader = require('NavigationHeader');
 const NavigationReducer = require('NavigationReducer');
-const NavigationRootContainer = require('NavigationRootContainer');
 const NavigationStateUtils = require('NavigationStateUtils');
 const NavigationView = require('NavigationView');
 const NavigationPropTypes = require('NavigationPropTypes');
@@ -26,10 +24,6 @@ const NavigationExperimental = {
   // Core
   StateUtils: NavigationStateUtils,
   Reducer: NavigationReducer,
-
-  // Containers
-  Container: NavigationContainer,
-  RootContainer: NavigationRootContainer,
 
   // Views
   View: NavigationView,
