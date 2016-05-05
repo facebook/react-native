@@ -16,6 +16,7 @@
 @property (nonatomic, copy) id /* NSString or NSNumber */ badge;
 @property (nonatomic, strong) UIImage *icon;
 @property (nonatomic, assign) UITabBarSystemItem systemIcon;
+@property (nonatomic, assign) BOOL renderAsOriginal;
 @property (nonatomic, assign, getter=isSelected) BOOL selected;
 @property (nonatomic, readonly) UITabBarItem *barItem;
 @property (nonatomic, copy) RCTBubblingEventBlock onPress;

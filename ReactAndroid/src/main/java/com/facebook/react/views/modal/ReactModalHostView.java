@@ -24,6 +24,7 @@ import android.view.WindowManager;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.JSTouchDispatcher;
@@ -44,7 +45,7 @@ import com.facebook.react.views.view.ReactViewGroup;
  *     DialogRootViewGroup were part of the hierarchy.  Therefore, we forward all view changes
  *     around addition and removal of views to the DialogRootViewGroup.
  */
-public class ReactModalHostView extends ViewGroup {
+public class ReactModalHostView extends ViewGroup implements LifecycleEventListener {
 
   // This listener is called when the user presses KeyEvent.KEYCODE_BACK
   // An event is then passed to JS which can either close or not close the Modal by setting the
@@ -66,6 +67,7 @@ public class ReactModalHostView extends ViewGroup {
 
   public ReactModalHostView(Context context) {
     super(context);
+    ((ReactContext) context).addLifecycleEventListener(this);
 
     mHostView = new DialogRootViewGroup(context);
   }
@@ -134,6 +136,22 @@ public class ReactModalHostView extends ViewGroup {
   protected void setAnimationType(String animationType) {
     mAnimationType = animationType;
     mPropertyRequiresNewDialog = true;
+  }
+
+  @Override
+  public void onHostResume() {
+    // do nothing
+  }
+
+  @Override
+  public void onHostPause() {
+    // do nothing
+  }
+
+  @Override
+  public void onHostDestroy() {
+    // Dismiss the dialog if it is present
+    dismiss();
   }
 
   @VisibleForTesting

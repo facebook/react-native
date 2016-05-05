@@ -172,8 +172,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   public void callFunction(
       ExecutorToken executorToken,
-      int moduleId,
-      int methodId,
+      String module,
+      String method,
       NativeArray arguments,
       String tracingName) {
     synchronized (mJavaToJSCallsTeardownLock) {
@@ -184,7 +184,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
       incrementPendingJSCalls();
 
-      Assertions.assertNotNull(mBridge).callFunction(executorToken, moduleId, methodId, arguments, tracingName);
+      Assertions.assertNotNull(mBridge).callFunction(executorToken,
+        module,
+        method, arguments, tracingName);
     }
   }
 

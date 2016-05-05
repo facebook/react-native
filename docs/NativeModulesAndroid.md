@@ -317,7 +317,7 @@ componentWillMount: function() {
 
 ### Getting activity result from `startActivityForResult`
 
-You'll need to listen to `onActivityResult` if you want to get results from an activity you started with `startActivityForResult`. To to do this, the module must implement `ActivityEventListener`. Then, you need to register a listener in the module's constructor,
+You'll need to listen to `onActivityResult` if you want to get results from an activity you started with `startActivityForResult`. To do this, the module must implement `ActivityEventListener`. Then, you need to register a listener in the module's constructor,
 
 ```java
 reactContext.addActivityEventListener(this);
@@ -376,7 +376,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
 
       final Intent chooserIntent = Intent.createChooser(galleryIntent, "Pick an image");
 
-      currentActivity.startActivityForResult(chooserIntent, PICK_IMAGE);
+      currentActivity.startActivityForResult(chooserIntent, IMAGE_PICKER_REQUEST);
     } catch (Exception e) {
       mPickerPromise.reject(E_FAILED_TO_SHOW_PICKER, e);
       mPickerPromise = null;

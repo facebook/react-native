@@ -48,12 +48,6 @@ describe('MessageQueue', () => {
     assertQueue(flushedQueue, 0, 0, 1, [2]);
   });
 
-  it('should call a local function with id', () => {
-    expect(TestModule.testHook1.calls.count()).toEqual(0);
-    queue.__callFunction(0, 0, [1]);
-    expect(TestModule.testHook1.calls.count()).toEqual(1);
-  });
-
   it('should call a local function with the function name', () => {
     expect(TestModule.testHook2.calls.count()).toEqual(0);
     queue.__callFunction('one', 'testHook2', [2]);

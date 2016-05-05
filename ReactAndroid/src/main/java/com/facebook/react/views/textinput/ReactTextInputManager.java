@@ -199,8 +199,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             (fontWeightNumeric != -1 && fontWeightNumeric < 500)) {
       fontWeight = Typeface.NORMAL;
     }
-    if (fontWeight != view.getTypeface().getStyle()) {
-      view.setTypeface(view.getTypeface(), fontWeight);
+    Typeface currentTypeface = view.getTypeface();
+    if (currentTypeface == null) {
+      currentTypeface = Typeface.DEFAULT;
+    }
+    if (fontWeight != currentTypeface.getStyle()) {
+      view.setTypeface(currentTypeface, fontWeight);
     }
   }
 

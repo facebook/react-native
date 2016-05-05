@@ -333,7 +333,8 @@ describe('Resolver', function() {
         module: module,
         name: 'test module',
         code,
-        meta: {dependencyOffsets}
+        meta: {dependencyOffsets},
+        dev: false,
       }).then(({code: processedCode}) => {
         expect(processedCode).toEqual([
           `__d(${getModuleId(module)} /* test module */, function(global, require, module, exports) {` +
@@ -346,6 +347,28 @@ describe('Resolver', function() {
           '});',
         ].join('\n'));
       });
+    });
+
+    pit('should add module transport names as third argument to `__d`', () => {
+      const module = createModule('test module');
+      const code = 'arbitrary(code)'
+      const resolutionResponse = new ResolutionResponseMock({
+        dependencies: [module],
+        mainModuleId: 'test module',
+      });
+      return depResolver.wrapModule({
+        resolutionResponse,
+        code,
+        module,
+        name: 'test module',
+        dev: true,
+      }).then(({code: processedCode}) =>
+        expect(processedCode).toEqual([
+          `__d(${getModuleId(module)} /* test module */, function(global, require, module, exports) {` +
+            code,
+          '}, "test module");'
+        ].join('\n'))
+      );
     });
 
     pit('should pass through passed-in source maps', () => {
@@ -400,7 +423,7 @@ describe('Resolver', function() {
 
       pit('should prefix JSON files with `module.exports=`', () => {
         return depResolver
-          .wrapModule({resolutionResponse, module, name: id, code})
+          .wrapModule({resolutionResponse, module, name: id, code, dev: false})
           .then(({code: processedCode}) =>
             expect(processedCode).toEqual([
               `__d(${getModuleId(module)} /* ${id} */, function(global, require, module, exports) {`,
@@ -420,7 +443,7 @@ describe('Resolver', function() {
         depResolver = new Resolver({
           projectRoot: '/root',
           getModuleId,
-          minifyCode
+          minifyCode,
         });
         module = createModule(id);
         module.path = '/arbitrary/path.js';
@@ -440,7 +463,8 @@ describe('Resolver', function() {
             name: id,
             code,
             map: sourceMap,
-            minify: true
+            minify: true,
+            dev: false,
           }).then(() => {
             expect(minifyCode).toBeCalledWith(module.path, wrappedCode, sourceMap);
           });
