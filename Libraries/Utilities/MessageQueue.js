@@ -53,8 +53,6 @@ class MessageQueue {
 
     this._callableModules = {};
     this._queue = [[], [], [], 0];
-    this._moduleTable = {};
-    this._methodTable = {};
     this._callbacks = [];
     this._callbackID = 0;
     this._callID = 0;
@@ -69,9 +67,6 @@ class MessageQueue {
 
     let modulesConfig = this._genModulesConfig(remoteModules);
     this._genModules(modulesConfig);
-    localModules && this._genLookupTables(
-      this._genModulesConfig(localModules),this._moduleTable, this._methodTable
-    );
 
     this._debugInfo = {};
     this._remoteModuleTable = {};
@@ -165,13 +160,9 @@ class MessageQueue {
     }
   }
 
-  __callFunction(module, method, args) {
+  __callFunction(module: string, method: string, args: any) {
     this._lastFlush = new Date().getTime();
     this._eventLoopStartTime = this._lastFlush;
-    if (isFinite(module)) {
-      method = this._methodTable[module][method];
-      module = this._moduleTable[module];
-    }
     Systrace.beginEvent(`${module}.${method}()`);
     if (__DEV__ && SPY_MODE) {
       console.log('N->JS : ' + module + '.' + method + '(' + JSON.stringify(args) + ')');

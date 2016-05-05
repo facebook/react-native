@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -310,12 +311,14 @@ public class DevSupportManagerImpl implements DevSupportManager {
           @Override
           public void onOptionSelected() {
             try {
-              String heapDumpPath = mApplicationContext.getCacheDir() + "/heapdump.json";
-              JSCHeapCapture.captureHeap(heapDumpPath, 60000);
-              Toast.makeText(
-                mCurrentContext,
-                "Heap captured to " + heapDumpPath,
-                Toast.LENGTH_LONG).show();
+              String heapDumpPath = mApplicationContext.getCacheDir().getPath();
+              List<String> captureFiles = JSCHeapCapture.captureHeap(heapDumpPath, 60000);
+              for (String captureFile : captureFiles) {
+                Toast.makeText(
+                  mCurrentContext,
+                  "Heap captured to " + captureFile,
+                  Toast.LENGTH_LONG).show();
+              }
             } catch (JSCHeapCapture.CaptureException e) {
               showNewJavaError(e.getMessage(), e);
             }

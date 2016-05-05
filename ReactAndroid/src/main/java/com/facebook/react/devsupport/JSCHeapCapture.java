@@ -11,6 +11,11 @@ package com.facebook.react.devsupport;
 
 import javax.annotation.Nullable;
 
+import java.io.File;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -33,28 +38,41 @@ public class JSCHeapCapture extends ReactContextBaseJavaModule {
   private int mOperationToken;
   private @Nullable String mOperationError;
 
-  private static @Nullable JSCHeapCapture sJSCHeapCapture = null;
+  private static final HashSet<JSCHeapCapture> sRegisteredDumpers = new HashSet<>();
 
   private static synchronized void registerHeapCapture(JSCHeapCapture dumper) {
-    if (sJSCHeapCapture != null) {
+    if (sRegisteredDumpers.contains(dumper)) {
       throw new RuntimeException(
-        "JSCHeapCapture already registered. Are you running more than one JSC?");
+        "a JSCHeapCapture registered more than once");
     }
-    sJSCHeapCapture = dumper;
+    sRegisteredDumpers.add(dumper);
   }
 
   private static synchronized void unregisterHeapCapture(JSCHeapCapture dumper) {
-    if (sJSCHeapCapture != dumper) {
-      throw new RuntimeException("Can't unregister JSCHeapCapture that is not registered.");
-    }
-    sJSCHeapCapture = null;
+    sRegisteredDumpers.remove(dumper);
   }
 
-  public static synchronized void captureHeap(String path, long timeout) throws CaptureException {
-    if (sJSCHeapCapture == null) {
-      throw new CaptureException("No JSC registered.");
+  public static synchronized List<String> captureHeap(String path, long timeout)
+      throws CaptureException {
+    LinkedList<String> captureFiles = new LinkedList<>();
+    if (sRegisteredDumpers.isEmpty()) {
+      throw new CaptureException("No JSC registered");
     }
-    sJSCHeapCapture.captureHeapHelper(path, timeout);
+
+    int disambiguate = 0;
+    File f = new File(path + "/capture" + Integer.toString(disambiguate) + ".json");
+    while (f.delete()) {
+      disambiguate++;
+      f = new File(path + "/capture" + Integer.toString(disambiguate) + ".json");
+    }
+
+    disambiguate = 0;
+    for (JSCHeapCapture dumper : sRegisteredDumpers) {
+      String file = path + "/capture" + Integer.toString(disambiguate) + ".json";
+      dumper.captureHeapHelper(file, timeout);
+      captureFiles.add(file);
+    }
+    return captureFiles;
   }
 
   public JSCHeapCapture(ReactApplicationContext reactContext) {

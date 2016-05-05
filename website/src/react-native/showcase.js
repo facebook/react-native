@@ -67,8 +67,9 @@ var featured = [
   },
   {
     name: 'Exponent',
-    icon: 'http://a4.mzstatic.com/us/r30/Purple2/v4/3a/d3/c9/3ad3c96c-5e14-f988-4bdd-0fdc95efd140/icon175x175.png',
-    link:  'http://exponentjs.com/',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple20/v4/b0/26/72/b02672b5-d347-6df1-e20f-de5f5c039664/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/exponent/id982107779?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=host.exp.exponent',
     author: 'Exponent',
   },
   {
@@ -301,6 +302,13 @@ var apps = [
     author: 'CBS Sports',
   },
   {
+    name: 'Chemin de Fer de Provence',
+    icon: 'https://lh3.googleusercontent.com/p80a9ZFgDd9EgKxViAOu3PF22GiEc2FaMxxlOib6SpvLR-M6wN1OSMuyzMcjIaNI4Jc=w300',
+    linkAppStore: 'https://itunes.apple.com/fr/app/chemins-de-fer-de-provence/id1107542956?l=fr&ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.cheminsdeferdeprovence&hl=fr',
+    author: 'Actigraph'
+  },
+  {
     name: 'Chillin\'',
     icon: 'http://www.chillin.io/img/logo175x175.png',
     linkAppStore: 'https://itunes.apple.com/us/app/chillin/id1059803303?ls=1&mt=8',
@@ -443,6 +451,7 @@ var apps = [
     author: 'Lim Chee Aun',
     blogs: [
       'http://cheeaun.com/blog/2016/03/building-hackerweb-ios/',
+      'http://cheeaun.com/blog/2016/05/building-hackerweb-android/',
     ],
   },
   {
@@ -782,7 +791,7 @@ var apps = [
   {
     name: 'Trump Blocker - That Filters Every Link',
     icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/e7/91/4c/e7914cbd-c405-8411-2173-e8ed59a901bd/icon175x175.jpeg',
-    link: 'https://itunes.apple.com/us/app/trump-blocker-that-filters/id1071733244?mt=8',    
+    link: 'https://itunes.apple.com/us/app/trump-blocker-that-filters/id1071733244?mt=8',
     author: 'Footbits, Inc.',
   },
   {
@@ -938,7 +947,7 @@ var AppList = React.createClass({
         {app.linkAppStore && app.linkPlayStore ? this._renderLinks(app) : null}
         <p>By {app.author}</p>
         {this._renderBlogPosts(app)}
-				{this._renderSourceLink(app)}
+        {this._renderSourceLink(app)}
         {this._renderVideos(app)}
       </div>
     );
@@ -980,7 +989,7 @@ var AppList = React.createClass({
     );
   },
 
-	_renderSourceLink: function(app) {
+  _renderSourceLink: function(app) {
     if (!app.source) {
       return;
     }
@@ -1017,7 +1026,8 @@ var AppList = React.createClass({
   _renderLinks: function(app) {
     return (
       <p>
-        <a href={app.linkAppStore} target="_blank">iOS</a> -&nbsp;
+        <a href={app.linkAppStore} target="_blank">iOS</a>
+        {' '}&middot;{' '}
         <a href={app.linkPlayStore} target="_blank">Android</a>
       </p>
     );

@@ -168,32 +168,31 @@ function buildAndRun(args, reject) {
 }
 
 function startServerInNewWindow() {
-  var yargV = require('yargs').argv;
-
+  const yargV = require('yargs').argv;
   const scriptFile = /^win/.test(process.platform) ?
     'launchPackager.bat' :
     'launchPackager.command';
-
-  const launchPackagerScript = path.resolve(
-    __dirname, '..', '..', 'packager', scriptFile
-  );
+  const packagerDir = path.resolve(__dirname, '..', '..', 'packager');
+  const launchPackagerScript = path.resolve(packagerDir, scriptFile);
+  const procConfig = {cwd: packagerDir};
 
   if (process.platform === 'darwin') {
     if (yargV.open) {
-      return child_process.spawnSync('open', ['-a', yargV.open, launchPackagerScript]);
+      return child_process.spawnSync('open', ['-a', yargV.open, launchPackagerScript], procConfig);
     }
-    return child_process.spawnSync('open', [launchPackagerScript]);
+    return child_process.spawnSync('open', [launchPackagerScript], procConfig);
 
   } else if (process.platform === 'linux') {
+    procConfig.detached = true;
     if (yargV.open){
-      return child_process.spawn(yargV.open,['-e', 'sh', launchPackagerScript], {detached: true});
+      return child_process.spawn(yargV.open,['-e', 'sh', launchPackagerScript], procConfig);
     }
-    return child_process.spawn('sh', [launchPackagerScript],{detached: true});
+    return child_process.spawn('sh', [launchPackagerScript], procConfig);
 
   } else if (/^win/.test(process.platform)) {
-    return child_process.spawn(
-      'cmd.exe', ['/C', 'start', launchPackagerScript], {detached: true, stdio: 'ignore'}
-    );
+    procConfig.detached = true;
+    procConfig.stdio = 'ignore';
+    return child_process.spawn('cmd.exe', ['/C', 'start', launchPackagerScript], procConfig);
   } else {
     console.log(chalk.red(`Cannot start the packager. Unknown platform ${process.platform}`));
   }

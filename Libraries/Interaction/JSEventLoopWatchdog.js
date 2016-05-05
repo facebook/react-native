@@ -39,6 +39,7 @@ const JSEventLoopWatchdog = {
     totalStallTime = 0;
     stallCount = 0;
     longestStall = 0;
+    lastInterval = performanceNow();
   },
   addHandler: function(handler: Handler) {
     handlers.push(handler);
@@ -49,7 +50,7 @@ const JSEventLoopWatchdog = {
       return;
     }
     installed = true;
-    let lastInterval = performanceNow();
+    lastInterval = performanceNow();
     function iteration() {
       const now = performanceNow();
       const busyTime = now - lastInterval;
@@ -80,6 +81,7 @@ let installed = false;
 let totalStallTime = 0;
 let stallCount = 0;
 let longestStall = 0;
+let lastInterval = 0;
 const handlers: Array<Handler> = [];
 
 module.exports = JSEventLoopWatchdog;

@@ -169,7 +169,7 @@ class Bundler {
     const moduleSystemDeps =
       this._resolver.getModuleSystemDependencies({dev, unbundle});
     return this._bundle({
-      bundle: new Bundle({minify, sourceMapUrl: options.sourceMapUrl}),
+      bundle: new Bundle({dev, minify, sourceMapUrl: options.sourceMapUrl}),
       moduleSystemDeps,
       ...options,
     });
@@ -248,16 +248,6 @@ class Bundler {
     entryModuleOnly,
     resolutionResponse,
   }) {
-    if (dev && runBeforeMainModule) { // no runBeforeMainModule for hmr bundles
-      // `require` calls in the require polyfill itself are not extracted and
-      // replaced with numeric module IDs, but the require polyfill
-      // needs Systrace.
-      // Therefore, we include the Systrace module before the main module, and
-      // it will set itself as property on the require function.
-      // TODO(davidaurelio) Scan polyfills for dependencies, too (t9759686)
-      runBeforeMainModule = runBeforeMainModule.concat(['Systrace']);
-    }
-
     const onResolutionResponse = response => {
       bundle.setMainModuleId(this._getModuleId(getMainModule(response)));
       if (bundle.setNumPrependedModules) {

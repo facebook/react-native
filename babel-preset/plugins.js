@@ -19,7 +19,7 @@ module.exports = {
   'babel-plugin-transform-es2015-block-scoping': require('babel-plugin-transform-es2015-block-scoping'),
   'babel-plugin-transform-es2015-classes': require('babel-plugin-transform-es2015-classes'),
   'babel-plugin-transform-es2015-computed-properties': require('babel-plugin-transform-es2015-computed-properties'),
-  'babel-plugin-transform-es2015-constants': require('babel-plugin-transform-es2015-constants'),
+  'babel-plugin-check-es2015-constants': require('babel-plugin-check-es2015-constants'),
   'babel-plugin-transform-es2015-destructuring': require('babel-plugin-transform-es2015-destructuring'),
   'babel-plugin-transform-es2015-modules-commonjs': require('babel-plugin-transform-es2015-modules-commonjs'),
   'babel-plugin-transform-es2015-parameters': require('babel-plugin-transform-es2015-parameters'),
