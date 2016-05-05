@@ -70,6 +70,10 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./NavigatorIOSExample'),
   },
   {
+    key: 'PickerExample',
+    module: require('./PickerExample'),
+  },
+  {
     key: 'PickerIOSExample',
     module: require('./PickerIOSExample'),
   },
@@ -143,6 +147,10 @@ var APIExamples: Array<UIExplorerExample> = [
   {
     key: 'AdSupportIOSExample',
     module: require('./AdSupportIOSExample'),
+  },
+  {
+    key: 'AlertExample',
+    module: require('./AlertExample').AlertExample,
   },
   {
     key: 'AlertIOSExample',
