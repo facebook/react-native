@@ -1,0 +1,85 @@
+def kwargs_add(base_kwargs, **new_kwargs):
+  ret_kwargs = dict(base_kwargs)
+  for name, add_value in new_kwargs.iteritems():
+    if name in ret_kwargs:
+      # Don't use +=, it will modify base_kwargs
+      ret_kwargs[name] = ret_kwargs[name] + add_value
+    else:
+      ret_kwargs[name] = add_value
+  return ret_kwargs
+
+if THIS_IS_FBANDROID:
+  include_defs('//ReactAndroid/DEFS')
+
+  def react_library(**kwargs):
+    kwargs = kwargs_add(
+      kwargs,
+      # We depend on JSC, support the same platforms
+      supported_platforms_regex = '^android-(armv7|x86)$',
+      compiler_flags = [
+        '-Wno-pessimizing-move',
+      ],
+      deps = [
+        '//xplat/folly:molly',
+      ])
+
+    cxx_library(
+      name = 'bridge',
+      **kwargs_add(
+        kwargs,
+        preprocessor_flags = [
+          '-DWITH_JSC_EXTRA_TRACING=1',
+          '-DWITH_JSC_MEMORY_PRESSURE=1',
+          '-DWITH_REACT_INTERNAL_SETTINGS=1',
+          '-DWITH_FB_MEMORY_PROFILING=1',
+        ],
+        deps = JSC_DEPS
+      )
+    )
+
+elif THIS_IS_FBOBJC:
+
+  def react_library(**kwargs):
+    ios_library(
+      name = 'bridge',
+      header_path_prefix = "cxxreact",
+      frameworks = [
+        '$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework',
+      ],
+      **kwargs_add(
+        kwargs,
+        deps = [
+          '//xplat/folly:molly',
+        ]
+      )
+    )
+
+LOCAL_HEADERS = [
+  'JSCTracing.h',
+  'JSCLegacyProfiler.h',
+  'JSCMemory.h',
+  'JSCPerfStats.h',
+]
+
+react_library(
+  soname = 'libreactnativefb.so',
+  header_namespace = 'cxxreact',
+  force_static = True,
+  srcs = glob(['*.cpp']),
+  headers = LOCAL_HEADERS,
+  preprocessor_flags = [
+    '-DLOG_TAG="ReactNative"',
+    '-DWITH_FBSYSTRACE=1',
+  ],
+  compiler_flags = [
+    '-Wall',
+    '-fexceptions',
+    '-fvisibility=hidden',
+    '-frtti',
+  ],
+  exported_headers = glob(['*.h'], excludes=LOCAL_HEADERS),
+  deps = [
+    '//xplat/fbsystrace:fbsystrace',
+  ],
+  visibility = [ 'PUBLIC' ],
+)

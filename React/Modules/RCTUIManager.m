@@ -46,6 +46,7 @@ static void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComp
   }
 }
 
+char *const RCTUIManagerQueueName = "com.facebook.react.ShadowQueue";
 NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification = @"RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification";
 NSString *const RCTUIManagerDidRegisterRootViewNotification = @"RCTUIManagerDidRegisterRootViewNotification";
 NSString *const RCTUIManagerDidRemoveRootViewNotification = @"RCTUIManagerDidRemoveRootViewNotification";
@@ -321,13 +322,11 @@ RCT_EXPORT_MODULE()
 - (dispatch_queue_t)methodQueue
 {
   if (!_shadowQueue) {
-    const char *queueName = "com.facebook.react.ShadowQueue";
-
     if ([NSOperation instancesRespondToSelector:@selector(qualityOfService)]) {
       dispatch_queue_attr_t attr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0);
-      _shadowQueue = dispatch_queue_create(queueName, attr);
+      _shadowQueue = dispatch_queue_create(RCTUIManagerQueueName, attr);
     } else {
-      _shadowQueue = dispatch_queue_create(queueName, DISPATCH_QUEUE_SERIAL);
+      _shadowQueue = dispatch_queue_create(RCTUIManagerQueueName, DISPATCH_QUEUE_SERIAL);
       dispatch_set_target_queue(_shadowQueue, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0));
     }
   }
@@ -1090,7 +1089,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     RCTProfileBeginFlowEvent();
     dispatch_async(dispatch_get_main_queue(), ^{
       RCTProfileEndFlowEvent();
-      RCT_PROFILE_BEGIN_EVENT(0, @"UIManager flushUIBlocks", nil);
+      RCT_PROFILE_BEGIN_EVENT(0, @"-[UIManager flushUIBlocks]", nil);
       @try {
         for (dispatch_block_t block in previousPendingUIBlocks) {
           block();

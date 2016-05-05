@@ -10,6 +10,8 @@ package com.facebook.react.testing;
 
 import javax.annotation.Nullable;
 
+import java.util.concurrent.Callable;
+
 import android.app.Instrumentation;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -124,9 +126,21 @@ public class ReactTestHelper {
 
         @Override
         public CatalystInstance build() {
-          CatalystInstance instance = builder.build();
-          testCase.initializeWithInstance(instance);
-          instance.runJSBundle();
+          final CatalystInstance instance = builder.build();
+          try {
+            instance.getReactQueueConfiguration().getJSQueueThread().callOnQueue(
+              new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                  testCase.initializeWithInstance(instance);
+                  instance.runJSBundle();
+                  return null;
+                }
+              }).get();
+
+          } catch (Exception e) {
+            throw new RuntimeException(e);
+          }
           testCase.waitForBridgeAndUIIdle();
           return instance;
         }

@@ -98,6 +98,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
                    "bridge.", _moduleClass);
       }
     }
+
+    if (RCTProfileIsProfiling()) {
+      RCTProfileHookInstance(_instance);
+    }
+
     // Bridge must be set before methodQueue is set up, as methodQueue
     // initialization requires it (View Managers get their queue by calling
     // self.bridge.uiManager.methodQueue)
