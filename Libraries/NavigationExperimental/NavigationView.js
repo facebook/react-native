@@ -12,7 +12,6 @@
 'use strict';
 
 const Animated = require('Animated');
-const NavigationContainer = require('NavigationContainer');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
@@ -179,4 +178,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = NavigationContainer.create(NavigationView);
+module.exports = NavigationView;

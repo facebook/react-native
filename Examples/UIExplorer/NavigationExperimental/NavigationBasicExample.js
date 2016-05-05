@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -22,12 +29,10 @@ const {
 } = ReactNative;
 const NavigationExampleRow = require('./NavigationExampleRow');
 const {
-  RootContainer: NavigationRootContainer,
   Reducer: NavigationReducer,
 } = NavigationExperimental;
-const StackReducer = NavigationReducer.StackReducer;
 
-const NavigationBasicReducer = NavigationReducer.StackReducer({
+const ExampleReducer = NavigationReducer.StackReducer({
   getPushedReducerForAction: (action) => {
     if (action.type === 'push') {
       return (state) => state || {key: action.key};
@@ -45,47 +50,51 @@ const NavigationBasicReducer = NavigationReducer.StackReducer({
 });
 
 const NavigationBasicExample = React.createClass({
+
+  getInitialState: function() {
+    return ExampleReducer();
+  },
+
   render: function() {
     return (
-      <NavigationRootContainer
-        reducer={NavigationBasicReducer}
-        persistenceKey="NavigationBasicExampleState"
-        ref={navRootContainer => { this.navRootContainer = navRootContainer; }}
-        renderNavigation={(navState, onNavigate) => {
-          if (!navState) { return null; }
-          return (
-            <ScrollView style={styles.topView}>
-              <NavigationExampleRow
-                text={`Current page: ${navState.children[navState.index].key}`}
-              />
-              <NavigationExampleRow
-                text={`Push page #${navState.children.length}`}
-                onPress={() => {
-                  onNavigate({ type: 'push', key: 'page #' + navState.children.length });
-                }}
-              />
-              <NavigationExampleRow
-                text="pop"
-                onPress={() => {
-                  onNavigate(NavigationRootContainer.getBackAction());
-                }}
-              />
-              <NavigationExampleRow
-                text="Exit Basic Nav Example"
-                onPress={this.props.onExampleExit}
-              />
-            </ScrollView>
-          );
-        }}
-      />
+      <ScrollView style={styles.topView}>
+        <NavigationExampleRow
+          text={`Current page: ${this.state.children[this.state.index].key}`}
+        />
+        <NavigationExampleRow
+          text={`Push page #${this.state.children.length}`}
+          onPress={() => {
+            this._handleAction({ type: 'push', key: 'page #' + this.state.children.length });
+          }}
+        />
+        <NavigationExampleRow
+          text="pop"
+          onPress={() => {
+            this._handleAction({ type: 'BackAction' });
+          }}
+        />
+        <NavigationExampleRow
+          text="Exit Basic Nav Example"
+          onPress={this.props.onExampleExit}
+        />
+      </ScrollView>
     );
   },
 
-  handleBackAction: function() {
-    return (
-      this.navRootContainer &&
-      this.navRootContainer.handleNavigation(NavigationRootContainer.getBackAction())
-    );
+  _handleAction(action) {
+    if (!action) {
+      return false;
+    }
+    const newState = ExampleReducer(this.state, action);
+    if (newState === this.state) {
+      return false;
+    }
+    this.setState(newState);
+    return true;
+  },
+
+  handleBackAction() {
+    return this._handleAction({ type: 'BackAction' });
   },
 
 });
