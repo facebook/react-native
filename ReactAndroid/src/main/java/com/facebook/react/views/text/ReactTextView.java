@@ -10,7 +10,9 @@
 package com.facebook.react.views.text;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.text.Layout;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -21,6 +23,7 @@ import android.widget.TextView;
 import com.facebook.csslayout.FloatUtil;
 import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.ViewDefaults;
+import com.facebook.react.views.view.ReactViewBackgroundDrawable;
 
 import javax.annotation.Nullable;
 
@@ -37,6 +40,8 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   private int mTextAlign = Gravity.NO_GRAVITY;
   private int mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
   private TextUtils.TruncateAt mEllipsizeLocation = TextUtils.TruncateAt.END;
+
+  private ReactViewBackgroundDrawable mReactBackgroundDrawable;
 
   public ReactTextView(Context context) {
     super(context);
@@ -204,6 +209,15 @@ public class ReactTextView extends TextView implements ReactCompoundView {
     }
   }
 
+  @Override
+  public void setBackgroundColor(int color) {
+    if (color == Color.TRANSPARENT && mReactBackgroundDrawable == null) {
+      // don't do anything, no need to allocate ReactBackgroundDrawable for transparent background
+    } else {
+      getOrCreateReactViewBackground().setColor(color);
+    }
+  }
+
   /* package */ void setGravityHorizontal(int gravityHorizontal) {
     if (gravityHorizontal == 0) {
       gravityHorizontal = mDefaultGravityHorizontal;
@@ -232,5 +246,42 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   public void updateView() {
     @Nullable TextUtils.TruncateAt ellipsizeLocation = mNumberOfLines == ViewDefaults.NUMBER_OF_LINES ? null : mEllipsizeLocation;
     setEllipsize(ellipsizeLocation);
+  }
+
+  public void setBorderWidth(int position, float width) {
+    getOrCreateReactViewBackground().setBorderWidth(position, width);
+  }
+
+  public void setBorderColor(int position, float color, float alpha) {
+    getOrCreateReactViewBackground().setBorderColor(position, color, alpha);
+  }
+
+  public void setBorderRadius(float borderRadius) {
+    getOrCreateReactViewBackground().setRadius(borderRadius);
+  }
+
+  public void setBorderRadius(float borderRadius, int position) {
+    getOrCreateReactViewBackground().setRadius(borderRadius, position);
+  }
+
+  public void setBorderStyle(@Nullable String style) {
+    getOrCreateReactViewBackground().setBorderStyle(style);
+  }
+
+  private ReactViewBackgroundDrawable getOrCreateReactViewBackground() {
+    if (mReactBackgroundDrawable == null) {
+      mReactBackgroundDrawable = new ReactViewBackgroundDrawable();
+      Drawable backgroundDrawable = getBackground();
+      super.setBackground(null);  // required so that drawable callback is cleared before we add the
+      // drawable back as a part of LayerDrawable
+      if (backgroundDrawable == null) {
+        super.setBackground(mReactBackgroundDrawable);
+      } else {
+        LayerDrawable layerDrawable =
+                new LayerDrawable(new Drawable[]{mReactBackgroundDrawable, backgroundDrawable});
+        super.setBackground(layerDrawable);
+      }
+    }
+    return mReactBackgroundDrawable;
   }
 }
