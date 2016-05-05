@@ -45,11 +45,13 @@ const SwipeableRow = React.createClass({
   _previousLeft: CLOSED_LEFT_POSITION,
 
   propTypes: {
+    isOpen: PropTypes.bool,
     /**
      * Left position of the maximum open swipe. If unspecified, swipe will open
      * fully to the left
      */
     maxSwipeDistance: PropTypes.number,
+    onOpen: PropTypes.func,
     /**
      * A ReactElement that is unveiled when the user swipes
      */
@@ -75,6 +77,7 @@ const SwipeableRow = React.createClass({
 
   getDefaultProps(): Object {
     return {
+      isOpen: false,
       swipeThreshold: 50,
     };
   },
@@ -91,6 +94,16 @@ const SwipeableRow = React.createClass({
       onPanResponderTerminationRequest: this._handlePanResponderTerminationRequest,
       onPanResponderTerminate: this._handlePanResponderEnd,
     });
+  },
+
+  componentWillReceiveProps(nextProps: Object): void {
+    /**
+     * We do not need an "animateOpen(noCallback)" because this animation is
+     * handled internally by this component.
+     */
+    if (this.props.isOpen && !nextProps.isOpen) {
+      this._animateClose();
+    }
   },
 
   render(): ReactElement {
@@ -260,14 +273,12 @@ const SwipeableRow = React.createClass({
   _animateTo(toValue: number): void {
     Animated.timing(this.state.currentLeft, {toValue: toValue}).start(() => {
       this._previousLeft = toValue;
-
-      this.setState({
-        currentLeft: new Animated.Value(this._previousLeft),
-      });
     });
   },
 
   _animateOpen(): void {
+    this.props.onOpen && this.props.onOpen();
+
     const toValue = this.props.maxSwipeDistance
       ? -this.props.maxSwipeDistance
       : -this.state.scrollViewWidth;
