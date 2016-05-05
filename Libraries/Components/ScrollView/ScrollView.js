@@ -222,7 +222,6 @@ var ScrollView = React.createClass({
      * When true, the scroll view stops on multiples of the scroll view's size
      * when scrolling. This can be used for horizontal pagination. The default
      * value is false.
-     * @platform ios
      */
     pagingEnabled: PropTypes.bool,
     /**
