@@ -33,6 +33,8 @@ const {PropTypes} = React;
 
 // Position of the left of the swipable item when closed
 const CLOSED_LEFT_POSITION = 0;
+// Minimum swipe distance before we recognize it as such
+const HORIZONTAL_SWIPE_DISTANCE_THRESHOLD = 15;
 
 /**
  * Creates a swipable row that allows taps on the main item and a custom View
@@ -80,10 +82,13 @@ const SwipeableRow = React.createClass({
   componentWillMount(): void {
     this._panResponder = PanResponder.create({
       onStartShouldSetPanResponder: this._handleStartShouldSetPanResponder,
+      onStartShouldSetPanResponderCapture: this._handleStartShouldSetPanResponderCapture,
       onMoveShouldSetPanResponder: this._handleMoveShouldSetPanResponder,
+      onMoveShouldSetPanResponderCapture: this._handleMoveShouldSetPanResponderCapture,
       onPanResponderGrant: (event, gesture) => {},
       onPanResponderMove: this._handlePanResponderMove,
       onPanResponderRelease: this._handlePanResponderEnd,
+      onPanResponderTerminationRequest: this._handlePanResponderTerminationRequest,
       onPanResponderTerminate: this._handlePanResponderEnd,
     });
   },
@@ -124,36 +129,68 @@ const SwipeableRow = React.createClass({
     );
   },
 
-  _handleStartShouldSetPanResponder(event: Object, gesture: Object): boolean {
-    return true;
+  _handlePanResponderTerminationRequest(
+    event: Object,
+    gestureState: Object,
+  ): boolean {
+    return false;
   },
 
-  // Return true to allow swipes to happen even if children contain touchables
-  _handleMoveShouldSetPanResponder(event: Object, gesture: Object): boolean {
-    return true;
+  _handleStartShouldSetPanResponder(
+    event: Object,
+    gestureState: Object,
+  ): boolean {
+    return false;
+  },
+
+  _handleStartShouldSetPanResponderCapture(
+    event: Object,
+    gestureState: Object,
+  ): boolean {
+    return false;
+  },
+
+  _handleMoveShouldSetPanResponder(
+    event: Object,
+    gestureState: Object,
+  ): boolean {
+    return false;
+  },
+
+  _handleMoveShouldSetPanResponderCapture(
+    event: Object,
+    gestureState: Object,
+  ): boolean {
+    return this._isValidSwipe(gestureState);
+  },
+
+  /**
+   * User might move their finger slightly when tapping; let's ignore that
+   * unless we are sure they are swiping.
+   */
+  _isValidSwipe(gestureState: Object): boolean {
+    return Math.abs(gestureState.dx) > HORIZONTAL_SWIPE_DISTANCE_THRESHOLD;
   },
 
   _shouldAllowSwipe(gestureState: Object): boolean {
-    const horizontalDistance = gestureState.dx;
-
     return (
-      this._isSwipeWithinOpenLimit(this._previousLeft + horizontalDistance) &&
+      this._isSwipeWithinOpenLimit(this._previousLeft + gestureState.dx) &&
       (
-        this._isSwipingLeftFromClosed(gestureState.vx) ||
-        this._isSwipingFromSemiOpened(horizontalDistance)
+        this._isSwipingLeftFromClosed(gestureState) ||
+        this._isSwipingFromSemiOpened(gestureState)
       )
     );
   },
 
-  _isSwipingLeftFromClosed(velocity: number): boolean {
-    return this._previousLeft === CLOSED_LEFT_POSITION && velocity < 0;
+  _isSwipingLeftFromClosed(gestureState: Object): boolean {
+    return this._previousLeft === CLOSED_LEFT_POSITION && gestureState.vx < 0;
   },
 
   // User is swiping left/right from a state between fully open and fully closed
-  _isSwipingFromSemiOpened(horizontalDistance: number): boolean {
+  _isSwipingFromSemiOpened(gestureState: Object): boolean {
     return (
       this._isSwipeableSomewhatOpen() &&
-      this._isBoundedSwipe(horizontalDistance)
+      this._isBoundedSwipe(gestureState)
     );
   },
 
@@ -161,20 +198,22 @@ const SwipeableRow = React.createClass({
     return this._previousLeft < CLOSED_LEFT_POSITION;
   },
 
-  _isBoundedSwipe(horizontalDistance: number): boolean {
+  _isBoundedSwipe(gestureState: Object): boolean {
     return (
-      this._isBoundedLeftSwipe(horizontalDistance) ||
-      this._isBoundedRightSwipe(horizontalDistance)
+      this._isBoundedLeftSwipe(gestureState) ||
+      this._isBoundedRightSwipe(gestureState)
     );
   },
 
-  _isBoundedLeftSwipe(horizontalDistance: number): boolean {
+  _isBoundedLeftSwipe(gestureState: Object): boolean {
     return (
-      horizontalDistance < 0 && -this._previousLeft < this.state.scrollViewWidth
+      gestureState.dx < 0 && -this._previousLeft < this.state.scrollViewWidth
     );
   },
 
-  _isBoundedRightSwipe(horizontalDistance: number): boolean {
+  _isBoundedRightSwipe(gestureState: Object): boolean {
+    const horizontalDistance = gestureState.dx;
+
     return (
       horizontalDistance > 0 &&
       this._previousLeft + horizontalDistance <= CLOSED_LEFT_POSITION
