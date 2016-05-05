@@ -16,15 +16,15 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   AppStateIOS,
   Text,
   View
 } = ReactNative;
 
-var AppStateSubscription = React.createClass({
+const AppStateSubscription = React.createClass({
   getInitialState() {
     return {
       appState: AppStateIOS.currentState,
@@ -44,7 +44,7 @@ var AppStateSubscription = React.createClass({
     this.setState({memoryWarnings: this.state.memoryWarnings + 1});
   },
   _handleAppStateChange: function(appState) {
-    var previousAppStates = this.state.previousAppStates.slice();
+    const previousAppStates = this.state.previousAppStates.slice();
     previousAppStates.push(this.state.appState);
     this.setState({
       appState,

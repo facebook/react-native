@@ -15,9 +15,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   ProgressBarAndroid,
   StyleSheet,
   Text,
@@ -26,10 +26,10 @@ var {
   View,
 } = ReactNative;
 
-var XHRExampleHeaders = require('./XHRExampleHeaders');
-var XHRExampleCookies = require('./XHRExampleCookies');
-var XHRExampleFetch = require('./XHRExampleFetch');
-var XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
+const XHRExampleHeaders = require('./XHRExampleHeaders');
+const XHRExampleCookies = require('./XHRExampleCookies');
+const XHRExampleFetch = require('./XHRExampleFetch');
+const XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
 
 // TODO t7093728 This is a simplified XHRExample.ios.js.
 // Once we have Camera roll, Toast, Intent (for opening URLs)
@@ -53,10 +53,10 @@ class Downloader extends React.Component {
   download() {
     this.xhr && this.xhr.abort();
 
-    var xhr = this.xhr || new XMLHttpRequest();
+    const xhr = this.xhr || new XMLHttpRequest();
     xhr.onreadystatechange = () => {
       if (xhr.readyState === xhr.HEADERS_RECEIVED) {
-        var contentSize = parseInt(xhr.getResponseHeader('Content-Length'), 10);
+        const contentSize = parseInt(xhr.getResponseHeader('Content-Length'), 10);
         this.setState({
           contentSize: contentSize,
           downloaded: 0,
@@ -100,7 +100,7 @@ class Downloader extends React.Component {
   }
 
   render() {
-    var button = this.state.status === 'Downloading...' ? (
+    const button = this.state.status === 'Downloading...' ? (
       <View style={styles.wrapper}>
         <View style={styles.button}>
           <Text>...</Text>
@@ -146,7 +146,7 @@ class FormUploader extends React.Component {
   }
 
   _addTextParam() {
-    var textParams = this.state.textParams;
+    const textParams = this.state.textParams;
     textParams.push({name: '', value: ''});
     this.setState({textParams});
   }
@@ -156,19 +156,19 @@ class FormUploader extends React.Component {
   }
 
   _onTextParamNameChange(index, text) {
-    var textParams = this.state.textParams;
+    const textParams = this.state.textParams;
     textParams[index].name = text;
     this.setState({textParams});
   }
 
   _onTextParamValueChange(index, text) {
-    var textParams = this.state.textParams;
+    const textParams = this.state.textParams;
     textParams[index].value = text;
     this.setState({textParams});
   }
 
   _upload() {
-    var xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
     xhr.open('POST', 'http://posttestserver.com/post.php');
     xhr.onload = () => {
       this.setState({isUploading: false});
@@ -186,7 +186,7 @@ class FormUploader extends React.Component {
         );
         return;
       }
-      var index = xhr.responseText.indexOf('http://www.posttestserver.com/');
+      const index = xhr.responseText.indexOf('http://www.posttestserver.com/');
       if (index === -1) {
         console.log(
           'Upload failed',
@@ -194,10 +194,10 @@ class FormUploader extends React.Component {
         );
         return;
       }
-      var url = xhr.responseText.slice(index).split('\n')[0];
+      const url = xhr.responseText.slice(index).split('\n')[0];
       console.log('Upload successful: ' + url);
     };
-    var formdata = new FormData();
+    const formdata = new FormData();
     this.state.textParams.forEach(
       (param) => formdata.append(param.name, param.value)
     );
@@ -214,7 +214,7 @@ class FormUploader extends React.Component {
   }
 
   render() {
-    var textItems = this.state.textParams.map((item, index) => (
+    const textItems = this.state.textParams.map((item, index) => (
       <View style={styles.paramRow}>
         <TextInput
           autoCapitalize="none"
@@ -234,7 +234,7 @@ class FormUploader extends React.Component {
       </View>
     ));
     var uploadButtonLabel = this.state.isUploading ? 'Uploading...' : 'Upload';
-    var uploadProgress = this.state.uploadProgress;
+    const uploadProgress = this.state.uploadProgress;
     if (uploadProgress !== null) {
       uploadButtonLabel += ' ' + Math.round(uploadProgress * 100) + '%';
     }
@@ -304,7 +304,7 @@ exports.examples = [{
   }
 }];
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,

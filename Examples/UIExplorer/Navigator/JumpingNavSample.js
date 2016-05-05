@@ -13,9 +13,9 @@
 */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Navigator,
   StyleSheet,
   ScrollView,
@@ -25,7 +25,7 @@ var {
   View,
 } = ReactNative;
 
-var _getRandomRoute = function() {
+const _getRandomRoute = function() {
   return {
     randNumber: Math.ceil(Math.random() * 1000),
   };
@@ -44,12 +44,12 @@ class NavButton extends React.Component {
   }
 }
 
-var ROUTE_STACK = [
+const ROUTE_STACK = [
   _getRandomRoute(),
   _getRandomRoute(),
   _getRandomRoute(),
 ];
-var INIT_ROUTE_INDEX = 1;
+const INIT_ROUTE_INDEX = 1;
 
 class JumpingNavBar extends React.Component {
   constructor(props) {
@@ -59,7 +59,7 @@ class JumpingNavBar extends React.Component {
     };
   }
   handleWillFocus(route) {
-    var tabIndex = ROUTE_STACK.indexOf(route);
+    const tabIndex = ROUTE_STACK.indexOf(route);
     this.setState({ tabIndex, });
   }
   render() {
@@ -99,7 +99,7 @@ class JumpingNavBar extends React.Component {
   }
 }
 
-var JumpingNavSample = React.createClass({
+const JumpingNavSample = React.createClass({
   render: function() {
     return (
       <Navigator
@@ -181,7 +181,7 @@ var JumpingNavSample = React.createClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   button: {
     backgroundColor: 'white',
     padding: 15,

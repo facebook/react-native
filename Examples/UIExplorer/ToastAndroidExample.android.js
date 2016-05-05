@@ -16,19 +16,19 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   StyleSheet,
   Text,
   ToastAndroid,
   TouchableWithoutFeedback,
 } = ReactNative;
 
-var UIExplorerBlock = require('UIExplorerBlock');
-var UIExplorerPage = require('UIExplorerPage');
+const UIExplorerBlock = require('UIExplorerBlock');
+const UIExplorerPage = require('UIExplorerPage');
 
-var ToastExample = React.createClass({
+const ToastExample = React.createClass({
 
   statics: {
     title: 'Toast Example',
@@ -61,7 +61,7 @@ var ToastExample = React.createClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   text: {
     color: 'black',
   },

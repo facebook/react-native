@@ -13,19 +13,19 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   DatePickerAndroid,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
 } = ReactNative;
 
-var UIExplorerBlock = require('./UIExplorerBlock');
-var UIExplorerPage = require('./UIExplorerPage');
+const UIExplorerBlock = require('./UIExplorerBlock');
+const UIExplorerPage = require('./UIExplorerPage');
 
-var DatePickerAndroidExample = React.createClass({
+const DatePickerAndroidExample = React.createClass({
 
   statics: {
     title: 'DatePickerAndroid',
@@ -46,12 +46,12 @@ var DatePickerAndroidExample = React.createClass({
 
   async showPicker(stateKey, options) {
     try {
-      var newState = {};
+      const newState = {};
       const {action, year, month, day} = await DatePickerAndroid.open(options);
       if (action === DatePickerAndroid.dismissedAction) {
         newState[stateKey + 'Text'] = 'dismissed';
       } else {
-        var date = new Date(year, month, day);
+        const date = new Date(year, month, day);
         newState[stateKey + 'Text'] = date.toLocaleDateString();
         newState[stateKey + 'Date'] = date;
       }
@@ -109,7 +109,7 @@ var DatePickerAndroidExample = React.createClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   text: {
     color: 'black',
   },

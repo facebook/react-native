@@ -15,10 +15,10 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var { PropTypes } = React;
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const { PropTypes } = React;
+const {
   Image,
   MapView,
   StyleSheet,
@@ -28,14 +28,14 @@ var {
   View,
 } = ReactNative;
 
-var regionText = {
+const regionText = {
   latitude: '0',
   longitude: '0',
   latitudeDelta: '0',
   longitudeDelta: '0',
 };
 
-var MapRegionInput = React.createClass({
+const MapRegionInput = React.createClass({
 
   propTypes: {
     region: PropTypes.shape({
@@ -63,7 +63,7 @@ var MapRegionInput = React.createClass({
   },
 
   render: function() {
-    var region = this.state.region || this.getInitialState().region;
+    const region = this.state.region || this.getInitialState().region;
     return (
       <View>
         <View style={styles.row}>
@@ -153,7 +153,7 @@ var MapRegionInput = React.createClass({
 
 });
 
-var MapViewExample = React.createClass({
+const MapViewExample = React.createClass({
 
   getInitialState() {
     return {
@@ -216,7 +216,7 @@ var MapViewExample = React.createClass({
 
 });
 
-var AnnotationExample = React.createClass({
+const AnnotationExample = React.createClass({
 
   getInitialState() {
     return {
@@ -252,7 +252,7 @@ var AnnotationExample = React.createClass({
 
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   map: {
     height: 150,
     margin: 10,

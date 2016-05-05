@@ -16,9 +16,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   ActivityIndicatorIOS,
   CameraRoll,
   Image,
@@ -28,10 +28,10 @@ var {
   View,
 } = ReactNative;
 
-var groupByEveryN = require('groupByEveryN');
-var logError = require('logError');
+const groupByEveryN = require('groupByEveryN');
+const logError = require('logError');
 
-var propTypes = {
+const propTypes = {
   /**
    * The group where the photos will be fetched from. Possible
    * values are 'Album', 'All', 'Event', 'Faces', 'Library', 'PhotoStream'
@@ -73,7 +73,7 @@ var propTypes = {
 
 };
 
-var CameraRollView = React.createClass({
+const CameraRollView = React.createClass({
   propTypes: propTypes,
 
   getDefaultProps: function(): Object {
@@ -83,8 +83,8 @@ var CameraRollView = React.createClass({
       imagesPerRow: 1,
       assetType: 'Photos',
       renderImage: function(asset) {
-        var imageSize = 150;
-        var imageStyle = [styles.image, {width: imageSize, height: imageSize}];
+        const imageSize = 150;
+        const imageStyle = [styles.image, {width: imageSize, height: imageSize}];
         return (
           <Image
             source={asset.node.image}
@@ -96,7 +96,7 @@ var CameraRollView = React.createClass({
   },
 
   getInitialState: function() {
-    var ds = new ListView.DataSource({rowHasChanged: this._rowHasChanged});
+    const ds = new ListView.DataSource({rowHasChanged: this._rowHasChanged});
 
     return {
       assets: ([]: Array<Image>),
@@ -114,7 +114,7 @@ var CameraRollView = React.createClass({
    * component to re-render its assets.
    */
   rendererChanged: function() {
-    var ds = new ListView.DataSource({rowHasChanged: this._rowHasChanged});
+    const ds = new ListView.DataSource({rowHasChanged: this._rowHasChanged});
     this.state.dataSource = ds.cloneWithRows(
       groupByEveryN(this.state.assets, this.props.imagesPerRow)
     );
@@ -136,7 +136,7 @@ var CameraRollView = React.createClass({
       return;
     }
 
-    var fetchParams: Object = {
+    const fetchParams: Object = {
       first: this.props.batchSize,
       groupTypes: this.props.groupTypes,
       assetType: this.props.assetType,
@@ -180,7 +180,7 @@ var CameraRollView = React.createClass({
       return true;
     }
 
-    for (var i = 0; i < r1.length; i++) {
+    for (const i = 0; i < r1.length; i++) {
       if (r1[i] !== r2[i]) {
         return true;
       }
@@ -198,7 +198,7 @@ var CameraRollView = React.createClass({
 
   // rowData is an array of images
   _renderRow: function(rowData: Array<Image>, sectionID: string, rowID: string)  {
-    var images = rowData.map((image) => {
+    const images = rowData.map((image) => {
       if (image === null) {
         return null;
       }
@@ -213,8 +213,8 @@ var CameraRollView = React.createClass({
   },
 
   _appendAssets: function(data: Object) {
-    var assets = data.edges;
-    var newState: Object = { loadingMore: false };
+    const assets = data.edges;
+    const newState: Object = { loadingMore: false };
 
     if (!data.page_info.has_next_page) {
       newState.noMore = true;
@@ -238,7 +238,7 @@ var CameraRollView = React.createClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     flex: 1,

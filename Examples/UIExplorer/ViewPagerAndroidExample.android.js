@@ -21,9 +21,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Image,
   StyleSheet,
   Text,
@@ -35,9 +35,9 @@ var {
 
 import type { ViewPagerScrollState } from 'ViewPagerAndroid';
 
-var PAGES = 5;
-var BGCOLOR = ['#fdc08e', '#fff6b9', '#99d1b7', '#dde5fe', '#f79273'];
-var IMAGE_URIS = [
+const PAGES = 5;
+const BGCOLOR = ['#fdc08e', '#fff6b9', '#99d1b7', '#dde5fe', '#f79273'];
+const IMAGE_URIS = [
   'http://apod.nasa.gov/apod/image/1410/20141008tleBaldridge001h990.jpg',
   'http://apod.nasa.gov/apod/image/1409/volcanicpillar_vetter_960.jpg',
   'http://apod.nasa.gov/apod/image/1409/m27_snyder_960.jpg',
@@ -45,7 +45,7 @@ var IMAGE_URIS = [
   'http://apod.nasa.gov/apod/image/1510/lunareclipse_27Sep_beletskycrop4.jpg',
 ];
 
-var LikeCount = React.createClass({
+const LikeCount = React.createClass({
   getInitialState: function() {
     return {
       likes: 7,
@@ -55,7 +55,7 @@ var LikeCount = React.createClass({
     this.setState({likes: this.state.likes + 1});
   },
   render: function() {
-    var thumbsUp = '\uD83D\uDC4D';
+    const thumbsUp = '\uD83D\uDC4D';
     return (
       <View style={styles.likeContainer}>
         <TouchableOpacity onPress={this.onClick} style={styles.likeButton}>
@@ -71,7 +71,7 @@ var LikeCount = React.createClass({
   },
 });
 
-var Button = React.createClass({
+const Button = React.createClass({
   _handlePress: function() {
     if (this.props.enabled && this.props.onPress) {
       this.props.onPress();
@@ -88,10 +88,10 @@ var Button = React.createClass({
   }
 });
 
-var ProgressBar = React.createClass({
+const ProgressBar = React.createClass({
   render: function() {
-    var fractionalPosition = (this.props.progress.position + this.props.progress.offset);
-    var progressBarSize = (fractionalPosition / (PAGES - 1)) * this.props.size;
+    const fractionalPosition = (this.props.progress.position + this.props.progress.offset);
+    const progressBarSize = (fractionalPosition / (PAGES - 1)) * this.props.size;
     return (
       <View style={[styles.progressBarContainer, {width: this.props.size}]}>
         <View style={[styles.progressBar, {width: progressBarSize}]}/>
@@ -100,7 +100,7 @@ var ProgressBar = React.createClass({
   }
 });
 
-var ViewPagerAndroidExample = React.createClass({
+const ViewPagerAndroidExample = React.createClass({
   statics: {
     title: '<ViewPagerAndroid>',
     description: 'Container that allows to flip left and right between child views.'
@@ -129,7 +129,7 @@ var ViewPagerAndroidExample = React.createClass({
   },
 
   move: function(delta) {
-    var page = this.state.page + delta;
+    const page = this.state.page + delta;
     this.go(page);
   },
 
@@ -144,9 +144,9 @@ var ViewPagerAndroidExample = React.createClass({
   },
 
   render: function() {
-    var pages = [];
-    for (var i = 0; i < PAGES; i++) {
-      var pageStyle = {
+    const pages = [];
+    for (const i = 0; i < PAGES; i++) {
+      const pageStyle = {
         backgroundColor: BGCOLOR[i % BGCOLOR.length],
         alignItems: 'center',
         padding: 20,
@@ -161,7 +161,7 @@ var ViewPagerAndroidExample = React.createClass({
        </View>
       );
     }
-    var { page, animationsAreEnabled } = this.state;
+    const { page, animationsAreEnabled } = this.state;
     return (
       <View style={styles.container}>
         <ViewPagerAndroid
@@ -201,7 +201,7 @@ var ViewPagerAndroidExample = React.createClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   buttons: {
     flexDirection: 'row',
     height: 30,

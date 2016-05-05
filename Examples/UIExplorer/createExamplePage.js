@@ -16,23 +16,23 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Platform,
 } = ReactNative;
-var UIExplorerBlock = require('./UIExplorerBlock');
-var UIExplorerPage = require('./UIExplorerPage');
+const UIExplorerBlock = require('./UIExplorerBlock');
+const UIExplorerPage = require('./UIExplorerPage');
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
 import type { Example, ExampleModule } from 'ExampleTypes';
 
-var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
+const createExamplePage = function(title: ?string, exampleModule: ExampleModule)
   : ReactClass<any> {
   invariant(!!exampleModule.examples, 'The module must have examples');
 
-  var ExamplePage = React.createClass({
+  const ExamplePage = React.createClass({
     statics: {
       title: exampleModule.title,
       description: exampleModule.description,
@@ -49,8 +49,8 @@ var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
       }
       // Hack warning: This is a hack because the www UI explorer used to
       // require render to be called. It should just return elements now.
-      var originalRender = React.render;
-      var originalIOSRender = ReactNative.render;
+      const originalRender = React.render;
+      const originalIOSRender = ReactNative.render;
       var renderedComponent;
       // TODO remove typecasts when Flow bug #6560135 is fixed
       // and workaround is removed from react-native.js
@@ -59,7 +59,7 @@ var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
         function(element, container) {
           renderedComponent = element;
         };
-      var result = example.render(null);
+      const result = example.render(null);
       if (result) {
         renderedComponent = React.cloneElement(result, {
           navigator: this.props.navigator,

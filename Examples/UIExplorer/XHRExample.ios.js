@@ -15,9 +15,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   AlertIOS,
   CameraRoll,
   Image,
@@ -30,9 +30,9 @@ var {
   View,
 } = ReactNative;
 
-var XHRExampleHeaders = require('./XHRExampleHeaders');
-var XHRExampleFetch = require('./XHRExampleFetch');
-var XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
+const XHRExampleHeaders = require('./XHRExampleHeaders');
+const XHRExampleFetch = require('./XHRExampleFetch');
+const XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
 
 class Downloader extends React.Component {
   state: any;
@@ -53,10 +53,10 @@ class Downloader extends React.Component {
   download() {
     this.xhr && this.xhr.abort();
 
-    var xhr = this.xhr || new XMLHttpRequest();
+    const xhr = this.xhr || new XMLHttpRequest();
     xhr.onreadystatechange = () => {
       if (xhr.readyState === xhr.HEADERS_RECEIVED) {
-        var contentSize = parseInt(xhr.getResponseHeader('Content-Length'), 10);
+        const contentSize = parseInt(xhr.getResponseHeader('Content-Length'), 10);
         this.setState({
           contentSize: contentSize,
           downloaded: 0,
@@ -95,7 +95,7 @@ class Downloader extends React.Component {
   }
 
   render() {
-    var button = this.state.downloading ? (
+    const button = this.state.downloading ? (
       <View style={styles.wrapper}>
         <View style={styles.button}>
           <Text>Downloading...</Text>
@@ -120,7 +120,7 @@ class Downloader extends React.Component {
   }
 }
 
-var PAGE_SIZE = 20;
+const PAGE_SIZE = 20;
 
 class FormUploader extends React.Component {
   state: any;
@@ -154,9 +154,9 @@ class FormUploader extends React.Component {
         if (!this._isMounted) {
           return;
         }
-        var edges = data.edges;
-        var edge = edges[Math.floor(Math.random() * edges.length)];
-        var randomPhoto = edge && edge.node && edge.node.image;
+        const edges = data.edges;
+        const edge = edges[Math.floor(Math.random() * edges.length)];
+        const randomPhoto = edge && edge.node && edge.node.image;
         if (randomPhoto) {
           this.setState({randomPhoto});
         }
@@ -166,7 +166,7 @@ class FormUploader extends React.Component {
   }
 
   _addTextParam() {
-    var textParams = this.state.textParams;
+    const textParams = this.state.textParams;
     textParams.push({name: '', value: ''});
     this.setState({textParams});
   }
@@ -176,19 +176,19 @@ class FormUploader extends React.Component {
   }
 
   _onTextParamNameChange(index, text) {
-    var textParams = this.state.textParams;
+    const textParams = this.state.textParams;
     textParams[index].name = text;
     this.setState({textParams});
   }
 
   _onTextParamValueChange(index, text) {
-    var textParams = this.state.textParams;
+    const textParams = this.state.textParams;
     textParams[index].value = text;
     this.setState({textParams});
   }
 
   _upload() {
-    var xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
     xhr.open('POST', 'http://posttestserver.com/post.php');
     xhr.onload = () => {
       this.setState({isUploading: false});
@@ -206,7 +206,7 @@ class FormUploader extends React.Component {
         );
         return;
       }
-      var index = xhr.responseText.indexOf('http://www.posttestserver.com/');
+      const index = xhr.responseText.indexOf('http://www.posttestserver.com/');
       if (index === -1) {
         AlertIOS.alert(
           'Upload failed',
@@ -214,10 +214,10 @@ class FormUploader extends React.Component {
         );
         return;
       }
-      var url = xhr.responseText.slice(index).split('\n')[0];
+      const url = xhr.responseText.slice(index).split('\n')[0];
       LinkingIOS.openURL(url);
     };
-    var formdata = new FormData();
+    const formdata = new FormData();
     if (this.state.randomPhoto) {
       formdata.append('image', {...this.state.randomPhoto, name: 'image.jpg'});
     }
@@ -246,7 +246,7 @@ class FormUploader extends React.Component {
         />
       );
     }
-    var textItems = this.state.textParams.map((item, index) => (
+    const textItems = this.state.textParams.map((item, index) => (
       <View style={styles.paramRow}>
         <TextInput
           autoCapitalize="none"
@@ -266,7 +266,7 @@ class FormUploader extends React.Component {
       </View>
     ));
     var uploadButtonLabel = this.state.isUploading ? 'Uploading...' : 'Upload';
-    var uploadProgress = this.state.uploadProgress;
+    const uploadProgress = this.state.uploadProgress;
     if (uploadProgress !== null) {
       uploadButtonLabel += ' ' + Math.round(uploadProgress * 100) + '%';
     }
@@ -339,7 +339,7 @@ exports.examples = [{
   }
 }];
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,

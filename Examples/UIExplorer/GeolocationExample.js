@@ -17,9 +17,9 @@
 'use strict';
 
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   StyleSheet,
   Text,
   View,
@@ -38,7 +38,7 @@ exports.examples = [
   }
 ];
 
-var GeolocationExample = React.createClass({
+const GeolocationExample = React.createClass({
   watchID: (null: ?number),
 
   getInitialState: function() {
@@ -51,14 +51,14 @@ var GeolocationExample = React.createClass({
   componentDidMount: function() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        var initialPosition = JSON.stringify(position);
+        const initialPosition = JSON.stringify(position);
         this.setState({initialPosition});
       },
       (error) => alert(error.message),
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
     );
     this.watchID = navigator.geolocation.watchPosition((position) => {
-      var lastPosition = JSON.stringify(position);
+      const lastPosition = JSON.stringify(position);
       this.setState({lastPosition});
     });
   },
@@ -83,7 +83,7 @@ var GeolocationExample = React.createClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   title: {
     fontWeight: '500',
   },

@@ -22,7 +22,7 @@ export type UIExplorerExample = {
   module: React.Component;
 };
 
-var ComponentExamples: Array<UIExplorerExample> = [
+const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'SliderExample',
     module: require('./SliderExample'),

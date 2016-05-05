@@ -15,20 +15,20 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   StyleSheet,
   Text,
   View,
 } = ReactNative;
 
-var UIExplorerBlock = require('./UIExplorerBlock');
-var UIExplorerPage = require('./UIExplorerPage');
+const UIExplorerBlock = require('./UIExplorerBlock');
+const UIExplorerPage = require('./UIExplorerPage');
 
-var Circle = React.createClass({
+const Circle = React.createClass({
   render: function() {
-    var size = this.props.size || 20;
+    const size = this.props.size || 20;
     return (
       <View
         style={{
@@ -43,9 +43,9 @@ var Circle = React.createClass({
   }
 });
 
-var CircleBlock = React.createClass({
+const CircleBlock = React.createClass({
   render: function() {
-    var circleStyle = {
+    const circleStyle = {
       flexDirection: 'row',
       backgroundColor: '#f6f7f8',
       borderWidth: 0.5,
@@ -60,7 +60,7 @@ var CircleBlock = React.createClass({
   }
 });
 
-var LayoutExample = React.createClass({
+const LayoutExample = React.createClass({
   statics: {
     title: 'Layout - Flexbox',
     description: 'Examples of using the flexbox API to layout views.',
@@ -146,7 +146,7 @@ var LayoutExample = React.createClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   overlay: {
     backgroundColor: '#aaccff',
     borderRadius: 10,

@@ -13,18 +13,18 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Linking,
   StyleSheet,
   Text,
   TouchableNativeFeedback,
   View,
 } = ReactNative;
-var UIExplorerBlock = require('./UIExplorerBlock');
+const UIExplorerBlock = require('./UIExplorerBlock');
 
-var OpenURLButton = React.createClass({
+const OpenURLButton = React.createClass({
 
   propTypes: {
     url: React.PropTypes.string,
@@ -52,7 +52,7 @@ var OpenURLButton = React.createClass({
   }
 });
 
-var IntentAndroidExample = React.createClass({
+const IntentAndroidExample = React.createClass({
 
   statics: {
     title: 'Linking',
@@ -73,7 +73,7 @@ var IntentAndroidExample = React.createClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',

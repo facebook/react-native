@@ -15,27 +15,27 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   AsyncStorage,
   PickerIOS,
   Text,
   View
 } = ReactNative;
-var PickerItemIOS = PickerIOS.Item;
+const PickerItemIOS = PickerIOS.Item;
 
-var STORAGE_KEY = '@AsyncStorageExample:key';
-var COLORS = ['red', 'orange', 'yellow', 'green', 'blue'];
+const STORAGE_KEY = '@AsyncStorageExample:key';
+const COLORS = ['red', 'orange', 'yellow', 'green', 'blue'];
 
-var BasicStorageExample = React.createClass({
+const BasicStorageExample = React.createClass({
   componentDidMount() {
     this._loadInitialState().done();
   },
 
   async _loadInitialState() {
     try {
-      var value = await AsyncStorage.getItem(STORAGE_KEY);
+      const value = await AsyncStorage.getItem(STORAGE_KEY);
       if (value !== null){
         this.setState({selectedValue: value});
         this._appendMessage('Recovered selection from disk: ' + value);
@@ -55,7 +55,7 @@ var BasicStorageExample = React.createClass({
   },
 
   render() {
-    var color = this.state.selectedValue;
+    const color = this.state.selectedValue;
     return (
       <View>
         <PickerIOS

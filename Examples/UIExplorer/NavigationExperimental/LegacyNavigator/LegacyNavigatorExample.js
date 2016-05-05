@@ -20,9 +20,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   NavigationExperimental,
   ScrollView,
   StyleSheet,
@@ -30,11 +30,11 @@ var {
   TouchableHighlight,
 } = ReactNative;
 
-var BreadcrumbNavSample = require('./BreadcrumbNavSample');
-var NavigationBarSample = require('./NavigationBarSample');
-var JumpingNavSample = require('./JumpingNavSample');
+const BreadcrumbNavSample = require('./BreadcrumbNavSample');
+const NavigationBarSample = require('./NavigationBarSample');
+const JumpingNavSample = require('./JumpingNavSample');
 
-var Navigator = NavigationExperimental.LegacyNavigator;
+const Navigator = NavigationExperimental.LegacyNavigator;
 
 class NavButton extends React.Component {
   render() {
@@ -113,7 +113,7 @@ class NavMenu extends React.Component {
   }
 }
 
-var TabBarExample = React.createClass({
+const TabBarExample = React.createClass({
 
   statics: {
     title: '<LegacyNavigator> (Experimental)',
@@ -167,7 +167,7 @@ var TabBarExample = React.createClass({
       this._navigator = navigator;
 
       if (navigator) {
-        var callback = (event) => {
+        const callback = (event) => {
           console.log(
             `LegacyNavigator: event ${event.type}`,
             {
@@ -187,7 +187,7 @@ var TabBarExample = React.createClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   messageText: {
     fontSize: 17,
     fontWeight: '500',

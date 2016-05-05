@@ -22,18 +22,18 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   PanResponder,
   StyleSheet,
   View,
   processColor,
 } = ReactNative;
 
-var CIRCLE_SIZE = 80;
+const CIRCLE_SIZE = 80;
 
-var PanResponderExample = React.createClass({
+const PanResponderExample = React.createClass({
 
   statics: {
     title: 'PanResponder Sample',
@@ -124,7 +124,7 @@ var PanResponderExample = React.createClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   circle: {
     width: CIRCLE_SIZE,
     height: CIRCLE_SIZE,

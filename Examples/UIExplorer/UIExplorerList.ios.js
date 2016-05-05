@@ -20,7 +20,7 @@ export type UIExplorerExample = {
   module: Object;
 };
 
-var ComponentExamples: Array<UIExplorerExample> = [
+const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'ActivityIndicatorIOSExample',
     module: require('./ActivityIndicatorIOSExample'),
@@ -131,7 +131,7 @@ var ComponentExamples: Array<UIExplorerExample> = [
   },
 ];
 
-var APIExamples: Array<UIExplorerExample> = [
+const APIExamples: Array<UIExplorerExample> = [
   {
     key: 'AccessibilityIOSExample',
     module: require('./AccessibilityIOSExample'),

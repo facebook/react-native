@@ -451,7 +451,7 @@ const examples = [{
 
 exports.examples = examples;
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,

@@ -15,9 +15,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Image,
   ListView,
   TouchableHighlight,
@@ -26,7 +26,7 @@ var {
   View,
 } = ReactNative;
 
-var THUMB_URLS = [
+const THUMB_URLS = [
   require('./Thumbnails/like.png'),
   require('./Thumbnails/dislike.png'),
   require('./Thumbnails/call.png'),
@@ -41,7 +41,7 @@ var THUMB_URLS = [
   require('./Thumbnails/victory.png'),
 ];
 
-var ListViewGridLayoutExample = React.createClass({
+const ListViewGridLayoutExample = React.createClass({
 
   statics: {
     title: '<ListView> - Grid Layout',
@@ -49,7 +49,7 @@ var ListViewGridLayoutExample = React.createClass({
   },
 
   getInitialState: function() {
-    var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     return {
       dataSource: ds.cloneWithRows(this._genRows({})),
     };
@@ -77,8 +77,8 @@ var ListViewGridLayoutExample = React.createClass({
   },
 
   _renderRow: function(rowData: string, sectionID: number, rowID: number) {
-    var rowHash = Math.abs(hashCode(rowData));
-    var imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
+    const rowHash = Math.abs(hashCode(rowData));
+    const imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
     return (
       <TouchableHighlight onPress={() => this._pressRow(rowID)} underlayColor="transparent">
         <View>
@@ -94,9 +94,9 @@ var ListViewGridLayoutExample = React.createClass({
   },
 
   _genRows: function(pressData: {[key: number]: boolean}): Array<string> {
-    var dataBlob = [];
-    for (var ii = 0; ii < 100; ii++) {
-      var pressedText = pressData[ii] ? ' (X)' : '';
+    const dataBlob = [];
+    for (const ii = 0; ii < 100; ii++) {
+      const pressedText = pressData[ii] ? ' (X)' : '';
       dataBlob.push('Cell ' + ii + pressedText);
     }
     return dataBlob;
@@ -111,15 +111,15 @@ var ListViewGridLayoutExample = React.createClass({
 });
 
 /* eslint no-bitwise: 0 */
-var hashCode = function(str) {
+const hashCode = function(str) {
   var hash = 15;
-  for (var ii = str.length - 1; ii >= 0; ii--) {
+  for (const ii = str.length - 1; ii >= 0; ii--) {
     hash = ((hash << 5) - hash) + str.charCodeAt(ii);
   }
   return hash;
 };
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   list: {
     justifyContent: 'space-around',
     flexDirection: 'row',

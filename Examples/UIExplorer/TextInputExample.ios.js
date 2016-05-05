@@ -15,16 +15,16 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Text,
   TextInput,
   View,
   StyleSheet,
 } = ReactNative;
 
-var WithLabel = React.createClass({
+const WithLabel = React.createClass({
   render: function() {
     return (
       <View style={styles.labelContainer}>
@@ -37,7 +37,7 @@ var WithLabel = React.createClass({
   },
 });
 
-var TextEventsExample = React.createClass({
+const TextEventsExample = React.createClass({
   getInitialState: function() {
     return {
       curText: '<No Event>',
@@ -130,9 +130,9 @@ class RewriteExample extends React.Component {
     this.state = {text: ''};
   }
   render() {
-    var limit = 20;
-    var remainder = limit - this.state.text.length;
-    var remainderColor = remainder > 5 ? 'blue' : 'red';
+    const limit = 20;
+    const remainder = limit - this.state.text.length;
+    const remainderColor = remainder > 5 ? 'blue' : 'red';
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
@@ -232,7 +232,7 @@ class TokenizedTextExample extends React.Component {
   }
 }
 
-var BlurOnSubmitExample = React.createClass({
+const BlurOnSubmitExample = React.createClass({
   focusNextField(nextField) {
     this.refs[nextField].focus();
   },
@@ -286,7 +286,7 @@ var BlurOnSubmitExample = React.createClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   page: {
     paddingBottom: 300,
   },
@@ -429,7 +429,7 @@ exports.examples = [
   {
     title: 'Keyboard types',
     render: function() {
-      var keyboardTypes = [
+      const keyboardTypes = [
         'default',
         'ascii-capable',
         'numbers-and-punctuation',
@@ -443,7 +443,7 @@ exports.examples = [
         'web-search',
         'numeric',
       ];
-      var examples = keyboardTypes.map((type) => {
+      const examples = keyboardTypes.map((type) => {
         return (
           <WithLabel key={type} label={type}>
             <TextInput
@@ -459,12 +459,12 @@ exports.examples = [
   {
     title: 'Keyboard appearance',
     render: function() {
-      var keyboardAppearance = [
+      const keyboardAppearance = [
         'default',
         'light',
         'dark',
       ];
-      var examples = keyboardAppearance.map((type) => {
+      const examples = keyboardAppearance.map((type) => {
         return (
           <WithLabel key={type} label={type}>
             <TextInput
@@ -480,7 +480,7 @@ exports.examples = [
   {
     title: 'Return key types',
     render: function() {
-      var returnKeyTypes = [
+      const returnKeyTypes = [
         'default',
         'go',
         'google',
@@ -493,7 +493,7 @@ exports.examples = [
         'done',
         'emergency-call',
       ];
-      var examples = returnKeyTypes.map((type) => {
+      const examples = returnKeyTypes.map((type) => {
         return (
           <WithLabel key={type} label={type}>
             <TextInput

@@ -15,9 +15,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   ActionSheetIOS,
   StyleSheet,
   Text,
@@ -25,17 +25,17 @@ var {
   View,
 } = ReactNative;
 
-var BUTTONS = [
+const BUTTONS = [
   'Option 0',
   'Option 1',
   'Option 2',
   'Delete',
   'Cancel',
 ];
-var DESTRUCTIVE_INDEX = 3;
-var CANCEL_INDEX = 4;
+const DESTRUCTIVE_INDEX = 3;
+const CANCEL_INDEX = 4;
 
-var ActionSheetExample = React.createClass({
+const ActionSheetExample = React.createClass({
   getInitialState() {
     return {
       clicked: 'none',
@@ -67,7 +67,7 @@ var ActionSheetExample = React.createClass({
   }
 });
 
-var ActionSheetTintExample = React.createClass({
+const ActionSheetTintExample = React.createClass({
   getInitialState() {
     return {
       clicked: 'none',
@@ -100,7 +100,7 @@ var ActionSheetTintExample = React.createClass({
   }
 });
 
-var ShareActionSheetExample = React.createClass({
+const ShareActionSheetExample = React.createClass({
   getInitialState() {
     return {
       text: ''
@@ -142,7 +142,7 @@ var ShareActionSheetExample = React.createClass({
   }
 });
 
-var ShareScreenshotExample = React.createClass({
+const ShareScreenshotExample = React.createClass({
   getInitialState() {
     return {
       text: ''
@@ -186,7 +186,7 @@ var ShareScreenshotExample = React.createClass({
   }
 });
 
-var style = StyleSheet.create({
+const style = StyleSheet.create({
   button: {
     marginBottom: 10,
     fontWeight: '500',

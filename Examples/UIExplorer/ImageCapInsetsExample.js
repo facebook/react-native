@@ -16,16 +16,16 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Image,
   StyleSheet,
   Text,
   View,
 } = ReactNative;
 
-var ImageCapInsetsExample = React.createClass({
+const ImageCapInsetsExample = React.createClass({
   render: function() {
     return (
       <View>
@@ -56,7 +56,7 @@ var ImageCapInsetsExample = React.createClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   background: {
     backgroundColor: '#F6F6F6',
     justifyContent: 'center',

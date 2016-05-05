@@ -13,9 +13,9 @@
 */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Text,
   PixelRatio,
   StyleSheet,
@@ -23,7 +23,7 @@ var {
   TouchableHighlight,
 } = ReactNative;
 
-var NavigationExampleRow = React.createClass({
+const NavigationExampleRow = React.createClass({
   render: function() {
     if (this.props.onPress) {
       return (

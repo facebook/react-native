@@ -14,9 +14,9 @@
 'use strict';
 
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   NavigationExperimental,
   ScrollView,
   StyleSheet,
@@ -25,7 +25,7 @@ var {
   TouchableOpacity,
 } = ReactNative;
 
-var Navigator = NavigationExperimental.LegacyNavigator;
+const Navigator = NavigationExperimental.LegacyNavigator;
 
 class NavButton extends React.Component {
   render() {
@@ -40,14 +40,14 @@ class NavButton extends React.Component {
   }
 }
 
-var NavigationBarRouteMapper = {
+const NavigationBarRouteMapper = {
 
   LeftButton: function(route, navigator, index, navState) {
     if (index === 0) {
       return null;
     }
 
-    var previousRoute = navState.routeStack[index - 1];
+    const previousRoute = navState.routeStack[index - 1];
     return (
       <TouchableOpacity
         onPress={() => navigator.pop()}
@@ -87,12 +87,12 @@ function newRandomRoute() {
   };
 }
 
-var NavigationBarSample = React.createClass({
+const NavigationBarSample = React.createClass({
 
   componentWillMount: function() {
-    var navigator = this.props.navigator;
+    const navigator = this.props.navigator;
 
-    var callback = (event) => {
+    const callback = (event) => {
       console.log(
         `NavigationBarSample : event ${event.type}`,
         {
@@ -153,7 +153,7 @@ var NavigationBarSample = React.createClass({
 
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   messageText: {
     fontSize: 17,
     fontWeight: '500',

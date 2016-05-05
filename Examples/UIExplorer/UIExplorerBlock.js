@@ -16,15 +16,15 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   StyleSheet,
   Text,
   View,
 } = ReactNative;
 
-var UIExplorerBlock = React.createClass({
+const UIExplorerBlock = React.createClass({
   propTypes: {
     title: React.PropTypes.string,
     description: React.PropTypes.string,
@@ -59,7 +59,7 @@ var UIExplorerBlock = React.createClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     borderRadius: 3,
     borderWidth: 0.5,

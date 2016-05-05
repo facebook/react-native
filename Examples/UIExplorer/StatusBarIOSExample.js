@@ -15,9 +15,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   StyleSheet,
   View,
   Text,
@@ -106,7 +106,7 @@ exports.examples = [{
   },
 }];
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,

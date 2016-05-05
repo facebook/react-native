@@ -16,9 +16,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Animated,
   Image,
   PanResponder,
@@ -26,10 +26,10 @@ var {
   View,
 } = ReactNative;
 
-var NUM_BOBBLES = 5;
-var RAD_EACH = Math.PI / 2 / (NUM_BOBBLES - 2);
-var RADIUS = 160;
-var BOBBLE_SPOTS = [...Array(NUM_BOBBLES)].map((_, i) => {  // static positions
+const NUM_BOBBLES = 5;
+const RAD_EACH = Math.PI / 2 / (NUM_BOBBLES - 2);
+const RADIUS = 160;
+const BOBBLE_SPOTS = [...Array(NUM_BOBBLES)].map((_, i) => {  // static positions
   return i === 0 ? {x: 0, y: 0} : {                         // first bobble is the selector
     x: -Math.cos(RAD_EACH * (i - 1)) * RADIUS,
     y: -Math.sin(RAD_EACH * (i - 1)) * RADIUS,
@@ -46,11 +46,11 @@ class AnExBobble extends React.Component {
       return new Animated.ValueXY();
     });
     this.state.selectedBobble = null;
-    var bobblePanListener = (e, gestureState) => {     // async events => change selection
-      var newSelected = computeNewSelected(gestureState);
+    const bobblePanListener = (e, gestureState) => {     // async events => change selection
+      const newSelected = computeNewSelected(gestureState);
       if (this.state.selectedBobble !== newSelected) {
         if (this.state.selectedBobble !== null) {
-          var restSpot = BOBBLE_SPOTS[this.state.selectedBobble];
+          const restSpot = BOBBLE_SPOTS[this.state.selectedBobble];
           Animated.spring(this.state.bobbles[this.state.selectedBobble], {
             toValue: restSpot,       // return previously selected bobble to rest position
           }).start();
@@ -63,7 +63,7 @@ class AnExBobble extends React.Component {
         this.state.selectedBobble = newSelected;
       }
     };
-    var releaseBobble = () => {
+    const releaseBobble = () => {
       this.state.bobbles.forEach((bobble, i) => {
         Animated.spring(bobble, {
           toValue: {x: 0, y: 0}           // all bobbles return to zero
@@ -93,8 +93,8 @@ class AnExBobble extends React.Component {
     return (
       <View style={styles.bobbleContainer}>
         {this.state.bobbles.map((_, i) => {
-          var j = this.state.bobbles.length - i - 1; // reverse so lead on top
-          var handlers = j > 0 ? {} : this.state.bobbleResponder.panHandlers;
+          const j = this.state.bobbles.length - i - 1; // reverse so lead on top
+          const handlers = j > 0 ? {} : this.state.bobbleResponder.panHandlers;
           return (
             <Animated.Image
               {...handlers}
@@ -112,7 +112,7 @@ class AnExBobble extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   circle: {
     position: 'absolute',
     height: 60,
@@ -133,14 +133,14 @@ var styles = StyleSheet.create({
 function computeNewSelected(
   gestureState: Object,
 ): ?number {
-  var {dx, dy} = gestureState;
+  const {dx, dy} = gestureState;
   var minDist = Infinity;
   var newSelected = null;
-  var pointRadius = Math.sqrt(dx * dx + dy * dy);
+  const pointRadius = Math.sqrt(dx * dx + dy * dy);
   if (Math.abs(RADIUS - pointRadius) < 80) {
     BOBBLE_SPOTS.forEach((spot, idx) => {
-      var delta = {x: spot.x - dx, y: spot.y - dy};
-      var dist = delta.x * delta.x + delta.y * delta.y;
+      const delta = {x: spot.x - dx, y: spot.y - dy};
+      const dist = delta.x * delta.x + delta.y * delta.y;
       if (dist < minDist) {
         minDist = dist;
         newSelected = idx;
@@ -151,11 +151,11 @@ function computeNewSelected(
 }
 
 function randColor(): string {
-  var colors = [0,1,2].map(() => Math.floor(Math.random() * 150 + 100));
+  const colors = [0,1,2].map(() => Math.floor(Math.random() * 150 + 100));
   return 'rgb(' + colors.join(',') + ')';
 }
 
-var BOBBLE_IMGS = [
+const BOBBLE_IMGS = [
   'https://scontent-sea1-1.xx.fbcdn.net/hphotos-xpf1/t39.1997-6/10173489_272703316237267_1025826781_n.png',
   'https://scontent-sea1-1.xx.fbcdn.net/hphotos-xaf1/l/t39.1997-6/p240x240/851578_631487400212668_2087073502_n.png',
   'https://scontent-sea1-1.xx.fbcdn.net/hphotos-xaf1/t39.1997-6/p240x240/851583_654446917903722_178118452_n.png',

@@ -15,9 +15,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   StyleSheet,
   Text,
   TextInput,
@@ -27,15 +27,15 @@ var {
   WebView
 } = ReactNative;
 
-var HEADER = '#3b5998';
-var BGWASH = 'rgba(255,255,255,0.8)';
-var DISABLED_WASH = 'rgba(255,255,255,0.25)';
+const HEADER = '#3b5998';
+const BGWASH = 'rgba(255,255,255,0.8)';
+const DISABLED_WASH = 'rgba(255,255,255,0.25)';
 
-var TEXT_INPUT_REF = 'urlInput';
-var WEBVIEW_REF = 'webview';
-var DEFAULT_URL = 'https://m.facebook.com';
+const TEXT_INPUT_REF = 'urlInput';
+const WEBVIEW_REF = 'webview';
+const DEFAULT_URL = 'https://m.facebook.com';
 
-var WebViewExample = React.createClass({
+const WebViewExample = React.createClass({
 
   getInitialState: function() {
     return {
@@ -148,7 +148,7 @@ var WebViewExample = React.createClass({
   },
 
   pressGoButton: function() {
-    var url = this.inputText.toLowerCase();
+    const url = this.inputText.toLowerCase();
     if (url === this.state.url) {
       this.reload();
     } else {
@@ -162,7 +162,7 @@ var WebViewExample = React.createClass({
 
 });
 
-var Button = React.createClass({
+const Button = React.createClass({
   _handlePress: function() {
     if (this.props.enabled !== false && this.props.onPress) {
       this.props.onPress();
@@ -179,7 +179,7 @@ var Button = React.createClass({
   }
 });
 
-var ScaledWebView = React.createClass({
+const ScaledWebView = React.createClass({
 
   getInitialState: function() {
     return {
@@ -216,7 +216,7 @@ var ScaledWebView = React.createClass({
   },
 })
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: HEADER,

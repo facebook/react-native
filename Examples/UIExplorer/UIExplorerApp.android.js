@@ -38,7 +38,7 @@ const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
 const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
 const URIActionMap = require('./URIActionMap');
 
-var DRAWER_WIDTH_LEFT = 56;
+const DRAWER_WIDTH_LEFT = 56;
 
 type Props = {
   exampleFromAppetizeParams: string,
@@ -135,7 +135,7 @@ class UIExplorerApp extends React.Component {
 
   _renderNavigation(navigationState, onNavigate) {
     if (navigationState.externalExample) {
-      var Component = UIExplorerList.Modules[navigationState.externalExample];
+      const Component = UIExplorerList.Modules[navigationState.externalExample];
       return (
         <Component
           onExampleExit={() => {

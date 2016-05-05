@@ -15,16 +15,16 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Image,
   StyleSheet,
   Text,
   View,
 } = ReactNative;
 
-var Entity = React.createClass({
+const Entity = React.createClass({
   render: function() {
     return (
       <Text style={{fontWeight: '500', color: '#527fe4'}}>
@@ -34,7 +34,7 @@ var Entity = React.createClass({
   }
 });
 
-var AttributeToggler = React.createClass({
+const AttributeToggler = React.createClass({
   getInitialState: function() {
     return {fontWeight: 'bold', fontSize: 15};
   },
@@ -49,7 +49,7 @@ var AttributeToggler = React.createClass({
     });
   },
   render: function() {
-    var curStyle = {fontWeight: this.state.fontWeight, fontSize: this.state.fontSize};
+    const curStyle = {fontWeight: this.state.fontWeight, fontSize: this.state.fontSize};
     return (
       <View>
         <Text style={curStyle}>
@@ -438,7 +438,7 @@ exports.examples = [
   },
 }];
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   backgroundColorText: {
     margin: 5,
     marginBottom: 0,

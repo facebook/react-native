@@ -16,9 +16,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Animated,
   Image,
   PanResponder,
@@ -34,16 +34,16 @@ class AnExChained extends React.Component {
     this.state = {
       stickers: [new Animated.ValueXY()],                    // 1 leader
     };
-    var stickerConfig = {tension: 2, friction: 3};           // soft spring
+    const stickerConfig = {tension: 2, friction: 3};           // soft spring
     for (var i = 0; i < 4; i++) {                            // 4 followers
-      var sticker = new Animated.ValueXY();
+      const sticker = new Animated.ValueXY();
       Animated.spring(sticker, {
         ...stickerConfig,
         toValue: this.state.stickers[i],               // Animated toValue's are tracked
       }).start();
       this.state.stickers.push(sticker);               // push on the followers
     }
-    var releaseChain = (e, gestureState) => {
+    const releaseChain = (e, gestureState) => {
       this.state.stickers[0].flattenOffset();          // merges offset into value and resets
       Animated.sequence([                              // spring to start after decay finishes
         Animated.decay(this.state.stickers[0], {       // coast to a stop
@@ -75,8 +75,8 @@ class AnExChained extends React.Component {
     return (
       <View style={styles.chained}>
         {this.state.stickers.map((_, i) => {
-          var j = this.state.stickers.length - i - 1; // reverse so leader is on top
-          var handlers = (j === 0) ? this.state.chainResponder.panHandlers : {};
+          const j = this.state.stickers.length - i - 1; // reverse so leader is on top
+          const handlers = (j === 0) ? this.state.chainResponder.panHandlers : {};
           return (
             <Animated.Image
               {...handlers}
@@ -93,7 +93,7 @@ class AnExChained extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   chained: {
     alignSelf: 'flex-end',
     top: -160,
@@ -107,7 +107,7 @@ var styles = StyleSheet.create({
   },
 });
 
-var CHAIN_IMGS = [
+const CHAIN_IMGS = [
   'https://scontent-sea1-1.xx.fbcdn.net/hphotos-xpf1/t39.1997-6/p160x160/10574705_1529175770666007_724328156_n.png',
   'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-xfa1/t39.1997-6/p160x160/851575_392309884199657_1917957497_n.png',
   'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-xfa1/t39.1997-6/p160x160/851567_555288911225630_1628791128_n.png',

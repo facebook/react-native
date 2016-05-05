@@ -15,14 +15,14 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Text,
   View,
 } = ReactNative;
 
-var AccessibilityIOSExample = React.createClass({
+const AccessibilityIOSExample = React.createClass({
   render() {
     return (
       <View>

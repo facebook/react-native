@@ -114,7 +114,7 @@ class UIExplorerApp extends React.Component {
       return null;
     }
     if (navigationState.externalExample) {
-      var Component = UIExplorerList.Modules[navigationState.externalExample];
+      const Component = UIExplorerList.Modules[navigationState.externalExample];
       return (
         <Component
           onExampleExit={() => {
@@ -194,9 +194,9 @@ AppRegistry.registerComponent('UIExplorerApp', () => UIExplorerApp);
 UIExplorerList.ComponentExamples.concat(UIExplorerList.APIExamples).forEach((Example: UIExplorerExample) => {
   const ExampleModule = Example.module;
   if (ExampleModule.displayName) {
-    var Snapshotter = React.createClass({
+    const Snapshotter = React.createClass({
       render: function() {
-        var Renderable = UIExplorerExampleList.makeRenderable(ExampleModule);
+        const Renderable = UIExplorerExampleList.makeRenderable(ExampleModule);
         return (
           <SnapshotViewIOS>
             <Renderable />

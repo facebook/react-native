@@ -16,9 +16,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Animated,
   LayoutAnimation,
   PanResponder,
@@ -26,11 +26,11 @@ var {
   View,
 } = ReactNative;
 
-var AnExSet = require('AnExSet');
+const AnExSet = require('AnExSet');
 
-var CIRCLE_SIZE = 80;
-var CIRCLE_MARGIN = 18;
-var NUM_CIRCLES = 30;
+const CIRCLE_SIZE = 80;
+const CIRCLE_MARGIN = 18;
+const NUM_CIRCLES = 30;
 
 class Circle extends React.Component {
   state: any;
@@ -51,7 +51,7 @@ class Circle extends React.Component {
   }
 
   _onLongPress(): void {
-    var config = {tension: 40, friction: 3};
+    const config = {tension: 40, friction: 3};
     this.state.pan.addListener((value) => {  // Async listener for state changes  (step1: uncomment)
       this.props.onMove && this.props.onMove(value);
     });
@@ -105,7 +105,7 @@ class Circle extends React.Component {
         }
       };
     }
-    var animatedStyle: Object = {
+    const animatedStyle: Object = {
       shadowOpacity: this.state.pop,    // no need for interpolation            (step2d: uncomment)
       transform: [
         {scale: this.state.pop.interpolate({
@@ -114,7 +114,7 @@ class Circle extends React.Component {
         })},
       ],
     };
-    var openVal = this.props.openVal;
+    const openVal = this.props.openVal;
     if (this.props.dummy) {
       animatedStyle.opacity = 0;
     } else if (this.state.isActive) {
@@ -145,7 +145,7 @@ class Circle extends React.Component {
     );
   }
   _toggleIsActive(velocity) {
-    var config = {tension: 30, friction: 7};
+    const config = {tension: 30, friction: 7};
     if (this.state.isActive) {
       Animated.spring(this.props.openVal, {toValue: 0, ...config}).start(() => { // (step4: uncomment)
         this.setState({isActive: false}, this.props.onDeactivate);
@@ -171,8 +171,8 @@ class AnExApp extends React.Component {
   _onMove: (position: Point) => void;
   constructor(props: any): void {
     super(props);
-    var keys = [];
-    for (var idx = 0; idx < NUM_CIRCLES; idx++) {
+    const keys = [];
+    for (const idx = 0; idx < NUM_CIRCLES; idx++) {
       keys.push('E' + idx);
     }
     this.state = {
@@ -184,13 +184,13 @@ class AnExApp extends React.Component {
   }
 
   render(): ReactElement {
-    var circles = this.state.keys.map((key, idx) => {
+    const circles = this.state.keys.map((key, idx) => {
       if (key === this.state.activeKey) {
         return <Circle key={key + 'd'} dummy={true} />;
       } else {
         if (!this.state.restLayouts[idx]) {
           var onLayout = function(index, e) {
-            var layout = e.nativeEvent.layout;
+            const layout = e.nativeEvent.layout;
             this.setState((state) => {
               state.restLayouts[index] = layout;
               return state;
@@ -238,7 +238,7 @@ class AnExApp extends React.Component {
   }
 
   _onMove(position: Point): void {
-    var newKeys = moveToClosest(this.state, position);
+    const newKeys = moveToClosest(this.state, position);
     if (newKeys !== this.state.keys) {
       LayoutAnimation.easeInEaseOut();  // animates layout update as one batch (step3: uncomment)
       this.setState({keys: newKeys});
@@ -248,18 +248,18 @@ class AnExApp extends React.Component {
 
 type Point = {x: number, y: number};
 function distance(p1: Point, p2: Point): number {
-  var dx = p1.x - p2.x;
-  var dy = p1.y - p2.y;
+  const dx = p1.x - p2.x;
+  const dy = p1.y - p2.y;
   return dx * dx + dy * dy;
 }
 
 function moveToClosest({activeKey, keys, restLayouts}, position) {
-  var activeIdx = -1;
+  const activeIdx = -1;
   var closestIdx = activeIdx;
   var minDist = Infinity;
-  var newKeys = [];
+  const newKeys = [];
   keys.forEach((key, idx) => {
-    var dist = distance(position, restLayouts[idx]);
+    const dist = distance(position, restLayouts[idx]);
     if (key === activeKey) {
       idx = activeIdx;
     } else {
@@ -278,7 +278,7 @@ function moveToClosest({activeKey, keys, restLayouts}, position) {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 64, // push content below nav bar

@@ -14,9 +14,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   StyleSheet,
   Text,
   View,
@@ -24,12 +24,12 @@ var {
   TouchableWithoutFeedback,
 } = ReactNative;
 
-var UIExplorerBlock = require('./UIExplorerBlock');
-var UIExplorerPage = require('./UIExplorerPage');
+const UIExplorerBlock = require('./UIExplorerBlock');
+const UIExplorerPage = require('./UIExplorerPage');
 
-var importantForAccessibilityValues = ['auto', 'yes', 'no', 'no-hide-descendants'];
+const importantForAccessibilityValues = ['auto', 'yes', 'no', 'no-hide-descendants'];
 
-var AccessibilityAndroidExample = React.createClass({
+const AccessibilityAndroidExample = React.createClass({
 
   statics: {
     title: 'Accessibility',
@@ -198,7 +198,7 @@ var AccessibilityAndroidExample = React.createClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
    embedded: {
     backgroundColor: 'yellow',
     padding:10,

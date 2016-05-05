@@ -15,16 +15,16 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   ActivityIndicatorIOS,
   StyleSheet,
   View,
 } = ReactNative;
-var TimerMixin = require('react-timer-mixin');
+const TimerMixin = require('react-timer-mixin');
 
-var ToggleAnimatingActivityIndicator = React.createClass({
+const ToggleAnimatingActivityIndicator = React.createClass({
   mixins: [TimerMixin],
 
   getInitialState: function() {
@@ -148,7 +148,7 @@ exports.examples = [
   },
 ];
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   centering: {
     alignItems: 'center',
     justifyContent: 'center',
