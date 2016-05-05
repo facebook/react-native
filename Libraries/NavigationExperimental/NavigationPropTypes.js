@@ -66,6 +66,7 @@ const scene = PropTypes.shape({
 
 /* NavigationSceneRendererProps */
 const SceneRenderer = {
+  key: PropTypes.string.isRequired,
   layout: layout.isRequired,
   navigationState: navigationParentState.isRequired,
   onNavigate: PropTypes.func.isRequired,
@@ -97,6 +98,7 @@ function extractSceneRendererProps(
   props: NavigationSceneRendererProps,
 ): NavigationSceneRendererProps {
   return {
+    key: props.scene.navigationState.key,
     layout: props.layout,
     navigationState: props.navigationState,
     onNavigate: props.onNavigate,
