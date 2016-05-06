@@ -35,7 +35,6 @@
 const Animated = require('Animated');
 const NavigationCardStackPanResponder = require('NavigationCardStackPanResponder');
 const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleInterpolator');
-const NavigationContainer = require('NavigationContainer');
 const NavigationPagerPanResponder = require('NavigationPagerPanResponder');
 const NavigationPagerStyleInterpolator = require('NavigationPagerStyleInterpolator');
 const NavigationPointerEventsContainer = require('NavigationPointerEventsContainer');
@@ -70,7 +69,8 @@ class SceneView extends React.Component<any, SceneViewProps, any> {
 
   static propTypes = {
     sceneRenderer: PropTypes.func.isRequired,
-    sceneRendererProps: NavigationPropTypes.SceneRenderer,
+    sceneRendererProps:
+      PropTypes.shape(NavigationPropTypes.SceneRenderer).isRequired,
   };
 
   shouldComponentUpdate(nextProps: SceneViewProps, nextState: any): boolean {
@@ -138,6 +138,11 @@ class NavigationCard extends React.Component<any, Props, any> {
       </Animated.View>
     );
   }
+
+  static CardStackPanResponder = NavigationCardStackPanResponder;
+  static CardStackStyleInterpolator = NavigationCardStackStyleInterpolator;
+  static PagerPanResponder = NavigationPagerPanResponder;
+  static PagerStyleInterpolator = NavigationPagerStyleInterpolator;
 }
 
 const styles = StyleSheet.create({
@@ -156,12 +161,5 @@ const styles = StyleSheet.create({
 });
 
 NavigationCard = NavigationPointerEventsContainer.create(NavigationCard);
-NavigationCard = NavigationContainer.create(NavigationCard);
-
-// Export these buil-in interaction modules.
-NavigationCard.CardStackPanResponder = NavigationCardStackPanResponder;
-NavigationCard.CardStackStyleInterpolator = NavigationCardStackStyleInterpolator;
-NavigationCard.PagerPanResponder = NavigationPagerPanResponder;
-NavigationCard.PagerStyleInterpolator = NavigationPagerStyleInterpolator;
 
 module.exports = NavigationCard;

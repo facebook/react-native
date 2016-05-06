@@ -57,18 +57,48 @@ function getPlatformFromPath(filepath) {
   return CROSS_SUFFIX;
 }
 
-function getExample(componentName, componentPlatform) {
-  let exPath = '../Examples/UIExplorer/' + componentName + 'Example.js';
-  if (!fs.existsSync(exPath)) {
-    exPath = '../Examples/UIExplorer/' + componentName + 'Example.' + componentPlatform + '.js';
-    if (!fs.existsSync(exPath)) {
-      return;
-    }
+function getExamplePaths(componentName, componentPlatform) {
+  var componentExample = '../Examples/UIExplorer/' + componentName + 'Example.';
+  var pathsToCheck = [
+    componentExample + 'js',
+    componentExample + componentPlatform + '.js',
+  ];
+  if (componentPlatform === CROSS_SUFFIX) {
+    pathsToCheck.push(
+      componentExample + IOS_SUFFIX + '.js',
+      componentExample + ANDROID_SUFFIX + '.js'
+    );
   }
-  return {
-    path: exPath.replace(/^\.\.\//, ''),
-    content: fs.readFileSync(exPath).toString(),
-  };
+  var paths = [];
+  pathsToCheck.map((p) => {
+    if (fs.existsSync(p)) {
+      paths.push(p);
+    }
+  });
+  return paths;
+}
+
+function getExamples(componentName, componentPlatform) {
+  var paths = getExamplePaths(componentName, componentPlatform);
+  if (paths) {
+    var examples = [];
+    paths.map((p) => {
+      var platform = p.match(/Example\.(.*)\.js$/);
+      var title = '';
+      if ((componentPlatform === CROSS_SUFFIX) && (platform !== null)) {
+        title = platform[1].toUpperCase();
+      }
+      examples.push(
+        {
+          path: p.replace(/^\.\.\//, ''),
+          title: title,
+          content: fs.readFileSync(p).toString(),
+        }
+      );
+    });
+    return examples;
+  }
+  return;
 }
 
 // Add methods that should not appear in the components documentation.
@@ -98,14 +128,12 @@ function filterMethods(method) {
 // Determines whether a component should have a link to a runnable example
 
 function isRunnable(componentName, componentPlatform) {
-  let exPath = '../Examples/UIExplorer/' + componentName + 'Example.js';
-  if (!fs.existsSync(exPath)) {
-    exPath = '../Examples/UIExplorer/' + componentName + 'Example.' + componentPlatform + '.js';
-    if (!fs.existsSync(exPath)) {
-      return false;
-    }
+  var paths = getExamplePaths(componentName, componentPlatform);
+  if (paths && paths.length > 0) {
+    return true;
+  } else {
+    return false;
   }
-  return true;
 }
 
 // Hide a component from the sidebar by making it return false from
@@ -148,7 +176,7 @@ function componentsToMarkdown(type, json, filepath, idx, styles) {
   if (styles) {
     json.styles = styles;
   }
-  json.example = getExample(componentName, componentPlatform);
+  json.examples = getExamples(componentName, componentPlatform);
 
   if (json.methods) {
     json.methods = json.methods.filter(filterMethods);

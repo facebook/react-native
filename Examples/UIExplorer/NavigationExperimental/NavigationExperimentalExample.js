@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -13,22 +20,19 @@
 */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
-  AsyncStorage,
-  ScrollView,
-  StyleSheet,
-  View,
-} = ReactNative;
-var NavigationExampleRow = require('./NavigationExampleRow');
+const AsyncStorage = require('AsyncStorage');
+const NavigationExampleRow = require('./NavigationExampleRow');
+const React = require('react');
+const ScrollView = require('ScrollView');
+const StyleSheet = require('StyleSheet');
+const View = require('View');
 
 /*
  * Heads up! This file is not the real navigation example- only a utility to switch between them.
  *
  * To learn how to use the Navigation API, take a look at the following example files:
  */
-var EXAMPLES = {
+const EXAMPLES = {
   'Tabs': require('./NavigationTabsExample'),
   'Basic': require('./NavigationBasicExample'),
   'Animated Example': require('./NavigationAnimatedExample'),
@@ -37,9 +41,9 @@ var EXAMPLES = {
   'Tic Tac Toe': require('./NavigationTicTacToeExample'),
 };
 
-var EXAMPLE_STORAGE_KEY = 'NavigationExperimentalExample';
+const EXAMPLE_STORAGE_KEY = 'NavigationExperimentalExample';
 
-var NavigationExperimentalExample = React.createClass({
+const NavigationExperimentalExample = React.createClass({
   statics: {
     title: 'Navigation (Experimental)',
     description: 'Upcoming navigation APIs and animated navigation views',
@@ -74,7 +78,7 @@ var NavigationExperimentalExample = React.createClass({
   },
 
   _renderMenu: function() {
-    var exitRow = null;
+    let exitRow = null;
     if (this.props.onExampleExit) {
       exitRow = (
         <NavigationExampleRow
@@ -130,7 +134,7 @@ var NavigationExperimentalExample = React.createClass({
       return this._renderMenu();
     }
     if (EXAMPLES[this.state.example]) {
-      var Component = EXAMPLES[this.state.example];
+      const Component = EXAMPLES[this.state.example];
       return (
         <Component
           onExampleExit={this._exitInnerExample}

@@ -544,21 +544,35 @@ var Autodocs = React.createClass({
     );
   },
 
-  renderExample: function(docs, metadata) {
-    if (!docs.example) {
+  renderExample: function(example, metadata) {
+    if (!example) {
       return;
     }
 
     return (
       <div>
         <HeaderWithGithub
-          title="Examples"
-          path={docs.example.path}
+          title={example.title || 'Examples'}
+          level={example.title ? 4 : 3}
+          path={example.path}
           metadata={metadata}
         />
         <Prism>
-          {docs.example.content.replace(/^[\s\S]*?\*\//, '').trim()}
+          {example.content.replace(/^[\s\S]*?\*\//, '').trim()}
         </Prism>
+      </div>
+    );
+  },
+
+  renderExamples: function(docs, metadata) {
+    if (!docs.examples || !docs.examples.length) {
+      return;
+    }
+
+    return (
+      <div>
+        {(docs.examples.length > 1) ? <H level={3}>Examples</H> : null}
+        {docs.examples.map(example => this.renderExample(example, metadata))}
       </div>
     );
   },
@@ -583,7 +597,7 @@ var Autodocs = React.createClass({
             />
             {content}
             {this.renderFullDescription(docs)}
-            {this.renderExample(docs, metadata)}
+            {this.renderExamples(docs, metadata)}
             <div className="docs-prevnext">
               {metadata.previous && <a className="docs-prev" href={'docs/' + metadata.previous + '.html#content'}>&larr; Prev</a>}
               {metadata.next && <a className="docs-next" href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>}
