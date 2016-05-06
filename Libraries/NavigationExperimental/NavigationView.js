@@ -12,7 +12,6 @@
 'use strict';
 
 const Animated = require('Animated');
-const NavigationContainer = require('NavigationContainer');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
@@ -122,12 +121,15 @@ class NavigationView extends React.Component<any, Props, any> {
       scenes,
     } = this.state;
 
+    const scene = scenes[navigationState.index];
+
     const sceneProps = {
+      key: 'scene_' + scene.navigationState.key,
       layout,
       navigationState: navigationState,
       onNavigate: onNavigate,
       position: this._position,
-      scene: scenes[navigationState.index],
+      scene,
       scenes,
     };
 
@@ -176,4 +178,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = NavigationContainer.create(NavigationView);
+module.exports = NavigationView;

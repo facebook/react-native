@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -16,19 +23,11 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
-  NavigationExperimental,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} = ReactNative;
-const {
-  Container: NavigationContainer,
-  RootContainer: NavigationRootContainer,
-} = NavigationExperimental;
+const React = require('react');
+const StyleSheet = require('StyleSheet');
+const Text = require('Text');
+const TouchableHighlight = require('TouchableHighlight');
+const View = require('View');
 
 type GameGrid = Array<Array<?string>>;
 
@@ -41,7 +40,7 @@ function parseGame(game: string): GameGrid {
   for (let i = 0; i < 3; i++) {
     const row = Array(3);
     for (let j = 0; j < 3; j++) {
-      const turnIndex = gameTurns.indexOf(rowLetterMap[i]+j);
+      const turnIndex = gameTurns.indexOf(rowLetterMap[i] + j);
       if (turnIndex === -1) {
         row[j] = null;
       } else {
@@ -60,13 +59,13 @@ function playTurn(game: string, row: number, col: number): string {
 
 function getWinner(gameString: string): ?string {
   const game = parseGame(gameString);
-  for (var i = 0; i < 3; i++) {
+  for (let i = 0; i < 3; i++) {
     if (game[i][0] !== null && game[i][0] === game[i][1] &&
         game[i][0] === game[i][2]) {
       return game[i][0];
     }
   }
-  for (var i = 0; i < 3; i++) {
+  for (let i = 0; i < 3; i++) {
     if (game[0][i] !== null && game[0][i] === game[1][i] &&
         game[0][i] === game[2][i]) {
       return game[0][i];
@@ -88,8 +87,8 @@ function isGameOver(gameString: string): boolean {
     return true;
   }
   const game = parseGame(gameString);
-  for (var i = 0; i < 3; i++) {
-    for (var j = 0; j < 3; j++) {
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
       if (game[i][j] === null) {
         return false;
       }
@@ -157,10 +156,9 @@ function GameEndOverlay(props) {
     </View>
   );
 }
-GameEndOverlay = NavigationContainer.create(GameEndOverlay);
 
 function TicTacToeGame(props) {
-  var rows = parseGame(props.game).map((cells, row) =>
+  const rows = parseGame(props.game).map((cells, row) =>
     <View key={'row' + row} style={styles.row}>
       {cells.map((player, col) =>
         <Cell
@@ -184,11 +182,11 @@ function TicTacToeGame(props) {
       </View>
       <GameEndOverlay
         game={props.game}
+        onNavigate={props.onNavigate}
       />
     </View>
   );
 }
-TicTacToeGame = NavigationContainer.create(TicTacToeGame);
 
 const GameActions = {
   Turn: (row, col) => ({type: 'TicTacToeTurnAction', row, col }),
@@ -208,21 +206,34 @@ function GameReducer(lastGame: ?string, action: Object): string {
   return lastGame;
 }
 
+type AppState = {
+  game: string,
+};
+
 class NavigationTicTacToeExample extends React.Component {
-  static GameView = TicTacToeGame;
-  static GameReducer = GameReducer;
-  static GameActions = GameActions;
+  _handleAction: Function;
+  state: AppState;
+  constructor() {
+    super();
+    this._handleAction = this._handleAction.bind(this);
+    this.state = {
+      game: ''
+    };
+  }
+  _handleAction(action: Object) {
+    const newState = GameReducer(this.state.game, action);
+    if (newState !== this.state.game) {
+      this.setState({
+        game: newState,
+      });
+    }
+  }
   render() {
     return (
-      <NavigationRootContainer
-        reducer={GameReducer}
-        persistenceKey="TicTacToeGameState"
-        renderNavigation={(game) => (
-          <TicTacToeGame
-            game={game}
-            onExampleExit={this.props.onExampleExit}
-          />
-        )}
+      <TicTacToeGame
+        game={this.state && this.state.game}
+        onExampleExit={this.props.onExampleExit}
+        onNavigate={this._handleAction}
       />
     );
   }

@@ -57,9 +57,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   private @Nullable String mJSModuleName;
   private @Nullable Bundle mLaunchOptions;
   private @Nullable KeyboardListener mKeyboardListener;
+  private @Nullable OnGenericMotionListener mOnGenericMotionListener;
   private boolean mWasMeasured = false;
-  private boolean mAttachScheduled = false;
-  private boolean mIsAttachedToWindow = false;
   private boolean mIsAttachedToInstance = false;
   private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
 
@@ -91,18 +90,13 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         MeasureSpec.getSize(heightMeasureSpec));
 
     mWasMeasured = true;
-    if (mAttachScheduled && mReactInstanceManager != null && mIsAttachedToWindow) {
-      // Scheduled from {@link #startReactApplication} call in case when the view measurements are
-      // not available
-      mAttachScheduled = false;
+    // Check if we were waiting for onMeasure to attach the root view
+    if (mReactInstanceManager != null && !mIsAttachedToInstance) {
       // Enqueue it to UIThread not to block onMeasure waiting for the catalyst instance creation
       UiThreadUtil.runOnUiThread(new Runnable() {
         @Override
         public void run() {
-          Assertions.assertNotNull(mReactInstanceManager)
-              .attachMeasuredRootView(ReactRootView.this);
-          mIsAttachedToInstance = true;
-          getViewTreeObserver().addOnGlobalLayoutListener(getKeyboardListener());
+          attachToReactInstanceManager();
         }
       });
     }
@@ -121,6 +115,10 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class)
       .getEventDispatcher();
     mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, eventDispatcher);
+    // Hook for containers or fragments to get informed of the on touch events to perform actions.
+    if (mOnGenericMotionListener != null) {
+      mOnGenericMotionListener.onGenericMotion(this, androidEvent);
+    }
   }
 
   @Override
@@ -136,6 +134,10 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     // In case when there is no children interested in handling touch event, we return true from
     // the root view in order to receive subsequent events related to that gesture
     return true;
+  }
+
+  public void setOnGenericMotionListener(OnGenericMotionListener listener) {
+    mOnGenericMotionListener = listener;
   }
 
   private void dispatchJSTouchEvent(MotionEvent event) {
@@ -167,25 +169,10 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
 
-    mIsAttachedToWindow = false;
-
-    if (mReactInstanceManager != null && !mAttachScheduled) {
+    if (mReactInstanceManager != null && mIsAttachedToInstance) {
       mReactInstanceManager.detachRootView(this);
       mIsAttachedToInstance = false;
       getViewTreeObserver().removeOnGlobalLayoutListener(getKeyboardListener());
-    }
-  }
-
-  @Override
-  protected void onAttachedToWindow() {
-    super.onAttachedToWindow();
-
-    mIsAttachedToWindow = true;
-
-    // If the view re-attached and catalyst instance has been set before, we'd attach again to the
-    // catalyst instance (expecting measure to be called after {@link onAttachedToWindow})
-    if (mReactInstanceManager != null) {
-      mAttachScheduled = true;
     }
   }
 
@@ -213,8 +200,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     // it in the case of re-creating the catalyst instance
     Assertions.assertCondition(
         mReactInstanceManager == null,
-        "This root view has already " +
-          "been attached to a catalyst instance manager");
+        "This root view has already been attached to a catalyst instance manager");
 
     mReactInstanceManager = reactInstanceManager;
     mJSModuleName = moduleName;
@@ -224,15 +210,10 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       mReactInstanceManager.createReactContextInBackground();
     }
 
-    // We need to wait for the initial onMeasure, if this view has not yet been measured, we set
-    // mAttachScheduled flag, which will make this view startReactApplication itself to instance
-    // manager once onMeasure is called.
-    if (mWasMeasured && mIsAttachedToWindow) {
-      mReactInstanceManager.attachMeasuredRootView(this);
-      mIsAttachedToInstance = true;
-      getViewTreeObserver().addOnGlobalLayoutListener(getKeyboardListener());
-    } else {
-      mAttachScheduled = true;
+    // We need to wait for the initial onMeasure, if this view has not yet been measured, we set which
+    // will make this view startReactApplication itself to instance manager once onMeasure is called.
+    if (mWasMeasured) {
+      attachToReactInstanceManager();
     }
   }
 
@@ -250,7 +231,6 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
    */
   @VisibleForTesting
   /* package */ void simulateAttachForTesting() {
-    mIsAttachedToWindow = true;
     mIsAttachedToInstance = true;
     mWasMeasured = true;
   }
@@ -260,6 +240,16 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       mKeyboardListener = new KeyboardListener();
     }
     return mKeyboardListener;
+  }
+
+  private void attachToReactInstanceManager() {
+    if (mIsAttachedToInstance) {
+      return;
+    }
+
+    mIsAttachedToInstance = true;
+    Assertions.assertNotNull(mReactInstanceManager).attachMeasuredRootView(this);
+    getViewTreeObserver().addOnGlobalLayoutListener(getKeyboardListener());
   }
 
   private class KeyboardListener implements ViewTreeObserver.OnGlobalLayoutListener {

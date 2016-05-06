@@ -652,7 +652,7 @@ class AnimatedValue extends AnimatedWithChildren {
       this._animation.stop();
       this._animation = null;
     }
-    this._updateValue(value);
+    this._updateValue(value, !this.__isNative /* don't perform a flush for natively driven values */);
     if (this.__isNative) {
       NativeAnimatedAPI.setAnimatedNodeValue(this.__getNativeTag(), value);
     }
@@ -730,7 +730,9 @@ class AnimatedValue extends AnimatedWithChildren {
     animation.start(
       this._value,
       (value) => {
-        this._updateValue(value);
+        // Natively driven animations will never call into that callback, therefore we can always pass `flush = true`
+        // to allow the updated value to propagate to native with `setNativeProps`
+        this._updateValue(value, true /* flush */);
       },
       (result) => {
         this._animation = null;
@@ -760,9 +762,11 @@ class AnimatedValue extends AnimatedWithChildren {
     this._tracking = tracking;
   }
 
-  _updateValue(value: number): void {
+  _updateValue(value: number, flush: bool): void {
     this._value = value;
-    _flush(this);
+    if (flush) {
+      _flush(this);
+    }
     for (var key in this._listeners) {
       this._listeners[key]({value: this.__getValue()});
     }

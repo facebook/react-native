@@ -12,7 +12,7 @@ cxx_library(
     '//native/jni:jni',
   ],
   visibility = [
-    '//instrumentation_tests/com/facebook/catalyst/...',
+    '//instrumentation_tests/com/facebook/react/...',
   ],
 )
 

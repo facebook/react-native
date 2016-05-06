@@ -214,7 +214,31 @@ void RCTProfileTrampolineEnd(void)
   RCT_PROFILE_END_EVENT(0, @"objc_call,modules,auto", nil);
 }
 
-static void RCTProfileHookInstance(id instance)
+static UIView *(*originalCreateView)(RCTComponentData *, SEL, NSNumber *);
+static UIView *RCTProfileCreateView(RCTComponentData *self, SEL _cmd, NSNumber *tag)
+{
+  UIView *view = originalCreateView(self, _cmd, tag);
+  RCTProfileHookInstance(view);
+  return view;
+}
+
+static void RCTProfileHookUIManager(RCTUIManager *uiManager)
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    for (id view in [uiManager valueForKey:@"viewRegistry"]) {
+      RCTProfileHookInstance([uiManager viewForReactTag:view]);
+    }
+
+    Method createView = class_getInstanceMethod([RCTComponentData class], @selector(createViewWithTag:));
+
+    if (method_getImplementation(createView) != (IMP)RCTProfileCreateView) {
+      originalCreateView = (typeof(originalCreateView))method_getImplementation(createView);
+      method_setImplementation(createView, (IMP)RCTProfileCreateView);
+    }
+  });
+}
+
+void RCTProfileHookInstance(id instance)
 {
   Class moduleClass = object_getClass(instance);
 
@@ -279,18 +303,10 @@ static void RCTProfileHookInstance(id instance)
 
   objc_registerClassPair(proxyClass);
   object_setClass(instance, proxyClass);
-}
 
-static UIView *(*originalCreateView)(RCTComponentData *, SEL, NSNumber *);
-
-RCT_EXTERN UIView *RCTProfileCreateView(RCTComponentData *self, SEL _cmd, NSNumber *tag);
-UIView *RCTProfileCreateView(RCTComponentData *self, SEL _cmd, NSNumber *tag)
-{
-  UIView *view = originalCreateView(self, _cmd, tag);
-
-  RCTProfileHookInstance(view);
-
-  return view;
+  if (moduleClass == [RCTUIManager class]) {
+    RCTProfileHookUIManager((RCTUIManager *)instance);
+  }
 }
 
 void RCTProfileHookModules(RCTBridge *bridge)
@@ -305,23 +321,13 @@ void RCTProfileHookModules(RCTBridge *bridge)
 #pragma clang diagnostic pop
 
   for (RCTModuleData *moduleData in [bridge valueForKey:@"moduleDataByID"]) {
-    [bridge dispatchBlock:^{
-      RCTProfileHookInstance(moduleData.instance);
-    } queue:moduleData.methodQueue];
+    // Only hook modules with an instance, to prevent initializing everything
+    if ([moduleData hasInstance]) {
+      [bridge dispatchBlock:^{
+        RCTProfileHookInstance(moduleData.instance);
+      } queue:moduleData.methodQueue];
+    }
   }
-
-  dispatch_async(dispatch_get_main_queue(), ^{
-    for (id view in [bridge.uiManager valueForKey:@"viewRegistry"]) {
-      RCTProfileHookInstance([bridge.uiManager viewForReactTag:view]);
-    }
-
-    Method createView = class_getInstanceMethod([RCTComponentData class], @selector(createViewWithTag:));
-
-    if (method_getImplementation(createView) != (IMP)RCTProfileCreateView) {
-      originalCreateView = (typeof(originalCreateView))method_getImplementation(createView);
-      method_setImplementation(createView, (IMP)RCTProfileCreateView);
-    }
-  });
 }
 
 static void RCTProfileUnhookInstance(id instance)
@@ -337,17 +343,22 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
 
   dispatch_group_enter(RCTProfileGetUnhookGroup());
 
-  for (RCTModuleData *moduleData in [bridge valueForKey:@"moduleDataByID"]) {
-    RCTProfileUnhookInstance(moduleData.instance);
+  NSDictionary *moduleDataByID = [bridge valueForKey:@"moduleDataByID"];
+  for (RCTModuleData *moduleData in moduleDataByID) {
+    if ([moduleData hasInstance]) {
+      RCTProfileUnhookInstance(moduleData.instance);
+    }
   }
 
-  dispatch_async(dispatch_get_main_queue(), ^{
-    for (id view in [bridge.uiManager valueForKey:@"viewRegistry"]) {
-      RCTProfileUnhookInstance(view);
-    }
+  if ([bridge moduleIsInitialized:[RCTUIManager class]]) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      for (id view in [bridge.uiManager valueForKey:@"viewRegistry"]) {
+        RCTProfileUnhookInstance(view);
+      }
 
-    dispatch_group_leave(RCTProfileGetUnhookGroup());
-  });
+      dispatch_group_leave(RCTProfileGetUnhookGroup());
+    });
+  }
 }
 
 #pragma mark - Private ObjC class only used for the vSYNC CADisplayLink target
@@ -457,8 +468,7 @@ void RCTProfileInit(RCTBridge *bridge)
 
   // Set up thread ordering
   dispatch_async(RCTProfileGetQueue(), ^{
-    NSString *shadowQueue = @(dispatch_queue_get_label([[bridge uiManager] methodQueue]));
-    NSArray *orderedThreads = @[@"JS async", RCTJSCThreadName, shadowQueue, @"main"];
+    NSArray *orderedThreads = @[@"JS async", @"RCTPerformanceLogger", RCTJSCThreadName, @(RCTUIManagerQueueName), @"main"];
     [orderedThreads enumerateObjectsUsingBlock:^(NSString *thread, NSUInteger idx, __unused BOOL *stop) {
       RCTProfileAddEvent(RCTProfileTraceEvents,
         @"ph": @"M", // metadata event

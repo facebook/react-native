@@ -13,12 +13,12 @@ function reportError(error) {
 }
 
 var ErrorUtils = {
-  apply: jest.genMockFunction().mockImplementation(execute),
-  applyWithGuard: jest.genMockFunction().mockImplementation(execute),
-  guard: jest.genMockFunction().mockImplementation(callback => callback),
-  inGuard: jest.genMockFunction().mockReturnValue(true),
-  reportError: jest.genMockFunction().mockImplementation(reportError),
-  setGlobalHandler: jest.genMockFunction(),
+  apply: jest.fn(execute),
+  applyWithGuard: jest.fn(execute),
+  guard: jest.fn(callback => callback),
+  inGuard: jest.fn().mockReturnValue(true),
+  reportError: jest.fn(reportError),
+  setGlobalHandler: jest.fn(),
 };
 
 module.exports = ErrorUtils;

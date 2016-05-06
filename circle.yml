@@ -65,20 +65,18 @@ test:
     - ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1:
         timeout: 360
     # build JS bundle for instrumentation tests
-    - node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/assets/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+    - node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
     # build test APK
     - buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
     # run installed apk with tests
-    - source scripts/circle-ci-android-setup.sh && retry3 ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests
+    - node ./scripts/run-ci-android-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
 
     - ./gradlew :ReactAndroid:testDebugUnitTest
     # Deprecated: these tests are executed using Buck above, while we support Gradle we just make sure the test code compiles
     - ./gradlew :ReactAndroid:assembleDebugAndroidTest
 
     # Android e2e test
-    # TODO t10955118, temporary until master is fixed
-    #- source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android --js
-    - node ./scripts/run-ci-e2e-tests.js --android --js
+    - node ./scripts/run-ci-e2e-tests.js --android --js --retries 3
 
     # testing docs generation is not broken
     - cd website && node ./server/generate.js

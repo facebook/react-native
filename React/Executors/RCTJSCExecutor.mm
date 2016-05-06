@@ -41,7 +41,6 @@ static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnable
 typedef struct ModuleData {
   uint32_t offset;
   uint32_t length;
-  uint32_t lineNo;
 } ModuleData;
 
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
@@ -144,7 +143,7 @@ static NSString *RCTJSValueToJSONString(JSContextRef context, JSValueRef value, 
   return (__bridge_transfer NSString *)string;
 }
 
-static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
+NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 {
   NSMutableDictionary *errorInfo = [NSMutableDictionary new];
 
@@ -270,6 +269,9 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   if (!_context) {
     JSContext *context = [JSContext new];
     _context = [[RCTJavaScriptContext alloc] initWithJSContext:context onThread:_javaScriptThread];
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptContextCreatedNotification
+                                                        object:context];
   }
 
   return _context;
@@ -413,9 +415,6 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
     JSContext *context = strongSelf.context.context;
     RCTInstallJSCProfiler(_bridge, context.JSGlobalContextRef);
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptContextCreatedNotification
-                                                        object:context];
   }];
 
   for (NSString *event in @[RCTProfileDidStartProfiling, RCTProfileDidEndProfiling]) {
@@ -517,16 +516,11 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return;
     }
     NSError *error;
-    NSString *argsString = (arguments.count == 1) ? RCTJSONStringify(arguments[0], &error) : RCTJSONStringify(arguments, &error);
-    if (!argsString) {
-      RCTLogError(@"Cannot convert argument to string: %@", error);
-      onComplete(nil, error);
-      return;
-    }
 
     JSValueRef errorJSRef = NULL;
     JSValueRef resultJSRef = NULL;
     JSGlobalContextRef contextJSRef = JSContextGetGlobalContext(strongSelf->_context.ctx);
+    JSContext *context = strongSelf->_context.context;
     JSObjectRef globalObjectJSRef = JSContextGetGlobalObject(strongSelf->_context.ctx);
 
     // get the BatchedBridge object
@@ -541,37 +535,11 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       JSStringRelease(methodNameJSStringRef);
 
       if (methodJSRef != NULL && errorJSRef == NULL && !JSValueIsUndefined(contextJSRef, methodJSRef)) {
-        // direct method invoke with no arguments
-        if (arguments.count == 0) {
-          resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 0, NULL, &errorJSRef);
+        JSValueRef jsArgs[arguments.count];
+        for (NSUInteger i = 0; i < arguments.count; i++) {
+          jsArgs[i] = [JSValue valueWithObject:arguments[i] inContext:context].JSValueRef;
         }
-
-        // direct method invoke with 1 argument
-        else if(arguments.count == 1) {
-          JSStringRef argsJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)argsString);
-          JSValueRef argsJSRef = JSValueMakeFromJSONString(contextJSRef, argsJSStringRef);
-          resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 1, &argsJSRef, &errorJSRef);
-          JSStringRelease(argsJSStringRef);
-
-        } else {
-          // apply invoke with array of arguments
-          JSStringRef applyNameJSStringRef = JSStringCreateWithUTF8CString("apply");
-          JSValueRef applyJSRef = JSObjectGetProperty(contextJSRef, (JSObjectRef)methodJSRef, applyNameJSStringRef, &errorJSRef);
-          JSStringRelease(applyNameJSStringRef);
-
-          if (applyJSRef != NULL && errorJSRef == NULL) {
-            // invoke apply
-            JSStringRef argsJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)argsString);
-            JSValueRef argsJSRef = JSValueMakeFromJSONString(contextJSRef, argsJSStringRef);
-
-            JSValueRef args[2];
-            args[0] = JSValueMakeNull(contextJSRef);
-            args[1] = argsJSRef;
-
-            resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)applyJSRef, (JSObjectRef)methodJSRef, 2, args, &errorJSRef);
-            JSStringRelease(argsJSStringRef);
-          }
-        }
+        resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, arguments.count, jsArgs, &errorJSRef);
       } else {
         if (!errorJSRef && JSValueIsUndefined(contextJSRef, methodJSRef)) {
           error = RCTErrorWithMessage([NSString stringWithFormat:@"Unable to execute JS call: method %@ is undefined", method]);
@@ -598,13 +566,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     // We often return `null` from JS when there is nothing for native side. JSONKit takes an extra hundred microseconds
     // to handle this simple case, so we are adding a shortcut to make executeJSCall method even faster
     if (!JSValueIsNull(contextJSRef, resultJSRef)) {
-      JSStringRef jsJSONString = JSValueCreateJSONString(contextJSRef, resultJSRef, 0, nil);
-      if (jsJSONString) {
-        NSString *objcJSONString = (__bridge_transfer NSString *)JSStringCopyCFString(kCFAllocatorDefault, jsJSONString);
-        JSStringRelease(jsJSONString);
-
-        objcValue = RCTJSONParse(objcJSONString, NULL);
-      }
+      objcValue = [[JSValue valueWithJSValueRef:resultJSRef inContext:context] toObject];
     }
 
     onComplete(objcValue, nil);
@@ -786,10 +748,13 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr)
     }
     JSStringRef code = JSStringCreateWithUTF8CString(bytes);
     JSValueRef jsError = NULL;
-    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, code, NULL, strongSelf->_bundleURL, data->lineNo, NULL);
+    JSStringRef sourceURL = JSStringCreateWithUTF8CString([moduleName stringByAppendingPathExtension:@"js"].UTF8String);
+
+    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, code, NULL, sourceURL, 0, NULL);
 
     CFDictionaryRemoveValue(strongSelf->_jsModules, moduleName.UTF8String);
     JSStringRelease(code);
+    JSStringRelease(sourceURL);
 
     RCT_PROFILE_END_EVENT(0, @"js_call", nil);
     RCTPerformanceLoggerAppendEnd(RCTPLRAMNativeRequires);
@@ -868,7 +833,6 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr)
 
     moduleData->offset = baseOffset + readUint32((const char **)&tableCursor);
     moduleData->length = readUint32((const char **)&tableCursor);
-    moduleData->lineNo = readUint32((const char **)&tableCursor);
 
     CFDictionarySetValue(_jsModules, name, moduleData);
   }

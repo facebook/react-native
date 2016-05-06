@@ -67,8 +67,9 @@ var featured = [
   },
   {
     name: 'Exponent',
-    icon: 'http://a4.mzstatic.com/us/r30/Purple2/v4/3a/d3/c9/3ad3c96c-5e14-f988-4bdd-0fdc95efd140/icon175x175.png',
-    link:  'http://exponentjs.com/',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple20/v4/b0/26/72/b02672b5-d347-6df1-e20f-de5f5c039664/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/exponent/id982107779?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=host.exp.exponent',
     author: 'Exponent',
   },
   {
@@ -276,6 +277,12 @@ var apps = [
     author: 'Macellan.net',
   },
   {
+    name: 'Calor - Field Pro',
+    icon: 'http://rnfdigital.com/wp-content/uploads/2016/04/FieldProIcon.png',
+    link: 'http://rnfdigital.com/react-native-a-game-changer-for-enterprise-mobile-development/',
+    author: 'RNF Digital',
+  },
+  {
     name: 'CANDDi',
     icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/c4/e4/85/c4e48546-7127-a133-29f2-3e2e1aa0f9af/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/gb/app/canddi/id1018168131?mt=8',
@@ -293,6 +300,13 @@ var apps = [
     icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/7b/0c/a0/7b0ca007-885a-7cfc-9fa2-2ec4394c2ecc/icon175x175.png',
     link: 'https://play.google.com/store/apps/details?id=com.cbssports.fantasy.franchisefootball2015',
     author: 'CBS Sports',
+  },
+  {
+    name: 'Chemin de Fer de Provence',
+    icon: 'https://lh3.googleusercontent.com/p80a9ZFgDd9EgKxViAOu3PF22GiEc2FaMxxlOib6SpvLR-M6wN1OSMuyzMcjIaNI4Jc=w300',
+    linkAppStore: 'https://itunes.apple.com/fr/app/chemins-de-fer-de-provence/id1107542956?l=fr&ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.cheminsdeferdeprovence&hl=fr',
+    author: 'Actigraph'
   },
   {
     name: 'Chillin\'',
@@ -355,6 +369,13 @@ var apps = [
       'http://www.s21g.com/DockMan.html',
     ],
     author: 'Genki Takiuchi (s21g Inc.)',
+  },
+  {
+    name: 'DONUT chatrooms for communities',
+    icon: 'http://a2.mzstatic.com/eu/r30/Purple49/v4/d4/2d/e5/d42de510-6802-2694-1b60-ca80ffa1e2cb/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/fr/app/donut-chat/id1067579321',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=me.donut.mobile',
+    author: 'Damien Brugne',
   },
   {
     name: 'Due',
@@ -430,6 +451,7 @@ var apps = [
     author: 'Lim Chee Aun',
     blogs: [
       'http://cheeaun.com/blog/2016/03/building-hackerweb-ios/',
+      'http://cheeaun.com/blog/2016/05/building-hackerweb-android/',
     ],
   },
   {
@@ -598,6 +620,12 @@ var apps = [
     link: 'https://play.google.com/store/apps/details?id=com.rhyble.nalathekerala',
     author: 'Rhyble',
   },
+  {
+    name: 'New Music - keep track of the latest album releases',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple49/v4/6f/4f/39/6f4f39db-e0ca-c80a-73e7-68830675e11b/icon175x175.png',
+    link: 'https://itunes.apple.com/app/new-music-keep-track-latest/id1104646834',
+    author: 'Alexey Ledak',
+  },
 	{
     name: 'No Fluff: Hiragana',
     icon: 'https://lh3.googleusercontent.com/kStXwjpbPsu27E1nIEU1gfG0I8j9t5bAR_20OMhGZvu0j2vab3EbBV7O_KNZChjflZ_O',
@@ -705,7 +733,7 @@ var apps = [
     author: 'Steve Ng'
   },
   {
-    name: 'ShareHows',
+    name: '쉐어하우스',
     icon: 'http://a4.mzstatic.com/us/r30/Purple5/v4/78/1c/83/781c8325-a1e1-4afc-f106-a629bcf3c6ef/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/kr/app/sweeohauseu-sesang-ui-modeun/id1060914858?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=kr.dobbit.sharehows',
@@ -759,6 +787,12 @@ var apps = [
     icon: 'http://a3.mzstatic.com/us/r30/Purple1/v4/7d/52/a7/7d52a71f-9532-82a5-b92f-87076624fdb2/icon175x175.jpeg',
     link: 'https://itunes.apple.com/cn/app/tong-xing-wang/id914254459?mt=8',
     author: 'Ho Yin Tsun Eugene',
+  },
+  {
+    name: 'Trump Blocker - That Filters Every Link',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/e7/91/4c/e7914cbd-c405-8411-2173-e8ed59a901bd/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/trump-blocker-that-filters/id1071733244?mt=8',
+    author: 'Footbits, Inc.',
   },
   {
     name: 'uSwitch - Energy switching app',
@@ -886,6 +920,12 @@ var apps = [
     icon: 'https://s3-ap-northeast-1.amazonaws.com/sw-misc/sharewis3_app.png',
     link: 'https://itunes.apple.com/jp/app/id585517208',
     author: 'ShareWis Inc.'
+  },
+  {
+    name: '找找',
+    icon: 'https://lh3.googleusercontent.com/H0SILVHcDUxSMoSQwMb2QYtLjTBCqvK5ZEjOEwKQQ-2qnRV6Hd9Hn-gtSGPaoIOPwA=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.biideal.biichat',
+    author: 'biideal Inc.'
   }
 ];
 
@@ -907,7 +947,7 @@ var AppList = React.createClass({
         {app.linkAppStore && app.linkPlayStore ? this._renderLinks(app) : null}
         <p>By {app.author}</p>
         {this._renderBlogPosts(app)}
-				{this._renderSourceLink(app)}
+        {this._renderSourceLink(app)}
         {this._renderVideos(app)}
       </div>
     );
@@ -949,7 +989,7 @@ var AppList = React.createClass({
     );
   },
 
-	_renderSourceLink: function(app) {
+  _renderSourceLink: function(app) {
     if (!app.source) {
       return;
     }
@@ -986,7 +1026,8 @@ var AppList = React.createClass({
   _renderLinks: function(app) {
     return (
       <p>
-        <a href={app.linkAppStore} target="_blank">iOS</a> -&nbsp;
+        <a href={app.linkAppStore} target="_blank">iOS</a>
+        {' '}&middot;{' '}
         <a href={app.linkPlayStore} target="_blank">Android</a>
       </p>
     );
