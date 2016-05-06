@@ -41,6 +41,13 @@ const HORIZONTAL_SWIPE_DISTANCE_THRESHOLD = 15;
  * on the item hidden behind the row
  */
 const SwipeableRow = React.createClass({
+  /**
+   * In order to render component A beneath component B, A must be rendered
+   * before B. However, this will cause "flickering", aka we see A briefly then
+   * B. To counter this, _isSwipeableViewRendered flag is used to set component
+   * A to be transparent until component B is loaded.
+   */
+  _isSwipeableViewRendered: false,
   _panResponder: {},
   _previousLeft: CLOSED_LEFT_POSITION,
 
@@ -112,6 +119,7 @@ const SwipeableRow = React.createClass({
       <View style={[
         styles.slideOutContainer,
         {
+          opacity: this._isSwipeableViewRendered ? 1 : 0,
           right: -this.state.scrollViewWidth,
           width: this.state.scrollViewWidth,
         },
@@ -121,8 +129,9 @@ const SwipeableRow = React.createClass({
     );
 
     // The swipable item
-    const mainView = (
+    const swipeableView = (
       <Animated.View
+        onLayout={this._onSwipeableViewLayout}
         style={{
           left: this.state.currentLeft,
           width: this.state.scrollViewWidth,
@@ -137,9 +146,15 @@ const SwipeableRow = React.createClass({
         style={styles.container}
         onLayout={this._onLayoutChange}>
         {slideOutView}
-        {mainView}
+        {swipeableView}
       </View>
     );
+  },
+
+  _onSwipeableViewLayout(event: Object): void {
+    if (!this._isSwipeableViewRendered) {
+      this._isSwipeableViewRendered = true;
+    }
   },
 
   _handlePanResponderTerminationRequest(

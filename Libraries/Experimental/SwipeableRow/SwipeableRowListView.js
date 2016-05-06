@@ -26,7 +26,6 @@
 const ListViewDataSource = require('ListViewDataSource');
 const React = require('React');
 const SwipeableRow = require('SwipeableRow');
-const View = require('View');
 
 const {PropTypes} = React;
 
@@ -45,7 +44,10 @@ const SwipeableRowListView = React.createClass({
      */
     listView: PropTypes.func.isRequired,
     maxSwipeDistance: PropTypes.number,
-    renderRow: PropTypes.func.isRequired,
+    // Callback method to render the view that will be unveiled on swipe
+    renderRowSlideout: PropTypes.func.isRequired,
+    // Callback method to render the swipeable view
+    renderRowSwipeable: PropTypes.func.isRequired,
     rowIDs: PropTypes.array.isRequired,
     sectionIDs: PropTypes.array.isRequired,
   },
@@ -82,12 +84,17 @@ const SwipeableRowListView = React.createClass({
   _renderRow(rowData: Object, sectionID: string, rowID: string): ReactElement {
     return (
       <SwipeableRow
-        slideoutView={rowData.slideoutView || <View />}
+        slideoutView={this.props.renderRowSlideout(rowData, sectionID, rowID)}
         isOpen={rowData.isOpen}
         maxSwipeDistance={this.props.maxSwipeDistance}
         key={rowID}
         onOpen={() => this._onRowOpen(rowID)}>
-        {this.props.renderRow(rowData, sectionID, rowID, this.state.dataSource)}
+        {this.props.renderRowSwipeable(
+          rowData,
+          sectionID,
+          rowID,
+          this.state.dataSource,
+        )}
       </SwipeableRow>
     );
   },
