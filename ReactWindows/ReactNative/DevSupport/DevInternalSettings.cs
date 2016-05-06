@@ -36,7 +36,7 @@ namespace ReactNative.DevSupport
 #if DEBUG
                 return GetSetting(JsDevModeDebugKey, true);
 #else
-                return GetSetting(JSDevModeDebugKey, false);
+                return GetSetting(JsDevModeDebugKey, false);
 #endif
             }
             set
