@@ -124,7 +124,7 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "15.0.2"
+    "react": "15.0.3-alpha.1"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -132,7 +132,7 @@
     "babel-core": "^6.6.4",
     "babel-plugin-external-helpers": "^6.5.0",
     "babel-polyfill": "^6.6.1",
-    "babel-preset-react-native": "~1.6.0",
+    "babel-preset-react-native": "^1.7.0",
     "babel-register": "^6.6.0",
     "babel-types": "^6.6.4",
     "babylon": "^6.6.4",
@@ -145,7 +145,7 @@
     "event-target-shim": "^1.0.5",
     "fbjs": "^0.8.0",
     "fbjs-scripts": "^0.4.0",
-    "graceful-fs": "^4.1.2",
+    "graceful-fs": "^4.1.3",
     "image-size": "^0.3.5",
     "immutable": "~3.7.6",
     "joi": "^6.6.1",
@@ -156,7 +156,7 @@
     "mkdirp": "^0.5.1",
     "module-deps": "^3.9.1",
     "node-fetch": "^1.3.3",
-    "node-haste": "~2.10.1",
+    "node-haste": "~2.11.0",
     "opn": "^3.0.2",
     "optimist": "^0.6.1",
     "progress": "^1.1.8",
@@ -165,7 +165,7 @@
     "react-timer-mixin": "^0.13.2",
     "react-transform-hmr": "^1.0.4",
     "rebound": "^0.0.13",
-    "regenerator": "^0.8.36",
+    "regenerator-runtime": "^0.9.5",
     "sane": "^1.2.0",
     "semver": "^5.0.3",
     "source-map": "^0.4.4",
@@ -187,7 +187,7 @@
     "flow-bin": "0.24.0",
     "jest-cli": "11.0.2",
     "portfinder": "0.4.0",
-    "react": "15.0.2",
+    "react": "15.0.3-alpha.1",
     "shelljs": "0.6.0"
   }
 }

@@ -11,21 +11,13 @@
  */
 'use strict';
 
-var NavigationStateUtils = require('NavigationStateUtils');
+const NavigationStateUtils = require('NavigationStateUtils');
 
 import type {
   NavigationState,
   NavigationParentState,
   NavigationReducer,
 } from 'NavigationTypeDefinition';
-
-import type {
-  BackAction,
-} from 'NavigationRootContainer';
-
-export type NavigationStackReducerAction = BackAction | {
-  type: string,
-};
 
 export type ReducerForStateHandler = (state: NavigationState) => NavigationReducer;
 

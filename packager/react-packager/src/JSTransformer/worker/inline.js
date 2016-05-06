@@ -20,7 +20,6 @@ const requirePattern = {name: 'require'};
 const env = {name: 'env'};
 const nodeEnv = {name: 'NODE_ENV'};
 const processId = {name: 'process'};
-const platformId = {name: 'platform'};
 
 const dev = {name: '__DEV__'};
 
@@ -64,11 +63,6 @@ const isProcessEnvNodeEnv = (node, scope) =>
   t.isIdentifier(node.object.object, processId) &&
   isGlobal(scope.getBinding(processId.name));
 
-const isProcessPlatform = (node, scope) =>
-  t.isIdentifier(node.property, platformId) &&
-  t.isIdentifier(node.object, processId) &&
-  isGlobal(scope.getBinding(processId.name));
-
 const isDev = (node, parent, scope) =>
   t.isIdentifier(node, dev) &&
   isGlobal(scope.getBinding(dev.name)) &&
@@ -90,9 +84,6 @@ const inlinePlugin = {
       } else if (isProcessEnvNodeEnv(node, scope)) {
         path.replaceWith(
           t.stringLiteral(state.opts.dev ? 'development' : 'production'));
-      } else if (isProcessPlatform(node, scope)) {
-        path.replaceWith(
-          t.stringLiteral(state.opts.platform));
       }
     },
   },
