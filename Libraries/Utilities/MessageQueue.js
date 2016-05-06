@@ -46,11 +46,13 @@ var guard = (fn) => {
   }
 };
 
+type Config = {
+  remoteModuleConfig: Object,
+};
+
 class MessageQueue {
 
-  constructor(remoteModules, localModules) {
-    this.RemoteModules = {};
-
+  constructor(configProvider: () => Config) {
     this._callableModules = {};
     this._queue = [[], [], [], 0];
     this._callbacks = [];
@@ -59,21 +61,27 @@ class MessageQueue {
     this._lastFlush = 0;
     this._eventLoopStartTime = new Date().getTime();
 
+    this._debugInfo = {};
+    this._remoteModuleTable = {};
+    this._remoteMethodTable = {};
+
     [
       'invokeCallbackAndReturnFlushedQueue',
       'callFunctionReturnFlushedQueue',
       'flushedQueue',
     ].forEach((fn) => this[fn] = this[fn].bind(this));
 
-    let modulesConfig = this._genModulesConfig(remoteModules);
-    this._genModules(modulesConfig);
+    lazyProperty(this, 'RemoteModules', () => {
+      let {remoteModuleConfig} = configProvider();
+      let modulesConfig = this._genModulesConfig(remoteModuleConfig);
+      let modules = this._genModules(modulesConfig);
 
-    this._debugInfo = {};
-    this._remoteModuleTable = {};
-    this._remoteMethodTable = {};
-    this._genLookupTables(
-      modulesConfig, this._remoteModuleTable, this._remoteMethodTable
-    );
+      this._genLookupTables(
+        modulesConfig, this._remoteModuleTable, this._remoteMethodTable
+      );
+
+      return modules;
+    });
   }
 
   /**
@@ -107,6 +115,7 @@ class MessageQueue {
 
   processModuleConfig(config, moduleID) {
     const module = this._genModule(config, moduleID);
+    this.RemoteModules[module.name] = module;
     this._genLookup(config, moduleID, this._remoteModuleTable, this._remoteMethodTable);
     return module;
   }
@@ -280,14 +289,21 @@ class MessageQueue {
   }
 
   _genModules(remoteModules) {
+    let modules = {};
+
     remoteModules.forEach((config, moduleID) => {
-      this._genModule(config, moduleID);
+      let module = this._genModule(config, moduleID);
+      if (module) {
+        modules[module.name] = module;
+      }
     });
+
+    return modules;
   }
 
-  _genModule(config, moduleID) {
+  _genModule(config, moduleID): ?Object {
     if (!config) {
-      return;
+      return null;
     }
 
     let moduleName, constants, methods, asyncMethods, syncHooks;
@@ -297,7 +313,9 @@ class MessageQueue {
       [moduleName, methods, asyncMethods, syncHooks] = config;
     }
 
-    let module = {};
+    let module = {
+      name: moduleName
+    };
     methods && methods.forEach((methodName, methodID) => {
       const isAsync = asyncMethods && arrayContains(asyncMethods, methodID);
       const isSyncHook = syncHooks && arrayContains(syncHooks, methodID);
@@ -313,7 +331,6 @@ class MessageQueue {
       module.moduleID = moduleID;
     }
 
-    this.RemoteModules[moduleName] = module;
     return module;
   }
 
@@ -383,6 +400,23 @@ function createErrorFromErrorData(errorData: {message: string}): Error {
   var error = new Error(message);
   error.framesToPop = 1;
   return Object.assign(error, extraErrorInfo);
+}
+
+function lazyProperty(target: Object, name: string, f: () => any) {
+  Object.defineProperty(target, name, {
+    configurable: true,
+    enumerable: true,
+    get() {
+      const value = f();
+      Object.defineProperty(target, name, {
+        configurable: true,
+        enumerable: true,
+        writeable: true,
+        value: value,
+      });
+      return value;
+    }
+  });
 }
 
 module.exports = MessageQueue;
