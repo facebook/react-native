@@ -38,7 +38,7 @@ h1 small, h2 small, h3 small, h4 small, h5 small, h6 small {
   color: #7b7b7b;
 }
 
-h1, h2, h3, h4 {
+h1, h2, h3 {
   line-height: 40px;
 }
 
@@ -683,7 +683,8 @@ h2 {
 }
 
 .documentationContent blockquote p:first-child {
-  font-size: 14px;
+  font-weight: bold;
+  font-size: 17.5px;
   line-height: 20px;
   margin-top: 0;
   text-rendering: optimizelegibility;
