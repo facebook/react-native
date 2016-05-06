@@ -22,60 +22,6 @@ Seeing **device** in the right column means the device is connected. Android - g
 
 Now you can use `react-native run-android` to install and launch your app on the device.
 
-## Setting up an Android Device
-
-Let's now set up an Android device to run our React Native projects.
-
-First thing is to plug in your device and check the manufacturer code by using `lsusb`, which should output something like this:
-
-```bash
-$ lsusb
-Bus 002 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
-Bus 002 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-Bus 001 Device 003: ID 22b8:2e76 Motorola PCS
-Bus 001 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
-Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-Bus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
-Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-```
-These lines represent the USB devices currently connected to your machine.
-
-You want the line that represents your phone. If you're in doubt, try unplugging your phone and running the command again:
-
-```bash
-$ lsusb
-Bus 002 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
-Bus 002 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-Bus 001 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
-Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-Bus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
-Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-```
-You'll see that after removing the phone, the line which has the phone model ("Motorola PCS" in this case) disappeared from the list. This is the line that we care about.
-
-`Bus 001 Device 003: ID 22b8:2e76 Motorola PCS`
-
-From the above line, you want to grab the first four digits from the device ID:
-
-`22b8:2e76`
-
-In this case, it's `22b8`. That's the identifier for Motorola.
-
-You'll need to input this into your udev rules in order to get up and running:
-
-```sh
-echo SUBSYSTEM=="usb", ATTR{idVendor}=="22b8", MODE="0666", GROUP="plugdev" | sudo tee /etc/udev/rules.d/51-android-usb.rules
-```
-
-Make sure that you replace `22b8` with the identifier you get in the above command.
-
-Now check that your device is properly connecting to ADB, the Android Debug Bridge, by using `adb devices`.
-
-```bash
-List of devices attached
-TA9300GLMK	device
-```
-
 ## Accessing development server from device
 
 You can also iterate quickly on device using the development server. Follow one of the steps described below to make your development server running on your laptop accessible for your device.
