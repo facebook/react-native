@@ -36,6 +36,8 @@ namespace ReactNative.Modules.WebSocket
         {
             var webSocket = new MessageWebSocket();
 
+            webSocket.Control.MessageType = SocketMessageType.Utf8;
+
             if (protocols != null)
             {
                 foreach (var protocol in protocols)
