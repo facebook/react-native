@@ -28,6 +28,10 @@ var TabBarIOS = React.createClass({
     ...View.propTypes,
     style: View.propTypes.style,
     /**
+     * Color of text on unselected tabs
+     */
+    unselectedTintColor: ColorPropType,
+    /**
      * Color of the currently selected tab icon
      */
     tintColor: ColorPropType,
@@ -45,6 +49,7 @@ var TabBarIOS = React.createClass({
     return (
       <RCTTabBar
         style={[styles.tabGroup, this.props.style]}
+        unselectedTintColor={this.props.unselectedTintColor}
         tintColor={this.props.tintColor}
         barTintColor={this.props.barTintColor}
         translucent={this.props.translucent !== false}>

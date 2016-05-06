@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -16,29 +23,24 @@
  */
 'use strict';
 
+const AppRegistry = require('AppRegistry');
+const AsyncStorage = require('AsyncStorage');
+const BackAndroid = require('BackAndroid');
+const Dimensions = require('Dimensions');
+const DrawerLayoutAndroid = require('DrawerLayoutAndroid');
+const Linking = require('Linking');
 const React = require('react');
-const ReactNative = require('react-native');
-const {
-  AppRegistry,
-  BackAndroid,
-  Dimensions,
-  DrawerLayoutAndroid,
-  NavigationExperimental,
-  StyleSheet,
-  ToolbarAndroid,
-  View,
-  StatusBar,
-} = ReactNative;
-const {
-  RootContainer: NavigationRootContainer,
-} = NavigationExperimental;
+const StatusBar = require('StatusBar');
+const StyleSheet = require('StyleSheet');
+const ToolbarAndroid = require('ToolbarAndroid');
 const UIExplorerExampleList = require('./UIExplorerExampleList');
 const UIExplorerList = require('./UIExplorerList');
 const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
 const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
 const URIActionMap = require('./URIActionMap');
+const View = require('View');
 
-var DRAWER_WIDTH_LEFT = 56;
+const DRAWER_WIDTH_LEFT = 56;
 
 type Props = {
   exampleFromAppetizeParams: string,
@@ -49,14 +51,13 @@ type State = {
 };
 
 class UIExplorerApp extends React.Component {
-  _handleOpenInitialExample: Function;
+  _handleAction: Function;
+  _renderDrawerContent: Function;
   state: State;
   constructor(props: Props) {
     super(props);
-    this._handleOpenInitialExample = this._handleOpenInitialExample.bind(this);
-    this.state = {
-      initialExampleUri: props.exampleFromAppetizeParams,
-    };
+    this._handleAction = this._handleAction.bind(this);
+    this._renderDrawerContent = this._renderDrawerContent.bind(this);
   }
 
   componentWillMount() {
@@ -64,38 +65,28 @@ class UIExplorerApp extends React.Component {
   }
 
   componentDidMount() {
-    // There's a race condition if we try to navigate to the specified example
-    // from the initial props at the same time the navigation logic is setting
-    // up the initial navigation state. This hack adds a delay to avoid this
-    // scenario. So after the initial example list is shown, we then transition
-    // to the initial example.
-    setTimeout(this._handleOpenInitialExample, 500);
+    Linking.getInitialURL().then((url) => {
+      AsyncStorage.getItem('UIExplorerAppState', (err, storedString) => {
+        const exampleAction = URIActionMap(this.props.exampleFromAppetizeParams);
+        const urlAction = URIActionMap(url);
+        const launchAction = exampleAction || urlAction;
+        if (err || !storedString) {
+          const initialAction = launchAction || {type: 'InitialAction'};
+          this.setState(UIExplorerNavigationReducer(null, initialAction));
+          return;
+        }
+        const storedState = JSON.parse(storedString);
+        if (launchAction) {
+          this.setState(UIExplorerNavigationReducer(storedState, launchAction));
+          return;
+        }
+        this.setState(storedState);
+      });
+    });
   }
 
   render() {
-    return (
-      <NavigationRootContainer
-        persistenceKey="UIExplorerStateNavState"
-        ref={navRootRef => { this._navigationRootRef = navRootRef; }}
-        reducer={UIExplorerNavigationReducer}
-        renderNavigation={this._renderApp.bind(this)}
-        linkingActionMap={URIActionMap}
-      />
-    );
-  }
-
-  _handleOpenInitialExample() {
-    if (this.state.initialExampleUri) {
-      const exampleAction = URIActionMap(this.state.initialExampleUri);
-      if (exampleAction && this._navigationRootRef) {
-        this._navigationRootRef.handleNavigation(exampleAction);
-      }
-    }
-    this.setState({initialExampleUri: null});
-  }
-
-  _renderApp(navigationState, onNavigate) {
-    if (!navigationState) {
+    if (!this.state) {
       return null;
     }
     return (
@@ -110,42 +101,42 @@ class UIExplorerApp extends React.Component {
           this._overrideBackPressForDrawerLayout = false;
         }}
         ref={(drawer) => { this.drawer = drawer; }}
-        renderNavigationView={this._renderDrawerContent.bind(this, onNavigate)}
+        renderNavigationView={this._renderDrawerContent}
         statusBarBackgroundColor="#589c90">
-        {this._renderNavigation(navigationState, onNavigate)}
+        {this._renderApp()}
       </DrawerLayoutAndroid>
     );
   }
 
-  _renderDrawerContent(onNavigate) {
+  _renderDrawerContent() {
     return (
       <View style={styles.drawerContentWrapper}>
         <UIExplorerExampleList
           list={UIExplorerList}
           displayTitleRow={true}
           disableSearch={true}
-          onNavigate={(action) => {
-            this.drawer && this.drawer.closeDrawer();
-            onNavigate(action);
-          }}
+          onNavigate={this._handleAction}
         />
       </View>
     );
   }
 
-  _renderNavigation(navigationState, onNavigate) {
-    if (navigationState.externalExample) {
-      var Component = UIExplorerList.Modules[navigationState.externalExample];
+  _renderApp() {
+    const {
+      externalExample,
+      stack,
+    } = this.state;
+    if (externalExample) {
+      const Component = UIExplorerList.Modules[externalExample];
       return (
         <Component
           onExampleExit={() => {
-            onNavigate(NavigationRootContainer.getBackAction());
+            this._handleAction({ type: 'BackAction' });
           }}
           ref={(example) => { this._exampleRef = example; }}
         />
       );
     }
-    const {stack} = navigationState;
     const title = UIExplorerStateTitleMap(stack.children[stack.index]);
     const index = stack.children.length <= 1 ?  1 : stack.index;
 
@@ -178,11 +169,23 @@ class UIExplorerApp extends React.Component {
           title={title}
         />
         <UIExplorerExampleList
+          onNavigate={this._handleAction}
           list={UIExplorerList}
           {...stack.children[0]}
         />
       </View>
     );
+  }
+
+  _handleAction(action: Object): boolean {
+    this.drawer && this.drawer.closeDrawer();
+    const newState = UIExplorerNavigationReducer(this.state, action);
+    if (this.state !== newState) {
+      this.setState(newState);
+      AsyncStorage.setItem('UIExplorerAppState', JSON.stringify(this.state));
+      return true;
+    }
+    return false;
   }
 
   _handleBackButtonPress() {
@@ -200,12 +203,7 @@ class UIExplorerApp extends React.Component {
     ) {
       return true;
     }
-    if (this._navigationRootRef) {
-      return this._navigationRootRef.handleNavigation(
-        NavigationRootContainer.getBackAction()
-      );
-    }
-    return false;
+    return this._handleAction({ type: 'BackAction' });
   }
 }
 
