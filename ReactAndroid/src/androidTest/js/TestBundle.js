@@ -15,15 +15,13 @@ console.disableYellowBox = true;
 // Include modules used by integration tests
 require('ScrollViewTestModule');
 require('PickerAndroidTestModule');
+require('SwipeRefreshLayoutTestModule');
+require('TextInputTestModule');
 
 // Define catalyst test apps used in integration tests
 var AppRegistry = require('AppRegistry');
 
 var apps = [
-{
-  appKey: 'ScrollViewTestApp',
-  component: () => require('ScrollViewTestModule').ScrollViewTestApp,
-},
 {
   appKey: 'HorizontalScrollViewTestApp',
   component: () => require('ScrollViewTestModule').HorizontalScrollViewTestApp,
@@ -32,7 +30,25 @@ var apps = [
   appKey: 'PickerAndroidTestApp',
   component: () => require('PickerAndroidTestModule').PickerAndroidTestApp,
 },
+{
+  appKey: 'ScrollViewTestApp',
+  component: () => require('ScrollViewTestModule').ScrollViewTestApp,
+},
+{
+  appKey: 'SwipeRefreshLayoutTestApp',
+  component: () => require('SwipeRefreshLayoutTestModule').SwipeRefreshLayoutTestApp
+},
+{
+  appKey: 'TextInputTestApp',
+  component: () => require('TextInputTestModule').TextInputTestApp
+},
+{
+  appKey: 'TestIdTestApp',
+  component: () => require('TestIdTestModule').TestIdTestApp
+},
+
 ];
+
 
 module.exports = apps;
 AppRegistry.registerConfig(apps);

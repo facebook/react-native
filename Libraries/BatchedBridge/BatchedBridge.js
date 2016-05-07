@@ -13,8 +13,7 @@
 const MessageQueue = require('MessageQueue');
 
 const BatchedBridge = new MessageQueue(
-  __fbBatchedBridgeConfig.remoteModuleConfig,
-  __fbBatchedBridgeConfig.localModulesConfig,
+  () => global.__fbBatchedBridgeConfig
 );
 
 // TODO: Move these around to solve the cycle in a cleaner way.

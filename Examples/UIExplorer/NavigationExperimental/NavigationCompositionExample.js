@@ -36,10 +36,8 @@ const {
 
 const {
   CardStack: NavigationCardStack,
-  Container: NavigationContainer,
   Header: NavigationHeader,
   Reducer: NavigationReducer,
-  RootContainer: NavigationRootContainer,
   View: NavigationView,
 } = NavigationExperimental;
 
@@ -177,6 +175,7 @@ class ExampleTabScreen extends React.Component {
       <NavigationCardStack
         style={styles.tabContent}
         navigationState={this.props.navigationState}
+        onNavigate={this.props.onNavigate}
         renderOverlay={this._renderHeader}
         renderScene={this._renderScene}
       />
@@ -225,40 +224,42 @@ class ExampleTabScreen extends React.Component {
     );
   }
 }
-ExampleTabScreen = NavigationContainer.create(ExampleTabScreen);
 
 class NavigationCompositionExample extends React.Component {
-  navRootContainer: NavigationRootContainer;
-
-  render() {
-    return (
-      <NavigationRootContainer
-        reducer={ExampleAppReducer}
-        persistenceKey="NavigationCompositionState"
-        ref={navRootContainer => { this.navRootContainer = navRootContainer; }}
-        renderNavigation={this.renderApp.bind(this)}
-      />
-    );
+  state: NavigationParentState;
+  constructor() {
+    super();
+    this.state = ExampleAppReducer(undefined, {});
+  }
+  handleAction(action: Object): boolean {
+    if (!action) {
+      return false;
+    }
+    const newState = ExampleAppReducer(this.state, action);
+    if (newState === this.state) {
+      return false;
+    }
+    this.setState(newState);
+    return true;
   }
   handleBackAction(): boolean {
-    return (
-      this.navRootContainer &&
-      this.navRootContainer.handleNavigation(NavigationRootContainer.getBackAction())
-    );
+    return this.handleAction({ type: 'BackAction' });
   }
-  renderApp(navigationState: NavigationParentState, onNavigate: Function) {
-    if (!navigationState) {
+  render() {
+    if (!this.state) {
       return null;
     }
     return (
       <View style={styles.topView}>
         <ExampleMainView
-          navigationState={navigationState}
+          navigationState={this.state}
           onExampleExit={this.props.onExampleExit}
+          onNavigate={this.handleAction.bind(this)}
         />
         <NavigationExampleTabBar
-          tabs={navigationState.children}
-          index={navigationState.index}
+          tabs={this.state.children}
+          index={this.state.index}
+          onNavigate={this.handleAction.bind(this)}
         />
       </View>
     );
@@ -267,15 +268,18 @@ class NavigationCompositionExample extends React.Component {
 
 class ExampleMainView extends React.Component {
   _renderScene: NavigationSceneRenderer;
+  _handleNavigation: Function;
 
   componentWillMount() {
     this._renderScene = this._renderScene.bind(this);
+    this._handleNavigation = this._handleNavigation.bind(this);
   }
 
   render() {
     return (
       <NavigationView
         navigationState={this.props.navigationState}
+        onNavigate={this._handleNavigation}
         style={styles.tabsContent}
         renderScene={this._renderScene}
       />
@@ -288,12 +292,12 @@ class ExampleMainView extends React.Component {
       <ExampleTabScreen
         key={'tab_screen' + scene.key}
         navigationState={scene.navigationState}
-        onNavigate={this._handleNavigation.bind(this, scene.key)}
+        onNavigate={this._handleNavigation}
       />
     );
   }
 
-  _handleNavigation(tabKey, action) {
+  _handleNavigation(action: Object) {
     if (ExampleExitAction.match(action)) {
       this.props.onExampleExit();
       return;
@@ -301,8 +305,6 @@ class ExampleMainView extends React.Component {
     this.props.onNavigate(action);
   }
 }
-
-ExampleMainView = NavigationContainer.create(ExampleMainView);
 
 const styles = StyleSheet.create({
   topView: {

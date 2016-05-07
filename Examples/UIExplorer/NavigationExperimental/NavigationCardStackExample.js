@@ -33,18 +33,15 @@ const {
 const {
   CardStack: NavigationCardStack,
   StateUtils: NavigationStateUtils,
-  RootContainer: NavigationRootContainer,
 } = NavigationExperimental;
 
 function createReducer(initialState) {
-  return (currentState, action) => {
+  return (currentState = initialState, action) => {
     switch (action.type) {
-      case 'RootContainerInitialAction':
-        return initialState;
-
       case 'push':
         return NavigationStateUtils.push(currentState, {key: action.key});
 
+      case 'BackAction':
       case 'back':
       case 'pop':
         return currentState.index > 0 ?
@@ -67,35 +64,46 @@ class NavigationCardStackExample extends React.Component {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {isHorizontal: true};
+    this.state = {
+      isHorizontal: true,
+      navState: ExampleReducer(undefined, {}),
+    };
   }
 
   componentWillMount() {
-    this._renderNavigation = this._renderNavigation.bind(this);
     this._renderScene = this._renderScene.bind(this);
     this._toggleDirection = this._toggleDirection.bind(this);
+    this._handleAction = this._handleAction.bind(this);
   }
 
   render() {
     return (
-      <NavigationRootContainer
-        reducer={ExampleReducer}
-        renderNavigation={this._renderNavigation}
+      <NavigationCardStack
+        direction={this.state.isHorizontal ? 'horizontal' : 'vertical'}
+        navigationState={this.state.navState}
+        onNavigate={this._handleAction}
+        renderScene={this._renderScene}
         style={styles.main}
       />
     );
   }
 
-  _renderNavigation(navigationState, onNavigate) {
-    return (
-      <NavigationCardStack
-        direction={this.state.isHorizontal ? 'horizontal' : 'vertical'}
-        navigationState={navigationState}
-        onNavigate={onNavigate}
-        renderScene={this._renderScene}
-        style={styles.main}
-      />
-    );
+  _handleAction(action): boolean {
+    if (!action) {
+      return false;
+    }
+    const newState = ExampleReducer(this.state.navState, action);
+    if (newState === this.state.navState) {
+      return false;
+    }
+    this.setState({
+      navState: newState,
+    });
+    return true;
+  }
+
+  handleBackAction(): boolean {
+    return this._handleAction({ type: 'BackAction', });
   }
 
   _renderScene(/*NavigationSceneRendererProps*/ props) {

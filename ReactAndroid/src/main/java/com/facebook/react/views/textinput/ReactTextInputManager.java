@@ -44,8 +44,8 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
-import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
+import com.facebook.react.views.text.TextInlineImageSpan;
 
 /**
  * Manages instances of TextInput.
@@ -431,6 +431,40 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     checkPasswordType(view);
   }
 
+  @ReactProp(name = "returnKeyType")
+  public void setReturnKeyType(ReactEditText view, String returnKeyType) {
+    switch (returnKeyType) {
+      case "done":
+        view.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        break;
+      case "go":
+        view.setImeOptions(EditorInfo.IME_ACTION_GO);
+        break;
+      case "next":
+        view.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+        break;
+      case "none":
+        view.setImeOptions(EditorInfo.IME_ACTION_NONE);
+        break;
+      case "previous":
+        view.setImeOptions(EditorInfo.IME_ACTION_PREVIOUS);
+        break;
+      case "search":
+        view.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+        break;
+      case "send":
+        view.setImeOptions(EditorInfo.IME_ACTION_SEND);
+        break;
+    }
+  }
+
+  private static final int IME_ACTION_ID = 0x670;
+
+  @ReactProp(name = "returnKeyLabel")
+  public void setReturnKeyLabel(ReactEditText view, String returnKeyLabel) {
+    view.setImeActionLabel(returnKeyLabel, IME_ACTION_ID);
+  }
+
   @Override
   protected void onAfterUpdateTransaction(ReactEditText view) {
     super.onAfterUpdateTransaction(view);
@@ -586,6 +620,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                       editText.getId(),
                       SystemClock.nanoTime(),
                       editText.getText().toString()));
+            }
+            if (actionId == EditorInfo.IME_ACTION_NEXT ||
+              actionId == EditorInfo.IME_ACTION_PREVIOUS) {
+              if (editText.getBlurOnSubmit()) {
+                editText.clearFocus();
+              }
+              return true;
             }
             return !editText.getBlurOnSubmit();
           }

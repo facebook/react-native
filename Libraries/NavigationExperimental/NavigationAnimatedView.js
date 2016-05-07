@@ -12,7 +12,6 @@
 'use strict';
 
 const Animated = require('Animated');
-const NavigationContainer = require('NavigationContainer');
 const NavigationPropTypes = require('NavigationPropTypes');
 const NavigationScenesReducer = require('NavigationScenesReducer');
 const React = require('React');
@@ -189,6 +188,7 @@ class NavigationAnimatedView
       onNavigate,
       position,
       scene,
+      key: 'scene_' + scene.navigationState.key,
       scenes,
     });
   }
@@ -208,6 +208,7 @@ class NavigationAnimatedView
 
       return renderOverlay({
         layout: this.state.layout,
+        key: navigationState.key,
         navigationState,
         onNavigate,
         position,
@@ -240,7 +241,5 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-NavigationAnimatedView = NavigationContainer.create(NavigationAnimatedView);
 
 module.exports = NavigationAnimatedView;
