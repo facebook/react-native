@@ -12,12 +12,13 @@
 var H = require('Header');
 var React = require('React');
 
-function getVersionedGithubPath(path, version='next') {
+function getVersionedGithubPath(path, version) {
+  version = version || 'next';
   return [
     'https://github.com/facebook/react-native/blob',
     version === 'next' ? 'master' : version + '-stable',
     path
-    ].join('/')
+  ].join('/');
 }
 
 var HeaderWithGithub = React.createClass({
