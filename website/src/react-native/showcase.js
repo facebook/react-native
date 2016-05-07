@@ -676,6 +676,13 @@ var apps = [
     author: 'Mussabekov Rustem',
   },
   {
+    name: 'Reach24',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple49/v4/35/0e/c8/350ec8b4-c725-4b03-3e9e-131b85e72166/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/reach24x7/id962380755?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.vantage.reachtwo&hl=en',
+    author: 'Spritle Software',
+  },
+  {
     name: 'ReactTo36',
     icon: 'http://is2.mzstatic.com/image/pf/us/r30/Purple5/v4/e3/c8/79/e3c87934-70c6-4974-f20d-4adcfc68d71d/mzl.wevtbbkq.png',
     link: 'https://itunes.apple.com/us/app/reactto36/id989009293?mt=8',

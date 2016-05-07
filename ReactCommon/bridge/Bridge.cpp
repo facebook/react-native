@@ -37,9 +37,8 @@ Bridge::~Bridge() {
 }
 
 void Bridge::loadApplicationScript(const std::string& script, const std::string& sourceURL) {
-  runOnExecutorQueue(*m_mainExecutorToken, [=] (JSExecutor* executor) {
-    executor->loadApplicationScript(script, sourceURL);
-  });
+  // TODO(t11144533): Add assert that we are on the correct thread
+  m_mainExecutor->loadApplicationScript(script, sourceURL);
 }
 
 void Bridge::loadApplicationUnbundle(
