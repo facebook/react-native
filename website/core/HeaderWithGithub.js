@@ -12,7 +12,20 @@
 var H = require('Header');
 var React = require('React');
 
+function getVersionedGithubPath(path, version='next') {
+  return [
+    'https://github.com/facebook/react-native/blob',
+    version === 'next' ? 'master' : version + '-stable',
+    path
+    ].join('/')
+}
+
 var HeaderWithGithub = React.createClass({
+
+  contextTypes: {
+    version: React.PropTypes.string
+  },
+
   render: function() {
     return (
       <table width="100%">
@@ -26,7 +39,7 @@ var HeaderWithGithub = React.createClass({
             <td style={{textAlign: 'right'}}>
               <a
                 target="_blank"
-                href={'https://github.com/facebook/react-native/blob/master/' + this.props.path}>
+                href={getVersionedGithubPath(this.props.path, this.context.version)}>
                 Edit on GitHub
               </a>
             </td>
