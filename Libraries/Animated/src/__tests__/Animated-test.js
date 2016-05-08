@@ -142,6 +142,9 @@ describe('Animated', () => {
     expect(anim.__getValue()).toBe(15);
   });
 
+  it('convert to JSON', () => {
+    expect(JSON.stringify(new Animated.Value(10))).toBe('10');
+  });
 });
 
 
