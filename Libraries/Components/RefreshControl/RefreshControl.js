@@ -137,6 +137,7 @@ const RefreshControl = React.createClass({
 
   componentDidUpdate() {
     if (this.props.refreshing !== this._lastNativeRefreshing) {
+      this._lastNativeRefreshing = this.props.refreshing;
       this._nativeRef.setNativeProps({refreshing: this.props.refreshing});
     }
   },
