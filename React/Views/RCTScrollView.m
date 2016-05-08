@@ -730,7 +730,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
   // Fire a final scroll event
   _allowNextScrollNoMatterWhat = YES;
   [self scrollViewDidScroll:scrollView];
-  
+
   // Fire the end deceleration event
   RCT_SEND_SCROLL_EVENT(onMomentumScrollEnd, nil);
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndDecelerating:scrollView);
@@ -741,9 +741,9 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
   // Fire a final scroll event
   _allowNextScrollNoMatterWhat = YES;
   [self scrollViewDidScroll:scrollView];
-  
+
   // Fire the end deceleration event
-  RCT_SEND_SCROLL_EVENT(onMomentumScrollEnd, nil); //TODO: shouldn't this be onScrollAnimationEnd? 
+  RCT_SEND_SCROLL_EVENT(onMomentumScrollEnd, nil); //TODO: shouldn't this be onScrollAnimationEnd?
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndScrollingAnimation:scrollView);
 }
 
@@ -898,34 +898,6 @@ RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, showsHorizontalSc
 RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
 RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIEdgeInsets);
-
-- (void)setOnRefreshStart:(RCTDirectEventBlock)onRefreshStart
-{
-  if (!onRefreshStart) {
-    _onRefreshStart = nil;
-    _scrollView.refreshControl = nil;
-    return;
-  }
-  _onRefreshStart = [onRefreshStart copy];
-
-  if (!_scrollView.refreshControl) {
-    RCTRefreshControl *refreshControl = [RCTRefreshControl new];
-    [refreshControl addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
-    _scrollView.refreshControl = refreshControl;
-  }
-}
-
-- (void)refreshControlValueChanged
-{
-  if (self.onRefreshStart) {
-    self.onRefreshStart(nil);
-  }
-}
-
-- (void)endRefreshing
-{
-  [_scrollView.refreshControl endRefreshing];
-}
 
 - (void)sendScrollEventWithName:(NSString *)eventName
                      scrollView:(UIScrollView *)scrollView
