@@ -132,8 +132,9 @@ const RefreshControl = React.createClass({
   },
 
   componentDidUpdate(prevProps: {refreshing: boolean}) {
-    // RefreshControl is a controlled component, makes sure that the native value
-    // matches the refreshing prop.
+    // RefreshControl is a controlled component so if the native refreshing
+    // value doesn't match the current js refreshing prop update it to
+    // the js value.
     if (this.props.refreshing !== prevProps.refreshing) {
       this._lastNativeRefreshing = this.props.refreshing;
     } else if (this.props.refreshing !== this._lastNativeRefreshing) {
@@ -157,6 +158,8 @@ const RefreshControl = React.createClass({
 
     this.props.onRefresh && this.props.onRefresh();
 
+    // The native component will start refreshing so force an update to
+    // make sure it stays in sync with the js component.
     this.forceUpdate();
   },
 });
