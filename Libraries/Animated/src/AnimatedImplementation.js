@@ -69,6 +69,7 @@ class Animated {
   __getNativeConfig(): Object {
     throw new Error('This JS animated node type cannot be used as native animated node');
   }
+  toJSON(): any { return this.__getValue(); }
 }
 
 type AnimationConfig = {
