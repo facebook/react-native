@@ -131,14 +131,14 @@ const RefreshControl = React.createClass({
     this._lastNativeRefreshing = this.props.refreshing;
   },
 
-  componentWillReceiveProps(nextProps: {refreshing: boolean}) {
-    this._lastNativeRefreshing = nextProps.refreshing;
-  },
-
-  componentDidUpdate() {
-    if (this.props.refreshing !== this._lastNativeRefreshing) {
+  componentDidUpdate(prevProps: {refreshing: boolean}) {
+    // RefreshControl is a controlled component, makes sure that the native value
+    // matches the refreshing prop.
+    if (this.props.refreshing !== prevProps.refreshing) {
       this._lastNativeRefreshing = this.props.refreshing;
+    } else if (this.props.refreshing !== this._lastNativeRefreshing) {
       this._nativeRef.setNativeProps({refreshing: this.props.refreshing});
+      this._lastNativeRefreshing = this.props.refreshing;
     }
   },
 
