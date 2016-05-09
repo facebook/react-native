@@ -108,7 +108,7 @@ public class MainReactPackage implements ReactPackage {
       new ReactDropdownPickerManager(),
       new ReactHorizontalScrollViewManager(),
       new ReactImageManager(),
-      new ReactModalHostManager(),
+      new ReactModalHostManager(reactContext),
       new ReactProgressBarViewManager(),
       new ReactRawTextManager(),
       new ReactScrollViewManager(),
