@@ -13,7 +13,6 @@
 
 const BatchedBridge = require('BatchedBridge');
 const RemoteModules = BatchedBridge.RemoteModules;
-const Platform = require('Platform');
 
 function normalizePrefix(moduleName: string): string {
   return moduleName.replace(/^(RCT|RK)/, '');
@@ -56,66 +55,5 @@ Object.keys(RemoteModules).forEach((moduleName) => {
     },
   });
 });
-
-/**
- * Copies the ViewManager constants and commands into UIManager. This is
- * only needed for iOS, which puts the constants in the ViewManager
- * namespace instead of UIManager, unlike Android.
- *
- * We'll eventually move this logic to UIManager.js, once all
- * the call sites accessing NativeModules.UIManager directly have
- * been removed #9344445
- */
-if (Platform.OS === 'ios') {
-  const UIManager = NativeModules.UIManager;
-  UIManager && Object.keys(UIManager).forEach(viewName => {
-    const viewConfig = UIManager[viewName];
-    if (viewConfig.Manager) {
-      let constants;
-      /* $FlowFixMe - nice try. Flow doesn't like getters */
-      Object.defineProperty(viewConfig, 'Constants', {
-        configurable: true,
-        enumerable: true,
-        get: () => {
-          if (constants) {
-            return constants;
-          }
-          constants = {};
-          const viewManager = NativeModules[normalizePrefix(viewConfig.Manager)];
-          viewManager && Object.keys(viewManager).forEach(key => {
-            const value = viewManager[key];
-            if (typeof value !== 'function') {
-              constants[key] = value;
-            }
-          });
-          return constants;
-        },
-      });
-      let commands;
-      /* $FlowFixMe - nice try. Flow doesn't like getters */
-      Object.defineProperty(viewConfig, 'Commands', {
-        configurable: true,
-        enumerable: true,
-        get: () => {
-          if (commands) {
-            return commands;
-          }
-          commands = {};
-          const viewManager = NativeModules[normalizePrefix(viewConfig.Manager)];
-          // Note: we depend on the fact that the JS object holding the configuration
-          // retains key order. This will probably break at some point.
-          let index = 0;
-          viewManager && Object.keys(viewManager).forEach(key => {
-            const value = viewManager[key];
-            if (typeof value === 'function') {
-              commands[key] = index++;
-            }
-          });
-          return commands;
-        },
-      });
-    }
-  });
-}
 
 module.exports = NativeModules;
