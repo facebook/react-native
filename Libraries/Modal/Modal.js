@@ -15,6 +15,7 @@ const Platform = require('Platform');
 const PropTypes = require('ReactPropTypes');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
+const UIManager = require('UIManager');
 const View = require('View');
 const deprecatedPropType = require('deprecatedPropType');
 
@@ -56,8 +57,9 @@ class Modal extends React.Component {
       return null;
     }
 
-    const containerBackgroundColor = {
+    const containerStyles = {
       backgroundColor: this.props.transparent ? 'transparent' : 'white',
+      top: Platform.OS === 'android' && Platform.Version >= 19 ? UIManager.RCTModalHostView.Constants.StatusBarHeight : 0,
     };
 
     let animationType = this.props.animationType;
@@ -78,7 +80,7 @@ class Modal extends React.Component {
         style={styles.modal}
         onStartShouldSetResponder={this._shouldSetResponder}
         >
-        <View style={[styles.container, containerBackgroundColor]}>
+        <View style={[styles.container, containerStyles]}>
           {this.props.children}
         </View>
       </RCTModalHostView>
