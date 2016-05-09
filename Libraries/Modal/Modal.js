@@ -14,12 +14,15 @@
 const Platform = require('Platform');
 const PropTypes = require('ReactPropTypes');
 const React = require('React');
+const StatusBar = require('StatusBar');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 const deprecatedPropType = require('deprecatedPropType');
 
 const requireNativeComponent = require('requireNativeComponent');
 const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
+
+const STATUS_BAR_HEIGHT = StatusBar.currentHeight;
 
 /**
  * A Modal component covers the native view (e.g. UIViewController, Activity)
@@ -56,9 +59,10 @@ class Modal extends React.Component {
       return null;
     }
 
-    const containerBackgroundColor = {
+    const containerStyles = {
       backgroundColor: this.props.transparent ? 'transparent' : 'white',
-    };
+      top: Platform.OS === 'android' && Platform.Version >= 19 ? STATUS_BAR_HEIGHT : 0,
+    }
 
     let animationType = this.props.animationType;
     if (!animationType) {
@@ -78,7 +82,7 @@ class Modal extends React.Component {
         style={styles.modal}
         onStartShouldSetResponder={this._shouldSetResponder}
         >
-        <View style={[styles.container, containerBackgroundColor]}>
+        <View style={[styles.container, containerStyles]}>
           {this.props.children}
         </View>
       </RCTModalHostView>
