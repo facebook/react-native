@@ -133,10 +133,11 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
       if (isUndefined(width) || isUndefined(height)) {
         RCTLogError(@"Views nested within a <Text> must have a width and height");
       }
-      CGPoint childOrigin = [layoutManager boundingRectForGlyphRange:range inTextContainer:textContainer].origin;
+      UIFont* font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
+      CGRect glyphRect = [layoutManager boundingRectForGlyphRange:range inTextContainer:textContainer];
       CGRect childFrame = {{
-        RCTRoundPixelValue(childOrigin.x),
-        RCTRoundPixelValue(childOrigin.y)
+        RCTRoundPixelValue(glyphRect.origin.x),
+        RCTRoundPixelValue(glyphRect.origin.y + glyphRect.size.height - height + font.descender)
       }, {
         RCTRoundPixelValue(width),
         RCTRoundPixelValue(height)
