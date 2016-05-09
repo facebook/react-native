@@ -499,7 +499,7 @@ tools from the command line such as `android avd`.
 
 <block class="linux android" />
 
-In your `~/.bash` or `~/.bash_profile`:
+In your `~/.bashrc` or `~/.bash_profile`:
 
 ```
 # Your exact string here may be different.
