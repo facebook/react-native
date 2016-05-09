@@ -15,7 +15,6 @@ var ColorPropType = require('ColorPropType');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var Platform = require('Platform');
 var PointPropType = require('PointPropType');
-var RCTScrollView = require('NativeModules').UIManager.RCTScrollView;
 var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
 var React = require('React');
 var ReactNative = require('ReactNative');
