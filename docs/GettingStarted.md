@@ -713,11 +713,11 @@ cd AwesomeProject
 react-native run-android
 ```
 
-<block class="windows android" />
+<block class="windows linux android" />
 
 ### Troubleshooting Run
 
-A common issue on Windows is that the packager is not started automatically when you run
+A common issue is that the packager is not started automatically when you run
 `react-native run-android`. You can start it manually using:
 
 ```
@@ -725,13 +725,18 @@ cd AwesomeProject
 react-native start
 ```
 
+<block class="windows android" />
+
 Or if you hit a `ERROR  Watcher took too long to load` on Windows, try increasing the timeout in [this file](https://github.com/facebook/react-native/blob/5fa33f3d07f8595a188f6fe04d6168a6ede1e721/packager/react-packager/src/DependencyResolver/FileWatcher/index.js#L16) (under your `node_modules/react-native/`).
+
+<block class="windows linux android" />
 
 ### Modifying Project
 
 Now that you successfully started the project, let's modify it:
 
-- Press the `R` key twice **OR** open the menu (F2 by default, or ⌘-M in Genymotion) and select Reload JS to see your change!
+- Open `index.android.js` in your text editor of choice (e.g. [Nuclide](http://nuclide.io/docs/platforms/react-native/)) and edit some lines.
+- Press the `R` key twice **OR** open the menu (F2 by default, or ⌘-M in the emulator) and select Reload JS to see your change!
 - Run `adb logcat *:S ReactNative:V ReactNativeJS:V` in a terminal to see your app's logs
 
 ### That's It
