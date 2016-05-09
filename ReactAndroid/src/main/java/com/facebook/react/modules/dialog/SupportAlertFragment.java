@@ -26,6 +26,7 @@ public class SupportAlertFragment extends DialogFragment implements DialogInterf
   private final @Nullable DialogModule.AlertFragmentListener mListener;
 
   public SupportAlertFragment() {
+      mListener = null;
   }
 
   public SupportAlertFragment(@Nullable DialogModule.AlertFragmentListener listener, Bundle arguments) {
