@@ -34,7 +34,6 @@
 
 const React = require('React');
 const ReactNative = require('react-native');
-const NavigationContainer = require('NavigationContainer');
 const NavigationHeaderTitle = require('NavigationHeaderTitle');
 const NavigationHeaderBackButton = require('NavigationHeaderBackButton');
 const NavigationPropTypes = require('NavigationPropTypes');
@@ -49,6 +48,7 @@ const {
 } = ReactNative;
 
 import type  {
+  NavigationActionCaller,
   NavigationSceneRenderer,
   NavigationSceneRendererProps,
   NavigationStyleInterpolator,
@@ -64,8 +64,9 @@ type Props = NavigationSceneRendererProps & {
   renderLeftComponent: NavigationSceneRenderer,
   renderRightComponent: NavigationSceneRenderer,
   renderTitleComponent: NavigationSceneRenderer,
-  style?: any;
-  viewProps?: any;
+  onNavigate: NavigationActionCaller,
+  style?: any,
+  viewProps?: any,
 };
 
 type SubViewName = 'left' | 'title' | 'right';
@@ -86,7 +87,14 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     },
 
     renderLeftComponent: (props: NavigationSceneRendererProps) => {
-      return props.scene.index > 0 ? <NavigationHeaderBackButton /> : null;
+      if (props.scene.index === 0) {
+        return null;
+      }
+      return (
+        <NavigationHeaderBackButton
+          onNavigate={props.onNavigate}
+        />
+      );
     },
 
     renderRightComponent: (props: NavigationSceneRendererProps) => {
@@ -199,6 +207,11 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
       </Animated.View>
     );
   }
+
+  static HEIGHT = APPBAR_HEIGHT + STATUSBAR_HEIGHT;
+  static Title = NavigationHeaderTitle;
+  static BackButton = NavigationHeaderBackButton;
+
 }
 
 const styles = StyleSheet.create({
@@ -243,11 +256,5 @@ const styles = StyleSheet.create({
     top: 0,
   },
 });
-
-NavigationHeader = NavigationContainer.create(NavigationHeader);
-
-NavigationHeader.HEIGHT = APPBAR_HEIGHT + STATUSBAR_HEIGHT;
-NavigationHeader.Title = NavigationHeaderTitle;
-NavigationHeader.BackButton = NavigationHeaderBackButton;
 
 module.exports = NavigationHeader;

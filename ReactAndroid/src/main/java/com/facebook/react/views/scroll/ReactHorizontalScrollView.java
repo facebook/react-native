@@ -11,6 +11,7 @@ package com.facebook.react.views.scroll;
 
 import javax.annotation.Nullable;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -35,10 +36,11 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
 
+  private boolean mActivelyScrolling;
   private @Nullable Rect mClippingRect;
-  private boolean mDoneFlinging;
   private boolean mDragging;
-  private boolean mFlinging;
+  private boolean mPagingEnabled = false;
+  private @Nullable Runnable mPostTouchRunnable;
   private boolean mRemoveClippedSubviews;
   private boolean mScrollEnabled = true;
   private boolean mSendMomentumEvents;
@@ -71,6 +73,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     mScrollEnabled = scrollEnabled;
   }
 
+  public void setPagingEnabled(boolean pagingEnabled) {
+    mPagingEnabled = pagingEnabled;
+  }
+
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     MeasureSpecAssertions.assertExplicitMeasureSpec(widthMeasureSpec, heightMeasureSpec);
@@ -95,9 +101,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
         updateClippingRect();
       }
 
-      if (mFlinging) {
-        mDoneFlinging = false;
-      }
+      mActivelyScrolling = true;
 
       ReactScrollViewHelper.emitScrollEvent(this);
     }
@@ -129,32 +133,22 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     if (action == MotionEvent.ACTION_UP && mDragging) {
       ReactScrollViewHelper.emitScrollEndDragEvent(this);
       mDragging = false;
+      // After the touch finishes, we may need to do some scrolling afterwards either as a result
+      // of a fling or because we need to page align the content
+      handlePostTouchScrolling();
     }
     return super.onTouchEvent(ev);
   }
 
   @Override
   public void fling(int velocityX) {
-    super.fling(velocityX);
-    if (mSendMomentumEvents) {
-      mFlinging = true;
-      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this);
-      Runnable r = new Runnable() {
-        @Override
-        public void run() {
-          if (mDoneFlinging) {
-            mFlinging = false;
-            ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactHorizontalScrollView.this);
-          } else {
-            mDoneFlinging = true;
-            ReactHorizontalScrollView.this.postOnAnimationDelayed(this, ReactScrollViewHelper.MOMENTUM_DELAY);
-          }
-        }
-      };
-      postOnAnimationDelayed(r, ReactScrollViewHelper.MOMENTUM_DELAY);
+    if (mPagingEnabled) {
+      smoothScrollToPage(velocityX);
+    } else {
+      super.fling(velocityX);
     }
+    handlePostTouchScrolling();
   }
-
 
   @Override
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -209,5 +203,80 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       }
     }
     super.draw(canvas);
+  }
+
+  /**
+   * This handles any sort of scrolling that may occur after a touch is finished.  This may be
+   * momentum scrolling (fling) or because you have pagingEnabled on the scroll view.  Because we
+   * don't get any events from Android about this lifecycle, we do all our detection by creating a
+   * runnable that checks if we scrolled in the last frame and if so assumes we are still scrolling.
+   */
+  @TargetApi(16)
+  private void handlePostTouchScrolling() {
+    // If we aren't going to do anything (send events or snap to page), we can early out.
+    if (!mSendMomentumEvents && !mPagingEnabled) {
+      return;
+    }
+
+    // Check if we are already handling this which may occur if this is called by both the touch up
+    // and a fling call
+    if (mPostTouchRunnable != null) {
+      return;
+    }
+
+    if (mSendMomentumEvents) {
+      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this);
+    }
+
+    mActivelyScrolling = false;
+    mPostTouchRunnable = new Runnable() {
+
+      private boolean mSnappingToPage = false;
+
+      @Override
+      public void run() {
+        if (mActivelyScrolling) {
+          // We are still scrolling so we just post to check again a frame later
+          mActivelyScrolling = false;
+          ReactHorizontalScrollView.this.postOnAnimationDelayed(this, ReactScrollViewHelper.MOMENTUM_DELAY);
+        } else {
+          boolean doneWithAllScrolling = true;
+          if (mPagingEnabled && !mSnappingToPage) {
+            // Only if we have pagingEnabled and we have not snapped to the page do we
+            // need to continue checking for the scroll.  And we cause that scroll by asking for it
+            mSnappingToPage = true;
+            smoothScrollToPage(0);
+            doneWithAllScrolling = false;
+          }
+          if (doneWithAllScrolling) {
+            if (mSendMomentumEvents) {
+              ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactHorizontalScrollView.this);
+            }
+            ReactHorizontalScrollView.this.mPostTouchRunnable = null;
+          } else {
+            ReactHorizontalScrollView.this.postOnAnimationDelayed(this, ReactScrollViewHelper.MOMENTUM_DELAY);
+          }
+        }
+      }
+    };
+    postOnAnimationDelayed(mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+  }
+
+  /**
+   * This will smooth scroll us to the nearest page boundary
+   * It currently just looks at where the content is relative to the page and slides to the nearest
+   * page.  It is intended to be run after we are done scrolling, and handling any momentum
+   * scrolling.
+   */
+  private void smoothScrollToPage(int velocity) {
+    int width = getWidth();
+    int currentX = getScrollX();
+    // TODO (t11123799) - Should we do anything beyond linear accounting of the velocity
+    int predictedX = currentX + velocity;
+    int page = currentX / width;
+    if (predictedX > page * width + width / 2) {
+      page = page + 1;
+    }
+    smoothScrollTo(page * width, getScrollY());
   }
 }

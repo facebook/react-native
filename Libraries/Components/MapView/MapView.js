@@ -351,6 +351,7 @@ const MapView = React.createClass({
         }
         var viewIndex = children.length;
         children.push(React.cloneElement(view, {
+          // $FlowFixMe - An array of styles should be fine
           style: [styles.annotationView, view.props.style || {}]
         }));
       }

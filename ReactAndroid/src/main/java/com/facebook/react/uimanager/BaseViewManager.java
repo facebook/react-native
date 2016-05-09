@@ -25,6 +25,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_DECOMPOSED_MATRIX_SCALE_Y = "scaleY";
   private static final String PROP_DECOMPOSED_MATRIX_TRANSLATE_X = "translateX";
   private static final String PROP_DECOMPOSED_MATRIX_TRANSLATE_Y = "translateY";
+  private static final String PROP_TRANSFORM = "transform";
   private static final String PROP_OPACITY = "opacity";
   private static final String PROP_ELEVATION = "elevation";
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
@@ -51,8 +52,18 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setBackgroundColor(backgroundColor);
   }
 
+  // TODO: t11041683 Remove this duplicate property name.
   @ReactProp(name = PROP_DECOMPOSED_MATRIX)
   public void setDecomposedMatrix(T view, ReadableMap decomposedMatrix) {
+    if (decomposedMatrix == null) {
+      resetTransformMatrix(view);
+    } else {
+      setTransformMatrix(view, decomposedMatrix);
+    }
+  }
+
+  @ReactProp(name = PROP_TRANSFORM)
+  public void setTransform(T view, ReadableMap decomposedMatrix) {
     if (decomposedMatrix == null) {
       resetTransformMatrix(view);
     } else {

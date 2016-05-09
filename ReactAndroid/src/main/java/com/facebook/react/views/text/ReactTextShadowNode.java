@@ -67,8 +67,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   public static final String PROP_TEXT = "text";
 
   public static final String PROP_SHADOW_OFFSET = "textShadowOffset";
+  public static final String PROP_SHADOW_OFFSET_WIDTH = "width";
+  public static final String PROP_SHADOW_OFFSET_HEIGHT = "height";
   public static final String PROP_SHADOW_RADIUS = "textShadowRadius";
   public static final String PROP_SHADOW_COLOR = "textShadowColor";
+
   public static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
 
   private static final TextPaint sTextPaintInstance = new TextPaint();
@@ -279,6 +282,9 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   /**
    * Return -1 if the input string is not a valid numeric fontWeight (100, 200, ..., 900), otherwise
    * return the weight.
+   * 
+   * This code is duplicated in ReactTextInputManager 
+   * TODO: Factor into a common place they can both use
    */
   private static int parseNumericFontWeight(String fontWeightString) {
     // This should be much faster than using regex to verify input and Integer.parseInt
@@ -407,13 +413,17 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       markUpdated();
     }
   }
-
+    
   @ReactProp(name = ViewProps.FONT_FAMILY)
   public void setFontFamily(@Nullable String fontFamily) {
     mFontFamily = fontFamily;
     markUpdated();
   }
-
+    
+  /**
+  /* This code is duplicated in ReactTextInputManager 
+  /* TODO: Factor into a common place they can both use
+  */
   @ReactProp(name = ViewProps.FONT_WEIGHT)
   public void setFontWeight(@Nullable String fontWeightString) {
     int fontWeightNumeric = fontWeightString != null ?
@@ -430,7 +440,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       markUpdated();
     }
   }
-
+  
+  /**
+  /* This code is duplicated in ReactTextInputManager 
+  /* TODO: Factor into a common place they can both use
+  */
   @ReactProp(name = ViewProps.FONT_STYLE)
   public void setFontStyle(@Nullable String fontStyleString) {
     int fontStyle = UNSET;
@@ -463,13 +477,22 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = PROP_SHADOW_OFFSET)
   public void setTextShadowOffset(ReadableMap offsetMap) {
-    if (offsetMap == null) {
-      mTextShadowOffsetDx = 0;
-      mTextShadowOffsetDy = 0;
-    } else {
-      mTextShadowOffsetDx = PixelUtil.toPixelFromDIP(offsetMap.getDouble("width"));
-      mTextShadowOffsetDy = PixelUtil.toPixelFromDIP(offsetMap.getDouble("height"));
+    mTextShadowOffsetDx = 0;
+    mTextShadowOffsetDy = 0;
+
+    if (offsetMap != null) {
+      if (offsetMap.hasKey(PROP_SHADOW_OFFSET_WIDTH) &&
+          !offsetMap.isNull(PROP_SHADOW_OFFSET_WIDTH)) {
+        mTextShadowOffsetDx =
+            PixelUtil.toPixelFromDIP(offsetMap.getDouble(PROP_SHADOW_OFFSET_WIDTH));
+      }
+      if (offsetMap.hasKey(PROP_SHADOW_OFFSET_HEIGHT) &&
+          !offsetMap.isNull(PROP_SHADOW_OFFSET_HEIGHT)) {
+        mTextShadowOffsetDy =
+            PixelUtil.toPixelFromDIP(offsetMap.getDouble(PROP_SHADOW_OFFSET_HEIGHT));
+      }
     }
+
     markUpdated();
   }
 

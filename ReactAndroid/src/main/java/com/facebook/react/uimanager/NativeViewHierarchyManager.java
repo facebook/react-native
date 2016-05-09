@@ -12,6 +12,7 @@ package com.facebook.react.uimanager;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import android.content.res.Resources;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
@@ -388,6 +389,51 @@ public class NativeViewHierarchyManager {
   }
 
   /**
+   * Simplified version of constructManageChildrenErrorMessage that only deals with adding children
+   * views
+   */
+  private static String constructSetChildrenErrorMessage(
+    ViewGroup viewToManage,
+    ViewGroupManager viewManager,
+    ReadableArray childrenTags) {
+    ViewAtIndex[] viewsToAdd = new ViewAtIndex[childrenTags.size()];
+    for (int i = 0; i < childrenTags.size(); i++) {
+      viewsToAdd[i] = new ViewAtIndex(childrenTags.getInt(i), i);
+    }
+    return constructManageChildrenErrorMessage(
+      viewToManage,
+      viewManager,
+      null,
+      viewsToAdd,
+      null
+    );
+  }
+
+  /**
+   * Simplified version of manageChildren that only deals with adding children views
+   */
+  public void setChildren(
+    int tag,
+    ReadableArray childrenTags) {
+    ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
+    ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
+
+    for (int i = 0; i < childrenTags.size(); i++) {
+      View viewToAdd = mTagsToViews.get(childrenTags.getInt(i));
+      if (viewToAdd == null) {
+        throw new IllegalViewOperationException(
+          "Trying to add unknown view tag: "
+            + childrenTags.getInt(i) + "\n detail: " +
+            constructSetChildrenErrorMessage(
+              viewToManage,
+              viewManager,
+              childrenTags));
+      }
+      viewManager.addView(viewToManage, viewToAdd, i);
+    }
+  }
+
+  /**
    * See {@link UIManagerModule#addMeasuredRootView}.
    *
    * Must be called from the UI thread.
@@ -483,7 +529,7 @@ public class NativeViewHierarchyManager {
   }
 
   /**
-   * Returns the coordinates of a view relative to the entire phone screen (not just the RootView
+   * Returns the coordinates of a view relative to the window (not just the RootView
    * which is what measure will return)
    *
    * @param tag - the tag for the view
@@ -498,6 +544,15 @@ public class NativeViewHierarchyManager {
     }
 
     v.getLocationOnScreen(outputBuffer);
+
+    // We need to remove the status bar from the height.  getLocationOnScreen will include the
+    // status bar.
+    Resources resources = v.getContext().getResources();
+    int statusBarId = resources.getIdentifier("status_bar_height", "dimen", "android");
+    if (statusBarId > 0) {
+      int height = (int) resources.getDimension(statusBarId);
+      outputBuffer[1] -= height;
+    }
 
     // outputBuffer[0,1] already contain what we want
     outputBuffer[2] = v.getWidth();

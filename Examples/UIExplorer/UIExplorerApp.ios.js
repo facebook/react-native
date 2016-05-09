@@ -23,6 +23,8 @@
  */
 'use strict';
 
+const AsyncStorage = require('AsyncStorage');
+const Linking = require('Linking');
 const React = require('react');
 const ReactNative = require('react-native');
 const UIExplorerList = require('./UIExplorerList.ios');
@@ -42,7 +44,6 @@ const {
 const {
   CardStack: NavigationCardStack,
   Header: NavigationHeader,
-  RootContainer: NavigationRootContainer,
 } = NavigationExperimental;
 
 import type { NavigationSceneRendererProps } from 'NavigationTypeDefinition';
@@ -55,81 +56,86 @@ type Props = {
   exampleFromAppetizeParams: string,
 };
 
-type State = {
-  initialExampleUri: ?string,
+type State = UIExplorerNavigationState & {
+  externalExample?: string,
 };
 
 class UIExplorerApp extends React.Component {
-  _navigationRootRef: ?NavigationRootContainer;
-  _renderNavigation: Function;
   _renderOverlay: Function;
   _renderScene: Function;
   _renderCard: Function;
   _renderTitleComponent: Function;
-  _handleOpenInitialExample: Function;
+  _handleAction: Function;
   state: State;
+
   constructor(props: Props) {
     super(props);
-    this._handleOpenInitialExample = this._handleOpenInitialExample.bind(this);
-    this.state = {
-      initialExampleUri: props.exampleFromAppetizeParams,
-    };
   }
+
   componentWillMount() {
-    this._renderNavigation = this._renderNavigation.bind(this);
+    this._handleAction = this._handleAction.bind(this);
     this._renderOverlay = this._renderOverlay.bind(this);
     this._renderScene = this._renderScene.bind(this);
     this._renderTitleComponent = this._renderTitleComponent.bind(this);
   }
+
   componentDidMount() {
-    // There's a race condition if we try to navigate to the specified example
-    // from the initial props at the same time the navigation logic is setting
-    // up the initial navigation state. This hack adds a delay to avoid this
-    // scenario. So after the initial example list is shown, we then transition
-    // to the initial example.
-    setTimeout(this._handleOpenInitialExample, 500);
+    Linking.getInitialURL().then((url) => {
+      AsyncStorage.getItem('UIExplorerAppState', (err, storedString) => {
+        const exampleAction = URIActionMap(this.props.exampleFromAppetizeParams);
+        const urlAction = URIActionMap(url);
+        const launchAction = exampleAction || urlAction;
+        if (err || !storedString) {
+          const initialAction = launchAction || {type: 'InitialAction'};
+          this.setState(UIExplorerNavigationReducer(null, initialAction));
+          return;
+        }
+        const storedState = JSON.parse(storedString);
+        if (launchAction) {
+          this.setState(UIExplorerNavigationReducer(storedState, launchAction));
+          return;
+        }
+        this.setState(storedState);
+      });
+    });
+
+    Linking.addEventListener('url', (url) => {
+      this._handleAction(URIActionMap(url));
+    });
   }
-  render() {
-    return (
-      <NavigationRootContainer
-        persistenceKey="UIExplorerState"
-        reducer={UIExplorerNavigationReducer}
-        ref={navRootRef => { this._navigationRootRef = navRootRef; }}
-        renderNavigation={this._renderNavigation}
-        linkingActionMap={URIActionMap}
-      />
-    );
-  }
-  _handleOpenInitialExample() {
-    if (this.state.initialExampleUri) {
-      const exampleAction = URIActionMap(this.state.initialExampleUri);
-      if (exampleAction && this._navigationRootRef) {
-        this._navigationRootRef.handleNavigation(exampleAction);
-      }
+
+  _handleAction(action: Object) {
+    if (!action) {
+      return;
     }
-    this.setState({initialExampleUri: null});
+    const newState = UIExplorerNavigationReducer(this.state, action);
+    if (this.state !== newState) {
+      this.setState(newState);
+      AsyncStorage.setItem('UIExplorerAppState', JSON.stringify(this.state));
+    }
   }
-  _renderNavigation(navigationState: UIExplorerNavigationState, onNavigate: Function) {
-    if (!navigationState) {
+
+  render() {
+    if (!this.state) {
       return null;
     }
-    if (navigationState.externalExample) {
-      var Component = UIExplorerList.Modules[navigationState.externalExample];
+    if (this.state.externalExample) {
+      const Component = UIExplorerList.Modules[this.state.externalExample];
       return (
         <Component
           onExampleExit={() => {
-            onNavigate(NavigationRootContainer.getBackAction());
+            this._handleAction({ type: 'BackAction' });
           }}
         />
       );
     }
-    const {stack} = navigationState;
     return (
       <NavigationCardStack
-        navigationState={stack}
+        navigationState={this.state.stack}
         style={styles.container}
         renderOverlay={this._renderOverlay}
         renderScene={this._renderScene}
+        onNavigate={this._handleAction}
       />
     );
   }
@@ -156,6 +162,7 @@ class UIExplorerApp extends React.Component {
     if (state.key === 'AppList') {
       return (
         <UIExplorerExampleList
+          onNavigate={this._handleAction}
           list={UIExplorerList}
           style={styles.exampleContainer}
           {...state}
@@ -194,9 +201,9 @@ AppRegistry.registerComponent('UIExplorerApp', () => UIExplorerApp);
 UIExplorerList.ComponentExamples.concat(UIExplorerList.APIExamples).forEach((Example: UIExplorerExample) => {
   const ExampleModule = Example.module;
   if (ExampleModule.displayName) {
-    var Snapshotter = React.createClass({
+    const Snapshotter = React.createClass({
       render: function() {
-        var Renderable = UIExplorerExampleList.makeRenderable(ExampleModule);
+        const Renderable = UIExplorerExampleList.makeRenderable(ExampleModule);
         return (
           <SnapshotViewIOS>
             <Renderable />

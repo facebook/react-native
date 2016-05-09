@@ -11,13 +11,15 @@
  */
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var ReactNativeEventEmitter = require('ReactNativeEventEmitter');
+const BatchedBridge = require('BatchedBridge');
 
-BatchedBridge.registerCallableModule(
-  'RCTEventEmitter',
-  ReactNativeEventEmitter
-);
+const RCTEventEmitter = {
+  register(eventEmitter: any) {
+    BatchedBridge.registerCallableModule(
+      'RCTEventEmitter',
+      eventEmitter
+    );
+  }
+};
 
-// Completely locally implemented - no native hooks.
-module.exports = ReactNativeEventEmitter;
+module.exports = RCTEventEmitter;

@@ -47,8 +47,19 @@
 @property (nonatomic, assign) int snapToInterval;
 @property (nonatomic, copy) NSString *snapToAlignment;
 @property (nonatomic, copy) NSIndexSet *stickyHeaderIndices;
-@property (nonatomic, copy) RCTDirectEventBlock onRefreshStart;
 
+// NOTE: currently these event props are only declared so we can export the
+// event names to JS - we don't call the blocks directly because scroll events
+// need to be coalesced before sending, for performance reasons.
+@property (nonatomic, copy) RCTDirectEventBlock onScrollBeginDrag;
+@property (nonatomic, copy) RCTDirectEventBlock onScroll;
+@property (nonatomic, copy) RCTDirectEventBlock onScrollEndDrag;
+@property (nonatomic, copy) RCTDirectEventBlock onMomentumScrollBegin;
+@property (nonatomic, copy) RCTDirectEventBlock onMomentumScrollEnd;
+@property (nonatomic, copy) RCTDirectEventBlock onScrollAnimationEnd;
+
+// Pull-to-refresh support (deprecated - use RCTPullToRefreshControl instead)
+@property (nonatomic, copy) RCTDirectEventBlock onRefreshStart;
 - (void)endRefreshing;
 
 @end

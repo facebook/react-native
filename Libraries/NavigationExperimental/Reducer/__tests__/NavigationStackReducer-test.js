@@ -11,8 +11,8 @@
 'use strict';
 
 jest
- .dontMock('NavigationStackReducer')
- .dontMock('NavigationStateUtils');
+ .unmock('NavigationStackReducer')
+ .unmock('NavigationStateUtils');
 
 jest.setMock('React', {Component() {}, PropTypes: {}});
 

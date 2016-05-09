@@ -21,6 +21,13 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 
 RCT_EXPORT_MODULE()
 
+- (instancetype)init
+{
+  // We're only overriding this to ensure the module gets created at startup
+  // TODO (t11106126): Remove once we have more declarative control over module setup.
+  return [super init];
+}
+
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
