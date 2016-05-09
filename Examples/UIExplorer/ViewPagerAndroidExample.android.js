@@ -109,7 +109,7 @@ var ViewPagerAndroidExample = React.createClass({
     return {
       page: 0,
       animationsAreEnabled: true,
-      swipeEnabled: true,
+      scrollEnabled: true,
       progress: {
         position: 0,
         offset: 0,
@@ -168,7 +168,7 @@ var ViewPagerAndroidExample = React.createClass({
         <ViewPagerAndroid
           style={styles.viewPager}
           initialPage={0}
-          swipeEnabled={this.state.swipeEnabled}
+          scrollEnabled={this.state.scrollEnabled}
           onPageScroll={this.onPageScroll}
           onPageSelected={this.onPageSelected}
           onPageScrollStateChanged={this.onPageScrollStateChanged}
@@ -179,8 +179,8 @@ var ViewPagerAndroidExample = React.createClass({
         <View style={styles.buttons}>
           <Button
             enabled={true}
-            text={this.state.swipeEnabled ? 'Swipe Enabled' : 'Swipe Disabled'}
-            onPress={() => this.setState({swipeEnabled: !this.state.swipeEnabled})}/>
+            text={this.state.scrollEnabled ? 'Scroll Enabled' : 'Scroll Disabled'}
+            onPress={() => this.setState({scrollEnabled: !this.state.scrollEnabled})}/>
         </View>
         <View style={styles.buttons}>
           { animationsAreEnabled ?

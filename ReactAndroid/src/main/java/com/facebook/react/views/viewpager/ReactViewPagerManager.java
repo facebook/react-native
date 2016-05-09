@@ -115,8 +115,8 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
     pager.setPageMargin((int) PixelUtil.toPixelFromDIP(margin));
   }
 
-  @ReactProp(name = "swipeEnabled", defaultBoolean = true)
-  public void setSwipeEnabled(ReactViewPager parent, boolean swipeEnabled) {
-    parent.setSwipeEnabled(swipeEnabled);
+  @ReactProp(name = "scrollEnabled", defaultBoolean = true)
+  public void setScrollEnabled(ReactViewPager parent, boolean scrollEnabled) {
+    parent.setScrollEnabled(scrollEnabled);
   }
 }
