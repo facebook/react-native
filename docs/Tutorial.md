@@ -46,7 +46,7 @@ In your terminal navigate into the `AwesomeProject` and run:
 
     react-native run-android
 
-This will install the generated app on your emulator or device, as well as start the Node server which enables live code reloading. To see your changes you have to open the rage-shake-menu (either shake the device or press the menu button on devices, press ⌘+M on OS X or ctrl+m on Windows, for both Genymotion and the stock emulator. In the old version of the Android emulator press F2 or Page Up), and then press `Reload JS`.
+This will install the generated app on your emulator or device, as well as start the Node server which enables live code reloading. To see your changes you have to open the rage-shake-menu (either shake the device or press the menu button on devices, press ⌘+M on OS X or ctrl+m on Windows, for both Genymotion and the stock emulator. In the pre 2.0 version of the Android emulator press F2 or Page Up), and then press `Reload JS`.
 
 ### Hello World
 
