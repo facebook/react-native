@@ -102,10 +102,13 @@ if (Platform.OS === 'ios') {
           }
           commands = {};
           const viewManager = NativeModules[normalizePrefix(viewConfig.Manager)];
-          viewManager && Object.keys(viewManager).forEach((key, index) => {
+          // Note: we depend on the fact that the JS object holding the configuration
+          // retains key order. This will probably break at some point.
+          let index = 0;
+          viewManager && Object.keys(viewManager).forEach(key => {
             const value = viewManager[key];
             if (typeof value === 'function') {
-              commands[key] = index;
+              commands[key] = index++;
             }
           });
           return commands;
