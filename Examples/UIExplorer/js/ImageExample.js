@@ -302,7 +302,6 @@ exports.examples = [
         />
       );
     },
-    platform: 'ios',
   },
   {
     title: 'Border Color',

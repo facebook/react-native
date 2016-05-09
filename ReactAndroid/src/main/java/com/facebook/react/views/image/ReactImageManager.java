@@ -81,8 +81,8 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     view.setSource(sources);
   }
 
-  // In JS this is Image.props.loadingIndicatorSource.uri
-  @ReactProp(name = "loadingIndicatorSrc")
+  // In JS this is Image.props.defaultSource.uri
+  @ReactProp(name = "defaultSrc")
   public void setLoadingIndicatorSource(ReactImageView view, @Nullable String source) {
     view.setLoadingIndicatorSource(source);
   }
