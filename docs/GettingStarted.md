@@ -97,7 +97,7 @@ npm install -g react-native-cli
 
 <block class="mac ios" />
 
-#### XCode
+#### Xcode
 
 [Xcode](https://developer.apple.com/xcode/downloads/) 7.0 or higher. Open the App Store or go to https://developer.apple.com/xcode/downloads/. This will also install `git` as well.
 
@@ -190,7 +190,7 @@ Enable [Gradle Daemon](https://docs.gradle.org/2.9/userguide/gradle_daemon.html)
 
 #### Git
 
-Git version control. If you have installed [XCode](https://developer.apple.com/xcode/), Git is
+Git version control. If you have installed [Xcode](https://developer.apple.com/xcode/), Git is
 already installed, otherwise run the following:
 
 ```
