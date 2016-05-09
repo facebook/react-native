@@ -144,7 +144,7 @@ var ListViewSectionStyleExample = React.createClass({
     );
   },
 
-  sectionStyle: function(sectionID : string): ?JSON {
+  getSectionStyle: function(sectionID : string): ?JSON {
     return parseInt(sectionID, 10) % 2 === 0 ? { backgroundColor: 'green' } : null;
   },
 
@@ -155,7 +155,7 @@ var ListViewSectionStyleExample = React.createClass({
         dataSource={this.state.dataSource}
         onChangeVisibleRows={(visibleRows, changedRows) => console.log({visibleRows, changedRows})}
         renderSectionHeader={this.renderSectionHeader}
-        sectionStyle={this.sectionStyle}
+        getSectionStyle={this.getSectionStyle}
         renderRow={this.renderRow}
         initialListSize={10}
         pageSize={4}
