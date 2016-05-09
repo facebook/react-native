@@ -79,6 +79,12 @@ var featured = [
     author: 'Helium',
   },
   {
+    name: 'li.st',
+    icon: 'https://lh3.googleusercontent.com/tXt0HgJ7dCgOnuQ-lQr1P7E57mnOYfwXhRsV9lGcPwHPVvrDAN6YmpLVFgy88qKrkFI=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=st.li.listapp',
+    author: 'li.st + Exponent',
+  },
+  {
     name: 'Lrn',
     icon: 'http://is4.mzstatic.com/image/pf/us/r30/Purple1/v4/41/a9/e9/41a9e9b6-7801-aef7-2400-2eca14923321/mzl.adyswxad.png',
     link: 'https://itunes.apple.com/us/app/lrn-learn-to-code-at-your/id1019622677',
