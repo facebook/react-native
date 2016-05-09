@@ -83,13 +83,13 @@ type Props = {
    * A simple array of data blobs that are passed to the renderRow function in
    * order. Note there is no dataSource like in the standard `ListView`.
    */
-  data: Array<mixed>;
+  data: Array<any>;
   /**
    * Takes a data blob from the `data` array prop plus some meta info and should
    * return a row.
    */
   renderRow: (
-    data: mixed, sectionIdx: number, rowIdx: number, key: string
+    data: any, sectionIdx: number, rowIdx: number, key?: string
   ) => ?ReactElement;
   /**
    * Rendered when the list is scrolled faster than rows can be rendered.
@@ -140,7 +140,7 @@ type Props = {
   /**
    * Used to log perf events for async row rendering.
    */
-  asyncRowPerfEventName: ?string;
+  asyncRowPerfEventName?: string;
   /**
    * A function that returns the scrollable component in which the list rows
    * are rendered. Defaults to returning a ScrollView with the given props.
@@ -154,29 +154,32 @@ type Props = {
    * This determines how frequently events such as scroll and layout can trigger a re-render.
    */
   recomputeRowsBatchingPeriod: number;
+  /**
+   * Called when rows will be mounted/unmounted. Mounted rows always form a contiguous block so it is expressed as a
+   * range of start plus count.
+   */
+  onMountedRowsWillChange?: (firstIdx: number, count: number) => void;
+  /**
+   * Change this when you want to make sure the WindowedListView will re-render, for example when the result of
+   * `renderScrollComponent` might change. It will be compared in `shouldComponentUpdate`.
+   */
+  shouldUpdateToken?: string;
 };
-const defaultProps = {
-  enableDangerousRecycling: false,
-  initialNumToRender: 10,
-  maxNumToRender: 30,
-  numToRenderAhead: 10,
-  viewablePercentThreshold: 50,
-  renderScrollComponent: (props) => <ScrollView {...props} />,
-  disableIncrementalRendering: false,
-  recomputeRowsBatchingPeriod: 100,
+
+type State = {
+  boundaryIndicatorHeight?: number;
+  firstRow: number;
+  lastRow: number;
 };
 class WindowedListView extends React.Component {
   props: Props;
-  state: {
-    boundaryIndicatorHeight?: number;
-    firstRow: number;
-    lastRow: number;
-    firstVisible: number;
-    lastVisible: number;
-  };
+  state: State;
+  _firstVisible: number = -1;
+  _lastVisible: number = -1;
   _scrollOffsetY: number = 0;
   _frameHeight: number = 0;
   _rowFrames: Array<Object> = [];
+  _rowFramesDirty: boolean = false;
   _hasCalledOnEndReached: bool = false;
   _willComputeRowsToRender: bool = false;
   _timeoutHandle: number = 0;
@@ -184,6 +187,18 @@ class WindowedListView extends React.Component {
   _viewableRows: Array<number> = [];
   _cellsInProgress: Set<number> = new Set();
   _scrollRef: ?Object;
+
+  static defaultProps = {
+    enableDangerousRecycling: false,
+    initialNumToRender: 10,
+    maxNumToRender: 30,
+    numToRenderAhead: 10,
+    viewablePercentThreshold: 50,
+    renderScrollComponent: (props) => <ScrollView {...props} />,
+    disableIncrementalRendering: false,
+    recomputeRowsBatchingPeriod: 100,
+  };
+
   constructor(props: Props) {
     super(props);
     invariant(
@@ -192,16 +207,34 @@ class WindowedListView extends React.Component {
     );
     this.state = {
       firstRow: 0,
-      lastRow:
-        Math.min(this.props.data.length, this.props.initialNumToRender) - 1,
-      firstVisible: -1,
-      lastVisible: -1,
+      lastRow: Math.min(this.props.data.length, this.props.initialNumToRender) - 1,
     };
   }
   getScrollResponder(): ?ReactComponent {
     return this._scrollRef &&
       this._scrollRef.getScrollResponder &&
       this._scrollRef.getScrollResponder();
+  }
+  shouldComponentUpdate(newProps: Props, newState: State): boolean {
+    if (newState !== this.state) {
+      return true;
+    }
+    for (const key in newProps) {
+      if (key !== 'data' && newProps[key] !== this.props[key]) {
+        return true;
+      }
+    }
+    const newDataSubset = newProps.data.slice(newState.firstRow, newState.lastRow + 1);
+    const prevDataSubset = this.props.data.slice(this.state.firstRow, this.state.lastRow + 1);
+    if (newDataSubset.length !== prevDataSubset.length) {
+      return true;
+    }
+    for (let idx = 0; idx < newDataSubset.length; idx++) {
+      if (newDataSubset[idx] !== prevDataSubset[idx]) {
+        return true;
+      }
+    }
+    return false;
   }
   componentWillReceiveProps(newProps: Object) {
     // This has to happen immediately otherwise we could crash, e.g. if the data
@@ -240,10 +273,11 @@ class WindowedListView extends React.Component {
       const layoutPrev = this._rowFrames[rowIndex] || {};
       console.log(
         'record layout for row: ',
-        {i: rowIndex, h: layout.height, y: layout.y, hp: layoutPrev.height, yp: layoutPrev.y}
+        {i: rowIndex, h: layout.height, y: layout.y, x: layout.x, hp: layoutPrev.height, yp: layoutPrev.y}
       );
     }
     this._rowFrames[rowIndex] = {...layout, offscreenLayoutDone: true};
+    this._rowFramesDirty = true;
     if (this._cellsInProgress.size === 0) {
       this._enqueueComputeRowsToRender();
     }
@@ -288,11 +322,10 @@ class WindowedListView extends React.Component {
   _computeRowsToRender(props: Object): void {
     const totalRows = props.data.length;
     if (totalRows === 0) {
+      this._updateVisibleRows(-1, -1);
       this.setState({
         firstRow: 0,
         lastRow: -1,
-        firstVisible: -1,
-        lastVisible: -1,
       });
       return;
     }
@@ -367,28 +400,28 @@ class WindowedListView extends React.Component {
         this._hasCalledOnEndReached = this.state.lastRow === lastRow;
       }
     }
-    if (this.state.firstRow !== firstRow || this.state.lastRow !== lastRow) {
-      console.log('WLV: row render range changed:', {firstRow, lastRow});
+    const rowsShouldChange = firstRow !== this.state.firstRow || lastRow !== this.state.lastRow;
+    if (this._rowFramesDirty || rowsShouldChange) {
+      if (rowsShouldChange) {
+        this.props.onMountedRowsWillChange && this.props.onMountedRowsWillChange(firstRow, lastRow - firstRow + 1);
+        console.log('WLV: row render range will change:', {firstRow, lastRow});
+      }
+      this._rowFramesDirty = false;
+      this.setState({firstRow, lastRow});
     }
-    this.setState({firstRow, lastRow});
   }
   _updateVisibleRows(newFirstVisible: number, newLastVisible: number) {
-    if (this.state.firstVisible !== newFirstVisible ||
-        this.state.lastVisible !== newLastVisible) {
-      if (this.props.onVisibleRowsChanged) {
-        this.props.onVisibleRowsChanged(
-          newFirstVisible,
-          newLastVisible - newFirstVisible + 1);
+    if (this.props.onVisibleRowsChanged) {
+      if (this._firstVisible !== newFirstVisible ||
+          this._lastVisible !== newLastVisible) {
+        this.props.onVisibleRowsChanged(newFirstVisible, newLastVisible - newFirstVisible + 1);
       }
-      this.setState({
-        firstVisible: newFirstVisible,
-        lastVisible: newLastVisible,
-      });
     }
+    this._firstVisible = newFirstVisible;
+    this._lastVisible = newLastVisible;
   }
   render(): ReactElement {
-    const firstRow = this.state.firstRow;
-    const lastRow = this.state.lastRow;
+    const {firstRow, lastRow} = this.state;
     const rowFrames = this._rowFrames;
     const rows = [];
     let spacerHeight = 0;
@@ -451,7 +484,9 @@ class WindowedListView extends React.Component {
         lastRow === this.props.data.length - 1;
     if (this.props.renderFooter) {
       rows.push(
-        <View style={showFooter ? styles.include : styles.remove}>
+        <View
+          key="ind-footer"
+          style={showFooter ? styles.include : styles.remove}>
           {this.props.renderFooter()}
         </View>
       );
@@ -488,7 +523,6 @@ class WindowedListView extends React.Component {
     );
   }
 }
-WindowedListView.defaultProps = defaultProps;
 
 // performance testing id, unique for each component mount cycle
 let g_perf_update_id = 0;
@@ -523,7 +557,7 @@ type CellProps = {
    * Updates the parent with the latest layout. Only called when incremental rendering is done and triggers the parent
    * to re-render this row with includeInLayout true.
    */
-  onNewLayout: (params: {rowIndex: number, layout: ?Object}) => void;
+  onNewLayout: (params: {rowIndex: number, layout: Object}) => void;
   /**
    * Used to track when rendering is in progress so the parent can avoid wastedful re-renders that are just going to be
    * invalidated once the cell finishes.
@@ -541,11 +575,15 @@ class CellRenderer extends React.Component {
   _lastLayout: ?Object = null;
   _perfUpdateID: number = 0;
   _asyncCookie: any;
+  _includeInLayoutLatch: boolean = false;
   componentWillMount() {
     if (this.props.asyncRowPerfEventName) {
       this._perfUpdateID = g_perf_update_id++;
       this._asyncCookie = Systrace.beginAsyncEvent(this.props.asyncRowPerfEventName + this._perfUpdateID);
       console.log(`perf_asynctest_${this.props.asyncRowPerfEventName}_start ${this._perfUpdateID} ${Date.now()}`);
+    }
+    if (this.props.includeInLayout) {
+      this._includeInLayoutLatch = true;
     }
     this.props.onProgressChange({rowIndex: this.props.rowIndex, inProgress: true});
   }
@@ -590,9 +628,8 @@ class CellRenderer extends React.Component {
   componentWillReceiveProps(newProps) {
     if (newProps.includeInLayout && !this.props.includeInLayout) {
       invariant(this._offscreenRenderDone, 'Should never try to add to layout before render done');
+      this._includeInLayoutLatch = true; // Once we render in layout, make sure it sticks.
       this.refs.container.setNativeProps({style: styles.include});
-    } else {
-      invariant(!(this.props.includeInLayout && !newProps.includeInLayout), 'Should never unset includeInLayout');
     }
   }
   shouldComponentUpdate(newProps) {
@@ -607,7 +644,7 @@ class CellRenderer extends React.Component {
         Row: {this.props.rowIndex}
       </Text>;
     }
-    const style = this.props.includeInLayout ? styles.include : styles.remove;
+    const style = (this._includeInLayoutLatch || this.props.includeInLayout) ? styles.include : styles.remove;
     return (
       <IncrementalGroup onDone={this._onOffscreenRenderDone} name={`CellRenderer_${this.props.rowIndex}`}>
         <View

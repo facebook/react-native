@@ -28,7 +28,7 @@ type ImageCropData = {
    */
   size: {
     width: number;
-    height: number; 
+    height: number;
   };
   /**
    * (Optional) size to scale the cropped image to.
@@ -52,7 +52,7 @@ class ImageEditor {
   /**
    * Crop the image specified by the URI param. If URI points to a remote
    * image, it will be downloaded automatically. If the image cannot be
-   * loaded/downloaded, the failure callback will be called. 
+   * loaded/downloaded, the failure callback will be called.
    *
    * If the cropping process is successful, the resultant cropped image
    * will be stored in the ImageStore, and the URI returned in the success

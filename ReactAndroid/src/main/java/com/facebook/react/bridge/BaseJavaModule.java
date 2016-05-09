@@ -49,6 +49,7 @@ public abstract class BaseJavaModule implements NativeModule {
   // taken from Libraries/Utilities/MessageQueue.js
   static final public String METHOD_TYPE_REMOTE = "remote";
   static final public String METHOD_TYPE_REMOTE_ASYNC = "remoteAsync";
+  static final public String METHOD_TYPE_SYNC_HOOK = "syncHook";
 
   private static abstract class ArgumentExtractor<T> {
     public int getJSArgumentsNeeded() {
@@ -154,10 +155,11 @@ public abstract class BaseJavaModule implements NativeModule {
         }
       };
 
-  private class JavaMethod implements NativeMethod {
+  public class JavaMethod implements NativeMethod {
 
     private Method mMethod;
     private final ArgumentExtractor[] mArgumentExtractors;
+    private final String mSignature;
     private final Object[] mArguments;
     private String mType = METHOD_TYPE_REMOTE;
     private final int mJSArgumentsNeeded;
@@ -167,11 +169,53 @@ public abstract class BaseJavaModule implements NativeModule {
       mMethod = method;
       Class[] parameterTypes = method.getParameterTypes();
       mArgumentExtractors = buildArgumentExtractors(parameterTypes);
+      mSignature = buildSignature(parameterTypes);
       // Since native methods are invoked from a message queue executed on a single thread, it is
       // save to allocate only one arguments object per method that can be reused across calls
       mArguments = new Object[parameterTypes.length];
       mJSArgumentsNeeded = calculateJSArgumentsNeeded();
       mTraceName = BaseJavaModule.this.getName() + "." + mMethod.getName();
+    }
+
+    public Method getMethod() {
+      return mMethod;
+    }
+
+    public String getSignature() {
+      return mSignature;
+    }
+
+    private String buildSignature(Class[] paramTypes) {
+      StringBuilder builder = new StringBuilder(paramTypes.length);
+      builder.append("v.");
+      for (int i = 0; i < paramTypes.length; i++) {
+        Class paramClass = paramTypes[i];
+        if (paramClass == ExecutorToken.class) {
+          if (!BaseJavaModule.this.supportsWebWorkers()) {
+            throw new RuntimeException(
+              "Module " + BaseJavaModule.this + " doesn't support web workers, but " +
+                mMethod.getName() +
+                " takes an ExecutorToken.");
+          }
+        } else if (paramClass == Promise.class) {
+          Assertions.assertCondition(
+            i == paramTypes.length - 1, "Promise must be used as last parameter only");
+          mType = METHOD_TYPE_REMOTE_ASYNC;
+        }
+        builder.append(paramTypeToChar(paramClass));
+      }
+
+      // Modules that support web workers are expected to take an ExecutorToken as the first
+      // parameter to all their @ReactMethod-annotated methods.
+      if (BaseJavaModule.this.supportsWebWorkers()) {
+        if (builder.charAt(2) != 'T') {
+          throw new RuntimeException(
+            "Module " + BaseJavaModule.this + " supports web workers, but " + mMethod.getName() +
+              "does not take an ExecutorToken as its first parameter.");
+        }
+      }
+
+      return builder.toString();
     }
 
     private ArgumentExtractor[] buildArgumentExtractors(Class[] paramTypes) {
@@ -189,7 +233,8 @@ public abstract class BaseJavaModule implements NativeModule {
 
       ArgumentExtractor[] argumentExtractors = new ArgumentExtractor[paramTypes.length - executorTokenOffset];
       for (int i = 0; i < paramTypes.length - executorTokenOffset; i += argumentExtractors[i].getJSArgumentsNeeded()) {
-        Class argumentClass = paramTypes[i + executorTokenOffset];
+        int paramIndex = i + executorTokenOffset;
+        Class argumentClass = paramTypes[paramIndex];
         if (argumentClass == Boolean.class || argumentClass == boolean.class) {
           argumentExtractors[i] = ARGUMENT_EXTRACTOR_BOOLEAN;
         } else if (argumentClass == Integer.class || argumentClass == int.class) {
@@ -205,7 +250,7 @@ public abstract class BaseJavaModule implements NativeModule {
         } else if (argumentClass == Promise.class) {
           argumentExtractors[i] = ARGUMENT_EXTRACTOR_PROMISE;
           Assertions.assertCondition(
-              i == paramTypes.length - 1, "Promise must be used as last parameter only");
+              paramIndex == paramTypes.length - 1, "Promise must be used as last parameter only");
           mType = METHOD_TYPE_REMOTE_ASYNC;
         } else if (argumentClass == ReadableMap.class) {
           argumentExtractors[i] = ARGUMENT_EXTRACTOR_MAP;
@@ -300,24 +345,84 @@ public abstract class BaseJavaModule implements NativeModule {
     }
   }
 
-  @Override
-  public final Map<String, NativeMethod> getMethods() {
-    Map<String, NativeMethod> methods = new HashMap<String, NativeMethod>();
+  public class SyncJavaHook implements SyncNativeHook {
+
+    private Method mMethod;
+    private final String mSignature;
+
+    public SyncJavaHook(Method method) {
+      mMethod = method;
+      mSignature = buildSignature(method);
+    }
+
+    public Method getMethod() {
+      return mMethod;
+    }
+
+    public String getSignature() {
+      return mSignature;
+    }
+
+    private String buildSignature(Method method) {
+      Class[] paramTypes = method.getParameterTypes();
+      StringBuilder builder = new StringBuilder(paramTypes.length + 2);
+
+      builder.append(returnTypeToChar(method.getReturnType()));
+      builder.append('.');
+
+      for (int i = 0; i < paramTypes.length; i++) {
+        Class paramClass = paramTypes[i];
+        if (paramClass == ExecutorToken.class) {
+          if (!BaseJavaModule.this.supportsWebWorkers()) {
+            throw new RuntimeException(
+              "Module " + BaseJavaModule.this + " doesn't support web workers, but " +
+                mMethod.getName() +
+                " takes an ExecutorToken.");
+          }
+        } else if (paramClass == Promise.class) {
+          Assertions.assertCondition(
+            i == paramTypes.length - 1, "Promise must be used as last parameter only");
+        }
+        builder.append(paramTypeToChar(paramClass));
+      }
+
+      return builder.toString();
+    }
+  }
+
+  private final Map<String, NativeMethod> mMethods = new HashMap<>();
+  private final Map<String, SyncNativeHook> mHooks = new HashMap<>();
+
+  public BaseJavaModule() {
     Method[] targetMethods = getClass().getDeclaredMethods();
     for (int i = 0; i < targetMethods.length; i++) {
       Method targetMethod = targetMethods[i];
       if (targetMethod.getAnnotation(ReactMethod.class) != null) {
         String methodName = targetMethod.getName();
-        if (methods.containsKey(methodName)) {
+        if (mHooks.containsKey(methodName) || mMethods.containsKey(methodName)) {
           // We do not support method overloading since js sees a function as an object regardless
           // of number of params.
           throw new IllegalArgumentException(
-              "Java Module " + getName() + " method name already registered: " + methodName);
-          }
-        methods.put(methodName, new JavaMethod(targetMethod));
+            "Java Module " + getName() + " sync method name already registered: " + methodName);
+        }
+        mMethods.put(methodName, new JavaMethod(targetMethod));
+      }
+      if (targetMethod.getAnnotation(ReactSyncHook.class) != null) {
+        String methodName = targetMethod.getName();
+        if (mHooks.containsKey(methodName) || mMethods.containsKey(methodName)) {
+          // We do not support method overloading since js sees a function as an object regardless
+          // of number of params.
+          throw new IllegalArgumentException(
+            "Java Module " + getName() + " sync method name already registered: " + methodName);
+        }
+        mHooks.put(methodName, new SyncJavaHook(targetMethod));
       }
     }
-    return methods;
+  }
+
+  @Override
+  public final Map<String, NativeMethod> getMethods() {
+    return mMethods;
   }
 
   /**
@@ -325,6 +430,10 @@ public abstract class BaseJavaModule implements NativeModule {
    */
   public @Nullable Map<String, Object> getConstants() {
     return null;
+  }
+
+  public final Map<String, SyncNativeHook> getSyncHooks() {
+    return mHooks;
   }
 
   @Override
@@ -361,9 +470,71 @@ public abstract class BaseJavaModule implements NativeModule {
   public void onCatalystInstanceDestroy() {
     // do nothing
   }
-  
+
   @Override
   public boolean supportsWebWorkers() {
     return false;
+  }
+
+  private static char paramTypeToChar(Class paramClass) {
+    char tryCommon = commonTypeToChar(paramClass);
+    if (tryCommon != '\0') {
+      return tryCommon;
+    }
+    if (paramClass == ExecutorToken.class) {
+      return 'T';
+    } else if (paramClass == Callback.class) {
+      return 'X';
+    } else if (paramClass == Promise.class) {
+      return 'P';
+    } else if (paramClass == ReadableMap.class) {
+      return 'M';
+    } else if (paramClass == ReadableArray.class) {
+      return 'A';
+    } else {
+      throw new RuntimeException(
+        "Got unknown param class: " + paramClass.getSimpleName());
+    }
+  }
+
+  private static char returnTypeToChar(Class returnClass) {
+    char tryCommon = commonTypeToChar(returnClass);
+    if (tryCommon != '\0') {
+      return tryCommon;
+    }
+    if (returnClass == void.class) {
+      return 'v';
+    } else if (returnClass == WritableMap.class) {
+      return 'M';
+    } else if (returnClass == WritableArray.class) {
+      return 'A';
+    } else {
+      throw new RuntimeException(
+        "Got unknown return class: " + returnClass.getSimpleName());
+    }
+  }
+
+  private static char commonTypeToChar(Class typeClass) {
+    if (typeClass == boolean.class) {
+      return 'z';
+    } else if (typeClass == Boolean.class) {
+      return 'Z';
+    } else if (typeClass == int.class) {
+      return 'i';
+    } else if (typeClass == Integer.class) {
+      return 'I';
+    } else if (typeClass == double.class) {
+      return 'd';
+    } else if (typeClass == Double.class) {
+      return 'D';
+    } else if (typeClass == float.class) {
+      return 'f';
+    } else if (typeClass == Float.class) {
+      return 'F';
+    } else if (typeClass == String.class) {
+      return 'S';
+    } else {
+      return '\0';
+    }
   }
 }

@@ -86,12 +86,17 @@ const RefreshControl = React.createClass({
     /**
      * Whether the view should be indicating an active refresh.
      */
-    refreshing: React.PropTypes.bool,
+    refreshing: React.PropTypes.bool.isRequired,
     /**
      * The color of the refresh indicator.
      * @platform ios
      */
     tintColor: ColorPropType,
+    /**
+     * Title color.
+     * @platform ios
+     */
+    titleColor: ColorPropType,
     /**
      * The title displayed under the refresh indicator.
      * @platform ios
@@ -124,7 +129,24 @@ const RefreshControl = React.createClass({
     progressViewOffset: React.PropTypes.number,
   },
 
-  _nativeRef: {},
+  _nativeRef: (null: any),
+  _lastNativeRefreshing: false,
+
+  componentDidMount() {
+    this._lastNativeRefreshing = this.props.refreshing;
+  },
+
+  componentDidUpdate(prevProps: {refreshing: boolean}) {
+    // RefreshControl is a controlled component so if the native refreshing
+    // value doesn't match the current js refreshing prop update it to
+    // the js value.
+    if (this.props.refreshing !== prevProps.refreshing) {
+      this._lastNativeRefreshing = this.props.refreshing;
+    } else if (this.props.refreshing !== this._lastNativeRefreshing) {
+      this._nativeRef.setNativeProps({refreshing: this.props.refreshing});
+      this._lastNativeRefreshing = this.props.refreshing;
+    }
+  },
 
   render() {
     return (
@@ -137,8 +159,13 @@ const RefreshControl = React.createClass({
   },
 
   _onRefresh() {
+    this._lastNativeRefreshing = true;
+
     this.props.onRefresh && this.props.onRefresh();
-    this._nativeRef.setNativeProps({refreshing: this.props.refreshing});
+
+    // The native component will start refreshing so force an update to
+    // make sure it stays in sync with the js component.
+    this.forceUpdate();
   },
 });
 

@@ -20,6 +20,9 @@
 #import "RCTNetworking.h"
 #import "RCTUtils.h"
 
+static NSString *const RCTErrorInvalidURI = @"E_INVALID_URI";
+static NSString *const RCTErrorPrefetchFailure = @"E_PREFETCH_FAILURE";
+
 @implementation UIImage (React)
 
 - (CAKeyframeAnimation *)reactKeyframeAnimation
@@ -368,7 +371,24 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     // Check for cached response before reloading
     // TODO: move URL cache out of RCTImageLoader into its own module
     NSCachedURLResponse *cachedResponse = [_URLCache cachedResponseForRequest:request];
-    if (cachedResponse) {
+
+    while (cachedResponse) {
+      if ([cachedResponse.response isKindOfClass:[NSHTTPURLResponse class]]) {
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)cachedResponse.response;
+        if (httpResponse.statusCode == 301 || httpResponse.statusCode == 302) {
+          NSString *location = httpResponse.allHeaderFields[@"Location"];
+          if (location == nil) {
+            completionHandler(RCTErrorWithMessage(@"Image redirect without location"), nil);
+            return;
+          }
+
+          NSURL *redirectURL = [NSURL URLWithString: location];
+          request = [NSURLRequest requestWithURL: redirectURL];
+          cachedResponse = [_URLCache cachedResponseForRequest:request];
+          continue;
+        }
+      }
+
       processResponse(cachedResponse.response, cachedResponse.data, nil);
       return;
     }
@@ -632,6 +652,27 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                         }
                         completionBlock(error, size);
                       }];
+}
+
+#pragma mark - Bridged methods
+
+RCT_EXPORT_METHOD(prefetchImage:(NSString *)uri
+                        resolve:(RCTPromiseResolveBlock)resolve
+                         reject:(RCTPromiseRejectBlock)reject)
+{
+  if (!uri.length) {
+    reject(RCTErrorInvalidURI, @"Cannot prefetch an image for an empty URI", nil);
+    return;
+  }
+
+  [_bridge.imageLoader loadImageWithTag:uri callback:^(NSError *error, UIImage *image) {
+    if (error) {
+      reject(RCTErrorPrefetchFailure, nil, error);
+      return;
+    }
+
+    resolve(@YES);
+  }];
 }
 
 #pragma mark - RCTURLRequestHandler

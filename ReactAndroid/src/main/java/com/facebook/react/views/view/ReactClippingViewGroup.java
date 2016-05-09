@@ -28,7 +28,7 @@ public interface ReactClippingViewGroup {
 
   /**
    * Notify view that clipping area may have changed and it should recalculate the list of children
-   * that shold be attached/detached. This method should be called only when property
+   * that should be attached/detached. This method should be called only when property
    * {@code removeClippedSubviews} is set to {@code true} on a view.
    *
    * CAUTION: Views are responsible for calling {@link #updateClippingRect} on it's children. This

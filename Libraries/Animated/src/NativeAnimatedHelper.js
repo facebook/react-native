@@ -16,7 +16,7 @@ var NativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
 var invariant = require('fbjs/lib/invariant');
 
 var __nativeAnimatedNodeTagCount = 1; /* used for animated nodes */
-var __nativeAnimationTagCount = 1; /* used for started animations */
+var __nativeAnimationIdCount = 1; /* used for started animations */
 
 type EndResult = {finished: bool};
 type EndCallback = (result: EndResult) => void;
@@ -38,9 +38,13 @@ var API = {
     assertNativeAnimatedModule();
     NativeAnimatedModule.disconnectAnimatedNodes(parentTag, childTag);
   },
-  startAnimatingNode: function(animationTag: number, nodeTag: number, config: Object, endCallback: EndCallback) {
+  startAnimatingNode: function(animationId: number, nodeTag: number, config: Object, endCallback: EndCallback): void {
     assertNativeAnimatedModule();
-    NativeAnimatedModule.startAnimatingNode(nodeTag, config, endCallback);
+    NativeAnimatedModule.startAnimatingNode(animationId, nodeTag, config, endCallback);
+  },
+  stopAnimation: function(animationId: number) {
+    assertNativeAnimatedModule();
+    NativeAnimatedModule.stopAnimation(animationId);
   },
   setAnimatedNodeValue: function(nodeTag: number, value: number): void {
     assertNativeAnimatedModule();
@@ -97,12 +101,24 @@ function validateStyles(styles: Object): void {
   }
 }
 
+function validateInterpolation(config: Object): void {
+  var SUPPORTED_INTERPOLATION_PARAMS = {
+    inputRange: true,
+    outputRange: true,
+  };
+  for (var key in config) {
+    if (!SUPPORTED_INTERPOLATION_PARAMS.hasOwnProperty(key)) {
+      throw new Error(`Interpolation property '${key}' is not supported by native animated module`);
+    }
+  }
+}
+
 function generateNewNodeTag(): number {
   return __nativeAnimatedNodeTagCount++;
 }
 
-function generateNewAnimationTag(): number {
-  return __nativeAnimationTagCount++;
+function generateNewAnimationId(): number {
+  return __nativeAnimationIdCount++;
 }
 
 function assertNativeAnimatedModule(): void {
@@ -113,7 +129,8 @@ module.exports = {
   API,
   validateProps,
   validateStyles,
+  validateInterpolation,
   generateNewNodeTag,
-  generateNewAnimationTag,
+  generateNewAnimationId,
   assertNativeAnimatedModule,
 };

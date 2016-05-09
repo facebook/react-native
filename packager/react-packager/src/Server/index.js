@@ -45,7 +45,11 @@ const validateOpts = declareOpts({
     default: false,
   },
   transformModulePath: {
-    type:'string',
+    type: 'string',
+    required: false,
+  },
+  extraNodeModules: {
+    type: 'object',
     required: false,
   },
   nonPersistent: {
@@ -62,7 +66,7 @@ const validateOpts = declareOpts({
       'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'svg', 'webp', // Image formats
       'm4v', 'mov', 'mp4', 'mpeg', 'mpg', 'webm', // Video formats
       'aac', 'aiff', 'caf', 'm4a', 'mp3', 'wav', // Audio formats
-      'html', // Document formats
+      'html', 'pdf', // Document formats
     ],
   },
   transformTimeoutInterval: {
@@ -254,8 +258,15 @@ class Server {
     return this._bundler.hmrBundle(modules, host, port);
   }
 
-  getShallowDependencies(entryFile) {
-    return this._bundler.getShallowDependencies(entryFile);
+  getShallowDependencies(options) {
+    return Promise.resolve().then(() => {
+      if (!options.platform) {
+        options.platform = getPlatformExtension(options.entryFile);
+      }
+
+      const opts = dependencyOpts(options);
+      return this._bundler.getShallowDependencies(opts);
+    });
   }
 
   getModuleForPath(entryFile) {

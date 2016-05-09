@@ -15,7 +15,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Modal,
   StyleSheet,
@@ -23,7 +24,7 @@ var {
   Text,
   TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
@@ -65,7 +66,7 @@ var Button = React.createClass({
 var ModalExample = React.createClass({
   getInitialState() {
     return {
-      animated: true,
+      animationType: 'none',
       modalVisible: false,
       transparent: false,
     };
@@ -75,8 +76,8 @@ var ModalExample = React.createClass({
     this.setState({modalVisible: visible});
   },
 
-  _toggleAnimated() {
-    this.setState({animated: !this.state.animated});
+  _setAnimationType(type) {
+    this.setState({animationType: type});
   },
 
   _toggleTransparent() {
@@ -90,18 +91,21 @@ var ModalExample = React.createClass({
     var innerContainerTransparentStyle = this.state.transparent
       ? {backgroundColor: '#fff', padding: 20}
       : null;
+    var activeButtonStyle = {
+      backgroundColor: '#ddd'
+    };
 
     return (
       <View>
         <Modal
-          animated={this.state.animated}
+          animationType={this.state.animationType}
           transparent={this.state.transparent}
           visible={this.state.modalVisible}
           onRequestClose={() => {this._setModalVisible(false)}}
           >
           <View style={[styles.container, modalBackgroundStyle]}>
             <View style={[styles.innerContainer, innerContainerTransparentStyle]}>
-              <Text>This modal was presented {this.state.animated ? 'with' : 'without'} animation.</Text>
+              <Text>This modal was presented {this.state.animationType === 'none' ? 'without' : 'with'} animation.</Text>
               <Button
                 onPress={this._setModalVisible.bind(this, false)}
                 style={styles.modalButton}>
@@ -110,10 +114,17 @@ var ModalExample = React.createClass({
             </View>
           </View>
         </Modal>
-
         <View style={styles.row}>
-          <Text style={styles.rowTitle}>Animated</Text>
-          <Switch value={this.state.animated} onValueChange={this._toggleAnimated} />
+          <Text style={styles.rowTitle}>Animation Type</Text>
+          <Button onPress={this._setAnimationType.bind(this, 'none')} style={this.state.animationType === 'none' ? activeButtonStyle : {}}>
+            none
+          </Button>
+          <Button onPress={this._setAnimationType.bind(this, 'slide')} style={this.state.animationType === 'slide' ? activeButtonStyle : {}}>
+            slide
+          </Button>
+          <Button onPress={this._setAnimationType.bind(this, 'fade')} style={this.state.animationType === 'fade' ? activeButtonStyle : {}}>
+            fade
+          </Button>
         </View>
 
         <View style={styles.row}>

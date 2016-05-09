@@ -10,9 +10,10 @@
  */
 'use strict';
 
-require('regenerator/runtime');
+require('regenerator-runtime/runtime');
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 
 var {
   AppRegistry,
@@ -21,7 +22,7 @@ var {
   Text,
   TouchableOpacity,
   View,
-} = React;
+} = ReactNative;
 
 /* Keep this list in sync with RCTRootViewIntegrationTests.m */
 var TESTS = [

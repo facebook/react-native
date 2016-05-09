@@ -9,6 +9,7 @@
 
 #import "RCTTextManager.h"
 
+#import "Layout.h"
 #import "RCTAccessibilityManager.h"
 #import "RCTAssert.h"
 #import "RCTConvert.h"
@@ -21,7 +22,7 @@
 
 @interface RCTShadowText (Private)
 
-- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width;
+- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width widthMode:(css_measure_mode_t)widthMode;
 
 @end
 
@@ -114,10 +115,9 @@ RCT_EXPORT_SHADOW_PROPERTY(textShadowColor, UIColor)
 
   /**
    * NOTE: this logic is included to support rich text editing inside multiline
-   * `<TextInput>` controls, a feature which is not yet supported in open source.
-   * It is required in order to ensure that the textStorage (aka attributed
-   * string) is copied over from the RCTShadowText to the RCTText view in time
-   * to be used to update the editable text content.
+   * `<TextInput>` controls. It is required in order to ensure that the
+   * textStorage (aka attributed string) is copied over from the RCTShadowText
+   * to the RCTText view in time to be used to update the editable text content.
    */
   if (textViewTagsToUpdate.count) {
 
@@ -134,8 +134,8 @@ RCT_EXPORT_SHADOW_PROPERTY(textShadowColor, UIColor)
 
       UIEdgeInsets padding = shadowText.paddingAsInsets;
       CGFloat width = shadowText.frame.size.width - (padding.left + padding.right);
-      NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width];
 
+      NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width widthMode:CSS_MEASURE_MODE_EXACTLY];
       [uiBlocks addObject:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTTextView *> *viewRegistry) {
         RCTTextView *textView = viewRegistry[reactTag];
         RCTText *text;

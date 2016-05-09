@@ -15,7 +15,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   ProgressBarAndroid,
   StyleSheet,
@@ -23,12 +24,12 @@ var {
   TextInput,
   TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 
 var XHRExampleHeaders = require('./XHRExampleHeaders');
 var XHRExampleCookies = require('./XHRExampleCookies');
 var XHRExampleFetch = require('./XHRExampleFetch');
-
+var XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
 
 // TODO t7093728 This is a simplified XHRExample.ios.js.
 // Once we have Camera roll, Toast, Intent (for opening URLs)
@@ -295,6 +296,11 @@ exports.examples = [{
   title: 'Cookies',
   render() {
     return <XHRExampleCookies/>;
+  }
+}, {
+  title: 'Time Out Test',
+  render() {
+    return <XHRExampleOnTimeOut/>;
   }
 }];
 

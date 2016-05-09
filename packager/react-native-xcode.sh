@@ -14,11 +14,11 @@ case "$CONFIGURATION" in
   Debug)
     # Speed up build times by skipping the creation of the offline package for debug
     # builds on the simulator since the packager is supposed to be running anyways.
-    if [[ "$PLATFORM_NAME" = "iphonesimulator" ]]; then		
-      echo "Skipping bundling for Simulator platform"		
-      exit 0;		
+    if [[ "$PLATFORM_NAME" = "iphonesimulator" ]]; then
+      echo "Skipping bundling for Simulator platform"
+      exit 0;
     fi
-    
+
     DEV=true
     ;;
   "")
@@ -72,5 +72,6 @@ $NODE_BINARY "$REACT_NATIVE_DIR/local-cli/cli.js" bundle \
   --entry-file index.ios.js \
   --platform ios \
   --dev $DEV \
+  --reset-cache true \
   --bundle-output "$DEST/main.jsbundle" \
   --assets-dest "$DEST"

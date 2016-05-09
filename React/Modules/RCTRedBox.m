@@ -16,7 +16,17 @@
 
 #if RCT_DEBUG
 
+@class RCTRedBoxWindow;
+
+@protocol RCTRedBoxWindowActionDelegate <NSObject>
+
+- (void)redBoxWindow:(RCTRedBoxWindow *)redBoxWindow openStackFrameInEditor:(NSDictionary *)stackFrame;
+- (void)reloadFromRedBoxWindow:(RCTRedBoxWindow *)redBoxWindow;
+
+@end
+
 @interface RCTRedBoxWindow : UIWindow <UITableViewDelegate, UITableViewDataSource>
+@property (nonatomic, weak) id<RCTRedBoxWindowActionDelegate> actionDelegate;
 @end
 
 @implementation RCTRedBoxWindow
@@ -89,23 +99,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)openStackFrameInEditor:(NSDictionary *)stackFrame
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack isUpdate:(BOOL)isUpdate
 {
-  NSData *stackFrameJSON = [RCTJSONStringify(stackFrame, NULL) dataUsingEncoding:NSUTF8StringEncoding];
-  NSString *postLength = [NSString stringWithFormat:@"%tu", stackFrameJSON.length];
-  NSMutableURLRequest *request = [NSMutableURLRequest new];
-  request.URL = [RCTConvert NSURL:@"http://localhost:8081/open-stack-frame"];
-  request.HTTPMethod = @"POST";
-  request.HTTPBody = stackFrameJSON;
-  [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
-  [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-
-  [[[NSURLSession sharedSession] dataTaskWithRequest:request] resume];
-}
-
-- (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack showIfHidden:(BOOL)shouldShow
-{
-  if ((self.hidden && shouldShow) || (!self.hidden && [_lastErrorMessage isEqualToString:message])) {
+  // Show if this is a new message, or if we're updating the previous message
+  if ((self.hidden && !isUpdate) || (!self.hidden && isUpdate && [_lastErrorMessage isEqualToString:message])) {
     _lastStackTrace = stack;
     // message is displayed using UILabel, which is unable to render text of
     // unlimited length, so we truncate it
@@ -133,7 +130,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)reload
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:nil userInfo:nil];
+  [_actionDelegate reloadFromRedBoxWindow:self];
 }
 
 #pragma mark - TableView
@@ -226,7 +223,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (indexPath.section == 1) {
     NSUInteger row = indexPath.row;
     NSDictionary *stackFrame = _lastStackTrace[row];
-    [self openStackFrameInEditor:stackFrame];
+    [_actionDelegate redBoxWindow:self openStackFrameInEditor:stackFrame];
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
@@ -260,13 +257,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 @end
 
-@interface RCTRedBox () <RCTInvalidating>
+@interface RCTRedBox () <RCTInvalidating, RCTRedBoxWindowActionDelegate>
 @end
 
 @implementation RCTRedBox
 {
   RCTRedBoxWindow *_window;
 }
+
+@synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
 
@@ -277,7 +276,7 @@ RCT_EXPORT_MODULE()
 
 - (void)showErrorMessage:(NSString *)message
 {
-  [self showErrorMessage:message withStack:nil showIfHidden:YES];
+  [self showErrorMessage:message withStack:nil isUpdate:NO];
 }
 
 - (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details
@@ -291,21 +290,22 @@ RCT_EXPORT_MODULE()
 
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack
 {
-  [self showErrorMessage:message withStack:stack showIfHidden:YES];
+  [self showErrorMessage:message withStack:stack isUpdate:NO];
 }
 
 - (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack
 {
-  [self showErrorMessage:message withStack:stack showIfHidden:NO];
+  [self showErrorMessage:message withStack:stack isUpdate:YES];
 }
 
-- (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack showIfHidden:(BOOL)shouldShow
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack isUpdate:(BOOL)isUpdate
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     if (!_window) {
       _window = [[RCTRedBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+      _window.actionDelegate = self;
     }
-    [_window showErrorMessage:message withStack:stack showIfHidden:shouldShow];
+    [_window showErrorMessage:message withStack:stack isUpdate:isUpdate];
   });
 }
 
@@ -319,6 +319,29 @@ RCT_EXPORT_METHOD(dismiss)
 - (void)invalidate
 {
   [self dismiss];
+}
+
+- (void)redBoxWindow:(RCTRedBoxWindow *)redBoxWindow openStackFrameInEditor:(NSDictionary *)stackFrame;
+{
+  if (![_bridge.bundleURL.scheme hasPrefix:@"http"]) {
+    RCTLogWarn(@"Cannot open stack frame in editor because you're not connected to the packager.");
+    return;
+  }
+
+  NSData *stackFrameJSON = [RCTJSONStringify(stackFrame, NULL) dataUsingEncoding:NSUTF8StringEncoding];
+  NSString *postLength = [NSString stringWithFormat:@"%tu", stackFrameJSON.length];
+  NSMutableURLRequest *request = [NSMutableURLRequest new];
+  request.URL = [NSURL URLWithString:@"/open-stack-frame" relativeToURL:_bridge.bundleURL];
+  request.HTTPMethod = @"POST";
+  request.HTTPBody = stackFrameJSON;
+  [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+  [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+
+  [[[NSURLSession sharedSession] dataTaskWithRequest:request] resume];
+}
+
+- (void)reloadFromRedBoxWindow:(RCTRedBoxWindow *)redBoxWindow {
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:nil userInfo:nil];
 }
 
 @end

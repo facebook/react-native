@@ -31,16 +31,29 @@ import type {Context} from 'Incremental';
  */
 type Props = {
   name: string;
-  disabled: boolean;
-  onDone: () => void;
-  onLayout: (event: Object) => void;
-  style: mixed;
-  children: any;
+  disabled?: boolean;
+  onDone?: () => void;
+  onLayout?: (event: Object) => void;
+  style?: mixed;
+  children?: any;
 }
 class IncrementalPresenter extends React.Component {
   props: Props;
   context: Context;
   _isDone: boolean;
+
+  static propTypes = {
+    name: React.PropTypes.string,
+    disabled: React.PropTypes.bool,
+    onDone: React.PropTypes.func,
+    onLayout: React.PropTypes.func,
+    style: View.propTypes.style,
+  };
+  static contextTypes = {
+    incrementalGroup: React.PropTypes.object,
+    incrementalGroupEnabled: React.PropTypes.bool,
+  };
+
   constructor(props: Props, context: Context) {
     super(props, context);
     this._isDone = false;
@@ -80,16 +93,5 @@ class IncrementalPresenter extends React.Component {
     );
   }
 }
-IncrementalPresenter.propTypes = {
-  name: React.PropTypes.string,
-  disabled: React.PropTypes.bool,
-  onDone: React.PropTypes.func,
-  onLayout: React.PropTypes.func,
-  style: View.propTypes.style,
-};
-IncrementalPresenter.contextTypes = {
-  incrementalGroup: React.PropTypes.object,
-  incrementalGroupEnabled: React.PropTypes.bool,
-};
 
 module.exports = IncrementalPresenter;

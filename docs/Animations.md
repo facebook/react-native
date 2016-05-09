@@ -276,23 +276,25 @@ UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationE
 ![](img/LayoutAnimationExample.gif)
 
 ```javascript
-var App = React.createClass({
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { w: 100, h: 100 };
+    this._onPress = this._onPress.bind(this);
+  }
+  
   componentWillMount() {
     // Animate creation
     LayoutAnimation.spring();
-  },
-
-  getInitialState() {
-    return { w: 100, h: 100 }
   },
 
   _onPress() {
     // Animate the update
     LayoutAnimation.spring();
     this.setState({w: this.state.w + 15, h: this.state.h + 15})
-  },
+  }
 
-  render: function() {
+  render() {
     return (
       <View style={styles.container}>
         <View style={[styles.box, {width: this.state.w, height: this.state.h}]} />
@@ -304,7 +306,7 @@ var App = React.createClass({
       </View>
     );
   }
-});
+};
 ```
 [Run this example](https://rnplay.org/apps/uaQrGQ)
 
@@ -351,13 +353,14 @@ your project, you will need to install it with `npm i react-tween-state
 
 ```javascript
 import tweenState from 'react-tween-state';
+import reactMixin from 'react-mixin'; // https://github.com/brigand/react-mixin
 
-var App = React.createClass({
-  mixins: [tweenState.Mixin],
-
-  getInitialState() {
-    return { opacity: 1 }
-  },
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { opacity: 1 };
+    this._animateOpacity = this._animateOpacity.bind(this);
+  }
 
   _animateOpacity() {
     this.tweenState('opacity', {
@@ -365,7 +368,7 @@ var App = React.createClass({
       duration: 1000,
       endValue: this.state.opacity === 0.2 ? 1 : 0.2,
     });
-  },
+  }
 
   render() {
     return (
@@ -377,8 +380,10 @@ var App = React.createClass({
         </TouchableWithoutFeedback>
       </View>
     )
-  },
-});
+  }
+}
+
+reactMixin.onClass(App, tweenState.Mixin);
 ```
 [Run this example](https://rnplay.org/apps/4FUQ-A)
 
@@ -410,7 +415,12 @@ the original value.
 ```javascript
 import rebound from 'rebound';
 
-var App = React.createClass({
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this._onPressIn = this._onPressIn.bind(this);
+    this._onPressOut = this._onPressOut.bind(this);
+  }
   // First we initialize the spring and add a listener, which calls
   // setState whenever it updates
   componentWillMount() {
@@ -429,17 +439,17 @@ var App = React.createClass({
 
     // Initialize the spring value at 1
     this._scrollSpring.setCurrentValue(1);
-  },
+  }
 
   _onPressIn() {
     this._scrollSpring.setEndValue(0.5);
-  },
+  }
 
   _onPressOut() {
     this._scrollSpring.setEndValue(1);
-  },
+  }
 
-  render: function() {
+  render() {
     var imageStyle = {
       width: 250,
       height: 200,
@@ -457,7 +467,7 @@ var App = React.createClass({
       </View>
     );
   }
-});
+}
 ```
 [Run this example](https://rnplay.org/apps/NNI5eA)
 
@@ -498,7 +508,7 @@ this._scrollSpring.addListener({
 // Lastly, we update the render function to no longer pass in the
 // transform via style (avoid clashes when re-rendering) and to set the
 // photo ref
-render: function() {
+render() {
   return (
     <View style={styles.container}>
       <TouchableWithoutFeedback onPressIn={this._onPressIn} onPressOut={this._onPressOut}>

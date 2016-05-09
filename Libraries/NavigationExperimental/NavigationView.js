@@ -12,8 +12,7 @@
 'use strict';
 
 const Animated = require('Animated');
-const NavigationContainer = require('NavigationContainer');
-const React = require('react-native');
+const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 const NavigationScenesReducer = require('NavigationScenesReducer');
@@ -37,6 +36,7 @@ type Props = {
 };
 
 type State = {
+  layout: NavigationLayout,
   scenes: Array<NavigationScene>,
 };
 
@@ -47,7 +47,6 @@ const {PropTypes} = React;
  * The most common use-case is for tabs, where no transition is needed
  */
 class NavigationView extends React.Component<any, Props, any> {
-  _layout: NavigationLayout;
   _onLayout: (event: any) => void;
   _position: NavigationAnimatedValue;
 
@@ -63,9 +62,10 @@ class NavigationView extends React.Component<any, Props, any> {
   constructor(props: Props, context: any) {
     super(props, context);
 
-    this._layout = {
+    const layout = {
       initWidth: 0,
       initHeight: 0,
+      isMeasured: false,
       width: new Animated.Value(0),
       height: new Animated.Value(0),
     };
@@ -75,6 +75,7 @@ class NavigationView extends React.Component<any, Props, any> {
     this._position = new Animated.Value(navigationState.index);
 
     this.state = {
+      layout,
       scenes: NavigationScenesReducer([], navigationState),
     };
   }
@@ -116,15 +117,19 @@ class NavigationView extends React.Component<any, Props, any> {
     } = this.props;
 
     const {
+      layout,
       scenes,
     } = this.state;
 
+    const scene = scenes[navigationState.index];
+
     const sceneProps = {
-      layout: this._layout,
+      key: 'scene_' + scene.navigationState.key,
+      layout,
       navigationState: navigationState,
       onNavigate: onNavigate,
       position: this._position,
-      scene: scenes[navigationState.index],
+      scene,
       scenes,
     };
 
@@ -150,14 +155,16 @@ class NavigationView extends React.Component<any, Props, any> {
     const {height, width} = event.nativeEvent.layout;
 
     const layout = {
-      ...this._layout,
+      ...this.state.layout,
       initHeight: height,
       initWidth: width,
+      isMeasured: true,
     };
 
-    this._layout = layout;
     layout.height.setValue(height);
     layout.width.setValue(width);
+
+    this.setState({ layout });
   }
 }
 
@@ -171,4 +178,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = NavigationContainer.create(NavigationView);
+module.exports = NavigationView;

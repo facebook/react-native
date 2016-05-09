@@ -23,7 +23,7 @@ import type  {
  */
 
 const Animated = require('Animated');
-const React = require('react-native');
+const React = require('React');
 
 const {PropTypes} = React;
 
@@ -52,6 +52,7 @@ const layout = PropTypes.shape({
   height: animatedValue,
   initHeight: PropTypes.number.isRequired,
   initWidth: PropTypes.number.isRequired,
+  isMeasured: PropTypes.bool.isRequired,
   width: animatedValue,
 });
 
@@ -65,6 +66,7 @@ const scene = PropTypes.shape({
 
 /* NavigationSceneRendererProps */
 const SceneRenderer = {
+  key: PropTypes.string.isRequired,
   layout: layout.isRequired,
   navigationState: navigationParentState.isRequired,
   onNavigate: PropTypes.func.isRequired,
@@ -96,6 +98,7 @@ function extractSceneRendererProps(
   props: NavigationSceneRendererProps,
 ): NavigationSceneRendererProps {
   return {
+    key: props.scene.navigationState.key,
     layout: props.layout,
     navigationState: props.navigationState,
     onNavigate: props.onNavigate,

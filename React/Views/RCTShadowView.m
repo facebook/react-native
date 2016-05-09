@@ -157,11 +157,6 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   absolutePosition.x += node->layout.position[CSS_LEFT];
   absolutePosition.y += node->layout.position[CSS_TOP];
 
-  node->layout.dimensions[CSS_WIDTH] = CSS_UNDEFINED;
-  node->layout.dimensions[CSS_HEIGHT] = CSS_UNDEFINED;
-  node->layout.position[CSS_LEFT] = 0;
-  node->layout.position[CSS_TOP] = 0;
-
   for (int i = 0; i < node->children_count; ++i) {
     RCTShadowView *child = (RCTShadowView *)_reactSubviews[i];
     [child applyLayoutNode:node->get_child(node->context, i)

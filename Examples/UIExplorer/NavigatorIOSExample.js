@@ -15,7 +15,8 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const ViewExample = require('./ViewExample');
 const createExamplePage = require('./createExamplePage');
 const {
@@ -26,7 +27,7 @@ const {
   Text,
   TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 
 const EmptyPage = React.createClass({
   render: function() {

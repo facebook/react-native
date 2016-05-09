@@ -11,8 +11,6 @@
  */
 'use strict';
 
-const ErrorUtils = require('ErrorUtils');
-
 const invariant = require('fbjs/lib/invariant');
 
 type SimpleTask = {
@@ -96,16 +94,16 @@ class TaskQueue {
         } else {
           invariant(
             typeof task === 'function',
-            'Expected Function, SimpleTask, or PromiseTask, but got: ' +
-              JSON.stringify(task)
+            'Expected Function, SimpleTask, or PromiseTask, but got:\n' +
+              JSON.stringify(task, null, 2)
           );
           DEBUG && console.log('run anonymous task');
           task();
         }
       } catch (e) {
-        e.message = 'TaskQueue: Error with task' + (task.name || ' ') + ': ' +
+        e.message = 'TaskQueue: Error with task ' + (task.name || '') + ': ' +
           e.message;
-        ErrorUtils.reportError(e);
+        throw e;
       }
     }
   }
@@ -136,19 +134,17 @@ class TaskQueue {
     const stackIdx = this._queueStack.length - 1;
     DEBUG && console.log('push new queue: ', {stackIdx});
     DEBUG && console.log('exec gen task ' + task.name);
-    ErrorUtils.applyWithGuard(task.gen)
+    task.gen()
       .then(() => {
         DEBUG && console.log('onThen for gen task ' + task.name, {stackIdx, queueStackSize: this._queueStack.length});
         this._queueStack[stackIdx].popable = true;
         this.hasTasksToProcess() && this._onMoreTasks();
       })
       .catch((ex) => {
-        console.warn(
-          'TaskQueue: Error resolving Promise in task ' + task.name,
-          ex
-        );
+        ex.message = `TaskQueue: Error resolving Promise in task ${task.name}: ${ex.message}`;
         throw ex;
-      });
+      })
+      .done();
   }
 }
 
