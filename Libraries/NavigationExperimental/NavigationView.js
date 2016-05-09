@@ -121,15 +121,12 @@ class NavigationView extends React.Component<any, Props, any> {
       scenes,
     } = this.state;
 
-    const scene = scenes[navigationState.index];
-
     const sceneProps = {
-      key: 'scene_' + scene.navigationState.key,
       layout,
       navigationState: navigationState,
       onNavigate: onNavigate,
       position: this._position,
-      scene,
+      scene: scenes[navigationState.index],
       scenes,
     };
 
