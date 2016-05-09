@@ -9,9 +9,6 @@
 
 package com.facebook.react.bridge.queue;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-
 import android.os.Looper;
 
 import com.facebook.common.logging.FLog;
@@ -21,6 +18,9 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.futures.SimpleSettableFuture;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 /**
  * Encapsulates a Thread that has a {@link Looper} running on it that can accept Runnables.
@@ -175,7 +175,8 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
       QueueThreadExceptionHandler exceptionHandler) {
     final SimpleSettableFuture<Looper> looperFuture = new SimpleSettableFuture<>();
     final SimpleSettableFuture<MessageQueueThread> mqtFuture = new SimpleSettableFuture<>();
-    Thread bgThread = new Thread(
+    ThreadGroup group = new ThreadGroup("mqtGroup_" + name);
+    Thread bgThread = new Thread(group,
         new Runnable() {
           @Override
           public void run() {
@@ -186,7 +187,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
 
             Looper.loop();
           }
-        }, "mqt_" + name);
+        }, "mqt_" + name, 2000000);
     bgThread.start();
 
     Looper myLooper = looperFuture.getOrThrow();
