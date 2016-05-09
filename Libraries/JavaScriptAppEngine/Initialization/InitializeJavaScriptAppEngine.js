@@ -22,20 +22,37 @@
 /* eslint strict: 0 */
 /* globals GLOBAL: true, window: true */
 
-require('regenerator/runtime');
+require('regenerator-runtime/runtime');
 
 if (typeof GLOBAL === 'undefined') {
-  global.GLOBAL = this;
+  global.GLOBAL = global;
 }
 
 if (typeof window === 'undefined') {
-  global.window = GLOBAL;
+  global.window = global;
+}
+
+function setUpProfile() {
+  if (__DEV__) {
+    const Systrace = require('Systrace');
+    Systrace.swizzleReactPerf();
+  }
+}
+
+function setUpProcess() {
+  GLOBAL.process = GLOBAL.process || {};
+  GLOBAL.process.env = GLOBAL.process.env || {};
+  if (!GLOBAL.process.env.NODE_ENV) {
+    GLOBAL.process.env.NODE_ENV = __DEV__ ? 'development' : 'production';
+  }
 }
 
 function setUpConsole() {
   // ExceptionsManager transitively requires Promise so we install it after
-  var ExceptionsManager = require('ExceptionsManager');
+  const ExceptionsManager = require('ExceptionsManager');
   ExceptionsManager.installConsoleErrorReporter();
+
+  require('RCTLog');
 }
 
 /**
@@ -53,8 +70,8 @@ function setUpConsole() {
  * For more info on that particular case, see:
  * https://github.com/facebook/react-native/issues/934
  */
-function polyfillGlobal(name, newValue, scope = GLOBAL) {
-  var descriptor = Object.getOwnPropertyDescriptor(scope, name) || {
+function polyfillGlobal(name, newValue, scope = global) {
+  const descriptor = Object.getOwnPropertyDescriptor(scope, name) || {
     // jest for some bad reasons runs the polyfill code multiple times. In jest
     // environment, XmlHttpRequest doesn't exist so getOwnPropertyDescriptor
     // returns undefined and defineProperty default for writable is false.
@@ -63,17 +80,40 @@ function polyfillGlobal(name, newValue, scope = GLOBAL) {
   };
 
   if (scope[name] !== undefined) {
-    var backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
+    const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
     Object.defineProperty(scope, backupName, {...descriptor, value: scope[name]});
   }
 
   Object.defineProperty(scope, name, {...descriptor, value: newValue});
 }
 
+function polyfillLazyGlobal(name, valueFn, scope = global) {
+  if (scope[name] !== undefined) {
+    const descriptor = Object.getOwnPropertyDescriptor(scope, name);
+    const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
+    Object.defineProperty(scope, backupName, {...descriptor, value: scope[name]});
+  }
+
+  Object.defineProperty(scope, name, {
+    configurable: true,
+    enumerable: true,
+    get() {
+      return (this[name] = valueFn());
+    },
+    set(value) {
+      Object.defineProperty(this, name, {
+        configurable: true,
+        enumerable: true,
+        value
+      });
+    }
+  });
+}
+
 /**
  * Polyfill a module if it is not already defined in `scope`.
  */
-function polyfillIfNeeded(name, polyfill, scope = GLOBAL, descriptor = {}) {
+function polyfillIfNeeded(name, polyfill, scope = global, descriptor = {}) {
   if (scope[name] === undefined) {
     Object.defineProperty(scope, name, {...descriptor, value: polyfill});
   }
@@ -92,7 +132,7 @@ function setUpErrorHandler() {
     }
   }
 
-  var ErrorUtils = require('ErrorUtils');
+  const ErrorUtils = require('ErrorUtils');
   ErrorUtils.setGlobalHandler(handleError);
 }
 
@@ -104,23 +144,22 @@ function setUpErrorHandler() {
  * unexplainably dropped timing signals.
  */
 function setUpTimers() {
-  var JSTimers = require('JSTimers');
-  GLOBAL.setTimeout = JSTimers.setTimeout;
-  GLOBAL.setInterval = JSTimers.setInterval;
-  GLOBAL.setImmediate = JSTimers.setImmediate;
-  GLOBAL.clearTimeout = JSTimers.clearTimeout;
-  GLOBAL.clearInterval = JSTimers.clearInterval;
-  GLOBAL.clearImmediate = JSTimers.clearImmediate;
-  GLOBAL.cancelAnimationFrame = JSTimers.clearInterval;
-  GLOBAL.requestAnimationFrame = function(cb) {
-    /*requestAnimationFrame() { [native code] };*/  // Trick scroller library
-    return JSTimers.requestAnimationFrame(cb);      // into thinking it's native
+  const defineLazyTimer = (name) => {
+    polyfillLazyGlobal(name, () => require('JSTimers')[name]);
   };
+  defineLazyTimer('setTimeout');
+  defineLazyTimer('setInterval');
+  defineLazyTimer('setImmediate');
+  defineLazyTimer('clearTimeout');
+  defineLazyTimer('clearInterval');
+  defineLazyTimer('clearImmediate');
+  defineLazyTimer('requestAnimationFrame');
+  defineLazyTimer('cancelAnimationFrame');
 }
 
 function setUpAlert() {
-  if (!GLOBAL.alert) {
-    GLOBAL.alert = function(text) {
+  if (!global.alert) {
+    global.alert = function(text) {
       // Require Alert on demand. Requiring it too early can lead to issues
       // with things like Platform not being fully initialized.
       require('Alert').alert('Alert', '' + text);
@@ -131,76 +170,56 @@ function setUpAlert() {
 function setUpPromise() {
   // The native Promise implementation throws the following error:
   // ERROR: Event loop not supported.
-  GLOBAL.Promise = require('Promise');
+  polyfillLazyGlobal('Promise', () => require('Promise'));
 }
 
 function setUpXHR() {
   // The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
   // let you fetch anything from the internet
-  polyfillGlobal('XMLHttpRequest', require('XMLHttpRequest'));
-  polyfillGlobal('FormData', require('FormData'));
+  polyfillLazyGlobal('XMLHttpRequest', () => require('XMLHttpRequest'));
+  polyfillLazyGlobal('FormData', () => require('FormData'));
 
-  var fetchPolyfill = require('fetch');
-  polyfillGlobal('fetch', fetchPolyfill.fetch);
-  polyfillGlobal('Headers', fetchPolyfill.Headers);
-  polyfillGlobal('Request', fetchPolyfill.Request);
-  polyfillGlobal('Response', fetchPolyfill.Response);
+  polyfillLazyGlobal('fetch', () => require('fetch').fetch);
+  polyfillLazyGlobal('Headers', () => require('fetch').Headers);
+  polyfillLazyGlobal('Request', () => require('fetch').Request);
+  polyfillLazyGlobal('Response', () => require('fetch').Response);
+
+  polyfillLazyGlobal('WebSocket', () => require('WebSocket'));
 }
 
 function setUpGeolocation() {
-  polyfillIfNeeded('navigator', {}, GLOBAL, {
+  polyfillIfNeeded('navigator', {}, global, {
     writable: true,
     enumerable: true,
     configurable: true,
   });
-  polyfillGlobal('geolocation', require('Geolocation'), GLOBAL.navigator);
+  Object.defineProperty(global.navigator, 'product', {value: 'ReactNative'});
+
+  polyfillLazyGlobal('geolocation', () => require('Geolocation'), global.navigator);
 }
 
 function setUpMapAndSet() {
+  // We can't make these lazy as Map checks the global.Map to see if it's
+  // available but in our case it'll be a lazy getter.
   polyfillGlobal('Map', require('Map'));
   polyfillGlobal('Set', require('Set'));
 }
 
-function setUpProduct() {
-  Object.defineProperty(GLOBAL.navigator, 'product', {value: 'ReactNative'});
-}
-
-function setUpWebSockets() {
-  polyfillGlobal('WebSocket', require('WebSocket'));
-}
-
-function setUpProfile() {
-  if (__DEV__) {
-    var Systrace = require('Systrace');
-    Systrace.swizzleReactPerf();
-  }
-}
-
-function setUpProcessEnv() {
-  GLOBAL.process = GLOBAL.process || {};
-  GLOBAL.process.env = GLOBAL.process.env || {};
-  if (!GLOBAL.process.env.NODE_ENV) {
-    GLOBAL.process.env.NODE_ENV = __DEV__ ? 'development' : 'production';
-  }
-}
-
-function setUpNumber() {
-  polyfillIfNeeded('EPSILON', Math.pow(2, -52), Number);
-  polyfillIfNeeded('MAX_SAFE_INTEGER', Math.pow(2, 53) - 1, Number);
-  polyfillIfNeeded('MIN_SAFE_INTEGER', -(Math.pow(2, 53) - 1), Number);
-}
-
 function setUpDevTools() {
-  // not when debugging in chrome
-  if (__DEV__) { // TODO(9123099) Strip `__DEV__ &&`
+  if (__DEV__) {
+    // not when debugging in chrome
     if (!window.document && require('Platform').OS === 'ios') {
-      var setupDevtools = require('setupDevtools');
+      const setupDevtools = require('setupDevtools');
       setupDevtools();
     }
+
+    require('RCTDebugComponentOwnership');
+    require('react-transform-hmr');
   }
 }
 
-setUpProcessEnv();
+setUpProfile();
+setUpProcess();
 setUpConsole();
 setUpTimers();
 setUpAlert();
@@ -209,22 +228,10 @@ setUpErrorHandler();
 setUpXHR();
 setUpGeolocation();
 setUpMapAndSet();
-setUpProduct();
-setUpWebSockets();
-setUpProfile();
-setUpNumber();
 setUpDevTools();
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has
 // been initialized before requiring them.
-if (__DEV__) {
-  require('RCTDebugComponentOwnership');
-}
 require('RCTDeviceEventEmitter');
 require('RCTNativeAppEventEmitter');
 require('PerformanceLogger');
-
-if (__DEV__) {
-  // include this transform and it's dependencies on the bundle on dev mode
-  require('react-transform-hmr');
-}

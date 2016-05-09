@@ -18,6 +18,7 @@ var Prism = require('Prism');
 var React = require('React');
 var Site = require('Site');
 var slugify = require('slugify');
+var Metadata = require('Metadata');
 
 var styleReferencePattern = /^[^.]+\.propTypes\.style$/;
 
@@ -498,8 +499,8 @@ var Modal = React.createClass({
     var appParams = {route: metadata.title};
     var encodedParams = encodeURIComponent(JSON.stringify(appParams));
     var url = metadata.platform === 'android'
-      ? `https://appetize.io/embed/q7wkvt42v6bkr0pzt1n0gmbwfr?device=nexus5&scale=65&autoplay=false&orientation=portrait&osVersion=6.0&deviceColor=white&params=${encodedParams}`
-      : `https://appetize.io/embed/7vdfm9h3e6vuf4gfdm7r5rgc48?device=iphone6s&scale=60&autoplay=false&orientation=portrait&osVersion=9.2&deviceColor=white&params=${encodedParams}`;
+      ? `https://appetize.io/embed/q7wkvt42v6bkr0pzt1n0gmbwfr?device=nexus5&scale=65&autoplay=false&orientation=portrait&deviceColor=white&params=${encodedParams}`
+      : `https://appetize.io/embed/7vdfm9h3e6vuf4gfdm7r5rgc48?device=iphone6s&scale=60&autoplay=false&orientation=portrait&deviceColor=white&params=${encodedParams}`;
 
     return (
       <div>
@@ -520,11 +521,15 @@ var Modal = React.createClass({
 
 var Autodocs = React.createClass({
   childContextTypes: {
-    permalink: React.PropTypes.string
+    permalink: React.PropTypes.string,
+    version: React.PropTypes.string
   },
 
   getChildContext: function() {
-    return {permalink: this.props.metadata.permalink};
+    return {
+      permalink: this.props.metadata.permalink,
+      version: Metadata.config.RN_VERSION || 'next'
+    };
   },
 
   renderFullDescription: function(docs) {
@@ -544,21 +549,35 @@ var Autodocs = React.createClass({
     );
   },
 
-  renderExample: function(docs, metadata) {
-    if (!docs.example) {
+  renderExample: function(example, metadata) {
+    if (!example) {
       return;
     }
 
     return (
       <div>
         <HeaderWithGithub
-          title="Examples"
-          path={docs.example.path}
+          title={example.title || 'Examples'}
+          level={example.title ? 4 : 3}
+          path={example.path}
           metadata={metadata}
         />
         <Prism>
-          {docs.example.content.replace(/^[\s\S]*?\*\//, '').trim()}
+          {example.content.replace(/^[\s\S]*?\*\//, '').trim()}
         </Prism>
+      </div>
+    );
+  },
+
+  renderExamples: function(docs, metadata) {
+    if (!docs.examples || !docs.examples.length) {
+      return;
+    }
+
+    return (
+      <div>
+        {(docs.examples.length > 1) ? <H level={3}>Examples</H> : null}
+        {docs.examples.map(example => this.renderExample(example, metadata))}
       </div>
     );
   },
@@ -583,7 +602,7 @@ var Autodocs = React.createClass({
             />
             {content}
             {this.renderFullDescription(docs)}
-            {this.renderExample(docs, metadata)}
+            {this.renderExamples(docs, metadata)}
             <div className="docs-prevnext">
               {metadata.previous && <a className="docs-prev" href={'docs/' + metadata.previous + '.html#content'}>&larr; Prev</a>}
               {metadata.next && <a className="docs-next" href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>}

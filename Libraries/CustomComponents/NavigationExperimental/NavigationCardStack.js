@@ -35,7 +35,6 @@
 const NavigationAnimatedView = require('NavigationAnimatedView');
 const NavigationCard = require('NavigationCard');
 const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleInterpolator');
-const NavigationContainer = require('NavigationContainer');
 const NavigationCardStackPanResponder = require('NavigationCardStackPanResponder');
 const NavigationPropTypes = require('NavigationPropTypes');
 const React = require('React');
@@ -48,6 +47,7 @@ const {PropTypes} = React;
 const {Directions} = NavigationCardStackPanResponder;
 
 import type {
+  NavigationActionCaller,
   NavigationParentState,
   NavigationSceneRenderer,
   NavigationSceneRendererProps,
@@ -60,8 +60,14 @@ import type {
 type Props = {
   direction: NavigationGestureDirection,
   navigationState: NavigationParentState,
+  onNavigate: NavigationActionCaller,
   renderOverlay: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
+};
+
+type DefaultProps = {
+  direction: NavigationGestureDirection,
+  renderOverlay: ?NavigationSceneRenderer,
 };
 
 /**
@@ -78,17 +84,18 @@ type Props = {
  *   +-+            |
  *     +------------+
  */
-class NavigationCardStack extends React.Component {
+class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   _renderScene : NavigationSceneRenderer;
 
   static propTypes = {
     direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
     navigationState: NavigationPropTypes.navigationParentState.isRequired,
+    onNavigate: NavigationPropTypes.SceneRenderer.onNavigate,
     renderOverlay: PropTypes.func,
     renderScene: PropTypes.func.isRequired,
   };
 
-  static defaultProps = {
+  static defaultProps: DefaultProps = {
     direction: Directions.HORIZONTAL,
     renderOverlay: emptyFunction.thatReturnsNull,
   };
@@ -101,7 +108,7 @@ class NavigationCardStack extends React.Component {
     this._renderScene = this._renderScene.bind(this);
   }
 
-  shouldComponentUpdate(nextProps: Object, nextState: Object): boolean {
+  shouldComponentUpdate(nextProps: Object, nextState: void): boolean {
     return ReactComponentWithPureRenderMixin.shouldComponentUpdate.call(
       this,
       nextProps,
@@ -115,6 +122,8 @@ class NavigationCardStack extends React.Component {
         navigationState={this.props.navigationState}
         renderOverlay={this.props.renderOverlay}
         renderScene={this._renderScene}
+        onNavigate={this.props.onNavigate}
+        // $FlowFixMe - style should be declared
         style={[styles.animatedView, this.props.style]}
       />
     );
@@ -149,4 +158,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = NavigationContainer.create(NavigationCardStack);
+module.exports = NavigationCardStack;

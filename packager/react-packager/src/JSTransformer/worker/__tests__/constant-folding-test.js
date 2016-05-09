@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.autoMockOff();
+jest.disableAutomock();
 const babel = require('babel-core');
 const constantFolding = require('../constant-folding');
 

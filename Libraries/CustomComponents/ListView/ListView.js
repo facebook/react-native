@@ -56,10 +56,10 @@ var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
 /**
  * ListView - A core component designed for efficient display of vertically
  * scrolling lists of changing data.  The minimal API is to create a
- * `ListView.DataSource`, populate it with a simple array of data blobs, and
- * instantiate a `ListView` component with that data source and a `renderRow`
- * callback which takes a blob from the data array and returns a renderable
- * component.
+ * [`ListView.DataSource`](docs/listviewdatasource.html), populate it with a simple
+ * array of data blobs, and instantiate a `ListView` component with that data
+ * source and a `renderRow` callback which takes a blob from the data array and
+ * returns a renderable component.
  *
  * Minimal example:
  *
@@ -117,7 +117,9 @@ var ListView = React.createClass({
    */
   propTypes: {
     ...ScrollView.propTypes,
-
+    /**
+     * An instance of [ListView.DataSource](docs/listviewdatasource.html) to use
+     */
     dataSource: PropTypes.instanceOf(ListViewDataSource).isRequired,
     /**
      * (sectionID, rowID, adjacentRowHighlighted) => renderable
@@ -135,9 +137,10 @@ var ListView = React.createClass({
      * a renderable component to be rendered as the row.  By default the data
      * is exactly what was put into the data source, but it's also possible to
      * provide custom extractors. ListView can be notified when a row is
-     * being highlighted by calling highlightRow function. The separators above and
-     * below will be hidden when a row is highlighted. The highlighted state of
-     * a row can be reset by calling highlightRow(null).
+     * being highlighted by calling `highlightRow(sectionID, rowID)`. This
+     * sets a boolean value of adjacentRowHighlighted in renderSeparator, allowing you
+     * to control the separators above and below the highlighted row. The highlighted
+     * state of a row can be reset by calling highlightRow(null).
      */
     renderRow: PropTypes.func.isRequired,
     /**

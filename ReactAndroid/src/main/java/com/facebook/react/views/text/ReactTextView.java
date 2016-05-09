@@ -143,7 +143,6 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   @Override
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
-    setTextIsSelectable(mTextIsSelectable);
     if (mContainsImages && getText() instanceof Spanned) {
       Spanned text = (Spanned) getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);

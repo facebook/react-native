@@ -23,7 +23,6 @@ type RelayProfiler = {
   ): void,
 };
 
-var GLOBAL = GLOBAL || this;
 var TRACE_TAG_REACT_APPS = 1 << 17;
 var TRACE_TAG_JSC_CALLS = 1 << 27;
 

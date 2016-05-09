@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.autoMockOff();
+jest.disableAutomock();
 
 jest.setMock('worker-farm', function() { return () => {}; })
     .setMock('timers', { setImmediate: (fn) => setTimeout(fn, 0) })
@@ -54,20 +54,19 @@ describe('processRequest', () => {
     )
   );
 
-  const invalidatorFunc = jest.genMockFunction();
-  const watcherFunc = jest.genMockFunction();
+  const invalidatorFunc = jest.fn();
+  const watcherFunc = jest.fn();
   var requestHandler;
   var triggerFileChange;
 
   beforeEach(() => {
     FileWatcher = require('node-haste').FileWatcher;
-    Bundler.prototype.bundle = jest.genMockFunction().mockImpl(() =>
+    Bundler.prototype.bundle = jest.fn(() =>
       Promise.resolve({
         getSource: () => 'this is the source',
         getSourceMap: () => 'this is the source map',
         getEtag: () => 'this is an etag',
-      })
-    );
+      }));
 
     FileWatcher.prototype.on = function(eventType, callback) {
       if (eventType !== 'all') {
@@ -198,7 +197,7 @@ describe('processRequest', () => {
     });
 
     it('does not rebuild the bundles that contain a file when that file is changed', () => {
-      const bundleFunc = jest.genMockFunction();
+      const bundleFunc = jest.fn();
       bundleFunc
         .mockReturnValueOnce(
           Promise.resolve({
@@ -243,7 +242,7 @@ describe('processRequest', () => {
     });
 
     it('does not rebuild the bundles that contain a file when that file is changed, even when hot loading is enabled', () => {
-      const bundleFunc = jest.genMockFunction();
+      const bundleFunc = jest.fn();
       bundleFunc
         .mockReturnValueOnce(
           Promise.resolve({
@@ -301,8 +300,8 @@ describe('processRequest', () => {
       req = new EventEmitter();
       req.url = '/onchange';
       res = {
-        writeHead: jest.genMockFn(),
-        end: jest.genMockFn()
+        writeHead: jest.fn(),
+        end: jest.fn()
       };
     });
 
@@ -326,7 +325,7 @@ describe('processRequest', () => {
   describe('/assets endpoint', () => {
     it('should serve simple case', () => {
       const req = {url: '/assets/imgs/a.png'};
-      const res = {end: jest.genMockFn()};
+      const res = {end: jest.fn()};
 
       AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
 
@@ -337,7 +336,7 @@ describe('processRequest', () => {
 
     it('should parse the platform option', () => {
       const req = {url: '/assets/imgs/a.png?platform=ios'};
-      const res = {end: jest.genMockFn()};
+      const res = {end: jest.fn()};
 
       AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
 

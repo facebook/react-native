@@ -66,12 +66,15 @@ Copy & paste following starter code for `index.ios.js` – it’s a barebones Re
 ```
 'use strict';
 
-import React, {
+import React from 'react';
+import {
+  AppRegistry,
+  StyleSheet,
   Text,
   View
 } from 'react-native';
 
-var styles = React.StyleSheet.create({
+var styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'red'
@@ -88,7 +91,7 @@ class SimpleApp extends React.Component {
   }
 }
 
-React.AppRegistry.registerComponent('SimpleApp', () => SimpleApp);
+AppRegistry.registerComponent('SimpleApp', () => SimpleApp);
 ```
 
 `SimpleApp` will be your **module name**, which will be used later on.
@@ -216,7 +219,7 @@ Now compile and run your app. You shall now see your React Native app running in
 
 ![Example](img/EmbeddedAppExample.png)
 
-Live reload and all of the debugging tools will work from the simulator (make sure that DEBUG=1 is set under Build Settings -> Preprocessor Macros).  You've got a simple React component totally encapsulated behind an Objective-C `UIView` subclass.
+Live reload and all of the debugging tools will work from the simulator. Just make sure that `DEBUG=1` is set under Build Settings -> Preprocessor Macros. If you're using Cocoapods and a custom configuration (that is, not "Debug"), make sure you've specified it to be a debug configuration using the [`xcodeproj` setting](https://guides.cocoapods.org/syntax/podfile.html#xcodeproj) in your Podfile. Also make sure you've got a simple React component totally encapsulated behind an Objective-C `UIView` subclass.
 
 ## Conclusion
 
