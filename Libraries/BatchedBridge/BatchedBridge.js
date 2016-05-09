@@ -13,8 +13,7 @@
 const MessageQueue = require('MessageQueue');
 
 const BatchedBridge = new MessageQueue(
-  __fbBatchedBridgeConfig.remoteModuleConfig,
-  __fbBatchedBridgeConfig.localModulesConfig,
+  () => global.__fbBatchedBridgeConfig
 );
 
 // TODO: Move these around to solve the cycle in a cleaner way.
@@ -24,6 +23,7 @@ const JSTimersExecution = require('JSTimersExecution');
 
 BatchedBridge.registerCallableModule('Systrace', Systrace);
 BatchedBridge.registerCallableModule('JSTimersExecution', JSTimersExecution);
+BatchedBridge.registerCallableModule('HeapCapture', require('HeapCapture'));
 
 if (__DEV__) {
   BatchedBridge.registerCallableModule('HMRClient', require('HMRClient'));

@@ -69,6 +69,11 @@ public class ReactHorizontalScrollViewManager
     view.setSendMomentumEvents(sendMomentumEvents);
   }
 
+  @ReactProp(name = "pagingEnabled")
+  public void setPagingEnabled(ReactHorizontalScrollView view, boolean pagingEnabled) {
+    view.setPagingEnabled(pagingEnabled);
+  }
+
   @Override
   public void receiveCommand(
       ReactHorizontalScrollView scrollView,

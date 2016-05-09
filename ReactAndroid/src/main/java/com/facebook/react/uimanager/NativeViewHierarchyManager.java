@@ -389,6 +389,51 @@ public class NativeViewHierarchyManager {
   }
 
   /**
+   * Simplified version of constructManageChildrenErrorMessage that only deals with adding children
+   * views
+   */
+  private static String constructSetChildrenErrorMessage(
+    ViewGroup viewToManage,
+    ViewGroupManager viewManager,
+    ReadableArray childrenTags) {
+    ViewAtIndex[] viewsToAdd = new ViewAtIndex[childrenTags.size()];
+    for (int i = 0; i < childrenTags.size(); i++) {
+      viewsToAdd[i] = new ViewAtIndex(childrenTags.getInt(i), i);
+    }
+    return constructManageChildrenErrorMessage(
+      viewToManage,
+      viewManager,
+      null,
+      viewsToAdd,
+      null
+    );
+  }
+
+  /**
+   * Simplified version of manageChildren that only deals with adding children views
+   */
+  public void setChildren(
+    int tag,
+    ReadableArray childrenTags) {
+    ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
+    ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
+
+    for (int i = 0; i < childrenTags.size(); i++) {
+      View viewToAdd = mTagsToViews.get(childrenTags.getInt(i));
+      if (viewToAdd == null) {
+        throw new IllegalViewOperationException(
+          "Trying to add unknown view tag: "
+            + childrenTags.getInt(i) + "\n detail: " +
+            constructSetChildrenErrorMessage(
+              viewToManage,
+              viewManager,
+              childrenTags));
+      }
+      viewManager.addView(viewToManage, viewToAdd, i);
+    }
+  }
+
+  /**
    * See {@link UIManagerModule#addMeasuredRootView}.
    *
    * Must be called from the UI thread.

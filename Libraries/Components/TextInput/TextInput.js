@@ -120,6 +120,7 @@ var TextInput = React.createClass({
      * Determines which keyboard to open, e.g.`numeric`.
      *
      * The following values work across platforms:
+     *
      * - default
      * - numeric
      * - email-address
@@ -150,22 +151,54 @@ var TextInput = React.createClass({
       'dark',
     ]),
     /**
-     * Determines how the return key should look.
-     * @platform ios
+     * Determines how the return key should look. On Android you can also use
+     * `returnKeyLabel`.
+     *
+     * The following values work across platforms:
+     *
+     * - done
+     * - go
+     * - next
+     * - search
+     * - send
+     *
+     * The following values work on Android only:
+     *
+     * - none
+     * - previous
+     *
+     * The following values work on iOS only:
+     *
+     * - default
+     * - emergency-call
+     * - google
+     * - join
+     * - route
+     * - yahoo
      */
     returnKeyType: PropTypes.oneOf([
-      'default',
+      // Cross-platform
+      'done',
       'go',
-      'google',
-      'join',
       'next',
-      'route',
       'search',
       'send',
-      'yahoo',
-      'done',
+      // Android-only
+      'none',
+      'previous',
+      // iOS-only
+      'default',
       'emergency-call',
+      'google',
+      'join',
+      'route',
+      'yahoo',
     ]),
+    /**
+     * Sets the return key to the label. Use it instead of `returnKeyType`.
+     * @platform android
+     */
+     returnKeyLabel: PropTypes.string,
     /**
      * Limits the maximum number of characters that can be entered. Use this
      * instead of implementing the logic in JS to avoid flicker.
@@ -531,6 +564,8 @@ var TextInput = React.createClass({
         children={children}
         editable={this.props.editable}
         selectTextOnFocus={this.props.selectTextOnFocus}
+        returnKeyType={this.props.returnKeyType}
+        returnKeyLabel={this.props.returnKeyLabel}
       />;
 
     return (

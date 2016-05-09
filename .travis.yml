@@ -5,6 +5,7 @@ osx_image: xcode7.3
 install:
   - mkdir -p /Users/travis/build/facebook/.nvm
   - export NVM_DIR="/Users/travis/build/facebook/.nvm"
+  - brew install nvm
   - source $(brew --prefix nvm)/nvm.sh
   # testing with npm@2 for diversity, Circle tests with npm@3
   - nvm install 4.4.3

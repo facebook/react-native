@@ -10,6 +10,7 @@
 #import <Foundation/Foundation.h>
 
 #import "RCTDefines.h"
+#import "RCTAssert.h"
 
 /**
  * RCTProfile
@@ -152,6 +153,11 @@ RCT_EXTERN void RCTProfileHookModules(RCTBridge *);
 RCT_EXTERN void RCTProfileUnhookModules(RCTBridge *);
 
 /**
+ * Hook into all of a module's methods
+ */
+RCT_EXTERN void RCTProfileHookInstance(id instance);
+
+/**
  * Send systrace or cpu profiling information to the packager
  * to present to the user
  */
@@ -217,6 +223,7 @@ RCT_EXTERN void RCTProfileHideControls(void);
 #define RCTProfileBlock(block, ...) block
 
 #define RCTProfileHookModules(...)
+#define RCTProfileHookInstance(...)
 #define RCTProfileUnhookModules(...)
 
 #define RCTProfileSendResult(...)

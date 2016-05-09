@@ -399,7 +399,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     _lastClippedToRect = CGRectNull;
 
     _scrollEventThrottle = 0.0;
-    _lastScrollDispatchTime = CACurrentMediaTime();
+    _lastScrollDispatchTime = 0;
     _cachedChildFrames = [NSMutableArray new];
 
     [self addSubview:_scrollView];
@@ -544,6 +544,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
 {
   if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
+    // Ensure at least one scroll event will fire
+    _allowNextScrollNoMatterWhat = YES;
     [_scrollView setContentOffset:offset animated:animated];
   }
 }
@@ -579,9 +581,7 @@ if ([_nativeScrollDelegate respondsToSelector:_cmd]) { \
   RCT_FORWARD_SCROLL_EVENT(delegateMethod:scrollView);      \
 }
 
-RCT_SCROLL_EVENT_HANDLER(scrollViewDidEndScrollingAnimation, onMomentumScrollEnd) //TODO: shouldn't this be onScrollAnimationEnd?
 RCT_SCROLL_EVENT_HANDLER(scrollViewWillBeginDecelerating, onMomentumScrollBegin)
-RCT_SCROLL_EVENT_HANDLER(scrollViewDidEndDecelerating, onMomentumScrollEnd)
 RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
@@ -723,6 +723,28 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 {
   RCT_SEND_SCROLL_EVENT(onScrollEndDrag, nil);
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndZooming:scrollView withView:view atScale:scale);
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+  // Fire a final scroll event
+  _allowNextScrollNoMatterWhat = YES;
+  [self scrollViewDidScroll:scrollView];
+  
+  // Fire the end deceleration event
+  RCT_SEND_SCROLL_EVENT(onMomentumScrollEnd, nil);
+  RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndDecelerating:scrollView);
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
+{
+  // Fire a final scroll event
+  _allowNextScrollNoMatterWhat = YES;
+  [self scrollViewDidScroll:scrollView];
+  
+  // Fire the end deceleration event
+  RCT_SEND_SCROLL_EVENT(onMomentumScrollEnd, nil); //TODO: shouldn't this be onScrollAnimationEnd? 
+  RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndScrollingAnimation:scrollView);
 }
 
 - (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView
