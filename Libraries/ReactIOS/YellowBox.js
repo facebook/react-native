@@ -17,6 +17,7 @@ import type EmitterSubscription from 'EmitterSubscription';
 const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
+const exceptionOccurHint = require('exceptionOccurHint');
 
 const _warningEmitter = new EventEmitter();
 const _warningMap = new Map();
@@ -82,9 +83,23 @@ function updateWarningMap(format, ...args): void {
     ...args.slice(argCount).map(stringifySafe),
   ].join(' ');
 
-  const count = _warningMap.has(warning) ? _warningMap.get(warning) : 0;
-  _warningMap.set(warning, count + 1);
+  var warningInfo = _warningMap.get(warning);
+  if (warningInfo) {
+    warningInfo.count += 1;
+  } else {
+    warningInfo = {count: 1, frame: ''};
+  }
+
+  _warningMap.set(warning, warningInfo);
   _warningEmitter.emit('warning', _warningMap);
+
+  exceptionOccurHint().then((frame) => {
+    warningInfo = _warningMap.get(warning);
+    if (warningInfo && frame) {
+      warningInfo.frame = frame;
+      _warningEmitter.emit('warning', _warningMap);
+    }
+  });
 }
 
 function isWarningIgnored(warning: string): boolean {
@@ -123,6 +138,7 @@ const WarningRow = ({count, warning, onPress}) => {
 
 const WarningInspector = ({
   count,
+  frame,
   warning,
   onClose,
   onDismiss,
@@ -145,6 +161,7 @@ const WarningInspector = ({
       <View style={styles.inspectorContent}>
         <View style={styles.inspectorCount}>
           <Text style={styles.inspectorCountText}>{countSentence}</Text>
+          <Text style={styles.inspectorCountText}>{frame}</Text>
         </View>
         <ScrollView style={styles.inspectorWarning}>
           <Text style={styles.inspectorWarningText}>{warning}</Text>
@@ -230,9 +247,12 @@ class YellowBox extends React.Component {
     const View = require('View');
 
     const inspecting = this.state.inspecting;
-    const inspector = inspecting !== null ?
+    const inspectingWarningInfo = this.state.warningMap.get(inspecting);
+
+    const inspector = inspecting !== null && inspectingWarningInfo !== null ?
       <WarningInspector
-        count={this.state.warningMap.get(inspecting)}
+        count={inspectingWarningInfo.count}
+        frame={inspectingWarningInfo.frame}
         warning={inspecting}
         onClose={() => this.setState({inspecting: null})}
         onDismiss={() => this.dismissWarning(inspecting)}
@@ -241,12 +261,12 @@ class YellowBox extends React.Component {
       null;
 
     const rows = [];
-    this.state.warningMap.forEach((count, warning) => {
+    this.state.warningMap.forEach((warningInfo, warning) => {
       if (!isWarningIgnored(warning)) {
         rows.push(
           <WarningRow
             key={warning}
-            count={count}
+            count={warningInfo.count}
             warning={warning}
             onPress={() => this.setState({inspecting: warning})}
             onDismiss={() => this.dismissWarning(warning)}
@@ -324,7 +344,7 @@ var styles = StyleSheet.create({
   inspectorWarning: {
     padding: 15,
     position: 'absolute',
-    top: 39,
+    top: 50,
     bottom: 60,
   },
   inspectorWarningText: {
