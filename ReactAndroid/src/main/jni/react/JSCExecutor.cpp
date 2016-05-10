@@ -277,7 +277,9 @@ void JSCExecutor::flush() {
 
   if (!ensureBatchedBridgeObject()) {
     throwJSExecutionException(
-        "Couldn't get the native call queue: bridge configuration isn't available. This shouldn't be possible. Congratulations.");
+        "Couldn't get the native call queue: bridge configuration isn't available. This "
+        "probably indicates there was an issue loading the JS bundle, e.g. it wasn't packaged "
+        "into the app or was malformed. Check your logs (`adb logcat`) for more information.");
   }
 
   std::string calls = m_flushedQueueObj->callAsFunction().toJSONString();
