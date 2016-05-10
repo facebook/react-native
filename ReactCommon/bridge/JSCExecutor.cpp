@@ -628,14 +628,19 @@ JSValueRef JSCExecutor::nativeCallSyncHook(
     return JSValueMakeUndefined(ctx);
   }
 
-  MethodCallResult result = executor->m_bridge->callSerializableNativeHook(
-      moduleId,
-      methodId,
-      argsJson);
-  if (result.isUndefined) {
+  try {
+    MethodCallResult result = executor->m_bridge->callSerializableNativeHook(
+        moduleId,
+        methodId,
+        argsJson);
+    if (result.isUndefined) {
+      return JSValueMakeUndefined(ctx);
+    }
+    return Value::fromJSON(ctx, String(folly::toJson(result.result).c_str()));
+  } catch (...) {
+    *exception = translatePendingCppExceptionToJSError(ctx, "nativeCallSyncHook");
     return JSValueMakeUndefined(ctx);
   }
-  return Value::fromJSON(ctx, String(folly::toJson(result.result).c_str()));
 }
 
 static JSValueRef nativeInjectHMRUpdate(
