@@ -212,6 +212,18 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=me.ele.crowdsource',
     author: 'Eleme',
   },
+  {
+    name: 'Agendakar',
+    icon: 'https://lh3.googleusercontent.com/mzsDuXfuOVjgIxEcvpVWJ5lxqZ1--LTAUC3RlXgNvy8FTj3_ooJSNB9J4-OKIi8YZ6cB=w300-rw',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.agendakar',
+    author: 'Nelam Services',
+  },
+  {
+    name: 'Découvrir Dakar',
+    icon: 'https://lh3.googleusercontent.com/RNHLP8u48cikIm58iY3DU9sw3RAoHlVWzYTMQC3T9gbu3Jt8pjgwniOS3_s26iuZk1c=w300-rw',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.nelamservices.nef',
+    author: 'Nelam Services',
+  },
 ];
 
 var apps = [
