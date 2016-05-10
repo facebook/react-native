@@ -36,12 +36,12 @@ block { display: none; }
   display: block;
 }</style>
 <span>Platform:</span>
-<a href="javascript:void(0);" class="button-ios" onclick="display('platform', 'ios')">iOS</a>
-<a href="javascript:void(0);" class="button-android" onclick="display('platform', 'android')">Android</a>
+<a class="button-ios" onclick="display('platform', 'ios')">iOS</a>
+<a class="button-android" onclick="display('platform', 'android')">Android</a>
 <span>OS:</span>
-<a href="javascript:void(0);" class="button-mac" onclick="display('os', 'mac')">Mac</a>
-<a href="javascript:void(0);" class="button-linux" onclick="display('os', 'linux')">Linux</a>
-<a href="javascript:void(0);" class="button-windows" onclick="display('os', 'windows')">Windows</a>
+<a class="button-mac" onclick="display('os', 'mac')">Mac</a>
+<a class="button-linux" onclick="display('os', 'linux')">Linux</a>
+<a class="button-windows" onclick="display('os', 'windows')">Windows</a>
 </div>
 
 <!-- ######### LINUX AND WINDOWS for iOS ##################### -->
@@ -52,7 +52,7 @@ block { display: none; }
 
 <div>Unfortunately, Apple only lets you develop for iOS on a Mac machine. Please check out the <a href="" onclick="display('platform', 'android')">Android</a> instructions instead.</div>
 
-<center><img src="img/react-native-sorry-not-supported.png" width="150"></img></center>
+<center><img src="https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-xaf1/t39.1997-6/851591_233289256829505_447005964_n.png" width="150"></img></center>
 
 <!-- ######### MAC for iOS ##################### -->
 
@@ -70,6 +70,8 @@ recommended installs.
 ```
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
+
+> We recommend periodically running `brew update && brew upgrade` to keep your programs up-to-date.
 
 #### Node
 
@@ -103,19 +105,13 @@ npm install -g react-native-cli
 
 #### Android Studio
 
-[Android Studio](http://developer.android.com/sdk/index.html) 2.0 or higher.
+[Android Studio](http://developer.android.com/sdk/index.html) 2.0 or higher. This will provide you
+the Android SDK and emulator required to run and test your React Native apps.
 
 > Android Studio requires the Java Development Kit [JDK] 1.8 or higher. You can type
 > `javac -version` to see what version you have, if any. If you do not meet the JDK requirement,
 > you can
 > [download it](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
-
-Android Studio will provide you the Android SDK and emulator required to run and test your React
-Native apps.
-
-> Unless otherwise mentioned, keep all the setup defaults intact. For example, the
-> `Android Support Repository` is installed automatically with Android Studio, and we need that
-> for React Native.
 
 You will need to customize your installation:
 
@@ -205,8 +201,8 @@ brew install git
 
 #### Nuclide
 
-[Nuclide](http://nuclide.io) is an IDE from Facebook providing a first-class development environment
-for writing, [running](http://nuclide.io/docs/platforms/react-native/#running-applications) and
+[Nuclide] is an IDE from Facebook providing a first-class development environment for writing,
+[running](http://nuclide.io/docs/platforms/react-native/#running-applications) and
 [debugging](http://nuclide.io/docs/platforms/react-native/#debugging)
 [React Native](http://nuclide.io/docs/platforms/react-native/) applications.
 
@@ -327,7 +323,8 @@ npm install -g react-native-cli
 
 #### Android Studio
 
-[Android Studio](http://developer.android.com/sdk/index.html) 2.0 or higher.
+[Android Studio](http://developer.android.com/sdk/index.html) 2.0 or higher. This will provide you
+the Android SDK and emulator required to run and test your React Native apps.
 
 > Android Studio requires the Java Development Kit [JDK] 1.8 or higher. You can type
 > `javac -version` to see what version you have, if any. If you do not meet the JDK requirement,
@@ -335,13 +332,6 @@ npm install -g react-native-cli
 > [download it](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html),
 > or use a pacakage manager to install it (e.g. `choco install jdk8`,
 > `apt-get install default-jdk`).
-
-Android Studio will provide you the Android SDK and emulator required to run and test your React
-Native apps.
-
-> Unless otherwise mentioned, keep all the setup defaults intact. For example, the
-> `Android Support Repository` is installed automatically with Android Studio, and we need that
-> for React Native.
 
 <block class="linux android" />
 
@@ -702,7 +692,6 @@ Now that you successfully started the project, let's modify it:
 
 <block class="mac android" />
 
-- Open `index.android.js` in your text editor of choice (e.g. [Nuclide](http://nuclide.io/docs/platforms/react-native/)) and edit some lines.
 - Press the `R` key twice **OR** open the menu (F2 by default, or ⌘-M in Genymotion) and select Reload JS to see your change!
 - Run `adb logcat *:S ReactNative:V ReactNativeJS:V` in a terminal to see your app's logs
 
@@ -712,7 +701,7 @@ Now that you successfully started the project, let's modify it:
 
 Congratulations! You've successfully run and modified your first React Native app.
 
-<center><img src="img/react-native-congratulations.png" width="150"></img></center>
+<center><img src="https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-xfa1/t39.1997-6/851555_209575209232981_1876032292_n.png" width="150"></img></center>
 
 <block class="windows linux android" />
 
@@ -747,14 +736,15 @@ Or if you hit a `ERROR  Watcher took too long to load` on Windows, try increasin
 Now that you successfully started the project, let's modify it:
 
 - Open `index.android.js` in your text editor of choice (e.g. [Nuclide](http://nuclide.io/docs/platforms/react-native/)) and edit some lines.
-- Press the `R` key twice **OR** open the menu (F2 by default, or ctrl-M in the emulator) and select Reload JS to see your change!
+- Press the `R` key twice **OR** open the menu (F2 by default, or ⌘-M in the emulator) and select Reload JS to see your change!
 - Run `adb logcat *:S ReactNative:V ReactNativeJS:V` in a terminal to see your app's logs
 
 ### That's It
 
 Congratulations! You've successfully run and modified your first React Native app.
 
-<center><img src="img/react-native-congratulations.png" width="150"></img></center>
+<center><img src="https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-xfa1/t39.1997-6/851555_209575209232981_1876032292_n.png" width="150"></img></center>
+
 
 <block class="mac ios android" />
 
