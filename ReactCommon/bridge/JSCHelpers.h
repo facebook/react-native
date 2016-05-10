@@ -9,6 +9,8 @@
 #include <stdexcept>
 #include <algorithm>
 
+#include "Value.h"
+
 namespace facebook {
 namespace react {
 
@@ -42,5 +44,9 @@ JSValueRef evaluateScript(
     JSContextRef ctx,
     JSStringRef script,
     JSStringRef sourceURL);
+
+JSValueRef makeJSError(JSContextRef ctx, const char *error);
+
+JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, const char *exceptionLocation);
 
 } }

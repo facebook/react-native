@@ -171,6 +171,7 @@ private:
 class Value : public noncopyable {
 public:
   Value(JSContextRef context, JSValueRef value);
+  Value(JSContextRef context, JSStringRef value);
   Value(Value&&);
 
   operator JSValueRef() const {
