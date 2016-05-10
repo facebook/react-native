@@ -52,4 +52,32 @@ JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef 
   return result;
 }
 
+JSValueRef makeJSError(JSContextRef ctx, const char *error) {
+  JSValueRef nestedException = nullptr;
+  JSValueRef args[] = { Value(ctx, String(error)) };
+  JSObjectRef errorObj = JSObjectMakeError(ctx, 1, args, &nestedException);
+  if (nestedException != nullptr) {
+    return std::move(args[0]);
+  }
+  return errorObj;
+}
+
+JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, const char *exceptionLocation) {
+  std::ostringstream msg;
+  try {
+    throw;
+  } catch (const std::bad_alloc& ex) {
+    throw; // We probably shouldn't try to handle this in JS
+  } catch (const std::exception& ex) {
+    msg << "C++ Exception in '" << exceptionLocation << "': " << ex.what();
+    return makeJSError(ctx, msg.str().c_str());
+  } catch (const char* ex) {
+    msg << "C++ Exception (thrown as a char*) in '" << exceptionLocation << "': " << ex;
+    return makeJSError(ctx, msg.str().c_str());
+  } catch (...) {
+    msg << "Unknown C++ Exception in '" << exceptionLocation << "'";
+    return makeJSError(ctx, msg.str().c_str());
+  }
+}
+
 } }
