@@ -21,7 +21,7 @@ var InspectorUtils = require('InspectorUtils');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var Touchable = require('Touchable');
-var UIManager = require('NativeModules').UIManager;
+var UIManager = require('UIManager');
 var View = require('View');
 
 if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {

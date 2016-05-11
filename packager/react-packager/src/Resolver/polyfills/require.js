@@ -41,17 +41,19 @@ function define(moduleId, factory) {
 }
 
 function require(moduleId) {
-  const module = modules[moduleId];
+  const module = __DEV__
+    ? modules[moduleId] || modules[verboseNamesToModuleIds[moduleId]]
+    : modules[moduleId];
   return module && module.isInitialized
     ? module.exports
     : guardedLoadModule(moduleId, module);
 }
 
-var inGuard = false;
+let inGuard = false;
 function guardedLoadModule(moduleId, module) {
   if (!inGuard && global.ErrorUtils) {
     inGuard = true;
-    var returnValue;
+    let returnValue;
     try {
       returnValue = loadModuleImplementation(moduleId, module);
     } catch (e) {

@@ -122,6 +122,7 @@ class NavigationAnimatedExample extends React.Component {
     return (
       <NavigationCard
         {...props}
+        key={'card_' + props.scene.navigationState.key}
         renderScene={this._renderScene}
       />
     );

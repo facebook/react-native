@@ -188,7 +188,6 @@ class NavigationAnimatedView
       onNavigate,
       position,
       scene,
-      key: 'scene_' + scene.navigationState.key,
       scenes,
     });
   }
@@ -208,7 +207,6 @@ class NavigationAnimatedView
 
       return renderOverlay({
         layout: this.state.layout,
-        key: navigationState.key,
         navigationState,
         onNavigate,
         position,
