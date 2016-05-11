@@ -257,7 +257,8 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
       {
         if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule)))
         {
-          if (![moduleClasses containsObject:cls]) {
+          if (![moduleClasses containsObject:cls] &&
+              ![cls respondsToSelector:@selector(moduleName)]) {
             RCTLogWarn(@"Class %@ was not exported. Did you forget to use "
                        "RCT_EXPORT_MODULE()?", cls);
           }
