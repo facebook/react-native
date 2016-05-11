@@ -202,8 +202,13 @@ class MessageQueue {
     }
     Systrace.beginEvent(
       `MessageQueue.invokeCallback(${profileName}, ${stringifySafe(args)})`);
-    this._callbacks[cbID & ~1] = null;
-    this._callbacks[cbID |  1] = null;
+    if (callback.reusable) {
+      console.log(`Because callback with id ${cbID}: ${module}.${method}() is marked as reusable, the clear action is skipped.`);
+    }
+    else {
+      this._callbacks[cbID & ~1] = null;
+      this._callbacks[cbID |  1] = null;
+    }
     callback.apply(null, args);
     Systrace.endEvent();
   }
