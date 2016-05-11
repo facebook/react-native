@@ -211,7 +211,7 @@ var featured = [
     linkAppStore: 'https://itunes.apple.com/cn/app/feng-niao-zhong-bao-jian-zhi/id1061034377?l=en&mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=me.ele.crowdsource',
     author: 'Eleme',
-  },
+  }
 ];
 
 var apps = [
@@ -327,6 +327,12 @@ var apps = [
     link: 'https://itunes.apple.com/us/app/choke-rap-battle-with-friends/id1077937445?ls=1&mt=8',
     author: 'Henry Kirkness',
   },
+  {
+    name: 'clapit',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple60/v4/1a/42/5b/1a425b56-848a-91f5-8078-9f5473c9021f/icon350x350.png',
+    link: 'https://itunes.apple.com/us/app/clapit/id1062124740?mt=8',
+    author: 'Refined Edge Solutions, LLC'
+  }, 
   {
     name: 'Codementor - Live 1:1 Expert Developer Help',
     icon: 'http://a1.mzstatic.com/us/r30/Purple3/v4/db/cf/35/dbcf3523-bac7-0f54-c6a8-a80bf4f43c38/icon175x175.jpeg',
