@@ -13,13 +13,27 @@
 
 var RCTNetworking = require('RCTNetworking');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
+const utf8 = require('utf8');
+const warning = require('fbjs/lib/warning');
+
+type ResponseType = '' | 'arraybuffer' | 'blob' | 'document' | 'json' | 'text';
+type Response = ?Object | string;
 
 const UNSENT = 0;
 const OPENED = 1;
 const HEADERS_RECEIVED = 2;
 const LOADING = 3;
 const DONE = 4;
+
+const SUPPORTED_RESPONSE_TYPES = {
+  arraybuffer: typeof global.ArrayBuffer === 'function',
+  blob: typeof global.Blob === 'function',
+  document: false,
+  json: true,
+  text: true,
+  '': true,
+};
 
 /**
  * Shared base for platform-specific XMLHttpRequest implementations.
@@ -43,12 +57,12 @@ class XMLHttpRequestBase {
   upload: any;
   readyState: number;
   responseHeaders: ?Object;
-  responseText: ?string;
-  response: ?string;
-  responseType: '' | 'text';
+  responseText: string;
   status: number;
   timeout: number;
   responseURL: ?string;
+  ontimeout: ?Function;
+  onerror: ?Function;
 
   upload: ?{
     onprogress?: (event: Object) => void;
@@ -57,12 +71,17 @@ class XMLHttpRequestBase {
   _requestId: ?number;
   _subscriptions: [any];
 
-  _method: ?string;
-  _url: ?string;
-  _headers: Object;
-  _sent: boolean;
   _aborted: boolean;
+  _cachedResponse: Response;
+  _hasError: boolean;
+  _headers: Object;
   _lowerCaseResponseHeaders: Object;
+  _method: ?string;
+  _response: string | ?Object;
+  _responseType: ResponseType;
+  _sent: boolean;
+  _url: ?string;
+  _timedOut: boolean;
 
   constructor() {
     this.UNSENT = UNSENT;
@@ -75,29 +94,111 @@ class XMLHttpRequestBase {
     this.onload = null;
     this.upload = undefined; /* Upload not supported yet */
     this.timeout = 0;
+    this.ontimeout = null;
+    this.onerror = null;
 
     this._reset();
     this._method = null;
     this._url = null;
     this._aborted = false;
+    this._timedOut = false;
+    this._hasError = false;
   }
 
-  _reset() {
+  _reset(): void {
     this.readyState = this.UNSENT;
     this.responseHeaders = undefined;
     this.responseText = '';
-    this.response = null;
-    this.responseType = '';
     this.status = 0;
     delete this.responseURL;
 
     this._requestId = null;
 
+    this._cachedResponse = undefined;
+    this._hasError = false;
     this._headers = {};
+    this._responseType = '';
     this._sent = false;
     this._lowerCaseResponseHeaders = {};
 
     this._clearSubscriptions();
+    this._timedOut = false;
+  }
+
+  // $FlowIssue #10784535
+  get responseType(): ResponseType {
+    return this._responseType;
+  }
+
+  // $FlowIssue #10784535
+  set responseType(responseType: ResponseType): void {
+    if (this.readyState > HEADERS_RECEIVED) {
+      throw new Error(
+        "Failed to set the 'responseType' property on 'XMLHttpRequest': The " +
+        "response type cannot be set if the object's state is LOADING or DONE"
+      );
+    }
+    if (!SUPPORTED_RESPONSE_TYPES.hasOwnProperty(responseType)) {
+      warning(
+        `The provided value '${responseType}' is not a valid 'responseType'.`);
+      return;
+    }
+
+    // redboxes early, e.g. for 'arraybuffer' on ios 7
+    invariant(
+      SUPPORTED_RESPONSE_TYPES[responseType] || responseType === 'document',
+      `The provided value '${responseType}' is unsupported in this environment.`
+    );
+    this._responseType = responseType;
+  }
+
+  // $FlowIssue #10784535
+  get response(): Response {
+    const {responseType} = this;
+    if (responseType === '' || responseType === 'text') {
+      return this.readyState < LOADING || this._hasError
+        ? ''
+        : this.responseText;
+    }
+
+    if (this.readyState !== DONE) {
+      return null;
+    }
+
+    if (this._cachedResponse !== undefined) {
+      return this._cachedResponse;
+    }
+
+    switch (this.responseType) {
+      case 'document':
+        this._cachedResponse = null;
+        break;
+
+      case 'arraybuffer':
+        this._cachedResponse = toArrayBuffer(
+          this.responseText, this.getResponseHeader('content-type') || '');
+        break;
+
+      case 'blob':
+        this._cachedResponse = new global.Blob(
+          [this.responseText],
+          {type: this.getResponseHeader('content-type') || ''}
+        );
+        break;
+
+      case 'json':
+        try {
+          this._cachedResponse = JSON.parse(this.responseText);
+        } catch (_) {
+          this._cachedResponse = null;
+        }
+        break;
+
+      default:
+        this._cachedResponse = null;
+    }
+
+    return this._cachedResponse;
   }
 
   didCreateRequest(requestId: number): void {
@@ -151,30 +252,19 @@ class XMLHttpRequestBase {
       } else {
         this.responseText += responseText;
       }
-      switch(this.responseType) {
-      case '':
-      case 'text':
-        this.response = this.responseText;
-        break;
-      case 'blob': // whatwg-fetch sets this in Chrome
-        /* global Blob: true */
-        invariant(
-          typeof Blob === 'function',
-          `responseType "blob" is only supported on platforms with native Blob support`
-        );
-        this.response = new Blob([this.responseText]);
-        break;
-      default: //TODO: Support other types, eg: document, arraybuffer, json
-        invariant(false, `responseType "${this.responseType}" is unsupported`);
-      }
+      this._cachedResponse = undefined; // force lazy recomputation
       this.setReadyState(this.LOADING);
     }
   }
 
-  _didCompleteResponse(requestId: number, error: string): void {
+  _didCompleteResponse(requestId: number, error: string, timeOutError: boolean): void {
     if (requestId === this._requestId) {
       if (error) {
         this.responseText = error;
+        this._hasError = true;
+        if (timeOutError) {
+          this._timedOut = true;
+        }
       }
       this._clearSubscriptions();
       this._requestId = null;
@@ -225,7 +315,7 @@ class XMLHttpRequestBase {
       throw new Error('Cannot load an empty url');
     }
     this._reset();
-    this._method = method;
+    this._method = method.toUpperCase();
     this._url = url;
     this._aborted = false;
     this.setReadyState(this.OPENED);
@@ -283,17 +373,25 @@ class XMLHttpRequestBase {
       onreadystatechange.call(this, null);
     }
     if (newState === this.DONE && !this._aborted) {
-      this._sendLoad();
+      if (this._hasError) {
+        if (this._timedOut) {
+          this._sendEvent(this.ontimeout);
+        } else {
+          this._sendEvent(this.onerror);
+        }
+      }
+      else {
+        this._sendEvent(this.onload);
+      }
     }
   }
 
-  _sendLoad(): void {
+  _sendEvent(newEvent: ?Function): void {
     // TODO: workaround flow bug with nullable function checks
-    var onload = this.onload;
-    if (onload) {
+    if (newEvent) {
       // We should send an event to handler, but since we don't process that
       // event anywhere, let's leave it empty
-      onload(null);
+      newEvent(null);
     }
   }
 }
@@ -303,5 +401,25 @@ XMLHttpRequestBase.OPENED = OPENED;
 XMLHttpRequestBase.HEADERS_RECEIVED = HEADERS_RECEIVED;
 XMLHttpRequestBase.LOADING = LOADING;
 XMLHttpRequestBase.DONE = DONE;
+
+function toArrayBuffer(text: string, contentType: string): ArrayBuffer {
+  const {length} = text;
+  if (length === 0) {
+    return new ArrayBuffer(0);
+  }
+
+  const charsetMatch = contentType.match(/;\s*charset=([^;]*)/i);
+  const charset = charsetMatch ? charsetMatch[1].trim() : 'utf-8';
+
+  if (/^utf-?8$/i.test(charset)) {
+    return utf8.encode(text);
+  } else { //TODO: utf16 / ucs2 / utf32
+    const array = new Uint8Array(length);
+    for (let i = 0; i < length; i++) {
+      array[i] = text.charCodeAt(i); // Uint8Array automatically masks with 0xff
+    }
+    return array.buffer;
+  }
+}
 
 module.exports = XMLHttpRequestBase;

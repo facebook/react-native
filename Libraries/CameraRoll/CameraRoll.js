@@ -135,9 +135,9 @@ class CameraRoll {
       'CameraRoll.saveImageWithTag tag must be a valid string.'
     );
     if (arguments.length > 1) {
-      console.warn("CameraRoll.saveImageWithTag(tag, success, error) is deprecated.  Use the returned Promise instead");
-      let successCallback = arguments[1];
-      let errorCallback = arguments[2] || ( () => {} );
+      console.warn('CameraRoll.saveImageWithTag(tag, success, error) is deprecated.  Use the returned Promise instead');
+      const successCallback = arguments[1];
+      const errorCallback = arguments[2] || ( () => {} );
       RCTCameraRollManager.saveImageWithTag(tag).then(successCallback, errorCallback);
       return;
     }
@@ -157,10 +157,10 @@ class CameraRoll {
       getPhotosParamChecker({params}, 'params', 'CameraRoll.getPhotos');
     }
     if (arguments.length > 1) {
-      console.warn("CameraRoll.getPhotos(tag, success, error) is deprecated.  Use the returned Promise instead");
+      console.warn('CameraRoll.getPhotos(tag, success, error) is deprecated.  Use the returned Promise instead');
       let successCallback = arguments[1];
       if (__DEV__) {
-        let callback = arguments[1];
+        const callback = arguments[1];
         successCallback = (response) => {
           getPhotosReturnChecker(
             {response},
@@ -170,7 +170,7 @@ class CameraRoll {
           callback(response);
         };
       }
-      let errorCallback = arguments[2] || ( () => {} );
+      const errorCallback = arguments[2] || ( () => {} );
       RCTCameraRollManager.getPhotos(params).then(successCallback, errorCallback);
     }
     // TODO: Add the __DEV__ check back in to verify the Promise result

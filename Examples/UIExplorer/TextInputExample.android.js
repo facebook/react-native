@@ -15,13 +15,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Text,
   TextInput,
   View,
   StyleSheet,
-} = React;
+} = ReactNative;
 
 var TextEventsExample = React.createClass({
   getInitialState: function() {
@@ -410,11 +411,19 @@ exports.examples = [
     title: 'Passwords',
     render: function() {
       return (
-        <TextInput
-          defaultValue="iloveturtles"
-          password={true}
-          style={styles.singleLine}
-        />
+        <View>
+          <TextInput
+            defaultValue="iloveturtles"
+            secureTextEntry={true}
+            style={styles.singleLine}
+          />
+          <TextInput
+            secureTextEntry={true}
+            style={[styles.singleLine, {color: 'red'}]}
+            placeholder="color is supported too"
+            placeholderTextColor="red"
+          />
+        </View>
       );
     }
   },

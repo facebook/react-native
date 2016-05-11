@@ -1,7 +1,11 @@
+require 'json'
+
+package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
+
 Pod::Spec.new do |s|
   s.name                = "React"
-  s.version             = "0.22.0-even1"
-  s.summary             = "Build high quality mobile apps using React."
+  s.version             = "0.25.1-even1"
+  s.summary             = package['description']
   s.description         = <<-DESC
                             React Native apps are built using the React JS
                             framework, and render directly to native UIKit
@@ -16,7 +20,7 @@ Pod::Spec.new do |s|
                             quality or capability.
                          DESC
   s.homepage            = "http://facebook.github.io/react-native/"
-  s.license             = "BSD"
+  s.license             = package['license']
   s.author              = "Facebook"
   s.source              = { :git => "https://github.com/facebook/react-native.git", :tag => "v#{s.version}" }
   s.default_subspec     = 'Core'
@@ -50,6 +54,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'RCTCameraRoll' do |ss|
     ss.dependency         'React/Core'
+    ss.dependency         'React/RCTImage'
     ss.source_files     = "Libraries/CameraRoll/*.{h,m}"
     ss.preserve_paths   = "Libraries/CameraRoll/*.js"
   end
@@ -110,9 +115,9 @@ Pod::Spec.new do |s|
   end
 
   s.subspec 'RCTTest' do |ss|
+    ss.dependency         'React/Core'
     ss.source_files     = "Libraries/RCTTest/**/*.{h,m}"
     ss.preserve_paths   = "Libraries/RCTTest/**/*.js"
     ss.frameworks       = "XCTest"
   end
-
 end

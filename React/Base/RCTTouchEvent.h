@@ -19,5 +19,6 @@
 
 - (instancetype)initWithEventName:(NSString *)eventName
                      reactTouches:(NSArray<NSDictionary *> *)reactTouches
-                   changedIndexes:(NSArray<NSNumber *> *)changedIndexes NS_DESIGNATED_INITIALIZER;
+                   changedIndexes:(NSArray<NSNumber *> *)changedIndexes
+                    coalescingKey:(uint16_t)coalescingKey NS_DESIGNATED_INITIALIZER;
 @end

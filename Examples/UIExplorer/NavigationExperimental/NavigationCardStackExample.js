@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -14,19 +21,22 @@
 'use strict';
 
 const NavigationExampleRow = require('./NavigationExampleRow');
-const NavigationRootContainer = require('NavigationRootContainer');
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 
 const {
   NavigationExperimental,
   StyleSheet,
   ScrollView,
-} = React;
+} = ReactNative;
 
-const NavigationCardStack = NavigationExperimental.CardStack;
-const NavigationStateUtils = NavigationExperimental.StateUtils;
+const {
+  CardStack: NavigationCardStack,
+  StateUtils: NavigationStateUtils,
+  RootContainer: NavigationRootContainer,
+} = NavigationExperimental;
 
-function reduceNavigationState(initialState) {
+function createReducer(initialState) {
   return (currentState, action) => {
     switch (action.type) {
       case 'RootContainerInitialAction':
@@ -47,7 +57,7 @@ function reduceNavigationState(initialState) {
   };
 }
 
-const ExampleReducer = reduceNavigationState({
+const ExampleReducer = createReducer({
   index: 0,
   key: 'exmaple',
   children: [{key: 'First Route'}],
@@ -133,11 +143,6 @@ class NavigationCardStackExample extends React.Component {
     });
   }
 
-  _onNavigate(action) {
-    if (action && action.type === 'back') {
-      this._pop();
-    }
-  }
 }
 
 const styles = StyleSheet.create({

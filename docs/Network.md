@@ -122,6 +122,34 @@ request.open('GET', 'https://mywebsite.com/endpoint.php');
 request.send();
 ```
 
+You can also use - 
+
+```js
+var request = new XMLHttpRequest();
+
+function onLoad() {
+    console.log(request.status);
+    console.log(request.responseText);
+};
+
+function onTimeout() {
+    console.log('Timeout');
+    console.log(request.responseText);
+};
+
+function onError() {
+    console.log('General network error');
+    console.log(request.responseText);
+};
+
+request.onload = onLoad;
+request.ontimeout = onTimeout;
+request.onerror = onError;
+request.open('GET', 'https://mywebsite.com/endpoint.php');
+request.send();
+```
+
+
 Please follow the [MDN Documentation](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) for a complete description of the API.
 
 As a developer, you're probably not going to use XMLHttpRequest directly as its API is very tedious to work with. But the fact that it is implemented and compatible with the browser API gives you the ability to use third-party libraries such as [frisbee](https://github.com/niftylettuce/frisbee) or [axios](https://github.com/mzabriskie/axios) directly from npm.

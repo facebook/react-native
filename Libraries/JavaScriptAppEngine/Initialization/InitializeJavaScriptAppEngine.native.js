@@ -22,7 +22,7 @@
 /* eslint strict: 0 */
 /* globals GLOBAL: true, window: true */
 
-require('regenerator/runtime');
+require('regenerator-runtime/runtime');
 
 if (typeof GLOBAL === 'undefined') {
   global.GLOBAL = this;
@@ -221,6 +221,7 @@ if (__DEV__) {
   require('RCTDebugComponentOwnership');
 }
 require('RCTDeviceEventEmitter');
+require('RCTNativeAppEventEmitter');
 require('PerformanceLogger');
 
 if (__DEV__) {

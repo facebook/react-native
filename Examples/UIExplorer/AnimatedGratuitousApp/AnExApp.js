@@ -16,14 +16,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Animated,
   LayoutAnimation,
   PanResponder,
   StyleSheet,
   View,
-} = React;
+} = ReactNative;
 
 var AnExSet = require('AnExSet');
 

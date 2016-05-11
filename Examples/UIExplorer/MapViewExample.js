@@ -15,17 +15,18 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
+var { PropTypes } = React;
 var {
   Image,
   MapView,
-  PropTypes,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-} = React;
+} = ReactNative;
 
 var regionText = {
   latitude: '0',

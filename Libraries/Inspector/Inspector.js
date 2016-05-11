@@ -16,7 +16,9 @@ var InspectorOverlay = require('InspectorOverlay');
 var InspectorPanel = require('InspectorPanel');
 var InspectorUtils = require('InspectorUtils');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var StyleSheet = require('StyleSheet');
+var Touchable = require('Touchable');
 var UIManager = require('NativeModules').UIManager;
 var View = require('View');
 
@@ -39,6 +41,7 @@ class Inspector extends React.Component {
       inspecting: true,
       perfing: false,
       inspected: null,
+      inspectedViewTag: this.props.inspectedViewTag,
     };
   }
 
@@ -60,6 +63,10 @@ class Inspector extends React.Component {
     if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
       window.__REACT_DEVTOOLS_GLOBAL_HOOK__.off('react-devtools', this.attachToDevtools);
     }
+  }
+
+  componentWillReceiveProps(newProps: Object) {
+    this.setState({inspectedViewTag: newProps.inspectedViewTag});
   }
 
   attachToDevtools(agent: Object) {
@@ -149,6 +156,13 @@ class Inspector extends React.Component {
     });
   }
 
+  setTouchTargetting(val: bool) {
+    Touchable.TOUCH_TARGET_DEBUG = val;
+    this.props.onRequestRerenderApp((inspectedViewTag) => {
+      this.setState({inspectedViewTag});
+    });
+  }
+
   render() {
     var panelContainerStyle = (this.state.panelPos === 'bottom') ? {bottom: 0} : {top: 0};
     return (
@@ -157,7 +171,7 @@ class Inspector extends React.Component {
           <InspectorOverlay
             rootTag={this.props.rootTag}
             inspected={this.state.inspected}
-            inspectedViewTag={this.props.inspectedViewTag}
+            inspectedViewTag={this.state.inspectedViewTag}
             onTouchInstance={this.onTouchInstance.bind(this)}
           />}
         <View style={[styles.panelContainer, panelContainerStyle]}>
@@ -171,6 +185,8 @@ class Inspector extends React.Component {
             hierarchy={this.state.hierarchy}
             selection={this.state.selection}
             setSelection={this.setSelection.bind(this)}
+            touchTargetting={Touchable.TOUCH_TARGET_DEBUG}
+            setTouchTargetting={this.setTouchTargetting.bind(this)}
           />
         </View>
       </View>

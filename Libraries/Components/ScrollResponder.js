@@ -15,6 +15,7 @@ var Dimensions = require('Dimensions');
 var Platform = require('Platform');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
 var UIManager = require('UIManager');
@@ -203,7 +204,6 @@ var ScrollResponderMixin = {
    * a touch has already started.
    */
   scrollResponderHandleResponderReject: function() {
-    warning(false, "ScrollView doesn't take rejection well - scrolls anyway");
   },
 
   /**

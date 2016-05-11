@@ -15,6 +15,8 @@
  */
 'use strict';
 
+const React = require('React');
+
 export type UIExplorerExample = {
   key: string;
   module: React.Component;
@@ -22,12 +24,20 @@ export type UIExplorerExample = {
 
 var ComponentExamples: Array<UIExplorerExample> = [
   {
+    key: 'SliderExample',
+    module: require('./SliderExample'),
+  },
+  {
     key: 'ImageExample',
     module: require('./ImageExample'),
   },
   {
     key: 'ListViewExample',
     module: require('./ListViewExample'),
+  },
+  {
+    key: 'ModalExample',
+    module: require('./ModalExample'),
   },
   {
     key: 'PickerAndroidExample',

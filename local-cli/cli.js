@@ -10,7 +10,8 @@
 
 require('../packager/babelRegisterOnly')([
   /private-cli\/src/,
-  /local-cli/
+  /local-cli/,
+  /react-packager\/src/
 ]);
 
 var bundle = require('./bundle/bundle');

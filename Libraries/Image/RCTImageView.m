@@ -16,6 +16,7 @@
 #import "RCTImageSource.h"
 #import "RCTImageUtils.h"
 #import "RCTUtils.h"
+#import "RCTImageBlurUtils.h"
 
 #import "UIView+React.h"
 
@@ -97,6 +98,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (image != super.image) {
     super.image = image;
     [self updateImage];
+  }
+}
+
+- (void)setBlurRadius:(CGFloat)blurRadius
+{
+  if (blurRadius != _blurRadius) {
+    _blurRadius = blurRadius;
+    [self reloadImage];
   }
 }
 
@@ -191,6 +200,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     }
 
     RCTImageSource *source = _source;
+    CGFloat blurRadius = _blurRadius;
     __weak RCTImageView *weakSelf = self;
     _reloadImageCancellationBlock = [_bridge.imageLoader loadImageWithoutClipping:_source.imageURL.absoluteString
                                                                              size:imageSize
@@ -198,8 +208,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                                                        resizeMode:(RCTResizeMode)self.contentMode
                                                                     progressBlock:progressHandler
                                                                   completionBlock:^(NSError *error, UIImage *image) {
+      RCTImageView *strongSelf = weakSelf;
+      if (blurRadius > __FLT_EPSILON__) {
+        // Do this on the background thread to avoid blocking interaction
+        image = RCTBlurredImageWithRadius(image, blurRadius);
+      }
       dispatch_async(dispatch_get_main_queue(), ^{
-        RCTImageView *strongSelf = weakSelf;
         if (![source isEqual:strongSelf.source]) {
           // Bail out if source has changed since we started loading
           return;

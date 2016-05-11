@@ -49,7 +49,7 @@ const _takeSnapshot = UIManager.takeSnapshot;
  * Capture an image of the screen, window or an individual view. The image
  * will be stored in a temporary file that will only exist for as long as the
  * app is running.
- * 
+ *
  * The `view` argument can be the literal string `window` if you want to
  * capture the entire window, or it can be a reference to a specific
  * React Native component.

@@ -11,6 +11,10 @@
  */
 'use strict';
 
+import type  {
+  NavigationSceneRendererProps,
+} from 'NavigationTypeDefinition';
+
 /**
  * React component PropTypes Definitions. Consider using this as a supplementary
  * measure with `NavigationTypeDefinition`. This helps to capture the propType
@@ -19,7 +23,7 @@
  */
 
 const Animated = require('Animated');
-const React = require('react-native');
+const React = require('React');
 
 const {PropTypes} = React;
 
@@ -55,6 +59,7 @@ const layout = PropTypes.shape({
 const scene = PropTypes.shape({
   index: PropTypes.number.isRequired,
   isStale: PropTypes.bool.isRequired,
+  key: PropTypes.string.isRequired,
   navigationState,
 });
 
@@ -68,9 +73,48 @@ const SceneRenderer = {
   scenes: PropTypes.arrayOf(scene).isRequired,
 };
 
+/* NavigationPanPanHandlers */
+const panHandlers = PropTypes.shape({
+  onMoveShouldSetResponder: PropTypes.func.isRequired,
+  onMoveShouldSetResponderCapture: PropTypes.func.isRequired,
+  onResponderEnd: PropTypes.func.isRequired,
+  onResponderGrant: PropTypes.func.isRequired,
+  onResponderMove: PropTypes.func.isRequired,
+  onResponderReject: PropTypes.func.isRequired,
+  onResponderRelease: PropTypes.func.isRequired,
+  onResponderStart: PropTypes.func.isRequired,
+  onResponderTerminate: PropTypes.func.isRequired,
+  onResponderTerminationRequest: PropTypes.func.isRequired,
+  onStartShouldSetResponder: PropTypes.func.isRequired,
+  onStartShouldSetResponderCapture: PropTypes.func.isRequired,
+});
+
+/**
+ * Helper function that extracts the props needed for scene renderer.
+ */
+function extractSceneRendererProps(
+  props: NavigationSceneRendererProps,
+): NavigationSceneRendererProps {
+  return {
+    layout: props.layout,
+    navigationState: props.navigationState,
+    onNavigate: props.onNavigate,
+    position: props.position,
+    scene: props.scene,
+    scenes: props.scenes,
+  };
+}
+
 module.exports = {
+  // helpers
+  extractSceneRendererProps,
+
+  // Bundled propTypes.
   SceneRenderer,
+
+  // propTypes
   action,
   navigationParentState,
   navigationState,
+  panHandlers,
 };

@@ -17,6 +17,7 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var Platform = require('Platform');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var ReactChildren = require('ReactChildren');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
@@ -69,7 +70,17 @@ type Event = Object;
  *   />
  * ```
  *
- * Note that some props are only available with `multiline={true/false}`:
+ * Note that some props are only available with `multiline={true/false}`.
+ * Additionally, border styles that apply to only one side of the element
+ * (e.g., `borderBottomColor`, `borderLeftWidth`, etc.) will not be applied if
+ * `multiline=false`. To achieve the same effect, you can wrap your `TextInput`
+ * in a `View`:
+ *
+ * ```
+ *  <View style={{ borderBottomColor: '#000000', borderBottomWidth: 1, }}>
+ *    <TextInput {...props} />
+ *  </View>
+ * ```
  */
 var TextInput = React.createClass({
   statics: {
@@ -275,7 +286,6 @@ var TextInput = React.createClass({
     clearTextOnFocus: PropTypes.bool,
     /**
      * If true, all text will automatically be selected on focus
-     * @platform ios
      */
     selectTextOnFocus: PropTypes.bool,
     /**
@@ -314,6 +324,9 @@ var TextInput = React.createClass({
         AndroidTextInput.viewConfig :
         {})) : Object),
 
+  /**
+   * Returns if the input is currently focused.
+   */
   isFocused: function(): boolean {
     return TextInputState.currentlyFocusedField() ===
       findNodeHandle(this.refs.input);
@@ -363,6 +376,9 @@ var TextInput = React.createClass({
     isInAParentText: React.PropTypes.bool
   },
 
+  /**
+   * Removes all text from the input.
+   */
   clear: function() {
     this.setNativeProps({text: ''});
   },
@@ -519,6 +535,7 @@ var TextInput = React.createClass({
         underlineColorAndroid={this.props.underlineColorAndroid}
         children={children}
         editable={this.props.editable}
+        selectTextOnFocus={this.props.selectTextOnFocus}
         manualInput={this.props.manualInput}
       />;
 

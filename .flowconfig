@@ -42,15 +42,40 @@
 # Ignore Website
 .*/website/.*
 
+
 # Even
 .*/Examples/.*
 .*/Libraries/NavigationExperimental/.*
 .*/Libraries/CustomComponents/NavigationExperimental/.*
 
+# Ignore generators
+.*/local-cli/generator.*
+
+# Ignore BUCK generated folders
+.*\.buckd/
+
+.*/node_modules/is-my-json-valid/test/.*\.json
+.*/node_modules/iconv-lite/encodings/tables/.*\.json
+.*/node_modules/y18n/test/.*\.json
+.*/node_modules/spdx-license-ids/spdx-license-ids.json
+.*/node_modules/spdx-exceptions/index.json
+.*/node_modules/resolve/test/subdirs/node_modules/a/b/c/x.json
+.*/node_modules/resolve/lib/core.json
+.*/node_modules/jsonparse/samplejson/.*\.json
+.*/node_modules/json5/test/.*\.json
+.*/node_modules/ua-parser-js/test/.*\.json
+.*/node_modules/builtin-modules/builtin-modules.json
+.*/node_modules/binary-extensions/binary-extensions.json
+.*/node_modules/url-regex/tlds.json
+.*/node_modules/joi/.*\.json
+.*/node_modules/isemail/.*\.json
+.*/node_modules/tr46/.*\.json
+
 [include]
 
 [libs]
 Libraries/react-native/react-native-interface.js
+flow/
 
 [options]
 module.system=haste
@@ -67,9 +92,9 @@ suppress_type=$FlowIssue
 suppress_type=$FlowFixMe
 suppress_type=$FixMe
 
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(>=0\\.\\(2[0-1]\\|1[0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)
-suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(>=0\\.\\(2[0-1]\\|1[0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)?:? #[0-9]+
+suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(>=0\\.\\(2[0-3]\\|1[0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)
+suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(>=0\\.\\(2[0-3]\\|1[0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)?:? #[0-9]+
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 
 [version]
-0.21.0
+0.23.0

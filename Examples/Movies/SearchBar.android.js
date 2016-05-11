@@ -16,7 +16,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Image,
   Platform,
@@ -25,7 +26,7 @@ var {
   StyleSheet,
   TouchableNativeFeedback,
   View,
-} = React;
+} = ReactNative;
 
 var IS_RIPPLE_EFFECT_SUPPORTED = Platform.Version >= 21;
 

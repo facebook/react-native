@@ -64,7 +64,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setOpacity(T view, float opacity) {
     view.setAlpha(opacity);
   }
-  
+
   @ReactProp(name = PROP_ELEVATION)
   public void setElevation(T view, float elevation) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

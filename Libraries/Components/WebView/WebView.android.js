@@ -11,7 +11,9 @@
 'use strict';
 
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
+var ProgressBarAndroid = require('ProgressBarAndroid');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');
@@ -33,6 +35,15 @@ var WebViewState = keyMirror({
   LOADING: null,
   ERROR: null,
 });
+
+var defaultRenderLoading = () => (
+  <View style={styles.loadingView}>
+    <ProgressBarAndroid
+      style={styles.loadingProgressBar}
+      styleAttr="Inverse"
+    />
+  </View>
+);
 
 /**
  * Renders a native WebView.
@@ -138,6 +149,12 @@ var WebView = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
+
+    /**
+     * Determines whether HTML5 audio & videos require the user to tap before they can
+     * start playing. The default value is `false`.
+     */
+    mediaPlaybackRequiresUserAction: PropTypes.bool,
   },
 
   getInitialState: function() {
@@ -165,7 +182,7 @@ var WebView = React.createClass({
     var otherView = null;
 
    if (this.state.viewState === WebViewState.LOADING) {
-      otherView = this.props.renderLoading && this.props.renderLoading();
+      otherView = (this.props.renderLoading || defaultRenderLoading)();
     } else if (this.state.viewState === WebViewState.ERROR) {
       var errorEvent = this.state.lastErrorEvent;
       otherView = this.props.renderError && this.props.renderError(
@@ -213,6 +230,7 @@ var WebView = React.createClass({
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
         testID={this.props.testID}
+        mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
       />;
 
     return (
@@ -300,6 +318,14 @@ var styles = StyleSheet.create({
   hidden: {
     height: 0,
     flex: 0, // disable 'flex:1' when hiding a View
+  },
+  loadingView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingProgressBar: {
+    height: 20,
   },
 });
 

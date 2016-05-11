@@ -30,6 +30,7 @@ public class DevInternalSettings implements
 
   private static final String PREFS_FPS_DEBUG_KEY = "fps_debug";
   private static final String PREFS_JS_DEV_MODE_DEBUG_KEY = "js_dev_mode_debug";
+  private static final String PREFS_JS_MINIFY_DEBUG_KEY = "js_minify_debug";
   private static final String PREFS_DEBUG_SERVER_HOST_KEY = "debug_http_host";
   private static final String PREFS_ANIMATIONS_DEBUG_KEY = "animations_debug";
   private static final String PREFS_RELOAD_ON_JS_CHANGE_KEY = "reload_on_js_change";
@@ -66,6 +67,11 @@ public class DevInternalSettings implements
     return mPreferences.getBoolean(PREFS_JS_DEV_MODE_DEBUG_KEY, true);
   }
 
+  @Override
+  public boolean isJSMinifyEnabled() {
+    return mPreferences.getBoolean(PREFS_JS_MINIFY_DEBUG_KEY, false);
+  }
+
   public @Nullable String getDebugServerHost() {
     return mPreferences.getString(PREFS_DEBUG_SERVER_HOST_KEY, null);
   }
@@ -73,7 +79,8 @@ public class DevInternalSettings implements
   public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
     if (PREFS_FPS_DEBUG_KEY.equals(key) ||
         PREFS_RELOAD_ON_JS_CHANGE_KEY.equals(key) ||
-        PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key)) {
+        PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key) ||
+        PREFS_JS_MINIFY_DEBUG_KEY.equals(key)) {
       mDebugManager.reloadSettings();
     }
   }

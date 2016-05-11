@@ -290,6 +290,7 @@ public class ReactToolbar extends Toolbar {
               .setOldController(holder.getController())
               .build();
       holder.setController(controller);
+      holder.getTopLevelDrawable().setVisible(true, true);
     } else {
       controllerListener.setDrawable(getDrawableByName(uri));
     }

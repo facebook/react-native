@@ -33,8 +33,7 @@ const Config = {
     const parentDir = findParentDirectory(cwd, RN_CLI_CONFIG);
     if (!parentDir && !defaultConfig) {
       throw new Error(
-        'Can\'t find "rn-cli.config.js" file in any parent folder of "' +
-        __dirname + '"'
+        `Can't find "rn-cli.config.js" file in any parent folder of "${__dirname}"`
       );
     }
 
@@ -63,7 +62,7 @@ function findParentDirectory(currentFullPath, filename) {
     return exists ? fullPath : testDir(parts.slice(0, -1));
   };
 
-  return testDir(currentFullPath.substring(1).split(path.sep));
+  return testDir(currentFullPath.substring(root.length).split(path.sep));
 }
 
 module.exports = Config;

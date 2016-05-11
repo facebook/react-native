@@ -12,7 +12,8 @@
 
 #if RCT_DEV && defined(__arm__)
 
-	.align 5
+  .thumb
+  .thumb_func
   .globl SYMBOL_NAME(RCTProfileTrampoline)
 SYMBOL_NAME(RCTProfileTrampoline):
   /**
@@ -34,7 +35,9 @@ SYMBOL_NAME(RCTProfileTrampoline):
    * profile
    */
   mov r0, #0xc
-  bl SYMBOL_NAME(malloc)
+  ldr ip, =L_malloc
+  ldr ip, [ip]
+  blx ip
   /**
    * r4 is the callee saved register we'll use to refer to the allocated memory,
    * store its initial value, so we can restore it later
@@ -86,10 +89,21 @@ SYMBOL_NAME(RCTProfileTrampoline):
   ldr r1, [r4, #0x8]
   ldr r4, [r4]
   push {r1} // save the caller on the stack
-  bl SYMBOL_NAME(free)
+  ldr ip, =L_free
+  ldr ip, [ip]
+  blx ip
 
   pop {lr} // pop the caller
   pop {r0} // pop the return value
   bx lr // jump to the calleer
+
+  trap
+
+  .data
+  .p2align 2
+L_malloc:
+  .long SYMBOL_NAME(malloc)
+L_free:
+  .long SYMBOL_NAME(free)
 
 #endif

@@ -45,6 +45,7 @@ export type NavigationPosition = NavigationAnimatedValue;
 export type NavigationScene = {
   index: number,
   isStale: boolean,
+  key: string,
   navigationState: NavigationState,
 };
 
@@ -68,6 +69,21 @@ export type NavigationSceneRendererProps = {
   scenes: Array<NavigationScene>,
 };
 
+export type NavigationPanPanHandlers = {
+  onMoveShouldSetResponder: Function,
+  onMoveShouldSetResponderCapture: Function,
+  onResponderEnd: Function,
+  onResponderGrant: Function,
+  onResponderMove: Function,
+  onResponderReject: Function,
+  onResponderRelease: Function,
+  onResponderStart: Function,
+  onResponderTerminate: Function,
+  onResponderTerminationRequest: Function,
+  onStartShouldSetResponder: Function,
+  onStartShouldSetResponderCapture: Function,
+};
+
 // Functions.
 
 export type NavigationActionCaller = Function;
@@ -79,7 +95,7 @@ export type NavigationAnimationSetter = (
 ) => void;
 
 export type NavigationRenderer = (
-  navigationState: NavigationState,
+  navigationState: ?NavigationState,
   onNavigate: NavigationActionCaller,
 ) => ReactElement;
 
@@ -91,3 +107,8 @@ export type NavigationReducer = (
 export type NavigationSceneRenderer = (
   props: NavigationSceneRendererProps,
 ) => ?ReactElement;
+
+export type NavigationStyleInterpolator = (
+  props: NavigationSceneRendererProps,
+) => Object;
+

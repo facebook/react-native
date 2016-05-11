@@ -1,0 +1,261 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+package com.facebook.react.views.modal;
+
+import javax.annotation.Nullable;
+
+import java.util.ArrayList;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.R;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.uimanager.JSTouchDispatcher;
+import com.facebook.react.uimanager.RootView;
+import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.view.ReactViewGroup;
+
+/**
+ * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
+ *
+ * It does a number of things:
+ *  1. It creates a Dialog.  We use this Dialog to actually display the Modal in the window.
+ *  2. It creates a DialogRootViewGroup.  This view is the view that is displayed by the Dialog. To
+ *     display a view within a Dialog, that view must have its parent set to the window the Dialog
+ *     creates.  Because of this, we can not use the ReactModalHostView since it sits in the
+ *     normal React view hierarchy.  We do however want all of the layout magic to happen as if the
+ *     DialogRootViewGroup were part of the hierarchy.  Therefore, we forward all view changes
+ *     around addition and removal of views to the DialogRootViewGroup.
+ */
+public class ReactModalHostView extends ViewGroup {
+
+  // This listener is called when the user presses KeyEvent.KEYCODE_BACK
+  // An event is then passed to JS which can either close or not close the Modal by setting the
+  // visible property
+  public interface OnRequestCloseListener {
+    void onRequestClose(DialogInterface dialog);
+  }
+
+  private DialogRootViewGroup mHostView;
+  private @Nullable Dialog mDialog;
+  private boolean mTransparent;
+  private boolean mAnimated;
+  // Set this flag to true if changing a particular property on the view requires a new Dialog to
+  // be created.  For instance, animation does since it affects Dialog creation through the theme
+  // but transparency does not since we can access the window to update the property.
+  private boolean mPropertyRequiresNewDialog;
+  private @Nullable DialogInterface.OnShowListener mOnShowListener;
+  private @Nullable OnRequestCloseListener mOnRequestCloseListener;
+
+  public ReactModalHostView(Context context) {
+    super(context);
+
+    mHostView = new DialogRootViewGroup(context);
+  }
+
+  @Override
+  protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    // Do nothing as we are laid out by UIManager
+  }
+
+  @Override
+  public void addView(View child, int index) {
+    mHostView.addView(child, index);
+  }
+
+  @Override
+  public int getChildCount() {
+    return mHostView.getChildCount();
+  }
+
+  @Override
+  public View getChildAt(int index) {
+    return mHostView.getChildAt(index);
+  }
+
+  @Override
+  public void removeView(View child) {
+    mHostView.removeView(child);
+  }
+
+  @Override
+  public void removeViewAt(int index) {
+    View child = getChildAt(index);
+    mHostView.removeView(child);
+  }
+
+  @Override
+  public void addChildrenForAccessibility(ArrayList<View> outChildren) {
+    // Explicitly override this to prevent accessibility events being passed down to children
+    // Those will be handled by the mHostView which lives in the dialog
+  }
+
+  public void dismiss() {
+    if (mDialog != null) {
+      mDialog.dismiss();
+      mDialog = null;
+
+      // We need to remove the mHostView from the parent
+      // It is possible we are dismissing this dialog and reattaching the hostView to another
+      ViewGroup parent = (ViewGroup) mHostView.getParent();
+      parent.removeViewAt(0);
+    }
+  }
+
+  protected void setOnRequestCloseListener(OnRequestCloseListener listener) {
+    mOnRequestCloseListener = listener;
+  }
+
+  protected void setOnShowListener(DialogInterface.OnShowListener listener) {
+    mOnShowListener = listener;
+  }
+
+  protected void setTransparent(boolean transparent) {
+    mTransparent = transparent;
+  }
+
+  protected void setAnimated(boolean animated) {
+    mAnimated = animated;
+    mPropertyRequiresNewDialog = true;
+  }
+
+  @VisibleForTesting
+  public @Nullable Dialog getDialog() {
+    return mDialog;
+  }
+
+  /**
+   * showOrUpdate will display the Dialog.  It is called by the manager once all properties are set
+   * because we need to know all of them before creating the Dialog.  It is also smart during
+   * updates if the changed properties can be applied directly to the Dialog or require the
+   * recreation of a new Dialog.
+   */
+  protected void showOrUpdate() {
+    // If the existing Dialog is currently up, we may need to redraw it or we may be able to update
+    // the property without having to recreate the dialog
+    if (mDialog != null) {
+      if (mPropertyRequiresNewDialog) {
+        dismiss();
+      } else {
+        updateProperties();
+        return;
+      }
+    }
+
+    // Reset the flag since we are going to create a new dialog
+    mPropertyRequiresNewDialog = false;
+    int theme = R.style.Theme_FullScreenDialog;
+    if (mAnimated) {
+      theme = R.style.Theme_FullScreenDialogAnimated;
+    }
+    mDialog = new Dialog(getContext(), theme);
+
+    mDialog.setContentView(mHostView);
+    updateProperties();
+
+    mDialog.setOnShowListener(mOnShowListener);
+    mDialog.setOnKeyListener(
+      new DialogInterface.OnKeyListener() {
+        @Override
+        public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+          // We need to stop the BACK button from closing the dialog by default so we capture that
+          // event and instead inform JS so that it can make the decision as to whether or not to
+          // allow the back button to close the dialog.  If it chooses to, it can just set visible
+          // to false on the Modal and the Modal will go away
+          if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (event.getAction() == KeyEvent.ACTION_UP) {
+              Assertions.assertNotNull(
+                  mOnRequestCloseListener,
+                  "setOnRequestCloseListener must be called by the manager");
+              mOnRequestCloseListener.onRequestClose(dialog);
+            }
+            return true;
+          }
+          return false;
+        }
+      });
+
+    mDialog.show();
+  }
+
+  /**
+   * updateProperties will update the properties that do not require us to recreate the dialog
+   * Properties that do require us to recreate the dialog should set mPropertyRequiresNewDialog to
+   * true when the property changes
+   */
+  private void updateProperties() {
+    Assertions.assertNotNull(mDialog, "mDialog must exist when we call updateProperties");
+
+    if (mTransparent) {
+      mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+    } else {
+      mDialog.getWindow().setDimAmount(0.5f);
+      mDialog.getWindow().setFlags(
+          WindowManager.LayoutParams.FLAG_DIM_BEHIND,
+          WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+    }
+  }
+
+  /**
+   * DialogRootViewGroup is the ViewGroup which contains all the children of a Modal.  It gets all
+   * child information forwarded from ReactModalHostView and uses that to create children.  It is
+   * also responsible for acting as a RootView and handling touch events.  It does this the same
+   * way as ReactRootView.
+   */
+  static class DialogRootViewGroup extends ReactViewGroup implements RootView {
+
+    private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
+
+    public DialogRootViewGroup(Context context) {
+      super(context);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+      mJSTouchDispatcher.handleTouchEvent(event, getEventDispatcher());
+      return super.onInterceptTouchEvent(event);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+      mJSTouchDispatcher.handleTouchEvent(event, getEventDispatcher());
+      super.onTouchEvent(event);
+      // In case when there is no children interested in handling touch event, we return true from
+      // the root view in order to receive subsequent events related to that gesture
+      return true;
+    }
+
+    @Override
+    public void onChildStartedNativeGesture(MotionEvent androidEvent) {
+      mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, getEventDispatcher());
+    }
+
+    @Override
+    public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+      // No-op - override in order to still receive events to onInterceptTouchEvent
+      // even when some other view disallow that
+    }
+
+    private EventDispatcher getEventDispatcher() {
+      ReactContext reactContext = (ReactContext) getContext();
+      return reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    }
+  }
+}
