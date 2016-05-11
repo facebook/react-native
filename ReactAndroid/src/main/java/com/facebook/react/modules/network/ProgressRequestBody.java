@@ -21,41 +21,34 @@ import okio.ByteString;
 import okio.Okio;
 import okio.Source;
 
-
-
 public class ProgressRequestBody extends RequestBody {
 
-  private final RequestBody requestBody;
-
-  private final ProgressRequestListener progressListener;
-
-  private BufferedSink bufferedSink;
+  private final RequestBody mRequestBody;
+  private final ProgressRequestListener mProgressListener;
+  private BufferedSink mBufferedSink;
 
   public ProgressRequestBody(RequestBody requestBody, ProgressRequestListener progressListener) {
-      this.requestBody = requestBody;
-      this.progressListener = progressListener;
+      this.mRequestBody = requestBody;
+      this.mProgressListener = progressListener;
   }
 
   @Override
   public MediaType contentType() {
-      return requestBody.contentType();
+      return mRequestBody.contentType();
   }
 
   @Override
   public long contentLength() throws IOException {
-      return requestBody.contentLength();
+      return mRequestBody.contentLength();
   }
 
   @Override
   public void writeTo(BufferedSink sink) throws IOException {
-      if (bufferedSink == null) {
-          bufferedSink = Okio.buffer(sink(sink));
+      if (mBufferedSink == null) {
+          mBufferedSink = Okio.buffer(sink(sink));
       }
-
-      requestBody.writeTo(bufferedSink);
-
-      bufferedSink.flush();
-
+      mRequestBody.writeTo(mBufferedSink);
+      mBufferedSink.flush();
   }
 
   private Sink sink(Sink sink) {
@@ -70,7 +63,7 @@ public class ProgressRequestBody extends RequestBody {
                   contentLength = contentLength();
               }
               bytesWritten += byteCount;
-              progressListener.onRequestProgress(bytesWritten, contentLength, bytesWritten == contentLength);
+              mProgressListener.onRequestProgress(bytesWritten, contentLength, bytesWritten == contentLength);
           }
       };
   }

@@ -19,10 +19,7 @@ var XMLHttpRequestBase = require('XMLHttpRequestBase');
 class XMLHttpRequest extends XMLHttpRequestBase {
   constructor() {
     super();
-    // iOS supports upload
-    this.upload = {};
   }
-
   sendImpl(method: ?string, url: ?string, headers: Object, data: any, timeout: number): void {
     if (typeof data === 'string') {
       data = {string: data};

@@ -92,7 +92,7 @@ class XMLHttpRequestBase {
 
     this.onreadystatechange = null;
     this.onload = null;
-    this.upload = undefined; /* Upload not supported yet */
+    this.upload = {};
     this.timeout = 0;
     this.ontimeout = null;
     this.onerror = null;

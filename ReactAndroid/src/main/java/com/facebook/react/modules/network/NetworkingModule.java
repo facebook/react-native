@@ -234,7 +234,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
         return;
       }
 
-      requestBuilder.method(method, RequestBodyUtil.createProgressRequest(multipartBuilder.build(),new ProgressRequestListener(){
+      requestBuilder.method(method, RequestBodyUtil.createProgressRequest(multipartBuilder.build(), new ProgressRequestListener(){
         long last = System.nanoTime();
 
         @Override
@@ -309,8 +309,8 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private void onDataSend(ExecutorToken ExecutorToken, int requestId, long progress, long total) {
     WritableArray args = Arguments.createArray();
     args.pushInt(requestId);
-    args.pushInt((int)progress);
-    args.pushInt((int)total);
+    args.pushInt((int) progress);
+    args.pushInt((int) total);
     getEventEmitter(ExecutorToken).emit("didSendNetworkData", args);
   }
 
