@@ -126,7 +126,7 @@ render, you might want to bump this up. Tweak it and find what works for
 your use case.</p><h5><a class="anchor" name="scrollrenderaheaddistance"></a>scrollRenderAheadDistance <a class="hash-link" href="docs/performance.html#scrollrenderaheaddistance">#</a></h5><p>&quot;How early to start rendering rows before they come on screen, in pixels.&quot;</p><p>If we had a list with 2000 items and rendered them all immediately that
 would be a poor use of both memory and computational resources. It would
 also probably cause some pretty awful jank. So the scrollRenderAhead
-distance allows us to specify for far beyond the current viewport we
+distance allows us to specify how far beyond the current viewport we
 should continue to render rows.</p><h5><a class="anchor" name="removeclippedsubviews"></a>removeClippedSubviews <a class="hash-link" href="docs/performance.html#removeclippedsubviews">#</a></h5><p>&quot;When true, offscreen child views (whose <code>overflow</code> value is <code>hidden</code>)
 are removed from their native backing superview when offscreen.  This
 can improve scrolling performance on long lists. The default value is
