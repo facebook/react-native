@@ -66,9 +66,6 @@ export type NavigationSceneRendererProps = {
   // The scene to render.
   scene: NavigationScene,
 
-  // The key of the scene
-  key: string,
-
   // All the scenes of the containing view's.
   scenes: Array<NavigationScene>,
 };

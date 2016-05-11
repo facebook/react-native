@@ -425,10 +425,12 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     if (!_pendingTasks) {
       _pendingTasks = [NSMutableArray new];
     }
-    [_pendingTasks addObject:task];
-    if (MAX(_activeTasks, _scheduledDecodes) < _maxConcurrentLoadingTasks) {
-      [task start];
-      _activeTasks++;
+    if (task) {
+      [_pendingTasks addObject:task];
+      if (MAX(_activeTasks, _scheduledDecodes) < _maxConcurrentLoadingTasks) {
+        [task start];
+        _activeTasks++;
+      }
     }
 
     cancelLoad = ^{

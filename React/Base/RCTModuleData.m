@@ -220,25 +220,29 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     }
 
     unsigned int methodCount;
-    Method *methods = class_copyMethodList(object_getClass(_moduleClass), &methodCount);
+    Class cls = _moduleClass;
+    while (cls && cls != [NSObject class] && cls != [NSProxy class]) {
+      Method *methods = class_copyMethodList(object_getClass(cls), &methodCount);
 
-    for (unsigned int i = 0; i < methodCount; i++) {
-      Method method = methods[i];
-      SEL selector = method_getName(method);
-      if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
-        IMP imp = method_getImplementation(method);
-        NSArray<NSString *> *entries =
-          ((NSArray<NSString *> *(*)(id, SEL))imp)(_moduleClass, selector);
-        id<RCTBridgeMethod> moduleMethod =
-          [[RCTModuleMethod alloc] initWithMethodSignature:entries[1]
-                                              JSMethodName:entries[0]
-                                               moduleClass:_moduleClass];
+      for (unsigned int i = 0; i < methodCount; i++) {
+        Method method = methods[i];
+        SEL selector = method_getName(method);
+        if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
+          IMP imp = method_getImplementation(method);
+          NSArray<NSString *> *entries =
+            ((NSArray<NSString *> *(*)(id, SEL))imp)(_moduleClass, selector);
+          id<RCTBridgeMethod> moduleMethod =
+            [[RCTModuleMethod alloc] initWithMethodSignature:entries[1]
+                                                JSMethodName:entries[0]
+                                                 moduleClass:_moduleClass];
 
-        [moduleMethods addObject:moduleMethod];
+          [moduleMethods addObject:moduleMethod];
+        }
       }
-    }
 
-    free(methods);
+      free(methods);
+      cls = class_getSuperclass(cls);
+    }
 
     _methods = [moduleMethods copy];
   }
