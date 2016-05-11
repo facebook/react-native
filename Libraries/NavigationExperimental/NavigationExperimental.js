@@ -17,7 +17,6 @@ const NavigationCardStack = require('NavigationCardStack');
 const NavigationHeader = require('NavigationHeader');
 const NavigationReducer = require('NavigationReducer');
 const NavigationStateUtils = require('NavigationStateUtils');
-const NavigationView = require('NavigationView');
 const NavigationPropTypes = require('NavigationPropTypes');
 
 const NavigationExperimental = {
@@ -26,7 +25,6 @@ const NavigationExperimental = {
   Reducer: NavigationReducer,
 
   // Views
-  View: NavigationView,
   AnimatedView: NavigationAnimatedView,
 
   // CustomComponents:
