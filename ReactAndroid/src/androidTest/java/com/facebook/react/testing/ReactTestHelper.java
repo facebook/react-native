@@ -23,7 +23,7 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSCJavaScriptExecutor;
-import com.facebook.react.bridge.JavaScriptModulesConfig;
+import com.facebook.react.bridge.JavaScriptModuleRegistry;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NativeModuleRegistry;
@@ -38,8 +38,8 @@ public class ReactTestHelper {
       private @Nullable Context mContext;
       private final NativeModuleRegistry.Builder mNativeModuleRegistryBuilder =
         new NativeModuleRegistry.Builder();
-      private final JavaScriptModulesConfig.Builder mJSModulesConfigBuilder =
-        new JavaScriptModulesConfig.Builder();
+      private final JavaScriptModuleRegistry.Builder mJSModuleRegistryBuilder =
+        new JavaScriptModuleRegistry.Builder();
 
       @Override
       public ReactInstanceEasyBuilder setContext(Context context) {
@@ -55,7 +55,7 @@ public class ReactTestHelper {
 
       @Override
       public ReactInstanceEasyBuilder addJSModule(Class moduleInterfaceClass) {
-        mJSModulesConfigBuilder.add(moduleInterfaceClass);
+        mJSModuleRegistryBuilder.add(moduleInterfaceClass);
         return this;
       }
 
@@ -65,7 +65,7 @@ public class ReactTestHelper {
           .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
           .setJSExecutor(new JSCJavaScriptExecutor(new WritableNativeMap()))
           .setRegistry(mNativeModuleRegistryBuilder.build())
-          .setJSModulesConfig(mJSModulesConfigBuilder.build())
+          .setJSModuleRegistry(mJSModuleRegistryBuilder.build())
           .setJSBundleLoader(JSBundleLoader.createFileLoader(
                                mContext,
                                "assets://AndroidTestBundle.js"))

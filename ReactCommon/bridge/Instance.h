@@ -32,8 +32,7 @@ class Instance {
     std::shared_ptr<JSExecutorFactory> jsef,
     std::shared_ptr<MessageQueueThread> jsQueue,
     std::unique_ptr<MessageQueueThread> nativeQueue,
-    std::shared_ptr<ModuleRegistry> moduleRegistry,
-    folly::dynamic jsModuleDescriptions);
+    std::shared_ptr<ModuleRegistry> moduleRegistry);
   void loadScriptFromString(const std::string& string, const std::string& sourceURL);
   void loadScriptFromFile(const std::string& filename, const std::string& sourceURL);
   void loadUnbundle(
