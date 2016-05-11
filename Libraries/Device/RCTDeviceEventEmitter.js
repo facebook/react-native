@@ -11,10 +11,36 @@
  */
 'use strict';
 
-var EventEmitter = require('EventEmitter');
-var BatchedBridge = require('BatchedBridge');
+const EventEmitter = require('EventEmitter');
+const BatchedBridge = require('BatchedBridge');
+const NativeModules = require('NativeModules');
 
-var RCTDeviceEventEmitter = new EventEmitter();
+import type EmitterSubscription from 'EmitterSubscription';
+
+/**
+ * Deprecated - subclass NativeEventEmitter to create granular event modules instead of
+ * routing all event observation through RCTDeviceEventEmitter.
+ */
+class RCTDeviceEventEmitter extends EventEmitter {
+
+  addListener(eventType: string, listener: any, context: ?Object): EmitterSubscription {
+    if (eventType.lastIndexOf('statusBar', 0) === 0) {
+      console.warn('statusBar events should be registered via the StatusBarIOS module');
+      return require('StatusBarIOS').addListener(eventType, listener, context);
+    }
+    if (eventType.lastIndexOf('keyboard', 0) === 0) {
+      console.warn('keyboard events should be registered via the Keyboard module');
+      return require('Keyboard').addListener(eventType, listener, context);
+    }
+    return super.addListener(eventType, listener, context);
+  }
+
+  nativeAddListener(eventType: string, listener: any, context: ?Object): EmitterSubscription {
+    return super.addListener(eventType, listener, context);
+  }
+}
+
+RCTDeviceEventEmitter = new RCTDeviceEventEmitter();
 
 BatchedBridge.registerCallableModule(
   'RCTDeviceEventEmitter',
