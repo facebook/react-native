@@ -627,6 +627,13 @@ var apps = [
     author: 'Impronta Advance',
   },
   {
+    name: 'Nabava.net',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple18/v4/85/ef/4d/85ef4d52-f752-c059-48c1-baa507d1f936/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/bm/app/nabava.net-usporedi-cijene/id1100660049?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.nabava_net',
+    author: 'Ars Futura'
+  },
+  {
     name: 'Nalathe Kerala',
     icon: 'https://lh3.googleusercontent.com/5N0WYat5WuFbhi5yR2ccdbqmiZ0wbTtKRG9GhT3YK7Z-qRvmykZyAgk0HNElOxD2JOPr=w300-rw',
     link: 'https://play.google.com/store/apps/details?id=com.rhyble.nalathekerala',
