@@ -67,8 +67,7 @@ void Instance::initializeBridge(
     std::shared_ptr<JSExecutorFactory> jsef,
     std::shared_ptr<MessageQueueThread> jsQueue,
     std::unique_ptr<MessageQueueThread> nativeQueue,
-    std::shared_ptr<ModuleRegistry> moduleRegistry,
-    folly::dynamic jsModuleDescriptions) {
+    std::shared_ptr<ModuleRegistry> moduleRegistry) {
   callback_ = std::move(callback);
   nativeQueue_ = std::move(nativeQueue);
   jsQueue_ = jsQueue;
@@ -94,8 +93,7 @@ void Instance::initializeBridge(
 
   folly::dynamic config =
     folly::dynamic::object
-    ("remoteModuleConfig", std::move(nativeModuleDescriptions))
-    ("localModulesConfig", std::move(jsModuleDescriptions));
+    ("remoteModuleConfig", std::move(nativeModuleDescriptions));
 
 #ifdef WITH_FBSYSTRACE
   FbSystraceSection t(TRACE_TAG_REACT_CXX_BRIDGE, "setGlobalVariable");

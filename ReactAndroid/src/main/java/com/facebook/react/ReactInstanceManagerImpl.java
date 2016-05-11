@@ -37,7 +37,7 @@ import com.facebook.react.bridge.JSCJavaScriptExecutor;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptModule;
-import com.facebook.react.bridge.JavaScriptModulesConfig;
+import com.facebook.react.bridge.JavaScriptModuleRegistry;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NativeModuleRegistry;
@@ -759,7 +759,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     // CREATE_REACT_CONTEXT_END is in JSCExecutor.cpp
     mSourceUrl = jsBundleLoader.getSourceUrl();
     NativeModuleRegistry.Builder nativeRegistryBuilder = new NativeModuleRegistry.Builder();
-    JavaScriptModulesConfig.Builder jsModulesBuilder = new JavaScriptModulesConfig.Builder();
+    JavaScriptModuleRegistry.Builder jsModulesBuilder = new JavaScriptModuleRegistry.Builder();
 
     final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
     if (mUseDeveloperSupport) {
@@ -801,15 +801,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
       ReactMarker.logMarker(BUILD_NATIVE_MODULE_REGISTRY_END);
     }
 
-    ReactMarker.logMarker(BUILD_JS_MODULE_CONFIG_START);
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "buildJSModuleConfig");
-    JavaScriptModulesConfig javaScriptModulesConfig;
-    try {
-      javaScriptModulesConfig = jsModulesBuilder.build();
-    } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-      ReactMarker.logMarker(BUILD_JS_MODULE_CONFIG_END);
-    }
 
     NativeModuleCallExceptionHandler exceptionHandler = mNativeModuleCallExceptionHandler != null
         ? mNativeModuleCallExceptionHandler
@@ -818,7 +809,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
         .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
         .setJSExecutor(jsExecutor)
         .setRegistry(nativeModuleRegistry)
-        .setJSModulesConfig(javaScriptModulesConfig)
+        .setJSModuleRegistry(jsModulesBuilder.build())
         .setJSBundleLoader(jsBundleLoader)
         .setNativeModuleCallExceptionHandler(exceptionHandler);
 
@@ -876,7 +867,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
       ReactPackage reactPackage,
       ReactApplicationContext reactContext,
       NativeModuleRegistry.Builder nativeRegistryBuilder,
-      JavaScriptModulesConfig.Builder jsModulesBuilder) {
+      JavaScriptModuleRegistry.Builder jsModulesBuilder) {
     for (NativeModule nativeModule : reactPackage.createNativeModules(reactContext)) {
       nativeRegistryBuilder.add(nativeModule);
     }

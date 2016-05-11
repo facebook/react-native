@@ -15,7 +15,9 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.WeakHashMap;
 
 import com.facebook.common.logging.FLog;
@@ -29,23 +31,21 @@ import com.facebook.react.common.ReactConstants;
  * JavaScript.
  */
 public class JavaScriptModuleRegistry {
-
-  private final CatalystInstance mCatalystInstance;
   private final WeakHashMap<ExecutorToken, HashMap<Class<? extends JavaScriptModule>, JavaScriptModule>> mModuleInstances;
   private final HashMap<Class<? extends JavaScriptModule>, JavaScriptModuleRegistration> mModuleRegistrations;
 
-  public JavaScriptModuleRegistry(
-      CatalystInstance instance,
-      JavaScriptModulesConfig config) {
-    mCatalystInstance = instance;
+  public JavaScriptModuleRegistry(List<JavaScriptModuleRegistration> config) {
     mModuleInstances = new WeakHashMap<>();
     mModuleRegistrations = new HashMap<>();
-    for (JavaScriptModuleRegistration registration : config.getModuleDefinitions()) {
+    for (JavaScriptModuleRegistration registration : config) {
       mModuleRegistrations.put(registration.getModuleInterface(), registration);
     }
   }
 
-  public synchronized  <T extends JavaScriptModule> T getJavaScriptModule(ExecutorToken executorToken, Class<T> moduleInterface) {
+  public synchronized <T extends JavaScriptModule> T getJavaScriptModule(
+    CatalystInstance instance,
+    ExecutorToken executorToken,
+    Class<T> moduleInterface) {
     HashMap<Class<? extends JavaScriptModule>, JavaScriptModule> instancesForContext =
         mModuleInstances.get(executorToken);
     if (instancesForContext == null) {
@@ -65,9 +65,23 @@ public class JavaScriptModuleRegistry {
     JavaScriptModule interfaceProxy = (JavaScriptModule) Proxy.newProxyInstance(
         moduleInterface.getClassLoader(),
         new Class[]{moduleInterface},
-        new JavaScriptModuleInvocationHandler(executorToken, mCatalystInstance, registration));
+        new JavaScriptModuleInvocationHandler(executorToken, instance, registration));
     instancesForContext.put(moduleInterface, interfaceProxy);
     return (T) interfaceProxy;
+  }
+
+  public static class Builder {
+    private List<JavaScriptModuleRegistration> mModules =
+      new ArrayList<JavaScriptModuleRegistration>();
+
+    public Builder add(Class<? extends JavaScriptModule> moduleInterfaceClass) {
+      mModules.add(new JavaScriptModuleRegistration(moduleInterfaceClass));
+      return this;
+    }
+
+    public JavaScriptModuleRegistry build() {
+      return new JavaScriptModuleRegistry(mModules);
+    }
   }
 
   private static class JavaScriptModuleInvocationHandler implements InvocationHandler {
