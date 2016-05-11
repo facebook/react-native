@@ -25,6 +25,7 @@
 
 const Animated = require('Animated');
 const PanResponder = require('PanResponder');
+const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
@@ -114,16 +115,20 @@ const SwipeableRow = React.createClass({
   },
 
   render(): ReactElement {
+    const slideoutStyle = [
+      styles.slideOutContainer,
+      {
+        right: -this.state.scrollViewWidth,
+        width: this.state.scrollViewWidth,
+      },
+    ];
+    if (Platform.OS === 'ios') {
+      slideoutStyle.push({opacity: this._isSwipeableViewRendered ? 1 : 0});
+    }
+
     // The view hidden behind the main view
     const slideOutView = (
-      <View style={[
-        styles.slideOutContainer,
-        {
-          opacity: this._isSwipeableViewRendered ? 1 : 0,
-          right: -this.state.scrollViewWidth,
-          width: this.state.scrollViewWidth,
-        },
-        ]}>
+      <View style={slideoutStyle}>
         {this.props.slideoutView}
       </View>
     );
