@@ -640,8 +640,8 @@ var apps = [
     author: 'Rhyble',
   },
   {
-    name: 'New Music - keep track of the latest album releases',
-    icon: 'http://a4.mzstatic.com/us/r30/Purple49/v4/6f/4f/39/6f4f39db-e0ca-c80a-73e7-68830675e11b/icon175x175.png',
+    name: 'New Music - listen to recent albums, EPs & singles',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple60/v4/fa/d9/be/fad9be3d-474c-4380-6391-37f234a81901/icon175x175.png',
     link: 'https://itunes.apple.com/app/new-music-keep-track-latest/id1104646834',
     author: 'Alexey Ledak',
   },
