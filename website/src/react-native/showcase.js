@@ -835,46 +835,46 @@ var apps = [
     icon: 'http://pp.myapp.com/ma_icon/0/icon_12236104_1451810987/96',
     linkAppStore: 'https://itunes.apple.com/us/app/tian-cai-duan-zi-shou-shen/id992312701?l=zh&ls=1&mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.geniusJokeWriter.app',
-    author: 'Ran Zhao&Ji Zhao'
+    author: 'Ran Zhao&Ji Zhao',
   },
   {
     name: '你造么',
     icon: 'http://7xk1ez.com2.z0.glb.qiniucdn.com/logo-mobile-0114logo_welcom.png',
     link: 'https://itunes.apple.com/us/app/ni-zao-me/id1025294933?l=zh&ls=1&mt=8',
-    author: 'Scott Chen(@NZAOM)'
+    author: 'Scott Chen(@NZAOM)',
   },
   {
     name: 'うたよみん',
     icon: 'http://a4.mzstatic.com/jp/r30/Purple69/v4/19/8f/fa/198ffafe-66a6-d682-c8d1-47faf2b0badb/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/jp/app/minnano-duan-ge-tou-gaokomyuniti/id675671254?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.plasticaromantica.utayomin',
-    author: 'Takayuki IMAI'
+    author: 'Takayuki IMAI',
   },
   {
     name: '烘焙帮',
     icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/79/85/ba/7985ba1d-a807-7c34-98f1-e9e2ed5d2cb5/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/cn/app/hong-bei-bang-hai-liang-hong/id1007812319?mt=8',
-    author: 'Hongbeibang'
+    author: 'Hongbeibang',
   },
   {
     name: 'Spatula',
     icon: 'https://lh3.googleusercontent.com/26xtcDsloLCAOpqgH_87sDxaSJsLuSN--oj-z5Frcdsaq4ta2GQlktF5ktTNWrRHyqo=w300-rw',
     linkAppStore: 'https://itunes.apple.com/us/app/spatula/id1090496189?ls=1&mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.usespatula',
-    author: 'Kushal Dave'
+    author: 'Kushal Dave',
   },
   {
     name: 'ShareWis',
     icon: 'https://s3-ap-northeast-1.amazonaws.com/sw-misc/sharewis3_app.png',
     link: 'https://itunes.apple.com/jp/app/id585517208',
-    author: 'ShareWis Inc.'
+    author: 'ShareWis Inc.',
   },
   {
-		name: '婚格',
-		icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/d2/fc/4b/d2fc4bfb-34c8-8b78-1126-6e81fc95a520/icon175x175.png',
-		linkAppStore: 'https://itunes.apple.com/cn/app/hun-ge-rang-jie-hun-geng-jian/id1062457289?mt=8',
-		linkPlayStore: 'https://play.google.com/store/apps/details?id=com.marryguard_v2',
-		author: 'Shanghai Jingyi Network Co'
+    name: '婚格',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/d2/fc/4b/d2fc4bfb-34c8-8b78-1126-6e81fc95a520/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/hun-ge-rang-jie-hun-geng-jian/id1062457289?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.marryguard_v2',
+	  author: 'Shanghai Jingyi Network Co',
   }
 ];
 
