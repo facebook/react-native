@@ -38,7 +38,6 @@ const {
   CardStack: NavigationCardStack,
   Header: NavigationHeader,
   Reducer: NavigationReducer,
-  View: NavigationView,
 } = NavigationExperimental;
 
 
@@ -267,7 +266,7 @@ class NavigationCompositionExample extends React.Component {
 }
 
 class ExampleMainView extends React.Component {
-  _renderScene: NavigationSceneRenderer;
+  _renderScene: Function;
   _handleNavigation: Function;
 
   componentWillMount() {
@@ -277,21 +276,19 @@ class ExampleMainView extends React.Component {
 
   render() {
     return (
-      <NavigationView
-        navigationState={this.props.navigationState}
-        onNavigate={this._handleNavigation}
-        style={styles.tabsContent}
-        renderScene={this._renderScene}
-      />
+      <View style={styles.tabsContent}>
+        {this._renderScene()}
+      </View>
     );
   }
 
-  _renderScene(props: NavigationSceneRendererProps): ReactElement {
-    const {scene} = props;
+  _renderScene(): ReactElement {
+    const {navigationState} = this.props;
+    const childState = navigationState.children[navigationState.index];
     return (
       <ExampleTabScreen
-        key={'tab_screen' + scene.key}
-        navigationState={scene.navigationState}
+        key={'tab_screen' + childState.key}
+        navigationState={childState}
         onNavigate={this._handleNavigation}
       />
     );
