@@ -121,7 +121,7 @@ const RefreshControl = React.createClass({
      * Size of the refresh indicator, see RefreshControl.SIZE.
      * @platform android
      */
-    size: React.PropTypes.oneOf(RefreshLayoutConsts.SIZE.DEFAULT, RefreshLayoutConsts.SIZE.LARGE),
+    size: React.PropTypes.oneOf([RefreshLayoutConsts.SIZE.DEFAULT, RefreshLayoutConsts.SIZE.LARGE]),
     /**
      * Progress view top offset
      * @platform android
