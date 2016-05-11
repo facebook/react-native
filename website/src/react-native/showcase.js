@@ -766,6 +766,12 @@ var apps = [
     author: 'Dobbit Co., Ltd.'
   },
   {
+    name: 'ShareWis',
+    icon: 'https://s3-ap-northeast-1.amazonaws.com/sw-misc/sharewis3_app.png',
+    link: 'https://itunes.apple.com/jp/app/id585517208',
+    author: 'ShareWis Inc.'
+  },
+  {
     name: 'sneat: réservez les meilleurs restaurants de Paris',
     icon: 'http://a3.mzstatic.com/eu/r30/Purple49/v4/71/71/df/7171df47-6e03-8619-19a8-07f52186b0ed/icon175x175.jpeg',
     link: 'https://itunes.apple.com/fr/app/sneat-reservez-les-meilleurs/id1062510079?l=en&mt=8',
@@ -776,6 +782,19 @@ var apps = [
     icon: 'https://lh3.googleusercontent.com/11AuzaeCnxrRnIp1E_a_6WWiQIRRoWhrvFr20eCRJX4ZMW6O3tGjZLiUw3thKUgGaC8X=w300',
     link: 'https://play.google.com/store/apps/details?id=com.SoftwareInterview',
     author: 'Andrew F. Ly',
+  },
+  {
+    name: 'Spatula',
+    icon: 'https://lh3.googleusercontent.com/26xtcDsloLCAOpqgH_87sDxaSJsLuSN--oj-z5Frcdsaq4ta2GQlktF5ktTNWrRHyqo=w300-rw',
+    linkAppStore: 'https://itunes.apple.com/us/app/spatula/id1090496189?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.usespatula',
+    author: 'Kushal Dave'
+  },
+  {
+    name: 'Splash: On-Demand Auto Detailing',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple30/v4/c3/14/74/c314748f-ff16-c7ec-77c5-1a84657d9154/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/splash-on-demand-auto-detailing/id1111109177',
+    author: 'Alex Leventer'
   },
   {
     name: 'Spero for Cancer',
@@ -933,19 +952,6 @@ var apps = [
     icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/79/85/ba/7985ba1d-a807-7c34-98f1-e9e2ed5d2cb5/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/cn/app/hong-bei-bang-hai-liang-hong/id1007812319?mt=8',
     author: 'Hongbeibang'
-  },
-  {
-    name: 'Spatula',
-    icon: 'https://lh3.googleusercontent.com/26xtcDsloLCAOpqgH_87sDxaSJsLuSN--oj-z5Frcdsaq4ta2GQlktF5ktTNWrRHyqo=w300-rw',
-    linkAppStore: 'https://itunes.apple.com/us/app/spatula/id1090496189?ls=1&mt=8',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.usespatula',
-    author: 'Kushal Dave'
-  },
-  {
-    name: 'ShareWis',
-    icon: 'https://s3-ap-northeast-1.amazonaws.com/sw-misc/sharewis3_app.png',
-    link: 'https://itunes.apple.com/jp/app/id585517208',
-    author: 'ShareWis Inc.'
   },
   {
     name: '找找',
