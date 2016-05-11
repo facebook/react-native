@@ -32,13 +32,6 @@ if (typeof window === 'undefined') {
   global.window = global;
 }
 
-function setUpProfile() {
-  if (__DEV__) {
-    const Systrace = require('Systrace');
-    Systrace.swizzleReactPerf();
-  }
-}
-
 function setUpProcess() {
   GLOBAL.process = GLOBAL.process || {};
   GLOBAL.process.env = GLOBAL.process.env || {};
@@ -218,7 +211,6 @@ function setUpDevTools() {
   }
 }
 
-setUpProfile();
 setUpProcess();
 setUpConsole();
 setUpTimers();
