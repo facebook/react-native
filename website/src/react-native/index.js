@@ -36,7 +36,7 @@ var index = React.createClass({
           </div>
 
           <div className="buttons-unit">
-            <a href="docs/getting-started.html#content" className="button">Get started with React Native</a>
+            <a href="docs/quick-start/getting-started.html#content" className="button">Get started with React Native</a>
           </div>
 
           <div style={{margin: '40px auto', maxWidth: 800}}>
@@ -415,7 +415,7 @@ export default class MyCustomView extends Component {
           </div>
           <section className="home-bottom-section">
             <div className="buttons-unit">
-              <a href="docs/getting-started.html#content" className="button">Get started with React Native</a>
+              <a href="docs/quick-start/getting-started.html#content" className="button">Get started with React Native</a>
             </div>
           </section>
         </section>

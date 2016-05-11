@@ -1,60 +1,73 @@
 ---
-id: tutorial
-title: Tutorial
+id: sample-applications-movies
+title: Movie Fetcher
 layout: docs
-category: Quick Start
-permalink: docs/tutorial.html
-next: videos
+category: Sample Applications
+permalink: docs/sample-apps/movies.html
+next: sample-applications-f8
 ---
-
-## Preface
-
-This tutorial aims to get you up to speed with writing iOS and Android apps using React Native. If you're wondering what React Native is and why Facebook built it, this [blog post](https://code.facebook.com/posts/1014532261909640/react-native-bringing-modern-web-techniques-to-mobile/) explains that.
-
-We assume you have experience writing applications with React. If not, you can learn about it on the [React website](http://facebook.github.io/react/).
-
-### Building a real-world app
-
-This tutorial explains how to build a simple app to get you started. If you're looking for a more advanced tutorial on building a real-world app, check out [makeitopen.com](http://makeitopen.com/).
-
-## Setup
-
-React Native requires the basic setup explained at [React Native Getting Started](docs/getting-started.html#content).
-
-After installing these dependencies there are two simple commands to get a React Native project all set up for development.
-
-1. `npm install -g react-native-cli`
-
-    react-native-cli is a command line interface that does the rest of the set up. It’s installable via npm. This will install `react-native` as a command in your terminal. You only ever need to do this once.
-
-2. `react-native init AwesomeProject`
-
-    This command fetches the React Native source code and dependencies and then creates a new Xcode project in `AwesomeProject/iOS/AwesomeProject.xcodeproj` and a gradle project in `AwesomeProject/android/app`.
-
 
 ## Overview
 
-In this tutorial we'll be building a simple version of the Movies app that fetches 25 movies that are in theaters and displays them in a ListView.
+In this tutorial we'll be building a simple version of a Movies app that fetches 25 movies that
+are in theaters and displays them in a `ListView`.
+
+## Setup
+
+> This sample application requires the basic setup explained at
+> [React Native Getting Started](docs/quick-start/getting-started.html#content).
+
+After installing these dependencies there are two simple commands to get a React Native project all
+set up for development.
+
+1. `npm install -g react-native-cli`
+
+    react-native-cli is a command line interface that does the rest of the set up. It’s installable
+    via npm. This will install `react-native` as a command in your terminal. You only ever need to
+    do this once.
+
+2. `react-native init SampleAppMovies`
+
+    This command fetches the React Native source code and dependencies and then creates a new Xcode
+    project in `SampleAppMovies/iOS/SampleAppMovies.xcodeproj` and a gradle project in
+    `SampleAppMovies/android/app`.
 
 ### Starting the app on iOS
 
-Open this new project (`AwesomeProject/ios/AwesomeProject.xcodeproj`) in Xcode and simply build and run it with `⌘+R`. Doing so will also start a Node server which enables live code reloading. With this you can see your changes by pressing `⌘+R` in the simulator rather than recompiling in Xcode.
+Open this new project (`SampleAppMovies/ios/SampleAppMovies.xcodeproj`) in Xcode and simply build
+and run it with `⌘+R`. Doing so will also start a Node server which enables live code reloading.
+With this you can see your changes by pressing `⌘+R` in the simulator rather than recompiling in
+Xcode.
 
 ### Starting the app on Android
 
-In your terminal navigate into the `AwesomeProject` and run:
+In your terminal navigate into the `SampleAppMovies` and run:
 
     react-native run-android
 
-This will install the generated app on your emulator or device, as well as start the Node server which enables live code reloading. To see your changes you have to open the rage-shake-menu (either shake the device or press the menu button on devices, press F2 or Page Up for emulator, ⌘+M for Genymotion), and then press `Reload JS`.
+This will install the generated app on your emulator or device, as well as start the Node server
+which enables live code reloading. To see your changes you have to open the rage-shake-menu (either
+shake the device or press the menu button on devices, press F2 or Page Up for emulator, ⌘+M for
+Genymotion), and then press `Reload JS`.
 
 ### Hello World
 
-`react-native init` will generate an app with the name of your project, in this case AwesomeProject. This is a simple hello world app. For iOS, you can edit `index.ios.js` to make changes to the app and then press ⌘+R in the simulator to see the changes. For Android, you can edit `index.android.js` to make changes to the app and press `Reload JS` from the rage shake menu to see the changes.
+`react-native init` will generate an app with the name of your project, in this case
+`SampleAppMovies`. This is a simple hello world app. For iOS, you can edit `index.ios.js` to make
+changes to the app and then press ⌘+R in the simulator to see the changes. For Android, you can
+edit `index.android.js` to make changes to the app and press `Reload JS` from the rage shake menu
+to see the changes.
+
+## Actual App
+
+Now that we have initialized our React Native project, we can begin creating our Movie application.
 
 ### Mocking data
 
-Before we write the code to fetch actual Rotten Tomatoes data let's mock some data so we can get our hands dirty with React Native. At Facebook we typically declare constants at the top of JS files, just below the imports, but feel free to add the following constant wherever you like. In `index.ios.js` or `index.android.js` :
+Before we write the code to fetch actual Rotten Tomatoes data let's mock some data so we can get
+our hands dirty with React Native. At Facebook we typically declare constants at the top of JS
+files, just below the imports, but feel free to add the following constant wherever you like. In
+`index.ios.js` or `index.android.js` :
 
 ```javascript
 var MOCKED_MOVIES_DATA = [
@@ -62,10 +75,10 @@ var MOCKED_MOVIES_DATA = [
 ];
 ```
 
-
 ### Render a movie
 
-We're going to render the title, year, and thumbnail for the movie. Since thumbnail is an Image component in React Native, add Image to the list of React imports below.
+We're going to render the title, year, and thumbnail for the movie. Since thumbnail is an Image
+component in React Native, add Image to the list of React imports below.
 
 ```javascript
 import React, {
@@ -80,7 +93,8 @@ import {
 } from 'react-native';
 ```
 
-Now change the render function so that we're rendering the data mentioned above rather than hello world.
+Now change the render function so that we're rendering the data mentioned above rather than hello
+world.
 
 ```javascript
   render() {
@@ -95,7 +109,10 @@ Now change the render function so that we're rendering the data mentioned above 
   }
 ```
 
-Press `⌘+R` / `Reload JS` and you should see "Title" above "2015". Notice that the Image doesn't render anything. This is because we haven't specified the width and height of the image we want to render. This is done via styles. While we're changing the styles let's also clean up the styles we're no longer using.
+Press `⌘+R` / `Reload JS` and you should see "Title" above "2015". Notice that the Image doesn't
+render anything. This is because we haven't specified the width and height of the image we want to
+render. This is done via styles. While we're changing the styles let's also clean up the styles
+we're no longer using.
 
 ```javascript
 var styles = StyleSheet.create({
@@ -131,7 +148,8 @@ Press `⌘+R` / `Reload JS` and the image should now render.
 
 ### Add some styling
 
-Great, we've rendered our data. Now let's make it look better. I'd like to put the text to the right of the image and make the title larger and centered within that area:
+Great, we've rendered our data. Now let's make it look better. I'd like to put the text to the right
+of the image and make the title larger and centered within that area:
 
 ```
 +---------------------------------+
@@ -143,7 +161,8 @@ Great, we've rendered our data. Now let's make it look better. I'd like to put t
 +---------------------------------+
 ```
 
-We'll need to add another container in order to vertically lay out components within horizontally laid out components.
+We'll need to add another container in order to vertically lay out components within horizontally
+laid out components.
 
 ```javascript
       return (
@@ -160,7 +179,8 @@ We'll need to add another container in order to vertically lay out components wi
       );
 ```
 
-Not too much has changed, we added a container around the Texts and then moved them after the Image (because they're to the right of the Image). Let's see what the style changes look like:
+Not too much has changed, we added a container around the Texts and then moved them after the Image
+(because they're to the right of the Image). Let's see what the style changes look like:
 
 ```javascript
   container: {
@@ -172,9 +192,11 @@ Not too much has changed, we added a container around the Texts and then moved t
   },
 ```
 
-We use FlexBox for layout - see [this great guide](https://css-tricks.com/snippets/css/a-guide-to-flexbox/) to learn more about it.
+We use FlexBox for layout - see
+[this great guide](https://css-tricks.com/snippets/css/a-guide-to-flexbox/) to learn more about it.
 
-In the above code snippet, we simply added `flexDirection: 'row'` that will make children of our main container to be layed out horizontally instead of vertically.
+In the above code snippet, we simply added `flexDirection: 'row'` that will make children of our
+main container to be layed out horizontally instead of vertically.
 
 Now add another style to the JS `style` object:
 
@@ -184,7 +206,10 @@ Now add another style to the JS `style` object:
   },
 ```
 
-This means that the `rightContainer` takes up the remaining space in the parent container that isn't taken up by the Image. If this doesn't make sense, add a `backgroundColor` to `rightContainer` and then try removing the `flex: 1`. You'll see that this causes the container's size to be the minimum size that fits its children.
+This means that the `rightContainer` takes up the remaining space in the parent container that isn't
+taken up by the Image. If this doesn't make sense, add a `backgroundColor` to `rightContainer` and
+then try removing the `flex: 1`. You'll see that this causes the container's size to be the minimum
+size that fits its children.
 
 Styling the text is pretty straightforward:
 
@@ -208,9 +233,11 @@ Go ahead and press `⌘+R` / `Reload JS` and you'll see the updated view.
 
 ### Fetching real data
 
-Fetching data from Rotten Tomatoes's API isn't really relevant to learning React Native so feel free to breeze through this section.
+Fetching data from Rotten Tomatoes's API isn't really relevant to learning React Native so feel free
+to breeze through this section.
 
-Add the following constants to the top of the file (typically below the imports) to create the REQUEST_URL used to request data with.
+Add the following constants to the top of the file (typically below the imports) to create the
+`REQUEST_URL`s used to request data with.
 
 ```javascript
 /**
@@ -220,7 +247,10 @@ Add the following constants to the top of the file (typically below the imports)
 var REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json';
 ```
 
-Add some initial state to our application so that we can check `this.state.movies === null` to determine whether the movies data has been loaded or not. We can set this data when the response comes back with `this.setState({movies: moviesData})`. Add this code just above the render function inside our React class.
+Add some initial state to our application so that we can check `this.state.movies === null` to
+determine whether the movies data has been loaded or not. We can set this data when the response
+comes back with `this.setState({movies: moviesData})`. Add this code just above the render function
+inside our React class.
 
 ```javascript
   constructor(props) {
@@ -231,7 +261,9 @@ Add some initial state to our application so that we can check `this.state.movie
   }
 ```
 
-We want to send off the request after the component has finished loading. `componentDidMount` is a function of React components that React will call exactly once, just after the component has been loaded.
+We want to send off the request after the component has finished loading. `componentDidMount` is a
+function of React components that React will call exactly once, just after the component has been
+loaded.
 
 ```javascript
   componentDidMount() {
@@ -239,7 +271,12 @@ We want to send off the request after the component has finished loading. `compo
   }
 ```
 
-Now add `fetchData` function used above to our main component. This method will be responsible for handling data fetching. All you need to do is call `this.setState({movies: data})` after resolving the promise chain because the way React works is that `setState` actually triggers a re-render and then the render function will notice that `this.state.movies` is no longer `null`.  Note that we call `done()` at the end of the promise chain - always make sure to call `done()` or any errors thrown will get swallowed.
+Now add `fetchData` function used above to our main component. This method will be responsible for
+handling data fetching. All you need to do is call `this.setState({movies: data})` after resolving
+the promise chain because the way React works is that `setState` actually triggers a re-render and
+then the render function will notice that `this.state.movies` is no longer `null`.  Note that we
+call `done()` at the end of the promise chain - always make sure to call `done()` or any errors
+thrown will get swallowed.
 
 ```javascript
   fetchData() {
@@ -254,7 +291,8 @@ Now add `fetchData` function used above to our main component. This method will 
   }
 ```
 
-Now modify the render function to render a loading view if we don't have any movies data, and to render the first movie otherwise.
+Now modify the render function to render a loading view if we don't have any movies data, and to
+render the first movie otherwise.
 
 ```javascript
   render() {
@@ -292,7 +330,8 @@ Now modify the render function to render a loading view if we don't have any mov
   }
 ```
 
-Now press `⌘+R` / `Reload JS` and you should see "Loading movies..." until the response comes back, then it will render the first movie it fetched from Rotten Tomatoes.
+Now press `⌘+R` / `Reload JS` and you should see "Loading movies..." until the response comes back,
+then it will render the first movie it fetched from Rotten Tomatoes.
 
 <div class="tutorial-mock">
   <img src="img/TutorialSingleFetched.png" />
@@ -411,7 +450,7 @@ import {
 
 var REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json';
 
-class AwesomeProject extends Component {
+class SampleAppMovies extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -507,5 +546,5 @@ var styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
+AppRegistry.registerComponent('SampleAppMovies', () => SampleAppMovies);
 ```
