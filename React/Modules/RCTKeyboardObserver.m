@@ -15,14 +15,10 @@ static NSDictionary *RCTParseKeyboardNotification(NSNotification *notification);
 
 @implementation RCTKeyboardObserver
 
-@synthesize bridge = _bridge;
-
 RCT_EXPORT_MODULE()
 
-- (void)setBridge:(RCTBridge *)bridge
+- (void)startObserving
 {
-  _bridge = bridge;
-
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
 #define ADD_KEYBOARD_HANDLER(NAME, SELECTOR) \
@@ -39,7 +35,17 @@ RCT_EXPORT_MODULE()
 
 }
 
-- (void)dealloc
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[@"keyboardWillShow",
+           @"keyboardDidShow",
+           @"keyboardWillHide",
+           @"keyboardDidHide",
+           @"keyboardWillChangeFrame",
+           @"keyboardDidChangeFrame"];
+}
+
+- (void)stopObserving
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -47,8 +53,7 @@ RCT_EXPORT_MODULE()
 #define IMPLEMENT_KEYBOARD_HANDLER(EVENT) \
 - (void)EVENT:(NSNotification *)notification \
 { \
-  [_bridge.eventDispatcher \
-    sendDeviceEventWithName:@#EVENT \
+  [self sendEventWithName:@#EVENT \
     body:RCTParseKeyboardNotification(notification)]; \
 }
 

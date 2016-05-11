@@ -11,12 +11,6 @@
  */
 'use strict';
 
-module.exports = {
+const NativeEventEmitter = require('NativeEventEmitter');
 
-    setStyle(style: any, animated: any) {},
-
-    setHidden(hidden: any, animation: any) {},
-
-    setNetworkActivityIndicatorVisible(visible: any) {},
-
-};
+module.exports = new NativeEventEmitter('StatusBarManager');

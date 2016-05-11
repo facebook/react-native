@@ -5,12 +5,12 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule Keyboard
+ * @flow
  */
+'use strict';
 
-#import <Foundation/Foundation.h>
+const NativeEventEmitter = require('NativeEventEmitter');
 
-#import "RCTBridgeModule.h"
-
-@interface RCTKeyboardObserver : NSObject <RCTBridgeModule>
-
-@end
+module.exports = new NativeEventEmitter('KeyboardObserver');

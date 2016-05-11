@@ -7,18 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <UIKit/UIKit.h>
-
 #import "RCTEventEmitter.h"
-#import "RCTConvert.h"
 
-@interface RCTConvert (UIStatusBar)
-
-+ (UIStatusBarStyle)UIStatusBarStyle:(id)json;
-+ (UIStatusBarAnimation)UIStatusBarAnimation:(id)json;
-
-@end
-
-@interface RCTStatusBarManager : RCTEventEmitter
+@interface RCTKeyboardObserver : RCTEventEmitter
 
 @end
