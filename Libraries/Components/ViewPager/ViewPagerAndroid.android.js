@@ -128,7 +128,7 @@ var ViewPagerAndroid = React.createClass({
     * When false, the content does not scroll.
     * The default value is true.
     */
-    scrollEnabled: React.PropTypes.bool,
+    scrollEnabled: ReactPropTypes.bool,
   },
 
   componentDidMount: function() {
