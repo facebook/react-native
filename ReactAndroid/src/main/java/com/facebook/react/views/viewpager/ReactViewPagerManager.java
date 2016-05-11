@@ -43,6 +43,12 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
     return new ReactViewPager(reactContext);
   }
 
+
+  @ReactProp(name = "scrollEnabled", defaultBoolean = true)
+  public void setScrollEnabled(ReactViewPager viewPager, boolean value) {
+    viewPager.setScrollEnabled(value);
+  }
+
   @Override
   public boolean needsCustomLayoutForChildren() {
     return true;
@@ -113,10 +119,5 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
   @ReactProp(name = "pageMargin", defaultFloat = 0)
   public void setPageMargin(ReactViewPager pager, float margin) {
     pager.setPageMargin((int) PixelUtil.toPixelFromDIP(margin));
-  }
-
-  @ReactProp(name = "scrollEnabled", defaultBoolean = true)
-  public void setScrollEnabled(ReactViewPager parent, boolean scrollEnabled) {
-    parent.setScrollEnabled(scrollEnabled);
   }
 }
