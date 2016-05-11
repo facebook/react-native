@@ -180,7 +180,8 @@ var ViewPagerAndroidExample = React.createClass({
           <Button
             enabled={true}
             text={this.state.scrollEnabled ? 'Scroll Enabled' : 'Scroll Disabled'}
-            onPress={() => this.setState({scrollEnabled: !this.state.scrollEnabled})}/>
+            onPress={() => this.setState({scrollEnabled: !this.state.scrollEnabled})}
+          />
         </View>
         <View style={styles.buttons}>
           { animationsAreEnabled ?
