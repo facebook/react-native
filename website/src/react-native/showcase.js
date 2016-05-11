@@ -939,6 +939,12 @@ var apps = [
     icon: 'https://lh3.googleusercontent.com/H0SILVHcDUxSMoSQwMb2QYtLjTBCqvK5ZEjOEwKQQ-2qnRV6Hd9Hn-gtSGPaoIOPwA=w300-rw',
     link: 'https://play.google.com/store/apps/details?id=com.biideal.biichat',
     author: 'biideal Inc.'
+  },
+  {
+    name: 'Splash: On-Demand Auto Detailing',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple30/v4/c3/14/74/c314748f-ff16-c7ec-77c5-1a84657d9154/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/splash-on-demand-auto-detailing/id1111109177',
+    author: 'Alex Leventer'
   }
 ];
 
