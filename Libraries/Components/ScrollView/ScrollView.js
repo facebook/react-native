@@ -359,7 +359,6 @@ const ScrollView = React.createClass({
   },
 
   getScrollableNode: function(): any {
-    // console.log('getScrollableNode: ', {ref: this._scrollViewRef, node: ReactNative.findNodeHandle(this._scrollViewRef)});
     return ReactNative.findNodeHandle(this._scrollViewRef);
   },
 
