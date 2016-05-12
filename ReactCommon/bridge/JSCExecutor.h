@@ -77,8 +77,6 @@ public:
   virtual void handleMemoryPressureCritical() override;
   virtual void destroy() override;
 
-  void installNativeHook(const char *name, JSObjectCallAsFunctionCallback callback);
-
 private:
   JSGlobalContextRef m_context;
   Bridge *m_bridge;
@@ -116,6 +114,9 @@ private:
   void receiveMessageFromOwner(const std::string &msgString);
   void terminateOwnedWebWorker(int worker);
   Object createMessageObject(const std::string& msgData);
+
+  template< JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
+  void installNativeHook(const char* name);
 
   static JSValueRef nativeStartWorker(
       JSContextRef ctx,
