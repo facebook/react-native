@@ -12,7 +12,6 @@
 'use strict';
 
 var Inspector = require('Inspector');
-var Portal = require('Portal');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
 var ReactNative = require('ReactNative');
@@ -76,16 +75,6 @@ var AppContainer = React.createClass({
     this._unmounted = true;
   },
 
-  setRootAccessibility: function(modalVisible) {
-    if (this._unmounted) {
-      return;
-    }
-
-    this.setState({
-      rootImportanceForAccessibility: modalVisible ? 'no-hide-descendants' : 'auto',
-    });
-  },
-
   render: function() {
     var RootComponent = this.props.rootComponent;
     var appView =
@@ -98,8 +87,6 @@ var AppContainer = React.createClass({
           {...this.props.initialProps}
           rootTag={this.props.rootTag}
           importantForAccessibility={this.state.rootImportanceForAccessibility}/>
-        <Portal
-          onModalVisibilityChanged={this.setRootAccessibility}/>
       </View>;
     return __DEV__ ?
       <View style={styles.appContainer}>
@@ -130,8 +117,6 @@ function renderApplication<D, P, S>(
 }
 
 var styles = StyleSheet.create({
-  // This is needed so the application covers the whole screen
-  // and therefore the contents of the Portal are not clipped.
   appContainer: {
     position: 'absolute',
     left: 0,

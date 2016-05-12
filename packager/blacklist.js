@@ -14,8 +14,6 @@ var path = require('path');
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
   /node_modules[/\\]react[/\\]dist[/\\].*/,
-  'node_modules/react/lib/React.js',
-  // 'node_modules/react/lib/ReactDOM.js', [Even]
 
   'downstream/core/invariant.js',
 
@@ -32,12 +30,10 @@ var platformBlacklists = {
     '.native.js',
   ],
   ios: [
-    'node_modules/react-haste/renderers/dom/ReactDOM.js',
     '.web.js',
     '.android.js',
   ],
   android: [
-    'node_modules/react-haste/renderers/dom/ReactDOM.js',
     '.web.js',
     '.ios.js',
   ],

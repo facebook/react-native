@@ -14,7 +14,6 @@
 var Dimensions = require('Dimensions');
 var Platform = require('Platform');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var React = require('React');
 var ReactNative = require('ReactNative');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
@@ -23,10 +22,7 @@ var UIManager = require('UIManager');
 var { ScrollViewManager } = require('NativeModules');
 
 var invariant = require('fbjs/lib/invariant');
-var warning = require('fbjs/lib/warning');
 var findNodeHandle = require('findNodeHandle');
-
-import type ReactComponent from 'ReactComponent';
 
 /**
  * Mixin that can be integrated in order to handle scrolling that plays well

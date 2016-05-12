@@ -456,7 +456,8 @@ RCT_EXPORT_MODULE()
     }]];
   } else {
     BOOL isDebuggingJS = _executorClass && _executorClass == jsDebuggingExecutorClass;
-    NSString *debugTitleJS = isDebuggingJS ? [NSString stringWithFormat:@"Disable %@ Debugging", _webSocketExecutorName] : [NSString stringWithFormat:@"Debug %@", _webSocketExecutorName];
+    NSString *debuggingDescription = [_defaults objectForKey:@"websocket-executor-name"] ?: @"Remote JS";
+    NSString *debugTitleJS = isDebuggingJS ? [NSString stringWithFormat:@"Disable %@ Debugging", debuggingDescription] : [NSString stringWithFormat:@"Debug %@", _webSocketExecutorName];
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:debugTitleJS handler:^{
       weakSelf.executorClass = isDebuggingJS ? Nil : jsDebuggingExecutorClass;
     }]];

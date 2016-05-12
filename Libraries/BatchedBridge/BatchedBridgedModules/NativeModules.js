@@ -13,6 +13,7 @@
 
 const BatchedBridge = require('BatchedBridge');
 const RemoteModules = BatchedBridge.RemoteModules;
+const Platform = require('Platform');
 
 function normalizePrefix(moduleName: string): string {
   return moduleName.replace(/^(RCT|RK)/, '');
@@ -65,51 +66,53 @@ Object.keys(RemoteModules).forEach((moduleName) => {
  * the call sites accessing NativeModules.UIManager directly have
  * been removed #9344445
  */
-const UIManager = NativeModules.UIManager;
-UIManager && Object.keys(UIManager).forEach(viewName => {
-  const viewConfig = UIManager[viewName];
-  if (viewConfig.Manager) {
-    let constants;
-    /* $FlowFixMe - nice try. Flow doesn't like getters */
-    Object.defineProperty(viewConfig, 'Constants', {
-      configurable: true,
-      enumerable: true,
-      get: () => {
-        if (constants) {
+if (Platform.OS === 'ios') {
+  const UIManager = NativeModules.UIManager;
+  UIManager && Object.keys(UIManager).forEach(viewName => {
+    const viewConfig = UIManager[viewName];
+    if (viewConfig.Manager) {
+      let constants;
+      /* $FlowFixMe - nice try. Flow doesn't like getters */
+      Object.defineProperty(viewConfig, 'Constants', {
+        configurable: true,
+        enumerable: true,
+        get: () => {
+          if (constants) {
+            return constants;
+          }
+          constants = {};
+          const viewManager = NativeModules[normalizePrefix(viewConfig.Manager)];
+          viewManager && Object.keys(viewManager).forEach(key => {
+            const value = viewManager[key];
+            if (typeof value !== 'function') {
+              constants[key] = value;
+            }
+          });
           return constants;
-        }
-        constants = {};
-        const viewManager = NativeModules[normalizePrefix(viewConfig.Manager)];
-        viewManager && Object.keys(viewManager).forEach(key => {
-          const value = viewManager[key];
-          if (typeof value !== 'function') {
-            constants[key] = value;
+        },
+      });
+      let commands;
+      /* $FlowFixMe - nice try. Flow doesn't like getters */
+      Object.defineProperty(viewConfig, 'Commands', {
+        configurable: true,
+        enumerable: true,
+        get: () => {
+          if (commands) {
+            return commands;
           }
-        });
-        return constants;
-      },
-    });
-    let commands;
-    /* $FlowFixMe - nice try. Flow doesn't like getters */
-    Object.defineProperty(viewConfig, 'Commands', {
-      configurable: true,
-      enumerable: true,
-      get: () => {
-        if (commands) {
+          commands = {};
+          const viewManager = NativeModules[normalizePrefix(viewConfig.Manager)];
+          viewManager && Object.keys(viewManager).forEach((key, index) => {
+            const value = viewManager[key];
+            if (typeof value === 'function') {
+              commands[key] = index;
+            }
+          });
           return commands;
-        }
-        commands = {};
-        const viewManager = NativeModules[normalizePrefix(viewConfig.Manager)];
-        viewManager && Object.keys(viewManager).forEach((key, index) => {
-          const value = viewManager[key];
-          if (typeof value === 'function') {
-            commands[key] = index;
-          }
-        });
-        return commands;
-      },
-    });
-  }
-});
+        },
+      });
+    }
+  });
+}
 
 module.exports = NativeModules;

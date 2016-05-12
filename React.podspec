@@ -4,7 +4,7 @@ package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
 Pod::Spec.new do |s|
   s.name                = "React"
-  s.version             = "0.25.1-even1"
+  s.version             = "0.26.0-even1"
   s.summary             = package['description']
   s.description         = <<-DESC
                             React Native apps are built using the React JS
@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
   s.preserve_paths      = "cli.js", "Libraries/**/*.js", "lint", "linter.js", "node_modules", "package.json", "packager", "PATENTS", "react-native-cli"
 
   s.subspec 'Core' do |ss|
-    ss.source_files     = "React/**/*.{c,h,m,S}"
+    ss.source_files     = "React/**/*.{c,h,m,mm,S}"
     ss.exclude_files    = "**/__tests__/*", "IntegrationTests/*"
     ss.frameworks       = "JavaScriptCore"
   end

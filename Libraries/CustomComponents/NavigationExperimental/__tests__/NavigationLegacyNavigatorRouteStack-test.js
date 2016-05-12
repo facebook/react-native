@@ -29,7 +29,7 @@
  */
 'use strict';
 
-jest.dontMock('NavigationLegacyNavigatorRouteStack');
+jest.unmock('NavigationLegacyNavigatorRouteStack');
 
 const NavigationLegacyNavigatorRouteStack = require('NavigationLegacyNavigatorRouteStack');
 

@@ -221,10 +221,16 @@ RCT_EXPORT_MODULE()
 
 - (void)testCustomSetBridgeModuleInitializedAtBridgeStartup
 {
-  RUN_RUNLOOP_WHILE(!_customSetBridgeModuleNotificationSent);
+  XCTAssertFalse(_customSetBridgeModuleNotificationSent);
+
+  __block RCTTestCustomSetBridgeModule *module;
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    module = [_bridge moduleForClass:[RCTTestCustomSetBridgeModule class]];
+  });
+
+  RUN_RUNLOOP_WHILE(!module);
   XCTAssertTrue(_customSetBridgeModuleNotificationSent);
-  RCTTestCustomSetBridgeModule *module = [_bridge moduleForClass:[RCTTestCustomSetBridgeModule class]];
-  XCTAssertTrue(module.setBridgeOnMainThread);
+  XCTAssertFalse(module.setBridgeOnMainThread);
   XCTAssertEqual(module.bridge, _bridge.batchedBridge);
   XCTAssertNotNil(module.methodQueue);
 }

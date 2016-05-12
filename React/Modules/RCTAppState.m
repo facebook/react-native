@@ -43,12 +43,19 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - Lifecycle
 
+- (instancetype)init
+{
+  if ((self = [super init])) {
+
+    // Needs to be called on the main thread, as it accesses UIApplication
+    _lastKnownState = RCTCurrentAppBackgroundState();
+  }
+  return self;
+}
+
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
-
-  // Is this thread-safe?
-  _lastKnownState = RCTCurrentAppBackgroundState();
 
   for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
                            UIApplicationDidEnterBackgroundNotification,
