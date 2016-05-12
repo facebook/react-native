@@ -22,23 +22,14 @@ var HeaderLinks = React.createClass({
   linksExternal: [
     {section: 'github', href: 'https://github.com/facebook/react-native', text: 'GitHub'},
     {section: 'react', href: 'http://facebook.github.io/react', text: 'React'},
-    {
-      section: 'survey',
-      href: 'https://www.facebook.com/survey?oid=681969738611332',
-      text: 'Take Our Docs Survey'
-    }
   ],
 
   makeLinks: function(links) {
-    var surveyStyle = {
-      color: '#2AFF48',
-    };
     return links.map(function(link) {
       return (
         <li key={link.section}>
           <a
             href={link.href}
-            style={link.section === 'survey' ? surveyStyle : null}
             className={link.section === this.props.section ? 'active' : ''}>
             {link.text}
           </a>
