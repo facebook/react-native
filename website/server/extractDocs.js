@@ -272,7 +272,7 @@ const components = [
   '../Libraries/Components/Switch/Switch.js',
   '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarItemIOS.ios.js',
-  '../Libraries/Text/Text.js',
+  '../Libraries/Text/Text.ios.js',
   '../Libraries/Components/TextInput/TextInput.js',
   '../Libraries/Components/ToolbarAndroid/ToolbarAndroid.android.js',
   '../Libraries/Components/Touchable/TouchableHighlight.js',

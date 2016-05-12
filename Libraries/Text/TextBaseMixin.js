@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule Text
  * @flow
  */
 'use strict';
@@ -35,40 +34,17 @@ const viewConfig = {
 };
 
 /**
- * A React component for displaying text which supports nesting,
- * styling, and touch handling.  In the following example, the nested title and
- * body text will inherit the `fontFamily` from `styles.baseText`, but the title
- * provides its own additional styles.  The title and body will stack on top of
- * each other on account of the literal newlines:
- *
- * ```
- * renderText: function() {
- *   return (
- *     <Text style={styles.baseText}>
- *       <Text style={styles.titleText} onPress={this.onPressTitle}>
- *         {this.state.titleText + '\n\n'}
- *       </Text>
- *       <Text numberOfLines={5}>
- *         {this.state.bodyText}
- *       </Text>
- *     </Text>
- *   );
- * },
- * ...
- * var styles = StyleSheet.create({
- *   baseText: {
- *     fontFamily: 'Cochin',
- *   },
- *   titleText: {
- *     fontSize: 20,
- *     fontWeight: 'bold',
- *   },
- * };
- * ```
+ * Shared code for the <Text> component.
+ * See Text.ios.js for documentation.
  */
-
-const Text = React.createClass({
+const TextBaseMixin = {
   propTypes: {
+    /**
+     * Specifies whether fonts should scale to respect the Text Size
+     * accessibility setting on iOS.
+     * @platform ios
+     */
+    allowFontScaling: React.PropTypes.bool,
     /**
      * Used to truncate the text with an ellipsis after computing the text
      * layout, including line wrapping, such that the total number of lines
@@ -100,11 +76,6 @@ const Text = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: React.PropTypes.string,
-    /**
-     * Specifies should fonts scale to respect Text Size accessibility setting on iOS.
-     * @platform ios
-     */
-    allowFontScaling: React.PropTypes.bool,
   },
   getDefaultProps(): Object {
     return {
@@ -144,7 +115,7 @@ const Text = React.createClass({
   touchableHandlePress: (null: ?Function),
   touchableHandleLongPress: (null: ?Function),
   touchableGetPressRectOffset: (null: ?Function),
-  render(): ReactElement {
+  getNewProps(): Object {
     let newProps = this.props;
     if (this.props.onStartShouldSetResponder || this._hasPressHandler()) {
       if (!this._handlers) {
@@ -236,13 +207,9 @@ const Text = React.createClass({
         style: [this.props.style, {color: 'magenta'}],
       };
     }
-    if (this.context.isInAParentText) {
-      return <RCTVirtualText {...newProps} />;
-    } else {
-      return <RCTText {...newProps} />;
-    }
+    return newProps;
   },
-});
+};
 
 type RectOffset = {
   top: number;
@@ -253,16 +220,4 @@ type RectOffset = {
 
 var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
-var RCTText = createReactNativeComponentClass(viewConfig);
-var RCTVirtualText = RCTText;
-
-if (Platform.OS === 'android') {
-  RCTVirtualText = createReactNativeComponentClass({
-    validAttributes: merge(ReactNativeViewAttributes.UIView, {
-      isHighlighted: true,
-    }),
-    uiViewClassName: 'RCTVirtualText',
-  });
-}
-
-module.exports = Text;
+module.exports = TextBaseMixin;
