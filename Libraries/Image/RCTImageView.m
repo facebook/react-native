@@ -43,6 +43,7 @@ static BOOL RCTShouldReloadImageForSizeChange(CGSize currentSize, CGSize idealSi
 @property (nonatomic, copy) RCTDirectEventBlock onError;
 @property (nonatomic, copy) RCTDirectEventBlock onLoad;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadEnd;
+@property (nonatomic) bool isReloadingOnSourceChange;
 
 @end
 
@@ -137,6 +138,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (![source isEqual:_source]) {
     _source = source;
     [self reloadImage];
+    _isReloadingOnSourceChange = true;
   }
 }
 
@@ -159,6 +161,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)cancelImageLoad
 {
   RCTImageLoaderCancellationBlock previousCancellationBlock = _reloadImageCancellationBlock;
+  _isReloadingOnSourceChange = false;
   if (previousCancellationBlock) {
     previousCancellationBlock();
     _reloadImageCancellationBlock = nil;
@@ -209,6 +212,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                                                     progressBlock:progressHandler
                                                                   completionBlock:^(NSError *error, UIImage *image) {
       RCTImageView *strongSelf = weakSelf;
+      strongSelf.isReloadingOnSourceChange = false;
       if (blurRadius > __FLT_EPSILON__) {
         // Do this on the background thread to avoid blocking interaction
         image = RCTBlurredImageWithRadius(image, blurRadius);
@@ -265,8 +269,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
         [self reloadImage];
       }
     } else {
+      // Do not cancel image load when source changed at the same time
+      if (!_isReloadingOnSourceChange) {
+        [self cancelImageLoad];
+      }
       // Our existing image is good enough.
-      [self cancelImageLoad];
       _targetSize = imageSize;
     }
   }
