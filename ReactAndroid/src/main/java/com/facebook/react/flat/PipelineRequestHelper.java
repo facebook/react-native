@@ -155,8 +155,8 @@ import com.facebook.react.views.image.ImageLoadEvent;
 
       BitmapUpdateListener listener = Assertions.assumeNotNull(mBitmapUpdateListener);
       listener.onBitmapReady(bitmap);
-      listener.onImageLoadEvent(ImageLoadEvent.ON_LOAD_END);
       listener.onImageLoadEvent(ImageLoadEvent.ON_LOAD);
+      listener.onImageLoadEvent(ImageLoadEvent.ON_LOAD_END);
     } finally {
       dataSource.close();
     }
@@ -165,6 +165,7 @@ import com.facebook.react.views.image.ImageLoadEvent;
   @Override
   public void onFailure(DataSource<CloseableReference<CloseableImage>> dataSource) {
     if (mDataSource == dataSource) {
+      Assertions.assumeNotNull(mBitmapUpdateListener).onImageLoadEvent(ImageLoadEvent.ON_ERROR);
       Assertions.assumeNotNull(mBitmapUpdateListener).onImageLoadEvent(ImageLoadEvent.ON_LOAD_END);
       mDataSource = null;
     }

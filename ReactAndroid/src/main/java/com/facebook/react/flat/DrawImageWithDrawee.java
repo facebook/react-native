@@ -174,8 +174,8 @@ import com.facebook.react.views.image.ReactImageView;
       @Nullable Object imageInfo,
       @Nullable Animatable animatable) {
     if (mCallback != null && mReactTag != 0) {
-      mCallback.dispatchImageLoadEvent(mReactTag, ImageLoadEvent.ON_LOAD_END);
       mCallback.dispatchImageLoadEvent(mReactTag, ImageLoadEvent.ON_LOAD);
+      mCallback.dispatchImageLoadEvent(mReactTag, ImageLoadEvent.ON_LOAD_END);
     }
   }
 
@@ -190,6 +190,7 @@ import com.facebook.react.views.image.ReactImageView;
   @Override
   public void onFailure(String id, Throwable throwable) {
     if (mCallback != null && mReactTag != 0) {
+      mCallback.dispatchImageLoadEvent(mReactTag, ImageLoadEvent.ON_ERROR);
       mCallback.dispatchImageLoadEvent(mReactTag, ImageLoadEvent.ON_LOAD_END);
     }
   }
