@@ -392,10 +392,13 @@ int JSCExecutor::addWebWorker(
 
   Object globalObj = Value(m_context, globalObjRef).asObject();
 
+  auto workerJscConfig = m_jscConfig;
+  workerJscConfig["isWebWorker"] = true;
+
   auto workerMQT = WebWorkerUtil::createWebWorkerThread(workerId, m_messageQueueThread.get());
   std::unique_ptr<JSCExecutor> worker;
-  workerMQT->runOnQueueSync([this, &worker, &script, &globalObj, workerId] () {
-    worker.reset(new JSCExecutor(m_bridge, workerId, this, script, globalObj.toJSONMap(), m_jscConfig));
+  workerMQT->runOnQueueSync([this, &worker, &script, &globalObj, workerId, &workerJscConfig] () {
+    worker.reset(new JSCExecutor(m_bridge, workerId, this, script, globalObj.toJSONMap(), workerJscConfig));
   });
 
   Object workerObj = Value(m_context, workerRef).asObject();
