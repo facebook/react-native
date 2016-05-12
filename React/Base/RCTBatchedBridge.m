@@ -474,7 +474,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
 #if RCT_DEV
 
-  if (RCTGetURLQueryParam(self.bundleURL, @"hot")) {
+  if ([RCTGetURLQueryParam(self.bundleURL, @"hot") boolValue]) {
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
     NSString *host = self.bundleURL.host;
     NSNumber *port = self.bundleURL.port;
