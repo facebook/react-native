@@ -371,6 +371,25 @@ And here is the modified `fetchData` method that updates the state accordingly:
   }
 ```
 
+`renderMovie` method stays as it is except that we assign each item a key (read about [why dynamic children should be keyed](https://facebook.github.io/react/docs/multiple-components.html#dynamic-children)).
+
+```javascript
+  renderMovie(movie) {
+    return (
+      <View style={styles.container} key={movie.id}>
+        <Image
+          source={{uri: movie.posters.thumbnail}}
+          style={styles.thumbnail}
+        />
+        <View style={styles.rightContainer}>
+          <Text style={styles.title}>{movie.title}</Text>
+          <Text style={styles.year}>{movie.year}</Text>
+        </View>
+      </View>
+    );
+  }
+```
+
 Finally, we add styles for the `ListView` component to the `styles` JS object:
 ```javascript
   listView: {
@@ -464,7 +483,7 @@ class AwesomeProject extends Component {
 
   renderMovie(movie) {
     return (
-      <View style={styles.container}>
+      <View style={styles.container} key={movie.id}>
         <Image
           source={{uri: movie.posters.thumbnail}}
           style={styles.thumbnail}
