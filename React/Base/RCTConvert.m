@@ -882,7 +882,7 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
   NSString *scheme = URL.scheme.lowercaseString;
   if ([scheme isEqualToString:@"file"]) {
     NSString *assetName = RCTBundlePathForURL(URL);
-    image = [UIImage imageNamed:assetName];
+    image = [UIImage imageNamed:[NSString stringWithFormat:@"%@", assetName]];
     if (!image) {
       // Attempt to load from the file system
       NSString *filePath = URL.path;
