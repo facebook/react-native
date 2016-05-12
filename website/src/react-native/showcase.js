@@ -888,7 +888,7 @@ var apps = [
     name: 'Whisky Journal',
     icon: 'http://cdn.whiskyjournal.co/files/icon350x350.png',
     link: 'https://itunes.apple.com/au/app/whiskyjournal/id1097713368',
-    author: 'Matt Mcnamee (@mcnamee_)',
+    author: 'Matt Mcnamee',
   },
   {
     name: 'WOOP',
