@@ -72,6 +72,9 @@ function NavigationScenesReducer(
   nextState: NavigationParentState,
   prevState: ?NavigationParentState,
 ): Array<NavigationScene> {
+  if (prevState === nextState) {
+    return scenes;
+  }
 
   const prevScenes = new Map();
   const freshScenes = new Map();
