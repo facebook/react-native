@@ -47,6 +47,39 @@ using fbsystrace::FbSystraceSection;
 namespace facebook {
 namespace react {
 
+namespace {
+
+template<JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
+inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
+  struct funcWrapper {
+    static JSValueRef call(
+        JSContextRef ctx,
+        JSObjectRef function,
+        JSObjectRef thisObject,
+        size_t argumentCount,
+        const JSValueRef arguments[],
+        JSValueRef *exception) {
+      try {
+        auto globalObj = JSContextGetGlobalObject(ctx);
+        auto executor = static_cast<JSCExecutor*>(JSObjectGetPrivate(globalObj));
+        return (executor->*method)(argumentCount, arguments);
+      } catch (...) {
+        try {
+          auto functionName = Object(ctx, function).getProperty("name").toString().str();
+          *exception = translatePendingCppExceptionToJSError(ctx, functionName.c_str());
+        } catch (...) {
+          *exception = makeJSError(ctx, "Failed to get function name while handling exception");
+        }
+        return JSValueMakeUndefined(ctx);
+      }
+    }
+  };
+
+  return &funcWrapper::call;
+}
+
+}
+
 static std::unordered_map<JSContextRef, JSCExecutor*> s_globalContextRefToJSCExecutor;
 
 static JSValueRef nativeInjectHMRUpdate(
@@ -148,7 +181,14 @@ void JSCExecutor::initOnJSVMThread() {
   #if defined(WITH_FB_JSC_TUNING)
   configureJSCForAndroid(m_jscConfig);
   #endif
-  m_context = JSGlobalContextCreateInGroup(nullptr, nullptr);
+
+  auto globalClass = JSClassCreate(&kJSClassDefinitionEmpty);
+  m_context = JSGlobalContextCreateInGroup(nullptr, globalClass);
+  JSClassRelease(globalClass);
+
+  // Add a pointer to ourselves so we can retrieve it later in our hooks
+  JSObjectSetPrivate(JSContextGetGlobalObject(m_context), this);
+
   s_globalContextRefToJSCExecutor[m_context] = this;
   installGlobalFunction(m_context, "nativeFlushQueueImmediate", nativeFlushQueueImmediate);
   installGlobalFunction(m_context, "nativeStartWorker", nativeStartWorker);
@@ -422,6 +462,11 @@ Object JSCExecutor::createMessageObject(const std::string& msgJson) {
 }
 
 // Native JS hooks
+template<JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
+void JSCExecutor::installNativeHook(const char* name) {
+  installGlobalFunction(m_context, name, exceptionWrapMethod<method>());
+}
+
 JSValueRef JSCExecutor::nativePostMessage(
     JSContextRef ctx,
     JSObjectRef function,
