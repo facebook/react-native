@@ -212,6 +212,7 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
     _textView.selectedTextRange = [_textView textRangeFromPosition:position toPosition:position];
   }
 
+  [self updateContentSize];
   [_textView layoutIfNeeded];
 
   [self _setPlaceholderVisibility];
