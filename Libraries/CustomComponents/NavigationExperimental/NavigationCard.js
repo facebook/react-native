@@ -92,7 +92,7 @@ class NavigationCard extends React.Component<any, Props, any> {
   props: Props;
 
   static propTypes = {
-    ...NavigationPropTypes.SceneRenderer,
+    ...NavigationPropTypes.SceneRendererProps,
     onComponentRef: PropTypes.func.isRequired,
     panHandlers: NavigationPropTypes.panHandlers,
     pointerEvents: PropTypes.string.isRequired,
