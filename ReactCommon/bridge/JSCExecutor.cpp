@@ -10,6 +10,7 @@
 #include <glog/logging.h>
 #include <folly/json.h>
 #include <folly/String.h>
+#include <folly/Conv.h>
 #include <sys/time.h>
 
 #include "Bridge.h"
@@ -80,8 +81,6 @@ inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
 
 }
 
-static std::unordered_map<JSContextRef, JSCExecutor*> s_globalContextRefToJSCExecutor;
-
 static JSValueRef nativeInjectHMRUpdate(
     JSContextRef ctx,
     JSObjectRef function,
@@ -143,7 +142,7 @@ JSCExecutor::JSCExecutor(
   m_messageQueueThread->runOnQueue([this, script, globalObjAsJSON] () {
     initOnJSVMThread();
 
-    installGlobalFunction(m_context, "postMessage", nativePostMessage);
+    installNativeHook<&JSCExecutor::nativePostMessage>("postMessage");
 
     for (auto& it : globalObjAsJSON) {
       setGlobalVariable(it.first, it.second);
@@ -189,13 +188,13 @@ void JSCExecutor::initOnJSVMThread() {
   // Add a pointer to ourselves so we can retrieve it later in our hooks
   JSObjectSetPrivate(JSContextGetGlobalObject(m_context), this);
 
-  s_globalContextRefToJSCExecutor[m_context] = this;
-  installGlobalFunction(m_context, "nativeFlushQueueImmediate", nativeFlushQueueImmediate);
-  installGlobalFunction(m_context, "nativeStartWorker", nativeStartWorker);
-  installGlobalFunction(m_context, "nativePostMessageToWorker", nativePostMessageToWorker);
-  installGlobalFunction(m_context, "nativeTerminateWorker", nativeTerminateWorker);
+  installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
+  installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
+  installNativeHook<&JSCExecutor::nativeStartWorker>("nativeStartWorker");
+  installNativeHook<&JSCExecutor::nativePostMessageToWorker>("nativePostMessageToWorker");
+  installNativeHook<&JSCExecutor::nativeTerminateWorker>("nativeTerminateWorker");
   installGlobalFunction(m_context, "nativeInjectHMRUpdate", nativeInjectHMRUpdate);
-  installGlobalFunction(m_context, "nativeCallSyncHook", nativeCallSyncHook);
+  installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
 
   installGlobalFunction(m_context, "nativeLoggingHook", JSNativeHooks::loggingHook);
   installGlobalFunction(m_context, "nativePerformanceNow", JSNativeHooks::nowHook);
@@ -230,7 +229,6 @@ void JSCExecutor::terminateOnJSVMThread() {
     terminateOwnedWebWorker(workerId);
   }
 
-  s_globalContextRefToJSCExecutor.erase(m_context);
   JSGlobalContextRelease(m_context);
   m_context = nullptr;
 }
@@ -254,7 +252,7 @@ void JSCExecutor::loadApplicationScript(
 
 void JSCExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle) {
   if (!m_unbundle) {
-    installGlobalFunction(m_context, "nativeRequire", nativeRequire);
+    installNativeHook<&JSCExecutor::nativeRequire>("nativeRequire");
   }
   m_unbundle = std::move(unbundle);
 }
@@ -388,7 +386,7 @@ int JSCExecutor::addWebWorker(
   return workerId;
 }
 
-void JSCExecutor::postMessageToOwnedWebWorker(int workerId, JSValueRef message, JSValueRef *exn) {
+void JSCExecutor::postMessageToOwnedWebWorker(int workerId, JSValueRef message) {
   auto worker = m_ownedWorkers.at(workerId).executor;
   std::string msgString = Value(m_context, message).toJSONString();
 
@@ -468,227 +466,120 @@ void JSCExecutor::installNativeHook(const char* name) {
 }
 
 JSValueRef JSCExecutor::nativePostMessage(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
     size_t argumentCount,
-    const JSValueRef arguments[],
-    JSValueRef *exception) {
+    const JSValueRef arguments[]) {
   if (argumentCount != 1) {
-    *exception = makeJSCException(ctx, "postMessage got wrong number of arguments");
-    return JSValueMakeUndefined(ctx);
+    throw std::invalid_argument("Got wrong number of args");
   }
   JSValueRef msg = arguments[0];
-  JSCExecutor *webWorker = s_globalContextRefToJSCExecutor.at(JSContextGetGlobalContext(ctx));
+  postMessageToOwner(msg);
 
-  webWorker->postMessageToOwner(msg);
-
-  return JSValueMakeUndefined(ctx);
-}
-
-static JSValueRef makeInvalidModuleIdJSCException(
-    JSContextRef ctx,
-    const JSValueRef id,
-    JSValueRef *exception) {
-  std::string message = "Received invalid module ID: ";
-  message += String::adopt(JSValueToStringCopy(ctx, id, exception)).str();
-  return makeJSCException(ctx, message.c_str());
+  return JSValueMakeUndefined(m_context);
 }
 
 JSValueRef JSCExecutor::nativeRequire(
-  JSContextRef ctx,
-  JSObjectRef function,
-  JSObjectRef thisObject,
   size_t argumentCount,
-  const JSValueRef arguments[],
-  JSValueRef *exception) {
+  const JSValueRef arguments[]) {
 
   if (argumentCount != 1) {
-    *exception = makeJSCException(ctx, "Got wrong number of args");
-    return JSValueMakeUndefined(ctx);
+    throw std::invalid_argument("Got wrong number of args");
   }
 
-  JSCExecutor *executor;
-  try {
-    executor = s_globalContextRefToJSCExecutor.at(JSContextGetGlobalContext(ctx));
-  } catch (std::out_of_range& e) {
-    *exception = makeJSCException(ctx, "Global JS context didn't map to a valid executor");
-    return JSValueMakeUndefined(ctx);
-  }
-
-  double moduleId = JSValueToNumber(ctx, arguments[0], exception);
+  double moduleId = Value(m_context, arguments[0]).asNumber();
   if (moduleId <= (double) std::numeric_limits<uint32_t>::max() && moduleId >= 0.0) {
     try {
-      executor->loadModule(moduleId);
+      loadModule(moduleId);
     } catch (JSModulesUnbundle::ModuleNotFound&) {
-      *exception = makeInvalidModuleIdJSCException(ctx, arguments[0], exception);
+      throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ", moduleId));
     }
   } else {
-    *exception = makeInvalidModuleIdJSCException(ctx, arguments[0], exception);
+    throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ", moduleId));
   }
-  return JSValueMakeUndefined(ctx);
-}
-
-static JSValueRef createErrorString(JSContextRef ctx, const char *msg) {
-  return JSValueMakeString(ctx, String(msg));
+  return JSValueMakeUndefined(m_context);
 }
 
 JSValueRef JSCExecutor::nativeFlushQueueImmediate(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
     size_t argumentCount,
-    const JSValueRef arguments[],
-    JSValueRef *exception) {
+    const JSValueRef arguments[]) {
   if (argumentCount != 1) {
-    *exception = createErrorString(ctx, "Got wrong number of args");
-    return JSValueMakeUndefined(ctx);
+    throw std::invalid_argument("Got wrong number of args");
   }
 
-  JSCExecutor *executor;
-  try {
-    executor = s_globalContextRefToJSCExecutor.at(JSContextGetGlobalContext(ctx));
-  } catch (std::out_of_range& e) {
-    *exception = createErrorString(ctx, "Global JS context didn't map to a valid executor");
-    return JSValueMakeUndefined(ctx);
-  }
-
-  std::string resStr = Value(ctx, arguments[0]).toJSONString();
-
-  executor->flushQueueImmediate(resStr);
-
-  return JSValueMakeUndefined(ctx);
+  std::string resStr = Value(m_context, arguments[0]).toJSONString();
+  flushQueueImmediate(resStr);
+  return JSValueMakeUndefined(m_context);
 }
 
 JSValueRef JSCExecutor::nativeStartWorker(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
     size_t argumentCount,
-    const JSValueRef arguments[],
-    JSValueRef *exception) {
+    const JSValueRef arguments[]) {
   if (argumentCount != 3) {
-    *exception = createErrorString(ctx, "Got wrong number of args");
-    return JSValueMakeUndefined(ctx);
+    throw std::invalid_argument("Got wrong number of args");
   }
 
-  std::string scriptFile = Value(ctx, arguments[0]).toString().str();
+  std::string scriptFile = Value(m_context, arguments[0]).toString().str();
 
   JSValueRef worker = arguments[1];
   JSValueRef globalObj = arguments[2];
 
-  JSCExecutor *executor;
-  try {
-    executor = s_globalContextRefToJSCExecutor.at(JSContextGetGlobalContext(ctx));
-  } catch (std::out_of_range& e) {
-    *exception = createErrorString(ctx, "Global JS context didn't map to a valid executor");
-    return JSValueMakeUndefined(ctx);
-  }
+  int workerId = addWebWorker(scriptFile, worker, globalObj);
 
-  int workerId = executor->addWebWorker(scriptFile, worker, globalObj);
-
-  return JSValueMakeNumber(ctx, workerId);
+  return JSValueMakeNumber(m_context, workerId);
 }
 
 JSValueRef JSCExecutor::nativePostMessageToWorker(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
     size_t argumentCount,
-    const JSValueRef arguments[],
-    JSValueRef *exception) {
+    const JSValueRef arguments[]) {
   if (argumentCount != 2) {
-    *exception = createErrorString(ctx, "Got wrong number of args");
-    return JSValueMakeUndefined(ctx);
+    throw std::invalid_argument("Got wrong number of args");
   }
 
-  double workerDouble = JSValueToNumber(ctx, arguments[0], exception);
+  double workerDouble = Value(m_context, arguments[0]).asNumber();
   if (workerDouble != workerDouble) {
-    *exception = createErrorString(ctx, "Got invalid worker id");
-    return JSValueMakeUndefined(ctx);
+    throw std::invalid_argument("Got invalid worker id");
   }
 
-  JSCExecutor *executor;
-  try {
-    executor = s_globalContextRefToJSCExecutor.at(JSContextGetGlobalContext(ctx));
-  } catch (std::out_of_range& e) {
-    *exception = createErrorString(ctx, "Global JS context didn't map to a valid executor");
-    return JSValueMakeUndefined(ctx);
-  }
+  postMessageToOwnedWebWorker((int) workerDouble, arguments[1]);
 
-  executor->postMessageToOwnedWebWorker((int) workerDouble, arguments[1], exception);
-
-  return JSValueMakeUndefined(ctx);
+  return JSValueMakeUndefined(m_context);
 }
 
 JSValueRef JSCExecutor::nativeTerminateWorker(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
     size_t argumentCount,
-    const JSValueRef arguments[],
-    JSValueRef *exception) {
+    const JSValueRef arguments[]) {
   if (argumentCount != 1) {
-    *exception = createErrorString(ctx, "Got wrong number of args");
-    return JSValueMakeUndefined(ctx);
+    throw std::invalid_argument("Got wrong number of args");
   }
 
-  double workerDouble = JSValueToNumber(ctx, arguments[0], exception);
+  double workerDouble = Value(m_context, arguments[0]).asNumber();
   if (workerDouble != workerDouble) {
-    *exception = createErrorString(ctx, "Got invalid worker id");
-    return JSValueMakeUndefined(ctx);
+    std::invalid_argument("Got invalid worker id");
   }
 
-  JSCExecutor *executor;
-  try {
-    executor = s_globalContextRefToJSCExecutor.at(JSContextGetGlobalContext(ctx));
-  } catch (std::out_of_range& e) {
-    *exception = createErrorString(ctx, "Global JS context didn't map to a valid executor");
-    return JSValueMakeUndefined(ctx);
-  }
+  terminateOwnedWebWorker((int) workerDouble);
 
-  executor->terminateOwnedWebWorker((int) workerDouble);
-
-  return JSValueMakeUndefined(ctx);
+  return JSValueMakeUndefined(m_context);
 }
 
 JSValueRef JSCExecutor::nativeCallSyncHook(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
     size_t argumentCount,
-    const JSValueRef arguments[],
-    JSValueRef *exception) {
+    const JSValueRef arguments[]) {
   if (argumentCount != 3) {
-    *exception = createErrorString(ctx, "Got wrong number of args for callSyncHook");
-    return JSValueMakeUndefined(ctx);
+    throw std::invalid_argument("Got wrong number of args");
   }
 
-  unsigned int moduleId = Value(ctx, arguments[0]).asUnsignedInteger();
-  unsigned int methodId = Value(ctx, arguments[1]).asUnsignedInteger();
-  std::string argsJson = Value(ctx, arguments[2]).toJSONString();
+  unsigned int moduleId = Value(m_context, arguments[0]).asUnsignedInteger();
+  unsigned int methodId = Value(m_context, arguments[1]).asUnsignedInteger();
+  std::string argsJson = Value(m_context, arguments[2]).toJSONString();
 
-  JSCExecutor *executor;
-  try {
-    executor = s_globalContextRefToJSCExecutor.at(JSContextGetGlobalContext(ctx));
-  } catch (std::out_of_range& e) {
-    *exception = createErrorString(ctx, "Global JS context didn't map to a valid executor");
-    return JSValueMakeUndefined(ctx);
+  MethodCallResult result = m_bridge->callSerializableNativeHook(
+      moduleId,
+      methodId,
+      argsJson);
+  if (result.isUndefined) {
+    return JSValueMakeUndefined(m_context);
   }
-
-  try {
-    MethodCallResult result = executor->m_bridge->callSerializableNativeHook(
-        moduleId,
-        methodId,
-        argsJson);
-    if (result.isUndefined) {
-      return JSValueMakeUndefined(ctx);
-    }
-    return Value::fromJSON(ctx, String(folly::toJson(result.result).c_str()));
-  } catch (...) {
-    *exception = translatePendingCppExceptionToJSError(ctx, "nativeCallSyncHook");
-    return JSValueMakeUndefined(ctx);
-  }
+  return Value::fromJSON(m_context, String(folly::toJson(result.result).c_str()));
 }
 
 static JSValueRef nativeInjectHMRUpdate(
