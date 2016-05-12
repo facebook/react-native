@@ -13,6 +13,7 @@
 
 const NativeEventEmitter = require('NativeEventEmitter');
 const StatusBar = require('StatusBar');
+const StatusBarManager = require('NativeModules').StatusBarManager;
 
 import type {StatusBarStyle, StatusBarAnimation} from 'StatusBar';
 
@@ -38,6 +39,6 @@ class StatusBarIOS extends NativeEventEmitter {
     );
     StatusBar.setNetworkActivityIndicatorVisible(visible);
   }
-};
+}
 
-module.exports = new StatusBarIOS('StatusBarManager');
+module.exports = new StatusBarIOS(StatusBarManager);

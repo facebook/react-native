@@ -23,18 +23,23 @@
 
 - (NSArray<NSString *> *)supportedEvents
 {
+  RCTAssert(NO, @"You must override the `supportedEvents` method of %@", [self class]);
   return nil;
 }
 
 - (void)sendEventWithName:(NSString *)eventName body:(id)body
 {
-  RCTAssert(self.bridge != nil, @"bridge is not set.");
+  RCTAssert(_bridge != nil, @"bridge is not set.");
 
   if (RCT_DEBUG && ![[self supportedEvents] containsObject:eventName]) {
     RCTLogError(@"`%@` is not a supported event type for %@", eventName, [self class]);
   }
-  [self.bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
-                        args:body ? @[eventName, body] : @[eventName]];
+  if (_listenerCount > 0) {
+    [_bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
+                      args:body ? @[eventName, body] : @[eventName]];
+  } else {
+    RCTLogWarn(@"Sending `%@` with no listeners registered.", eventName);
+  }
 }
 
 - (void)startObserving
