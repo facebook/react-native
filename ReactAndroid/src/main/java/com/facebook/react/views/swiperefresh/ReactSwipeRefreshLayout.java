@@ -20,8 +20,25 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
  */
 public class ReactSwipeRefreshLayout extends SwipeRefreshLayout {
 
+  private boolean mRefreshing = false;
+
   public ReactSwipeRefreshLayout(ReactContext reactContext) {
     super(reactContext);
+  }
+
+  @Override
+  public void setRefreshing(boolean refreshing) {
+    if (mRefreshing != refreshing) {
+      mRefreshing = refreshing;
+      // Use `post` otherwise the control won't start refreshing if refreshing is true when
+      // the component gets mounted.
+      post(new Runnable() {
+        @Override
+        public void run() {
+          ReactSwipeRefreshLayout.super.setRefreshing(mRefreshing);
+        }
+      });
+    }
   }
 
   @Override
