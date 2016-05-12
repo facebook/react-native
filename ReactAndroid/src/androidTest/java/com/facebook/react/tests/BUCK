@@ -17,6 +17,8 @@ deps = [
   react_native_target('java/com/facebook/react/views/swiperefresh:swiperefresh'),
   react_native_target('java/com/facebook/react:react'),
   react_native_target('java/com/facebook/react/common:common'),
+  react_native_target('java/com/facebook/react/modules/systeminfo:systeminfo'),
+  react_native_target('java/com/facebook/react/uimanager/annotations:annotations'),
   react_native_target('java/com/facebook/react/views/progressbar:progressbar'),
   react_native_target('java/com/facebook/react/views/recyclerview:recyclerview'),
   react_native_target('java/com/facebook/react/views/scroll:scroll'),

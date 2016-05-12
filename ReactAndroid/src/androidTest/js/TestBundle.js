@@ -13,8 +13,9 @@
 console.disableYellowBox = true;
 
 // Include modules used by integration tests
-require('ScrollViewTestModule');
 require('PickerAndroidTestModule');
+require('ProgressBarTestModule');
+require('ScrollViewTestModule');
 require('SwipeRefreshLayoutTestModule');
 require('TextInputTestModule');
 
