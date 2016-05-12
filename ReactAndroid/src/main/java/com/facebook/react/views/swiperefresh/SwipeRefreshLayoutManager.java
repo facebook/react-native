@@ -74,8 +74,15 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
   }
 
   @ReactProp(name = "refreshing")
-  public void setRefreshing(ReactSwipeRefreshLayout view, boolean refreshing) {
-    view.setRefreshing(refreshing);
+  public void setRefreshing(final ReactSwipeRefreshLayout view, final boolean refreshing) {
+    // Use `post` otherwise the control won't start refreshing if refreshing is true when
+    // the component gets mounted.
+    view.post(new Runnable() {
+      @Override
+      public void run() {
+        view.setRefreshing(refreshing);
+      }
+    });
   }
 
   @ReactProp(name = "progressViewOffset", defaultFloat = 0)
