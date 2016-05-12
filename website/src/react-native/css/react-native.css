@@ -1256,10 +1256,46 @@ div[data-twttr-id] iframe {
   background-color: hsl(198, 100%, 94%);
 }
 
+.survey {
+  padding: 10px;
+  padding-top: 0;
+  background-color: rgba(5, 165, 209, 0.05);
+  border: 2px solid #05A5D1;
+  position: relative;
+}
+
+.survey-image {
+  position: absolute;
+  top: 10px;
+  height: 83px;
+  width: 120px;
+  background-image: url('../img/survey.png');
+  background-size: 272px 198px;
+  background-position: -8px -8px;
+}
+
+.survey p {
+  margin-left: 130px;
+}
+
+.survey .button {
+  font-size: 24px;
+  background: #05A5D1;
+  color: #fafafa;
+}
+
 @media only screen
   and (max-device-width: 1024px) {
   #content {
     display: inline;
+  }
+
+  .survey-image {
+    position: static;
+    margin: 10px auto;
+  }
+  .survey p {
+    margin-left: 0px;
   }
 
   .container {
