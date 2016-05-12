@@ -136,6 +136,7 @@ import type <span class="token punctuation">{</span> ViewPagerScrollState <span 
     <span class="token keyword">return</span> <span class="token punctuation">{</span>
       page<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
       animationsAreEnabled<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+      scrollEnabled<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
       progress<span class="token punctuation">:</span> <span class="token punctuation">{</span>
         position<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
         offset<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
@@ -194,6 +195,7 @@ import type <span class="token punctuation">{</span> ViewPagerScrollState <span 
         &lt;ViewPagerAndroid
           style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>viewPager<span class="token punctuation">}</span>
           initialPage<span class="token operator">=</span><span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">}</span>
+          scrollEnabled<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>scrollEnabled<span class="token punctuation">}</span>
           onPageScroll<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>onPageScroll<span class="token punctuation">}</span>
           onPageSelected<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>onPageSelected<span class="token punctuation">}</span>
           onPageScrollStateChanged<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>onPageScrollStateChanged<span class="token punctuation">}</span>
@@ -201,6 +203,13 @@ import type <span class="token punctuation">{</span> ViewPagerScrollState <span 
           ref<span class="token operator">=</span><span class="token punctuation">{</span>viewPager <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span> <span class="token keyword">this</span><span class="token punctuation">.</span>viewPager <span class="token operator">=</span> viewPager<span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
           <span class="token punctuation">{</span>pages<span class="token punctuation">}</span>
         &lt;<span class="token operator">/</span>ViewPagerAndroid<span class="token operator">&gt;</span>
+        &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>buttons<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+          &lt;Button
+            enabled<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">true</span><span class="token punctuation">}</span>
+            text<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>scrollEnabled <span class="token operator">?</span> <span class="token string">&#x27;Scroll Enabled&#x27;</span> <span class="token punctuation">:</span> <span class="token string">&#x27;Scroll Disabled&#x27;</span><span class="token punctuation">}</span>
+            onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>scrollEnabled<span class="token punctuation">:</span> <span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>scrollEnabled<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+          <span class="token operator">/</span><span class="token operator">&gt;</span>
+        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
         &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>buttons<span class="token punctuation">}</span><span class="token operator">&gt;</span>
           <span class="token punctuation">{</span> animationsAreEnabled <span class="token operator">?</span>
             &lt;Button
