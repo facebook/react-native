@@ -4,6 +4,7 @@
 'use strict';
 
 var React = require('React');
+var ReactDOM = require('react-dom');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
@@ -42,8 +43,9 @@ var ScrollView = React.createClass({
     },
 
     scrollTo: function(y, x) {
-        this.refs.scrollView.getDOMNode().scrollTop = y;
-        this.refs.scrollView.getDOMNode().scrollLeft = x;
+        var node = ReactDOM.findDOMNode(this.refs.scrollView);
+        node.scrollTop = y;
+        node.scrollLeft = x;
     },
 
     scrollWithoutAnimationTo: function(y, x) {
@@ -128,14 +130,14 @@ var ScrollView = React.createClass({
     _updateScrollProperties: function() {
         var layout = this.refs.scrollView.measure();
         var containerLayout = this.refs.containerView.measure();
-        var scrollViewNode = this.refs.scrollView;
+        var scrollViewNode = ReactDOM.findDOMNode(this.refs.scrollView);
         var contentSize = {
             width: containerLayout.width,
             height: containerLayout.height,
         };
         var contentOffset = {
-            x: scrollViewNode.getDOMNode().scrollLeft,
-            y: scrollViewNode.getDOMNode().scrollTop,
+            x: scrollViewNode.scrollLeft,
+            y: scrollViewNode.scrollTop,
         };
         this.scrollProperties = {
             layout: layout,
