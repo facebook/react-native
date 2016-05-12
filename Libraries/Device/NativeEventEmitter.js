@@ -11,7 +11,6 @@
  */
 'use strict';
 
-const NativeModules = require('NativeModules');
 const Platform = require('Platform');
 const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 const invariant = require('fbjs/lib/invariant');
@@ -24,21 +23,17 @@ import type EmitterSubscription from 'EmitterSubscription';
  */
 class NativeEventEmitter {
 
-  _listenerCount: number;
   _nativeModule: Object;
 
-  constructor(nativeModuleName: string) {
+  constructor(nativeModule: Object) {
     if (Platform.OS === 'ios') {
-      this._listenerCount = 0;
-      this._nativeModule = NativeModules[nativeModuleName];
-      invariant(this._nativeModule,
-        'Native module `' + nativeModuleName + '` not found.');
+      invariant(nativeModule, 'Native module cannot be null.');
+      this._nativeModule = nativeModule;
     }
   }
 
   addListener(eventType: string, listener: any, context: ?Object): EmitterSubscription {
     if (Platform.OS === 'ios') {
-      this._listenerCount++;
       this._nativeModule.addListener(eventType);
     }
     return RCTDeviceEventEmitter.nativeAddListener(eventType, listener, context);
@@ -54,7 +49,7 @@ class NativeEventEmitter {
   removeAllListeners(eventType: string) {
     invariant(eventType, 'eventType argument is required.');
     if (Platform.OS === 'ios') {
-      var count = RCTDeviceEventEmitter.listeners(eventType).length;
+      const count = RCTDeviceEventEmitter.listeners(eventType).length;
       this._nativeModule.removeListeners(count);
     }
     RCTDeviceEventEmitter.removeAllListeners(eventType);
@@ -62,7 +57,6 @@ class NativeEventEmitter {
 
   removeCurrentListener() {
     if (Platform.OS === 'ios') {
-      this._listenerCount--;
       this._nativeModule.removeListeners(1);
     }
     RCTDeviceEventEmitter.removeCurrentListener();
