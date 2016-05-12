@@ -32,7 +32,9 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
       blacklistRE: config.getBlacklistRE(args.platform),
       getTransformOptionsModulePath: config.getTransformOptionsModulePath,
       transformModulePath: args.transformer,
+      extraNodeModules: config.extraNodeModules,
       nonPersistent: true,
+      resetCache: args['reset-cache'],
     };
 
     const requestOpts = {

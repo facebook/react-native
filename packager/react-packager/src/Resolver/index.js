@@ -54,6 +54,10 @@ const validateOpts = declareOpts({
   transformCode: {
     type: 'function',
   },
+  extraNodeModules: {
+    type: 'object',
+    required: false,
+  },
   minifyCode: {
     type: 'function',
   },
@@ -107,6 +111,7 @@ class Resolver {
       cache: opts.cache,
       shouldThrowOnUnresolvedErrors: (_, platform) => platform === 'ios',
       transformCode: opts.transformCode,
+      extraNodeModules: opts.extraNodeModules,
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
     });
 
@@ -158,9 +163,7 @@ class Resolver {
         ? path.join(__dirname, 'polyfills/prelude_dev.js')
         : path.join(__dirname, 'polyfills/prelude.js');
 
-    const moduleSystem = opts.unbundle
-        ? path.join(__dirname, 'polyfills/require-unbundle.js')
-        : path.join(__dirname, 'polyfills/require.js');
+    const moduleSystem = path.join(__dirname, 'polyfills/require.js');
 
     return [
       prelude,
@@ -177,6 +180,7 @@ class Resolver {
       path.join(__dirname, 'polyfills/polyfills.js'),
       path.join(__dirname, 'polyfills/console.js'),
       path.join(__dirname, 'polyfills/error-guard.js'),
+      path.join(__dirname, 'polyfills/Number.es6.js'),
       path.join(__dirname, 'polyfills/String.prototype.es6.js'),
       path.join(__dirname, 'polyfills/Array.prototype.es6.js'),
       path.join(__dirname, 'polyfills/Array.es6.js'),
@@ -237,6 +241,7 @@ class Resolver {
     map,
     code,
     meta = {},
+    dev = true,
     minify = false
   }) {
     if (module.isJSON()) {
@@ -253,7 +258,7 @@ class Resolver {
         code,
         meta.dependencyOffsets
       );
-      code = defineModuleCode(moduleId, code, name);
+      code = defineModuleCode(moduleId, code, name, dev);
     }
 
 
@@ -271,13 +276,15 @@ class Resolver {
   }
 }
 
-function defineModuleCode(moduleName, code, verboseName = '') {
+function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
   return [
-    `__d(`,
+    '__d(',
     `${JSON.stringify(moduleName)} /* ${verboseName} */, `,
-    `function(global, require, module, exports) {`,
-      `${code}`,
-    '\n});',
+    'function(global, require, module, exports) {',
+      code,
+    '\n}',
+    dev ? `, ${JSON.stringify(verboseName)}` : '',
+    ');',
   ].join('');
 }
 

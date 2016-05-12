@@ -84,7 +84,12 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
     _barItem.selectedImage = oldItem.selectedImage;
     _barItem.badgeValue = oldItem.badgeValue;
   }
-  self.barItem.image = _icon;
+  
+  if (_renderAsOriginal) {
+    self.barItem.image = [_icon imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+  } else {
+    self.barItem.image = _icon;
+  }
 }
 
 - (UIViewController *)reactViewController

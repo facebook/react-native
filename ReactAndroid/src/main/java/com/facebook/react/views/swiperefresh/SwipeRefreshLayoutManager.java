@@ -20,6 +20,7 @@ import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.SystemClock;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
@@ -31,6 +32,8 @@ import com.facebook.react.uimanager.annotations.ReactProp;
  * child view. Emits an {@code onRefresh} event when this happens.
  */
 public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefreshLayout> {
+
+  public static final float REFRESH_TRIGGER_DISTANCE = 48;
 
   @Override
   protected ReactSwipeRefreshLayout createViewInstance(ThemedReactContext reactContext) {
@@ -78,6 +81,21 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
       @Override
       public void run() {
         view.setRefreshing(refreshing);
+      }
+    });
+  }
+
+  @ReactProp(name = "progressViewOffset", defaultFloat = 0)
+  public void setProgressViewOffset(final ReactSwipeRefreshLayout view, final float offset) {
+    // Use `post` to get progress circle diameter properly
+    // Otherwise returns 0
+    view.post(new Runnable() {
+      @Override
+      public void run() {
+        int diameter = view.getProgressCircleDiameter();
+        int start = Math.round(PixelUtil.toPixelFromDIP(offset)) - diameter;
+        int end = Math.round(PixelUtil.toPixelFromDIP(offset + REFRESH_TRIGGER_DISTANCE));
+        view.setProgressViewOffset(false, start, end);
       }
     });
   }

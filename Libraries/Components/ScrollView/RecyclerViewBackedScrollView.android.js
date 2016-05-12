@@ -5,7 +5,6 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ScrollResponder = require('ScrollResponder');
 var ScrollView = require('ScrollView');

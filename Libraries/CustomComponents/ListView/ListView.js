@@ -40,6 +40,7 @@ var ScrollResponder = require('ScrollResponder');
 var StaticRenderer = require('StaticRenderer');
 var TimerMixin = require('react-timer-mixin');
 
+var cloneReferencedElement = require('react-clone-referenced-element');
 var isEmpty = require('isEmpty');
 var merge = require('merge');
 
@@ -50,16 +51,15 @@ var DEFAULT_INITIAL_ROWS = 10;
 var DEFAULT_SCROLL_RENDER_AHEAD = 1000;
 var DEFAULT_END_REACHED_THRESHOLD = 1000;
 var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
-var SCROLLVIEW_REF = 'listviewscroll';
 
 
 /**
  * ListView - A core component designed for efficient display of vertically
  * scrolling lists of changing data.  The minimal API is to create a
- * `ListView.DataSource`, populate it with a simple array of data blobs, and
- * instantiate a `ListView` component with that data source and a `renderRow`
- * callback which takes a blob from the data array and returns a renderable
- * component.
+ * [`ListView.DataSource`](docs/listviewdatasource.html), populate it with a simple
+ * array of data blobs, and instantiate a `ListView` component with that data
+ * source and a `renderRow` callback which takes a blob from the data array and
+ * returns a renderable component.
  *
  * Minimal example:
  *
@@ -117,7 +117,9 @@ var ListView = React.createClass({
    */
   propTypes: {
     ...ScrollView.propTypes,
-
+    /**
+     * An instance of [ListView.DataSource](docs/listviewdatasource.html) to use
+     */
     dataSource: PropTypes.instanceOf(ListViewDataSource).isRequired,
     /**
      * (sectionID, rowID, adjacentRowHighlighted) => renderable
@@ -135,9 +137,10 @@ var ListView = React.createClass({
      * a renderable component to be rendered as the row.  By default the data
      * is exactly what was put into the data source, but it's also possible to
      * provide custom extractors. ListView can be notified when a row is
-     * being highlighted by calling highlightRow function. The separators above and
-     * below will be hidden when a row is highlighted. The highlighted state of
-     * a row can be reset by calling highlightRow(null).
+     * being highlighted by calling `highlightRow(sectionID, rowID)`. This
+     * sets a boolean value of adjacentRowHighlighted in renderSeparator, allowing you
+     * to control the separators above and below the highlighted row. The highlighted
+     * state of a row can be reset by calling highlightRow(null).
      */
     renderRow: PropTypes.func.isRequired,
     /**
@@ -243,13 +246,13 @@ var ListView = React.createClass({
 
   /**
    * Provides a handle to the underlying scroll responder.
-   * Note that the view in `SCROLLVIEW_REF` may not be a `ScrollView`, so we
+   * Note that `this._scrollComponent` might not be a `ScrollView`, so we
    * need to check that it responds to `getScrollResponder` before calling it.
    */
   getScrollResponder: function() {
-    return this.refs[SCROLLVIEW_REF] &&
-      this.refs[SCROLLVIEW_REF].getScrollResponder &&
-      this.refs[SCROLLVIEW_REF].getScrollResponder();
+    if (this._scrollComponent && this._scrollComponent.getScrollResponder) {
+      return this._scrollComponent.getScrollResponder();
+    }
   },
 
   /**
@@ -258,14 +261,15 @@ var ListView = React.createClass({
    * See `ScrollView#scrollTo`.
    */
   scrollTo: function(...args) {
-    this.refs[SCROLLVIEW_REF] &&
-      this.refs[SCROLLVIEW_REF].scrollTo &&
-      this.refs[SCROLLVIEW_REF].scrollTo(...args);
+    if (this._scrollComponent && this._scrollComponent.scrollTo) {
+      this._scrollComponent.scrollTo(...args);
+    }
   },
 
   setNativeProps: function(props) {
-    this.refs[SCROLLVIEW_REF] &&
-      this.refs[SCROLLVIEW_REF].setNativeProps(props);
+    if (this._scrollComponent) {
+      this._scrollComponent.setNativeProps(props);
+    }
   },
 
   /**
@@ -291,7 +295,7 @@ var ListView = React.createClass({
   },
 
   getInnerViewNode: function() {
-    return this.refs[SCROLLVIEW_REF].getInnerViewNode();
+    return this._scrollComponent.getInnerViewNode();
   },
 
   componentWillMount: function() {
@@ -459,10 +463,8 @@ var ListView = React.createClass({
       onKeyboardDidHide: undefined,
     });
 
-    // TODO(ide): Use function refs so we can compose with the scroll
-    // component's original ref instead of clobbering it
-    return React.cloneElement(renderScrollComponent(props), {
-      ref: SCROLLVIEW_REF,
+    return cloneReferencedElement(renderScrollComponent(props), {
+      ref: this._setScrollComponentRef,
       onContentSizeChange: this._onContentSizeChange,
       onLayout: this._onLayout,
     }, header, bodyComponents, footer);
@@ -485,6 +487,10 @@ var ListView = React.createClass({
         ReactNative.findNodeHandle(scrollComponent),
         this._updateVisibleRows,
       );
+  },
+
+  _setScrollComponentRef: function(scrollComponent) {
+    this._scrollComponent = scrollComponent;
   },
 
   _onContentSizeChange: function(width, height) {

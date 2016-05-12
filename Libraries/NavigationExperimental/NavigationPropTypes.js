@@ -52,6 +52,7 @@ const layout = PropTypes.shape({
   height: animatedValue,
   initHeight: PropTypes.number.isRequired,
   initWidth: PropTypes.number.isRequired,
+  isMeasured: PropTypes.bool.isRequired,
   width: animatedValue,
 });
 
@@ -71,6 +72,7 @@ const SceneRenderer = {
   position: animatedValue.isRequired,
   scene: scene.isRequired,
   scenes: PropTypes.arrayOf(scene).isRequired,
+  transition: animatedValue.isRequired,
 };
 
 /* NavigationPanPanHandlers */
@@ -102,6 +104,7 @@ function extractSceneRendererProps(
     position: props.position,
     scene: props.scene,
     scenes: props.scenes,
+    transition: props.transition,
   };
 }
 

@@ -30,7 +30,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
  * allowing the manager (or the views that it manages) to manipulate the view
  * hierarchy and send events back to the JS context.
  */
-@property (nonatomic, weak, readonly) RCTBridge *bridge;
+@property (nonatomic, weak) RCTBridge *bridge;
 
 /**
  * This method instantiates a native view to be managed by the module. Override
@@ -61,7 +61,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
  * Note that this method is not inherited when you subclass a view module, and
  * you should not call [super customBubblingEventTypes] when overriding it.
  */
-- (NSArray<NSString *> *)customBubblingEventTypes;
+- (NSArray<NSString *> *)customBubblingEventTypes __deprecated_msg("Use RCTBubblingEventBlock props instead.");
 
 /**
  * DEPRECATED: declare properties of type RCTDirectEventBlock instead
@@ -74,7 +74,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
  * Note that this method is not inherited when you subclass a view module, and
  * you should not call [super customDirectEventTypes] when overriding it.
  */
-- (NSArray<NSString *> *)customDirectEventTypes;
+- (NSArray<NSString *> *)customDirectEventTypes __deprecated_msg("Use RCTDirectEventBlock props instead.");
 
 /**
  * Called to notify manager that layout has finished, in case any calculated

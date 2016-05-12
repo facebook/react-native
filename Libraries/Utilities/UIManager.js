@@ -11,37 +11,11 @@
  */
 'use strict';
 
-var UIManager = require('NativeModules').UIManager;
-var findNodeHandle = require('findNodeHandle');
+const Platform = require('Platform');
+const NativeModules = require('NativeModules');
+const { UIManager } = NativeModules;
 
-if (!UIManager.setChildren) {
-
-  /**
-   * Index cache (used by setChildren())
-   */
-  UIManager._cachedIndexArray = function(size) {
-    var cachedResult = this._cachedIndexArray._cache[size];
-    if (!cachedResult) {
-      var arr = [];
-      for (var i = 0; i < size; i++) {
-        arr[i] = i;
-      }
-      this._cachedIndexArray._cache[size] = arr;
-      return arr;
-    } else {
-      return cachedResult;
-    }
-  };
-  UIManager._cachedIndexArray._cache = {};
-
-  /**
-   * Fallback setChildren() implementation for Android
-   */
-  UIManager.setChildren = function(containerTag, createdTags) {
-    var indexes = this._cachedIndexArray(createdTags.length);
-    UIManager.manageChildren(containerTag, null, null, createdTags, indexes, null);
-  };
-}
+const findNodeHandle = require('findNodeHandle');
 
 const _takeSnapshot = UIManager.takeSnapshot;
 
@@ -80,5 +54,64 @@ UIManager.takeSnapshot = async function(
   }
   return _takeSnapshot(view, options);
 };
+
+/**
+ * Copies the ViewManager constants and commands into UIManager. This is
+ * only needed for iOS, which puts the constants in the ViewManager
+ * namespace instead of UIManager, unlike Android.
+ */
+if (Platform.OS === 'ios') {
+  // Copied from NativeModules
+  function normalizePrefix(moduleName: string): string {
+    return moduleName.replace(/^(RCT|RK)/, '');
+  }
+
+  Object.keys(UIManager).forEach(viewName => {
+    const viewConfig = UIManager[viewName];
+    if (viewConfig.Manager) {
+      let constants;
+      /* $FlowFixMe - nice try. Flow doesn't like getters */
+      Object.defineProperty(viewConfig, 'Constants', {
+        configurable: true,
+        enumerable: true,
+        get: () => {
+          if (constants) {
+            return constants;
+          }
+          constants = {};
+          const viewManager = NativeModules[normalizePrefix(viewConfig.Manager)];
+          viewManager && Object.keys(viewManager).forEach(key => {
+            const value = viewManager[key];
+            if (typeof value !== 'function') {
+              constants[key] = value;
+            }
+          });
+          return constants;
+        },
+      });
+      let commands;
+      /* $FlowFixMe - nice try. Flow doesn't like getters */
+      Object.defineProperty(viewConfig, 'Commands', {
+        configurable: true,
+        enumerable: true,
+        get: () => {
+          if (commands) {
+            return commands;
+          }
+          commands = {};
+          const viewManager = NativeModules[normalizePrefix(viewConfig.Manager)];
+          let index = 0;
+          viewManager && Object.keys(viewManager).forEach(key => {
+            const value = viewManager[key];
+            if (typeof value === 'function') {
+              commands[key] = index++;
+            }
+          });
+          return commands;
+        },
+      });
+    }
+  });
+}
 
 module.exports = UIManager;

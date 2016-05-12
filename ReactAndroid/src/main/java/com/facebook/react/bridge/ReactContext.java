@@ -31,6 +31,10 @@ import com.facebook.react.bridge.queue.ReactQueueConfiguration;
  */
 public class ReactContext extends ContextWrapper {
 
+  private static final String EARLY_JS_ACCESS_EXCEPTION_MESSAGE =
+    "Tried to access a JS module before the React instance was fully set up. Calls to " +
+      "ReactContext#getJSModule should be protected by ReactContext#hasActiveCatalystInstance().";
+
   private final CopyOnWriteArraySet<LifecycleEventListener> mLifecycleEventListeners =
       new CopyOnWriteArraySet<>();
   private final CopyOnWriteArraySet<ActivityEventListener> mActivityEventListeners =
@@ -92,16 +96,24 @@ public class ReactContext extends ContextWrapper {
    */
   public <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface) {
     if (mCatalystInstance == null) {
-      throw new RuntimeException("Trying to invoke JS before CatalystInstance has been set!");
+      throw new RuntimeException(EARLY_JS_ACCESS_EXCEPTION_MESSAGE);
     }
     return mCatalystInstance.getJSModule(jsInterface);
   }
 
   public <T extends JavaScriptModule> T getJSModule(ExecutorToken executorToken, Class<T> jsInterface) {
     if (mCatalystInstance == null) {
-      throw new RuntimeException("Trying to invoke JS before CatalystInstance has been set!");
+      throw new RuntimeException(EARLY_JS_ACCESS_EXCEPTION_MESSAGE);
     }
     return mCatalystInstance.getJSModule(executorToken, jsInterface);
+  }
+
+  public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
+    if (mCatalystInstance == null) {
+      throw new RuntimeException(
+        "Trying to call native module before CatalystInstance has been set!");
+    }
+    return mCatalystInstance.hasNativeModule(nativeModuleInterface);
   }
 
   /**
@@ -109,7 +121,8 @@ public class ReactContext extends ContextWrapper {
    */
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     if (mCatalystInstance == null) {
-      throw new RuntimeException("Trying to invoke JS before CatalystInstance has been set!");
+      throw new RuntimeException(
+        "Trying to call native module before CatalystInstance has been set!");
     }
     return mCatalystInstance.getNativeModule(nativeModuleInterface);
   }
