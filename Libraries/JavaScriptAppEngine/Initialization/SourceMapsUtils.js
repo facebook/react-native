@@ -68,7 +68,9 @@ var SourceMapsUtils = {
       return Promise.reject(new Error('RCTNetworking module is not available'));
     }
 
-    return RCTSourceCode.getScriptText()
+    const scriptText = RCTSourceCode.getScriptText();
+    if (scriptText) {
+      scriptText
       .then(SourceMapsUtils.extractSourceMapURL)
       .then((url) => {
         if (url === null) {
@@ -76,6 +78,11 @@ var SourceMapsUtils = {
         }
         return Promise.resolve(url);
       });
+    }
+    else {
+      // Running in mock-config mode
+      return Promise.reject(new Error('Couldn\'t fetch script text'));
+    }
   },
 };
 
