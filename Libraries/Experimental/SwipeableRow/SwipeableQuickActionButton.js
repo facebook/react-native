@@ -84,6 +84,7 @@ const styles = StyleSheet.create({
   text: {
     color: '#ffffff',
     fontSize: 12,
+    textAlign: 'center', // For Android to align properly
   },
 });
 
