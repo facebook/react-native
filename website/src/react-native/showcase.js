@@ -885,6 +885,12 @@ var apps = [
     author: 'Play Company',
   },
   {
+    name: 'Whisky Journal',
+    icon: 'http://cdn.whiskyjournal.co/files/icon350x350.png',
+    link: 'https://itunes.apple.com/au/app/whiskyjournal/id1097713368',
+    author: 'Matt Mcnamee',
+  },
+  {
     name: 'WOOP',
     icon: 'http://a4.mzstatic.com/us/r30/Purple6/v4/b0/44/f9/b044f93b-dbf3-9ae5-0f36-9b4956628cab/icon350x350.jpeg',
     link: 'https://itunes.apple.com/us/app/woop-app/id790247988?mt=8',
