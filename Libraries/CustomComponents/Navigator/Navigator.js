@@ -1,5 +1,10 @@
 /**
- * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
@@ -446,7 +451,7 @@ var Navigator = React.createClass({
     this._onAnimationEnd();
     var presentedIndex = this.state.presentedIndex;
     var didFocusRoute = this._subRouteFocus[presentedIndex] || this.state.routeStack[presentedIndex];
-    this._emitDidFocus(didFocusRoute);
+
     if (AnimationsDebugModule) {
       AnimationsDebugModule.stopRecordingFps(Date.now());
     }
@@ -457,6 +462,9 @@ var Navigator = React.createClass({
       this.state.transitionCb();
       this.state.transitionCb = null;
     }
+
+    this._emitDidFocus(didFocusRoute);
+
     if (this._interactionHandle) {
       this.clearInteractionHandle(this._interactionHandle);
       this._interactionHandle = null;
