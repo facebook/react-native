@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+
+const cli = require('commander');
+const updateNotifier = require('update-notifier');
+const flatten = require('lodash').flatten;
+
+const commands = require('../src/getCommands')();
+const config = require('../src/config');
+const pkg = require('../package.json');
+
+updateNotifier({ pkg }).notify();
+
+cli.version(pkg.version);
+
+const addCommand = (command) =>
+  cli
+    .command(command.name)
+    .usage(command.usage)
+    .description(command.description)
+    .action(function runAction() {
+      command.func(config, arguments);
+    });
+
+
+flatten(commands).forEach(addCommand);
+
+cli.parse(process.argv);

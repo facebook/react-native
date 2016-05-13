@@ -1,0 +1,18 @@
+machine:
+  node:
+    version: 4.2.1
+
+dependencies:
+  pre:
+    - npm install codeclimate-test-reporter@0.1
+    
+deployment:
+  coverage: 
+    branch: master
+    owner: rnpm
+    commands:
+      - codeclimate-test-reporter < coverage/lcov.info
+ 
+notify:
+  webhooks:
+    - url: https://webhooks.gitter.im/e/bf9cb7240681c7263e6b
