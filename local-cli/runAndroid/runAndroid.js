@@ -12,6 +12,7 @@ const chalk = require('chalk');
 const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const androidCommandLineArgs = require('../args/runAndroid');
 const parseCommandLine = require('../util/parseCommandLine');
 const isPackagerRunning = require('../util/isPackagerRunning');
 const Promise = require('promise');
@@ -27,23 +28,7 @@ function runAndroid(argv, config) {
 }
 
 function _runAndroid(argv, config, resolve, reject) {
-  const args = parseCommandLine([{
-    command: 'install-debug',
-    type: 'string',
-    required: false,
-  }, {
-    command: 'root',
-    type: 'string',
-    description: 'Override the root directory for the android build (which contains the android directory)',
-  }, {
-    command: 'flavor',
-    type: 'string',
-    required: false,
-  }, {
-    command: 'variant',
-    type: 'string',
-    required: false,
-  }], argv);
+  const args = parseCommandLine(androidCommandLineArgs, argv);
 
   args.root = args.root || '';
 

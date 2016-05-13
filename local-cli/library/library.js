@@ -11,6 +11,7 @@
 const copyAndReplace = require('../util/copyAndReplace');
 const fs = require('fs');
 const isValidPackageName = require('../util/isValidPackageName');
+const libraryCommandLineArgs = require('../args/library');
 const parseCommandLine = require('../util/parseCommandLine');
 const path = require('path');
 const Promise = require('promise');
@@ -26,12 +27,7 @@ function library(argv, config) {
 }
 
 function _library(argv, config, resolve, reject) {
-  const args = parseCommandLine([{
-    command: 'name',
-    description: 'Library name',
-    type: 'string',
-    required: true,
-  }], argv);
+  const args = parseCommandLine(libraryCommandLineArgs, argv);
 
   if (!isValidPackageName(args.name)) {
     reject(

@@ -8,7 +8,7 @@
  */
 
 const buildBundle = require('./buildBundle');
-const bundleCommandLineArgs = require('./bundleCommandLineArgs');
+const bundleCommandLineArgs = require('../args/bundle');
 const parseCommandLine = require('../util/parseCommandLine');
 const outputBundle = require('./output/bundle');
 const outputPrepack = require('./output/prepack');

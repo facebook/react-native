@@ -16,6 +16,8 @@ require('../packager/babelRegisterOnly')([
 
 var bundle = require('./bundle/bundle');
 var childProcess = require('child_process');
+var columnify = require('columnify');
+var commandArgs = require('./args');
 var Config = require('./util/Config');
 var defaultConfig = require('./default.config');
 var dependencies = require('./dependencies/dependencies');
@@ -57,6 +59,7 @@ Object.keys(documentedCommands).forEach(function(command) {
 });
 
 var undocumentedCommands = {
+  'help': [printHelp, ''],
   '--version': [version, ''],
   'init': [printInitWarning, ''],
 };
@@ -77,10 +80,25 @@ function run() {
     : 'setup_env.sh';
   childProcess.execFileSync(path.join(__dirname, setupEnvScript));
 
-  var command = commands[args[0]];
+  // format to remove dash prefix from command arg (for --help)
+  var name = args[0].replace(/^-{1,2}/g, '');
+
+  var command = commands[name];
   if (!command) {
     console.error('Command `%s` unrecognized', args[0]);
     printUsage();
+    return;
+  }
+
+  // user used react-native --help [command]
+  if (name === 'help') {
+    printHelp(args[1]);
+    return;
+  }
+
+  // user used react-native [command] --help
+  if (args[1] === '--help') {
+    printHelp(name);
     return;
   }
 
@@ -98,14 +116,73 @@ function generateWrapper(args, config) {
 }
 
 function printUsage() {
+  var usage = Object.keys(documentedCommands).map(function(name) {
+    return '  - ' + name + ': ' + documentedCommands[name][1];
+  });
+
+  var helpUsage = [
+  '',
+  'For options and command usage: react-native help <command>'
+  ];
+
   console.log([
     'Usage: react-native <command>',
     '',
     'Commands:'
-  ].concat(Object.keys(documentedCommands).map(function(name) {
-    return '  - ' + name + ': ' + documentedCommands[name][1];
-  })).join('\n'));
+  ].concat(usage).concat(helpUsage).join('\n'));
+
   process.exit(1);
+}
+
+function printHelp(commandName) {
+  // Print usage if no name or falsey name is given
+  if (!commandName) {
+    printUsage();
+    return;
+  }
+
+  // Check if the command is documented
+  var command = documentedCommands[commandName];
+  if (!command) {
+    console.error('\nHelp not found for command: `%s`.', commandName);
+    return;
+  }
+
+  var commandDescription = command[1];
+
+  console.log([
+    '',
+    'Command: `' + commandName + '`',
+    'Description: ' + commandDescription,
+  ].join('\n'));
+
+  var args = commandArgs[commandName] || [];
+
+  if (args.length > 0) {
+    var usage = {};
+    var minWidth = 1;
+
+    args.forEach(function(arg) {
+      var name = '--' + arg.command;
+      usage[name] = arg.description || '';
+
+      // This helps add padding between the two columns
+      if (name.length > minWidth - 2) {
+        minWidth = name.length + 2;
+      }
+    });
+
+    console.log([
+      '',
+      'Options',
+      '-------',
+      columnify(usage, {
+        showHeaders: false,
+        minWidth: minWidth,
+        maxWidth: 80
+      })
+    ].join('\n'));
+  }
 }
 
 // The user should never get here because projects are inited by
