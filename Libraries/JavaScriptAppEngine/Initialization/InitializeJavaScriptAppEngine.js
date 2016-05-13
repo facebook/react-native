@@ -205,8 +205,6 @@ function setUpProcess() {
   if (!global.process.env.NODE_ENV) {
     global.process.env.NODE_ENV = __DEV__ ? 'development' : 'production';
   }
-
-  polyfillLazyGlobal('platform', () => require('Platform').OS, global.process);
 }
 
 function setUpDevTools() {
