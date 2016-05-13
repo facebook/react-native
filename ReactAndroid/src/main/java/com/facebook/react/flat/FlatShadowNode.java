@@ -35,6 +35,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   private static final String PROP_ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
   private static final String PROP_IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
   private static final String PROP_TEST_ID = "testID";
+  private static final String PROP_TRANSFORM = "transform";
 
   private DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
   private AttachDetachListener[] mAttachDetachListeners = AttachDetachListener.EMPTY_ARRAY;
@@ -72,6 +73,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
           styles.hasKey(PROP_ACCESSIBILITY_LABEL) ||
           styles.hasKey(PROP_ACCESSIBILITY_COMPONENT_TYPE) ||
           styles.hasKey(PROP_ACCESSIBILITY_LIVE_REGION) ||
+          styles.hasKey(PROP_TRANSFORM) ||
           styles.hasKey(PROP_IMPORTANT_FOR_ACCESSIBILITY)) {
         forceMountToView();
       }

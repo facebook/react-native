@@ -465,10 +465,18 @@ public class FlatUIImplementation extends UIImplementation {
     while (node.isVirtual()) {
       node = node.getParent();
     }
+    int tag = node.getReactTag();
+
+    // if the node in question doesn't mount to a View, find the first parent that does mount to
+    // a View. without this, we'll crash when we try to set the JSResponder, since part of that
+    // is to find the parent view and ask it to not intercept touch events.
+    while (node instanceof FlatShadowNode && !((FlatShadowNode) node).mountsToView()) {
+      node = node.getParent();
+    }
 
     FlatUIViewOperationQueue operationsQueue = mStateBuilder.getOperationsQueue();
     operationsQueue.enqueueSetJSResponder(
-        node.getReactTag(),
+        node == null ? tag : node.getReactTag(),
         possiblyVirtualReactTag,
         blockNativeResponder);
   }
