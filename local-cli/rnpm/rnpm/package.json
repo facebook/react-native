@@ -11,13 +11,6 @@
     "collectCoverage": true,
     "testRunner": "<rootDir>/node_modules/jest-cli/src/testRunners/jasmine/jasmine2.js"
   },
-  "bin": {
-    "rnpm": "bin/cli"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rnpm/rnpm.git"
-  },
   "author": "Amazing React Native Community (https://github.com/facebook/react-native)",
   "contributors": [
     "Alexey Kureev <kureev-mail@ya.ru> (https://github.com/Kureev)",

@@ -18,7 +18,8 @@
       "^[./a-zA-Z0-9$_-]+\\.png$": "RelativeImageStub"
     },
     "testPathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "/local-cli/rnpm/"
     ],
     "haste": {
       "defaultPlatform": "ios",
