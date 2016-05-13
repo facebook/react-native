@@ -166,6 +166,10 @@ function printHelp(commandName) {
       var name = '--' + arg.command;
       usage[name] = arg.description || '';
 
+      if (arg.required) {
+        usage[name] += '  [required]';
+      }
+
       // This helps add padding between the two columns
       if (name.length > minWidth - 2) {
         minWidth = name.length + 2;
@@ -174,12 +178,10 @@ function printHelp(commandName) {
 
     console.log([
       '',
-      'Options',
-      '-------',
+      'Options:',
       columnify(usage, {
         showHeaders: false,
-        minWidth: minWidth,
-        maxWidth: 80
+        minWidth: minWidth
       })
     ].join('\n'));
   }
