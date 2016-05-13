@@ -207,7 +207,7 @@ var ViewPagerAndroid = React.createClass({
 
   /**
    * A helper function to scroll to a specific page in the ViewPager.
-   * The transition between pages will be *not* be animated.
+   * The transition between pages will *not* be animated.
    */
   setPageWithoutAnimation: function(selectedPage: number) {
     UIManager.dispatchViewManagerCommand(
