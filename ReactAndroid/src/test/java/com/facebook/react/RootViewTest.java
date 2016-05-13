@@ -162,7 +162,7 @@ public class RootViewTest {
         ArgumentCaptor.forClass(JavaOnlyArray.class);
 
     rootView.onTouchEvent(
-        MotionEvent.obtain(100, ts, MotionEvent.ACTION_UP, 0, 0, 0));
+        MotionEvent.obtain(50, ts, MotionEvent.ACTION_UP, 0, 0, 0));
     verify(eventDispatcher).dispatchEvent(upEventCaptor.capture());
     verifyNoMoreInteractions(eventDispatcher);
 
