@@ -766,6 +766,12 @@ var apps = [
     author: 'Dobbit Co., Ltd.'
   },
   {
+    name: 'SAY',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple30/v4/ee/d8/b3/eed8b3e5-c55d-bc97-7228-2bfb4323ddef/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/id1069693851',
+    author: 'beijing qingfengyun Technology Co., Ltd.',
+  },
+  {
     name: 'ShareWis',
     icon: 'https://s3-ap-northeast-1.amazonaws.com/sw-misc/sharewis3_app.png',
     link: 'https://itunes.apple.com/jp/app/id585517208',
