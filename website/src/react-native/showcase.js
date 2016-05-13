@@ -974,9 +974,9 @@ var apps = [
   {
     name: '饿小闲',
     icon: 'https://xiaoxian.ele.me/download/images/share_page/ic_launcher.png',
-    link: 'https://xiaoxian.ele.me/download/?td_channelid=RNshowcase',
-    author: 'Eleme',
-  }
+    linkAppStore: 'https://itunes.apple.com/cn/app/e-xiao-xian/id1092025196',
+    author: 'Eleme'
+  },
 ];
 
 var AppList = React.createClass({
