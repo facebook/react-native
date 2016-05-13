@@ -784,12 +784,14 @@ var Navigator = React.createClass({
       }
       var isTravelVertical = gesture.direction === 'top-to-bottom' || gesture.direction === 'bottom-to-top';
       var isTravelInverted = gesture.direction === 'right-to-left' || gesture.direction === 'bottom-to-top';
+      var startedLoc = isTravelVertical ? gestureState.y0 : gestureState.x0;
       var currentLoc = isTravelVertical ? gestureState.moveY : gestureState.moveX;
       var travelDist = isTravelVertical ? gestureState.dy : gestureState.dx;
       var oppositeAxisTravelDist =
         isTravelVertical ? gestureState.dx : gestureState.dy;
       var edgeHitWidth = gesture.edgeHitWidth;
       if (isTravelInverted) {
+        startedLoc = -startedLoc;
         currentLoc = -currentLoc;
         travelDist = -travelDist;
         oppositeAxisTravelDist = -oppositeAxisTravelDist;
@@ -797,8 +799,11 @@ var Navigator = React.createClass({
           -(SCREEN_HEIGHT - edgeHitWidth) :
           -(SCREEN_WIDTH - edgeHitWidth);
       }
+      if (startedLoc === 0) {
+        startedLoc = currentLoc;
+      }
       var moveStartedInRegion = gesture.edgeHitWidth == null ||
-        currentLoc < edgeHitWidth;
+        startedLoc < edgeHitWidth;
       if (!moveStartedInRegion) {
         return false;
       }
@@ -912,16 +917,15 @@ var Navigator = React.createClass({
     var activeAnimationConfigStack = this.state.sceneConfigStack.slice(0, activeLength);
     var nextStack = activeStack.concat([route]);
     var destIndex = nextStack.length - 1;
-    var nextAnimationConfigStack = activeAnimationConfigStack.concat([
-      this.props.configureScene(route, nextStack),
-    ]);
+    var nextSceneConfig = this.props.configureScene(route, nextStack);
+    var nextAnimationConfigStack = activeAnimationConfigStack.concat([nextSceneConfig]);
     this._emitWillFocus(nextStack[destIndex]);
     this.setState({
       routeStack: nextStack,
       sceneConfigStack: nextAnimationConfigStack,
     }, () => {
       this._enableScene(destIndex);
-      this._transitionTo(destIndex);
+      this._transitionTo(destIndex, nextSceneConfig.defaultTransitionVelocity);
     });
   },
 
@@ -934,11 +938,13 @@ var Navigator = React.createClass({
       'Cannot pop below zero'
     );
     var popIndex = this.state.presentedIndex - n;
+    var presentedRoute = this.state.routeStack[this.state.presentedIndex];
+    var popSceneConfig = this.props.configureScene(presentedRoute); // using the scene config of the currently presented view
     this._enableScene(popIndex);
     this._emitWillFocus(this.state.routeStack[popIndex]);
     this._transitionTo(
       popIndex,
-      null, // default velocity
+      popSceneConfig.defaultTransitionVelocity,
       null, // no spring jumping
       () => {
         this._cleanScenesPastIndex(popIndex);

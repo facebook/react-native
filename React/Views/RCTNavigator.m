@@ -27,6 +27,20 @@ typedef NS_ENUM(NSUInteger, RCTNavigationLock) {
   RCTNavigationLockJavaScript
 };
 
+// By default the interactive pop gesture will be enabled when the navigation bar is displayed
+// and disabled when hidden
+// RCTPopGestureStateDefault maps to the default behavior (mentioned above). Once popGestureState
+// leaves this value, it can never be returned back to it. This is because, due to a limitation in
+// the iOS APIs, once we override the default behavior of the gesture recognizer, we cannot return
+// back to it.
+// RCTPopGestureStateEnabled will enable the gesture independent of nav bar visibility
+// RCTPopGestureStateDisabled will disable the gesture independent of nav bar visibility
+typedef NS_ENUM(NSUInteger, RCTPopGestureState) {
+  RCTPopGestureStateDefault = 0,
+  RCTPopGestureStateEnabled,
+  RCTPopGestureStateDisabled
+};
+
 NSInteger kNeverRequested = -1;
 NSInteger kNeverProgressed = -10000;
 
@@ -191,12 +205,14 @@ NSInteger kNeverProgressed = -10000;
 
 @end
 
-@interface RCTNavigator() <RCTWrapperViewControllerNavigationListener, UINavigationControllerDelegate>
+@interface RCTNavigator() <RCTWrapperViewControllerNavigationListener, UINavigationControllerDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, copy) RCTDirectEventBlock onNavigationProgress;
 @property (nonatomic, copy) RCTBubblingEventBlock onNavigationComplete;
 
 @property (nonatomic, assign) NSInteger previousRequestedTopOfStack;
+
+@property (nonatomic, assign) RCTPopGestureState popGestureState;
 
 // Previous views are only mainted in order to detect incorrect
 // addition/removal of views below the `requestedTopOfStack`
@@ -332,8 +348,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+- (void)setInteractivePopGestureEnabled:(BOOL)interactivePopGestureEnabled
+{
+  _interactivePopGestureEnabled = interactivePopGestureEnabled;
+ 
+  _navigationController.interactivePopGestureRecognizer.delegate = self;
+  _navigationController.interactivePopGestureRecognizer.enabled = interactivePopGestureEnabled;
+
+  _popGestureState = interactivePopGestureEnabled ? RCTPopGestureStateEnabled : RCTPopGestureStateDisabled;
+}
+
 - (void)dealloc
 {
+  if (_navigationController.interactivePopGestureRecognizer.delegate == self) {
+    _navigationController.interactivePopGestureRecognizer.delegate = nil;
+  }
   _navigationController.delegate = nil;
   [_navigationController removeFromParentViewController];
 }
@@ -341,6 +370,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (UIViewController *)reactViewController
 {
   return _navigationController;
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+  return _navigationController.viewControllers.count > 1;
 }
 
 /**
@@ -399,7 +433,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)freeLock
 {
   _navigationController.navigationLock = RCTNavigationLockNone;
-  _navigationController.interactivePopGestureRecognizer.enabled = YES;
+  
+  // Unless the pop gesture has been explicitly disabled (RCTPopGestureStateDisabled),
+  // Set interactivePopGestureRecognizer.enabled to YES
+  // If the popGestureState is RCTPopGestureStateDefault the default behavior will be maintained
+  _navigationController.interactivePopGestureRecognizer.enabled = self.popGestureState != RCTPopGestureStateDisabled;
 }
 
 /**

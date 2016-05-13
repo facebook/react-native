@@ -26,7 +26,7 @@ static JSValueRef nativeProfilerStart(
   }
 
   JSStringRef title = JSValueToStringCopy(ctx, arguments[0], exception);
-  #if WITH_JSC_INTERNAL
+  #if WITH_REACT_INTERNAL_SETTINGS
   JSStartProfiling(ctx, title, false);
   #else
   JSStartProfiling(ctx, title);

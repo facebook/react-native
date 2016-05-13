@@ -14,6 +14,7 @@
 @implementation RCTRefreshControl {
   BOOL _initialRefreshingState;
   BOOL _isInitialRender;
+  BOOL _currentRefreshingState;
 }
 
 - (instancetype)init
@@ -21,6 +22,7 @@
   if ((self = [super init])) {
     [self addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
     _isInitialRender = true;
+    _currentRefreshingState = false;
   }
   return self;
 }
@@ -68,7 +70,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // endRefreshing otherwise the next pull to refresh will not work properly.
   UIScrollView *scrollView = (UIScrollView *)self.superview;
   if (scrollView.contentOffset.y < 0) {
-    CGPoint offset = {scrollView.contentOffset.x, 0};
+    CGPoint offset = {scrollView.contentOffset.x, -scrollView.contentInset.top};
     [UIView animateWithDuration:0.25
                           delay:0
                         options:UIViewAnimationOptionBeginFromCurrentState
@@ -89,12 +91,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setTitle:(NSString *)title
 {
-  self.attributedTitle = [[NSAttributedString alloc] initWithString:title];
+  NSRange range = NSMakeRange(0, self.attributedTitle.length);
+  NSDictionary *attrs = [self.attributedTitle attributesAtIndex:0 effectiveRange: &range];
+  self.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:attrs];
+}
+
+- (void)setTitleColor:(UIColor *)color
+{
+  NSRange range = NSMakeRange(0, self.attributedTitle.length);
+  NSDictionary *attrs = [self.attributedTitle attributesAtIndex:0 effectiveRange: &range];
+  NSMutableDictionary *attrsMutable = [attrs mutableCopy];
+  [attrsMutable setObject:color forKey:NSForegroundColorAttributeName];
+  self.attributedTitle = [[NSAttributedString alloc] initWithString:self.attributedTitle.string attributes:attrsMutable];
 }
 
 - (void)setRefreshing:(BOOL)refreshing
 {
-  if (self.refreshing != refreshing) {
+  if (_currentRefreshingState != refreshing) {
+    _currentRefreshingState = refreshing;
+
     if (refreshing) {
       // If it is the initial render, beginRefreshing will get called
       // in layoutSubviews.
@@ -111,6 +126,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)refreshControlValueChanged
 {
+  _currentRefreshingState = super.refreshing;
+
   if (_onRefresh) {
     _onRefresh(nil);
   }

@@ -31,8 +31,7 @@ RCT_EXPORT_METHOD(getScriptText:(RCTPromiseResolveBlock)resolve
 {
   if (RCT_DEV && self.scriptData && self.scriptURL) {
     NSString *scriptText = [[NSString alloc] initWithData:self.scriptData encoding:NSUTF8StringEncoding];
-
-    resolve(@{@"text": scriptText, @"url": self.scriptURL.absoluteString});
+    resolve(@{@"text": RCTNullIfNil(scriptText), @"url": self.scriptURL.absoluteString});
   } else {
     reject(RCTErrorUnavailable, nil, RCTErrorWithMessage(@"Source code is not available"));
   }

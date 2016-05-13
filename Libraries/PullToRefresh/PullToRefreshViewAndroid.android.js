@@ -49,6 +49,11 @@ var PullToRefreshViewAndroid = React.createClass({
      */
     progressBackgroundColor: ColorPropType,
     /**
+     * Progress view top offset
+     * @platform android
+     */
+    progressViewOffset: React.PropTypes.number,
+    /**
      * Whether the view should be indicating an active refresh
      */
     refreshing: React.PropTypes.bool,
@@ -67,7 +72,8 @@ var PullToRefreshViewAndroid = React.createClass({
   },
 
   setNativeProps: function(props) {
-    return this.refs[NATIVE_REF].setNativeProps(props);
+    let innerViewNode = this.getInnerViewNode();
+    return innerViewNode && innerViewNode.setNativeProps(props);
   },
 
   render: function() {
@@ -79,6 +85,7 @@ var PullToRefreshViewAndroid = React.createClass({
         progressBackgroundColor={this.props.progressBackgroundColor}
         ref={NATIVE_REF}
         refreshing={this.props.refreshing}
+        progressViewOffset={this.props.progressViewOffset}
         size={this.props.size}
         style={this.props.style}>
         {onlyChild(this.props.children)}
@@ -88,7 +95,7 @@ var PullToRefreshViewAndroid = React.createClass({
 
   _onRefresh: function() {
     this.props.onRefresh && this.props.onRefresh();
-    this.refs[NATIVE_REF].setNativeProps({refreshing: !!this.props.refreshing});
+    this.setNativeProps({refreshing: !!this.props.refreshing});
   }
 });
 

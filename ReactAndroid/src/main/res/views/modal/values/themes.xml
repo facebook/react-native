@@ -8,13 +8,24 @@
     <item name="android:windowBackground">@android:color/transparent</item>
   </style>
 
-  <style name="Theme.FullScreenDialogAnimated" parent="Theme.FullScreenDialog">
-    <item name="android:windowAnimationStyle">@style/DialogAnimation</item>
+  <style name="Theme.FullScreenDialogAnimatedSlide" parent="Theme.FullScreenDialog">
+    <item name="android:windowAnimationStyle">@style/DialogAnimationSlide</item>
   </style>
 
-  <style name="DialogAnimation">
+  <style name="Theme.FullScreenDialogAnimatedFade" parent="Theme.FullScreenDialog">
+    <item name="android:windowAnimationStyle">@style/DialogAnimationFade</item>
+  </style>
+
+  <style name="DialogAnimationSlide">
     <item name="android:windowEnterAnimation">@anim/slide_up</item>
     <item name="android:windowExitAnimation">@anim/slide_down</item>
   </style>
+
+  <style name="DialogAnimationFade">
+    <item name="android:windowEnterAnimation">@anim/fade_in</item>
+    <item name="android:windowExitAnimation">@anim/fade_out</item>
+  </style>
+
+
 
 </resources>

@@ -45,7 +45,11 @@ const validateOpts = declareOpts({
     default: false,
   },
   transformModulePath: {
-    type:'string',
+    type: 'string',
+    required: false,
+  },
+  extraNodeModules: {
+    type: 'object',
     required: false,
   },
   nonPersistent: {
@@ -62,7 +66,7 @@ const validateOpts = declareOpts({
       'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'svg', 'webp', // Image formats
       'm4v', 'mov', 'mp4', 'mpeg', 'mpg', 'webm', // Video formats
       'aac', 'aiff', 'caf', 'm4a', 'mp3', 'wav', // Audio formats
-      'html', // Document formats
+      'html', 'pdf', // Document formats
     ],
   },
   transformTimeoutInterval: {
@@ -127,6 +131,10 @@ const bundleOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
+  isolateModuleIDs: {
+    type: 'boolean',
+    default: false
+  }
 });
 
 const dependencyOpts = declareOpts({
@@ -163,7 +171,7 @@ class Server {
 
     const assetGlobs = opts.assetExts.map(ext => '**/*.' + ext);
 
-    var watchRootConfigs = opts.projectRoots.map(dir => {
+    let watchRootConfigs = opts.projectRoots.map(dir => {
       return {
         dir: dir,
         globs: [
@@ -334,7 +342,7 @@ class Server {
   }
 
   _processDebugRequest(reqUrl, res) {
-    var ret = '<!doctype html>';
+    let ret = '<!doctype html>';
     const pathname = url.parse(reqUrl).pathname;
     const parts = pathname.split('/').filter(Boolean);
     if (parts.length === 1) {
@@ -402,9 +410,9 @@ class Server {
 
   processRequest(req, res, next) {
     const urlObj = url.parse(req.url, true);
-    var pathname = urlObj.pathname;
+    const pathname = urlObj.pathname;
 
-    var requestType;
+    let requestType;
     if (pathname.match(/\.bundle$/)) {
       requestType = 'bundle';
     } else if (pathname.match(/\.map$/)) {
@@ -434,7 +442,7 @@ class Server {
     building.then(
       p => {
         if (requestType === 'bundle') {
-          var bundleSource = p.getSource({
+          const bundleSource = p.getSource({
             inlineSourceMap: options.inlineSourceMap,
             minify: options.minify,
             dev: options.dev,
@@ -449,7 +457,7 @@ class Server {
           }
           Activity.endEvent(startReqEventId);
         } else if (requestType === 'map') {
-          var sourceMap = p.getSourceMap({
+          let sourceMap = p.getSourceMap({
             minify: options.minify,
             dev: options.dev,
           });
@@ -462,7 +470,7 @@ class Server {
           res.end(sourceMap);
           Activity.endEvent(startReqEventId);
         } else if (requestType === 'assets') {
-          var assetsList = JSON.stringify(p.getAssets());
+          const assetsList = JSON.stringify(p.getAssets());
           res.setHeader('Content-Type', 'application/json');
           res.end(assetsList);
           Activity.endEvent(startReqEventId);

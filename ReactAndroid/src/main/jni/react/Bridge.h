@@ -66,8 +66,8 @@ public:
    */
   void callFunction(
     ExecutorToken executorToken,
-    const std::string& moduleId,
-    const std::string& methodId,
+    const std::string& module,
+    const std::string& method,
     const folly::dynamic& args,
     const std::string& tracingName);
 

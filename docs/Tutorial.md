@@ -13,6 +13,9 @@ This tutorial aims to get you up to speed with writing iOS and Android apps usin
 
 We assume you have experience writing applications with React. If not, you can learn about it on the [React website](http://facebook.github.io/react/).
 
+### Building a real-world app
+
+This tutorial explains how to build a simple app to get you started. If you're looking for a more advanced tutorial on building a real-world app, check out [makeitopen.com](http://makeitopen.com/).
 
 ## Setup
 
@@ -66,8 +69,10 @@ We're going to render the title, year, and thumbnail for the movie. Since thumbn
 
 ```javascript
 import React, {
-  AppRegistry,
   Component,
+} from 'react';
+import {
+  AppRegistry,
   Image,
   StyleSheet,
   Text,
@@ -304,8 +309,10 @@ First things first: add the `ListView` import to the top of the file.
 
 ```javascript
 import React, {
-  AppRegistry,
   Component,
+} from 'react';
+import {
+  AppRegistry,
   Image,
   ListView,
   StyleSheet,
@@ -391,8 +398,10 @@ There's still some work to be done to make it a fully functional app such as: ad
  */
 
 import React, {
-  AppRegistry,
   Component,
+} from 'react';
+import {
+  AppRegistry,
   Image,
   ListView,
   StyleSheet,
@@ -400,11 +409,7 @@ import React, {
   View,
 } from 'react-native';
 
-var API_KEY = '7waqfqbprs7pajbz28mqf6vz';
-var API_URL = 'http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json';
-var PAGE_SIZE = 25;
-var PARAMS = '?apikey=' + API_KEY + '&page_limit=' + PAGE_SIZE;
-var REQUEST_URL = API_URL + PARAMS;
+var REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json';
 
 class AwesomeProject extends Component {
   constructor(props) {

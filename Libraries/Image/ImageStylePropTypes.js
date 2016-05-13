@@ -31,9 +31,7 @@ var ImageStylePropTypes = {
   overflow: ReactPropTypes.oneOf(['visible', 'hidden']),
 
   /**
-   * iOS-Specific style to "tint" an image.
    * Changes the color of all the non-transparent pixels to the tintColor.
-   * @platform ios
    */
   tintColor: ColorPropType,
   opacity: ReactPropTypes.number,
@@ -55,6 +53,12 @@ var ImageStylePropTypes = {
    * @platform android
   */
   overlayColor: ReactPropTypes.string,
+
+  // Android-Specific styles
+  borderTopLeftRadius: ReactPropTypes.number,
+  borderTopRightRadius: ReactPropTypes.number,
+  borderBottomLeftRadius: ReactPropTypes.number,
+  borderBottomRightRadius: ReactPropTypes.number,
 };
 
 module.exports = ImageStylePropTypes;

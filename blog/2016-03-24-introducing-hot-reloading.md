@@ -34,7 +34,7 @@ Hot reloading is available as of 0.22, you can enable it:
 
 ## Implementation in a nutshell
 
-Now that we've seen why we want it and how to use it, the fun part begins: how does it actually works.
+Now that we've seen why we want it and how to use it, the fun part begins: how it actually works.
 
 Hot Reloading is built on top of a feature [Hot Module Replacement](https://webpack.github.io/docs/hot-module-replacement-with-webpack.html), or HMR. It was first introduced by Webpack and we implemented it inside of React Native Packager. HMR makes the Packager watch for file changes and send HMR updates to a thin HMR runtime included on the app.
 
@@ -43,7 +43,7 @@ In a nutshell, the HMR update contains the new code of the JS modules that chang
 ![](/react-native/blog/img/hmr-architecture.png)
 
 
-The HMR update contains a bit more  than just the module's code we want to change because replacing it, it's not enough for the runtime to pick up the changes. The problem is that the module system may have already cached the *exports* of the module we want to update. For instance, say you have an app composed by these two modules:
+The HMR update contains a bit more than just the module's code we want to change because replacing it, it's not enough for the runtime to pick up the changes. The problem is that the module system may have already cached the *exports* of the module we want to update. For instance, say you have an app composed of these two modules:
 
 ```
 // log.js
@@ -140,7 +140,7 @@ As we've seen before, sometimes it's not enough only accepting the HMR update be
 ![](/react-native/blog/img/hmr-diamond.png)
 
 
-If the user access the movies' search view but not the other one, all the modules but `MovieScreen` would have cached exports. If a change is made to module `time`, the runtime will have to clear the exports of `log` for it to pick up `time`'s changes. The process wouldn't finish there: the runtime will repeat this process recursively up until all the parents have been accepted. So, it'll grab the modules that depend on `log` and try to accept them. For `MovieScreen` it can bail, as it hasn't been required yet. For `MovieSearch`, it will have to clear its exports and process its parents recursively. Finally, it will do the same thing for `MovieRouter` and finish there as no modules depends on it.
+If the user accesses the movies' search view but not the other one, all the modules except for `MovieScreen` would have cached exports. If a change is made to module `time`, the runtime will have to clear the exports of `log` for it to pick up `time`'s changes. The process wouldn't finish there: the runtime will repeat this process recursively up until all the parents have been accepted. So, it'll grab the modules that depend on `log` and try to accept them. For `MovieScreen` it can bail, as it hasn't been required yet. For `MovieSearch`, it will have to clear its exports and process its parents recursively. Finally, it will do the same thing for `MovieRouter` and finish there as no modules depends on it.
 
 In order to walk the dependency tree, the runtime receives the inverse dependency tree from the Packager on the HMR update. For this example the runtime will receive a JSON object like this one:
 

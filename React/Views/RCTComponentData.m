@@ -12,6 +12,7 @@
 #import <objc/message.h>
 
 #import "RCTBridge.h"
+#import "RCTConvert.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
