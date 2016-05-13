@@ -41,6 +41,8 @@ export type NavigationLayout = {
   width: NavigationAnimatedValue,
 };
 
+export type NavigationPosition = NavigationAnimatedValue;
+
 export type NavigationScene = {
   index: number,
   isStale: boolean,
@@ -59,20 +61,13 @@ export type NavigationSceneRendererProps = {
   onNavigate: NavigationActionCaller,
 
   // The progressive index of the containing view's navigation state.
-  position: NavigationAnimatedValue,
+  position: NavigationPosition,
 
   // The scene to render.
   scene: NavigationScene,
 
   // All the scenes of the containing view's.
   scenes: Array<NavigationScene>,
-
-  // The value that represents the progress of the transition when navigation
-  // state changes from one to another. Its numberic value will range from 0
-  // to 1.
-  //  transition.__getAnimatedValue() < 1 : transtion is happening.
-  //  transition.__getAnimatedValue() == 1 : transtion completes.
-  transition: NavigationAnimatedValue,
 };
 
 export type NavigationPanPanHandlers = {
@@ -88,12 +83,6 @@ export type NavigationPanPanHandlers = {
   onResponderTerminationRequest: Function,
   onStartShouldSetResponder: Function,
   onStartShouldSetResponderCapture: Function,
-};
-
-export type NavigationTransitionSpec = {
-  duration: number,
-  // An easing function from `Easing`.
-  easing: () => any,
 };
 
 // Functions.
@@ -123,5 +112,3 @@ export type NavigationSceneRenderer = (
 export type NavigationStyleInterpolator = (
   props: NavigationSceneRendererProps,
 ) => Object;
-
-export type NavigationTransitionConfigurator = () => NavigationTransitionSpec;

@@ -46,6 +46,8 @@ const SwipeableListView = React.createClass({
     },
   },
 
+  _listViewRef: (null: ?string),
+
   propTypes: {
     dataSource: PropTypes.object.isRequired, // SwipeableListViewDataSource
     maxSwipeDistance: PropTypes.number,
@@ -79,10 +81,20 @@ const SwipeableListView = React.createClass({
     return (
       <ListView
         {...this.props}
+        ref={(ref) => {
+          this._listViewRef = ref;
+        }}
         dataSource={this.state.dataSource}
         renderRow={this._renderRow}
       />
     );
+  },
+
+  // Passing through ListView's getScrollResponder() function
+  getScrollResponder(): ?Object {
+    if (this._listViewRef && this._listViewRef.getScrollResponder) {
+      return this._listViewRef.getScrollResponder();
+    }
   },
 
   _renderRow(rowData: Object, sectionID: string, rowID: string): ReactElement {

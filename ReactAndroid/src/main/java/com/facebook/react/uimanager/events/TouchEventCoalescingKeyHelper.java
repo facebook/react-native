@@ -81,10 +81,6 @@ public class TouchEventCoalescingKeyHelper {
    * Stops tracking a new coalescing key corresponding to the gesture with this down time.
    */
   public static void removeCoalescingKey(long downTime) {
-    int currentValue = sDownTimeToCoalescingKey.get((int) downTime, -1);
-    if (currentValue == -1) {
-      throw new RuntimeException("Tried to remove non-existent cookie");
-    }
     sDownTimeToCoalescingKey.delete((int) downTime);
   }
 }

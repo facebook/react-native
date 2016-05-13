@@ -77,8 +77,6 @@ public:
   virtual void handleMemoryPressureCritical() override;
   virtual void destroy() override;
 
-  void installNativeHook(const char *name, JSObjectCallAsFunctionCallback callback);
-
 private:
   JSGlobalContextRef m_context;
   Bridge *m_bridge;
@@ -110,62 +108,37 @@ private:
   void loadModule(uint32_t moduleId);
 
   int addWebWorker(const std::string& script, JSValueRef workerRef, JSValueRef globalObjRef);
-  void postMessageToOwnedWebWorker(int worker, JSValueRef message, JSValueRef *exn);
+  void postMessageToOwnedWebWorker(int worker, JSValueRef message);
   void postMessageToOwner(JSValueRef result);
   void receiveMessageFromOwnedWebWorker(int workerId, const std::string& message);
   void receiveMessageFromOwner(const std::string &msgString);
   void terminateOwnedWebWorker(int worker);
   Object createMessageObject(const std::string& msgData);
 
-  static JSValueRef nativeStartWorker(
-      JSContextRef ctx,
-      JSObjectRef function,
-      JSObjectRef thisObject,
+  template< JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
+  void installNativeHook(const char* name);
+
+  JSValueRef nativeStartWorker(
       size_t argumentCount,
-      const JSValueRef arguments[],
-      JSValueRef *exception);
-  static JSValueRef nativePostMessageToWorker(
-      JSContextRef ctx,
-      JSObjectRef function,
-      JSObjectRef thisObject,
+      const JSValueRef arguments[]);
+  JSValueRef nativePostMessageToWorker(
       size_t argumentCount,
-      const JSValueRef arguments[],
-      JSValueRef *exception);
-  static JSValueRef nativeTerminateWorker(
-      JSContextRef ctx,
-      JSObjectRef function,
-      JSObjectRef thisObject,
+      const JSValueRef arguments[]);
+  JSValueRef nativeTerminateWorker(
       size_t argumentCount,
-      const JSValueRef arguments[],
-      JSValueRef *exception);
-  static JSValueRef nativePostMessage(
-      JSContextRef ctx,
-      JSObjectRef function,
-      JSObjectRef thisObject,
+      const JSValueRef arguments[]);
+  JSValueRef nativePostMessage(
       size_t argumentCount,
-      const JSValueRef arguments[],
-      JSValueRef *exception);
-  static JSValueRef nativeRequire(
-      JSContextRef ctx,
-      JSObjectRef function,
-      JSObjectRef thisObject,
+      const JSValueRef arguments[]);
+  JSValueRef nativeRequire(
       size_t argumentCount,
-      const JSValueRef arguments[],
-      JSValueRef *exception);
-  static JSValueRef nativeFlushQueueImmediate(
-      JSContextRef ctx,
-      JSObjectRef function,
-      JSObjectRef thisObject,
+      const JSValueRef arguments[]);
+  JSValueRef nativeFlushQueueImmediate(
       size_t argumentCount,
-      const JSValueRef arguments[],
-      JSValueRef *exception);
-  static JSValueRef nativeCallSyncHook(
-      JSContextRef ctx,
-      JSObjectRef function,
-      JSObjectRef thisObject,
+      const JSValueRef arguments[]);
+  JSValueRef nativeCallSyncHook(
       size_t argumentCount,
-      const JSValueRef arguments[],
-      JSValueRef *exception);
+      const JSValueRef arguments[]);
 };
 
 } }

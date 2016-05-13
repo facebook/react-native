@@ -766,6 +766,12 @@ var apps = [
     author: 'Dobbit Co., Ltd.'
   },
   {
+    name: 'SAY',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple30/v4/ee/d8/b3/eed8b3e5-c55d-bc97-7228-2bfb4323ddef/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/id1069693851',
+    author: 'beijing qingfengyun Technology Co., Ltd.',
+  },
+  {
     name: 'ShareWis',
     icon: 'https://s3-ap-northeast-1.amazonaws.com/sw-misc/sharewis3_app.png',
     link: 'https://itunes.apple.com/jp/app/id585517208',
@@ -883,6 +889,12 @@ var apps = [
     icon: 'http://a4.mzstatic.com/us/r30/Purple49/v4/8f/1c/21/8f1c2158-c7fb-1bbb-94db-e77b867aad1a/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/whammy/id899759777',
     author: 'Play Company',
+  },
+  {
+    name: 'Whisky Journal',
+    icon: 'http://cdn.whiskyjournal.co/files/icon350x350.png',
+    link: 'https://itunes.apple.com/au/app/whiskyjournal/id1097713368',
+    author: 'Matt Mcnamee',
   },
   {
     name: 'WOOP',
