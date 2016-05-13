@@ -65,6 +65,8 @@ NSString *const RCTUIManagerRootViewKey = @"RCTUIManagerRootViewKey";
 
 @end
 
+static UIViewAnimationCurve _currentKeyboardAnimationCurve;
+
 @implementation RCTAnimation
 
 static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnimationType type)
@@ -80,11 +82,32 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
       return UIViewAnimationOptionCurveEaseInOut;
     case RCTAnimationTypeKeyboard:
       // http://stackoverflow.com/questions/18870447/how-to-use-the-default-ios7-uianimation-curve
-      return (UIViewAnimationOptions)(7 << 16);
+      return (UIViewAnimationOptions)(_currentKeyboardAnimationCurve << 16);
     default:
       RCTLogError(@"Unsupported animation type %zd", type);
       return UIViewAnimationOptionCurveEaseInOut;
   }
+}
+
+// Use a custom initialization function rather than implementing `+initialize` so that we can control
+// when the initialization code runs. `+initialize` runs immediately before the first message is sent
+// to the class which may be too late for us. By this time, we may have missed some 
+// `UIKeyboardWillChangeFrameNotification`s.
++ (void)initializeStatics
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillChangeFrame:)
+                                                name:UIKeyboardWillChangeFrameNotification
+                                               object:nil];
+  });
+}
+
++ (void)keyboardWillChangeFrame:(NSNotification *)notification
+{
+  NSDictionary *userInfo = notification.userInfo;
+  _currentKeyboardAnimationCurve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
 }
 
 - (instancetype)initWithDuration:(NSTimeInterval)duration dictionary:(NSDictionary *)config
@@ -317,6 +340,8 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(interfaceOrientationWillChange:)
                                                name:UIApplicationWillChangeStatusBarOrientationNotification
                                              object:nil];
+  
+  [RCTAnimation initializeStatics];
 }
 
 - (dispatch_queue_t)methodQueue
