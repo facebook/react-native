@@ -272,6 +272,7 @@ RCT_EXPORT_MODULE()
   _pendingUIBlocks = nil;
 
   dispatch_async(dispatch_get_main_queue(), ^{
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"UIManager invalidate", nil);
     for (NSNumber *rootViewTag in _rootViewTags) {
       [(id<RCTInvalidating>)_viewRegistry[rootViewTag] invalidate];
     }
@@ -283,6 +284,7 @@ RCT_EXPORT_MODULE()
     _bridge = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
   });
 }
 

@@ -322,6 +322,7 @@ void RCTProfileHookModules(RCTBridge *bridge)
   }
 #pragma clang diagnostic pop
 
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"RCTProfileHookModules", nil);
   for (RCTModuleData *moduleData in [bridge valueForKey:@"moduleDataByID"]) {
     // Only hook modules with an instance, to prevent initializing everything
     if ([moduleData hasInstance]) {
@@ -330,6 +331,7 @@ void RCTProfileHookModules(RCTBridge *bridge)
       } queue:moduleData.methodQueue];
     }
   }
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
 }
 
 static void RCTProfileUnhookInstance(id instance)
