@@ -489,7 +489,7 @@ JSValueRef JSCExecutor::nativeRequire(
   if (moduleId <= (double) std::numeric_limits<uint32_t>::max() && moduleId >= 0.0) {
     try {
       loadModule(moduleId);
-    } catch (JSModulesUnbundle::ModuleNotFound&) {
+    } catch (const std::exception&) {
       throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ", moduleId));
     }
   } else {
