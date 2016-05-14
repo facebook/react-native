@@ -90,22 +90,22 @@ void Instance::initializeBridge(
   SystraceSection t("setGlobalVariable");
   setGlobalVariable(
     "__fbBatchedBridgeConfig",
-    folly::toJson(config));
+    folly::make_unique<JSBigStdString>(folly::toJson(config)));
 }
 
-void Instance::loadScriptFromString(const std::string& string,
-                                    const std::string& sourceURL) {
+void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> string,
+                                    std::string sourceURL) {
   callback_->incrementPendingJSCalls();
   SystraceSection s("reactbridge_xplat_loadScriptFromString",
                     "sourceURL", sourceURL);
   // TODO mhorowitz: ReactMarker around loadApplicationScript
-  bridge_->loadApplicationScript(string, sourceURL);
+  bridge_->loadApplicationScript(std::move(string), std::move(sourceURL));
 }
 
 void Instance::loadScriptFromFile(const std::string& filename,
                                   const std::string& sourceURL) {
   // TODO mhorowitz: ReactMarker around file read
-  std::string script;
+  std::unique_ptr<JSBigBufferString> buf;
   {
     SystraceSection s("reactbridge_xplat_loadScriptFromFile",
                       "fileName", filename);
@@ -115,23 +115,22 @@ void Instance::loadScriptFromFile(const std::string& filename,
       LOG(ERROR) << "Unable to load script from file" << filename;
     } else {
       jsfile.seekg(0, std::ios::end);
-      script.reserve(jsfile.tellg());
+      buf.reset(new JSBigBufferString(jsfile.tellg()));
       jsfile.seekg(0, std::ios::beg);
-      script.assign(
-        std::istreambuf_iterator<char>(jsfile),
-        std::istreambuf_iterator<char>());
+      jsfile.read(buf->data(), buf->size());
     }
   }
 
-  loadScriptFromString(script, sourceURL);
+  loadScriptFromString(std::move(buf), sourceURL);
 }
 
 void Instance::loadUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle,
-                            const std::string& startupScript,
-                            const std::string& startupScriptSourceURL) {
+                            std::unique_ptr<const JSBigString> startupScript,
+                            std::string startupScriptSourceURL) {
   callback_->incrementPendingJSCalls();
   SystraceSection s("reactbridge_xplat_setJSModulesUnbundle");
-  bridge_->loadApplicationUnbundle(std::move(unbundle), startupScript, startupScriptSourceURL);
+  bridge_->loadApplicationUnbundle(std::move(unbundle), std::move(startupScript),
+                                   std::move(startupScriptSourceURL));
 }
 
 bool Instance::supportsProfiling() {
@@ -146,9 +145,9 @@ void Instance::stopProfiler(const std::string& title, const std::string& filenam
   return bridge_->stopProfiler(title, filename);
 }
 
-void Instance::setGlobalVariable(const std::string& propName,
-                                 const std::string& jsonValue) {
-  bridge_->setGlobalVariable(propName, jsonValue);
+void Instance::setGlobalVariable(std::string propName,
+                                 std::unique_ptr<const JSBigString> jsonValue) {
+  bridge_->setGlobalVariable(std::move(propName), std::move(jsonValue));
 }
 
 void Instance::callJSFunction(ExecutorToken token, const std::string& module, const std::string& method,

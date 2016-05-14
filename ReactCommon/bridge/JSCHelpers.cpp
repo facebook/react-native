@@ -32,6 +32,14 @@ JSValueRef makeJSCException(
   return JSValueToObject(ctx, exceptionString, NULL);
 }
 
+String jsStringFromBigString(const JSBigString& bigstr) {
+  if (bigstr.isAscii()) {
+    return String::createExpectingAscii(bigstr.c_str(), bigstr.size());
+  } else {
+    return String(bigstr.c_str());
+  }
+}
+
 JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef source) {
   JSValueRef exn, result;
   result = JSEvaluateScript(context, script, NULL, source, 0, &exn);

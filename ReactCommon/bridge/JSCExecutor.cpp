@@ -9,6 +9,7 @@
 #include <string>
 #include <glog/logging.h>
 #include <folly/json.h>
+#include <folly/Memory.h>
 #include <folly/String.h>
 #include <folly/Conv.h>
 #include <sys/time.h>
@@ -125,8 +126,8 @@ JSCExecutor::JSCExecutor(
     std::shared_ptr<MessageQueueThread> messageQueueThread,
     int workerId,
     JSCExecutor *owner,
-    const std::string& script,
-    const std::unordered_map<std::string, std::string>& globalObjAsJSON,
+    std::string scriptURL,
+    std::unordered_map<std::string, std::string> globalObjAsJSON,
     const folly::dynamic& jscConfig) :
     m_bridge(bridge),
     m_workerId(workerId),
@@ -136,29 +137,32 @@ JSCExecutor::JSCExecutor(
     m_jscConfig(jscConfig) {
   // We post initOnJSVMThread here so that the owner doesn't have to wait for
   // initialization on its own thread
-  m_messageQueueThread->runOnQueue([this, script, globalObjAsJSON] () {
+  m_messageQueueThread->runOnQueue([this, scriptURL,
+                                    globalObjAsJSON=std::move(globalObjAsJSON)] () {
     initOnJSVMThread();
 
     installNativeHook<&JSCExecutor::nativePostMessage>("postMessage");
 
     for (auto& it : globalObjAsJSON) {
-      setGlobalVariable(it.first, it.second);
+      setGlobalVariable(std::move(it.first),
+                        folly::make_unique<JSBigStdString>(std::move(it.second)));
     }
 
     // Try to load the script from the network if script is a URL
     // NB: For security, this will only work in debug builds
-    std::string scriptSrc;
-    if (script.find("http://") == 0 || script.find("https://") == 0) {
+    std::unique_ptr<const JSBigString> script;
+    if (scriptURL.find("http://") == 0 || scriptURL.find("https://") == 0) {
       std::stringstream outfileBuilder;
       outfileBuilder << m_deviceCacheDir << "/workerScript" << m_workerId << ".js";
-      scriptSrc = WebWorkerUtil::loadScriptFromNetworkSync(script, outfileBuilder.str());
+      script = folly::make_unique<JSBigStdString>(
+        WebWorkerUtil::loadScriptFromNetworkSync(scriptURL, outfileBuilder.str()));
     } else {
       // TODO(9604438): Protect against script does not exist
-      scriptSrc = WebWorkerUtil::loadScriptFromAssets(script);
+      script = WebWorkerUtil::loadScriptFromAssets(scriptURL);
     }
 
     // TODO(9994180): Throw on error
-    loadApplicationScript(scriptSrc, script);
+    loadApplicationScript(std::move(script), std::move(scriptURL));
   });
 }
 
@@ -236,9 +240,7 @@ void JSCExecutor::terminateOnJSVMThread() {
   m_context = nullptr;
 }
 
-void JSCExecutor::loadApplicationScript(
-    const std::string& script,
-    const std::string& sourceURL) {
+void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) {
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
 
@@ -249,7 +251,7 @@ void JSCExecutor::loadApplicationScript(
   #endif
 
   ReactMarker::logMarker("loadApplicationScript_startStringConvert");
-  String jsScript = String::createExpectingAscii(script);
+  String jsScript = jsStringFromBigString(*script);
   ReactMarker::logMarker("loadApplicationScript_endStringConvert");
 
   #ifdef WITH_FBSYSTRACE
@@ -296,13 +298,14 @@ void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& 
   m_bridge->callNativeModules(*this, calls, true);
 }
 
-void JSCExecutor::setGlobalVariable(const std::string& propName, const std::string& jsonValue) {
-  // TODO mhorowitz: systrace this.
+void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) {
+  SystraceSection s("JSCExecutor.setGlobalVariable",
+                    "propName", propName);
 
   auto globalObject = JSContextGetGlobalObject(m_context);
   String jsPropertyName(propName.c_str());
 
-  String jsValueJSON(jsonValue.c_str());
+  String jsValueJSON = jsStringFromBigString(*jsonValue);
   auto valueToInject = JSValueMakeFromJSONString(m_context, jsValueJSON);
 
   JSObjectSetProperty(m_context, globalObject, jsPropertyName, valueToInject, 0, NULL);
@@ -364,7 +367,7 @@ void JSCExecutor::loadModule(uint32_t moduleId) {
 }
 
 int JSCExecutor::addWebWorker(
-    const std::string& script,
+    std::string scriptURL,
     JSValueRef workerRef,
     JSValueRef globalObjRef) {
   static std::atomic_int nextWorkerId(1);
@@ -378,8 +381,8 @@ int JSCExecutor::addWebWorker(
   std::shared_ptr<MessageQueueThread> workerMQT =
     WebWorkerUtil::createWebWorkerThread(workerId, m_messageQueueThread.get());
   std::unique_ptr<JSCExecutor> worker;
-  workerMQT->runOnQueueSync([this, &worker, &workerMQT, &script, &globalObj, workerId, &workerJscConfig] () {
-    worker.reset(new JSCExecutor(m_bridge, workerMQT, workerId, this, script,
+  workerMQT->runOnQueueSync([this, &worker, &workerMQT, &scriptURL, &globalObj, workerId, &workerJscConfig] () {
+    worker.reset(new JSCExecutor(m_bridge, workerMQT, workerId, this, scriptURL,
                                  globalObj.toJSONMap(), workerJscConfig));
   });
 
