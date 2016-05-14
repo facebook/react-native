@@ -13,9 +13,11 @@ import android.graphics.Canvas;
 
 /* package */ final class DrawView extends AbstractClippingDrawCommand {
 
-  /* package */ static final DrawView INSTANCE = new DrawView(0, 0, 0, 0);
+  /* package */ final int reactTag;
+  /* package */ boolean isViewGroupClipped;
 
-  public DrawView(float clipLeft, float clipTop, float clipRight, float clipBottom) {
+  public DrawView(int reactTag, float clipLeft, float clipTop, float clipRight, float clipBottom) {
+    this.reactTag = reactTag;
     setClipBounds(clipLeft, clipTop, clipRight, clipBottom);
   }
 

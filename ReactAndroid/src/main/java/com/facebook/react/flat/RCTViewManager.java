@@ -21,8 +21,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
-import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 import com.facebook.react.views.view.ReactDrawableHelper;
 
 /**
@@ -100,6 +101,11 @@ import com.facebook.react.views.view.ReactDrawableHelper;
   @ReactProp(name = "pointerEvents")
   public void setPointerEvents(FlatViewGroup view, @Nullable String pointerEventsStr) {
     view.setPointerEvents(parsePointerEvents(pointerEventsStr));
+  }
+
+  @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
+  public void setRemoveClippedSubviews(FlatViewGroup view, boolean removeClippedSubviews) {
+    view.setRemoveClippedSubviews(removeClippedSubviews);
   }
 
   private static PointerEvents parsePointerEvents(@Nullable String pointerEventsStr) {

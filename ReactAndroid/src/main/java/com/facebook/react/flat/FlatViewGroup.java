@@ -13,6 +13,8 @@ import javax.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -22,7 +24,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.animation.Animation;
 
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.common.SystemClock;
@@ -33,13 +37,16 @@ import com.facebook.react.uimanager.ReactCompoundViewGroup;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.image.ImageLoadEvent;
+import com.facebook.react.views.view.ReactClippingViewGroup;
+import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
 /**
  * A view that FlatShadowNode hierarchy maps to. Performs drawing by iterating over
  * array of DrawCommands, executing them one by one.
  */
 /* package */ final class FlatViewGroup extends ViewGroup
-    implements ReactInterceptingViewGroup, ReactCompoundViewGroup, ReactPointerEventsView {
+    implements ReactInterceptingViewGroup, ReactClippingViewGroup,
+    ReactCompoundViewGroup, ReactPointerEventsView {
   /**
    * Helper class that allows AttachDetachListener to invalidate the hosting View.
    */
@@ -87,6 +94,12 @@ import com.facebook.react.views.image.ImageLoadEvent;
   private PointerEvents mPointerEvents = PointerEvents.AUTO;
   private long mLastTouchDownTime;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
+
+  private boolean mRemoveClippedSubviews;
+  private @Nullable Rect mClippingRect;
+  // lookups in o(1) instead of o(log n) - trade space for time
+  private final Map<Integer, DrawView> mDrawViewMap = new HashMap<>();
+  private final Map<Integer, FlatViewGroup> mClippedSubviews = new HashMap<>();
 
   /* package */ FlatViewGroup(Context context) {
     super(context);
@@ -144,8 +157,21 @@ import com.facebook.react.views.image.ImageLoadEvent;
   public void dispatchDraw(Canvas canvas) {
     super.dispatchDraw(canvas);
 
-    for (DrawCommand drawCommand : mDrawCommands) {
-      drawCommand.draw(this, canvas);
+    if (mRemoveClippedSubviews) {
+      for (DrawCommand drawCommand : mDrawCommands) {
+        if (drawCommand instanceof DrawView) {
+          if (!((DrawView) drawCommand).isViewGroupClipped) {
+            drawCommand.draw(this, canvas);
+          }
+          // else, don't draw, and don't increment index
+        } else {
+          drawCommand.draw(this, canvas);
+        }
+      }
+    } else {
+      for (DrawCommand drawCommand : mDrawCommands) {
+        drawCommand.draw(this, canvas);
+      }
     }
 
     if (mDrawChildIndex != getChildCount()) {
@@ -187,6 +213,10 @@ import com.facebook.react.views.image.ImageLoadEvent;
 
     super.onAttachedToWindow();
     dispatchOnAttached(mAttachDetachListeners);
+
+    if (mRemoveClippedSubviews) {
+      updateClippingRect();
+    }
   }
 
   @Override
@@ -206,6 +236,10 @@ import com.facebook.react.views.image.ImageLoadEvent;
     if (mHotspot != null) {
       mHotspot.setBounds(0, 0, w, h);
       invalidate();
+    }
+
+    if (mRemoveClippedSubviews) {
+      updateClippingRect();
     }
   }
 
@@ -358,6 +392,15 @@ import com.facebook.react.views.image.ImageLoadEvent;
 
   /* package */ void mountDrawCommands(DrawCommand[] drawCommands) {
     mDrawCommands = drawCommands;
+    if (mRemoveClippedSubviews) {
+      mDrawViewMap.clear();
+      for (DrawCommand drawCommand : mDrawCommands) {
+        if (drawCommand instanceof DrawView) {
+          DrawView drawView = (DrawView) drawCommand;
+          mDrawViewMap.put(drawView.reactTag, drawView);
+        }
+      }
+    }
     invalidate();
   }
 
@@ -393,11 +436,27 @@ import com.facebook.react.views.image.ImageLoadEvent;
       } else {
         View view = ensureViewHasNoParent(viewResolver.getView(-viewToAdd));
         attachViewToParent(view, -1, ensureLayoutParams(view.getLayoutParams()));
+        if (mRemoveClippedSubviews) {
+          mClippedSubviews.remove(-viewToAdd);
+          DrawView drawView = mDrawViewMap.get(-viewToAdd);
+          if (drawView != null) {
+            drawView.isViewGroupClipped = false;
+          }
+        }
       }
     }
 
     for (int viewToDetach : viewsToDetach) {
-      removeDetachedView(viewResolver.getView(viewToDetach), false);
+      View view = viewResolver.getView(viewToDetach);
+      if (view.getParent() != null) {
+        removeViewInLayout(view);
+      } else {
+        removeDetachedView(view, false);
+      }
+
+      if (mRemoveClippedSubviews) {
+        mClippedSubviews.remove(viewToDetach);
+      }
     }
 
     invalidate();
@@ -492,5 +551,99 @@ import com.facebook.react.views.image.ImageLoadEvent;
       return lp;
     }
     return generateDefaultLayoutParams();
+  }
+
+  @Override
+  public void updateClippingRect() {
+    if (!mRemoveClippedSubviews) {
+      return;
+    }
+
+    Assertions.assertNotNull(mClippingRect);
+    ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
+    if (getParent() != null && mClippingRect.top != mClippingRect.bottom) {
+      updateClippingToRect(mClippingRect);
+    }
+  }
+
+  private void updateClippingToRect(Rect clippingRect) {
+    int index = 0;
+    boolean needsInvalidate = false;
+    for (DrawCommand drawCommand : mDrawCommands) {
+      if (drawCommand instanceof DrawView) {
+        DrawView drawView = (DrawView) drawCommand;
+        FlatViewGroup flatViewGroup = mClippedSubviews.get(drawView.reactTag);
+        if (flatViewGroup != null) {
+          // invisible
+          if (clippingRect.intersects(
+              flatViewGroup.getLeft(),
+              flatViewGroup.getTop(),
+              flatViewGroup.getRight(),
+              flatViewGroup.getBottom())) {
+            // now on the screen
+            attachViewToParent(
+                flatViewGroup,
+                index++,
+                ensureLayoutParams(flatViewGroup.getLayoutParams()));
+            mClippedSubviews.remove(flatViewGroup.getId());
+            drawView.isViewGroupClipped = false;
+            needsInvalidate = true;
+          }
+        } else {
+          // visible
+          View view = getChildAt(index++);
+          if (view instanceof FlatViewGroup) {
+            FlatViewGroup flatChildView = (FlatViewGroup) view;
+            Animation animation = flatChildView.getAnimation();
+            boolean isAnimating = animation != null && !animation.hasEnded();
+            if (!isAnimating &&
+                !clippingRect.intersects(
+                    view.getLeft(),
+                    view.getTop(),
+                    view.getRight(),
+                    view.getBottom())) {
+              // now off the screen
+              mClippedSubviews.put(view.getId(), flatChildView);
+              detachViewFromParent(view);
+              drawView.isViewGroupClipped = true;
+              index--;
+              needsInvalidate = true;
+            }
+          }
+        }
+      }
+    }
+
+    if (needsInvalidate) {
+      invalidate();
+    }
+  }
+
+  @Override
+  public void getClippingRect(Rect outClippingRect) {
+    outClippingRect.set(mClippingRect);
+  }
+
+  @Override
+  public void setRemoveClippedSubviews(boolean removeClippedSubviews) {
+    if (removeClippedSubviews == mRemoveClippedSubviews) {
+      return;
+    }
+    mRemoveClippedSubviews = removeClippedSubviews;
+    if (removeClippedSubviews) {
+      mClippingRect = new Rect();
+      updateClippingRect();
+    } else {
+      // Add all clipped views back, deallocate additional arrays, remove layoutChangeListener
+      Assertions.assertNotNull(mClippingRect);
+      getDrawingRect(mClippingRect);
+      updateClippingToRect(mClippingRect);
+      mClippingRect = null;
+    }
+  }
+
+  @Override
+  public boolean getRemoveClippedSubviews() {
+    return mRemoveClippedSubviews;
   }
 }

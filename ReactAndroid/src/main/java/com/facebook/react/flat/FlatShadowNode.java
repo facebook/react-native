@@ -18,6 +18,7 @@ import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
 /**
  * FlatShadowNode is a base class for all shadow node used in FlatUIImplementation. It extends
@@ -36,6 +37,8 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   private static final String PROP_IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
   private static final String PROP_TEST_ID = "testID";
   private static final String PROP_TRANSFORM = "transform";
+  private static final String PROP_REMOVE_CLIPPED_SUBVIEWS =
+      ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS;
 
   private DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
   private AttachDetachListener[] mAttachDetachListeners = AttachDetachListener.EMPTY_ARRAY;
@@ -74,7 +77,8 @@ import com.facebook.react.uimanager.annotations.ReactProp;
           styles.hasKey(PROP_ACCESSIBILITY_COMPONENT_TYPE) ||
           styles.hasKey(PROP_ACCESSIBILITY_LIVE_REGION) ||
           styles.hasKey(PROP_TRANSFORM) ||
-          styles.hasKey(PROP_IMPORTANT_FOR_ACCESSIBILITY)) {
+          styles.hasKey(PROP_IMPORTANT_FOR_ACCESSIBILITY) ||
+          styles.hasKey(PROP_REMOVE_CLIPPED_SUBVIEWS)) {
         forceMountToView();
       }
     }
@@ -317,7 +321,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
     }
 
     if (mDrawView == null) {
-      mDrawView = DrawView.INSTANCE;
+      mDrawView = new DrawView(getReactTag(), 0, 0, 0, 0);
       invalidate();
 
       // reset NodeRegion to allow it getting garbage-collected
@@ -327,7 +331,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
   /* package */ final DrawView collectDrawView(float left, float top, float right, float bottom) {
     if (!Assertions.assumeNotNull(mDrawView).clipBoundsMatch(left, top, right, bottom)) {
-      mDrawView = new DrawView(left, top, right, bottom);
+      mDrawView = new DrawView(getReactTag(), left, top, right, bottom);
     }
 
     return mDrawView;

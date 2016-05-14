@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.uimanager.NoSuchNativeViewException;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 
@@ -180,8 +181,15 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
 
     @Override
     public void execute() {
-      // Measure native View
-      mNativeViewHierarchyManager.measure(mReactTag, MEASURE_BUFFER);
+      try {
+        // Measure native View
+        mNativeViewHierarchyManager.measure(mReactTag, MEASURE_BUFFER);
+      } catch (NoSuchNativeViewException noSuchNativeViewException) {
+        // Invoke with no args to signal failure and to allow JS to clean up the callback
+        // handle.
+        mCallback.invoke();
+        return;
+      }
 
       float nativeViewX = MEASURE_BUFFER[0];
       float nativeViewY = MEASURE_BUFFER[1];
