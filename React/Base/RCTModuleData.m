@@ -124,6 +124,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   // `moduleData.instance` to be accessed re-entrantly.
   if (_bridge.moduleSetupComplete) {
     [self finishSetupForInstance];
+  } else {
+    // If we're here, then the module is completely initialized,
+    // except for what finishSetupForInstance does.  When the instance
+    // method is called after moduleSetupComplete,
+    // finishSetupForInstance will run.  If _requiresMainThreadSetup
+    // is true, getting the instance will block waiting for the main
+    // thread, which could take a while if the main thread is busy
+    // (I've seen 50ms in testing).  So we clear that flag, since
+    // nothing in finishSetupForInstance needs to be run on the main
+    // thread.
+    _requiresMainThreadSetup = NO;
   }
 }
 
