@@ -696,13 +696,15 @@ NSNumber *_RCTProfileBeginFlowEvent(void)
 
   CHECK(@0);
 
+  unsigned int cookie = ++flowID;
+  NSNumber *currentID = @(cookie);
+
   if (callbacks != NULL) {
-    // flow events not supported yet
-    return @0;
+    callbacks->begin_async_flow(1, "flow", cookie);
+    return currentID;
   }
 
   NSTimeInterval time = CACurrentMediaTime();
-  NSNumber *currentID = @(++flowID);
   NSString *threadName = RCTCurrentThreadName();
 
   dispatch_async(RCTProfileGetQueue(), ^{
@@ -725,6 +727,7 @@ void _RCTProfileEndFlowEvent(NSNumber *flowID)
   CHECK();
 
   if (callbacks != NULL) {
+    callbacks->end_async_flow(1, "flow", [flowID integerValue]);
     return;
   }
 

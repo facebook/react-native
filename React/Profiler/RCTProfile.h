@@ -187,6 +187,9 @@ typedef struct {
   void (*end_async_section)(uint64_t tag, const char *name, int cookie, size_t numArgs, systrace_arg_t *args);
 
   void (*instant_section)(uint64_t tag, const char *name, char scope);
+
+  void (*begin_async_flow)(uint64_t tag, const char *name, int cookie);
+  void (*end_async_flow)(uint64_t tag, const char *name, int cookie);
 } RCTProfileCallbacks;
 
 RCT_EXTERN void RCTProfileRegisterCallbacks(RCTProfileCallbacks *);
