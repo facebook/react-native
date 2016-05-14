@@ -60,6 +60,11 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   private float mClipRight;
   private float mClipBottom;
 
+  // Used to track whether any of the NodeRegions overflow this Node. This is used to determine
+  // whether or not we can detach this Node in the context of a container with
+  // setRemoveClippedSubviews enabled.
+  private boolean mOverflowsContainer;
+
   // last OnLayoutEvent info, only used when shouldNotifyOnLayout() is true.
   private int mLayoutX;
   private int mLayoutY;
@@ -120,6 +125,11 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   @ReactProp(name = "overflow")
   public final void setOverflow(String overflow) {
     mClipToBounds = "hidden".equals(overflow);
+    if (mClipToBounds) {
+      mOverflowsContainer = false;
+    } else {
+      updateOverflowsContainer();
+    }
     invalidate();
   }
 
@@ -255,6 +265,51 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
   /* package */ final void setNodeRegions(NodeRegion[] nodeRegion) {
     mNodeRegions = nodeRegion;
+    updateOverflowsContainer();
+  }
+
+  /* package */ final void updateOverflowsContainer() {
+    boolean overflowsContainer = false;
+    int width = (int) (mNodeRegion.mRight - mNodeRegion.mLeft);
+    int height = (int) (mNodeRegion.mBottom - mNodeRegion.mTop);
+    if (!mClipToBounds && height > 0 && width > 0) {
+      for (NodeRegion region : mNodeRegions) {
+        if (region.mBottom - region.mTop > height || region.mRight - region.mLeft > width) {
+          overflowsContainer = true;
+          break;
+        }
+      }
+    }
+
+    // if we don't overflow, let's check if any of the immediate children overflow.
+    // this is "indirectly recursive," since this method is called when setNodeRegions is called,
+    // and the children call setNodeRegions before their parent. consequently, when a node deep
+    // inside the tree overflows, its immediate parent has mOverflowsContainer set to true, and,
+    // by extension, so do all of its ancestors, sufficing here to only check the immediate
+    // child's mOverflowsContainer value instead of recursively asking if each child overflows its
+    // container.
+    if (!overflowsContainer) {
+      int children = getChildCount();
+      for (int i = 0; i < children; i++) {
+        ReactShadowNode node = getChildAt(i);
+        if (node instanceof FlatShadowNode && ((FlatShadowNode) node).mOverflowsContainer) {
+          overflowsContainer = true;
+          break;
+        }
+      }
+    }
+
+    // if things changed, notify the parent(s) about said changes - while in many cases, this will
+    // be extra work (since we process this for the parents after the children), in some cases,
+    // we may have no new node regions in the parent, but have a new node region in the child, and,
+    // as a result, the parent may not get the correct value for overflows container.
+    if (mOverflowsContainer != overflowsContainer) {
+      mOverflowsContainer = overflowsContainer;
+    }
+  }
+
+  /* package */ final boolean getOverflowsContainer() {
+    return mOverflowsContainer;
   }
 
   /* package */ void updateNodeRegion(

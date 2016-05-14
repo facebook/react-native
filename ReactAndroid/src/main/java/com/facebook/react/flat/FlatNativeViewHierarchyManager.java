@@ -64,10 +64,11 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
       int reactTag,
       @Nullable DrawCommand[] drawCommands,
       @Nullable AttachDetachListener[] listeners,
-      @Nullable NodeRegion[] nodeRegions) {
+      @Nullable NodeRegion[] nodeRegions,
+      boolean hasOverflowingElements) {
     FlatViewGroup view = (FlatViewGroup) resolveView(reactTag);
     if (drawCommands != null) {
-      view.mountDrawCommands(drawCommands);
+      view.mountDrawCommands(drawCommands, hasOverflowingElements);
     }
     if (listeners != null) {
       view.mountAttachDetachListeners(listeners);

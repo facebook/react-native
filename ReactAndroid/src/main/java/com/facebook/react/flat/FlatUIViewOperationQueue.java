@@ -44,16 +44,19 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     private final @Nullable DrawCommand[] mDrawCommands;
     private final @Nullable AttachDetachListener[] mAttachDetachListeners;
     private final @Nullable NodeRegion[] mNodeRegions;
+    private final boolean mHasOverflowingElements;
 
     private UpdateMountState(
         int reactTag,
         @Nullable DrawCommand[] drawCommands,
         @Nullable AttachDetachListener[] listeners,
-        @Nullable NodeRegion[] nodeRegions) {
+        @Nullable NodeRegion[] nodeRegions,
+        boolean hasOverflowingElements) {
       mReactTag = reactTag;
       mDrawCommands = drawCommands;
       mAttachDetachListeners = listeners;
       mNodeRegions = nodeRegions;
+      mHasOverflowingElements = hasOverflowingElements;
     }
 
     @Override
@@ -62,7 +65,8 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
           mReactTag,
           mDrawCommands,
           mAttachDetachListeners,
-          mNodeRegions);
+          mNodeRegions,
+          mHasOverflowingElements);
     }
   }
 
@@ -234,8 +238,14 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
       int reactTag,
       @Nullable DrawCommand[] drawCommands,
       @Nullable AttachDetachListener[] listeners,
-      @Nullable NodeRegion[] nodeRegions) {
-    enqueueUIOperation(new UpdateMountState(reactTag, drawCommands, listeners, nodeRegions));
+      @Nullable NodeRegion[] nodeRegions,
+      boolean hasOverflowingElements) {
+    enqueueUIOperation(new UpdateMountState(
+        reactTag,
+        drawCommands,
+        listeners,
+        nodeRegions,
+        hasOverflowingElements));
   }
 
   public void enqueueUpdateViewGroup(int reactTag, int[] viewsToAdd, int[] viewsToDetach) {

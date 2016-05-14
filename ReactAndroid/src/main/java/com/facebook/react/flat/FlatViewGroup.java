@@ -100,6 +100,8 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   // lookups in o(1) instead of o(log n) - trade space for time
   private final Map<Integer, DrawView> mDrawViewMap = new HashMap<>();
   private final Map<Integer, FlatViewGroup> mClippedSubviews = new HashMap<>();
+  // whether or not this FlatViewGroup has elements that overflow its bounds
+  private boolean mHasOverflowingElements;
 
   /* package */ FlatViewGroup(Context context) {
     super(context);
@@ -390,8 +392,9 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     ++mDrawChildIndex;
   }
 
-  /* package */ void mountDrawCommands(DrawCommand[] drawCommands) {
+  /* package */ void mountDrawCommands(DrawCommand[] drawCommands, boolean hasOverflowingElements) {
     mDrawCommands = drawCommands;
+    mHasOverflowingElements = hasOverflowingElements;
     if (mRemoveClippedSubviews) {
       mDrawViewMap.clear();
       for (DrawCommand drawCommand : mDrawCommands) {
@@ -597,6 +600,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
             Animation animation = flatChildView.getAnimation();
             boolean isAnimating = animation != null && !animation.hasEnded();
             if (!isAnimating &&
+                !flatChildView.mHasOverflowingElements &&
                 !clippingRect.intersects(
                     view.getLeft(),
                     view.getTop(),

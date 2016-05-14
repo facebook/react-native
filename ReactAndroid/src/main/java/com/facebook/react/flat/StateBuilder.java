@@ -325,6 +325,10 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     if (nodeRegions != null) {
       shouldUpdateMountState = true;
       node.setNodeRegions(nodeRegions);
+    } else if (descendantUpdated) {
+      // one of the descendant's value for overflows container may have changed, so
+      // we still need to update ours.
+      node.updateOverflowsContainer();
     }
 
     if (shouldUpdateMountState) {
@@ -332,7 +336,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
           node.getReactTag(),
           drawCommands,
           listeners,
-          nodeRegions);
+          nodeRegions,
+          node.getOverflowsContainer());
     }
 
     if (node.hasUnseenUpdates()) {
