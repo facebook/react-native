@@ -21,7 +21,7 @@ void RCTPerformanceLoggerStart(RCTPLTag tag)
 {
   if (RCTProfileIsProfiling()) {
     NSString *label = RCTPerformanceLoggerLabels()[tag];
-    RCTPLCookies[tag] = RCTProfileBeginAsyncEvent(0, label, nil);
+    RCTPLCookies[tag] = RCTProfileBeginAsyncEvent(RCTProfileTagAlways, label, nil);
   }
 
   RCTPLData[tag][0] = CACurrentMediaTime() * 1000;
@@ -35,7 +35,7 @@ void RCTPerformanceLoggerEnd(RCTPLTag tag)
 
     if (RCTProfileIsProfiling()) {
       NSString *label = RCTPerformanceLoggerLabels()[tag];
-      RCTProfileEndAsyncEvent(0, @"native", RCTPLCookies[tag], label, @"RCTPerformanceLogger", nil);
+      RCTProfileEndAsyncEvent(RCTProfileTagAlways, @"native", RCTPLCookies[tag], label, @"RCTPerformanceLogger", nil);
     }
   } else {
     RCTLogInfo(@"Unbalanced calls start/end for tag %li", (unsigned long)tag);

@@ -24,6 +24,8 @@
 RCT_EXTERN NSString *const RCTProfileDidStartProfiling;
 RCT_EXTERN NSString *const RCTProfileDidEndProfiling;
 
+RCT_EXTERN const uint64_t RCTProfileTagAlways;
+
 #if RCT_DEV
 
 @class RCTBridge;
@@ -72,9 +74,7 @@ RCT_EXTERN void _RCTProfileBeginEvent(NSThread *calleeThread,
     if (RCTProfileIsProfiling()) { \
       NSThread *__calleeThread = [NSThread currentThread]; \
       NSTimeInterval __time = CACurrentMediaTime(); \
-      dispatch_async(RCTProfileGetQueue(), ^{ \
-        _RCTProfileBeginEvent(__calleeThread, __time, __VA_ARGS__); \
-      }); \
+      _RCTProfileBeginEvent(__calleeThread, __time, __VA_ARGS__); \
     } \
   } while(0)
 
@@ -96,9 +96,7 @@ RCT_EXTERN void _RCTProfileEndEvent(NSThread *calleeThread,
       NSThread *__calleeThread = [NSThread currentThread]; \
       NSString *__threadName = RCTCurrentThreadName(); \
       NSTimeInterval __time = CACurrentMediaTime(); \
-      dispatch_async(RCTProfileGetQueue(), ^{ \
-        _RCTProfileEndEvent(__calleeThread, __threadName, __time, __VA_ARGS__); \
-      }); \
+      _RCTProfileEndEvent(__calleeThread, __threadName, __time, __VA_ARGS__); \
     } \
   } while(0)
 
