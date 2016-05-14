@@ -177,6 +177,11 @@ void JSCExecutor::destroy() {
 }
 
 void JSCExecutor::initOnJSVMThread() {
+  #ifdef WITH_FBSYSTRACE
+  FbSystraceSection s(
+    TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor.initOnJSVMThread");
+  #endif
+
   #if defined(WITH_FB_JSC_TUNING)
   configureJSCForAndroid(m_jscConfig);
   #endif
@@ -236,15 +241,26 @@ void JSCExecutor::terminateOnJSVMThread() {
 void JSCExecutor::loadApplicationScript(
     const std::string& script,
     const std::string& sourceURL) {
-  ReactMarker::logMarker("loadApplicationScript_startStringConvert");
-  String jsScript = String::createExpectingAscii(script);
-  ReactMarker::logMarker("loadApplicationScript_endStringConvert");
-
-  String jsSourceURL(sourceURL.c_str());
   #ifdef WITH_FBSYSTRACE
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor::loadApplicationScript",
     "sourceURL", sourceURL);
   #endif
+
+  #ifdef WITH_FBSYSTRACE
+  fbsystrace_begin_section(
+    TRACE_TAG_REACT_CXX_BRIDGE,
+    "JSCExecutor::loadApplicationScript-createExpectingAscii");
+  #endif
+
+  ReactMarker::logMarker("loadApplicationScript_startStringConvert");
+  String jsScript = String::createExpectingAscii(script);
+  ReactMarker::logMarker("loadApplicationScript_endStringConvert");
+
+  #ifdef WITH_FBSYSTRACE
+  fbsystrace_end_section(TRACE_TAG_REACT_CXX_BRIDGE);
+  #endif
+
+  String jsSourceURL(sourceURL.c_str());
   evaluateScript(m_context, jsScript, jsSourceURL);
   flush();
   ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
