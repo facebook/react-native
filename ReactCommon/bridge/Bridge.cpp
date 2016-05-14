@@ -4,14 +4,15 @@
 
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
-using fbsystrace::FbSystraceSection;
 using fbsystrace::FbSystraceAsyncFlow;
 #endif
+
 #include <folly/json.h>
 #include <folly/Memory.h>
 #include <folly/MoveWrapper.h>
 
 #include "Platform.h"
+#include "SystraceSection.h"
 
 namespace facebook {
 namespace react {
@@ -75,7 +76,7 @@ void Bridge::callFunction(
         TRACE_TAG_REACT_CXX_BRIDGE,
         tracingName.c_str(),
         systraceCookie);
-    FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, tracingName.c_str());
+    SystraceSection s(tracingName.c_str());
     #endif
 
     // This is safe because we are running on the executor's thread: it won't
@@ -100,7 +101,7 @@ void Bridge::invokeCallback(ExecutorToken executorToken, const double callbackId
         TRACE_TAG_REACT_CXX_BRIDGE,
         "<callback>",
         systraceCookie);
-    FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "Bridge.invokeCallback");
+    SystraceSection s("Bridge.invokeCallback");
     #endif
 
     executor->invokeCallback(callbackId, arguments);
