@@ -18,9 +18,13 @@
 #include "Platform.h"
 #include "Value.h"
 
-#ifdef WITH_JSC_EXTRA_TRACING
+#if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
 #include "JSCTracing.h"
+#endif
+
+#ifdef WITH_JSC_EXTRA_TRACING
 #include "JSCLegacyProfiler.h"
+#include "JSCLegacyTracing.h"
 #include <JavaScriptCore/API/JSProfilerPrivate.h>
 #endif
 
@@ -204,9 +208,13 @@ void JSCExecutor::initOnJSVMThread() {
   installGlobalFunction(m_context, "nativeLoggingHook", JSNativeHooks::loggingHook);
   installGlobalFunction(m_context, "nativePerformanceNow", JSNativeHooks::nowHook);
 
-  #ifdef WITH_JSC_EXTRA_TRACING
+  #if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
   addNativeTracingHooks(m_context);
+  #endif
+
+  #ifdef WITH_JSC_EXTRA_TRACING
   addNativeProfilingHooks(m_context);
+  addNativeTracingLegacyHooks(m_context);
   PerfLogging::installNativeHooks(m_context);
   #endif
 
@@ -301,6 +309,8 @@ void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& 
 }
 
 void JSCExecutor::setGlobalVariable(const std::string& propName, const std::string& jsonValue) {
+  // TODO mhorowitz: systrace this.
+
   auto globalObject = JSContextGetGlobalObject(m_context);
   String jsPropertyName(propName.c_str());
 
