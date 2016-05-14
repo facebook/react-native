@@ -322,10 +322,10 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return nil;
     }
 
-    RCT_PROFILE_BEGIN_EVENT(0, @"nativeRequireModuleConfig", nil);
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"nativeRequireModuleConfig", nil);
     NSArray *config = [strongSelf->_bridge configForModuleName:moduleName];
     NSString *result = config ? RCTJSONStringify(config, NULL) : nil;
-    RCT_PROFILE_END_EVENT(0, @"js_call,config", @{ @"moduleName": moduleName });
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call,config", @{ @"moduleName": moduleName });
     return result;
   }];
 
@@ -335,9 +335,9 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return;
     }
 
-    RCT_PROFILE_BEGIN_EVENT(0, @"nativeFlushQueueImmediate", nil);
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"nativeFlushQueueImmediate", nil);
     [strongSelf->_bridge handleBuffer:calls batchEnded:NO];
-    RCT_PROFILE_END_EVENT(0, @"js_call", nil);
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call", nil);
   }];
 
   [self addSynchronousHookWithName:@"nativePerformanceNow" usingBlock:^{
@@ -736,7 +736,8 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr)
 
     RCTPerformanceLoggerAdd(RCTPLRAMNativeRequiresCount, 1);
     RCTPerformanceLoggerAppendStart(RCTPLRAMNativeRequires);
-    RCT_PROFILE_BEGIN_EVENT(0, [@"nativeRequire_" stringByAppendingString:moduleName], nil);
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
+                            [@"nativeRequire_" stringByAppendingString:moduleName], nil);
 
     ModuleData *data = (ModuleData *)CFDictionaryGetValue(strongSelf->_jsModules, moduleName.UTF8String);
     RCTPerformanceLoggerAdd(RCTPLRAMNativeRequiresSize, data->length);
@@ -756,7 +757,7 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr)
     JSStringRelease(code);
     JSStringRelease(sourceURL);
 
-    RCT_PROFILE_END_EVENT(0, @"js_call", nil);
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call", nil);
     RCTPerformanceLoggerAppendEnd(RCTPLRAMNativeRequires);
 
     if (!result) {
