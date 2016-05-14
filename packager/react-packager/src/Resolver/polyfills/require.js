@@ -201,6 +201,7 @@ if (__DEV__) {
     if (factory) {
       mod.factory = factory;
     }
+    mod.hasError = false;
     mod.isInitialized = false;
     require(id);
 
