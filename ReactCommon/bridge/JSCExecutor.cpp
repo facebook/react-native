@@ -16,6 +16,7 @@
 #include "Bridge.h"
 #include "JSCHelpers.h"
 #include "Platform.h"
+#include "SystraceSection.h"
 #include "Value.h"
 
 #if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
@@ -30,11 +31,6 @@
 
 #ifdef WITH_JSC_MEMORY_PRESSURE
 #include <jsc_memory.h>
-#endif
-
-#ifdef WITH_FBSYSTRACE
-#include <fbsystrace.h>
-using fbsystrace::FbSystraceSection;
 #endif
 
 #ifdef WITH_FB_MEMORY_PROFILING
@@ -97,11 +93,8 @@ static std::string executeJSCallWithJSC(
     JSGlobalContextRef ctx,
     const std::string& methodName,
     const std::vector<folly::dynamic>& arguments) {
-  #ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(
-      TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor.executeJSCall",
-      "method", methodName);
-  #endif
+  SystraceSection s("JSCExecutor.executeJSCall",
+                    "method", methodName);
 
   // Evaluate script with JSC
   folly::dynamic jsonArgs(arguments.begin(), arguments.end());
@@ -181,10 +174,7 @@ void JSCExecutor::destroy() {
 }
 
 void JSCExecutor::initOnJSVMThread() {
-  #ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(
-    TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor.initOnJSVMThread");
-  #endif
+  SystraceSection s("JSCExecutor.initOnJSVMThread");
 
   #if defined(WITH_FB_JSC_TUNING)
   configureJSCForAndroid(m_jscConfig);
@@ -249,10 +239,8 @@ void JSCExecutor::terminateOnJSVMThread() {
 void JSCExecutor::loadApplicationScript(
     const std::string& script,
     const std::string& sourceURL) {
-  #ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor::loadApplicationScript",
-    "sourceURL", sourceURL);
-  #endif
+  SystraceSection s("JSCExecutor::loadApplicationScript",
+                    "sourceURL", sourceURL);
 
   #ifdef WITH_FBSYSTRACE
   fbsystrace_begin_section(
