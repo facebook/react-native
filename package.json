@@ -103,6 +103,7 @@
     "react.gradle",
     "android",
     "Libraries",
+    "lib",
     "packager",
     "cli.js",
     "local-cli",
