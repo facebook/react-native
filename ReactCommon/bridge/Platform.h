@@ -8,6 +8,7 @@
 
 #include <JavaScriptCore/JSContextRef.h>
 
+#include "Executor.h"
 #include "MessageQueueThread.h"
 
 namespace facebook {
@@ -22,7 +23,7 @@ namespace WebWorkerUtil {
 using WebWorkerQueueFactory = std::function<std::unique_ptr<MessageQueueThread>(int id, MessageQueueThread* ownerMessageQueue)>;
 extern WebWorkerQueueFactory createWebWorkerThread;
 
-using LoadScriptFromAssets = std::function<std::string(const std::string& assetName)>;
+using LoadScriptFromAssets = std::function<std::unique_ptr<const JSBigString>(const std::string& assetName)>;
 extern LoadScriptFromAssets loadScriptFromAssets;
 
 using LoadScriptFromNetworkSync = std::function<std::string(const std::string& url, const std::string& tempfileName)>;

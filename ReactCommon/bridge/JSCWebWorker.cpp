@@ -89,8 +89,8 @@ void JSCWebWorker::initJSVMAndLoadScript() {
   s_globalContextRefToJSCWebWorker[context_] = this;
 
   // TODO(9604438): Protect against script does not exist
-  std::string script = WebWorkerUtil::loadScriptFromAssets(scriptName_);
-  evaluateScript(context_, String(script.c_str()), String(scriptName_.c_str()));
+  std::unique_ptr<const JSBigString> script = WebWorkerUtil::loadScriptFromAssets(scriptName_);
+  evaluateScript(context_, jsStringFromBigString(*script), String(scriptName_.c_str()));
 
   installGlobalFunction(context_, "postMessage", nativePostMessage);
 }
