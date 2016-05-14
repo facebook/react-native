@@ -975,7 +975,7 @@ var apps = [
     name: '饿小闲',
     icon: 'https://xiaoxian.ele.me/download/images/share_page/ic_launcher.png',
     linkAppStore: 'https://itunes.apple.com/cn/app/e-xiao-xian/id1092025196',
-    author: 'Eleme'
+    author: 'Eleme',
   },
 ];
 
