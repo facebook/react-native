@@ -3,6 +3,7 @@
 #include "JSCHelpers.h"
 
 #include <JavaScriptCore/JSStringRef.h>
+#include <folly/String.h>
 #include <glog/logging.h>
 
 #include "Value.h"
@@ -36,18 +37,33 @@ JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef 
   result = JSEvaluateScript(context, script, NULL, source, 0, &exn);
   if (result == nullptr) {
     Value exception = Value(context, exn);
-    std::string exceptionText = exception.toString().str();
-    LOG(ERROR) << "Got JS Exception: " << exceptionText;
-    auto line = exception.asObject().getProperty("line");
 
-    std::ostringstream locationInfo;
-    std::string file = source != nullptr ? String::ref(source).str() : "";
-    locationInfo << "(" << (file.length() ? file : "<unknown file>");
+    std::string exceptionText = exception.toString().str();
+
+    // The null/empty-ness of source tells us if the JS came from a
+    // file/resource, or was a constructed statement.  The location
+    // info will include that source, if any.
+    std::string locationInfo = source != nullptr ? String::ref(source).str() : "";
+    auto line = exception.asObject().getProperty("line");
     if (line != nullptr && line.isNumber()) {
-      locationInfo << ":" << line.asInteger();
+      if (locationInfo.empty() && line.asInteger() != 1) {
+        // If there is a non-trivial line number, but there was no
+        // location info, we include a placeholder, and the line
+        // number.
+        locationInfo = folly::to<std::string>("<unknown file>:", line.asInteger());
+      } else if (!locationInfo.empty()) {
+        // If there is location info, we always include the line
+        // number, regardless of its value.
+        locationInfo += folly::to<std::string>(":", line.asInteger());
+      }
     }
-    locationInfo << ")";
-    throwJSExecutionException("%s %s", exceptionText.c_str(), locationInfo.str().c_str());
+
+    if (!locationInfo.empty()) {
+      exceptionText += " (" + locationInfo + ")";
+    }
+
+    LOG(ERROR) << "Got JS Exception: " << exceptionText;
+    throwJSExecutionException("%s", exceptionText.c_str());
   }
   return result;
 }
