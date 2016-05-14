@@ -1,14 +1,15 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
+#include <JavaScriptCore/JavaScript.h>
+
+#ifdef WITH_FB_MEMORY_PROFILING
+
 #include <stdio.h>
 #include <string.h>
-#include <JavaScriptCore/JavaScript.h>
 #include <JavaScriptCore/API/JSProfilerPrivate.h>
 #include "JSCHelpers.h"
 
 #include "Value.h"
-
-#ifdef WITH_FB_MEMORY_PROFILING
 
 static JSValueRef nativeCaptureHeap(
     JSContextRef ctx,
