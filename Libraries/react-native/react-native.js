@@ -172,22 +172,22 @@ var ReactNative = {
 
 // Preserve getters with warnings on the internal ReactNative copy without
 // invoking them.
-// [Even] disabled to not conflict with ReactDOM dep
-// var ReactNativeInternal = require('ReactNative');
-// function applyForwarding(key) {
-//   if (__DEV__) {
-//     Object.defineProperty(
-//       ReactNative,
-//       key,
-//       Object.getOwnPropertyDescriptor(ReactNativeInternal, key)
-//     );
-//     return;
-//   }
-//   ReactNative[key] = ReactNativeInternal[key];
-// }
-// for (var key in ReactNativeInternal) {
-//   applyForwarding(key);
-// }
+// [Even] changed import to not conflict with ReactDOM
+var ReactNativeInternal = require('ReactNativeReactAPI');
+function applyForwarding(key) {
+  if (__DEV__) {
+    Object.defineProperty(
+      ReactNative,
+      key,
+      Object.getOwnPropertyDescriptor(ReactNativeInternal, key)
+    );
+    return;
+  }
+  ReactNative[key] = ReactNativeInternal[key];
+}
+for (var key in ReactNativeInternal) {
+  applyForwarding(key);
+}
 
 if (__DEV__) {
   Object.defineProperty(ReactNative.addons, 'Perf', {
