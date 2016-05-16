@@ -37,6 +37,30 @@ AppRegistry.registerComponent('MyApp', () => App)
 
 ## Image
 
+The other basic React Native component is the `Image` component. Like `Text`, the `Image` component
+simply renders an image.
+
+> An `Image` is analogous to using `img` when building websites.
+
+The simplest way to render an image is to provide a source file to that image via the `source`
+attribute.
+
+This example displays a checkbox `Image` on the device.
+
+```JavaScript
+import React, { AppRegistry, Image } from 'react-native'
+
+const App = () => {
+  return (
+    // Normally this would at least be wrapped in a View for better control.
+    <Image source={require('./img/check.png')} />
+  )
+}
+
+// App registration and rendering
+AppRegistry.registerComponent('MyApp', () => App)
+```
+
 ## View
 
 ## TextInput
