@@ -970,6 +970,13 @@ var apps = [
     icon: 'https://lh3.googleusercontent.com/H0SILVHcDUxSMoSQwMb2QYtLjTBCqvK5ZEjOEwKQQ-2qnRV6Hd9Hn-gtSGPaoIOPwA=w300-rw',
     link: 'https://play.google.com/store/apps/details?id=com.biideal.biichat',
     author: 'biideal Inc.'
+  },
+  {
+    name: 'Easybooking',
+    icon: 'https://lh3.googleusercontent.com/j7JDhoagzDvtEjspdGniLDHbPBBMV9qCO84IKBH6mqMATFfdfmkuQKdQWJyYNetQaok=w300-rw',
+    linkAppStore: 'https://itunes.apple.com/vn/app/easybooking/id1087711401?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=vn.easybooking&hl=en',
+    author: 'IDTEK, JSC'
   }
 ];
 
