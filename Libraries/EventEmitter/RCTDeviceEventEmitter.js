@@ -12,6 +12,7 @@
 'use strict';
 
 const EventEmitter = require('EventEmitter');
+const EventSubscriptionVendor = require('EventSubscriptionVendor');
 const BatchedBridge = require('BatchedBridge');
 
 import type EmitterSubscription from 'EmitterSubscription';
@@ -22,7 +23,15 @@ import type EmitterSubscription from 'EmitterSubscription';
  */
 class RCTDeviceEventEmitter extends EventEmitter {
 
-  addListener(eventType: string, listener: any, context: ?Object): EmitterSubscription {
+  sharedSubscriber: EventSubscriptionVendor;
+
+  constructor() {
+    const sharedSubscriber = new EventSubscriptionVendor();
+    super(sharedSubscriber);
+    this.sharedSubscriber = sharedSubscriber;
+  }
+
+  addListener(eventType: string, listener: Function, context: ?Object): EmitterSubscription {
     if (eventType.lastIndexOf('statusBar', 0) === 0) {
       console.warn('`%s` event should be registered via the StatusBarIOS module', eventType);
       return require('StatusBarIOS').addListener(eventType, listener, context);
@@ -34,8 +43,26 @@ class RCTDeviceEventEmitter extends EventEmitter {
     return super.addListener(eventType, listener, context);
   }
 
-  nativeAddListener(eventType: string, listener: any, context: ?Object): EmitterSubscription {
-    return super.addListener(eventType, listener, context);
+  removeAllListeners(eventType: ?string) {
+    if (eventType) {
+      if (eventType.lastIndexOf('statusBar', 0) === 0) {
+        console.warn('statusBar events should be unregistered via the StatusBarIOS module');
+        return require('StatusBarIOS').removeAllListeners(eventType);
+      }
+      if (eventType.lastIndexOf('keyboard', 0) === 0) {
+        console.warn('keyboard events should be unregistered via the Keyboard module');
+        return require('Keyboard').removeAllListeners(eventType);
+      }
+    }
+    super.removeAllListeners(eventType);
+  }
+
+  removeSubscription(subscription: EmitterSubscription) {
+    if (subscription.emitter !== this) {
+      subscription.emitter.removeSubscription(subscription);
+    } else {
+      super.removeSubscription(subscription);
+    }
   }
 }
 

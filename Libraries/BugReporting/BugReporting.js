@@ -14,7 +14,7 @@
 const BugReportingNativeModule = require('NativeModules').BugReporting;
 const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
-import type {EmitterSubscription} from 'EventEmitter';
+import type EmitterSubscription from 'EmitterSubscription';
 
 type ExtraData = { [key: string]: string };
 type SourceCallback = () => string;
@@ -28,7 +28,7 @@ type SourceCallback = () => string;
 class BugReporting {
 
   static _sources: Map<string, SourceCallback> = new Map();
-  static _subscription: EmitterSubscription = null;
+  static _subscription: ?EmitterSubscription = null;
 
   /**
    * `init` is called in `AppRegistry.runApplication`, so you shouldn't have to worry about it.
