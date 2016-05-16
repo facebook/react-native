@@ -9,11 +9,13 @@
 
 package com.facebook.react.flat;
 
+import javax.annotation.Nullable;
+
 import android.text.Layout;
 import android.text.Spanned;
 
 /* package */ final class TextNodeRegion extends NodeRegion {
-  private final Layout mLayout;
+  private @Nullable Layout mLayout;
 
   /* package */ TextNodeRegion(
       float left,
@@ -22,29 +24,35 @@ import android.text.Spanned;
       float bottom,
       int tag,
       boolean isVirtual,
-      Layout layout) {
+      @Nullable Layout layout) {
     super(left, top, right, bottom, tag, isVirtual);
     mLayout = layout;
   }
 
-  /* package */ Layout getLayout() {
+  public void setLayout(Layout layout) {
+    mLayout = layout;
+  }
+
+  /* package */ @Nullable Layout getLayout() {
     return mLayout;
   }
 
   /* package */ int getReactTag(float touchX, float touchY) {
-    int y = Math.round(touchY - mTop);
-    if (y >= mLayout.getLineTop(0) && y < mLayout.getLineBottom(mLayout.getLineCount() - 1)) {
-      float x = Math.round(touchX - mLeft);
-      int line = mLayout.getLineForVertical(y);
+    if (mLayout != null) {
+      int y = Math.round(touchY - mTop);
+      if (y >= mLayout.getLineTop(0) && y < mLayout.getLineBottom(mLayout.getLineCount() - 1)) {
+        float x = Math.round(touchX - mLeft);
+        int line = mLayout.getLineForVertical(y);
 
-      if (mLayout.getLineLeft(line) <= x && x <= mLayout.getLineRight(line)) {
-        int off = mLayout.getOffsetForHorizontal(line, x);
+        if (mLayout.getLineLeft(line) <= x && x <= mLayout.getLineRight(line)) {
+          int off = mLayout.getOffsetForHorizontal(line, x);
 
-        Spanned text = (Spanned) mLayout.getText();
-        RCTRawText[] link = text.getSpans(off, off, RCTRawText.class);
+          Spanned text = (Spanned) mLayout.getText();
+          RCTRawText[] link = text.getSpans(off, off, RCTRawText.class);
 
-        if (link.length != 0) {
-          return link[0].getReactTag();
+          if (link.length != 0) {
+            return link[0].getReactTag();
+          }
         }
       }
     }

@@ -179,6 +179,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
       return;
     }
 
+    boolean updateNodeRegion = false;
     if (mDrawCommand == null) {
       // Layout was not created during the measure pass, must be Boring, create it now
       mDrawCommand = new DrawTextLayout(new BoringLayout(
@@ -190,6 +191,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
           mSpacingAdd,
           mBoringLayoutMetrics,
           INCLUDE_PADDING));
+      updateNodeRegion = true;
     }
 
     Spacing padding = getPadding();
@@ -211,6 +213,13 @@ import com.facebook.react.uimanager.annotations.ReactProp;
         clipRight,
         clipBottom);
     stateBuilder.addDrawCommand(mDrawCommand);
+
+    if (updateNodeRegion) {
+      NodeRegion nodeRegion = getNodeRegion();
+      if (nodeRegion instanceof TextNodeRegion) {
+        ((TextNodeRegion) nodeRegion).setLayout(mDrawCommand.getLayout());
+      }
+    }
 
     performCollectAttachDetachListeners(stateBuilder);
   }
@@ -240,12 +249,16 @@ import com.facebook.react.uimanager.annotations.ReactProp;
       float right,
       float bottom,
       boolean isVirtual) {
+
+    NodeRegion nodeRegion = getNodeRegion();
     if (mDrawCommand == null) {
-      super.updateNodeRegion(left, top, right, bottom, isVirtual);
+      if (nodeRegion.mLeft != left || nodeRegion.mTop != top || nodeRegion.mRight != right ||
+          nodeRegion.mBottom != bottom || nodeRegion.mIsVirtual != isVirtual) {
+        setNodeRegion(new TextNodeRegion(left, top, right, bottom, getReactTag(), isVirtual, null));
+      }
       return;
     }
 
-    NodeRegion nodeRegion = getNodeRegion();
     Layout layout = null;
 
     if (nodeRegion instanceof TextNodeRegion) {
