@@ -1,25 +1,23 @@
 /**
- * @generated SignedSource<<0591836c443c735d24e61782320d3d16>>
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !! This file is a check-in of a static_upstream project!      !!
- * !!                                                            !!
- * !! You should not modify this file directly. Instead:         !!
- * !! 1) Use `fjs use-upstream` to temporarily replace this with !!
- * !!    the latest version from upstream.                       !!
- * !! 2) Make your changes, test them, etc.                      !!
- * !! 3) Use `fjs push-upstream` to copy your changes back to    !!
- * !!    static_upstream.                                        !!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule EventHolder
- * @typechecks
+ * @flow
  */
 'use strict';
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
 class EventHolder {
+
+  _heldEvents: Object;
+  _currentEventKey: ?Object;
+
   constructor() {
     this._heldEvents = {};
     this._currentEventKey = null;
@@ -46,14 +44,14 @@ class EventHolder {
    *   }); //logs 'abc'
    *
    */
-  holdEvent(eventType: String, a, b, c, d, e, _) {
+  holdEvent(eventType: string, ...args: any) {
     this._heldEvents[eventType] = this._heldEvents[eventType] || [];
-    var eventsOfType = this._heldEvents[eventType];
-    var key = {
+    const eventsOfType = this._heldEvents[eventType];
+    const key = {
       eventType: eventType,
       index: eventsOfType.length
     };
-    eventsOfType.push([a, b, c, d, e, _]);
+    eventsOfType.push(args);
     return key;
   }
 
@@ -65,12 +63,12 @@ class EventHolder {
    * @param {?object} context - Optional context object to use when invoking
    *   the listener
    */
-  emitToListener(eventType: ?String , listener, context: ?Object) {
-    var eventsOfType = this._heldEvents[eventType];
+  emitToListener(eventType: ?string , listener: Function, context: ?Object) {
+    const eventsOfType = this._heldEvents[eventType];
     if (!eventsOfType) {
       return;
     }
-    var origEventKey = this._currentEventKey;
+    const origEventKey = this._currentEventKey;
     eventsOfType.forEach((/*?array*/ eventHeld, /*number*/ index) => {
       if (!eventHeld) {
         return;
@@ -97,7 +95,7 @@ class EventHolder {
       this._currentEventKey !== null,
       'Not in an emitting cycle; there is no current event'
     );
-    this.releaseEvent(this._currentEventKey);
+    this._currentEventKey && this.releaseEvent(this._currentEventKey);
   }
 
   /**
@@ -115,7 +113,7 @@ class EventHolder {
    *
    * @param {string} type
    */
-  releaseEventType(type: String) {
+  releaseEventType(type: string) {
     this._heldEvents[type] = [];
   }
 }

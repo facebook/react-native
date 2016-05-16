@@ -9,6 +9,8 @@
 
 #import "RCTJSCExecutor.h"
 
+#import <cinttypes>
+#import <memory>
 #import <pthread.h>
 
 #ifdef WITH_FB_JSC_TUNING
@@ -38,10 +40,33 @@ NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContext
 
 static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
 
-typedef struct ModuleData {
+struct __attribute__((packed)) ModuleData {
   uint32_t offset;
-  uint32_t length;
-} ModuleData;
+  uint32_t size;
+};
+
+using file_ptr = std::unique_ptr<FILE, decltype(&fclose)>;
+using memory_ptr = std::unique_ptr<void, decltype(&free)>;
+using table_ptr = std::unique_ptr<ModuleData[], decltype(&free)>;
+
+struct RandomAccessBundleData {
+  file_ptr bundle;
+  size_t baseOffset;
+  size_t numTableEntries;
+  table_ptr table;
+  RandomAccessBundleData(): bundle(nullptr, fclose), table(nullptr, free) {}
+};
+
+struct RandomAccessBundleStartupCode {
+  memory_ptr code;
+  size_t size;
+  static RandomAccessBundleStartupCode empty() {
+    return RandomAccessBundleStartupCode{memory_ptr(nullptr, free), 0};
+  };
+  bool isEmpty() {
+    return !code;
+  }
+};
 
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
 
@@ -111,9 +136,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   NSThread *_javaScriptThread;
   CFMutableDictionaryRef _cookieMap;
 
-  FILE *_bundle;
   JSStringRef _bundleURL;
-  CFMutableDictionaryRef _jsModules;
+  RandomAccessBundleData _randomAccessBundle;
 }
 
 @synthesize valid = _valid;
@@ -471,11 +495,8 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
               waitUntilDone:NO];
   _context = nil;
 
-  if (_jsModules) {
-    CFRelease(_jsModules);
-    fclose(_bundle);
-  }
-
+  _randomAccessBundle.bundle.reset();
+  _randomAccessBundle.table.reset();
   if (_cookieMap) {
     CFRelease(_cookieMap);
   }
@@ -689,36 +710,37 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   }), 0, @"js_call,json_call", (@{@"objectName": objectName}))];
 }
 
-static int streq(const char *a, const char *b)
+static bool readRandomAccessModule(const RandomAccessBundleData& bundleData, size_t offset, size_t size, char *data)
 {
-  return strcmp(a, b) == 0;
+  return fseek(bundleData.bundle.get(), offset + bundleData.baseOffset, SEEK_SET) == 0 &&
+         fread(data, 1, size, bundleData.bundle.get()) == size;
 }
 
-static void freeModule(__unused CFAllocatorRef allocator, void *ptr)
+static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleID, size_t offset, size_t size)
 {
-  free(ptr);
-}
-
-static uint32_t readUint32(const char **ptr)
-{
-  uint32_t data;
-  memcpy(&data, *ptr, sizeof(uint32_t));
-  data = NSSwapLittleIntToHost(data);
-  *ptr += sizeof(uint32_t);
-  return data;
-}
-
-static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr)
-{
-  if (fseek(fd, offset, SEEK_SET) != 0) {
-   return 1;
+  auto data = std::unique_ptr<char[]>(new char[size]);
+  if (!readRandomAccessModule(executor->_randomAccessBundle, offset, size, data.get())) {
+    RCTFatal(RCTErrorWithMessage(@"Error loading RAM module"));
+    return;
   }
 
-  if (fread(ptr, sizeof(uint8_t), length, fd) != length) {
-    return 1;
-  }
+  static char url[14]; // 10 = maximum decimal digits in a 32bit unsigned int + ".js" + null byte
+  sprintf(url, "%" PRIu32 ".js", moduleID);
 
-  return 0;
+  JSStringRef code = JSStringCreateWithUTF8CString(data.get());
+  JSValueRef jsError = NULL;
+  JSStringRef sourceURL = JSStringCreateWithUTF8CString(url);
+  JSValueRef result = JSEvaluateScript(executor->_context.ctx, code, NULL, sourceURL, 0, &jsError);
+
+  JSStringRelease(code);
+  JSStringRelease(sourceURL);
+
+  if (!result) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      RCTFatal(RCTNSErrorFromJSError(executor->_context.ctx, jsError));
+      [executor invalidate];
+    });
+  }
 }
 
 - (void)registerNativeRequire
@@ -728,52 +750,79 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr)
   RCTPerformanceLoggerSet(RCTPLRAMNativeRequiresSize, 0);
 
   __weak RCTJSCExecutor *weakSelf = self;
-  [self addSynchronousHookWithName:@"nativeRequire" usingBlock:^(NSString *moduleName) {
+  [self addSynchronousHookWithName:@"nativeRequire" usingBlock:^(NSNumber *moduleID) {
     RCTJSCExecutor *strongSelf = weakSelf;
-    if (!strongSelf || !moduleName) {
+    if (!strongSelf || !moduleID) {
       return;
     }
 
     RCTPerformanceLoggerAdd(RCTPLRAMNativeRequiresCount, 1);
     RCTPerformanceLoggerAppendStart(RCTPLRAMNativeRequires);
-    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
-                            [@"nativeRequire_" stringByAppendingString:moduleName], nil);
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, 
+                            [@"nativeRequire_" stringByAppendingFormat:@"%@", moduleID], nil);
 
-    ModuleData *data = (ModuleData *)CFDictionaryGetValue(strongSelf->_jsModules, moduleName.UTF8String);
-    RCTPerformanceLoggerAdd(RCTPLRAMNativeRequiresSize, data->length);
+    const uint32_t ID = [moduleID unsignedIntValue];
 
-    char bytes[data->length];
-    if (readBundle(strongSelf->_bundle, data->offset, data->length, bytes) != 0) {
-      RCTFatal(RCTErrorWithMessage(@"Error loading RAM module"));
-      return;
+    if (ID < strongSelf->_randomAccessBundle.numTableEntries) {
+      ModuleData *moduleData = &strongSelf->_randomAccessBundle.table[ID];
+      const uint32_t size = NSSwapLittleIntToHost(moduleData->size);
+
+      // sparse entry in the table -- module does not exist or is contained in the startup section
+      if (size == 0) {
+        return;
+      }
+
+      RCTPerformanceLoggerAdd(RCTPLRAMNativeRequiresSize, size);
+      executeRandomAccessModule(strongSelf, ID, NSSwapLittleIntToHost(moduleData->offset), size);
     }
-    JSStringRef code = JSStringCreateWithUTF8CString(bytes);
-    JSValueRef jsError = NULL;
-    JSStringRef sourceURL = JSStringCreateWithUTF8CString([moduleName stringByAppendingPathExtension:@"js"].UTF8String);
-
-    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, code, NULL, sourceURL, 0, NULL);
-
-    CFDictionaryRemoveValue(strongSelf->_jsModules, moduleName.UTF8String);
-    JSStringRelease(code);
-    JSStringRelease(sourceURL);
 
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call", nil);
     RCTPerformanceLoggerAppendEnd(RCTPLRAMNativeRequires);
-
-    if (!result) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        RCTFatal(RCTNSErrorFromJSError(strongSelf->_context.ctx, jsError));
-        [strongSelf invalidate];
-      });
-    }
   }];
+}
+
+static RandomAccessBundleStartupCode readRAMBundle(file_ptr bundle, RandomAccessBundleData& randomAccessBundle)
+{
+  // read in magic header, number of entries, and length of the startup section
+  uint32_t header[3];
+  if (fread(&header, 1, sizeof(header), bundle.get()) != sizeof(header)) {
+    return RandomAccessBundleStartupCode::empty();
+  }
+
+  const size_t numTableEntries = NSSwapLittleIntToHost(header[1]);
+  const size_t startupCodeSize = NSSwapLittleIntToHost(header[2]);
+  const size_t tableSize = numTableEntries * sizeof(ModuleData);
+
+  // allocate memory for meta data and lookup table. malloc instead of new to avoid constructor calls
+  table_ptr table(static_cast<ModuleData *>(malloc(tableSize)), free);
+  if (!table) {
+    return RandomAccessBundleStartupCode::empty();
+  }
+
+  // read the lookup table from the file
+  if (fread(table.get(), 1, tableSize, bundle.get()) != tableSize) {
+    return RandomAccessBundleStartupCode::empty();
+  }
+
+  // read the startup code
+  memory_ptr code(malloc(startupCodeSize), free);
+  if (!code || fread(code.get(), 1, startupCodeSize, bundle.get()) != startupCodeSize) {
+    return RandomAccessBundleStartupCode::empty();
+  }
+
+  randomAccessBundle.bundle = std::move(bundle);
+  randomAccessBundle.baseOffset = sizeof(header) + tableSize;
+  randomAccessBundle.numTableEntries = numTableEntries;
+  randomAccessBundle.table = std::move(table);
+
+  return {std::move(code), startupCodeSize};
 }
 
 - (NSData *)loadRAMBundle:(NSURL *)sourceURL error:(NSError **)error
 {
   RCTPerformanceLoggerStart(RCTPLRAMBundleLoad);
-  _bundle = fopen(sourceURL.path.UTF8String, "r");
-  if (!_bundle) {
+  file_ptr bundle(fopen(sourceURL.path.UTF8String, "r"), fclose);
+  if (!bundle) {
     if (error) {
       *error = RCTErrorWithMessage([NSString stringWithFormat:@"Bundle %@ cannot be opened: %d", sourceURL.path, errno]);
     }
@@ -782,82 +831,18 @@ static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr)
 
   [self registerNativeRequire];
 
-  // once a module has been loaded free its space from the heap, remove it from the index and release the module name
-  CFDictionaryKeyCallBacks keyCallbacks = { 0, NULL, (CFDictionaryReleaseCallBack)freeModule, NULL, (CFDictionaryEqualCallBack)streq, (CFDictionaryHashCallBack)strlen };
-  CFDictionaryValueCallBacks valueCallbacks = { 0, NULL, (CFDictionaryReleaseCallBack)freeModule, NULL, NULL };
-  _jsModules = CFDictionaryCreateMutable(NULL, 0, &keyCallbacks, &valueCallbacks);
 
-  uint32_t currentOffset = sizeof(uint32_t); // skip magic number
-
-  uint32_t tableLength;
-  if (readBundle(_bundle, currentOffset, sizeof(tableLength), &tableLength) != 0) {
-    if (error) {
-      *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
-    }
-    return nil;
-  }
-  tableLength = NSSwapLittleIntToHost(tableLength);
-
-  currentOffset += sizeof(uint32_t); // skip table length
-
-  // base offset to add to every module's offset to skip the header of the RAM bundle
-  uint32_t baseOffset = 4 + tableLength;
-
-  char tableStart[tableLength];
-  if (readBundle(_bundle, currentOffset, tableLength, tableStart) != 0) {
+  auto startupCode = readRAMBundle(std::move(bundle), _randomAccessBundle);
+  if (startupCode.isEmpty()) {
     if (error) {
       *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
     }
     return nil;
   }
 
-  char *tableCursor = tableStart;
-  char *endOfTable = tableCursor + tableLength;
-
-  while (tableCursor < endOfTable) {
-    uint32_t nameLength = strlen((const char *)tableCursor);
-    char *name = (char *)malloc(nameLength + 1);
-
-    if (!name) {
-      if (error) {
-        *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
-      }
-      return nil;
-    }
-
-    strcpy(name, tableCursor);
-
-    // the space allocated for each module's metada gets freed when the module is injected into JSC on `nativeRequire`
-    ModuleData *moduleData = (ModuleData *)malloc(sizeof(ModuleData));
-
-    tableCursor += nameLength + 1; // null byte terminator
-
-    moduleData->offset = baseOffset + readUint32((const char **)&tableCursor);
-    moduleData->length = readUint32((const char **)&tableCursor);
-
-    CFDictionarySetValue(_jsModules, name, moduleData);
-  }
-
-  ModuleData *startupData = ((ModuleData *)CFDictionaryGetValue(_jsModules, ""));
-
-  void *startupCode;
-  if (!(startupCode = malloc(startupData->length))) {
-    if (error) {
-      *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
-    }
-    return nil;
-  }
-
-  if (readBundle(_bundle, startupData->offset, startupData->length, startupCode) != 0) {
-    if (error) {
-      *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
-    }
-    free(startupCode);
-    return nil;
-  }
   RCTPerformanceLoggerEnd(RCTPLRAMBundleLoad);
-  RCTPerformanceLoggerSet(RCTPLRAMStartupCodeSize, startupData->length);
-  return [NSData dataWithBytesNoCopy:startupCode length:startupData->length freeWhenDone:YES];
+  RCTPerformanceLoggerSet(RCTPLRAMStartupCodeSize, startupCode.size);
+  return [NSData dataWithBytesNoCopy:startupCode.code.release() length:startupCode.size freeWhenDone:YES];
 }
 
 RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)name)

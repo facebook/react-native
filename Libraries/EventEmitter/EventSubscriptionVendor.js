@@ -1,29 +1,28 @@
 /**
- * @generated SignedSource<<24d5cc1cdd24704296686faf89dd36cf>>
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !! This file is a check-in of a static_upstream project!      !!
- * !!                                                            !!
- * !! You should not modify this file directly. Instead:         !!
- * !! 1) Use `fjs use-upstream` to temporarily replace this with !!
- * !!    the latest version from upstream.                       !!
- * !! 2) Make your changes, test them, etc.                      !!
- * !! 3) Use `fjs push-upstream` to copy your changes back to    !!
- * !!    static_upstream.                                        !!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule EventSubscriptionVendor
- * @typechecks
+ * @flow
  */
 'use strict';
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
+
+import type EventSubscription from 'EventSubscription';
 
 /**
  * EventSubscriptionVendor stores a set of EventSubscriptions that are
  * subscribed to a particular event type.
  */
 class EventSubscriptionVendor {
+
+  _subscriptionsForType: Object;
+  _currentSubscription: ?EventSubscription;
 
   constructor() {
     this._subscriptionsForType = {};
@@ -37,14 +36,14 @@ class EventSubscriptionVendor {
    * @param {EventSubscription} subscription
    */
   addSubscription(
-    eventType: String, subscription: EventSubscription): EventSubscription {
+    eventType: string, subscription: EventSubscription): EventSubscription {
     invariant(
       subscription.subscriber === this,
       'The subscriber of the subscription is incorrectly set.');
     if (!this._subscriptionsForType[eventType]) {
       this._subscriptionsForType[eventType] = [];
     }
-    var key = this._subscriptionsForType[eventType].length;
+    const key = this._subscriptionsForType[eventType].length;
     this._subscriptionsForType[eventType].push(subscription);
     subscription.eventType = eventType;
     subscription.key = key;
@@ -57,7 +56,7 @@ class EventSubscriptionVendor {
    * @param {?string} eventType - Optional name of the event type whose
    *   registered supscriptions to remove, if null remove all subscriptions.
    */
-  removeAllSubscriptions(eventType: ?String) {
+  removeAllSubscriptions(eventType: ?string) {
     if (eventType === undefined) {
       this._subscriptionsForType = {};
     } else {
@@ -72,10 +71,10 @@ class EventSubscriptionVendor {
    * @param {object} subscription
    */
   removeSubscription(subscription: Object) {
-    var eventType = subscription.eventType;
-    var key = subscription.key;
+    const eventType = subscription.eventType;
+    const key = subscription.key;
 
-    var subscriptionsForType = this._subscriptionsForType[eventType];
+    const subscriptionsForType = this._subscriptionsForType[eventType];
     if (subscriptionsForType) {
       delete subscriptionsForType[key];
     }
@@ -93,7 +92,7 @@ class EventSubscriptionVendor {
    * @param {string} eventType
    * @returns {?array}
    */
-  getSubscriptionsForType(eventType: String): ?Array {
+  getSubscriptionsForType(eventType: string): ?[EventSubscription] {
    return this._subscriptionsForType[eventType];
   }
 }

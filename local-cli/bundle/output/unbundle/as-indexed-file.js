@@ -15,7 +15,7 @@ const writeSourceMap = require('./write-sourcemap');
 const {joinModules} = require('./util');
 
 const MAGIC_UNBUNDLE_FILE_HEADER = require('./magic-number');
-const MAGIC_STARTUP_MODULE_ID = '';
+const SIZEOF_UINT32 = 4;
 
 /**
  * Saves all JS modules of an app as a single file, separated with null bytes.
@@ -77,67 +77,67 @@ function moduleToBuffer(id, code, encoding) {
   };
 }
 
-function uInt32Buffer(n) {
-  const buffer = Buffer(4);
-  buffer.writeUInt32LE(n, 0);
-  return buffer;
+function entryOffset(n) {
+  // 2: num_entries + startup_code_len
+  // n * 2: each entry consists of two uint32s
+  return (2 + n * 2) * SIZEOF_UINT32;
 }
 
-function buildModuleTable(buffers) {
+function buildModuleTable(startupCode, buffers) {
   // table format:
-  //  - table_length: uint_32 length of all table entries in bytes + the table length itself
-  //  - entries: entry...
+  // - num_entries:      uint_32  number of entries
+  // - startup_code_len: uint_32  length of the startup section
+  // - entries:          entry...
   //
   // entry:
-  //  - module_id: NUL terminated utf8 string
-  //  - module_offset: uint_32 offset into the module string
-  //  - module_length: uint_32 length in bytes of the module
+  //  - module_offset:   uint_32  offset into the modules blob
+  //  - module_length:   uint_32  length of the module code in bytes
 
-  const numBuffers = buffers.length;
+  const maxId = buffers.reduce((max, {id}) => Math.max(max, id), 0);
+  const numEntries = maxId + 1;
+  const table = new Buffer(entryOffset(numEntries)).fill(0);
 
-  const tableLengthBuffer = uInt32Buffer(0);
-  let tableLength = 4; // the table length itself, 4 == tableLengthBuffer.length
-  let currentOffset = 0;
+  // num_entries
+  table.writeUInt32LE(numEntries, 0);
 
-  const offsetTable = [tableLengthBuffer];
-  for (let i = 0; i < numBuffers; i++) {
-    const {id, buffer: {length}} = buffers[i];
+  // startup_code_len
+  table.writeUInt32LE(startupCode.length, SIZEOF_UINT32);
 
-    const entry = Buffer.concat([
-      Buffer(i === 0 ? MAGIC_STARTUP_MODULE_ID : id, 'utf8'),
-      nullByteBuffer,
-      uInt32Buffer(currentOffset),
-      uInt32Buffer(length),
-    ]);
+  // entries
+  let codeOffset = startupCode.length;
+  buffers.forEach(({id, buffer}) => {
+    const offset = entryOffset(id);
+    // module_offset
+    table.writeUInt32LE(codeOffset, offset);
+    // module_length
+    table.writeUInt32LE(buffer.length, offset + SIZEOF_UINT32);
+    codeOffset += buffer.length;
+  });
 
-    currentOffset += length;
-    tableLength += entry.length;
-    offsetTable.push(entry);
-  }
-
-  tableLengthBuffer.writeUInt32LE(tableLength, 0);
-  return Buffer.concat(offsetTable);
+  return table;
 }
 
-function buildModuleBuffers(startupCode, modules, encoding) {
-  return (
-    [moduleToBuffer('', startupCode, encoding, true)].concat(
-      modules.map(module =>
-        moduleToBuffer(
-          String(module.id),
-          module.code,
-          encoding,
-        )
-      )
-    )
-  );
+function buildModuleBuffers(modules, encoding) {
+  return modules.map(
+    module => moduleToBuffer(module.id, module.code, encoding));
 }
 
 function buildTableAndContents(startupCode, modules, encoding) {
-  const buffers = buildModuleBuffers(startupCode, modules, encoding);
-  const table = buildModuleTable(buffers, encoding);
+  // file contents layout:
+  // - magic number      char[4]  0xE5 0xD1 0x0B 0xFB (0xFB0BD1E5 uint32 LE)
+  // - offset table      table    see `buildModuleTables`
+  // - code blob         char[]   null-terminated code strings, starting with
+  //                              the startup code
 
-  return [fileHeader, table].concat(buffers.map(({buffer}) => buffer));
+  const startupCodeBuffer = Buffer(startupCode, encoding);
+  const moduleBuffers = buildModuleBuffers(modules, encoding);
+  const table = buildModuleTable(startupCodeBuffer, moduleBuffers);
+
+  return [
+    fileHeader,
+    table,
+    startupCodeBuffer
+  ].concat(moduleBuffers.map(({buffer}) => buffer));
 }
 
 module.exports = saveAsIndexedFile;

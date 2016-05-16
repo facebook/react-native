@@ -91,7 +91,7 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
 
 // Use a custom initialization function rather than implementing `+initialize` so that we can control
 // when the initialization code runs. `+initialize` runs immediately before the first message is sent
-// to the class which may be too late for us. By this time, we may have missed some 
+// to the class which may be too late for us. By this time, we may have missed some
 // `UIKeyboardWillChangeFrameNotification`s.
 + (void)initializeStatics
 {
@@ -208,8 +208,6 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
 
 @implementation RCTUIManager
 {
-  dispatch_queue_t _shadowQueue;
-
   // Root views are only mutated on the shadow queue
   NSMutableSet<NSNumber *> *_rootViewTags;
   NSMutableArray<dispatch_block_t> *_pendingUIBlocks;
@@ -235,7 +233,7 @@ RCT_EXPORT_MODULE()
 - (void)didReceiveNewContentSizeMultiplier
 {
   __weak RCTUIManager *weakSelf = self;
-  dispatch_async(self.methodQueue, ^{
+  dispatch_async(RCTGetUIManagerQueue(), ^{
     RCTUIManager *strongSelf = weakSelf;
     if (strongSelf) {
       [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
@@ -342,22 +340,29 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(interfaceOrientationWillChange:)
                                                name:UIApplicationWillChangeStatusBarOrientationNotification
                                              object:nil];
-  
+
   [RCTAnimation initializeStatics];
+}
+
+dispatch_queue_t RCTGetUIManagerQueue(void)
+{
+  static dispatch_queue_t shadowQueue;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    if ([NSOperation instancesRespondToSelector:@selector(qualityOfService)]) {
+      dispatch_queue_attr_t attr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0);
+      shadowQueue = dispatch_queue_create(RCTUIManagerQueueName, attr);
+    } else {
+      shadowQueue = dispatch_queue_create(RCTUIManagerQueueName, DISPATCH_QUEUE_SERIAL);
+      dispatch_set_target_queue(shadowQueue, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0));
+    }
+  });
+  return shadowQueue;
 }
 
 - (dispatch_queue_t)methodQueue
 {
-  if (!_shadowQueue) {
-    if ([NSOperation instancesRespondToSelector:@selector(qualityOfService)]) {
-      dispatch_queue_attr_t attr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0);
-      _shadowQueue = dispatch_queue_create(RCTUIManagerQueueName, attr);
-    } else {
-      _shadowQueue = dispatch_queue_create(RCTUIManagerQueueName, DISPATCH_QUEUE_SERIAL);
-      dispatch_set_target_queue(_shadowQueue, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0));
-    }
-  }
-  return _shadowQueue;
+  return RCTGetUIManagerQueue();
 }
 
 - (void)registerRootView:(UIView *)rootView withSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
@@ -378,7 +383,7 @@ RCT_EXPORT_MODULE()
 
   // Register shadow view
   __weak RCTUIManager *weakSelf = self;
-  dispatch_async(_shadowQueue, ^{
+  dispatch_async(RCTGetUIManagerQueue(), ^{
     RCTUIManager *strongSelf = weakSelf;
     if (!_viewRegistry) {
       return;
@@ -419,7 +424,7 @@ RCT_EXPORT_MODULE()
   }
 
   NSNumber *reactTag = view.reactTag;
-  dispatch_async(_shadowQueue, ^{
+  dispatch_async(RCTGetUIManagerQueue(), ^{
     RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
     RCTAssert(shadowView != nil, @"Could not locate shadow view with tag #%@", reactTag);
 
@@ -452,7 +457,7 @@ RCT_EXPORT_MODULE()
   RCTAssertMainThread();
 
   NSNumber *reactTag = view.reactTag;
-  dispatch_async(_shadowQueue, ^{
+  dispatch_async(RCTGetUIManagerQueue(), ^{
     RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
     RCTAssert(shadowView != nil, @"Could not locate root view with tag #%@", reactTag);
 
@@ -469,7 +474,7 @@ RCT_EXPORT_MODULE()
   NSNumber *reactTag = view.reactTag;
 
   __weak RCTUIManager *weakSelf = self;
-  dispatch_async(_shadowQueue, ^{
+  dispatch_async(RCTGetUIManagerQueue(), ^{
     RCTUIManager *strongSelf = weakSelf;
     if (!_viewRegistry) {
       return;
@@ -505,9 +510,9 @@ RCT_EXPORT_MODULE()
 
 - (void)addUIBlock:(RCTViewManagerUIBlock)block
 {
-  RCTAssertThread(_shadowQueue,
+  RCTAssertThread(RCTGetUIManagerQueue(),
                   @"-[RCTUIManager addUIBlock:] should only be called from the "
-                  "UIManager's _shadowQueue (it may be accessed via `bridge.uiManager.methodQueue`)");
+                  "UIManager's queue (get this using `RCTGetUIManagerQueue()`)");
 
   if (!block) {
     return;
@@ -1103,7 +1108,8 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
 
 - (void)flushUIBlocks
 {
-  RCTAssertThread(_shadowQueue, @"flushUIBlocks can only be called from the shadow queue");
+  RCTAssertThread(RCTGetUIManagerQueue(),
+                  @"flushUIBlocks can only be called from the shadow queue");
 
   // First copy the previous blocks into a temporary variable, then reset the
   // pending blocks to a new array. This guards against mutation while

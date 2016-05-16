@@ -120,7 +120,11 @@ function loadModuleImplementation(moduleId, module) {
     // keep args in sync with with defineModuleCode in
     // packager/react-packager/src/Resolver/index.js
     factory(global, require, moduleObject, exports);
-    module.factory = undefined;
+
+    // avoid removing factory in DEV mode as it breaks HMR
+    if (!__DEV__) {
+      module.factory = undefined;
+    }
 
     if (__DEV__) {
       Systrace.endEvent();

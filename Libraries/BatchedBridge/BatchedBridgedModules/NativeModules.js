@@ -51,6 +51,11 @@ Object.keys(RemoteModules).forEach((moduleName) => {
         module = config && BatchedBridge.processModuleConfig(config, module.moduleID);
         RemoteModules[moduleName] = module;
       }
+      Object.defineProperty(NativeModules, moduleName, {
+        configurable: true,
+        enumerable: true,
+        value: module,
+      });
       return module;
     },
   });
