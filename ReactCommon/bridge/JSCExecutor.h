@@ -55,8 +55,8 @@ public:
   ~JSCExecutor() override;
 
   virtual void loadApplicationScript(
-    const std::string& script,
-    const std::string& sourceURL) override;
+    std::unique_ptr<const JSBigString> script,
+    std::string sourceURL) override;
   virtual void setJSModulesUnbundle(
     std::unique_ptr<JSModulesUnbundle> unbundle) override;
   virtual void callFunction(
@@ -67,8 +67,8 @@ public:
     const double callbackId,
     const folly::dynamic& arguments) override;
   virtual void setGlobalVariable(
-    const std::string& propName,
-    const std::string& jsonValue) override;
+    std::string propName,
+    std::unique_ptr<const JSBigString> jsonValue) override;
   virtual void* getJavaScriptContext() override;
   virtual bool supportsProfiling() override;
   virtual void startProfiler(const std::string &titleString) override;
@@ -97,8 +97,8 @@ private:
       std::shared_ptr<MessageQueueThread> messageQueueThread,
       int workerId,
       JSCExecutor *owner,
-      const std::string& script,
-      const std::unordered_map<std::string, std::string>& globalObjAsJSON,
+      std::string scriptURL,
+      std::unordered_map<std::string, std::string> globalObjAsJSON,
       const folly::dynamic& jscConfig);
 
   void initOnJSVMThread();
@@ -107,7 +107,7 @@ private:
   void flushQueueImmediate(std::string queueJSON);
   void loadModule(uint32_t moduleId);
 
-  int addWebWorker(const std::string& script, JSValueRef workerRef, JSValueRef globalObjRef);
+  int addWebWorker(std::string scriptURL, JSValueRef workerRef, JSValueRef globalObjRef);
   void postMessageToOwnedWebWorker(int worker, JSValueRef message);
   void postMessageToOwner(JSValueRef result);
   void receiveMessageFromOwnedWebWorker(int workerId, const std::string& message);

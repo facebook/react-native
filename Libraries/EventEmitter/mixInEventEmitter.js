@@ -1,30 +1,25 @@
 /**
- * @generated SignedSource<<c735038726af2daf584b3e7fb3950e8b>>
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !! This file is a check-in of a static_upstream project!      !!
- * !!                                                            !!
- * !! You should not modify this file directly. Instead:         !!
- * !! 1) Use `fjs use-upstream` to temporarily replace this with !!
- * !!    the latest version from upstream.                       !!
- * !! 2) Make your changes, test them, etc.                      !!
- * !! 3) Use `fjs push-upstream` to copy your changes back to    !!
- * !!    static_upstream.                                        !!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule mixInEventEmitter
+ * @flow
  */
 
-var EventEmitter = require('EventEmitter');
-var EventEmitterWithHolding = require('EventEmitterWithHolding');
-var EventHolder = require('EventHolder');
-var EventValidator = require('EventValidator');
+const EventEmitter = require('EventEmitter');
+const EventEmitterWithHolding = require('EventEmitterWithHolding');
+const EventHolder = require('EventHolder');
+const EventValidator = require('EventValidator');
 
-var copyProperties = require('copyProperties');
-var invariant = require('fbjs/lib/invariant');
-var keyOf = require('fbjs/lib/keyOf');
+const copyProperties = require('copyProperties');
+const invariant = require('fbjs/lib/invariant');
+const keyOf = require('fbjs/lib/keyOf');
 
-var TYPES_KEY = keyOf({__types: true});
+const TYPES_KEY = keyOf({__types: true});
 
 /**
  * API to setup an object or constructor to be able to emit data events.
@@ -47,16 +42,16 @@ var TYPES_KEY = keyOf({__types: true});
  * mixInEventEmitter(Singleton, {lonely: true});
  * Singleton.emit('lonely', true);
  */
-function mixInEventEmitter(klass, types) {
+function mixInEventEmitter(cls: Function | Object, types: Object) {
   invariant(types, 'Must supply set of valid event types');
 
   // If this is a constructor, write to the prototype, otherwise write to the
   // singleton object.
-  var target = klass.prototype || klass;
+  const target = cls.prototype || cls;
 
   invariant(!target.__eventEmitter, 'An active emitter is already mixed in');
 
-  var ctor = klass.constructor;
+  const ctor = cls.constructor;
   if (ctor) {
     invariant(
       ctor === Object || ctor === Function,
@@ -76,7 +71,7 @@ function mixInEventEmitter(klass, types) {
   copyProperties(target, EventEmitterMixin);
 }
 
-var EventEmitterMixin = {
+const EventEmitterMixin = {
   emit: function(eventType, a, b, c, d, e, _) {
     return this.__getEventEmitter().emit(eventType, a, b, c, d, e, _);
   },
@@ -123,10 +118,10 @@ var EventEmitterMixin = {
 
   __getEventEmitter: function() {
     if (!this.__eventEmitter) {
-      var emitter = new EventEmitter();
+      let emitter = new EventEmitter();
       emitter = EventValidator.addValidation(emitter, this.__types);
 
-      var holder = new EventHolder();
+      const holder = new EventHolder();
       this.__eventEmitter = new EventEmitterWithHolding(emitter, holder);
     }
     return this.__eventEmitter;

@@ -87,7 +87,7 @@ public:
    * contains code for all modules and a runtime that resolves and
    * executes modules.
    */
-  void loadApplicationScript(const std::string& script, const std::string& sourceURL);
+  void loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL);
 
   /**
    * An "unbundle" is a backend that stores and injects JavaScript modules as
@@ -98,9 +98,9 @@ public:
    */
   void loadApplicationUnbundle(
     std::unique_ptr<JSModulesUnbundle> unbundle,
-    const std::string& startupCode,
-    const std::string& sourceURL);
-  void setGlobalVariable(const std::string& propName, const std::string& jsonValue);
+    std::unique_ptr<const JSBigString> startupCode,
+    std::string sourceURL);
+  void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
   void* getJavaScriptContext();
   bool supportsProfiling();
   void startProfiler(const std::string& title);

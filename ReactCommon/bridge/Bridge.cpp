@@ -4,14 +4,15 @@
 
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
-using fbsystrace::FbSystraceSection;
 using fbsystrace::FbSystraceAsyncFlow;
 #endif
+
 #include <folly/json.h>
 #include <folly/Memory.h>
 #include <folly/MoveWrapper.h>
 
 #include "Platform.h"
+#include "SystraceSection.h"
 
 namespace facebook {
 namespace react {
@@ -36,22 +37,26 @@ Bridge::~Bridge() {
   CHECK(*m_destroyed) << "Bridge::destroy() must be called before deallocating the Bridge!";
 }
 
-void Bridge::loadApplicationScript(const std::string& script, const std::string& sourceURL) {
+void Bridge::loadApplicationScript(std::unique_ptr<const JSBigString> script,
+                                   std::string sourceURL) {
   // TODO(t11144533): Add assert that we are on the correct thread
-  m_mainExecutor->loadApplicationScript(script, sourceURL);
+  m_mainExecutor->loadApplicationScript(std::move(script), std::move(sourceURL));
 }
 
 void Bridge::loadApplicationUnbundle(
     std::unique_ptr<JSModulesUnbundle> unbundle,
-    const std::string& startupScript,
-    const std::string& startupScriptSourceURL) {
+    std::unique_ptr<const JSBigString> startupScript,
+    std::string startupScriptSourceURL) {
   runOnExecutorQueue(
       *m_mainExecutorToken,
-      [unbundle=folly::makeMoveWrapper(std::move(unbundle)), startupScript, startupScriptSourceURL]
+      [unbundle=folly::makeMoveWrapper(std::move(unbundle)),
+       startupScript=folly::makeMoveWrapper(std::move(startupScript)),
+       startupScriptSourceURL=std::move(startupScriptSourceURL)]
         (JSExecutor* executor) mutable {
 
     executor->setJSModulesUnbundle(unbundle.move());
-    executor->loadApplicationScript(startupScript, startupScriptSourceURL);
+    executor->loadApplicationScript(std::move(*startupScript),
+                                    std::move(startupScriptSourceURL));
   });
 }
 
@@ -75,7 +80,7 @@ void Bridge::callFunction(
         TRACE_TAG_REACT_CXX_BRIDGE,
         tracingName.c_str(),
         systraceCookie);
-    FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, tracingName.c_str());
+    SystraceSection s(tracingName.c_str());
     #endif
 
     // This is safe because we are running on the executor's thread: it won't
@@ -100,17 +105,21 @@ void Bridge::invokeCallback(ExecutorToken executorToken, const double callbackId
         TRACE_TAG_REACT_CXX_BRIDGE,
         "<callback>",
         systraceCookie);
-    FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "Bridge.invokeCallback");
+    SystraceSection s("Bridge.invokeCallback");
     #endif
 
     executor->invokeCallback(callbackId, arguments);
   });
 }
 
-void Bridge::setGlobalVariable(const std::string& propName, const std::string& jsonValue) {
-  runOnExecutorQueue(*m_mainExecutorToken, [=] (JSExecutor* executor) {
-    executor->setGlobalVariable(propName, jsonValue);
-  });
+void Bridge::setGlobalVariable(std::string propName,
+                               std::unique_ptr<const JSBigString> jsonValue) {
+  runOnExecutorQueue(
+    *m_mainExecutorToken,
+    [propName=std::move(propName), jsonValue=folly::makeMoveWrapper(std::move(jsonValue))]
+    (JSExecutor* executor) mutable {
+      executor->setGlobalVariable(propName, jsonValue.move());
+    });
 }
 
 void* Bridge::getJavaScriptContext() {

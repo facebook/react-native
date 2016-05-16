@@ -4,11 +4,7 @@
 
 #include "Executor.h"
 #include "MethodCall.h"
-
-#ifdef WITH_FBSYSTRACE
-#include <fbsystrace.h>
-using fbsystrace::FbSystraceSection;
-#endif
+#include "SystraceSection.h"
 
 #include <folly/json.h>
 #include <folly/Memory.h>
@@ -77,17 +73,13 @@ void Instance::initializeBridge(
     bridge_ = folly::make_unique<Bridge>(
       jsef.get(), jsQueue_, folly::make_unique<ExecutorTokenFactoryImpl>(callback_.get()), folly::make_unique<BridgeCallbackImpl>(this));
   });
-#ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "setBatchedBridgeConfig");
-#endif
+  SystraceSection s("setBatchedBridgeConfig");
 
   CHECK(bridge_);
 
   folly::dynamic nativeModuleDescriptions = folly::dynamic::array();
   {
-#ifdef WITH_FBSYSTRACE
-    FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "collectNativeModuleDescriptions");
-#endif
+    SystraceSection s("collectNativeModuleDescriptions");
     nativeModuleDescriptions = moduleRegistry_->moduleDescriptions();
   }
 
@@ -95,62 +87,50 @@ void Instance::initializeBridge(
     folly::dynamic::object
     ("remoteModuleConfig", std::move(nativeModuleDescriptions));
 
-#ifdef WITH_FBSYSTRACE
-  FbSystraceSection t(TRACE_TAG_REACT_CXX_BRIDGE, "setGlobalVariable");
-#endif
+  SystraceSection t("setGlobalVariable");
   setGlobalVariable(
     "__fbBatchedBridgeConfig",
-    folly::toJson(config));
+    folly::make_unique<JSBigStdString>(folly::toJson(config)));
 }
 
-void Instance::loadScriptFromString(const std::string& string,
-                                    const std::string& sourceURL) {
+void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> string,
+                                    std::string sourceURL) {
   callback_->incrementPendingJSCalls();
-#ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE,
-    "reactbridge_xplat_loadScriptFromString",
-    "sourceURL", sourceURL);
-#endif
+  SystraceSection s("reactbridge_xplat_loadScriptFromString",
+                    "sourceURL", sourceURL);
   // TODO mhorowitz: ReactMarker around loadApplicationScript
-  bridge_->loadApplicationScript(string, sourceURL);
+  bridge_->loadApplicationScript(std::move(string), std::move(sourceURL));
 }
 
 void Instance::loadScriptFromFile(const std::string& filename,
                                   const std::string& sourceURL) {
   // TODO mhorowitz: ReactMarker around file read
-  std::string script;
+  std::unique_ptr<JSBigBufferString> buf;
   {
-#ifdef WITH_FBSYSTRACE
-    FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE,
-      "reactbridge_xplat_loadScriptFromFile",
-      "fileName", filename);
-#endif
+    SystraceSection s("reactbridge_xplat_loadScriptFromFile",
+                      "fileName", filename);
 
     std::ifstream jsfile(filename);
     if (!jsfile) {
       LOG(ERROR) << "Unable to load script from file" << filename;
     } else {
       jsfile.seekg(0, std::ios::end);
-      script.reserve(jsfile.tellg());
+      buf.reset(new JSBigBufferString(jsfile.tellg()));
       jsfile.seekg(0, std::ios::beg);
-      script.assign(
-        std::istreambuf_iterator<char>(jsfile),
-        std::istreambuf_iterator<char>());
+      jsfile.read(buf->data(), buf->size());
     }
   }
 
-  loadScriptFromString(script, sourceURL);
+  loadScriptFromString(std::move(buf), sourceURL);
 }
 
 void Instance::loadUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle,
-                            const std::string& startupScript,
-                            const std::string& startupScriptSourceURL) {
+                            std::unique_ptr<const JSBigString> startupScript,
+                            std::string startupScriptSourceURL) {
   callback_->incrementPendingJSCalls();
-#ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE,
-    "reactbridge_xplat_setJSModulesUnbundle");
-#endif
-  bridge_->loadApplicationUnbundle(std::move(unbundle), startupScript, startupScriptSourceURL);
+  SystraceSection s("reactbridge_xplat_setJSModulesUnbundle");
+  bridge_->loadApplicationUnbundle(std::move(unbundle), std::move(startupScript),
+                                   std::move(startupScriptSourceURL));
 }
 
 bool Instance::supportsProfiling() {
@@ -165,24 +145,20 @@ void Instance::stopProfiler(const std::string& title, const std::string& filenam
   return bridge_->stopProfiler(title, filename);
 }
 
-void Instance::setGlobalVariable(const std::string& propName,
-                                 const std::string& jsonValue) {
-  bridge_->setGlobalVariable(propName, jsonValue);
+void Instance::setGlobalVariable(std::string propName,
+                                 std::unique_ptr<const JSBigString> jsonValue) {
+  bridge_->setGlobalVariable(std::move(propName), std::move(jsonValue));
 }
 
 void Instance::callJSFunction(ExecutorToken token, const std::string& module, const std::string& method,
                               folly::dynamic&& params, const std::string& tracingName) {
-#ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, tracingName.c_str());
-#endif
+  SystraceSection s(tracingName.c_str());
   callback_->incrementPendingJSCalls();
   bridge_->callFunction(token, module, method, std::move(params), tracingName);
 }
 
 void Instance::callJSCallback(ExecutorToken token, uint64_t callbackId, folly::dynamic&& params) {
-#ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "<callback>");
-#endif
+  SystraceSection s("<callback>");
   callback_->incrementPendingJSCalls();
   bridge_->invokeCallback(token, (double) callbackId, std::move(params));
 }

@@ -33,6 +33,15 @@ public class ReactScrollViewManager
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactScrollView> {
 
   private static final String REACT_CLASS = "RCTScrollView";
+  private @Nullable FpsListener mFpsListener = null;
+
+  public ReactScrollViewManager() {
+    this(null);
+  }
+
+  public ReactScrollViewManager(@Nullable FpsListener fpsListener) {
+    mFpsListener = fpsListener;
+  }
 
   @Override
   public String getName() {
@@ -41,7 +50,7 @@ public class ReactScrollViewManager
 
   @Override
   public ReactScrollView createViewInstance(ThemedReactContext context) {
-    return new ReactScrollView(context);
+    return new ReactScrollView(context, mFpsListener);
   }
 
   @ReactProp(name = "scrollEnabled", defaultBoolean = true)
@@ -70,6 +79,18 @@ public class ReactScrollViewManager
   @ReactProp(name = "sendMomentumEvents")
   public void setSendMomentumEvents(ReactScrollView view, boolean sendMomentumEvents) {
     view.setSendMomentumEvents(sendMomentumEvents);
+  }
+
+  /**
+   * Tag used for logging scroll performance on this scroll view. Will force momentum events to be
+   * turned on (see setSendMomentumEvents).
+   *
+   * @param view
+   * @param scrollPerfTag
+   */
+  @ReactProp(name = "scrollPerfTag")
+  public void setScrollPerfTag(ReactScrollView view, String scrollPerfTag) {
+    view.setScrollPerfTag(scrollPerfTag);
   }
 
   /**
