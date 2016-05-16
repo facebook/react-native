@@ -210,6 +210,12 @@ var apps = [
     link: 'https://play.google.com/store/apps/details?id=com.ziliunapp',
     author: 'Sonny Lazuardi',
   },
+  {
+    name: '一休',
+    icon: 'https://avatars0.githubusercontent.com/u/3763708?v=3&',
+    link: 'https://itunes.apple.com/cn/app/yi-xiu-zhong-xiao-qi-ye-cai/id1050588308?mt=8',
+    author: 'Hangzhou Xiuxiu Technology',
+  },
 ];
 
 var showcase = React.createClass({
