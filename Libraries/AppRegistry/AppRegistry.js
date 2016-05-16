@@ -90,6 +90,7 @@ var AppRegistry = {
     console.log(msg);
     BugReporting.init();
     BugReporting.addSource('AppRegistry.runApplication' + runCount++, () => msg);
+    BugReporting.addFileSource('react_hierarchy.txt', () => require('dumpReactTree')());
     invariant(
       runnables[appKey] && runnables[appKey].run,
       'Application ' + appKey + ' has not been registered. This ' +
