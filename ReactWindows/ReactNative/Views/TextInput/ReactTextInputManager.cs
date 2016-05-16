@@ -6,6 +6,7 @@ using ReactNative.Views.Text;
 using System;
 using System.Collections.Generic;
 using Windows.System;
+using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -209,6 +210,19 @@ namespace ReactNative.Views.TextInput
         public void SetPlaceholder(ReactTextBox view, string placeholder)
         {
             view.PlaceholderText = placeholder;
+        }
+
+        /// <summary>
+        /// Sets the background color for the <see cref="ReactTextBox"/>.
+        /// </summary>
+        /// <param name="view">The view instance.</param>
+        /// <param name="color">The masked color value.</param>
+        [ReactProp(ViewProps.BackgroundColor, CustomType = "Color")]
+        public void SetBackgroundColor(ReactTextBox view, uint? color)
+        {
+            view.Background = color.HasValue
+                ? new SolidColorBrush(ColorHelpers.Parse(color.Value))
+                : new SolidColorBrush(Colors.White);
         }
 
         /// <summary>
