@@ -93,4 +93,26 @@ AppRegistry.registerComponent('MyApp', () => App)
 
 ## TextInput
 
+Direct text-based user input is a foundation for many apps. The completion of a form where you are
+entering personal information such as address is a canonical example of this. `TextInput` is a
+basic component that allows the user to enter text.
+
+This example creates a simple `TextInput` box with the `string` `Hello` as the placeholder when
+the `TextInput` is empty.
+
+```JavaScript
+import React, { AppRegistry, TextInput, View } from 'react-native'
+
+const App = () => {
+  return (
+      <View>
+        <TextInput placeholder='Hello'/>
+      </View>
+  )
+}
+
+// App registration and rendering
+AppRegistry.registerComponent('MyApp', () => App)
+```
+
 ## ListView
