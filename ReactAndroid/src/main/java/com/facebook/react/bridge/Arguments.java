@@ -12,6 +12,7 @@ package com.facebook.react.bridge;
 import javax.annotation.Nullable;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 
 public class Arguments {
 
@@ -180,13 +181,117 @@ public class Arguments {
           bundle.putBundle(key, toBundle(readableMap.getMap(key)));
           break;
         case Array:
-          // TODO t8873322
-          throw new UnsupportedOperationException("Arrays aren't supported yet.");
+          putArrayInBundle(bundle, readableMap, key);
+          break;
         default:
           throw new IllegalArgumentException("Could not convert object with key: " + key + ".");
       }
     }
 
     return bundle;
+  }
+
+  private static void putArrayInBundle(Bundle bundle, ReadableMap map, String key) {
+    ReadableArray array = map.getArray(key);
+    if (array.size() == 0) {
+      bundle.putParcelableArray(key, new Parcelable[0]);
+      return;
+    }
+    ReadableType arrayType = array.getType(0);
+    switch (arrayType) {
+      case Null:
+        // Java puts null on an uninitialized reference for us
+        bundle.putParcelableArray(key, new Parcelable[array.size()]);
+      case Boolean:
+        bundle.putBooleanArray(key, toBooleanArray(array));
+        break;
+      case Number:
+        bundle.putDoubleArray(key, toDoubleArray(array));
+      case String:
+        bundle.putStringArray(key, toStringArray(array));
+      case Map:
+        bundle.putParcelableArray(key, toBundleArray(array));
+        break;
+      case Array:
+        throw new IllegalArgumentException("Array of arrays are not supported yet. At key: " + key + ".");
+      default:
+        throw new IllegalArgumentException("Could not convert object array with key: " + key + ".");
+    }
+  }
+
+  /**
+   * Convert a {@link ReadableArray} to a boolean array.
+   * @param array the {@link ReadableArray} to convert.
+   * @return the converted boolean array.
+   */
+  @Nullable
+  public static boolean[] toBooleanArray(ReadableArray array) {
+    if (array == null) {
+      return null;
+    }
+    final int size = array.size();
+    boolean[] ret = new boolean[size];
+
+    for (int i = 0; i < size; i++) {
+      ret[i] = array.getBoolean(i);
+    }
+    return ret;
+  }
+
+  /**
+   * Convert a {@link ReadableArray} to a double array.
+   * @param array the {@link ReadableArray} to convert.
+   * @return the converted double array.
+   */
+  @Nullable
+  public static double[] toDoubleArray(ReadableArray array) {
+    if (array == null) {
+      return null;
+    }
+    final int size = array.size();
+    double[] ret = new double[size];
+
+    for (int i = 0; i < size; i++) {
+      ret[i] = array.getDouble(i);
+    }
+    return ret;
+  }
+
+  /**
+   * Convert a {@link ReadableArray} to a {@link String} array.
+   * @param array the {@link ReadableArray} to convert.
+   * @return the converted {@link String} array.
+   */
+  @Nullable
+  public static String[] toStringArray(ReadableArray array) {
+    if (array == null) {
+      return null;
+    }
+    final int size = array.size();
+    String[] ret = new String[size];
+
+    for (int i = 0; i < size; i++) {
+      ret[i] = array.getString(i);
+    }
+    return ret;
+  }
+
+  /**
+   * Convert a {@link ReadableArray} to a {@link Bundle} array.
+   * @param array the {@link ReadableArray} to convert.
+   * @return the converted {@link Bundle} array.
+   */
+  @Nullable
+  public static Bundle[] toBundleArray(ReadableArray array) {
+    if (array == null) {
+      return null;
+    }
+    final int size = array.size();
+    Bundle[] ret = new Bundle[size];
+
+    for (int i = 0; i < size; i++) {
+      ret[i] = toBundle(array.getMap(i));
+    }
+    return ret;
   }
 }
