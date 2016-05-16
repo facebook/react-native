@@ -16,6 +16,25 @@ their own or combined to build new components.
 
 ## Text
 
+The most basic component in React Native is the `Text` component. The `Text` component simply
+renders text.
+
+This example displays the `string` `"Hello"` on the device.
+
+```JavaScript
+import React, { AppRegistry, Text } from 'react-native'
+
+const App = () => {
+  return (
+    // Normally this would at least be wrapped in a View for better control.
+    <Text>Hello!</Text>
+  )
+}
+
+// App registration and rendering
+AppRegistry.registerComponent('MyApp', () => App)
+```
+
 ## Image
 
 ## View
