@@ -28,17 +28,15 @@ public class ReactSwipeRefreshLayout extends SwipeRefreshLayout {
 
   @Override
   public void setRefreshing(boolean refreshing) {
-    if (mRefreshing != refreshing) {
-      mRefreshing = refreshing;
-      // Use `post` otherwise the control won't start refreshing if refreshing is true when
-      // the component gets mounted.
-      post(new Runnable() {
-        @Override
-        public void run() {
-          ReactSwipeRefreshLayout.super.setRefreshing(mRefreshing);
-        }
-      });
-    }
+    mRefreshing = refreshing;
+    // Use `post` otherwise the control won't start refreshing if refreshing is true when
+    // the component gets mounted.
+    post(new Runnable() {
+      @Override
+      public void run() {
+        ReactSwipeRefreshLayout.super.setRefreshing(mRefreshing);
+      }
+    });
   }
 
   @Override
