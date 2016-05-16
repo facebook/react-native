@@ -191,6 +191,13 @@ var featured = [
     ],
   },
   {
+    name: 'Vorterix',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple49/v4/3a/f0/b4/3af0b475-f0e8-e81d-eb38-1ec1dfa9b2f4/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/ar/app/vorterix/id577990518?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.vorterix',
+    author: 'Dift & underscope.io',
+  },
+  {
     name: 'WPV',
     icon: 'http://a2.mzstatic.com/us/r30/Purple49/v4/a8/26/d7/a826d7bf-337b-c6b8-488d-aca98027754d/icon350x350.png',
     link: 'https://itunes.apple.com/us/app/wpv/id725222647?mt=8',
