@@ -72,7 +72,9 @@ RCT_EXPORT_METHOD(addListener:(NSString *)eventName)
 
 RCT_EXPORT_METHOD(removeListeners:(NSInteger)count)
 {
-  RCTAssert(count <= _listenerCount, @"Attempted to remove more listeners than added");
+  if (RCT_DEBUG && count > _listenerCount) {
+    RCTLogError(@"Attempted to remove more %@ listeners than added", [self class]);
+  }
   if (count == _listenerCount) {
     [self stopObserving];
   }

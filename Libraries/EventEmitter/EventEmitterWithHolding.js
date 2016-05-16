@@ -1,21 +1,19 @@
 /**
- * @generated SignedSource<<fb2bb5c1c402a097a7e1da7413526629>>
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !! This file is a check-in of a static_upstream project!      !!
- * !!                                                            !!
- * !! You should not modify this file directly. Instead:         !!
- * !! 1) Use `fjs use-upstream` to temporarily replace this with !!
- * !!    the latest version from upstream.                       !!
- * !! 2) Make your changes, test them, etc.                      !!
- * !! 3) Use `fjs push-upstream` to copy your changes back to    !!
- * !!    static_upstream.                                        !!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule EventEmitterWithHolding
- * @typechecks
+ * @flow
  */
 'use strict';
+
+import type EmitterSubscription from 'EmitterSubscription';
+import type EventEmitter from 'EventEmitter';
+import type EventHolder from 'EventHolder';
 
 /**
  * @class EventEmitterWithHolding
@@ -30,6 +28,12 @@
  * that uses an emitter.
  */
 class EventEmitterWithHolding {
+
+  _emitter: EventEmitter;
+  _eventHolder: EventHolder;
+  _currentEventToken: ?Object;
+  _emittingHeldEvents: boolean;
+
   /**
    * @constructor
    * @param {object} emitter - The object responsible for emitting the actual
@@ -37,7 +41,7 @@ class EventEmitterWithHolding {
    * @param {object} holder - The event holder that is responsible for holding
    *   and then emitting held events.
    */
-  constructor(emitter, holder) {
+  constructor(emitter: EventEmitter, holder: EventHolder) {
     this._emitter = emitter;
     this._eventHolder = holder;
     this._currentEventToken = null;
@@ -47,14 +51,14 @@ class EventEmitterWithHolding {
   /**
    * @see EventEmitter#addListener
    */
-  addListener(eventType: String, listener, context: ?Object) {
+  addListener(eventType: string, listener: Function, context: ?Object) {
     return this._emitter.addListener(eventType, listener, context);
   }
 
   /**
    * @see EventEmitter#once
    */
-  once(eventType: String, listener, context: ?Object) {
+  once(eventType: string, listener: Function, context: ?Object) {
     return this._emitter.once(eventType, listener, context);
   }
 
@@ -79,8 +83,8 @@ class EventEmitterWithHolding {
    *   }); // logs 'abc'
    */
   addRetroactiveListener(
-    eventType: String, listener, context: ?Object): EmitterSubscription {
-    var subscription = this._emitter.addListener(eventType, listener, context);
+    eventType: string, listener: Function, context: ?Object): EmitterSubscription {
+    const subscription = this._emitter.addListener(eventType, listener, context);
 
     this._emittingHeldEvents = true;
     this._eventHolder.emitToListener(eventType, listener, context);
@@ -92,7 +96,7 @@ class EventEmitterWithHolding {
   /**
    * @see EventEmitter#removeAllListeners
    */
-  removeAllListeners(eventType: String) {
+  removeAllListeners(eventType: string) {
     this._emitter.removeAllListeners(eventType);
   }
 
@@ -106,15 +110,15 @@ class EventEmitterWithHolding {
   /**
    * @see EventEmitter#listeners
    */
-  listeners(eventType: String) /* TODO: Annotate return type here */ {
+  listeners(eventType: string) /* TODO: Annotate return type here */ {
     return this._emitter.listeners(eventType);
   }
 
   /**
    * @see EventEmitter#emit
    */
-  emit(eventType: String, a, b, c, d, e, _) {
-    this._emitter.emit(eventType, a, b, c, d, e, _);
+  emit(eventType: string, ...args: any) {
+    this._emitter.emit(eventType, ...args);
   }
 
   /**
@@ -132,12 +136,9 @@ class EventEmitterWithHolding {
    *     console.log(message);
    *   }); // logs 'abc'
    */
-  emitAndHold(eventType: String, a, b, c, d, e, _) {
-    this._currentEventToken = this._eventHolder.holdEvent(
-      eventType,
-      a, b, c, d, e, _
-    );
-    this._emitter.emit(eventType, a, b, c, d, e, _);
+  emitAndHold(eventType: string, ...args: any) {
+    this._currentEventToken = this._eventHolder.holdEvent(eventType, ...args);
+    this._emitter.emit(eventType, ...args);
     this._currentEventToken = null;
   }
 
@@ -145,7 +146,7 @@ class EventEmitterWithHolding {
    * @see EventHolder#releaseCurrentEvent
    */
   releaseCurrentEvent() {
-    if (this._currentEventToken !== null) {
+    if (this._currentEventToken) {
       this._eventHolder.releaseEvent(this._currentEventToken);
     } else if (this._emittingHeldEvents) {
       this._eventHolder.releaseCurrentEvent();
@@ -156,7 +157,7 @@ class EventEmitterWithHolding {
    * @see EventHolder#releaseEventType
    * @param {string} eventType
    */
-  releaseHeldEventType(eventType: String) {
+  releaseHeldEventType(eventType: string) {
     this._eventHolder.releaseEventType(eventType);
   }
 }
