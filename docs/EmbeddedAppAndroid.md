@@ -18,9 +18,24 @@ Since React makes no assumptions about the rest of your technology stack, it's e
 
 In your app's `build.gradle` file add the React Native dependency:
 
-    compile 'com.facebook.react:react-native:0.20.+'
+    compile "com.facebook.react:react-native:+"  // From node_modules
 
-You can find the latest version of the react-native library on [Maven Central](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.facebook.react%22%20AND%20a%3A%22react-native%22). Next, make sure you have the Internet permission in your `AndroidManifest.xml`:
+In your project's `build.gradle` file add an entry for the local React Native maven directory:
+
+```
+allprojects {
+    repositories {
+        ...
+        maven {
+            // All of React Native (JS, Android binaries) is installed from npm
+            url "$projectDir/node_modules/react-native/android"
+        }
+    }
+    ...
+}
+```
+
+Next, make sure you have the Internet permission in your `AndroidManifest.xml`:
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -113,7 +128,7 @@ That's it, your activity is ready to run some JavaScript code.
 
 ## Add JS to your app
 
-In your project's root folder, run:
+In your app's root folder, run:
 
     $ npm init
     $ npm install --save react-native
