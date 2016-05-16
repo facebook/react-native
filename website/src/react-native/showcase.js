@@ -970,6 +970,30 @@ var apps = [
     icon: 'https://lh3.googleusercontent.com/H0SILVHcDUxSMoSQwMb2QYtLjTBCqvK5ZEjOEwKQQ-2qnRV6Hd9Hn-gtSGPaoIOPwA=w300-rw',
     link: 'https://play.google.com/store/apps/details?id=com.biideal.biichat',
     author: 'biideal Inc.'
+  },
+  {
+    name: 'QQ音乐',
+    icon: 'http://pp.myapp.com/ma_icon/0/icon_6259_1462429453/96',
+    link: 'http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.qqmusic',
+    author: '石玉磊'
+  },
+  {
+    name: '全民K歌',
+    icon: 'http://pp.myapp.com/ma_icon/0/icon_10966186_1460087288/96',
+    link: 'http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.karaoke',
+    author: '石玉磊'
+  },
+  {
+    name: 'QQ空间',
+    icon: 'http://pp.myapp.com/ma_icon/0/icon_9959_1460036593/96',
+    link: 'http://android.myapp.com/myapp/detail.htm?apkName=com.qzone',
+    author: '薛丰'
+  },
+  {
+    name: 'QQ',
+    icon: 'http://pp.myapp.com/ma_icon/0/icon_6633_1461768893/96',
+    link: 'http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.mobileqq',
+    author: '邱俊'
   }
 ];
 
