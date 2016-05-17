@@ -6,6 +6,6 @@ prebuilt_jar(
 
 remote_file(
     name = 'okio-binary-jar',
-    url = 'mvn:com.squareup.okio:okio:jar:1.6.0',
-    sha1 = '98476622f10715998eacf9240d6b479f12c66143',
+    url = 'mvn:com.squareup.okio:okio:jar:1.8.0',
+    sha1 = '05ea7af56cc7c567ed9856d99efb30740e9b17ff',
 )
