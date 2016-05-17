@@ -117,6 +117,16 @@ var WebView = React.createClass({
     ]),
 
     /**
+     * Used on Android only, defines what native class will be used
+     * by the WebView, with RCTWebView as default.
+     * This property is useful if you would like to override the behavior
+     * of the native webview, ie. by intercepting resource loading or
+     * triggering custom events.
+     * @platform android
+     */
+    nativeWebView: PropTypes.string,
+
+    /**
      * Used on Android only, JS is enabled by default for WebView on iOS
      * @platform android
      */
@@ -168,6 +178,7 @@ var WebView = React.createClass({
     return {
       javaScriptEnabled : true,
       scalesPageToFit: true,
+      nativeWebView: 'RCTWebView',
     };
   },
 
@@ -175,6 +186,8 @@ var WebView = React.createClass({
     if (this.props.startInLoadingState) {
       this.setState({viewState: WebViewState.LOADING});
     }
+
+    this.setState({nativeWebView: requireNativeComponent(this.props.nativeWebView, WebView)});
   },
 
   render: function() {
@@ -212,8 +225,10 @@ var WebView = React.createClass({
       console.warn('WebView: `source.body` is not supported when using GET.');
     }
 
+    let NativeWebView = this.state.nativeWebView;
+
     var webView =
-      <RCTWebView
+      <NativeWebView
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
         style={webViewStyles}
@@ -315,8 +330,6 @@ var WebView = React.createClass({
     this.updateNavigationState(event);
   },
 });
-
-var RCTWebView = requireNativeComponent('RCTWebView', WebView);
 
 var styles = StyleSheet.create({
   container: {
