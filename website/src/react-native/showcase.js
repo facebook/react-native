@@ -633,7 +633,7 @@ var apps = [
   },
   {
     name: '蜂鸟众包',
-    icon: 'http://img.wdjimg.com/mms/icon/v1/7/fd/b017c4a3eda1330f6b2561ec57cb0fd7_256_256.png',
+    icon: 'http://img.wdjimg.com/mms/icon/v1/e/6e/687b129606504cd52632a8cc4ca816ee_256_256.png',
     linkAppStore: 'https://itunes.apple.com/cn/app/feng-niao-zhong-bao-jian-zhi/id1061034377?l=en&mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=me.ele.crowdsource',
     author: 'Eleme',
