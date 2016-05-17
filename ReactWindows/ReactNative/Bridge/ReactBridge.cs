@@ -46,15 +46,15 @@ namespace ReactNative.Bridge
         /// <summary>
         /// Calls a JavaScript function.
         /// </summary>
-        /// <param name="moduleId">The module ID.</param>
-        /// <param name="methodId">The method ID.</param>
+        /// <param name="module">The module ID.</param>
+        /// <param name="method">The method ID.</param>
         /// <param name="arguments">The arguments.</param>
-        public void CallFunction(int moduleId, int methodId, JArray arguments)
+        public void CallFunction(string module, string method, JArray arguments)
         {
             var allArgs = new JArray
             {
-                moduleId,
-                methodId,
+                module,
+                method,
                 arguments,
             };
 

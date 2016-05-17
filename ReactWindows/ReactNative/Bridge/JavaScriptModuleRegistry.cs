@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace ReactNative.Bridge
 {
@@ -14,29 +15,15 @@ namespace ReactNative.Bridge
     public class JavaScriptModuleRegistry
     {
         private readonly IDictionary<Type, IJavaScriptModule> _moduleInstances;
+        private readonly IDictionary<Type, JavaScriptModuleRegistration> _moduleRegistrations;
 
-        /// <summary>
-        /// Instantiates the <see cref="JavaScriptModuleRegistry"/>.
-        /// </summary>
-        /// <param name="reactInstance">The react instance.</param>
-        /// <param name="config">The module configuration.</param>
-        public JavaScriptModuleRegistry(
-            IReactInstance reactInstance,
-            JavaScriptModulesConfig config)
+        private JavaScriptModuleRegistry(IList<JavaScriptModuleRegistration> config)
         {
-            if (reactInstance == null)
-                throw new ArgumentNullException(nameof(reactInstance));
-            if (config == null)
-                throw new ArgumentNullException(nameof(config));
-
-            _moduleInstances = new Dictionary<Type, IJavaScriptModule>(config.ModuleDefinitions.Count);
-            foreach (var registration in config.ModuleDefinitions)
+            _moduleInstances = new Dictionary<Type, IJavaScriptModule>(config.Count);
+            _moduleRegistrations = new Dictionary<Type, JavaScriptModuleRegistration>(config.Count);
+            foreach (var registration in config)
             {
-                var type = registration.ModuleInterface;
-                var moduleInstance = (IJavaScriptModule)Activator.CreateInstance(type);
-                var invokeHandler = new JavaScriptModuleInvocationHandler(reactInstance, registration);
-                moduleInstance.InvocationHandler = invokeHandler;
-                _moduleInstances.Add(type, moduleInstance);
+                _moduleRegistrations.Add(registration.ModuleInterface, registration);
             }
         }
 
@@ -44,17 +31,31 @@ namespace ReactNative.Bridge
         /// Gets an instance of a <see cref="IJavaScriptModule"/>.
         /// </summary>
         /// <typeparam name="T">Type of JavaScript module.</typeparam>
+        /// <param name="instance">The React instance.</param>
         /// <returns>The JavaScript module instance.</returns>
-        public T GetJavaScriptModule<T>() where T : IJavaScriptModule
+        public T GetJavaScriptModule<T>(IReactInstance instance) where T : IJavaScriptModule
         {
-            var instance = default(IJavaScriptModule);
-            if (!_moduleInstances.TryGetValue(typeof(T), out instance))
+            lock (_moduleInstances)
             {
-                throw new InvalidOperationException(
-                    $"JS module '{typeof(T)}' hasn't been registered.");
-            }
+                var moduleInstance = default(IJavaScriptModule);
+                if (!_moduleInstances.TryGetValue(typeof(T), out moduleInstance))
+                {
+                    var registration = default(JavaScriptModuleRegistration);
+                    if (!_moduleRegistrations.TryGetValue(typeof(T), out registration))
+                    {
+                        throw new InvalidOperationException(
+                            $"JS module '{typeof(T)}' hasn't been registered.");
+                    }
 
-            return (T)instance;
+                    var type = registration.ModuleInterface;
+                    moduleInstance = (IJavaScriptModule)Activator.CreateInstance(type);
+                    var invokeHandler = new JavaScriptModuleInvocationHandler(instance, registration);
+                    moduleInstance.InvocationHandler = invokeHandler;
+                    _moduleInstances.Add(type, moduleInstance);
+                }
+
+                return (T)moduleInstance;
+            }
         }
 
         class JavaScriptModuleInvocationHandler : IInvocationHandler
@@ -74,10 +75,67 @@ namespace ReactNative.Bridge
             {
                 var tracingName = _moduleRegistration.GetTracingName(name);
                 _reactInstance.InvokeFunction(
-                    _moduleRegistration.ModuleId,
-                    _moduleRegistration.GetMethodId(name),
+                    _moduleRegistration.Name,
+                    name,
                     JArray.FromObject(args),
                     tracingName);
+            }
+        }
+
+        /// <summary>
+        /// Builder for <see cref="JavaScriptModuleRegistry"/>.
+        /// </summary>
+        public sealed class Builder
+        {
+            private readonly IList<JavaScriptModuleRegistration> _modules =
+                new List<JavaScriptModuleRegistration>();
+
+            /// <summary>
+            /// Add a JavaScript module.
+            /// </summary>
+            /// <param name="type">The JavaScript module type.</param>
+            /// <returns>The builder instance.</returns>
+            public Builder Add(Type type)
+            {
+#if DEBUG
+                Validate(type);
+#endif
+                _modules.Add(new JavaScriptModuleRegistration(type));
+                return this;
+            }
+
+            /// <summary>
+            /// Build the JavaScript module registry.
+            /// </summary>
+            /// <returns>The registry.</returns>
+            public JavaScriptModuleRegistry Build()
+            {
+                return new JavaScriptModuleRegistry(_modules);
+            }
+
+            private static void Validate(Type type)
+            {
+                if (type.GetTypeInfo().IsAbstract)
+                {
+                    throw new ArgumentException(
+                        $"JavaScript module '{type}' must not be abstract.",
+                        nameof(type));
+                }
+
+                if (!typeof(IJavaScriptModule).IsAssignableFrom(type))
+                {
+                    throw new ArgumentException(
+                        $"JavaScript module '{type}' must derive from IJavaScriptModule.",
+                        nameof(type));
+                }
+
+                var defaultConstructor = type.GetConstructor(Array.Empty<Type>());
+                if (defaultConstructor == null || !defaultConstructor.IsPublic)
+                {
+                    throw new ArgumentException(
+                        $"JavaScript module '{type}' must have a public default constructor.",
+                        nameof(type));
+                }
             }
         }
     }

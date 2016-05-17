@@ -65,7 +65,7 @@ namespace ReactNative.Tests.Bridge
                     var bridge = new ReactBridge(executor, new MockReactCallback(), nativeThread);
                     var token = await jsQueueThread.CallOnQueue(() =>
                     {
-                        bridge.CallFunction(1, 1, new JArray());
+                        bridge.CallFunction("module", "method", new JArray());
                         return executor.GetGlobalVariable("FunctionCalls");
                     });
 
@@ -73,8 +73,8 @@ namespace ReactNative.Tests.Bridge
                     {
                         new JArray
                         {
-                            1,
-                            1,
+                            "module",
+                            "method",
                             new JArray(),
                         },
                     };
@@ -132,7 +132,7 @@ namespace ReactNative.Tests.Bridge
                     () => eventHandler.Set());
 
                 var bridge = new ReactBridge(executor, callback, nativeThread);
-                bridge.CallFunction(0, 0, new JArray());
+                bridge.CallFunction("module", "method", new JArray());
 
                 Assert.IsTrue(eventHandler.WaitOne());
 
@@ -175,7 +175,7 @@ namespace ReactNative.Tests.Bridge
 
                 for (var i = 0; i < n; ++i)
                 {
-                    AssertEx.Throws<InvalidOperationException>(() => bridge.CallFunction(0, 0, new JArray()));
+                    AssertEx.Throws<InvalidOperationException>(() => bridge.CallFunction("module", "method", new JArray()));
                 }
 
                 Assert.AreEqual(n, count);

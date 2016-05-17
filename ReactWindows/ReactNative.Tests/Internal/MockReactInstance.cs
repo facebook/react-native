@@ -10,7 +10,7 @@ namespace ReactNative.Tests
     class MockReactInstance : IReactInstance
     {
         private readonly Action<int, JArray> _callback;
-        private readonly Action<int, int, JArray, string> _function;
+        private readonly Action<string, string, JArray, string> _function;
 
         private int _isDisposed;
 
@@ -24,12 +24,12 @@ namespace ReactNative.Tests
         {
         }
 
-        public MockReactInstance(Action<int, int, JArray, string> function)
+        public MockReactInstance(Action<string, string, JArray, string> function)
             : this((_, __) => { }, function)
         {
         }
 
-        public MockReactInstance(Action<int, JArray> callback, Action<int, int, JArray, string> function)
+        public MockReactInstance(Action<int, JArray> callback, Action<string, string, JArray, string> function)
         {
             _callback = callback;
             _function = function;
@@ -79,9 +79,9 @@ namespace ReactNative.Tests
             _callback(callbackId, arguments);
         }
 
-        public void InvokeFunction(int moduleId, int methodId, JArray arguments, string tracingName)
+        public void InvokeFunction(string module, string method, JArray arguments, string tracingName)
         {
-            _function(moduleId, methodId, arguments, tracingName);
+            _function(module, method, arguments, tracingName);
         }
 
         public void Dispose()

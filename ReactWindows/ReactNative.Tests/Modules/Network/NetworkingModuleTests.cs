@@ -130,7 +130,7 @@ namespace ReactNative.Tests.Modules.Network
                 }
 
                 var array = args[1] as JArray;
-                if (array == null || array.Count != 2)
+                if (array == null || array.Count != 3)
                 {
                     return;
                 }

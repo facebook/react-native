@@ -20,7 +20,7 @@ namespace ReactNative.Tests.Bridge
                 .Add(module)
                 .Build();
 
-            var jsConfig = new JavaScriptModulesConfig.Builder()
+            var jsRegistry = new JavaScriptModuleRegistry.Builder()
                 .Add<TestJavaScriptModule>()
                 .Build();
 
@@ -29,7 +29,7 @@ namespace ReactNative.Tests.Bridge
             {
                 QueueConfigurationSpec = ReactQueueConfigurationSpec.Default,
                 Registry = registry,
-                JavaScriptModulesConfig = jsConfig,
+                JavaScriptModuleRegistry = jsRegistry,
                 JavaScriptExecutorFactory = () => executor,
                 BundleLoader = JavaScriptBundleLoader.CreateFileLoader("ms-appx:///Resources/test.js"),
                 NativeModuleCallExceptionHandler = _ => { }
@@ -56,14 +56,14 @@ namespace ReactNative.Tests.Bridge
                 .Add(module)
                 .Build();
 
-            var jsConfig = new JavaScriptModulesConfig.Builder().Build();
+            var jsRegistry = new JavaScriptModuleRegistry.Builder().Build();
 
             var executor = new MockJavaScriptExecutor((p0, p1, p2) => JValue.CreateNull());
             var builder = new ReactInstance.Builder()
             {
                 QueueConfigurationSpec = ReactQueueConfigurationSpec.Default,
                 Registry = registry,
-                JavaScriptModulesConfig = jsConfig,
+                JavaScriptModuleRegistry = jsRegistry,
                 JavaScriptExecutorFactory = () => executor,
                 BundleLoader = JavaScriptBundleLoader.CreateFileLoader("ms-appx:///Resources/test.js"),
                 NativeModuleCallExceptionHandler = _ => { },
@@ -107,7 +107,7 @@ namespace ReactNative.Tests.Bridge
                 .Add(module)
                 .Build();
 
-            var jsConfig = new JavaScriptModulesConfig.Builder().Build();
+            var jsRegistry = new JavaScriptModuleRegistry.Builder().Build();
             var executor = new MockJavaScriptExecutor((p0, p1, p2) => JValue.CreateNull());
 
             var exception = new Exception();
@@ -121,7 +121,7 @@ namespace ReactNative.Tests.Bridge
             {
                 QueueConfigurationSpec = ReactQueueConfigurationSpec.Default,
                 Registry = registry,
-                JavaScriptModulesConfig = jsConfig,
+                JavaScriptModuleRegistry = jsRegistry,
                 JavaScriptExecutorFactory = () => executor,
                 BundleLoader = JavaScriptBundleLoader.CreateFileLoader("ms-appx:///Resources/test.js"),
                 NativeModuleCallExceptionHandler = handler,

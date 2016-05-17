@@ -401,7 +401,7 @@ namespace ReactNative.Tests.UIManager.Events
         private static ReactInstance CreateReactInstance(IJavaScriptExecutor executor)
         {
             var registry = new NativeModuleRegistry.Builder().Build();
-            var jsModules = new JavaScriptModulesConfig.Builder()
+            var jsModules = new JavaScriptModuleRegistry.Builder()
                 .Add<RCTEventEmitter>()
                 .Build();
 
@@ -409,7 +409,7 @@ namespace ReactNative.Tests.UIManager.Events
             {
                 QueueConfigurationSpec = ReactQueueConfigurationSpec.Default,
                 BundleLoader = JavaScriptBundleLoader.CreateFileLoader("ms-appx:///Resources/test.js"),
-                JavaScriptModulesConfig = jsModules,
+                JavaScriptModuleRegistry = jsModules,
                 Registry = registry,
                 JavaScriptExecutorFactory = () => executor,
                 NativeModuleCallExceptionHandler = ex => Assert.Fail(ex.ToString()),

@@ -21,7 +21,6 @@ namespace ReactNative.Bridge
         private readonly JavaScriptModuleRegistry _jsRegistry;
         private readonly Func<IJavaScriptExecutor> _jsExecutorFactory;
         private readonly JavaScriptBundleLoader _bundleLoader;
-        private readonly JavaScriptModulesConfig _jsModulesConfig;
         private readonly Action<Exception> _nativeModuleCallExceptionHandler;
 
         private IReactBridge _bridge;
@@ -34,16 +33,15 @@ namespace ReactNative.Bridge
             ReactQueueConfigurationSpec reactQueueConfigurationSpec,
             Func<IJavaScriptExecutor> jsExecutorFactory,
             NativeModuleRegistry registry,
-            JavaScriptModulesConfig jsModulesConfig,
+            JavaScriptModuleRegistry jsModuleRegistry,
             JavaScriptBundleLoader bundleLoader,
             Action<Exception> nativeModuleCallExceptionHandler)
         {
             _registry = registry;
             _jsExecutorFactory = jsExecutorFactory;
-            _jsModulesConfig = jsModulesConfig;
             _nativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
+            _jsRegistry = jsModuleRegistry;
             _bundleLoader = bundleLoader;
-            _jsRegistry = new JavaScriptModuleRegistry(this, _jsModulesConfig);
 
             QueueConfiguration = ReactQueueConfiguration.Create(
                 reactQueueConfigurationSpec,
@@ -75,7 +73,7 @@ namespace ReactNative.Bridge
 
         public T GetJavaScriptModule<T>() where T : IJavaScriptModule
         {
-            return _jsRegistry.GetJavaScriptModule<T>();
+            return _jsRegistry.GetJavaScriptModule<T>(this);
         }
 
         public T GetNativeModule<T>() where T : INativeModule
@@ -147,7 +145,7 @@ namespace ReactNative.Bridge
             });
         }
 
-        public /* TODO: internal? */ void InvokeFunction(int moduleId, int methodId, JArray arguments, string tracingName)
+        public /* TODO: internal? */ void InvokeFunction(string module, string method, JArray arguments, string tracingName)
         {
             QueueConfiguration.JavaScriptQueueThread.RunOnQueue(() =>
             {
@@ -165,7 +163,7 @@ namespace ReactNative.Bridge
                         throw new InvalidOperationException("Bridge has not been initialized.");
                     }
 
-                    _bridge.CallFunction(moduleId, methodId, arguments);
+                    _bridge.CallFunction(module, method, arguments);
                 }
             });
         }
@@ -205,8 +203,6 @@ namespace ReactNative.Bridge
                     writer.WriteStartObject();
                     writer.WritePropertyName("remoteModuleConfig");
                     _registry.WriteModuleDescriptions(writer);
-                    writer.WritePropertyName("localModulesConfig");
-                    _jsModulesConfig.WriteModuleDescriptions(writer);
                     writer.WriteEndObject();
                 }
 
@@ -258,7 +254,7 @@ namespace ReactNative.Bridge
         {
             private ReactQueueConfigurationSpec _reactQueueConfigurationSpec;
             private NativeModuleRegistry _registry;
-            private JavaScriptModulesConfig _jsModulesConfig;
+            private JavaScriptModuleRegistry _jsModuleRegistry;
             private Func<IJavaScriptExecutor> _jsExecutorFactory;
             private JavaScriptBundleLoader _bundleLoader;
             private Action<Exception> _nativeModuleCallExceptionHandler;
@@ -279,11 +275,11 @@ namespace ReactNative.Bridge
                 }
             }
 
-            public JavaScriptModulesConfig JavaScriptModulesConfig
+            public JavaScriptModuleRegistry JavaScriptModuleRegistry
             {
                 set
                 {
-                    _jsModulesConfig = value;
+                    _jsModuleRegistry = value;
                 }
             }
 
@@ -316,7 +312,6 @@ namespace ReactNative.Bridge
                 AssertNotNull(_reactQueueConfigurationSpec, nameof(QueueConfigurationSpec));
                 AssertNotNull(_jsExecutorFactory, nameof(JavaScriptExecutorFactory));
                 AssertNotNull(_registry, nameof(Registry));
-                AssertNotNull(_jsModulesConfig, nameof(JavaScriptModulesConfig));
                 AssertNotNull(_bundleLoader, nameof(BundleLoader));
                 AssertNotNull(_nativeModuleCallExceptionHandler, nameof(NativeModuleCallExceptionHandler));
                  
@@ -324,7 +319,7 @@ namespace ReactNative.Bridge
                     _reactQueueConfigurationSpec,
                     _jsExecutorFactory,
                     _registry,
-                    _jsModulesConfig,
+                    _jsModuleRegistry,
                     _bundleLoader,
                     _nativeModuleCallExceptionHandler);
             }

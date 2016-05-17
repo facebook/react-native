@@ -531,7 +531,7 @@ namespace ReactNative
             _sourceUrl = jsBundleLoader.SourceUrl;
 
             var nativeRegistryBuilder = new NativeModuleRegistry.Builder();
-            var jsModulesBuilder = new JavaScriptModulesConfig.Builder();
+            var jsModulesBuilder = new JavaScriptModuleRegistry.Builder();
 
             var reactContext = new ReactContext();
             if (_useDeveloperSupport)
@@ -561,19 +561,13 @@ namespace ReactNative
                 nativeModuleRegistry = nativeRegistryBuilder.Build();
             }
 
-            var javaScriptModulesConfig = default(JavaScriptModulesConfig);
-            using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "buildJSModuleConfig"))
-            {
-                javaScriptModulesConfig = jsModulesBuilder.Build();
-            }
-
             var exceptionHandler = _nativeModuleCallExceptionHandler ?? _devSupportManager.HandleException;
             var reactInstanceBuilder = new ReactInstance.Builder
             {
                 QueueConfigurationSpec = ReactQueueConfigurationSpec.Default,
                 JavaScriptExecutorFactory = jsExecutorFactory,
                 Registry = nativeModuleRegistry,
-                JavaScriptModulesConfig = javaScriptModulesConfig,
+                JavaScriptModuleRegistry = jsModulesBuilder.Build(),
                 BundleLoader = jsBundleLoader,
                 NativeModuleCallExceptionHandler = exceptionHandler,
             };
@@ -602,7 +596,7 @@ namespace ReactNative
             IReactPackage reactPackage,
             ReactContext reactContext,
             NativeModuleRegistry.Builder nativeRegistryBuilder,
-            JavaScriptModulesConfig.Builder jsModulesBuilder)
+            JavaScriptModuleRegistry.Builder jsModulesBuilder)
         {
             foreach (var nativeModule in reactPackage.CreateNativeModules(reactContext))
             {
@@ -611,10 +605,7 @@ namespace ReactNative
 
             foreach (var type in reactPackage.CreateJavaScriptModulesConfig())
             {
-                if (JavaScriptModulesConfig.Builder.ValidJavaScriptModuleType(type))
-                {
-                    jsModulesBuilder.Add(type);
-                }
+                jsModulesBuilder.Add(type);
             }
         }
 

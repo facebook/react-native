@@ -140,7 +140,6 @@
     </Compile>
     <Compile Include="Bridge\JavaScriptModuleRegistration.cs" />
     <Compile Include="Bridge\JavaScriptModuleRegistry.cs" />
-    <Compile Include="Bridge\JavaScriptModulesConfig.cs" />
     <Compile Include="Bridge\JavaScriptBundleLoader.cs" />
     <Compile Include="Bridge\NativeArgumentsParseException.cs" />
     <Compile Include="Bridge\ICallback.cs" />

@@ -98,7 +98,6 @@
     <Compile Include="Bridge\ReactInstanceTests.cs" />
     <Compile Include="Bridge\JavaScriptModuleBaseTests.cs" />
     <Compile Include="Bridge\JavaScriptModuleRegistryTests.cs" />
-    <Compile Include="Bridge\JavaScriptModulesConfigTests.cs" />
     <Compile Include="Bridge\NativeModuleBaseTests.cs" />
     <Compile Include="Bridge\Queue\MessageQueueThreadTests.cs" />
     <Compile Include="Bridge\ReactContextNativeModuleBaseTests.cs" />
@@ -109,6 +108,7 @@
     <Compile Include="Internal\Constants\DictionaryHelpers.cs" />
     <Compile Include="Internal\JavaScriptHelpers.cs" />
     <Compile Include="Internal\DispatcherHelpers.cs" />
+    <Compile Include="Internal\JavaScriptModuleRegistryExtensions.cs" />
     <Compile Include="Internal\MockCallback.cs" />
     <Compile Include="Internal\MockPromise.cs" />
     <Compile Include="Internal\MockReactInstance.cs" />
