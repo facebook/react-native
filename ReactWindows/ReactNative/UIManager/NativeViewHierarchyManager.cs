@@ -271,6 +271,30 @@ namespace ReactNative.UIManager
         }
 
         /// <summary>
+        /// Simplified version of <see cref="UIManagerModule.manageChildren(int, int[], int[], int[], int[], int[])"/>
+        /// that only deals with adding children views.
+        /// </summary>
+        /// <param name="tag">The view tag to manage.</param>
+        /// <param name="childrenTags">The children tags.</param>
+        public void SetChildren(int tag, int[] childrenTags)
+        {
+            var viewToManage = _tagsToViews[tag];
+            var viewManager = (IViewParentManager)ResolveViewManager(tag);
+
+            for (var i = 0; i < childrenTags.Length; ++i)
+            {
+                var viewToAdd = _tagsToViews[childrenTags[i]];
+                if (viewToAdd == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Trying to add unknown view tag: {childrenTags[i]}.");
+                }
+
+                viewManager.AddView(viewToManage, viewToAdd, i);
+            }
+        }
+
+        /// <summary>
         /// Remove the root view with the given tag.
         /// </summary>
         /// <param name="rootViewTag">The root view tag.</param>

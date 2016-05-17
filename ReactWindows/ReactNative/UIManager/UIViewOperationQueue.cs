@@ -235,6 +235,18 @@ namespace ReactNative.UIManager
         }
 
         /// <summary>
+        /// Enqueues an operation to set the children of a view.
+        /// </summary>
+        /// <param name="reactTag">The view to manage.</param>
+        /// <param name="childrenTags">The children tags.</param>
+        public void EnqueueSetChildren(int reactTag, int[] childrenTags)
+        {
+            EnqueueOperation(() => _nativeViewHierarchyManager.SetChildren(
+                reactTag,
+                childrenTags));
+        }
+
+        /// <summary>
         /// Enqueues an operation to measure the view.
         /// </summary>
         /// <param name="reactTag">The tag of the view to measure.</param>

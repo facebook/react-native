@@ -332,6 +332,38 @@ namespace ReactNative.UIManager
             }
         }
 
+
+        /// <summary>
+        /// An optimized version of manageChildren that is used for initial
+        /// setting of child views. The children are assumed to be in index
+        /// order.
+        /// </summary>
+        /// <param name="viewTag">Tag of the parent.</param>
+        /// <param name="childrenTags">Tags of the children.</param>
+        public void SetChildren(int viewTag, int[] childrenTags)
+        {
+            var cssNodeToManage = _shadowNodeRegistry.GetNode(viewTag);
+
+            for (var i = 0; i < childrenTags.Length; ++i)
+            {
+                var cssNodeToAdd = _shadowNodeRegistry.GetNode(childrenTags[i]);
+                if (cssNodeToAdd == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Trying to add unknown view tag: {childrenTags[i]}");
+                }
+
+                cssNodeToManage.AddChildAt(cssNodeToAdd, i);
+            }
+
+            if (!cssNodeToManage.IsVirtual && !cssNodeToManage.IsVirtualAnchor)
+            {
+                _nativeViewHierarchyOptimizer.HandleSetChildren(
+                    cssNodeToManage,
+                    childrenTags);
+            }
+        }
+
         /// <summary>
         /// Replaces the view specified by <paramref name="oldTag"/> with the
         /// view specified by <paramref name="newTag"/> within

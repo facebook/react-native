@@ -199,6 +199,22 @@ namespace ReactNative.UIManager
         }
 
         /// <summary>
+        /// Interface for fast tracking the initial adding of views.Children 
+        /// view tags are assumed to be in order.
+        /// </summary>
+        /// <param name="viewTag">The view tag of the parent view.</param>
+        /// <param name="childrenTags">
+        /// An array of tags to add to the parent in order.
+        /// </param>
+        [ReactMethod]
+        public void setChildren(
+            int viewTag,
+            int[] childrenTags)
+        {
+            _uiImplementation.SetChildren(viewTag, childrenTags);
+        }
+
+        /// <summary>
         /// Replaces the view specified by the <paramref name="oldTag"/> with
         /// the view specified by <paramref name="newTag"/> within
         /// <paramref name="oldTag"/>'s parent. This resolves to a simple 

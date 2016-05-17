@@ -180,6 +180,28 @@ namespace ReactNative.UIManager
         }
 
         /// <summary>
+        /// Handles a setChildren call. This is a simplification of <see cref="HandleManageChildren(ReactShadowNode, int[], int[], ViewAtIndex[], int[])"/>
+        /// that only adds children in index order of the <paramref name="childrenTags"/>
+        /// array.
+        /// </summary>
+        /// <param name="nodeToManage">The node to manage.</param>
+        /// <param name="childrenTags">The children tags.</param>
+        public void HandleSetChildren(ReactShadowNode nodeToManage, int[] childrenTags)
+        {
+#if !ENABLED
+            _uiViewOperationQueue.EnqueueSetChildren(
+                nodeToManage.ReactTag,
+                childrenTags);
+#else
+            for (var i = 0; i < childrenTags.Length; ++i)
+            {
+                var nodeToAdd = _shadowNodeRegistry.GetNode(childrenTags[i]);
+                AddNodeToNode(nodeToManage, nodeToAdd, i);
+            }
+#endif
+        }
+
+        /// <summary>
         /// Handles an update layout call. All update layout calls are 
         /// collected and dispatched at the end of a batch because update
         /// layout calls to layout-only nodes can necessitate multiple update
