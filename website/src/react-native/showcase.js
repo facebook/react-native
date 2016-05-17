@@ -332,7 +332,7 @@ var apps = [
     icon: 'http://a4.mzstatic.com/us/r30/Purple60/v4/1a/42/5b/1a425b56-848a-91f5-8078-9f5473c9021f/icon350x350.png',
     link: 'https://itunes.apple.com/us/app/clapit/id1062124740?mt=8',
     author: 'Refined Edge Solutions, LLC'
-  }, 
+  },
   {
     name: 'Codementor - Live 1:1 Expert Developer Help',
     icon: 'http://a1.mzstatic.com/us/r30/Purple3/v4/db/cf/35/dbcf3523-bac7-0f54-c6a8-a80bf4f43c38/icon175x175.jpeg',
@@ -491,6 +491,12 @@ var apps = [
     author: 'Scrollback',
   },
   {
+    name: 'HireArt',
+    icon: 'https://www.filepicker.io/api/file/Yd7YXXoRWq98VF7TbPUg',
+    link: 'https://itunes.apple.com/us/app/id1056320926',
+    author: 'HireArt, Inc',
+  },
+  {
     name: 'Honest Reviews',
     icon: 'http://honestreviews.techulus.com/icon.png',
     link: 'https://play.google.com/store/apps/details?id=com.techulus.honestreviews&hl=en',
@@ -645,7 +651,7 @@ var apps = [
     link: 'https://itunes.apple.com/app/new-music-keep-track-latest/id1104646834',
     author: 'Alexey Ledak',
   },
-	{
+  {
     name: 'No Fluff: Hiragana',
     icon: 'https://lh3.googleusercontent.com/kStXwjpbPsu27E1nIEU1gfG0I8j9t5bAR_20OMhGZvu0j2vab3EbBV7O_KNZChjflZ_O',
     link: 'https://play.google.com/store/apps/details?id=com.hiragana',
