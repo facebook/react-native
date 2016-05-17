@@ -17,6 +17,7 @@ var ReactNative = require('ReactNative');
 
 var invariant = require('fbjs/lib/invariant');
 var renderApplication = require('renderApplication');
+const infoLog = require('infoLog');
 
 if (__DEV__) {
   // In order to use Cmd+P to record/dump perf data, we need to make sure
@@ -87,7 +88,7 @@ var AppRegistry = {
       '__DEV__ === ' + String(__DEV__) +
       ', development-level warning are ' + (__DEV__ ? 'ON' : 'OFF') +
       ', performance optimizations are ' + (__DEV__ ? 'OFF' : 'ON');
-    console.log(msg);
+    infoLog(msg);
     BugReporting.init();
     BugReporting.addSource('AppRegistry.runApplication' + runCount++, () => msg);
     BugReporting.addFileSource('react_hierarchy.txt', () => require('dumpReactTree')());
