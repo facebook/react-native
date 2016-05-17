@@ -32,6 +32,8 @@ const View = require('View');
 
 const {PropTypes} = React;
 
+const emptyFunction = require('emptyFunction');
+
 // Position of the left of the swipable item when closed
 const CLOSED_LEFT_POSITION = 0;
 // Minimum swipe distance before we recognize it as such
@@ -42,13 +44,6 @@ const HORIZONTAL_SWIPE_DISTANCE_THRESHOLD = 15;
  * on the item hidden behind the row
  */
 const SwipeableRow = React.createClass({
-  /**
-   * In order to render component A beneath component B, A must be rendered
-   * before B. However, this will cause "flickering", aka we see A briefly then
-   * B. To counter this, _isSwipeableViewRendered flag is used to set component
-   * A to be transparent until component B is loaded.
-   */
-  _isSwipeableViewRendered: false,
   _panResponder: {},
   _previousLeft: CLOSED_LEFT_POSITION,
 
@@ -60,6 +55,8 @@ const SwipeableRow = React.createClass({
      */
     maxSwipeDistance: PropTypes.number,
     onOpen: PropTypes.func,
+    onSwipeEnd: PropTypes.func.isRequired,
+    onSwipeStart: PropTypes.func.isRequired,
     /**
      * A ReactElement that is unveiled when the user swipes
      */
@@ -76,6 +73,13 @@ const SwipeableRow = React.createClass({
     return {
       currentLeft: new Animated.Value(this._previousLeft),
       /**
+       * In order to render component A beneath component B, A must be rendered
+       * before B. However, this will cause "flickering", aka we see A briefly
+       * then B. To counter this, _isSwipeableViewRendered flag is used to set
+       * component A to be transparent until component B is loaded.
+       */
+      isSwipeableViewRendered: false,
+      /**
        * scrollViewWidth can change based on orientation, thus it's stored as a
        * state variable. This means all styles depending on it will be inline
        */
@@ -86,20 +90,23 @@ const SwipeableRow = React.createClass({
   getDefaultProps(): Object {
     return {
       isOpen: false,
-      swipeThreshold: 50,
+      onSwipeEnd: emptyFunction,
+      onSwipeStart: emptyFunction,
+      swipeThreshold: 30,
     };
   },
 
   componentWillMount(): void {
     this._panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: this._handleStartShouldSetPanResponder,
-      onStartShouldSetPanResponderCapture: this._handleStartShouldSetPanResponderCapture,
-      onMoveShouldSetPanResponder: this._handleMoveShouldSetPanResponder,
+      onStartShouldSetPanResponder: (event, gestureState) => true,
+      // Don't capture child's start events
+      onStartShouldSetPanResponderCapture: (event, gestureState) => false,
+      onMoveShouldSetPanResponder: (event, gestureState) => false,
       onMoveShouldSetPanResponderCapture: this._handleMoveShouldSetPanResponderCapture,
-      onPanResponderGrant: (event, gesture) => {},
+      onPanResponderGrant: this._handlePanResponderGrant,
       onPanResponderMove: this._handlePanResponderMove,
       onPanResponderRelease: this._handlePanResponderEnd,
-      onPanResponderTerminationRequest: this._handlePanResponderTerminationRequest,
+      onPanResponderTerminationRequest: this._onPanResponderTerminationRequest,
       onPanResponderTerminate: this._handlePanResponderEnd,
     });
   },
@@ -110,7 +117,7 @@ const SwipeableRow = React.createClass({
      * handled internally by this component.
      */
     if (this.props.isOpen && !nextProps.isOpen) {
-      this._animateClose();
+      this._animateToClosedPosition();
     }
   },
 
@@ -123,7 +130,7 @@ const SwipeableRow = React.createClass({
       },
     ];
     if (Platform.OS === 'ios') {
-      slideoutStyle.push({opacity: this._isSwipeableViewRendered ? 1 : 0});
+      slideoutStyle.push({opacity: this.state.isSwipeableViewRendered ? 1 : 0});
     }
 
     // The view hidden behind the main view
@@ -138,7 +145,7 @@ const SwipeableRow = React.createClass({
       <Animated.View
         onLayout={this._onSwipeableViewLayout}
         style={{
-          left: this.state.currentLeft,
+          transform: [{translateX: this.state.currentLeft}],
           width: this.state.scrollViewWidth,
         }}>
         {this.props.children}
@@ -157,181 +164,82 @@ const SwipeableRow = React.createClass({
   },
 
   _onSwipeableViewLayout(event: Object): void {
-    if (!this._isSwipeableViewRendered) {
-      this._isSwipeableViewRendered = true;
+    if (!this._isSwipeableViewRendered && this.state.scrollViewWidth !== 0) {
+      this.setState({
+        isSwipeableViewRendered: true,
+      });
     }
-  },
-
-  _handlePanResponderTerminationRequest(
-    event: Object,
-    gestureState: Object,
-  ): boolean {
-    return false;
-  },
-
-  _handleStartShouldSetPanResponder(
-    event: Object,
-    gestureState: Object,
-  ): boolean {
-    return false;
-  },
-
-  _handleStartShouldSetPanResponderCapture(
-    event: Object,
-    gestureState: Object,
-  ): boolean {
-    return false;
-  },
-
-  _handleMoveShouldSetPanResponder(
-    event: Object,
-    gestureState: Object,
-  ): boolean {
-    return false;
   },
 
   _handleMoveShouldSetPanResponderCapture(
     event: Object,
     gestureState: Object,
   ): boolean {
-    return this._isValidSwipe(gestureState);
+    // Decides whether a swipe is responded to by this component or its child
+    return  gestureState.dy < 10 && this._isValidSwipe(gestureState);
   },
 
-  /**
-   * User might move their finger slightly when tapping; let's ignore that
-   * unless we are sure they are swiping.
-   */
-  _isValidSwipe(gestureState: Object): boolean {
-    return Math.abs(gestureState.dx) > HORIZONTAL_SWIPE_DISTANCE_THRESHOLD;
-  },
+  _handlePanResponderGrant(event: Object, gestureState: Object): void {
 
-  _shouldAllowSwipe(gestureState: Object): boolean {
-    return (
-      this._isSwipeWithinOpenLimit(this._previousLeft + gestureState.dx) &&
-      (
-        this._isSwipingLeftFromClosed(gestureState) ||
-        this._isSwipingFromSemiOpened(gestureState)
-      )
-    );
-  },
-
-  _isSwipingLeftFromClosed(gestureState: Object): boolean {
-    return this._previousLeft === CLOSED_LEFT_POSITION && gestureState.vx < 0;
-  },
-
-  // User is swiping left/right from a state between fully open and fully closed
-  _isSwipingFromSemiOpened(gestureState: Object): boolean {
-    return (
-      this._isSwipeableSomewhatOpen() &&
-      this._isBoundedSwipe(gestureState)
-    );
-  },
-
-  _isSwipeableSomewhatOpen(): boolean {
-    return this._previousLeft < CLOSED_LEFT_POSITION;
-  },
-
-  _isBoundedSwipe(gestureState: Object): boolean {
-    return (
-      this._isBoundedLeftSwipe(gestureState) ||
-      this._isBoundedRightSwipe(gestureState)
-    );
-  },
-
-  _isBoundedLeftSwipe(gestureState: Object): boolean {
-    return (
-      gestureState.dx < 0 && -this._previousLeft < this.state.scrollViewWidth
-    );
-  },
-
-  _isBoundedRightSwipe(gestureState: Object): boolean {
-    const horizontalDistance = gestureState.dx;
-
-    return (
-      horizontalDistance > 0 &&
-      this._previousLeft + horizontalDistance <= CLOSED_LEFT_POSITION
-    );
-  },
-
-  _isSwipeWithinOpenLimit(distance: number): boolean {
-    const maxSwipeDistance = this.props.maxSwipeDistance;
-
-    return maxSwipeDistance
-      ? Math.abs(distance) <= maxSwipeDistance
-      : true;
   },
 
   _handlePanResponderMove(event: Object, gestureState: Object): void {
-    if (this._shouldAllowSwipe(gestureState)) {
-      this.setState({
-        currentLeft: new Animated.Value(this._previousLeft + gestureState.dx),
-      });
-    }
+    this.props.onSwipeStart();
+    this.state.currentLeft.setValue(this._previousLeft + gestureState.dx);
   },
 
-  // Animation for after a user lifts their finger after swiping
-  _postReleaseAnimate(horizontalDistance: number): void {
-    if (horizontalDistance < 0) {
-      if (horizontalDistance < -this.props.swipeThreshold) {
-        // Swiped left far enough, animate to fully opened state
-        this._animateOpen();
-        return;
-      }
-      // Did not swipe left enough, animate to closed
-      this._animateClose();
-    } else if (horizontalDistance > 0) {
-      if (horizontalDistance > this.props.swipeThreshold) {
-        // Swiped right far enough, animate to closed state
-        this._animateClose();
-        return;
-      }
-      // Did not swipe right enough, animate to opened
-      this._animateOpen();
-    }
+  _onPanResponderTerminationRequest(event: Object, gestureState: Object): boolean {
+    return false;
   },
 
   _animateTo(toValue: number): void {
-    Animated.timing(this.state.currentLeft, {toValue: toValue}).start(() => {
+    Animated.timing(
+      this.state.currentLeft,
+      {
+        toValue: toValue,
+      },
+    ).start(() => {
       this._previousLeft = toValue;
     });
   },
 
-  _animateOpen(): void {
-    this.props.onOpen && this.props.onOpen();
-
+  _animateToOpenPosition(): void {
     const toValue = this.props.maxSwipeDistance
       ? -this.props.maxSwipeDistance
       : -this.state.scrollViewWidth;
     this._animateTo(toValue);
   },
 
-  _animateClose(): void {
+  _animateToClosedPosition(): void {
     this._animateTo(CLOSED_LEFT_POSITION);
+  },
+
+  // Ignore swipes due to user's finger moving slightly when tapping
+  _isValidSwipe(gestureState: Object): boolean {
+    return Math.abs(gestureState.dx) > HORIZONTAL_SWIPE_DISTANCE_THRESHOLD;
   },
 
   _handlePanResponderEnd(event: Object, gestureState: Object): void {
     const horizontalDistance = gestureState.dx;
-    this._postReleaseAnimate(horizontalDistance);
 
-    if (this._shouldAllowSwipe(gestureState)) {
-      this._previousLeft += horizontalDistance;
-      return;
+    if (Math.abs(horizontalDistance) > this.props.swipeThreshold) {
+      if (horizontalDistance < 0) {
+        // Swiped left
+        this.props.onOpen && this.props.onOpen();
+        this._animateToOpenPosition();
+      } else {
+        // Swiped right
+        this._animateToClosedPosition();
+      }
+    } else {
+      if (this._previousLeft === CLOSED_LEFT_POSITION) {
+        this._animateToClosedPosition();
+      } else {
+        this._animateToOpenPosition();
+      }
     }
 
-    if (this._previousLeft + horizontalDistance >= 0) {
-      // We are swiping back to close or somehow swiped past close
-      this._previousLeft = 0;
-    } else if (
-      this.props.maxSwipeDistance &&
-      !this._isSwipeWithinOpenLimit(this._previousLeft + horizontalDistance)
-    ) {
-      // We are swiping past the max swipe distance?
-      this._previousLeft = -this.props.maxSwipeDistance;
-    }
-
-    this.setState({
-      currentLeft: new Animated.Value(this._previousLeft),
-    });
+    this.props.onSwipeEnd();
   },
 
   _onLayoutChange(event: Object): void {

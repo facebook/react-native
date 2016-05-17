@@ -49,7 +49,7 @@ const SwipeableListView = React.createClass({
   _listViewRef: (null: ?string),
 
   propTypes: {
-    dataSource: PropTypes.object.isRequired, // SwipeableListViewDataSource
+    dataSource: PropTypes.instanceOf(SwipeableListViewDataSource).isRequired,
     maxSwipeDistance: PropTypes.number,
     // Callback method to render the swipeable view
     renderRow: PropTypes.func.isRequired,
@@ -65,14 +65,16 @@ const SwipeableListView = React.createClass({
 
   getInitialState(): Object {
     return {
-      dataSource: this.props.dataSource.getDataSource(),
+      dataSource: this.props.dataSource,
     };
   },
 
   componentWillReceiveProps(nextProps: Object): void {
-    if ('dataSource' in nextProps && this.state.dataSource !== nextProps.dataSource) {
+    if (
+      this.state.dataSource.getDataSource() !== nextProps.dataSource.getDataSource()
+    ) {
       this.setState({
-        dataSource: nextProps.dataSource.getDataSource(),
+        dataSource: nextProps.dataSource,
       });
     }
   },
@@ -84,10 +86,25 @@ const SwipeableListView = React.createClass({
         ref={(ref) => {
           this._listViewRef = ref;
         }}
-        dataSource={this.state.dataSource}
+        dataSource={this.state.dataSource.getDataSource()}
         renderRow={this._renderRow}
+        scrollEnabled={this.state.scrollEnabled}
       />
     );
+  },
+
+  /**
+   * This is a work-around to lock vertical `ListView` scrolling on iOS and
+   * mimic Android behaviour. Locking vertical scrolling when horizontal
+   * scrolling is active allows us to significantly improve framerates
+   * (from high 20s to almost consistently 60 fps)
+   */
+  _setListViewScrollable(value: boolean): void {
+    if (this._listViewRef && this._listViewRef.setNativeProps) {
+      this._listViewRef.setNativeProps({
+        scrollEnabled: value,
+      });
+    }
   },
 
   // Passing through ListView's getScrollResponder() function
@@ -111,7 +128,9 @@ const SwipeableListView = React.createClass({
         isOpen={rowData.id === this.props.dataSource.getOpenRowID()}
         maxSwipeDistance={this.props.maxSwipeDistance}
         key={rowID}
-        onOpen={() => this._onOpen(rowData.id)}>
+        onOpen={() => this._onOpen(rowData.id)}
+        onSwipeEnd={() => this._setListViewScrollable(true)}
+        onSwipeStart={() => this._setListViewScrollable(false)}>
         {this.props.renderRow(rowData, sectionID, rowID)}
       </SwipeableRow>
     );
@@ -119,7 +138,7 @@ const SwipeableListView = React.createClass({
 
   _onOpen(rowID: string): void {
     this.setState({
-      dataSource: this.props.dataSource.setOpenRowID(rowID),
+      dataSource: this.state.dataSource.setOpenRowID(rowID),
     });
   },
 });
