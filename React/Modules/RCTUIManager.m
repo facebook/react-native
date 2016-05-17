@@ -560,12 +560,15 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
     [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
   NSMutableDictionary<NSNumber *, RCTViewManagerUIBlock> *updateBlocks =
     [NSMutableDictionary new];
+  NSMutableArray<NSNumber *> *areHidden =
+    [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
 
   for (RCTShadowView *shadowView in viewsWithNewFrames) {
     [frameReactTags addObject:shadowView.reactTag];
     [frames addObject:[NSValue valueWithCGRect:shadowView.frame]];
     [areNew addObject:@(shadowView.isNewView)];
     [parentsAreNew addObject:@(shadowView.superview.isNewView)];
+    [areHidden addObject:@(shadowView.isHidden)];
   }
 
   for (RCTShadowView *shadowView in viewsWithNewFrames) {
@@ -620,6 +623,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
       UIView *view = viewRegistry[reactTag];
       CGRect frame = [frames[ii] CGRectValue];
 
+      BOOL isHidden = [areHidden[ii] boolValue];
       BOOL isNew = [areNew[ii] boolValue];
       RCTAnimation *updateAnimation = isNew ? nil : layoutAnimation.updateAnimation;
       BOOL shouldAnimateCreation = isNew && ![parentsAreNew[ii] boolValue];
@@ -635,6 +639,10 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
           layoutAnimation.callback = nil;
         }
       };
+
+      if (view.isHidden != isHidden) {
+        view.hidden = isHidden;
+      }
 
       // Animate view creation
       if (createAnimation) {
