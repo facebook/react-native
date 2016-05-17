@@ -88,15 +88,17 @@ class SwipeableListViewDataSource {
     return this._openRowID;
   }
 
-  setOpenRowID(rowID: string): ListViewDataSource {
+  setOpenRowID(rowID: string): SwipeableListViewDataSource {
     this._previousOpenRowID = this._openRowID;
     this._openRowID = rowID;
 
-    return this._dataSource.cloneWithRowsAndSections(
+    this._dataSource = this._dataSource.cloneWithRowsAndSections(
       this._dataBlob,
       this.sectionIdentities,
       this.rowIdentities
     );
+
+    return this;
   }
 }
 
