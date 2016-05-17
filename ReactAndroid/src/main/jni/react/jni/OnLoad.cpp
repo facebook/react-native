@@ -6,12 +6,12 @@
 #include <fb/glog_init.h>
 #include <folly/json.h>
 #include <jni/Countable.h>
-#include <jni/Environment.h>
-#include <jni/fbjni.h>
+#include <fb/Environment.h>
+#include <fb/fbjni.h>
 #include <jni/LocalReference.h>
 #include <jni/LocalString.h>
 #include <jni/WeakReference.h>
-#include <jni/fbjni/Exceptions.h>
+#include <fb/fbjni/Exceptions.h>
 #include <react/Bridge.h>
 #include <react/Executor.h>
 #include <react/JSCExecutor.h>
