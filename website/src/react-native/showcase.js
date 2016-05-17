@@ -872,6 +872,13 @@ var apps = [
     author: 'Victor Delgado',
   },
   {
+    name: 'Vorterix',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple49/v4/3a/f0/b4/3af0b475-f0e8-e81d-eb38-1ec1dfa9b2f4/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/ar/app/vorterix/id577990518?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.vorterix',
+    author: 'Dift & underscope.io',
+  },
+  {
     name: 'WEARVR',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple69/v4/4f/5a/28/4f5a2876-9530-ef83-e399-c5ef5b2dab80/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/gb/app/wearvr/id1066288171?mt=8',
