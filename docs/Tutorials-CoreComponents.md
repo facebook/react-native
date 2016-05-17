@@ -3,7 +3,7 @@ id: tutorials-core-components
 title: Core Components
 layout: docs
 category: Tutorials
-permalink: docs/tutorials/core-components.html
+permalink: docs/tutorials-core-components.html
 next: sample-applications-movies
 ---
 

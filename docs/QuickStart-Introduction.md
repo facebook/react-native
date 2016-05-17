@@ -3,7 +3,7 @@ id: quick-start-introduction
 title: Introduction to React Native
 layout: docs
 category: Quick Start
-permalink: docs/quick-start/introduction.html
+permalink: docs/quick-start-introduction.html
 next: quick-start-getting-started
 ---
 

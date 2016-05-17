@@ -3,7 +3,7 @@ id: sample-applications-movies
 title: Movie Fetcher
 layout: docs
 category: Sample Applications
-permalink: docs/sample-apps/movies.html
+permalink: docs/sample-applications-movies.html
 next: sample-applications-f8
 ---
 
