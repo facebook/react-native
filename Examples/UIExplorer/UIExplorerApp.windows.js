@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -16,48 +23,66 @@
  */
 'use strict';
 
+const AppRegistry = require('AppRegistry');
+const AsyncStorage = require('AsyncStorage');
+const BackAndroid = require('BackAndroid');
+const Dimensions = require('Dimensions');
+const SplitViewWindows = require('SplitViewWindows');
+const Linking = require('Linking');
 const React = require('react');
-const ReactNative = require('react-native');
-const {
-  AppRegistry,
-  BackAndroid,
-  Dimensions,
-  NavigationExperimental,
-  SplitViewWindows,    
-  StyleSheet,
-  View,
-  StatusBar,
-} = ReactNative;
-const {
-  RootContainer: NavigationRootContainer,
-} = NavigationExperimental;
-const UIExplorerActions = require('./UIExplorerActions');
+const StatusBar = require('StatusBar');
+const StyleSheet = require('StyleSheet');
 const UIExplorerExampleList = require('./UIExplorerExampleList');
 const UIExplorerList = require('./UIExplorerList');
 const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
 const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
 const UIExplorerHeaderWindows = require('./UIExplorerHeaderWindows');
+const URIActionMap = require('./URIActionMap');
+const View = require('View');
 
-var DRAWER_WIDTH_LEFT = 56;
+const DRAWER_WIDTH_LEFT = 56;
+
+type Props = {
+  exampleFromAppetizeParams: string,
+};
+
+type State = {
+  initialExampleUri: ?string,
+};
 
 class UIExplorerApp extends React.Component {
+  _handleAction: Function;
+  _renderPaneContent: Function;
+  state: State;
+  constructor(props: Props) {
+    super(props);
+    this._handleAction = this._handleAction.bind(this);
+    this._renderPaneContent = this._renderPaneContent.bind(this);
+  }
+
   componentWillMount() {
     BackAndroid.addEventListener('hardwareBackPress', this._handleBackButtonPress.bind(this));
   }
-  
-  render() {
-    return (
-      <NavigationRootContainer
-        persistenceKey="UIExplorerStateNavState"
-        ref={navRootRef => { this._navigationRootRef = navRootRef; }}
-        reducer={UIExplorerNavigationReducer}
-        renderNavigation={this._renderApp.bind(this)}
-      />
-    );
+
+  componentDidMount() {
+    AsyncStorage.getItem('UIExplorerAppState', (err, storedString) => {
+      const exampleAction = URIActionMap(this.props.exampleFromAppetizeParams);
+      if (err || !storedString) {
+        const initialAction = exampleAction || {type: 'InitialAction'};
+        this.setState(UIExplorerNavigationReducer(null, initialAction));
+        return;
+      }
+      const storedState = JSON.parse(storedString);
+      if (exampleAction) {
+        this.setState(UIExplorerNavigationReducer(storedState, exampleAction));
+        return;
+      }
+      this.setState(storedState);
+    });
   }
-  
-  _renderApp(navigationState, onNavigate) {
-    if (!navigationState) {
+
+  render() {
+    if (!this.state) {
       return null;
     }
     return (
@@ -72,49 +97,51 @@ class UIExplorerApp extends React.Component {
           this._overrideBackPressForSplitView = false;
         }}
         ref={(splitView) => { this.splitView = splitView; }}
-        renderPaneView={this._renderPaneContent.bind(this, onNavigate)}>
-        {this._renderNavigation(navigationState, onNavigate)}
+        renderPaneView={this._renderPaneContent}
+        statusBarBackgroundColor="#589c90">
+        {this._renderApp()}
       </SplitViewWindows>
     );
   }
-  
-  _renderPaneContent(onNavigate) {
+
+  _renderPaneContent() {
     return (
-      <UIExplorerExampleList
-        list={UIExplorerList}
-        displayTitleRow={true}
-        disableSearch={true}
-        onNavigate={(action) => {
-          this.splitView && this.splitView.closePane();
-          onNavigate(action);
-        }}
-      />
+      <View style={styles.paneContentWrapper}>
+        <UIExplorerExampleList
+          list={UIExplorerList}
+          displayTitleRow={true}
+          disableSearch={true}
+          onNavigate={this._handleAction}
+        />
+      </View>
     );
   }
 
-  _renderNavigation(navigationState, onNavigate) {
-    if (navigationState.externalExample) {
-      var Component = UIExplorerList.Modules[navigationState.externalExample];
+  _renderApp() {
+    const {
+      externalExample,
+      stack,
+    } = this.state;
+    if (externalExample) {
+      const Component = UIExplorerList.Modules[externalExample];
       return (
         <Component
           onExampleExit={() => {
-            onNavigate(NavigationRootContainer.getBackAction());
+            this._handleAction({ type: 'BackAction' });
           }}
           ref={(example) => { this._exampleRef = example; }}
         />
       );
     }
-    const {stack} = navigationState;
     const title = UIExplorerStateTitleMap(stack.children[stack.index]);
-    if (stack && stack.children[1]) {
-      const {key} = stack.children[1];
+    const index = stack.children.length <= 1 ?  1 : stack.index;
+
+    if (stack && stack.children[index]) {
+      const {key} = stack.children[index];
       const ExampleModule = UIExplorerList.Modules[key];
       const ExampleComponent = UIExplorerExampleList.makeRenderable(ExampleModule);
       return (
         <View style={styles.container}>
-          <StatusBar
-            backgroundColor="#589c90"
-          />
           <UIExplorerHeaderWindows
             onPress={() => this.splitView.openPane()} 
             title={title}
@@ -128,15 +155,13 @@ class UIExplorerApp extends React.Component {
     }
     return (
       <View style={styles.container}>
-        <StatusBar
-          backgroundColor="#589c90"
-        />
         <UIExplorerHeaderWindows
           onPress={() => this.splitView.openPane()} 
           title={title}
           style={styles.header}
         />
         <UIExplorerExampleList
+          onNavigate={this._handleAction}
           list={UIExplorerList}
           {...stack.children[0]}
         />
@@ -144,7 +169,25 @@ class UIExplorerApp extends React.Component {
     );
   }
 
+  _handleAction(action: Object): boolean {
+    this.splitView && this.splitView.closePane();
+    const newState = UIExplorerNavigationReducer(this.state, action);
+    if (this.state !== newState) {
+      this.setState(newState);
+      AsyncStorage.setItem('UIExplorerAppState', JSON.stringify(newState));
+      return true;
+    }
+    return false;
+  }
+
   _handleBackButtonPress() {
+    if (this._overrideBackPressForSplitView) {
+      // This hack is necessary because split view provides an imperative API
+      // with open and close methods. This code would be cleaner if the split
+      // view provided an `isOpen` prop and allowed us to pass a `onPaneClose` handler.
+      this.splitView && this.splitView.closePane();
+      return true;
+    }
     if (
       this._exampleRef &&
       this._exampleRef.handleBackAction &&
@@ -152,12 +195,7 @@ class UIExplorerApp extends React.Component {
     ) {
       return true;
     }
-    if (this._navigationRootRef) {
-      return this._navigationRootRef.handleNavigation(
-        NavigationRootContainer.getBackAction()
-      );
-    }
-    return false;
+    return this._handleAction({ type: 'BackAction' });
   }
 }
 
@@ -167,6 +205,11 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#E9EAED',
+  },
+  paneContentWrapper: {
+    flex: 1,
+    paddingTop: StatusBar.currentHeight,
+    backgroundColor: 'white',
   },
 });
 
