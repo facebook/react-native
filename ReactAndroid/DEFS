@@ -28,14 +28,7 @@ JSC_DEPS = [
   '//native/third-party/jsc:jsc_legacy_profiler',
 ]
 
-JSC_INTERNAL_DEPS = [
-  '//native/third-party/jsc-internal:jsc',
-  '//native/third-party/jsc-internal:jsc_legacy_profiler',
-]
-
 FBGLOGINIT_TARGET = '//ReactAndroid/src/main/jni/first-party/fbgloginit:fbgloginit'
-
-INTERNAL_APP = 'PUBLIC'
 
 # React property preprocessor
 original_android_library=android_library
