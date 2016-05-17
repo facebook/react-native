@@ -61,7 +61,6 @@ const SwipeableQuickActions = React.createClass({
 
 const styles = StyleSheet.create({
   background: {
-    alignSelf: 'flex-end',
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-end',

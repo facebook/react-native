@@ -122,13 +122,7 @@ const SwipeableRow = React.createClass({
   },
 
   render(): ReactElement {
-    const slideoutStyle = [
-      styles.slideOutContainer,
-      {
-        right: -this.state.scrollViewWidth,
-        width: this.state.scrollViewWidth,
-      },
-    ];
+    const slideoutStyle = [styles.slideOutContainer];
     if (Platform.OS === 'ios') {
       slideoutStyle.push({opacity: this.state.isSwipeableViewRendered ? 1 : 0});
     }
@@ -244,8 +238,7 @@ const SwipeableRow = React.createClass({
 
   _onLayoutChange(event: Object): void {
     const width = event.nativeEvent.layout.width;
-
-    if (width !== this.state.scrollViewWidth) {
+    if (width && width !== this.state.scrollViewWidth) {
       this.setState({
         scrollViewWidth: width,
       });
@@ -259,9 +252,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   slideOutContainer: {
+    bottom: 0,
     flex: 1,
-    flexDirection: 'column',
-    alignItems: 'flex-end',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
 });
 
