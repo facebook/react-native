@@ -970,7 +970,13 @@ var apps = [
     icon: 'https://lh3.googleusercontent.com/H0SILVHcDUxSMoSQwMb2QYtLjTBCqvK5ZEjOEwKQQ-2qnRV6Hd9Hn-gtSGPaoIOPwA=w300-rw',
     link: 'https://play.google.com/store/apps/details?id=com.biideal.biichat',
     author: 'biideal Inc.'
-  }
+  },
+  {
+    name: '饿小闲',
+    icon: 'https://xiaoxian.ele.me/download/images/share_page/ic_launcher.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/e-xiao-xian/id1092025196',
+    author: 'Eleme',
+  },
 ];
 
 var AppList = React.createClass({

@@ -602,6 +602,9 @@ var ListView = React.createClass({
         var rowVisible = visibleSection[rowID];
         var min = isVertical ? frame.y : frame.x;
         var max = min + (isVertical ? frame.height : frame.width);
+        if ((!min && !max) || (min === max)) {
+          break;
+        }
         if (min > visibleMax || max < visibleMin) {
           if (rowVisible) {
             visibilityChanged = true;
