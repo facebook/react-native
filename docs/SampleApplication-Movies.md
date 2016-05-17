@@ -1,10 +1,10 @@
 ---
-id: sample-applications-movies
+id: sample-application-movies
 title: Movie Fetcher
 layout: docs
 category: Sample Applications
-permalink: docs/sample-applications-movies.html
-next: sample-applications-f8
+permalink: docs/sample-application-movies.html
+next: sample-application-f8
 ---
 
 ## Overview

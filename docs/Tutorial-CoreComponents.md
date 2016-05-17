@@ -1,10 +1,10 @@
 ---
-id: tutorials-core-components
+id: tutorial-core-components
 title: Core Components
 layout: docs
 category: Tutorials
-permalink: docs/tutorials-core-components.html
-next: sample-applications-movies
+permalink: docs/tutorial-core-components.html
+next: sample-application-movies
 ---
 
 Components are the building blocks for a React Native application. A React Native user interface
@@ -23,17 +23,17 @@ component simply renders text.
 This example displays the `string` `"Hello"` on the device.
 
 ```JavaScript
-import React, { AppRegistry, Text } from 'react-native'
+import React from 'react';
+import { AppRegistry, Text } from 'react-native';
 
 const App = () => {
   return (
-    // Normally this would at least be wrapped in a View for better control.
-    <Text>Hello!</Text>
-  )
+    <Text>Hello World!</Text>
+  );
 }
 
 // App registration and rendering
-AppRegistry.registerComponent('MyApp', () => App)
+AppRegistry.registerComponent('MyApp', () => App);
 ```
 
 ## Image
@@ -50,17 +50,17 @@ attribute.
 This example displays a checkbox `Image` on the device.
 
 ```JavaScript
-import React, { AppRegistry, Image } from 'react-native'
+import React from 'react';
+import { AppRegistry, Image } from 'react-native';
 
 const App = () => {
   return (
-    // Normally this would at least be wrapped in a View for better control.
     <Image source={require('./img/check.png')} />
-  )
+  );
 }
 
 // App registration and rendering
-AppRegistry.registerComponent('MyApp', () => App)
+AppRegistry.registerComponent('MyApp', () => App);
 ```
 
 ## View
@@ -80,26 +80,26 @@ something which could not be done with a `Text` component alone (i.e., a `Text` 
 without a `View` would place the `string` in a fixed location in the upper corner):
 
 ```JavaScript
-import React, { AppRegistry, Text, View } from 'react-native'
+import React from 'react';
+import { AppRegistry, Text, View } from 'react-native';
 
 const App = () => {
   return (
-    <View style={{alignItems: `center`}}>
+    <View style={{alignItems: 'center'}}>
       <Text>Hello!</Text>
     </View>
-  )
+  );
 }
 
 // App registration and rendering
-AppRegistry.registerComponent('MyApp', () => App)
+AppRegistry.registerComponent('MyApp', () => App);
 ```
 
 ## TextInput
 
-Direct text-based user input is a foundation for many apps. The completion of a form where you are
-entering personal information such as address is a canonical example of this.
-[`TextInput`](/react-native/docs/textinput.html#content) is a basic component that allows the user
-to enter text.
+Direct text-based user input is a foundation for many apps. Writing a post or comment on a page
+is a canonical example of this. [`TextInput`](/react-native/docs/textinput.html#content) is a basic
+component that allows the user to enter text.
 
 This example creates a simple `TextInput` box with the `string` `Hello` as the placeholder when
 the `TextInput` is empty.
@@ -110,13 +110,13 @@ import React, { AppRegistry, TextInput, View } from 'react-native'
 const App = () => {
   return (
       <View>
-        <TextInput placeholder='Hello'/>
+        <TextInput placeholder="Hello" />
       </View>
-  )
+  );
 }
 
 // App registration and rendering
-AppRegistry.registerComponent('MyApp', () => App)
+AppRegistry.registerComponent('MyApp', () => App);
 ```
 
 ## ListView
@@ -133,11 +133,12 @@ returns a renderable component to display.
 This example creates a simple `ListView` of hardcoded data. It first initializes the `datasource`
 that will be used to populate the `ListView`. Then it renders that `ListView` with that data.
 
-> A `rowHasChanged` function si required to use `ListView`. Here we just say a row has changed if
+> A `rowHasChanged` function is required to use `ListView`. Here we just say a row has changed if
 > the row we are on is not the same as the previous row.
 
 ```JavaScript
-import React, { AppRegistry, ListView, Text, View } from 'react-native'
+import React from 'react';
+import { AppRegistry, Text, View, ListView} from 'react-native';
 
 var SimpleList = React.createClass({
   // Initialize the hardcoded data
@@ -153,7 +154,7 @@ var SimpleList = React.createClass({
         <ListView
           dataSource={this.state.dataSource}
           renderRow={(rowData) => <Text>{rowData}</Text>}
-          />
+        />
       </View>
     );
   }

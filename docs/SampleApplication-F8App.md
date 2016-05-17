@@ -1,5 +1,5 @@
 ---
-id: sample-applications-f8
+id: sample-application-f8
 title: F8 2016 App
 layout: docs
 category: Sample Applications

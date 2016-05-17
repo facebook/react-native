@@ -3,8 +3,8 @@ id: quick-start-getting-started
 title: Getting Started
 layout: docs
 category: Quick Start
-permalink: docs/quick-start-getting-started.html
-next: tutorials-core-components
+permalink: docs/getting-started.html
+next: tutorial-core-components
 ---
 
 
