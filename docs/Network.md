@@ -79,25 +79,25 @@ WebSocket is a protocol providing full-duplex communication channels over a sing
 ```js
 var ws = new WebSocket('ws://host.com/path');
 
-ws.onopen = () => {
+ws.addEventListener('open',() => {
   // connection opened
   ws.send('something');
-};
+});
 
-ws.onmessage = (e) => {
+ws.addEventListener('message',(e) => {
   // a message was received
   console.log(e.data);
-};
+});
 
-ws.onerror = (e) => {
+ws.addEventListener('error',(e) => {
   // an error occurred
   console.log(e.message);
-};
+});
 
-ws.onclose = (e) => {
+ws.addEventListener('close',(e) => {
   // connection closed
   console.log(e.code, e.reason);
-};
+});
 ```
 
 ## XMLHttpRequest
