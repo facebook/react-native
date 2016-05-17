@@ -16,8 +16,9 @@ their own or combined to build new components.
 
 ## Text
 
-The most basic component in React Native is the `Text` component. The `Text` component simply
-renders text.
+The most basic component in React Native is the
+[`Text`](/react-native/docs/text.html#content) component. The `Text`
+component simply renders text.
 
 This example displays the `string` `"Hello"` on the device.
 
@@ -37,7 +38,8 @@ AppRegistry.registerComponent('MyApp', () => App)
 
 ## Image
 
-The other basic React Native component is the `Image` component. Like `Text`, the `Image` component
+The other basic React Native component is the
+[`Image`](/react-native/docs/image.html#content) component. Like `Text`, the `Image` component
 simply renders an image.
 
 > An `Image` is analogous to using `img` when building websites.
@@ -63,8 +65,9 @@ AppRegistry.registerComponent('MyApp', () => App)
 
 ## View
 
-A `View` is the most basic building block for a React Native application. The `View` is an
-abstraction on top of the target platform's native equivalent, such as iOS's `UIView`.
+A [`View`](/react-native/docs/view.html#content) is the most basic building block for a React Native
+application. The `View` is an abstraction on top of the target platform's native equivalent, such as
+iOS's `UIView`.
 
 > A `View` is analogous to using a `div` for building websites.
 
@@ -94,8 +97,9 @@ AppRegistry.registerComponent('MyApp', () => App)
 ## TextInput
 
 Direct text-based user input is a foundation for many apps. The completion of a form where you are
-entering personal information such as address is a canonical example of this. `TextInput` is a
-basic component that allows the user to enter text.
+entering personal information such as address is a canonical example of this.
+[`TextInput`](/react-native/docs/textinput.html#content) is a basic component that allows the user
+to enter text.
 
 This example creates a simple `TextInput` box with the `string` `Hello` as the placeholder when
 the `TextInput` is empty.
@@ -117,8 +121,10 @@ AppRegistry.registerComponent('MyApp', () => App)
 
 ## ListView
 
-On mobile devices, lists are a core element in many applications. The `ListView` component is a
-special type of `View` that displays a vertically scrolling list of changing data.
+On mobile devices, lists are a core element in many applications. The
+[`ListView`](/react-native/docs/listview.html#content) component is a special type of
+[`View`](/react-native/docs/tutorials/core-components.html#view) that displays a vertically
+scrolling list of changing data.
 
 The `ListView` component requires two properties, `dataSource` and `renderRow`. `dataSource` is
 the actual source of information that will be part of the list. `renderRow` takes the data and
