@@ -9,7 +9,7 @@
 
 package com.facebook.react.modules.network;
 
-import com.squareup.okhttp.Interceptor;
+import okhttp3.Interceptor;
 
 /**
  * Classes implementing this interface return a new {@link Interceptor} when the {@link #create}
