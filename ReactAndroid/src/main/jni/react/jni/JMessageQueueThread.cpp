@@ -4,7 +4,7 @@
 
 #include <fb/log.h>
 #include <folly/Memory.h>
-#include <jni/fbjni.h>
+#include <fb/fbjni.h>
 
 #include "JNativeRunnable.h"
 
