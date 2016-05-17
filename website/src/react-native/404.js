@@ -14,7 +14,7 @@ var fourOhFour = React.createClass({
     return (
       <html>
         <head>
-          <meta httpEquiv="refresh" content="0; /react-native/docs/quick-start/introduction.html" />
+          <meta httpEquiv="refresh" content="0; /react-native/docs/quick-start-introduction.html" />
         </head>
         <body></body>
       </html>
