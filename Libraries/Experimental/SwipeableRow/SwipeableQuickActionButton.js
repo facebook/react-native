@@ -78,8 +78,8 @@ const styles = StyleSheet.create({
     width: 76,
   },
   image: {
-    height: 30,
-    width: 30,
+    height: 33,
+    width: 33,
   },
   text: {
     color: '#ffffff',
