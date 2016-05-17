@@ -14,6 +14,7 @@
 const BugReportingNativeModule = require('NativeModules').BugReporting;
 const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 const Map = require('Map');
+const infoLog = require('infoLog');
 
 import type EmitterSubscription from 'EmitterSubscription';
 
@@ -89,7 +90,7 @@ class BugReporting {
     for (const [key, callback] of BugReporting._fileSources) {
       fileData[key] = callback();
     }
-    console.log('BugReporting extraData:', extraData);
+    infoLog('BugReporting extraData:', extraData);
     BugReportingNativeModule &&
       BugReportingNativeModule.setExtraData &&
       BugReportingNativeModule.setExtraData(extraData, fileData);
