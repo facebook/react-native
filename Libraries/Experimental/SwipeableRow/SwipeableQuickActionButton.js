@@ -25,7 +25,6 @@
 
 const Image = require('Image');
 const React = require('React');
-const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TouchableHighlight = require('TouchableHighlight');
 const View = require('View');
@@ -54,36 +53,18 @@ const SwipeableQuickActionButton = React.createClass({
         onPress={this.props.onPress}
         testID={this.props.testID}
         underlayColor="transparent">
-        <View style={[styles.button, this.props.style]}>
+        <View style={this.props.style}>
           <Image
             accessibilityLabel={this.props.accessibilityLabel}
             source={this.props.imageSource}
-            style={[styles.image, this.props.imageStyle]}
+            style={this.props.imageStyle}
           />
-          <Text style={[styles.text, this.props.textStyle]}>
+          <Text style={this.props.textStyle}>
             {this.props.text}
           </Text>
         </View>
       </TouchableHighlight>
     );
-  },
-});
-
-const styles = StyleSheet.create({
-  button: {
-    alignItems: 'center',
-    flex: 1,
-    flexDirection: 'column',
-    width: 76,
-  },
-  image: {
-    height: 33,
-    width: 33,
-  },
-  text: {
-    color: '#ffffff',
-    fontSize: 12,
-    textAlign: 'center', // For Android to align properly
   },
 });
 
