@@ -816,7 +816,7 @@ if (window.location.hash !== '' && window.location.hash !== 'content') { // cont
   for (var i = 0; i < hashLinks.length && !foundHash; ++i) {
     if (hashLinks[i].hash === window.location.hash) {
       var parent = hashLinks[i].parentElement;
-      while (parent !== null) {
+      while (parent) {
         if (parent.tagName === 'BLOCK') {
           var devOS = null;
           var targetPlatform = null;
