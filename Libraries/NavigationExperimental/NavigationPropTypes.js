@@ -70,6 +70,7 @@ const SceneRendererProps = {
   navigationState: navigationParentState.isRequired,
   onNavigate: PropTypes.func.isRequired,
   position: animatedValue.isRequired,
+  progress: animatedValue.isRequired,
   scene: scene.isRequired,
   scenes: PropTypes.arrayOf(scene).isRequired,
 };
@@ -103,6 +104,7 @@ function extractSceneRendererProps(
     navigationState: props.navigationState,
     onNavigate: props.onNavigate,
     position: props.position,
+    progress: props.progress,
     scene: props.scene,
     scenes: props.scenes,
   };
