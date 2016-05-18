@@ -26,21 +26,16 @@ RCT_EXTERN NSString *const RCTJSCThreadName;
 RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
 
 /**
+ * Create a NSError from a JSError object.
+ *
+ * If available, the error's userInfo property will contain the JS stacktrace under
+ * the RCTJSStackTraceKey key.
+ */
+RCT_EXTERN NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError);
+
+/**
  * Uses a JavaScriptCore context as the execution engine.
  */
 @interface RCTJSCExecutor : NSObject <RCTJavaScriptExecutor>
-
-/**
- * Configures the executor to run JavaScript on a specific thread with a given JS context.
- * You probably don't want to use this; use -init instead.
- */
-- (instancetype)initWithJavaScriptThread:(NSThread *)javaScriptThread
-                                 context:(JSContext *)context NS_DESIGNATED_INITIALIZER;
-
-/**
- * Like -[initWithJavaScriptThread:context:] but uses JSGlobalContextRef from JavaScriptCore's C API.
- */
-- (instancetype)initWithJavaScriptThread:(NSThread *)javaScriptThread
-                        globalContextRef:(JSGlobalContextRef)contextRef;
 
 @end

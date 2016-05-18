@@ -106,6 +106,12 @@ function launchEditor(fileName, lineNumber) {
     return;
   }
 
+  // Sanitize lineNumber to prevent malicious use on win32
+  // via: https://github.com/nodejs/node/blob/c3bb4b1aa5e907d489619fb43d233c3336bfc03d/lib/child_process.js#L333
+  if (lineNumber && isNaN(lineNumber)) {
+    return;
+  }
+
   var editor = guessEditor();
   if (!editor) {
     printInstructions('PRO TIP');

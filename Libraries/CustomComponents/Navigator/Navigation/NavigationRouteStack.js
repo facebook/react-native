@@ -7,7 +7,7 @@
 'use strict';
 
 var immutable = require('immutable');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 type IterationCallback = (route: any, index: number, key: string) => void;
 
@@ -117,7 +117,7 @@ class RouteStack {
     return this._routeNodes.findIndex(finder, this);
   }
 
-  slice(begin: ?number, end: ?number): RouteStack {
+  slice(begin?: number, end?: number): RouteStack {
     var routeNodes = this._routeNodes.slice(begin, end);
     var index = Math.min(this._index, routeNodes.size - 1);
     return this._update(index, routeNodes);

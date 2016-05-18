@@ -37,7 +37,7 @@ var View = require('View');
 var { Map } = require('immutable');
 
 var guid = require('guid');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 var Interpolators = NavigatorBreadcrumbNavigationBarStyles.Interpolators;
 var NavigatorNavigationBarStyles = Platform.OS === 'android' ?

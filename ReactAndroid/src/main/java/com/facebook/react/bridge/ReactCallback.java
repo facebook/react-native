@@ -15,8 +15,11 @@ import com.facebook.proguard.annotations.DoNotStrip;
 public interface ReactCallback {
 
   @DoNotStrip
-  void call(int moduleId, int methodId, ReadableNativeArray parameters);
+  void call(ExecutorToken executorToken, int moduleId, int methodId, ReadableNativeArray parameters);
 
   @DoNotStrip
   void onBatchComplete();
+
+  @DoNotStrip
+  void onExecutorUnregistered(ExecutorToken executorToken);
 }

@@ -1,5 +1,10 @@
 /**
- * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
@@ -29,82 +34,123 @@
 
 const NavigationAnimatedView = require('NavigationAnimatedView');
 const NavigationCard = require('NavigationCard');
-const NavigationContainer = require('NavigationContainer');
+const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleInterpolator');
+const NavigationCardStackPanResponder = require('NavigationCardStackPanResponder');
+const NavigationPropTypes = require('NavigationPropTypes');
 const React = require('React');
+const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
 const StyleSheet = require('StyleSheet');
 
-const emptyFunction = require('emptyFunction');
+const emptyFunction = require('fbjs/lib/emptyFunction');
 
 const {PropTypes} = React;
+const {Directions} = NavigationCardStackPanResponder;
 
 import type {
+  NavigationActionCaller,
   NavigationParentState,
-  NavigationState,
-} from 'NavigationStateUtils';
+  NavigationSceneRenderer,
+  NavigationSceneRendererProps,
+} from 'NavigationTypeDefinition';
 
 import type {
-  Layout,
-  OverlayRenderer,
-  Position,
-  SceneRenderer,
-} from 'NavigationAnimatedView';
+  NavigationGestureDirection,
+} from 'NavigationCardStackPanResponder';
 
 type Props = {
+  direction: NavigationGestureDirection,
   navigationState: NavigationParentState,
-  renderOverlay: OverlayRenderer,
-  renderScene: SceneRenderer,
+  onNavigate: NavigationActionCaller,
+  renderOverlay: ?NavigationSceneRenderer,
+  renderScene: NavigationSceneRenderer,
+};
+
+type DefaultProps = {
+  direction: NavigationGestureDirection,
+  renderOverlay: ?NavigationSceneRenderer,
 };
 
 /**
- * A controlled navigation view that renders a list of cards.
+ * A controlled navigation view that renders a stack of cards.
+ *
+ *     +------------+
+ *   +-+            |
+ * +-+ |            |
+ * | | |            |
+ * | | |  Focused   |
+ * | | |   Card     |
+ * | | |            |
+ * +-+ |            |
+ *   +-+            |
+ *     +------------+
  */
-class NavigationCardStack extends React.Component {
-  _renderScene : SceneRenderer;
+class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
+  _renderScene : NavigationSceneRenderer;
+
+  static propTypes = {
+    direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
+    navigationState: NavigationPropTypes.navigationParentState.isRequired,
+    onNavigate: NavigationPropTypes.SceneRenderer.onNavigate,
+    renderOverlay: PropTypes.func,
+    renderScene: PropTypes.func.isRequired,
+  };
+
+  static defaultProps: DefaultProps = {
+    direction: Directions.HORIZONTAL,
+    renderOverlay: emptyFunction.thatReturnsNull,
+  };
 
   constructor(props: Props, context: any) {
     super(props, context);
+  }
+
+  componentWillMount(): void {
     this._renderScene = this._renderScene.bind(this);
+  }
+
+  shouldComponentUpdate(nextProps: Object, nextState: void): boolean {
+    return ReactComponentWithPureRenderMixin.shouldComponentUpdate.call(
+      this,
+      nextProps,
+      nextState
+    );
   }
 
   render(): ReactElement {
     return (
       <NavigationAnimatedView
         navigationState={this.props.navigationState}
-        style={[styles.animatedView, this.props.style]}
         renderOverlay={this.props.renderOverlay}
         renderScene={this._renderScene}
+        onNavigate={this.props.onNavigate}
+        // $FlowFixMe - style should be declared
+        style={[styles.animatedView, this.props.style]}
       />
     );
   }
 
-  _renderScene(
-    navigationState: NavigationState,
-    index: number,
-    position: Position,
-    layout: Layout,
-  ): ReactElement {
+  _renderScene(props: NavigationSceneRendererProps): ReactElement {
+    const isVertical = this.props.direction === 'vertical';
+
+    const style = isVertical ?
+      NavigationCardStackStyleInterpolator.forVertical(props) :
+      NavigationCardStackStyleInterpolator.forHorizontal(props);
+
+    const panHandlers = isVertical ?
+      NavigationCardStackPanResponder.forVertical(props) :
+      NavigationCardStackPanResponder.forHorizontal(props);
+
     return (
       <NavigationCard
-        key={navigationState.key}
-        index={index}
-        navigationState={navigationState}
-        position={position}
-        layout={layout}>
-        {this.props.renderScene(navigationState, index, position, layout)}
-      </NavigationCard>
+        {...props}
+        key={'card_' + props.scene.key}
+        panHandlers={panHandlers}
+        renderScene={this.props.renderScene}
+        style={style}
+      />
     );
   }
 }
-
-NavigationCardStack.propTypes = {
-  navigationState: PropTypes.object.isRequired,
-  renderOverlay: PropTypes.func,
-  renderScene: PropTypes.func.isRequired,
-};
-
-NavigationCardStack.defaultProps = {
-  renderOverlay: emptyFunction.thatReturnsNull,
-};
 
 const styles = StyleSheet.create({
   animatedView: {
@@ -112,4 +158,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = NavigationContainer.create(NavigationCardStack);
+module.exports = NavigationCardStack;

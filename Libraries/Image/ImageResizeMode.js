@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var keyMirror = require('keyMirror');
+var keyMirror = require('fbjs/lib/keyMirror');
 
 /**
  * ImageResizeMode - Enum for different image resizing modes, set via
@@ -34,6 +34,12 @@ var ImageResizeMode = keyMirror({
    * distorting it.
    */
   stretch: null,
+  /**
+  * center - The image will be scaled down such that it is completely visible,
+  * if bigger than the area of the view.
+  * The image will not be scaled up.
+  */
+  center: null,
 });
 
 module.exports = ImageResizeMode;

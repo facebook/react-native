@@ -11,25 +11,17 @@
  */
 'use strict';
 
-var NavigationStateUtils = require('NavigationStateUtils');
+const NavigationStateUtils = require('NavigationStateUtils');
 
 import type {
   NavigationState,
   NavigationParentState,
   NavigationReducer,
-} from 'NavigationStateUtils';
-
-import type {
-  BackAction,
-} from 'NavigationRootContainer';
-
-export type NavigationStackReducerAction = BackAction | {
-  type: string,
-};
+} from 'NavigationTypeDefinition';
 
 export type ReducerForStateHandler = (state: NavigationState) => NavigationReducer;
 
-export type PushedReducerForActionHandler = (action: any) => ?NavigationReducer;
+export type PushedReducerForActionHandler = (action: any, lastState: NavigationParentState) => ?NavigationReducer;
 
 export type StackReducerConfig = {
   /*
@@ -73,13 +65,6 @@ function NavigationStackReducer({initialState, getReducerForState, getPushedRedu
     if (!lastParentState) {
       return lastState;
     }
-    switch (action.type) {
-      case 'BackAction':
-        if (lastParentState.index === 0 || lastParentState.children.length === 1) {
-          return lastParentState;
-        }
-        return NavigationStateUtils.pop(lastParentState);
-    }
 
     const activeSubState = lastParentState.children[lastParentState.index];
     const activeSubReducer = getReducerForStateWithDefault(activeSubState);
@@ -93,13 +78,23 @@ function NavigationStackReducer({initialState, getReducerForState, getPushedRedu
       };
     }
 
-    const subReducerToPush = getPushedReducerForAction(action);
+    const subReducerToPush = getPushedReducerForAction(action, lastParentState);
     if (subReducerToPush) {
       return NavigationStateUtils.push(
         lastParentState,
         subReducerToPush(null, action)
       );
     }
+
+    switch (action.type) {
+      case 'back':
+      case 'BackAction':
+        if (lastParentState.index === 0 || lastParentState.children.length === 1) {
+          return lastParentState;
+        }
+        return NavigationStateUtils.pop(lastParentState);
+    }
+
     return lastParentState;
   };
 }

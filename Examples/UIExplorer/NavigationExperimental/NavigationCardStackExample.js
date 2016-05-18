@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -14,84 +21,121 @@
 'use strict';
 
 const NavigationExampleRow = require('./NavigationExampleRow');
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 
 const {
   NavigationExperimental,
   StyleSheet,
   ScrollView,
-} = React;
+} = ReactNative;
 
-const NavigationCardStack = NavigationExperimental.CardStack;
-const NavigationStateUtils = NavigationExperimental.StateUtils;
+const {
+  CardStack: NavigationCardStack,
+  StateUtils: NavigationStateUtils,
+} = NavigationExperimental;
+
+function createReducer(initialState) {
+  return (currentState = initialState, action) => {
+    switch (action.type) {
+      case 'push':
+        return NavigationStateUtils.push(currentState, {key: action.key});
+
+      case 'BackAction':
+      case 'back':
+      case 'pop':
+        return currentState.index > 0 ?
+          NavigationStateUtils.pop(currentState) :
+          currentState;
+
+      default:
+        return currentState;
+    }
+  };
+}
+
+const ExampleReducer = createReducer({
+  index: 0,
+  key: 'exmaple',
+  children: [{key: 'First Route'}],
+});
 
 class NavigationCardStackExample extends React.Component {
 
   constructor(props, context) {
     super(props, context);
-    this.state = this._getInitialState();
+    this.state = {
+      isHorizontal: true,
+      navState: ExampleReducer(undefined, {}),
+    };
+  }
+
+  componentWillMount() {
     this._renderScene = this._renderScene.bind(this);
-    this._push = this._push.bind(this);
-    this._pop = this._pop.bind(this);
+    this._toggleDirection = this._toggleDirection.bind(this);
+    this._handleAction = this._handleAction.bind(this);
   }
 
   render() {
     return (
       <NavigationCardStack
-        style={styles.main}
+        direction={this.state.isHorizontal ? 'horizontal' : 'vertical'}
+        navigationState={this.state.navState}
+        onNavigate={this._handleAction}
         renderScene={this._renderScene}
-        navigationState={this.state.navigationState}
+        style={styles.main}
       />
     );
   }
 
-  _getInitialState() {
-    const route = {key: 'First Route'};
-    const navigationState = {
-      index: 0,
-      children: [route],
-    };
-    return {
-      navigationState,
-    };
-  }
-
-  _push() {
-    const state = this.state.navigationState;
-    const nextRoute = {key: 'Route ' + (state.index + 1)};
-    const nextState = NavigationStateUtils.push(
-      state,
-      nextRoute,
-    );
+  _handleAction(action): boolean {
+    if (!action) {
+      return false;
+    }
+    const newState = ExampleReducer(this.state.navState, action);
+    if (newState === this.state.navState) {
+      return false;
+    }
     this.setState({
-      navigationState: nextState,
+      navState: newState,
     });
+    return true;
   }
 
-  _pop() {
-    const state = this.state.navigationState;
-    const nextState = state.index > 0 ?
-      NavigationStateUtils.pop(state) :
-      state;
-
-    this.setState({
-      navigationState: nextState,
-    });
+  handleBackAction(): boolean {
+    return this._handleAction({ type: 'BackAction', });
   }
 
-  _renderScene(navigationState, index, position, layout) {
+  _renderScene(/*NavigationSceneRendererProps*/ props) {
     return (
       <ScrollView style={styles.scrollView}>
         <NavigationExampleRow
-          text={JSON.stringify(navigationState)}
+          text={
+            this.state.isHorizontal ?
+            'direction = "horizontal"' :
+            'direction = "vertical"'
+          }
+          onPress={this._toggleDirection}
+        />
+        <NavigationExampleRow
+          text={'route = ' + props.scene.navigationState.key}
         />
         <NavigationExampleRow
           text="Push Route"
-          onPress={this._push}
+          onPress={() => {
+            props.onNavigate({
+              type: 'push',
+              key: 'Route ' + props.scenes.length,
+            });
+          }}
         />
         <NavigationExampleRow
           text="Pop Route"
-          onPress={this._pop}
+          onPress={() => {
+            props.onNavigate({
+              type: 'pop',
+            });
+          }}
         />
         <NavigationExampleRow
           text="Exit Card Stack Example"
@@ -100,6 +144,13 @@ class NavigationCardStackExample extends React.Component {
       </ScrollView>
     );
   }
+
+  _toggleDirection() {
+    this.setState({
+      isHorizontal: !this.state.isHorizontal,
+    });
+  }
+
 }
 
 const styles = StyleSheet.create({

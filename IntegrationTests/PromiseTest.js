@@ -10,8 +10,10 @@
  */
 'use strict';
 
-var React = require('react-native');
-var { TestModule } = React.NativeModules;
+var React = require('react');
+var ReactNative = require('react-native');
+var { View } = ReactNative;
+var { TestModule } = ReactNative.NativeModules;
 
 var PromiseTest = React.createClass({
   shouldResolve: false,
@@ -64,7 +66,7 @@ var PromiseTest = React.createClass({
   },
 
   render() : ReactElement {
-    return <React.View />;
+    return <View />;
   }
 
 });

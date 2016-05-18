@@ -18,8 +18,8 @@ let ErrorUtils = require('ErrorUtils');
 let JSTimersExecution = require('JSTimersExecution');
 let Platform = require('Platform');
 
-let invariant = require('invariant');
-let keyMirror = require('keyMirror');
+let invariant = require('fbjs/lib/invariant');
+let keyMirror = require('fbjs/lib/keyMirror');
 let stringifySafe = require('stringifySafe');
 
 let MODULE_IDS = 0;
@@ -35,6 +35,7 @@ let SPY_MODE = false;
 let MethodTypes = keyMirror({
   remote: null,
   remoteAsync: null,
+  syncHook: null,
 });
 
 var guard = (fn) => {
@@ -45,20 +46,24 @@ var guard = (fn) => {
   }
 };
 
+type Config = {
+  remoteModuleConfig: Object,
+};
+
 class MessageQueue {
 
-  constructor(remoteModules, localModules) {
-    this.RemoteModules = {};
-
+  constructor(configProvider: () => Config) {
     this._callableModules = {};
     this._queue = [[], [], [], 0];
-    this._moduleTable = {};
-    this._methodTable = {};
     this._callbacks = [];
     this._callbackID = 0;
     this._callID = 0;
     this._lastFlush = 0;
     this._eventLoopStartTime = new Date().getTime();
+
+    this._debugInfo = {};
+    this._remoteModuleTable = {};
+    this._remoteMethodTable = {};
 
     [
       'invokeCallbackAndReturnFlushedQueue',
@@ -66,18 +71,17 @@ class MessageQueue {
       'flushedQueue',
     ].forEach((fn) => this[fn] = this[fn].bind(this));
 
-    let modulesConfig = this._genModulesConfig(remoteModules);
-    this._genModules(modulesConfig);
-    localModules && this._genLookupTables(
-      this._genModulesConfig(localModules),this._moduleTable, this._methodTable
-    );
+    lazyProperty(this, 'RemoteModules', () => {
+      let {remoteModuleConfig} = configProvider();
+      let modulesConfig = this._genModulesConfig(remoteModuleConfig);
+      let modules = this._genModules(modulesConfig);
 
-    this._debugInfo = {};
-    this._remoteModuleTable = {};
-    this._remoteMethodTable = {};
-    this._genLookupTables(
-      modulesConfig, this._remoteModuleTable, this._remoteMethodTable
-    );
+      this._genLookupTables(
+        modulesConfig, this._remoteModuleTable, this._remoteMethodTable
+      );
+
+      return modules;
+    });
   }
 
   /**
@@ -110,9 +114,10 @@ class MessageQueue {
   }
 
   processModuleConfig(config, moduleID) {
-    const module = this._genModule(config, moduleID);
+    const info = this._genModule(config, moduleID);
+    this.RemoteModules[info.name] = info.module;
     this._genLookup(config, moduleID, this._remoteModuleTable, this._remoteMethodTable);
-    return module;
+    return info.module;
   }
 
   getEventLoopRunningTime() {
@@ -164,13 +169,9 @@ class MessageQueue {
     }
   }
 
-  __callFunction(module, method, args) {
+  __callFunction(module: string, method: string, args: any) {
     this._lastFlush = new Date().getTime();
     this._eventLoopStartTime = this._lastFlush;
-    if (isFinite(module)) {
-      method = this._methodTable[module][method];
-      module = this._moduleTable[module];
-    }
     Systrace.beginEvent(`${module}.${method}()`);
     if (__DEV__ && SPY_MODE) {
       console.log('N->JS : ' + module + '.' + method + '(' + JSON.stringify(args) + ')');
@@ -192,10 +193,17 @@ class MessageQueue {
     let debug = this._debugInfo[cbID >> 1];
     let module = debug && this._remoteModuleTable[debug[0]];
     let method = debug && this._remoteMethodTable[debug[0]][debug[1]];
-    invariant(
-      callback,
-      `Callback with id ${cbID}: ${module}.${method}() not found`
-    );
+    if (!callback) {
+      let errorMessage = `Callback with id ${cbID}: ${module}.${method}() not found`;
+      if (method) {
+        errorMessage = `The callback ${method}() exists in module ${module}, `
+        + `but only one callback may be registered to a function in a native module.`;
+      }
+      invariant(
+        callback,
+        errorMessage
+      );
+    }
     let profileName = debug ? '<callback for ' + module + '.' + method + '>' : cbID;
     if (callback && SPY_MODE && __DEV__) {
       console.log('N->JS : ' + profileName + '(' + JSON.stringify(args) + ')');
@@ -234,6 +242,7 @@ class MessageQueue {
         if (methodsConfig) {
           let methods = [];
           let asyncMethods = [];
+          let syncHooks = [];
           let methodNames = Object.keys(methodsConfig);
           for (var j = 0, ll = methodNames.length; j < ll; j++) {
             let methodName = methodNames[j];
@@ -241,13 +250,14 @@ class MessageQueue {
             methods[methodConfig.methodID] = methodName;
             if (methodConfig.type === MethodTypes.remoteAsync) {
               asyncMethods.push(methodConfig.methodID);
+            } else if (methodConfig.type === MethodTypes.syncHook) {
+              syncHooks.push(methodConfig.methodID);
             }
           }
           if (methods.length) {
             module.push(methods);
-            if (asyncMethods.length) {
-              module.push(asyncMethods);
-            }
+            module.push(asyncMethods);
+            module.push(syncHooks);
           }
         }
         moduleArray[moduleConfig.moduleID] = module;
@@ -279,28 +289,38 @@ class MessageQueue {
   }
 
   _genModules(remoteModules) {
+    let modules = {};
+
     remoteModules.forEach((config, moduleID) => {
-      this._genModule(config, moduleID);
+      let info = this._genModule(config, moduleID);
+      if (info) {
+        modules[info.name] = info.module;
+      }
     });
+
+    return modules;
   }
 
-  _genModule(config, moduleID) {
+  _genModule(config, moduleID): ?Object {
     if (!config) {
-      return;
+      return null;
     }
 
-    let moduleName, constants, methods, asyncMethods;
+    let moduleName, constants, methods, asyncMethods, syncHooks;
     if (moduleHasConstants(config)) {
-      [moduleName, constants, methods, asyncMethods] = config;
+      [moduleName, constants, methods, asyncMethods, syncHooks] = config;
     } else {
-      [moduleName, methods, asyncMethods] = config;
+      [moduleName, methods, asyncMethods, syncHooks] = config;
     }
 
     let module = {};
     methods && methods.forEach((methodName, methodID) => {
-      const methodType =
-        asyncMethods && arrayContains(asyncMethods, methodID) ?
-          MethodTypes.remoteAsync : MethodTypes.remote;
+      const isAsync = asyncMethods && arrayContains(asyncMethods, methodID);
+      const isSyncHook = syncHooks && arrayContains(syncHooks, methodID);
+      invariant(!isAsync || !isSyncHook, 'Cannot have a method that is both async and a sync hook');
+      const methodType = isAsync ? MethodTypes.remoteAsync :
+          isSyncHook ? MethodTypes.syncHook :
+          MethodTypes.remote;
       module[methodName] = this._genMethod(moduleID, methodID, methodType);
     });
     Object.assign(module, constants);
@@ -309,8 +329,7 @@ class MessageQueue {
       module.moduleID = moduleID;
     }
 
-    this.RemoteModules[moduleName] = module;
-    return module;
+    return { name: moduleName, module };
   }
 
   _genMethod(module, method, type) {
@@ -332,6 +351,10 @@ class MessageQueue {
             });
         });
       };
+    } else if (type === MethodTypes.syncHook) {
+      return function(...args) {
+        return global.nativeCallSyncHook(module, method, args);
+      }
     } else {
       fn = function(...args) {
         let lastArg = args.length > 0 ? args[args.length - 1] : null;
@@ -375,6 +398,23 @@ function createErrorFromErrorData(errorData: {message: string}): Error {
   var error = new Error(message);
   error.framesToPop = 1;
   return Object.assign(error, extraErrorInfo);
+}
+
+function lazyProperty(target: Object, name: string, f: () => any) {
+  Object.defineProperty(target, name, {
+    configurable: true,
+    enumerable: true,
+    get() {
+      const value = f();
+      Object.defineProperty(target, name, {
+        configurable: true,
+        enumerable: true,
+        writeable: true,
+        value: value,
+      });
+      return value;
+    }
+  });
 }
 
 module.exports = MessageQueue;

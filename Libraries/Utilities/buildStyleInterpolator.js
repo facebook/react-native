@@ -9,7 +9,7 @@
  */
 /* eslint-disable global-strict */
 
-var keyOf = require('keyOf');
+var keyOf = require('fbjs/lib/keyOf');
 
 var X_DIM = keyOf({x: null});
 var Y_DIM = keyOf({y: null});
@@ -461,8 +461,9 @@ for (var varIndex = 0; varIndex < 16; varIndex++) {
 }
 var setNextMatrixAndDetectChange = function(orderedMatrixOperations) {
   var fn = [
-    '  var transformMatrix = result.transformMatrix !== undefined ? ' +
-    'result.transformMatrix : (result.transformMatrix = []);'
+    '  var transform = result.transform !== undefined ? ' +
+    'result.transform : (result.transform = [{ matrix: [] }]);' +
+    '  var transformMatrix = transform[0].matrix;'
   ];
   fn.push.apply(
     fn,

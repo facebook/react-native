@@ -24,15 +24,22 @@
 @end
 
 @implementation AppDelegate
-
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   _bridge = [[RCTBridge alloc] initWithDelegate:self
                                   launchOptions:launchOptions];
-
+  
+  // Appetizer.io params check
+  NSDictionary *initProps = nil;
+  NSString *_routeUri = [[NSUserDefaults standardUserDefaults] stringForKey:@"route"];
+  if (_routeUri) {
+    initProps = @{@"exampleFromAppetizeParams":
+                    [NSString stringWithFormat:@"rnuiexplorer://example/%@Example", _routeUri]};
+  }
+  
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_bridge
                                                    moduleName:@"UIExplorerApp"
-                                            initialProperties:nil];
+                                            initialProperties:initProps];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];

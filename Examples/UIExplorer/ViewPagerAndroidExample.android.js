@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -14,7 +21,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Image,
   StyleSheet,
@@ -23,7 +31,7 @@ var {
   TouchableOpacity,
   View,
   ViewPagerAndroid,
-} = React;
+} = ReactNative;
 
 import type { ViewPagerScrollState } from 'ViewPagerAndroid';
 
@@ -101,6 +109,7 @@ var ViewPagerAndroidExample = React.createClass({
     return {
       page: 0,
       animationsAreEnabled: true,
+      scrollEnabled: true,
       progress: {
         position: 0,
         offset: 0,
@@ -159,12 +168,21 @@ var ViewPagerAndroidExample = React.createClass({
         <ViewPagerAndroid
           style={styles.viewPager}
           initialPage={0}
+          scrollEnabled={this.state.scrollEnabled}
           onPageScroll={this.onPageScroll}
           onPageSelected={this.onPageSelected}
           onPageScrollStateChanged={this.onPageScrollStateChanged}
+          pageMargin={10}
           ref={viewPager => { this.viewPager = viewPager; }}>
           {pages}
         </ViewPagerAndroid>
+        <View style={styles.buttons}>
+          <Button
+            enabled={true}
+            text={this.state.scrollEnabled ? 'Scroll Enabled' : 'Scroll Disabled'}
+            onPress={() => this.setState({scrollEnabled: !this.state.scrollEnabled})}
+          />
+        </View>
         <View style={styles.buttons}>
           { animationsAreEnabled ?
             <Button

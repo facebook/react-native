@@ -18,6 +18,7 @@ var Prism = require('Prism');
 var React = require('React');
 var Site = require('Site');
 var slugify = require('slugify');
+var Metadata = require('Metadata');
 
 var styleReferencePattern = /^[^.]+\.propTypes\.style$/;
 
@@ -37,16 +38,26 @@ function renderType(type) {
     return 'enum(' + type.value.map((v) => renderEnumValue(v.value)).join(', ') + ')';
   }
 
+  if (type.name === '$Enum') {
+    if (type.elements[0].signature.properties) {
+      return type.elements[0].signature.properties.map(p => `'${p.key}'`).join(' | ');
+    }
+    return type.name;
+  }
+
   if (type.name === 'shape') {
     return '{' + Object.keys(type.value).map((key => key + ': ' + renderType(type.value[key]))).join(', ') + '}';
   }
 
-  if (type.name == 'union') {
-    return type.value.map(renderType).join(', ');
+  if (type.name === 'union') {
+    if (type.value) {
+      return type.value.map(renderType).join(', ');
+    }
+    return type.elements.map(renderType).join(' | ');
   }
 
   if (type.name === 'arrayOf') {
-    return '[' + renderType(type.value) + ']';
+    return <span>[{renderType(type.value)}]</span>;
   }
 
   if (type.name === 'instanceOf') {
@@ -56,10 +67,10 @@ function renderType(type) {
   if (type.name === 'custom') {
     if (styleReferencePattern.test(type.raw)) {
       var name = type.raw.substring(0, type.raw.indexOf('.'));
-      return <a href={'docs/' + slugify(name) + '.html#style'}>{name}#style</a>
+      return <a href={'docs/' + slugify(name) + '.html#style'}>{name}#style</a>;
     }
     if (type.raw === 'ColorPropType') {
-      return <a href={'docs/colors.html'}>color</a>
+      return <a href={'docs/colors.html'}>color</a>;
     }
     if (type.raw === 'EdgeInsetsPropType') {
       return '{top: number, left: number, bottom: number, right: number}';
@@ -74,6 +85,11 @@ function renderType(type) {
   if (type.name === 'func') {
     return 'function';
   }
+
+  if (type.name === 'signature') {
+    return type.raw;
+  }
+
   return type.name;
 }
 
@@ -104,6 +120,18 @@ function sortByPlatform(props, nameA, nameB) {
   }
 
   return 0;
+}
+
+function removeCommentsFromDocblock(docblock) {
+  return docblock
+    .trim('\n ')
+    .replace(/^\/\*+/, '')
+    .replace(/\*\/$/, '')
+    .split('\n')
+    .map(function(line) {
+      return line.trim().replace(/^\* ?/, '');
+    })
+    .join('\n');
 }
 
 var ComponentDoc = React.createClass({
@@ -226,6 +254,35 @@ var ComponentDoc = React.createClass({
     }
   },
 
+  renderMethod: function(method) {
+    return (
+      <Method
+        key={method.name}
+        name={method.name}
+        description={method.description}
+        params={method.params}
+        modifiers={method.modifiers}
+        returns={method.returns}
+      />
+    );
+  },
+
+  renderMethods: function(methods) {
+    if (!methods || !methods.length) {
+      return null;
+    }
+    return (
+      <span>
+        <H level={3}>Methods</H>
+        <div className="props">
+          {methods.filter((method) => {
+            return method.name[0] !== '_';
+          }).map(this.renderMethod)}
+        </div>
+      </span>
+    );
+  },
+
   render: function() {
     var content = this.props.content;
     this.extractPlatformFromProps(content.props);
@@ -236,71 +293,23 @@ var ComponentDoc = React.createClass({
         </Marked>
         <H level={3}>Props</H>
         {this.renderProps(content.props, content.composes)}
+        {this.renderMethods(content.methods)}
       </div>
     );
   }
 });
 
 var APIDoc = React.createClass({
-  removeCommentsFromDocblock: function(docblock) {
-    return docblock
-      .trim('\n ')
-      .replace(/^\/\*+/, '')
-      .replace(/\*\/$/, '')
-      .split('\n')
-      .map(function(line) {
-        return line.trim().replace(/^\* ?/, '');
-      })
-      .join('\n');
-  },
-
-  renderTypehintRec: function(typehint) {
-    if (typehint.type === 'simple') {
-      return typehint.value;
-    }
-
-    if (typehint.type === 'generic') {
-      return this.renderTypehintRec(typehint.value[0]) + '<' + this.renderTypehintRec(typehint.value[1]) + '>';
-    }
-
-    return JSON.stringify(typehint);
-
-  },
-
-  renderTypehint: function(typehint) {
-    try {
-      var typehint = JSON.parse(typehint);
-    } catch(e) {
-      return typehint;
-    }
-
-    return this.renderTypehintRec(typehint);
-  },
 
   renderMethod: function(method) {
     return (
-      <div className="prop" key={method.name}>
-        <Header level={4} className="propTitle" toSlug={method.name}>
-          {method.modifiers.length && <span className="propType">
-            {method.modifiers.join(' ') + ' '}
-          </span> || ''}
-          {method.name}
-          <span className="propType">
-            ({method.params
-              .map((param) => {
-                var res = param.name;
-                if (param.typehint) {
-                  res += ': ' + this.renderTypehint(param.typehint);
-                }
-                return res;
-              })
-              .join(', ')})
-          </span>
-        </Header>
-        {method.docblock && <Marked>
-          {this.removeCommentsFromDocblock(method.docblock)}
-        </Marked>}
-      </div>
+      <Method
+        key={method.name}
+        name={method.name}
+        description={method.docblock && removeCommentsFromDocblock(method.docblock)}
+        params={method.params}
+        modifiers={method.modifiers}
+      />
     );
   },
 
@@ -332,7 +341,7 @@ var APIDoc = React.createClass({
           }
         </Header>
         {property.docblock && <Marked>
-          {this.removeCommentsFromDocblock(property.docblock)}
+          {removeCommentsFromDocblock(property.docblock)}
         </Marked>}
       </div>
     );
@@ -371,7 +380,7 @@ var APIDoc = React.createClass({
                 </Header>
                 <ul>
                   {cls.docblock && <Marked>
-                    {this.removeCommentsFromDocblock(cls.docblock)}
+                    {removeCommentsFromDocblock(cls.docblock)}
                   </Marked>}
                   {this.renderMethods(cls.methods)}
                   {this.renderProperties(cls.properties)}
@@ -394,7 +403,7 @@ var APIDoc = React.createClass({
     return (
       <div>
         <Marked>
-          {this.removeCommentsFromDocblock(content.docblock)}
+          {removeCommentsFromDocblock(content.docblock)}
         </Marked>
         {this.renderMethods(content.methods)}
         {this.renderProperties(content.properties)}
@@ -402,6 +411,62 @@ var APIDoc = React.createClass({
       </div>
     );
   }
+});
+
+var Method = React.createClass({
+  renderTypehintRec: function(typehint) {
+    if (typehint.type === 'simple') {
+      return typehint.value;
+    }
+
+    if (typehint.type === 'generic') {
+      return this.renderTypehintRec(typehint.value[0]) + '<' + this.renderTypehintRec(typehint.value[1]) + '>';
+    }
+
+    return JSON.stringify(typehint);
+
+  },
+
+  renderTypehint: function(typehint) {
+    if (typeof typehint === 'object' && typehint.name) {
+      return renderType(typehint);
+    }
+    try {
+      var typehint = JSON.parse(typehint);
+    } catch (e) {
+      return typehint;
+    }
+
+    return this.renderTypehintRec(typehint);
+  },
+
+  render: function() {
+    return (
+      <div className="prop">
+        <Header level={4} className="propTitle" toSlug={this.props.name}>
+          {this.props.modifiers.length && <span className="propType">
+            {this.props.modifiers.join(' ') + ' '}
+          </span> || ''}
+          {this.props.name}
+          <span className="propType">
+            ({this.props.params
+              .map((param) => {
+                var res = param.name;
+                if (param.type) {
+                  res += ': ' + this.renderTypehint(param.type);
+                }
+                return res;
+              })
+              .join(', ')})
+              {this.props.returns && ': ' + this.renderTypehint(this.props.returns.type)}
+          </span>
+        </Header>
+        {this.props.description && <Marked>
+          {this.props.description}
+        </Marked>}
+      </div>
+    );
+  },
 });
 
 var EmbeddedSimulator = React.createClass({
@@ -412,13 +477,17 @@ var EmbeddedSimulator = React.createClass({
 
     var metadata = this.props.metadata;
 
+    var imagePreview = metadata.platform === 'android'
+      ? <img alt="Run example in simulator" width="170" height="338" src="img/uiexplorer_main_android.png" />
+      : <img alt="Run example in simulator" width="170" height="356" src="img/uiexplorer_main_ios.png" />;
+
     return (
       <div className="column-left">
         <p><a className="modal-button-open"><strong>Run this example</strong></a></p>
         <div className="modal-button-open modal-button-open-img">
-          <img alt="Run example in simulator" width="170" height="358" src="img/alertIOS.png" />
+          {imagePreview}
         </div>
-        <Modal />
+        <Modal metadata={metadata} />
       </div>
     );
   }
@@ -426,9 +495,12 @@ var EmbeddedSimulator = React.createClass({
 
 var Modal = React.createClass({
   render: function() {
-    var appParams = {route: 'AlertIOS'};
+    var metadata = this.props.metadata;
+    var appParams = {route: metadata.title};
     var encodedParams = encodeURIComponent(JSON.stringify(appParams));
-    var url = `https://appetize.io/embed/bypdk4jnjra5uwyj2kzd2aenv4?device=iphone5s&scale=70&autoplay=false&orientation=portrait&deviceColor=white&params=${encodedParams}`;
+    var url = metadata.platform === 'android'
+      ? `https://appetize.io/embed/q7wkvt42v6bkr0pzt1n0gmbwfr?device=nexus5&scale=65&autoplay=false&orientation=portrait&deviceColor=white&params=${encodedParams}`
+      : `https://appetize.io/embed/7vdfm9h3e6vuf4gfdm7r5rgc48?device=iphone6s&scale=60&autoplay=false&orientation=portrait&deviceColor=white&params=${encodedParams}`;
 
     return (
       <div>
@@ -448,6 +520,18 @@ var Modal = React.createClass({
 });
 
 var Autodocs = React.createClass({
+  childContextTypes: {
+    permalink: React.PropTypes.string,
+    version: React.PropTypes.string
+  },
+
+  getChildContext: function() {
+    return {
+      permalink: this.props.metadata.permalink,
+      version: Metadata.config.RN_VERSION || 'next'
+    };
+  },
+
   renderFullDescription: function(docs) {
     if (!docs.fullDescription) {
       return;
@@ -465,21 +549,35 @@ var Autodocs = React.createClass({
     );
   },
 
-  renderExample: function(docs, metadata) {
-    if (!docs.example) {
+  renderExample: function(example, metadata) {
+    if (!example) {
       return;
     }
 
     return (
       <div>
         <HeaderWithGithub
-          title="Examples"
-          path={docs.example.path}
+          title={example.title || 'Examples'}
+          level={example.title ? 4 : 3}
+          path={example.path}
           metadata={metadata}
         />
         <Prism>
-          {docs.example.content.replace(/^[\s\S]*?\*\//, '').trim()}
+          {example.content.replace(/^[\s\S]*?\*\//, '').trim()}
         </Prism>
+      </div>
+    );
+  },
+
+  renderExamples: function(docs, metadata) {
+    if (!docs.examples || !docs.examples.length) {
+      return;
+    }
+
+    return (
+      <div>
+        {(docs.examples.length > 1) ? <H level={3}>Examples</H> : null}
+        {docs.examples.map(example => this.renderExample(example, metadata))}
       </div>
     );
   },
@@ -504,7 +602,7 @@ var Autodocs = React.createClass({
             />
             {content}
             {this.renderFullDescription(docs)}
-            {this.renderExample(docs, metadata)}
+            {this.renderExamples(docs, metadata)}
             <div className="docs-prevnext">
               {metadata.previous && <a className="docs-prev" href={'docs/' + metadata.previous + '.html#content'}>&larr; Prev</a>}
               {metadata.next && <a className="docs-next" href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>}

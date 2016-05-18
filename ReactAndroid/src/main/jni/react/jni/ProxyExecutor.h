@@ -3,7 +3,7 @@
 #pragma once
 
 #include <react/Executor.h>
-#include <jni/fbjni.h>
+#include <fb/fbjni.h>
 #include <jni.h>
 #include <jni/GlobalReference.h>
 #include "OnLoad.h"
@@ -39,8 +39,8 @@ public:
     const std::string& startupCode,
     const std::string& sourceURL) override;
   virtual void callFunction(
-    const double moduleId,
-    const double methodId,
+    const std::string& moduleId,
+    const std::string& methodId,
     const folly::dynamic& arguments) override;
   virtual void invokeCallback(
     const double callbackId,

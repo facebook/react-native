@@ -15,14 +15,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Navigator,
   ScrollView,
   StyleSheet,
   Text,
   TouchableHighlight,
-} = React;
+} = ReactNative;
 var BreadcrumbNavSample = require('./BreadcrumbNavSample');
 var NavigationBarSample = require('./NavigationBarSample');
 var JumpingNavSample = require('./JumpingNavSample');

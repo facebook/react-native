@@ -14,7 +14,8 @@
 */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const {
   ScrollView,
   StyleSheet,
@@ -22,7 +23,7 @@ const {
   Text,
   TouchableWithoutFeedback,
   View,
-} = React;
+} = ReactNative;
 
 const styles = StyleSheet.create({
   row: {
@@ -93,6 +94,7 @@ const RefreshControlExample = React.createClass({
             onRefresh={this._onRefresh}
             tintColor="#ff0000"
             title="Loading..."
+            titleColor="#00ff00"
             colors={['#ff0000', '#00ff00', '#0000ff']}
             progressBackgroundColor="#ffff00"
           />

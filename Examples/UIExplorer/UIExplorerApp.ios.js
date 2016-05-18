@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -16,152 +23,146 @@
  */
 'use strict';
 
-const React = require('react-native');
-const UIExplorerActions = require('./UIExplorerActions');
+const AsyncStorage = require('AsyncStorage');
+const Linking = require('Linking');
+const React = require('react');
+const ReactNative = require('react-native');
 const UIExplorerList = require('./UIExplorerList.ios');
 const UIExplorerExampleList = require('./UIExplorerExampleList');
 const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
 const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
+const URIActionMap = require('./URIActionMap');
 
 const {
-  Alert,
-  Animated,
   AppRegistry,
   NavigationExperimental,
   SnapshotViewIOS,
   StyleSheet,
-  Text,
-  TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
+
 const {
-  AnimatedView: NavigationAnimatedView,
-  Card: NavigationCard,
+  CardStack: NavigationCardStack,
   Header: NavigationHeader,
-  Reducer: NavigationReducer,
-  RootContainer: NavigationRootContainer,
 } = NavigationExperimental;
-const StackReducer = NavigationReducer.StackReducer;
 
-import type {
-  NavigationState,
-} from 'NavigationStateUtils'
+import type { NavigationSceneRendererProps } from 'NavigationTypeDefinition';
 
-import type { Value } from 'Animated';
-import type { Layout } from 'NavigationAnimatedView';
 import type { UIExplorerNavigationState } from './UIExplorerNavigationReducer';
 
-import type {
-  UIExplorerExample,
-} from './UIExplorerList.ios'
+import type { UIExplorerExample } from './UIExplorerList.ios';
 
-function PathActionMap(path: string): ?Object {
-  // Warning! Hacky parsing for example code. Use a library for this!
-  const exampleParts = path.split('/example/');
-  const exampleKey = exampleParts[1];
-  if (exampleKey) {
-    if (!UIExplorerList.Modules[exampleKey]) {
-      Alert.alert(`${exampleKey} example could not be found!`);
-      return null;
-    }
-    return UIExplorerActions.ExampleAction(exampleKey);
-  }
-  return null;
-}
+type Props = {
+  exampleFromAppetizeParams: string,
+};
 
-function URIActionMap(uri: ?string): ?Object {
-  // Warning! Hacky parsing for example code. Use a library for this!
-  if (!uri) {
-    return null;
-  }
-  const parts = uri.split('rnuiexplorer:/');
-  if (!parts[1]) {
-    return null;
-  }
-  const path = parts[1];
-  return PathActionMap(path);
-}
-
+type State = UIExplorerNavigationState & {
+  externalExample?: string,
+};
 
 class UIExplorerApp extends React.Component {
-  _navigationRootRef: ?NavigationRootContainer;
-  _renderNavigation: Function;
+  _renderOverlay: Function;
+  _renderScene: Function;
+  _renderCard: Function;
+  _renderTitleComponent: Function;
+  _handleAction: Function;
+  state: State;
+
+  constructor(props: Props) {
+    super(props);
+  }
+
   componentWillMount() {
-    this._renderNavigation = this._renderNavigation.bind(this);
+    this._handleAction = this._handleAction.bind(this);
+    this._renderOverlay = this._renderOverlay.bind(this);
+    this._renderScene = this._renderScene.bind(this);
+    this._renderTitleComponent = this._renderTitleComponent.bind(this);
   }
+
+  componentDidMount() {
+    Linking.getInitialURL().then((url) => {
+      AsyncStorage.getItem('UIExplorerAppState', (err, storedString) => {
+        const exampleAction = URIActionMap(this.props.exampleFromAppetizeParams);
+        const urlAction = URIActionMap(url);
+        const launchAction = exampleAction || urlAction;
+        if (err || !storedString) {
+          const initialAction = launchAction || {type: 'InitialAction'};
+          this.setState(UIExplorerNavigationReducer(null, initialAction));
+          return;
+        }
+        const storedState = JSON.parse(storedString);
+        if (launchAction) {
+          this.setState(UIExplorerNavigationReducer(storedState, launchAction));
+          return;
+        }
+        this.setState(storedState);
+      });
+    });
+
+    Linking.addEventListener('url', (url) => {
+      this._handleAction(URIActionMap(url));
+    });
+  }
+
+  _handleAction(action: Object) {
+    if (!action) {
+      return;
+    }
+    const newState = UIExplorerNavigationReducer(this.state, action);
+    if (this.state !== newState) {
+      this.setState(newState);
+      AsyncStorage.setItem('UIExplorerAppState', JSON.stringify(this.state));
+    }
+  }
+
   render() {
-    return (
-      <NavigationRootContainer
-        persistenceKey="UIExplorerState"
-        reducer={UIExplorerNavigationReducer}
-        ref={navRootRef => { this._navigationRootRef = navRootRef; }}
-        renderNavigation={this._renderNavigation}
-        linkingActionMap={URIActionMap}
-      />
-    );
-  }
-  _renderNavigation(navigationState: UIExplorerNavigationState, onNavigate: Function) {
-    if (!navigationState) {
+    if (!this.state) {
       return null;
     }
-    if (navigationState.externalExample) {
-      var Component = UIExplorerList.Modules[navigationState.externalExample];
+    if (this.state.externalExample) {
+      const Component = UIExplorerList.Modules[this.state.externalExample];
       return (
         <Component
           onExampleExit={() => {
-            onNavigate(NavigationRootContainer.getBackAction());
+            this._handleAction({ type: 'BackAction' });
           }}
         />
       );
     }
-    const {stack} = navigationState;
     return (
-      <NavigationAnimatedView
-        navigationState={stack}
+      <NavigationCardStack
+        navigationState={this.state.stack}
         style={styles.container}
-        renderOverlay={this._renderOverlay.bind(this, stack)}
-        renderScene={this._renderSceneContainer.bind(this, stack)}
+        renderOverlay={this._renderOverlay}
+        renderScene={this._renderScene}
+        onNavigate={this._handleAction}
       />
     );
   }
 
-  _renderOverlay(
-    navigationState: NavigationState,
-    position: Value,
-    layout: Layout
-  ): ReactElement {
+  _renderOverlay(props: NavigationSceneRendererProps): ReactElement {
     return (
       <NavigationHeader
-        navigationState={navigationState}
-        position={position}
-        getTitle={UIExplorerStateTitleMap}
+        {...props}
+        renderTitleComponent={this._renderTitleComponent}
       />
-    );    
-  }
-
-  _renderSceneContainer(
-    navigationState: NavigationState,
-    scene: NavigationState,
-    index: number,
-    position: Value,
-    layout: Layout
-  ): ReactElement {
-    return (
-      <NavigationCard
-        key={scene.key}
-        index={index}
-        navigationState={navigationState}
-        position={position}
-        layout={layout}>
-        {this._renderScene(scene)}
-      </NavigationCard>
     );
   }
 
-  _renderScene(state: Object): ?ReactElement {
+  _renderTitleComponent(props: NavigationSceneRendererProps): ReactElement {
+    return (
+      <NavigationHeader.Title>
+        {UIExplorerStateTitleMap(props.scene.navigationState)}
+      </NavigationHeader.Title>
+    );
+  }
+
+  _renderScene(props: NavigationSceneRendererProps): ?ReactElement {
+    const state = props.scene.navigationState;
     if (state.key === 'AppList') {
       return (
         <UIExplorerExampleList
+          onNavigate={this._handleAction}
           list={UIExplorerList}
           style={styles.exampleContainer}
           {...state}
@@ -188,7 +189,7 @@ const styles = StyleSheet.create({
   },
   exampleContainer: {
     flex: 1,
-    paddingTop: 60,
+    paddingTop: NavigationHeader.HEIGHT,
   },
 });
 
@@ -200,9 +201,9 @@ AppRegistry.registerComponent('UIExplorerApp', () => UIExplorerApp);
 UIExplorerList.ComponentExamples.concat(UIExplorerList.APIExamples).forEach((Example: UIExplorerExample) => {
   const ExampleModule = Example.module;
   if (ExampleModule.displayName) {
-    var Snapshotter = React.createClass({
+    const Snapshotter = React.createClass({
       render: function() {
-        var Renderable = UIExplorerExampleList.makeRenderable(ExampleModule);
+        const Renderable = UIExplorerExampleList.makeRenderable(ExampleModule);
         return (
           <SnapshotViewIOS>
             <Renderable />

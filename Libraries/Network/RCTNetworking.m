@@ -141,17 +141,8 @@ RCT_EXPORT_MODULE()
   }
 
   if (!_handlers) {
-
-    // get handlers
-    NSMutableArray<id<RCTURLRequestHandler>> *handlers = [NSMutableArray array];
-    for (Class moduleClass in _bridge.moduleClasses) {
-      if ([moduleClass conformsToProtocol:@protocol(RCTURLRequestHandler)]) {
-        [handlers addObject:[_bridge moduleForClass:moduleClass]];
-      }
-    }
-
-    // Sort handlers in reverse priority order (highest priority first)
-    [handlers sortUsingComparator:^NSComparisonResult(id<RCTURLRequestHandler> a, id<RCTURLRequestHandler> b) {
+    // Get handlers, sorted in reverse priority order (highest priority first)
+    _handlers = [[_bridge modulesConformingToProtocol:@protocol(RCTURLRequestHandler)] sortedArrayUsingComparator:^NSComparisonResult(id<RCTURLRequestHandler> a, id<RCTURLRequestHandler> b) {
       float priorityA = [a respondsToSelector:@selector(handlerPriority)] ? [a handlerPriority] : 0;
       float priorityB = [b respondsToSelector:@selector(handlerPriority)] ? [b handlerPriority] : 0;
       if (priorityA > priorityB) {
@@ -162,8 +153,6 @@ RCT_EXPORT_MODULE()
         return NSOrderedSame;
       }
     }];
-
-    _handlers = handlers;
   }
 
   if (RCT_DEBUG) {
@@ -201,6 +190,19 @@ RCT_EXPORT_MODULE()
   return nil;
 }
 
+- (NSDictionary<NSString *, id> *)stripNullsInRequestHeaders:(NSDictionary<NSString *, id> *)headers
+{
+  NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:headers.count];
+  for (NSString *key in headers.allKeys) {
+    id val = headers[key];
+    if (val != [NSNull null]) {
+      result[key] = val;
+    }
+  }
+
+  return result;
+}
+
 - (RCTURLRequestCancellationBlock)buildRequest:(NSDictionary<NSString *, id> *)query
                                  completionBlock:(void (^)(NSURLRequest *request))block
 {
@@ -209,7 +211,7 @@ RCT_EXPORT_MODULE()
   NSURL *URL = [RCTConvert NSURL:query[@"url"]]; // this is marked as nullable in JS, but should not be null
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
   request.HTTPMethod = [RCTConvert NSString:RCTNilIfNull(query[@"method"])].uppercaseString ?: @"GET";
-  request.allHTTPHeaderFields = [RCTConvert NSDictionary:query[@"headers"]];
+  request.allHTTPHeaderFields = [self stripNullsInRequestHeaders:[RCTConvert NSDictionary:query[@"headers"]]];
   request.timeoutInterval = [RCTConvert NSTimeInterval:query[@"timeout"]];
   NSDictionary<NSString *, id> *data = [RCTConvert NSDictionary:RCTNilIfNull(query[@"data"])];
   return [self processDataForHTTPQuery:data callback:^(NSError *error, NSDictionary<NSString *, id> *result) {
@@ -396,6 +398,7 @@ RCT_EXPORT_MODULE()
       }
       NSArray *responseJSON = @[task.requestID,
                                 RCTNullIfNil(error.localizedDescription),
+                                error.code == kCFURLErrorTimedOut ? @YES : @NO
                                 ];
 
       [_bridge.eventDispatcher sendDeviceEventWithName:@"didCompleteNetworkResponse"

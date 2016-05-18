@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var warning = require('warning');
+var warning = require('fbjs/lib/warning');
 
 const DatePickerAndroid = {
   async open(options: Object): Promise<Object> {

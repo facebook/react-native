@@ -21,13 +21,25 @@ var TransformMatrixPropType = function(
   propName : string,
   componentName : string
 ) : ?Error {
-  if (props.transform && props.transformMatrix) {
+  if (props[propName]) {
     return new Error(
-      'transformMatrix and transform styles cannot be used on the same ' +
-      'component'
+      'The transformMatrix style property is deprecated. ' +
+      'Use `transform: [{ matrix: ... }]` instead.'
     );
   }
-  return ArrayOfNumberPropType(props, propName, componentName);
+};
+
+var DecomposedMatrixPropType = function(
+  props : Object,
+  propName : string,
+  componentName : string
+) : ?Error {
+  if (props[propName]) {
+    return new Error(
+      'The decomposedMatrix style property is deprecated. ' +
+      'Use `transform: [...]` instead.'
+    );
+  }
 };
 
 var TransformPropTypes = {
@@ -47,7 +59,10 @@ var TransformPropTypes = {
       ReactPropTypes.shape({skewY: ReactPropTypes.string})
     ])
   ),
+
+  /* Deprecated */
   transformMatrix: TransformMatrixPropType,
+  decomposedMatrix: DecomposedMatrixPropType,
 
   /* Deprecated transform props used on Android only */
   scaleX: deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.'),

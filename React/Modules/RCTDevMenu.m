@@ -185,7 +185,7 @@ RCT_EXPORT_MODULE()
       [weakSelf.bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
     }]];
 
-    _webSocketExecutorName = [_defaults objectForKey:@"websocket-executor-name"] ?: @"Chrome";
+    _webSocketExecutorName = [_defaults objectForKey:@"websocket-executor-name"] ?: @"JS Remotely";
 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -239,7 +239,10 @@ RCT_EXPORT_MODULE()
 
   NSString *scheme = [_bridge.bundleURL scheme];
   NSNumber *port = [_bridge.bundleURL port];
-  return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/packager-proxy?role=client", scheme, host, port]];
+  if (!port) {
+    port = @8081; // Packager default port
+  }
+  return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/message?role=shell", scheme, host, port]];
 }
 
 // TODO: Move non-UI logic into separate RCTDevSettings module
@@ -369,7 +372,7 @@ RCT_EXPORT_MODULE()
   if (!sourceCodeModule.scriptURL) {
     if (!sourceCodeModule) {
       RCTLogWarn(@"RCTSourceCode module not found");
-    } else {
+    } else if (!RCTRunningInTestEnvironment()) {
       RCTLogWarn(@"RCTSourceCode module scriptURL has not been set");
     }
   } else if (!sourceCodeModule.scriptURL.fileURL) {
@@ -440,8 +443,8 @@ RCT_EXPORT_MODULE()
     [weakSelf reload];
   }]];
 
-  Class chromeExecutorClass = NSClassFromString(@"RCTWebSocketExecutor");
-  if (!chromeExecutorClass) {
+  Class jsDebuggingExecutorClass = NSClassFromString(@"RCTWebSocketExecutor");
+  if (!jsDebuggingExecutorClass) {
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:[NSString stringWithFormat:@"%@ Debugger Unavailable", _webSocketExecutorName] handler:^{
       UIAlertView *alert = RCTAlertView(
         [NSString stringWithFormat:@"%@ Debugger Unavailable", _webSocketExecutorName],
@@ -452,10 +455,11 @@ RCT_EXPORT_MODULE()
       [alert show];
     }]];
   } else {
-    BOOL isDebuggingInChrome = _executorClass && _executorClass == chromeExecutorClass;
-    NSString *debugTitleChrome = isDebuggingInChrome ? [NSString stringWithFormat:@"Disable %@ Debugging", _webSocketExecutorName] : [NSString stringWithFormat:@"Debug in %@", _webSocketExecutorName];
-    [items addObject:[RCTDevMenuItem buttonItemWithTitle:debugTitleChrome handler:^{
-      weakSelf.executorClass = isDebuggingInChrome ? Nil : chromeExecutorClass;
+    BOOL isDebuggingJS = _executorClass && _executorClass == jsDebuggingExecutorClass;
+    NSString *debuggingDescription = [_defaults objectForKey:@"websocket-executor-name"] ?: @"Remote JS";
+    NSString *debugTitleJS = isDebuggingJS ? [NSString stringWithFormat:@"Disable %@ Debugging", debuggingDescription] : [NSString stringWithFormat:@"Debug %@", _webSocketExecutorName];
+    [items addObject:[RCTDevMenuItem buttonItemWithTitle:debugTitleJS handler:^{
+      weakSelf.executorClass = isDebuggingJS ? Nil : jsDebuggingExecutorClass;
     }]];
   }
 
@@ -472,7 +476,7 @@ RCT_EXPORT_MODULE()
   }
 
   if ([self hotLoadingAvailable]) {
-    NSString *hotLoadingTitle = _hotLoadingEnabled ? @"Disable Hot Loading" : @"Enable Hot Loading";
+    NSString *hotLoadingTitle = _hotLoadingEnabled ? @"Disable Hot Reloading" : @"Enable Hot Reloading";
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:hotLoadingTitle handler:^{
       weakSelf.hotLoadingEnabled = !_hotLoadingEnabled;
     }]];
@@ -541,7 +545,9 @@ RCT_EXPORT_METHOD(show)
 
 RCT_EXPORT_METHOD(reload)
 {
-  [_bridge reload];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
+                                                      object:nil
+                                                    userInfo:nil];
 }
 
 - (void)setShakeToShow:(BOOL)shakeToShow
@@ -581,7 +587,7 @@ RCT_EXPORT_METHOD(reload)
 
 - (BOOL)hotLoadingAvailable
 {
-  return !_bridge.bundleURL.fileURL; // Only works when running from server
+  return _bridge.bundleURL && !_bridge.bundleURL.fileURL; // Only works when running from server
 }
 
 - (void)setHotLoadingEnabled:(BOOL)enabled

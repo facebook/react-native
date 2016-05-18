@@ -38,7 +38,7 @@ h1 small, h2 small, h3 small, h4 small, h5 small, h6 small {
   color: #7b7b7b;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
   line-height: 40px;
 }
 
@@ -262,7 +262,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 
 .nav-main .nav-site-external {
   float: right;
-  margin: 0;
+  margin: 0 12px 0 0;
 }
 
 .nav-main .nav-site li {
@@ -299,6 +299,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   margin-left: 1px;
   width: 34px;
 }
+
 .nav-main a.nav-home {
   color: white;
 }
@@ -316,8 +317,63 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   font-size: 16px;
   font-weight: 800;
   color: #05A5D1;
-  margin-left: 5px;
+  margin-left: 8px;
   text-decoration: underline;
+}
+
+@media screen and (max-width: 680px) {
+  .nav-main .nav-home {
+    font-size: 20px;
+  }
+
+  .nav-main a.nav-version {
+    font-size: 14px;
+  }
+
+  .nav-main .nav-site-wrapper {
+    display: block;
+    overflow: hidden;
+  }
+
+  .nav-main ul {
+    display: -webkit-flex;
+    display: flex;
+    overflow: hidden;
+  }
+
+  .nav-main li {
+    -webkit-flex: 1;
+    flex: 1;
+  }
+
+  .nav-main .nav-site li a {
+    width: 100%;
+    padding: 0;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .nav-main .nav-site a.active {
+    color: #05A5D1;
+    font-weight: bold;
+    background-color: transparent;
+  }
+
+  .nav-main .nav-site-internal {
+    margin: 0;
+    width: 100%;
+  }
+
+  .nav-main .nav-site-external {
+    position: absolute;
+    top: 0;
+    right: 0;
+    float: none;
+  }
+
+  .nav-main .nav-site-external li a {
+    padding: 0 6px;
+  }
 }
 
 .hero {
@@ -486,15 +542,6 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   box-shadow: 5px 5px 5px #888888;
 }
 
-.versions ul {
-  list-style: none;
-}
-
-.versions li {
-  font-size: 16px;
-  padding-top: 10px;
-}
-
 #examples h3, .home-presentation h3 {
   color: #2d2d2d;
   font-size: 24px;
@@ -623,7 +670,7 @@ h2 {
 .documentationContent blockquote {
   padding: 15px 30px 15px 15px;
   margin: 20px 0;
-  background-color: rgba(204, 122, 111, 0.1);
+  background-color: rgba(248, 245, 236, 0.1);
   border-left: 5px solid rgba(191, 87, 73, 0.2);
 }
 
@@ -636,8 +683,7 @@ h2 {
 }
 
 .documentationContent blockquote p:first-child {
-  font-weight: bold;
-  font-size: 17.5px;
+  font-size: 14px;
   line-height: 20px;
   margin-top: 0;
   text-rendering: optimizelegibility;
@@ -926,7 +972,6 @@ small code, li code, p code {
 }
 
 .modal-button-open-img {
-  background: #05A5D1;
   height: 358px;
 }
 
@@ -1199,10 +1244,58 @@ div[data-twttr-id] iframe {
   border-radius: 20px;
 }
 
+.versions th {
+  text-align: right;
+}
+
+.versions td, .versions th {
+  padding: 2px 5px;
+}
+
+.versions tr:nth-child(2n+1) {
+  background-color: hsl(198, 100%, 94%);
+}
+
+.survey {
+  padding: 10px;
+  padding-top: 0;
+  background-color: rgba(5, 165, 209, 0.05);
+  border: 2px solid #05A5D1;
+  position: relative;
+}
+
+.survey-image {
+  position: absolute;
+  top: 10px;
+  height: 83px;
+  width: 120px;
+  background-image: url('../img/survey.png');
+  background-size: 272px 198px;
+  background-position: -8px -8px;
+}
+
+.survey p {
+  margin-left: 130px;
+}
+
+.survey .button {
+  font-size: 24px;
+  background: #05A5D1;
+  color: #fafafa;
+}
+
 @media only screen
   and (max-device-width: 1024px) {
   #content {
     display: inline;
+  }
+
+  .survey-image {
+    position: static;
+    margin: 10px auto;
+  }
+  .survey p {
+    margin-left: 0px;
   }
 
   .container {
@@ -1229,10 +1322,13 @@ div[data-twttr-id] iframe {
     margin: 0;
   }
   .nav-main .nav-site a {
-    padding: 0 4px;
+    padding: 0 8px;
+  }
+  .nav-main .nav-home {
+    margin-left: 8px;
   }
   .nav-main .wrap {
-    padding: 0 2px 0 4px;
+    padding: 0;
   }
   .home-divider {
     display: none;
@@ -1255,7 +1351,7 @@ div[data-twttr-id] iframe {
   .nav-docs {
     float: none;
     width: auto;
-    margin-top: -20px;
+    margin-top: -8px;
     margin-bottom: 20px;
   }
   h1 {
@@ -1283,6 +1379,11 @@ div.algolia-search-wrapper {
   margin-left: 15px;
 }
 
+.algolia-autocomplete .aa-dropdown-menu {
+  margin-left: -210px;
+  margin-top: -4px;
+}
+
 @media screen and (max-width: 960px) {
   div.algolia-search-wrapper {
     display: none;
@@ -1290,81 +1391,52 @@ div.algolia-search-wrapper {
 }
 
 input#algolia-doc-search {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-family: proxima-nova, "Helvetica Neue", Helvetica, Arial, sans-serif;
-
-  background: transparent url('../img/search.png') no-repeat left center;
+  background: transparent url('../img/search.png') no-repeat 10px center;
   background-size: 16px 16px;
 
-  padding-left: 30px;
+  padding: 0 10px;
+  padding-left: 35px;
+  margin-top: 10px;
+  height: 30px;
   font-size: 16px;
   line-height: 20px;
-  background-color: #3B3738;
-  border-bottom: solid 3px #3B3738;
+  background-color: #555;
+  border-radius: 4px;
   color: white;
   outline: none;
-  width: 130px;
-  height: 53px;
-
-  transition: border-color .2s ease, width .2s ease;
-  -webkit-transition: border-color .2s ease, width .2s ease;
-  -moz-transition: border-color .2s ease, width .2s ease;
-  -o-transition: border-color .2s ease, width .2s ease;
+  border: none;
+  width: 170px;
 }
 
 input#algolia-doc-search:focus {
-  border-color: #05A5D1;
-  width: 240px;
-}
-
-@media screen and (max-width: 1085px) {
-  input#algolia-doc-search:focus {
-    width: 178px;
-  }
+  width: 220px;
 }
 
 .algolia-autocomplete {
   vertical-align: top;
   height: 53px;
-
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-family: proxima-nova, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-/* Bottom border of each suggestion */
-.algolia-docsearch-suggestion {
-  border-bottom-color: #05A5D1;
-}
-/* Main category headers */
 .algolia-docsearch-suggestion--category-header {
   background-color: #3B3738;
 }
-/* Highlighted search terms */
 .algolia-docsearch-suggestion--highlight {
   color: #05A5D1;
 }
-/* Highligted search terms in the main category headers */
 .algolia-docsearch-suggestion--category-header .algolia-docsearch-suggestion--highlight  {
   background-color: #05A5D1;
 }
-/* Currently selected suggestion */
 .aa-cursor .algolia-docsearch-suggestion--content {
   color: #05A5D1;
 }
 .aa-cursor .algolia-docsearch-suggestion {
   background: hsl(198, 100%, 96%);
 }
-
-/* For bigger screens, when displaying results in two columns */
-@media (min-width: 768px) {
-  /* Bottom border of each suggestion */
-  .algolia-docsearch-suggestion {
-    border-bottom-color: hsl(198, 100%, 94%);
-  }
-  /* Left column, with secondary category header */
-  .algolia-docsearch-suggestion--subcategory-column {
-    border-right-color: hsl(198, 100%, 94%);
-    background-color: hsl(198, 100%, 96%);
-    color: #3B3738;
-  }
+.algolia-docsearch-suggestion {
+  border-bottom-color: hsl(198, 100%, 94%);
+}
+.algolia-docsearch-suggestion--subcategory-column {
+  border-right-color: hsl(198, 100%, 94%);
+  background-color: hsl(198, 100%, 96%);
+  color: #3B3738;
 }

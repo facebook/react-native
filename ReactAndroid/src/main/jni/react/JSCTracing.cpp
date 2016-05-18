@@ -427,7 +427,7 @@ static JSValueRef nativeTraceBeginLegacy(
   }
 
   JSStringRef title = JSStringCreateWithUTF8CString(ENABLED_FBSYSTRACE_PROFILE_NAME);
-  #if WITH_JSC_INTERNAL
+  #if WITH_REACT_INTERNAL_SETTINGS
   JSStartProfiling(ctx, title, true);
   #else
   JSStartProfiling(ctx, title);

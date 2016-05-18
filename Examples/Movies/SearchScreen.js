@@ -15,7 +15,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   ActivityIndicatorIOS,
   ListView,
@@ -24,10 +25,10 @@ var {
   StyleSheet,
   Text,
   View,
-} = React;
+} = ReactNative;
 var TimerMixin = require('react-timer-mixin');
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var dismissKeyboard = require('dismissKeyboard');
 
 var MovieCell = require('./MovieCell');

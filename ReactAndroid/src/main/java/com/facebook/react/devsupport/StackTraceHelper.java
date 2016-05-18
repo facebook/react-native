@@ -119,7 +119,7 @@ import com.facebook.react.bridge.ReadableMap;
           stackTrace[i].getFileName(),
           stackTrace[i].getMethodName(),
           stackTrace[i].getLineNumber(),
-          0);
+          -1);
     }
     return result;
   }

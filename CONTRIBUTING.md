@@ -19,11 +19,17 @@ The core team will be monitoring for pull requests. When we get one, we'll run s
 1. Fork the repo and create your branch from `master`.
 2. **Describe your test plan in your commit.** If you've added code that should be tested, add tests!
 3. If you've changed APIs, update the documentation.
-4. Add the copyright notice to the top of any new files you've added.
-5. Ensure tests pass on Travis and Circle CI.
-6. Make sure your code lints (`node linter.js <files touched>`).
-7. Squash your commits (`git rebase -i`).
-8. If you haven't already, sign the [CLA](https://code.facebook.com/cla).
+4. If you've updated the docs, verify the website locally and submit screenshots if applicable
+```
+$ cd website
+$ npm install && npm start
+go to: http://localhost:8079/react-native/index.html
+```
+5. Add the copyright notice to the top of any new files you've added.
+6. Ensure tests pass on Travis and Circle CI.
+7. Make sure your code lints (`node linter.js <files touched>`).
+8. Squash your commits (`git rebase -i`).
+9. If you haven't already, sign the [CLA](https://code.facebook.com/cla).
 
 #### Copyright Notice for files
 
@@ -73,6 +79,7 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 
 #### General
 
+* **Most important: Look around.** Match the style you see used in the rest of the project. This includes formatting, naming things in code, naming things in documentation.
 * Add trailing commas,
 * 2 spaces for indentation (no tabs)
 * "Attractive"

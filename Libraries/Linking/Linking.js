@@ -18,7 +18,7 @@ const {
   LinkingManager: LinkingManagerIOS
 } = require('NativeModules');
 const LinkingManager = Platform.OS === 'android' ? IntentAndroid : LinkingManagerIOS;
-const invariant = require('invariant');
+const invariant = require('fbjs/lib/invariant');
 const Map = require('Map');
 
 const _notifHandlers = new Map();
@@ -49,11 +49,13 @@ const DEVICE_NOTIF_EVENT = 'openURL';
  * NOTE: For instructions on how to add support for deep linking on Android,
  * refer [Enabling Deep Links for App Content - Add Intent Filters for Your Deep Links](http://developer.android.com/training/app-indexing/deep-linking.html#adding-filters).
  *
- * NOTE: For iOS, in case you also want to listen to incoming app links during your app's
+ * NOTE: On iOS you'll need to link `RCTLinking` to your project by following
+ * the steps described [here](docs/linking-libraries-ios.html#manual-linking).
+ * In case you also want to listen to incoming app links during your app's
  * execution you'll need to add the following lines to you `*AppDelegate.m`:
  *
  * ```
- *#import "RCTLinkingManager.h" 
+ *#import "RCTLinkingManager.h"
  *
  * - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
  *   sourceApplication:(NSString *)sourceApplication annotation:(id)annotation

@@ -17,7 +17,7 @@
 #import <Foundation/Foundation.h>
 
 
-@interface OCMConstraint : NSObject 
+@interface OCMConstraint : NSObject
 
 + (instancetype)constraint;
 - (BOOL)evaluate:(id)value;

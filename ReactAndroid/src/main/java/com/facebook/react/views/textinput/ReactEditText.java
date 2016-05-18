@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
@@ -66,7 +67,9 @@ public class ReactEditText extends EditText {
   private @Nullable ArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
+  private boolean mTextIsSelectable = true;
   private boolean mContainsImages;
+  private boolean mBlurOnSubmit;
   private @Nullable SelectionWatcher mSelectionWatcher;
   private final InternalKeyListener mKeyListener;
 
@@ -84,6 +87,7 @@ public class ReactEditText extends EditText {
     mNativeEventCount = 0;
     mIsSettingTextFromJS = false;
     mIsJSSettingFocus = false;
+    mBlurOnSubmit = true;
     mListeners = null;
     mTextWatcherDelegator = null;
     mStagedInputType = getInputType();
@@ -179,6 +183,14 @@ public class ReactEditText extends EditText {
     mSelectionWatcher = selectionWatcher;
   }
 
+  public void setBlurOnSubmit(boolean blurOnSubmit) {
+    mBlurOnSubmit = blurOnSubmit;
+  }
+
+  public boolean getBlurOnSubmit() {
+    return mBlurOnSubmit;
+  }
+
   /*protected*/ int getStagedInputType() {
     return mStagedInputType;
   }
@@ -195,14 +207,23 @@ public class ReactEditText extends EditText {
 
   @Override
   public void setInputType(int type) {
+    Typeface tf = super.getTypeface();
     super.setInputType(type);
     mStagedInputType = type;
-
+    // Input type password defaults to monospace font, so we need to re-apply the font
+    super.setTypeface(tf);
+    
     // We override the KeyListener so that all keys on the soft input keyboard as well as hardware
     // keyboards work. Some KeyListeners like DigitsKeyListener will display the keyboard but not
     // accept all input from it
     mKeyListener.setInputType(type);
     setKeyListener(mKeyListener);
+  }
+
+  @Override
+  public void setTextIsSelectable(boolean selectable) {
+    mTextIsSelectable = selectable;
+    super.setTextIsSelectable(selectable);
   }
 
   // VisibleForTesting from {@link TextInputEventsTestCase}.

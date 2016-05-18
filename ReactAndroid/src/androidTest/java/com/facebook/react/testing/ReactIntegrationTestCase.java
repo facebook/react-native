@@ -32,6 +32,9 @@ import com.facebook.react.common.ApplicationHolder;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.modules.core.Timing;
 
+import com.facebook.soloader.SoLoader;
+
+
 /**
  * Use this class for writing integration tests of catalyst. This class will run all JNI call
  * within separate android looper, thus you don't need to care about starting your own looper.
@@ -170,6 +173,7 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
+    SoLoader.init(getContext(), /* native exopackage */ false);
     ApplicationHolder.setApplication((Application) getContext().getApplicationContext());
   }
 

@@ -157,11 +157,13 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   absolutePosition.x += node->layout.position[CSS_LEFT];
   absolutePosition.y += node->layout.position[CSS_TOP];
 
-  node->layout.dimensions[CSS_WIDTH] = CSS_UNDEFINED;
-  node->layout.dimensions[CSS_HEIGHT] = CSS_UNDEFINED;
-  node->layout.position[CSS_LEFT] = 0;
-  node->layout.position[CSS_TOP] = 0;
+  [self applyLayoutToChildren:node viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
+}
 
+- (void)applyLayoutToChildren:(css_node_t *)node
+            viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
+             absolutePosition:(CGPoint)absolutePosition
+{
   for (int i = 0; i < node->children_count; ++i) {
     RCTShadowView *child = (RCTShadowView *)_reactSubviews[i];
     [child applyLayoutNode:node->get_child(node->context, i)
@@ -214,38 +216,35 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   }
 }
 
-
-- (void)applySizeConstraints
+- (void)collectUpdatedFrames:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
+                   withFrame:(CGRect)frame
+                      hidden:(BOOL)hidden
+            absolutePosition:(CGPoint)absolutePosition
 {
-  switch (_sizeFlexibility) {
-    case RCTRootViewSizeFlexibilityNone:
-      break;
-    case RCTRootViewSizeFlexibilityWidth:
-      _cssNode->style.dimensions[CSS_WIDTH] = CSS_UNDEFINED;
-      break;
-    case RCTRootViewSizeFlexibilityHeight:
-      _cssNode->style.dimensions[CSS_HEIGHT] = CSS_UNDEFINED;
-      break;
-    case RCTRootViewSizeFlexibilityWidthAndHeight:
-      _cssNode->style.dimensions[CSS_WIDTH] = CSS_UNDEFINED;
-      _cssNode->style.dimensions[CSS_HEIGHT] = CSS_UNDEFINED;
-      break;
+  if (_hidden != hidden) {
+    // The hidden state has changed. Even if the frame hasn't changed, add
+    // this ShadowView to viewsWithNewFrame so the UIManager will process
+    // this ShadowView's UIView and update its hidden state.
+    _hidden = hidden;
+    [viewsWithNewFrame addObject:self];
   }
-}
 
-- (NSSet<RCTShadowView *> *)collectRootUpdatedFrames
-{
-  RCTAssert(RCTIsReactRootView(self.reactTag),
-            @"The method has been called on a view with react tag %@, which is not a root view", self.reactTag);
-
-  [self applySizeConstraints];
+  if (!CGRectEqualToRect(frame, _frame)) {
+    _cssNode->style.position_type = CSS_POSITION_ABSOLUTE;
+    _cssNode->style.dimensions[CSS_WIDTH] = frame.size.width;
+    _cssNode->style.dimensions[CSS_HEIGHT] = frame.size.height;
+    _cssNode->style.position[CSS_LEFT] = frame.origin.x;
+    _cssNode->style.position[CSS_TOP] = frame.origin.y;
+    // Our parent has asked us to change our cssNode->styles. Dirty the layout
+    // so that we can rerun layout on this node. The request came from our parent
+    // so there's no need to dirty our ancestors by calling dirtyLayout.
+    _layoutLifecycle = RCTUpdateLifecycleDirtied;
+  }
 
   [self fillCSSNode:_cssNode];
-  layoutNode(_cssNode, CSS_UNDEFINED, CSS_UNDEFINED, CSS_DIRECTION_INHERIT);
-
-  NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];
-  [self applyLayoutNode:_cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
-  return viewsWithNewFrame;
+  resetNodeLayout(self.cssNode);
+  layoutNode(_cssNode, frame.size.width, frame.size.height, CSS_DIRECTION_INHERIT);
+  [self applyLayoutNode:_cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
 }
 
 - (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor
@@ -270,7 +269,6 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   if ((self = [super init])) {
 
     _frame = CGRectMake(0, 0, CSS_UNDEFINED, CSS_UNDEFINED);
-    _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
 
     for (unsigned int ii = 0; ii < META_PROP_COUNT; ii++) {
       _paddingMetaProps[ii] = CSS_UNDEFINED;
@@ -499,6 +497,7 @@ RCT_BORDER_PROPERTY(Right, RIGHT)
 {                                                                      \
   _cssNode->style.dimensions[CSS_##cssProp] = value;                   \
   [self dirtyLayout];                                                  \
+  [self dirtyText];                                                    \
 }                                                                      \
 - (CGFloat)getProp                                                     \
 {                                                                      \
@@ -533,6 +532,28 @@ RCT_POSITION_PROPERTY(Left, left, LEFT)
   _cssNode->style.dimensions[CSS_WIDTH] = CGRectGetWidth(frame);
   _cssNode->style.dimensions[CSS_HEIGHT] = CGRectGetHeight(frame);
   [self dirtyLayout];
+}
+
+static inline BOOL RCTAssignSuggestedDimension(css_node_t *css_node, int dimension, CGFloat amount)
+{
+  if (amount != UIViewNoIntrinsicMetric
+      && isnan(css_node->style.dimensions[dimension])) {
+    css_node->style.dimensions[dimension] = amount;
+    return YES;
+  }
+  return NO;
+}
+
+- (void)setIntrinsicContentSize:(CGSize)size
+{
+  if (_cssNode->style.flex == 0) {
+    BOOL dirty = NO;
+    dirty |= RCTAssignSuggestedDimension(_cssNode, CSS_HEIGHT, size.height);
+    dirty |= RCTAssignSuggestedDimension(_cssNode, CSS_WIDTH, size.width);
+    if (dirty) {
+      [self dirtyLayout];
+    }
+  }
 }
 
 - (void)setTopLeft:(CGPoint)topLeft

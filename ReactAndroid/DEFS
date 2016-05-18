@@ -6,7 +6,6 @@
 
 import os
 
-
 # Example: react_native_target('java/com/facebook/react/common:common')
 def react_native_target(path):
   return '//ReactAndroid/src/main/' + path
@@ -29,12 +28,7 @@ JSC_DEPS = [
   '//native/third-party/jsc:jsc_legacy_profiler',
 ]
 
-JSC_INTERNAL_DEPS = [
-  '//native/third-party/jsc-internal:jsc',
-  '//native/third-party/jsc-internal:jsc_legacy_profiler',
-]
-
-INTERNAL_APP = 'PUBLIC'
+FBGLOGINIT_TARGET = '//ReactAndroid/src/main/jni/first-party/fbgloginit:fbgloginit'
 
 # React property preprocessor
 original_android_library=android_library

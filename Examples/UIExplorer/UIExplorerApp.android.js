@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -16,47 +23,70 @@
  */
 'use strict';
 
-const React = require('react-native');
-const {
-  AppRegistry,
-  BackAndroid,
-  Dimensions,
-  DrawerLayoutAndroid,
-  NavigationExperimental,
-  StyleSheet,
-  ToolbarAndroid,
-  View,
-  StatusBar,
-} = React;
-const {
-  RootContainer: NavigationRootContainer,
-} = NavigationExperimental;
-const UIExplorerActions = require('./UIExplorerActions');
+const AppRegistry = require('AppRegistry');
+const AsyncStorage = require('AsyncStorage');
+const BackAndroid = require('BackAndroid');
+const Dimensions = require('Dimensions');
+const DrawerLayoutAndroid = require('DrawerLayoutAndroid');
+const Linking = require('Linking');
+const React = require('react');
+const StatusBar = require('StatusBar');
+const StyleSheet = require('StyleSheet');
+const ToolbarAndroid = require('ToolbarAndroid');
 const UIExplorerExampleList = require('./UIExplorerExampleList');
 const UIExplorerList = require('./UIExplorerList');
 const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
 const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
+const URIActionMap = require('./URIActionMap');
+const View = require('View');
 
-var DRAWER_WIDTH_LEFT = 56;
+const DRAWER_WIDTH_LEFT = 56;
+
+type Props = {
+  exampleFromAppetizeParams: string,
+};
+
+type State = {
+  initialExampleUri: ?string,
+};
 
 class UIExplorerApp extends React.Component {
+  _handleAction: Function;
+  _renderDrawerContent: Function;
+  state: State;
+  constructor(props: Props) {
+    super(props);
+    this._handleAction = this._handleAction.bind(this);
+    this._renderDrawerContent = this._renderDrawerContent.bind(this);
+  }
+
   componentWillMount() {
     BackAndroid.addEventListener('hardwareBackPress', this._handleBackButtonPress.bind(this));
   }
 
-  render() {
-    return (
-      <NavigationRootContainer
-        persistenceKey="UIExplorerStateNavState"
-        ref={navRootRef => { this._navigationRootRef = navRootRef; }}
-        reducer={UIExplorerNavigationReducer}
-        renderNavigation={this._renderApp.bind(this)}
-      />
-    );
+  componentDidMount() {
+    Linking.getInitialURL().then((url) => {
+      AsyncStorage.getItem('UIExplorerAppState', (err, storedString) => {
+        const exampleAction = URIActionMap(this.props.exampleFromAppetizeParams);
+        const urlAction = URIActionMap(url);
+        const launchAction = exampleAction || urlAction;
+        if (err || !storedString) {
+          const initialAction = launchAction || {type: 'InitialAction'};
+          this.setState(UIExplorerNavigationReducer(null, initialAction));
+          return;
+        }
+        const storedState = JSON.parse(storedString);
+        if (launchAction) {
+          this.setState(UIExplorerNavigationReducer(storedState, launchAction));
+          return;
+        }
+        this.setState(storedState);
+      });
+    });
   }
 
-  _renderApp(navigationState, onNavigate) {
-    if (!navigationState) {
+  render() {
+    if (!this.state) {
       return null;
     }
     return (
@@ -71,49 +101,51 @@ class UIExplorerApp extends React.Component {
           this._overrideBackPressForDrawerLayout = false;
         }}
         ref={(drawer) => { this.drawer = drawer; }}
-        renderNavigationView={this._renderDrawerContent.bind(this, onNavigate)}>
-        {this._renderNavigation(navigationState, onNavigate)}
+        renderNavigationView={this._renderDrawerContent}
+        statusBarBackgroundColor="#589c90">
+        {this._renderApp()}
       </DrawerLayoutAndroid>
     );
   }
 
-  _renderDrawerContent(onNavigate) {
+  _renderDrawerContent() {
     return (
-      <UIExplorerExampleList
-        list={UIExplorerList}
-        displayTitleRow={true}
-        disableSearch={true}
-        onNavigate={(action) => {
-          this.drawer && this.drawer.closeDrawer();
-          onNavigate(action);
-        }}
-      />
+      <View style={styles.drawerContentWrapper}>
+        <UIExplorerExampleList
+          list={UIExplorerList}
+          displayTitleRow={true}
+          disableSearch={true}
+          onNavigate={this._handleAction}
+        />
+      </View>
     );
   }
 
-  _renderNavigation(navigationState, onNavigate) {
-    if (navigationState.externalExample) {
-      var Component = UIExplorerList.Modules[navigationState.externalExample];
+  _renderApp() {
+    const {
+      externalExample,
+      stack,
+    } = this.state;
+    if (externalExample) {
+      const Component = UIExplorerList.Modules[externalExample];
       return (
         <Component
           onExampleExit={() => {
-            onNavigate(NavigationRootContainer.getBackAction());
+            this._handleAction({ type: 'BackAction' });
           }}
           ref={(example) => { this._exampleRef = example; }}
         />
       );
     }
-    const {stack} = navigationState;
     const title = UIExplorerStateTitleMap(stack.children[stack.index]);
-    if (stack && stack.children[1]) {
-      const {key} = stack.children[1];
+    const index = stack.children.length <= 1 ?  1 : stack.index;
+
+    if (stack && stack.children[index]) {
+      const {key} = stack.children[index];
       const ExampleModule = UIExplorerList.Modules[key];
       const ExampleComponent = UIExplorerExampleList.makeRenderable(ExampleModule);
       return (
         <View style={styles.container}>
-          <StatusBar
-            backgroundColor="#589c90"
-          />
           <ToolbarAndroid
             logo={require('image!launcher_icon')}
             navIcon={require('image!ic_menu_black_24dp')}
@@ -129,9 +161,6 @@ class UIExplorerApp extends React.Component {
     }
     return (
       <View style={styles.container}>
-        <StatusBar
-          backgroundColor="#589c90"
-        />
         <ToolbarAndroid
           logo={require('image!launcher_icon')}
           navIcon={require('image!ic_menu_black_24dp')}
@@ -140,11 +169,23 @@ class UIExplorerApp extends React.Component {
           title={title}
         />
         <UIExplorerExampleList
+          onNavigate={this._handleAction}
           list={UIExplorerList}
           {...stack.children[0]}
         />
       </View>
     );
+  }
+
+  _handleAction(action: Object): boolean {
+    this.drawer && this.drawer.closeDrawer();
+    const newState = UIExplorerNavigationReducer(this.state, action);
+    if (this.state !== newState) {
+      this.setState(newState);
+      AsyncStorage.setItem('UIExplorerAppState', JSON.stringify(this.state));
+      return true;
+    }
+    return false;
   }
 
   _handleBackButtonPress() {
@@ -162,12 +203,7 @@ class UIExplorerApp extends React.Component {
     ) {
       return true;
     }
-    if (this._navigationRootRef) {
-      return this._navigationRootRef.handleNavigation(
-        NavigationRootContainer.getBackAction()
-      );
-    }
-    return false;
+    return this._handleAction({ type: 'BackAction' });
   }
 }
 
@@ -178,6 +214,11 @@ const styles = StyleSheet.create({
   toolbar: {
     backgroundColor: '#E9EAED',
     height: 56,
+  },
+  drawerContentWrapper: {
+    flex: 1,
+    paddingTop: StatusBar.currentHeight,
+    backgroundColor: 'white',
   },
 });
 

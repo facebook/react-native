@@ -52,21 +52,21 @@ public class BaseJavaModuleTest {
   public void testCallMethodWithoutEnoughArgs() throws Exception {
     BaseJavaModule.NativeMethod regularMethod = mMethods.get("regularMethod");
     Mockito.stub(mArguments.size()).toReturn(1);
-    regularMethod.invoke(null, mArguments);
+    regularMethod.invoke(null, null, mArguments);
   }
 
   @Test(expected = NativeArgumentsParseException.class)
   public void testCallAsyncMethodWithoutEnoughArgs() throws Exception {
     BaseJavaModule.NativeMethod asyncMethod = mMethods.get("asyncMethod");
     Mockito.stub(mArguments.size()).toReturn(2);
-    asyncMethod.invoke(null, mArguments);
+    asyncMethod.invoke(null, null, mArguments);
   }
 
   @Test()
   public void testCallAsyncMethodWithEnoughArgs() throws Exception {
     BaseJavaModule.NativeMethod asyncMethod = mMethods.get("asyncMethod");
     Mockito.stub(mArguments.size()).toReturn(3);
-    asyncMethod.invoke(null, mArguments);
+    asyncMethod.invoke(null, null, mArguments);
   }
 
   private static class MethodsModule extends BaseJavaModule {

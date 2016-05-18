@@ -20,6 +20,9 @@
 #import "RCTNetworking.h"
 #import "RCTUtils.h"
 
+static NSString *const RCTErrorInvalidURI = @"E_INVALID_URI";
+static NSString *const RCTErrorPrefetchFailure = @"E_PREFETCH_FAILURE";
+
 @implementation UIImage (React)
 
 - (CAKeyframeAnimation *)reactKeyframeAnimation
@@ -59,52 +62,29 @@ RCT_EXPORT_MODULE()
   _maxConcurrentDecodingTasks = _maxConcurrentDecodingTasks ?: 2;
   _maxConcurrentDecodingBytes = _maxConcurrentDecodingBytes ?: 30 * 1024 *1024; // 30MB
 
-  // Get image loaders and decoders
-  NSMutableArray<id<RCTImageURLLoader>> *loaders = [NSMutableArray array];
-  NSMutableArray<id<RCTImageDataDecoder>> *decoders = [NSMutableArray array];
-  for (Class moduleClass in _bridge.moduleClasses) {
-    if ([moduleClass conformsToProtocol:@protocol(RCTImageURLLoader)]) {
-      [loaders addObject:[_bridge moduleForClass:moduleClass]];
-    }
-    if ([moduleClass conformsToProtocol:@protocol(RCTImageDataDecoder)]) {
-      [decoders addObject:[_bridge moduleForClass:moduleClass]];
-    }
-  }
-
-  // Sort loaders in reverse priority order (highest priority first)
-  [loaders sortUsingComparator:^NSComparisonResult(id<RCTImageURLLoader> a, id<RCTImageURLLoader> b) {
-    float priorityA = [a respondsToSelector:@selector(loaderPriority)] ? [a loaderPriority] : 0;
-    float priorityB = [b respondsToSelector:@selector(loaderPriority)] ? [b loaderPriority] : 0;
-    if (priorityA > priorityB) {
-      return NSOrderedAscending;
-    } else if (priorityA < priorityB) {
-      return NSOrderedDescending;
-    } else {
-      return NSOrderedSame;
-    }
-  }];
-
-  // Sort decoders in reverse priority order (highest priority first)
-  [decoders sortUsingComparator:^NSComparisonResult(id<RCTImageDataDecoder> a, id<RCTImageDataDecoder> b) {
-    float priorityA = [a respondsToSelector:@selector(decoderPriority)] ? [a decoderPriority] : 0;
-    float priorityB = [b respondsToSelector:@selector(decoderPriority)] ? [b decoderPriority] : 0;
-    if (priorityA > priorityB) {
-      return NSOrderedAscending;
-    } else if (priorityA < priorityB) {
-      return NSOrderedDescending;
-    } else {
-      return NSOrderedSame;
-    }
-  }];
-
-  _loaders = loaders;
-  _decoders = decoders;
+  _URLCacheQueue = dispatch_queue_create("com.facebook.react.ImageLoaderURLCacheQueue", DISPATCH_QUEUE_SERIAL);
 }
 
 - (id<RCTImageURLLoader>)imageURLLoaderForURL:(NSURL *)URL
 {
-  if (!_loaders) {
+  if (!_maxConcurrentLoadingTasks) {
     [self setUp];
+  }
+
+  if (!_loaders) {
+    // Get loaders, sorted in reverse priority order (highest priority first)
+    RCTAssert(_bridge, @"Bridge not set");
+    _loaders = [[_bridge modulesConformingToProtocol:@protocol(RCTImageURLLoader)] sortedArrayUsingComparator:^NSComparisonResult(id<RCTImageURLLoader> a, id<RCTImageURLLoader> b) {
+      float priorityA = [a respondsToSelector:@selector(loaderPriority)] ? [a loaderPriority] : 0;
+      float priorityB = [b respondsToSelector:@selector(loaderPriority)] ? [b loaderPriority] : 0;
+      if (priorityA > priorityB) {
+        return NSOrderedAscending;
+      } else if (priorityA < priorityB) {
+        return NSOrderedDescending;
+      } else {
+        return NSOrderedSame;
+      }
+    }];
   }
 
   if (RCT_DEBUG) {
@@ -144,8 +124,24 @@ RCT_EXPORT_MODULE()
 
 - (id<RCTImageDataDecoder>)imageDataDecoderForData:(NSData *)data
 {
-  if (!_decoders) {
+  if (!_maxConcurrentLoadingTasks) {
     [self setUp];
+  }
+
+  if (!_decoders) {
+    // Get decoders, sorted in reverse priority order (highest priority first)
+    RCTAssert(_bridge, @"Bridge not set");
+    _decoders = [[_bridge modulesConformingToProtocol:@protocol(RCTImageDataDecoder)] sortedArrayUsingComparator:^NSComparisonResult(id<RCTImageDataDecoder> a, id<RCTImageDataDecoder> b) {
+      float priorityA = [a respondsToSelector:@selector(decoderPriority)] ? [a decoderPriority] : 0;
+      float priorityB = [b respondsToSelector:@selector(decoderPriority)] ? [b decoderPriority] : 0;
+      if (priorityA > priorityB) {
+        return NSOrderedAscending;
+      } else if (priorityA < priorityB) {
+        return NSOrderedDescending;
+      } else {
+        return NSOrderedSame;
+      }
+    }];
   }
 
   if (RCT_DEBUG) {
@@ -295,7 +291,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
   // All access to URL cache must be serialized
   if (!_URLCacheQueue) {
-    _URLCacheQueue = dispatch_queue_create("com.facebook.react.ImageLoaderURLCacheQueue", DISPATCH_QUEUE_SERIAL);
+    [self setUp];
   }
   dispatch_async(_URLCacheQueue, ^{
 
@@ -326,7 +322,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     // Check if networking module is available
     if (RCT_DEBUG && ![_bridge respondsToSelector:@selector(networking)]) {
       RCTLogError(@"No suitable image URL loader found for %@. You may need to "
-                  " import the RCTNetworking library in order to load images.",
+                  " import the RCTNetwork library in order to load images.",
                   imageTag);
       return;
     }
@@ -375,7 +371,24 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     // Check for cached response before reloading
     // TODO: move URL cache out of RCTImageLoader into its own module
     NSCachedURLResponse *cachedResponse = [_URLCache cachedResponseForRequest:request];
-    if (cachedResponse) {
+
+    while (cachedResponse) {
+      if ([cachedResponse.response isKindOfClass:[NSHTTPURLResponse class]]) {
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)cachedResponse.response;
+        if (httpResponse.statusCode == 301 || httpResponse.statusCode == 302) {
+          NSString *location = httpResponse.allHeaderFields[@"Location"];
+          if (location == nil) {
+            completionHandler(RCTErrorWithMessage(@"Image redirect without location"), nil);
+            return;
+          }
+
+          NSURL *redirectURL = [NSURL URLWithString: location];
+          request = [NSURLRequest requestWithURL: redirectURL];
+          cachedResponse = [_URLCache cachedResponseForRequest:request];
+          continue;
+        }
+      }
+
       processResponse(cachedResponse.response, cachedResponse.data, nil);
       return;
     }
@@ -412,10 +425,12 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     if (!_pendingTasks) {
       _pendingTasks = [NSMutableArray new];
     }
-    [_pendingTasks addObject:task];
-    if (MAX(_activeTasks, _scheduledDecodes) < _maxConcurrentLoadingTasks) {
-      [task start];
-      _activeTasks++;
+    if (task) {
+      [_pendingTasks addObject:task];
+      if (MAX(_activeTasks, _scheduledDecodes) < _maxConcurrentLoadingTasks) {
+        [task start];
+        _activeTasks++;
+      }
     }
 
     cancelLoad = ^{
@@ -539,6 +554,9 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                        completionHandler:completionHandler];
   } else {
 
+    if (!_URLCacheQueue) {
+      [self setUp];
+    }
     dispatch_async(_URLCacheQueue, ^{
       dispatch_block_t decodeBlock = ^{
 
@@ -636,6 +654,27 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                         }
                         completionBlock(error, size);
                       }];
+}
+
+#pragma mark - Bridged methods
+
+RCT_EXPORT_METHOD(prefetchImage:(NSString *)uri
+                        resolve:(RCTPromiseResolveBlock)resolve
+                         reject:(RCTPromiseRejectBlock)reject)
+{
+  if (!uri.length) {
+    reject(RCTErrorInvalidURI, @"Cannot prefetch an image for an empty URI", nil);
+    return;
+  }
+
+  [_bridge.imageLoader loadImageWithTag:uri callback:^(NSError *error, UIImage *image) {
+    if (error) {
+      reject(RCTErrorPrefetchFailure, nil, error);
+      return;
+    }
+
+    resolve(@YES);
+  }];
 }
 
 #pragma mark - RCTURLRequestHandler

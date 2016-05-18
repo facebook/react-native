@@ -15,12 +15,18 @@
  */
 'use strict';
 
+const React = require('React');
+
 export type UIExplorerExample = {
   key: string;
   module: React.Component;
 };
 
 var ComponentExamples: Array<UIExplorerExample> = [
+  {
+    key: 'SliderExample',
+    module: require('./SliderExample'),
+  },
   {
     key: 'ImageExample',
     module: require('./ImageExample'),
@@ -30,8 +36,12 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ListViewExample'),
   },
   {
-    key: 'PickerAndroidExample',
-    module: require('./PickerAndroidExample'),
+    key: 'ModalExample',
+    module: require('./ModalExample'),
+  },
+  {
+    key: 'PickerExample',
+    module: require('./PickerExample'),
   },
   {
     key: 'ProgressBarAndroidExample',
@@ -121,12 +131,16 @@ const APIExamples = [
     module: require('./ImageEditingExample'),
   },
   {
-    key: 'IntentAndroidExample',
-    module: require('./IntentAndroidExample'),
-  },
-  {
     key: 'LayoutEventsExample',
     module: require('./LayoutEventsExample'),
+  },
+  {
+    key: 'LinkingExample',
+    module: require('./LinkingExample'),
+  },
+  {
+    key: 'LayoutAnimationExample',
+    module: require('./LayoutAnimationExample'),
   },
   {
     key: 'LayoutExample',
@@ -159,6 +173,14 @@ const APIExamples = [
   {
     key: 'ToastAndroidExample',
     module: require('./ToastAndroidExample'),
+  },
+  {
+    key: 'VibrationExample',
+    module: require('./VibrationExample'),
+  },
+  {
+    key: 'WebSocketExample',
+    module: require('./WebSocketExample'),
   },
   {
     key: 'XHRExample',

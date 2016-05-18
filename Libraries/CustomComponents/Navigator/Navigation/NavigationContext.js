@@ -33,8 +33,8 @@ var NavigationTreeNode = require('NavigationTreeNode');
 
 var Set = require('Set');
 
-var emptyFunction = require('emptyFunction');
-var invariant = require('invariant');
+var emptyFunction = require('fbjs/lib/emptyFunction');
+var invariant = require('fbjs/lib/invariant');
 
 import type EventSubscription from 'EventSubscription';
 

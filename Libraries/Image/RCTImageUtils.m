@@ -16,8 +16,6 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
-static const CGFloat RCTThresholdValue = 0.0001;
-
 static CGFloat RCTCeilValue(CGFloat value, CGFloat scale)
 {
   return ceil(value * scale) / scale;
@@ -336,47 +334,4 @@ BOOL RCTImageHasAlpha(CGImageRef image)
     default:
       return YES;
   }
-}
-
-UIImage *__nullable RCTGetPlaceholderImage(CGSize size,
-                                           UIColor *__nullable color)
-{
-  if (size.width <= 0 || size.height <= 0) {
-    return nil;
-  }
-
-  // If dimensions are nonintegral, increase scale
-  CGFloat scale = 1;
-  if (size.width - floor(size.width) > RCTThresholdValue) {
-    scale *= round(1.0 / (size.width - floor(size.width)));
-  }
-  if (size.height - floor(size.height) > RCTThresholdValue) {
-    scale *= round(1.0 / (size.height - floor(size.height)));
-  }
-
-  // Use Euclid's algorithm to find the greatest common divisor
-  // between the specified placeholder width and height;
-  NSInteger a = size.width * scale;
-  NSInteger b = size.height * scale;
-  while (a != 0) {
-    NSInteger c = a;
-    a = b % a;
-    b = c;
-  }
-
-  // Divide the placeholder image scale by the GCD we found above. This allows
-  // us to save memory by creating the smallest possible placeholder image
-  // with the correct aspect ratio, then scaling it up at display time.
-  scale /= b;
-
-  // Fill image with specified color
-  CGFloat alpha = CGColorGetAlpha(color.CGColor);
-  UIGraphicsBeginImageContextWithOptions(size, ABS(1.0 - alpha) < RCTThresholdValue, scale);
-  if (alpha > 0) {
-    [color setFill];
-    UIRectFill((CGRect){CGPointZero, size});
-  }
-  UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return image;
 }
