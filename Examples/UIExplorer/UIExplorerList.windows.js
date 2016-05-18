@@ -30,6 +30,10 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ImageExample'),
   },
   {
+    key: 'ListViewExample',
+    module: require('./ListViewWindowsExample'),
+  },
+  {
     key: 'PickerWindowsExample',
     module: require('./PickerWindowsExample'),
   },
