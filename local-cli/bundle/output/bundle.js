@@ -9,7 +9,7 @@
 'use strict';
 
 const Promise = require('promise');
-const sign = require('../sign');
+const hash = require('./hash');
 const writeFile = require('./writeFile');
 
 function buildBundle(packagerClient, requestOptions) {
@@ -36,7 +36,9 @@ function saveBundleAndMap(bundle, options, log) {
   log('finish');
 
   log('Writing bundle output to:', bundleOutput);
-  const writeBundle = writeFile(bundleOutput, sign(codeWithMap.code), encoding);
+
+  const code = hash.appendToString(codeWithMap.code, encoding);
+  const writeBundle = writeFile(bundleOutput, code, encoding);
   writeBundle.then(() => log('Done writing bundle output'));
 
   if (sourcemapOutput) {

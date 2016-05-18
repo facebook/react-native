@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -43,8 +44,8 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
-import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
+import com.facebook.react.views.text.TextInlineImageSpan;
 
 /**
  * Manages instances of TextInput.
@@ -64,7 +65,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
   private static final String KEYBOARD_TYPE_PHONE_PAD = "phone-pad";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
-
+  private static final int UNSET = -1;
+  
   @Override
   public String getName() {
     return REACT_CLASS;
@@ -170,6 +172,62 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setTextSize(
         TypedValue.COMPLEX_UNIT_PX,
         (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize)));
+  }
+
+  @ReactProp(name = ViewProps.FONT_FAMILY)
+  public void setFontFamily(ReactEditText view, String fontFamily) {
+    int style = Typeface.NORMAL;
+    if (view.getTypeface() != null) {
+      style = view.getTypeface().getStyle();
+    }
+    Typeface newTypeface = Typeface.create(fontFamily, style);
+    view.setTypeface(newTypeface);
+  }
+
+  /**
+  /* This code was taken from the method setFontWeight of the class ReactTextShadowNode
+  /* TODO: Factor into a common place they can both use
+  */
+  @ReactProp(name = ViewProps.FONT_WEIGHT)
+  public void setFontWeight(ReactEditText view, @Nullable String fontWeightString) {
+    int fontWeightNumeric = fontWeightString != null ?
+            parseNumericFontWeight(fontWeightString) : -1;
+    int fontWeight = UNSET;
+    if (fontWeightNumeric >= 500 || "bold".equals(fontWeightString)) {
+      fontWeight = Typeface.BOLD;
+    } else if ("normal".equals(fontWeightString) ||
+            (fontWeightNumeric != -1 && fontWeightNumeric < 500)) {
+      fontWeight = Typeface.NORMAL;
+    }
+    Typeface currentTypeface = view.getTypeface();
+    if (currentTypeface == null) {
+      currentTypeface = Typeface.DEFAULT;
+    }
+    if (fontWeight != currentTypeface.getStyle()) {
+      view.setTypeface(currentTypeface, fontWeight);
+    }
+  }
+
+  /**
+  /* This code was taken from the method setFontStyle of the class ReactTextShadowNode
+  /* TODO: Factor into a common place they can both use
+  */
+  @ReactProp(name = ViewProps.FONT_STYLE)
+  public void setFontStyle(ReactEditText view, @Nullable String fontStyleString) {
+    int fontStyle = UNSET;
+    if ("italic".equals(fontStyleString)) {
+      fontStyle = Typeface.ITALIC;
+    } else if ("normal".equals(fontStyleString)) {
+      fontStyle = Typeface.NORMAL;
+    }
+
+    Typeface currentTypeface = view.getTypeface();
+    if (currentTypeface == null) {
+      currentTypeface = Typeface.DEFAULT;
+    }
+    if (fontStyle != currentTypeface.getStyle()) {
+      view.setTypeface(currentTypeface, fontStyle);
+    }
   }
 
   @ReactProp(name = "onSelectionChange", defaultBoolean = false)
@@ -289,7 +347,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           }
         }
         if (!list.isEmpty()) {
-          newFilters = (InputFilter[]) list.toArray();
+          newFilters = (InputFilter[]) list.toArray(new InputFilter[list.size()]);
         }
       }
     } else {
@@ -373,6 +431,40 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     checkPasswordType(view);
   }
 
+  @ReactProp(name = "returnKeyType")
+  public void setReturnKeyType(ReactEditText view, String returnKeyType) {
+    switch (returnKeyType) {
+      case "done":
+        view.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        break;
+      case "go":
+        view.setImeOptions(EditorInfo.IME_ACTION_GO);
+        break;
+      case "next":
+        view.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+        break;
+      case "none":
+        view.setImeOptions(EditorInfo.IME_ACTION_NONE);
+        break;
+      case "previous":
+        view.setImeOptions(EditorInfo.IME_ACTION_PREVIOUS);
+        break;
+      case "search":
+        view.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+        break;
+      case "send":
+        view.setImeOptions(EditorInfo.IME_ACTION_SEND);
+        break;
+    }
+  }
+
+  private static final int IME_ACTION_ID = 0x670;
+
+  @ReactProp(name = "returnKeyLabel")
+  public void setReturnKeyLabel(ReactEditText view, String returnKeyLabel) {
+    view.setImeActionLabel(returnKeyLabel, IME_ACTION_ID);
+  }
+
   @Override
   protected void onAfterUpdateTransaction(ReactEditText view) {
     super.onAfterUpdateTransaction(view);
@@ -389,6 +481,20 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           InputType.TYPE_TEXT_VARIATION_PASSWORD,
           InputType.TYPE_NUMBER_VARIATION_PASSWORD);
     }
+  }
+
+  /**
+   * This code was taken from the method parseNumericFontWeight of the class ReactTextShadowNode
+   * TODO: Factor into a common place they can both use
+   *
+   * Return -1 if the input string is not a valid numeric fontWeight (100, 200, ..., 900), otherwise
+   * return the weight.
+   */
+  private static int parseNumericFontWeight(String fontWeightString) {
+    // This should be much faster than using regex to verify input and Integer.parseInt
+    return fontWeightString.length() == 3 && fontWeightString.endsWith("00")
+            && fontWeightString.charAt(0) <= '9' && fontWeightString.charAt(0) >= '1' ?
+            100 * (fontWeightString.charAt(0) - '0') : -1;
   }
 
   private static void updateStagedInputTypeFlag(
@@ -514,6 +620,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                       editText.getId(),
                       SystemClock.nanoTime(),
                       editText.getText().toString()));
+            }
+            if (actionId == EditorInfo.IME_ACTION_NEXT ||
+              actionId == EditorInfo.IME_ACTION_PREVIOUS) {
+              if (editText.getBlurOnSubmit()) {
+                editText.clearFocus();
+              }
+              return true;
             }
             return !editText.getBlurOnSubmit();
           }

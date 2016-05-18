@@ -72,7 +72,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       final ReactQueueConfigurationSpec ReactQueueConfigurationSpec,
       final JavaScriptExecutor jsExecutor,
       final NativeModuleRegistry registry,
-      final JavaScriptModulesConfig jsModulesConfig,
+      final JavaScriptModuleRegistry jsModuleRegistry,
       final JSBundleLoader jsBundleLoader,
       NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
     FLog.d(ReactConstants.TAG, "Initializing React Bridge.");
@@ -81,7 +81,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
         new NativeExceptionHandler());
     mBridgeIdleListeners = new CopyOnWriteArrayList<>();
     mJavaRegistry = registry;
-    mJSModuleRegistry = new JavaScriptModuleRegistry(CatalystInstanceImpl.this, jsModulesConfig);
+    mJSModuleRegistry = jsModuleRegistry;
     mJSBundleLoader = jsBundleLoader;
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
     mTraceListener = new JSProfilerTraceListener();
@@ -93,7 +93,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
             public ReactBridge call() throws Exception {
               Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "initializeBridge");
               try {
-                return initializeBridge(jsExecutor, jsModulesConfig);
+                return initializeBridge(jsExecutor);
               } finally {
                 Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
               }
@@ -104,9 +104,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     }
   }
 
-  private ReactBridge initializeBridge(
-      JavaScriptExecutor jsExecutor,
-      JavaScriptModulesConfig jsModulesConfig) {
+  private ReactBridge initializeBridge(JavaScriptExecutor jsExecutor) {
     mReactQueueConfiguration.getJSQueueThread().assertIsOnThread();
     Assertions.assertCondition(mBridge == null, "initializeBridge should be called once");
 
@@ -126,7 +124,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     try {
       bridge.setGlobalVariable(
           "__fbBatchedBridgeConfig",
-          buildModulesConfigJSONProperty(mJavaRegistry, jsModulesConfig));
+          buildModulesConfigJSONProperty(mJavaRegistry));
       bridge.setGlobalVariable(
           "__RCTProfileIsProfiling",
           Systrace.isTracing(Systrace.TRACE_TAG_REACT_APPS) ? "true" : "false");
@@ -140,40 +138,31 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public void runJSBundle() {
+    mReactQueueConfiguration.getJSQueueThread().assertIsOnThread();
+    Assertions.assertCondition(!mJSBundleHasLoaded, "JS bundle was already loaded!");
+
+    incrementPendingJSCalls();
+
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "loadJSScript");
     try {
-      mJSBundleHasLoaded = mReactQueueConfiguration.getJSQueueThread().callOnQueue(
-          new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-              Assertions.assertCondition(!mJSBundleHasLoaded, "JS bundle was already loaded!");
+      mJSBundleLoader.loadScript(mBridge);
 
-              incrementPendingJSCalls();
-
-              Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "loadJSScript");
-              try {
-                mJSBundleLoader.loadScript(mBridge);
-
-                // This is registered after JS starts since it makes a JS call
-                Systrace.registerListener(mTraceListener);
-              } catch (JSExecutionException e) {
-                mNativeModuleCallExceptionHandler.handleException(e);
-              } finally {
-                Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-              }
-
-              return true;
-            }
-          }).get();
-    } catch (Exception t) {
-      throw new RuntimeException(t);
+      // This is registered after JS starts since it makes a JS call
+      Systrace.registerListener(mTraceListener);
+    } catch (JSExecutionException e) {
+      mNativeModuleCallExceptionHandler.handleException(e);
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
+
+    mJSBundleHasLoaded = true;
   }
 
   @Override
   public void callFunction(
       ExecutorToken executorToken,
-      int moduleId,
-      int methodId,
+      String module,
+      String method,
       NativeArray arguments,
       String tracingName) {
     synchronized (mJavaToJSCallsTeardownLock) {
@@ -184,7 +173,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
       incrementPendingJSCalls();
 
-      Assertions.assertNotNull(mBridge).callFunction(executorToken, moduleId, methodId, arguments, tracingName);
+      Assertions.assertNotNull(mBridge).callFunction(executorToken,
+        module,
+        method, arguments, tracingName);
     }
   }
 
@@ -287,7 +278,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public <T extends JavaScriptModule> T getJSModule(ExecutorToken executorToken, Class<T> jsInterface) {
-    return Assertions.assertNotNull(mJSModuleRegistry).getJavaScriptModule(executorToken, jsInterface);
+    return Assertions.assertNotNull(mJSModuleRegistry)
+      .getJavaScriptModule(this, executorToken, jsInterface);
   }
 
   @Override
@@ -357,17 +349,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mBridge.setGlobalVariable(propName, jsonValue);
   }
 
-  private String buildModulesConfigJSONProperty(
-      NativeModuleRegistry nativeModuleRegistry,
-      JavaScriptModulesConfig jsModulesConfig) {
+  private String buildModulesConfigJSONProperty(NativeModuleRegistry nativeModuleRegistry) {
     StringWriter stringWriter = new StringWriter();
     JsonWriter writer = new JsonWriter(stringWriter);
     try {
       writer.beginObject();
       writer.name("remoteModuleConfig");
       nativeModuleRegistry.writeModuleDescriptions(writer);
-      writer.name("localModulesConfig");
-      jsModulesConfig.writeModuleDescriptions(writer);
       writer.endObject();
       return stringWriter.toString();
     } catch (IOException ioe) {
@@ -511,7 +499,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     private @Nullable ReactQueueConfigurationSpec mReactQueueConfigurationSpec;
     private @Nullable JSBundleLoader mJSBundleLoader;
     private @Nullable NativeModuleRegistry mRegistry;
-    private @Nullable JavaScriptModulesConfig mJSModulesConfig;
+    private @Nullable JavaScriptModuleRegistry mJSModuleRegistry;
     private @Nullable JavaScriptExecutor mJSExecutor;
     private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
 
@@ -526,8 +514,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
       return this;
     }
 
-    public Builder setJSModulesConfig(JavaScriptModulesConfig jsModulesConfig) {
-      mJSModulesConfig = jsModulesConfig;
+    public Builder setJSModuleRegistry(JavaScriptModuleRegistry jsModuleRegistry) {
+      mJSModuleRegistry = jsModuleRegistry;
       return this;
     }
 
@@ -552,7 +540,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
           Assertions.assertNotNull(mReactQueueConfigurationSpec),
           Assertions.assertNotNull(mJSExecutor),
           Assertions.assertNotNull(mRegistry),
-          Assertions.assertNotNull(mJSModulesConfig),
+          Assertions.assertNotNull(mJSModuleRegistry),
           Assertions.assertNotNull(mJSBundleLoader),
           Assertions.assertNotNull(mNativeModuleCallExceptionHandler));
     }

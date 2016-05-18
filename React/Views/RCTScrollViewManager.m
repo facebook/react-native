@@ -73,6 +73,12 @@ RCT_EXPORT_VIEW_PROPERTY(snapToInterval, int)
 RCT_EXPORT_VIEW_PROPERTY(snapToAlignment, NSString)
 RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffset, CGPoint)
 RCT_EXPORT_VIEW_PROPERTY(onRefreshStart, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onScrollBeginDrag, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onScroll, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onScrollEndDrag, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollBegin, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollEnd, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onScrollAnimationEnd, RCTDirectEventBlock)
 
 RCT_EXPORT_METHOD(getContentSize:(nonnull NSNumber *)reactTag
                   callback:(RCTResponseSenderBlock)callback)
@@ -159,18 +165,6 @@ RCT_EXPORT_METHOD(zoomToRect:(nonnull NSNumber *)reactTag
                   "with tag #%@", view, reactTag);
     }
   }];
-}
-
-- (NSArray<NSString *> *)customDirectEventTypes
-{
-  return @[
-    @"scrollBeginDrag",
-    @"scroll",
-    @"scrollEndDrag",
-    @"scrollAnimationEnd",
-    @"momentumScrollBegin",
-    @"momentumScrollEnd",
-  ];
 }
 
 @end

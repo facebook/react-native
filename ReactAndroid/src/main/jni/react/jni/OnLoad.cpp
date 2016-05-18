@@ -6,12 +6,12 @@
 #include <fb/glog_init.h>
 #include <folly/json.h>
 #include <jni/Countable.h>
-#include <jni/Environment.h>
-#include <jni/fbjni.h>
+#include <fb/Environment.h>
+#include <fb/fbjni.h>
 #include <jni/LocalReference.h>
 #include <jni/LocalString.h>
 #include <jni/WeakReference.h>
-#include <jni/fbjni/Exceptions.h>
+#include <fb/fbjni/Exceptions.h>
 #include <react/Bridge.h>
 #include <react/Executor.h>
 #include <react/JSCExecutor.h>
@@ -776,15 +776,15 @@ static void loadScriptFromFile(JNIEnv* env, jobject obj, jstring fileName, jstri
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromFile_exec"));
 }
 
-static void callFunction(JNIEnv* env, jobject obj, JExecutorToken::jhybridobject jExecutorToken, jint moduleId, jint methodId,
+static void callFunction(JNIEnv* env, jobject obj, JExecutorToken::jhybridobject jExecutorToken, jstring module, jstring method,
                          NativeArray::jhybridobject args, jstring tracingName) {
   auto bridge = extractRefPtr<CountableBridge>(env, obj);
   auto arguments = cthis(wrap_alias(args));
   try {
     bridge->callFunction(
       cthis(wrap_alias(jExecutorToken))->getExecutorToken(wrap_alias(jExecutorToken)),
-      folly::to<std::string>(moduleId),
-      folly::to<std::string>(methodId),
+      fromJString(env, module),
+      fromJString(env, method),
       std::move(arguments->array),
       fromJString(env, tracingName)
     );

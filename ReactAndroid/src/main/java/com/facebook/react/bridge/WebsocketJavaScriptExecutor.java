@@ -159,7 +159,7 @@ public class WebsocketJavaScriptExecutor implements JavaJSExecutor {
   }
 
   @Override
-  public void loadApplicationScript(String script, String sourceURL)
+  public void loadApplicationScript(String sourceURL)
       throws ProxyExecutorException {
     JSExecutorCallbackFuture callback = new JSExecutorCallbackFuture();
     Assertions.assertNotNull(mWebSocketClient).loadApplicationScript(

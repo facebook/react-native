@@ -67,8 +67,9 @@ var featured = [
   },
   {
     name: 'Exponent',
-    icon: 'http://a4.mzstatic.com/us/r30/Purple2/v4/3a/d3/c9/3ad3c96c-5e14-f988-4bdd-0fdc95efd140/icon175x175.png',
-    link:  'http://exponentjs.com/',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple20/v4/b0/26/72/b02672b5-d347-6df1-e20f-de5f5c039664/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/exponent/id982107779?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=host.exp.exponent',
     author: 'Exponent',
   },
   {
@@ -76,6 +77,12 @@ var featured = [
     icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/df/a6/22/dfa622c4-e29c-c720-f32e-3fec99d14337/icon175x175.png',
     link:  'https://itunes.apple.com/app/id1071378510',
     author: 'Helium',
+  },
+  {
+    name: 'li.st',
+    icon: 'https://lh3.googleusercontent.com/tXt0HgJ7dCgOnuQ-lQr1P7E57mnOYfwXhRsV9lGcPwHPVvrDAN6YmpLVFgy88qKrkFI=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=st.li.listapp',
+    author: 'li.st + Exponent',
   },
   {
     name: 'Lrn',
@@ -204,7 +211,7 @@ var featured = [
     linkAppStore: 'https://itunes.apple.com/cn/app/feng-niao-zhong-bao-jian-zhi/id1061034377?l=en&mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=me.ele.crowdsource',
     author: 'Eleme',
-  },
+  }
 ];
 
 var apps = [
@@ -276,6 +283,12 @@ var apps = [
     author: 'Macellan.net',
   },
   {
+    name: 'Calor - Field Pro',
+    icon: 'http://rnfdigital.com/wp-content/uploads/2016/04/FieldProIcon.png',
+    link: 'http://rnfdigital.com/react-native-a-game-changer-for-enterprise-mobile-development/',
+    author: 'RNF Digital',
+  },
+  {
     name: 'CANDDi',
     icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/c4/e4/85/c4e48546-7127-a133-29f2-3e2e1aa0f9af/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/gb/app/canddi/id1018168131?mt=8',
@@ -295,6 +308,13 @@ var apps = [
     author: 'CBS Sports',
   },
   {
+    name: 'Chemin de Fer de Provence',
+    icon: 'https://lh3.googleusercontent.com/p80a9ZFgDd9EgKxViAOu3PF22GiEc2FaMxxlOib6SpvLR-M6wN1OSMuyzMcjIaNI4Jc=w300',
+    linkAppStore: 'https://itunes.apple.com/fr/app/chemins-de-fer-de-provence/id1107542956?l=fr&ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.cheminsdeferdeprovence&hl=fr',
+    author: 'Actigraph'
+  },
+  {
     name: 'Chillin\'',
     icon: 'http://www.chillin.io/img/logo175x175.png',
     linkAppStore: 'https://itunes.apple.com/us/app/chillin/id1059803303?ls=1&mt=8',
@@ -307,6 +327,12 @@ var apps = [
     link: 'https://itunes.apple.com/us/app/choke-rap-battle-with-friends/id1077937445?ls=1&mt=8',
     author: 'Henry Kirkness',
   },
+  {
+    name: 'clapit',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple60/v4/1a/42/5b/1a425b56-848a-91f5-8078-9f5473c9021f/icon350x350.png',
+    link: 'https://itunes.apple.com/us/app/clapit/id1062124740?mt=8',
+    author: 'Refined Edge Solutions, LLC'
+  }, 
   {
     name: 'Codementor - Live 1:1 Expert Developer Help',
     icon: 'http://a1.mzstatic.com/us/r30/Purple3/v4/db/cf/35/dbcf3523-bac7-0f54-c6a8-a80bf4f43c38/icon175x175.jpeg',
@@ -355,6 +381,13 @@ var apps = [
       'http://www.s21g.com/DockMan.html',
     ],
     author: 'Genki Takiuchi (s21g Inc.)',
+  },
+  {
+    name: 'DONUT chatrooms for communities',
+    icon: 'http://a2.mzstatic.com/eu/r30/Purple49/v4/d4/2d/e5/d42de510-6802-2694-1b60-ca80ffa1e2cb/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/fr/app/donut-chat/id1067579321',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=me.donut.mobile',
+    author: 'Damien Brugne',
   },
   {
     name: 'Due',
@@ -430,6 +463,7 @@ var apps = [
     author: 'Lim Chee Aun',
     blogs: [
       'http://cheeaun.com/blog/2016/03/building-hackerweb-ios/',
+      'http://cheeaun.com/blog/2016/05/building-hackerweb-android/',
     ],
   },
   {
@@ -593,10 +627,23 @@ var apps = [
     author: 'Impronta Advance',
   },
   {
+    name: 'Nabava.net',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple18/v4/85/ef/4d/85ef4d52-f752-c059-48c1-baa507d1f936/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/bm/app/nabava.net-usporedi-cijene/id1100660049?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.nabava_net',
+    author: 'Ars Futura'
+  },
+  {
     name: 'Nalathe Kerala',
     icon: 'https://lh3.googleusercontent.com/5N0WYat5WuFbhi5yR2ccdbqmiZ0wbTtKRG9GhT3YK7Z-qRvmykZyAgk0HNElOxD2JOPr=w300-rw',
     link: 'https://play.google.com/store/apps/details?id=com.rhyble.nalathekerala',
     author: 'Rhyble',
+  },
+  {
+    name: 'New Music - listen to recent albums, EPs & singles',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple60/v4/fa/d9/be/fad9be3d-474c-4380-6391-37f234a81901/icon175x175.png',
+    link: 'https://itunes.apple.com/app/new-music-keep-track-latest/id1104646834',
+    author: 'Alexey Ledak',
   },
 	{
     name: 'No Fluff: Hiragana',
@@ -646,6 +693,13 @@ var apps = [
     icon: 'http://a5.mzstatic.com/us/r30/Purple3/v4/f0/a4/57/f0a4574e-4a59-033f-05ff-5c421f0a0b00/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/raindrop.io-keep-your-favorites/id1021913807',
     author: 'Mussabekov Rustem',
+  },
+  {
+    name: 'Reach24',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple49/v4/35/0e/c8/350ec8b4-c725-4b03-3e9e-131b85e72166/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/reach24x7/id962380755?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.vantage.reachtwo&hl=en',
+    author: 'Spritle Software',
   },
   {
     name: 'ReactTo36',
@@ -705,11 +759,23 @@ var apps = [
     author: 'Steve Ng'
   },
   {
-    name: 'ShareHows',
+    name: '쉐어하우스',
     icon: 'http://a4.mzstatic.com/us/r30/Purple5/v4/78/1c/83/781c8325-a1e1-4afc-f106-a629bcf3c6ef/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/kr/app/sweeohauseu-sesang-ui-modeun/id1060914858?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=kr.dobbit.sharehows',
     author: 'Dobbit Co., Ltd.'
+  },
+  {
+    name: 'SAY',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple30/v4/ee/d8/b3/eed8b3e5-c55d-bc97-7228-2bfb4323ddef/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/id1069693851',
+    author: 'beijing qingfengyun Technology Co., Ltd.',
+  },
+  {
+    name: 'ShareWis',
+    icon: 'https://s3-ap-northeast-1.amazonaws.com/sw-misc/sharewis3_app.png',
+    link: 'https://itunes.apple.com/jp/app/id585517208',
+    author: 'ShareWis Inc.'
   },
   {
     name: 'sneat: réservez les meilleurs restaurants de Paris',
@@ -722,6 +788,19 @@ var apps = [
     icon: 'https://lh3.googleusercontent.com/11AuzaeCnxrRnIp1E_a_6WWiQIRRoWhrvFr20eCRJX4ZMW6O3tGjZLiUw3thKUgGaC8X=w300',
     link: 'https://play.google.com/store/apps/details?id=com.SoftwareInterview',
     author: 'Andrew F. Ly',
+  },
+  {
+    name: 'Spatula',
+    icon: 'https://lh3.googleusercontent.com/26xtcDsloLCAOpqgH_87sDxaSJsLuSN--oj-z5Frcdsaq4ta2GQlktF5ktTNWrRHyqo=w300-rw',
+    linkAppStore: 'https://itunes.apple.com/us/app/spatula/id1090496189?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.usespatula',
+    author: 'Kushal Dave'
+  },
+  {
+    name: 'Splash: On-Demand Auto Detailing',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple30/v4/c3/14/74/c314748f-ff16-c7ec-77c5-1a84657d9154/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/splash-on-demand-auto-detailing/id1111109177',
+    author: 'Alex Leventer'
   },
   {
     name: 'Spero for Cancer',
@@ -761,6 +840,12 @@ var apps = [
     author: 'Ho Yin Tsun Eugene',
   },
   {
+    name: 'Trump Blocker - That Filters Every Link',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/e7/91/4c/e7914cbd-c405-8411-2173-e8ed59a901bd/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/trump-blocker-that-filters/id1071733244?mt=8',
+    author: 'Footbits, Inc.',
+  },
+  {
     name: 'uSwitch - Energy switching app',
     icon: 'https://lh3.googleusercontent.com/NpkGlwFWdj7VsK2ueVwlgdrrBrNJ-yN-4TkEHjjSjDUu7NpMcfyAp10p97f0zci0CSFQ=w300-rw',
     linkAppStore: 'https://itunes.apple.com/gb/app/uswitch-compare-switch-save/id935325621?mt=8&ct=react',
@@ -787,6 +872,13 @@ var apps = [
     author: 'Victor Delgado',
   },
   {
+    name: 'Vorterix',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple49/v4/3a/f0/b4/3af0b475-f0e8-e81d-eb38-1ec1dfa9b2f4/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/ar/app/vorterix/id577990518?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.vorterix',
+    author: 'Dift & underscope.io',
+  },
+  {
     name: 'WEARVR',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple69/v4/4f/5a/28/4f5a2876-9530-ef83-e399-c5ef5b2dab80/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/gb/app/wearvr/id1066288171?mt=8',
@@ -804,6 +896,12 @@ var apps = [
     icon: 'http://a4.mzstatic.com/us/r30/Purple49/v4/8f/1c/21/8f1c2158-c7fb-1bbb-94db-e77b867aad1a/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/whammy/id899759777',
     author: 'Play Company',
+  },
+  {
+    name: 'Whisky Journal',
+    icon: 'http://cdn.whiskyjournal.co/files/icon350x350.png',
+    link: 'https://itunes.apple.com/au/app/whiskyjournal/id1097713368',
+    author: 'Matt Mcnamee',
   },
   {
     name: 'WOOP',
@@ -875,18 +973,17 @@ var apps = [
     author: 'Hongbeibang'
   },
   {
-    name: 'Spatula',
-    icon: 'https://lh3.googleusercontent.com/26xtcDsloLCAOpqgH_87sDxaSJsLuSN--oj-z5Frcdsaq4ta2GQlktF5ktTNWrRHyqo=w300-rw',
-    linkAppStore: 'https://itunes.apple.com/us/app/spatula/id1090496189?ls=1&mt=8',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.usespatula',
-    author: 'Kushal Dave'
+    name: '找找',
+    icon: 'https://lh3.googleusercontent.com/H0SILVHcDUxSMoSQwMb2QYtLjTBCqvK5ZEjOEwKQQ-2qnRV6Hd9Hn-gtSGPaoIOPwA=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.biideal.biichat',
+    author: 'biideal Inc.'
   },
   {
-    name: 'ShareWis',
-    icon: 'https://s3-ap-northeast-1.amazonaws.com/sw-misc/sharewis3_app.png',
-    link: 'https://itunes.apple.com/jp/app/id585517208',
-    author: 'ShareWis Inc.'
-  }
+    name: '饿小闲',
+    icon: 'https://xiaoxian.ele.me/download/images/share_page/ic_launcher.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/e-xiao-xian/id1092025196',
+    author: 'Eleme',
+  },
 ];
 
 var AppList = React.createClass({
@@ -907,7 +1004,7 @@ var AppList = React.createClass({
         {app.linkAppStore && app.linkPlayStore ? this._renderLinks(app) : null}
         <p>By {app.author}</p>
         {this._renderBlogPosts(app)}
-				{this._renderSourceLink(app)}
+        {this._renderSourceLink(app)}
         {this._renderVideos(app)}
       </div>
     );
@@ -949,7 +1046,7 @@ var AppList = React.createClass({
     );
   },
 
-	_renderSourceLink: function(app) {
+  _renderSourceLink: function(app) {
     if (!app.source) {
       return;
     }
@@ -986,7 +1083,8 @@ var AppList = React.createClass({
   _renderLinks: function(app) {
     return (
       <p>
-        <a href={app.linkAppStore} target="_blank">iOS</a> -&nbsp;
+        <a href={app.linkAppStore} target="_blank">iOS</a>
+        {' '}&middot;{' '}
         <a href={app.linkPlayStore} target="_blank">Android</a>
       </p>
     );

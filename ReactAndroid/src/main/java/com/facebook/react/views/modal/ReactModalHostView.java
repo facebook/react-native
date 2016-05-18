@@ -24,6 +24,7 @@ import android.view.WindowManager;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.JSTouchDispatcher;
@@ -44,7 +45,7 @@ import com.facebook.react.views.view.ReactViewGroup;
  *     DialogRootViewGroup were part of the hierarchy.  Therefore, we forward all view changes
  *     around addition and removal of views to the DialogRootViewGroup.
  */
-public class ReactModalHostView extends ViewGroup {
+public class ReactModalHostView extends ViewGroup implements LifecycleEventListener {
 
   // This listener is called when the user presses KeyEvent.KEYCODE_BACK
   // An event is then passed to JS which can either close or not close the Modal by setting the
@@ -56,7 +57,7 @@ public class ReactModalHostView extends ViewGroup {
   private DialogRootViewGroup mHostView;
   private @Nullable Dialog mDialog;
   private boolean mTransparent;
-  private boolean mAnimated;
+  private String mAnimationType;
   // Set this flag to true if changing a particular property on the view requires a new Dialog to
   // be created.  For instance, animation does since it affects Dialog creation through the theme
   // but transparency does not since we can access the window to update the property.
@@ -66,6 +67,7 @@ public class ReactModalHostView extends ViewGroup {
 
   public ReactModalHostView(Context context) {
     super(context);
+    ((ReactContext) context).addLifecycleEventListener(this);
 
     mHostView = new DialogRootViewGroup(context);
   }
@@ -131,9 +133,25 @@ public class ReactModalHostView extends ViewGroup {
     mTransparent = transparent;
   }
 
-  protected void setAnimated(boolean animated) {
-    mAnimated = animated;
+  protected void setAnimationType(String animationType) {
+    mAnimationType = animationType;
     mPropertyRequiresNewDialog = true;
+  }
+
+  @Override
+  public void onHostResume() {
+    // do nothing
+  }
+
+  @Override
+  public void onHostPause() {
+    // do nothing
+  }
+
+  @Override
+  public void onHostDestroy() {
+    // Dismiss the dialog if it is present
+    dismiss();
   }
 
   @VisibleForTesting
@@ -162,8 +180,10 @@ public class ReactModalHostView extends ViewGroup {
     // Reset the flag since we are going to create a new dialog
     mPropertyRequiresNewDialog = false;
     int theme = R.style.Theme_FullScreenDialog;
-    if (mAnimated) {
-      theme = R.style.Theme_FullScreenDialogAnimated;
+    if (mAnimationType.equals("fade")) {
+      theme = R.style.Theme_FullScreenDialogAnimatedFade;
+    } else if (mAnimationType.equals("slide")) {
+      theme = R.style.Theme_FullScreenDialogAnimatedSlide;
     }
     mDialog = new Dialog(getContext(), theme);
 
@@ -202,6 +222,8 @@ public class ReactModalHostView extends ViewGroup {
    */
   private void updateProperties() {
     Assertions.assertNotNull(mDialog, "mDialog must exist when we call updateProperties");
+
+    mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
     if (mTransparent) {
       mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);

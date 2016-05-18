@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -22,8 +29,6 @@ const {
   View,
 } = ReactNative;
 const {
-  Container: NavigationContainer,
-  RootContainer: NavigationRootContainer,
   Reducer: NavigationReducer,
 } = NavigationExperimental;
 
@@ -55,7 +60,6 @@ class ExmpleTabPage extends React.Component {
     );
   }
 }
-ExmpleTabPage = NavigationContainer.create(ExmpleTabPage);
 
 const ExampleTabsReducer = NavigationReducer.TabsReducer({
   tabReducers: [
@@ -66,36 +70,40 @@ const ExampleTabsReducer = NavigationReducer.TabsReducer({
 });
 
 class NavigationTabsExample extends React.Component {
+  constructor() {
+    super();
+    this.state = ExampleTabsReducer(undefined, {});
+  }
   render() {
     return (
-      <NavigationRootContainer
-        reducer={ExampleTabsReducer}
-        persistenceKey="NAV_EXAMPLE_STATE_TABS"
-        ref={navRootContainer => { this.navRootContainer = navRootContainer; }}
-        renderNavigation={(navigationState) => {
-          if (!navigationState) { return null; }
-          return (
-            <View style={styles.topView}>
-              <ExmpleTabPage
-                tabs={navigationState.children}
-                index={navigationState.index}
-                onExampleExit={this.props.onExampleExit}
-              />
-              <NavigationExampleTabBar
-                tabs={navigationState.children}
-                index={navigationState.index}
-              />
-            </View>
-          );
-        }}
-      />
+      <View style={styles.topView}>
+        <ExmpleTabPage
+          tabs={this.state.children}
+          index={this.state.index}
+          onExampleExit={this.props.onExampleExit}
+          onNavigate={this.handleAction.bind(this)}
+        />
+        <NavigationExampleTabBar
+          tabs={this.state.children}
+          index={this.state.index}
+          onNavigate={this.handleAction.bind(this)}
+        />
+      </View>
     );
   }
+  handleAction(action) {
+    if (!action) {
+      return false;
+    }
+    const newState = ExampleTabsReducer(this.state, action);
+    if (newState === this.state) {
+      return false;
+    }
+    this.setState(newState);
+    return true;
+  }
   handleBackAction() {
-    return (
-      this.navRootContainer &&
-      this.navRootContainer.handleNavigation(NavigationRootContainer.getBackAction())
-    );
+    return this.handleAction({ type: 'BackAction' });
   }
 }
 

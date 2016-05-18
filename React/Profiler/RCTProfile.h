@@ -10,6 +10,7 @@
 #import <Foundation/Foundation.h>
 
 #import "RCTDefines.h"
+#import "RCTAssert.h"
 
 /**
  * RCTProfile
@@ -22,6 +23,8 @@
 
 RCT_EXTERN NSString *const RCTProfileDidStartProfiling;
 RCT_EXTERN NSString *const RCTProfileDidEndProfiling;
+
+RCT_EXTERN const uint64_t RCTProfileTagAlways;
 
 #if RCT_DEV
 
@@ -71,9 +74,7 @@ RCT_EXTERN void _RCTProfileBeginEvent(NSThread *calleeThread,
     if (RCTProfileIsProfiling()) { \
       NSThread *__calleeThread = [NSThread currentThread]; \
       NSTimeInterval __time = CACurrentMediaTime(); \
-      dispatch_async(RCTProfileGetQueue(), ^{ \
-        _RCTProfileBeginEvent(__calleeThread, __time, __VA_ARGS__); \
-      }); \
+      _RCTProfileBeginEvent(__calleeThread, __time, __VA_ARGS__); \
     } \
   } while(0)
 
@@ -95,9 +96,7 @@ RCT_EXTERN void _RCTProfileEndEvent(NSThread *calleeThread,
       NSThread *__calleeThread = [NSThread currentThread]; \
       NSString *__threadName = RCTCurrentThreadName(); \
       NSTimeInterval __time = CACurrentMediaTime(); \
-      dispatch_async(RCTProfileGetQueue(), ^{ \
-        _RCTProfileEndEvent(__calleeThread, __threadName, __time, __VA_ARGS__); \
-      }); \
+      _RCTProfileEndEvent(__calleeThread, __threadName, __time, __VA_ARGS__); \
     } \
   } while(0)
 
@@ -152,6 +151,11 @@ RCT_EXTERN void RCTProfileHookModules(RCTBridge *);
 RCT_EXTERN void RCTProfileUnhookModules(RCTBridge *);
 
 /**
+ * Hook into all of a module's methods
+ */
+RCT_EXTERN void RCTProfileHookInstance(id instance);
+
+/**
  * Send systrace or cpu profiling information to the packager
  * to present to the user
  */
@@ -181,6 +185,9 @@ typedef struct {
   void (*end_async_section)(uint64_t tag, const char *name, int cookie, size_t numArgs, systrace_arg_t *args);
 
   void (*instant_section)(uint64_t tag, const char *name, char scope);
+
+  void (*begin_async_flow)(uint64_t tag, const char *name, int cookie);
+  void (*end_async_flow)(uint64_t tag, const char *name, int cookie);
 } RCTProfileCallbacks;
 
 RCT_EXTERN void RCTProfileRegisterCallbacks(RCTProfileCallbacks *);
@@ -217,6 +224,7 @@ RCT_EXTERN void RCTProfileHideControls(void);
 #define RCTProfileBlock(block, ...) block
 
 #define RCTProfileHookModules(...)
+#define RCTProfileHookInstance(...)
 #define RCTProfileUnhookModules(...)
 
 #define RCTProfileSendResult(...)

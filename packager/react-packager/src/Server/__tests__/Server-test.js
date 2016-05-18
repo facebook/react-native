@@ -22,14 +22,14 @@ jest.setMock('worker-farm', function() { return () => {}; })
 
 const Promise = require('promise');
 
-var Bundler = require('../../Bundler');
-var Server = require('../');
-var AssetServer = require('../../AssetServer');
+const Bundler = require('../../Bundler');
+const Server = require('../');
+const AssetServer = require('../../AssetServer');
 
-var FileWatcher;
+let FileWatcher;
 
 describe('processRequest', () => {
-  var server;
+  let server;
 
   const options = {
      projectRoots: ['root'],
@@ -56,8 +56,8 @@ describe('processRequest', () => {
 
   const invalidatorFunc = jest.fn();
   const watcherFunc = jest.fn();
-  var requestHandler;
-  var triggerFileChange;
+  let requestHandler;
+  let triggerFileChange;
 
   beforeEach(() => {
     FileWatcher = require('node-haste').FileWatcher;
@@ -135,7 +135,7 @@ describe('processRequest', () => {
       requestHandler,
       'index.ios.includeRequire.bundle'
     ).then(response => {
-      expect(response.body).toEqual('this is the source');
+      expect(response.body).toEqual('this is the source')
       expect(Bundler.prototype.bundle).toBeCalledWith({
         entryFile: 'index.ios.js',
         inlineSourceMap: false,
@@ -148,6 +148,7 @@ describe('processRequest', () => {
         runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
         unbundle: false,
         entryModuleOnly: false,
+        isolateModuleIDs: false,
       });
     });
   });
@@ -170,6 +171,7 @@ describe('processRequest', () => {
         runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
         unbundle: false,
         entryModuleOnly: false,
+        isolateModuleIDs: false,
       });
     });
   });
@@ -291,9 +293,9 @@ describe('processRequest', () => {
   });
 
   describe('/onchange endpoint', () => {
-    var EventEmitter;
-    var req;
-    var res;
+    let EventEmitter;
+    let req;
+    let res;
 
     beforeEach(() => {
       EventEmitter = require.requireActual('events').EventEmitter;
@@ -363,6 +365,7 @@ describe('processRequest', () => {
           runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
           unbundle: false,
           entryModuleOnly: false,
+          isolateModuleIDs: false,
         })
       );
     });
@@ -384,6 +387,7 @@ describe('processRequest', () => {
             runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
             unbundle: false,
             entryModuleOnly: false,
+            isolateModuleIDs: false,
           })
         );
     });
