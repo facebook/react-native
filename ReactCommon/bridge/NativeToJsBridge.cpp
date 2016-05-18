@@ -303,13 +303,13 @@ ExecutorToken NativeToJsBridge::getTokenForExecutor(JSExecutor& executor) {
 
 void NativeToJsBridge::destroy() {
   m_delegate->quitQueueSynchronous();
-  auto executorMessageQueueThread = getMessageQueueThread(m_mainExecutorToken);
-  executorMessageQueueThread->runOnQueueSync([this, &executorMessageQueueThread] {
+  auto* executorMessageQueueThread = getMessageQueueThread(m_mainExecutorToken);
+  executorMessageQueueThread->runOnQueueSync([this, executorMessageQueueThread] {
+    m_mainExecutor->destroy();
     executorMessageQueueThread->quitSynchronous();
-    *m_destroyed = true;
-    std::unique_ptr<JSExecutor> mainExecutor = unregisterExecutor(*m_mainExecutor);
+    unregisterExecutor(*m_mainExecutor);
     m_mainExecutor = nullptr;
-    mainExecutor->destroy();
+    *m_destroyed = true;
   });
 }
 
