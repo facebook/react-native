@@ -11,12 +11,14 @@ SANDCASTLE_FLAKY = [
 
 deps = [
   react_native_integration_tests_target('java/com/facebook/react/testing:testing'),
-  react_native_target('java/com/facebook/react/bridge:bridge'),
   react_native_target('java/com/facebook/react:react'),
+  react_native_target('java/com/facebook/react/bridge:bridge'),
   react_native_target('java/com/facebook/react/common:common'),
-  react_native_target('java/com/facebook/react/modules/timepicker:timepicker'),
+  react_native_target('java/com/facebook/react/modules/core:core'),
   react_native_target('java/com/facebook/react/modules/datepicker:datepicker'),
   react_native_target('java/com/facebook/react/modules/systeminfo:systeminfo'),
+  react_native_target('java/com/facebook/react/modules/timepicker:timepicker'),
+  react_native_target('java/com/facebook/react/touch:touch'),
   react_native_target('java/com/facebook/react/uimanager:uimanager'),
   react_native_target('java/com/facebook/react/uimanager/annotations:annotations'),
   react_native_target('java/com/facebook/react/views/picker:picker'),

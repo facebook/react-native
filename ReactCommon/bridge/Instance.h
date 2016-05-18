@@ -33,16 +33,16 @@ class Instance {
     std::shared_ptr<MessageQueueThread> jsQueue,
     std::unique_ptr<MessageQueueThread> nativeQueue,
     std::shared_ptr<ModuleRegistry> moduleRegistry);
-  void loadScriptFromString(const std::string& string, const std::string& sourceURL);
+  void loadScriptFromString(std::unique_ptr<const JSBigString> string, std::string sourceURL);
   void loadScriptFromFile(const std::string& filename, const std::string& sourceURL);
   void loadUnbundle(
     std::unique_ptr<JSModulesUnbundle> unbundle,
-    const std::string& startupScript,
-    const std::string& startupScriptSourceURL);
+    std::unique_ptr<const JSBigString> startupScript,
+    std::string startupScriptSourceURL);
   bool supportsProfiling();
   void startProfiler(const std::string& title);
   void stopProfiler(const std::string& title, const std::string& filename);
-  void setGlobalVariable(const std::string& propName, const std::string& jsonValue);
+  void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
   void callJSFunction(ExecutorToken token, const std::string& module, const std::string& method,
                       folly::dynamic&& params, const std::string& tracingName);
   void callJSCallback(ExecutorToken token, uint64_t callbackId, folly::dynamic&& params);

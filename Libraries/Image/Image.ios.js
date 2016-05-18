@@ -201,10 +201,6 @@ var Image = React.createClass({
     validAttributes: ReactNativeViewAttributes.UIView
   },
 
-  contextTypes: {
-    isInAParentText: React.PropTypes.bool
-  },
-
   render: function() {
     var source = resolveAssetSource(this.props.source) || {};
     var {width, height, uri} = source;
@@ -223,13 +219,6 @@ var Image = React.createClass({
 
     if (this.props.src) {
       console.warn('The <Image> component requires a `source` property rather than `src`.');
-    }
-
-    if (this.context.isInAParentText) {
-      RawImage = RCTVirtualImage;
-      if (!width || !height) {
-        console.warn('You must specify a width and height for the image %s', uri);
-      }
     }
 
     return (
@@ -252,7 +241,6 @@ var styles = StyleSheet.create({
 
 var RCTImageView = requireNativeComponent('RCTImageView', Image);
 var RCTNetworkImageView = NetworkImageViewManager ? requireNativeComponent('RCTNetworkImageView', Image) : RCTImageView;
-var RCTVirtualImage = requireNativeComponent('RCTVirtualImage', Image);
 
 
 module.exports = Image;

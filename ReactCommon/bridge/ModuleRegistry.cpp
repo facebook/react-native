@@ -3,11 +3,7 @@
 #include "ModuleRegistry.h"
 
 #include "NativeModule.h"
-
-#ifdef WITH_FBSYSTRACE
-#include <fbsystrace.h>
-using fbsystrace::FbSystraceSection;
-#endif
+#include "SystraceSection.h"
 
 namespace facebook {
 namespace react {
@@ -24,9 +20,8 @@ folly::dynamic ModuleRegistry::moduleDescriptions() {
     folly::dynamic methodDescs = folly::dynamic::object;
     std::vector<MethodDescriptor> methods;
     {
-#ifdef WITH_FBSYSTRACE
-      FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "getMethods", "module", module->getName());
-#endif
+      SystraceSection s("getMethods",
+                        "module", module->getName());
       methods = module->getMethods();
     }
     for (size_t methodId = 0; methodId < methods.size(); ++methodId) {
@@ -38,9 +33,8 @@ folly::dynamic ModuleRegistry::moduleDescriptions() {
 
     folly::dynamic constants = folly::dynamic::array();
     {
-#ifdef WITH_FBSYSTRACE
-      FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "getConstants", "module", module->getName());
-#endif
+      SystraceSection s("getConstants",
+                        "module", module->getName());
       constants = module->getConstants();
     }
 
