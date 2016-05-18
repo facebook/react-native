@@ -9,10 +9,19 @@
 
 #import "RCTURLRequestHandler.h"
 #import "RCTInvalidating.h"
+#import "RCTConvert.h"
 
 /**
  * This is the default RCTURLRequestHandler implementation for HTTP requests.
  */
 @interface RCTHTTPRequestHandler : NSObject <RCTURLRequestHandler, RCTInvalidating>
+
+- (void)setCachePolicy:(NSURLRequestCachePolicy)cachePolicy;
+
+@end
+
+@interface RCTConvert(RCTRequestCachePolicy)
+
++ (NSURLRequestCachePolicy)NSURLRequestCachePolicy:(id)json;
 
 @end

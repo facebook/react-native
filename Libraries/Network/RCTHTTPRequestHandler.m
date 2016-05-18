@@ -13,10 +13,25 @@
 
 @end
 
+@implementation RCTConvert(RCTRequestCachePolicy)
+
+RCT_ENUM_CONVERTER(NSURLRequestCachePolicy, (@{
+  @"UseProtocolCachePolicy" : @(NSURLRequestUseProtocolCachePolicy),
+  @"ReloadIgnoringLocalCacheData" : @(NSURLRequestReloadIgnoringLocalCacheData),
+  @"ReturnCacheDataElseLoad" : @(NSURLRequestReturnCacheDataElseLoad),
+  @"ReturnCacheDataDontLoad" : @(NSURLRequestReturnCacheDataDontLoad),
+  @"ReloadIgnoringLocalAndRemoteCacheData" : @(NSURLRequestReloadIgnoringLocalAndRemoteCacheData),
+  @"ReloadIgnoringCacheData" : @(NSURLRequestReloadIgnoringCacheData),
+  @"ReloadRevalidatingCacheData" : @(NSURLRequestReloadRevalidatingCacheData)
+}), NSURLRequestUseProtocolCachePolicy, integerValue)
+
+@end
+
 @implementation RCTHTTPRequestHandler
 {
   NSMapTable *_delegates;
   NSURLSession *_session;
+  NSURLRequestCachePolicy _cachePolicy;
 }
 
 RCT_EXPORT_MODULE()
@@ -31,6 +46,11 @@ RCT_EXPORT_MODULE()
 {
   // if session == nil and delegates != nil, we've been invalidated
   return _session || !_delegates;
+}
+
+- (BOOL)hasNewCachePolicy
+{
+  return _cachePolicy != _session.configuration.requestCachePolicy;
 }
 
 #pragma mark - NSURLRequestHandler
@@ -51,16 +71,16 @@ RCT_EXPORT_MODULE()
                          withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
   // Lazy setup
-  if (!_session && [self isValid]) {
-
-    NSOperationQueue *callbackQueue = [NSOperationQueue new];
+  if ((!_session || [self hasNewCachePolicy]) && [self isValid]) {
+    NSOperationQueue *callbackQueue = _session ? _session.delegateQueue : [NSOperationQueue new];
     callbackQueue.maxConcurrentOperationCount = 1;
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    configuration.requestCachePolicy = _cachePolicy ?: NSURLRequestUseProtocolCachePolicy;
     _session = [NSURLSession sessionWithConfiguration:configuration
                                              delegate:self
                                         delegateQueue:callbackQueue];
 
-    _delegates = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
+    _delegates = _delegates?: [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
                                            valueOptions:NSPointerFunctionsStrongMemory
                                                capacity:0];
   }
@@ -108,6 +128,13 @@ didReceiveResponse:(NSURLResponse *)response
 {
   [[_delegates objectForKey:task] URLRequest:task didCompleteWithError:error];
   [_delegates removeObjectForKey:task];
+}
+
+#pragma mark - JS API
+
+RCT_EXPORT_METHOD(setCachePolicy:(NSURLRequestCachePolicy)cachePolicy)
+{
+  _cachePolicy = cachePolicy;
 }
 
 @end
