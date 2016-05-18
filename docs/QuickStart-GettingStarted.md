@@ -807,8 +807,57 @@ function display(type, value) {
     container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
   event && event.preventDefault();
 }
-var isMac = navigator.platform === 'MacIntel';
-var isWindows = navigator.platform === 'Win32';
-display('os', isMac ? 'mac' : (isWindows ? 'windows' : 'linux'));
-display('platform', isMac ? 'ios' : 'android');
+
+// If we are coming to the page with a hash in it (i.e. from a search, for example), try to get
+// us as close as possible to the correct platform and dev os using the hashtag and block walk up.
+var foundHash = false;
+if (window.location.hash !== '' && window.location.hash !== 'content') { // content is default
+  var hashLinks = document.querySelectorAll('a.hash-link');
+  for (var i = 0; i < hashLinks.length && !foundHash; ++i) {
+    if (hashLinks[i].hash === window.location.hash) {
+      var parent = hashLinks[i].parentElement;
+      while (parent) {
+        if (parent.tagName === 'BLOCK') {
+          var devOS = null;
+          var targetPlatform = null;
+          // Could be more than one target os and dev platform, but just choose some sort of order
+          // of priority here.
+
+          // Dev OS
+          if (parent.className.indexOf('mac') > -1) {
+            devOS = 'mac';
+          } else if (parent.className.indexOf('linux') > -1) {
+            devOS = 'linux';
+          } else if (parent.className.indexOf('windows') > -1) {
+            devOS = 'windows';
+          } else {
+            break; // assume we don't have anything.
+          }
+
+          // Target Platform
+          if (parent.className.indexOf('ios') > -1) {
+            targetPlatform = 'ios';
+          } else if (parent.className.indexOf('android') > -1) {
+            targetPlatform = 'android';
+          } else {
+            break; // assume we don't have anything.
+          }
+          // We would have broken out if both targetPlatform and devOS hadn't been filled.
+          display('os', devOS);
+          display('platform', targetPlatform);      
+          foundHash = true;
+          break;
+        }
+        parent = parent.parentElement;
+      }
+    }
+  }
+}
+// Do the default if there is no matching hash
+if (!foundHash) {
+  var isMac = navigator.platform === 'MacIntel';
+  var isWindows = navigator.platform === 'Win32';
+  display('os', isMac ? 'mac' : (isWindows ? 'windows' : 'linux'));
+  display('platform', isMac ? 'ios' : 'android');
+}
 </script>
