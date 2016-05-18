@@ -183,11 +183,15 @@ var WebView = React.createClass({
   },
 
   componentWillMount: function() {
+    var state = {
+      nativeWebView: requireNativeComponent(this.props.nativeWebView, WebView)
+    };
+    
     if (this.props.startInLoadingState) {
-      this.setState({viewState: WebViewState.LOADING});
+      state.viewState = WebViewState.LOADING;
     }
-
-    this.setState({nativeWebView: requireNativeComponent(this.props.nativeWebView, WebView)});
+    
+    this.setState(state);
   },
 
   render: function() {
