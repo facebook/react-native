@@ -57,6 +57,17 @@ module.exports = function upgrade(args, config) {
             );
             return Promise.resolve();
           }
+          
+          if (semver.satisfies(v, '~0.26.0')) {
+            console.log(
+              chalk.yellow(
+                'React Native 0.26 introduced some breaking changes to the native files on iOS. You can\n' +
+                'perform them manually by checking the release notes or use \'rnpm\' to do it automatically.\n' +
+                'Just run:\n' +
+                '\'npm install -g rnpm && npm install rnpm-plugin-upgrade@0.26 --save-dev\', then run \'rnpm upgrade\''
+              )
+            );
+          }
         } else {
           console.log(
             chalk.yellow(
