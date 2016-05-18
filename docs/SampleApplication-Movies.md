@@ -1,25 +1,20 @@
 ---
-id: tutorial
-title: Tutorial
+id: sample-application-movies
+title: Movie Fetcher
 layout: docs
-category: Quick Start
-permalink: docs/tutorial.html
-next: videos
+category: Sample Applications
+permalink: docs/sample-application-movies.html
+next: sample-application-f8
 ---
 
-## Preface
+## Overview
 
-This tutorial aims to get you up to speed with writing iOS and Android apps using React Native. If you're wondering what React Native is and why Facebook built it, this [blog post](https://code.facebook.com/posts/1014532261909640/react-native-bringing-modern-web-techniques-to-mobile/) explains that.
-
-We assume you have experience writing applications with React. If not, you can learn about it on the [React website](http://facebook.github.io/react/).
-
-### Building a real-world app
-
-This tutorial explains how to build a simple app to get you started. If you're looking for a more advanced tutorial on building a real-world app, check out [makeitopen.com](http://makeitopen.com/).
+In this tutorial we'll be building a simple version of a Movies app that fetches 25 movies that are in theaters and displays them in a `ListView`.
 
 ## Setup
 
-React Native requires the basic setup explained at [React Native Getting Started](docs/getting-started.html#content).
+> This sample application requires the basic setup explained at
+> [React Native Getting Started](docs/quick-start/getting-started.html#content).
 
 After installing these dependencies there are two simple commands to get a React Native project all set up for development.
 
@@ -27,22 +22,17 @@ After installing these dependencies there are two simple commands to get a React
 
     react-native-cli is a command line interface that does the rest of the set up. It’s installable via npm. This will install `react-native` as a command in your terminal. You only ever need to do this once.
 
-2. `react-native init AwesomeProject`
+2. `react-native init SampleAppMovies`
 
-    This command fetches the React Native source code and dependencies and then creates a new Xcode project in `AwesomeProject/iOS/AwesomeProject.xcodeproj` and a gradle project in `AwesomeProject/android/app`.
-
-
-## Overview
-
-In this tutorial we'll be building a simple version of the Movies app that fetches 25 movies that are in theaters and displays them in a ListView.
+    This command fetches the React Native source code and dependencies and then creates a new Xcode project in `SampleAppMovies/iOS/SampleAppMovies.xcodeproj` and a gradle project in `SampleAppMovies/android/app`.
 
 ### Starting the app on iOS
 
-Open this new project (`AwesomeProject/ios/AwesomeProject.xcodeproj`) in Xcode and simply build and run it with `⌘+R`. Doing so will also start a Node server which enables live code reloading. With this you can see your changes by pressing `⌘+R` in the simulator rather than recompiling in Xcode.
+Open this new project (`SampleAppMovies/ios/SampleAppMovies.xcodeproj`) in Xcode and simply build and run it with `⌘+R`. Doing so will also start a Node server which enables live code reloading. With this you can see your changes by pressing `⌘+R` in the simulator rather than recompiling in Xcode.
 
 ### Starting the app on Android
 
-In your terminal navigate into the `AwesomeProject` and run:
+In your terminal navigate into the `SampleAppMovies` and run:
 
     react-native run-android
 
@@ -50,7 +40,11 @@ This will install the generated app on your emulator or device, as well as start
 
 ### Hello World
 
-`react-native init` will generate an app with the name of your project, in this case AwesomeProject. This is a simple hello world app. For iOS, you can edit `index.ios.js` to make changes to the app and then press ⌘+R in the simulator to see the changes. For Android, you can edit `index.android.js` to make changes to the app and press `Reload JS` from the rage shake menu to see the changes.
+`react-native init` will generate an app with the name of your project, in this case `SampleAppMovies`. This is a simple hello world app. For iOS, you can edit `index.ios.js` to make changes to the app and then press ⌘+R in the simulator to see the changes. For Android, you can edit `index.android.js` to make changes to the app and press `Reload JS` from the rage shake menu to see the changes.
+
+## Actual App
+
+Now that we have initialized our React Native project, we can begin creating our Movie application.
 
 ### Mocking data
 
@@ -61,7 +55,6 @@ var MOCKED_MOVIES_DATA = [
   {title: 'Title', year: '2015', posters: {thumbnail: 'http://i.imgur.com/UePbdph.jpg'}},
 ];
 ```
-
 
 ### Render a movie
 
@@ -210,7 +203,7 @@ Go ahead and press `⌘+R` / `Reload JS` and you'll see the updated view.
 
 Fetching data from Rotten Tomatoes's API isn't really relevant to learning React Native so feel free to breeze through this section.
 
-Add the following constants to the top of the file (typically below the imports) to create the REQUEST_URL used to request data with.
+Add the following constants to the top of the file (typically below the imports) to create the `REQUEST_URL`s used to request data with.
 
 ```javascript
 /**
@@ -411,7 +404,7 @@ import {
 
 var REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json';
 
-class AwesomeProject extends Component {
+class SampleAppMovies extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -507,5 +500,5 @@ var styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
+AppRegistry.registerComponent('SampleAppMovies', () => SampleAppMovies);
 ```
