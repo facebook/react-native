@@ -6,7 +6,7 @@
 
 #include <folly/dynamic.h>
 
-#include "Bridge.h"
+#include "NativeToJsBridge.h"
 #include "ModuleRegistry.h"
 #include "NativeModule.h"
 
@@ -22,6 +22,7 @@ struct InstanceCallback {
   virtual void decrementPendingJSCalls() = 0;
   virtual void onNativeException(const std::string& what) = 0;
   virtual ExecutorToken createExecutorToken() = 0;
+  virtual void onExecutorStopped(ExecutorToken) = 0;
 };
 
 class Instance {
@@ -46,21 +47,15 @@ class Instance {
   void callJSFunction(ExecutorToken token, const std::string& module, const std::string& method,
                       folly::dynamic&& params, const std::string& tracingName);
   void callJSCallback(ExecutorToken token, uint64_t callbackId, folly::dynamic&& params);
-  MethodCallResult callSerializableNativeHook(ExecutorToken token, unsigned int moduleId, unsigned int methodId, folly::dynamic&& args);
+  MethodCallResult callSerializableNativeHook(ExecutorToken token, unsigned int moduleId,
+                                              unsigned int methodId, folly::dynamic&& args);
   ExecutorToken getMainExecutorToken();
 
  private:
-  class BridgeCallbackImpl;
-
   void callNativeModules(ExecutorToken token, const std::string& calls, bool isEndOfBatch);
 
-  std::unique_ptr<InstanceCallback> callback_;
-  std::shared_ptr<ModuleRegistry> moduleRegistry_;
-  // TODO #10487027: clean up the ownership of this.
-  std::shared_ptr<MessageQueueThread> jsQueue_;
-  std::unique_ptr<MessageQueueThread> nativeQueue_;
-
-  std::unique_ptr<Bridge> bridge_;
+  std::shared_ptr<InstanceCallback> callback_;
+  std::unique_ptr<NativeToJsBridge> nativeToJsBridge_;
 };
 
 }

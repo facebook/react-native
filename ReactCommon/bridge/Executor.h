@@ -7,26 +7,45 @@
 #include <string>
 #include <vector>
 
+#include <folly/dynamic.h>
+
 #include "JSModulesUnbundle.h"
-
-namespace folly {
-
-struct dynamic;
-
-}
 
 namespace facebook {
 namespace react {
 
-class Bridge;
 class JSExecutor;
 class MessageQueueThread;
+
+struct MethodCallResult {
+  folly::dynamic result;
+  bool isUndefined;
+};
+
+// This interface describes the delegate interface required by
+// Executor implementations to call from JS into native code.
+class ExecutorDelegate {
+ public:
+  virtual ~ExecutorDelegate() {}
+
+  virtual void registerExecutor(std::unique_ptr<JSExecutor> executor,
+                                std::shared_ptr<MessageQueueThread> queue) = 0;
+  virtual std::unique_ptr<JSExecutor> unregisterExecutor(JSExecutor& executor) = 0;
+
+  virtual std::vector<std::string> moduleNames() = 0;
+  virtual folly::dynamic getModuleConfig(const std::string& name) = 0;
+  virtual void callNativeModules(
+    JSExecutor& executor, std::string callJSON, bool isEndOfBatch) = 0;
+  virtual MethodCallResult callSerializableNativeHook(
+    JSExecutor& executor, unsigned int moduleId, unsigned int methodId, folly::dynamic&& args) = 0;
+};
 
 class JSExecutorFactory {
 public:
   virtual std::unique_ptr<JSExecutor> createJSExecutor(
-    Bridge *bridge, std::shared_ptr<MessageQueueThread> jsQueue) = 0;
-  virtual ~JSExecutorFactory() {};
+    std::shared_ptr<ExecutorDelegate> delegate,
+    std::shared_ptr<MessageQueueThread> jsQueue) = 0;
+  virtual ~JSExecutorFactory() {}
 };
 
 // JSExecutor functions sometimes take large strings, on the order of
@@ -143,18 +162,18 @@ public:
                                  std::unique_ptr<const JSBigString> jsonValue) = 0;
   virtual void* getJavaScriptContext() {
     return nullptr;
-  };
+  }
   virtual bool supportsProfiling() {
     return false;
-  };
-  virtual void startProfiler(const std::string &titleString) {};
-  virtual void stopProfiler(const std::string &titleString, const std::string &filename) {};
-  virtual void handleMemoryPressureModerate() {};
+  }
+  virtual void startProfiler(const std::string &titleString) {}
+  virtual void stopProfiler(const std::string &titleString, const std::string &filename) {}
+  virtual void handleMemoryPressureModerate() {}
   virtual void handleMemoryPressureCritical() {
     handleMemoryPressureModerate();
-  };
-  virtual void destroy() {};
-  virtual ~JSExecutor() {};
+  }
+  virtual void destroy() {}
+  virtual ~JSExecutor() {}
 };
 
 } }
