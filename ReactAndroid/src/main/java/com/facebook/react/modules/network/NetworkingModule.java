@@ -69,12 +69,16 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       OkHttpClient client,
       @Nullable List<NetworkInterceptorCreator> networkInterceptorCreators) {
     super(reactContext);
-    mClient = client;
+    
     if (networkInterceptorCreators != null) {
+      OkHttpClient.Builder clientBuilder = client.newBuilder();
       for (NetworkInterceptorCreator networkInterceptorCreator : networkInterceptorCreators) {
-        mClient.networkInterceptors().add(networkInterceptorCreator.create());
+        clientBuilder.addNetworkInterceptor(networkInterceptorCreator.create());
       }
+      client = clientBuilder.build();
     }
+    mClient = client;
+    OkHttpClientProvider.replaceOkHttpClient(client);
     mCookieHandler = new ForwardingCookieHandler(reactContext);
     mCookieJarContainer = (CookieJarContainer) mClient.cookieJar();
     mShuttingDown = false;
@@ -87,7 +91,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * caller does not provide one explicitly
    * @param client the {@link OkHttpClient} to be used for networking
    */
-  public NetworkingModule(
+  /* package */ NetworkingModule(
     ReactApplicationContext context,
     @Nullable String defaultUserAgent,
     OkHttpClient client) {
@@ -119,10 +123,6 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    */
   public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
     this(context, defaultUserAgent, OkHttpClientProvider.getOkHttpClient(), null);
-  }
-
-  public NetworkingModule(ReactApplicationContext reactContext, OkHttpClient client) {
-    this(reactContext, null, client, null);
   }
 
   @Override

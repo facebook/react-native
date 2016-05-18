@@ -1,10 +1,10 @@
 ---
-id: getting-started
+id: quick-start-getting-started
 title: Getting Started
 layout: docs
 category: Quick Start
 permalink: docs/getting-started.html
-next: tutorial
+next: tutorial-core-components
 ---
 
 
