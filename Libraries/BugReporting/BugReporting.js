@@ -22,6 +22,10 @@ type ExtraData = { [key: string]: string };
 type SourceCallback = () => string;
 type DebugData = { extras: ExtraData, files: ExtraData };
 
+function defaultExtras() {
+  BugReporting.addFileSource('react_hierarchy.txt', () => require('dumpReactTree')());
+}
+
 /**
  * A simple class for collecting bug report data. Components can add sources that will be queried when a bug report
  * is created via `collectExtraData`. For example, a list component might add a source that provides the list of rows
@@ -33,13 +37,11 @@ class BugReporting {
   static _fileSources: Map<string, SourceCallback> = new Map();
   static _subscription: ?EmitterSubscription = null;
 
-  /**
-   * `init` is called in `AppRegistry.runApplication`, so you shouldn't have to worry about it.
-   */
-  static init() {
+  static _maybeInit() {
     if (!BugReporting._subscription) {
       BugReporting._subscription = RCTDeviceEventEmitter
           .addListener('collectBugExtraData', BugReporting.collectExtraData, null);
+      defaultExtras();
     }
   }
 
@@ -68,6 +70,7 @@ class BugReporting {
   }
 
   static _addSource(key: string, callback: SourceCallback, source: Map<string, SourceCallback>): {remove: () => void} {
+    BugReporting._maybeInit();
     if (source.has(key)) {
       console.warn(`BugReporting.add* called multiple times for same key '${key}'`);
     }
