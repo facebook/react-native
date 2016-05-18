@@ -382,9 +382,13 @@ namespace ReactNative.DevSupport
             try
             {
                 await _devServerHelper.LaunchDevToolsAsync(token);
-                var executor = new WebSocketJavaScriptExecutor();
-                await executor.ConnectAsync(_devServerHelper.WebsocketProxyUrl, token);
-                var factory = new Func<IJavaScriptExecutor>(() => executor);
+                var factory = new Func<IJavaScriptExecutor>(() =>
+                {
+                    var executor = new WebSocketJavaScriptExecutor();
+                    executor.ConnectAsync(_devServerHelper.WebsocketProxyUrl, token).Wait();
+                    return executor;
+                });
+
                 _reactInstanceCommandsHandler.OnReloadWithJavaScriptDebugger(factory);
                 dismissProgress();
             }
