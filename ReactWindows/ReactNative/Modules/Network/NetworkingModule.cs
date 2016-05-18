@@ -121,8 +121,28 @@ namespace ReactNative.Modules.Network
                 }
                 else if ((formData = data.Value<JArray>("formData")) != null)
                 {
-                    // TODO: (#388) Add support for form data.
-                    throw new NotImplementedException("HTTP handling for FormData not yet implemented.");
+                    if (headerData.ContentType == null)
+                    {
+                        headerData.ContentType = "multipart/form-data";
+                    }
+
+                    var formDataContent = new HttpMultipartFormDataContent();
+                    foreach (var content in formData)
+                    {
+                        var fieldName = content.Value<string>("fieldName");
+
+                        var formDataHeaders = content.Value<JArray>("headers");
+
+                        var stringContent = content.Value<string>("string");
+                        if (stringContent != null)
+                        {
+                            formDataContent.Add(new HttpStringContent(stringContent), fieldName);
+                        }
+                    }
+
+                    request.Content = formDataContent;
+                    // TODO: Check for gzipped body content
+                    // TODO: Issue #383
                 }
             }
 
