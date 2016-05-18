@@ -6,8 +6,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = 'fresco-binary-aar',
-    url = 'mvn:com.facebook.fresco:fresco:aar:0.8.1',
-    sha1 = 'f0a4f04318123e1597514b2abf56b7e66581f3f8',
+    url = 'mvn:com.facebook.fresco:fresco:aar:0.10.0',
+    sha1 = '8576630feea3d08eb681dec389a472623179f84d',
 )
 
 android_prebuilt_aar(
@@ -18,19 +18,31 @@ android_prebuilt_aar(
 
 remote_file(
     name = 'drawee-binary-aar',
-    url = 'mvn:com.facebook.fresco:drawee:aar:0.8.1',
-    sha1 = 'a944015ddf50fdad79302e42a85a351633c24472',
+    url = 'mvn:com.facebook.fresco:drawee:aar:0.10.0',
+    sha1 = 'c594f9c23f844d08ecd4c0e42df40d80767d4b18',
 )
 
 android_library(
   name = 'imagepipeline',
   exported_deps = [
+      ':imagepipeline-base',
       ':imagepipeline-core',
       ':bolts',
   ],
   visibility = ['//ReactAndroid/...',],
 )
 
+android_prebuilt_aar(
+  name = 'imagepipeline-base',
+  aar = ':imagepipeline-base-aar',
+  visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+  name = 'imagepipeline-base-aar',
+  url = 'mvn:com.facebook.fresco:imagepipeline-base:aar:0.10.0',
+  sha1 = '1390f28d0e4f16b0008fed481eb1b107d93f35b8',
+)
 
 android_prebuilt_aar(
     name = 'imagepipeline-core',
@@ -40,8 +52,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = 'imagepipeline-aar',
-    url = 'mvn:com.facebook.fresco:imagepipeline:aar:0.8.1',
-    sha1 = '93fe3e629c03aea8f63dabd80a0e616b0caef65b',
+    url = 'mvn:com.facebook.fresco:imagepipeline:aar:0.10.0',
+    sha1 = 'ecec308b714039dd9e0cf4b7595a427765f43a01',
 )
 
 prebuilt_jar(
@@ -64,18 +76,18 @@ android_prebuilt_aar(
 
 remote_file(
     name = 'fbcore-aar',
-    url = 'mvn:com.facebook.fresco:fbcore:aar:0.8.1',
-    sha1 = 'cc46b3d564139bf63bb41534c7a723ee8119ae5f',
+    url = 'mvn:com.facebook.fresco:fbcore:aar:0.10.0',
+    sha1 = '4650dd9a46064c254e0468bba23804e8f32e6144',
 )
 
 android_prebuilt_aar(
-    name = 'imagepipeline-okhttp',
-    aar = ':imagepipeline-okhttp-binary-aar',
+    name = 'imagepipeline-okhttp3',
+    aar = ':imagepipeline-okhttp3-binary-aar',
     visibility = ['//ReactAndroid/...',],
 )
 
 remote_file(
-    name = 'imagepipeline-okhttp-binary-aar',
-    url = 'mvn:com.facebook.fresco:imagepipeline-okhttp:aar:0.8.1',
-    sha1 = 'd6b16dbaab8b810620347355a425fb2982e33ef8',
+    name = 'imagepipeline-okhttp3-binary-aar',
+    url = 'mvn:com.facebook.fresco:imagepipeline-okhttp3:aar:0.10.0',
+    sha1 = 'a3e95483f116b528bdf2d06f7ff2212cb9b372e2',
 )

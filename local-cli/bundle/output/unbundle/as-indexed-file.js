@@ -67,13 +67,14 @@ function writeBuffers(stream, buffers) {
   });
 }
 
+function nullTerminatedBuffer(contents, encoding) {
+  return Buffer.concat([Buffer(contents, encoding), nullByteBuffer]);
+}
+
 function moduleToBuffer(id, code, encoding) {
   return {
     id,
-    buffer: Buffer.concat([
-      Buffer(code, encoding),
-      nullByteBuffer // create \0-terminated strings
-    ])
+    buffer: nullTerminatedBuffer(code, encoding),
   };
 }
 
@@ -129,7 +130,7 @@ function buildTableAndContents(startupCode, modules, encoding) {
   // - code blob         char[]   null-terminated code strings, starting with
   //                              the startup code
 
-  const startupCodeBuffer = Buffer(startupCode, encoding);
+  const startupCodeBuffer = nullTerminatedBuffer(startupCode, encoding);
   const moduleBuffers = buildModuleBuffers(modules, encoding);
   const table = buildModuleTable(startupCodeBuffer, moduleBuffers);
 

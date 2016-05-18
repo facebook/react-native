@@ -25,14 +25,15 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ws.WebSocket;
-import com.squareup.okhttp.ws.WebSocketCall;
-import com.squareup.okhttp.ws.WebSocketListener;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okhttp3.ws.WebSocket;
+import okhttp3.ws.WebSocketCall;
+import okhttp3.ws.WebSocketListener;
 import okio.Buffer;
-import okio.BufferedSource;
 
 /**
  * A wrapper around WebSocketClient that recognizes RN debugging message format.
@@ -59,11 +60,11 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
       throw new IllegalStateException("JSDebuggerWebSocketClient is already initialized.");
     }
     mConnectCallback = callback;
-    mHttpClient = new OkHttpClient();
-    mHttpClient.setConnectTimeout(10, TimeUnit.SECONDS);
-    mHttpClient.setWriteTimeout(10, TimeUnit.SECONDS);
-    // Disable timeouts for read
-    mHttpClient.setReadTimeout(0, TimeUnit.MINUTES);
+    mHttpClient = new OkHttpClient.Builder()
+      .connectTimeout(10, TimeUnit.SECONDS)
+      .writeTimeout(10, TimeUnit.SECONDS)
+      .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
+      .build();
 
     Request request = new Request.Builder().url(url).build();
     WebSocketCall call = WebSocketCall.create(mHttpClient, request);
@@ -162,10 +163,8 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
           new IllegalStateException("WebSocket connection no longer valid"));
       return;
     }
-    Buffer messageBuffer = new Buffer();
-    messageBuffer.writeUtf8(message);
     try {
-      mWebSocket.sendMessage(WebSocket.PayloadType.TEXT, messageBuffer);
+      mWebSocket.sendMessage(RequestBody.create(WebSocket.TEXT, message));
     } catch (IOException e) {
       triggerRequestFailure(requestID, e);
     }
@@ -188,17 +187,17 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
   }
 
   @Override
-  public void onMessage(BufferedSource payload, WebSocket.PayloadType type) throws IOException {
-    if (type != WebSocket.PayloadType.TEXT) {
-      FLog.w(TAG, "Websocket received unexpected message with payload of type " + type);
+  public void onMessage(ResponseBody response) throws IOException {
+    if (response.contentType() != WebSocket.TEXT) {
+      FLog.w(TAG, "Websocket received unexpected message with payload of type " + response.contentType());
       return;
     }
 
     String message = null;
     try {
-      message = payload.readUtf8();
+      message = response.source().readUtf8();
     } finally {
-      payload.close();
+      response.close();
     }
     Integer replyID = null;
 

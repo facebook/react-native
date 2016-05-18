@@ -207,13 +207,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                                                             scale:imageScale
                                                                        resizeMode:(RCTResizeMode)self.contentMode
                                                                     progressBlock:progressHandler
-                                                                  completionBlock:^(NSError *error, UIImage *image) {
+                                                                  completionBlock:^(NSError *error, UIImage *loadedImage) {
       RCTImageView *strongSelf = weakSelf;
-      if (blurRadius > __FLT_EPSILON__) {
-        // Do this on the background thread to avoid blocking interaction
-        image = RCTBlurredImageWithRadius(image, blurRadius);
-      }
-      dispatch_async(dispatch_get_main_queue(), ^{
+      void (^setImageBlock)(UIImage *) = ^(UIImage *image) {
         if (![source isEqual:strongSelf.source]) {
           // Bail out if source has changed since we started loading
           return;
@@ -234,9 +230,31 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
           }
         }
         if (strongSelf->_onLoadEnd) {
-           strongSelf->_onLoadEnd(nil);
+          strongSelf->_onLoadEnd(nil);
         }
-      });
+      };
+
+      if (blurRadius > __FLT_EPSILON__) {
+        // Blur on a background thread to avoid blocking interaction
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+          UIImage *image = RCTBlurredImageWithRadius(loadedImage, blurRadius);
+          RCTExecuteOnMainThread(^{
+            setImageBlock(image);
+          }, NO);
+        });
+      } else {
+        // No blur, so try to set the image on the main thread synchronously to minimize image
+        // flashing. (For instance, if this view gets attached to a window, then -didMoveToWindow
+        // calls -reloadImage, and we want to set the image synchronously if possible so that the
+        // image property is set in the same CATransaction that attaches this view to the window.)
+        if ([NSThread isMainThread]) {
+          setImageBlock(loadedImage);
+        } else {
+          RCTExecuteOnMainThread(^{
+            setImageBlock(loadedImage);
+          }, NO);
+        }
+      }
     }];
   } else {
     [self clearImage];

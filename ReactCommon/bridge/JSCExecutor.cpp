@@ -184,14 +184,20 @@ void JSCExecutor::initOnJSVMThread() {
   configureJSCForAndroid(m_jscConfig);
   #endif
 
-  auto globalClass = JSClassCreate(&kJSClassDefinitionEmpty);
-  m_context = JSGlobalContextCreateInGroup(nullptr, globalClass);
+  JSClassRef globalClass = nullptr;
+  {
+    SystraceSection s("JSClassCreate");
+    globalClass = JSClassCreate(&kJSClassDefinitionEmpty);
+  }
+  {
+    SystraceSection s("JSGlobalContextCreateInGroup");
+    m_context = JSGlobalContextCreateInGroup(nullptr, globalClass);
+  }
   JSClassRelease(globalClass);
 
   // Add a pointer to ourselves so we can retrieve it later in our hooks
   JSObjectSetPrivate(JSContextGetGlobalObject(m_context), this);
 
-  installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
   installNativeHook<&JSCExecutor::nativeStartWorker>("nativeStartWorker");
   installNativeHook<&JSCExecutor::nativePostMessageToWorker>("nativePostMessageToWorker");
