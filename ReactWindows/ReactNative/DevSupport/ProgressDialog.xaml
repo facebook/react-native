@@ -1,0 +1,28 @@
+﻿<ContentDialog
+    x:Class="ReactNative.DevSupport.ProgressDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ReactNative.DevSupport"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="{x:Bind Path=Heading, Mode=OneTime}"
+    PrimaryButtonText="Dismiss"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <TextBlock Name="MessageTextBlock"
+                   Text="{x:Bind Path=Message, Mode=OneTime}"
+                   HorizontalAlignment="Center"
+                   Margin="0 10 0 0"
+                   Grid.Row="0" />
+        <ProgressRing IsActive="True"
+                      VerticalAlignment="Center" 
+                      HorizontalAlignment="Center"
+                      Grid.Row="1" />
+    </Grid>
+</ContentDialog>

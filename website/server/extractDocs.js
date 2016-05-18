@@ -19,6 +19,7 @@ const slugify = require('../core/slugify');
 const ANDROID_SUFFIX = 'android';
 const CROSS_SUFFIX = 'cross';
 const IOS_SUFFIX = 'ios';
+var WINDOWS_SUFFIX = 'windows';
 
 function endsWith(str, suffix) {
   return str.indexOf(suffix, str.length - suffix.length) !== -1;
@@ -53,6 +54,8 @@ function getPlatformFromPath(filepath) {
     return ANDROID_SUFFIX;
   } else if (endsWith(filepath, 'IOS')) {
     return IOS_SUFFIX;
+  } else if (endsWith(filepath, 'Windows')) {
+    return WINDOWS_SUFFIX;
   }
   return CROSS_SUFFIX;
 }
@@ -66,7 +69,8 @@ function getExamplePaths(componentName, componentPlatform) {
   if (componentPlatform === CROSS_SUFFIX) {
     pathsToCheck.push(
       componentExample + IOS_SUFFIX + '.js',
-      componentExample + ANDROID_SUFFIX + '.js'
+      componentExample + ANDROID_SUFFIX + '.js',
+      componentExample + WINDOWS_SUFFIX + '.js'
     );
   }
   var paths = [];
