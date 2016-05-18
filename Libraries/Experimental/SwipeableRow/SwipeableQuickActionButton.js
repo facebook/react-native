@@ -74,7 +74,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'center',
     width: 76,
   },
   image: {
