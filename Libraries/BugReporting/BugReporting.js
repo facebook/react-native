@@ -11,7 +11,6 @@
  */
 'use strict';
 
-const BugReportingNativeModule = require('NativeModules').BugReporting;
 const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 const Map = require('Map');
 const infoLog = require('infoLog');
@@ -94,6 +93,7 @@ class BugReporting {
       fileData[key] = callback();
     }
     infoLog('BugReporting extraData:', extraData);
+    const BugReportingNativeModule = require('NativeModules').BugReporting;
     BugReportingNativeModule &&
       BugReportingNativeModule.setExtraData &&
       BugReportingNativeModule.setExtraData(extraData, fileData);
