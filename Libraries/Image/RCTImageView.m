@@ -43,6 +43,8 @@ static BOOL RCTShouldReloadImageForSizeChange(CGSize currentSize, CGSize idealSi
 @property (nonatomic, copy) RCTDirectEventBlock onError;
 @property (nonatomic, copy) RCTDirectEventBlock onLoad;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadEnd;
+@property (nonatomic, strong) CAKeyframeAnimation *keyframeAnimation;
+@property (nonatomic, strong) id<NSObject> applicationStateObserver;
 
 @end
 
@@ -56,6 +58,11 @@ static BOOL RCTShouldReloadImageForSizeChange(CGSize currentSize, CGSize idealSi
    * if any.
    */
   RCTImageLoaderCancellationBlock _reloadImageCancellationBlock;
+}
+
+- (void)dealloc
+{
+  [self removeApplicationStateObserver];
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -170,6 +177,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self cancelImageLoad];
   [self.layer removeAnimationForKey:@"contents"];
   self.image = nil;
+  self.keyframeAnimation = nil;
 }
 
 - (void)reloadImage
@@ -207,15 +215,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                                                             scale:imageScale
                                                                        resizeMode:(RCTResizeMode)self.contentMode
                                                                     progressBlock:progressHandler
-                                                                  completionBlock:^(NSError *error, UIImage *loadedImage) {
+                                                                  completionBlock:^(NSError *error, UIImage *image) {
       RCTImageView *strongSelf = weakSelf;
-      void (^setImageBlock)(UIImage *) = ^(UIImage *image) {
+      if (blurRadius > __FLT_EPSILON__) {
+        // Do this on the background thread to avoid blocking interaction
+        image = RCTBlurredImageWithRadius(image, blurRadius);
+      }
+      dispatch_async(dispatch_get_main_queue(), ^{
         if (![source isEqual:strongSelf.source]) {
           // Bail out if source has changed since we started loading
           return;
         }
         if (image.reactKeyframeAnimation) {
           [strongSelf.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
+          strongSelf.keyframeAnimation = image.reactKeyframeAnimation;
+          [strongSelf addApplicationStateObserver];
         } else {
           [strongSelf.layer removeAnimationForKey:@"contents"];
           strongSelf.image = image;
@@ -230,31 +244,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
           }
         }
         if (strongSelf->_onLoadEnd) {
-          strongSelf->_onLoadEnd(nil);
+           strongSelf->_onLoadEnd(nil);
         }
-      };
-
-      if (blurRadius > __FLT_EPSILON__) {
-        // Blur on a background thread to avoid blocking interaction
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-          UIImage *image = RCTBlurredImageWithRadius(loadedImage, blurRadius);
-          RCTExecuteOnMainThread(^{
-            setImageBlock(image);
-          }, NO);
-        });
-      } else {
-        // No blur, so try to set the image on the main thread synchronously to minimize image
-        // flashing. (For instance, if this view gets attached to a window, then -didMoveToWindow
-        // calls -reloadImage, and we want to set the image synchronously if possible so that the
-        // image property is set in the same CATransaction that attaches this view to the window.)
-        if ([NSThread isMainThread]) {
-          setImageBlock(loadedImage);
-        } else {
-          RCTExecuteOnMainThread(^{
-            setImageBlock(loadedImage);
-          }, NO);
-        }
-      }
+      });
     }];
   } else {
     [self clearImage];
@@ -313,6 +305,28 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     });
   } else if (!self.image || self.image == _defaultImage) {
     [self reloadImage];
+  }
+}
+
+- (void)addApplicationStateObserver {
+  if (self.applicationStateObserver != nil) {
+    return;
+  }
+  __weak typeof(self) weakSelf = self;
+  self.applicationStateObserver = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+    __strong typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    if (strongSelf.keyframeAnimation != nil) {
+      [strongSelf.layer addAnimation:strongSelf.keyframeAnimation forKey:@"contents"];
+    }
+  }];
+}
+
+- (void)removeApplicationStateObserver {
+  if (self.applicationStateObserver != nil) {
+    [[NSNotificationCenter defaultCenter] removeObserver:self.applicationStateObserver];
   }
 }
 
