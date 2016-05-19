@@ -12,12 +12,10 @@
 module.exports = function(req, res, next) {
   if (req.url === '/copy-to-clipboard') {
   	var copyText = req.rawBody;
-  	if (process.platform === 'darwin') {
-	  	var proc = require('child_process').spawn('pbcopy'); 
-	  	proc.stdin.write(copyText); 
-	  	proc.stdin.end(); 
+		var cp = require('copy-paste');
+		cp.copy(copyText, function () {
 	    res.end('OK');
-	  }
+		});
   } else {
     next();
   }
