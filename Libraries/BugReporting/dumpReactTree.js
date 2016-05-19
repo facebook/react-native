@@ -45,18 +45,23 @@ function getReactTree() {
 
 function dumpNode(node: Object, identation: number) {
   const data = getReactData(node);
-  if (data.nodeType == 'Text') {
+  if (data.nodeType === 'Text') {
     return indent(identation) + data.text + '\n';
-  } else if (data.nodeType == 'Empty') {
+  } else if (data.nodeType === 'Empty') {
     return '';
   }
   let output = indent(identation) + `<${data.name}`;
-  if (data.nodeType == 'Composite') {
+  if (data.nodeType === 'Composite') {
     for (const propName of Object.getOwnPropertyNames(data.props || {})) {
       if (isNormalProp(propName)) {
-        const value = convertValue(data.props[propName]);
-        if (value) {
-          output += ` ${propName}=${value}`;
+        try {
+          const value = convertValue(data.props[propName]);
+          if (value) {
+            output += ` ${propName}=${value}`;
+          }
+        } catch (e) {
+          const message = `[Failed to get property: ${e}]`;
+          output += ` ${propName}=${message}`;
         }
       }
     }
@@ -67,7 +72,7 @@ function dumpNode(node: Object, identation: number) {
   }
 
   if (childOutput) {
-    output += '>\n' + childOutput + indent(identation) + `</${data.name}>\n`;;
+    output += '>\n' + childOutput + indent(identation) + `</${data.name}>\n`;
   } else {
     output += ' />\n';
   }
@@ -90,11 +95,11 @@ function convertObject(object: Object, depth: number) {
   if (depth >= MAX_DEPTH) {
     return '[...omitted]';
   }
-  let output = '{'
+  let output = '{';
   let first = true;
   for (const key of Object.getOwnPropertyNames(object)) {
     if (!first) {
-      output += ', '
+      output += ', ';
     }
     output += `${key}: ${convertValue(object[key], depth + 1)}`;
     first = false;

@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-react-native",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "Babel preset for React Native applications",
   "main": "index.js",
   "repository": "https://github.com/facebook/react-native/tree/master/babel-preset",
@@ -39,6 +39,7 @@
     "babel-plugin-transform-object-assign": "^6.5.0",
     "babel-plugin-transform-object-rest-spread": "^6.5.0",
     "babel-plugin-transform-react-display-name": "^6.5.0",
+    "babel-plugin-transform-react-jsx-source": "^6.5.0",
     "babel-plugin-transform-react-jsx": "^6.5.0",
     "babel-plugin-transform-regenerator": "^6.5.0",
     "react-transform-hmr": "^1.0.4"

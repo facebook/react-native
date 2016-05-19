@@ -16,9 +16,21 @@ const fs = require('fs');
 const getAssetDataFromName = require('node-haste').getAssetDataFromName;
 const path = require('path');
 
-const stat = Promise.denodeify(fs.stat);
-const readDir = Promise.denodeify(fs.readdir);
-const readFile = Promise.denodeify(fs.readFile);
+const createTimeoutPromise = (timeout) => new Promise((resolve, reject) => {
+  setTimeout(reject, timeout, 'fs operation timeout');
+});
+function timeoutableDenodeify(fsFunc, timeout) {
+  return function raceWrapper(...args) {
+    return new Promise.race([
+      createTimeoutPromise(timeout),
+      Promise.denodeify(fsFunc).apply(this, args)
+    ]);
+  };
+}
+
+const stat = timeoutableDenodeify(fs.stat, 5000);
+const readDir = timeoutableDenodeify(fs.readdir, 5000);
+const readFile = timeoutableDenodeify(fs.readFile, 5000);
 
 const validateOpts = declareOpts({
   projectRoots: {
