@@ -13,6 +13,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.SeekBar;
 
@@ -144,16 +145,22 @@ public class ReactSlider extends SeekBar {
 
   @TargetApi(21)
   public void setProgressColor(Integer value) {
-    setProgressTintList(ColorStateList.valueOf(value));
+    if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP) {
+      setProgressTintList(ColorStateList.valueOf(value));
+    }
   }
 
   @TargetApi(21)
   public void setProgressBackgroundColor(Integer value) {
-    setProgressBackgroundTintList(ColorStateList.valueOf(value));
+    if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP) {
+      setProgressBackgroundTintList(ColorStateList.valueOf(value));
+    }
   }
 
   @TargetApi(21)
   public void setThumbColor(Integer value) {
-    setThumbTintList(ColorStateList.valueOf(value));
+    if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP) {
+      setThumbTintList(ColorStateList.valueOf(value));
+    }
   }
 }
