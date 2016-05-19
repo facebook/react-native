@@ -23,7 +23,7 @@ any knowledge of that fact or requiring any changes to its implementation:</p><d
   &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span><span class="token operator">&gt;</span>
     &lt;Text<span class="token operator">&gt;</span>Press me<span class="token operator">!</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
   &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
-&lt;TouchableOpacity<span class="token operator">&gt;</span></div><p>Let&#x27;s imagine that <code>setNativeProps</code> was not available. One way that we
+&lt;<span class="token operator">/</span>TouchableOpacity<span class="token operator">&gt;</span></div><p>Let&#x27;s imagine that <code>setNativeProps</code> was not available. One way that we
 might implement it with that constraint is to store the opacity value
 in the state, then update that value whenever <code>onPress</code> is fired:</p><div class="prism language-javascript"><span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">return</span> <span class="token punctuation">{</span> myButtonOpacity<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token punctuation">}</span>
