@@ -59,7 +59,6 @@ Object.keys(documentedCommands).forEach(function(command) {
 });
 
 var undocumentedCommands = {
-  'help': [printHelp, ''],
   '--version': [version, ''],
   'init': [printInitWarning, ''],
 };
@@ -80,25 +79,17 @@ function run() {
     : 'setup_env.sh';
   childProcess.execFileSync(path.join(__dirname, setupEnvScript));
 
-  // format to remove dash prefix from command arg (for --help)
-  var name = args[0].replace(/^-{1,2}/g, '');
+  var commandName = args[0];
 
-  var command = commands[name];
+  var command = commands[commandName];
   if (!command) {
     console.error('Command `%s` unrecognized', args[0]);
     printUsage();
     return;
   }
 
-  // user used react-native --help [command]
-  if (name === 'help') {
-    printHelp(args[1]);
-    return;
-  }
-
-  // user used react-native [command] --help
   if (args[1] === '--help') {
-    printHelp(name);
+    printHelp(commandName);
     return;
   }
 
@@ -121,8 +112,8 @@ function printUsage() {
   });
 
   var helpUsage = [
-  '',
-  'For options and command usage: react-native help <command>'
+    '',
+    'For command usage and options: react-native <command> --help'
   ];
 
   console.log([
@@ -145,15 +136,14 @@ function printHelp(commandName) {
   var command = documentedCommands[commandName];
   if (!command) {
     console.error('\nHelp not found for command: `%s`.', commandName);
+    printUsage();
     return;
   }
-
-  var commandDescription = command[1];
 
   console.log([
     '',
     'Command: `' + commandName + '`',
-    'Description: ' + commandDescription,
+    'Description: ' + command[1]
   ].join('\n'));
 
   var args = commandArgs[commandName] || [];
@@ -185,6 +175,8 @@ function printHelp(commandName) {
       })
     ].join('\n'));
   }
+
+  process.exit(0);
 }
 
 // The user should never get here because projects are inited by
