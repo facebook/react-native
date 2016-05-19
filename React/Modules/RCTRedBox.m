@@ -167,16 +167,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     }
   }
   
-  UIPasteboard *pb = [UIPasteboard generalPasteboard];
-  [pb setString:fullStackTrace];
-  
-#if TARGET_IPHONE_SIMULATOR
-  // if running in the simulator, try to get the stack up to the hosting computer's clipboard as
-  // well as the pastboard in the simulator
   if (_actionDelegate && [_actionDelegate respondsToSelector:@selector(redBoxWindow:sendTextToPasteboard:)]) {
     [_actionDelegate redBoxWindow:self sendTextToPasteboard:fullStackTrace];
   }
-#endif
 }
 
 #pragma mark - TableView
@@ -399,6 +392,13 @@ RCT_EXPORT_METHOD(dismiss)
 
 
 - (void)redBoxWindow:(RCTRedBoxWindow *)redBoxWindow sendTextToPasteboard:(NSString *)text {
+
+  // add the text to the local pasteboard on the device.
+  UIPasteboard *pb = [UIPasteboard generalPasteboard];
+  [pb setString:text];
+  
+  // if the bridge is connected, send the text to the packager so it can be added to the desktop
+  // clipboard too
   if (![_bridge.bundleURL.scheme hasPrefix:@"http"]) {
     RCTLogWarn(@"Cannot copy text to clipboard because you're not connected to the packager.");
     return;
