@@ -30,6 +30,7 @@ module.exports = {
   'babel-plugin-transform-object-assign': require('babel-plugin-transform-object-assign'),
   'babel-plugin-transform-object-rest-spread': require('babel-plugin-transform-object-rest-spread'),
   'babel-plugin-transform-react-display-name': require('babel-plugin-transform-react-display-name'),
+  'babel-plugin-transform-react-jsx-source': require('babel-plugin-transform-react-jsx-source'),
   'babel-plugin-transform-react-jsx': require('babel-plugin-transform-react-jsx'),
   'babel-plugin-transform-regenerator': require('babel-plugin-transform-regenerator'),
   'babel-plugin-transform-es2015-for-of': require('babel-plugin-transform-es2015-for-of'),

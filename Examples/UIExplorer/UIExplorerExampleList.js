@@ -27,7 +27,6 @@ const React = require('react');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TextInput = require('TextInput');
-const NavigationContainer = require('NavigationContainer');
 const TouchableHighlight = require('TouchableHighlight');
 const View = require('View');
 const UIExplorerActions = require('./UIExplorerActions');
@@ -56,6 +55,13 @@ class UIExplorerExampleList extends React.Component {
   }) {
 
   }
+
+  static makeRenderable(example: any): ReactClass<any> {
+    return example.examples ?
+      createExamplePage(null, example) :
+      example;
+  }
+
   render(): ?ReactElement {
     const filterText = this.props.filter || '';
     const filterRegex = new RegExp(String(filterText), 'i');
@@ -159,15 +165,6 @@ class UIExplorerExampleList extends React.Component {
     this.props.onNavigate(UIExplorerActions.ExampleAction(exampleKey));
   }
 }
-
-function makeRenderable(example: any): ReactClass<any> {
-  return example.examples ?
-    createExamplePage(null, example) :
-    example;
-}
-
-UIExplorerExampleList = NavigationContainer.create(UIExplorerExampleList);
-UIExplorerExampleList.makeRenderable = makeRenderable;
 
 const styles = StyleSheet.create({
   listContainer: {

@@ -380,6 +380,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   CGRect _lastClippedToRect;
   uint16_t _coalescingKey;
   NSString *_lastEmittedEventName;
+  NSHashTable *_scrollListeners;
 }
 
 @synthesize nativeScrollDelegate = _nativeScrollDelegate;
@@ -399,8 +400,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     _lastClippedToRect = CGRectNull;
 
     _scrollEventThrottle = 0.0;
-    _lastScrollDispatchTime = CACurrentMediaTime();
+    _lastScrollDispatchTime = 0;
     _cachedChildFrames = [NSMutableArray new];
+
+    _scrollListeners = [NSHashTable weakObjectsHashTable];
 
     [self addSubview:_scrollView];
   }
@@ -544,6 +547,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
 {
   if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
+    // Ensure at least one scroll event will fire
+    _allowNextScrollNoMatterWhat = YES;
     [_scrollView setContentOffset:offset animated:animated];
   }
 }
@@ -568,8 +573,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 
 #define RCT_FORWARD_SCROLL_EVENT(call) \
-if ([_nativeScrollDelegate respondsToSelector:_cmd]) { \
-  [_nativeScrollDelegate call]; \
+for (NSObject<UIScrollViewDelegate> *scrollViewListener in _scrollListeners) { \
+  if ([scrollViewListener respondsToSelector:_cmd]) { \
+    [scrollViewListener call]; \
+  } \
 }
 
 #define RCT_SCROLL_EVENT_HANDLER(delegateMethod, eventName) \
@@ -579,10 +586,35 @@ if ([_nativeScrollDelegate respondsToSelector:_cmd]) { \
   RCT_FORWARD_SCROLL_EVENT(delegateMethod:scrollView);      \
 }
 
-RCT_SCROLL_EVENT_HANDLER(scrollViewDidEndScrollingAnimation, onMomentumScrollEnd) //TODO: shouldn't this be onScrollAnimationEnd?
 RCT_SCROLL_EVENT_HANDLER(scrollViewWillBeginDecelerating, onMomentumScrollBegin)
-RCT_SCROLL_EVENT_HANDLER(scrollViewDidEndDecelerating, onMomentumScrollEnd)
 RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
+
+- (void)setNativeScrollDelegate:(NSObject<UIScrollViewDelegate> *)nativeScrollDelegate
+{
+  if (nativeScrollDelegate != _nativeScrollDelegate) {
+    if (_nativeScrollDelegate) {
+      [_scrollListeners removeObject:_nativeScrollDelegate];
+    }
+    if (nativeScrollDelegate) {
+      [_scrollListeners addObject:nativeScrollDelegate];
+    }
+    _nativeScrollDelegate = nativeScrollDelegate;
+  }
+}
+
+- (void)addScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
+{
+  [_scrollListeners addObject:scrollListener];
+}
+
+- (void)removeScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
+{
+  if (scrollListener == _nativeScrollDelegate) {
+    [self setNativeScrollDelegate:nil];
+  } else {
+    [_scrollListeners removeObject:scrollListener];
+  }
+}
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
@@ -725,10 +757,35 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndZooming:scrollView withView:view atScale:scale);
 }
 
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+  // Fire a final scroll event
+  _allowNextScrollNoMatterWhat = YES;
+  [self scrollViewDidScroll:scrollView];
+
+  // Fire the end deceleration event
+  RCT_SEND_SCROLL_EVENT(onMomentumScrollEnd, nil);
+  RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndDecelerating:scrollView);
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
+{
+  // Fire a final scroll event
+  _allowNextScrollNoMatterWhat = YES;
+  [self scrollViewDidScroll:scrollView];
+
+  // Fire the end deceleration event
+  RCT_SEND_SCROLL_EVENT(onMomentumScrollEnd, nil); //TODO: shouldn't this be onScrollAnimationEnd?
+  RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndScrollingAnimation:scrollView);
+}
+
 - (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView
 {
-  if ([_nativeScrollDelegate respondsToSelector:_cmd]) {
-    return [_nativeScrollDelegate scrollViewShouldScrollToTop:scrollView];
+  for (NSObject<UIScrollViewDelegate> *scrollListener in _scrollListeners) {
+    if ([scrollListener respondsToSelector:_cmd] &&
+        ![scrollListener scrollViewShouldScrollToTop:scrollView]) {
+      return NO;
+    }
   }
   return YES;
 }

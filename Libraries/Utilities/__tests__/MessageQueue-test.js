@@ -32,8 +32,7 @@ describe('MessageQueue', () => {
 
   beforeEach(() => {
     queue = new MessageQueue(
-      remoteModulesConfig,
-      localModulesConfig
+      () => ({ remoteModuleConfig: remoteModulesConfig })
     );
 
     queue.registerCallableModule('one', TestModule);

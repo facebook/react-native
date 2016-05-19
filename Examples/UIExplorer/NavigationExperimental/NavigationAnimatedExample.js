@@ -37,10 +37,9 @@ const  {
   Card: NavigationCard,
   Header: NavigationHeader,
   Reducer: NavigationReducer,
-  RootContainer: NavigationRootContainer,
 } = NavigationExperimental;
 
-const NavigationBasicReducer = NavigationReducer.StackReducer({
+const ExampleReducer = NavigationReducer.StackReducer({
   getPushedReducerForAction: (action) => {
     if (action.type === 'push') {
       return (state) => state || {key: action.key};
@@ -58,37 +57,41 @@ const NavigationBasicReducer = NavigationReducer.StackReducer({
 });
 
 class NavigationAnimatedExample extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.state = ExampleReducer();
+  }
+
   componentWillMount() {
     this._renderCard = this._renderCard.bind(this);
     this._renderHeader = this._renderHeader.bind(this);
-    this._renderNavigation = this._renderNavigation.bind(this);
     this._renderScene = this._renderScene.bind(this);
     this._renderTitleComponent = this._renderTitleComponent.bind(this);
+    this._handleAction = this._handleAction.bind(this);
   }
+
+  _handleAction(action): boolean {
+    if (!action) {
+      return false;
+    }
+    const newState = ExampleReducer(this.state, action);
+    if (newState === this.state) {
+      return false;
+    }
+    this.setState(newState);
+    return true;
+  }
+
+  handleBackAction(): boolean {
+    return this._handleAction({ type: 'BackAction', });
+  }
+
   render() {
     return (
-      <NavigationRootContainer
-        reducer={NavigationBasicReducer}
-        ref={navRootContainer => { this.navRootContainer = navRootContainer; }}
-        persistenceKey="NavigationAnimExampleState"
-        renderNavigation={this._renderNavigation}
-      />
-    );
-  }
-  handleBackAction() {
-    return (
-      this.navRootContainer &&
-      this.navRootContainer.handleNavigation(NavigationRootContainer.getBackAction())
-    );
-  }
-  _renderNavigation(navigationState, onNavigate) {
-    if (!navigationState) {
-      return null;
-    }
-    return (
       <NavigationAnimatedView
-        navigationState={navigationState}
+        navigationState={this.state}
         style={styles.animatedView}
+        onNavigate={this._handleAction}
         renderOverlay={this._renderHeader}
         applyAnimation={(pos, navState) => {
           Animated.timing(pos, {toValue: navState.index, duration: 500}).start();

@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 'use strict';
 
 jest
@@ -55,7 +64,7 @@ describe('XMLHttpRequestBase', function(){
     });
 
 	it('should call ontimeout function when the request times out', function(){
-		xhr._didCompleteResponse(1, 'Timeout', true);
+		xhr.__didCompleteResponse(1, 'Timeout', true);
 
 		expect(xhr.readyState).toBe(xhr.DONE);
 
@@ -69,7 +78,7 @@ describe('XMLHttpRequestBase', function(){
 	});
 
 	it('should call onerror function when the request times out', function(){
-		xhr._didCompleteResponse(1, 'Generic error');
+		xhr.__didCompleteResponse(1, 'Generic error');
 
 		expect(xhr.readyState).toBe(xhr.DONE);
 
@@ -85,7 +94,7 @@ describe('XMLHttpRequestBase', function(){
 	});
 
 	it('should call onload function when there is no error', function(){
-		xhr._didCompleteResponse(1, null);
+		xhr.__didCompleteResponse(1, null);
 
 		expect(xhr.readyState).toBe(xhr.DONE);
 
@@ -105,7 +114,7 @@ describe('XMLHttpRequestBase', function(){
 		var handleProgress = jest.fn();
 		xhr.upload.addEventListener('progress', handleProgress);
 
-		xhr._didUploadProgress(1, 42, 100);
+		xhr.__didUploadProgress(1, 42, 100);
 
 		expect(xhr.upload.onprogress.mock.calls.length).toBe(1);
 		expect(handleProgress.mock.calls.length).toBe(1);

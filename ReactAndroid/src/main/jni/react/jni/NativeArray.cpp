@@ -2,7 +2,7 @@
 
 #include "NativeArray.h"
 
-#include <jni/fbjni.h>
+#include <fb/fbjni.h>
 #include <folly/json.h>
 
 namespace facebook {

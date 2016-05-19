@@ -12,17 +12,29 @@
 // Disable YellowBox so we do not have to mock its dependencies
 console.disableYellowBox = true;
 
-// Include modules used by integration tests
-require('ScrollViewTestModule');
+// Include callable JS modules first, in case one of the other ones below throws
+require('ProgressBarTestModule');
+require('ViewRenderingTestModule');
+
 require('PickerAndroidTestModule');
+require('CatalystRootViewTestModule');
+require('DatePickerDialogTestModule');
+require('ScrollViewTestModule');
+require('SwipeRefreshLayoutTestModule');
+require('TextInputTestModule');
+require('TimePickerDialogTestModule');
 
 // Define catalyst test apps used in integration tests
 var AppRegistry = require('AppRegistry');
 
 var apps = [
 {
-  appKey: 'ScrollViewTestApp',
-  component: () => require('ScrollViewTestModule').ScrollViewTestApp,
+  appKey: 'CatalystRootViewTestApp',
+  component: () => require('CatalystRootViewTestModule').CatalystRootViewTestApp
+},
+{
+  appKey: 'DatePickerDialogTestApp',
+  component: () => require('DatePickerDialogTestModule').DatePickerDialogTestApp
 },
 {
   appKey: 'HorizontalScrollViewTestApp',
@@ -32,7 +44,29 @@ var apps = [
   appKey: 'PickerAndroidTestApp',
   component: () => require('PickerAndroidTestModule').PickerAndroidTestApp,
 },
+{
+  appKey: 'ScrollViewTestApp',
+  component: () => require('ScrollViewTestModule').ScrollViewTestApp,
+},
+{
+  appKey: 'SwipeRefreshLayoutTestApp',
+  component: () => require('SwipeRefreshLayoutTestModule').SwipeRefreshLayoutTestApp
+},
+{
+  appKey: 'TextInputTestApp',
+  component: () => require('TextInputTestModule').TextInputTestApp
+},
+{
+  appKey: 'TestIdTestApp',
+  component: () => require('TestIdTestModule').TestIdTestApp
+},
+{
+  appKey: 'TimePickerDialogTestApp',
+  component: () => require('TimePickerDialogTestModule').TimePickerDialogTestApp
+},
+
 ];
+
 
 module.exports = apps;
 AppRegistry.registerConfig(apps);

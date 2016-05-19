@@ -48,6 +48,7 @@ elif THIS_IS_FBOBJC:
       ],
       **kwargs_add(
         kwargs,
+        preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS,
         deps = [
           '//xplat/folly:molly',
         ]
@@ -57,6 +58,7 @@ elif THIS_IS_FBOBJC:
 LOCAL_HEADERS = [
   'JSCTracing.h',
   'JSCLegacyProfiler.h',
+  'JSCLegacyTracing.h',
   'JSCMemory.h',
   'JSCPerfStats.h',
 ]

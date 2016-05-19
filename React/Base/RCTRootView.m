@@ -62,7 +62,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   RCTAssert(bridge, @"A bridge instance is required to create an RCTRootView");
   RCTAssert(moduleName, @"A moduleName is required to create an RCTRootView");
 
-  RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTRootView init]", nil);
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTRootView init]", nil);
 
   if ((self = [super initWithFrame:CGRectZero])) {
 
@@ -98,7 +98,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     [self showLoadingView];
   }
 
-  RCT_PROFILE_END_EVENT(0, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
 
   return self;
 }

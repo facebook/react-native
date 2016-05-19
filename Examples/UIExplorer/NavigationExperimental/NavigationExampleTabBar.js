@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -13,24 +20,20 @@
 */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
-  NavigationExperimental,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} = ReactNative;
+const NavigationExperimental = require('NavigationExperimental');
+const React = require('react');
+const StyleSheet = require('StyleSheet');
+const Text = require('Text');
+const TouchableOpacity = require('TouchableOpacity');
+const View = require('View');
 const {
-  Container: NavigationContainer,
   Reducer: NavigationReducer,
 } = NavigationExperimental;
 const {
   JumpToAction,
 } = NavigationReducer.TabsReducer;
 
-var NavigationExampleTabBar = React.createClass({
+const NavigationExampleTabBar = React.createClass({
   render: function() {
     return (
       <View style={styles.tabBar}>
@@ -39,7 +42,7 @@ var NavigationExampleTabBar = React.createClass({
     );
   },
   _renderTab: function(tab, index) {
-    var textStyle = [styles.tabButtonText];
+    const textStyle = [styles.tabButtonText];
     if (this.props.index === index) {
       textStyle.push(styles.selectedTabButtonText);
     }
@@ -57,8 +60,6 @@ var NavigationExampleTabBar = React.createClass({
     );
   },
 });
-
-NavigationExampleTabBar = NavigationContainer.create(NavigationExampleTabBar);
 
 const styles = StyleSheet.create({
   tabBar: {

@@ -13,6 +13,12 @@ Value::Value(JSContextRef context, JSValueRef value) :
 {
 }
 
+Value::Value(JSContextRef context, JSStringRef str) :
+  m_context(context),
+  m_value(JSValueMakeString(context, str))
+{
+}
+
 Value::Value(Value&& other) :
   m_context(other.m_context),
   m_value(other.m_value)

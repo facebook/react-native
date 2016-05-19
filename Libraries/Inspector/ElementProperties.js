@@ -20,6 +20,8 @@ var Text = require('Text');
 var TouchableHighlight = require('TouchableHighlight');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
+var {SourceCode} = require('NativeModules');
+var {fetch} = require('fetch');
 
 var flattenStyle = require('flattenStyle');
 var mapWithSeparator = require('mapWithSeparator');
@@ -32,11 +34,31 @@ var ElementProperties = React.createClass({
       PropTypes.array,
       PropTypes.number,
     ]),
+    source: PropTypes.shape({
+      fileName: PropTypes.string,
+      lineNumber: PropTypes.number,
+    }),
   },
 
   render: function() {
     var style = flattenStyle(this.props.style);
     var selection = this.props.selection;
+    var openFileButton;
+    var source = this.props.source;
+    var {fileName, lineNumber} = source || {};
+    if (fileName && lineNumber) {
+      var parts = fileName.split('/');
+      var fileNameShort = parts[parts.length - 1];
+      openFileButton = (
+        <TouchableHighlight
+          style={styles.openButton}
+          onPress={this._openFile.bind(null, fileName, lineNumber)}>
+          <Text style={styles.openButtonTitle} numberOfLines={1}>
+            {fileNameShort}:{lineNumber}
+          </Text>
+        </TouchableHighlight>
+      );
+    }
     // Without the `TouchableWithoutFeedback`, taps on this inspector pane
     // would change the inspected element to whatever is under the inspector
     return (
@@ -63,13 +85,26 @@ var ElementProperties = React.createClass({
             )}
           </View>
           <View style={styles.row}>
-            <StyleInspector style={style} />
+            <View style={styles.col}>
+              <StyleInspector style={style} />
+              {openFileButton}
+            </View>
             <BoxInspector style={style} frame={this.props.frame} />
           </View>
         </View>
       </TouchableWithoutFeedback>
     );
-  }
+  },
+
+  _openFile: function(fileName: string, lineNumber: number) {
+    var match = SourceCode.scriptURL && SourceCode.scriptURL.match(/^https?:\/\/.*?\//);
+    var baseURL = match ? match[0] : 'http://localhost:8081/';
+
+    fetch(baseURL + 'open-stack-frame', {
+      method: 'POST',
+      body: JSON.stringify({file: fileName, lineNumber}),
+    });
+  },
 });
 
 var styles = StyleSheet.create({
@@ -101,6 +136,9 @@ var styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  col: {
+    flex: 1,
+  },
   info: {
     padding: 10,
   },
@@ -108,6 +146,17 @@ var styles = StyleSheet.create({
     color: 'white',
     fontSize: 9,
   },
+  openButton: {
+    padding: 10,
+    backgroundColor: '#000',
+    marginVertical: 5,
+    marginRight: 5,
+    borderRadius: 2,
+  },
+  openButtonTitle: {
+    color: 'white',
+    fontSize: 8,
+  }
 });
 
 module.exports = ElementProperties;

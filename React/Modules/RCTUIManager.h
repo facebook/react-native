@@ -16,6 +16,11 @@
 #import "RCTRootView.h"
 
 /**
+ * UIManager queue
+ */
+RCT_EXTERN dispatch_queue_t RCTGetUIManagerQueue(void);
+
+/**
  * Default name for the UIManager queue
  */
 RCT_EXTERN char *const RCTUIManagerQueueName;

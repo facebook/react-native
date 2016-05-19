@@ -79,6 +79,12 @@ var featured = [
     author: 'Helium',
   },
   {
+    name: 'li.st',
+    icon: 'https://lh3.googleusercontent.com/tXt0HgJ7dCgOnuQ-lQr1P7E57mnOYfwXhRsV9lGcPwHPVvrDAN6YmpLVFgy88qKrkFI=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=st.li.listapp',
+    author: 'li.st + Exponent',
+  },
+  {
     name: 'Lrn',
     icon: 'http://is4.mzstatic.com/image/pf/us/r30/Purple1/v4/41/a9/e9/41a9e9b6-7801-aef7-2400-2eca14923321/mzl.adyswxad.png',
     link: 'https://itunes.apple.com/us/app/lrn-learn-to-code-at-your/id1019622677',
@@ -205,7 +211,7 @@ var featured = [
     linkAppStore: 'https://itunes.apple.com/cn/app/feng-niao-zhong-bao-jian-zhi/id1061034377?l=en&mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=me.ele.crowdsource',
     author: 'Eleme',
-  },
+  }
 ];
 
 var apps = [
@@ -321,6 +327,12 @@ var apps = [
     link: 'https://itunes.apple.com/us/app/choke-rap-battle-with-friends/id1077937445?ls=1&mt=8',
     author: 'Henry Kirkness',
   },
+  {
+    name: 'clapit',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple60/v4/1a/42/5b/1a425b56-848a-91f5-8078-9f5473c9021f/icon350x350.png',
+    link: 'https://itunes.apple.com/us/app/clapit/id1062124740?mt=8',
+    author: 'Refined Edge Solutions, LLC'
+  }, 
   {
     name: 'Codementor - Live 1:1 Expert Developer Help',
     icon: 'http://a1.mzstatic.com/us/r30/Purple3/v4/db/cf/35/dbcf3523-bac7-0f54-c6a8-a80bf4f43c38/icon175x175.jpeg',
@@ -615,14 +627,21 @@ var apps = [
     author: 'Impronta Advance',
   },
   {
+    name: 'Nabava.net',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple18/v4/85/ef/4d/85ef4d52-f752-c059-48c1-baa507d1f936/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/bm/app/nabava.net-usporedi-cijene/id1100660049?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.nabava_net',
+    author: 'Ars Futura'
+  },
+  {
     name: 'Nalathe Kerala',
     icon: 'https://lh3.googleusercontent.com/5N0WYat5WuFbhi5yR2ccdbqmiZ0wbTtKRG9GhT3YK7Z-qRvmykZyAgk0HNElOxD2JOPr=w300-rw',
     link: 'https://play.google.com/store/apps/details?id=com.rhyble.nalathekerala',
     author: 'Rhyble',
   },
   {
-    name: 'New Music - keep track of the latest album releases',
-    icon: 'http://a4.mzstatic.com/us/r30/Purple49/v4/6f/4f/39/6f4f39db-e0ca-c80a-73e7-68830675e11b/icon175x175.png',
+    name: 'New Music - listen to recent albums, EPs & singles',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple60/v4/fa/d9/be/fad9be3d-474c-4380-6391-37f234a81901/icon175x175.png',
     link: 'https://itunes.apple.com/app/new-music-keep-track-latest/id1104646834',
     author: 'Alexey Ledak',
   },
@@ -670,10 +689,35 @@ var apps = [
     author: 'ProjectSeptember.com',
   },
   {
+    name: 'QQ',
+    icon: 'http://pp.myapp.com/ma_icon/0/icon_6633_1461768893/96',
+    link: 'http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.mobileqq',
+    author: '邱俊',
+  },
+  {
+    name: 'QQ空间',
+    icon: 'http://pp.myapp.com/ma_icon/0/icon_9959_1460036593/96',
+    link: 'http://android.myapp.com/myapp/detail.htm?apkName=com.qzone',
+    author: '薛丰',
+  },
+  {
+    name: 'QQ音乐',
+    icon: 'http://pp.myapp.com/ma_icon/0/icon_6259_1462429453/96',
+    link: 'http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.qqmusic',
+    author: '石玉磊',
+  },
+  {
     name: 'Raindrop.io',
     icon: 'http://a5.mzstatic.com/us/r30/Purple3/v4/f0/a4/57/f0a4574e-4a59-033f-05ff-5c421f0a0b00/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/raindrop.io-keep-your-favorites/id1021913807',
     author: 'Mussabekov Rustem',
+  },
+  {
+    name: 'Reach24',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple49/v4/35/0e/c8/350ec8b4-c725-4b03-3e9e-131b85e72166/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/reach24x7/id962380755?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.vantage.reachtwo&hl=en',
+    author: 'Spritle Software',
   },
   {
     name: 'ReactTo36',
@@ -740,6 +784,18 @@ var apps = [
     author: 'Dobbit Co., Ltd.'
   },
   {
+    name: 'SAY',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple30/v4/ee/d8/b3/eed8b3e5-c55d-bc97-7228-2bfb4323ddef/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/id1069693851',
+    author: 'beijing qingfengyun Technology Co., Ltd.',
+  },
+  {
+    name: 'ShareWis',
+    icon: 'https://s3-ap-northeast-1.amazonaws.com/sw-misc/sharewis3_app.png',
+    link: 'https://itunes.apple.com/jp/app/id585517208',
+    author: 'ShareWis Inc.'
+  },
+  {
     name: 'sneat: réservez les meilleurs restaurants de Paris',
     icon: 'http://a3.mzstatic.com/eu/r30/Purple49/v4/71/71/df/7171df47-6e03-8619-19a8-07f52186b0ed/icon175x175.jpeg',
     link: 'https://itunes.apple.com/fr/app/sneat-reservez-les-meilleurs/id1062510079?l=en&mt=8',
@@ -750,6 +806,19 @@ var apps = [
     icon: 'https://lh3.googleusercontent.com/11AuzaeCnxrRnIp1E_a_6WWiQIRRoWhrvFr20eCRJX4ZMW6O3tGjZLiUw3thKUgGaC8X=w300',
     link: 'https://play.google.com/store/apps/details?id=com.SoftwareInterview',
     author: 'Andrew F. Ly',
+  },
+  {
+    name: 'Spatula',
+    icon: 'https://lh3.googleusercontent.com/26xtcDsloLCAOpqgH_87sDxaSJsLuSN--oj-z5Frcdsaq4ta2GQlktF5ktTNWrRHyqo=w300-rw',
+    linkAppStore: 'https://itunes.apple.com/us/app/spatula/id1090496189?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.usespatula',
+    author: 'Kushal Dave'
+  },
+  {
+    name: 'Splash: On-Demand Auto Detailing',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple30/v4/c3/14/74/c314748f-ff16-c7ec-77c5-1a84657d9154/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/splash-on-demand-auto-detailing/id1111109177',
+    author: 'Alex Leventer'
   },
   {
     name: 'Spero for Cancer',
@@ -821,6 +890,13 @@ var apps = [
     author: 'Victor Delgado',
   },
   {
+    name: 'Vorterix',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple49/v4/3a/f0/b4/3af0b475-f0e8-e81d-eb38-1ec1dfa9b2f4/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/ar/app/vorterix/id577990518?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.vorterix',
+    author: 'Dift & underscope.io',
+  },
+  {
     name: 'WEARVR',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple69/v4/4f/5a/28/4f5a2876-9530-ef83-e399-c5ef5b2dab80/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/gb/app/wearvr/id1066288171?mt=8',
@@ -838,6 +914,12 @@ var apps = [
     icon: 'http://a4.mzstatic.com/us/r30/Purple49/v4/8f/1c/21/8f1c2158-c7fb-1bbb-94db-e77b867aad1a/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/whammy/id899759777',
     author: 'Play Company',
+  },
+  {
+    name: 'Whisky Journal',
+    icon: 'http://cdn.whiskyjournal.co/files/icon350x350.png',
+    link: 'https://itunes.apple.com/au/app/whiskyjournal/id1097713368',
+    author: 'Matt Mcnamee',
   },
   {
     name: 'WOOP',
@@ -909,24 +991,23 @@ var apps = [
     author: 'Hongbeibang'
   },
   {
-    name: 'Spatula',
-    icon: 'https://lh3.googleusercontent.com/26xtcDsloLCAOpqgH_87sDxaSJsLuSN--oj-z5Frcdsaq4ta2GQlktF5ktTNWrRHyqo=w300-rw',
-    linkAppStore: 'https://itunes.apple.com/us/app/spatula/id1090496189?ls=1&mt=8',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.usespatula',
-    author: 'Kushal Dave'
-  },
-  {
-    name: 'ShareWis',
-    icon: 'https://s3-ap-northeast-1.amazonaws.com/sw-misc/sharewis3_app.png',
-    link: 'https://itunes.apple.com/jp/app/id585517208',
-    author: 'ShareWis Inc.'
-  },
-  {
     name: '找找',
     icon: 'https://lh3.googleusercontent.com/H0SILVHcDUxSMoSQwMb2QYtLjTBCqvK5ZEjOEwKQQ-2qnRV6Hd9Hn-gtSGPaoIOPwA=w300-rw',
     link: 'https://play.google.com/store/apps/details?id=com.biideal.biichat',
     author: 'biideal Inc.'
-  }
+  },
+  {
+    name: '饿小闲',
+    icon: 'https://xiaoxian.ele.me/download/images/share_page/ic_launcher.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/e-xiao-xian/id1092025196',
+    author: 'Eleme',
+  },
+  {
+    name: '全民K歌',
+    icon: 'http://pp.myapp.com/ma_icon/0/icon_10966186_1460087288/96',
+    link: 'http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.karaoke',
+    author: '石玉磊',
+  },
 ];
 
 var AppList = React.createClass({

@@ -100,15 +100,22 @@ function buildBabelConfig(filename, options) {
 function transform(src, filename, options) {
   options = options || {};
 
-  const babelConfig = buildBabelConfig(filename, options);
-  const result = babel.transform(src, babelConfig);
+  const OLD_BABEL_ENV = process.env.BABEL_ENV;
+  process.env.BABEL_ENV = options.dev ? 'development' : 'production';
 
-  return {
-    ast: result.ast,
-    code: result.code,
-    map: result.map,
-    filename: filename,
-  };
+  try {
+    const babelConfig = buildBabelConfig(filename, options);
+    const result = babel.transform(src, babelConfig);
+
+    return {
+      ast: result.ast,
+      code: result.code,
+      map: result.map,
+      filename: filename,
+    };
+  } finally {
+    process.env.BABEL_ENV = OLD_BABEL_ENV;
+  }
 }
 
 module.exports = function(data, callback) {

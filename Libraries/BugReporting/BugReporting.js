@@ -13,11 +13,18 @@
 
 const BugReportingNativeModule = require('NativeModules').BugReporting;
 const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const Map = require('Map');
+const infoLog = require('infoLog');
 
-import type {EmitterSubscription} from 'EventEmitter';
+import type EmitterSubscription from 'EmitterSubscription';
 
 type ExtraData = { [key: string]: string };
 type SourceCallback = () => string;
+type DebugData = { extras: ExtraData, files: ExtraData };
+
+function defaultExtras() {
+  BugReporting.addFileSource('react_hierarchy.txt', () => require('dumpReactTree')());
+}
 
 /**
  * A simple class for collecting bug report data. Components can add sources that will be queried when a bug report
@@ -26,17 +33,15 @@ type SourceCallback = () => string;
  * returned by `addSource` when they are unmounted.
  */
 class BugReporting {
+  static _extraSources: Map<string, SourceCallback> = new Map();
+  static _fileSources: Map<string, SourceCallback> = new Map();
+  static _subscription: ?EmitterSubscription = null;
 
-  static _sources: Map<string, SourceCallback> = new Map();
-  static _subscription: EmitterSubscription = null;
-
-  /**
-   * `init` is called in `AppRegistry.runApplication`, so you shouldn't have to worry about it.
-   */
-  static init() {
+  static _maybeInit() {
     if (!BugReporting._subscription) {
       BugReporting._subscription = RCTDeviceEventEmitter
           .addListener('collectBugExtraData', BugReporting.collectExtraData, null);
+      defaultExtras();
     }
   }
 
@@ -49,11 +54,28 @@ class BugReporting {
    * Conflicts trample with a warning.
    */
   static addSource(key: string, callback: SourceCallback): {remove: () => void} {
-    if (BugReporting._sources.has(key)) {
-      console.warn(`BugReporting.addSource called multiple times for same key '${key}'`);
+    return this._addSource(key, callback, BugReporting._extraSources);
+  }
+
+  /**
+   * Maps a string key to a simple callback that should return a string payload to be attached
+   * to a bug report. Source callbacks are called when `collectExtraData` is called.
+   *
+   * Returns an object to remove the source when the component unmounts.
+   *
+   * Conflicts trample with a warning.
+   */
+  static addFileSource(key: string, callback: SourceCallback): {remove: () => void} {
+    return this._addSource(key, callback, BugReporting._fileSources);
+  }
+
+  static _addSource(key: string, callback: SourceCallback, source: Map<string, SourceCallback>): {remove: () => void} {
+    BugReporting._maybeInit();
+    if (source.has(key)) {
+      console.warn(`BugReporting.add* called multiple times for same key '${key}'`);
     }
-    BugReporting._sources.set(key, callback);
-    return {remove: () => { BugReporting._sources.delete(key); }};
+    source.set(key, callback);
+    return {remove: () => { source.delete(key); }};
   }
 
   /**
@@ -62,16 +84,21 @@ class BugReporting {
    * If available, this will call `NativeModules.BugReporting.setExtraData(extraData)`
    * after collecting `extraData`.
    */
-  static collectExtraData(): ExtraData {
+  static collectExtraData(): DebugData {
     const extraData: ExtraData = {};
-    for (const [key, callback] of BugReporting._sources) {
+    for (const [key, callback] of BugReporting._extraSources) {
       extraData[key] = callback();
     }
-    console.log('BugReporting extraData:', extraData);
+    const fileData: ExtraData = {};
+    for (const [key, callback] of BugReporting._fileSources) {
+      fileData[key] = callback();
+    }
+    infoLog('BugReporting extraData:', extraData);
     BugReportingNativeModule &&
       BugReportingNativeModule.setExtraData &&
-      BugReportingNativeModule.setExtraData(extraData);
-    return extraData;
+      BugReportingNativeModule.setExtraData(extraData, fileData);
+
+    return { extras: extraData, files: fileData };
   }
 }
 

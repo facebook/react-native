@@ -5,7 +5,7 @@ SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
 
 DEPS = [
   FBGLOGINIT_TARGET,
-  '//native/jni:jni',
+  '//native/fb:fb',
   '//native/third-party/android-ndk:android',
   '//xplat/folly:molly',
 ]
