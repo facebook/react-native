@@ -200,14 +200,12 @@ class EventEmitter {
    *
    */
   removeListener(eventType: String, listener) {
-    var subscriptions = this._subscriber.getSubscriptionsForType(eventType);
+    const subscriptions: ?[EmitterSubscription] = (this._subscriber.getSubscriptionsForType(eventType): any);
     if (subscriptions) {
-      var keys = Object.keys(subscriptions);
-      for (var ii = 0; ii < keys.length; ii++) {
-        var key = keys[ii];
-        var subscription = subscriptions[key];
+      for (let i = 0, l = subscriptions.length; i < l; i++) {
+        const subscription = subscriptions[i];
 
-        // Remove the subscription if it still exists and
+        // The subscription may have been removed during this event loop.
         // its listener matches the listener in method parameters
         if (subscription && subscription.listener === listener) {
           subscription.remove();
