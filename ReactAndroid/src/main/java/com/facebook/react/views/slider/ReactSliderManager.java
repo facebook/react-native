@@ -19,6 +19,7 @@ import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -27,6 +28,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+
 
 /**
  * Manages instances of {@code ReactSlider}.
@@ -147,6 +149,28 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
   public void setStep(ReactSlider view, double value) {
     view.setStep(value);
   }
+
+  @ReactProp(name = "thumbImage")
+  public void setThumbImage(ReactSlider view,ReadableMap value) {
+    view.setThumbImage(value);
+  }
+
+  @ReactProp(name = "progressColor",customType = "Color")
+  public void setProgressColor(ReactSlider view,Integer value) {
+    view.setProgressColor(value);
+  }
+
+  @ReactProp(name = "progressBackgroundColor",customType = "Color")
+  public void setProgressBackgroundColor(ReactSlider view,Integer value) {
+    view.setProgressBackgroundColor(value);
+  }
+
+  @ReactProp(name = "thumbColor",customType = "Color")
+  public void setThumbColor(ReactSlider view,Integer value) {
+    view.setThumbColor(value);
+  }
+
+
 
   @Override
   protected void addEventEmitters(final ThemedReactContext reactContext, final ReactSlider view) {

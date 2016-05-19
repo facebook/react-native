@@ -127,6 +127,26 @@ var Slider = React.createClass({
      * Used to locate this view in UI automation tests.
      */
     testID: PropTypes.string,
+
+    /**
+     * The color used for the progress
+     * @platform android >=21
+     */
+    progressColor: PropTypes.string,
+
+    /**
+     * The color used for the progressBackgroundColor
+     * @platform android >=21
+     */
+    progressBackgroundColor: PropTypes.string,
+
+    /**
+     * The color used for the thumbColor
+     * @platform android >=21
+     */
+    thumbColor: PropTypes.string,
+
+
   },
 
   getDefaultProps: function() : any {

@@ -167,4 +167,30 @@ exports.examples = [
       );
     }
   },
+  {
+    title: 'Custom thumb image',
+    platform: 'android',
+    render(): ReactElement {
+      return <SliderExample thumbImage={require('image!slider')} />;
+    }
+  },
+  {
+    title: 'Custom thumb color',
+    platform: 'android',
+    render(): ReactElement {
+      return <SliderExample thumbColor={'blue'} />;
+    }
+  },
+  {
+    title: 'Custom progress/progressBackgroundColor track tint color',
+    platform: 'android',
+    render(): ReactElement {
+      return (
+        <SliderExample
+          progressColor={'red'}
+          progressBackgroundColor={'green'}
+        />
+      );
+    }
+  },
 ];
