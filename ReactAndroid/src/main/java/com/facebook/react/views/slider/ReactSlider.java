@@ -145,21 +145,21 @@ public class ReactSlider extends SeekBar {
 
   @TargetApi(21)
   public void setProgressColor(Integer value) {
-    if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       setProgressTintList(ColorStateList.valueOf(value));
     }
   }
 
   @TargetApi(21)
   public void setProgressBackgroundColor(Integer value) {
-    if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       setProgressBackgroundTintList(ColorStateList.valueOf(value));
     }
   }
 
   @TargetApi(21)
   public void setThumbColor(Integer value) {
-    if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       setThumbTintList(ColorStateList.valueOf(value));
     }
   }
