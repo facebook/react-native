@@ -14,7 +14,6 @@
 #include <folly/Conv.h>
 #include <sys/time.h>
 
-#include "Bridge.h"
 #include "JSCHelpers.h"
 #include "Platform.h"
 #include "SystraceSection.h"
@@ -107,29 +106,51 @@ static std::string executeJSCallWithJSC(
 }
 
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
-    Bridge *bridge, std::shared_ptr<MessageQueueThread> jsQueue) {
+    std::shared_ptr<ExecutorDelegate> delegate, std::shared_ptr<MessageQueueThread> jsQueue) {
   return std::unique_ptr<JSExecutor>(
-    new JSCExecutor(bridge, jsQueue, cacheDir_, m_jscConfig));
+    new JSCExecutor(delegate, jsQueue, m_cacheDir, m_jscConfig));
 }
 
-JSCExecutor::JSCExecutor(Bridge *bridge, std::shared_ptr<MessageQueueThread> messageQueueThread,
-                         const std::string& cacheDir, const folly::dynamic& jscConfig) :
-    m_bridge(bridge),
+JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
+                         std::shared_ptr<MessageQueueThread> messageQueueThread,
+                         const std::string& cacheDir,
+                         const folly::dynamic& jscConfig) :
+    m_delegate(delegate),
     m_deviceCacheDir(cacheDir),
     m_messageQueueThread(messageQueueThread),
     m_jscConfig(jscConfig) {
   initOnJSVMThread();
+
+  SystraceSection s("setBatchedBridgeConfig");
+
+  folly::dynamic nativeModuleConfig = folly::dynamic::array();
+
+  {
+    SystraceSection s("collectNativeModuleNames");
+    std::vector<std::string> names = delegate->moduleNames();
+    for (auto& name : delegate->moduleNames()) {
+      nativeModuleConfig.push_back(folly::dynamic::array(std::move(name)));
+    }
+  }
+
+  folly::dynamic config =
+    folly::dynamic::object("remoteModuleConfig", std::move(nativeModuleConfig));
+
+  SystraceSection t("setGlobalVariable");
+  setGlobalVariable(
+    "__fbBatchedBridgeConfig",
+    folly::make_unique<JSBigStdString>(folly::toJson(config)));
 }
 
 JSCExecutor::JSCExecutor(
-    Bridge *bridge,
+    std::shared_ptr<ExecutorDelegate> delegate,
     std::shared_ptr<MessageQueueThread> messageQueueThread,
     int workerId,
     JSCExecutor *owner,
     std::string scriptURL,
     std::unordered_map<std::string, std::string> globalObjAsJSON,
     const folly::dynamic& jscConfig) :
-    m_bridge(bridge),
+    m_delegate(delegate),
     m_workerId(workerId),
     m_owner(owner),
     m_deviceCacheDir(owner->m_deviceCacheDir),
@@ -198,6 +219,7 @@ void JSCExecutor::initOnJSVMThread() {
   // Add a pointer to ourselves so we can retrieve it later in our hooks
   JSObjectSetPrivate(JSContextGetGlobalObject(m_context), this);
 
+  installNativeHook<&JSCExecutor::nativeRequireModuleConfig>("nativeRequireModuleConfig");
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
   installNativeHook<&JSCExecutor::nativeStartWorker>("nativeStartWorker");
   installNativeHook<&JSCExecutor::nativePostMessageToWorker>("nativePostMessageToWorker");
@@ -280,7 +302,7 @@ void JSCExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> unbund
 void JSCExecutor::flush() {
   // TODO: Make this a first class function instead of evaling. #9317773
   std::string calls = executeJSCallWithJSC(m_context, "flushedQueue", std::vector<folly::dynamic>());
-  m_bridge->callNativeModules(*this, calls, true);
+  m_delegate->callNativeModules(*this, std::move(calls), true);
 }
 
 void JSCExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
@@ -291,7 +313,7 @@ void JSCExecutor::callFunction(const std::string& moduleId, const std::string& m
     std::move(arguments),
   };
   std::string calls = executeJSCallWithJSC(m_context, "callFunctionReturnFlushedQueue", std::move(call));
-  m_bridge->callNativeModules(*this, calls, true);
+  m_delegate->callNativeModules(*this, std::move(calls), true);
 }
 
 void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
@@ -301,7 +323,7 @@ void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& 
     std::move(arguments)
   };
   std::string calls = executeJSCallWithJSC(m_context, "invokeCallbackAndReturnFlushedQueue", std::move(call));
-  m_bridge->callNativeModules(*this, calls, true);
+  m_delegate->callNativeModules(*this, std::move(calls), true);
 }
 
 void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) {
@@ -362,7 +384,7 @@ void JSCExecutor::handleMemoryPressureCritical() {
 }
 
 void JSCExecutor::flushQueueImmediate(std::string queueJSON) {
-  m_bridge->callNativeModules(*this, queueJSON, false);
+  m_delegate->callNativeModules(*this, std::move(queueJSON), false);
 }
 
 void JSCExecutor::loadModule(uint32_t moduleId) {
@@ -388,7 +410,7 @@ int JSCExecutor::addWebWorker(
     WebWorkerUtil::createWebWorkerThread(workerId, m_messageQueueThread.get());
   std::unique_ptr<JSCExecutor> worker;
   workerMQT->runOnQueueSync([this, &worker, &workerMQT, &scriptURL, &globalObj, workerId, &workerJscConfig] () {
-    worker.reset(new JSCExecutor(m_bridge, workerMQT, workerId, this, scriptURL,
+    worker.reset(new JSCExecutor(m_delegate, workerMQT, workerId, this, std::move(scriptURL),
                                  globalObj.toJSONMap(), workerJscConfig));
   });
 
@@ -397,14 +419,14 @@ int JSCExecutor::addWebWorker(
 
   JSCExecutor *workerPtr = worker.get();
   std::shared_ptr<MessageQueueThread> sharedMessageQueueThread = worker->m_messageQueueThread;
-  ExecutorToken token = m_bridge->registerExecutor(
+  m_delegate->registerExecutor(
       std::move(worker),
       std::move(sharedMessageQueueThread));
 
   m_ownedWorkers.emplace(
       std::piecewise_construct,
       std::forward_as_tuple(workerId),
-      std::forward_as_tuple(workerPtr, token, std::move(workerObj)));
+      std::forward_as_tuple(workerPtr, std::move(workerObj)));
 
   return workerId;
 }
@@ -464,12 +486,11 @@ void JSCExecutor::receiveMessageFromOwner(const std::string& msgString) {
 void JSCExecutor::terminateOwnedWebWorker(int workerId) {
   auto& workerRegistration = m_ownedWorkers.at(workerId);
   std::shared_ptr<MessageQueueThread> workerMQT = workerRegistration.executor->m_messageQueueThread;
-  ExecutorToken workerExecutorToken = workerRegistration.executorToken;
   m_ownedWorkers.erase(workerId);
 
-  workerMQT->runOnQueueSync([this, workerExecutorToken, &workerMQT] {
+  workerMQT->runOnQueueSync([this, &workerMQT] {
     workerMQT->quitSynchronous();
-    std::unique_ptr<JSExecutor> worker = m_bridge->unregisterExecutor(workerExecutorToken);
+    std::unique_ptr<JSExecutor> worker = m_delegate->unregisterExecutor(*this);
     worker->destroy();
     worker.reset();
   });
@@ -521,6 +542,18 @@ JSValueRef JSCExecutor::nativeRequire(
   return JSValueMakeUndefined(m_context);
 }
 
+JSValueRef JSCExecutor::nativeRequireModuleConfig(
+    size_t argumentCount,
+    const JSValueRef arguments[]) {
+  if (argumentCount != 1) {
+    throw std::invalid_argument("Got wrong number of args");
+  }
+
+  std::string moduleName = Value(m_context, arguments[0]).toString().str();
+  folly::dynamic config = m_delegate->getModuleConfig(moduleName);
+  return JSValueMakeString(m_context, String(folly::toJson(config).c_str()));
+}
+
 JSValueRef JSCExecutor::nativeFlushQueueImmediate(
     size_t argumentCount,
     const JSValueRef arguments[]) {
@@ -529,7 +562,7 @@ JSValueRef JSCExecutor::nativeFlushQueueImmediate(
   }
 
   std::string resStr = Value(m_context, arguments[0]).toJSONString();
-  flushQueueImmediate(resStr);
+  flushQueueImmediate(std::move(resStr));
   return JSValueMakeUndefined(m_context);
 }
 
@@ -595,7 +628,8 @@ JSValueRef JSCExecutor::nativeCallSyncHook(
   unsigned int methodId = Value(m_context, arguments[1]).asUnsignedInteger();
   std::string argsJson = Value(m_context, arguments[2]).toJSONString();
 
-  MethodCallResult result = m_bridge->callSerializableNativeHook(
+  MethodCallResult result = m_delegate->callSerializableNativeHook(
+      *this,
       moduleId,
       methodId,
       argsJson);

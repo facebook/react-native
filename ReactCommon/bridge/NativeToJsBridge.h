@@ -11,7 +11,6 @@
 
 #include "Executor.h"
 #include "ExecutorToken.h"
-#include "ExecutorTokenFactory.h"
 #include "JSModulesUnbundle.h"
 #include "MessageQueueThread.h"
 #include "MethodCall.h"
@@ -27,21 +26,9 @@ struct dynamic;
 namespace facebook {
 namespace react {
 
-class BridgeCallback {
-public:
-  virtual ~BridgeCallback() {};
+struct InstanceCallback;
+class ModuleRegistry;
 
-  virtual void onCallNativeModules(
-      ExecutorToken executorToken,
-      const std::string& callJSON,
-      bool isEndOfBatch) = 0;
-
-  virtual void onExecutorUnregistered(ExecutorToken executorToken) = 0;
-
-  virtual MethodCallResult callSerializableNativeHook(ExecutorToken token, unsigned int moduleId, unsigned int methodId, folly::dynamic&& args) = 0;
-};
-
-class Bridge;
 class ExecutorRegistration {
 public:
   ExecutorRegistration(
@@ -54,17 +41,26 @@ public:
   std::shared_ptr<MessageQueueThread> messageQueueThread_;
 };
 
-class Bridge {
+class JsToNativeBridge;
+
+// This class manages calls from native code to JS.  It also manages
+// executors and their threads.  This part is used by both bridges for
+// now, but further refactorings should separate the bridges more
+// fully #11247981.
+class NativeToJsBridge {
 public:
+  friend class JsToNativeBridge;
+
   /**
    * This must be called on the main JS thread.
    */
-  Bridge(
+  NativeToJsBridge(
       JSExecutorFactory* jsExecutorFactory,
+      std::shared_ptr<ModuleRegistry> registry,
       std::shared_ptr<MessageQueueThread> jsQueue,
-      std::unique_ptr<ExecutorTokenFactory> executorTokenFactory,
-      std::unique_ptr<BridgeCallback> callback);
-  virtual ~Bridge();
+      std::unique_ptr<MessageQueueThread> nativeQueue,
+      std::shared_ptr<InstanceCallback> callback);
+  virtual ~NativeToJsBridge();
 
   /**
    * Executes a function with the module ID and method ID and any additional
@@ -109,57 +105,47 @@ public:
   void handleMemoryPressureCritical();
 
   /**
-   * Invokes a set of native module calls on behalf of the given executor.
-   *
-   * TODO: get rid of isEndOfBatch
-   */
-  void callNativeModules(JSExecutor& executor, const std::string& callJSON, bool isEndOfBatch);
-
-  MethodCallResult callSerializableNativeHook(unsigned int moduleId, unsigned int methodId, const std::string& argsJSON);
-
-  /**
    * Returns the ExecutorToken corresponding to the main JSExecutor.
    */
   ExecutorToken getMainExecutorToken() const;
-
-  /**
-   * Registers the given JSExecutor which runs on the given MessageQueueThread
-   * with the Bridge. Part of this registration is transfering ownership of this
-   * JSExecutor to the Bridge for the duration of the registration.
-   *
-   * Returns a ExecutorToken which can be used to refer to this JSExecutor
-   * in the Bridge.
-   */
-  ExecutorToken registerExecutor(
-      std::unique_ptr<JSExecutor> executor,
-      std::shared_ptr<MessageQueueThread> executorMessageQueueThread);
-
-  /**
-   * Unregisters a JSExecutor that was previously registered with this Bridge
-   * using registerExecutor. Use the ExecutorToken returned from this
-   * registerExecutor call. This method will return ownership of the unregistered
-   * executor to the caller for it to retain or tear down.
-   *
-   * Returns ownership of the unregistered executor.
-   */
-  std::unique_ptr<JSExecutor> unregisterExecutor(ExecutorToken executorToken);
 
   /**
    * Synchronously tears down the bridge and the main executor.
    */
   void destroy();
 private:
+  /**
+   * Registers the given JSExecutor which runs on the given MessageQueueThread
+   * with the NativeToJsBridge. Part of this registration is transfering
+   * ownership of this JSExecutor to the NativeToJsBridge for the duration of
+   * the registration.
+   *
+   * Returns a ExecutorToken which can be used to refer to this JSExecutor
+   * in the NativeToJsBridge.
+   */
+  ExecutorToken registerExecutor(
+      ExecutorToken token,
+      std::unique_ptr<JSExecutor> executor,
+      std::shared_ptr<MessageQueueThread> executorMessageQueueThread);
+
+  /**
+   * Unregisters a JSExecutor that was previously registered with this NativeToJsBridge
+   * using registerExecutor.
+   */
+  std::unique_ptr<JSExecutor> unregisterExecutor(JSExecutor& executorToken);
+
   void runOnExecutorQueue(ExecutorToken token, std::function<void(JSExecutor*)> task);
-  std::unique_ptr<BridgeCallback> m_callback;
-  // This is used to avoid a race condition where a proxyCallback gets queued after ~Bridge(),
-  // on the same thread. In that case, the callback will try to run the task on m_callback which
-  // will have been destroyed within ~Bridge(), thus causing a SIGSEGV.
+
+  // This is used to avoid a race condition where a proxyCallback gets queued
+  // after ~NativeToJsBridge(), on the same thread. In that case, the callback
+  // will try to run the task on m_callback which will have been destroyed
+  // within ~NativeToJsBridge(), thus causing a SIGSEGV.
   std::shared_ptr<bool> m_destroyed;
   JSExecutor* m_mainExecutor;
-  std::unique_ptr<ExecutorToken> m_mainExecutorToken;
-  std::unique_ptr<ExecutorTokenFactory> m_executorTokenFactory;
+  ExecutorToken m_mainExecutorToken;
+  std::shared_ptr<JsToNativeBridge> m_delegate;
   std::unordered_map<JSExecutor*, ExecutorToken> m_executorTokenMap;
-  std::unordered_map<ExecutorToken, std::unique_ptr<ExecutorRegistration>> m_executorMap;
+  std::unordered_map<ExecutorToken, ExecutorRegistration> m_executorMap;
   std::mutex m_registrationMutex;
   #ifdef WITH_FBSYSTRACE
   std::atomic_uint_least32_t m_systraceCookie = ATOMIC_VAR_INIT();
@@ -167,7 +153,7 @@ private:
 
   MessageQueueThread* getMessageQueueThread(const ExecutorToken& executorToken);
   JSExecutor* getExecutor(const ExecutorToken& executorToken);
-  inline ExecutorToken getTokenForExecutor(JSExecutor& executor);
+  ExecutorToken getTokenForExecutor(JSExecutor& executor);
 };
 
 } }

@@ -14,6 +14,8 @@
 const InteractionManager = require('InteractionManager');
 const React = require('React');
 
+const infoLog = require('infoLog');
+
 const DEBUG = false;
 
 /**
@@ -121,12 +123,12 @@ class Incremental extends React.Component<DefaultProps, Props, State> {
   }
 
   getName(): string {
-    var ctx = this.context.incrementalGroup || {};
+    const ctx = this.context.incrementalGroup || {};
     return ctx.groupId + ':' + this._incrementId + '-' + this.props.name;
   }
 
   componentWillMount() {
-    var ctx = this.context.incrementalGroup;
+    const ctx = this.context.incrementalGroup;
     if (!ctx) {
       return;
     }
@@ -134,15 +136,15 @@ class Incremental extends React.Component<DefaultProps, Props, State> {
     InteractionManager.runAfterInteractions({
       name: 'Incremental:' + this.getName(),
       gen: () => new Promise(resolve => {
-        if (!this._mounted) {
+        if (!this._mounted || this._rendered) {
           resolve();
           return;
         }
-        DEBUG && console.log('set doIncrementalRender for ' + this.getName());
+        DEBUG && infoLog('set doIncrementalRender for ' + this.getName());
         this.setState({doIncrementalRender: true}, resolve);
       }),
     }).then(() => {
-      DEBUG && console.log('call onDone for ' + this.getName());
+      DEBUG && infoLog('call onDone for ' + this.getName());
       this._mounted && this.props.onDone && this.props.onDone();
     }).catch((ex) => {
       ex.message = `Incremental render failed for ${this.getName()}: ${ex.message}`;
@@ -154,7 +156,7 @@ class Incremental extends React.Component<DefaultProps, Props, State> {
     if (this._rendered || // Make sure that once we render once, we stay rendered even if incrementalGroupEnabled gets flipped.
         !this.context.incrementalGroupEnabled ||
         this.state.doIncrementalRender) {
-      DEBUG && console.log('render ' + this.getName());
+      DEBUG && infoLog('render ' + this.getName());
       this._rendered = true;
       return this.props.children;
     }

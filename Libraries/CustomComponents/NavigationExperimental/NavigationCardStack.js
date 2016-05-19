@@ -90,7 +90,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   static propTypes = {
     direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
     navigationState: NavigationPropTypes.navigationParentState.isRequired,
-    onNavigate: NavigationPropTypes.SceneRenderer.onNavigate,
+    onNavigate: NavigationPropTypes.SceneRendererProps.onNavigate,
     renderOverlay: PropTypes.func,
     renderScene: PropTypes.func.isRequired,
   };

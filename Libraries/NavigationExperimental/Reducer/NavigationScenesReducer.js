@@ -24,7 +24,7 @@ const SCENE_KEY_PREFIX = 'scene_';
  * Helper function to compare route keys (e.g. "9", "11").
  */
 function compareKey(one: string, two: string): number {
-  var delta = one.length - two.length;
+  const delta = one.length - two.length;
   if (delta > 0) {
     return 1;
   }
@@ -72,6 +72,9 @@ function NavigationScenesReducer(
   nextState: NavigationParentState,
   prevState: ?NavigationParentState,
 ): Array<NavigationScene> {
+  if (prevState === nextState) {
+    return scenes;
+  }
 
   const prevScenes = new Map();
   const freshScenes = new Map();
