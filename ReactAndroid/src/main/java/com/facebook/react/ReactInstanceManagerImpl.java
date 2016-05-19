@@ -11,8 +11,6 @@ package com.facebook.react;
 
 import javax.annotation.Nullable;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,12 +24,8 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.View;
-import android.view.WindowManager;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -43,7 +37,7 @@ import com.facebook.react.bridge.JSCJavaScriptExecutor;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptModule;
-import com.facebook.react.bridge.JavaScriptModulesConfig;
+import com.facebook.react.bridge.JavaScriptModuleRegistry;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NativeModuleRegistry;
@@ -285,7 +279,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
 
     // TODO(9577825): remove this
     ApplicationHolder.setApplication((Application) applicationContext.getApplicationContext());
-    setDisplayMetrics(applicationContext);
+    DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(applicationContext);
 
     mApplicationContext = applicationContext;
     mCurrentActivity = currentActivity;
@@ -326,40 +320,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     // Method SoLoader.init is idempotent, so if you wish to use native exopackage, just call
     // SoLoader.init with appropriate args before initializing ReactInstanceManagerImpl
     SoLoader.init(applicationContext, /* native exopackage */ false);
-  }
-
-  private static void setDisplayMetrics(Context context) {
-    DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-    DisplayMetricsHolder.setWindowDisplayMetrics(displayMetrics);
-
-    DisplayMetrics screenDisplayMetrics = new DisplayMetrics();
-    screenDisplayMetrics.setTo(displayMetrics);
-    WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-    Display display = wm.getDefaultDisplay();
-
-    // Get the real display metrics if we are using API level 17 or higher.
-    // The real metrics include system decor elements (e.g. soft menu bar).
-    //
-    // See: http://developer.android.com/reference/android/view/Display.html#getRealMetrics(android.util.DisplayMetrics)
-    if (Build.VERSION.SDK_INT >= 17) {
-      display.getRealMetrics(screenDisplayMetrics);
-    } else {
-      // For 14 <= API level <= 16, we need to invoke getRawHeight and getRawWidth to get the real dimensions.
-      // Since react-native only supports API level 16+ we don't have to worry about other cases.
-      //
-      // Reflection exceptions are rethrown at runtime.
-      //
-      // See: http://stackoverflow.com/questions/14341041/how-to-get-real-screen-height-and-width/23861333#23861333
-      try {
-        Method mGetRawH = Display.class.getMethod("getRawHeight");
-        Method mGetRawW = Display.class.getMethod("getRawWidth");
-        screenDisplayMetrics.widthPixels = (Integer) mGetRawW.invoke(display);
-        screenDisplayMetrics.heightPixels = (Integer) mGetRawH.invoke(display);
-      } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-        throw new RuntimeException("Error getting real dimensions for API level < 17", e);
-      }
-    }
-    DisplayMetricsHolder.setScreenDisplayMetrics(screenDisplayMetrics);
   }
 
   /**
@@ -799,7 +759,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     // CREATE_REACT_CONTEXT_END is in JSCExecutor.cpp
     mSourceUrl = jsBundleLoader.getSourceUrl();
     NativeModuleRegistry.Builder nativeRegistryBuilder = new NativeModuleRegistry.Builder();
-    JavaScriptModulesConfig.Builder jsModulesBuilder = new JavaScriptModulesConfig.Builder();
+    JavaScriptModuleRegistry.Builder jsModulesBuilder = new JavaScriptModuleRegistry.Builder();
 
     final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
     if (mUseDeveloperSupport) {
@@ -841,15 +801,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
       ReactMarker.logMarker(BUILD_NATIVE_MODULE_REGISTRY_END);
     }
 
-    ReactMarker.logMarker(BUILD_JS_MODULE_CONFIG_START);
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "buildJSModuleConfig");
-    JavaScriptModulesConfig javaScriptModulesConfig;
-    try {
-      javaScriptModulesConfig = jsModulesBuilder.build();
-    } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-      ReactMarker.logMarker(BUILD_JS_MODULE_CONFIG_END);
-    }
 
     NativeModuleCallExceptionHandler exceptionHandler = mNativeModuleCallExceptionHandler != null
         ? mNativeModuleCallExceptionHandler
@@ -858,7 +809,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
         .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
         .setJSExecutor(jsExecutor)
         .setRegistry(nativeModuleRegistry)
-        .setJSModulesConfig(javaScriptModulesConfig)
+        .setJSModuleRegistry(jsModulesBuilder.build())
         .setJSBundleLoader(jsBundleLoader)
         .setNativeModuleCallExceptionHandler(exceptionHandler);
 
@@ -916,7 +867,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
       ReactPackage reactPackage,
       ReactApplicationContext reactContext,
       NativeModuleRegistry.Builder nativeRegistryBuilder,
-      JavaScriptModulesConfig.Builder jsModulesBuilder) {
+      JavaScriptModuleRegistry.Builder jsModulesBuilder) {
     for (NativeModule nativeModule : reactPackage.createNativeModules(reactContext)) {
       nativeRegistryBuilder.add(nativeModule);
     }

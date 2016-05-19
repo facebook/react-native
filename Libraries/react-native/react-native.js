@@ -195,7 +195,7 @@ if (__DEV__) {
       if (__DEV__) {
         addonWarn('Perf', 'react-addons-perf');
       }
-      return require('ReactDefaultPerf');
+      return require('ReactPerf');
     }
   });
   Object.defineProperty(ReactNative.addons, 'TestUtils', {

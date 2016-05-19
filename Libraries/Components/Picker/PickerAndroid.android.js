@@ -52,7 +52,11 @@ var PickerAndroid = React.createClass({
   },
 
   getInitialState: function() {
-    return this._stateFromProps(this.props);
+    var state = this._stateFromProps(this.props);
+    return {
+      ...state,
+      initialSelectedIndex: state.selectedIndex,
+    };
   },
 
   componentWillReceiveProps: function(nextProps) {
@@ -87,7 +91,7 @@ var PickerAndroid = React.createClass({
       mode: this.props.mode,
       onSelect: this._onChange,
       prompt: this.props.prompt,
-      selected: this.state.selectedIndex,
+      selected: this.state.initialSelectedIndex,
       testID: this.props.testID,
       style: [styles.pickerAndroid, this.props.style],
     };
@@ -105,15 +109,24 @@ var PickerAndroid = React.createClass({
         this.props.onValueChange(null, position);
       }
     }
+    this._lastNativePosition = event.nativeEvent.position;
+    this.forceUpdate();
+  },
 
+  componentDidMount: function() {
+    this._lastNativePosition = this.state.initialSelectedIndex;
+  },
+
+  componentDidUpdate: function() {
     // The picker is a controlled component. This means we expect the
     // on*Change handlers to be in charge of updating our
     // `selectedValue` prop. That way they can also
     // disallow/undo/mutate the selection of certain values. In other
     // words, the embedder of this component should be the source of
     // truth, not the native component.
-    if (this.refs[REF_PICKER] && this.state.selectedIndex !== event.nativeEvent.position) {
+    if (this.refs[REF_PICKER] && this.state.selectedIndex !== this._lastNativePosition) {
       this.refs[REF_PICKER].setNativeProps({selected: this.state.selectedIndex});
+      this._lastNativePosition = this.state.selectedIndex;
     }
   },
 });

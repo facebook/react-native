@@ -114,10 +114,10 @@ class MessageQueue {
   }
 
   processModuleConfig(config, moduleID) {
-    const module = this._genModule(config, moduleID);
-    this.RemoteModules[module.name] = module;
+    const info = this._genModule(config, moduleID);
+    this.RemoteModules[info.name] = info.module;
     this._genLookup(config, moduleID, this._remoteModuleTable, this._remoteMethodTable);
-    return module;
+    return info.module;
   }
 
   getEventLoopRunningTime() {
@@ -292,9 +292,9 @@ class MessageQueue {
     let modules = {};
 
     remoteModules.forEach((config, moduleID) => {
-      let module = this._genModule(config, moduleID);
-      if (module) {
-        modules[module.name] = module;
+      let info = this._genModule(config, moduleID);
+      if (info) {
+        modules[info.name] = info.module;
       }
     });
 
@@ -313,9 +313,7 @@ class MessageQueue {
       [moduleName, methods, asyncMethods, syncHooks] = config;
     }
 
-    let module = {
-      name: moduleName
-    };
+    let module = {};
     methods && methods.forEach((methodName, methodID) => {
       const isAsync = asyncMethods && arrayContains(asyncMethods, methodID);
       const isSyncHook = syncHooks && arrayContains(syncHooks, methodID);
@@ -331,7 +329,7 @@ class MessageQueue {
       module.moduleID = moduleID;
     }
 
-    return module;
+    return { name: moduleName, module };
   }
 
   _genMethod(module, method, type) {

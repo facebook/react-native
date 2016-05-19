@@ -41,17 +41,19 @@ function define(moduleId, factory) {
 }
 
 function require(moduleId) {
-  const module = modules[moduleId];
+  const module = __DEV__
+    ? modules[moduleId] || modules[verboseNamesToModuleIds[moduleId]]
+    : modules[moduleId];
   return module && module.isInitialized
     ? module.exports
     : guardedLoadModule(moduleId, module);
 }
 
-var inGuard = false;
+let inGuard = false;
 function guardedLoadModule(moduleId, module) {
   if (!inGuard && global.ErrorUtils) {
     inGuard = true;
-    var returnValue;
+    let returnValue;
     try {
       returnValue = loadModuleImplementation(moduleId, module);
     } catch (e) {
@@ -118,7 +120,11 @@ function loadModuleImplementation(moduleId, module) {
     // keep args in sync with with defineModuleCode in
     // packager/react-packager/src/Resolver/index.js
     factory(global, require, moduleObject, exports);
-    module.factory = undefined;
+
+    // avoid removing factory in DEV mode as it breaks HMR
+    if (!__DEV__) {
+      module.factory = undefined;
+    }
 
     if (__DEV__) {
       Systrace.endEvent();
@@ -199,6 +205,7 @@ if (__DEV__) {
     if (factory) {
       mod.factory = factory;
     }
+    mod.hasError = false;
     mod.isInitialized = false;
     require(id);
 

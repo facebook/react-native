@@ -108,8 +108,15 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
   BOOL isMovie = [mediaType isEqualToString:(NSString *)kUTTypeMovie];
   NSString *key = isMovie ? UIImagePickerControllerMediaURL : UIImagePickerControllerReferenceURL;
   NSURL *imageURL = info[key];
+  UIImage *image = info[UIImagePickerControllerOriginalImage];
+  NSNumber *width = 0;
+  NSNumber *height = 0;
+  if (image) {
+    height = @(image.size.height);
+    width = @(image.size.width);
+  }
   if (imageURL) {
-    [self _dismissPicker:picker args:@[imageURL.absoluteString]];
+    [self _dismissPicker:picker args:@[imageURL.absoluteString, RCTNullIfNil(height), RCTNullIfNil(width)]];
     return;
   }
 
@@ -120,7 +127,7 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
   // WARNING: Using ImageStoreManager may cause a memory leak because the
   // image isn't automatically removed from store once we're done using it.
   [_bridge.imageStoreManager storeImage:originalImage withBlock:^(NSString *tempImageTag) {
-    [self _dismissPicker:picker args:tempImageTag ? @[tempImageTag] : nil];
+    [self _dismissPicker:picker args:tempImageTag ? @[tempImageTag, height, width] : nil];
   }];
 }
 

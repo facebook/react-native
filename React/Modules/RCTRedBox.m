@@ -81,11 +81,22 @@
     [reloadButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [reloadButton addTarget:self action:@selector(reload) forControlEvents:UIControlEventTouchUpInside];
 
-    CGFloat buttonWidth = self.bounds.size.width / 2;
+    UIButton *copyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    copyButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
+    copyButton.accessibilityIdentifier = @"redbox-copy";
+    copyButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [copyButton setTitle:@"Copy (\u2325\u2318C)" forState:UIControlStateNormal];
+    [copyButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
+    [copyButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+    [copyButton addTarget:self action:@selector(copyStack) forControlEvents:UIControlEventTouchUpInside];
+    
+    CGFloat buttonWidth = self.bounds.size.width / 3;
     dismissButton.frame = CGRectMake(0, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
     reloadButton.frame = CGRectMake(buttonWidth, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
+    copyButton.frame = CGRectMake(buttonWidth * 2, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
     [rootView addSubview:dismissButton];
     [rootView addSubview:reloadButton];
+    [rootView addSubview:copyButton];
   }
   return self;
 }
@@ -131,6 +142,33 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)reload
 {
   [_actionDelegate reloadFromRedBoxWindow:self];
+}
+
+- (void)copyStack
+{
+  NSMutableString *fullStackTrace;
+  
+  if (_lastErrorMessage != nil) {
+    fullStackTrace = [_lastErrorMessage mutableCopy];
+    [fullStackTrace appendString:@"\n\n"];
+  }
+  else {
+    fullStackTrace = [NSMutableString string];
+  }
+  
+  for (NSDictionary *stackFrame in _lastStackTrace) {
+    [fullStackTrace appendString:[NSString stringWithFormat:@"%@\n", stackFrame[@"methodName"]]];
+    if (stackFrame[@"file"]) {
+      NSString *lineInfo = [NSString stringWithFormat:@"    %@ @ %zd:%zd\n",
+                            [stackFrame[@"file"] lastPathComponent],
+                            [stackFrame[@"lineNumber"] integerValue],
+                            [stackFrame[@"column"] integerValue]];
+      [fullStackTrace appendString:lineInfo];
+    }
+  }
+  
+  UIPasteboard *pb = [UIPasteboard generalPasteboard];
+  [pb setString:fullStackTrace];
 }
 
 #pragma mark - TableView
@@ -240,14 +278,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
     // Dismiss red box
     [UIKeyCommand keyCommandWithInput:UIKeyInputEscape
-                        modifierFlags:0
-                               action:@selector(dismiss)],
+                       modifierFlags:0
+                              action:@selector(dismiss)],
 
     // Reload
     [UIKeyCommand keyCommandWithInput:@"r"
-                        modifierFlags:UIKeyModifierCommand
-                               action:@selector(reload)]
-  ];
+                       modifierFlags:UIKeyModifierCommand
+                              action:@selector(reload)],
+
+    // Copy = Cmd-Option C since Cmd-C in the simulator copies the pasteboard from
+    // the simulator to the desktop pasteboard.
+    [UIKeyCommand keyCommandWithInput:@"c"
+                       modifierFlags:UIKeyModifierCommand | UIKeyModifierAlternate
+                              action:@selector(copyStack)]
+
+    ];
 }
 
 - (BOOL)canBecomeFirstResponder
@@ -321,7 +366,7 @@ RCT_EXPORT_METHOD(dismiss)
   [self dismiss];
 }
 
-- (void)redBoxWindow:(RCTRedBoxWindow *)redBoxWindow openStackFrameInEditor:(NSDictionary *)stackFrame;
+- (void)redBoxWindow:(RCTRedBoxWindow *)redBoxWindow openStackFrameInEditor:(NSDictionary *)stackFrame
 {
   if (![_bridge.bundleURL.scheme hasPrefix:@"http"]) {
     RCTLogWarn(@"Cannot open stack frame in editor because you're not connected to the packager.");

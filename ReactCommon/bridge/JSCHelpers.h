@@ -2,12 +2,17 @@
 
 #pragma once
 
+#include "Executor.h"
+#include "Value.h"
+
 #include <JavaScriptCore/JSContextRef.h>
 #include <JavaScriptCore/JSObjectRef.h>
 #include <JavaScriptCore/JSValueRef.h>
 
 #include <stdexcept>
 #include <algorithm>
+
+#include "Value.h"
 
 namespace facebook {
 namespace react {
@@ -38,9 +43,15 @@ JSValueRef makeJSCException(
     JSContextRef ctx,
     const char* exception_text);
 
+String jsStringFromBigString(const JSBigString& bigstr);
+
 JSValueRef evaluateScript(
     JSContextRef ctx,
     JSStringRef script,
     JSStringRef sourceURL);
+
+JSValueRef makeJSError(JSContextRef ctx, const char *error);
+
+JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, const char *exceptionLocation);
 
 } }
