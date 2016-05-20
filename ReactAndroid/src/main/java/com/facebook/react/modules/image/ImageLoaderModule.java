@@ -77,9 +77,12 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule {
               WritableMap sizes = Arguments.createMap();
               sizes.putInt("width", image.getWidth());
               sizes.putInt("height", image.getHeight());
+
+              image.close();
               promise.resolve(sizes);
             } finally {
               CloseableReference.closeSafely(ref);
+              dataSource.close();
             }
           }
         }
