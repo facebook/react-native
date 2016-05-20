@@ -38,7 +38,10 @@ RCT_EXPORT_MODULE()
   }
 
   if (textField.maxLength == nil || [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
-    return YES;
+    NSMutableString *newString = [textField.text stringByReplacingCharactersInRange:range withString:string];
+      
+    [textField sendTextChangedForString:newString];
+    return NO;
   }
   NSUInteger allowedLength = textField.maxLength.integerValue - textField.text.length + range.length;
   if (string.length > allowedLength) {
