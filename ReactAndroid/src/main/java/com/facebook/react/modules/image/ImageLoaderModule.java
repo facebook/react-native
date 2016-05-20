@@ -11,11 +11,14 @@ package com.facebook.react.modules.image;
 
 import android.net.Uri;
 
+import com.facebook.react.bridge.Callback;
 import com.facebook.common.executors.CallerThreadExecutor;
+import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
 import com.facebook.datasource.DataSource;
 import com.facebook.datasource.DataSubscriber;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.react.bridge.Promise;
@@ -43,6 +46,48 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return "ImageLoader";
+  }
+
+  @ReactMethod
+  public void getSize(
+      String uriString,
+      final Callback successCallback,
+      final Callback errorCallback) {
+    Uri uri = Uri.parse(uriString);
+    ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri).build();
+
+    DataSource<CloseableReference<CloseableImage>> dataSource =
+      Fresco.getImagePipeline().fetchDecodedImage(request, mCallerContext);
+
+    DataSubscriber<CloseableReference<CloseableImage>> dataSubscriber =
+      new BaseDataSubscriber<CloseableReference<CloseableImage>>() {
+        @Override
+        protected void onNewResultImpl(
+            DataSource<CloseableReference<CloseableImage>> dataSource) {
+          if (!dataSource.isFinished()) {
+            return;
+          }
+          CloseableReference<CloseableImage> ref = dataSource.getResult();
+          if (ref != null) {
+            try {
+              CloseableImage image = ref.get();
+              successCallback.invoke(image.getWidth(), image.getHeight());
+            } finally {
+              CloseableReference.closeSafely(ref);
+            }
+          }
+        }
+
+        @Override
+        protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
+          try {
+            errorCallback.invoke(dataSource.getFailureCause());
+          } finally {
+            dataSource.close();
+          }
+        }
+      };
+    dataSource.subscribe(dataSubscriber, CallerThreadExecutor.getInstance());
   }
 
   /**
