@@ -55,6 +55,11 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule {
   public void getSize(
       String uriString,
       final Promise promise) {
+    if (uriString == null || uriString.isEmpty()) {
+      promise.reject(ERROR_INVALID_URI, "Cannot get the size of an image for an empty URI");
+      return;
+    }
+
     Uri uri = Uri.parse(uriString);
     ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri).build();
 
@@ -80,10 +85,15 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule {
 
               image.close();
               promise.resolve(sizes);
+            } catch (Exception e) {
+              promise.reject(ERROR_GET_SIZE_FAILURE, e);
             } finally {
               CloseableReference.closeSafely(ref);
               dataSource.close();
             }
+          } else {
+            dataSource.close();
+            promise.reject(ERROR_GET_SIZE_FAILURE);
           }
         }
 
