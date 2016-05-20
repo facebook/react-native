@@ -54,7 +54,7 @@ it will give the link url, otherwise it will give <code>null</code></p><p>NOTE: 
   Linking<span class="token punctuation">,</span>
   StyleSheet<span class="token punctuation">,</span>
   Text<span class="token punctuation">,</span>
-  TouchableNativeFeedback<span class="token punctuation">,</span>
+  TouchableOpacity<span class="token punctuation">,</span>
   View<span class="token punctuation">,</span>
 <span class="token punctuation">}</span> <span class="token operator">=</span> ReactNative<span class="token punctuation">;</span>
 <span class="token keyword">var</span> UIExplorerBlock <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./UIExplorerBlock&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -77,12 +77,12 @@ it will give the link url, otherwise it will give <code>null</code></p><p>NOTE: 
 
   render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
-      &lt;TouchableNativeFeedback
+      &lt;TouchableOpacity
         onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>handleClick<span class="token punctuation">}</span><span class="token operator">&gt;</span>
         &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span><span class="token operator">&gt;</span>
           &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>text<span class="token punctuation">}</span><span class="token operator">&gt;</span>Open <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>url<span class="token punctuation">}</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
         &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
-      &lt;<span class="token operator">/</span>TouchableNativeFeedback<span class="token operator">&gt;</span>
+      &lt;<span class="token operator">/</span>TouchableOpacity<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
