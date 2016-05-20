@@ -14,19 +14,19 @@
 const NavigationStateUtils = require('NavigationStateUtils');
 
 import type {
+  NavigationRoute,
   NavigationState,
-  NavigationParentState,
   NavigationReducer,
 } from 'NavigationTypeDefinition';
 
-export type ReducerForStateHandler = (state: NavigationState) => NavigationReducer;
+export type ReducerForStateHandler = (state: NavigationRoute) => NavigationReducer;
 
-export type PushedReducerForActionHandler = (action: any, lastState: NavigationParentState) => ?NavigationReducer;
+export type PushedReducerForActionHandler = (action: any, lastState: NavigationState) => ?NavigationReducer;
 
 export type StackReducerConfig = {
   /*
    * The initialState is that the reducer will use when there is no previous state.
-   * Must be a NavigationParentState:
+   * Must be a NavigationState:
    *
    * {
    *   children: [
@@ -37,7 +37,7 @@ export type StackReducerConfig = {
    *   key: 'navStackKey'
    * }
    */
-  initialState: NavigationParentState;
+  initialState: NavigationState;
 
   /*
    * Returns the sub-reducer for a particular state to handle. This will be called
@@ -57,7 +57,7 @@ const defaultGetReducerForState = (initialState) => (state) => state || initialS
 
 function NavigationStackReducer({initialState, getReducerForState, getPushedReducerForAction}: StackReducerConfig): NavigationReducer {
   const getReducerForStateWithDefault = getReducerForState || defaultGetReducerForState;
-  return function (lastState: ?NavigationState, action: any): NavigationState {
+  return function (lastState: ?NavigationRoute, action: any): NavigationRoute {
     if (!lastState) {
       return initialState;
     }

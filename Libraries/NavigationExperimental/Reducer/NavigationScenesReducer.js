@@ -14,7 +14,7 @@
 const invariant = require('fbjs/lib/invariant');
 
 import type {
-  NavigationParentState,
+  NavigationState,
   NavigationScene,
 } from 'NavigationTypeDefinition';
 
@@ -69,8 +69,8 @@ function areScenesShallowEqual(
 
 function NavigationScenesReducer(
   scenes: Array<NavigationScene>,
-  nextState: NavigationParentState,
-  prevState: ?NavigationParentState,
+  nextState: NavigationState,
+  prevState: ?NavigationState,
 ): Array<NavigationScene> {
   if (prevState === nextState) {
     return scenes;

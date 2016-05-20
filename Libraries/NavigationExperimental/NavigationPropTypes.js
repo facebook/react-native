@@ -35,12 +35,12 @@ const action =  PropTypes.shape({
 /* NavigationAnimatedValue  */
 const animatedValue = PropTypes.instanceOf(Animated.Value);
 
-/* NavigationState  */
+/* NavigationRoute  */
 const navigationState = PropTypes.shape({
   key: PropTypes.string.isRequired,
 });
 
-/* NavigationParentState  */
+/* NavigationState  */
 const navigationParentState = PropTypes.shape({
   index: PropTypes.number.isRequired,
   key: PropTypes.string.isRequired,

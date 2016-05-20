@@ -18,15 +18,15 @@
  */
 
 import type {
-  NavigationState,
+  NavigationRoute,
   NavigationReducer
 } from 'NavigationTypeDefinition';
 
 function NavigationFindReducer(
   reducers: Array<NavigationReducer>,
-  defaultState: NavigationState,
+  defaultState: NavigationRoute,
 ): NavigationReducer {
-  return function(lastState: ?NavigationState, action: ?any): NavigationState {
+  return function(lastState: ?NavigationRoute, action: ?any): NavigationRoute {
     for (let i = 0; i < reducers.length; i++) {
       let reducer = reducers[i];
       let newState = reducer(lastState, action);
