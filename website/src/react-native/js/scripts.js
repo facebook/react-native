@@ -7,6 +7,10 @@
   document.addEventListener('DOMContentLoaded', init);
 
   function init() {
+    if (isMobile()) {
+      document.querySelector('.nav-site-wrapper a[data-target]').addEventListener('click', toggleTargetNav);
+    }
+
     var backdrop = document.querySelector('.modal-backdrop');
     if (!backdrop) return;
 
@@ -40,6 +44,20 @@
 
     backdrop.classList.remove('modal-open');
     modal.classList.remove('modal-open');
+  }
+
+  function toggleTargetNav(event) {
+    var target = document.body.querySelector(event.target.getAttribute('data-target'));
+
+    if (target) {
+      event.preventDefault();
+      target.classList.toggle('in');
+    }
+  }
+
+  // Primitive mobile detection
+  function isMobile() {
+    return ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) );
   }
 
 }());
