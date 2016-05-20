@@ -35,6 +35,7 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
+import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
@@ -294,7 +295,7 @@ public class NativeViewHierarchyManager {
       @Nullable int[] indicesToRemove,
       @Nullable ViewAtIndex[] viewsToAdd,
       @Nullable int[] tagsToDelete) {
-    ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
+    final ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
     final ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
     if (viewToManage == null) {
       throw new IllegalViewOperationException("Trying to manageChildren view with tag " + tag +
@@ -347,8 +348,11 @@ public class NativeViewHierarchyManager {
 
         View viewToRemove = viewToManage.getChildAt(indexToRemove);
 
-        // Don't remove the view from it's parent if it is going to be deleted with a layout animation.
-        if (!mLayoutAnimator.shouldAnimateLayout(viewToRemove) || !isViewDeleted(viewToRemove, tagsToDelete)) {
+        if (mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
+            arrayContains(tagsToDelete, viewToRemove.getId())) {
+          // The view will be removed and dropped by the 'delete' layout animation
+          // instead, so do nothing
+        } else {
           viewManager.removeViewAt(viewToManage, indexToRemove);
         }
 
@@ -392,14 +396,10 @@ public class NativeViewHierarchyManager {
         }
 
         if (mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
-          disableUserInteractions(viewToDestroy);
-          mLayoutAnimator.deleteView(viewToDestroy, new Callback() {
+          mLayoutAnimator.deleteView(viewToDestroy, new LayoutAnimationListener() {
             @Override
-            public void invoke(Object... args) {
-              ViewGroup parent = (ViewGroup)viewToDestroy.getParent();
-              if (parent != null) {
-                viewManager.removeView(parent, viewToDestroy);
-              }
+            public void onAnimationEnd() {
+              viewManager.removeView(viewToManage, viewToDestroy);
               dropView(viewToDestroy);
             }
           });
@@ -410,30 +410,13 @@ public class NativeViewHierarchyManager {
     }
   }
 
-  /**
-   * Checks if a view's tag is contained in the tagsToDelete array.
-   */
-  private boolean isViewDeleted(View view, int[] tagsToDelete) {
-    int viewTag = view.getId();
-    for (int tag : tagsToDelete) {
-      if (tag == viewTag) {
+  private boolean arrayContains(int[] array, int ele) {
+    for (int curEle : array) {
+      if (curEle == ele) {
         return true;
       }
     }
     return false;
-  }
-
-  /**
-   * Disables user interactions for a view and all it's subviews.
-   */
-  private void disableUserInteractions(View view) {
-    view.setClickable(false);
-    if (view instanceof ViewGroup) {
-      ViewGroup viewGroup = (ViewGroup)view;
-      for (int i = 0; i < viewGroup.getChildCount(); i++) {
-        disableUserInteractions(viewGroup.getChildAt(i));
-      }
-    }
   }
 
   /**

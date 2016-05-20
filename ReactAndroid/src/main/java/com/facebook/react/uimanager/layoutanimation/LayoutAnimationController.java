@@ -6,9 +6,9 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 
@@ -105,10 +105,10 @@ public class LayoutAnimationController {
    * Animate a view deletion using the layout animation configuration supplied during initialization.
    *
    * @param view     The view to animate.
-   * @param callback Called once the animation is finished, should be used to
+   * @param listener Called once the animation is finished, should be used to
    *                 completely remove the view.
    */
-  public void deleteView(final View view, final Callback callback) {
+  public void deleteView(final View view, final LayoutAnimationListener listener) {
     UiThreadUtil.assertOnUiThread();
 
     AbstractLayoutAnimation layoutAnimation = mLayoutDeleteAnimation;
@@ -117,6 +117,8 @@ public class LayoutAnimationController {
         view, view.getLeft(), view.getTop(), view.getWidth(), view.getHeight());
 
     if (animation != null) {
+      disableUserInteractions(view);
+
       animation.setAnimationListener(new Animation.AnimationListener() {
         @Override
         public void onAnimationStart(Animation anim) {}
@@ -126,13 +128,26 @@ public class LayoutAnimationController {
 
         @Override
         public void onAnimationEnd(Animation anim) {
-          callback.invoke();
+          listener.onAnimationEnd();
         }
       });
 
       view.startAnimation(animation);
     } else {
-      callback.invoke();
+      listener.onAnimationEnd();
+    }
+  }
+
+  /**
+   * Disables user interactions for a view and all it's subviews.
+   */
+  private void disableUserInteractions(View view) {
+    view.setClickable(false);
+    if (view instanceof ViewGroup) {
+      ViewGroup viewGroup = (ViewGroup)view;
+      for (int i = 0; i < viewGroup.getChildCount(); i++) {
+        disableUserInteractions(viewGroup.getChildAt(i));
+      }
     }
   }
 }
