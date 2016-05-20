@@ -56,7 +56,10 @@ RCT_EXPORT_MODULE()
     }
     return NO;
   } else {
-    return YES;
+    NSMutableString *newString = [textField.text stringByReplacingCharactersInRange:range withString:string];
+        
+    [textField sendTextChangedForString:newString];
+    return NO;
   }
 }
 

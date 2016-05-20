@@ -58,6 +58,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                eventCount:_nativeEventCount];
 }
 
+- (void)sendTextChangedForString:(NSString *)string
+{
+    [_eventDispatcher sendTextEventWithType:RCTTextEventTypeChange
+                                   reactTag:self.reactTag
+                                       text:string
+                                        key:nil
+                                 eventCount:_nativeEventCount];
+}
+
 // This method is overridden for `onKeyPress`. The manager
 // will not send a keyPress for text that was pasted.
 - (void)paste:(id)sender
@@ -69,19 +78,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)setText:(NSString *)text
 {
   NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
-  if (eventLag == 0 && ![text isEqualToString:self.text]) {
-    UITextRange *selection = self.selectedTextRange;
-    NSInteger oldTextLength = self.text.length;
-
-    super.text = text;
-
-    if (selection.empty) {
-      // maintain cursor position relative to the end of the old text
-      NSInteger offsetStart = [self offsetFromPosition:self.beginningOfDocument toPosition:selection.start];
-      NSInteger offsetFromEnd = oldTextLength - offsetStart;
-      NSInteger newOffset = text.length - offsetFromEnd;
-      UITextPosition *position = [self positionFromPosition:self.beginningOfDocument offset:newOffset];
-      self.selectedTextRange = [self textRangeFromPosition:position toPosition:position];
+  if (eventLag == 0) {
+    if (text.length == 0) {
+      // Note: If we don't set 'super.text' it doesn't clear the autocorrect state; so ensure we do this when clearing the text field or autocorrect results will just keep appending
+      super.text = text;
+    }
+    else if (![text isEqualToString:self.text]) {
+      UITextRange *selection = self.selectedTextRange;
+      NSInteger oldTextLength = self.text.length;
+            
+      super.text = text;
+            
+      if (selection.empty) {
+        // maintain cursor position relative to the end of the old text
+        NSInteger offsetStart = [self offsetFromPosition:self.beginningOfDocument toPosition:selection.start];
+        NSInteger offsetFromEnd = oldTextLength - offsetStart;
+        NSInteger newOffset = text.length - offsetFromEnd;
+        UITextPosition *position = [self positionFromPosition:self.beginningOfDocument offset:newOffset];
+        self.selectedTextRange = [self textRangeFromPosition:position toPosition:position];
+      }
     }
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
     RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
