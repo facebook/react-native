@@ -11,6 +11,7 @@
 const chalk = require('chalk');
 const checkNodeVersion = require('./checkNodeVersion');
 const formatBanner = require('./formatBanner');
+const serverCommandLineArgs = require('../args/server');
 const parseCommandLine = require('../util/parseCommandLine');
 const path = require('path');
 const Promise = require('promise');
@@ -26,50 +27,7 @@ function server(argv, config) {
 }
 
 function _server(argv, config, resolve, reject) {
-  const args = parseCommandLine([{
-    command: 'port',
-    default: 8081,
-    type: 'string',
-  }, {
-    command: 'host',
-    default: '',
-    type: 'string',
-  }, {
-    command: 'root',
-    type: 'string',
-    description: 'add another root(s) to be used by the packager in this project',
-  }, {
-    command: 'projectRoots',
-    type: 'string',
-    description: 'override the root(s) to be used by the packager',
-  },{
-    command: 'assetRoots',
-    type: 'string',
-    description: 'specify the root directories of app assets'
-  }, {
-    command: 'skipflow',
-    description: 'Disable flow checks'
-  }, {
-    command: 'nonPersistent',
-    description: 'Disable file watcher'
-  }, {
-    command: 'transformer',
-    type: 'string',
-    default: require.resolve('../../packager/transformer'),
-    description: 'Specify a custom transformer to be used (absolute path)'
-  }, {
-    command: 'resetCache',
-    description: 'Removes cached files',
-    default: false,
-  }, {
-    command: 'reset-cache',
-    description: 'Removes cached files',
-    default: false,
-  }, {
-    command: 'verbose',
-    description: 'Enables logging',
-    default: false,
-  }]);
+  const args = parseCommandLine(serverCommandLineArgs);
 
   args.projectRoots = args.projectRoots
     ? argToArray(args.projectRoots)

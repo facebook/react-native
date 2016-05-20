@@ -11,6 +11,7 @@
 const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const iOSCommandLineArgs = require('../args/runIos');
 const parseCommandLine = require('../util/parseCommandLine');
 const findXcodeProject = require('./findXcodeProject');
 const parseIOSSimulatorsList = require('./parseIOSSimulatorsList');
@@ -27,26 +28,7 @@ function runIOS(argv, config) {
 }
 
 function _runIOS(argv, config, resolve, reject) {
-  const args = parseCommandLine([
-    {
-      command: 'simulator',
-      description: 'Explicitly set simulator to use',
-      type: 'string',
-      required: false,
-      default: 'iPhone 6',
-    }, {
-      command: 'scheme',
-      description: 'Explicitly set Xcode scheme to use',
-      type: 'string',
-      required: false,
-    }, {
-      command: 'project-path',
-      description: 'Path relative to project root where the Xcode project (.xcodeproj) lives. The default is \'ios\'.',
-      type: 'string',
-      required: false,
-      default: 'ios',
-    }
-  ], argv);
+  const args = parseCommandLine(iOSCommandLineArgs, argv);
 
   process.chdir(args['project-path']);
   const xcodeProject = findXcodeProject(fs.readdirSync('.'));

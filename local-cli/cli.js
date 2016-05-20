@@ -16,6 +16,8 @@ require('../packager/babelRegisterOnly')([
 
 var bundle = require('./bundle/bundle');
 var childProcess = require('child_process');
+var columnify = require('columnify');
+var commandArgs = require('./args');
 var Config = require('./util/Config');
 var defaultConfig = require('./default.config');
 var dependencies = require('./dependencies/dependencies');
@@ -77,10 +79,17 @@ function run() {
     : 'setup_env.sh';
   childProcess.execFileSync(path.join(__dirname, setupEnvScript));
 
-  var command = commands[args[0]];
+  var commandName = args[0];
+
+  var command = commands[commandName];
   if (!command) {
     console.error('Command `%s` unrecognized', args[0]);
     printUsage();
+    return;
+  }
+
+  if (args[1] === '--help') {
+    printHelp(commandName);
     return;
   }
 
@@ -98,14 +107,76 @@ function generateWrapper(args, config) {
 }
 
 function printUsage() {
+  var usage = Object.keys(documentedCommands).map(function(name) {
+    return '  - ' + name + ': ' + documentedCommands[name][1];
+  });
+
+  var helpUsage = [
+    '',
+    'For command usage and options: react-native <command> --help'
+  ];
+
   console.log([
     'Usage: react-native <command>',
     '',
     'Commands:'
-  ].concat(Object.keys(documentedCommands).map(function(name) {
-    return '  - ' + name + ': ' + documentedCommands[name][1];
-  })).join('\n'));
+  ].concat(usage).concat(helpUsage).join('\n'));
+
   process.exit(1);
+}
+
+function printHelp(commandName) {
+  // Print usage if no name or falsey name is given
+  if (!commandName) {
+    printUsage();
+    return;
+  }
+
+  // Check if the command is documented
+  var command = documentedCommands[commandName];
+  if (!command) {
+    console.error('\nHelp not found for command: `%s`.', commandName);
+    printUsage();
+    return;
+  }
+
+  console.log([
+    '',
+    'Command: `' + commandName + '`',
+    'Description: ' + command[1]
+  ].join('\n'));
+
+  var args = commandArgs[commandName] || [];
+
+  if (args.length > 0) {
+    var usage = {};
+    var minWidth = 1;
+
+    args.forEach(function(arg) {
+      var name = '--' + arg.command;
+      usage[name] = arg.description || '';
+
+      if (arg.required) {
+        usage[name] += '  [required]';
+      }
+
+      // This helps add padding between the two columns
+      if (name.length > minWidth - 2) {
+        minWidth = name.length + 2;
+      }
+    });
+
+    console.log([
+      '',
+      'Options:',
+      columnify(usage, {
+        showHeaders: false,
+        minWidth: minWidth
+      })
+    ].join('\n'));
+  }
+
+  process.exit(0);
 }
 
 // The user should never get here because projects are inited by
