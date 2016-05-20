@@ -83,11 +83,9 @@
       "downstream/core/toArray.js",
       "node_modules/jest-cli",
       "node_modules/react/dist",
-      "/node_modules/fbjs/.*/__mocks__/",
+      "node_modules/fbjs/.*/__mocks__/",
+      "node_modules/fbjs/node_modules/",
       "<rootDir>/website/"
-    ],
-    "testFileExtensions": [
-      "js"
     ],
     "unmockedModulePathPatterns": [
       "promise",
@@ -187,7 +185,7 @@
     "eslint-plugin-flow-vars": "^0.2.1",
     "eslint-plugin-react": "^4.2.1",
     "flow-bin": "^0.25.0",
-    "jest-cli": "11.0.2",
+    "jest": "12.1.1",
     "portfinder": "0.4.0",
     "react": "^15.1.0-alpha.1",
     "shelljs": "0.6.0"

@@ -29,21 +29,26 @@ function reportException(e: Error, isFatal: bool) {
       RCTExceptionsManager.reportSoftException(e.message, stack, currentExceptionID);
     }
     if (__DEV__) {
-      require('SourceMapsCache').getSourceMaps().then(sourceMaps => {
-        const prettyStack = parseErrorStack(e, sourceMaps);
-        RCTExceptionsManager.updateExceptionMessage(
-          e.message,
-          prettyStack,
-          currentExceptionID,
-        );
-      })
-      .catch(error => {
-        // This can happen in a variety of normal situations, such as
-        // Network module not being available, or when running locally
-        console.warn('Unable to load source map: ' + error.message);
-      });
+      symbolicateAndUpdateStack(currentExceptionID, e.message, stack);
     }
   }
+}
+
+function symbolicateAndUpdateStack(id, message, stack) {
+  const {fetch} = require('fetch');
+  const {SourceCode, ExceptionsManager} = require('NativeModules');
+  const match = SourceCode.scriptURL && SourceCode.scriptURL.match(/^https?:\/\/.*?\//);
+  const endpoint = (match && match[0] : 'http://localhost:8081/') + 'symbolicate';
+
+  fetch(endpoint, { method: 'POST', body: JSON.stringify({stack}) })
+    .then(response => response.json())
+    .then(response =>
+      ExceptionsManager.updateExceptionMessage(message, response.stack, id))
+    .catch(error => {
+      // This can happen in a variety of normal situations, such as
+      // Network module not being available, or when running locally
+      console.warn('Unable to symbolicate stack trace: ' + error.message);
+    });
 }
 
 /**

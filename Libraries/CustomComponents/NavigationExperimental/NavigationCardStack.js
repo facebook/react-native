@@ -48,7 +48,7 @@ const {Directions} = NavigationCardStackPanResponder;
 
 import type {
   NavigationActionCaller,
-  NavigationParentState,
+  NavigationState,
   NavigationSceneRenderer,
   NavigationSceneRendererProps,
 } from 'NavigationTypeDefinition';
@@ -59,7 +59,7 @@ import type {
 
 type Props = {
   direction: NavigationGestureDirection,
-  navigationState: NavigationParentState,
+  navigationState: NavigationState,
   onNavigate: NavigationActionCaller,
   renderOverlay: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,

@@ -42,7 +42,7 @@ const {
 
 
 import type {
-  NavigationParentState,
+  NavigationState,
   NavigationSceneRenderer,
   NavigationSceneRendererProps,
 } from 'NavigationTypeDefinition';
@@ -225,7 +225,7 @@ class ExampleTabScreen extends React.Component {
 }
 
 class NavigationCompositionExample extends React.Component {
-  state: NavigationParentState;
+  state: NavigationState;
   constructor() {
     super();
     this.state = ExampleAppReducer(undefined, {});
