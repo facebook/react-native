@@ -11,7 +11,9 @@ package com.facebook.react.modules.image;
 
 import android.net.Uri;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
@@ -30,6 +32,7 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule {
 
   private static final String ERROR_INVALID_URI = "E_INVALID_URI";
   private static final String ERROR_PREFETCH_FAILURE = "E_PREFETCH_FAILURE";
+  private static final String ERROR_GET_SIZE_FAILURE = "E_GET_SIZE_FAILURE";
 
   private final Object mCallerContext;
 
@@ -51,8 +54,7 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void getSize(
       String uriString,
-      final Callback successCallback,
-      final Callback errorCallback) {
+      final Promise promise) {
     Uri uri = Uri.parse(uriString);
     ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri).build();
 
@@ -71,7 +73,11 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule {
           if (ref != null) {
             try {
               CloseableImage image = ref.get();
-              successCallback.invoke(image.getWidth(), image.getHeight());
+
+              WritableMap sizes = Arguments.createMap();
+              sizes.putInt("width", image.getWidth());
+              sizes.putInt("height", image.getHeight());
+              promise.resolve(sizes);
             } finally {
               CloseableReference.closeSafely(ref);
             }
@@ -81,7 +87,7 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule {
         @Override
         protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
           try {
-            errorCallback.invoke(dataSource.getFailureCause());
+            promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.getFailureCause());
           } finally {
             dataSource.close();
           }
