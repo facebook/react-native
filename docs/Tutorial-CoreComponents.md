@@ -4,7 +4,7 @@ title: Core Components
 layout: docs
 category: Tutorials
 permalink: docs/tutorial-core-components.html
-next: sample-application-movies
+next: tutorial-integration-with-existing-apps
 ---
 
 Components are the building blocks for a React Native application. A React Native user interface (UI) is specified by declaring components, possibly nested, and then those components are mapped to the native UI on the targeted platform.
