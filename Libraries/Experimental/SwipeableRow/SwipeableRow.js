@@ -74,6 +74,7 @@ const SwipeableRow = React.createClass({
        * component A to be transparent until component B is loaded.
        */
       isSwipeableViewRendered: false,
+      rowHeight: (null: ?number),
     };
   },
 
@@ -117,7 +118,10 @@ const SwipeableRow = React.createClass({
     let slideOutView;
     if (this.state.isSwipeableViewRendered) {
       slideOutView = (
-        <View style={styles.slideOutContainer}>
+        <View style={[
+          styles.slideOutContainer,
+          {height: this.state.rowHeight},
+          ]}>
           {this.props.slideoutView}
         </View>
       );
@@ -139,8 +143,7 @@ const SwipeableRow = React.createClass({
 
     return (
       <View
-        {...this._panResponder.panHandlers}
-        style={styles.container}>
+        {...this._panResponder.panHandlers}>
         {slideOutView}
         {swipeableView}
       </View>
@@ -151,6 +154,7 @@ const SwipeableRow = React.createClass({
     if (!this.state.isSwipeableViewRendered) {
       this.setState({
         isSwipeableViewRendered: true,
+        rowHeight: event.nativeEvent.layout.height,
       });
     }
   },
@@ -225,13 +229,8 @@ const SwipeableRow = React.createClass({
 });
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-  },
   slideOutContainer: {
     bottom: 0,
-    flex: 1,
     left: 0,
     position: 'absolute',
     right: 0,
