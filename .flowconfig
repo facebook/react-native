@@ -46,6 +46,9 @@
 # Ignore BUCK generated folders
 .*\.buckd/
 
+# Ignore RNPM
+.*/local-cli/rnpm/.*
+
 .*/node_modules/is-my-json-valid/test/.*\.json
 .*/node_modules/iconv-lite/encodings/tables/.*\.json
 .*/node_modules/y18n/test/.*\.json
