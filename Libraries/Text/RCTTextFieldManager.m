@@ -37,7 +37,11 @@ RCT_EXPORT_MODULE()
     [textField sendKeyValueForString:string];
   }
 
-  if (textField.maxLength == nil || [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
+  if ([string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
+    return NO;
+  }
+    
+  if (textField.maxLength == nil) {
     NSMutableString *newString = [textField.text stringByReplacingCharactersInRange:range withString:string];
       
     [textField sendTextChangedForString:newString];
