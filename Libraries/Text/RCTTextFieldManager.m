@@ -38,7 +38,7 @@ RCT_EXPORT_MODULE()
   }
 
   if ([string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
-    return NO;
+    return YES;
   }
     
   if (textField.maxLength == nil) {
