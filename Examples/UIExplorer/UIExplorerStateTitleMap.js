@@ -27,11 +27,11 @@ const UIExplorerList = require('./UIExplorerList');
 
 import type {NavigationRoute} from 'NavigationTypeDefinition';
 
-function StateTitleMap(state: NavigationRoute): string {
-  if (UIExplorerList.Modules[state.key]) {
-    return UIExplorerList.Modules[state.key].title
+function StateTitleMap(route: NavigationRoute): string {
+  if (UIExplorerList.Modules[route.key]) {
+    return UIExplorerList.Modules[route.key].title;
   }
-  if (state.key === 'AppList') {
+  if (route.key === 'AppList') {
     return 'UIExplorer';
   }
   return 'Unknown';

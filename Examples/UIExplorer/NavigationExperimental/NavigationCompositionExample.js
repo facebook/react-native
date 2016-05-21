@@ -192,7 +192,7 @@ class ExampleTabScreen extends React.Component {
   _renderTitleComponent(props: NavigationSceneRendererProps) {
     return (
       <NavigationHeader.Title>
-        {stateTypeTitleMap(props.scene.navigationState)}
+        {stateTypeTitleMap(props.scene.route)}
       </NavigationHeader.Title>
     );
   }

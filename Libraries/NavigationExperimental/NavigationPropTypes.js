@@ -36,15 +36,15 @@ const action =  PropTypes.shape({
 const animatedValue = PropTypes.instanceOf(Animated.Value);
 
 /* NavigationRoute  */
-const navigationState = PropTypes.shape({
+const navigationRoute = PropTypes.shape({
   key: PropTypes.string.isRequired,
 });
 
-/* NavigationState  */
-const navigationParentState = PropTypes.shape({
+/* navigationRoute  */
+const navigationState = PropTypes.shape({
   index: PropTypes.number.isRequired,
   key: PropTypes.string.isRequired,
-  children: PropTypes.arrayOf(navigationState),
+  children: PropTypes.arrayOf(navigationRoute),
 });
 
 /* NavigationLayout */
@@ -61,13 +61,13 @@ const scene = PropTypes.shape({
   index: PropTypes.number.isRequired,
   isStale: PropTypes.bool.isRequired,
   key: PropTypes.string.isRequired,
-  navigationState,
+  route: navigationRoute.isRequired,
 });
 
 /* NavigationSceneRendererProps */
 const SceneRendererProps = {
   layout: layout.isRequired,
-  navigationState: navigationParentState.isRequired,
+  navigationState: navigationState.isRequired,
   onNavigate: PropTypes.func.isRequired,
   position: animatedValue.isRequired,
   progress: animatedValue.isRequired,
@@ -118,9 +118,9 @@ module.exports = {
   SceneRendererProps,
 
   // propTypes
-  action,
-  navigationParentState,
-  navigationState,
-  panHandlers,
   SceneRenderer,
+  action,
+  navigationState,
+  navigationRoute,
+  panHandlers,
 };

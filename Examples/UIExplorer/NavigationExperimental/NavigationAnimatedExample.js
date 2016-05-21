@@ -113,7 +113,7 @@ class NavigationAnimatedExample extends React.Component {
   _renderTitleComponent(/*NavigationSceneRendererProps*/ props) {
     return (
       <NavigationHeader.Title>
-        {props.scene.navigationState.key}
+        {props.scene.route.key}
       </NavigationHeader.Title>
     );
   }
@@ -122,7 +122,7 @@ class NavigationAnimatedExample extends React.Component {
     return (
       <NavigationCard
         {...props}
-        key={'card_' + props.scene.navigationState.key}
+        key={'card_' + props.scene.route.key}
         renderScene={this._renderScene}
       />
     );
@@ -132,7 +132,7 @@ class NavigationAnimatedExample extends React.Component {
     return (
       <ScrollView style={styles.scrollView}>
         <NavigationExampleRow
-          text={props.scene.navigationState.key}
+          text={props.scene.route.key}
         />
         <NavigationExampleRow
           text="Push!"

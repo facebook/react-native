@@ -26,8 +26,8 @@ export type NavigationRoute = {
 };
 
 export type NavigationState = {
-  index: number,
   key: string,
+  index: number,
   children: Array<NavigationRoute>,
 };
 
@@ -45,7 +45,7 @@ export type NavigationScene = {
   index: number,
   isStale: boolean,
   key: string,
-  navigationState: NavigationRoute,
+  route: NavigationRoute,
 };
 
 export type NavigationSceneRendererProps = {
