@@ -97,7 +97,9 @@ npm install -g react-native-cli
 
 #### Xcode
 
-[Xcode](https://developer.apple.com/xcode/downloads/) 7.0 or higher. Open the App Store or go to https://developer.apple.com/xcode/downloads/. This will also install `git` as well.
+[Xcode](https://developer.apple.com/xcode/downloads/) 7.0 or higher is required. You can install Xcode via the App Store or [Apple developer downloads](https://developer.apple.com/xcode/downloads/). This will install the Xcode IDE and Xcode Command Line Tools.
+
+> While generally installed by default, you can verify that the Xcode Command Line Tools are installed by launching Xcode and selecting `Xcode | Preferences | Locations` and ensuring there is a version of the command line tools shown in the `Command Line Tools` list box. The Command Line Tools give you `git`, etc.
 
 <block class="mac android" />
 
