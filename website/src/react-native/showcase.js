@@ -671,6 +671,13 @@ var apps = [
     author: 'Levi Cabral',
   },
   {
+    name: 'passpoints',
+    icon: 'http://a5.mzstatic.com/eu/r30/Purple1/v4/8c/a0/72/8ca072ac-2304-1bf6-16e5-701e71921f42/icon350x350.png',
+    linkAppStore: 'https://itunes.apple.com/app/passpoints/id930988932',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.passpointsreactnative',
+    author: 'passpoints.de',
+  },
+  {
     name: 'Pimmr',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple69/v4/99/da/0e/99da0ee6-bc87-e1a6-1d95-7027c78f50e1/icon175x175.jpeg',
     link: 'https://itunes.apple.com/nl/app/pimmr/id1023343303?mt=8',
