@@ -8,7 +8,7 @@
 
   function init() {
     if (isMobile()) {
-      document.querySelector('.nav-site-wrapper a[data-target]').addEventListener('click', toggleTargetNav);
+      document.querySelector('.nav-site-wrapper a[data-target]').addEventListener('click', toggleTarget);
     }
 
     var backdrop = document.querySelector('.modal-backdrop');
@@ -46,12 +46,21 @@
     modal.classList.remove('modal-open');
   }
 
-  function toggleTargetNav(event) {
+  var toggledTarget;
+  function toggleTarget(event) {
     var target = document.body.querySelector(event.target.getAttribute('data-target'));
 
     if (target) {
       event.preventDefault();
-      target.classList.toggle('in');
+
+      if (toggledTarget === target) {
+        toggledTarget.classList.toggle('in');
+      } else {
+        toggledTarget && toggledTarget.classList.remove('in');
+        target.classList.add('in');
+      }
+
+      toggledTarget = target;
     }
   }
 
