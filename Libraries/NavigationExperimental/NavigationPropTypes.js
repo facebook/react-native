@@ -65,7 +65,7 @@ const scene = PropTypes.shape({
 });
 
 /* NavigationSceneRendererProps */
-const SceneRenderer = {
+const SceneRendererProps = {
   layout: layout.isRequired,
   navigationState: navigationParentState.isRequired,
   onNavigate: PropTypes.func.isRequired,
@@ -73,6 +73,8 @@ const SceneRenderer = {
   scene: scene.isRequired,
   scenes: PropTypes.arrayOf(scene).isRequired,
 };
+
+const SceneRenderer = PropTypes.shape(SceneRendererProps);
 
 /* NavigationPanPanHandlers */
 const panHandlers = PropTypes.shape({
@@ -111,11 +113,12 @@ module.exports = {
   extractSceneRendererProps,
 
   // Bundled propTypes.
-  SceneRenderer,
+  SceneRendererProps,
 
   // propTypes
   action,
   navigationParentState,
   navigationState,
   panHandlers,
+  SceneRenderer,
 };
