@@ -481,7 +481,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   border-bottom: 0;
 }
 
-@media screen and (max-device-width: 960px) {
+@media only screen and (max-device-width: 1024px) {
   .nav-docs {
     position: fixed;
     z-index: 90;
@@ -555,15 +555,35 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   }
 }
 
-@media screen and (min-device-width: 641px) and (max-device-width: 1024px) {
+/**
+ * Multicolumn layout for phone (landscape only) & tablet (regardless its screen orientation)/
+ */
+@media only screen and (min-device-width : 375px) and (max-device-width : 1024px) {
   .nav-docs-section ul {
     display: flex;
     flex-wrap: wrap;
   }
 
-  /* Display 2 columns on tablet */
+  .nav-docs-section li {
+    width: 100%;
+  }
+}
+
+/* 2 columns layout */
+@media
+  /*Phone, landscape screen orientation*/
+  only screen and (min-device-width : 375px) and (max-device-width : 1024px) and (orientation : landscape),
+  /*Tablet, portrait screen orientation*/
+  only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : portrait) {
   .nav-docs-section li {
     width: 50%;
+  }
+}
+
+/* 3 columns layout on tablet (landscape screen orientation) */
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
+  .nav-docs-section li {
+    width: 33%;
   }
 }
 
