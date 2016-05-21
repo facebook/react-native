@@ -38,7 +38,7 @@ block { display: none; }
 <span>Target:</span>
 <a href="javascript:void(0);" class="button-ios" onclick="display('platform', 'ios')">iOS</a>
 <a href="javascript:void(0);" class="button-android" onclick="display('platform', 'android')">Android</a>
-<span>Development:</span>
+<span>Development OS:</span>
 <a href="javascript:void(0);" class="button-mac" onclick="display('os', 'mac')">Mac</a>
 <a href="javascript:void(0);" class="button-linux" onclick="display('os', 'linux')">Linux</a>
 <a href="javascript:void(0);" class="button-windows" onclick="display('os', 'windows')">Windows</a>
