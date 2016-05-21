@@ -35,10 +35,10 @@ block { display: none; }
 .display-platform-android.display-os-windows .android.windows {
   display: block;
 }</style>
-<span>Platform:</span>
+<span>Target:</span>
 <a href="javascript:void(0);" class="button-ios" onclick="display('platform', 'ios')">iOS</a>
 <a href="javascript:void(0);" class="button-android" onclick="display('platform', 'android')">Android</a>
-<span>OS:</span>
+<span>Development OS:</span>
 <a href="javascript:void(0);" class="button-mac" onclick="display('os', 'mac')">Mac</a>
 <a href="javascript:void(0);" class="button-linux" onclick="display('os', 'linux')">Linux</a>
 <a href="javascript:void(0);" class="button-windows" onclick="display('os', 'windows')">Windows</a>
