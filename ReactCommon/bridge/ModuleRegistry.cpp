@@ -104,37 +104,7 @@ void ModuleRegistry::callNativeMethod(ExecutorToken token, unsigned int moduleId
   }
 #endif
 
-  // TODO mhorowitz: systrace
-  std::string what;
-  try {
-    modules_[moduleId]->invoke(token, methodId, std::move(params));
-    return;
-  } catch (const std::exception& e) {
-    what = e.what();
-    // fall through;
-  } catch (...) {
-    // fall through;
-  }
-
-  std::string moduleName = normalizeName(modules_[moduleId]->getName());
-  auto descs = modules_[moduleId]->getMethods();
-  std::string methodName;
-  if (methodId < descs.size()) {
-    methodName = descs[methodId].name;
-  } else {
-    methodName = folly::to<std::string>("id ", methodId, " (out of range [0..",
-                                        descs.size(), "))");
-  }
-
-  if (what.empty()) {
-    throw std::runtime_error(
-      folly::to<std::string>("Unknown native exception in module '", moduleName,
-                             "' method '", methodName, "'"));
-  } else {
-    throw std::runtime_error(
-      folly::to<std::string>("Native exception in module '", moduleName,
-                             "' method '", methodName, "': ", what));
-  }
+  modules_[moduleId]->invoke(token, methodId, std::move(params));
 }
 
 MethodCallResult ModuleRegistry::callSerializableNativeHook(ExecutorToken token, unsigned int moduleId, unsigned int methodId, folly::dynamic&& params) {
