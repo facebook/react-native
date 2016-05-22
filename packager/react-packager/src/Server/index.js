@@ -14,6 +14,7 @@ const FileWatcher = require('node-haste').FileWatcher;
 const getPlatformExtension = require('node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const Promise = require('promise');
+const SourceMapConsumer = require('source-map').SourceMapConsumer;
 
 const _ = require('lodash');
 const declareOpts = require('../lib/declareOpts');
@@ -428,6 +429,9 @@ class Server {
     } else if (pathname.match(/^\/assets\//)) {
       this._processAssetsRequest(req, res);
       return;
+    } else if (pathname === '/symbolicate') {
+      this._symbolicate(req, res);
+      return;
     } else {
       next();
       return;
@@ -478,6 +482,64 @@ class Server {
       },
       this._handleError.bind(this, res, optionsJson)
     ).done();
+  }
+
+  _symbolicate(req, res) {
+    const startReqEventId = Activity.startEvent('symbolicate');
+    new Promise.resolve(req.rawBody).then(body => {
+      const stack = JSON.parse(body).stack;
+
+      // In case of multiple bundles / HMR, some stack frames can have
+      // different URLs from others
+      const urls = stack.map(frame => frame.file);
+      const uniqueUrls = urls.filter((elem, idx) => urls.indexOf(elem) === idx);
+
+      const sourceMaps = uniqueUrls.map(sourceUrl => this._sourceMapForURL(sourceUrl));
+      return Promise.all(sourceMaps).then(consumers => {
+        return stack.map(frame => {
+          const idx = uniqueUrls.indexOf(frame.file);
+          const consumer = consumers[idx];
+
+          const original = consumer.originalPositionFor({
+            line: frame.lineNumber,
+            column: frame.column,
+          });
+
+          if (!original) {
+            return frame;
+          }
+
+          return Object.assign({}, frame, {
+            file: original.source,
+            lineNumber: original.line,
+            column: original.column,
+          });
+        });
+      });
+    }).then(
+      stack => res.end(JSON.stringify({stack: stack})),
+      error => {
+        console.error(error.stack || error);
+        res.statusCode = 500;
+        res.end(JSON.stringify({error: error.message}));
+      }
+    ).done(() => {
+      Activity.endEvent(startReqEventId);
+    });
+  }
+
+  _sourceMapForURL(reqUrl) {
+    const options = this._getOptionsFromUrl(reqUrl);
+    const optionsJson = JSON.stringify(options);
+    const building = this._bundles[optionsJson] || this.buildBundle(options);
+    this._bundles[optionsJson] = building;
+    return building.then(p => {
+      const sourceMap = p.getSourceMap({
+        minify: options.minify,
+        dev: options.dev,
+      });
+      return new SourceMapConsumer(sourceMap);
+    });
   }
 
   _handleError(res, bundleID, error) {

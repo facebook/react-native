@@ -28,14 +28,14 @@ import type {
   NavigationAnimatedValue,
   NavigationAnimationSetter,
   NavigationLayout,
-  NavigationParentState,
+  NavigationState,
   NavigationScene,
   NavigationSceneRenderer,
 } from 'NavigationTypeDefinition';
 
 type Props = {
   applyAnimation: NavigationAnimationSetter,
-  navigationState: NavigationParentState,
+  navigationState: NavigationState,
   onNavigate: NavigationActionCaller,
   renderOverlay: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
@@ -53,7 +53,7 @@ const {PropTypes} = React;
 
 function applyDefaultAnimation(
   position: NavigationAnimatedValue,
-  navigationState: NavigationParentState,
+  navigationState: NavigationState,
 ): void {
   Animated.spring(
     position,

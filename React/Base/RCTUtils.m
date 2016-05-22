@@ -439,6 +439,21 @@ UIWindow *__nullable RCTKeyWindow(void)
   return RCTSharedApplication().keyWindow;
 }
 
+UIViewController *__nullable RCTPresentedViewController(void)
+{
+  if (RCTRunningInAppExtension()) {
+    return nil;
+  }
+
+  UIViewController *controller = RCTKeyWindow().rootViewController;
+
+  while (controller.presentedViewController) {
+    controller = controller.presentedViewController;
+  }
+
+  return controller;
+}
+
 BOOL RCTForceTouchAvailable(void)
 {
   static BOOL forceSupported;
