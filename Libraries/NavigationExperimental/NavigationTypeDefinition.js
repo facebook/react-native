@@ -21,14 +21,14 @@ export type NavigationAnimatedValue = Animated.Value;
 
 export type NavigationGestureDirection = 'horizontal' | 'vertical';
 
-export type NavigationState = {
+export type NavigationRoute = {
   key: string,
 };
 
-export type NavigationParentState = {
-  index: number,
+export type NavigationState = {
   key: string,
-  children: Array<NavigationState>,
+  index: number,
+  children: Array<NavigationRoute>,
 };
 
 export type NavigationAction = any;
@@ -41,13 +41,11 @@ export type NavigationLayout = {
   width: NavigationAnimatedValue,
 };
 
-export type NavigationPosition = NavigationAnimatedValue;
-
 export type NavigationScene = {
   index: number,
   isStale: boolean,
   key: string,
-  navigationState: NavigationState,
+  route: NavigationRoute,
 };
 
 export type NavigationSceneRendererProps = {
@@ -55,13 +53,20 @@ export type NavigationSceneRendererProps = {
   layout: NavigationLayout,
 
   // The navigation state of the containing view.
-  navigationState: NavigationParentState,
+  navigationState: NavigationState,
 
   // Callback to navigation with an action.
   onNavigate: NavigationActionCaller,
 
   // The progressive index of the containing view's navigation state.
-  position: NavigationPosition,
+  position: NavigationAnimatedValue,
+
+  // The value that represents the progress of the transition when navigation
+  // state changes from one to another. Its numberic value will range from 0
+  // to 1.
+  //  progress.__getAnimatedValue() < 1 : transtion is happening.
+  //  progress.__getAnimatedValue() == 1 : transtion completes.
+  progress: NavigationAnimatedValue,
 
   // The scene to render.
   scene: NavigationScene,
@@ -85,25 +90,31 @@ export type NavigationPanPanHandlers = {
   onStartShouldSetResponderCapture: Function,
 };
 
+export type NavigationTransitionSpec = {
+  duration?: number,
+  // An easing function from `Easing`.
+  easing?: () => any,
+};
+
 // Functions.
 
 export type NavigationActionCaller = Function;
 
 export type NavigationAnimationSetter = (
   position: NavigationAnimatedValue,
-  newState: NavigationParentState,
-  lastState: NavigationParentState,
+  newState: NavigationState,
+  lastState: NavigationState,
 ) => void;
 
 export type NavigationRenderer = (
-  navigationState: ?NavigationState,
+  navigationState: ?NavigationRoute,
   onNavigate: NavigationActionCaller,
 ) => ReactElement;
 
 export type NavigationReducer = (
-  state: ?NavigationState,
+  state: ?NavigationRoute,
   action: ?NavigationAction,
-) => NavigationState;
+) => NavigationRoute;
 
 export type NavigationSceneRenderer = (
   props: NavigationSceneRendererProps,
@@ -112,3 +123,5 @@ export type NavigationSceneRenderer = (
 export type NavigationStyleInterpolator = (
   props: NavigationSceneRendererProps,
 ) => Object;
+
+export type NavigationTransitionConfigurator = () => NavigationTransitionSpec;

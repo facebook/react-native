@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <jni/fbjni.h>
+#include <fb/fbjni.h>
 #include <folly/dynamic.h>
 
 namespace facebook {

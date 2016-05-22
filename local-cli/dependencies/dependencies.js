@@ -60,6 +60,7 @@ function _dependencies(argv, config, resolve, reject, packagerInstance) {
     blacklistRE: config.getBlacklistRE(args.platform),
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
     transformModulePath: args.transformer,
+    extraNodeModules: config.extraNodeModules,
     verbose: config.verbose,
   };
 

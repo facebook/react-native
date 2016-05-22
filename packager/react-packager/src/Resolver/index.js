@@ -47,12 +47,12 @@ const validateOpts = declareOpts({
     type: 'object',
     required: true,
   },
-  getModuleId: {
-    type: 'function',
-    required: true,
-  },
   transformCode: {
     type: 'function',
+  },
+  extraNodeModules: {
+    type: 'object',
+    required: false,
   },
   minifyCode: {
     type: 'function',
@@ -95,22 +95,23 @@ class Resolver {
       providesModuleNodeModules: [
         'react',
         'react-native',
+        'react-native-windows',
         // Parse requires AsyncStorage. They will
         // change that to require('react-native') which
         // should work after this release and we can
         // remove it from here.
         'parse',
       ],
-      platforms: ['ios', 'android'],
+      platforms: ['ios', 'android', 'windows'],
       preferNativePlatform: true,
       fileWatcher: opts.fileWatcher,
       cache: opts.cache,
       shouldThrowOnUnresolvedErrors: (_, platform) => platform === 'ios',
       transformCode: opts.transformCode,
+      extraNodeModules: opts.extraNodeModules,
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
     });
 
-    this._getModuleId = options.getModuleId;
     this._minifyCode = opts.minifyCode;
     this._polyfillModuleNames = opts.polyfillModuleNames || [];
 
@@ -132,7 +133,7 @@ class Resolver {
     return this._depGraph.getModuleForPath(entryFile);
   }
 
-  getDependencies(entryPath, options, transformOptions, onProgress) {
+  getDependencies(entryPath, options, transformOptions, onProgress, getModuleId) {
     const {platform, recursive} = getDependenciesValidateOpts(options);
     return this._depGraph.getDependencies({
       entryPath,
@@ -145,8 +146,7 @@ class Resolver {
         polyfill => resolutionResponse.prependDependency(polyfill)
       );
 
-      // currently used by HMR
-      resolutionResponse.getModuleId = this._getModuleId;
+      resolutionResponse.getModuleId = getModuleId;
       return resolutionResponse.finalize();
     });
   }
@@ -158,9 +158,7 @@ class Resolver {
         ? path.join(__dirname, 'polyfills/prelude_dev.js')
         : path.join(__dirname, 'polyfills/prelude.js');
 
-    const moduleSystem = opts.unbundle
-        ? path.join(__dirname, 'polyfills/require-unbundle.js')
-        : path.join(__dirname, 'polyfills/require.js');
+    const moduleSystem = path.join(__dirname, 'polyfills/require.js');
 
     return [
       prelude,
@@ -177,6 +175,7 @@ class Resolver {
       path.join(__dirname, 'polyfills/polyfills.js'),
       path.join(__dirname, 'polyfills/console.js'),
       path.join(__dirname, 'polyfills/error-guard.js'),
+      path.join(__dirname, 'polyfills/Number.es6.js'),
       path.join(__dirname, 'polyfills/String.prototype.es6.js'),
       path.join(__dirname, 'polyfills/Array.prototype.es6.js'),
       path.join(__dirname, 'polyfills/Array.es6.js'),
@@ -201,7 +200,7 @@ class Resolver {
     resolutionResponse.getResolvedDependencyPairs(module)
       .forEach(([depName, depModule]) => {
         if (depModule) {
-          resolvedDeps[depName] = this._getModuleId(depModule);
+          resolvedDeps[depName] = resolutionResponse.getModuleId(depModule);
         }
       });
 
@@ -237,6 +236,7 @@ class Resolver {
     map,
     code,
     meta = {},
+    dev = true,
     minify = false
   }) {
     if (module.isJSON()) {
@@ -246,14 +246,14 @@ class Resolver {
     if (module.isPolyfill()) {
       code = definePolyfillCode(code);
     } else {
-      const moduleId = this._getModuleId(module);
+      const moduleId = resolutionResponse.getModuleId(module);
       code = this.resolveRequires(
         resolutionResponse,
         module,
         code,
         meta.dependencyOffsets
       );
-      code = defineModuleCode(moduleId, code, name);
+      code = defineModuleCode(moduleId, code, name, dev);
     }
 
 
@@ -271,13 +271,15 @@ class Resolver {
   }
 }
 
-function defineModuleCode(moduleName, code, verboseName = '') {
+function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
   return [
-    `__d(`,
+    '__d(',
     `${JSON.stringify(moduleName)} /* ${verboseName} */, `,
-    `function(global, require, module, exports) {`,
-      `${code}`,
-    '\n});',
+    'function(global, require, module, exports) {',
+      code,
+    '\n}',
+    dev ? `, ${JSON.stringify(verboseName)}` : '',
+    ');',
   ].join('');
 }
 

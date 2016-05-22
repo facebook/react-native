@@ -3,7 +3,7 @@
 #include "ProxyExecutor.h"
 
 #include <fb/assert.h>
-#include <jni/Environment.h>
+#include <fb/Environment.h>
 #include <jni/LocalReference.h>
 #include <jni/LocalString.h>
 #include <folly/json.h>

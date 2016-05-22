@@ -78,6 +78,7 @@ function getPackagerServer(args, config) {
     cacheVersion: '3',
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
     transformModulePath: transformerPath,
+    extraNodeModules: config.extraNodeModules,
     assetRoots: args.assetRoots,
     assetExts: [
       'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'svg', 'webp', // Image formats

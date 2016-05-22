@@ -23,7 +23,7 @@ var merge = require('merge');
 // Diff Helpers
 
 function arrayDiffer(a, b) {
-  if (a == null) {
+  if (a == null || b == null) {
     return true;
   }
   if (a.length !== b.length) {

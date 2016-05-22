@@ -21,6 +21,9 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.facebook.infer.annotation.Assertions.assertNotNull;
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
+
 /**
  * Base class for Catalyst native modules whose implementations are written in Java. Default
  * implementations for {@link #initialize} and {@link #onCatalystInstanceDestroy} are provided for
@@ -49,6 +52,7 @@ public abstract class BaseJavaModule implements NativeModule {
   // taken from Libraries/Utilities/MessageQueue.js
   static final public String METHOD_TYPE_REMOTE = "remote";
   static final public String METHOD_TYPE_REMOTE_ASYNC = "remoteAsync";
+  static final public String METHOD_TYPE_SYNC_HOOK = "syncHook";
 
   private static abstract class ArgumentExtractor<T> {
     public int getJSArgumentsNeeded() {
@@ -186,56 +190,28 @@ public abstract class BaseJavaModule implements NativeModule {
 
     private String buildSignature(Class[] paramTypes) {
       StringBuilder builder = new StringBuilder(paramTypes.length);
+      builder.append("v.");
       for (int i = 0; i < paramTypes.length; i++) {
-        Class argumentClass = paramTypes[i];
-        if (argumentClass == ExecutorToken.class) {
+        Class paramClass = paramTypes[i];
+        if (paramClass == ExecutorToken.class) {
           if (!BaseJavaModule.this.supportsWebWorkers()) {
             throw new RuntimeException(
               "Module " + BaseJavaModule.this + " doesn't support web workers, but " +
                 mMethod.getName() +
                 " takes an ExecutorToken.");
           }
-
-          builder.append('T');
-        } else if (argumentClass == boolean.class) {
-          builder.append('z');
-        } else if (argumentClass == Boolean.class) {
-          builder.append('Z');
-        } else if (argumentClass == int.class) {
-          builder.append('i');
-        } else if (argumentClass == Integer.class) {
-          builder.append('I');
-        } else if (argumentClass == double.class) {
-          builder.append('d');
-        } else if (argumentClass == Double.class) {
-          builder.append('D');
-        } else if (argumentClass == float.class) {
-          builder.append('f');
-        } else if (argumentClass == Float.class) {
-          builder.append('F');
-        } else if (argumentClass == String.class) {
-          builder.append('S');
-        } else if (argumentClass == Callback.class) {
-          builder.append('X');
-        } else if (argumentClass == Promise.class) {
-          builder.append('P');
+        } else if (paramClass == Promise.class) {
           Assertions.assertCondition(
             i == paramTypes.length - 1, "Promise must be used as last parameter only");
           mType = METHOD_TYPE_REMOTE_ASYNC;
-        } else if (argumentClass == ReadableMap.class) {
-          builder.append('M');
-        } else if (argumentClass == ReadableArray.class) {
-          builder.append('A');
-        } else {
-          throw new RuntimeException(
-            "Got unknown argument class: " + argumentClass.getSimpleName());
         }
+        builder.append(paramTypeToChar(paramClass));
       }
 
       // Modules that support web workers are expected to take an ExecutorToken as the first
       // parameter to all their @ReactMethod-annotated methods.
       if (BaseJavaModule.this.supportsWebWorkers()) {
-        if (builder.charAt(0) != 'T') {
+        if (builder.charAt(2) != 'T') {
           throw new RuntimeException(
             "Module " + BaseJavaModule.this + " supports web workers, but " + mMethod.getName() +
               "does not take an ExecutorToken as its first parameter.");
@@ -306,7 +282,7 @@ public abstract class BaseJavaModule implements NativeModule {
 
     @Override
     public void invoke(CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray parameters) {
-      SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "callJavaModuleMethod")
+      SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "callJavaModuleMethod")
           .arg("method", mTraceName)
           .flush();
       try {
@@ -357,7 +333,7 @@ public abstract class BaseJavaModule implements NativeModule {
               "Could not invoke " + BaseJavaModule.this.getName() + "." + mMethod.getName(), ite);
         }
       } finally {
-        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       }
     }
 
@@ -372,24 +348,91 @@ public abstract class BaseJavaModule implements NativeModule {
     }
   }
 
+  public class SyncJavaHook implements SyncNativeHook {
+
+    private Method mMethod;
+    private final String mSignature;
+
+    public SyncJavaHook(Method method) {
+      mMethod = method;
+      mSignature = buildSignature(method);
+    }
+
+    public Method getMethod() {
+      return mMethod;
+    }
+
+    public String getSignature() {
+      return mSignature;
+    }
+
+    private String buildSignature(Method method) {
+      Class[] paramTypes = method.getParameterTypes();
+      StringBuilder builder = new StringBuilder(paramTypes.length + 2);
+
+      builder.append(returnTypeToChar(method.getReturnType()));
+      builder.append('.');
+
+      for (int i = 0; i < paramTypes.length; i++) {
+        Class paramClass = paramTypes[i];
+        if (paramClass == ExecutorToken.class) {
+          if (!BaseJavaModule.this.supportsWebWorkers()) {
+            throw new RuntimeException(
+              "Module " + BaseJavaModule.this + " doesn't support web workers, but " +
+                mMethod.getName() +
+                " takes an ExecutorToken.");
+          }
+        } else if (paramClass == Promise.class) {
+          Assertions.assertCondition(
+            i == paramTypes.length - 1, "Promise must be used as last parameter only");
+        }
+        builder.append(paramTypeToChar(paramClass));
+      }
+
+      return builder.toString();
+    }
+  }
+
+  private @Nullable Map<String, NativeMethod> mMethods;
+  private @Nullable Map<String, SyncNativeHook> mHooks;
+
+  private void findMethods() {
+    if (mMethods == null) {
+      Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "findMethods");
+      mMethods = new HashMap<>();
+      mHooks = new HashMap<>();
+
+      Method[] targetMethods = getClass().getDeclaredMethods();
+      for (Method targetMethod : targetMethods) {
+        if (targetMethod.getAnnotation(ReactMethod.class) != null) {
+          String methodName = targetMethod.getName();
+          if (mHooks.containsKey(methodName) || mMethods.containsKey(methodName)) {
+            // We do not support method overloading since js sees a function as an object regardless
+            // of number of params.
+            throw new IllegalArgumentException(
+              "Java Module " + getName() + " sync method name already registered: " + methodName);
+          }
+          mMethods.put(methodName, new JavaMethod(targetMethod));
+        }
+        if (targetMethod.getAnnotation(ReactSyncHook.class) != null) {
+          String methodName = targetMethod.getName();
+          if (mHooks.containsKey(methodName) || mMethods.containsKey(methodName)) {
+            // We do not support method overloading since js sees a function as an object regardless
+            // of number of params.
+            throw new IllegalArgumentException(
+              "Java Module " + getName() + " sync method name already registered: " + methodName);
+          }
+          mHooks.put(methodName, new SyncJavaHook(targetMethod));
+        }
+      }
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
+  }
+
   @Override
   public final Map<String, NativeMethod> getMethods() {
-    Map<String, NativeMethod> methods = new HashMap<String, NativeMethod>();
-    Method[] targetMethods = getClass().getDeclaredMethods();
-    for (int i = 0; i < targetMethods.length; i++) {
-      Method targetMethod = targetMethods[i];
-      if (targetMethod.getAnnotation(ReactMethod.class) != null) {
-        String methodName = targetMethod.getName();
-        if (methods.containsKey(methodName)) {
-          // We do not support method overloading since js sees a function as an object regardless
-          // of number of params.
-          throw new IllegalArgumentException(
-              "Java Module " + getName() + " method name already registered: " + methodName);
-          }
-        methods.put(methodName, new JavaMethod(targetMethod));
-      }
-    }
-    return methods;
+    findMethods();
+    return assertNotNull(mMethods);
   }
 
   /**
@@ -397,6 +440,11 @@ public abstract class BaseJavaModule implements NativeModule {
    */
   public @Nullable Map<String, Object> getConstants() {
     return null;
+  }
+
+  public final Map<String, SyncNativeHook> getSyncHooks() {
+    findMethods();
+    return assertNotNull(mHooks);
   }
 
   @Override
@@ -437,5 +485,67 @@ public abstract class BaseJavaModule implements NativeModule {
   @Override
   public boolean supportsWebWorkers() {
     return false;
+  }
+
+  private static char paramTypeToChar(Class paramClass) {
+    char tryCommon = commonTypeToChar(paramClass);
+    if (tryCommon != '\0') {
+      return tryCommon;
+    }
+    if (paramClass == ExecutorToken.class) {
+      return 'T';
+    } else if (paramClass == Callback.class) {
+      return 'X';
+    } else if (paramClass == Promise.class) {
+      return 'P';
+    } else if (paramClass == ReadableMap.class) {
+      return 'M';
+    } else if (paramClass == ReadableArray.class) {
+      return 'A';
+    } else {
+      throw new RuntimeException(
+        "Got unknown param class: " + paramClass.getSimpleName());
+    }
+  }
+
+  private static char returnTypeToChar(Class returnClass) {
+    char tryCommon = commonTypeToChar(returnClass);
+    if (tryCommon != '\0') {
+      return tryCommon;
+    }
+    if (returnClass == void.class) {
+      return 'v';
+    } else if (returnClass == WritableMap.class) {
+      return 'M';
+    } else if (returnClass == WritableArray.class) {
+      return 'A';
+    } else {
+      throw new RuntimeException(
+        "Got unknown return class: " + returnClass.getSimpleName());
+    }
+  }
+
+  private static char commonTypeToChar(Class typeClass) {
+    if (typeClass == boolean.class) {
+      return 'z';
+    } else if (typeClass == Boolean.class) {
+      return 'Z';
+    } else if (typeClass == int.class) {
+      return 'i';
+    } else if (typeClass == Integer.class) {
+      return 'I';
+    } else if (typeClass == double.class) {
+      return 'd';
+    } else if (typeClass == Double.class) {
+      return 'D';
+    } else if (typeClass == float.class) {
+      return 'f';
+    } else if (typeClass == Float.class) {
+      return 'F';
+    } else if (typeClass == String.class) {
+      return 'S';
+    } else {
+      return '\0';
+    }
   }
 }

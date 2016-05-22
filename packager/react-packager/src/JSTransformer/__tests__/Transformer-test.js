@@ -9,12 +9,12 @@
 'use strict';
 
 jest
-  .dontMock('../../lib/ModuleTransport')
-  .dontMock('../');
+  .unmock('../../lib/ModuleTransport')
+  .unmock('../');
 
-const fs = {writeFileSync: jest.genMockFn()};
+const fs = {writeFileSync: jest.fn()};
 const temp = {path: () => '/arbitrary/path'};
-const workerFarm = jest.genMockFn();
+const workerFarm = jest.fn();
 jest.setMock('fs', fs);
 jest.setMock('temp', temp);
 jest.setMock('worker-farm', workerFarm);
@@ -29,15 +29,15 @@ describe('Transformer', function() {
   const transformModulePath = __filename;
 
   beforeEach(function() {
-    Cache = jest.genMockFn();
-    Cache.prototype.get = jest.genMockFn().mockImpl((a, b, c) => c());
+    Cache = jest.fn();
+    Cache.prototype.get = jest.fn((a, b, c) => c());
 
     fs.writeFileSync.mockClear();
     options = {transformModulePath};
     workerFarm.mockClear();
     workerFarm.mockImpl((opts, path, methods) => {
       const api = workers = {};
-      methods.forEach(method => api[method] = jest.genMockFn());
+      methods.forEach(method => api[method] = jest.fn());
       return api;
     });
   });

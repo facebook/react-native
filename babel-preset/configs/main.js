@@ -23,7 +23,7 @@ module.exports = {
     'transform-es2015-block-scoping',
     'transform-es2015-classes',
     'transform-es2015-computed-properties',
-    'transform-es2015-constants',
+    'check-es2015-constants',
     'transform-es2015-destructuring',
     ['transform-es2015-modules-commonjs', { strict: false, allowTopLevelThis: true }],
     'transform-es2015-parameters',
@@ -39,6 +39,11 @@ module.exports = {
     ['transform-es2015-for-of', { loose: true }],
     require('../transforms/transform-symbol-member'),
   ]),
+  env: {
+    development: {
+      plugins: resolvePlugins(['transform-react-jsx-source']),
+    },
+  },
   retainLines: true,
   sourceMaps: false,
 };

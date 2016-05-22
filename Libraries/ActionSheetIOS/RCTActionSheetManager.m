@@ -66,10 +66,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   NSInteger destructiveButtonIndex = options[@"destructiveButtonIndex"] ? [RCTConvert NSInteger:options[@"destructiveButtonIndex"]] : -1;
   NSInteger cancelButtonIndex = options[@"cancelButtonIndex"] ? [RCTConvert NSInteger:options[@"cancelButtonIndex"]] : -1;
 
-  UIViewController *controller = RCTKeyWindow().rootViewController;
-  while (controller.presentedViewController) {
-    controller = controller.presentedViewController;
-  }
+  UIViewController *controller = RCTPresentedViewController();
 
   if (controller == nil) {
     RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", options);
@@ -195,7 +192,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
     shareController.excludedActivityTypes = excludedActivityTypes;
   }
 
-  UIViewController *controller = RCTKeyWindow().rootViewController;
+  UIViewController *controller = RCTPresentedViewController();
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 
