@@ -118,7 +118,7 @@ class NavigationCardStackExample extends React.Component {
           onPress={this._toggleDirection}
         />
         <NavigationExampleRow
-          text={'route = ' + props.scene.navigationState.key}
+          text={'route = ' + props.scene.route.key}
         />
         <NavigationExampleRow
           text="Push Route"

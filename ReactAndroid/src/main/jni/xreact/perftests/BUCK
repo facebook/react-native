@@ -1,0 +1,21 @@
+cxx_library(
+  name = 'perftests',
+  srcs = [ 'OnLoad.cpp' ],
+  soname = 'libnativereactperftests.so',
+  compiler_flags = [
+    '-fexceptions',
+  ],
+  deps = [
+    '//native:base',
+    '//native/fb:fb',
+    '//xplat/folly:molly',
+    '//xplat/react/module:module',
+  ],
+  visibility = [
+    '//instrumentation_tests/com/facebook/react/...',
+  ],
+)
+
+project_config(
+  src_target = ':perftests',
+)

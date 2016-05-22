@@ -53,6 +53,12 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign, getter=isNewView) BOOL newView;
 
 /**
+ * isHidden - RCTUIManager uses this to determine whether or not the UIView should be hidden. Useful if the
+ * ShadowView determines that its UIView will be clipped and wants to hide it.
+ */
+@property (nonatomic, assign, getter=isHidden) BOOL hidden;
+
+/**
  * Position and dimensions.
  * Defaults to { 0, 0, NAN, NAN }.
  */
@@ -134,11 +140,31 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
                                           parentProperties:(NSDictionary<NSString *, id> *)parentProperties NS_REQUIRES_SUPER;
 
 /**
+ * Can be called by a parent on a child in order to calculate all views whose frame needs
+ * updating in that branch. Adds these frames to `viewsWithNewFrame`. Useful if layout
+ * enters a view where flex doesn't apply (e.g. Text) and then you want to resume flex
+ * layout on a subview.
+ */
+- (void)collectUpdatedFrames:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
+                   withFrame:(CGRect)frame
+                      hidden:(BOOL)hidden
+            absolutePosition:(CGPoint)absolutePosition;
+
+/**
  * Recursively apply layout to children.
+ * The job of applyLayoutNode:viewsWithNewFrame:absolutePosition is to apply the layout to
+ * this node.
+ * The job of applyLayoutToChildren:viewsWithNewFrame:absolutePosition is to enumerate the
+ * children and tell them to apply layout.
+ * The functionality is split into two methods so subclasses can override applyLayoutToChildren
+ * while using the default implementation of applyLayoutNode.
  */
 - (void)applyLayoutNode:(css_node_t *)node
       viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
        absolutePosition:(CGPoint)absolutePosition NS_REQUIRES_SUPER;
+- (void)applyLayoutToChildren:(css_node_t *)node
+            viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
+             absolutePosition:(CGPoint)absolutePosition;
 
 /**
  * The following are implementation details exposed to subclasses. Do not call them directly

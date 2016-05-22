@@ -23,25 +23,24 @@ class MessageQueueThread;
 class JSCExecutorFactory : public JSExecutorFactory {
 public:
   JSCExecutorFactory(const std::string& cacheDir, const folly::dynamic& jscConfig) :
-  cacheDir_(cacheDir),
+  m_cacheDir(cacheDir),
   m_jscConfig(jscConfig) {}
   virtual std::unique_ptr<JSExecutor> createJSExecutor(
-    Bridge *bridge, std::shared_ptr<MessageQueueThread> jsQueue) override;
+    std::shared_ptr<ExecutorDelegate> delegate,
+    std::shared_ptr<MessageQueueThread> jsQueue) override;
 private:
-  std::string cacheDir_;
+  std::string m_cacheDir;
   folly::dynamic m_jscConfig;
 };
 
 class JSCExecutor;
 class WorkerRegistration : public noncopyable {
 public:
-  explicit WorkerRegistration(JSCExecutor* executor_, ExecutorToken executorToken_, Object jsObj_) :
+  explicit WorkerRegistration(JSCExecutor* executor_, Object jsObj_) :
       executor(executor_),
-      executorToken(executorToken_),
       jsObj(std::move(jsObj_)) {}
 
   JSCExecutor *executor;
-  ExecutorToken executorToken;
   Object jsObj;
 };
 
@@ -50,8 +49,10 @@ public:
   /**
    * Must be invoked from thread this Executor will run on.
    */
-  explicit JSCExecutor(Bridge *bridge, std::shared_ptr<MessageQueueThread> messageQueueThread,
-                       const std::string& cacheDir, const folly::dynamic& jscConfig);
+  explicit JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
+                       std::shared_ptr<MessageQueueThread> messageQueueThread,
+                       const std::string& cacheDir,
+                       const folly::dynamic& jscConfig);
   ~JSCExecutor() override;
 
   virtual void loadApplicationScript(
@@ -79,7 +80,7 @@ public:
 
 private:
   JSGlobalContextRef m_context;
-  Bridge *m_bridge;
+  std::shared_ptr<ExecutorDelegate> m_delegate;
   int m_workerId = 0; // if this is a worker executor, this is non-zero
   JSCExecutor *m_owner = nullptr; // if this is a worker executor, this is non-null
   std::shared_ptr<bool> m_isDestroyed = std::shared_ptr<bool>(new bool(false));
@@ -93,7 +94,7 @@ private:
    * WebWorker constructor. Must be invoked from thread this Executor will run on.
    */
   JSCExecutor(
-      Bridge *bridge,
+      std::shared_ptr<ExecutorDelegate> delegate,
       std::shared_ptr<MessageQueueThread> messageQueueThread,
       int workerId,
       JSCExecutor *owner,
@@ -118,6 +119,9 @@ private:
   template< JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
   void installNativeHook(const char* name);
 
+  JSValueRef nativeRequireModuleConfig(
+      size_t argumentCount,
+      const JSValueRef arguments[]);
   JSValueRef nativeStartWorker(
       size_t argumentCount,
       const JSValueRef arguments[]);

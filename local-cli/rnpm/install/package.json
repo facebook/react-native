@@ -1,0 +1,26 @@
+{
+  "name": "rnpm-plugin-install",
+  "version": "1.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rnpm/rnpm-plugin-install.git"
+  },
+  "author": "Alexey Kureev <kureev-mail@ya.ru> (https://github.com/Kureev)",
+  "contributors": [
+    "Alexey Kureev <kureev-mail@ya.ru> (https://github.com/Kureev)",
+    "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rnpm/rnpm-plugin-install/issues"
+  },
+  "homepage": "https://github.com/rnpm/rnpm-plugin-install#readme",
+  "dependencies": {
+    "npmlog": "^2.0.2"
+  }
+}

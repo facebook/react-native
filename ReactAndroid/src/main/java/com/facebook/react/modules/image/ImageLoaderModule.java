@@ -11,11 +11,16 @@ package com.facebook.react.modules.image;
 
 import android.net.Uri;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.common.executors.CallerThreadExecutor;
+import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
 import com.facebook.datasource.DataSource;
 import com.facebook.datasource.DataSubscriber;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.react.bridge.Promise;
@@ -27,6 +32,7 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule {
 
   private static final String ERROR_INVALID_URI = "E_INVALID_URI";
   private static final String ERROR_PREFETCH_FAILURE = "E_PREFETCH_FAILURE";
+  private static final String ERROR_GET_SIZE_FAILURE = "E_GET_SIZE_FAILURE";
 
   private final Object mCallerContext;
 
@@ -43,6 +49,64 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return "ImageLoader";
+  }
+
+  @ReactMethod
+  public void getSize(
+      String uriString,
+      final Promise promise) {
+    if (uriString == null || uriString.isEmpty()) {
+      promise.reject(ERROR_INVALID_URI, "Cannot get the size of an image for an empty URI");
+      return;
+    }
+
+    Uri uri = Uri.parse(uriString);
+    ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri).build();
+
+    DataSource<CloseableReference<CloseableImage>> dataSource =
+      Fresco.getImagePipeline().fetchDecodedImage(request, mCallerContext);
+
+    DataSubscriber<CloseableReference<CloseableImage>> dataSubscriber =
+      new BaseDataSubscriber<CloseableReference<CloseableImage>>() {
+        @Override
+        protected void onNewResultImpl(
+            DataSource<CloseableReference<CloseableImage>> dataSource) {
+          if (!dataSource.isFinished()) {
+            return;
+          }
+          CloseableReference<CloseableImage> ref = dataSource.getResult();
+          if (ref != null) {
+            try {
+              CloseableImage image = ref.get();
+
+              WritableMap sizes = Arguments.createMap();
+              sizes.putInt("width", image.getWidth());
+              sizes.putInt("height", image.getHeight());
+
+              image.close();
+              promise.resolve(sizes);
+            } catch (Exception e) {
+              promise.reject(ERROR_GET_SIZE_FAILURE, e);
+            } finally {
+              CloseableReference.closeSafely(ref);
+              dataSource.close();
+            }
+          } else {
+            dataSource.close();
+            promise.reject(ERROR_GET_SIZE_FAILURE);
+          }
+        }
+
+        @Override
+        protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
+          try {
+            promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.getFailureCause());
+          } finally {
+            dataSource.close();
+          }
+        }
+      };
+    dataSource.subscribe(dataSubscriber, CallerThreadExecutor.getInstance());
   }
 
   /**

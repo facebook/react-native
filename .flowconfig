@@ -46,6 +46,9 @@
 # Ignore BUCK generated folders
 .*\.buckd/
 
+# Ignore RNPM
+.*/local-cli/rnpm/.*
+
 .*/node_modules/is-my-json-valid/test/.*\.json
 .*/node_modules/iconv-lite/encodings/tables/.*\.json
 .*/node_modules/y18n/test/.*\.json
@@ -85,9 +88,9 @@ suppress_type=$FlowIssue
 suppress_type=$FlowFixMe
 suppress_type=$FixMe
 
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(>=0\\.\\(2[0-4]\\|1[0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)
-suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(>=0\\.\\(2[0-4]\\|1[0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)?:? #[0-9]+
+suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(>=0\\.\\(2[0-5]\\|1[0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)
+suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(>=0\\.\\(2[0-5]\\|1[0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)?:? #[0-9]+
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 
 [version]
-0.24.0
+^0.25.0

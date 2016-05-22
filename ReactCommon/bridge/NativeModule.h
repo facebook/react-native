@@ -12,11 +12,6 @@
 namespace facebook {
 namespace react {
 
-struct MethodCallResult {
-  folly::dynamic result;
-  bool isUndefined;
-};
-
 struct MethodDescriptor {
   std::string name;
   // type is one of js MessageQueue.MethodTypes

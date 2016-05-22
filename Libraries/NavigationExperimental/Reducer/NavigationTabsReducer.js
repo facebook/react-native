@@ -16,7 +16,7 @@ const NavigationStateUtils = require('NavigationStateUtils');
 
 import type {
   NavigationReducer,
-  NavigationState,
+  NavigationRoute,
 } from 'NavigationTypeDefinition';
 
 const ActionTypes = {
@@ -41,7 +41,7 @@ type TabsReducerConfig = {
 };
 
 function NavigationTabsReducer({key, initialIndex, tabReducers}: TabsReducerConfig): NavigationReducer {
-  return function(lastNavState: ?NavigationState, action: ?any): NavigationState {
+  return function(lastNavState: ?NavigationRoute, action: ?any): NavigationRoute {
     if (!lastNavState) {
       lastNavState = {
         children: tabReducers.map(reducer => reducer(null, null)),
@@ -63,7 +63,7 @@ function NavigationTabsReducer({key, initialIndex, tabReducers}: TabsReducerConf
       );
     }
     const subReducers = tabReducers.map((tabReducer, tabIndex) => {
-      return function(navState: ?NavigationState, tabAction: any): NavigationState {
+      return function(navState: ?NavigationRoute, tabAction: any): NavigationRoute {
         if (!navState) {
           return lastParentNavState;
         }
@@ -83,7 +83,7 @@ function NavigationTabsReducer({key, initialIndex, tabReducers}: TabsReducerConf
       };
     });
     let selectedTabReducer = subReducers.splice(lastParentNavState.index, 1)[0];
-    subReducers.unshift(function(navState: ?NavigationState, action: any): NavigationState {
+    subReducers.unshift(function(navState: ?NavigationRoute, action: any): NavigationRoute {
       if (navState && action.type === 'BackAction') {
         return NavigationStateUtils.jumpToIndex(
           lastParentNavState,

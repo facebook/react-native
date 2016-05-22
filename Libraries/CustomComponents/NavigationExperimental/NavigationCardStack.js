@@ -48,7 +48,7 @@ const {Directions} = NavigationCardStackPanResponder;
 
 import type {
   NavigationActionCaller,
-  NavigationParentState,
+  NavigationState,
   NavigationSceneRenderer,
   NavigationSceneRendererProps,
 } from 'NavigationTypeDefinition';
@@ -59,7 +59,7 @@ import type {
 
 type Props = {
   direction: NavigationGestureDirection,
-  navigationState: NavigationParentState,
+  navigationState: NavigationState,
   onNavigate: NavigationActionCaller,
   renderOverlay: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
@@ -89,8 +89,8 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
 
   static propTypes = {
     direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
-    navigationState: NavigationPropTypes.navigationParentState.isRequired,
-    onNavigate: NavigationPropTypes.SceneRenderer.onNavigate,
+    navigationState: NavigationPropTypes.navigationState.isRequired,
+    onNavigate: NavigationPropTypes.SceneRendererProps.onNavigate,
     renderOverlay: PropTypes.func,
     renderScene: PropTypes.func.isRequired,
   };

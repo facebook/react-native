@@ -43,6 +43,16 @@ var TabBarIOS = React.createClass({
      * A Boolean value that indicates whether the tab bar is translucent
      */
     translucent: React.PropTypes.bool,
+    /**
+     * Specifies tab bar item positioning. Available values are:
+     * - fill - distributes items across the entire width of the tab bar
+     * - center - centers item in the available tab bar space
+     * - auto (default) - distributes items dynamically according to the
+     * user interface idiom. In a horizontally compact environment (e.g. iPhone 5)
+     * this value defaults to `fill`, in a horizontally regular one (e.g. iPad)
+     * it defaults to center.
+     */
+    itemPositioning: React.PropTypes.oneOf(['fill', 'center', 'auto']),
   },
 
   render: function() {
@@ -52,6 +62,7 @@ var TabBarIOS = React.createClass({
         unselectedTintColor={this.props.unselectedTintColor}
         tintColor={this.props.tintColor}
         barTintColor={this.props.barTintColor}
+        itemPositioning={this.props.itemPositioning}
         translucent={this.props.translucent !== false}>
         {this.props.children}
       </RCTTabBar>
