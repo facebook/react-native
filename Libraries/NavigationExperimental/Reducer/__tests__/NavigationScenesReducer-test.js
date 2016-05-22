@@ -19,7 +19,7 @@ const NavigationScenesReducer = require('NavigationScenesReducer');
 function testTransition(states) {
   const routes = states.map(keys => {
     return {
-      children: keys.map(key => {
+      routes: keys.map(key => {
         return { key };
       }),
     };

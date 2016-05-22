@@ -91,7 +91,7 @@ function NavigationScenesReducer(
   });
 
   const nextKeys = new Set();
-  nextState.children.forEach((route, index) => {
+  nextState.routes.forEach((route, index) => {
     const key = SCENE_KEY_PREFIX + route.key;
     const scene = {
       index,
@@ -101,8 +101,8 @@ function NavigationScenesReducer(
     };
     invariant(
       !nextKeys.has(key),
-      `navigationState.children[${index}].key "${key}" conflicts with` +
-        'another child!'
+      `navigationState.routes[${index}].key "${key}" conflicts with` +
+        'another route!'
     );
     nextKeys.add(key);
 
@@ -115,8 +115,8 @@ function NavigationScenesReducer(
   });
 
   if (prevState) {
-    // Look at the previous children and classify any removed scenes as `stale`.
-    prevState.children.forEach((route: NavigationRoute, index) => {
+    // Look at the previous routes and classify any removed scenes as `stale`.
+    prevState.routes.forEach((route: NavigationRoute, index) => {
       const key = SCENE_KEY_PREFIX + route.key;
       if (freshScenes.has(key)) {
         return;

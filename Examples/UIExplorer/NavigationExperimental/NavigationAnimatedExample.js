@@ -50,7 +50,7 @@ const ExampleReducer = NavigationReducer.StackReducer({
   initialState: {
     key: 'AnimatedExampleStackKey',
     index: 0,
-    children: [
+    routes: [
       {key: 'First Route'},
     ],
   },

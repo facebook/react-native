@@ -106,7 +106,7 @@ const ExampleAppReducer = NavigationReducer.TabsReducer({
       initialState: {
         key: 'notifs',
         index: 0,
-        children: [
+        routes: [
           {key: 'base', type: 'NotifsPage'},
         ],
       },
@@ -121,7 +121,7 @@ const ExampleAppReducer = NavigationReducer.TabsReducer({
       initialState: {
         key: 'settings',
         index: 0,
-        children: [
+        routes: [
           {key: 'base', type: 'SettingsPage'},
         ],
       },
@@ -136,7 +136,7 @@ const ExampleAppReducer = NavigationReducer.TabsReducer({
       initialState: {
         key: 'profile',
         index: 0,
-        children: [
+        routes: [
           {key: 'base', type: 'ProfilePage'},
         ],
       },
@@ -256,7 +256,7 @@ class NavigationCompositionExample extends React.Component {
           onNavigate={this.handleAction.bind(this)}
         />
         <NavigationExampleTabBar
-          tabs={this.state.children}
+          tabs={this.state.routes}
           index={this.state.index}
           onNavigate={this.handleAction.bind(this)}
         />
@@ -284,7 +284,7 @@ class ExampleMainView extends React.Component {
 
   _renderScene(): ReactElement {
     const {navigationState} = this.props;
-    const childState = navigationState.children[navigationState.index];
+    const childState = navigationState.routes[navigationState.index];
     return (
       <ExampleTabScreen
         key={'tab_screen' + childState.key}
