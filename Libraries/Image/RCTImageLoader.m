@@ -23,6 +23,35 @@
 static NSString *const RCTErrorInvalidURI = @"E_INVALID_URI";
 static NSString *const RCTErrorPrefetchFailure = @"E_PREFETCH_FAILURE";
 
+static const NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 1048576; // 1MB
+
+static NSCache *RCTGetDecodedImageCache(void)
+{
+  static NSCache *cache;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    cache = [NSCache new];
+    cache.totalCostLimit = 5 * 1024 * 1024; // 5MB
+
+    // Clear cache in the event of a memory warning, or if app enters background
+    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification object:nil queue:nil usingBlock:^(__unused NSNotification *note) {
+      [cache removeAllObjects];
+    }];
+    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationWillResignActiveNotification object:nil queue:nil usingBlock:^(__unused NSNotification *note) {
+      [cache removeAllObjects];
+    }];
+  });
+  return cache;
+
+}
+
+static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size,
+                                     CGFloat scale, RCTResizeMode resizeMode)
+{
+  return [NSString stringWithFormat:@"%@|%f|%f|%f|%zd",
+          imageTag, size.width, size.height, scale, resizeMode];
+}
+
 @implementation UIImage (React)
 
 - (CAKeyframeAnimation *)reactKeyframeAnimation
@@ -476,16 +505,40 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   __block void(^cancelLoad)(void) = nil;
   __weak RCTImageLoader *weakSelf = self;
 
-  void (^completionHandler)(NSError *error, id imageOrData) = ^(NSError *error, id imageOrData) {
+  // Check decoded image cache
+  NSString *cacheKey = RCTCacheKeyForImage(imageTag, size, scale, resizeMode);
+  {
+    UIImage *image = [RCTGetDecodedImageCache() objectForKey:cacheKey];
+    if (image) {
+      // Most loaders do not return on the main thread, so caller is probably not
+      // expecting it, and may do expensive post-processing in the callback
+      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        completionBlock(nil, image);
+      });
+      return ^{};
+    }
+  }
+
+  RCTImageLoaderCompletionBlock cacheResultHandler = ^(NSError *error, UIImage *image) {
+    if (image) {
+      CGFloat bytes = image.size.width * image.size.height * image.scale * image.scale * 4;
+      if (bytes <= RCTMaxCachableDecodedImageSizeInBytes) {
+        [RCTGetDecodedImageCache() setObject:image forKey:cacheKey cost:bytes];
+      }
+    }
+    completionBlock(error, image);
+  };
+
+  void (^completionHandler)(NSError *, id) = ^(NSError *error, id imageOrData) {
     if (!cancelled) {
       if (!imageOrData || [imageOrData isKindOfClass:[UIImage class]]) {
-        completionBlock(error, imageOrData);
+        cacheResultHandler(error, imageOrData);
       } else {
         cancelLoad = [weakSelf decodeImageDataWithoutClipping:imageOrData
                                                          size:size
                                                         scale:scale
                                                    resizeMode:resizeMode
-                                              completionBlock:completionBlock] ?: ^{};
+                                              completionBlock:cacheResultHandler];
       }
     }
   };
@@ -495,7 +548,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                       scale:scale
                                  resizeMode:resizeMode
                               progressBlock:progressHandler
-                            completionBlock:completionHandler] ?: ^{};
+                            completionBlock:completionHandler];
   return ^{
     if (cancelLoad) {
       cancelLoad();
@@ -551,7 +604,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                     size:size
                                    scale:scale
                               resizeMode:resizeMode
-                       completionHandler:completionHandler];
+                       completionHandler:completionHandler] ?: ^{};
   } else {
 
     if (!_URLCacheQueue) {
