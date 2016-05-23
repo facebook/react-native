@@ -28,7 +28,7 @@ export type NavigationRoute = {
 export type NavigationState = {
   key: string,
   index: number,
-  children: Array<NavigationRoute>,
+  routes: Array<NavigationRoute>,
 };
 
 export type NavigationAction = any;

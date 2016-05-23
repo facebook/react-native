@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule NavigationStackReducer
- * @flow
+ * @flow-broken
  */
 'use strict';
 
@@ -29,7 +29,7 @@ export type StackReducerConfig = {
    * Must be a NavigationState:
    *
    * {
-   *   children: [
+   *   routes: [
    *     {key: 'subState0'},
    *     {key: 'subState1'},
    *   ],
@@ -66,15 +66,15 @@ function NavigationStackReducer({initialState, getReducerForState, getPushedRedu
       return lastState;
     }
 
-    const activeSubState = lastParentState.children[lastParentState.index];
+    const activeSubState = lastParentState.routes[lastParentState.index];
     const activeSubReducer = getReducerForStateWithDefault(activeSubState);
     const nextActiveState = activeSubReducer(activeSubState, action);
     if (nextActiveState !== activeSubState) {
-      const nextChildren = [...lastParentState.children];
+      const nextChildren = [...lastParentState.routes];
       nextChildren[lastParentState.index] = nextActiveState;
       return {
         ...lastParentState,
-        children: nextChildren,
+        routes: nextChildren,
       };
     }
 
@@ -89,7 +89,7 @@ function NavigationStackReducer({initialState, getReducerForState, getPushedRedu
     switch (action.type) {
       case 'back':
       case 'BackAction':
-        if (lastParentState.index === 0 || lastParentState.children.length === 1) {
+        if (lastParentState.index === 0 || lastParentState.routes.length === 1) {
           return lastParentState;
         }
         return NavigationStateUtils.pop(lastParentState);
