@@ -346,8 +346,11 @@ RCT_EXPORT_MODULE()
   }
 
   NSArray<id> *responseJSON = @[task.requestID, responseText ?: @""];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [_bridge.eventDispatcher sendDeviceEventWithName:@"didReceiveNetworkData"
                                               body:responseJSON];
+#pragma clang diagnostic pop
 }
 
 - (void)sendRequest:(NSURLRequest *)request
@@ -361,7 +364,10 @@ RCT_EXPORT_MODULE()
   RCTURLRequestProgressBlock uploadProgressBlock = ^(int64_t progress, int64_t total) {
     dispatch_async(_methodQueue, ^{
       NSArray *responseJSON = @[task.requestID, @((double)progress), @((double)total)];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
       [_bridge.eventDispatcher sendDeviceEventWithName:@"didSendNetworkData" body:responseJSON];
+#pragma clang diagnostic pop
     });
   };
 
@@ -379,8 +385,11 @@ RCT_EXPORT_MODULE()
       }
       id responseURL = response.URL ? response.URL.absoluteString : [NSNull null];
       NSArray<id> *responseJSON = @[task.requestID, @(status), headers, responseURL];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
       [_bridge.eventDispatcher sendDeviceEventWithName:@"didReceiveNetworkResponse"
                                                   body:responseJSON];
+#pragma clang diagnostic pop
     });
   };
 
@@ -401,8 +410,11 @@ RCT_EXPORT_MODULE()
                                 error.code == kCFURLErrorTimedOut ? @YES : @NO
                                 ];
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
       [_bridge.eventDispatcher sendDeviceEventWithName:@"didCompleteNetworkResponse"
                                                   body:responseJSON];
+#pragma clang diagnostic pop
 
       [_tasksByRequestID removeObjectForKey:task.requestID];
     });

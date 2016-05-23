@@ -66,9 +66,13 @@ typedef void (^ControlBlock)(RCTRootView*);
 
 - (void)rootViewDidChangeIntrinsicSize:(RCTRootView *)rootView
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
   [rootView.bridge.eventDispatcher sendAppEventWithName:@"rootViewDidChangeIntrinsicSize"
                                                    body:@{@"width": @(rootView.intrinsicSize.width),
                                                           @"height": @(rootView.intrinsicSize.height)}];
+#pragma clang diagnostic pop
 }
 
 @end

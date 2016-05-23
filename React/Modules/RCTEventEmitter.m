@@ -9,6 +9,7 @@
 
 #import "RCTEventEmitter.h"
 #import "RCTAssert.h"
+#import "RCTUtils.h"
 #import "RCTLog.h"
 
 @implementation RCTEventEmitter
@@ -21,9 +22,16 @@
   return @"";
 }
 
++ (void)initialize
+{
+  if (self != [RCTEventEmitter class]) {
+    RCTAssert(RCTClassOverridesInstanceMethod(self, @selector(supportedEvents)),
+              @"You must override the `supportedEvents` method of %@", self);
+  }
+}
+
 - (NSArray<NSString *> *)supportedEvents
 {
-  RCTAssert(NO, @"You must override the `supportedEvents` method of %@", [self class]);
   return nil;
 }
 
@@ -32,7 +40,8 @@
   RCTAssert(_bridge != nil, @"bridge is not set.");
 
   if (RCT_DEBUG && ![[self supportedEvents] containsObject:eventName]) {
-    RCTLogError(@"`%@` is not a supported event type for %@", eventName, [self class]);
+    RCTLogError(@"`%@` is not a supported event type for %@. Supported events are: `%@`",
+                eventName, [self class], [[self supportedEvents] componentsJoinedByString:@"`, `"]);
   }
   if (_listenerCount > 0) {
     [_bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
@@ -62,7 +71,8 @@
 RCT_EXPORT_METHOD(addListener:(NSString *)eventName)
 {
   if (RCT_DEBUG && ![[self supportedEvents] containsObject:eventName]) {
-    RCTLogError(@"`%@` is not a supported event type for %@", eventName, [self class]);
+    RCTLogError(@"`%@` is not a supported event type for %@. Supported events are: `%@`",
+                eventName, [self class], [[self supportedEvents] componentsJoinedByString:@"`, `"]);
   }
   if (_listenerCount == 0) {
     [self startObserving];
