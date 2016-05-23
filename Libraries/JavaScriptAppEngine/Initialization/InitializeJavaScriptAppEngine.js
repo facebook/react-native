@@ -97,6 +97,7 @@ function polyfillLazyGlobal(name, valueFn, scope = global) {
       Object.defineProperty(this, name, {
         configurable: true,
         enumerable: true,
+        writable: true,
         value
       });
     }
