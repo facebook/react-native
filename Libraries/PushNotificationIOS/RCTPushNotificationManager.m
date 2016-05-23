@@ -27,7 +27,7 @@
 NSString *const RCTLocalNotificationReceived = @"LocalNotificationReceived";
 NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
 NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegistered";
-NSString *const RCTRemoteNotificationRegisteredError = @"RemoteNotificationRegisteredError";
+NSString *const RCTRemoteNotificationsRegistrationError = @"RemoteNotificationsRegistrationError";
 
 @implementation RCTConvert (UILocalNotification)
 
@@ -87,8 +87,8 @@ RCT_EXPORT_MODULE()
                                                name:RCTRemoteNotificationsRegistered
                                              object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(handleRemoteNotificationRegisteredError:)
-                                               name:RCTRemoteNotificationRegisteredError
+                                           selector:@selector(handleRemoteNotificationsRegistrationError:)
+                                               name:RCTRemoteNotificationsRegistrationError
                                              object:nil];
 }
 
@@ -144,7 +144,7 @@ RCT_EXPORT_MODULE()
 
 + (void)didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationRegisteredError
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationsRegistrationError
                                                       object:self
                                                     userInfo:error.userInfo];
 }
@@ -167,10 +167,10 @@ RCT_EXPORT_MODULE()
                                               body:notification.userInfo];
 }
 
-- (void)handleRemoteNotificationRegisteredError:(NSNotification *)notification
+- (void)handleRemoteNotificationsRegistrationError:(NSNotification *)notification
 {
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationsRegisteredError"
-                                              body:[notification userInfo]];
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationsRegistrationError"
+                                              body:notification.userInfo];
 }
 
 /**

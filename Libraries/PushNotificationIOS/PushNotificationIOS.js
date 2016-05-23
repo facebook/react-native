@@ -21,7 +21,7 @@ var _initialNotification = RCTPushNotificationManager &&
 
 var DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
 var NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
-var NOTIF_REGISTER_ERROR_EVENT = 'remoteNotificationsRegisteredError';
+var NOTIF_REGISTER_ERROR_EVENT = 'remoteNotificationsRegistrationError';
 var DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
 
 /**
@@ -179,7 +179,7 @@ class PushNotificationIOS {
           handler(registrationInfo.deviceToken);
         }
       );
-    } else if(type === 'error'){
+    } else if (type === 'error'){
       listener = RCTDeviceEventEmitter.addListener(
         NOTIF_REGISTER_ERROR_EVENT,
         (registrationError) => {
