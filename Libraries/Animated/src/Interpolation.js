@@ -75,6 +75,7 @@ class Interpolation {
       );
 
       var range = findRange(input, inputRange);
+      var mapping = config.mapping || passThrough;
       return interpolate(
         input,
         inputRange[range],
@@ -84,9 +85,14 @@ class Interpolation {
         easing,
         extrapolateLeft,
         extrapolateRight,
+        mapping,
       );
     };
   }
+}
+
+function passThrough(input: any): any {
+  return input;
 }
 
 function interpolate(
@@ -98,13 +104,14 @@ function interpolate(
   easing: ((input: number) => number),
   extrapolateLeft: ExtrapolateType,
   extrapolateRight: ExtrapolateType,
+  mapping: ((input: number) => any)
 ) {
   var result = input;
 
   // Extrapolate
   if (result < inputMin) {
     if (extrapolateLeft === 'identity') {
-      return result;
+      return mapping(result);
     } else if (extrapolateLeft === 'clamp') {
       result = inputMin;
     } else if (extrapolateLeft === 'extend') {
@@ -114,7 +121,7 @@ function interpolate(
 
   if (result > inputMax) {
     if (extrapolateRight === 'identity') {
-      return result;
+      return mapping(result);
     } else if (extrapolateRight === 'clamp') {
       result = inputMax;
     } else if (extrapolateRight === 'extend') {
@@ -123,14 +130,14 @@ function interpolate(
   }
 
   if (outputMin === outputMax) {
-    return outputMin;
+    return mapping(outputMin);
   }
 
   if (inputMin === inputMax) {
     if (input <= inputMin) {
-      return outputMin;
+      return mapping(outputMin);
     }
-    return outputMax;
+    return mapping(outputMin);
   }
 
   // Input Range
@@ -154,7 +161,7 @@ function interpolate(
     result = result * (outputMax - outputMin) + outputMin;
   }
 
-  return result;
+  return mapping(result);
 }
 
 function colorToRgba(input: string): string {
