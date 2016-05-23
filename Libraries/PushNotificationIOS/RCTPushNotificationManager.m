@@ -27,6 +27,7 @@
 NSString *const RCTLocalNotificationReceived = @"LocalNotificationReceived";
 NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
 NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegistered";
+NSString *const RCTRemoteNotificationRegisteredError = @"RemoteNotificationRegisteredError";
 
 @implementation RCTConvert (UILocalNotification)
 
@@ -85,6 +86,10 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(handleRemoteNotificationsRegistered:)
                                                name:RCTRemoteNotificationsRegistered
                                              object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleRemoteNotificationRegisteredError:)
+                                               name:RCTRemoteNotificationRegisteredError
+                                             object:nil];
 }
 
 - (NSDictionary<NSString *, id> *)constantsToExport
@@ -135,6 +140,15 @@ RCT_EXPORT_MODULE()
                                                     userInfo:details];
 }
 
+
+
++ (void)didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationRegisteredError
+                                                      object:self
+                                                    userInfo:error.userInfo];
+}
+
 - (void)handleLocalNotificationReceived:(NSNotification *)notification
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"localNotificationReceived"
@@ -151,6 +165,12 @@ RCT_EXPORT_MODULE()
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationsRegistered"
                                               body:notification.userInfo];
+}
+
+- (void)handleRemoteNotificationRegisteredError:(NSNotification *)notification
+{
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationsRegisteredError"
+                                              body:[notification userInfo]];
 }
 
 /**

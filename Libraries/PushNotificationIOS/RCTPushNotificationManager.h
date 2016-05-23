@@ -17,5 +17,6 @@
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification;
 + (void)didReceiveLocalNotification:(UILocalNotification *)notification;
++ (void)didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
 
 @end

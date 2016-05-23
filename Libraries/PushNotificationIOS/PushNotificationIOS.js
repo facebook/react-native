@@ -21,6 +21,7 @@ var _initialNotification = RCTPushNotificationManager &&
 
 var DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
 var NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
+var NOTIF_REGISTER_ERROR_EVENT = 'remoteNotificationsRegisteredError';
 var DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
 
 /**
@@ -153,8 +154,8 @@ class PushNotificationIOS {
    */
   static addEventListener(type: string, handler: Function) {
     invariant(
-      type === 'notification' || type === 'register' || type === 'localNotification',
-      'PushNotificationIOS only supports `notification`, `register` and `localNotification` events'
+      type === 'notification' || type === 'register' || type === 'localNotification' || type === 'error',
+      'PushNotificationIOS only supports `notification`, `register`, `error` and `localNotification` events'
     );
     var listener;
     if (type === 'notification') {
@@ -176,6 +177,13 @@ class PushNotificationIOS {
         NOTIF_REGISTER_EVENT,
         (registrationInfo) => {
           handler(registrationInfo.deviceToken);
+        }
+      );
+    } else if(type === 'error'){
+      listener = RCTDeviceEventEmitter.addListener(
+        NOTIF_REGISTER_ERROR_EVENT,
+        (registrationError) => {
+          handler(registrationError);
         }
       );
     }
@@ -252,8 +260,8 @@ class PushNotificationIOS {
    */
   static removeEventListener(type: string, handler: Function) {
     invariant(
-      type === 'notification' || type === 'register' || type === 'localNotification',
-      'PushNotificationIOS only supports `notification`, `register` and `localNotification` events'
+      type === 'notification' || type === 'register' || type === 'localNotification' || type === 'error',
+      'PushNotificationIOS only supports `notification`, `register`, `error` and `localNotification` events'
     );
     var listener = _notifHandlers.get(handler);
     if (!listener) {
