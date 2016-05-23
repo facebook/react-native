@@ -277,9 +277,12 @@ void JSCExecutor::flush() {
 
   if (!ensureBatchedBridgeObject()) {
     throwJSExecutionException(
-        "Couldn't get the native call queue: bridge configuration isn't available. This "
-        "probably indicates there was an issue loading the JS bundle, e.g. it wasn't packaged "
-        "into the app or was malformed. Check your logs (`adb logcat`) for more information.");
+      "Could not connect to development server.\n"
+      "Try the following to fix the issue:\n"
+      "Ensure that the packager server is running\n"
+      "Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run 'adb devices' to see a list of connected devices\n"
+      "If you're on a physical device connected to the same machine, run 'adb reverse tcp:8081 tcp:8081' to forward requests from your device\n"
+      "If your device is on the same Wi-Fi network, set 'Debug server host & port for device' in 'Dev settings' to your machine's IP address and the port of the local dev server - e.g. 10.0.1.1:8081");
   }
 
   std::string calls = m_flushedQueueObj->callAsFunction().toJSONString();
