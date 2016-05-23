@@ -37,6 +37,8 @@ const emptyFunction = require('emptyFunction');
 const CLOSED_LEFT_POSITION = 0;
 // Minimum swipe distance before we recognize it as such
 const HORIZONTAL_SWIPE_DISTANCE_THRESHOLD = 15;
+// Time, in milliseconds, of how long the animated swipe should be
+const SWIPE_DURATION = 200;
 
 /**
  * Creates a swipable row that allows taps on the main item and a custom View
@@ -184,6 +186,7 @@ const SwipeableRow = React.createClass({
     Animated.timing(
       this.state.currentLeft,
       {
+        duration: SWIPE_DURATION,
         toValue: toValue,
       },
     ).start(() => {
