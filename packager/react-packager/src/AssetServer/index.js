@@ -51,7 +51,7 @@ class AssetServer {
   }
 
   get(assetPath, platform = null) {
-    const assetData = getAssetDataFromName(assetPath);
+    const assetData = getAssetDataFromName(assetPath, new Set([platform]));
     return this._getAssetRecord(assetPath, platform).then(record => {
       for (let i = 0; i < record.scales.length; i++) {
         if (record.scales[i] >= assetData.resolution) {
@@ -64,7 +64,7 @@ class AssetServer {
   }
 
   getAssetData(assetPath, platform = null) {
-    const nameData = getAssetDataFromName(assetPath);
+    const nameData = getAssetDataFromName(assetPath, new Set([platform]));
     const data = {
       name: nameData.name,
       type: nameData.type,
@@ -115,7 +115,7 @@ class AssetServer {
       .then(res => {
         const dir = res[0];
         const files = res[1];
-        const assetData = getAssetDataFromName(filename);
+        const assetData = getAssetDataFromName(filename, new Set([platform]));
 
         const map = this._buildAssetMap(dir, files, platform);
 
@@ -166,8 +166,8 @@ class AssetServer {
     });
   }
 
-  _buildAssetMap(dir, files) {
-    const assets = files.map(getAssetDataFromName);
+  _buildAssetMap(dir, files, platform) {
+    const assets = files.map(this._getAssetDataFromName.bind(this, new Set([platform])));
     const map = Object.create(null);
     assets.forEach(function(asset, i) {
       const file = files[i];
@@ -193,6 +193,10 @@ class AssetServer {
     });
 
     return map;
+  }
+  
+  _getAssetDataFromName(platform, file) {
+    return getAssetDataFromName(file, platform);
   }
 }
 
