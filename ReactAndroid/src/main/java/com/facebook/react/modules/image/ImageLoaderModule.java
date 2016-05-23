@@ -83,7 +83,6 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule {
               sizes.putInt("width", image.getWidth());
               sizes.putInt("height", image.getHeight());
 
-              image.close();
               promise.resolve(sizes);
             } catch (Exception e) {
               promise.reject(ERROR_GET_SIZE_FAILURE, e);
