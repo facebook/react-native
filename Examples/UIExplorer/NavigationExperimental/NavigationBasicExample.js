@@ -59,7 +59,7 @@ const NavigationBasicExample = React.createClass({
     return (
       <ScrollView style={styles.topView}>
         <NavigationExampleRow
-          text={`Current page: ${this.state.croutes[this.state.index].key}`}
+          text={`Current page: ${this.state.routes[this.state.index].key}`}
         />
         <NavigationExampleRow
           text={`Push page #${this.state.routes.length}`}
