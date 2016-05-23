@@ -332,7 +332,7 @@ var apps = [
     icon: 'http://a4.mzstatic.com/us/r30/Purple60/v4/1a/42/5b/1a425b56-848a-91f5-8078-9f5473c9021f/icon350x350.png',
     link: 'https://itunes.apple.com/us/app/clapit/id1062124740?mt=8',
     author: 'Refined Edge Solutions, LLC'
-  }, 
+  },
   {
     name: 'Codementor - Live 1:1 Expert Developer Help',
     icon: 'http://a1.mzstatic.com/us/r30/Purple3/v4/db/cf/35/dbcf3523-bac7-0f54-c6a8-a80bf4f43c38/icon175x175.jpeg',
@@ -671,6 +671,13 @@ var apps = [
     author: 'Levi Cabral',
   },
   {
+    name: 'passpoints',
+    icon: 'http://a5.mzstatic.com/eu/r30/Purple1/v4/8c/a0/72/8ca072ac-2304-1bf6-16e5-701e71921f42/icon350x350.png',
+    linkAppStore: 'https://itunes.apple.com/app/passpoints/id930988932',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.passpointsreactnative',
+    author: 'passpoints.de',
+  },
+  {
     name: 'Pimmr',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple69/v4/99/da/0e/99da0ee6-bc87-e1a6-1d95-7027c78f50e1/icon175x175.jpeg',
     link: 'https://itunes.apple.com/nl/app/pimmr/id1023343303?mt=8',
@@ -1007,6 +1014,12 @@ var apps = [
     icon: 'http://pp.myapp.com/ma_icon/0/icon_10966186_1460087288/96',
     link: 'http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.karaoke',
     author: '石玉磊',
+  },
+  {
+    name: 'Emberall',
+    icon: 'http://assets.emberall.com/images/app/icons/medium.png',
+    link: 'https://emberall.com/',
+    author: 'Kyle Corbitt',
   },
 ];
 

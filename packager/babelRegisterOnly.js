@@ -12,20 +12,19 @@ Array.prototype.values || require('core-js/fn/array/values');
 Object.entries || require('core-js/fn/object/entries');
 Object.values || require('core-js/fn/object/values');
 
-var fs = require('fs');
-var path = require('path');
-
 var _only = [];
-
-function readBabelRC() {
-  var rcpath = path.join(__dirname, 'react-packager', 'rn-babelrc.json');
-  var source = fs.readFileSync(rcpath).toString();
-  return JSON.parse(source);
-}
 
 module.exports = function(onlyList) {
   _only = _only.concat(onlyList);
-  var config = readBabelRC();
-  config.only = _only;
-  require('babel-register')(config);
+
+  require('babel-register')({
+    presets: ['es2015-node'],
+    plugins: [
+      'transform-flow-strip-types',
+      'syntax-trailing-function-commas',
+      'transform-object-rest-spread',
+    ],
+    only: _only,
+    sourceMaps: 'inline',
+  });
 };

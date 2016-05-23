@@ -43,7 +43,7 @@ const ExampleReducer = NavigationReducer.StackReducer({
   initialState: {
     key: 'BasicExampleStackKey',
     index: 0,
-    children: [
+    routes: [
       {key: 'First Route'},
     ],
   },
@@ -59,12 +59,12 @@ const NavigationBasicExample = React.createClass({
     return (
       <ScrollView style={styles.topView}>
         <NavigationExampleRow
-          text={`Current page: ${this.state.children[this.state.index].key}`}
+          text={`Current page: ${this.state.croutes[this.state.index].key}`}
         />
         <NavigationExampleRow
-          text={`Push page #${this.state.children.length}`}
+          text={`Push page #${this.state.routes.length}`}
           onPress={() => {
-            this._handleAction({ type: 'push', key: 'page #' + this.state.children.length });
+            this._handleAction({ type: 'push', key: 'page #' + this.state.routes.length });
           }}
         />
         <NavigationExampleRow
