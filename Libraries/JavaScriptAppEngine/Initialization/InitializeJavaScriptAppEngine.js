@@ -90,15 +90,15 @@ function polyfillLazyGlobal(name, valueFn, scope = global) {
   const {enumerable, writable} = descriptor;
   Object.defineProperty(scope, name, {
     configurable: true,
-    enumerable !== false,
+    enumerable: enumerable !== false,
     get() {
       return (this[name] = valueFn());
     },
     set(value) {
       Object.defineProperty(this, name, {
         configurable: true,
-        enumerable !== false,
-        writable !== false,
+        enumerable: enumerable !== false,
+        writable: writable !== false,
         value,
       });
     }
