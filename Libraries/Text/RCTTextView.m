@@ -63,6 +63,7 @@
   BOOL _blockTextShouldChange;
   UITextRange *_previousSelectionRange;
   NSUInteger _previousTextLength;
+  NSString *_previousText;
   CGFloat _previousContentHeight;
   UIScrollView *_scrollView;
 }
@@ -251,6 +252,50 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   size.height = [_textView sizeThatFits:size].height;
   _scrollView.contentSize = size;
   _textView.frame = (CGRect){CGPointZero, size};
+  _nativeEventCount++;
+
+  if (!self.reactTag) {
+    return;
+  }
+
+  // When the context size increases, iOS updates the contentSize twice; once
+  // with a lower height, then again with the correct height. To prevent a
+  // spurious event from being sent, we track the previous, and only send the
+  // update event if it matches our expectation that greater text length
+  // should result in increased height. This assumption is, of course, not
+  // necessarily true because shorter text might include more linebreaks, but
+  // in practice this works well enough.
+  NSUInteger textLength = _textView.text.length;
+  CGFloat contentHeight = _textView.contentSize.height;
+  if (textLength >= _previousTextLength) {
+    contentHeight = MAX(contentHeight, _previousContentHeight);
+  }
+  
+  //We don't need to trigger the change method if neither the height or
+  //text value have changed.
+  if (contentHeight == _previousContentHeight && [_previousText isEqualToString:self.text]) {
+      return;
+  }
+  
+  _previousTextLength = textLength;
+  _previousText = [self.text copy];
+  _previousContentHeight = contentHeight;
+
+  
+  //Any text value change is now updated by firing change in updateContentSize
+  //to acommodate notifying the user of layout changes caused by a change in
+  //value, as opposed to just when a user has typed in input.
+  
+  NSDictionary *event = @{
+    @"text": self.text,
+    @"contentSize": @{
+      @"height": @(contentHeight),
+      @"width": @(_textView.contentSize.width)
+    },
+    @"target": self.reactTag,
+    @"eventCount": @(_nativeEventCount),
+  };
+  [_eventDispatcher sendInputEventWithName:@"change" body:event];
 }
 
 - (void)updatePlaceholder
@@ -470,37 +515,6 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 {
   [self updateContentSize];
   [self _setPlaceholderVisibility];
-  _nativeEventCount++;
-
-  if (!self.reactTag) {
-    return;
-  }
-
-  // When the context size increases, iOS updates the contentSize twice; once
-  // with a lower height, then again with the correct height. To prevent a
-  // spurious event from being sent, we track the previous, and only send the
-  // update event if it matches our expectation that greater text length
-  // should result in increased height. This assumption is, of course, not
-  // necessarily true because shorter text might include more linebreaks, but
-  // in practice this works well enough.
-  NSUInteger textLength = textView.text.length;
-  CGFloat contentHeight = textView.contentSize.height;
-  if (textLength >= _previousTextLength) {
-    contentHeight = MAX(contentHeight, _previousContentHeight);
-  }
-  _previousTextLength = textLength;
-  _previousContentHeight = contentHeight;
-
-  NSDictionary *event = @{
-    @"text": self.text,
-    @"contentSize": @{
-      @"height": @(contentHeight),
-      @"width": @(textView.contentSize.width)
-    },
-    @"target": self.reactTag,
-    @"eventCount": @(_nativeEventCount),
-  };
-  [_eventDispatcher sendInputEventWithName:@"change" body:event];
 }
 
 - (void)textViewDidEndEditing:(UITextView *)textView
