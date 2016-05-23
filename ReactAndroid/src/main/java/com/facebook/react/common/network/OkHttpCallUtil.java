@@ -32,4 +32,8 @@ public class OkHttpCallUtil {
       }
     }
   }
+  
+  public static void cancelAll(OkHttpClient client) {
+    client.dispatcher().cancelAll();
+  }
 }
