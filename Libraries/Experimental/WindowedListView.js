@@ -339,7 +339,7 @@ class WindowedListView extends React.Component {
     const rowFrames = this._rowFrames;
     let firstVisible = -1;
     let lastVisible = 0;
-    let lastRow = this.state.lastRow;
+    let lastRow = clamp(0, this.state.lastRow, totalRows - 1);
     const top = this._scrollOffsetY;
     const bottom = top + this._frameHeight;
     for (let idx = 0; idx < lastRow; idx++) {

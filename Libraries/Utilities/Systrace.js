@@ -194,8 +194,6 @@ const Systrace = {
  },
 };
 
-Systrace.setEnabled(global.__RCTProfileIsProfiling || false);
-
 if (__DEV__) {
   // This is needed, because require callis in polyfills are not processed as
   // other files. Therefore, calls to `require('moduleId')` are not replaced
