@@ -11,6 +11,8 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import java.util.Collection;
+
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
@@ -131,6 +133,30 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
   /* package */ void dropViews(int[] viewsToDrop) {
     for (int viewToDrop : viewsToDrop) {
       dropView(resolveView(viewToDrop));
+    }
+  }
+
+  @Override
+  protected void dropView(View view) {
+    super.dropView(view);
+
+    // As a result of removeClippedSubviews, some views have strong references but are not attached
+    // to a parent. consequently, when the parent gets removed, these Views don't get cleaned up,
+    // because they aren't children (they also aren't removed from mTagsToViews, thus causing a
+    // leak). To solve this, we ask for said detached views and explicitly drop them.
+    if (view instanceof FlatViewGroup) {
+      FlatViewGroup flatViewGroup = (FlatViewGroup) view;
+      if (flatViewGroup.getRemoveClippedSubviews()) {
+        Collection<FlatViewGroup> detachedViews = flatViewGroup.getDetachedViews();
+        for (FlatViewGroup detachedChild : detachedViews) {
+          // we can do super here because removeClippedSubviews is currently not recursive. if/when
+          // we become recursive one day, this should call vanilla dropView to be recursive as well.
+          super.dropView(detachedChild);
+          // trigger onDetachedFromWindow - this is currently needed due to using attach/detach
+          // instead of add/remove. if we move to add/remove in the future, we can remove this.
+          flatViewGroup.removeDetachedView(detachedChild);
+        }
+      }
     }
   }
 

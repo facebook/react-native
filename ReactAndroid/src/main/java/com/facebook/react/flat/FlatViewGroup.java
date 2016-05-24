@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -405,6 +406,28 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
       }
     }
     invalidate();
+  }
+
+  /**
+   * Return a list of FlatViewGroups that are detached (due to being clipped) but that we have a
+   * strong reference to. This is used by the FlatNativeViewHierarchyManager to explicitly clean up
+   * those views when removing this parent.
+   *
+   * @return a Collection of FlatViewGroups to clean up
+   */
+  Collection<FlatViewGroup> getDetachedViews() {
+    return mClippedSubviews.values();
+  }
+
+  /**
+   * Remove the detached view from the parent
+   * This is used during cleanup to trigger onDetachedFromWindow on any views that were in a
+   * temporary detached state due to them being clipped. This is called for cleanup of said views
+   * by FlatNativeViewHierarchyManager.
+   * @param flatViewGroup the detached FlatViewGroup to remove
+   */
+  void removeDetachedView(FlatViewGroup flatViewGroup) {
+    removeDetachedView(flatViewGroup, false);
   }
 
   /* package */ void mountAttachDetachListeners(AttachDetachListener[] listeners) {
