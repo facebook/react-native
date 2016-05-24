@@ -1070,6 +1070,13 @@ var apps = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.cnyes.android',
     author: '鉅亨網',
   },
+  {
+    name: '爱普云',
+    icon: 'http://img.applean.cn/icon1024.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/ai-pu-yun/id1100119649?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=cn.applean.apprunner',
+    author: 'Applean.cn',
+  },
 ];
 
 var AppList = React.createClass({
