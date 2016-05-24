@@ -35,11 +35,11 @@ block { display: none; }
 <a href="javascript:void(0);" class="button-android" onclick="display('platform', 'android')">Android</a>
 </div>
 
-<block class="swift android" />
+<block class="android" />
 
 ## Coming Soon!
 
-<block class="objc" />
+<block class="objc swift" />
 
 ## Key Concepts
 
@@ -49,7 +49,7 @@ The keys to integrating React Native components into your iOS application are to
 
 1. Understand what React Native components you want to integrate.
 2. Create a `Podfile` with `subspec`s for all the React Native components you will need for your integration.
-3. Create your actual React Native components in JavaScript - either all directly in a `index.ios.js` file, or in a `index.ios.js` file and multiple other files.  
+3. Create your actual React Native components in JavaScript - either all directly in a `index.ios.js` file, or in a `index.ios.js` file and multiple other files.
 4. Add a new event handler that creates a `RCTRootView` that points to your React Native component and its `AppRegistry` name that you defined in `index.ios.js`.
 5. Start the React Native server and run your native application.
 6. Profit!
@@ -72,7 +72,15 @@ $ gem install cocoapods
 
 ## Our Sample App
 
+<block class="objc" />
+
 Assume the [app for integration](https://github.com/JoelMarcey/iOS-2048) is a [2048](https://en.wikipedia.org/wiki/2048_(video_game) game. Here is what the main menu of the native application looks like without React Native.
+
+<block class="swift" />
+
+Assume the [app for integration](https://github.com/JoelMarcey/swift-2048) is a [2048](https://en.wikipedia.org/wiki/2048_(video_game) game. Here is what the main menu of the native application looks like without React Native.
+
+<block class="objc swift" />
 
 ![Before RN Integration](img/react-native-existing-app-integration-ios-before.png)
 
@@ -91,6 +99,8 @@ Below is an example of what your `package.json` file should minimally contain.
 
 > Version numbers will vary according to your needs. Normally the latest versions for each will be sufficient.
 
+<block class="objc" />
+
 ```bash
 {
   "name": "NumberTileGame",
@@ -105,6 +115,25 @@ Below is an example of what your `package.json` file should minimally contain.
   }
 }
 ```
+
+<block class="swift" />
+
+```bash
+{
+  "name": "swift-2048",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+  "start": "node node_modules/react-native/local-cli/cli.js start"
+  },
+  "dependencies": {
+    "react": "^15.0.2",
+    "react-native": "^0.26.1"
+  }
+}
+```
+
+<block class="objc swift" />
 
 ### Packages Installation
 
@@ -139,6 +168,8 @@ $ pod init
 
 The `Podfile` will be created and saved in the *root* directory of your current project and will contain a boilerplate setup that ou will tweak for your integration purposes. In the end, `Podfile` should look something similar to this:
 
+<block class="objc" />
+
 ```
 # The target name is most likely the name of your project.
 target 'NumberTileGame' do
@@ -154,6 +185,32 @@ target 'NumberTileGame' do
 
 end
 ```
+
+<block class="swift" />
+
+```
+source 'https://github.com/CocoaPods/Specs.git'
+
+# Required for Swift apps
+platform :ios, '8.0'
+use_frameworks!
+
+# The target name is most likely the name of your project.
+target 'swift-2048' do
+
+  # Your 'node_modules' directory is probably in the root of your project,
+  # but if not, adjust the `:path` accordingly
+  pod 'React', :path => './node_modules/react-native', :subspecs => [
+    'Core',
+    'RCTText',
+    'RCTWebSocket', # needed for localhost testing of your app
+    # Add any other subspecs you want to use in your project
+  ]
+
+end
+```
+
+<block class="objc swift" />
 
 #### Pod Installation
 
@@ -175,6 +232,12 @@ Integrating client project
 Sending stats
 Pod installation complete! There are 2 dependencies from the Podfile and 1 total pod installed.
 ```
+
+<block class="swift" />
+
+> If you get a warning such as "*The `swift-2048 [Debug]` target overrides the `FRAMEWORK_SEARCH_PATHS` build setting defined in `Pods/Target Support Files/Pods-swift-2048/Pods-swift-2048.debug.xcconfig`. This can lead to problems with the CocoaPods installation*", then make sure the `Framework Search Paths` in `Build Settings` for both `Debug` and `Release` only contain `$(inherited)`.
+
+<block class="objc swift" />
 
 ## Code Integration
 
@@ -274,6 +337,8 @@ When you build a React Native application, you use the React Native packager to 
 
 We will, for debugging purposes, log that the event handler was invoked. Then create a string with the location of our React Native code inside the `index.ios.bundle` and then create the main `RCTRootView`. Notice how we provide `HighScores` as the `moduleName` that we created [above](#the-react-native-component) when writing the code for our React Native component.
 
+<block class="objc" />
+
 First `import` the `RCTRootView` library.
 
 ```
@@ -309,6 +374,41 @@ First `import` the `RCTRootView` library.
     [self presentViewController:vc animated:YES completion:nil];
 }
 ```
+
+<block class="swift" />
+
+First `import` the `React` library.
+
+```
+import React
+```
+
+> The `initialProperties` are here for illustration purposes so we have some data for our high score screen. In our React Native component, we will use `this.props` to get access to that data.
+
+```
+@IBAction func highScoreButtonTapped(sender : UIButton) {
+  NSLog("Hello")
+  let jsCodeLocation = NSURL(string: "http://localhost:8081/index.ios.bundle?platform=ios")
+  let mockData:NSDictionary = ["scores":
+      [
+          ["name":"Alex", "value":"42"],
+          ["name":"Joel", "value":"10"]
+      ]
+  ]
+
+  let rootView = RCTRootView(
+      bundleURL: jsCodeLocation,
+      moduleName: "RNHighScores",
+      initialProperties: mockData as [NSObject : AnyObject],
+      launchOptions: nil
+  )
+  let vc = UIViewController()
+  vc.view = rootView
+  self.presentViewController(vc, animated: true, completion: nil)
+}
+```
+
+<block class="objc swift" />
 
 > When moving your app to production, the `NSURL` can point to a pre-bundled file on disk via something like `[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];`. You can use the `react-native-xcode.sh` script in `node_modules/react-native/packager/` to generate that pre-bundled file.
 
@@ -366,7 +466,13 @@ Here is the *React Native* high score screen:
 
 ### See the Code
 
+<block class="objc" />
+
 You can examine the code that added the React Native screen on [GitHub](https://github.com/JoelMarcey/iOS-2048/commit/b90f5235e8af40eb10ade112a6283c3d68266e1d).
+
+<block class="swift" />
+
+You can examine the code that added the React Native screen on [GitHub](https://github.com/JoelMarcey/swift-2048/commit/413f1fcbacad30dc72b3a181b0b1a15daf7f2d97).
 
 <script>
 // Convert <div>...<span><block /></span>...</div>
@@ -390,7 +496,6 @@ for (var i = 0; i < blocks.length; ++i) {
 }
 function display(type, value) {
   var container = document.getElementsByTagName('block')[0].parentNode;
-  console.log(container);
   container.className = 'display-' + type + '-' + value + ' ' +
     container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
   console.log(container.className);
