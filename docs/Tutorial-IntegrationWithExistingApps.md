@@ -7,9 +7,43 @@ permalink: docs/tutorial-integration-with-existing-apps.html
 next: sample-application-movies
 ---
 
-We know that many developers are not looking to create new applications from scratch. Instead, they have existing applications where React Native may be a technological fit. With a few steps, you can begin to integrate React Native to add new components to your existing app, or convert current components to React Native.
+<div class="integration-toggler">
+<style>
+.integration-toggler a {
+  display: inline-block;
+  padding: 10px 5px;
+  margin: 2px;
+  border: 1px solid #05A5D1;
+  border-radius: 3px;
+  text-decoration: none !important;
+}
+.display-platform-objc .integration-toggler .button-objc,
+.display-platform-swift .integration-toggler .button-swift,
+.display-platform-android .integration-toggler .button-android {
+  background-color: #05A5D1;
+  color: white;
+}
+block { display: none; }
+.display-platform-objc .objc,
+.display-platform-swift .swift,
+.display-platform-android .android {
+  display: block;
+}</style>
+<span>Platform:</span>
+<a href="javascript:void(0);" class="button-objc" onclick="display('platform', 'objc')">Objective-C</a>
+<a href="javascript:void(0);" class="button-swift" onclick="display('platform', 'swift')">Swift</a>
+<a href="javascript:void(0);" class="button-android" onclick="display('platform', 'android')">Android</a>
+</div>
+
+<block class="swift android" />
+
+## Coming Soon!
+
+<block class="objc" />
 
 ## Key Concepts
+
+We know that many developers are not looking to create new applications from scratch. Instead, they have existing applications where React Native may be a technological fit. With a few steps, you can begin to integrate React Native to add new components to your existing app, or convert current components to React Native.
 
 The keys to integrating React Native components into your iOS application are to:
 
@@ -333,3 +367,73 @@ Here is the *React Native* high score screen:
 ### See the Code
 
 You can examine the code that added the React Native screen on [GitHub](https://github.com/JoelMarcey/iOS-2048/commit/b90f5235e8af40eb10ade112a6283c3d68266e1d).
+
+<script>
+// Convert <div>...<span><block /></span>...</div>
+// Into <div>...<block />...</div>
+var blocks = document.getElementsByTagName('block');
+for (var i = 0; i < blocks.length; ++i) {
+  var block = blocks[i];
+  var span = blocks[i].parentNode;
+  var container = span.parentNode;
+  container.insertBefore(block, span);
+  container.removeChild(span);
+}
+// Convert <div>...<block />content<block />...</div>
+// Into <div>...<block>content</block><block />...</div>
+blocks = document.getElementsByTagName('block');
+for (var i = 0; i < blocks.length; ++i) {
+  var block = blocks[i];
+  while (block.nextSibling && block.nextSibling.tagName !== 'BLOCK') {
+    block.appendChild(block.nextSibling);
+  }
+}
+function display(type, value) {
+  var container = document.getElementsByTagName('block')[0].parentNode;
+  console.log(container);
+  container.className = 'display-' + type + '-' + value + ' ' +
+    container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
+  console.log(container.className);
+  event && event.preventDefault();
+}
+
+// If we are coming to the page with a hash in it (i.e. from a search, for example), try to get
+// us as close as possible to the correct platform and dev os using the hashtag and block walk up.
+var foundHash = false;
+if (window.location.hash !== '' && window.location.hash !== 'content') { // content is default
+  var hashLinks = document.querySelectorAll('a.hash-link');
+  for (var i = 0; i < hashLinks.length && !foundHash; ++i) {
+    if (hashLinks[i].hash === window.location.hash) {
+      var parent = hashLinks[i].parentElement;
+      while (parent) {
+        if (parent.tagName === 'BLOCK') {
+          var targetPlatform = null;
+          // Could be more than one target platform, but just choose some sort of order
+          // of priority here.
+
+          // Target Platform
+          if (parent.className.indexOf('objc') > -1) {
+            targetPlatform = 'objc';
+          } else if (parent.className.indexOf('swift') > -1) {
+            targetPlatform = 'swift';
+          } else if (parent.className.indexOf('android') > -1) {
+            targetPlatform = 'android';
+          } else {
+            break; // assume we don't have anything.
+          }
+          // We would have broken out if both targetPlatform and devOS hadn't been filled.
+          display('platform', targetPlatform);
+          foundHash = true;
+          break;
+        }
+        parent = parent.parentElement;
+      }
+    }
+  }
+}
+// Do the default if there is no matching hash
+if (!foundHash) {
+  var isMac = navigator.platform === 'MacIntel';
+  display('platform', isMac ? 'objc' : 'android');
+}
+</script>
