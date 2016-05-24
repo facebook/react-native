@@ -82,4 +82,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return _coalescingKey;
 }
 
+- (NSString *)description
+{
+  return [NSString stringWithFormat:@"<%@: %p; name = %@; coalescing key = %hu>", [self class], self, _eventName, _coalescingKey];
+}
+
 @end
