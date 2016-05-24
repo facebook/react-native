@@ -1012,7 +1012,7 @@ var apps = [
     icon: 'http://a4.mzstatic.com/us/r30/Purple18/v4/1e/b1/dd/1eb1dd6e-0d9e-03cf-22f9-1b6fd816814d/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/us/app/ju-heng-cai-jing-xin-wen/id1071014509?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.cnyes.android',
-    author: '鉅亨網'
+    author: '鉅亨網',
   },
 ];
 
