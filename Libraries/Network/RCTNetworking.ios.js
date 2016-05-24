@@ -10,39 +10,21 @@
  */
 'use strict';
 
-const FormData = require('FormData');
-const NativeEventEmitter = require('NativeEventEmitter');
-const RCTNetworkingNative = require('NativeModules').Networking;
+var RCTNetworkingNative = require('NativeModules').Networking;
 
-class RCTNetworking extends NativeEventEmitter {
+/**
+ * This class is a wrapper around the native RCTNetworking module.
+ */
+class RCTNetworking {
 
-  constructor() {
-    super(RCTNetworkingNative);
+  static sendRequest(query, callback) {
+    RCTNetworkingNative.sendRequest(query, callback);
   }
 
-  sendRequest(method, url, headers, data, incrementalUpdates, timeout, callback) {
-    if (typeof data === 'string') {
-      data = {string: data};
-    } else if (data instanceof FormData) {
-      data = {formData: data.getParts()};
-    }
-    RCTNetworkingNative.sendRequest({
-      method,
-      url,
-      data,
-      headers,
-      incrementalUpdates,
-      timeout
-    }, callback);
+  static abortRequest(requestId) {
+    RCTNetworkingNative.cancelRequest(requestId);
   }
 
-  abortRequest(requestId) {
-    RCTNetworkingNative.abortRequest(requestId);
-  }
-
-  clearCookies(callback) {
-    console.warn('RCTNetworking.clearCookies is not supported on iOS');
-  }
 }
 
-module.exports = new RCTNetworking();
+module.exports = RCTNetworking;

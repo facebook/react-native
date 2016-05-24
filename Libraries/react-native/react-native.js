@@ -10,11 +10,11 @@
  */
 'use strict';
 
-const warning = require('fbjs/lib/warning');
+var warning = require('fbjs/lib/warning');
 
 if (__DEV__) {
-  const warningDedupe = {};
-  const addonWarn = function(prevName, newPackageName) {
+  var warningDedupe = {};
+  var addonWarn = function(prevName, newPackageName) {
     warning(
       warningDedupe[prevName],
       'React.addons.' + prevName + ' is deprecated. Please import the "' +
@@ -25,7 +25,7 @@ if (__DEV__) {
 }
 
 // Export React, plus some native additions.
-const ReactNative = {
+var ReactNative = {
   // Components
   get ActivityIndicatorIOS() { return require('ActivityIndicatorIOS'); },
   get ART() { return require('ReactNativeART'); },
@@ -87,11 +87,9 @@ const ReactNative = {
   get ImagePickerIOS() { return require('ImagePickerIOS'); },
   get IntentAndroid() { return require('IntentAndroid'); },
   get InteractionManager() { return require('InteractionManager'); },
-  get Keyboard() { return require('Keyboard'); },
   get LayoutAnimation() { return require('LayoutAnimation'); },
   get Linking() { return require('Linking'); },
   get LinkingIOS() { return require('LinkingIOS'); },
-  get NativeEventEmitter() { return require('NativeEventEmitter'); },
   get NavigationExperimental() { return require('NavigationExperimental'); },
   get NetInfo() { return require('NetInfo'); },
   get PanResponder() { return require('PanResponder'); },
@@ -173,7 +171,7 @@ const ReactNative = {
 
 // Preserve getters with warnings on the internal ReactNative copy without
 // invoking them.
-const ReactNativeInternal = require('ReactNative');
+var ReactNativeInternal = require('ReactNative');
 function applyForwarding(key) {
   if (__DEV__) {
     Object.defineProperty(
@@ -185,7 +183,7 @@ function applyForwarding(key) {
   }
   ReactNative[key] = ReactNativeInternal[key];
 }
-for (const key in ReactNativeInternal) {
+for (var key in ReactNativeInternal) {
   applyForwarding(key);
 }
 

@@ -12,13 +12,11 @@
 'use strict';
 
 const Map = require('Map');
-const NativeEventEmitter = require('NativeEventEmitter');
 const NativeModules = require('NativeModules');
 const Platform = require('Platform');
+const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 const RCTNetInfo = NativeModules.NetInfo;
 const deprecatedCallback = require('deprecatedCallback');
-
-const NetInfoEventEmitter = new NativeEventEmitter(RCTNetInfo);
 
 const DEVICE_CONNECTIVITY_EVENT = 'networkStatusDidChange';
 
@@ -178,7 +176,7 @@ const NetInfo = {
     eventName: ChangeEventName,
     handler: Function
   ): {remove: () => void} {
-    const listener = NetInfoEventEmitter.addListener(
+    const listener = RCTDeviceEventEmitter.addListener(
       DEVICE_CONNECTIVITY_EVENT,
       (appStateData) => {
         handler(appStateData.network_info);

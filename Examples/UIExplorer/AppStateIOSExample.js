@@ -11,7 +11,7 @@
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * @providesModule AppStateExample
+ * @providesModule AppStateIOSExample
  * @flow
  */
 'use strict';
@@ -19,7 +19,7 @@
 var React = require('react');
 var ReactNative = require('react-native');
 var {
-  AppState,
+  AppStateIOS,
   Text,
   View
 } = ReactNative;
@@ -27,15 +27,21 @@ var {
 var AppStateSubscription = React.createClass({
   getInitialState() {
     return {
-      appState: AppState.currentState,
+      appState: AppStateIOS.currentState,
       previousAppStates: [],
+      memoryWarnings: 0,
     };
   },
   componentDidMount: function() {
-    AppState.addEventListener('change', this._handleAppStateChange);
+    AppStateIOS.addEventListener('change', this._handleAppStateChange);
+    AppStateIOS.addEventListener('memoryWarning', this._handleMemoryWarning);
   },
   componentWillUnmount: function() {
-    AppState.removeEventListener('change', this._handleAppStateChange);
+    AppStateIOS.removeEventListener('change', this._handleAppStateChange);
+    AppStateIOS.removeEventListener('memoryWarning', this._handleMemoryWarning);
+  },
+  _handleMemoryWarning: function() {
+    this.setState({memoryWarnings: this.state.memoryWarnings + 1});
   },
   _handleAppStateChange: function(appState) {
     var previousAppStates = this.state.previousAppStates.slice();
@@ -46,6 +52,13 @@ var AppStateSubscription = React.createClass({
     });
   },
   render() {
+    if (this.props.showMemoryWarnings) {
+      return (
+        <View>
+          <Text>{this.state.memoryWarnings}</Text>
+        </View>
+      );
+    }
     if (this.props.showCurrentOnly) {
       return (
         <View>
@@ -61,21 +74,26 @@ var AppStateSubscription = React.createClass({
   }
 });
 
-exports.title = 'AppState';
-exports.description = 'app background status';
+exports.title = 'AppStateIOS';
+exports.description = 'iOS app background status';
 exports.examples = [
   {
-    title: 'AppState.currentState',
+    title: 'AppStateIOS.currentState',
     description: 'Can be null on app initialization',
-    render() { return <Text>{AppState.currentState}</Text>; }
+    render() { return <Text>{AppStateIOS.currentState}</Text>; }
   },
   {
-    title: 'Subscribed AppState:',
+    title: 'Subscribed AppStateIOS:',
     description: 'This changes according to the current state, so you can only ever see it rendered as "active"',
     render(): ReactElement { return <AppStateSubscription showCurrentOnly={true} />; }
   },
   {
     title: 'Previous states:',
     render(): ReactElement { return <AppStateSubscription showCurrentOnly={false} />; }
+  },
+  {
+    title: 'Memory Warnings',
+    description: 'In the simulator, hit Shift+Command+M to simulate a memory warning.',
+    render(): ReactElement { return <AppStateSubscription showMemoryWarnings={true} />; }
   },
 ];

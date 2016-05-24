@@ -92,11 +92,8 @@ RCT_EXPORT_MODULE()
   BOOL newIsVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
   if (_isVoiceOverEnabled != newIsVoiceOverEnabled) {
     _isVoiceOverEnabled = newIsVoiceOverEnabled;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [_bridge.eventDispatcher sendDeviceEventWithName:@"voiceOverDidChange"
                                                 body:@(_isVoiceOverEnabled)];
-#pragma clang diagnostic pop
   }
 }
 

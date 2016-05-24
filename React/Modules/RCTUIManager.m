@@ -253,11 +253,8 @@ RCT_EXPORT_MODULE()
       !UIInterfaceOrientationIsPortrait(nextOrientation)) ||
       (UIInterfaceOrientationIsLandscape(_currentInterfaceOrientation) &&
       !UIInterfaceOrientationIsLandscape(nextOrientation))) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
                                                 body:RCTExportedDimensions(YES)];
-#pragma clang diagnostic pop
   }
 
   _currentInterfaceOrientation = nextOrientation;

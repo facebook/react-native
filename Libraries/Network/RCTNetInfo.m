@@ -22,8 +22,9 @@ static NSString *const RCTReachabilityStateCell = @"cell";
 {
   SCNetworkReachabilityRef _reachability;
   NSString *_status;
-  NSString *_host;
 }
+
+@synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
 
@@ -50,7 +51,11 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 
   if (![status isEqualToString:self->_status]) {
     self->_status = status;
-    [self sendEventWithName:@"networkStatusDidChange" body:@{@"network_info": status}];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [self->_bridge.eventDispatcher sendDeviceEventWithName:@"networkStatusDidChange"
+                                                      body:@{@"network_info": status}];
+#pragma clang diagnostic pop
   }
 }
 
@@ -61,40 +66,34 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
   RCTAssertParam(host);
   RCTAssert(![host hasPrefix:@"http"], @"Host value should just contain the domain, not the URL scheme.");
 
-  if ((self = [self init])) {
-    _host = [host copy];
+  if ((self = [super init])) {
+    _status = RCTReachabilityStateUnknown;
+    _reachability = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, host.UTF8String);
+    SCNetworkReachabilityContext context = { 0, ( __bridge void *)self, NULL, NULL, NULL };
+    SCNetworkReachabilitySetCallback(_reachability, RCTReachabilityCallback, &context);
+    SCNetworkReachabilityScheduleWithRunLoop(_reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
   }
   return self;
 }
 
-- (NSArray<NSString *> *)supportedEvents
+- (instancetype)init
 {
-  return @[@"networkStatusDidChange"];
+  return [self initWithHost:@"apple.com"];
 }
 
-- (void)startObserving
+- (void)dealloc
 {
-  _status = RCTReachabilityStateUnknown;
-  _reachability = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, _host.UTF8String ?: "apple.com");
-  SCNetworkReachabilityContext context = { 0, ( __bridge void *)self, NULL, NULL, NULL };
-  SCNetworkReachabilitySetCallback(_reachability, RCTReachabilityCallback, &context);
-  SCNetworkReachabilityScheduleWithRunLoop(_reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
-}
-
-- (void)stopObserving
-{
-  if (_reachability) {
-    SCNetworkReachabilityUnscheduleFromRunLoop(_reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
-    CFRelease(_reachability);
-  }
+  SCNetworkReachabilityUnscheduleFromRunLoop(_reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+  CFRelease(_reachability);
 }
 
 #pragma mark - Public API
 
+// TODO: remove error callback - not needed except by Subscribable interface
 RCT_EXPORT_METHOD(getCurrentConnectivity:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
-  resolve(@{@"network_info": _status ?: RCTReachabilityStateUnknown});
+  resolve(@{@"network_info": _status});
 }
 
 @end

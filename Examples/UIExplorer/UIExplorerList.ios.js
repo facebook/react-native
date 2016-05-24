@@ -172,6 +172,10 @@ const APIExamples: Array<UIExplorerExample> = [
     module: require('./AnimatedGratuitousApp/AnExApp'),
   },
   {
+    key: 'AppStateIOSExample',
+    module: require('./AppStateIOSExample'),
+  },
+  {
     key: 'AppStateExample',
     module: require('./AppStateExample'),
   },

@@ -113,6 +113,8 @@ static NSDictionary<NSString *, id> *RCTPositionError(RCTPositionErrorCode code,
 
 RCT_EXPORT_MODULE()
 
+@synthesize bridge = _bridge;
+
 #pragma mark - Lifecycle
 
 - (void)dealloc
@@ -126,12 +128,8 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-- (NSArray<NSString *> *)supportedEvents
-{
-  return @[@"geolocationDidChange", @"geolocationError"];
-}
-
 #pragma mark - Private API
+
 
 - (void)beginLocationUpdatesWithDesiredAccuracy:(CLLocationAccuracy)desiredAccuracy distanceFilter:(CLLocationDistance)distanceFilter
 {
@@ -281,7 +279,11 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
 
   // Send event
   if (_observingLocation) {
-    [self sendEventWithName:@"geolocationDidChange" body:_lastLocationEvent];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"geolocationDidChange"
+                                                body:_lastLocationEvent];
+#pragma clang diagnostic pop
   }
 
   // Fire all queued callbacks
@@ -322,7 +324,11 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
 
   // Send event
   if (_observingLocation) {
-    [self sendEventWithName:@"geolocationError" body:jsError];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"geolocationError"
+                                                body:jsError];
+#pragma clang diagnostic pop
   }
 
   // Fire all queued error callbacks

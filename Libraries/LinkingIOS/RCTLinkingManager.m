@@ -88,11 +88,8 @@ continueUserActivity:(NSUserActivity *)userActivity
 
 - (void)handleOpenURLNotification:(NSNotification *)notification
 {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [_bridge.eventDispatcher sendDeviceEventWithName:@"openURL"
                                               body:notification.userInfo];
-#pragma clang diagnostic pop
 }
 
 RCT_EXPORT_METHOD(openURL:(NSURL *)URL

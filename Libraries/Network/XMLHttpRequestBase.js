@@ -6,12 +6,13 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule XMLHttpRequest
+ * @providesModule XMLHttpRequestBase
  * @flow
  */
 'use strict';
 
-const RCTNetworking = require('RCTNetworking');
+var RCTNetworking = require('RCTNetworking');
+var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 const EventTarget = require('event-target-shim');
 const invariant = require('fbjs/lib/invariant');
@@ -211,19 +212,19 @@ class XMLHttpRequestBase extends EventTarget(...XHR_EVENTS) {
 
   didCreateRequest(requestId: number): void {
     this._requestId = requestId;
-    this._subscriptions.push(RCTNetworking.addListener(
+    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
       'didSendNetworkData',
       (args) => this.__didUploadProgress(...args)
     ));
-    this._subscriptions.push(RCTNetworking.addListener(
+    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
       'didReceiveNetworkResponse',
       (args) => this._didReceiveResponse(...args)
     ));
-    this._subscriptions.push(RCTNetworking.addListener(
+    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
       'didReceiveNetworkData',
       (args) =>  this._didReceiveData(...args)
     ));
-    this._subscriptions.push(RCTNetworking.addListener(
+    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
       'didCompleteNetworkResponse',
       (args) => this.__didCompleteResponse(...args)
     ));
@@ -336,18 +337,10 @@ class XMLHttpRequestBase extends EventTarget(...XHR_EVENTS) {
     url: ?string,
     headers: Object,
     data: any,
-    useIncrementalUpdates: boolean,
-    timeout: number,
+    incrementalEvents: boolean,
+    timeout: number
   ): void {
-    RCTNetworking.sendRequest(
-      method,
-      url,
-      headers,
-      data,
-      useIncrementalUpdates,
-      timeout,
-      this.didCreateRequest.bind(this),
-    );
+    throw new Error('Subclass must define sendImpl method');
   }
 
   send(data: any): void {

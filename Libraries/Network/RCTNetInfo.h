@@ -9,10 +9,10 @@
 
 #import <SystemConfiguration/SystemConfiguration.h>
 
-#import "RCTEventEmitter.h"
+#import "RCTBridgeModule.h"
 
-@interface RCTNetInfo : RCTEventEmitter
+@interface RCTNetInfo : NSObject<RCTBridgeModule>
 
-- (instancetype)initWithHost:(NSString *)host;
+- (instancetype)initWithHost:(NSString *)host NS_DESIGNATED_INITIALIZER;
 
 @end

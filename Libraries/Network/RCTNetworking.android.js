@@ -12,66 +12,39 @@
 
 // Do not require the native RCTNetworking module directly! Use this wrapper module instead.
 // It will add the necessary requestId, so that you don't have to generate it yourself.
-const FormData = require('FormData');
-const NativeEventEmitter = require('NativeEventEmitter');
-const RCTNetworkingNative = require('NativeModules').Networking;
+var RCTNetworkingNative = require('NativeModules').Networking;
 
-type Header = [string, string];
-
-function convertHeadersMapToArray(headers: Object): Array<Header> {
-  const headerArray = [];
-  for (const name in headers) {
-    headerArray.push([name, headers[name]]);
-  }
-  return headerArray;
-}
-
-let _requestId = 1;
-function generateRequestId() {
+var _requestId = 1;
+var generateRequestId = function() {
   return _requestId++;
-}
+};
 
 /**
  * This class is a wrapper around the native RCTNetworking module. It adds a necessary unique
  * requestId to each network request that can be used to abort that request later on.
  */
-class RCTNetworking extends NativeEventEmitter {
+class RCTNetworking {
 
-  constructor() {
-    super(RCTNetworkingNative);
-  }
-
-  sendRequest(method, url, headers, data, incrementalUpdates, timeout, callback) {
-    if (typeof data === 'string') {
-      data = {string: data};
-    } else if (data instanceof FormData) {
-      data = {
-        formData: data.getParts().map((part) => {
-          part.headers = convertHeadersMapToArray(part.headers);
-          return part;
-        }),
-      };
-    }
-    const requestId = generateRequestId();
+  static sendRequest(method, url, headers, data, useIncrementalUpdates, timeout) {
+    var requestId = generateRequestId();
     RCTNetworkingNative.sendRequest(
       method,
       url,
       requestId,
-      convertHeadersMapToArray(headers),
+      headers,
       data,
-      incrementalUpdates,
-      timeout
-    );
-    callback(requestId);
+      useIncrementalUpdates,
+      timeout);
+    return requestId;
   }
 
-  abortRequest(requestId) {
+  static abortRequest(requestId) {
     RCTNetworkingNative.abortRequest(requestId);
   }
 
-  clearCookies(callback) {
+  static clearCookies(callback) {
     RCTNetworkingNative.clearCookies(callback);
   }
 }
 
-module.exports = new RCTNetworking();
+module.exports = RCTNetworking;
