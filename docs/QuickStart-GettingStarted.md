@@ -226,6 +226,20 @@ However, it's only free for personal use. If you want to use the stock Google em
 3. Create a new emulator and start it.
 4. To bring up the developer menu press ⌘+M
 
+### Start the Android Emulator
+
+You'll need to start an Android Emulator before launching your React Native app. To run the stock
+emulator, first start the Android Virtual Device (AVD) Manager:
+
+```
+android avd
+```
+
+Next select the "reactnative" virtual device and click `Edit...` (if this virtual device doesn't exist,
+see the `Troubleshooting` section below). Make sure the `Use Host GPU` checkbox is checked and click `OK`.
+Click `Start...` to launch the emulator. Wait for the emulator to finish starting before running your app.
+If you'd prefer to use the Genymotion emulator, see the instructions under `Genymotion` above.
+
 ### Troubleshooting
 
 #### Virtual Device Not Created When Installing Android Studio
