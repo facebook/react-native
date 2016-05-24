@@ -46,7 +46,7 @@ React Native will import the correct component for the running platform.
 A module is provided by React Native to detect what is the platform in which the app is running. This piece of functionality can be useful when only small parts of a component are platform specific.
 
 ```javascript
-var { Platform } = React;
+var { Platform } = ReactNative;
 
 var styles = StyleSheet.create({
   height: (Platform.OS === 'ios') ? 200 : 100,
@@ -59,7 +59,7 @@ There is also a `Platform.select` method available, that given an object contain
 returns the value for the platform you are currently running on.
 
 ```javascript
-var { Platform } = React;
+var { Platform } = ReactNative;
 
 var styles = StyleSheet.create({
   container: {
@@ -94,7 +94,7 @@ var Component = Platform.select({
 On Android, the Platform module can be also used to detect which is the version of the Android Platform in which the app is running
 
 ```javascript
-var {Platform} = React;
+var {Platform} = ReactNative;
 
 if(Platform.Version === 21){
   console.log('Running on Lollipop!');

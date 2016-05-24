@@ -14,29 +14,29 @@
 const invariant = require('fbjs/lib/invariant');
 
 import type {
+  NavigationRoute,
   NavigationState,
-  NavigationParentState,
 } from 'NavigationTypeDefinition';
 
-function getParent(state: NavigationState): ?NavigationParentState {
+function getParent(state: NavigationState): ?NavigationState {
   if (
     (state instanceof Object) &&
-    (state.children instanceof Array) &&
-    (state.children[0] !== undefined) &&
+    (state.routes instanceof Array) &&
+    (state.routes[0] !== undefined) &&
     (typeof state.index === 'number') &&
-    (state.children[state.index] !== undefined)
+    (state.routes[state.index] !== undefined)
   ) {
     return state;
   }
   return null;
 }
 
-function get(state: NavigationState, key: string): ?NavigationState {
+function get(state: NavigationState, key: string): ?NavigationRoute {
   const parentState = getParent(state);
   if (!parentState) {
     return null;
   }
-  const childState = parentState.children.find(child => child.key === key);
+  const childState = parentState.routes.find(child => child.key === key);
   return childState || null;
 }
 
@@ -45,18 +45,18 @@ function indexOf(state: NavigationState, key: string): ?number {
   if (!parentState) {
     return null;
   }
-  const index = parentState.children.map(child => child.key).indexOf(key);
+  const index = parentState.routes.map(child => child.key).indexOf(key);
   if (index === -1) {
     return null;
   }
   return index;
 }
 
-function push(state: NavigationParentState, newChildState: NavigationState): NavigationParentState {
-  var lastChildren: Array<NavigationState> = state.children;
+function push(state: NavigationState, newChildState: NavigationRoute): NavigationState {
+  var lastChildren: Array<NavigationRoute> = state.routes;
   return {
     ...state,
-    children: [
+    routes: [
       ...lastChildren,
       newChildState,
     ],
@@ -64,36 +64,36 @@ function push(state: NavigationParentState, newChildState: NavigationState): Nav
   };
 }
 
-function pop(state: NavigationParentState): NavigationParentState {
-  const lastChildren = state.children;
+function pop(state: NavigationState): NavigationState {
+  const lastChildren = state.routes;
   return {
     ...state,
-    children: lastChildren.slice(0, lastChildren.length - 1),
+    routes: lastChildren.slice(0, lastChildren.length - 1),
     index: lastChildren.length - 2,
   };
 }
 
-function reset(state: NavigationState, nextChildren: ?Array<NavigationState>, nextIndex: ?number): NavigationState {
+function reset(state: NavigationState, nextChildren: ?Array<NavigationRoute>, nextIndex: ?number): NavigationState {
   const parentState = getParent(state);
   if (!parentState) {
     return state;
   }
-  const children = nextChildren || parentState.children;
+  const routes = nextChildren || parentState.routes;
   const index = nextIndex == null ? parentState.index : nextIndex;
-  if (children === parentState.children && index === parentState.index) {
+  if (routes === parentState.routes && index === parentState.index) {
     return state;
   }
   return {
     ...parentState,
-    children,
+    routes,
     index,
   };
 }
 
-function set(state: ?NavigationState, key: string, nextChildren: Array<NavigationState>, nextIndex: number): NavigationState {
+function set(state: ?NavigationState, key: string, nextChildren: Array<NavigationRoute>, nextIndex: number): NavigationState {
   if (!state) {
     return {
-      children: nextChildren,
+      routes: nextChildren,
       index: nextIndex,
       key,
     };
@@ -101,17 +101,17 @@ function set(state: ?NavigationState, key: string, nextChildren: Array<Navigatio
   const parentState = getParent(state);
   if (!parentState) {
     return {
-      children: nextChildren,
+      routes: nextChildren,
       index: nextIndex,
       key,
     };
   }
-  if (nextChildren === parentState.children && nextIndex === parentState.index && key === parentState.key) {
+  if (nextChildren === parentState.routes && nextIndex === parentState.index && key === parentState.key) {
     return parentState;
   }
   return {
     ...parentState,
-    children: nextChildren,
+    routes: nextChildren,
     index: nextIndex,
     key,
   };
@@ -133,10 +133,10 @@ function jumpTo(state: NavigationState, key: string): NavigationState {
   if (!parentState) {
     return state;
   }
-  const index = parentState.children.indexOf(parentState.children.find(child => child.key === key));
+  const index = parentState.routes.indexOf(parentState.routes.find(child => child.key === key));
   invariant(
     index !== -1,
-    'Cannot find child with matching key in this NavigationState'
+    'Cannot find child with matching key in this NavigationRoute'
   );
   return {
     ...parentState,
@@ -149,16 +149,16 @@ function replaceAt(state: NavigationState, key: string, newState: NavigationStat
   if (!parentState) {
     return state;
   }
-  const children = [...parentState.children];
-  const index = parentState.children.indexOf(parentState.children.find(child => child.key === key));
+  const routes = [...parentState.routes];
+  const index = parentState.routes.indexOf(parentState.routes.find(child => child.key === key));
   invariant(
     index !== -1,
-    'Cannot find child with matching key in this NavigationState'
+    'Cannot find child with matching key in this NavigationRoute'
   );
-  children[index] = newState;
+  routes[index] = newState;
   return {
     ...parentState,
-    children,
+    routes,
   };
 }
 
@@ -167,11 +167,11 @@ function replaceAtIndex(state: NavigationState, index: number, newState: Navigat
   if (!parentState) {
     return state;
   }
-  const children = [...parentState.children];
-  children[index] = newState;
+  const routes = [...parentState.routes];
+  routes[index] = newState;
   return {
     ...parentState,
-    children,
+    routes,
   };
 }
 

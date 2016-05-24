@@ -1,0 +1,50 @@
+{
+  "name": "rnpm",
+  "version": "1.7.0",
+  "description": "React Native Package Manager",
+  "main": "./src/getCommands.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "testDirectoryName": "test",
+    "collectCoverage": true,
+    "testRunner": "<rootDir>/node_modules/jest-cli/src/testRunners/jasmine/jasmine2.js"
+  },
+  "author": "Amazing React Native Community (https://github.com/facebook/react-native)",
+  "contributors": [
+    "Alexey Kureev <kureev-mail@ya.ru> (https://github.com/Kureev)",
+    "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)"
+  ],
+  "engines": {
+    "node": ">= 4.0.0"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rnpm/rnpm/issues"
+  },
+  "keywords": [
+    "react-native",
+    "native-modules",
+    "packager",
+    "rnpm"
+  ],
+  "homepage": "https://github.com/rnpm/rnpm#readme",
+  "dependencies": {
+    "commander": "^2.9.0",
+    "glob": "^7.0.1",
+    "lodash": "^3.10.1",
+    "rnpm-plugin-install": "^1.1.0",
+    "rnpm-plugin-link": "^1.7.4",
+    "update-notifier": "^0.6.0",
+    "xmldoc": "^0.4.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^4.1.5",
+    "eslint": "^1.9.0",
+    "mock-fs": "^3.5.0",
+    "mock-require": "^1.2.1",
+    "rewire": "^2.5.1",
+    "jest-cli": "^0.9.0-fb2"
+  }
+}

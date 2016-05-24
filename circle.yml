@@ -4,7 +4,7 @@ general:
       - gh-pages # list of branches to ignore
 machine:
   node:
-    version: 5.6.0
+    version: 6.2.0
   environment:
     PATH: "~/$CIRCLE_PROJECT_REPONAME/gradle-2.9/bin:/home/ubuntu/buck/bin:$PATH"
     TERM: "dumb"

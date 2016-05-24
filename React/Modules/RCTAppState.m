@@ -16,6 +16,8 @@
 
 static NSString *RCTCurrentAppBackgroundState()
 {
+  RCTAssertMainThread();
+
   static NSDictionary *states;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -37,26 +39,22 @@ static NSString *RCTCurrentAppBackgroundState()
   NSString *_lastKnownState;
 }
 
-@synthesize bridge = _bridge;
-
 RCT_EXPORT_MODULE()
+
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
 
 #pragma mark - Lifecycle
 
-- (instancetype)init
+- (NSArray<NSString *> *)supportedEvents
 {
-  if ((self = [super init])) {
-
-    // Needs to be called on the main thread, as it accesses UIApplication
-    _lastKnownState = RCTCurrentAppBackgroundState();
-  }
-  return self;
+  return @[@"appStateDidChange", @"memoryWarning"];
 }
 
-- (void)setBridge:(RCTBridge *)bridge
+- (void)startObserving
 {
-  _bridge = bridge;
-
   for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
                            UIApplicationDidEnterBackgroundNotification,
                            UIApplicationDidFinishLaunchingNotification,
@@ -75,18 +73,17 @@ RCT_EXPORT_MODULE()
                                              object:nil];
 }
 
-- (void)handleMemoryWarning
-{
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"memoryWarning"
-                                              body:nil];
-}
-
-- (void)dealloc
+- (void)stopObserving
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - App Notification Methods
+
+- (void)handleMemoryWarning
+{
+  [self sendEventWithName:@"memoryWarning" body:nil];
+}
 
 - (void)handleAppStateDidChange:(NSNotification *)notification
 {
@@ -102,8 +99,8 @@ RCT_EXPORT_MODULE()
 
   if (![newState isEqualToString:_lastKnownState]) {
     _lastKnownState = newState;
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"appStateDidChange"
-                                                body:@{@"app_state": _lastKnownState}];
+    [self sendEventWithName:@"appStateDidChange"
+                       body:@{@"app_state": _lastKnownState}];
   }
 }
 
@@ -115,7 +112,7 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(getCurrentAppState:(RCTResponseSenderBlock)callback
                   error:(__unused RCTResponseSenderBlock)error)
 {
-  callback(@[@{@"app_state": _lastKnownState}]);
+  callback(@[@{@"app_state": RCTCurrentAppBackgroundState()}]);
 }
 
 @end

@@ -137,11 +137,11 @@ class UIExplorerApp extends React.Component {
         />
       );
     }
-    const title = UIExplorerStateTitleMap(stack.children[stack.index]);
-    const index = stack.children.length <= 1 ?  1 : stack.index;
+    const title = UIExplorerStateTitleMap(stack.routes[stack.index]);
+    const index = stack.routes.length <= 1 ?  1 : stack.index;
 
-    if (stack && stack.children[index]) {
-      const {key} = stack.children[index];
+    if (stack && stack.routes[index]) {
+      const {key} = stack.routes[index];
       const ExampleModule = UIExplorerList.Modules[key];
       const ExampleComponent = UIExplorerExampleList.makeRenderable(ExampleModule);
       return (
@@ -171,7 +171,7 @@ class UIExplorerApp extends React.Component {
         <UIExplorerExampleList
           onNavigate={this._handleAction}
           list={UIExplorerList}
-          {...stack.children[0]}
+          {...stack.routes[0]}
         />
       </View>
     );

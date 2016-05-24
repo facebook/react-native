@@ -332,7 +332,7 @@ var apps = [
     icon: 'http://a4.mzstatic.com/us/r30/Purple60/v4/1a/42/5b/1a425b56-848a-91f5-8078-9f5473c9021f/icon350x350.png',
     link: 'https://itunes.apple.com/us/app/clapit/id1062124740?mt=8',
     author: 'Refined Edge Solutions, LLC'
-  }, 
+  },
   {
     name: 'Codementor - Live 1:1 Expert Developer Help',
     icon: 'http://a1.mzstatic.com/us/r30/Purple3/v4/db/cf/35/dbcf3523-bac7-0f54-c6a8-a80bf4f43c38/icon175x175.jpeg',
@@ -669,6 +669,13 @@ var apps = [
     icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/aa/93/17/aa93171e-d0ed-7e07-54a1-be27490e210c/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/okanagan-news-reader-for-viewing/id1049147148?mt=8',
     author: 'Levi Cabral',
+  },
+  {
+    name: 'passpoints',
+    icon: 'http://a5.mzstatic.com/eu/r30/Purple1/v4/8c/a0/72/8ca072ac-2304-1bf6-16e5-701e71921f42/icon350x350.png',
+    linkAppStore: 'https://itunes.apple.com/app/passpoints/id930988932',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.passpointsreactnative',
+    author: 'passpoints.de',
   },
   {
     name: 'Pimmr',
@@ -1013,6 +1020,12 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/us/app/ju-heng-cai-jing-xin-wen/id1071014509?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.cnyes.android',
     author: '鉅亨網',
+  },
+  {
+    name: 'Emberall',
+    icon: 'http://assets.emberall.com/images/app/icons/medium.png',
+    link: 'https://emberall.com/',
+    author: 'Kyle Corbitt',
   },
 ];
 
