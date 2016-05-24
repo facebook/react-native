@@ -6,13 +6,12 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule XMLHttpRequestBase
+ * @providesModule XMLHttpRequest
  * @flow
  */
 'use strict';
 
-var RCTNetworking = require('RCTNetworking');
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const RCTNetworking = require('RCTNetworking');
 
 const EventTarget = require('event-target-shim');
 const invariant = require('fbjs/lib/invariant');
@@ -212,19 +211,19 @@ class XMLHttpRequestBase extends EventTarget(...XHR_EVENTS) {
 
   didCreateRequest(requestId: number): void {
     this._requestId = requestId;
-    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
+    this._subscriptions.push(RCTNetworking.addListener(
       'didSendNetworkData',
       (args) => this.__didUploadProgress(...args)
     ));
-    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
+    this._subscriptions.push(RCTNetworking.addListener(
       'didReceiveNetworkResponse',
       (args) => this._didReceiveResponse(...args)
     ));
-    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
+    this._subscriptions.push(RCTNetworking.addListener(
       'didReceiveNetworkData',
       (args) =>  this._didReceiveData(...args)
     ));
-    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
+    this._subscriptions.push(RCTNetworking.addListener(
       'didCompleteNetworkResponse',
       (args) => this.__didCompleteResponse(...args)
     ));
@@ -337,10 +336,18 @@ class XMLHttpRequestBase extends EventTarget(...XHR_EVENTS) {
     url: ?string,
     headers: Object,
     data: any,
-    incrementalEvents: boolean,
-    timeout: number
+    useIncrementalUpdates: boolean,
+    timeout: number,
   ): void {
-    throw new Error('Subclass must define sendImpl method');
+    RCTNetworking.sendRequest(
+      method,
+      url,
+      headers,
+      data,
+      useIncrementalUpdates,
+      timeout,
+      this.didCreateRequest.bind(this),
+    );
   }
 
   send(data: any): void {

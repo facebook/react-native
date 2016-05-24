@@ -12,13 +12,11 @@
 jest
 	.disableAutomock()
 	.dontMock('event-target-shim')
-	.dontMock('XMLHttpRequestBase');
+	.dontMock('XMLHttpRequest');
 
-const XMLHttpRequestBase = require('XMLHttpRequestBase');
+const XMLHttpRequest = require('XMLHttpRequest');
 
-class XMLHttpRequest extends XMLHttpRequestBase {}
-
-describe('XMLHttpRequestBase', function(){
+describe('XMLHttpRequest', function(){
 	var xhr;
 	var handleTimeout;
 	var handleError;
