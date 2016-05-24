@@ -640,6 +640,13 @@ var apps = [
     author: 'Rhyble',
   },
   {
+    name: 'NeoReader',
+    icon: 'http://firicon.fir.im/a4c5f1e8c52d9d98e7b990e5098a161a8f698653',
+    linkAppStore: 'https://itunes.apple.com/cn/app/niu-du-neoreader/id1111443079?l=cn&mt=8',
+    linkPlayStore: 'http://fir.im/neoreader',
+    author: 'Neo Nie',
+  },
+  {
     name: 'New Music - listen to recent albums, EPs & singles',
     icon: 'http://a5.mzstatic.com/us/r30/Purple60/v4/fa/d9/be/fad9be3d-474c-4380-6391-37f234a81901/icon175x175.png',
     link: 'https://itunes.apple.com/app/new-music-keep-track-latest/id1104646834',
