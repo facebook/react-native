@@ -24,6 +24,7 @@
 @end
 
 @implementation AppDelegate
+
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   _bridge = [[RCTBridge alloc] initWithDelegate:self
