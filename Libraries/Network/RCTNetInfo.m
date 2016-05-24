@@ -51,8 +51,11 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 
   if (![status isEqualToString:self->_status]) {
     self->_status = status;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [self->_bridge.eventDispatcher sendDeviceEventWithName:@"networkStatusDidChange"
                                                       body:@{@"network_info": status}];
+#pragma clang diagnostic pop
   }
 }
 

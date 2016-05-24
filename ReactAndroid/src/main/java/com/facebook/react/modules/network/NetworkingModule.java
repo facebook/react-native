@@ -138,7 +138,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   @Override
   public void onCatalystInstanceDestroy() {
     mShuttingDown = true;
-    OkHttpCallUtil.cancelTag(mClient, null);
+    OkHttpCallUtil.cancelAll(mClient);
 
     mCookieHandler.destroy();
     mCookieJarContainer.removeCookieJar();

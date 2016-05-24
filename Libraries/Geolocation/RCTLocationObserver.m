@@ -279,8 +279,11 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
 
   // Send event
   if (_observingLocation) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [_bridge.eventDispatcher sendDeviceEventWithName:@"geolocationDidChange"
                                                 body:_lastLocationEvent];
+#pragma clang diagnostic pop
   }
 
   // Fire all queued callbacks
@@ -321,8 +324,11 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
 
   // Send event
   if (_observingLocation) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [_bridge.eventDispatcher sendDeviceEventWithName:@"geolocationError"
                                                 body:jsError];
+#pragma clang diagnostic pop
   }
 
   // Fire all queued error callbacks

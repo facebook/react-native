@@ -20,19 +20,20 @@
 const ViewabilityHelper = {
   computeViewableRows(
     viewablePercentThreshold: number,
-    rowFrames: Array<Object>,
+    rowFrames: {[key: string]: Object},
+    data: Array<{rowKey: string, rowData: any}>,
     scrollOffsetY: number,
     viewportHeight: number
   ): Array<number> {
-    var viewableRows = [];
-    var firstVisible = -1;
-    for (var idx = 0; idx < rowFrames.length; idx++) {
-      var frame = rowFrames[idx];
+    const viewableRows = [];
+    let firstVisible = -1;
+    for (let idx = 0; idx < data.length; idx++) {
+      const frame = rowFrames[data[idx].rowKey];
       if (!frame) {
         continue;
       }
-      var top = frame.y - scrollOffsetY;
-      var bottom = top + frame.height;
+      const top = frame.y - scrollOffsetY;
+      const bottom = top + frame.height;
       if ((top < viewportHeight) && (bottom > 0)) {
         firstVisible = idx;
         if (_isViewable(
@@ -67,7 +68,7 @@ function _getPercentOccupied(
   bottom: number,
   viewportHeight: number
 ): number {
-  var visibleHeight = Math.min(bottom, viewportHeight) - Math.max(top, 0);
+  let visibleHeight = Math.min(bottom, viewportHeight) - Math.max(top, 0);
   visibleHeight = Math.max(0, visibleHeight);
   return Math.max(0, visibleHeight * 100 / viewportHeight);
 }

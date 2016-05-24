@@ -152,13 +152,13 @@ class UIExplorerApp extends React.Component {
   _renderTitleComponent(props: NavigationSceneRendererProps): ReactElement {
     return (
       <NavigationHeader.Title>
-        {UIExplorerStateTitleMap(props.scene.navigationState)}
+        {UIExplorerStateTitleMap(props.scene.route)}
       </NavigationHeader.Title>
     );
   }
 
   _renderScene(props: NavigationSceneRendererProps): ?ReactElement {
-    const state = props.scene.navigationState;
+    const state = props.scene.route;
     if (state.key === 'AppList') {
       return (
         <UIExplorerExampleList

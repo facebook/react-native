@@ -78,13 +78,13 @@ class NavigationTabsExample extends React.Component {
     return (
       <View style={styles.topView}>
         <ExmpleTabPage
-          tabs={this.state.children}
+          tabs={this.state.routes}
           index={this.state.index}
           onExampleExit={this.props.onExampleExit}
           onNavigate={this.handleAction.bind(this)}
         />
         <NavigationExampleTabBar
-          tabs={this.state.children}
+          tabs={this.state.routes}
           index={this.state.index}
           onNavigate={this.handleAction.bind(this)}
         />

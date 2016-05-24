@@ -147,20 +147,16 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     final MessageQueueThreadImpl mqt =
         new MessageQueueThreadImpl(name, mainLooper, exceptionHandler);
 
-    // Ensure that the MQT is registered by the time this method returns
     if (UiThreadUtil.isOnUiThread()) {
       MessageQueueThreadRegistry.register(mqt);
     } else {
-      final SimpleSettableFuture<Void> registrationFuture = new SimpleSettableFuture<>();
       UiThreadUtil.runOnUiThread(
           new Runnable() {
             @Override
             public void run() {
               MessageQueueThreadRegistry.register(mqt);
-              registrationFuture.set(null);
             }
           });
-      registrationFuture.getOrThrow();
     }
     return mqt;
   }

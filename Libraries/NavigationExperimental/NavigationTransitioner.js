@@ -23,7 +23,7 @@ import type {
   NavigationActionCaller,
   NavigationAnimatedValue,
   NavigationLayout,
-  NavigationParentState,
+  NavigationState,
   NavigationScene,
   NavigationSceneRenderer,
   NavigationTransitionConfigurator,
@@ -31,7 +31,7 @@ import type {
 
 type Props = {
   configureTransition: NavigationTransitionConfigurator,
-  navigationState: NavigationParentState,
+  navigationState: NavigationState,
   onNavigate: NavigationActionCaller,
   onTransitionEnd: () => void,
   onTransitionStart: () => void,
