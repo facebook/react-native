@@ -40,6 +40,11 @@ function setUpProcess() {
   }
 }
 
+function setUpProfile() {
+  const Systrace = require('Systrace');
+  Systrace.setEnabled(global.__RCTProfileIsProfiling || false);
+}
+
 function setUpConsole() {
   // ExceptionsManager transitively requires Promise so we install it after
   const ExceptionsManager = require('ExceptionsManager');
@@ -229,6 +234,7 @@ function getPropertyDescriptor(object, name) {
 }
 
 setUpProcess();
+setUpProfile();
 setUpConsole();
 setUpTimers();
 setUpAlert();
