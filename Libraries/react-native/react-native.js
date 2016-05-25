@@ -98,6 +98,7 @@ var ReactNative = {
   get Settings() { return require('Settings'); },
   get StatusBarIOS() { return require('StatusBarIOS'); },
   get StyleSheet() { return require('StyleSheet'); },
+  get Systrace() { return require('Systrace'); },
   get TimePickerAndroid() { return require('TimePickerAndroid'); },
   get UIManager() { return require('UIManager'); },
   get Vibration() { return require('Vibration'); },
