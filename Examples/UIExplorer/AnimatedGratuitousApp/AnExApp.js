@@ -281,7 +281,6 @@ function moveToClosest({activeKey, keys, restLayouts}, position) {
 var styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 64, // push content below nav bar
   },
   grid: {
     flex: 1,
