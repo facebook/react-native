@@ -72,6 +72,5 @@ $NODE_BINARY "$REACT_NATIVE_DIR/local-cli/cli.js" bundle \
   --entry-file index.ios.js \
   --platform ios \
   --dev $DEV \
-  --reset-cache true \
   --bundle-output "$DEST/main.jsbundle" \
   --assets-dest "$DEST"
