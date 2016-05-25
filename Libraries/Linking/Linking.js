@@ -75,8 +75,8 @@ const DEVICE_NOTIF_EVENT = 'openURL';
  *
  * ```
  *
- * And then on your React component you'll be able to listen to the events on
- * `Linking` as follows
+ * You can then listen on your React Component to new `Linking` events while
+ * your app is launched as follows
  *
  * ```
  * componentDidMount() {
@@ -89,7 +89,6 @@ const DEVICE_NOTIF_EVENT = 'openURL';
  *   console.log(event.url);
  * }
  * ```
- * Note that this is only supported on iOS.
  *
  * #### Opening external links
  *
@@ -114,45 +113,33 @@ class Linking {
   /**
    * Add a handler to Linking changes by listening to the `url` event type
    * and providing the handler
-   *
-   * @platform ios
    */
   static addEventListener(type: string, handler: Function) {
-    if (Platform.OS === 'android') {
-        console.warn('Linking.addEventListener is not supported on Android');
-    } else {
-      invariant(
-        type === 'url',
-        'Linking only supports `url` events'
-      );
-      var listener = RCTDeviceEventEmitter.addListener(
-        DEVICE_NOTIF_EVENT,
-        handler
-      );
-      _notifHandlers.set(handler, listener);
-    }
+    invariant(
+      type === 'url',
+      'Linking only supports `url` events'
+    );
+    var listener = RCTDeviceEventEmitter.addListener(
+      DEVICE_NOTIF_EVENT,
+      handler
+    );
+    _notifHandlers.set(handler, listener);
   }
 
   /**
    * Remove a handler by passing the `url` event type and the handler
-   *
-   * @platform ios
    */
-  static removeEventListener(type: string, handler: Function ) {
-    if (Platform.OS === 'android') {
-        console.warn('Linking.removeEventListener is not supported on Android');
-    } else {
-      invariant(
-        type === 'url',
-        'Linking only supports `url` events'
-      );
-      var listener = _notifHandlers.get(handler);
-      if (!listener) {
-        return;
-      }
-      listener.remove();
-      _notifHandlers.delete(handler);
+  static removeEventListener(type: string, handler: Function) {
+    invariant(
+      type === 'url',
+      'Linking only supports `url` events'
+    );
+    var listener = _notifHandlers.get(handler);
+    if (!listener) {
+      return;
     }
+    listener.remove();
+    _notifHandlers.delete(handler);
   }
 
   /**

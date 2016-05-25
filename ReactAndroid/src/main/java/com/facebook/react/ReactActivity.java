@@ -2,6 +2,7 @@ package com.facebook.react;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,8 +12,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.intent.IntentModule;
 
 import java.util.List;
 
@@ -226,5 +231,20 @@ public abstract class ReactActivity extends Activity implements DefaultHardwareB
   @Override
   public void invokeDefaultOnBackPressed() {
     super.onBackPressed();
+  }
+
+  @Override
+  protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    Uri uri = intent.getData();
+
+    if (IntentModule.isLinkingIntent(intent) &&
+      mReactInstanceManager != null && mReactInstanceManager.getCurrentReactContext() != null) {
+      WritableMap map = Arguments.createMap();
+
+      map.putString("url", uri.toString());
+      mReactInstanceManager.getCurrentReactContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+        .emit("openURL", map);
+    }
   }
 }

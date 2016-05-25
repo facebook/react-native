@@ -47,11 +47,9 @@ public class IntentModule extends ReactContextBaseJavaModule {
 
       if (currentActivity != null) {
         Intent intent = currentActivity.getIntent();
-        String action = intent.getAction();
-        Uri uri = intent.getData();
 
-        if (Intent.ACTION_VIEW.equals(action) && uri != null) {
-          initialURL = uri.toString();
+        if (isLinkingIntent(intent)) {
+          initialURL = intent.getDataString();
         }
       }
 
@@ -130,5 +128,12 @@ public class IntentModule extends ReactContextBaseJavaModule {
       promise.reject(new JSApplicationIllegalArgumentException(
           "Could not check if URL '" + url + "' can be opened: " + e.getMessage()));
     }
+  }
+
+  public static boolean isLinkingIntent(Intent intent) {
+    String action = intent.getAction();
+    Uri uri = intent.getData();
+
+    return (Intent.ACTION_VIEW.equals(action) && uri != null);
   }
 }
