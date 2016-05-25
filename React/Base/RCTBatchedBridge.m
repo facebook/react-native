@@ -170,7 +170,18 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:withBlock:)]) {
     [self.delegate loadSourceForBridge:_parentBridge withBlock:onSourceLoad];
   } else if (self.bundleURL) {
-    [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onComplete:onSourceLoad];
+    [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onComplete:^(NSError *error, NSData *source) {
+      if (error && [self.delegate respondsToSelector:@selector(fallbackSourceURLForBridge:)]) {
+        NSURL *fallbackURL = [self.delegate fallbackSourceURLForBridge:_parentBridge];
+        if (fallbackURL && ![fallbackURL isEqual:self.bundleURL]) {
+          RCTLogError(@"Failed to load bundle(%@) with error:(%@)", self.bundleURL, error.localizedDescription);
+          self.bundleURL = fallbackURL;
+          [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onComplete:onSourceLoad];
+          return;
+        }
+      }
+      onSourceLoad(error, source);
+    }];
   } else {
     // Allow testing without a script
     dispatch_async(dispatch_get_main_queue(), ^{

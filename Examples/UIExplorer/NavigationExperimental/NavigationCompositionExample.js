@@ -282,7 +282,7 @@ class ExampleMainView extends React.Component {
     );
   }
 
-  _renderScene(): ReactElement {
+  _renderScene(): ReactElement<any> {
     const {navigationState} = this.props;
     const childState = navigationState.routes[navigationState.index];
     return (

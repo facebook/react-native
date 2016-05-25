@@ -137,20 +137,29 @@ RCT_EXPORT_MODULE()
 
 - (void)handleLocalNotificationReceived:(NSNotification *)notification
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [_bridge.eventDispatcher sendDeviceEventWithName:@"localNotificationReceived"
                                               body:notification.userInfo];
+#pragma clang diagnostic pop
 }
 
 - (void)handleRemoteNotificationReceived:(NSNotification *)notification
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationReceived"
                                               body:notification.userInfo];
+#pragma clang diagnostic pop
 }
 
 - (void)handleRemoteNotificationsRegistered:(NSNotification *)notification
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationsRegistered"
                                               body:notification.userInfo];
+#pragma clang diagnostic pop
 }
 
 /**

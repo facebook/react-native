@@ -340,6 +340,12 @@ var apps = [
     author: 'Codementor',
   },
   {
+    name: 'Coiney窓口',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/c9/bc/3a/c9bc3a29-9c11-868f-b960-ca46d5fcd509/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/jp/app/coiney-chuang-kou/id1069271336?mt=8',
+    author: 'Coiney, Inc.'
+  },
+  {
     name: 'Collegiate - Learn Anywhere',
     icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/17/a9/60/17a960d3-8cbd-913a-9f08-ebd9139c116c/icon175x175.png',
     link: 'https://itunes.apple.com/app/id1072463482',

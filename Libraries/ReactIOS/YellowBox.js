@@ -177,7 +177,7 @@ const WarningInspector = ({
 class YellowBox extends React.Component {
   state: {
     inspecting: ?string;
-    warningMap: Map;
+    warningMap: Map<any, any>;
   };
   _listener: ?EmitterSubscription;
   dismissWarning: (warning: ?string) => void;

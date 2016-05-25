@@ -79,7 +79,7 @@ const SwipeableListView = React.createClass({
     }
   },
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     return (
       <ListView
         {...this.props}
@@ -114,7 +114,7 @@ const SwipeableListView = React.createClass({
     }
   },
 
-  _renderRow(rowData: Object, sectionID: string, rowID: string): ReactElement {
+  _renderRow(rowData: Object, sectionID: string, rowID: string): ReactElement<any> {
     const slideoutView = this.props.renderQuickActions(rowData, sectionID, rowID);
 
     // If renderRowSlideout is unspecified or returns falsey, don't allow swipe
