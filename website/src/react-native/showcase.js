@@ -754,8 +754,8 @@ var apps = [
     link: 'https://readzi.io',
     author: 'Kevin Kennedy',
     blogs: [
-      'https://strazi.org/journal/building-readzi/'
-    ]
+      'https://strazi.org/journal/building-readzi/',
+    ],
   },
   {
     name: 'RenovationFind',
