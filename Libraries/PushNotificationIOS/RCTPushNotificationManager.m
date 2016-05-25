@@ -115,7 +115,19 @@ RCT_EXPORT_MODULE()
 {
   NSDictionary<NSString *, id> *initialNotification =
     [self.bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] copy];
-  return @{@"initialNotification": RCTNullIfNil(initialNotification)};
+
+  if (initialNotification) {
+    return @{@"initialNotification": initialNotification};
+  }
+
+  UILocalNotification *initialLocalNotification =
+    self.bridge.launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
+
+  if (initialLocalNotification) {
+    return @{@"initialNotification": RCTConvertLocalNotification(initialLocalNotification)};
+  }
+
+  return @{@"initialNotification": (id)kCFNull};
 }
 
 + (void)didRegisterUserNotificationSettings:(__unused UIUserNotificationSettings *)notificationSettings
@@ -150,6 +162,13 @@ RCT_EXPORT_MODULE()
 
 + (void)didReceiveLocalNotification:(UILocalNotification *)notification
 {
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTLocalNotificationReceived
+                                                      object:self
+                                                    userInfo:RCTConvertLocalNotification(notification)];
+}
+
+NSDictionary * RCTConvertLocalNotification(UILocalNotification *notification)
+{
   NSMutableDictionary *details = [NSMutableDictionary new];
   if (notification.alertBody) {
     details[@"alertBody"] = notification.alertBody;
@@ -157,9 +176,7 @@ RCT_EXPORT_MODULE()
   if (notification.userInfo) {
     details[@"userInfo"] = RCTJSONClean(notification.userInfo);
   }
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTLocalNotificationReceived
-                                                      object:self
-                                                    userInfo:details];
+  return details;
 }
 
 - (void)handleLocalNotificationReceived:(NSNotification *)notification
@@ -320,7 +337,17 @@ RCT_EXPORT_METHOD(getInitialNotification:(RCTPromiseResolveBlock)resolve
 {
   NSDictionary<NSString *, id> *initialNotification =
     [self.bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] copy];
-  resolve(RCTNullIfNil(initialNotification));
+
+  UILocalNotification *initialLocalNotification =
+  self.bridge.launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
+
+  if (initialNotification) {
+    resolve(initialNotification);
+  } else if (initialLocalNotification) {
+    resolve(RCTConvertLocalNotification(initialLocalNotification));
+  } else {
+    resolve((id)kCFNull);
+  }
 }
 
 RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTResponseSenderBlock)callback)
