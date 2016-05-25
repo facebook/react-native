@@ -436,6 +436,8 @@ import React
 
 > When moving your app to production, the `NSURL` can point to a pre-bundled file on disk via something like `let mainBundle = NSBundle(URLForResource: "main" withExtension:"jsbundle")`. You can use the `react-native-xcode.sh` script in `node_modules/react-native/packager/` to generate that pre-bundled file.
 
+<block class="objc swift" />
+
 #### Wire Up
 
 Wire up the new link in the main menu to the newly added event handler method.

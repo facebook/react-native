@@ -4,7 +4,7 @@ title: Running On Device
 layout: docs
 category: Guides (Android)
 permalink: docs/running-on-device-android.html
-next: embedded-app-android
+next: signed-apk-android
 ---
 
 ## Prerequisite: USB Debugging
