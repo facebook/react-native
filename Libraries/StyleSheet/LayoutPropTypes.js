@@ -100,6 +100,9 @@ var LayoutPropTypes = {
 
   // https://developer.mozilla.org/en-US/docs/Web/CSS/flex
   flex: ReactPropTypes.number,
+
+  // https://developer.mozilla.org/en-US/docs/Web/CSS/z-index
+  zIndex: ReactPropTypes.number,
 };
 
 module.exports = LayoutPropTypes;

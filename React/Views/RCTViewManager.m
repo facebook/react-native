@@ -123,6 +123,7 @@ RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize);
 RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
 RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(overflow, clipsToBounds, css_clip_t)
+RCT_REMAP_VIEW_PROPERTY(zIndex, layer.zPosition, CGFloat)
 RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
 {
   view.layer.shouldRasterize = json ? [RCTConvert BOOL:json] : defaultView.layer.shouldRasterize;
