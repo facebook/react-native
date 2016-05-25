@@ -97,6 +97,38 @@ describe('NavigationScenesReducer', () => {
     ]);
   });
 
+  it('gets same scenes', () => {
+    const state1 = {
+      index: 0,
+      routes: [{key: '1'}, {key: '2'}],
+    };
+
+    const state2 = {
+      index: 0,
+      routes: [{key: '1'}, {key: '2'}],
+    };
+
+    const scenes1 = NavigationScenesReducer([], state1, null);
+    const scenes2 = NavigationScenesReducer(scenes1, state2, state1);
+    expect(scenes1).toBe(scenes2);
+  });
+
+  it('gets different scenes', () => {
+    const state1 = {
+      index: 0,
+      routes: [{key: '1'}, {key: '2'}],
+    };
+
+    const state2 = {
+      index: 0,
+      routes: [{key: '2'}, {key: '1'}],
+    };
+
+    const scenes1 = NavigationScenesReducer([], state1, null);
+    const scenes2 = NavigationScenesReducer(scenes1, state2, state1);
+    expect(scenes1).not.toBe(scenes2);
+  });
+
   it('pops scenes', () => {
     // Transition from ['1', '2', '3'] to ['1', '2'].
     const scenes = testTransition([

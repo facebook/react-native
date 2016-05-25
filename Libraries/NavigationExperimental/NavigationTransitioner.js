@@ -19,6 +19,8 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
+const invariant = require('fbjs/lib/invariant');
+
 import type {
   NavigationActionCaller,
   NavigationAnimatedValue,
@@ -219,13 +221,23 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
         scenes,
       } = this.state;
 
+      const route = navigationState.routes[navigationState.index];
+
+      const activeScene = scenes.find(scene => {
+        return (!scene.isStale && scene.route === route) ?
+          scene :
+          undefined;
+      });
+
+      invariant(!!activeScene, 'no active scene found');
+
       return renderOverlay({
         layout: this.state.layout,
         navigationState,
         onNavigate,
         position,
         progress,
-        scene: scenes[navigationState.index],
+        scene: activeScene,
         scenes,
       });
     }
