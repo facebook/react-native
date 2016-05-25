@@ -37,13 +37,15 @@ block { display: none; }
 
 <block class="android" />
 
-## Coming Soon!
+> This section will be updated shortly showing an integration into a more real world application such as the 2048 app that was used for Objective-C and Swift.
 
-<block class="objc swift" />
+<block class="objc swift android" />
 
 ## Key Concepts
 
 We know that many developers are not looking to create new applications from scratch. Instead, they have existing applications where React Native may be a technological fit. With a few steps, you can begin to integrate React Native to add new components to your existing app, or convert current components to React Native.
+
+<block class="objc swift" />
 
 The keys to integrating React Native components into your iOS application are to:
 
@@ -54,7 +56,27 @@ The keys to integrating React Native components into your iOS application are to
 5. Start the React Native server and run your native application.
 6. Profit!
 
+<block class="android" />
+
+The keys to integrating React Native components into your iOS application are to:
+
+1. Understand what React Native components you want to integrate.
+2. Install `react-native` in your Android application root directory to create `node_modules/` directory.
+3. Create your actual React Native components in JavaScript - either all directly in a `index.android.js` file, or in a `index.android.js` file and multiple other files.
+4. Add `com.facebook.react:react-native:+` and a `maven` pointing to the `react-native` binaries in `node_nodules/` to your `build.gradle` file.
+4. Create a custom React Native specific `Activity` that creates a `ReactRootView`.
+5. Start the React Native server and run your native application.
+6. Profit!
+
+<block class="objc swift android" />
+
 ## Prerequisites
+
+<block class="android" />
+
+The [Android Getting Started guide](/react-native/docs/getting-started.html) will install the appropriate prerequisites (e.g., `npm`) for React Native on the Android target platform and your chosen development environment.
+
+<block class="objc swift" />
 
 ### General
 
@@ -473,6 +495,181 @@ You can examine the code that added the React Native screen on [GitHub](https://
 <block class="swift" />
 
 You can examine the code that added the React Native screen on [GitHub](https://github.com/JoelMarcey/swift-2048/commit/413f1fcbacad30dc72b3a181b0b1a15daf7f2d97).
+
+<block class="android" />
+
+## Add JS to your app
+
+In your app's root folder, run:
+
+    $ npm init
+    $ npm install --save react-native
+    $ curl -o .flowconfig https://raw.githubusercontent.com/facebook/react-native/master/.flowconfig
+
+This creates a node module for your app and adds the `react-native` npm dependency. Now open the newly created `package.json` file and add this under `scripts`:
+
+    "start": "node node_modules/react-native/local-cli/cli.js start"
+
+Copy & paste the following code to `index.android.js` in your root folder — it's a barebones React Native app:
+
+```js
+'use strict';
+
+import React from 'react';
+import {
+  AppRegistry,
+  StyleSheet,
+  Text,
+  View
+} from 'react-native';
+
+class MyAwesomeApp extends React.Component {
+  render() {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.hello}>Hello, World</Text>
+      </View>
+    )
+  }
+}
+var styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  hello: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+});
+
+AppRegistry.registerComponent('MyAwesomeApp', () => MyAwesomeApp);
+```
+
+## Prepare your current app
+
+In your app's `build.gradle` file add the React Native dependency:
+
+    compile "com.facebook.react:react-native:+"  // From node_modules
+
+In your project's `build.gradle` file add an entry for the local React Native maven directory:
+
+```
+allprojects {
+    repositories {
+        ...
+        maven {
+            // All of React Native (JS, Android binaries) is installed from npm
+            url "$projectDir/node_modules/react-native/android"
+        }
+    }
+    ...
+}
+```
+
+Next, make sure you have the Internet permission in your `AndroidManifest.xml`:
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+This is only really used in dev mode when reloading JavaScript from the development server, so you can strip this in release builds if you need to.
+
+## Add native code
+
+You need to add some native code in order to start the React Native runtime and get it to render something. To do this, we're going to create an `Activity` that creates a `ReactRootView`, starts a React application inside it and sets it as the main content view.
+
+```java
+public class MyReactActivity extends Activity implements DefaultHardwareBackBtnHandler {
+    private ReactRootView mReactRootView;
+    private ReactInstanceManager mReactInstanceManager;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mReactRootView = new ReactRootView(this);
+        mReactInstanceManager = ReactInstanceManager.builder()
+                .setApplication(getApplication())
+                .setBundleAssetName("index.android.bundle")
+                .setJSMainModuleName("index.android")
+                .addPackage(new MainReactPackage())
+                .setUseDeveloperSupport(BuildConfig.DEBUG)
+                .setInitialLifecycleState(LifecycleState.RESUMED)
+                .build();
+        mReactRootView.startReactApplication(mReactInstanceManager, "MyAwesomeApp", null);
+
+        setContentView(mReactRootView);
+    }
+
+    @Override
+    public void invokeDefaultOnBackPressed() {
+        super.onBackPressed();
+    }
+}
+```
+
+> A `ReactInstanceManager` can be shared amongst multiple activities and/or fragments. You will want to make your own `ReactFragment` or `ReactActivity` and have a singleton *holder* that holds a `ReactInstanceManager`. When you need the `ReactInstanceManager` (e.g., to hook up the `ReactInstanceManager` to the lifecycle of those Activities or Fragments) use the one provided by the singleton.
+
+Next, we need to pass some activity lifecycle callbacks down to the `ReactInstanceManager`:
+
+```java
+@Override
+protected void onPause() {
+    super.onPause();
+
+    if (mReactInstanceManager != null) {
+        mReactInstanceManager.onPause();
+    }
+}
+
+@Override
+protected void onResume() {
+    super.onResume();
+
+    if (mReactInstanceManager != null) {
+        mReactInstanceManager.onResume(this, this);
+    }
+}
+```
+
+We also need to pass back button events to React Native:
+
+```java
+@Override
+ public void onBackPressed() {
+    if (mReactInstanceManager != null) {
+        mReactInstanceManager.onBackPressed();
+    } else {
+        super.onBackPressed();
+    }
+}
+```
+
+ This allows JavaScript to control what happens when the user presses the hardware back button (e.g. to implement navigation). When JavaScript doesn't handle a back press, your `invokeDefaultOnBackPressed` method will be called. By default this simply finishes your `Activity`.
+Finally, we need to hook up the dev menu. By default, this is activated by (rage) shaking the device, but this is not very useful in emulators. So we make it show when you press the hardware menu button:
+
+```java
+@Override
+public boolean onKeyUp(int keyCode, KeyEvent event) {
+    if (keyCode == KeyEvent.KEYCODE_MENU && mReactInstanceManager != null) {
+        mReactInstanceManager.showDevOptionsDialog();
+        return true;
+    }
+    return super.onKeyUp(keyCode, event);
+}
+```
+
+That's it, your activity is ready to run some JavaScript code.
+
+## Run your app
+
+To run your app, you need to first start the development server. To do this, simply run the following command in your root folder:
+
+    $ npm start
+
+Now build and run your Android app as normal (e.g. `./gradlew installDebug`). Once you reach your React-powered activity inside the app, it should load the JavaScript code from the development server and display:
+
+![Screenshot](img/EmbeddedAppAndroid.png)
 
 <script>
 // Convert <div>...<span><block /></span>...</div>
