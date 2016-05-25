@@ -6,10 +6,9 @@
 
 #include <fb/fbjni.h>
 
-#include <Module/CxxModule.h>
-#include <Module/JsArgumentHelpers.h>
-
+#include <cxxreact/CxxModule.h>
 #include <cxxreact/Instance.h>
+#include <cxxreact/JsArgumentHelpers.h>
 #include <cxxreact/NativeModule.h>
 #include <react/jni/ReadableNativeArray.h>
 

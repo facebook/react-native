@@ -12,13 +12,16 @@
 jest
 	.disableAutomock()
 	.dontMock('event-target-shim')
-	.dontMock('XMLHttpRequestBase');
+	.setMock('NativeModules', {
+    Networking: {
+      addListener: function(){},
+      removeListeners: function(){},
+    }
+  });
 
-const XMLHttpRequestBase = require('XMLHttpRequestBase');
+const XMLHttpRequest = require('XMLHttpRequest');
 
-class XMLHttpRequest extends XMLHttpRequestBase {}
-
-describe('XMLHttpRequestBase', function(){
+describe('XMLHttpRequest', function(){
 	var xhr;
 	var handleTimeout;
 	var handleError;
@@ -43,7 +46,7 @@ describe('XMLHttpRequestBase', function(){
 		xhr.addEventListener('load', handleLoad);
 		xhr.addEventListener('readystatechange', handleReadyStateChange);
 
-		xhr.didCreateRequest(1);
+		xhr.__didCreateRequest(1);
 	});
 
 	afterEach(() => {
@@ -53,7 +56,7 @@ describe('XMLHttpRequestBase', function(){
 		handleLoad = null;
 	});
 
-    it('should transition readyState correctly', function() {
+  it('should transition readyState correctly', function() {
 		expect(xhr.readyState).toBe(xhr.UNSENT);
 
 		xhr.open('GET', 'blabla');

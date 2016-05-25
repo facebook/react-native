@@ -129,10 +129,17 @@ static NSString *RCTGenerateFormBoundary()
   NSArray<id<RCTURLRequestHandler>> *_handlers;
 }
 
-@synthesize bridge = _bridge;
 @synthesize methodQueue = _methodQueue;
 
 RCT_EXPORT_MODULE()
+
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[@"didCompleteNetworkResponse",
+           @"didReceiveNetworkResponse",
+           @"didSendNetworkData",
+           @"didReceiveNetworkData"];
+}
 
 - (id<RCTURLRequestHandler>)handlerForRequest:(NSURLRequest *)request
 {
@@ -142,7 +149,7 @@ RCT_EXPORT_MODULE()
 
   if (!_handlers) {
     // Get handlers, sorted in reverse priority order (highest priority first)
-    _handlers = [[_bridge modulesConformingToProtocol:@protocol(RCTURLRequestHandler)] sortedArrayUsingComparator:^NSComparisonResult(id<RCTURLRequestHandler> a, id<RCTURLRequestHandler> b) {
+    _handlers = [[self.bridge modulesConformingToProtocol:@protocol(RCTURLRequestHandler)] sortedArrayUsingComparator:^NSComparisonResult(id<RCTURLRequestHandler> a, id<RCTURLRequestHandler> b) {
       float priorityA = [a respondsToSelector:@selector(handlerPriority)] ? [a handlerPriority] : 0;
       float priorityB = [b respondsToSelector:@selector(handlerPriority)] ? [b handlerPriority] : 0;
       if (priorityA > priorityB) {
@@ -346,11 +353,7 @@ RCT_EXPORT_MODULE()
   }
 
   NSArray<id> *responseJSON = @[task.requestID, responseText ?: @""];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"didReceiveNetworkData"
-                                              body:responseJSON];
-#pragma clang diagnostic pop
+  [self sendEventWithName:@"didReceiveNetworkData" body:responseJSON];
 }
 
 - (void)sendRequest:(NSURLRequest *)request
@@ -364,10 +367,7 @@ RCT_EXPORT_MODULE()
   RCTURLRequestProgressBlock uploadProgressBlock = ^(int64_t progress, int64_t total) {
     dispatch_async(_methodQueue, ^{
       NSArray *responseJSON = @[task.requestID, @((double)progress), @((double)total)];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      [_bridge.eventDispatcher sendDeviceEventWithName:@"didSendNetworkData" body:responseJSON];
-#pragma clang diagnostic pop
+      [self sendEventWithName:@"didSendNetworkData" body:responseJSON];
     });
   };
 
@@ -385,11 +385,7 @@ RCT_EXPORT_MODULE()
       }
       id responseURL = response.URL ? response.URL.absoluteString : [NSNull null];
       NSArray<id> *responseJSON = @[task.requestID, @(status), headers, responseURL];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      [_bridge.eventDispatcher sendDeviceEventWithName:@"didReceiveNetworkResponse"
-                                                  body:responseJSON];
-#pragma clang diagnostic pop
+      [self sendEventWithName:@"didReceiveNetworkResponse" body:responseJSON];
     });
   };
 
@@ -410,12 +406,7 @@ RCT_EXPORT_MODULE()
                                 error.code == kCFURLErrorTimedOut ? @YES : @NO
                                 ];
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      [_bridge.eventDispatcher sendDeviceEventWithName:@"didCompleteNetworkResponse"
-                                                  body:responseJSON];
-#pragma clang diagnostic pop
-
+      [self sendEventWithName:@"didCompleteNetworkResponse" body:responseJSON];
       [_tasksByRequestID removeObjectForKey:task.requestID];
     });
   };
@@ -469,7 +460,7 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)query
   }];
 }
 
-RCT_EXPORT_METHOD(cancelRequest:(nonnull NSNumber *)requestID)
+RCT_EXPORT_METHOD(abortRequest:(nonnull NSNumber *)requestID)
 {
   [_tasksByRequestID[requestID] cancel];
   [_tasksByRequestID removeObjectForKey:requestID];

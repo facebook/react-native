@@ -43,7 +43,7 @@ const SwipeableQuickActionButton = React.createClass({
     textStyle: Text.propTypes.style,
   },
 
-  render(): ?ReactElement {
+  render(): ?ReactElement<any> {
     if (!this.props.imageSource && !this.props.text) {
       return null;
     }

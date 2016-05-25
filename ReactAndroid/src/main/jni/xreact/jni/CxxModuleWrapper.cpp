@@ -9,7 +9,7 @@
 #include <jni/LocalString.h>
 #include <jni/Registration.h>
 
-#include <Module/JsArgumentHelpers.h>
+#include <cxxreact/JsArgumentHelpers.h>
 
 #include <android/log.h>
 

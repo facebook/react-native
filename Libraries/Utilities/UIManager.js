@@ -37,7 +37,7 @@ const _takeSnapshot = UIManager.takeSnapshot;
  * @platform ios
  */
 UIManager.takeSnapshot = async function(
-  view ?: 'window' | ReactElement | number,
+  view ?: 'window' | ReactElement<any> | number,
   options ?: {
     width ?: number;
     height ?: number;

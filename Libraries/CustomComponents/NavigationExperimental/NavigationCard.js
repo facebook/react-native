@@ -79,7 +79,7 @@ class SceneView extends React.Component<any, SceneViewProps, any> {
     );
   }
 
-  render(): ?ReactElement {
+  render(): ?ReactElement<any> {
     return this.props.sceneRenderer(this.props.sceneRendererProps);
   }
 }
@@ -107,7 +107,7 @@ class NavigationCard extends React.Component<any, Props, any> {
     );
   }
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     const {
       panHandlers,
       pointerEvents,
@@ -156,13 +156,9 @@ const styles = StyleSheet.create({
 
 NavigationCard = NavigationPointerEventsContainer.create(NavigationCard);
 
-// $FlowFixMe: Figure out how to declare these properties on the container class
 NavigationCard.CardStackPanResponder = NavigationCardStackPanResponder;
-// $FlowFixMe
 NavigationCard.CardStackStyleInterpolator = NavigationCardStackStyleInterpolator;
-// $FlowFixMe
 NavigationCard.PagerPanResponder = NavigationPagerPanResponder;
-// $FlowFixMe
 NavigationCard.PagerStyleInterpolator = NavigationPagerStyleInterpolator;
 
 module.exports = NavigationCard;

@@ -105,9 +105,7 @@
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-
   [_eventDispatcher sendDeviceEventWithName:_eventName body:_body];
-
 #pragma clang diagnostic pop
 
   [_bridge verify];

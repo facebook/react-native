@@ -142,7 +142,7 @@ exports.examples = [
   },
   {
     title: 'Start/stop',
-    render: function(): ReactElement {
+    render: function(): ReactElement<any> {
       return <ToggleAnimatingActivityIndicator />;
     }
   },

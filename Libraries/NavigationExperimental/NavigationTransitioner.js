@@ -162,7 +162,7 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
     Animated.parallel(animations).start(this._onTransitionEnd);
   }
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     const overlay = this._renderOverlay();
     const scenes = this._renderScenes();
     return (
@@ -177,11 +177,11 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
     );
   }
 
-  _renderScenes(): Array<?ReactElement> {
+  _renderScenes(): Array<?ReactElement<any>> {
     return this.state.scenes.map(this._renderScene, this);
   }
 
-  _renderScene(scene: NavigationScene): ?ReactElement {
+  _renderScene(scene: NavigationScene): ?ReactElement<any> {
     const {
       navigationState,
       onNavigate,
@@ -205,7 +205,7 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
     });
   }
 
-  _renderOverlay(): ?ReactElement {
+  _renderOverlay(): ?ReactElement<any> {
     if (this.props.renderOverlay) {
       const {
         navigationState,

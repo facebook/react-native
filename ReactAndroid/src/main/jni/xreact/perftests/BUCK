@@ -1,3 +1,5 @@
+include_defs('//ReactAndroid/DEFS')
+
 cxx_library(
   name = 'perftests',
   srcs = [ 'OnLoad.cpp' ],
@@ -9,7 +11,7 @@ cxx_library(
     '//native:base',
     '//native/fb:fb',
     '//xplat/folly:molly',
-    '//xplat/react/module:module',
+    react_native_xplat_target('bridge:module'),
   ],
   visibility = [
     '//instrumentation_tests/com/facebook/react/...',
