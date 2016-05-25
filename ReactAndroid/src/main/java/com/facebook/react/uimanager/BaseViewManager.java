@@ -20,6 +20,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_BACKGROUND_COLOR = ViewProps.BACKGROUND_COLOR;
   private static final String PROP_TRANSFORM = "transform";
   private static final String PROP_OPACITY = "opacity";
+  private static final String PROP_Z_INDEX = "zIndex";
   private static final String PROP_ELEVATION = "elevation";
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
   private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
@@ -60,6 +61,14 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = PROP_OPACITY, defaultFloat = 1.f)
   public void setOpacity(T view, float opacity) {
     view.setAlpha(opacity);
+  }
+
+  @ReactProp(name = PROP_Z_INDEX)
+  public void setZIndex(T view, float zIndex) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      view.setZ(zIndex);
+    }
+    // Do nothing on API < 21
   }
 
   @ReactProp(name = PROP_ELEVATION)
