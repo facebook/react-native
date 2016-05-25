@@ -19,7 +19,7 @@ var VALID_PARENT_STATES = [
   {routes: ['a','b'], index: 0},
   {routes: [{key: 'a'},{key: 'b', foo: 123}], index: 1},
   {routes: [{key: 'a'},{key: 'b'}], index: 0},
-  {routes: [{key: 'a'},{key: 'b'}], index: 2},
+  {routes: [{key: 'a'},{key: 'b'}], index: 1},
 ];
 var INVALID_PARENT_STATES = [
   'foo',
