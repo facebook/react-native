@@ -98,6 +98,7 @@ var ReactNative = Object.assign(Object.create(require('ReactNative')), {
   Settings: require('Settings'),
   StatusBarIOS: require('StatusBarIOS'),
   StyleSheet: require('StyleSheet'),
+  Systrace: require('Systrace'),
   TimePickerAndroid: require('TimePickerAndroid'),
   UIManager: require('UIManager'),
   Vibration: require('Vibration'),
