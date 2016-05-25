@@ -21,6 +21,9 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.facebook.infer.annotation.Assertions.assertNotNull;
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
+
 /**
  * Base class for Catalyst native modules whose implementations are written in Java. Default
  * implementations for {@link #initialize} and {@link #onCatalystInstanceDestroy} are provided for
@@ -279,7 +282,7 @@ public abstract class BaseJavaModule implements NativeModule {
 
     @Override
     public void invoke(CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray parameters) {
-      SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "callJavaModuleMethod")
+      SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "callJavaModuleMethod")
           .arg("method", mTraceName)
           .flush();
       try {
@@ -330,7 +333,7 @@ public abstract class BaseJavaModule implements NativeModule {
               "Could not invoke " + BaseJavaModule.this.getName() + "." + mMethod.getName(), ite);
         }
       } finally {
-        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       }
     }
 
@@ -390,39 +393,46 @@ public abstract class BaseJavaModule implements NativeModule {
     }
   }
 
-  private final Map<String, NativeMethod> mMethods = new HashMap<>();
-  private final Map<String, SyncNativeHook> mHooks = new HashMap<>();
+  private @Nullable Map<String, NativeMethod> mMethods;
+  private @Nullable Map<String, SyncNativeHook> mHooks;
 
-  public BaseJavaModule() {
-    Method[] targetMethods = getClass().getDeclaredMethods();
-    for (int i = 0; i < targetMethods.length; i++) {
-      Method targetMethod = targetMethods[i];
-      if (targetMethod.getAnnotation(ReactMethod.class) != null) {
-        String methodName = targetMethod.getName();
-        if (mHooks.containsKey(methodName) || mMethods.containsKey(methodName)) {
-          // We do not support method overloading since js sees a function as an object regardless
-          // of number of params.
-          throw new IllegalArgumentException(
-            "Java Module " + getName() + " sync method name already registered: " + methodName);
+  private void findMethods() {
+    if (mMethods == null) {
+      Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "findMethods");
+      mMethods = new HashMap<>();
+      mHooks = new HashMap<>();
+
+      Method[] targetMethods = getClass().getDeclaredMethods();
+      for (Method targetMethod : targetMethods) {
+        if (targetMethod.getAnnotation(ReactMethod.class) != null) {
+          String methodName = targetMethod.getName();
+          if (mHooks.containsKey(methodName) || mMethods.containsKey(methodName)) {
+            // We do not support method overloading since js sees a function as an object regardless
+            // of number of params.
+            throw new IllegalArgumentException(
+              "Java Module " + getName() + " sync method name already registered: " + methodName);
+          }
+          mMethods.put(methodName, new JavaMethod(targetMethod));
         }
-        mMethods.put(methodName, new JavaMethod(targetMethod));
-      }
-      if (targetMethod.getAnnotation(ReactSyncHook.class) != null) {
-        String methodName = targetMethod.getName();
-        if (mHooks.containsKey(methodName) || mMethods.containsKey(methodName)) {
-          // We do not support method overloading since js sees a function as an object regardless
-          // of number of params.
-          throw new IllegalArgumentException(
-            "Java Module " + getName() + " sync method name already registered: " + methodName);
+        if (targetMethod.getAnnotation(ReactSyncHook.class) != null) {
+          String methodName = targetMethod.getName();
+          if (mHooks.containsKey(methodName) || mMethods.containsKey(methodName)) {
+            // We do not support method overloading since js sees a function as an object regardless
+            // of number of params.
+            throw new IllegalArgumentException(
+              "Java Module " + getName() + " sync method name already registered: " + methodName);
+          }
+          mHooks.put(methodName, new SyncJavaHook(targetMethod));
         }
-        mHooks.put(methodName, new SyncJavaHook(targetMethod));
       }
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
   @Override
   public final Map<String, NativeMethod> getMethods() {
-    return mMethods;
+    findMethods();
+    return assertNotNull(mMethods);
   }
 
   /**
@@ -433,7 +443,8 @@ public abstract class BaseJavaModule implements NativeModule {
   }
 
   public final Map<String, SyncNativeHook> getSyncHooks() {
-    return mHooks;
+    findMethods();
+    return assertNotNull(mHooks);
   }
 
   @Override

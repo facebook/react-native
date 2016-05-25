@@ -52,10 +52,7 @@ RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue
 {
-  RCTAssert(_bridge, @"Bridge not set");
-  RCTAssert(_bridge.uiManager || !_bridge.valid, @"UIManager not initialized");
-  RCTAssert(_bridge.uiManager.methodQueue || !_bridge.valid, @"UIManager.methodQueue not initialized");
-  return _bridge.uiManager.methodQueue;
+  return RCTGetUIManagerQueue();
 }
 
 - (UIView *)view
@@ -128,7 +125,14 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
   view.layer.shouldRasterize = json ? [RCTConvert BOOL:json] : defaultView.layer.shouldRasterize;
   view.layer.rasterizationScale = view.layer.shouldRasterize ? [UIScreen mainScreen].scale : defaultView.layer.rasterizationScale;
 }
+// TODO: t11041683 Remove this duplicate property name.
 RCT_CUSTOM_VIEW_PROPERTY(transformMatrix, CATransform3D, RCTView)
+{
+  view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
+  // TODO: Improve this by enabling edge antialiasing only for transforms with rotation or skewing
+  view.layer.allowsEdgeAntialiasing = !CATransform3DIsIdentity(view.layer.transform);
+}
+RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 {
   view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
   // TODO: Improve this by enabling edge antialiasing only for transforms with rotation or skewing

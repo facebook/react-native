@@ -86,7 +86,7 @@ var InteractionManager = {
   /**
    * Schedule a function to run after all interactions have completed.
    */
-  runAfterInteractions(task: ?Task): Promise {
+  runAfterInteractions(task: ?Task): Promise<any> {
     return new Promise(resolve => {
       _scheduleUpdate();
       if (task) {

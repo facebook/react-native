@@ -1,5 +1,10 @@
 /**
- * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
@@ -446,7 +451,7 @@ var Navigator = React.createClass({
     this._onAnimationEnd();
     var presentedIndex = this.state.presentedIndex;
     var didFocusRoute = this._subRouteFocus[presentedIndex] || this.state.routeStack[presentedIndex];
-    this._emitDidFocus(didFocusRoute);
+
     if (AnimationsDebugModule) {
       AnimationsDebugModule.stopRecordingFps(Date.now());
     }
@@ -457,6 +462,9 @@ var Navigator = React.createClass({
       this.state.transitionCb();
       this.state.transitionCb = null;
     }
+
+    this._emitDidFocus(didFocusRoute);
+
     if (this._interactionHandle) {
       this.clearInteractionHandle(this._interactionHandle);
       this._interactionHandle = null;
@@ -917,16 +925,15 @@ var Navigator = React.createClass({
     var activeAnimationConfigStack = this.state.sceneConfigStack.slice(0, activeLength);
     var nextStack = activeStack.concat([route]);
     var destIndex = nextStack.length - 1;
-    var nextAnimationConfigStack = activeAnimationConfigStack.concat([
-      this.props.configureScene(route, nextStack),
-    ]);
+    var nextSceneConfig = this.props.configureScene(route, nextStack);
+    var nextAnimationConfigStack = activeAnimationConfigStack.concat([nextSceneConfig]);
     this._emitWillFocus(nextStack[destIndex]);
     this.setState({
       routeStack: nextStack,
       sceneConfigStack: nextAnimationConfigStack,
     }, () => {
       this._enableScene(destIndex);
-      this._transitionTo(destIndex);
+      this._transitionTo(destIndex, nextSceneConfig.defaultTransitionVelocity);
     });
   },
 
@@ -939,11 +946,13 @@ var Navigator = React.createClass({
       'Cannot pop below zero'
     );
     var popIndex = this.state.presentedIndex - n;
+    var presentedRoute = this.state.routeStack[this.state.presentedIndex];
+    var popSceneConfig = this.props.configureScene(presentedRoute); // using the scene config of the currently presented view
     this._enableScene(popIndex);
     this._emitWillFocus(this.state.routeStack[popIndex]);
     this._transitionTo(
       popIndex,
-      null, // default velocity
+      popSceneConfig.defaultTransitionVelocity,
       null, // no spring jumping
       () => {
         this._cleanScenesPastIndex(popIndex);

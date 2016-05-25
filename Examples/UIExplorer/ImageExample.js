@@ -509,7 +509,6 @@ exports.examples = [
     render: function() {
       return <ImageSizeExample source={fullImage} />;
     },
-    platform: 'ios',
   },
 ];
 

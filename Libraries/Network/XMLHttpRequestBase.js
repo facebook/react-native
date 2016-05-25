@@ -214,7 +214,7 @@ class XMLHttpRequestBase extends EventTarget(...XHR_EVENTS) {
     this._requestId = requestId;
     this._subscriptions.push(RCTDeviceEventEmitter.addListener(
       'didSendNetworkData',
-      (args) => this._didUploadProgress(...args)
+      (args) => this.__didUploadProgress(...args)
     ));
     this._subscriptions.push(RCTDeviceEventEmitter.addListener(
       'didReceiveNetworkResponse',
@@ -226,11 +226,12 @@ class XMLHttpRequestBase extends EventTarget(...XHR_EVENTS) {
     ));
     this._subscriptions.push(RCTDeviceEventEmitter.addListener(
       'didCompleteNetworkResponse',
-      (args) => this._didCompleteResponse(...args)
+      (args) => this.__didCompleteResponse(...args)
     ));
   }
 
-  _didUploadProgress(requestId: number, progress: number, total: number): void {
+  // exposed for testing
+  __didUploadProgress(requestId: number, progress: number, total: number): void {
     if (requestId === this._requestId) {
       this.upload.dispatchEvent({
         type: 'progress',
@@ -266,7 +267,8 @@ class XMLHttpRequestBase extends EventTarget(...XHR_EVENTS) {
     }
   }
 
-  _didCompleteResponse(requestId: number, error: string, timeOutError: boolean): void {
+  // exposed for testing
+  __didCompleteResponse(requestId: number, error: string, timeOutError: boolean): void {
     if (requestId === this._requestId) {
       if (error) {
         this.responseText = error;

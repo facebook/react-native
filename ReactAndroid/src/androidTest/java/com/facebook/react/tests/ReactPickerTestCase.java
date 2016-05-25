@@ -6,7 +6,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
  
-package com.facebook.react;
+package com.facebook.react.tests;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -169,6 +169,36 @@ public class ReactPickerTestCase extends ReactAppInstrumentationTestCase {
     List<Integer> selections = mRecordingModule.getSelections();
     assertEquals(1, selections.size());
     assertEquals(2, (int) selections.get(0));
+  }
+
+  public void testOnSelectSequence() throws Throwable {
+    updateFirstSpinnerAndCheckLastSpinnerMatches(0);
+    updateFirstSpinnerAndCheckLastSpinnerMatches(2);
+    updateFirstSpinnerAndCheckLastSpinnerMatches(0);
+    updateFirstSpinnerAndCheckLastSpinnerMatches(2);
+  }
+
+  private void updateFirstSpinnerAndCheckLastSpinnerMatches(
+    final int indexToSelect
+  ) throws Throwable {
+    // The last spinner has the same selected value as the first one.
+    // Test that user selection is propagated correctly to JS, to setState, and to Spinners.
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            ReactPicker spinner = getViewAtPath(0, 0);
+            spinner.setSelection(indexToSelect);
+          }
+        });
+    getInstrumentation().waitForIdleSync();
+    waitForBridgeAndUIIdle();
+
+    ReactPicker spinnerInSync = getViewAtPath(0, 3);
+    assertEquals(
+      "Picker selection was not updated correctly via setState.",
+      indexToSelect,
+      spinnerInSync.getSelectedItemPosition());
   }
 
   private PickerAndroidTestModule getTestModule() {

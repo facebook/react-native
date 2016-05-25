@@ -49,7 +49,6 @@ var ReactNative = {
   get SliderIOS() { return require('SliderIOS'); },
   get SnapshotViewIOS() { return require('SnapshotViewIOS'); },
   get Switch() { return require('Switch'); },
-  get PullToRefreshViewAndroid() { return require('PullToRefreshViewAndroid'); },
   get RecyclerViewBackedScrollView() { return require('RecyclerViewBackedScrollView'); },
   get RefreshControl() { return require('RefreshControl'); },
   get StatusBar() { return require('StatusBar'); },
@@ -195,7 +194,7 @@ if (__DEV__) {
       if (__DEV__) {
         addonWarn('Perf', 'react-addons-perf');
       }
-      return require('ReactDefaultPerf');
+      return require('ReactPerf');
     }
   });
   Object.defineProperty(ReactNative.addons, 'TestUtils', {

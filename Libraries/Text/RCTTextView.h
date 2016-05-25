@@ -28,6 +28,7 @@
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, strong) NSNumber *maxLength;
 
+@property (nonatomic, copy) RCTDirectEventBlock onChange;
 @property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;

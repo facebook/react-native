@@ -34,6 +34,7 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
       transformModulePath: args.transformer,
       extraNodeModules: config.extraNodeModules,
       nonPersistent: true,
+      resetCache: args['reset-cache'],
     };
 
     const requestOpts = {

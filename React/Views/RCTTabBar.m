@@ -109,6 +109,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_tabViews enumerateObjectsUsingBlock:
    ^(RCTTabBarItem *tab, NSUInteger index, __unused BOOL *stop) {
     UIViewController *controller = _tabController.viewControllers[index];
+    if (_unselectedTintColor) {
+      [tab.barItem setTitleTextAttributes:@{NSForegroundColorAttributeName: _unselectedTintColor} forState:UIControlStateNormal];
+    }
+
+    [tab.barItem setTitleTextAttributes:@{NSForegroundColorAttributeName: self.tintColor} forState:UIControlStateSelected];
+
     controller.tabBarItem = tab.barItem;
     if (tab.selected) {
       _tabController.selectedViewController = controller;
@@ -142,6 +148,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setTranslucent:(BOOL)translucent {
   _tabController.tabBar.translucent = translucent;
+}
+
+- (UITabBarItemPositioning)itemPositoning
+{
+  return _tabController.tabBar.itemPositioning;
+}
+
+- (void)setItemPositioning:(UITabBarItemPositioning)itemPositioning
+{
+  _tabController.tabBar.itemPositioning = itemPositioning;
 }
 
 #pragma mark - UITabBarControllerDelegate
