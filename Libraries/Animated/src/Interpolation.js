@@ -137,7 +137,7 @@ function interpolate(
     if (input <= inputMin) {
       return mapping(outputMin);
     }
-    return mapping(outputMin);
+    return mapping(outputMax);
   }
 
   // Input Range
