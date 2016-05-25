@@ -11,7 +11,8 @@ describe('makeBuildPatch', () => {
   });
 
   it('should make a correct patch', () => {
-    expect(makeBuildPatch(name).patch)
-      .to.be.equal(`    compile project(':${name}')\n`);
+    expect(makeBuildPatch(name).patch).to.be.equal(`    compile project(':${name}') {
+        exclude group: 'com.facebook.react', module: 'react-native'
+    }`);
   });
 });
