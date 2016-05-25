@@ -80,17 +80,15 @@ The [Android Getting Started guide](/react-native/docs/getting-started.html) wil
 
 ### General
 
-First, follow the [Getting Started guide](/react-native/docs/getting-started.html) for your development environment and target platform to install the prerequisites for React Native.
+First, follow the [Getting Started guide](/react-native/docs/getting-started.html) for your development environment and the iOS target platform to install the prerequisites for React Native.
 
 ### CocoaPods
 
 [CocoaPods](http://cocoapods.org) is a package management tool for iOS and Mac development. We use it to add the actual React Native framework code locally into your current project.
 
 ```bash
-$ gem install cocoapods
+$ sudo gem install cocoapods
 ```
-
-> If you get a permission error, prefix the above command with `sudo`.
 
 ## Our Sample App
 
@@ -430,9 +428,13 @@ import React
 }
 ```
 
-<block class="objc swift" />
+<block class="objc" />
 
 > When moving your app to production, the `NSURL` can point to a pre-bundled file on disk via something like `[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];`. You can use the `react-native-xcode.sh` script in `node_modules/react-native/packager/` to generate that pre-bundled file.
+
+<block class="swift" />
+
+> When moving your app to production, the `NSURL` can point to a pre-bundled file on disk via something like `let mainBundle = NSBundle(URLForResource: "main" withExtension:"jsbundle")`. You can use the `react-native-xcode.sh` script in `node_modules/react-native/packager/` to generate that pre-bundled file.
 
 #### Wire Up
 
@@ -476,7 +478,7 @@ $ npm start
 
 Using Xcode or your favorite editor, build and run your native iOS application as normal. In our sample application, you should see the link to the "High Scores" and then when you click on that you will see the rendering of your React Native component.
 
-Here is the *native, Objective-C* home screen:
+Here is the *native* application home screen:
 
 ![Home Screen](img/react-native-add-react-native-integration-example-home-screen.png)
 
