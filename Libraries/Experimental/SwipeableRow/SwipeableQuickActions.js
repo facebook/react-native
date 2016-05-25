@@ -34,7 +34,7 @@ const SwipeableQuickActions = React.createClass({
     style: View.propTypes.style,
   },
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     const children = this.props.children;
     let buttons = [];
 

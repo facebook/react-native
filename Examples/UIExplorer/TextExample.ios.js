@@ -351,7 +351,7 @@ exports.examples = [
   },
 }, {
   title: 'Toggling Attributes',
-  render: function(): ReactElement {
+  render: function(): ReactElement<any> {
     return <AttributeToggler />;
   },
 }, {

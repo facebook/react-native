@@ -131,7 +131,7 @@ var ListViewPagingExample = React.createClass({
     };
   },
 
-  renderRow: function(rowData: string, sectionID: string, rowID: string): ReactElement {
+  renderRow: function(rowData: string, sectionID: string, rowID: string): ReactElement<any> {
     return (<Thumb text={rowData}/>);
   },
 

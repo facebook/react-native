@@ -72,10 +72,10 @@ exports.examples = [
   {
     title: 'Subscribed AppState:',
     description: 'This changes according to the current state, so you can only ever see it rendered as "active"',
-    render(): ReactElement { return <AppStateSubscription showCurrentOnly={true} />; }
+    render(): ReactElement<any> { return <AppStateSubscription showCurrentOnly={true} />; }
   },
   {
     title: 'Previous states:',
-    render(): ReactElement { return <AppStateSubscription showCurrentOnly={false} />; }
+    render(): ReactElement<any> { return <AppStateSubscription showCurrentOnly={false} />; }
   },
 ];

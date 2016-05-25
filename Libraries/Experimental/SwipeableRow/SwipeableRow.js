@@ -115,7 +115,7 @@ const SwipeableRow = React.createClass({
     }
   },
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     // The view hidden behind the main view
     let slideOutView;
     if (this.state.isSwipeableViewRendered) {

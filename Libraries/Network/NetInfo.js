@@ -207,7 +207,7 @@ const NetInfo = {
    * Returns a promise that resolves with one of the connectivity types listed
    * above.
    */
-  fetch(): Promise {
+  fetch(): Promise<any> {
     return RCTNetInfo.getCurrentConnectivity().then(resp => resp.network_info);
   },
 
@@ -248,14 +248,14 @@ const NetInfo = {
       _isConnectedSubscriptions.delete(handler);
     },
 
-    fetch(): Promise {
+    fetch(): Promise<any> {
       return NetInfo.fetch().then(
         (connection) => _isConnected(connection)
       );
     },
   },
 
-  isConnectionExpensive(): Promise {
+  isConnectionExpensive(): Promise<any> {
     return deprecatedCallback(
       Platform.OS === 'android' ? RCTNetInfo.isConnectionMetered() : Promise.reject(new Error('Currently not supported on iOS')),
       Array.prototype.slice.call(arguments),

@@ -85,15 +85,15 @@ exports.examples = [
   {
     title: 'Subscribed AppStateIOS:',
     description: 'This changes according to the current state, so you can only ever see it rendered as "active"',
-    render(): ReactElement { return <AppStateSubscription showCurrentOnly={true} />; }
+    render(): ReactElement<any> { return <AppStateSubscription showCurrentOnly={true} />; }
   },
   {
     title: 'Previous states:',
-    render(): ReactElement { return <AppStateSubscription showCurrentOnly={false} />; }
+    render(): ReactElement<any> { return <AppStateSubscription showCurrentOnly={false} />; }
   },
   {
     title: 'Memory Warnings',
     description: 'In the simulator, hit Shift+Command+M to simulate a memory warning.',
-    render(): ReactElement { return <AppStateSubscription showMemoryWarnings={true} />; }
+    render(): ReactElement<any> { return <AppStateSubscription showMemoryWarnings={true} />; }
   },
 ];
