@@ -63,7 +63,6 @@ function areScenesShallowEqual(
     one.key === two.key &&
     one.index === two.index &&
     one.isStale === two.isStale &&
-    one.route === two.route &&
     one.route.key === two.route.key
   );
 }
@@ -147,7 +146,20 @@ function NavigationScenesReducer(
   staleScenes.forEach(mergeScene);
   freshScenes.forEach(mergeScene);
 
-  return nextScenes.sort(compareScenes);
+  nextScenes.sort(compareScenes);
+
+  if (nextScenes.length !== scenes.length) {
+    return nextScenes;
+  }
+
+  if (nextScenes.some(
+    (scene, index) => !areScenesShallowEqual(scenes[index], scene)
+  )) {
+    return nextScenes;
+  }
+
+  // scenes haven't changed.
+  return scenes;
 }
 
 module.exports = NavigationScenesReducer;
