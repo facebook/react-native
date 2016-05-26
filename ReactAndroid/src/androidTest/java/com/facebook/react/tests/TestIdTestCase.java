@@ -31,8 +31,8 @@ public class TestIdTestCase extends ReactAppInstrumentationTestCase {
   }
 
   private final List<String> viewTags = Arrays.asList(
-      "Image",
-      "ProgressBar",
+      // "Image",
+      // "ProgressBar",
       // "ScrollView",
       // "Horizontal ScrollView",
       "Dropdown Picker",
@@ -40,9 +40,9 @@ public class TestIdTestCase extends ReactAppInstrumentationTestCase {
       "Switch",
       "Text",
       "TouchableBounce"
-      // "TouchableHighlight",
-      // "TouchableOpacity",
-      // "TouchableWithoutFeedback",
+      "TouchableHighlight",
+      "TouchableOpacity",
+      "TouchableWithoutFeedback",
       // "Toolbar",
       // "TextInput",
       // "View",

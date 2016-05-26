@@ -43,6 +43,7 @@ testClasses.forEach((testClass) => {
   if (tryExecNTimes(
     () => {
       exec('sleep 10s');
+      echo(`Starting ${testClass}`);
       return exec(`./scripts/run-instrumentation-tests-via-adb-shell.sh ${argv.package} com.facebook.react.tests.TestIdTestCase`).code;
     },
     numberOfRetries)) {
