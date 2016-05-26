@@ -924,6 +924,12 @@ var apps = [
     author: 'WEARVR LLC',
   },
   {
+    name: 'WeatherEh - Canada weather',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple18/v4/39/cf/84/39cf8411-acc3-f7d6-3923-39973c2eb511/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/app/id1112813447',
+    author: 'Zhao Han',
+  },
+  {
     name: 'wego concerts',
     icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/03/91/2d/03912daa-fae7-6a25-5f11-e6b19290b3f4/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/wego-concerts-follow-friends/id869478093?mt=8',
