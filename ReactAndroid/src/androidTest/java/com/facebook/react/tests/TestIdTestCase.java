@@ -46,18 +46,18 @@ public class TestIdTestCase extends ReactAppInstrumentationTestCase {
       "Toolbar",
       "TextInput",
       "View",
-      "WebView",
+      // "WebView", TODO t11449130
       "ScrollView Item (same id used for all items)"
       );
 
   public void testPropertyIsSetForViews() {
-    // for (String tag : viewTags) {
-    //   View viewWithTag = ReactTestHelper.getViewWithReactTestId(
-    //     getActivity().getRootView(),
-    //     tag);
-    //   assertNotNull(
-    //       "View with testID tag " + tag + " was not found. Check TestIdTestModule.js.",
-    //       viewWithTag);
-    // }
+    for (String tag : viewTags) {
+      View viewWithTag = ReactTestHelper.getViewWithReactTestId(
+        getActivity().getRootView(),
+        tag);
+      assertNotNull(
+          "View with testID tag " + tag + " was not found. Check TestIdTestModule.js.",
+          viewWithTag);
+    }
   }
 }
