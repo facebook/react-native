@@ -1056,6 +1056,12 @@ var apps = [
     link: 'https://emberall.com/',
     author: 'Kyle Corbitt',
   },
+  {
+    name: '一休',
+    icon: 'http://www.lagou.com/i/image/M00/00/01/Cgp3O1YffzaAJCYWAABg1P8s1l0717.jpg',
+    link: 'https://itunes.apple.com/cn/app/yi-xiu-zhong-xiao-qi-ye-cai/id1050588308?mt=8',
+    author: '嗅嗅科技',
+  },
 ];
 
 var AppList = React.createClass({
