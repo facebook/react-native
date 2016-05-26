@@ -7,27 +7,18 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ActivityIndicatorIOS
- * @flow
  */
 'use strict';
 
+var ActivityIndicator = require('ActivityIndicator');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
-var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var requireNativeComponent = require('requireNativeComponent');
-
-var GRAY = '#999999';
-
-type DefaultProps = {
-  animating: boolean;
-  color: string;
-  hidesWhenStopped: boolean;
-  size: 'small' | 'large';
-};
-
+/**
+ * Deprecated, use ActivityIndicator instead.
+ */
 var ActivityIndicatorIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
@@ -60,47 +51,13 @@ var ActivityIndicatorIOS = React.createClass({
     onLayout: PropTypes.func,
   },
 
-  getDefaultProps: function(): DefaultProps {
-    return {
-      animating: true,
-      color: GRAY,
-      hidesWhenStopped: true,
-      size: 'small',
-    };
+  componentDidMount: function() {
+    console.warn('ActivityIndicatorIOS is deprecated. Use ActivityIndicator instead.');
   },
 
   render: function() {
-    var {onLayout, style, ...props} = this.props;
-    var sizeStyle = (this.props.size === 'large') ? styles.sizeLarge : styles.sizeSmall;
-    return (
-      <View
-        onLayout={onLayout}
-        style={[styles.container, style]}>
-        <RCTActivityIndicatorView {...props} style={sizeStyle} />
-      </View>
-    );
+    return <ActivityIndicator {...this.props} />;
   }
 });
-
-var styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sizeSmall: {
-    width: 20,
-    height: 20,
-  },
-  sizeLarge: {
-    width: 36,
-    height: 36,
-  }
-});
-
-var RCTActivityIndicatorView = requireNativeComponent(
-  'RCTActivityIndicatorView',
-  ActivityIndicatorIOS,
-  {nativeOnly: {activityIndicatorViewStyle: true}},
-);
 
 module.exports = ActivityIndicatorIOS;
