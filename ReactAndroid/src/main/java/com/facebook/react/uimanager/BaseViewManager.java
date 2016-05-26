@@ -65,10 +65,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = PROP_Z_INDEX)
   public void setZIndex(T view, float zIndex) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      view.setZ(zIndex);
+    if (view instanceof ReactZIndexView) {
+      ((ReactZIndexView)view).setZIndex(zIndex);
     }
-    // Do nothing on API < 21
   }
 
   @ReactProp(name = PROP_ELEVATION)
