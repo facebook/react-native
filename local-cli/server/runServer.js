@@ -17,6 +17,7 @@ const isAbsolutePath = require('absolute-path');
 const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
 const messageSocket = require('./util/messageSocket.js');
 const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInEditorMiddleware');
+const copyToClipboard = require('./middleware/copyToClipboard');
 const path = require('path');
 const ReactPackager = require('../../packager/react-packager');
 const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
@@ -34,6 +35,7 @@ function runServer(args, config, readyCallback) {
     .use(getDevToolsMiddleware(args, () => wsProxy && wsProxy.isChromeConnected()))
     .use(getDevToolsMiddleware(args, () => ms && ms.isChromeConnected()))
     .use(openStackFrameInEditorMiddleware)
+    .use(copyToClipboard)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
     .use(cpuProfilerMiddleware)
