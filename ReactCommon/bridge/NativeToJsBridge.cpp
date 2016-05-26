@@ -226,6 +226,12 @@ void NativeToJsBridge::stopProfiler(const std::string& title, const std::string&
   });
 }
 
+void NativeToJsBridge::handleMemoryPressureUiHidden() {
+  runOnExecutorQueue(m_mainExecutorToken, [=] (JSExecutor* executor) {
+    executor->handleMemoryPressureUiHidden();
+  });
+}
+
 void NativeToJsBridge::handleMemoryPressureModerate() {
   runOnExecutorQueue(m_mainExecutorToken, [=] (JSExecutor* executor) {
     executor->handleMemoryPressureModerate();

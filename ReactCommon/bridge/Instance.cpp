@@ -118,5 +118,17 @@ ExecutorToken Instance::getMainExecutorToken() {
   return nativeToJsBridge_->getMainExecutorToken();
 }
 
+void Instance::handleMemoryPressureUiHidden() {
+  nativeToJsBridge_->handleMemoryPressureUiHidden();
+}
+
+void Instance::handleMemoryPressureModerate() {
+  nativeToJsBridge_->handleMemoryPressureModerate();
+}
+
+void Instance::handleMemoryPressureCritical() {
+  nativeToJsBridge_->handleMemoryPressureCritical();
+}
+
 } // namespace react
 } // namespace facebook

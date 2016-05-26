@@ -50,6 +50,9 @@ class Instance {
   MethodCallResult callSerializableNativeHook(ExecutorToken token, unsigned int moduleId,
                                               unsigned int methodId, folly::dynamic&& args);
   ExecutorToken getMainExecutorToken();
+  void handleMemoryPressureUiHidden();
+  void handleMemoryPressureModerate();
+  void handleMemoryPressureCritical();
 
  private:
   void callNativeModules(ExecutorToken token, const std::string& calls, bool isEndOfBatch);
