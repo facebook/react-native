@@ -222,6 +222,13 @@ var apps = [
     author: 'Accio Delivery Inc.',
   },
   {
+    name: 'AirPoPo',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/47/1a/07/471a07e1-50d9-a432-060b-76f32df8c345/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/airpopo/id1100540816',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.airpopo.client',
+    author: 'DingTaxi',
+  },
+  {
     name: 'ArcChat.com',
     icon: 'https://lh3.googleusercontent.com/mZJjidMobu3NAZApdtp-vdBBzIWzCNTaIcKShbGqwXRRzL3B9bbi6E0eRuykgT6vmg=w300-rw',
     link: 'https://play.google.com/store/apps/details?id=com.arcchat',
