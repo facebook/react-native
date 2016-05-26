@@ -762,6 +762,15 @@ var apps = [
     ],
   },
   {
+    name: 'Readzi',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple18/v4/b9/32/99/b9329992-1677-9ee2-5d04-e901e4bbb2b7/icon175x175.png',
+    link: 'https://readzi.io',
+    author: 'Kevin Kennedy',
+    blogs: [
+      'https://strazi.org/journal/building-readzi/',
+    ],
+  },
+  {
     name: 'RenovationFind',
     icon: 'http://a2.mzstatic.com/us/r30/Purple3/v4/4f/89/af/4f89af72-9733-2f59-6876-161983a0ee82/icon175x175.png',
     link: 'https://itunes.apple.com/ca/app/renovationfind/id1040331641?mt=8',
