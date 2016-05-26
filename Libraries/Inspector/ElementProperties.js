@@ -73,7 +73,7 @@ var ElementProperties = React.createClass({
                   style={[styles.breadItem, i === selection && styles.selected]}
                   onPress={() => this.props.setSelection(i)}>
                   <Text style={styles.breadItemText}>
-                    {item.getName ? item.getName() : 'Unknown'}
+                    {getInstanceName(item)}
                   </Text>
                 </TouchableHighlight>
               ),
@@ -106,6 +106,16 @@ var ElementProperties = React.createClass({
     });
   },
 });
+
+function getInstanceName(instance) {
+  if (instance.getName) {
+    return instance.getName();
+  }
+  if (instance.constructor && instance.constructor.displayName) {
+    return instance.constructor.displayName;
+  }
+  return 'Unknown';
+}
 
 var styles = StyleSheet.create({
   breadSep: {
