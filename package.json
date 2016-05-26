@@ -136,7 +136,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.6.5",
     "babel-polyfill": "^6.6.1",
     "babel-preset-es2015-node": "^4.0.2",
-    "babel-preset-react-native": "^1.8.0",
+    "babel-preset-react-native": "^1.9.0",
     "babel-register": "^6.6.0",
     "babel-types": "^6.6.4",
     "babylon": "^6.6.4",
