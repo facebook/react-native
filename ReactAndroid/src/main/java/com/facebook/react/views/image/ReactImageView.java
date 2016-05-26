@@ -561,4 +561,12 @@ public class ReactImageView extends GenericDraweeView implements ReactZIndexView
   public float getZIndex() {
     return mZIndex;
   }
+
+  public void setZIndex(float zIndex) {
+    mZIndex = zIndex;
+  }
+
+  public float getZIndex() {
+    return mZIndex;
+  }
 }

@@ -30,7 +30,6 @@ import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ReactZIndexView;
-import com.facebook.react.uimanager.ViewGroupManager;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
@@ -129,15 +128,6 @@ public class ReactViewGroup extends ViewGroup implements
     } else {
       getOrCreateReactViewBackground().setColor(color);
     }
-  }
-
-  public void setZIndex(float targetZIndex) {
-    zIndex = targetZIndex;
-    ViewGroupManager.reorderChildrenByZIndex((ViewGroup) this.getParent());
-  }
-
-  public float getZIndex() {
-    return zIndex;
   }
 
   @Override
