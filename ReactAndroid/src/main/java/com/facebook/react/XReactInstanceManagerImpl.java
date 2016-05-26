@@ -78,6 +78,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_EN
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START;
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 /**
  * This class is managing instances of {@link CatalystInstance}. It expose a way to configure
@@ -612,7 +613,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
   @Override
   public List<ViewManager> createAllViewManagers(
       ReactApplicationContext catalystApplicationContext) {
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createAllViewManagers");
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createAllViewManagers");
     try {
       List<ViewManager> allViewManagers = new ArrayList<>();
       for (ReactPackage reactPackage : mPackages) {
@@ -620,7 +621,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
       }
       return allViewManagers;
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
@@ -681,6 +682,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
   }
 
   private void setupReactContext(ReactApplicationContext reactContext) {
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "setupReactContext");
     UiThreadUtil.assertOnUiThread();
     Assertions.assertCondition(mCurrentReactContext == null);
     mCurrentReactContext = Assertions.assertNotNull(reactContext);
@@ -703,11 +705,13 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     for (ReactInstanceEventListener listener : listeners) {
       listener.onReactContextInitialized(reactContext);
     }
+    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
   private void attachMeasuredRootViewToInstance(
       ReactRootView rootView,
       CatalystInstance catalystInstance) {
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachMeasuredRootViewToInstance");
     UiThreadUtil.assertOnUiThread();
 
     // Reset view content as it's going to be populated by the application content from JS
@@ -724,6 +728,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     appParams.putDouble("rootTag", rootTag);
     appParams.putMap("initialProps", initialProps);
     catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
+    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
   private void detachViewFromInstance(
@@ -766,36 +771,36 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
 
     ReactMarker.logMarker(PROCESS_PACKAGES_START);
     Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        TRACE_TAG_REACT_JAVA_BRIDGE,
         "createAndProcessCoreModulesPackage");
     try {
       CoreModulesPackage coreModulesPackage =
           new CoreModulesPackage(this, mBackBtnHandler, mUIImplementationProvider);
       processPackage(coreModulesPackage, reactContext, nativeRegistryBuilder, jsModulesBuilder);
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
 
     // TODO(6818138): Solve use-case of native/js modules overriding
     for (ReactPackage reactPackage : mPackages) {
       Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+          TRACE_TAG_REACT_JAVA_BRIDGE,
           "createAndProcessCustomReactPackage");
       try {
         processPackage(reactPackage, reactContext, nativeRegistryBuilder, jsModulesBuilder);
       } finally {
-        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       }
     }
     ReactMarker.logMarker(PROCESS_PACKAGES_END);
 
     ReactMarker.logMarker(BUILD_NATIVE_MODULE_REGISTRY_START);
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "buildNativeModuleRegistry");
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "buildNativeModuleRegistry");
     NativeModuleRegistry nativeModuleRegistry;
     try {
        nativeModuleRegistry = nativeRegistryBuilder.build();
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(BUILD_NATIVE_MODULE_REGISTRY_END);
     }
 
@@ -812,12 +817,12 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
 
     ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
     // CREATE_CATALYST_INSTANCE_END is in JSCExecutor.cpp
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstance");
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstance");
     final CatalystInstance catalystInstance;
     try {
       catalystInstance = catalystInstanceBuilder.build();
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_END);
     }
 
@@ -831,11 +836,11 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     catalystInstance.getReactQueueConfiguration().getJSQueueThread().runOnQueue(new Runnable() {
       @Override
       public void run() {
-        Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "runJSBundle");
+        Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "runJSBundle");
         try {
           catalystInstance.runJSBundle();
         } finally {
-          Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+          Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
           ReactMarker.logMarker(RUN_JS_BUNDLE_END);
         }
       }
