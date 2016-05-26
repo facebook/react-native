@@ -48,6 +48,7 @@ import com.facebook.imagepipeline.request.Postprocessor;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactZIndexView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 
@@ -57,7 +58,7 @@ import java.util.Arrays;
  * Wrapper class around Fresco's GenericDraweeView, enabling persisting props across multiple view
  * update and consistent processing of both static and network images.
  */
-public class ReactImageView extends GenericDraweeView {
+public class ReactImageView extends GenericDraweeView implements ReactZIndexView {
 
   public static final int REMOTE_IMAGE_FADE_DURATION_MS = 300;
 
@@ -152,6 +153,7 @@ public class ReactImageView extends GenericDraweeView {
   private final @Nullable Object mCallerContext;
   private int mFadeDurationMs = -1;
   private boolean mProgressiveRenderingEnabled;
+  private @Nullable float mZIndex;
 
   // We can't specify rounding in XML, so have to do so here
   private static GenericDraweeHierarchy buildHierarchy(Context context) {
@@ -412,5 +414,13 @@ public class ReactImageView extends GenericDraweeView {
     // We resize here only for images likely to be from the device's camera, where the app developer
     // has no control over the original size
     return uri != null && (UriUtil.isLocalContentUri(uri) || UriUtil.isLocalFileUri(uri));
+  }
+
+  public void setZIndex(float zIndex) {
+    mZIndex = zIndex;
+  }
+
+  public float getZIndex() {
+    return mZIndex;
   }
 }

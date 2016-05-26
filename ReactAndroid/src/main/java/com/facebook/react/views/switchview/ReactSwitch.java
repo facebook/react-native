@@ -13,14 +13,19 @@ import android.content.Context;
 import android.support.v7.widget.SwitchCompat;
 import android.widget.Switch;
 
+import com.facebook.react.uimanager.ReactZIndexView;
+
+import javax.annotation.Nullable;
+
 /**
  * Switch that has its value controlled by JS. Whenever the value of the switch changes, we do not
  * allow any other changes to that switch until JS sets a value explicitly. This stops the Switch
  * from changing its value multiple times, when those changes have not been processed by JS first.
  */
-/*package*/ class ReactSwitch extends SwitchCompat {
+/*package*/ class ReactSwitch extends SwitchCompat implements ReactZIndexView {
 
   private boolean mAllowChange;
+  private @Nullable float mZIndex;
 
   public ReactSwitch(Context context) {
     super(context);
@@ -41,5 +46,13 @@ import android.widget.Switch;
       super.setChecked(on);
     }
     mAllowChange = true;
+  }
+
+  public void setZIndex(float zIndex) {
+    mZIndex = zIndex;
+  }
+
+  public float getZIndex() {
+    return mZIndex;
   }
 }

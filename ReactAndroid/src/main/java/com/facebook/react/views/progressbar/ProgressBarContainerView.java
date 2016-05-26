@@ -12,18 +12,20 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.uimanager.ReactZIndexView;
 
 /**
  * Controls an enclosing ProgressBar. Exists so that the ProgressBar can be recreated if
  * the style would change.
  */
-/* package */ class ProgressBarContainerView extends FrameLayout {
+/* package */ class ProgressBarContainerView extends FrameLayout implements ReactZIndexView {
   private static final int MAX_PROGRESS = 1000;
 
   private @Nullable Integer mColor;
   private boolean mIndeterminate = true;
   private double mProgress;
   private @Nullable ProgressBar mProgressBar;
+  private @Nullable float mZIndex;
 
   public ProgressBarContainerView(Context context) {
     super(context);
@@ -80,5 +82,13 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
     } else {
       drawable.clearColorFilter();
     }
+  }
+
+  public void setZIndex(float zIndex) {
+    mZIndex = zIndex;
+  }
+
+  public float getZIndex() {
+    return mZIndex;
   }
 }

@@ -30,7 +30,6 @@ import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ReactZIndexView;
-import com.facebook.react.uimanager.ViewGroupManager;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
@@ -44,7 +43,7 @@ public class ReactViewGroup extends ViewGroup implements
   private static final LayoutParams sDefaultLayoutParam = new ViewGroup.LayoutParams(0, 0);
   /* should only be used in {@link #updateClippingToRect} */
   private static final Rect sHelperRect = new Rect();
-  private @Nullable float zIndex;
+  private @Nullable float mZIndex;
 
   /**
    * This listener will be set for child views when removeClippedSubview property is enabled. When
@@ -129,15 +128,6 @@ public class ReactViewGroup extends ViewGroup implements
     } else {
       getOrCreateReactViewBackground().setColor(color);
     }
-  }
-
-  public void setZIndex(float targetZIndex) {
-    zIndex = targetZIndex;
-    ViewGroupManager.reorderChildrenByZIndex((ViewGroup) this.getParent());
-  }
-
-  public float getZIndex() {
-    return zIndex;
   }
 
   @Override
@@ -540,6 +530,14 @@ public class ReactViewGroup extends ViewGroup implements
 
   public void setHitSlopRect(@Nullable Rect rect) {
     mHitSlopRect = rect;
+  }
+
+  public void setZIndex(float zIndex) {
+    mZIndex = zIndex;
+  }
+
+  public float getZIndex() {
+    return mZIndex;
   }
 
 }

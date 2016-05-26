@@ -35,6 +35,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.uimanager.ReactZIndexView;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -179,8 +180,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
    * Subclass of {@link WebView} that implements {@link LifecycleEventListener} interface in order
    * to call {@link WebView#destroy} on activty destroy event and also to clear the client
    */
-  private static class ReactWebView extends WebView implements LifecycleEventListener {
+  private static class ReactWebView extends WebView implements LifecycleEventListener, ReactZIndexView {
     private @Nullable String injectedJS;
+    private @Nullable float mZIndex;
 
     /**
      * WebView must be created with an context of the current activity
@@ -223,6 +225,14 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     private void cleanupCallbacksAndDestroy() {
       setWebViewClient(null);
       destroy();
+    }
+
+    public void setZIndex(float zIndex) {
+      mZIndex = zIndex;
+    }
+
+    public float getZIndex() {
+      return mZIndex;
     }
   }
 
