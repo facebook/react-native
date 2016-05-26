@@ -27,6 +27,7 @@
 NSString *const RCTLocalNotificationReceived = @"LocalNotificationReceived";
 NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
 NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegistered";
+NSString *const RCTRemoteNotificationsRegistrationError = @"RemoteNotificationsRegistrationError";
 
 @implementation RCTConvert (UILocalNotification)
 
@@ -85,6 +86,10 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(handleRemoteNotificationsRegistered:)
                                                name:RCTRemoteNotificationsRegistered
                                              object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleRemoteNotificationsRegistrationError:)
+                                               name:RCTRemoteNotificationsRegistrationError
+                                             object:nil];
 }
 
 - (NSDictionary<NSString *, id> *)constantsToExport
@@ -135,6 +140,15 @@ RCT_EXPORT_MODULE()
                                                     userInfo:details];
 }
 
+
+
++ (void)didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationsRegistrationError
+                                                      object:self
+                                                    userInfo:error.userInfo];
+}
+
 - (void)handleLocalNotificationReceived:(NSNotification *)notification
 {
 #pragma clang diagnostic push
@@ -160,6 +174,12 @@ RCT_EXPORT_MODULE()
   [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationsRegistered"
                                               body:notification.userInfo];
 #pragma clang diagnostic pop
+}
+
+- (void)handleRemoteNotificationsRegistrationError:(NSNotification *)notification
+{
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationsRegistrationError"
+                                              body:notification.userInfo];
 }
 
 /**
