@@ -33,21 +33,22 @@ public class TestIdTestCase extends ReactAppInstrumentationTestCase {
   private final List<String> viewTags = Arrays.asList(
       "Image",
       "ProgressBar",
-      "ScrollView",
-      "Horizontal ScrollView",
-      "Dropdown Picker",
-      "Dialog Picker",
-      "Switch",
-      "Text",
-      "TouchableBounce",
-      "TouchableHighlight",
-      "TouchableOpacity",
-      "TouchableWithoutFeedback",
-      "Toolbar",
-      "TextInput",
-      "View",
-      "WebView",
-      "ScrollView Item (same id used for all items)");
+      // "ScrollView",
+      // "Horizontal ScrollView",
+      // "Dropdown Picker",
+      // "Dialog Picker",
+      // "Switch",
+      // "Text",
+      // "TouchableBounce",
+      // "TouchableHighlight",
+      // "TouchableOpacity",
+      // "TouchableWithoutFeedback",
+      // "Toolbar",
+      // "TextInput",
+      // "View",
+      // "WebView",
+      // "ScrollView Item (same id used for all items)"
+      );
 
   public void testPropertyIsSetForViews() {
     for (String tag : viewTags) {
