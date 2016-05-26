@@ -29,19 +29,22 @@ import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactPointerEventsView;
+import com.facebook.react.uimanager.ReactZIndexView;
+import com.facebook.react.uimanager.ViewGroupManager;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
  * initializes most of the storage needed for them.
  */
 public class ReactViewGroup extends ViewGroup implements
-    ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView {
+    ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView, ReactZIndexView {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
   private static final LayoutParams sDefaultLayoutParam = new ViewGroup.LayoutParams(0, 0);
   /* should only be used in {@link #updateClippingToRect} */
   private static final Rect sHelperRect = new Rect();
+  private @Nullable float zIndex;
 
   /**
    * This listener will be set for child views when removeClippedSubview property is enabled. When
@@ -126,6 +129,15 @@ public class ReactViewGroup extends ViewGroup implements
     } else {
       getOrCreateReactViewBackground().setColor(color);
     }
+  }
+
+  public void setZIndex(float targetZIndex) {
+    zIndex = targetZIndex;
+    ViewGroupManager.reorderChildrenByZIndex((ViewGroup) this.getParent());
+  }
+
+  public float getZIndex() {
+    return zIndex;
   }
 
   @Override
