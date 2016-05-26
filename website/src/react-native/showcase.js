@@ -888,6 +888,13 @@ var apps = [
     author: 'Alexey Ledak',
   },
   {
+    name: 'Ticketea',
+    icon: 'http://f.cl.ly/items/0n3g3x2t0W0a0d0b1F0C/tkt-icon.png',
+    linkAppStore: 'https://itunes.apple.com/es/app/entradas-teatro-y-conciertos/id1060067658?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.ticketea.geminis',
+    author: 'Ticketea (@ticketeaeng)',
+  },
+  {
     name: 'Tong Xing Wang',
     icon: 'http://a3.mzstatic.com/us/r30/Purple1/v4/7d/52/a7/7d52a71f-9532-82a5-b92f-87076624fdb2/icon175x175.jpeg',
     link: 'https://itunes.apple.com/cn/app/tong-xing-wang/id914254459?mt=8',
