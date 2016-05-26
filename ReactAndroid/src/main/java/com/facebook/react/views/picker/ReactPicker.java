@@ -18,14 +18,16 @@ import android.widget.AdapterView;
 import android.widget.Spinner;
 
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.uimanager.ReactZIndexView;
 
-public class ReactPicker extends Spinner {
+public class ReactPicker extends Spinner implements ReactZIndexView {
 
   private int mMode = MODE_DIALOG;
   private @Nullable Integer mPrimaryColor;
   private boolean mSuppressNextEvent;
   private @Nullable OnSelectListener mOnSelectListener;
   private @Nullable Integer mStagedSelection;
+  private @Nullable float mZIndex;
 
   /**
    * Listener interface for ReactPicker events.
@@ -144,5 +146,13 @@ public class ReactPicker extends Spinner {
   @VisibleForTesting
   public int getMode() {
     return mMode;
+  }
+
+  public void setZIndex(float zIndex) {
+    mZIndex = zIndex;
+  }
+
+  public float getZIndex() {
+    return mZIndex;
   }
 }

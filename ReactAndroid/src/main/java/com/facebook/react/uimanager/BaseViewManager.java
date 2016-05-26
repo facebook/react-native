@@ -5,6 +5,7 @@ package com.facebook.react.uimanager;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -67,6 +68,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setZIndex(T view, float zIndex) {
     if (view instanceof ReactZIndexView) {
       ((ReactZIndexView)view).setZIndex(zIndex);
+      ViewGroupManager.reorderChildrenByZIndex((ViewGroup) view.getParent());
     }
   }
 

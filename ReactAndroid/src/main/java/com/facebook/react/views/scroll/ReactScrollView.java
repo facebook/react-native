@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.ScrollView;
 
 import com.facebook.react.uimanager.MeasureSpecAssertions;
+import com.facebook.react.uimanager.ReactZIndexView;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.view.ReactClippingViewGroup;
 import com.facebook.react.views.view.ReactClippingViewGroupHelper;
@@ -34,7 +35,7 @@ import com.facebook.infer.annotation.Assertions;
  * <p>ReactScrollView only supports vertical scrolling. For horizontal scrolling,
  * use {@link ReactHorizontalScrollView}.
  */
-public class ReactScrollView extends ScrollView implements ReactClippingViewGroup {
+public class ReactScrollView extends ScrollView implements ReactClippingViewGroup, ReactZIndexView {
 
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
 
@@ -49,6 +50,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
+  private @Nullable float mZIndex;
 
   public ReactScrollView(Context context) {
     this(context, null);
@@ -246,5 +248,13 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       mEndFillColor = color;
       mEndBackground = new ColorDrawable(mEndFillColor);
     }
+  }
+
+  public void setZIndex(float zIndex) {
+    mZIndex = zIndex;
+  }
+
+  public float getZIndex() {
+    return mZIndex;
   }
 }

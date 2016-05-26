@@ -34,6 +34,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.uimanager.ReactZIndexView;
 import com.facebook.react.views.text.CustomStyleSpan;
 import com.facebook.react.views.text.ReactTagSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
@@ -51,7 +52,7 @@ import com.facebook.react.views.text.TextInlineImageSpan;
  * has called this explicitly. This is the default behavior on other platforms as well.
  * VisibleForTesting from {@link TextInputEventsTestCase}.
  */
-public class ReactEditText extends EditText {
+public class ReactEditText extends EditText implements ReactZIndexView {
 
   private final InputMethodManager mInputMethodManager;
   // This flag is set to true when we set the text of the EditText explicitly. In that case, no
@@ -72,6 +73,7 @@ public class ReactEditText extends EditText {
   private boolean mBlurOnSubmit;
   private @Nullable SelectionWatcher mSelectionWatcher;
   private final InternalKeyListener mKeyListener;
+  private @Nullable float mZIndex;
 
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
 
@@ -212,7 +214,7 @@ public class ReactEditText extends EditText {
     mStagedInputType = type;
     // Input type password defaults to monospace font, so we need to re-apply the font
     super.setTypeface(tf);
-    
+
     // We override the KeyListener so that all keys on the soft input keyboard as well as hardware
     // keyboards work. Some KeyListeners like DigitsKeyListener will display the keyboard but not
     // accept all input from it
@@ -371,6 +373,14 @@ public class ReactEditText extends EditText {
       }
     }
     super.invalidateDrawable(drawable);
+  }
+
+  public void setZIndex(float zIndex) {
+    mZIndex = zIndex;
+  }
+
+  public float getZIndex() {
+    return mZIndex;
   }
 
   @Override
