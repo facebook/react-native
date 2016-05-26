@@ -91,7 +91,7 @@ var TestIdTestApp = React.createClass({
 
         <TextInput testID="TextInput" value="Text input" />
 
-        {/*<TouchableBounce testID="TouchableBounce">
+        <TouchableBounce testID="TouchableBounce">
           <Text>TouchableBounce</Text>
         </TouchableBounce>
 
@@ -111,7 +111,7 @@ var TestIdTestApp = React.createClass({
 
         <View testID="View" />
 
-        <WebView
+        {/*<WebView
           testID="WebView"
           url={'http://newsroom.fb.com'}
           renderError={() => <View /> }
