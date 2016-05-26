@@ -55,6 +55,9 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   local_ref<JExecutorToken::JavaPart> getMainExecutorToken();
   void setGlobalVariable(std::string propName,
                          std::string&& jsonValue);
+  void handleMemoryPressureUiHidden();
+  void handleMemoryPressureModerate();
+  void handleMemoryPressureCritical();
   jboolean supportsProfiling();
   void startProfiler(const std::string& title);
   void stopProfiler(const std::string& title, const std::string& filename);

@@ -168,6 +168,7 @@ public:
   }
   virtual void startProfiler(const std::string &titleString) {}
   virtual void stopProfiler(const std::string &titleString, const std::string &filename) {}
+  virtual void handleMemoryPressureUiHidden() {}
   virtual void handleMemoryPressureModerate() {}
   virtual void handleMemoryPressureCritical() {
     handleMemoryPressureModerate();
