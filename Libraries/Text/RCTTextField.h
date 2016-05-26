@@ -31,6 +31,7 @@
 
 - (void)textFieldDidChange;
 - (void)sendKeyValueForString:(NSString *)string;
+- (void)sendTextChangedForString:(NSString *)string;
 - (BOOL)textFieldShouldEndEditing:(RCTTextField *)textField;
 
 @end

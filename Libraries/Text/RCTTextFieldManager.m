@@ -37,8 +37,15 @@ RCT_EXPORT_MODULE()
     [textField sendKeyValueForString:string];
   }
 
-  if (textField.maxLength == nil || [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
+  if ([string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
     return YES;
+  }
+    
+  if (textField.maxLength == nil) {
+    NSMutableString *newString = [textField.text stringByReplacingCharactersInRange:range withString:string];
+      
+    [textField sendTextChangedForString:newString];
+    return NO;
   }
   NSUInteger allowedLength = textField.maxLength.integerValue - textField.text.length + range.length;
   if (string.length > allowedLength) {
@@ -56,7 +63,10 @@ RCT_EXPORT_MODULE()
     }
     return NO;
   } else {
-    return YES;
+    NSMutableString *newString = [textField.text stringByReplacingCharactersInRange:range withString:string];
+        
+    [textField sendTextChangedForString:newString];
+    return NO;
   }
 }
 
