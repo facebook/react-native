@@ -966,7 +966,7 @@ var Navigator = React.createClass({
 
   /**
    * Transition back and unmount the current scene.
-   * Optionally call `cb` when transition finished
+   * Optionally call `cb` when transition finished.
    */
   pop: function(cb) {
     if (this.state.transitionQueue.length) {
@@ -985,7 +985,7 @@ var Navigator = React.createClass({
   },
 
   /**
-   * Pop current scene then, after transition, push new route
+   * Pop current scene then, after transition, push new route.
    */
   popAndPushToRoute(route){
     invariant(!!route, 'Must supply route to push');
