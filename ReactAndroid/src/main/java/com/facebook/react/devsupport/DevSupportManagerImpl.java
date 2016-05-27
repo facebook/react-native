@@ -106,7 +106,6 @@ public class DevSupportManagerImpl implements DevSupportManager {
   private @Nullable DebugOverlayController mDebugOverlayController;
   private @Nullable ReactContext mCurrentContext;
   private DevInternalSettings mDevSettings;
-  private boolean mIsUsingJSProxy = false;
   private boolean mIsReceiverRegistered = false;
   private boolean mIsShakeDetectorStarted = false;
   private boolean mIsDevSupportEnabled = false;
@@ -139,10 +138,10 @@ public class DevSupportManagerImpl implements DevSupportManager {
         String action = intent.getAction();
         if (DevServerHelper.getReloadAppAction(context).equals(action)) {
           if (intent.getBooleanExtra(DevServerHelper.RELOAD_APP_EXTRA_JS_PROXY, false)) {
-            mIsUsingJSProxy = true;
+            mDevSettings.setRemoteJSDebugEnabled(true);
             mDevServerHelper.launchJSDevtools();
           } else {
-            mIsUsingJSProxy = false;
+            mDevSettings.setRemoteJSDebugEnabled(false);
           }
           handleReloadJS();
         }
@@ -265,13 +264,13 @@ public class DevSupportManagerImpl implements DevSupportManager {
           }
         });
     options.put(
-        mIsUsingJSProxy ?
+        mDevSettings.isRemoteJSDebugEnabled() ?
             mApplicationContext.getString(R.string.catalyst_debugjs_off) :
             mApplicationContext.getString(R.string.catalyst_debugjs),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
-            mIsUsingJSProxy = !mIsUsingJSProxy;
+            mDevSettings.setRemoteJSDebugEnabled(!mDevSettings.isRemoteJSDebugEnabled());
             handleReloadJS();
           }
         });
@@ -297,7 +296,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
           }
         });
     options.put(
-        mApplicationContext.getString(R.string.catalyst_element_inspector),
+      mApplicationContext.getString(R.string.catalyst_element_inspector),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
@@ -340,7 +339,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
         mCurrentContext.getCatalystInstance().supportsProfiling()) {
       options.put(
           mApplicationContext.getString(
-              mIsCurrentlyProfiling ? R.string.catalyst_stop_profile :
+            mIsCurrentlyProfiling ? R.string.catalyst_stop_profile :
                   R.string.catalyst_start_profile),
           new DevOptionHandler() {
             @Override
@@ -581,13 +580,13 @@ public class DevSupportManagerImpl implements DevSupportManager {
     ProgressDialog progressDialog = new ProgressDialog(mApplicationContext);
     progressDialog.setTitle(R.string.catalyst_jsload_title);
     progressDialog.setMessage(mApplicationContext.getString(
-        mIsUsingJSProxy ? R.string.catalyst_remotedbg_message : R.string.catalyst_jsload_message));
+        mDevSettings.isRemoteJSDebugEnabled() ? R.string.catalyst_remotedbg_message : R.string.catalyst_jsload_message));
     progressDialog.setIndeterminate(true);
     progressDialog.setCancelable(false);
     progressDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
     progressDialog.show();
 
-    if (mIsUsingJSProxy) {
+    if (mDevSettings.isRemoteJSDebugEnabled()) {
       reloadJSInProxyMode(progressDialog);
     } else {
       reloadJSFromServer(progressDialog);

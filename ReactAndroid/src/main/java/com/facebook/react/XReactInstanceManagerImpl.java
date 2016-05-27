@@ -59,6 +59,7 @@ import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.debug.DeveloperSettings;
 import com.facebook.react.uimanager.AppRegistry;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.UIImplementationProvider;
@@ -362,8 +363,13 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     UiThreadUtil.assertOnUiThread();
 
     if (mUseDeveloperSupport && mJSMainModuleName != null) {
-      if (mDevSupportManager.hasUpToDateJSBundleInCache()) {
-        // If there is a up-to-date bundle downloaded from server, always use that
+      final DeveloperSettings devSettings = mDevSupportManager.getDevSettings();
+
+      // If remote JS debugging is enabled, load from dev server.
+      if (mDevSupportManager.hasUpToDateJSBundleInCache() &&
+          !devSettings.isRemoteJSDebugEnabled()) {
+        // If there is a up-to-date bundle downloaded from server,
+        // with remote JS debugging disabled, always use that.
         onJSBundleLoadedFromServer();
       } else if (mJSBundleFile == null) {
         mDevSupportManager.handleReloadJS();
@@ -379,6 +385,8 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
                         if (packagerIsRunning) {
                           mDevSupportManager.handleReloadJS();
                         } else {
+                          // If dev server is down, disable the remote JS debugging.
+                          devSettings.setRemoteJSDebugEnabled(false);
                           recreateReactContextInBackgroundFromBundleFile();
                         }
                       }
