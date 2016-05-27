@@ -60,6 +60,8 @@ type State = UIExplorerNavigationState & {
   externalExample?: string,
 };
 
+const APP_STATE_KEY = 'UIExplorerAppState.v1';
+
 class UIExplorerApp extends React.Component {
   _renderOverlay: Function;
   _renderScene: Function;
@@ -81,7 +83,7 @@ class UIExplorerApp extends React.Component {
 
   componentDidMount() {
     Linking.getInitialURL().then((url) => {
-      AsyncStorage.getItem('UIExplorerAppState', (err, storedString) => {
+      AsyncStorage.getItem(APP_STATE_KEY, (err, storedString) => {
         const exampleAction = URIActionMap(this.props.exampleFromAppetizeParams);
         const urlAction = URIActionMap(url);
         const launchAction = exampleAction || urlAction;
@@ -111,7 +113,7 @@ class UIExplorerApp extends React.Component {
     const newState = UIExplorerNavigationReducer(this.state, action);
     if (this.state !== newState) {
       this.setState(newState);
-      AsyncStorage.setItem('UIExplorerAppState', JSON.stringify(this.state));
+      AsyncStorage.setItem(APP_STATE_KEY, JSON.stringify(this.state));
     }
   }
 
