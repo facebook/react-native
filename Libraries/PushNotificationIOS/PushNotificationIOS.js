@@ -11,17 +11,21 @@
  */
 'use strict';
 
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTPushNotificationManager = require('NativeModules').PushNotificationManager;
-var invariant = require('fbjs/lib/invariant');
+const NativeEventEmitter = require('NativeEventEmitter');
+const RCTPushNotificationManager = require('NativeModules').PushNotificationManager;
+const invariant = require('fbjs/lib/invariant');
 
-var _notifHandlers = new Map();
-var _initialNotification = RCTPushNotificationManager &&
+const PushNotificationEmitter = new NativeEventEmitter(RCTPushNotificationManager);
+
+const _notifHandlers = new Map();
+
+//TODO: remove this once all call sites for popInitialNotification() have been removed
+let _initialNotification = RCTPushNotificationManager &&
   RCTPushNotificationManager.initialNotification;
 
-var DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
-var NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
-var DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
+const DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
+const NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
+const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
 
 /**
  * Handle push notifications for your app, including permission handling and
@@ -158,21 +162,21 @@ class PushNotificationIOS {
     );
     var listener;
     if (type === 'notification') {
-      listener =  RCTDeviceEventEmitter.addListener(
+      listener =  PushNotificationEmitter.addListener(
         DEVICE_NOTIF_EVENT,
         (notifData) => {
           handler(new PushNotificationIOS(notifData));
         }
       );
     } else if (type === 'localNotification') {
-      listener = RCTDeviceEventEmitter.addListener(
+      listener = PushNotificationEmitter.addListener(
         DEVICE_LOCAL_NOTIF_EVENT,
         (notifData) => {
           handler(new PushNotificationIOS(notifData));
         }
       );
     } else if (type === 'register') {
-      listener = RCTDeviceEventEmitter.addListener(
+      listener = PushNotificationEmitter.addListener(
         NOTIF_REGISTER_EVENT,
         (registrationInfo) => {
           handler(registrationInfo.deviceToken);
@@ -180,6 +184,23 @@ class PushNotificationIOS {
       );
     }
     _notifHandlers.set(handler, listener);
+  }
+
+  /**
+   * Removes the event listener. Do this in `componentWillUnmount` to prevent
+   * memory leaks
+   */
+  static removeEventListener(type: string, handler: Function) {
+    invariant(
+      type === 'notification' || type === 'register' || type === 'localNotification',
+      'PushNotificationIOS only supports `notification`, `register` and `localNotification` events'
+    );
+    var listener = _notifHandlers.get(handler);
+    if (!listener) {
+      return;
+    }
+    listener.remove();
+    _notifHandlers.delete(handler);
   }
 
   /**
@@ -247,35 +268,28 @@ class PushNotificationIOS {
   }
 
   /**
-   * Removes the event listener. Do this in `componentWillUnmount` to prevent
-   * memory leaks
-   */
-  static removeEventListener(type: string, handler: Function) {
-    invariant(
-      type === 'notification' || type === 'register' || type === 'localNotification',
-      'PushNotificationIOS only supports `notification`, `register` and `localNotification` events'
-    );
-    var listener = _notifHandlers.get(handler);
-    if (!listener) {
-      return;
-    }
-    listener.remove();
-    _notifHandlers.delete(handler);
-  }
-
-
-  /**
-   * An initial notification will be available if the app was cold-launched
-   * from a notification.
+   * DEPRECATED: An initial notification will be available if the app was
+   * cold-launched from a notification.
    *
    * The first caller of `popInitialNotification` will get the initial
    * notification object, or `null`. Subsequent invocations will return null.
    */
   static popInitialNotification() {
+    console.warn('PushNotificationIOS.popInitialNotification() is deprecated. Use getInitialNotification() instead.');
     var initialNotification = _initialNotification &&
       new PushNotificationIOS(_initialNotification);
     _initialNotification = null;
     return initialNotification;
+  }
+  
+  /**
+   * If the app launch was triggered by a push notification,
+   * it will give the notification object, otherwise it will give `null`
+   */
+  static getInitialNotification(): Promise<?PushNotificationIOS> {
+    return RCTPushNotificationManager.getInitialNotification().then(notification => {
+      return notification && new PushNotificationIOS(notification);
+    });
   }
 
   /**
@@ -286,8 +300,7 @@ class PushNotificationIOS {
   constructor(nativeNotif: Object) {
     this._data = {};
 
-    // Extract data from Apple's `aps` dict as defined:
-
+    // Extract data from Apple's `aps` dict as specified here:
     // https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
 
     Object.keys(nativeNotif).forEach((notifKey) => {

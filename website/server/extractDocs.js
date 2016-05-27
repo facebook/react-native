@@ -301,7 +301,6 @@ const apis = [
   '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/Linking/Linking.js',
-  '../Libraries/LinkingIOS/LinkingIOS.js',
   '../Libraries/CustomComponents/ListView/ListViewDataSource.js',
   '../node_modules/react/lib/NativeMethodsMixin.js',
   '../Libraries/Network/NetInfo.js',
