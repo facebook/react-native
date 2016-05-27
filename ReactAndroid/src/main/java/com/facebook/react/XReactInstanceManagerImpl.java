@@ -764,7 +764,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     NativeModuleRegistry.Builder nativeRegistryBuilder = new NativeModuleRegistry.Builder();
     JavaScriptModuleRegistry.Builder jsModulesBuilder = new JavaScriptModuleRegistry.Builder();
 
-    ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
+    final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
     if (mUseDeveloperSupport) {
       reactContext.setNativeModuleCallExceptionHandler(mDevSupportManager);
     }
@@ -830,21 +830,28 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
     }
 
-    reactContext.initializeWithInstance(catalystInstance);
 
     ReactMarker.logMarker(RUN_JS_BUNDLE_START);
-    catalystInstance.getReactQueueConfiguration().getJSQueueThread().runOnQueue(new Runnable() {
-      @Override
-      public void run() {
-        Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "runJSBundle");
-        try {
-          catalystInstance.runJSBundle();
-        } finally {
-          Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-          ReactMarker.logMarker(RUN_JS_BUNDLE_END);
-        }
-      }
-    });
+    try {
+      catalystInstance.getReactQueueConfiguration().getJSQueueThread().callOnQueue(
+        new Callable<Void>() {
+          @Override
+          public Void call() throws Exception {
+            reactContext.initializeWithInstance(catalystInstance);
+
+            Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "runJSBundle");
+            try {
+              catalystInstance.runJSBundle();
+            } finally {
+              Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+              ReactMarker.logMarker(RUN_JS_BUNDLE_END);
+            }
+            return null;
+          }
+        }).get();
+    } catch (InterruptedException | ExecutionException e) {
+      throw new RuntimeException(e);
+    }
 
     return reactContext;
   }
