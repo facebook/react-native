@@ -95,7 +95,6 @@ function set(state: ?NavigationState, key: string, nextChildren: Array<Navigatio
     return {
       routes: nextChildren,
       index: nextIndex,
-      key,
     };
   }
   const parentState = getParent(state);
@@ -103,17 +102,15 @@ function set(state: ?NavigationState, key: string, nextChildren: Array<Navigatio
     return {
       routes: nextChildren,
       index: nextIndex,
-      key,
     };
   }
-  if (nextChildren === parentState.routes && nextIndex === parentState.index && key === parentState.key) {
+  if (nextChildren === parentState.routes && nextIndex === parentState.index) {
     return parentState;
   }
   return {
     ...parentState,
     routes: nextChildren,
     index: nextIndex,
-    key,
   };
 }
 
@@ -144,7 +141,7 @@ function jumpTo(state: NavigationState, key: string): NavigationState {
   };
 }
 
-function replaceAt(state: NavigationState, key: string, newState: NavigationState): NavigationState {
+function replaceAt(state: NavigationState, key: string, newState: NavigationRoute): NavigationState {
   const parentState = getParent(state);
   if (!parentState) {
     return state;
@@ -162,7 +159,7 @@ function replaceAt(state: NavigationState, key: string, newState: NavigationStat
   };
 }
 
-function replaceAtIndex(state: NavigationState, index: number, newState: NavigationState): NavigationState {
+function replaceAtIndex(state: NavigationState, index: number, newState: NavigationRoute): NavigationState {
   const parentState = getParent(state);
   if (!parentState) {
     return state;
@@ -176,17 +173,17 @@ function replaceAtIndex(state: NavigationState, index: number, newState: Navigat
 }
 
 const NavigationStateUtils = {
-  getParent,
   get: get,
+  getParent,
   indexOf,
-  push,
-  pop,
-  reset,
-  set: set,
-  jumpToIndex,
   jumpTo,
+  jumpToIndex,
+  pop,
+  push,
   replaceAt,
   replaceAtIndex,
+  reset,
+  set: set,
 };
 
 module.exports = NavigationStateUtils;

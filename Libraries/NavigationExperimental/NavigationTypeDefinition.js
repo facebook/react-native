@@ -26,7 +26,6 @@ export type NavigationRoute = {
 };
 
 export type NavigationState = {
-  key: string,
   index: number,
   routes: Array<NavigationRoute>,
 };
