@@ -27,7 +27,7 @@ gradle.projectsEvaluated {
 
     // When no product flavors defined, use empty
     if (!productFlavors) productFlavors.add('')
-
+    def currentBundleTask
     productFlavors.each { productFlavorName ->
         buildTypes.each { buildTypeName ->
             // Create variant and target names
@@ -48,42 +48,42 @@ gradle.projectsEvaluated {
 
             // Bundle task name for variant
             def bundleJsAndAssetsTaskName = "bundle${targetName}JsAndAssets"
+            if (currentBundleTask == null) {
+                currentBundleTask = tasks.create(
+                        name: bundleJsAndAssetsTaskName,
+                        type: Exec) {
+                    group = "react"
+                    description = "bundle JS and assets for ${targetName}."
 
-            def currentBundleTask = tasks.create(
-                    name: bundleJsAndAssetsTaskName,
-                    type: Exec) {
-                group = "react"
-                description = "bundle JS and assets for ${targetName}."
+                    // Create dirs if they are not there (e.g. the "clean" task just ran)
+                    doFirst {
+                        jsBundleDir.mkdirs()
+                        resourcesDir.mkdirs()
+                    }
 
-                // Create dirs if they are not there (e.g. the "clean" task just ran)
-                doFirst {
-                    jsBundleDir.mkdirs()
-                    resourcesDir.mkdirs()
+                    // Set up inputs and outputs so gradle can cache the result
+                    inputs.files fileTree(dir: reactRoot, excludes: inputExcludes)
+                    outputs.dir jsBundleDir
+                    outputs.dir resourcesDir
+
+                    // Set up the call to the react-native cli
+                    workingDir reactRoot
+
+                    // Set up dev mode
+                    def devEnabled = !targetName.toLowerCase().contains("release")
+                    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                        commandLine "cmd", "/c", "node", "node_modules/react-native/local-cli/cli.js", "bundle", "--platform", "android", "--dev", "${devEnabled}",
+                                "--reset-cache", "true", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir
+                    } else {
+                        commandLine "node", "node_modules/react-native/local-cli/cli.js", "bundle", "--platform", "android", "--dev", "${devEnabled}",
+                                "--reset-cache", "true", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir
+                    }
+
+                    enabled config."bundleIn${targetName}" ||
+                        config."bundleIn${buildTypeName.capitalize()}" ?:
+                                targetName.toLowerCase().contains("release")
                 }
-
-                // Set up inputs and outputs so gradle can cache the result
-                inputs.files fileTree(dir: reactRoot, excludes: inputExcludes)
-                outputs.dir jsBundleDir
-                outputs.dir resourcesDir
-
-                // Set up the call to the react-native cli
-                workingDir reactRoot
-
-                // Set up dev mode
-                def devEnabled = !targetName.toLowerCase().contains("release")
-                if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                    commandLine "cmd", "/c", "node", "node_modules/react-native/local-cli/cli.js", "bundle", "--platform", "android", "--dev", "${devEnabled}",
-                            "--reset-cache", "true", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir
-                } else {
-                    commandLine "node", "node_modules/react-native/local-cli/cli.js", "bundle", "--platform", "android", "--dev", "${devEnabled}",
-                            "--reset-cache", "true", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir
-                }
-
-                enabled config."bundleIn${targetName}" ||
-                    config."bundleIn${buildTypeName.capitalize()}" ?:
-                            targetName.toLowerCase().contains("release")
             }
-
             // Hook bundle${productFlavor}${buildType}JsAndAssets into the android build process
             currentBundleTask.dependsOn("merge${targetName}Resources")
             currentBundleTask.dependsOn("merge${targetName}Assets")
