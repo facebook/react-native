@@ -2,18 +2,19 @@
 
 #include "JSCWebWorker.h"
 
-#include <unistd.h>
+
 #include <condition_variable>
 #include <mutex>
 #include <unordered_map>
 
-#include <glog/logging.h>
 #include <folly/Memory.h>
 
 #include "JSCHelpers.h"
 #include "MessageQueueThread.h"
 #include "Platform.h"
 #include "Value.h"
+
+#include <glog/logging.h>
 
 #include <JavaScriptCore/JSValueRef.h>
 

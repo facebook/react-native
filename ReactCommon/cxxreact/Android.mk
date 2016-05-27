@@ -2,13 +2,21 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := libreactnative
+LOCAL_MODULE := libreactnativefb
 
 LOCAL_SRC_FILES := \
-  Bridge.cpp \
+  Instance.cpp \
   JSCExecutor.cpp \
   JSCHelpers.cpp \
+  JSCLegacyProfiler.cpp \
+  JSCLegacyTracing.cpp \
+  JSCMemory.cpp \
+  JSCPerfStats.cpp \
+  JSCTracing.cpp \
+  JSCWebWorker.cpp \
   MethodCall.cpp \
+  ModuleRegistry.cpp \
+  NativeToJsBridge.cpp \
   Platform.cpp \
   Value.cpp \
 

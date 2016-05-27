@@ -147,8 +147,9 @@ void NativeToJsBridge::callFunction(
     const std::string& methodId,
     const folly::dynamic& arguments,
     const std::string& tracingName) {
+  int systraceCookie = -1;
   #ifdef WITH_FBSYSTRACE
-  int systraceCookie = m_systraceCookie++;
+  systraceCookie = m_systraceCookie++;
   FbSystraceAsyncFlow::begin(
       TRACE_TAG_REACT_CXX_BRIDGE,
       tracingName.c_str(),
@@ -173,8 +174,9 @@ void NativeToJsBridge::callFunction(
 
 void NativeToJsBridge::invokeCallback(ExecutorToken executorToken, const double callbackId,
                                       const folly::dynamic& arguments) {
+  int systraceCookie = -1;
   #ifdef WITH_FBSYSTRACE
-  int systraceCookie = m_systraceCookie++;
+  systraceCookie = m_systraceCookie++;
   FbSystraceAsyncFlow::begin(
       TRACE_TAG_REACT_CXX_BRIDGE,
       "<callback>",

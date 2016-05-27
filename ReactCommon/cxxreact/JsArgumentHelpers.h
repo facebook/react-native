@@ -5,7 +5,10 @@
 #include <folly/Conv.h>
 #include <folly/dynamic.h>
 
+#include "FollySupport.h"
+
 #include <exception>
+#include <string>
 
 // When building a cross-platform module for React Native, arguments passed
 // from JS are represented as a folly::dynamic.  This class provides helpers to
@@ -97,7 +100,7 @@ inline double jsArgAsDouble(const folly::dynamic& args, size_t n) {
 // Extract the n'th arg from the given dynamic, as a string.  Throws a
 // JsArgumentException if this fails for some reason.
 inline std::string jsArgAsString(const folly::dynamic& args, size_t n) {
-  return jsArgN(args, n, &folly::dynamic::asString);
+  return facebook::react::detail::toStdString(jsArgN(args, n, &folly::dynamic::asString));
 }
 
 }}

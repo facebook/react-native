@@ -56,13 +56,14 @@ elif THIS_IS_FBOBJC:
 
 cxx_library(
   name = 'module',
-  header_namespace = 'cxxreact',
   force_static = True,
   exported_headers = [
     'CxxModule.h',
+    'FollySupport.h',
     'JsArgumentHelpers.h',
     'JsArgumentHelpers-inl.h',
   ],
+  header_namespace = 'cxxreact',
   deps = [
     '//xplat/folly:molly',
   ],
