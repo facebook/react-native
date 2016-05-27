@@ -27,6 +27,7 @@ if (__DEV__) {
 // Export React, plus some native additions.
 const ReactNative = {
   // Components
+  get ActivityIndicator() { return require('ActivityIndicator'); },
   get ActivityIndicatorIOS() { return require('ActivityIndicatorIOS'); },
   get ART() { return require('ReactNativeART'); },
   get DatePickerIOS() { return require('DatePickerIOS'); },

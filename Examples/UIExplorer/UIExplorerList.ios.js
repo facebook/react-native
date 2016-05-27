@@ -29,8 +29,8 @@ export type UIExplorerExample = {
 
 const ComponentExamples: Array<UIExplorerExample> = [
   {
-    key: 'ActivityIndicatorIOSExample',
-    module: require('./ActivityIndicatorIOSExample'),
+    key: 'ActivityIndicatorExample',
+    module: require('./ActivityIndicatorExample'),
   },
   {
     key: 'DatePickerIOSExample',
