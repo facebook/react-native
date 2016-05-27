@@ -57,8 +57,6 @@ NSString *const RCTUIManagerRootViewKey = @"RCTUIManagerRootViewKey";
 @property (nonatomic, readonly) NSTimeInterval duration;
 @property (nonatomic, readonly) NSTimeInterval delay;
 @property (nonatomic, readonly, copy) NSString *property;
-@property (nonatomic, readonly) id fromValue;
-@property (nonatomic, readonly) id toValue;
 @property (nonatomic, readonly) CGFloat springDamping;
 @property (nonatomic, readonly) CGFloat initialVelocity;
 @property (nonatomic, readonly) RCTAnimationType animationType;
@@ -136,8 +134,6 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
       _springDamping = [RCTConvert CGFloat:config[@"springDamping"]];
       _initialVelocity = [RCTConvert CGFloat:config[@"initialVelocity"]];
     }
-    _fromValue = config[@"fromValue"];
-    _toValue = config[@"toValue"];
   }
   return self;
 }
@@ -552,42 +548,47 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
     return nil;
   }
 
-  // Parallel arrays are built and then handed off to main thread
-  NSMutableArray<NSNumber *> *frameReactTags =
-    [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
-  NSMutableArray<NSValue *> *frames =
-    [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
-  NSMutableArray<NSNumber *> *areNew =
-    [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
-  NSMutableArray<NSNumber *> *parentsAreNew =
-    [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
-  NSMutableDictionary<NSNumber *, RCTViewManagerUIBlock> *updateBlocks =
-    [NSMutableDictionary new];
-  NSMutableArray<NSNumber *> *areHidden =
-    [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
+  typedef struct {
+    CGRect frame;
+    BOOL isNew;
+    BOOL parentIsNew;
+    BOOL isHidden;
+  } RCTFrameData;
 
-  for (RCTShadowView *shadowView in viewsWithNewFrames) {
-    [frameReactTags addObject:shadowView.reactTag];
-    [frames addObject:[NSValue valueWithCGRect:shadowView.frame]];
-    [areNew addObject:@(shadowView.isNewView)];
-    [parentsAreNew addObject:@(shadowView.superview.isNewView)];
-    [areHidden addObject:@(shadowView.isHidden)];
-  }
-
-  for (RCTShadowView *shadowView in viewsWithNewFrames) {
-    // We have to do this after we build the parentsAreNew array.
-    shadowView.newView = NO;
+  // Construct arrays then hand off to main thread
+  NSInteger count = viewsWithNewFrames.count;
+  NSMutableArray *reactTags = [[NSMutableArray alloc] initWithCapacity:count];
+  NSMutableData *framesData = [[NSMutableData alloc] initWithLength:sizeof(RCTFrameData) * count];
+  {
+    NSInteger index = 0;
+    RCTFrameData *frameDataArray = (RCTFrameData *)framesData.mutableBytes;
+    for (RCTShadowView *shadowView in viewsWithNewFrames) {
+      reactTags[index] = shadowView.reactTag;
+      frameDataArray[index++] = (RCTFrameData){
+        shadowView.frame,
+        shadowView.isNewView,
+        shadowView.superview.isNewView,
+        shadowView.isHidden,
+      };
+    }
   }
 
   // These are blocks to be executed on each view, immediately after
   // reactSetFrame: has been called. Note that if reactSetFrame: is not called,
   // these won't be called either, so this is not a suitable place to update
   // properties that aren't related to layout.
+  NSMutableDictionary<NSNumber *, RCTViewManagerUIBlock> *updateBlocks =
+  [NSMutableDictionary new];
   for (RCTShadowView *shadowView in viewsWithNewFrames) {
+
+    // We have to do this after we build the parentsAreNew array.
+    shadowView.newView = NO;
+
+    NSNumber *reactTag = shadowView.reactTag;
     RCTViewManager *manager = [_componentDataByName[shadowView.viewName] manager];
     RCTViewManagerUIBlock block = [manager uiBlockToAmendWithShadowView:shadowView];
     if (block) {
-      updateBlocks[shadowView.reactTag] = block;
+      updateBlocks[reactTag] = block;
     }
 
     if (shadowView.onLayout) {
@@ -602,8 +603,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
       });
     }
 
-    if (RCTIsReactRootView(shadowView.reactTag)) {
-      NSNumber *reactTag = shadowView.reactTag;
+    if (RCTIsReactRootView(reactTag)) {
       CGSize contentSize = shadowView.frame.size;
 
       dispatch_async(dispatch_get_main_queue(), ^{
@@ -618,87 +618,107 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
   // Perform layout (possibly animated)
   return ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    RCTLayoutAnimation *layoutAnimation = _layoutAnimation;
 
-    __block NSUInteger completionsCalled = 0;
-    for (NSUInteger ii = 0; ii < frames.count; ii++) {
-      NSNumber *reactTag = frameReactTags[ii];
-      UIView *view = viewRegistry[reactTag];
-      CGRect frame = [frames[ii] CGRectValue];
+    const RCTFrameData *frameDataArray = (const RCTFrameData *)framesData.bytes;
 
-      BOOL isHidden = [areHidden[ii] boolValue];
-      BOOL isNew = [areNew[ii] boolValue];
-      RCTAnimation *updateAnimation = isNew ? nil : layoutAnimation.updateAnimation;
-      BOOL shouldAnimateCreation = isNew && ![parentsAreNew[ii] boolValue];
-      RCTAnimation *createAnimation = shouldAnimateCreation ? layoutAnimation.createAnimation : nil;
+    RCTLayoutAnimation *layoutAnimation = uiManager->_layoutAnimation;
+    if (!layoutAnimation.updateAnimation && !layoutAnimation.createAnimation) {
 
-      void (^completion)(BOOL) = ^(BOOL finished) {
-        completionsCalled++;
-        if (layoutAnimation.callback && completionsCalled == frames.count) {
-          layoutAnimation.callback(@[@(finished)]);
+      // Fast path for common case
+      NSInteger index = 0;
+      for (NSNumber *reactTag in reactTags) {
+        RCTFrameData frameData = frameDataArray[index++];
 
-          // It's unsafe to call this callback more than once, so we nil it out here
-          // to make sure that doesn't happen.
-          layoutAnimation.callback = nil;
-        }
-      };
-
-      if (view.isHidden != isHidden) {
-        view.hidden = isHidden;
-      }
-
-      // Animate view creation
-      if (createAnimation) {
+        UIView *view = viewRegistry[reactTag];
+        CGRect frame = frameData.frame;
         [view reactSetFrame:frame];
 
-        CATransform3D finalTransform = view.layer.transform;
-        CGFloat finalOpacity = view.layer.opacity;
-        if ([createAnimation.property isEqualToString:@"scaleXY"]) {
-          view.layer.transform = CATransform3DMakeScale(0, 0, 0);
-        } else if ([createAnimation.property isEqualToString:@"opacity"]) {
-          view.layer.opacity = 0.0;
+        RCTViewManagerUIBlock updateBlock = updateBlocks[reactTag];
+        if (updateBlock) {
+          updateBlock(self, viewRegistry);
+        }
+      }
+      if (layoutAnimation.callback) {
+        layoutAnimation.callback(@[@YES]);
+      }
+
+    } else {
+
+      __block NSUInteger completionsCalled = 0;
+
+      NSInteger index = 0;
+      for (NSNumber *reactTag in reactTags) {
+        RCTFrameData frameData = frameDataArray[index++];
+
+        UIView *view = viewRegistry[reactTag];
+        CGRect frame = frameData.frame;
+
+        BOOL isNew = frameData.isNew;
+        RCTAnimation *updateAnimation = isNew ? nil : layoutAnimation.updateAnimation;
+        BOOL shouldAnimateCreation = isNew && !frameData.parentIsNew;
+        RCTAnimation *createAnimation = shouldAnimateCreation ? layoutAnimation.createAnimation : nil;
+
+        BOOL isHidden = frameData.isHidden;
+        if (view.isHidden != isHidden) {
+          view.hidden = isHidden;
         }
 
-        [createAnimation performAnimations:^{
-          if ([createAnimation.property isEqual:@"scaleXY"]) {
-            view.layer.transform = finalTransform;
-          } else if ([createAnimation.property isEqual:@"opacity"]) {
-            view.layer.opacity = finalOpacity;
+        void (^completion)(BOOL) = ^(BOOL finished) {
+          completionsCalled++;
+          if (layoutAnimation.callback && completionsCalled == count) {
+            layoutAnimation.callback(@[@(finished)]);
+
+            // It's unsafe to call this callback more than once, so we nil it out here
+            // to make sure that doesn't happen.
+            layoutAnimation.callback = nil;
+          }
+        };
+
+        RCTViewManagerUIBlock updateBlock = updateBlocks[reactTag];
+        if (createAnimation) {
+
+          // Animate view creation
+          [view reactSetFrame:frame];
+
+          CATransform3D finalTransform = view.layer.transform;
+          CGFloat finalOpacity = view.layer.opacity;
+
+          NSString *property = createAnimation.property;
+          if ([property isEqualToString:@"scaleXY"]) {
+            view.layer.transform = CATransform3DMakeScale(0, 0, 0);
+          } else if ([property isEqualToString:@"opacity"]) {
+            view.layer.opacity = 0.0;
           } else {
             RCTLogError(@"Unsupported layout animation createConfig property %@",
                         createAnimation.property);
           }
 
-          RCTViewManagerUIBlock updateBlock = updateBlocks[reactTag];
-          if (updateBlock) {
-            updateBlock(self, _viewRegistry);
-          }
-        } withCompletionBlock:completion];
+          [createAnimation performAnimations:^{
+            if ([property isEqualToString:@"scaleXY"]) {
+              view.layer.transform = finalTransform;
+            } else if ([property isEqualToString:@"opacity"]) {
+              view.layer.opacity = finalOpacity;
+            }
+            if (updateBlock) {
+              updateBlock(self, viewRegistry);
+            }
+          } withCompletionBlock:completion];
 
-      // Animate view update
-      } else if (updateAnimation) {
-        [updateAnimation performAnimations:^{
-          [view reactSetFrame:frame];
+        } else if (updateAnimation) {
 
-          RCTViewManagerUIBlock updateBlock = updateBlocks[reactTag];
-          if (updateBlock) {
-            updateBlock(self, _viewRegistry);
-          }
-        } withCompletionBlock:completion];
-
-      // Update without animation
-      } else {
-        [view reactSetFrame:frame];
-
-        RCTViewManagerUIBlock updateBlock = updateBlocks[reactTag];
-        if (updateBlock) {
-          updateBlock(self, _viewRegistry);
+          // Animate view update
+          [updateAnimation performAnimations:^{
+            [view reactSetFrame:frame];
+            if (updateBlock) {
+              updateBlock(self, viewRegistry);
+            }
+          } withCompletionBlock:completion];
         }
-        completion(YES);
       }
     }
 
-    _layoutAnimation = nil;
+    // Clean up
+    uiManager->_layoutAnimation = nil;
   };
 }
 
@@ -802,10 +822,11 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
       // the view events anyway.
       view.userInteractionEnabled = NO;
 
+      NSString *property = deleteAnimation.property;
       [deleteAnimation performAnimations:^{
-        if ([deleteAnimation.property isEqual:@"scaleXY"]) {
+        if ([property isEqualToString:@"scaleXY"]) {
           view.layer.transform = CATransform3DMakeScale(0, 0, 0);
-        } else if ([deleteAnimation.property isEqual:@"opacity"]) {
+        } else if ([property isEqualToString:@"opacity"]) {
           view.layer.opacity = 0.0;
         } else {
           RCTLogError(@"Unsupported layout animation createConfig property %@",
