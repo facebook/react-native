@@ -127,6 +127,12 @@ void Bridge::stopProfiler(const std::string& title, const std::string& filename)
   });
 }
 
+void Bridge::handleMemoryPressureUiHidden() {
+  runOnExecutorQueue(*m_mainExecutorToken, [=] (JSExecutor* executor) {
+    executor->handleMemoryPressureUiHidden();
+  });
+}
+
 void Bridge::handleMemoryPressureModerate() {
   runOnExecutorQueue(*m_mainExecutorToken, [=] (JSExecutor* executor) {
     executor->handleMemoryPressureModerate();

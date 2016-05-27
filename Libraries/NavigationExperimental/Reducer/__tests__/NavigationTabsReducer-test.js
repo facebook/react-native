@@ -35,10 +35,10 @@ describe('NavigationTabsReducer', () => {
 
     let navState = reducer();
 
-    expect(navState.children[0]).toBe('a');
-    expect(navState.children[1]).toBe('b');
-    expect(navState.children[2]).toBe('c');
-    expect(navState.children.length).toBe(3);
+    expect(navState.routes[0]).toBe('a');
+    expect(navState.routes[1]).toBe('b');
+    expect(navState.routes[2]).toBe('c');
+    expect(navState.routes.length).toBe(3);
     expect(navState.index).toBe(1);
 
     navState = reducer(
@@ -46,10 +46,10 @@ describe('NavigationTabsReducer', () => {
       JumpToAction(2)
     );
 
-    expect(navState.children[0]).toEqual('a');
-    expect(navState.children[1]).toEqual('b');
-    expect(navState.children[2]).toEqual('c');
-    expect(navState.children.length).toBe(3);
+    expect(navState.routes[0]).toEqual('a');
+    expect(navState.routes[1]).toEqual('b');
+    expect(navState.routes[2]).toEqual('c');
+    expect(navState.routes.length).toBe(3);
     expect(navState.index).toBe(2);
   });
 

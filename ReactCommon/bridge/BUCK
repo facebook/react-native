@@ -38,7 +38,6 @@ if THIS_IS_FBANDROID:
     )
 
 elif THIS_IS_FBOBJC:
-
   def react_library(**kwargs):
     ios_library(
       name = 'bridge',
@@ -55,20 +54,91 @@ elif THIS_IS_FBOBJC:
       )
     )
 
-LOCAL_HEADERS = [
-  'JSCTracing.h',
-  'JSCLegacyProfiler.h',
-  'JSCLegacyTracing.h',
-  'JSCMemory.h',
-  'JSCPerfStats.h',
-]
+cxx_library(
+  name = 'module',
+  header_namespace = 'cxxreact',
+  force_static = True,
+  exported_headers = [
+    'CxxModule.h',
+    'JsArgumentHelpers.h',
+    'JsArgumentHelpers-inl.h',
+  ],
+  deps = [
+    '//xplat/folly:molly',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+cxx_library(
+  name = 'samplemodule',
+  soname = 'libxplat_react_module_samplemodule.so',
+  srcs = ['SampleCxxModule.cpp'],
+  exported_headers = ['SampleCxxModule.h'],
+  header_namespace = '',
+  compiler_flags = [
+    '-fno-omit-frame-pointer',
+    '-Wall',
+    '-Werror',
+    '-std=c++11',
+    '-fexceptions',
+  ],
+  deps = [
+    ':module',
+    '//xplat/folly:molly',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
 
 react_library(
   soname = 'libreactnativefb.so',
   header_namespace = 'cxxreact',
   force_static = True,
-  srcs = glob(['*.cpp']),
-  headers = LOCAL_HEADERS,
+  srcs = [
+    'Instance.cpp',
+    'JSCExecutor.cpp',
+    'JSCHelpers.cpp',
+    'JSCLegacyProfiler.cpp',
+    'JSCLegacyTracing.cpp',
+    'JSCMemory.cpp',
+    'JSCPerfStats.cpp',
+    'JSCTracing.cpp',
+    'JSCWebWorker.cpp',
+    'MethodCall.cpp',
+    'ModuleRegistry.cpp',
+    'NativeToJsBridge.cpp',
+    'Platform.cpp',
+    'Value.cpp',
+  ],
+  headers = [
+    'JSCLegacyProfiler.h',
+    'JSCLegacyTracing.h',
+    'JSCMemory.h',
+    'JSCPerfStats.h',
+    'JSCTracing.h',
+  ],
+  exported_headers = [
+    'Executor.h',
+    'ExecutorToken.h',
+    'ExecutorTokenFactory.h',
+    'Instance.h',
+    'JSCExecutor.h',
+    'JSCHelpers.h',
+    'JSCWebWorker.h',
+    'JSModulesUnbundle.h',
+    'MessageQueueThread.h',
+    'MethodCall.h',
+    'ModuleRegistry.h',
+    'NativeModule.h',
+    'NativeToJsBridge.h',
+    'noncopyable.h',
+    'Platform.h',
+    'SystraceSection.h',
+    'Value.h',
+  ],
   preprocessor_flags = [
     '-DLOG_TAG="ReactNative"',
     '-DWITH_FBSYSTRACE=1',
@@ -79,7 +149,6 @@ react_library(
     '-fvisibility=hidden',
     '-frtti',
   ],
-  exported_headers = glob(['*.h'], excludes=LOCAL_HEADERS),
   deps = [
     '//xplat/fbsystrace:fbsystrace',
   ],

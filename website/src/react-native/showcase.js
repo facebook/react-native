@@ -222,6 +222,13 @@ var apps = [
     author: 'Accio Delivery Inc.',
   },
   {
+    name: 'AirPoPo',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/47/1a/07/471a07e1-50d9-a432-060b-76f32df8c345/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/airpopo/id1100540816',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.airpopo.client',
+    author: 'DingTaxi',
+  },
+  {
     name: 'ArcChat.com',
     icon: 'https://lh3.googleusercontent.com/mZJjidMobu3NAZApdtp-vdBBzIWzCNTaIcKShbGqwXRRzL3B9bbi6E0eRuykgT6vmg=w300-rw',
     link: 'https://play.google.com/store/apps/details?id=com.arcchat',
@@ -338,6 +345,12 @@ var apps = [
     icon: 'http://a1.mzstatic.com/us/r30/Purple3/v4/db/cf/35/dbcf3523-bac7-0f54-c6a8-a80bf4f43c38/icon175x175.jpeg',
     link: 'https://www.codementor.io/downloads',
     author: 'Codementor',
+  },
+  {
+    name: 'Coiney窓口',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/c9/bc/3a/c9bc3a29-9c11-868f-b960-ca46d5fcd509/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/jp/app/coiney-chuang-kou/id1069271336?mt=8',
+    author: 'Coiney, Inc.'
   },
   {
     name: 'Collegiate - Learn Anywhere',
@@ -647,6 +660,13 @@ var apps = [
     author: 'Rhyble',
   },
   {
+    name: 'NeoReader',
+    icon: 'http://firicon.fir.im/a4c5f1e8c52d9d98e7b990e5098a161a8f698653',
+    linkAppStore: 'https://itunes.apple.com/cn/app/niu-du-neoreader/id1111443079?l=cn&mt=8',
+    linkPlayStore: 'http://fir.im/neoreader',
+    author: 'Neo Nie',
+  },
+  {
     name: 'New Music - listen to recent albums, EPs & singles',
     icon: 'http://a5.mzstatic.com/us/r30/Purple60/v4/fa/d9/be/fad9be3d-474c-4380-6391-37f234a81901/icon175x175.png',
     link: 'https://itunes.apple.com/app/new-music-keep-track-latest/id1104646834',
@@ -746,6 +766,15 @@ var apps = [
     author: 'RichardCao',
     blogs: [
       'http://richard-cao.github.io/2016/02/06/Reading-App-Write-In-React-Native/',
+    ],
+  },
+  {
+    name: 'Readzi',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple18/v4/b9/32/99/b9329992-1677-9ee2-5d04-e901e4bbb2b7/icon175x175.png',
+    link: 'https://readzi.io',
+    author: 'Kevin Kennedy',
+    blogs: [
+      'https://strazi.org/journal/building-readzi/',
     ],
   },
   {
@@ -916,6 +945,12 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/gb/app/wearvr/id1066288171?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.wearvr.app',
     author: 'WEARVR LLC',
+  },
+  {
+    name: 'WeatherEh - Canada weather',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple18/v4/39/cf/84/39cf8411-acc3-f7d6-3923-39973c2eb511/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/app/id1112813447',
+    author: 'Zhao Han',
   },
   {
     name: 'wego concerts',

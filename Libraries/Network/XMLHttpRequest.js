@@ -6,13 +6,12 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule XMLHttpRequestBase
+ * @providesModule XMLHttpRequest
  * @flow
  */
 'use strict';
 
-var RCTNetworking = require('RCTNetworking');
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const RCTNetworking = require('RCTNetworking');
 
 const EventTarget = require('event-target-shim');
 const invariant = require('fbjs/lib/invariant');
@@ -61,7 +60,7 @@ class XMLHttpRequestEventTarget extends EventTarget(...REQUEST_EVENTS) {
 /**
  * Shared base for platform-specific XMLHttpRequest implementations.
  */
-class XMLHttpRequestBase extends EventTarget(...XHR_EVENTS) {
+class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
 
   static UNSENT: number = UNSENT;
   static OPENED: number = OPENED;
@@ -210,21 +209,22 @@ class XMLHttpRequestBase extends EventTarget(...XHR_EVENTS) {
     return this._cachedResponse;
   }
 
-  didCreateRequest(requestId: number): void {
+  // exposed for testing
+  __didCreateRequest(requestId: number): void {
     this._requestId = requestId;
-    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
+    this._subscriptions.push(RCTNetworking.addListener(
       'didSendNetworkData',
       (args) => this.__didUploadProgress(...args)
     ));
-    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
+    this._subscriptions.push(RCTNetworking.addListener(
       'didReceiveNetworkResponse',
       (args) => this._didReceiveResponse(...args)
     ));
-    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
+    this._subscriptions.push(RCTNetworking.addListener(
       'didReceiveNetworkData',
       (args) =>  this._didReceiveData(...args)
     ));
-    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
+    this._subscriptions.push(RCTNetworking.addListener(
       'didCompleteNetworkResponse',
       (args) => this.__didCompleteResponse(...args)
     ));
@@ -337,10 +337,18 @@ class XMLHttpRequestBase extends EventTarget(...XHR_EVENTS) {
     url: ?string,
     headers: Object,
     data: any,
-    incrementalEvents: boolean,
-    timeout: number
+    useIncrementalUpdates: boolean,
+    timeout: number,
   ): void {
-    throw new Error('Subclass must define sendImpl method');
+    RCTNetworking.sendRequest(
+      method,
+      url,
+      headers,
+      data,
+      useIncrementalUpdates,
+      timeout,
+      this.__didCreateRequest.bind(this),
+    );
   }
 
   send(data: any): void {
@@ -439,4 +447,4 @@ function toArrayBuffer(text: string, contentType: string): ArrayBuffer {
   }
 }
 
-module.exports = XMLHttpRequestBase;
+module.exports = XMLHttpRequest;

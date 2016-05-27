@@ -57,7 +57,7 @@ function createReducer(initialState) {
 const ExampleReducer = createReducer({
   index: 0,
   key: 'exmaple',
-  children: [{key: 'First Route'}],
+  routes: [{key: 'First Route'}],
 });
 
 class NavigationCardStackExample extends React.Component {

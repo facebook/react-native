@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.views.textfrescosupport;
+package com.facebook.react.views.text.frescosupport;
 
 import javax.annotation.Nullable;
 
@@ -23,6 +23,7 @@ import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactTextInlineImageShadowNode;
 import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.react.views.textfrescosupport.FrescoBasedReactTextInlineImageSpan;
 
 /**
  * {@link CSSNode} that represents an inline image. Loading is done using Fresco.

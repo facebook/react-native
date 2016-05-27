@@ -371,6 +371,12 @@ void JSCExecutor::stopProfiler(const std::string &titleString, const std::string
   #endif
 }
 
+void JSCExecutor::handleMemoryPressureUiHidden() {
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::UI_HIDDEN);
+  #endif
+}
+
 void JSCExecutor::handleMemoryPressureModerate() {
   #ifdef WITH_JSC_MEMORY_PRESSURE
   JSHandleMemoryPressure(this, m_context, JSMemoryPressure::MODERATE);

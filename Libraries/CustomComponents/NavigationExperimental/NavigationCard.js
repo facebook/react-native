@@ -79,7 +79,7 @@ class SceneView extends React.Component<any, SceneViewProps, any> {
     );
   }
 
-  render(): ?ReactElement {
+  render(): ?ReactElement<any> {
     return this.props.sceneRenderer(this.props.sceneRendererProps);
   }
 }
@@ -107,7 +107,7 @@ class NavigationCard extends React.Component<any, Props, any> {
     );
   }
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     const {
       panHandlers,
       pointerEvents,
@@ -137,11 +137,6 @@ class NavigationCard extends React.Component<any, Props, any> {
       </Animated.View>
     );
   }
-
-  static CardStackPanResponder = NavigationCardStackPanResponder;
-  static CardStackStyleInterpolator = NavigationCardStackStyleInterpolator;
-  static PagerPanResponder = NavigationPagerPanResponder;
-  static PagerStyleInterpolator = NavigationPagerStyleInterpolator;
 }
 
 const styles = StyleSheet.create({
@@ -160,5 +155,10 @@ const styles = StyleSheet.create({
 });
 
 NavigationCard = NavigationPointerEventsContainer.create(NavigationCard);
+
+NavigationCard.CardStackPanResponder = NavigationCardStackPanResponder;
+NavigationCard.CardStackStyleInterpolator = NavigationCardStackStyleInterpolator;
+NavigationCard.PagerPanResponder = NavigationPagerPanResponder;
+NavigationCard.PagerStyleInterpolator = NavigationPagerStyleInterpolator;
 
 module.exports = NavigationCard;

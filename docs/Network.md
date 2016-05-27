@@ -102,7 +102,7 @@ ws.onclose = (e) => {
 
 ## XMLHttpRequest
 
-XMLHttpRequest API is implemented on-top of [iOS networking apis](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/URLLoadingSystem/URLLoadingSystem.html). The notable difference from web is the security model: you can read from arbitrary websites on the internet since there is no concept of [CORS](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing).
+XMLHttpRequest API is implemented on-top of [iOS networking apis](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/URLLoadingSystem/URLLoadingSystem.html) and [OkHttp](http://square.github.io/okhttp/). The notable difference from web is the security model: you can read from arbitrary websites on the internet since there is no concept of [CORS](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing).
 
 ```js
 var request = new XMLHttpRequest();
