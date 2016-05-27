@@ -21,20 +21,6 @@ Behind the scenes, React Native converts this to a flat `NSAttributedString` or 
 9-17: bold, red
 ```
 
-## Nested Views (iOS Only)
-
-On iOS, you can nest views within your Text component. Here's an example:
-
-```javascript
-<Text>
-  There is a blue square
-  <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
-  in between my text.
-</Text>
-```
-
-In order to use this feature, you must give the view a `width` and a `height`.
-
 ## Containers
 
 The `<Text>` element is special relative to layout: everything inside is no longer using the flexbox layout but using text layout. This means that elements inside of a `<Text>` are no longer rectangles, but wrap when they see the end of the line.

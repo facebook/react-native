@@ -13,17 +13,6 @@
 #import "RCTUtils.h"
 #import "UIView+React.h"
 
-static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDescendants)
-{
-  for (UIView *child in view.reactSubviews) {
-    if ([child isKindOfClass:[RCTText class]]) {
-      collectNonTextDescendants((RCTText *)child, nonTextDescendants);
-    } else {
-      [nonTextDescendants addObject:child];
-    }
-  }
-}
-
 @implementation RCTText
 {
   NSTextStorage *_textStorage;
@@ -129,15 +118,6 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
   } else {
     [_highlightLayer removeFromSuperlayer];
     _highlightLayer = nil;
-  }
-
-  for (UIView *child in [self subviews]) {
-    [child removeFromSuperview];
-  }
-  NSMutableArray *nonTextDescendants = [NSMutableArray new];
-  collectNonTextDescendants(self, nonTextDescendants);
-  for (UIView *child in nonTextDescendants) {
-    [self addSubview:child];
   }
 }
 

@@ -7,21 +7,22 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <UIKit/UIKit.h>
+#import "RCTShadowView.h"
 #import "RCTImageComponent.h"
+#import "RCTImageSource.h"
 #import "RCTResizeMode.h"
 
 @class RCTBridge;
-@class RCTImageSource;
 
-@interface RCTImageView : UIImageView <RCTImageComponent>
+/**
+ * Shadow image component, used for embedding images in non-view contexts such
+ * as text. This is NOT used for ordinary <Image> views.
+ */
+@interface RCTShadowVirtualImage : RCTShadowView <RCTImageComponent>
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBridge:(RCTBridge *)bridge;
 
-@property (nonatomic, assign) UIEdgeInsets capInsets;
-@property (nonatomic, strong) UIImage *defaultImage;
-@property (nonatomic, assign) UIImageRenderingMode renderingMode;
 @property (nonatomic, strong) RCTImageSource *source;
-@property (nonatomic, assign) CGFloat blurRadius;
+@property (nonatomic, assign) RCTResizeMode resizeMode;
 
 @end
