@@ -937,7 +937,10 @@ var Navigator = React.createClass({
     });
   },
 
-  _popN: function(n) {
+  /**
+   * Pop `n` routes and optionally call `cb` when transition finished
+   */
+  _popN: function(n, cb) {
     if (n === 0) {
       return;
     }
@@ -956,14 +959,16 @@ var Navigator = React.createClass({
       null, // no spring jumping
       () => {
         this._cleanScenesPastIndex(popIndex);
+        cb && cb();
       }
     );
   },
 
   /**
    * Transition back and unmount the current scene.
+   * Optionally call `cb` when transition finished.
    */
-  pop: function() {
+  pop: function(cb) {
     if (this.state.transitionQueue.length) {
       // This is the workaround to prevent user from firing multiple `pop()`
       // calls that may pop the routes beyond the limit.
@@ -975,8 +980,18 @@ var Navigator = React.createClass({
     }
 
     if (this.state.presentedIndex > 0) {
-      this._popN(1);
+      this._popN(1, cb);
     }
+  },
+
+  /**
+   * Pop current scene then, after transition, push new route.
+   */
+  popAndPushToRoute(route){
+    invariant(!!route, 'Must supply route to push');
+    this.pop( () => {
+      this.push(route);
+    });
   },
 
   /**
