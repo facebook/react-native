@@ -83,11 +83,12 @@ var TouchableOpacity = React.createClass({
 
   /**
    * Animate the touchable to a new opacity.
+   * While pressing the element, it change immediately without animation. 
    */
   setOpacityTo: function(value: number) {
     Animated.timing(
       this.state.anim,
-      {toValue: value, duration: 150}
+      {toValue: value, duration: value == 1 ? 150 : 0}
     ).start();
   },
 
