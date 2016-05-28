@@ -13,6 +13,7 @@
 #import "RCTConvert.h"
 #import "RCTDefines.h"
 #import "RCTUtils.h"
+#import "RCTPackagerUtils.h"
 
 #if RCT_DEBUG
 
@@ -382,7 +383,7 @@ RCT_EXPORT_METHOD(dismiss)
   NSData *stackFrameJSON = [RCTJSONStringify(stackFrame, NULL) dataUsingEncoding:NSUTF8StringEncoding];
   NSString *postLength = [NSString stringWithFormat:@"%tu", stackFrameJSON.length];
   NSMutableURLRequest *request = [NSMutableURLRequest new];
-  request.URL = [NSURL URLWithString:@"/open-stack-frame" relativeToURL:_bridge.bundleURL];
+  request.URL = [RCTPackagerUtils URLForPath:@"open-stack-frame"];
   request.HTTPMethod = @"POST";
   request.HTTPBody = stackFrameJSON;
   [request setValue:postLength forHTTPHeaderField:@"Content-Length"];

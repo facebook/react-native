@@ -19,6 +19,7 @@
 #import "RCTRootView.h"
 #import "RCTSourceCode.h"
 #import "RCTUtils.h"
+#import "RCTPackagerUtils.h"
 #import "RCTWebSocketProxy.h"
 
 #if RCT_DEV
@@ -238,17 +239,7 @@ RCT_EXPORT_MODULE()
 
 - (NSURL *)packagerURL
 {
-  NSString *host = [_bridge.bundleURL host];
-  if (!host) {
-    return nil;
-  }
-
-  NSString *scheme = [_bridge.bundleURL scheme];
-  NSNumber *port = [_bridge.bundleURL port];
-  if (!port) {
-    port = @8081; // Packager default port
-  }
-  return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/message?role=shell", scheme, host, port]];
+  return [RCTPackagerUtils URLForPath:@"message?role=shell"];
 }
 
 // TODO: Move non-UI logic into separate RCTDevSettings module
