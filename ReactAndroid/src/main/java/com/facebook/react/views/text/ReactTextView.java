@@ -14,16 +14,22 @@ import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.Spanned;
 import android.view.Gravity;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.facebook.react.uimanager.ReactCompoundView;
+import com.facebook.react.uimanager.ReactZIndexView;
+import com.facebook.react.uimanager.ViewGroupManager;
 
-public class ReactTextView extends TextView implements ReactCompoundView {
+import javax.annotation.Nullable;
+
+public class ReactTextView extends TextView implements ReactCompoundView, ReactZIndexView {
 
   private boolean mContainsImages;
   private int mDefaultGravityHorizontal;
   private int mDefaultGravityVertical;
   private boolean mTextIsSelectable;
+  private @Nullable float zIndex;
 
   public ReactTextView(Context context) {
     super(context);
@@ -114,6 +120,15 @@ public class ReactTextView extends TextView implements ReactCompoundView {
       }
     }
     super.invalidateDrawable(drawable);
+  }
+
+  public void setZIndex(float targetZIndex) {
+    zIndex = targetZIndex;
+    ViewGroupManager.reorderChildrenByZIndex((ViewGroup) this.getParent());
+  }
+
+  public float getZIndex() {
+    return zIndex;
   }
 
   @Override
