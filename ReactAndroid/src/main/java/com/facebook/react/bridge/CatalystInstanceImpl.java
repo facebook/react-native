@@ -46,6 +46,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final AtomicInteger mPendingJSCalls = new AtomicInteger(0);
   private final String mJsPendingCallsTitleForTrace =
       "pending_js_calls_instance" + sNextInstanceIdForTrace.getAndIncrement();
+  private volatile boolean mIsBeingDestroyed = false;
   private volatile boolean mDestroyed = false;
   private final TraceListener mTraceListener;
   private final JavaScriptModuleRegistry mJSModuleRegistry;
@@ -165,6 +166,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
       String method,
       NativeArray arguments,
       String tracingName) {
+    if (mIsBeingDestroyed) {
+      FLog.w(ReactConstants.TAG, "Calling JS function after bridge has been destroyed.");
+      return;
+    }
     synchronized (mJavaToJSCallsTeardownLock) {
       if (mDestroyed) {
         FLog.w(ReactConstants.TAG, "Calling JS function after bridge has been destroyed.");
@@ -184,6 +189,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @DoNotStrip
   @Override
   public void invokeCallback(ExecutorToken executorToken, int callbackID, NativeArray arguments) {
+    if (mIsBeingDestroyed) {
+      FLog.w(ReactConstants.TAG, "Invoking JS callback after bridge has been destroyed.");
+      return;
+    }
     synchronized (mJavaToJSCallsTeardownLock) {
       if (mDestroyed) {
         FLog.w(ReactConstants.TAG, "Invoking JS callback after bridge has been destroyed.");
@@ -207,6 +216,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
     // This ordering is important. A JS to Java call that triggers a Java to JS call will also
     // acquire these locks in the same order
+    mIsBeingDestroyed = true;
     synchronized (mJSToJavaCallsTeardownLock) {
       synchronized (mJavaToJSCallsTeardownLock) {
         if (mDestroyed) {
@@ -411,12 +421,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
     public void call(ExecutorToken executorToken, int moduleId, int methodId, ReadableNativeArray parameters) {
       mReactQueueConfiguration.getNativeModulesQueueThread().assertIsOnThread();
 
+      if (mIsBeingDestroyed) {
+        return;
+      }
       synchronized (mJSToJavaCallsTeardownLock) {
         // Suppress any callbacks if destroyed - will only lead to sadness.
         if (mDestroyed) {
           return;
         }
-
         mJavaRegistry.call(CatalystInstanceImpl.this, executorToken, moduleId, methodId, parameters);
       }
     }
@@ -429,14 +441,18 @@ public class CatalystInstanceImpl implements CatalystInstance {
       // native modules could be in a bad state so we don't want to call anything on them. We
       // still want to trigger the debug listener since it allows instrumentation tests to end and
       // check their assertions without waiting for a timeout.
+      if (mIsBeingDestroyed) {
+        return;
+      }
       synchronized (mJSToJavaCallsTeardownLock) {
-        if (!mDestroyed) {
-          Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "onBatchComplete");
-          try {
-            mJavaRegistry.onBatchComplete();
-          } finally {
-            Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-          }
+        if (mDestroyed) {
+          return;
+        }
+        Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "onBatchComplete");
+        try {
+          mJavaRegistry.onBatchComplete();
+        } finally {
+          Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
         }
       }
 
@@ -450,14 +466,18 @@ public class CatalystInstanceImpl implements CatalystInstance {
       // Since onCatalystInstanceDestroy happens on the UI thread, we don't want to also execute
       // this callback on the native modules thread at the same time. Longer term, onCatalystInstanceDestroy
       // should probably be executed on the native modules thread as well instead.
+      if (mIsBeingDestroyed) {
+        return;
+      }
       synchronized (mJSToJavaCallsTeardownLock) {
-        if (!mDestroyed) {
-          Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "onExecutorUnregistered");
-          try {
-            mJavaRegistry.onExecutorUnregistered(executorToken);
-          } finally {
-            Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-          }
+        if (mDestroyed) {
+          return;
+        }
+        Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "onExecutorUnregistered");
+        try {
+          mJavaRegistry.onExecutorUnregistered(executorToken);
+        } finally {
+          Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
         }
       }
     }

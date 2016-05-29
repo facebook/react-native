@@ -17,14 +17,8 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
-import com.squareup.okhttp.Call;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.ConnectionPool;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +27,13 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.ConnectionPool;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import okio.Okio;
 import okio.Sink;
 
@@ -91,12 +92,12 @@ public class DevServerHelper {
 
   public DevServerHelper(DevInternalSettings settings) {
     mSettings = settings;
-    mClient = new OkHttpClient();
-    mClient.setConnectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+    mClient = new OkHttpClient.Builder()
+      .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+      .readTimeout(0, TimeUnit.MILLISECONDS)
+      .writeTimeout(0, TimeUnit.MILLISECONDS)
+      .build();
 
-    // No read or write timeouts by default
-    mClient.setReadTimeout(0, TimeUnit.MILLISECONDS);
-    mClient.setWriteTimeout(0, TimeUnit.MILLISECONDS);
     mRestartOnChangePollingHandler = new Handler();
   }
 
@@ -176,7 +177,7 @@ public class DevServerHelper {
     mDownloadBundleFromURLCall = Assertions.assertNotNull(mClient.newCall(request));
     mDownloadBundleFromURLCall.enqueue(new Callback() {
       @Override
-      public void onFailure(Request request, IOException e) {
+      public void onFailure(Call call, IOException e) {
         // ignore callback if call was cancelled
         if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
           mDownloadBundleFromURLCall = null;
@@ -191,12 +192,12 @@ public class DevServerHelper {
           .append("\u2022 Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run 'adb devices' to see a list of connected devices\n")
           .append("\u2022 If you're on a physical device connected to the same machine, run 'adb reverse tcp:8081 tcp:8081' to forward requests from your device\n")
           .append("\u2022 If your device is on the same Wi-Fi network, set 'Debug server host & port for device' in 'Dev settings' to your machine's IP address and the port of the local dev server - e.g. 10.0.1.1:8081\n\n")
-          .append("URL: ").append(request.urlString());
+          .append("URL: ").append(call.request().url().toString());
         callback.onFailure(new DebugServerException(sb.toString()));
       }
 
       @Override
-      public void onResponse(Response response) throws IOException {
+      public void onResponse(Call call, Response response) throws IOException {
         // ignore callback if call was cancelled
         if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
           mDownloadBundleFromURLCall = null;
@@ -213,7 +214,7 @@ public class DevServerHelper {
           } else {
             StringBuilder sb = new StringBuilder();
             sb.append("The development server returned response error code: ").append(response.code()).append("\n\n")
-              .append("URL: ").append(request.urlString()).append("\n\n")
+              .append("URL: ").append(call.request().url().toString()).append("\n\n")
               .append("Body:\n")
               .append(body);
             callback.onFailure(new DebugServerException(sb.toString()));
@@ -251,7 +252,7 @@ public class DevServerHelper {
     mClient.newCall(request).enqueue(
         new Callback() {
           @Override
-          public void onFailure(Request request, IOException e) {
+          public void onFailure(Call call, IOException e) {
             FLog.w(
                 ReactConstants.TAG,
                 "The packager does not seem to be running as we got an IOException requesting " +
@@ -260,7 +261,7 @@ public class DevServerHelper {
           }
 
           @Override
-          public void onResponse(Response response) throws IOException {
+          public void onResponse(Call call, Response response) throws IOException {
             if (!response.isSuccessful()) {
               FLog.e(
                   ReactConstants.TAG,
@@ -297,7 +298,7 @@ public class DevServerHelper {
     mOnChangePollingEnabled = false;
     mRestartOnChangePollingHandler.removeCallbacksAndMessages(null);
     if (mOnChangePollingClient != null) {
-      mOnChangePollingClient.cancel(this);
+      OkHttpCallUtil.cancelTag(mOnChangePollingClient, this);
       mOnChangePollingClient = null;
     }
     mOnServerContentChangeListener = null;
@@ -311,10 +312,10 @@ public class DevServerHelper {
     }
     mOnChangePollingEnabled = true;
     mOnServerContentChangeListener = onServerContentChangeListener;
-    mOnChangePollingClient = new OkHttpClient();
-    mOnChangePollingClient
-        .setConnectionPool(new ConnectionPool(1, LONG_POLL_KEEP_ALIVE_DURATION_MS))
-        .setConnectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+    mOnChangePollingClient = new OkHttpClient.Builder()
+        .connectionPool(new ConnectionPool(1, LONG_POLL_KEEP_ALIVE_DURATION_MS, TimeUnit.MINUTES))
+        .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+        .build();
     enqueueOnChangeEndpointLongPolling();
   }
 
@@ -338,7 +339,7 @@ public class DevServerHelper {
     Request request = new Request.Builder().url(createOnChangeEndpointUrl()).tag(this).build();
     Assertions.assertNotNull(mOnChangePollingClient).newCall(request).enqueue(new Callback() {
       @Override
-      public void onFailure(Request request, IOException e) {
+      public void onFailure(Call call, IOException e) {
         if (mOnChangePollingEnabled) {
           // this runnable is used by onchange endpoint poller to delay subsequent requests in case
           // of a failure, so that we don't flood network queue with frequent requests in case when
@@ -356,7 +357,7 @@ public class DevServerHelper {
       }
 
       @Override
-      public void onResponse(Response response) throws IOException {
+      public void onResponse(Call call, Response response) throws IOException {
         handleOnChangePollingResponse(response.code() == 205);
       }
     });
@@ -376,13 +377,13 @@ public class DevServerHelper {
         .build();
     mClient.newCall(request).enqueue(new Callback() {
       @Override
-      public void onFailure(Request request, IOException e) {
+      public void onFailure(Call call, IOException e) {
         // ignore HTTP call response, this is just to open a debugger page and there is no reason
         // to report failures from here
       }
 
       @Override
-      public void onResponse(Response response) throws IOException {
+      public void onResponse(Call call, Response response) throws IOException {
         // ignore HTTP call response - see above
       }
     });

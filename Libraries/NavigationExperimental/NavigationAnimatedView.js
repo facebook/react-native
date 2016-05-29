@@ -11,6 +11,11 @@
  */
 'use strict';
 
+/**
+ * WARNING: NavigationAnimatedView will be deprecated soon.
+ * Use NavigationTransitioner instead.
+ */
+
 const Animated = require('Animated');
 const NavigationPropTypes = require('NavigationPropTypes');
 const NavigationScenesReducer = require('NavigationScenesReducer');
@@ -23,14 +28,14 @@ import type {
   NavigationAnimatedValue,
   NavigationAnimationSetter,
   NavigationLayout,
-  NavigationParentState,
+  NavigationState,
   NavigationScene,
   NavigationSceneRenderer,
 } from 'NavigationTypeDefinition';
 
 type Props = {
   applyAnimation: NavigationAnimationSetter,
-  navigationState: NavigationParentState,
+  navigationState: NavigationState,
   onNavigate: NavigationActionCaller,
   renderOverlay: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
@@ -40,6 +45,7 @@ type Props = {
 type State = {
   layout: NavigationLayout,
   position: NavigationAnimatedValue,
+  progress: NavigationAnimatedValue,
   scenes: Array<NavigationScene>,
 };
 
@@ -47,7 +53,7 @@ const {PropTypes} = React;
 
 function applyDefaultAnimation(
   position: NavigationAnimatedValue,
-  navigationState: NavigationParentState,
+  navigationState: NavigationState,
 ): void {
   Animated.spring(
     position,
@@ -96,6 +102,9 @@ class NavigationAnimatedView
     this.state = {
       layout,
       position: new Animated.Value(this.props.navigationState.index),
+      // This `progress` is a adummy placeholder value to meet the values
+      // as `NavigationSceneRendererProps` requires.
+      progress: new Animated.Value(1),
       scenes: NavigationScenesReducer([], this.props.navigationState),
     };
   }
@@ -151,7 +160,7 @@ class NavigationAnimatedView
     }
   }
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     const overlay = this._renderOverlay();
     const scenes = this._renderScenes();
     return (
@@ -166,11 +175,11 @@ class NavigationAnimatedView
     );
   }
 
-  _renderScenes(): Array<?ReactElement> {
+  _renderScenes(): Array<?ReactElement<any>> {
     return this.state.scenes.map(this._renderScene, this);
   }
 
-  _renderScene(scene: NavigationScene): ?ReactElement {
+  _renderScene(scene: NavigationScene): ?ReactElement<any> {
     const {
       navigationState,
       onNavigate,
@@ -179,6 +188,7 @@ class NavigationAnimatedView
 
     const {
       position,
+      progress,
       scenes,
     } = this.state;
 
@@ -187,12 +197,13 @@ class NavigationAnimatedView
       navigationState,
       onNavigate,
       position,
+      progress,
       scene,
       scenes,
     });
   }
 
-  _renderOverlay(): ?ReactElement {
+  _renderOverlay(): ?ReactElement<any> {
     if (this.props.renderOverlay) {
       const {
         navigationState,
@@ -202,6 +213,7 @@ class NavigationAnimatedView
 
       const {
         position,
+        progress,
         scenes,
       } = this.state;
 
@@ -210,6 +222,7 @@ class NavigationAnimatedView
         navigationState,
         onNavigate,
         position,
+        progress,
         scene: scenes[navigationState.index],
         scenes,
       });

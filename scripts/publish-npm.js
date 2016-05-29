@@ -60,12 +60,17 @@ if (buildBranch.indexOf(`-stable`) !== -1) {
   exit(0);
 }
 
-// ['latest', 'v0.33.0', 'v0.33.0-rc', 'v0.33.0-rc1', 'v0.33.0-rc2', 'v0.34.0', '']
-const tagsWithVersion = exec(`git tag -l --points-at HEAD`).stdout.split(/\s/)
-  // ['v0.33.0', 'v0.33.0-rc', 'v0.33.0-rc1', 'v0.33.0-rc2', 'v0.34.0']
-  .filter(version => !!version && version.indexOf(`v${branchVersion}`) === 0)
+// 34c034298dc9cad5a4553964a5a324450fda0385
+const currentCommit = exec(`git rev-parse HEAD`, {silent: true}).stdout.trim();
+// [34c034298dc9cad5a4553964a5a324450fda0385, refs/heads/0.33-stable, refs/tags/latest, refs/tags/v0.33.1, refs/tags/v0.34.1-rc]
+const tagsWithVersion = exec(`git ls-remote origin | grep ${currentCommit}`, {silent: true})
+  .stdout.split(/\s/)
+  // ['refs/tags/v0.33.0', 'refs/tags/v0.33.0-rc', 'refs/tags/v0.33.0-rc1', 'refs/tags/v0.33.0-rc2', 'refs/tags/v0.34.0']
+  .filter(version => !!version && version.indexOf(`refs/tags/v${branchVersion}`) === 0)
+  // ['refs/tags/v0.33.0', 'refs/tags/v0.33.0-rc', 'refs/tags/v0.33.0-rc1', 'refs/tags/v0.33.0-rc2']
+  .filter(version => version.indexOf(branchVersion) !== -1)
   // ['v0.33.0', 'v0.33.0-rc', 'v0.33.0-rc1', 'v0.33.0-rc2']
-  .filter(version => version.indexOf(branchVersion) !== -1);
+  .map(version => version.slice(`refs/tags/`.length));
 
 if (tagsWithVersion.length === 0) {
   echo(`Error: Can't find version tag in current commit. To deploy to NPM you must add tag v0.XY.Z[-rc] to your commit`);

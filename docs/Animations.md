@@ -323,7 +323,7 @@ animations that underlies all of the JavaScript-based animation APIs.  In
 general, you shouldn't need to call this yourself - the animation APIs will
 manage frame updates for you.
 
-### react-tween-state (Not recommended - use [Animated](#animated) instead)
+### react-tween-state (Not recommended - use [Animated](docs/animations.html#animated) instead)
 
 [react-tween-state](https://github.com/chenglou/react-tween-state) is a
 minimal library that does exactly what its name suggests: it *tweens* a
@@ -393,7 +393,7 @@ Here we animated the opacity, but as you might guess, we can animate any
 numeric value. Read more about react-tween-state in its
 [README](https://github.com/chenglou/react-tween-state).
 
-### Rebound (Not recommended - use [Animated](docs/animation.html) instead)
+### Rebound (Not recommended - use [Animated](docs/animations.html#animated) instead)
 
 [Rebound.js](https://github.com/facebook/rebound-js) is a JavaScript port of
 [Rebound for Android](https://github.com/facebook/rebound). It is

@@ -23,22 +23,19 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
-import com.squareup.okhttp.Call;
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.MultipartBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
+import okhttp3.Call;
+import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import okio.Buffer;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -46,9 +43,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.rule.PowerMockRule;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
@@ -65,7 +60,8 @@ import static org.mockito.Mockito.when;
     Arguments.class,
     Call.class,
     RequestBodyUtil.class,
-    MultipartBuilder.class,
+    MultipartBody.class,
+    MultipartBody.Builder.class,
     NetworkingModule.class,
     OkHttpClient.class})
 @RunWith(RobolectricTestRunner.class)
@@ -100,7 +96,7 @@ public class NetworkingModuleTest {
 
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
     verify(httpClient).newCall(argumentCaptor.capture());
-    assertThat(argumentCaptor.getValue().urlString()).isEqualTo("http://somedomain/foo");
+    assertThat(argumentCaptor.getValue().url().toString()).isEqualTo("http://somedomain/foo");
     // We set the User-Agent header by default
     assertThat(argumentCaptor.getValue().headers().size()).isEqualTo(1);
     assertThat(argumentCaptor.getValue().method()).isEqualTo("GET");
@@ -215,7 +211,7 @@ public class NetworkingModuleTest {
 
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
     verify(httpClient).newCall(argumentCaptor.capture());
-    assertThat(argumentCaptor.getValue().urlString()).isEqualTo("http://somedomain/bar");
+    assertThat(argumentCaptor.getValue().url().toString()).isEqualTo("http://somedomain/bar");
     assertThat(argumentCaptor.getValue().headers().size()).isEqualTo(2);
     assertThat(argumentCaptor.getValue().method()).isEqualTo("POST");
     assertThat(argumentCaptor.getValue().body().contentType().type()).isEqualTo("text");
@@ -302,12 +298,12 @@ public class NetworkingModuleTest {
     // verify url, method, headers
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
     verify(httpClient).newCall(argumentCaptor.capture());
-    assertThat(argumentCaptor.getValue().urlString()).isEqualTo("http://someurl/uploadFoo");
+    assertThat(argumentCaptor.getValue().url().toString()).isEqualTo("http://someurl/uploadFoo");
     assertThat(argumentCaptor.getValue().method()).isEqualTo("POST");
     assertThat(argumentCaptor.getValue().body().contentType().type()).
-        isEqualTo(MultipartBuilder.FORM.type());
+        isEqualTo(MultipartBody.FORM.type());
     assertThat(argumentCaptor.getValue().body().contentType().subtype()).
-        isEqualTo(MultipartBuilder.FORM.subtype());
+        isEqualTo(MultipartBody.FORM.subtype());
     Headers requestHeaders = argumentCaptor.getValue().headers();
     assertThat(requestHeaders.size()).isEqualTo(1);
   }
@@ -361,12 +357,12 @@ public class NetworkingModuleTest {
     // verify url, method, headers
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
     verify(httpClient).newCall(argumentCaptor.capture());
-    assertThat(argumentCaptor.getValue().urlString()).isEqualTo("http://someurl/uploadFoo");
+    assertThat(argumentCaptor.getValue().url().toString()).isEqualTo("http://someurl/uploadFoo");
     assertThat(argumentCaptor.getValue().method()).isEqualTo("POST");
     assertThat(argumentCaptor.getValue().body().contentType().type()).
-        isEqualTo(MultipartBuilder.FORM.type());
+        isEqualTo(MultipartBody.FORM.type());
     assertThat(argumentCaptor.getValue().body().contentType().subtype()).
-        isEqualTo(MultipartBuilder.FORM.subtype());
+        isEqualTo(MultipartBody.FORM.subtype());
     Headers requestHeaders = argumentCaptor.getValue().headers();
     assertThat(requestHeaders.size()).isEqualTo(3);
     assertThat(requestHeaders.get("Accept")).isEqualTo("text/plain");
@@ -383,9 +379,9 @@ public class NetworkingModuleTest {
     when(RequestBodyUtil.create(any(MediaType.class), any(InputStream.class))).thenCallRealMethod();
     when(inputStream.available()).thenReturn("imageUri".length());
 
-    final MultipartBuilder multipartBuilder = mock(MultipartBuilder.class);
-    PowerMockito.whenNew(MultipartBuilder.class).withNoArguments().thenReturn(multipartBuilder);
-    when(multipartBuilder.type(any(MediaType.class))).thenAnswer(
+    final MultipartBody.Builder multipartBuilder = mock(MultipartBody.Builder.class);
+    PowerMockito.whenNew(MultipartBody.Builder.class).withNoArguments().thenReturn(multipartBuilder);
+    when(multipartBuilder.setType(any(MediaType.class))).thenAnswer(
         new Answer<Object>() {
           @Override
           public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -403,7 +399,7 @@ public class NetworkingModuleTest {
         new Answer<Object>() {
           @Override
           public Object answer(InvocationOnMock invocation) throws Throwable {
-            return mock(RequestBody.class);
+            return mock(MultipartBody.class);
           }
         });
 
@@ -462,7 +458,7 @@ public class NetworkingModuleTest {
 
     // verify body
     verify(multipartBuilder).build();
-    verify(multipartBuilder).type(MultipartBuilder.FORM);
+    verify(multipartBuilder).setType(MultipartBody.FORM);
     ArgumentCaptor<Headers> headersArgumentCaptor = ArgumentCaptor.forClass(Headers.class);
     ArgumentCaptor<RequestBody> bodyArgumentCaptor = ArgumentCaptor.forClass(RequestBody.class);
     verify(multipartBuilder, times(2)).

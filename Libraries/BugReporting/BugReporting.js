@@ -11,15 +11,19 @@
  */
 'use strict';
 
-const BugReportingNativeModule = require('NativeModules').BugReporting;
 const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 const Map = require('Map');
+const infoLog = require('infoLog');
 
 import type EmitterSubscription from 'EmitterSubscription';
 
 type ExtraData = { [key: string]: string };
 type SourceCallback = () => string;
 type DebugData = { extras: ExtraData, files: ExtraData };
+
+function defaultExtras() {
+  BugReporting.addFileSource('react_hierarchy.txt', () => require('dumpReactTree')());
+}
 
 /**
  * A simple class for collecting bug report data. Components can add sources that will be queried when a bug report
@@ -32,13 +36,11 @@ class BugReporting {
   static _fileSources: Map<string, SourceCallback> = new Map();
   static _subscription: ?EmitterSubscription = null;
 
-  /**
-   * `init` is called in `AppRegistry.runApplication`, so you shouldn't have to worry about it.
-   */
-  static init() {
+  static _maybeInit() {
     if (!BugReporting._subscription) {
       BugReporting._subscription = RCTDeviceEventEmitter
           .addListener('collectBugExtraData', BugReporting.collectExtraData, null);
+      defaultExtras();
     }
   }
 
@@ -67,6 +69,7 @@ class BugReporting {
   }
 
   static _addSource(key: string, callback: SourceCallback, source: Map<string, SourceCallback>): {remove: () => void} {
+    BugReporting._maybeInit();
     if (source.has(key)) {
       console.warn(`BugReporting.add* called multiple times for same key '${key}'`);
     }
@@ -89,7 +92,8 @@ class BugReporting {
     for (const [key, callback] of BugReporting._fileSources) {
       fileData[key] = callback();
     }
-    console.log('BugReporting extraData:', extraData);
+    infoLog('BugReporting extraData:', extraData);
+    const BugReportingNativeModule = require('NativeModules').BugReporting;
     BugReportingNativeModule &&
       BugReportingNativeModule.setExtraData &&
       BugReportingNativeModule.setExtraData(extraData, fileData);
