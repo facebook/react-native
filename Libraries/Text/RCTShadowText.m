@@ -306,8 +306,8 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
     CGFloat lineHeight = round(_lineHeight * fontSizeMultiplier);
     paragraphStyle.minimumLineHeight = lineHeight;
     paragraphStyle.maximumLineHeight = lineHeight;
-    // vertically center text
 
+    // vertically center text
     CGFloat fontSize = _fontSize && !isnan(_fontSize) ? _fontSize : UIFont.systemFontSize;
     fontSize *= fontSizeMultiplier;
 
