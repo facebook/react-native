@@ -52,6 +52,7 @@ xdescribe('React Yeoman Generators', function() {
         '.flowconfig',
         '.gitignore',
         '.watchmanconfig',
+        '.babelrc',
         'index.ios.js',
         'index.android.js'
       ]);
