@@ -307,7 +307,10 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
     paragraphStyle.minimumLineHeight = lineHeight;
     paragraphStyle.maximumLineHeight = lineHeight;
     // vertically center text
-    CGFloat fontSize = round(_fontSize * (_allowFontScaling && self.fontSizeMultiplier > 0.0 ? self.fontSizeMultiplier : 1.0));
+
+    CGFloat fontSize = _fontSize && !isnan(_fontSize) ? _fontSize : UIFont.systemFontSize;
+    fontSize *= fontSizeMultiplier;
+
     [attributedString addAttribute:NSBaselineOffsetAttributeName
                              value:@(lineHeight/2 - fontSize/2)
                              range:(NSRange){0, attributedString.length}];
