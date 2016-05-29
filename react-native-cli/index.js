@@ -200,24 +200,28 @@ function createProject(name, verbose, rnPackage) {
   }
 }
 
-function getInstallPackage(rnPackage) {
-  var packageToInstall = 'react-native';
+function getInstallPackages(rnPackage) {
+  var reactNativePackageToInstall = 'react-native';
   var valideSemver = semver.valid(rnPackage);
   if (valideSemver) {
-    packageToInstall += '@' + valideSemver;
+    reactNativePackageToInstall += '@' + valideSemver;
   } else if (rnPackage) {
     // for tar.gz or alternative paths
-    packageToInstall = rnPackage;
+    reactNativePackageToInstall = rnPackage;
   }
-  return packageToInstall;
+  return [
+    reactNativePackageToInstall,
+    'babel-preset-react-native'
+  ].join(' ');
 }
 
 function run(root, projectName, rnPackage) {
-  exec('npm install --save ' + getInstallPackage(rnPackage), function(e, stdout, stderr) {
+  var installPackages = getInstallPackages(rnPackage);
+  exec('npm install --save ' + installPackages, function(e, stdout, stderr) {
     if (e) {
       console.log(stdout);
       console.error(stderr);
-      console.error('`npm install --save react-native` failed');
+      console.error('`npm install --save ' + installPackages + '` failed');
       process.exit(1);
     }
 
@@ -229,10 +233,11 @@ function run(root, projectName, rnPackage) {
 }
 
 function runVerbose(root, projectName, rnPackage) {
-  var proc = spawn('npm', ['install', '--verbose', '--save', getInstallPackage(rnPackage)], {stdio: 'inherit'});
+  var installPackages = getInstallPackages(rnPackage);
+  var proc = spawn('npm', ['install', '--verbose', '--save', installPackages], {stdio: 'inherit'});
   proc.on('close', function (code) {
     if (code !== 0) {
-      console.error('`npm install --save react-native` failed');
+      console.error('`npm install --save ' + installPackages + '` failed');
       return;
     }
 
