@@ -309,7 +309,7 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
     // vertically center text
     CGFloat fontSize = round(_fontSize * (_allowFontScaling && self.fontSizeMultiplier > 0.0 ? self.fontSizeMultiplier : 1.0));
     [attributedString addAttribute:NSBaselineOffsetAttributeName
-                             value:[NSNumber numberWithFloat:lineHeight/2 - fontSize/2]
+                             value:@(lineHeight/2 - fontSize/2)
                              range:(NSRange){0, attributedString.length}];
     [attributedString addAttribute:NSParagraphStyleAttributeName
                              value:paragraphStyle
