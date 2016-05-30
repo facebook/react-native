@@ -146,7 +146,20 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTDatePickerIOS = requireNativeComponent('RCTDatePicker', DatePickerIOS, {
+
+const NativeDatePickerIOS = {
+  ...DatePickerIOS,
+  propTypes: {
+    ...DatePickerIOS.propTypes,
+    date: PropTypes.number,
+    minimumDate: PropTypes.number,
+    maximumDate: PropTypes.number,
+    onChange: PropTypes.func
+  }
+};
+delete NativeDatePickerIOS.propTypes.onDateChange;
+
+var RCTDatePickerIOS = requireNativeComponent('RCTDatePicker', NativeDatePickerIOS, {
   nativeOnly: { onChange: true },
 });
 
