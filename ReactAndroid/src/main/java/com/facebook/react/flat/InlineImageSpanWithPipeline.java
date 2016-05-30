@@ -158,7 +158,7 @@ import com.facebook.infer.annotation.Assertions;
       return;
     }
 
-    float bottomFloat = (float) bottom;
+    float bottomFloat = (float) bottom - paint.getFontMetricsInt().descent;
     TMP_RECT.set(x, bottomFloat - mHeight, x + mWidth, bottomFloat);
 
     canvas.drawBitmap(bitmap, null, TMP_RECT, paint);
