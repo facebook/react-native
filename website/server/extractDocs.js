@@ -250,7 +250,7 @@ function renderStyle(filepath) {
 }
 
 const components = [
-  '../Libraries/Components/ActivityIndicatorIOS/ActivityIndicatorIOS.ios.js',
+  '../Libraries/Components/ActivityIndicator/ActivityIndicator.js',
   '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
   '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
   '../Libraries/Image/Image.ios.js',
@@ -301,7 +301,6 @@ const apis = [
   '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/Linking/Linking.js',
-  '../Libraries/LinkingIOS/LinkingIOS.js',
   '../Libraries/CustomComponents/ListView/ListViewDataSource.js',
   '../node_modules/react/lib/NativeMethodsMixin.js',
   '../Libraries/Network/NetInfo.js',

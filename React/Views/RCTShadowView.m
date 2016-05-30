@@ -157,13 +157,6 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   absolutePosition.x += node->layout.position[CSS_LEFT];
   absolutePosition.y += node->layout.position[CSS_TOP];
 
-  [self applyLayoutToChildren:node viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
-}
-
-- (void)applyLayoutToChildren:(css_node_t *)node
-            viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
-             absolutePosition:(CGPoint)absolutePosition
-{
   for (int i = 0; i < node->children_count; ++i) {
     RCTShadowView *child = (RCTShadowView *)_reactSubviews[i];
     [child applyLayoutNode:node->get_child(node->context, i)
@@ -214,37 +207,6 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   for (RCTShadowView *child in _reactSubviews) {
     [child collectUpdatedProperties:applierBlocks parentProperties:nextProps];
   }
-}
-
-- (void)collectUpdatedFrames:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
-                   withFrame:(CGRect)frame
-                      hidden:(BOOL)hidden
-            absolutePosition:(CGPoint)absolutePosition
-{
-  if (_hidden != hidden) {
-    // The hidden state has changed. Even if the frame hasn't changed, add
-    // this ShadowView to viewsWithNewFrame so the UIManager will process
-    // this ShadowView's UIView and update its hidden state.
-    _hidden = hidden;
-    [viewsWithNewFrame addObject:self];
-  }
-
-  if (!CGRectEqualToRect(frame, _frame)) {
-    _cssNode->style.position_type = CSS_POSITION_ABSOLUTE;
-    _cssNode->style.dimensions[CSS_WIDTH] = frame.size.width;
-    _cssNode->style.dimensions[CSS_HEIGHT] = frame.size.height;
-    _cssNode->style.position[CSS_LEFT] = frame.origin.x;
-    _cssNode->style.position[CSS_TOP] = frame.origin.y;
-    // Our parent has asked us to change our cssNode->styles. Dirty the layout
-    // so that we can rerun layout on this node. The request came from our parent
-    // so there's no need to dirty our ancestors by calling dirtyLayout.
-    _layoutLifecycle = RCTUpdateLifecycleDirtied;
-  }
-
-  [self fillCSSNode:_cssNode];
-  resetNodeLayout(self.cssNode);
-  layoutNode(_cssNode, frame.size.width, frame.size.height, CSS_DIRECTION_INHERIT);
-  [self applyLayoutNode:_cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
 }
 
 - (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor
@@ -497,7 +459,6 @@ RCT_BORDER_PROPERTY(Right, RIGHT)
 {                                                                      \
   _cssNode->style.dimensions[CSS_##cssProp] = value;                   \
   [self dirtyLayout];                                                  \
-  [self dirtyText];                                                    \
 }                                                                      \
 - (CGFloat)getProp                                                     \
 {                                                                      \

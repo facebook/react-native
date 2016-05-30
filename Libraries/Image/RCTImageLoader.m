@@ -25,30 +25,10 @@ static NSString *const RCTErrorPrefetchFailure = @"E_PREFETCH_FAILURE";
 
 static const NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 1048576; // 1MB
 
-static NSCache *RCTGetDecodedImageCache(void)
-{
-  static NSCache *cache;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    cache = [NSCache new];
-    cache.totalCostLimit = 5 * 1024 * 1024; // 5MB
-
-    // Clear cache in the event of a memory warning, or if app enters background
-    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification object:nil queue:nil usingBlock:^(__unused NSNotification *note) {
-      [cache removeAllObjects];
-    }];
-    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationWillResignActiveNotification object:nil queue:nil usingBlock:^(__unused NSNotification *note) {
-      [cache removeAllObjects];
-    }];
-  });
-  return cache;
-
-}
-
 static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size,
                                      CGFloat scale, RCTResizeMode resizeMode)
 {
-  return [NSString stringWithFormat:@"%@|%f|%f|%f|%zd",
+  return [NSString stringWithFormat:@"%@|%g|%g|%g|%zd",
           imageTag, size.width, size.height, scale, resizeMode];
 }
 
@@ -73,6 +53,7 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size,
   NSOperationQueue *_imageDecodeQueue;
   dispatch_queue_t _URLCacheQueue;
   NSURLCache *_URLCache;
+  NSCache *_decodedImageCache;
   NSMutableArray *_pendingTasks;
   NSInteger _activeTasks;
   NSMutableArray *_pendingDecodes;
@@ -92,6 +73,18 @@ RCT_EXPORT_MODULE()
   _maxConcurrentDecodingBytes = _maxConcurrentDecodingBytes ?: 30 * 1024 *1024; // 30MB
 
   _URLCacheQueue = dispatch_queue_create("com.facebook.react.ImageLoaderURLCacheQueue", DISPATCH_QUEUE_SERIAL);
+
+  _decodedImageCache = [NSCache new];
+  _decodedImageCache.totalCostLimit = 5 * 1024 * 1024; // 5MB
+
+  // Clear cache in the event of a memory warning, or if app enters background
+  [[NSNotificationCenter defaultCenter] addObserver:_decodedImageCache selector:@selector(removeAllObjects) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:_decodedImageCache selector:@selector(removeAllObjects) name:UIApplicationWillResignActiveNotification object:nil];
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:_decodedImageCache];
 }
 
 - (id<RCTImageURLLoader>)imageURLLoaderForURL:(NSURL *)URL
@@ -508,7 +501,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   // Check decoded image cache
   NSString *cacheKey = RCTCacheKeyForImage(imageTag, size, scale, resizeMode);
   {
-    UIImage *image = [RCTGetDecodedImageCache() objectForKey:cacheKey];
+    UIImage *image = [_decodedImageCache objectForKey:cacheKey];
     if (image) {
       // Most loaders do not return on the main thread, so caller is probably not
       // expecting it, and may do expensive post-processing in the callback
@@ -523,7 +516,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     if (image) {
       CGFloat bytes = image.size.width * image.size.height * image.scale * image.scale * 4;
       if (bytes <= RCTMaxCachableDecodedImageSizeInBytes) {
-        [RCTGetDecodedImageCache() setObject:image forKey:cacheKey cost:bytes];
+        [_decodedImageCache setObject:image forKey:cacheKey cost:bytes];
       }
     }
     completionBlock(error, image);

@@ -47,6 +47,7 @@ test:
     - source scripts/circle-ci-android-setup.sh && waitForAVD
 
   override:
+    # TODO flow is disabled see t11343811 and 0.25.1
     # eslint bot
     # - cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
     # JS tests for dependencies installed with npm3
@@ -69,14 +70,14 @@ test:
     # build test APK
     - buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
     # run installed apk with tests
-    - node ./scripts/run-ci-android-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
+    - node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
 
     - ./gradlew :ReactAndroid:testDebugUnitTest
     # Deprecated: these tests are executed using Buck above, while we support Gradle we just make sure the test code compiles
     - ./gradlew :ReactAndroid:assembleDebugAndroidTest
 
     # Android e2e test
-    - node ./scripts/run-ci-e2e-tests.js --android --js --retries 5
+    - node ./scripts/run-ci-e2e-tests.js --android --js --retries 3
 
     # testing docs generation is not broken
     - cd website && node ./server/generate.js

@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -16,9 +23,9 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   AppState,
   Text,
   View
@@ -29,13 +36,19 @@ var AppStateSubscription = React.createClass({
     return {
       appState: AppState.currentState,
       previousAppStates: [],
+      memoryWarnings: 0,
     };
   },
   componentDidMount: function() {
     AppState.addEventListener('change', this._handleAppStateChange);
+    AppState.addEventListener('memoryWarning', this._handleMemoryWarning);
   },
   componentWillUnmount: function() {
     AppState.removeEventListener('change', this._handleAppStateChange);
+    AppState.removeEventListener('memoryWarning', this._handleMemoryWarning);
+  },
+  _handleMemoryWarning: function() {
+    this.setState({memoryWarnings: this.state.memoryWarnings + 1});
   },
   _handleAppStateChange: function(appState) {
     var previousAppStates = this.state.previousAppStates.slice();
@@ -46,6 +59,13 @@ var AppStateSubscription = React.createClass({
     });
   },
   render() {
+    if (this.props.showMemoryWarnings) {
+      return (
+        <View>
+          <Text>{this.state.memoryWarnings}</Text>
+        </View>
+      );
+    }
     if (this.props.showCurrentOnly) {
       return (
         <View>
@@ -77,5 +97,11 @@ exports.examples = [
   {
     title: 'Previous states:',
     render(): ReactElement<any> { return <AppStateSubscription showCurrentOnly={false} />; }
+  },
+  {
+    platform: 'ios',
+    title: 'Memory Warnings',
+    description: 'In the IOS simulator, hit Shift+Command+M to simulate a memory warning.',
+    render(): ReactElement { return <AppStateSubscription showMemoryWarnings={true} />; }
   },
 ];

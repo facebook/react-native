@@ -25,6 +25,7 @@
 //
 var ReactNative = Object.assign(Object.create(require('ReactNative')), {
   // Components
+  ActivityIndicator: require('ActivityIndicator'),
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
   ART: require('ReactNativeART'),
   DatePickerIOS: require('DatePickerIOS'),
@@ -85,9 +86,11 @@ var ReactNative = Object.assign(Object.create(require('ReactNative')), {
   ImagePickerIOS: require('ImagePickerIOS'),
   IntentAndroid: require('IntentAndroid'),
   InteractionManager: require('InteractionManager'),
+  Keyboard: require('Keyboard'),
   LayoutAnimation: require('LayoutAnimation'),
   Linking: require('Linking'),
   LinkingIOS: require('LinkingIOS'),
+  NativeEventEmitter: require('NativeEventEmitter'),
   NavigationExperimental: require('NavigationExperimental'),
   NetInfo: require('NetInfo'),
   PanResponder: require('PanResponder'),
@@ -96,6 +99,7 @@ var ReactNative = Object.assign(Object.create(require('ReactNative')), {
   Settings: require('Settings'),
   StatusBarIOS: require('StatusBarIOS'),
   StyleSheet: require('StyleSheet'),
+  Systrace: require('Systrace'),
   TimePickerAndroid: require('TimePickerAndroid'),
   UIManager: require('UIManager'),
   Vibration: require('Vibration'),
