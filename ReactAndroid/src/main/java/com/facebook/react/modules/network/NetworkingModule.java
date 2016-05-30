@@ -9,6 +9,17 @@
 
 package com.facebook.react.modules.network;
 
+import javax.annotation.Nullable;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.net.SocketTimeoutException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.GuardedAsyncTask;
@@ -21,15 +32,6 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.net.SocketTimeoutException;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.Nullable;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -61,6 +63,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private final ForwardingCookieHandler mCookieHandler;
   private final @Nullable String mDefaultUserAgent;
   private final CookieJarContainer mCookieJarContainer;
+  private final Set<Integer> mRequestIds;
   private boolean mShuttingDown;
 
   /* package */ NetworkingModule(
@@ -69,7 +72,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       OkHttpClient client,
       @Nullable List<NetworkInterceptorCreator> networkInterceptorCreators) {
     super(reactContext);
-    
+
     if (networkInterceptorCreators != null) {
       OkHttpClient.Builder clientBuilder = client.newBuilder();
       for (NetworkInterceptorCreator networkInterceptorCreator : networkInterceptorCreators) {
@@ -83,6 +86,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     mCookieJarContainer = (CookieJarContainer) mClient.cookieJar();
     mShuttingDown = false;
     mDefaultUserAgent = defaultUserAgent;
+    mRequestIds = new HashSet<>();
   }
 
   /**
@@ -138,7 +142,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   @Override
   public void onCatalystInstanceDestroy() {
     mShuttingDown = true;
-    OkHttpCallUtil.cancelAll(mClient);
+    cancelAllRequests();
 
     mCookieHandler.destroy();
     mCookieJarContainer.removeCookieJar();
@@ -241,6 +245,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
     }
 
+    addRequest(requestId);
     client.newCall(requestBuilder.build()).enqueue(
         new Callback() {
           @Override
@@ -248,6 +253,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
             if (mShuttingDown) {
               return;
             }
+            removeRequest(requestId);
             onRequestError(executorToken, requestId, e.getMessage(), e);
           }
 
@@ -256,7 +262,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
             if (mShuttingDown) {
               return;
             }
-
+            removeRequest(requestId);
             // Before we touch the body send headers to JS
             onResponseReceived(executorToken, requestId, response);
 
@@ -335,6 +341,21 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     getEventEmitter(ExecutorToken).emit("didReceiveNetworkResponse", args);
   }
 
+  private synchronized void addRequest(int requestId) {
+    mRequestIds.add(requestId);
+  }
+
+  private synchronized void removeRequest(int requestId) {
+    mRequestIds.remove(requestId);
+  }
+
+  private synchronized void cancelAllRequests() {
+    for (Integer requestId : mRequestIds) {
+      cancelRequest(requestId);
+    }
+    mRequestIds.clear();
+  }
+
   private static WritableMap translateHeaders(Headers headers) {
     WritableMap responseHeaders = Arguments.createMap();
     for (int i = 0; i < headers.size(); i++) {
@@ -353,6 +374,11 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void abortRequest(ExecutorToken executorToken, final int requestId) {
+    cancelRequest(requestId);
+    removeRequest(requestId);
+  }
+
+  private void cancelRequest(final int requestId) {
     // We have to use AsyncTask since this might trigger a NetworkOnMainThreadException, this is an
     // open issue on OkHttp: https://github.com/square/okhttp/issues/869
     new GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
