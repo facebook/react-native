@@ -166,7 +166,7 @@ const SwipeableRow = React.createClass({
     gestureState: Object,
   ): boolean {
     // Decides whether a swipe is responded to by this component or its child
-    return  gestureState.dy < 10 && this._isValidSwipe(gestureState);
+    return gestureState.dy < 10 && this._isValidSwipe(gestureState);
   },
 
   _handlePanResponderGrant(event: Object, gestureState: Object): void {
@@ -175,7 +175,14 @@ const SwipeableRow = React.createClass({
 
   _handlePanResponderMove(event: Object, gestureState: Object): void {
     this.props.onSwipeStart();
-    this.state.currentLeft.setValue(this._previousLeft + gestureState.dx);
+
+    if (!this._isSwipingRightFromClosedPosition(gestureState)) {
+      this.state.currentLeft.setValue(this._previousLeft + gestureState.dx);
+    }
+  },
+
+  _isSwipingRightFromClosedPosition(gestureState: Object): boolean {
+    return this._previousLeft === CLOSED_LEFT_POSITION && gestureState.dx > 0;
   },
 
   _onPanResponderTerminationRequest(event: Object, gestureState: Object): boolean {
