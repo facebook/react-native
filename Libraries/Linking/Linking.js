@@ -44,13 +44,24 @@ const LinkingManager = Platform.OS === 'android' ?
  * NOTE: For instructions on how to add support for deep linking on Android,
  * refer to [Enabling Deep Links for App Content - Add Intent Filters for Your Deep Links](http://developer.android.com/training/app-indexing/deep-linking.html#adding-filters).
  *
+ * If you wish to receive the intent in an existing instance of MainActivity,
+ * you may set the `launchMode` of MainActivity to `singleTask` in
+ * `AndroidManifest.xml`. See [`<activity>`](http://developer.android.com/guide/topics/manifest/activity-element.html)
+ * documentation for more information.
+ * 
+ * ```
+ * <activity
+ *   android:name=".MainActivity"
+ *   android:launchMode="singleTask">
+ * ```
+ * 
  * NOTE: On iOS you'll need to link `RCTLinking` to your project by following
  * the steps described [here](docs/linking-libraries-ios.html#manual-linking).
  * In case you also want to listen to incoming app links during your app's
  * execution you'll need to add the following lines to you `*AppDelegate.m`:
  *
  * ```
- *#import "RCTLinkingManager.h"
+ * #import "RCTLinkingManager.h"
  *
  * - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
  *   sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
@@ -84,8 +95,6 @@ const LinkingManager = Platform.OS === 'android' ?
  *   console.log(event.url);
  * }
  * ```
- * Note that this is only supported on iOS.
- *
  * #### Opening external links
  *
  * To start the corresponding activity for a link (web URL, email, contact etc.), call
@@ -114,28 +123,16 @@ class Linking extends NativeEventEmitter {
   /**
    * Add a handler to Linking changes by listening to the `url` event type
    * and providing the handler
-   *
-   * @platform ios
    */
   addEventListener(type: string, handler: Function) {
-    if (Platform.OS === 'android') {
-      console.warn('Linking.addEventListener is not supported on Android');
-    } else {
-      this.addListener(type, handler);
-    }
+    this.addListener(type, handler);
   }
 
   /**
    * Remove a handler by passing the `url` event type and the handler
-   *
-   * @platform ios
    */
   removeEventListener(type: string, handler: Function ) {
-    if (Platform.OS === 'android') {
-      console.warn('Linking.removeEventListener is not supported on Android');
-    } else {
-      this.removeListener(type, handler);
-    }
+    this.removeListener(type, handler);
   }
 
   /**

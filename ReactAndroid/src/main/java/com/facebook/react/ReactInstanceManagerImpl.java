@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.net.Uri;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -463,6 +464,22 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     UiThreadUtil.assertOnUiThread();
     if (mDefaultBackButtonImpl != null) {
       mDefaultBackButtonImpl.invokeDefaultOnBackPressed();
+    }
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    if (mCurrentReactContext == null) {
+      FLog.w(ReactConstants.TAG, "Instance detached from instance manager");
+    } else {
+      String action = intent.getAction();
+      Uri uri = intent.getData();
+
+      if (Intent.ACTION_VIEW.equals(action) && uri != null) {
+        DeviceEventManagerModule deviceEventManagerModule =
+            Assertions.assertNotNull(mCurrentReactContext).getNativeModule(DeviceEventManagerModule.class);
+        deviceEventManagerModule.emitNewIntentReceived(uri);
+      }
     }
   }
 

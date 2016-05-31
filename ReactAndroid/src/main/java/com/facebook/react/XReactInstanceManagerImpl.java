@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -57,6 +58,7 @@ import com.facebook.react.devsupport.DevServerHelper;
 import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
+import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.debug.DeveloperSettings;
@@ -67,10 +69,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
-import com.facebook.react.devsupport.RedBoxHandler;
 
-import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_JS_MODULE_CONFIG_END;
-import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_JS_MODULE_CONFIG_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_NATIVE_MODULE_REGISTRY_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_NATIVE_MODULE_REGISTRY_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_CATALYST_INSTANCE_END;
@@ -473,6 +472,22 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     UiThreadUtil.assertOnUiThread();
     if (mDefaultBackButtonImpl != null) {
       mDefaultBackButtonImpl.invokeDefaultOnBackPressed();
+    }
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    if (mCurrentReactContext == null) {
+      FLog.w(ReactConstants.TAG, "Instance detached from instance manager");
+    } else {
+      String action = intent.getAction();
+      Uri uri = intent.getData();
+
+      if (Intent.ACTION_VIEW.equals(action) && uri != null) {
+        DeviceEventManagerModule deviceEventManagerModule =
+                Assertions.assertNotNull(mCurrentReactContext).getNativeModule(DeviceEventManagerModule.class);
+        deviceEventManagerModule.emitNewIntentReceived(uri);
+      }
     }
   }
 
