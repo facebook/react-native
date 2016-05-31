@@ -15,12 +15,13 @@ import java.util.List;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ExecutorToken;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 import okhttp3.Call;
@@ -31,7 +32,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okio.Buffer;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,8 +40,8 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
@@ -63,7 +63,8 @@ import static org.mockito.Mockito.when;
     MultipartBody.class,
     MultipartBody.Builder.class,
     NetworkingModule.class,
-    OkHttpClient.class})
+    OkHttpClient.class,
+    OkHttpCallUtil.class})
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 public class NetworkingModuleTest {
@@ -475,5 +476,106 @@ public class NetworkingModuleTest {
     assertThat(bodyHeaders.get(1).get("content-disposition")).isEqualTo("filename=photo.jpg");
     assertThat(bodyRequestBody.get(1).contentType()).isEqualTo(MediaType.parse("image/jpg"));
     assertThat(bodyRequestBody.get(1).contentLength()).isEqualTo("imageUri".getBytes().length);
+  }
+
+  @Test
+  public void testCancelAllCallsOnCatalystInstanceDestroy() throws Exception {
+    PowerMockito.mockStatic(OkHttpCallUtil.class);
+    OkHttpClient httpClient = mock(OkHttpClient.class);
+    final int requests = 3;
+    final Call[] calls = new Call[requests];
+    for (int idx = 0; idx < requests; idx++) {
+      calls[idx] = mock(Call.class);
+    }
+
+    when(httpClient.cookieJar()).thenReturn(mock(CookieJarContainer.class));
+    when(httpClient.newCall(any(Request.class))).thenAnswer(new Answer<Object>() {
+      @Override
+      public Object answer(InvocationOnMock invocation) throws Throwable {
+        Request request = (Request) invocation.getArguments()[0];
+        return calls[(Integer) request.tag() - 1];
+      }
+    });
+    NetworkingModule networkingModule = new NetworkingModule(null, "", httpClient);
+    networkingModule.initialize();
+
+    for (int idx = 0; idx < requests; idx++) {
+      networkingModule.sendRequest(
+        mock(ExecutorToken.class),
+        "GET",
+        "http://somedomain/foo",
+        idx + 1,
+        JavaOnlyArray.of(),
+        null,
+        true,
+        0);
+    }
+    verify(httpClient, times(3)).newCall(any(Request.class));
+
+    networkingModule.onCatalystInstanceDestroy();
+    PowerMockito.verifyStatic(times(3));
+    ArgumentCaptor<OkHttpClient> clientArguments = ArgumentCaptor.forClass(OkHttpClient.class);
+    ArgumentCaptor<Integer> requestIdArguments = ArgumentCaptor.forClass(Integer.class);
+    OkHttpCallUtil.cancelTag(clientArguments.capture(), requestIdArguments.capture());
+
+    assertThat(requestIdArguments.getAllValues().size()).isEqualTo(requests);
+    for (int idx = 0; idx < requests; idx++) {
+      assertThat(requestIdArguments.getAllValues().contains(idx + 1)).isTrue();
+    }
+  }
+
+  @Test
+  public void testCancelSomeCallsOnCatalystInstanceDestroy() throws Exception {
+    PowerMockito.mockStatic(OkHttpCallUtil.class);
+    OkHttpClient httpClient = mock(OkHttpClient.class);
+    final int requests = 3;
+    final Call[] calls = new Call[requests];
+    for (int idx = 0; idx < requests; idx++) {
+      calls[idx] = mock(Call.class);
+    }
+
+    when(httpClient.cookieJar()).thenReturn(mock(CookieJarContainer.class));
+    when(httpClient.newCall(any(Request.class))).thenAnswer(new Answer<Object>() {
+      @Override
+      public Object answer(InvocationOnMock invocation) throws Throwable {
+        Request request = (Request) invocation.getArguments()[0];
+        return calls[(Integer) request.tag() - 1];
+      }
+    });
+    NetworkingModule networkingModule = new NetworkingModule(null, "", httpClient);
+
+    for (int idx = 0; idx < requests; idx++) {
+      networkingModule.sendRequest(
+        mock(ExecutorToken.class),
+        "GET",
+        "http://somedomain/foo",
+        idx + 1,
+        JavaOnlyArray.of(),
+        null,
+        true,
+        0);
+    }
+    verify(httpClient, times(3)).newCall(any(Request.class));
+
+    networkingModule.abortRequest(mock(ExecutorToken.class), requests);
+    PowerMockito.verifyStatic(times(1));
+    ArgumentCaptor<OkHttpClient> clientArguments = ArgumentCaptor.forClass(OkHttpClient.class);
+    ArgumentCaptor<Integer> requestIdArguments = ArgumentCaptor.forClass(Integer.class);
+    OkHttpCallUtil.cancelTag(clientArguments.capture(), requestIdArguments.capture());
+    assertThat(requestIdArguments.getAllValues().size()).isEqualTo(1);
+    assertThat(requestIdArguments.getAllValues().get(0)).isEqualTo(requests);
+
+    // verifyStatic actually does not clear all calls so far, so we have to check for all of them.
+    // If `cancelTag` would've been called again for the aborted call, we would have had
+    // `requests + 1` calls.
+    networkingModule.onCatalystInstanceDestroy();
+    PowerMockito.verifyStatic(times(requests));
+    clientArguments = ArgumentCaptor.forClass(OkHttpClient.class);
+    requestIdArguments = ArgumentCaptor.forClass(Integer.class);
+    OkHttpCallUtil.cancelTag(clientArguments.capture(), requestIdArguments.capture());
+    assertThat(requestIdArguments.getAllValues().size()).isEqualTo(requests);
+    for (int idx = 0; idx < requests; idx++) {
+      assertThat(requestIdArguments.getAllValues().contains(idx + 1)).isTrue();
+    }
   }
 }
