@@ -642,6 +642,10 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
           layoutAnimation.callback = nil;
         }
       };
+      
+      if (view.isHidden != isHidden) {
+        view.hidden = isHidden;
+      }
 
       if (view.isHidden != isHidden) {
         view.hidden = isHidden;
