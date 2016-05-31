@@ -30,6 +30,7 @@ module.exports = {
     'transform-es2015-shorthand-properties',
     'transform-es2015-spread',
     'transform-es2015-template-literals',
+    'transform-es2015-literals',
     'transform-flow-strip-types',
     'transform-object-assign',
     'transform-object-rest-spread',

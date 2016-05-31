@@ -114,7 +114,7 @@ task prepareGlog(dependsOn: downloadGlog, type: Copy) {
 
 task downloadJSCHeaders(type: Download) {
     def jscAPIBaseURL = 'https://svn.webkit.org/repository/webkit/!svn/bc/174650/trunk/Source/JavaScriptCore/API/'
-    def jscHeaderFiles = ['JSBase.h', 'JSContextRef.h', 'JSObjectRef.h', 'JSRetainPtr.h', 'JSStringRef.h', 'JSValueRef.h', 'WebKitAvailability.h']
+    def jscHeaderFiles = ['JavaScript.h', 'JSBase.h', 'JSContextRef.h', 'JSObjectRef.h', 'JSRetainPtr.h', 'JSStringRef.h', 'JSValueRef.h', 'WebKitAvailability.h']
     def output = new File(downloadsDir, 'jsc')
     output.mkdirs()
     src(jscHeaderFiles.collect { headerName -> "$jscAPIBaseURL$headerName" })
@@ -185,7 +185,7 @@ def getNdkBuildFullPath() {
 }
 
 task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
-    inputs.file('src/main/jni/react')
+    inputs.file('src/main/jni/xreact')
     outputs.dir("$buildDir/react-ndk/all")
     commandLine getNdkBuildFullPath(),
             'NDK_PROJECT_PATH=null',
@@ -193,7 +193,8 @@ task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConvers
             'NDK_OUT=' + temporaryDir,
             "NDK_LIBS_OUT=$buildDir/react-ndk/all",
             "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
-            '-C', file('src/main/jni/react/jni').absolutePath,
+            "REACT_COMMON_DIR=$projectDir/../ReactCommon",
+            '-C', file('src/main/jni/xreact/jni').absolutePath,
             '--jobs', project.hasProperty("jobs") ? project.property("jobs") : Runtime.runtime.availableProcessors()
 }
 

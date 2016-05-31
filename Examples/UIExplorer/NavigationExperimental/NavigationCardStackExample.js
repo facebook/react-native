@@ -57,7 +57,7 @@ function createReducer(initialState) {
 const ExampleReducer = createReducer({
   index: 0,
   key: 'exmaple',
-  children: [{key: 'First Route'}],
+  routes: [{key: 'First Route'}],
 });
 
 class NavigationCardStackExample extends React.Component {
@@ -118,7 +118,7 @@ class NavigationCardStackExample extends React.Component {
           onPress={this._toggleDirection}
         />
         <NavigationExampleRow
-          text={'route = ' + props.scene.navigationState.key}
+          text={'route = ' + props.scene.route.key}
         />
         <NavigationExampleRow
           text="Push Route"

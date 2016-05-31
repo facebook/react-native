@@ -2,20 +2,21 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := reactnativejni
+LOCAL_MODULE := libreactnativejni
 
 LOCAL_SRC_FILES := \
   JExecutorToken.cpp \
   JMessageQueueThread.cpp \
+  JniJSModulesUnbundle.cpp \
   JSCPerfLogging.cpp \
   JSLoader.cpp \
   JSLogging.cpp \
-  JniJSModulesUnbundle.cpp \
   NativeArray.cpp \
   OnLoad.cpp \
   ProxyExecutor.cpp \
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../.. $(LOCAL_PATH)/..
 
 LOCAL_CFLAGS += -Wall -Werror -fvisibility=hidden -fexceptions -frtti
 CXX11_FLAGS := -std=c++11

@@ -16,18 +16,18 @@ jest
 var NavigationStateUtils = require('NavigationStateUtils');
 
 var VALID_PARENT_STATES = [
-  {children: ['a','b'], index: 0},
-  {children: [{key: 'a'},{key: 'b', foo: 123}], index: 1},
-  {children: [{key: 'a'},{key: 'b'}], index: 0},
-  {children: [{key: 'a'},{key: 'b'}], index: 2},
+  {routes: ['a','b'], index: 0},
+  {routes: [{key: 'a'},{key: 'b', foo: 123}], index: 1},
+  {routes: [{key: 'a'},{key: 'b'}], index: 0},
+  {routes: [{key: 'a'},{key: 'b'}], index: 2},
 ];
 var INVALID_PARENT_STATES = [
   'foo',
   {},
-  {children: [{key: 'a'}], index: 4},
-  {children: [{key: 'a'}], index: -1},
-  {children: [{key: 'a'}]},
-  {children: {key: 'foo'}},
+  {routes: [{key: 'a'}], index: 4},
+  {routes: [{key: 'a'}], index: -1},
+  {routes: [{key: 'a'}]},
+  {routes: {key: 'foo'}},
   12,
   null,
   undefined,
@@ -47,9 +47,9 @@ describe('NavigationStateUtils', () => {
     }
   });
 
-  it('can get children', () => {
+  it('can get routes', () => {
     var fooState = {key: 'foo'};
-    var navState = {children: [{key: 'foobar'}, fooState], index: 0};
+    var navState = {routes: [{key: 'foobar'}, fooState], index: 0};
     expect(NavigationStateUtils.get(navState, 'foo')).toBe(fooState);
     expect(NavigationStateUtils.get(navState, 'missing')).toBe(null);
   });

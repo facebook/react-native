@@ -839,6 +839,12 @@ static void stopProfiler(JNIEnv* env, jobject obj, jstring title, jstring filena
   bridge->stopProfiler(fromJString(env, title), fromJString(env, filename));
 }
 
+static void handleMemoryPressureUiHidden(JNIEnv* env, jobject obj) {
+  LOG(WARNING) << "handleMemoryPressureUiHidden";
+  auto bridge = extractRefPtr<CountableBridge>(env, obj);
+  bridge->handleMemoryPressureUiHidden();
+}
+
 static void handleMemoryPressureModerate(JNIEnv* env, jobject obj) {
   auto bridge = extractRefPtr<CountableBridge>(env, obj);
   bridge->handleMemoryPressureModerate();
@@ -1029,6 +1035,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
         makeNativeMethod("supportsProfiling", bridge::supportsProfiling),
         makeNativeMethod("startProfiler", bridge::startProfiler),
         makeNativeMethod("stopProfiler", bridge::stopProfiler),
+        makeNativeMethod("handleMemoryPressureUiHidden", bridge::handleMemoryPressureUiHidden),
         makeNativeMethod("handleMemoryPressureModerate", bridge::handleMemoryPressureModerate),
         makeNativeMethod("handleMemoryPressureCritical", bridge::handleMemoryPressureCritical),
         makeNativeMethod("getJavaScriptContextNativePtrExperimental", bridge::getJavaScriptContext),

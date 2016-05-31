@@ -62,9 +62,12 @@ RCT_EXPORT_MODULE()
     return;
   }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [_bridge.eventDispatcher
    sendDeviceEventWithName:@"settingsUpdated"
    body:RCTJSONClean([_defaults dictionaryRepresentation])];
+#pragma clang diagnostic pop
 }
 
 /**

@@ -30,31 +30,35 @@ class RCTDeviceEventEmitter extends EventEmitter {
     super(sharedSubscriber);
     this.sharedSubscriber = sharedSubscriber;
   }
+  
+  _nativeEventModule(eventType: ?string) {
+    if (eventType) {
+      if (eventType.lastIndexOf('statusBar', 0) === 0) {
+        console.warn('`%s` event should be registered via the StatusBarIOS module', eventType);
+        return require('StatusBarIOS');
+      }
+      if (eventType.lastIndexOf('keyboard', 0) === 0) {
+        console.warn('`%s` event should be registered via the Keyboard module', eventType);
+        return require('Keyboard');
+      }
+      if (eventType === 'appStateDidChange' || eventType === 'memoryWarning') {
+        console.warn('`%s` event should be registered via the AppState module', eventType);
+        return require('AppState');
+      }
+    }
+    return null;
+  }
 
   addListener(eventType: string, listener: Function, context: ?Object): EmitterSubscription {
-    if (eventType.lastIndexOf('statusBar', 0) === 0) {
-      console.warn('`%s` event should be registered via the StatusBarIOS module', eventType);
-      return require('StatusBarIOS').addListener(eventType, listener, context);
-    }
-    if (eventType.lastIndexOf('keyboard', 0) === 0) {
-      console.warn('`%s` event should be registered via the Keyboard module', eventType);
-      return require('Keyboard').addListener(eventType, listener, context);
-    }
-    return super.addListener(eventType, listener, context);
+    const eventModule = this._nativeEventModule(eventType);
+    return eventModule ? eventModule.addListener(eventType, listener, context)
+                       : super.addListener(eventType, listener, context);
   }
 
   removeAllListeners(eventType: ?string) {
-    if (eventType) {
-      if (eventType.lastIndexOf('statusBar', 0) === 0) {
-        console.warn('statusBar events should be unregistered via the StatusBarIOS module');
-        return require('StatusBarIOS').removeAllListeners(eventType);
-      }
-      if (eventType.lastIndexOf('keyboard', 0) === 0) {
-        console.warn('keyboard events should be unregistered via the Keyboard module');
-        return require('Keyboard').removeAllListeners(eventType);
-      }
-    }
-    super.removeAllListeners(eventType);
+    const eventModule = this._nativeEventModule(eventType);
+    (eventModule && eventType) ? eventModule.removeAllListeners(eventType)
+                               : super.removeAllListeners(eventType);
   }
 
   removeSubscription(subscription: EmitterSubscription) {

@@ -124,7 +124,8 @@ import org.json.JSONObject;
         FrameViewHolder holder = (FrameViewHolder) convertView.getTag();
         holder.mMethodView.setText(frame.getMethod());
         final int column = frame.getColumn();
-        final String columnString = column < 0 ? "" : ":" + column;
+        // If the column is 0, don't show it in red box.
+        final String columnString = column <= 0 ? "" : ":" + column;
         holder.mFileView.setText(frame.getFileName() + ":" + frame.getLine() + columnString);
         return convertView;
       }

@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule NavigationTabsReducer
- * @flow
+ * @flow-broken
  */
 'use strict';
 
@@ -16,7 +16,7 @@ const NavigationStateUtils = require('NavigationStateUtils');
 
 import type {
   NavigationReducer,
-  NavigationState,
+  NavigationRoute,
 } from 'NavigationTypeDefinition';
 
 const ActionTypes = {
@@ -41,10 +41,10 @@ type TabsReducerConfig = {
 };
 
 function NavigationTabsReducer({key, initialIndex, tabReducers}: TabsReducerConfig): NavigationReducer {
-  return function(lastNavState: ?NavigationState, action: ?any): NavigationState {
+  return function(lastNavState: ?NavigationRoute, action: ?any): NavigationRoute {
     if (!lastNavState) {
       lastNavState = {
-        children: tabReducers.map(reducer => reducer(null, null)),
+        routes: tabReducers.map(reducer => reducer(null, null)),
         index: initialIndex || 0,
         key,
       };
@@ -63,15 +63,15 @@ function NavigationTabsReducer({key, initialIndex, tabReducers}: TabsReducerConf
       );
     }
     const subReducers = tabReducers.map((tabReducer, tabIndex) => {
-      return function(navState: ?NavigationState, tabAction: any): NavigationState {
+      return function(navState: ?NavigationRoute, tabAction: any): NavigationRoute {
         if (!navState) {
           return lastParentNavState;
         }
         const parentState = NavigationStateUtils.getParent(navState);
-        const tabState = parentState && parentState.children[tabIndex];
+        const tabState = parentState && parentState.routes[tabIndex];
         const nextTabState = tabReducer(tabState, tabAction);
         if (nextTabState && tabState !== nextTabState) {
-          const tabs = parentState && parentState.children || [];
+          const tabs = parentState && parentState.routes || [];
           tabs[tabIndex] = nextTabState;
           return {
             ...lastParentNavState,
@@ -83,7 +83,7 @@ function NavigationTabsReducer({key, initialIndex, tabReducers}: TabsReducerConf
       };
     });
     let selectedTabReducer = subReducers.splice(lastParentNavState.index, 1)[0];
-    subReducers.unshift(function(navState: ?NavigationState, action: any): NavigationState {
+    subReducers.unshift(function(navState: ?NavigationRoute, action: any): NavigationRoute {
       if (navState && action.type === 'BackAction') {
         return NavigationStateUtils.jumpToIndex(
           lastParentNavState,

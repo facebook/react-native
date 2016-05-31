@@ -25,7 +25,6 @@
 
 const Animated = require('Animated');
 const PanResponder = require('PanResponder');
-const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
@@ -38,6 +37,8 @@ const emptyFunction = require('emptyFunction');
 const CLOSED_LEFT_POSITION = 0;
 // Minimum swipe distance before we recognize it as such
 const HORIZONTAL_SWIPE_DISTANCE_THRESHOLD = 15;
+// Time, in milliseconds, of how long the animated swipe should be
+const SWIPE_DURATION = 200;
 
 /**
  * Creates a swipable row that allows taps on the main item and a custom View
@@ -49,11 +50,7 @@ const SwipeableRow = React.createClass({
 
   propTypes: {
     isOpen: PropTypes.bool,
-    /**
-     * Left position of the maximum open swipe. If unspecified, swipe will open
-     * fully to the left
-     */
-    maxSwipeDistance: PropTypes.number,
+    maxSwipeDistance: PropTypes.number.isRequired,
     onOpen: PropTypes.func,
     onSwipeEnd: PropTypes.func.isRequired,
     onSwipeStart: PropTypes.func.isRequired,
@@ -79,17 +76,14 @@ const SwipeableRow = React.createClass({
        * component A to be transparent until component B is loaded.
        */
       isSwipeableViewRendered: false,
-      /**
-       * scrollViewWidth can change based on orientation, thus it's stored as a
-       * state variable. This means all styles depending on it will be inline
-       */
-      scrollViewWidth: 0,
+      rowHeight: (null: ?number),
     };
   },
 
   getDefaultProps(): Object {
     return {
       isOpen: false,
+      maxSwipeDistance: 0,
       onSwipeEnd: emptyFunction,
       onSwipeStart: emptyFunction,
       swipeThreshold: 30,
@@ -121,36 +115,37 @@ const SwipeableRow = React.createClass({
     }
   },
 
-  render(): ReactElement {
-    const slideoutStyle = [styles.slideOutContainer];
-    if (Platform.OS === 'ios') {
-      slideoutStyle.push({opacity: this.state.isSwipeableViewRendered ? 1 : 0});
+  render(): ReactElement<any> {
+    // The view hidden behind the main view
+    let slideOutView;
+    if (this.state.isSwipeableViewRendered) {
+      slideOutView = (
+        <View style={[
+          styles.slideOutContainer,
+          {height: this.state.rowHeight},
+          ]}>
+          {this.props.slideoutView}
+        </View>
+      );
     }
 
-    // The view hidden behind the main view
-    const slideOutView = (
-      <View style={slideoutStyle}>
-        {this.props.slideoutView}
-      </View>
-    );
-
-    // The swipable item
+    // The swipeable item
     const swipeableView = (
       <Animated.View
         onLayout={this._onSwipeableViewLayout}
-        style={{
-          transform: [{translateX: this.state.currentLeft}],
-          width: this.state.scrollViewWidth,
-        }}>
+        style={[
+          styles.swipeableContainer,
+          {
+            transform: [{translateX: this.state.currentLeft}],
+          },
+        ]}>
         {this.props.children}
       </Animated.View>
     );
 
     return (
       <View
-        {...this._panResponder.panHandlers}
-        style={styles.container}
-        onLayout={this._onLayoutChange}>
+        {...this._panResponder.panHandlers}>
         {slideOutView}
         {swipeableView}
       </View>
@@ -158,9 +153,10 @@ const SwipeableRow = React.createClass({
   },
 
   _onSwipeableViewLayout(event: Object): void {
-    if (!this._isSwipeableViewRendered && this.state.scrollViewWidth !== 0) {
+    if (!this.state.isSwipeableViewRendered) {
       this.setState({
         isSwipeableViewRendered: true,
+        rowHeight: event.nativeEvent.layout.height,
       });
     }
   },
@@ -190,6 +186,7 @@ const SwipeableRow = React.createClass({
     Animated.timing(
       this.state.currentLeft,
       {
+        duration: SWIPE_DURATION,
         toValue: toValue,
       },
     ).start(() => {
@@ -198,10 +195,7 @@ const SwipeableRow = React.createClass({
   },
 
   _animateToOpenPosition(): void {
-    const toValue = this.props.maxSwipeDistance
-      ? -this.props.maxSwipeDistance
-      : -this.state.scrollViewWidth;
-    this._animateTo(toValue);
+    this._animateTo(-this.props.maxSwipeDistance);
   },
 
   _animateToClosedPosition(): void {
@@ -235,29 +229,18 @@ const SwipeableRow = React.createClass({
 
     this.props.onSwipeEnd();
   },
-
-  _onLayoutChange(event: Object): void {
-    const width = event.nativeEvent.layout.width;
-    if (width && width !== this.state.scrollViewWidth) {
-      this.setState({
-        scrollViewWidth: width,
-      });
-    }
-  },
 });
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-  },
   slideOutContainer: {
     bottom: 0,
-    flex: 1,
     left: 0,
     position: 'absolute',
     right: 0,
     top: 0,
+  },
+  swipeableContainer: {
+    flex: 1,
   },
 });
 

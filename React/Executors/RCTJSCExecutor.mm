@@ -47,14 +47,13 @@ struct __attribute__((packed)) ModuleData {
 
 using file_ptr = std::unique_ptr<FILE, decltype(&fclose)>;
 using memory_ptr = std::unique_ptr<void, decltype(&free)>;
-using table_ptr = std::unique_ptr<ModuleData[], decltype(&free)>;
 
 struct RandomAccessBundleData {
   file_ptr bundle;
   size_t baseOffset;
   size_t numTableEntries;
-  table_ptr table;
-  RandomAccessBundleData(): bundle(nullptr, fclose), table(nullptr, free) {}
+  std::unique_ptr<ModuleData[]> table;
+  RandomAccessBundleData(): bundle(nullptr, fclose) {}
 };
 
 struct RandomAccessBundleStartupCode {
@@ -718,13 +717,13 @@ static bool readRandomAccessModule(const RandomAccessBundleData& bundleData, siz
 
 static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleID, size_t offset, size_t size)
 {
-  auto data = std::unique_ptr<char[]>(new char[size]);
+  auto data = std::make_unique<char[]>(size);
   if (!readRandomAccessModule(executor->_randomAccessBundle, offset, size, data.get())) {
     RCTFatal(RCTErrorWithMessage(@"Error loading RAM module"));
     return;
   }
 
-  static char url[14]; // 10 = maximum decimal digits in a 32bit unsigned int + ".js" + null byte
+  char url[14]; // 10 = maximum decimal digits in a 32bit unsigned int + ".js" + null byte
   sprintf(url, "%" PRIu32 ".js", moduleID);
 
   JSStringRef code = JSStringCreateWithUTF8CString(data.get());
@@ -758,7 +757,7 @@ static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleI
 
     RCTPerformanceLoggerAdd(RCTPLRAMNativeRequiresCount, 1);
     RCTPerformanceLoggerAppendStart(RCTPLRAMNativeRequires);
-    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, 
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
                             [@"nativeRequire_" stringByAppendingFormat:@"%@", moduleID], nil);
 
     const uint32_t ID = [moduleID unsignedIntValue];
@@ -794,7 +793,7 @@ static RandomAccessBundleStartupCode readRAMBundle(file_ptr bundle, RandomAccess
   const size_t tableSize = numTableEntries * sizeof(ModuleData);
 
   // allocate memory for meta data and lookup table. malloc instead of new to avoid constructor calls
-  table_ptr table(static_cast<ModuleData *>(malloc(tableSize)), free);
+  auto table = std::make_unique<ModuleData[]>(numTableEntries);
   if (!table) {
     return RandomAccessBundleStartupCode::empty();
   }

@@ -29,8 +29,8 @@ export type UIExplorerExample = {
 
 const ComponentExamples: Array<UIExplorerExample> = [
   {
-    key: 'ActivityIndicatorIOSExample',
-    module: require('./ActivityIndicatorIOSExample'),
+    key: 'ActivityIndicatorExample',
+    module: require('./ActivityIndicatorExample'),
   },
   {
     key: 'DatePickerIOSExample',
@@ -170,10 +170,6 @@ const APIExamples: Array<UIExplorerExample> = [
   {
     key: 'AnExApp',
     module: require('./AnimatedGratuitousApp/AnExApp'),
-  },
-  {
-    key: 'AppStateIOSExample',
-    module: require('./AppStateIOSExample'),
   },
   {
     key: 'AppStateExample',
