@@ -65,6 +65,9 @@ function push(state: NavigationState, newChildState: NavigationRoute): Navigatio
 }
 
 function pop(state: NavigationState): NavigationState {
+  if (state.index <= 0) {
+    return state;
+  }
   const lastChildren = state.routes;
   return {
     ...state,
