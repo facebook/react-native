@@ -24,7 +24,6 @@ import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.UnderlineSpan;
-import android.util.DisplayMetrics;
 import android.view.Choreographer;
 import android.widget.TextView;
 
@@ -34,7 +33,6 @@ import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
-import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactChoreographer;
 import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -428,9 +426,6 @@ public class ReactTextTest {
 
   public UIManagerModule getUIManagerModule() {
     ReactApplicationContext reactContext = ReactTestHelper.createCatalystContextForTest();
-    DisplayMetrics displayMetrics = reactContext.getResources().getDisplayMetrics();
-    DisplayMetricsHolder.setWindowDisplayMetrics(displayMetrics);
-    DisplayMetricsHolder.setScreenDisplayMetrics(displayMetrics);
     List<ViewManager> viewManagers = Arrays.asList(
         new ViewManager[] {
             new ReactTextViewManager(),

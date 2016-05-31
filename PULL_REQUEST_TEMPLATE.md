@@ -15,3 +15,5 @@ Make sure tests pass on both Travis and Circle CI.
 **Code formatting**
 
 Look around. Match the style of the rest of the codebase. See also the simple [style guide](https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md#style-guide).
+
+For more info, see the ["Pull Requests" section of our "Contributing" guidelines](https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md#pull-requests).

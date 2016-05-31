@@ -53,6 +53,12 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign, getter=isNewView) BOOL newView;
 
 /**
+ * isHidden - RCTUIManager uses this to determine whether or not the UIView should be hidden. Useful if the
+ * ShadowView determines that its UIView will be clipped and wants to hide it.
+ */
+@property (nonatomic, assign, getter=isHidden) BOOL hidden;
+
+/**
  * Position and dimensions.
  * Defaults to { 0, 0, NAN, NAN }.
  */

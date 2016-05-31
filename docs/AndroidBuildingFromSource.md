@@ -4,7 +4,7 @@ title: Building React Native from source
 layout: docs
 category: Guides (Android)
 permalink: docs/android-building-from-source.html
-next: activityindicatorios
+next: activityindicator
 ---
 
 You will need to build React Native from source if you want to work on a new feature/bug fix, try out the latest features which are not released yet, or maintain your own fork with patches that cannot be merged to the core.
@@ -128,6 +128,10 @@ gradle.projectsLoaded {
     }
 }
 ```
+
+## Testing
+
+If you made changes to React Native and submit a pull request, all tests will run on your pull request automatically. To run the tests locally, see [Testing](/react-native/docs/testing.html).
 
 ## Troubleshooting
 

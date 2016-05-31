@@ -277,7 +277,12 @@ void JSCExecutor::flush() {
 
   if (!ensureBatchedBridgeObject()) {
     throwJSExecutionException(
-        "Couldn't get the native call queue: bridge configuration isn't available. This shouldn't be possible. Congratulations.");
+      "Could not connect to development server.\n"
+      "Try the following to fix the issue:\n"
+      "Ensure that the packager server is running\n"
+      "Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run 'adb devices' to see a list of connected devices\n"
+      "If you're on a physical device connected to the same machine, run 'adb reverse tcp:8081 tcp:8081' to forward requests from your device\n"
+      "If your device is on the same Wi-Fi network, set 'Debug server host & port for device' in 'Dev settings' to your machine's IP address and the port of the local dev server - e.g. 10.0.1.1:8081");
   }
 
   std::string calls = m_flushedQueueObj->callAsFunction().toJSONString();
@@ -358,6 +363,12 @@ void JSCExecutor::stopProfiler(const std::string &titleString, const std::string
   #endif
 }
 
+void JSCExecutor::handleMemoryPressureUiHidden() {
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::UI_HIDDEN);
+  #endif
+}
+
 void JSCExecutor::handleMemoryPressureModerate() {
   #ifdef WITH_JSC_MEMORY_PRESSURE
   JSHandleMemoryPressure(this, m_context, JSMemoryPressure::MODERATE);
@@ -390,10 +401,13 @@ int JSCExecutor::addWebWorker(
 
   Object globalObj = Value(m_context, globalObjRef).asObject();
 
+  auto workerJscConfig = m_jscConfig;
+  workerJscConfig["isWebWorker"] = true;
+
   auto workerMQT = WebWorkerUtil::createWebWorkerThread(workerId, m_messageQueueThread.get());
   std::unique_ptr<JSCExecutor> worker;
-  workerMQT->runOnQueueSync([this, &worker, &script, &globalObj, workerId] () {
-    worker.reset(new JSCExecutor(m_bridge, workerId, this, script, globalObj.toJSONMap(), m_jscConfig));
+  workerMQT->runOnQueueSync([this, &worker, &script, &globalObj, workerId, &workerJscConfig] () {
+    worker.reset(new JSCExecutor(m_bridge, workerId, this, script, globalObj.toJSONMap(), workerJscConfig));
   });
 
   Object workerObj = Value(m_context, workerRef).asObject();

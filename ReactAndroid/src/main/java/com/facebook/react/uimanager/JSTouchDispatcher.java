@@ -18,6 +18,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.TouchEvent;
+import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
 import com.facebook.react.uimanager.events.TouchEventType;
 
 /**
@@ -137,7 +138,14 @@ public class JSTouchDispatcher {
           mTargetCoordinates[0],
           mTargetCoordinates[1]));
     } else if (action == MotionEvent.ACTION_CANCEL) {
-      dispatchCancelEvent(ev, eventDispatcher);
+      if (TouchEventCoalescingKeyHelper.hasCoalescingKey(ev.getDownTime())) {
+        dispatchCancelEvent(ev, eventDispatcher);
+      } else {
+        FLog.e(
+          ReactConstants.TAG,
+          "Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN"
+        );
+      }
       mTargetTag = -1;
     } else {
       FLog.w(

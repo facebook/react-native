@@ -62,8 +62,23 @@ static BOOL RCTShouldReloadImageForSizeChange(CGSize currentSize, CGSize idealSi
 {
   if ((self = [super init])) {
     _bridge = bridge;
+
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    [center addObserver:self
+               selector:@selector(clearImageIfDetached)
+                   name:UIApplicationDidReceiveMemoryWarningNotification
+                 object:nil];
+    [center addObserver:self
+               selector:@selector(clearImageIfDetached)
+                   name:UIApplicationDidEnterBackgroundNotification
+                 object:nil];
   }
   return self;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
@@ -172,6 +187,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   self.image = nil;
 }
 
+- (void)clearImageIfDetached
+{
+  if (!self.window) {
+    [self clearImage];
+  }
+}
+
 - (void)reloadImage
 {
   [self cancelImageLoad];
@@ -207,13 +229,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                                                             scale:imageScale
                                                                        resizeMode:(RCTResizeMode)self.contentMode
                                                                     progressBlock:progressHandler
-                                                                  completionBlock:^(NSError *error, UIImage *image) {
+                                                                  completionBlock:^(NSError *error, UIImage *loadedImage) {
       RCTImageView *strongSelf = weakSelf;
-      if (blurRadius > __FLT_EPSILON__) {
-        // Do this on the background thread to avoid blocking interaction
-        image = RCTBlurredImageWithRadius(image, blurRadius);
-      }
-      dispatch_async(dispatch_get_main_queue(), ^{
+      void (^setImageBlock)(UIImage *) = ^(UIImage *image) {
         if (![source isEqual:strongSelf.source]) {
           // Bail out if source has changed since we started loading
           return;
@@ -234,9 +252,31 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
           }
         }
         if (strongSelf->_onLoadEnd) {
-           strongSelf->_onLoadEnd(nil);
+          strongSelf->_onLoadEnd(nil);
         }
-      });
+      };
+
+      if (blurRadius > __FLT_EPSILON__) {
+        // Blur on a background thread to avoid blocking interaction
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+          UIImage *image = RCTBlurredImageWithRadius(loadedImage, blurRadius);
+          RCTExecuteOnMainThread(^{
+            setImageBlock(image);
+          }, NO);
+        });
+      } else {
+        // No blur, so try to set the image on the main thread synchronously to minimize image
+        // flashing. (For instance, if this view gets attached to a window, then -didMoveToWindow
+        // calls -reloadImage, and we want to set the image synchronously if possible so that the
+        // image property is set in the same CATransaction that attaches this view to the window.)
+        if ([NSThread isMainThread]) {
+          setImageBlock(loadedImage);
+        } else {
+          RCTExecuteOnMainThread(^{
+            setImageBlock(loadedImage);
+          }, NO);
+        }
+      }
     }];
   } else {
     [self clearImage];
@@ -276,24 +316,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   [super didMoveToWindow];
 
-  if (!self.window) {
-    // Don't keep self alive through the asynchronous dispatch, if the intention
-    // was to remove the view so it would deallocate.
-    __weak typeof(self) weakSelf = self;
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-      __strong typeof(self) strongSelf = weakSelf;
-      if (!strongSelf) {
-        return;
-      }
-
-      // If we haven't been re-added to a window by this run loop iteration,
-      // clear out the image to save memory.
-      if (!strongSelf.window) {
-        [strongSelf clearImage];
-      }
-    });
-  } else if (!self.image || self.image == _defaultImage) {
+  if (self.window && (!self.image || self.image == _defaultImage)) {
     [self reloadImage];
   }
 }

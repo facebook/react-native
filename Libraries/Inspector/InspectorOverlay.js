@@ -15,7 +15,7 @@ var Dimensions = require('Dimensions');
 var InspectorUtils = require('InspectorUtils');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
-var UIManager = require('NativeModules').UIManager;
+var UIManager = require('UIManager');
 var View = require('View');
 var ElementBox = require('ElementBox');
 

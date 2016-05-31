@@ -43,7 +43,7 @@ const WS_STATES = [
 ];
 
 class Button extends React.Component {
-  render(): ReactElement {
+  render(): ReactElement<any> {
     const label = <Text style={styles.buttonLabel}>{this.props.label}</Text>;
     if (this.props.disabled) {
       return (
@@ -63,7 +63,7 @@ class Button extends React.Component {
 }
 
 class Row extends React.Component {
-  render(): ReactElement {
+  render(): ReactElement<any> {
     return (
       <View style={styles.row}>
         <Text>{this.props.label}</Text>
@@ -162,7 +162,7 @@ class WebSocketExample extends React.Component<any, any, State> {
     this.setState({outgoingMessage: ''});
   };
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     const socketState = WS_STATES[this.state.socketState || -1];
     const canConnect =
       !this.state.socket ||

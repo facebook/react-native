@@ -11,9 +11,11 @@
  */
 'use strict';
 
-var ReactDefaultPerf = require('ReactDefaultPerf');
+var ReactPerf = require('ReactPerf');
+var ReactDebugTool = require('ReactDebugTool');
 
 var invariant = require('fbjs/lib/invariant');
+var performanceNow = require('fbjs/lib/performanceNow');
 
 type perfModule = {
   start: () => void;
@@ -22,6 +24,22 @@ type perfModule = {
 
 var perfModules = [];
 var enabled = false;
+var lastRenderStartTime = 0;
+var totalRenderDuration = 0;
+
+var RCTRenderingPerfDevtool = {
+  onBeginLifeCycleTimer(debugID, timerType) {
+    if (timerType === 'render') {
+      lastRenderStartTime = performanceNow();
+    }
+  },
+  onEndLifeCycleTimer(debugID, timerType) {
+    if (timerType === 'render') {
+      var lastRenderDuration = performanceNow() - lastRenderStartTime;
+      totalRenderDuration += lastRenderDuration;
+    }
+  },
+};
 
 var RCTRenderingPerf = {
   // Once perf is enabled, it stays enabled
@@ -35,7 +53,8 @@ var RCTRenderingPerf = {
       return;
     }
 
-    ReactDefaultPerf.start();
+    ReactPerf.start();
+    ReactDebugTool.addDevtool(RCTRenderingPerfDevtool);
     perfModules.forEach((module) => module.start());
   },
 
@@ -44,21 +63,14 @@ var RCTRenderingPerf = {
       return;
     }
 
-    ReactDefaultPerf.stop();
-    ReactDefaultPerf.printInclusive();
-    ReactDefaultPerf.printWasted();
+    ReactPerf.stop();
+    ReactPerf.printInclusive();
+    ReactPerf.printWasted();
+    ReactDebugTool.removeDevtool(RCTRenderingPerfDevtool);
 
-    var totalRender = 0;
-    var totalTime = 0;
-    var measurements = ReactDefaultPerf.getLastMeasurements();
-    for (var ii = 0; ii < measurements.length; ii++) {
-      var render = measurements[ii].render;
-      for (var nodeName in render) {
-        totalRender += render[nodeName];
-      }
-      totalTime += measurements[ii].totalTime;
-    }
-    console.log('Total time spent in render(): ' + totalRender + 'ms');
+    console.log(`Total time spent in render(): ${totalRenderDuration.toFixed(2)} ms`);
+    lastRenderStartTime = 0;
+    totalRenderDuration = 0;
 
     perfModules.forEach((module) => module.stop());
   },

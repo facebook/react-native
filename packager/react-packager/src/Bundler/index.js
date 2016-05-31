@@ -141,7 +141,6 @@ class Bundler {
       fileWatcher: opts.fileWatcher,
       assetExts: opts.assetExts,
       cache: this._cache,
-      getModuleId: this._getModuleId,
       transformCode:
         (module, code, options) =>
           this._transformer.transformFile(module.path, code, options),
@@ -169,9 +168,9 @@ class Bundler {
     const moduleSystemDeps =
       this._resolver.getModuleSystemDependencies({dev, unbundle});
     return this._bundle({
-      bundle: new Bundle({minify, sourceMapUrl: options.sourceMapUrl}),
-      moduleSystemDeps,
       ...options,
+      bundle: new Bundle({dev, minify, sourceMapUrl: options.sourceMapUrl}),
+      moduleSystemDeps,
     });
   }
 
@@ -247,19 +246,10 @@ class Bundler {
     unbundle,
     entryModuleOnly,
     resolutionResponse,
+    isolateModuleIDs,
   }) {
-    if (dev && runBeforeMainModule) { // no runBeforeMainModule for hmr bundles
-      // `require` calls in the require polyfill itself are not extracted and
-      // replaced with numeric module IDs, but the require polyfill
-      // needs Systrace.
-      // Therefore, we include the Systrace module before the main module, and
-      // it will set itself as property on the require function.
-      // TODO(davidaurelio) Scan polyfills for dependencies, too (t9759686)
-      runBeforeMainModule = runBeforeMainModule.concat(['Systrace']);
-    }
-
     const onResolutionResponse = response => {
-      bundle.setMainModuleId(this._getModuleId(getMainModule(response)));
+      bundle.setMainModuleId(response.getModuleId(getMainModule(response)));
       if (bundle.setNumPrependedModules) {
         bundle.setNumPrependedModules(
           response.numPrependedDependencies + moduleSystemDeps.length
@@ -283,7 +273,7 @@ class Bundler {
           ? runBeforeMainModule
               .map(name => modulesByName[name])
               .filter(Boolean)
-              .map(this._getModuleId, this)
+              .map(response.getModuleId)
           : undefined;
 
         bundle.finalize({
@@ -304,6 +294,7 @@ class Bundler {
       resolutionResponse,
       onResolutionResponse,
       finalizeBundle,
+      isolateModuleIDs,
     });
   }
 
@@ -354,6 +345,7 @@ class Bundler {
     hot,
     unbundle,
     resolutionResponse,
+    isolateModuleIDs,
     onResolutionResponse = noop,
     onModuleTransformed = noop,
     finalizeBundle = noop,
@@ -381,6 +373,7 @@ class Bundler {
         hot,
         onProgress,
         minify,
+        isolateModuleIDs,
         generateSourceMaps: unbundle,
       });
     }
@@ -408,6 +401,7 @@ class Bundler {
           bundle,
           entryFilePath,
           transformOptions: response.transformOptions,
+          getModuleId: response.getModuleId,
         }).then(transformed => {
           modulesByName[transformed.name] = module;
           onModuleTransformed({
@@ -477,6 +471,7 @@ class Bundler {
     hot = false,
     recursive = true,
     generateSourceMaps = false,
+    isolateModuleIDs = false,
     onProgress,
   }) {
     return this.getTransformOptions(
@@ -501,6 +496,7 @@ class Bundler {
         {dev, platform, recursive},
         transformOptions,
         onProgress,
+        isolateModuleIDs ? createModuleIdFactory() : this._getModuleId,
       );
     });
   }
@@ -537,13 +533,14 @@ class Bundler {
     );
   }
 
-  _toModuleTransport({module, bundle, entryFilePath, transformOptions}) {
+  _toModuleTransport({module, bundle, entryFilePath, transformOptions, getModuleId}) {
     let moduleTransport;
     if (module.isAsset_DEPRECATED()) {
-      moduleTransport = this._generateAssetModule_DEPRECATED(bundle, module);
+      moduleTransport =
+        this._generateAssetModule_DEPRECATED(bundle, module, getModuleId);
     } else if (module.isAsset()) {
       moduleTransport = this._generateAssetModule(
-        bundle, module, transformOptions.platform);
+        bundle, module, getModuleId, transformOptions.platform);
     }
 
     if (moduleTransport) {
@@ -564,7 +561,7 @@ class Bundler {
 
       return new ModuleTransport({
         name,
-        id: this._getModuleId(module),
+        id: getModuleId(module),
         code,
         map,
         meta: {dependencies, dependencyOffsets, preloaded},
@@ -578,7 +575,7 @@ class Bundler {
     return this._resolver.getDebugInfo();
   }
 
-  _generateAssetModule_DEPRECATED(bundle, module) {
+  _generateAssetModule_DEPRECATED(bundle, module, getModuleId) {
     return Promise.all([
       sizeOf(module.path),
       module.getName(),
@@ -598,7 +595,7 @@ class Bundler {
 
       return new ModuleTransport({
         name: id,
-        id: this._getModuleId(module),
+        id: getModuleId(module),
         code: code,
         sourceCode: code,
         sourcePath: module.path,
@@ -657,7 +654,7 @@ class Bundler {
   }
 
 
-  _generateAssetModule(bundle, module, platform = null) {
+  _generateAssetModule(bundle, module, getModuleId, platform = null) {
     return Promise.all([
       module.getName(),
       this._generateAssetObjAndCode(module, platform),
@@ -665,7 +662,7 @@ class Bundler {
       bundle.addAsset(asset);
       return new ModuleTransport({
         name,
-        id: this._getModuleId(module),
+        id: getModuleId(module),
         code,
         meta: meta,
         sourceCode: code,

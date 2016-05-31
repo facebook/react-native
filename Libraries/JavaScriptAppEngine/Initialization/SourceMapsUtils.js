@@ -12,15 +12,15 @@
 
 'use strict';
 
-var Promise = require('Promise');
-var NativeModules = require('NativeModules');
-var SourceMapConsumer = require('SourceMap').SourceMapConsumer;
-var SourceMapURL = require('./source-map-url');
+const Promise = require('Promise');
+const NativeModules = require('NativeModules');
+const SourceMapConsumer = require('SourceMap').SourceMapConsumer;
+const SourceMapURL = require('./source-map-url');
 
-var RCTSourceCode = NativeModules.SourceCode;
-var RCTNetworking = NativeModules.Networking;
+const RCTSourceCode = NativeModules.SourceCode;
+const RCTNetworking = NativeModules.Networking;
 
-var SourceMapsUtils = {
+const SourceMapsUtils = {
   fetchMainSourceMap(): Promise {
     return SourceMapsUtils._getMainSourceMapURL().then(url =>
       SourceMapsUtils.fetchSourceMap(url)
@@ -40,14 +40,14 @@ var SourceMapsUtils = {
     if (fullSourceMappingURL) {
       return fullSourceMappingURL;
     }
-    var mapURL = SourceMapURL.getFrom(text);
+    const mapURL = SourceMapURL.getFrom(text);
     if (!mapURL) {
       return null;
     }
     if (!url) {
       return null;
     }
-    var baseURLs = url.match(/(.+:\/\/.*?)\//);
+    const baseURLs = url.match(/(.+:\/\/.*?)\//);
     if (!baseURLs || baseURLs.length < 2) {
       return null;
     }
@@ -68,14 +68,20 @@ var SourceMapsUtils = {
       return Promise.reject(new Error('RCTNetworking module is not available'));
     }
 
-    return RCTSourceCode.getScriptText()
-      .then(SourceMapsUtils.extractSourceMapURL)
-      .then((url) => {
-        if (url === null) {
-          return Promise.reject(new Error('No source map URL found. May be running from bundled file.'));
-        }
-        return Promise.resolve(url);
-      });
+    const scriptText = RCTSourceCode.getScriptText();
+    if (scriptText) {
+      return scriptText
+        .then(SourceMapsUtils.extractSourceMapURL)
+        .then((url) => {
+          if (url === null) {
+            return Promise.reject(new Error('No source map URL found. May be running from bundled file.'));
+          }
+          return Promise.resolve(url);
+        });
+    } else {
+      // Running in mock-config mode
+      return Promise.reject(new Error('Couldn\'t fetch script text'));
+    }
   },
 };
 
