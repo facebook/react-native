@@ -28,7 +28,7 @@ Before cutting a release branch, make sure CI systems [Travis](https://travis-ci
 
 Before executing the following script, make sure you have:
 - An Android emulator / Genymotion device running
-- No packager running in any of the projects 
+- No packager running in any of the projects
 
 ```bash
 ./scripts/test-manual-e2e.sh
@@ -43,10 +43,10 @@ After `npm install` completes, the script prints a set of manual checks you have
 Run:
 
 ```bash
-git checkout -b <version_you_are_releasing>-stable 
+git checkout -b <version_you_are_releasing>-stable
 # e.g. git checkout -b 0.22-stable
 
-node ./scripts/bump-oss-version.js <exact-version_you_are_releasing> 
+node ./scripts/bump-oss-version.js <exact-version_you_are_releasing>
 # e.g. node ./scripts/bump-oss-version.js 0.22.0-rc
 
 git push origin <version_you_are_releasing>-stable --tags
@@ -68,7 +68,7 @@ https://github.com/facebook/react-native/compare/0.21-stable...0.22-stable
 
 **Note**: This only shows **250** commits, if there are more use git.
 
-When making a list of changes, ignore docs, showcase updates and minor typos. 
+When making a list of changes, ignore docs, showcase updates and minor typos.
 
 Sometimes commit messages might be really short / confusing - try rewording them where it makes sense. Below are few examples:
 - `Fix logging reported by RUN_JS_BUNDLE` -> `Fix systrace logging of RUN_JS_BUNDLE event`
@@ -90,7 +90,7 @@ A good way to do this is to create a github issue and post about it so people ca
 
 -------------------
 
-## How to release an RC update (e.g. 0.22.0-rc1, 0.22.0-rc2)
+## How to release an RC update (e.g. 0.28.0-rc.1, 0.28.0-rc.2)
 
 After cherry-picking 1-2 bug fixes, it is a good idea to do a new RC release so that people can test again. Having a few RC releases can also help people bisect in case we cherry-pick a bad commit by mistake.
 
@@ -111,10 +111,10 @@ git cherry-pick commitHash1
 If everything worked:
 
 ```bash
-node ./scripts/bump-oss-version.js <exact_version_you_are_releasing> 
-# e.g. node ./scripts/bump-oss-version.js 0.22.0-rc1
+node ./scripts/bump-oss-version.js <exact_version_you_are_releasing>
+# e.g. node ./scripts/bump-oss-version.js 0.28.0-rc.1
 
-git push origin version_you_are_releasing-stable --tags 
+git push origin version_you_are_releasing-stable --tags
 # e.g. git push origin 0.22-stable --tags
 ````
 
@@ -143,13 +143,13 @@ git cherry-pick commitHash1
 If everything worked:
 
 ```bash
-node ./scripts/bump-oss-version.js <exact_version_you_are_releasing> 
+node ./scripts/bump-oss-version.js <exact_version_you_are_releasing>
 # e.g. node ./scripts/bump-oss-version.js 0.22.0
 
 git tag -d latest
 git push origin :latest
 
-git tag latest 
+git tag latest
 # The latest tag marks when to regenerate the website.
 
 git push origin version_you_are_releasing-stable --tags  
