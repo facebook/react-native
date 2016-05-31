@@ -140,11 +140,32 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
                                           parentProperties:(NSDictionary<NSString *, id> *)parentProperties NS_REQUIRES_SUPER;
 
 /**
- * Recursively apply layout to children.
+ * Can be called by a parent on a child in order to calculate all views whose frame needs
+ * updating in that branch. Adds these frames to `viewsWithNewFrame`. Useful if layout
+ * enters a view where flex doesn't apply (e.g. Text) and then you want to resume flex
+ * layout on a subview.
+ */
+- (void)collectUpdatedFrames:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
+                   withFrame:(CGRect)frame
+                      hidden:(BOOL)hidden
+            absolutePosition:(CGPoint)absolutePosition;
+
+/**
+ * Apply the CSS layout.
+ * This method also calls `applyLayoutToChildren:` internally. The functionality
+ * is split into two methods so subclasses can override `applyLayoutToChildren:`
+ * while using default implementation of `applyLayoutNode:`.
  */
 - (void)applyLayoutNode:(css_node_t *)node
       viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
        absolutePosition:(CGPoint)absolutePosition NS_REQUIRES_SUPER;
+
+/**
+ * Enumerate the child nodes and tell them to apply layout.
+ */
+- (void)applyLayoutToChildren:(css_node_t *)node
+            viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
+             absolutePosition:(CGPoint)absolutePosition;
 
 /**
  * The following are implementation details exposed to subclasses. Do not call them directly

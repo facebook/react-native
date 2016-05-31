@@ -217,7 +217,6 @@
 		13E067501A70F44B002CDEE1 /* RCTView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTView.m; sourceTree = "<group>"; };
 		13E067531A70F44B002CDEE1 /* UIView+React.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+React.h"; sourceTree = "<group>"; };
 		13E067541A70F44B002CDEE1 /* UIView+React.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+React.m"; sourceTree = "<group>"; };
-		13EF7F441BC69646003F47DD /* RCTImageComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTImageComponent.h; sourceTree = "<group>"; };
 		13F17A831B8493E5007D4C75 /* RCTRedBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRedBox.h; sourceTree = "<group>"; };
 		13F17A841B8493E5007D4C75 /* RCTRedBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRedBox.m; sourceTree = "<group>"; };
 		14200DA81AC179B3008EE6BA /* RCTJavaScriptLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTJavaScriptLoader.h; sourceTree = "<group>"; };
@@ -388,7 +387,6 @@
 				13AB90BF1B6FA36700713B4F /* RCTComponentData.h */,
 				13456E941ADAD482009F94A7 /* RCTConvert+MapKit.h */,
 				13AB90C01B6FA36700713B4F /* RCTComponentData.m */,
-				13EF7F441BC69646003F47DD /* RCTImageComponent.h */,
 				13456E911ADAD2DE009F94A7 /* RCTConvert+CoreLocation.h */,
 				13456E921ADAD2DE009F94A7 /* RCTConvert+CoreLocation.m */,
 				13456E951ADAD482009F94A7 /* RCTConvert+MapKit.m */,
