@@ -97,6 +97,8 @@ NSArray *RCTPerformanceLoggerLabels(void)
       @"NativeModulePrepareConfig",
       @"NativeModuleInjectConfig",
       @"NativeModuleMainThreadUsesCount",
+      @"JSCWrapperOpenLibrary",
+      @"JSCWrapperLoadFunctions",
       @"JSCExecutorSetup",
       @"BridgeStartup",
       @"RootViewTTI",
