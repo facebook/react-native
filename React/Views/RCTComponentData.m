@@ -180,7 +180,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
           ((void (*)(id, SEL, id))objc_msgSend)(target, setter, [RCTConvert BOOL:json] ? ^(NSDictionary *body) {
             body = [NSMutableDictionary dictionaryWithDictionary:body];
             ((NSMutableDictionary *)body)[@"target"] = weakTarget.reactTag;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
             [weakManager.bridge.eventDispatcher sendInputEventWithName:RCTNormalizeInputEventName(name) body:body];
+#pragma clang diagnostic pop
           } : nil);
         };
 

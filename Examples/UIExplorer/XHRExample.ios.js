@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -21,7 +28,7 @@ var {
   AlertIOS,
   CameraRoll,
   Image,
-  LinkingIOS,
+  Linking,
   ProgressViewIOS,
   StyleSheet,
   Text,
@@ -215,7 +222,7 @@ class FormUploader extends React.Component {
         return;
       }
       var url = xhr.responseText.slice(index).split('\n')[0];
-      LinkingIOS.openURL(url);
+      Linking.openURL(url);
     };
     var formdata = new FormData();
     if (this.state.randomPhoto) {

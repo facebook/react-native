@@ -127,7 +127,7 @@ var DrawerLayoutAndroid = React.createClass({
      * - idle, meaning there is no interaction with the navigation view happening at the time
      * - dragging, meaning there is currently an interaction with the navigation view
      * - settling, meaning that there was an interaction with the navigation view, and the
-     * navigation view is now finishing it's closing or opening animation
+     * navigation view is now finishing its closing or opening animation
      */
     onDrawerStateChanged: ReactPropTypes.func,
     /**

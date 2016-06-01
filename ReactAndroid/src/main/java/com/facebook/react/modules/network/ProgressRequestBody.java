@@ -10,9 +10,9 @@
 package com.facebook.react.modules.network;
 
 import java.io.IOException;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.internal.Util;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.internal.Util;
 import okio.BufferedSink;
 import okio.Buffer;
 import okio.Sink;
@@ -28,8 +28,8 @@ public class ProgressRequestBody extends RequestBody {
   private BufferedSink mBufferedSink;
 
   public ProgressRequestBody(RequestBody requestBody, ProgressRequestListener progressListener) {
-      this.mRequestBody = requestBody;
-      this.mProgressListener = progressListener;
+      mRequestBody = requestBody;
+      mProgressListener = progressListener;
   }
 
   @Override

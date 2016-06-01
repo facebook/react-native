@@ -24,11 +24,12 @@
 @end
 
 @implementation AppDelegate
+
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   _bridge = [[RCTBridge alloc] initWithDelegate:self
                                   launchOptions:launchOptions];
-  
+
   // Appetizer.io params check
   NSDictionary *initProps = nil;
   NSString *_routeUri = [[NSUserDefaults standardUserDefaults] stringForKey:@"route"];
@@ -36,7 +37,7 @@
     initProps = @{@"exampleFromAppetizeParams":
                     [NSString stringWithFormat:@"rnuiexplorer://example/%@Example", _routeUri]};
   }
-  
+
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_bridge
                                                    moduleName:@"UIExplorerApp"
                                             initialProperties:initProps];
@@ -67,7 +68,7 @@
      * on the same Wi-Fi network.
      */
 
-    sourceURL = [NSURL URLWithString:@"http://localhost:8081/Examples/UIExplorer/UIExplorerApp.ios.bundle?platform=ios&dev=true"];
+    sourceURL = [NSURL URLWithString:@"http://10.177.174.43:8081/Examples/UIExplorer/UIExplorerApp.ios.bundle?platform=ios&dev=true"];
 
     /**
      * OPTION 2
@@ -81,9 +82,9 @@
 
   //  sourceURL = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 
-  #if RUNNING_ON_CI
+  if (!getenv("CI_USE_PACKAGER")) {
      sourceURL = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
-  #endif
+  }
 
   return sourceURL;
 }

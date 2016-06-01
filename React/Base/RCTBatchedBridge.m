@@ -111,11 +111,6 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   // Synchronously initialize all native modules that cannot be loaded lazily
   [self initModulesWithDispatchGroup:initModulesAndLoadSource];
 
-  if (RCTProfileIsProfiling()) {
-    // Depends on moduleDataByID being loaded
-    RCTProfileHookModules(self);
-  }
-
   __block NSString *config;
   dispatch_group_enter(initModulesAndLoadSource);
   dispatch_async(bridgeQueue, ^{
@@ -175,7 +170,18 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:withBlock:)]) {
     [self.delegate loadSourceForBridge:_parentBridge withBlock:onSourceLoad];
   } else if (self.bundleURL) {
-    [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onComplete:onSourceLoad];
+    [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onComplete:^(NSError *error, NSData *source) {
+      if (error && [self.delegate respondsToSelector:@selector(fallbackSourceURLForBridge:)]) {
+        NSURL *fallbackURL = [self.delegate fallbackSourceURLForBridge:_parentBridge];
+        if (fallbackURL && ![fallbackURL isEqual:self.bundleURL]) {
+          RCTLogError(@"Failed to load bundle(%@) with error:(%@)", self.bundleURL, error.localizedDescription);
+          self.bundleURL = fallbackURL;
+          [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onComplete:onSourceLoad];
+          return;
+        }
+      }
+      onSourceLoad(error, source);
+    }];
   } else {
     // Allow testing without a script
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -262,7 +268,8 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
       {
         if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule)))
         {
-          if (![moduleClasses containsObject:cls]) {
+          if (![moduleClasses containsObject:cls] &&
+              ![cls respondsToSelector:@selector(moduleName)]) {
             RCTLogWarn(@"Class %@ was not exported. Did you forget to use "
                        "RCT_EXPORT_MODULE()?", cls);
           }
@@ -308,7 +315,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
   // The executor is a bridge module, but we want it to be instantiated before
   // any other module has access to the bridge, in case they need the JS thread.
-  // TODO: once we have more fine-grained control of init (D3175632) we can
+  // TODO: once we have more fine-grained control of init (t11106126) we can
   // probably just replace this with [self moduleForClass:self.executorClass]
   if (!_javaScriptExecutor) {
     id<RCTJavaScriptExecutor> executorModule = [self.executorClass new];
@@ -478,7 +485,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
 #if RCT_DEV
 
-  if (RCTGetURLQueryParam(self.bundleURL, @"hot")) {
+  if ([RCTGetURLQueryParam(self.bundleURL, @"hot") boolValue]) {
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
     NSString *host = self.bundleURL.host;
     NSNumber *port = self.bundleURL.port;
@@ -668,7 +675,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
    * AnyThread
    */
 
-  RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBatchedBridge enqueueJSCall:]", nil);
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTBatchedBridge enqueueJSCall:]", nil);
 
   NSArray<NSString *> *ids = [moduleDotMethod componentsSeparatedByString:@"."];
 
@@ -696,7 +703,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     }
   }];
 
-  RCT_PROFILE_END_EVENT(0, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
 }
 
 /**
@@ -766,10 +773,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       return;
     }
 
-    RCT_PROFILE_BEGIN_EVENT(0, @"FetchApplicationScriptCallbacks", nil);
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"FetchApplicationScriptCallbacks", nil);
     [_javaScriptExecutor flushedQueue:^(id json, NSError *error)
      {
-       RCT_PROFILE_END_EVENT(0, @"js_call,init", @{
+       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call,init", @{
          @"json": RCTNullIfNil(json),
          @"error": RCTNullIfNil(error),
        });
@@ -893,7 +900,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
     dispatch_block_t block = ^{
       RCTProfileEndFlowEvent();
-      RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBatchedBridge handleBuffer:]", nil);
+      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTBatchedBridge handleBuffer:]", nil);
 
       NSOrderedSet *calls = [buckets objectForKey:queue];
       @autoreleasepool {
@@ -913,7 +920,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
         }
       }
 
-      RCT_PROFILE_END_EVENT(0, @"objc_call,dispatch_async", @{
+      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"objc_call,dispatch_async", @{
         @"calls": @(calls.count),
       });
     };

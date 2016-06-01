@@ -11,19 +11,14 @@
  */
 'use strict';
 
+const NativeEventEmitter = require('NativeEventEmitter');
+const NativeModules = require('NativeModules');
 const Platform = require('Platform');
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-const {
-  IntentAndroid,
-  LinkingManager: LinkingManagerIOS
-} = require('NativeModules');
-const LinkingManager = Platform.OS === 'android' ? IntentAndroid : LinkingManagerIOS;
+
 const invariant = require('fbjs/lib/invariant');
-const Map = require('Map');
 
-const _notifHandlers = new Map();
-
-const DEVICE_NOTIF_EVENT = 'openURL';
+const LinkingManager = Platform.OS === 'android' ?
+  NativeModules.IntentAndroid : NativeModules.LinkingManager;
 
 /**
  * `Linking` gives you a general interface to interact with both incoming
@@ -110,26 +105,23 @@ const DEVICE_NOTIF_EVENT = 'openURL';
  * }).catch(err => console.error('An error occurred', err));
  * ```
  */
-class Linking {
+class Linking extends NativeEventEmitter {
+  
+  constructor() {
+    super(LinkingManager); 
+  }
+  
   /**
    * Add a handler to Linking changes by listening to the `url` event type
    * and providing the handler
    *
    * @platform ios
    */
-  static addEventListener(type: string, handler: Function) {
+  addEventListener(type: string, handler: Function) {
     if (Platform.OS === 'android') {
-        console.warn('Linking.addEventListener is not supported on Android');
+      console.warn('Linking.addEventListener is not supported on Android');
     } else {
-      invariant(
-        type === 'url',
-        'Linking only supports `url` events'
-      );
-      var listener = RCTDeviceEventEmitter.addListener(
-        DEVICE_NOTIF_EVENT,
-        handler
-      );
-      _notifHandlers.set(handler, listener);
+      this.addListener(type, handler);
     }
   }
 
@@ -138,20 +130,11 @@ class Linking {
    *
    * @platform ios
    */
-  static removeEventListener(type: string, handler: Function ) {
+  removeEventListener(type: string, handler: Function ) {
     if (Platform.OS === 'android') {
-        console.warn('Linking.removeEventListener is not supported on Android');
+      console.warn('Linking.removeEventListener is not supported on Android');
     } else {
-      invariant(
-        type === 'url',
-        'Linking only supports `url` events'
-      );
-      var listener = _notifHandlers.get(handler);
-      if (!listener) {
-        return;
-      }
-      listener.remove();
-      _notifHandlers.delete(handler);
+      this.removeListener(type, handler);
     }
   }
 
@@ -166,7 +149,7 @@ class Linking {
    *
    * NOTE: For web URLs, the protocol ("http://", "https://") must be set accordingly!
    */
-  static openURL(url: string): Promise<boolean> {
+  openURL(url: string): Promise {
     this._validateURL(url);
     return LinkingManager.openURL(url);
   }
@@ -177,30 +160,26 @@ class Linking {
    * NOTE: For web URLs, the protocol ("http://", "https://") must be set accordingly!
    *
    * NOTE: As of iOS 9, your app needs to provide the `LSApplicationQueriesSchemes` key
-   * inside `Info.plist`.
+   * inside `Info.plist` or canOpenURL will always return false.
    *
    * @param URL the URL to open
    */
-  static canOpenURL(url: string): Promise<boolean> {
+  canOpenURL(url: string): Promise<boolean> {
     this._validateURL(url);
     return LinkingManager.canOpenURL(url);
   }
 
   /**
-   * If the app launch was triggered by an app link with,
+   * If the app launch was triggered by an app link,
    * it will give the link url, otherwise it will give `null`
    *
    * NOTE: To support deep linking on Android, refer http://developer.android.com/training/app-indexing/deep-linking.html#handling-intents
    */
-  static getInitialURL(): Promise<?string> {
-    if (Platform.OS === 'android') {
-      return IntentAndroid.getInitialURL();
-    } else {
-      return Promise.resolve(LinkingManagerIOS.initialURL);
-    }
+  getInitialURL(): Promise<?string> {
+    return LinkingManager.getInitialURL();
   }
 
-  static _validateURL(url: string) {
+  _validateURL(url: string) {
     invariant(
       typeof url === 'string',
       'Invalid URL: should be a string. Was: ' + url
@@ -212,4 +191,4 @@ class Linking {
   }
 }
 
-module.exports = Linking;
+module.exports = new Linking();

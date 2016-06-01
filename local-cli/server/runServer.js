@@ -20,6 +20,7 @@ const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInE
 const path = require('path');
 const ReactPackager = require('../../packager/react-packager');
 const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
+const indexPageMiddleware = require('./middleware/indexPage');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
@@ -36,6 +37,7 @@ function runServer(args, config, readyCallback) {
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
     .use(cpuProfilerMiddleware)
+    .use(indexPageMiddleware)
     .use(packagerServer.processRequest.bind(packagerServer));
 
   args.projectRoots.forEach(root => app.use(connect.static(root)));
@@ -78,6 +80,7 @@ function getPackagerServer(args, config) {
     cacheVersion: '3',
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
     transformModulePath: transformerPath,
+    extraNodeModules: config.extraNodeModules,
     assetRoots: args.assetRoots,
     assetExts: [
       'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'svg', 'webp', // Image formats
