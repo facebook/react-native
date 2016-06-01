@@ -13,6 +13,7 @@
 
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var ImageResizeMode = require('ImageResizeMode');
+var ImageSourcePropType = require('ImageSourcePropType');
 var ImageStylePropTypes = require('ImageStylePropTypes');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var NativeModules = require('NativeModules');
@@ -60,24 +61,32 @@ var Image = React.createClass({
   propTypes: {
     style: StyleSheetPropType(ImageStylePropTypes),
     /**
-     * `uri` is a string representing the resource identifier for the image, which
-     * could be an http address, a local file path, or the name of a static image
-     * resource (which should be wrapped in the `require('./path/to/image.png')` function).
+     * The image source (either a remote URL or a local file resource).
      */
-    source: PropTypes.oneOfType([
-      PropTypes.shape({
-        uri: PropTypes.string,
-      }),
-      // Opaque type returned by require('./image.jpg')
-      PropTypes.number,
-    ]),
+    source: ImageSourcePropType,
     /**
      * A static image to display while loading the image source.
      * @platform ios
      */
     defaultSource: PropTypes.oneOfType([
       PropTypes.shape({
+        /**
+         * `uri` is a string representing the resource identifier for the image, which
+         * should be either a local file path or the name of a static image resource
+         * (which should be wrapped in the `require('./path/to/image.png')` function).
+         */
         uri: PropTypes.string,
+        /**
+         * `width` and `height` can be specified if known at build time, in which case
+         * these will be used to set the default `<Image/>` component dimensions.
+         */
+        width: PropTypes.number,
+        height: PropTypes.number,
+        /**
+         * `scale` is used to indicate the scale factor of the image. Defaults to 1.0 if
+         * unspecified, meaning that one image pixel equates to one display point / DIP.
+         */
+        scale: PropTypes.number,
       }),
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
@@ -202,7 +211,7 @@ var Image = React.createClass({
   },
 
   render: function() {
-    var source = resolveAssetSource(this.props.source) || {};
+    var source = resolveAssetSource(this.props.source) || { uri: null, width: undefined, height: undefined };
     var {width, height, uri} = source;
     var style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
 
@@ -216,7 +225,11 @@ var Image = React.createClass({
     if (isNetwork && (tintColor || this.props.blurRadius)) {
       RawImage = RCTImageView;
     }
-
+    
+    if (uri === '') {
+      console.warn('source.uri should not be an empty string');
+    }
+    
     if (this.props.src) {
       console.warn('The <Image> component requires a `source` property rather than `src`.');
     }

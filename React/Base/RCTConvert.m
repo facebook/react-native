@@ -133,6 +133,23 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
     if ([method isEqualToString:@"GET"] && headers == nil && body == nil) {
       return [NSURLRequest requestWithURL:URL];
     }
+
+    if (headers) {
+      __block BOOL allHeadersAreStrings = YES;
+      [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id header, BOOL *stop) {
+        if (![header isKindOfClass:[NSString class]]) {
+          RCTLogError(@"Values of HTTP headers passed must be  of type string. "
+                      "Value of header '%@' is not a string.", key);
+          allHeadersAreStrings = NO;
+          *stop = YES;
+        }
+      }];
+      if (!allHeadersAreStrings) {
+        // Set headers to nil here to avoid crashing later.
+        headers = nil;
+      }
+    }
+
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
     request.HTTPBody = body;
     request.HTTPMethod = method;
@@ -878,7 +895,7 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
     return image;
   }
 
-  NSURL *URL = imageSource.imageURL;
+  NSURL *URL = imageSource.request.URL;
   NSString *scheme = URL.scheme.lowercaseString;
   if ([scheme isEqualToString:@"file"]) {
     NSString *assetName = RCTBundlePathForURL(URL);
@@ -914,7 +931,7 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
   if (!CGSizeEqualToSize(imageSource.size, CGSizeZero) &&
       !CGSizeEqualToSize(imageSource.size, image.size)) {
     RCTLogError(@"Image source %@ size %@ does not match loaded image size %@.",
-                imageSource.imageURL.path.lastPathComponent,
+                URL.path.lastPathComponent,
                 NSStringFromCGSize(imageSource.size),
                 NSStringFromCGSize(image.size));
   }
