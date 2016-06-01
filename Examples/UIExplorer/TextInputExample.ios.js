@@ -524,7 +524,7 @@ exports.examples = [
       return (
         <View>
           <WithLabel label="true">
-            <TextInput password={true} style={styles.default} defaultValue="abc" />
+            <TextInput secureTextEntry={true} style={styles.default} defaultValue="abc" />
           </WithLabel>
         </View>
       );
