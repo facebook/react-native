@@ -56,14 +56,14 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
  * Loads the specified image at the highest available resolution.
  * Can be called from any thread, will call back on an unspecified thread.
  */
-- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
                                            callback:(RCTImageLoaderCompletionBlock)callback;
 
 /**
  * As above, but includes target size, scale and resizeMode, which are used to
  * select the optimal dimensions for the loaded image.
  */
-- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
                                                size:(CGSize)size
                                               scale:(CGFloat)scale
                                          resizeMode:(RCTResizeMode)resizeMode
@@ -73,7 +73,7 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
 /**
  * Loads an image without clipping the result to fit - used by RCTImageView.
  */
-- (RCTImageLoaderCancellationBlock)loadImageWithoutClipping:(NSString *)imageTag
+- (RCTImageLoaderCancellationBlock)loadImageWithURLRequestWithoutClipping:(NSURLRequest *)imageURLRequest
                                                        size:(CGSize)size
                                                       scale:(CGFloat)scale
                                                  resizeMode:(RCTResizeMode)resizeMode
@@ -104,8 +104,32 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
  * Get image size, in pixels. This method will do the least work possible to get
  * the information, and won't decode the image if it doesn't have to.
  */
-- (RCTImageLoaderCancellationBlock)getImageSize:(NSString *)imageTag
+- (RCTImageLoaderCancellationBlock)getImageSizeForURLRequest:(NSURLRequest *)imageURLRequest
                                           block:(void(^)(NSError *error, CGSize size))completionBlock;
+
+@end
+
+@interface RCTImageLoader (Deprecated)
+
+- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+                                           callback:(RCTImageLoaderCompletionBlock)callback __deprecated;
+
+- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+                                               size:(CGSize)size
+                                              scale:(CGFloat)scale
+                                         resizeMode:(RCTResizeMode)resizeMode
+                                      progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock __deprecated;
+
+- (RCTImageLoaderCancellationBlock)loadImageWithoutClipping:(NSString *)imageTag
+                                                       size:(CGSize)size
+                                                      scale:(CGFloat)scale
+                                                 resizeMode:(RCTResizeMode)resizeMode
+                                              progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                            completionBlock:(RCTImageLoaderCompletionBlock)completionBlock __deprecated;
+
+- (RCTImageLoaderCancellationBlock)getImageSize:(NSString *)imageTag
+                                          block:(void(^)(NSError *error, CGSize size))completionBlock __deprecated;
 
 @end
 
