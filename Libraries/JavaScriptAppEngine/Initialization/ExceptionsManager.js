@@ -18,6 +18,7 @@ let exceptionID = 0;
  */
 function reportException(e: Error, isFatal: bool) {
   const parseErrorStack = require('parseErrorStack');
+  const symbolicateStackTrace = require('symbolicateStackTrace');
   const RCTExceptionsManager = require('NativeModules').ExceptionsManager;
 
   const currentExceptionID = ++exceptionID;
@@ -29,29 +30,14 @@ function reportException(e: Error, isFatal: bool) {
       RCTExceptionsManager.reportSoftException(e.message, stack, currentExceptionID);
     }
     if (__DEV__) {
-      symbolicateAndUpdateStack(currentExceptionID, e.message, stack);
+      symbolicateStackTrace(stack).then(
+        (prettyStack) =>
+          RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack, currentExceptionID),
+        (error) =>
+          console.warn('Unable to symbolicate stack trace: ' + error.message)
+      );
     }
   }
-}
-
-function symbolicateAndUpdateStack(id, message, stack) {
-  const getDevServer = require('getDevServer');
-  const {fetch} = require('fetch');
-  const {ExceptionsManager} = require('NativeModules');
-  const devServer = getDevServer();
-  if (!devServer.bundleLoadedFromServer) {
-    return;
-  }
-
-  fetch(devServer.url + 'symbolicate', { method: 'POST', body: JSON.stringify({stack}) })
-    .then(response => response.json())
-    .then(response =>
-      ExceptionsManager.updateExceptionMessage(message, response.stack, id))
-    .catch(error => {
-      // This can happen in a variety of normal situations, such as
-      // Network module not being available, or when running locally
-      console.warn('Unable to symbolicate stack trace: ' + error.message);
-    });
 }
 
 /**
