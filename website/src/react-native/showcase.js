@@ -396,6 +396,13 @@ var apps = [
     author: 'Genki Takiuchi (s21g Inc.)',
   },
   {
+    name: 'Dohop Flights',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple60/v4/3e/94/e9/3e94e9b3-f9a0-7b27-1824-b3da732ec967/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/dohop-flights-your-new-flight/id964170399',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.dohop',
+    author: 'Dohop',
+  },
+  {
     name: 'DONUT chatrooms for communities',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple49/v4/d4/2d/e5/d42de510-6802-2694-1b60-ca80ffa1e2cb/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/fr/app/donut-chat/id1067579321',
