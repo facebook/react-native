@@ -251,23 +251,6 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   size.height = [_textView sizeThatFits:size].height;
   _scrollView.contentSize = size;
   _textView.frame = (CGRect){CGPointZero, size};
-
-  NSUInteger textLength = _textView.text.length;
-  CGFloat contentHeight = _textView.contentSize.height;
-  if (textLength >= _previousTextLength) {
-    contentHeight = MAX(contentHeight, _previousContentHeight);
-  }
-  _previousTextLength = textLength;
-  _previousContentHeight = contentHeight;
-  _onChange(@{
-    @"text": self.text,
-    @"contentSize": @{
-      @"height": @(contentHeight),
-      @"width": @(_textView.contentSize.width)
-    },
-    @"target": self.reactTag,
-    @"eventCount": @(_nativeEventCount),
-  });
 }
 
 - (void)updatePlaceholder
@@ -492,6 +475,30 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   if (!self.reactTag || !_onChange) {
     return;
   }
+
+  // When the context size increases, iOS updates the contentSize twice; once
+  // with a lower height, then again with the correct height. To prevent a
+  // spurious event from being sent, we track the previous, and only send the
+  // update event if it matches our expectation that greater text length
+  // should result in increased height. This assumption is, of course, not
+  // necessarily true because shorter text might include more linebreaks, but
+  // in practice this works well enough.
+  NSUInteger textLength = textView.text.length;
+  CGFloat contentHeight = textView.contentSize.height;
+  if (textLength >= _previousTextLength) {
+    contentHeight = MAX(contentHeight, _previousContentHeight);
+  }
+  _previousTextLength = textLength;
+  _previousContentHeight = contentHeight;
+  _onChange(@{
+    @"text": self.text,
+    @"contentSize": @{
+      @"height": @(contentHeight),
+      @"width": @(textView.contentSize.width)
+    },
+    @"target": self.reactTag,
+    @"eventCount": @(_nativeEventCount),
+  });
 }
 
 - (void)textViewDidEndEditing:(UITextView *)textView
