@@ -45,7 +45,10 @@ var DatePickerIOS = React.createClass({
     /**
      * The currently selected date.
      */
-    date: PropTypes.instanceOf(Date).isRequired,
+    date: PropTypes.oneOfType([
+       PropTypes.instanceOf(Date),
+       PropTypes.number,
+    ]).isRequired,
 
     /**
      * Date change handler.
@@ -61,14 +64,20 @@ var DatePickerIOS = React.createClass({
      *
      * Restricts the range of possible date/time values.
      */
-    maximumDate: PropTypes.instanceOf(Date),
+    maximumDate: PropTypes.oneOfType([
+       PropTypes.instanceOf(Date),
+       PropTypes.number,
+    ]),
 
     /**
      * Minimum date.
      *
      * Restricts the range of possible date/time values.
      */
-    minimumDate: PropTypes.instanceOf(Date),
+    minimumDate: PropTypes.oneOfType([
+       PropTypes.instanceOf(Date),
+       PropTypes.number,
+    ]),
 
     /**
      * The date picker mode.
@@ -107,7 +116,8 @@ var DatePickerIOS = React.createClass({
     // prop. That way they can also disallow/undo/mutate the selection of
     // certain values. In other words, the embedder of this component should
     // be the source of truth, not the native component.
-    var propsTimeStamp = this.props.date.getTime();
+    const { date } = this.props;
+    var propsTimeStamp = ( date && typeof date !== 'number' ? date.getTime() : date );
     if (this._picker && nativeTimeStamp !== propsTimeStamp) {
       this._picker.setNativeProps({
         date: propsTimeStamp,
@@ -117,22 +127,32 @@ var DatePickerIOS = React.createClass({
 
   render: function() {
     var props = this.props;
+
+    if (props.date && typeof props.date !== 'number') {
+      props.date = props.date.getTime();
+    }
+    if (props.minimumDate && typeof props.minimumDate !== 'number') {
+      props.minimumDate = props.minimumDate.getTime();
+    }
+    if (props.maximumDate && typeof props.maximumDate !== 'number') {
+      props.maximumDate = props.maximumDate.getTime();
+    }
+
     return (
       <View style={props.style}>
         <RCTDatePickerIOS
           ref={ picker => this._picker = picker }
           style={styles.datePickerIOS}
-          date={props.date.getTime()}
-          maximumDate={
-            props.maximumDate ? props.maximumDate.getTime() : undefined
-          }
-          minimumDate={
-            props.minimumDate ? props.minimumDate.getTime() : undefined
-          }
+          date={props.date}
+          maximumDate={props.maximumDate}
+          minimumDate={props.minimumDate}
           mode={props.mode}
           minuteInterval={props.minuteInterval}
           timeZoneOffsetInMinutes={props.timeZoneOffsetInMinutes}
           onChange={this._onChange}
+          onDateChange={() => {
+            //Do nothing, just remove warn of unset function
+          }}
         />
       </View>
     );
