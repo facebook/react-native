@@ -171,6 +171,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       event.putString("title", webView.getTitle());
       event.putBoolean("canGoBack", webView.canGoBack());
       event.putBoolean("canGoForward", webView.canGoForward());
+      event.putBoolean("contentHeight", webView.getContentHeight*webView.getScale());
+      event.putBoolean("contentWidth", webView.getContentWidth*webView.getScale());
       return event;
     }
   }
