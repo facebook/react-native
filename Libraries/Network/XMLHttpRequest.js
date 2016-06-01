@@ -212,22 +212,6 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   // exposed for testing
   __didCreateRequest(requestId: number): void {
     this._requestId = requestId;
-    this._subscriptions.push(RCTNetworking.addListener(
-      'didSendNetworkData',
-      (args) => this.__didUploadProgress(...args)
-    ));
-    this._subscriptions.push(RCTNetworking.addListener(
-      'didReceiveNetworkResponse',
-      (args) => this._didReceiveResponse(...args)
-    ));
-    this._subscriptions.push(RCTNetworking.addListener(
-      'didReceiveNetworkData',
-      (args) =>  this._didReceiveData(...args)
-    ));
-    this._subscriptions.push(RCTNetworking.addListener(
-      'didCompleteNetworkResponse',
-      (args) => this.__didCompleteResponse(...args)
-    ));
   }
 
   // exposed for testing
@@ -340,6 +324,22 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     useIncrementalUpdates: boolean,
     timeout: number,
   ): void {
+    this._subscriptions.push(RCTNetworking.addListener(
+      'didSendNetworkData',
+      (args) => this.__didUploadProgress(...args)
+    ));
+    this._subscriptions.push(RCTNetworking.addListener(
+      'didReceiveNetworkResponse',
+      (args) => this._didReceiveResponse(...args)
+    ));
+    this._subscriptions.push(RCTNetworking.addListener(
+      'didReceiveNetworkData',
+      (args) =>  this._didReceiveData(...args)
+    ));
+    this._subscriptions.push(RCTNetworking.addListener(
+      'didCompleteNetworkResponse',
+      (args) => this.__didCompleteResponse(...args)
+    ));
     RCTNetworking.sendRequest(
       method,
       url,
