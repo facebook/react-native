@@ -13,13 +13,13 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var PropTypes = require('ReactPropTypes');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var View = require('View');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const PropTypes = require('ReactPropTypes');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const View = require('View');
 
-var requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('requireNativeComponent');
 
 type DefaultProps = {
   mode: 'date' | 'time' | 'datetime';
@@ -34,7 +34,7 @@ type Event = Object;
  * the user's change will be reverted immediately to reflect `props.date` as the
  * source of truth.
  */
-var DatePickerIOS = React.createClass({
+const DatePickerIOS = React.createClass({
   // TOOD: Put a better type for _picker
   _picker: (undefined: ?$FlowFixMe),
 
@@ -97,7 +97,7 @@ var DatePickerIOS = React.createClass({
   },
 
   _onChange: function(event: Event) {
-    var nativeTimeStamp = event.nativeEvent.timestamp;
+    const nativeTimeStamp = event.nativeEvent.timestamp;
     this.props.onDateChange && this.props.onDateChange(
       new Date(nativeTimeStamp)
     );
@@ -107,7 +107,7 @@ var DatePickerIOS = React.createClass({
     // prop. That way they can also disallow/undo/mutate the selection of
     // certain values. In other words, the embedder of this component should
     // be the source of truth, not the native component.
-    var propsTimeStamp = this.props.date.getTime();
+    const propsTimeStamp = this.props.date.getTime();
     if (this._picker && nativeTimeStamp !== propsTimeStamp) {
       this._picker.setNativeProps({
         date: propsTimeStamp,
@@ -116,11 +116,11 @@ var DatePickerIOS = React.createClass({
   },
 
   render: function() {
-    var props = this.props;
+    const props = this.props;
     return (
       <View style={props.style}>
         <RCTDatePickerIOS
-          ref={ picker => this._picker = picker }
+          ref={ picker => { this._picker = picker; } }
           style={styles.datePickerIOS}
           date={props.date.getTime()}
           maximumDate={
@@ -139,10 +139,9 @@ var DatePickerIOS = React.createClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   datePickerIOS: {
     height: 216,
-    width: 320,
   },
 });
 
