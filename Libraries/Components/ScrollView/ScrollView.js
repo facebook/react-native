@@ -24,7 +24,6 @@ const StyleSheetPropType = require('StyleSheetPropType');
 const View = require('View');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
-const deprecatedPropType = require('deprecatedPropType');
 const dismissKeyboard = require('dismissKeyboard');
 const flattenStyle = require('flattenStyle');
 const invariant = require('fbjs/lib/invariant');
@@ -312,14 +311,6 @@ const ScrollView = React.createClass({
     refreshControl: PropTypes.element,
 
     /**
-     * @platform ios
-     */
-    onRefreshStart: deprecatedPropType(
-      PropTypes.func,
-      'Use the `refreshControl` prop instead.'
-    ),
-
-    /**
      * Sometimes a scrollview takes up more space than its content fills. When this is
      * the case, this prop will fill the rest of the scrollview with a color to avoid setting
      * a background and creating unnecessary overdraw. This is an advanced optimization
@@ -346,15 +337,6 @@ const ScrollView = React.createClass({
 
   setNativeProps: function(props: Object) {
     this._scrollViewRef && this._scrollViewRef.setNativeProps(props);
-  },
-
-  /**
-   * Deprecated. Use `RefreshControl` instead.
-   */
-  endRefreshing: function() {
-    RCTScrollViewManager.endRefreshing(
-      ReactNative.findNodeHandle(this)
-    );
   },
 
   /**
@@ -509,14 +491,6 @@ const ScrollView = React.createClass({
       onResponderReject: this.scrollResponderHandleResponderReject,
       sendMomentumEvents: (this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd) ? true : false,
     };
-
-    const onRefreshStart = this.props.onRefreshStart;
-    if (onRefreshStart) {
-      // this is necessary because if we set it on props, even when empty,
-      // it'll trigger the default pull-to-refresh behavior on native.
-      props.onRefreshStart =
-        function() { onRefreshStart && onRefreshStart(this.endRefreshing); }.bind(this);
-    }
 
     const { decelerationRate } = this.props;
     if (decelerationRate) {

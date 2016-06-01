@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule NavigationTabsReducer
- * @flow
+ * @flow-broken
  */
 'use strict';
 
@@ -44,7 +44,7 @@ function NavigationTabsReducer({key, initialIndex, tabReducers}: TabsReducerConf
   return function(lastNavState: ?NavigationRoute, action: ?any): NavigationRoute {
     if (!lastNavState) {
       lastNavState = {
-        children: tabReducers.map(reducer => reducer(null, null)),
+        routes: tabReducers.map(reducer => reducer(null, null)),
         index: initialIndex || 0,
         key,
       };
@@ -68,10 +68,10 @@ function NavigationTabsReducer({key, initialIndex, tabReducers}: TabsReducerConf
           return lastParentNavState;
         }
         const parentState = NavigationStateUtils.getParent(navState);
-        const tabState = parentState && parentState.children[tabIndex];
+        const tabState = parentState && parentState.routes[tabIndex];
         const nextTabState = tabReducer(tabState, tabAction);
         if (nextTabState && tabState !== nextTabState) {
-          const tabs = parentState && parentState.children || [];
+          const tabs = parentState && parentState.routes || [];
           tabs[tabIndex] = nextTabState;
           return {
             ...lastParentNavState,

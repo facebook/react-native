@@ -12,6 +12,7 @@
 'use strict';
 
 const invariant = require('fbjs/lib/invariant');
+const shallowEqual = require('fbjs/lib/shallowEqual');
 
 import type {
   NavigationRoute,
@@ -55,6 +56,9 @@ function compareScenes(
   );
 }
 
+/**
+ * Whether two routes are the same.
+ */
 function areScenesShallowEqual(
   one: NavigationScene,
   two: NavigationScene,
@@ -63,9 +67,26 @@ function areScenesShallowEqual(
     one.key === two.key &&
     one.index === two.index &&
     one.isStale === two.isStale &&
-    one.route === two.route &&
-    one.route.key === two.route.key
+    areRoutesShallowEqual(one.route, two.route)
   );
+}
+
+/**
+ * Whether two routes are the same.
+ */
+function areRoutesShallowEqual(
+  one: ?NavigationRoute,
+  two: ?NavigationRoute,
+): boolean {
+  if (!one || !two) {
+    return one === two;
+  }
+
+  if (one.key !== two.key) {
+    return false;
+  }
+
+  return shallowEqual(one, two);
 }
 
 function NavigationScenesReducer(
@@ -91,7 +112,7 @@ function NavigationScenesReducer(
   });
 
   const nextKeys = new Set();
-  nextState.children.forEach((route, index) => {
+  nextState.routes.forEach((route, index) => {
     const key = SCENE_KEY_PREFIX + route.key;
     const scene = {
       index,
@@ -101,8 +122,8 @@ function NavigationScenesReducer(
     };
     invariant(
       !nextKeys.has(key),
-      `navigationState.children[${index}].key "${key}" conflicts with` +
-        'another child!'
+      `navigationState.routes[${index}].key "${key}" conflicts with` +
+        'another route!'
     );
     nextKeys.add(key);
 
@@ -115,8 +136,8 @@ function NavigationScenesReducer(
   });
 
   if (prevState) {
-    // Look at the previous children and classify any removed scenes as `stale`.
-    prevState.children.forEach((route: NavigationRoute, index) => {
+    // Look at the previous routes and classify any removed scenes as `stale`.
+    prevState.routes.forEach((route: NavigationRoute, index) => {
       const key = SCENE_KEY_PREFIX + route.key;
       if (freshScenes.has(key)) {
         return;
@@ -147,7 +168,20 @@ function NavigationScenesReducer(
   staleScenes.forEach(mergeScene);
   freshScenes.forEach(mergeScene);
 
-  return nextScenes.sort(compareScenes);
+  nextScenes.sort(compareScenes);
+
+  if (nextScenes.length !== scenes.length) {
+    return nextScenes;
+  }
+
+  if (nextScenes.some(
+    (scene, index) => !areScenesShallowEqual(scenes[index], scene)
+  )) {
+    return nextScenes;
+  }
+
+  // scenes haven't changed.
+  return scenes;
 }
 
 module.exports = NavigationScenesReducer;

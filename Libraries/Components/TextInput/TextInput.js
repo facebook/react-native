@@ -366,8 +366,10 @@ var TextInput = React.createClass({
   },
 
   _focusSubscription: (undefined: ?Function),
+  _lastNativeText: (undefined: ?string),
 
   componentDidMount: function() {
+    this._lastNativeText = this.props.value;
     if (!this.context.focusEmitter) {
       if (this.props.autoFocus) {
         this.requestAnimationFrame(this.focus);
@@ -613,10 +615,15 @@ var TextInput = React.createClass({
       return;
     }
 
+    this._lastNativeText = text;
+    this.forceUpdate();
+  },
+
+  componentDidUpdate: function () {
     // This is necessary in case native updates the text and JS decides
     // that the update should be ignored and we should stick with the value
     // that we have in JS.
-    if (text !== this.props.value && typeof this.props.value === 'string') {
+    if (this._lastNativeText !== this.props.value && typeof this.props.value === 'string') {
       this.refs.input.setNativeProps({
         text: this.props.value,
       });

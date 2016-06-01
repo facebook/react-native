@@ -26,9 +26,8 @@ export type NavigationRoute = {
 };
 
 export type NavigationState = {
-  key: string,
   index: number,
-  children: Array<NavigationRoute>,
+  routes: Array<NavigationRoute>,
 };
 
 export type NavigationAction = any;
@@ -109,7 +108,7 @@ export type NavigationAnimationSetter = (
 export type NavigationRenderer = (
   navigationState: ?NavigationRoute,
   onNavigate: NavigationActionCaller,
-) => ReactElement;
+) => ReactElement<any>;
 
 export type NavigationReducer = (
   state: ?NavigationRoute,
@@ -118,7 +117,7 @@ export type NavigationReducer = (
 
 export type NavigationSceneRenderer = (
   props: NavigationSceneRendererProps,
-) => ?ReactElement;
+) => ?ReactElement<any>;
 
 export type NavigationStyleInterpolator = (
   props: NavigationSceneRendererProps,

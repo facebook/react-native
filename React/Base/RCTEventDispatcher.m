@@ -126,7 +126,10 @@ RCT_EXPORT_MODULE()
     body[@"key"] = key;
   }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [self sendInputEventWithName:events[type] body:body];
+#pragma clang diagnostic pop
 }
 
 - (void)sendEvent:(id<RCTEvent>)event

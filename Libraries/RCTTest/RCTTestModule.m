@@ -52,7 +52,10 @@ RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
 
 RCT_EXPORT_METHOD(sendAppEvent:(NSString *)name body:(nullable id)body)
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [_bridge.eventDispatcher sendAppEventWithName:name body:body];
+#pragma clang diagnostic pop
 }
 
 RCT_REMAP_METHOD(shouldResolve, shouldResolve_resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)

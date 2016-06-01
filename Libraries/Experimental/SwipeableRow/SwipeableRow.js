@@ -37,6 +37,8 @@ const emptyFunction = require('emptyFunction');
 const CLOSED_LEFT_POSITION = 0;
 // Minimum swipe distance before we recognize it as such
 const HORIZONTAL_SWIPE_DISTANCE_THRESHOLD = 15;
+// Time, in milliseconds, of how long the animated swipe should be
+const SWIPE_DURATION = 200;
 
 /**
  * Creates a swipable row that allows taps on the main item and a custom View
@@ -113,7 +115,7 @@ const SwipeableRow = React.createClass({
     }
   },
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     // The view hidden behind the main view
     let slideOutView;
     if (this.state.isSwipeableViewRendered) {
@@ -164,7 +166,7 @@ const SwipeableRow = React.createClass({
     gestureState: Object,
   ): boolean {
     // Decides whether a swipe is responded to by this component or its child
-    return  gestureState.dy < 10 && this._isValidSwipe(gestureState);
+    return gestureState.dy < 10 && this._isValidSwipe(gestureState);
   },
 
   _handlePanResponderGrant(event: Object, gestureState: Object): void {
@@ -173,7 +175,14 @@ const SwipeableRow = React.createClass({
 
   _handlePanResponderMove(event: Object, gestureState: Object): void {
     this.props.onSwipeStart();
-    this.state.currentLeft.setValue(this._previousLeft + gestureState.dx);
+
+    if (!this._isSwipingRightFromClosedPosition(gestureState)) {
+      this.state.currentLeft.setValue(this._previousLeft + gestureState.dx);
+    }
+  },
+
+  _isSwipingRightFromClosedPosition(gestureState: Object): boolean {
+    return this._previousLeft === CLOSED_LEFT_POSITION && gestureState.dx > 0;
   },
 
   _onPanResponderTerminationRequest(event: Object, gestureState: Object): boolean {
@@ -184,6 +193,7 @@ const SwipeableRow = React.createClass({
     Animated.timing(
       this.state.currentLeft,
       {
+        duration: SWIPE_DURATION,
         toValue: toValue,
       },
     ).start(() => {

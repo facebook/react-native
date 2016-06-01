@@ -913,8 +913,10 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
 
   if (!CGSizeEqualToSize(imageSource.size, CGSizeZero) &&
       !CGSizeEqualToSize(imageSource.size, image.size)) {
-    RCTLogError(@"Image source size %@ does not match loaded image size %@.",
-                NSStringFromCGSize(imageSource.size), NSStringFromCGSize(image.size));
+    RCTLogError(@"Image source %@ size %@ does not match loaded image size %@.",
+                imageSource.imageURL.path.lastPathComponent,
+                NSStringFromCGSize(imageSource.size),
+                NSStringFromCGSize(image.size));
   }
 
   return image;

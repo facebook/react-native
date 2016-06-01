@@ -107,7 +107,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
     XCTAssertEqualObjects(decodedImage, image);
     XCTAssertNil(decodeError);
   }];
-  XCTAssertNil(cancelBlock);
+  XCTAssertNotNil(cancelBlock);
 }
 
 - (void)testImageLoaderUsesImageDecoderWithHighestPriority
@@ -136,7 +136,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
     XCTAssertEqualObjects(decodedImage, image);
     XCTAssertNil(decodeError);
   }];
-  XCTAssertNil(cancelBlock);
+  XCTAssertNotNil(cancelBlock);
 }
 
 @end

@@ -43,8 +43,7 @@ const navigationRoute = PropTypes.shape({
 /* navigationRoute  */
 const navigationState = PropTypes.shape({
   index: PropTypes.number.isRequired,
-  key: PropTypes.string.isRequired,
-  children: PropTypes.arrayOf(navigationRoute),
+  routes: PropTypes.arrayOf(navigationRoute),
 });
 
 /* NavigationLayout */
