@@ -9,7 +9,7 @@
 
 package com.facebook.react.bridge;
 
-import com.facebook.jni.Countable;
+import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 
@@ -25,6 +25,10 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
 
   static {
     SoLoader.loadLibrary(ReactBridge.REACT_NATIVE_LIB);
+  }
+
+  protected ReadableNativeMap(HybridData hybridData) {
+    super(hybridData);
   }
 
   @Override
@@ -51,7 +55,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     return new ReadableNativeMapKeySetIterator(this);
   }
 
-  public HashMap<String, Object>toHashMap() {
+  public HashMap<String, Object> toHashMap() {
     ReadableMapKeySetIterator iterator = keySetIterator();
     HashMap<String, Object> hashMap = new HashMap<>();
 
@@ -87,14 +91,17 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
    * Implementation of a {@link ReadableNativeMap} iterator in native memory.
    */
   @DoNotStrip
-  private static class ReadableNativeMapKeySetIterator extends Countable
-      implements ReadableMapKeySetIterator {
+  private static class ReadableNativeMapKeySetIterator implements ReadableMapKeySetIterator {
+    @DoNotStrip
+    private final HybridData mHybridData;
 
-    private final ReadableNativeMap mReadableNativeMap;
+    // Need to hold a strong ref to the map so that our native references remain valid.
+    @DoNotStrip
+    private final ReadableNativeMap mMap;
 
     public ReadableNativeMapKeySetIterator(ReadableNativeMap readableNativeMap) {
-      mReadableNativeMap = readableNativeMap;
-      initialize(mReadableNativeMap);
+      mMap = readableNativeMap;
+      mHybridData = initHybrid(readableNativeMap);
     }
 
     @Override
@@ -102,6 +109,6 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     @Override
     public native String nextKey();
 
-    private native void initialize(ReadableNativeMap readableNativeMap);
+    private static native HybridData initHybrid(ReadableNativeMap readableNativeMap);
   }
 }
