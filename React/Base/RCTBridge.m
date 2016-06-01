@@ -172,6 +172,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                                       userInfo:nil];
   }];
 
+
+  [commands registerDoublePressKeyCommandWithInput:@"r"
+                          modifierFlags:0
+                                 action:^(__unused UIKeyCommand *command) {
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
+                                                        object:nil
+                                                      userInfo:nil];
+  }];
+
 #endif
 }
 
