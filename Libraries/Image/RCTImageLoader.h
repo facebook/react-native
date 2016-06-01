@@ -56,56 +56,85 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
  * Loads the specified image at the highest available resolution.
  * Can be called from any thread, will call back on an unspecified thread.
  */
-- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
-                                           callback:(RCTImageLoaderCompletionBlock)callback;
+- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+                                                  callback:(RCTImageLoaderCompletionBlock)callback;
 
 /**
- * As above, but includes target size, scale and resizeMode, which are used to
- * select the optimal dimensions for the loaded image.
+ * As above, but includes target `size`, `scale` and `resizeMode`, which are used to
+ * select the optimal dimensions for the loaded image. The `clipped` option
+ * controls whether the image will be clipped to fit the specified size exactly,
+ * or if the original aspect ratio should be retained.
  */
-- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
-                                               size:(CGSize)size
-                                              scale:(CGFloat)scale
-                                         resizeMode:(RCTResizeMode)resizeMode
-                                      progressBlock:(RCTImageLoaderProgressBlock)progressBlock
-                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
+- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+                                                      size:(CGSize)size
+                                                     scale:(CGFloat)scale
+                                                   clipped:(BOOL)clipped
+                                                resizeMode:(RCTResizeMode)resizeMode
+                                             progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                           completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
 
 /**
- * Loads an image without clipping the result to fit - used by RCTImageView.
- */
-- (RCTImageLoaderCancellationBlock)loadImageWithoutClipping:(NSString *)imageTag
-                                                       size:(CGSize)size
-                                                      scale:(CGFloat)scale
-                                                 resizeMode:(RCTResizeMode)resizeMode
-                                              progressBlock:(RCTImageLoaderProgressBlock)progressBlock
-                                            completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
-
-/**
- * Finds an appropriate image decoder and passes the target size, scale and
- * resizeMode for optimal image decoding. Can be called from any thread,
- * will call callback on an unspecified thread.
+ * Finds an appropriate image decoder and passes the target `size`, `scale` and
+ * `resizeMode` for optimal image decoding.  The `clipped` option controls
+ * whether the image will be clipped to fit the specified size exactly, or
+ * if the original aspect ratio should be retained. Can be called from any
+ * thread, will call callback on an unspecified thread.
  */
 - (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData
                                               size:(CGSize)size
                                              scale:(CGFloat)scale
+                                           clipped:(BOOL)clipped
                                         resizeMode:(RCTResizeMode)resizeMode
                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
-
-/**
- * Decodes an image without clipping the result to fit.
- */
-- (RCTImageLoaderCancellationBlock)decodeImageDataWithoutClipping:(NSData *)data
-                                                             size:(CGSize)size
-                                                            scale:(CGFloat)scale
-                                                       resizeMode:(RCTResizeMode)resizeMode
-                                                  completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
 
 /**
  * Get image size, in pixels. This method will do the least work possible to get
  * the information, and won't decode the image if it doesn't have to.
  */
+- (RCTImageLoaderCancellationBlock)getImageSizeForURLRequest:(NSURLRequest *)imageURLRequest
+                                                       block:(void(^)(NSError *error, CGSize size))completionBlock;
+
+@end
+
+@interface RCTImageLoader (Deprecated)
+
+- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+                                           callback:(RCTImageLoaderCompletionBlock)callback
+__deprecated_msg("Use loadImageWithURLRequest:callback: instead");
+
+- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+                                               size:(CGSize)size
+                                              scale:(CGFloat)scale
+                                         resizeMode:(RCTResizeMode)resizeMode
+                                      progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
+__deprecated_msg("Use loadImageWithURLRequest:size:scale:clipped:resizeMode:progressBlock:completionBlock: instead");
+
+- (RCTImageLoaderCancellationBlock)loadImageWithoutClipping:(NSString *)imageTag
+                                                       size:(CGSize)size
+                                                      scale:(CGFloat)scale
+                                                 resizeMode:(RCTResizeMode)resizeMode
+                                              progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                            completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
+__deprecated_msg("Use loadImageWithURLRequest:size:scale:clipped:resizeMode:progressBlock:completionBlock: instead");
+
+- (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData
+                                              size:(CGSize)size
+                                             scale:(CGFloat)scale
+                                        resizeMode:(RCTResizeMode)resizeMode
+                                   completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
+__deprecated_msg("Use decodeImageData:size:scale:clipped:resizeMode:completionBlock: instead");
+
+- (RCTImageLoaderCancellationBlock)decodeImageDataWithoutClipping:(NSData *)data
+                                                             size:(CGSize)size
+                                                            scale:(CGFloat)scale
+                                                       resizeMode:(RCTResizeMode)resizeMode
+                                                  completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
+__deprecated_msg("Use decodeImageData:size:scale:clipped:resizeMode:completionBlock: instead");
+
 - (RCTImageLoaderCancellationBlock)getImageSize:(NSString *)imageTag
-                                          block:(void(^)(NSError *error, CGSize size))completionBlock;
+                                          block:(void(^)(NSError *error, CGSize size))completionBlock
+__deprecated_msg("Use getImageSizeWithURLRequest:callback: instead");
 
 @end
 

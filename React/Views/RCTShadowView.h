@@ -151,17 +151,18 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
             absolutePosition:(CGPoint)absolutePosition;
 
 /**
- * Recursively apply layout to children.
- * The job of applyLayoutNode:viewsWithNewFrame:absolutePosition is to apply the layout to
- * this node.
- * The job of applyLayoutToChildren:viewsWithNewFrame:absolutePosition is to enumerate the
- * children and tell them to apply layout.
- * The functionality is split into two methods so subclasses can override applyLayoutToChildren
- * while using the default implementation of applyLayoutNode.
+ * Apply the CSS layout.
+ * This method also calls `applyLayoutToChildren:` internally. The functionality
+ * is split into two methods so subclasses can override `applyLayoutToChildren:`
+ * while using default implementation of `applyLayoutNode:`.
  */
 - (void)applyLayoutNode:(css_node_t *)node
       viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
        absolutePosition:(CGPoint)absolutePosition NS_REQUIRES_SUPER;
+
+/**
+ * Enumerate the child nodes and tell them to apply layout.
+ */
 - (void)applyLayoutToChildren:(css_node_t *)node
             viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
              absolutePosition:(CGPoint)absolutePosition;

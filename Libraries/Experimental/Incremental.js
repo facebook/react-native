@@ -152,7 +152,7 @@ class Incremental extends React.Component<DefaultProps, Props, State> {
     }).done();
   }
 
-  render(): ?ReactElement {
+  render(): ?ReactElement<any> {
     if (this._rendered || // Make sure that once we render once, we stay rendered even if incrementalGroupEnabled gets flipped.
         !this.context.incrementalGroupEnabled ||
         this.state.doIncrementalRender) {

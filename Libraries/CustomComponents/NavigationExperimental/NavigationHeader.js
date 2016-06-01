@@ -119,7 +119,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     );
   }
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     const { scenes, style, viewProps } = this.props;
 
     const scenesProps = scenes.map(scene => {
@@ -137,7 +137,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     );
   }
 
-  _renderLeft(props: NavigationSceneRendererProps): ?ReactElement {
+  _renderLeft(props: NavigationSceneRendererProps): ?ReactElement<any> {
     return this._renderSubView(
       props,
       'left',
@@ -146,7 +146,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     );
   }
 
-  _renderTitle(props: NavigationSceneRendererProps): ?ReactElement {
+  _renderTitle(props: NavigationSceneRendererProps): ?ReactElement<any> {
     return this._renderSubView(
       props,
       'title',
@@ -155,7 +155,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     );
   }
 
-  _renderRight(props: NavigationSceneRendererProps): ?ReactElement {
+  _renderRight(props: NavigationSceneRendererProps): ?ReactElement<any> {
     return this._renderSubView(
       props,
       'right',
@@ -169,7 +169,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     name: SubViewName,
     renderer: NavigationSceneRenderer,
     styleInterpolator: NavigationStyleInterpolator,
-  ): ?ReactElement {
+  ): ?ReactElement<any> {
     const {
       scene,
       navigationState,

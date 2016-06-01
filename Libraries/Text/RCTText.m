@@ -18,7 +18,7 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
   for (UIView *child in view.reactSubviews) {
     if ([child isKindOfClass:[RCTText class]]) {
       collectNonTextDescendants((RCTText *)child, nonTextDescendants);
-    } else {
+    } else if (!CGRectEqualToRect(child.frame, CGRectZero)) {
       [nonTextDescendants addObject:child];
     }
   }
@@ -87,6 +87,21 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
 {
   if (_textStorage != textStorage) {
     _textStorage = textStorage;
+
+    NSMutableArray *nonTextDescendants = [NSMutableArray new];
+    collectNonTextDescendants(self, nonTextDescendants);
+    NSArray *subviews = self.subviews;
+    if (![subviews isEqualToArray:nonTextDescendants]) {
+      for (UIView *child in subviews) {
+        if (![nonTextDescendants containsObject:child]) {
+          [child removeFromSuperview];
+        }
+      }
+      for (UIView *child in nonTextDescendants) {
+        [self addSubview:child];
+      }
+    }
+
     [self setNeedsDisplay];
   }
 }
@@ -129,15 +144,6 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
   } else {
     [_highlightLayer removeFromSuperlayer];
     _highlightLayer = nil;
-  }
-
-  for (UIView *child in [self subviews]) {
-    [child removeFromSuperview];
-  }
-  NSMutableArray *nonTextDescendants = [NSMutableArray new];
-  collectNonTextDescendants(self, nonTextDescendants);
-  for (UIView *child in nonTextDescendants) {
-    [self addSubview:child];
   }
 }
 

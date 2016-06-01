@@ -124,7 +124,7 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "15.1.0-alpha.1"
+    "react": "^15.1.0"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -136,7 +136,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.6.5",
     "babel-polyfill": "^6.6.1",
     "babel-preset-es2015-node": "^4.0.2",
-    "babel-preset-react-native": "^1.8.0",
+    "babel-preset-react-native": "^1.9.0",
     "babel-register": "^6.6.0",
     "babel-types": "^6.6.4",
     "babylon": "^6.6.4",
@@ -160,7 +160,7 @@
     "mkdirp": "^0.5.1",
     "module-deps": "^3.9.1",
     "node-fetch": "^1.3.3",
-    "node-haste": "~2.11.0",
+    "node-haste": "~2.12.0",
     "opn": "^3.0.2",
     "optimist": "^0.6.1",
     "progress": "^1.1.8",
@@ -188,10 +188,10 @@
     "eslint": "^2.5.3",
     "eslint-plugin-flow-vars": "^0.2.1",
     "eslint-plugin-react": "^4.2.1",
-    "flow-bin": "^0.25.0",
+    "flow-bin": "^0.26.0",
     "jest": "12.1.1",
     "portfinder": "0.4.0",
-    "react": "^15.1.0-alpha.1",
+    "react": "^15.1.0",
     "shelljs": "0.6.0"
   }
 }

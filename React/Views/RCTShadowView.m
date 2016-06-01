@@ -242,7 +242,6 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   }
 
   [self fillCSSNode:_cssNode];
-  resetNodeLayout(self.cssNode);
   layoutNode(_cssNode, frame.size.width, frame.size.height, CSS_DIRECTION_INHERIT);
   [self applyLayoutNode:_cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
 }

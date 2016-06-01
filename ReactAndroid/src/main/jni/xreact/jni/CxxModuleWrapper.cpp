@@ -9,7 +9,8 @@
 #include <jni/LocalString.h>
 #include <jni/Registration.h>
 
-#include <Module/JsArgumentHelpers.h>
+#include <cxxreact/JsArgumentHelpers.h>
+#include <cxxreact/FollySupport.h>
 
 #include <android/log.h>
 
@@ -190,7 +191,7 @@ std::string CxxModuleWrapper::getConstantsJson() {
     constsobject.insert(std::move(c.first), std::move(c.second));
   }
 
-  return folly::toJson(constsobject);
+  return facebook::react::detail::toStdString(folly::toJson(constsobject));
 }
 
 jobject CxxModuleWrapper::getMethods() {

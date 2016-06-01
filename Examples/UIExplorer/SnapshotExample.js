@@ -69,6 +69,6 @@ exports.description = 'API to capture images from the screen.';
 exports.examples = [
   {
     title: 'Take screenshot',
-    render(): ReactElement { return <ScreenshotExample />; }
+    render(): ReactElement<any> { return <ScreenshotExample />; }
   },
 ];
