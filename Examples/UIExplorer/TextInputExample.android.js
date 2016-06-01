@@ -439,11 +439,11 @@ exports.examples = [
         <View>
           <TextInput
             defaultValue="iloveturtles"
-            password={true}
+            secureTextEntry={true}
             style={styles.singleLine}
           />
           <TextInput
-            password={true}
+            secureTextEntry={true}
             style={[styles.singleLine, {color: 'red'}]}
             placeholder="color is supported too"
             placeholderTextColor="red"
