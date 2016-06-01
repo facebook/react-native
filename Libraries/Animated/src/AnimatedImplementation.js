@@ -67,6 +67,7 @@ class Animated {
     return this.__nativeTag;
   }
   __getNativeConfig(): Object {
+    console.log("error")
     throw new Error('This JS animated node type cannot be used as native animated node');
   }
   toJSON(): any { return this.__getValue(); }
@@ -256,6 +257,7 @@ class TimingAnimation extends Animation {
       type: 'frames',
       frames,
       toValue: this._toValue,
+      delay: this._delay
     };
   }
 
@@ -774,6 +776,7 @@ class AnimatedValue extends AnimatedWithChildren {
   }
 
   __getNativeConfig(): Object {
+    console.log("value")
     return {
       type: 'value',
       value: this._startingValue,
@@ -934,6 +937,10 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     this._interpolation = Interpolation.create(config);
   }
 
+  __makeNative() {
+    super.__makeNative();
+  }
+
   __getValue(): number | string {
     var parentValue: number = this._parent.__getValue();
     invariant(
@@ -1086,6 +1093,18 @@ class AnimatedTransform extends AnimatedWithChildren {
     this._transforms = transforms;
   }
 
+  __makeNative() {
+    super.__makeNative();
+    this._transforms.forEach(transform => {
+      for (var key in transform) {
+        var value = transform[key];
+        if (value instanceof Animated) {
+          value.__makeNative();
+        }
+      }
+    });
+  }
+
   __getValue(): Array<Object> {
     return this._transforms.map(transform => {
       var result = {};
@@ -1137,6 +1156,26 @@ class AnimatedTransform extends AnimatedWithChildren {
         }
       }
     });
+  }
+
+  __getNativeConfig(): any {
+    console.log('transform')
+    var transConfig = {};
+
+    this._transforms.forEach(transform => {
+      for (var key in transform) {
+        var value = transform[key];
+        if (value instanceof Animated) {
+          transConfig[key] = value.__getNativeTag();
+        }
+      }
+    });
+
+    NativeAnimatedHelper.validateTransform(transConfig);
+    return {
+      type: 'transform',
+      transform: transConfig,
+    };
   }
 }
 
@@ -1212,6 +1251,7 @@ class AnimatedStyle extends AnimatedWithChildren {
   }
 
   __getNativeConfig(): Object {
+    console.log("style")
     var styleConfig = {};
     for (let styleKey in this._style) {
       if (this._style[styleKey] instanceof Animated) {
@@ -1341,6 +1381,7 @@ class AnimatedProps extends Animated {
   }
 
   __getNativeConfig(): Object {
+    console.log("props")
     var propsConfig = {};
     for (let propKey in this._props) {
       var value = this._props[propKey];
