@@ -85,7 +85,7 @@ What that means is, are you using this library on the native side or only in
 JavaScript? If you are only using it in JavaScript, you are good to go!
 
 This step is not necessary for libraries that we ship with React Native with the
-exception of `PushNotificationIOS` and `LinkingIOS`.
+exception of `PushNotificationIOS` and `Linking`.
 
 In the case of the `PushNotificationIOS` for example, you have to call a method
 on the library from your `AppDelegate` every time a new push notification is

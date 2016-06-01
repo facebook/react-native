@@ -8,10 +8,10 @@ cxx_library(
     '-fexceptions',
   ],
   deps = [
-    '//native:base',
     '//native/fb:fb',
+    '//native:base',
     '//xplat/folly:molly',
-    react_native_xplat_target('bridge:module'),
+    react_native_xplat_target('cxxreact:module'),
   ],
   visibility = [
     '//instrumentation_tests/com/facebook/react/...',

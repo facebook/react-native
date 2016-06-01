@@ -56,6 +56,11 @@
    CSS_JUSTIFY_SPACE_AROUND
  } css_justify_t;
 
+ typedef enum {
+   CSS_OVERFLOW_VISIBLE = 0,
+   CSS_OVERFLOW_HIDDEN
+ } css_overflow_t;
+
  // Note: auto is only a valid value for alignSelf. It is NOT a valid value for
  // alignItems.
  typedef enum {
@@ -91,7 +96,8 @@
  typedef enum {
    CSS_MEASURE_MODE_UNDEFINED = 0,
    CSS_MEASURE_MODE_EXACTLY,
-   CSS_MEASURE_MODE_AT_MOST
+   CSS_MEASURE_MODE_AT_MOST,
+   CSS_MEASURE_MODE_COUNT
  } css_measure_mode_t;
 
  typedef enum {
@@ -100,19 +106,39 @@
  } css_dimension_t;
 
  typedef struct {
+   float available_width;
+   float available_height;
+   css_measure_mode_t width_measure_mode;
+   css_measure_mode_t height_measure_mode;
+
+   float computed_width;
+   float computed_height;
+ } css_cached_measurement_t;
+
+ enum {
+   // This value was chosen based on empiracle data. Even the most complicated
+   // layouts should not require more than 16 entries to fit within the cache.
+   CSS_MAX_CACHED_RESULT_COUNT = 16
+ };
+
+ typedef struct {
    float position[4];
    float dimensions[2];
    css_direction_t direction;
 
+   float flex_basis;
+
    // Instead of recomputing the entire layout every single time, we
    // cache some information to break early when nothing changed
    bool should_update;
-   float last_requested_dimensions[2];
-   float last_parent_max_width;
-   float last_parent_max_height;
-   float last_dimensions[2];
-   float last_position[2];
-   css_direction_t last_direction;
+   int generation_count;
+   css_direction_t last_parent_direction;
+
+   int next_cached_measurements_index;
+   css_cached_measurement_t cached_measurements[CSS_MAX_CACHED_RESULT_COUNT];
+   float measured_dimensions[2];
+
+   css_cached_measurement_t cached_layout;
  } css_layout_t;
 
  typedef struct {
@@ -128,6 +154,7 @@
    css_align_t align_self;
    css_position_type_t position_type;
    css_wrap_type_t flex_wrap;
+   css_overflow_t overflow;
    float flex;
    float margin[6];
    float position[4];
@@ -155,8 +182,7 @@
    int children_count;
    int line_index;
 
-   css_node_t *next_absolute_child;
-   css_node_t *next_flex_child;
+   css_node_t* next_child;
 
    css_dim_t (*measure)(void *context, float width, css_measure_mode_t widthMode, float height, css_measure_mode_t heightMode);
    void (*print)(void *context);
@@ -178,12 +204,8 @@
  } css_print_options_t;
  void print_css_node(css_node_t *node, css_print_options_t options);
 
- bool isUndefined(float value);
-
  // Function that computes the layout!
- void layoutNode(css_node_t *node, float maxWidth, float maxHeight, css_direction_t parentDirection);
-
- // Reset the calculated layout values for a given node. You should call this before `layoutNode`.
- void resetNodeLayout(css_node_t *node);
+ void layoutNode(css_node_t *node, float availableWidth, float availableHeight, css_direction_t parentDirection);
+ bool isUndefined(float value);
 
  #endif

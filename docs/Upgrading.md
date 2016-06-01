@@ -19,10 +19,10 @@ Note the latest version of the `react-native` npm package from here (or use `npm
 
 * https://www.npmjs.com/package/react-native
 
-Now install that version of `react-native` in your project with `npm install --save`. For example, to upgrade to the version `0.18`, in a terminal run:
+Now install that version of `react-native` in your project with `npm install --save`. For example, to upgrade to the version `0.26`, in a terminal run:
 
 ```sh
-$ npm install --save react-native@0.18
+$ npm install --save react-native@0.26
 ```
 
 ## 2. Upgrade your project templates
