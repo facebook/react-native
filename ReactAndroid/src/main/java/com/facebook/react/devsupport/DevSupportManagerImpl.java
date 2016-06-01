@@ -275,6 +275,16 @@ public class DevSupportManagerImpl implements DevSupportManager {
           }
         });
     options.put(
+      mDevSettings.isReloadOnJSChangeEnabled()
+        ? mApplicationContext.getString(R.string.catalyst_live_reload_off)
+        : mApplicationContext.getString(R.string.catalyst_live_reload),
+      new DevOptionHandler() {
+        @Override
+        public void onOptionSelected() {
+          mDevSettings.setReloadOnJSChangeEnabled(!mDevSettings.isReloadOnJSChangeEnabled());
+        }
+      });
+    options.put(
             mDevSettings.isHotModuleReplacementEnabled()
                     ? mApplicationContext.getString(R.string.catalyst_hot_module_replacement_off)
                     : mApplicationContext.getString(R.string.catalyst_hot_module_replacement),
@@ -286,16 +296,6 @@ public class DevSupportManagerImpl implements DevSupportManager {
               }
             });
     options.put(
-        mDevSettings.isReloadOnJSChangeEnabled()
-            ? mApplicationContext.getString(R.string.catalyst_live_reload_off)
-            : mApplicationContext.getString(R.string.catalyst_live_reload),
-        new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            mDevSettings.setReloadOnJSChangeEnabled(!mDevSettings.isReloadOnJSChangeEnabled());
-          }
-        });
-    options.put(
       mApplicationContext.getString(R.string.catalyst_element_inspector),
         new DevOptionHandler() {
           @Override
@@ -304,6 +304,16 @@ public class DevSupportManagerImpl implements DevSupportManager {
             mReactInstanceCommandsHandler.toggleElementInspector();
           }
         });
+    options.put(
+      mDevSettings.isFpsDebugEnabled()
+        ? mApplicationContext.getString(R.string.catalyst_perf_monitor_off)
+        : mApplicationContext.getString(R.string.catalyst_perf_monitor),
+      new DevOptionHandler() {
+        @Override
+        public void onOptionSelected() {
+          mDevSettings.setFpsDebugEnabled(!mDevSettings.isFpsDebugEnabled());
+        }
+      });
     options.put(
         mApplicationContext.getString(R.string.catalyst_heap_capture),
         new DevOptionHandler() {
@@ -321,16 +331,6 @@ public class DevSupportManagerImpl implements DevSupportManager {
             } catch (JSCHeapCapture.CaptureException e) {
               showNewJavaError(e.getMessage(), e);
             }
-          }
-        });
-    options.put(
-        mDevSettings.isFpsDebugEnabled()
-            ? mApplicationContext.getString(R.string.catalyst_perf_monitor_off)
-            : mApplicationContext.getString(R.string.catalyst_perf_monitor),
-        new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            mDevSettings.setFpsDebugEnabled(!mDevSettings.isFpsDebugEnabled());
           }
         });
     if (mCurrentContext != null &&
