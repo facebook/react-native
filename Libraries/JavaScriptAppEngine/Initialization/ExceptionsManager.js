@@ -35,12 +35,15 @@ function reportException(e: Error, isFatal: bool) {
 }
 
 function symbolicateAndUpdateStack(id, message, stack) {
+  const getDevServer = require('getDevServer');
   const {fetch} = require('fetch');
-  const {SourceCode, ExceptionsManager} = require('NativeModules');
-  const match = SourceCode.scriptURL && SourceCode.scriptURL.match(/^https?:\/\/.*?\//);
-  const endpoint = (match && match[0] : 'http://localhost:8081/') + 'symbolicate';
+  const {ExceptionsManager} = require('NativeModules');
+  const devServer = getDevServer();
+  if (!devServer.bundleLoadedFromServer) {
+    return;
+  }
 
-  fetch(endpoint, { method: 'POST', body: JSON.stringify({stack}) })
+  fetch(devServer.url + 'symbolicate', { method: 'POST', body: JSON.stringify({stack}) })
     .then(response => response.json())
     .then(response =>
       ExceptionsManager.updateExceptionMessage(message, response.stack, id))
