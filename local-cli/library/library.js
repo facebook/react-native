@@ -18,19 +18,17 @@ const walk = require('../util/walk');
 /**
  * Creates a new native library with the given name
  */
-function library(argv, config) {
-  const name = argv[0];
-
-  if (!isValidPackageName(name)) {
+function library(argv, config, args) {
+  if (!isValidPackageName(args.name)) {
     return Promise.reject(
-      name + ' is not a valid name for a project. Please use a valid ' +
+      args.name + ' is not a valid name for a project. Please use a valid ' +
       'identifier name (alphanumeric).'
     );
   }
 
   const root = process.cwd();
   const libraries = path.resolve(root, 'Libraries');
-  const libraryDest = path.resolve(libraries, name);
+  const libraryDest = path.resolve(libraries, args.name);
   const source = path.resolve('node_modules', 'react-native', 'Libraries', 'Sample');
 
   if (!fs.existsSync(libraries)) {
@@ -47,11 +45,11 @@ function library(argv, config) {
       return;
     }
 
-    const dest = f.replace(/Sample/g, name).replace(/^_/, '.');
+    const dest = f.replace(/Sample/g, args.name).replace(/^_/, '.');
     copyAndReplace(
       path.resolve(source, f),
       path.resolve(libraryDest, dest),
-      {'Sample': name}
+      {'Sample': args.name}
     );
   });
 
@@ -62,7 +60,12 @@ function library(argv, config) {
 }
 
 module.exports = {
-  name: 'new-library <name>',
+  name: 'new-library',
   func: library,
   description: 'generates a native library bridge',
+  options: [{
+    command: '--name <lib>',
+    description: 'name of the library to generate',
+    default: null,
+  }],
 };

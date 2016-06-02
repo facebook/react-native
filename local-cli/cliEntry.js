@@ -20,6 +20,7 @@ const gracefulFs = require('graceful-fs');
 
 const init = require('./init/init');
 const commands = require('./commands');
+const assertRequiredOptions = require('./util/assertRequiredOptions');
 const pkg = require('../package.json');
 const defaultConfig = require('./default.config');
 
@@ -31,16 +32,28 @@ cli.version(pkg.version);
 
 const defaultOptParser = (val) => val;
 
+const handleError = (err) => console.error(err.message || err);
+
 const addCommand = (command, config) => {
+  const options = command.options || [];
+
   const cmd = cli
     .command(command.name)
     .usage(command.usage)
     .description(command.description)
     .action(function runAction() {
-      Promise.resolve(command.func(arguments, config, this.opts())).done();
+      const passedOptions = this.opts();
+
+      try {
+        assertRequiredOptions(options, passedOptions);
+      } catch (e) {
+        return handleError(e);
+      }
+
+      command.func(arguments, config, passedOptions).catch(handleError);
     });
 
-  (command.options || [])
+  options
     .forEach(opt => cmd.option(
       opt.command,
       opt.description,
