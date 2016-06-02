@@ -12,10 +12,11 @@ const documentedCommands = [
   require('./server/server'),
   require('./runIOS/runIOS'),
   require('./runAndroid/runAndroid'),
+  require('./library/library'),
   // @todo(mike) start rewriting these files one by one
   // require('./bundle/bundle'),
   // require('./bundle/unbundle'),
-  // require('./library/library'),
+  //
   // require('./upgrade/upgrade'),
   // require('./link/link'),
   // require('./link/unlink'),
