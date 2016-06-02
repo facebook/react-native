@@ -14,59 +14,42 @@ const char *gUnexpectedNativeTypeExceptionClass =
 
 namespace {
 
-local_ref<ReadableType> getTypeField(const char* fieldName) {
+// Returns a leaked global_ref.
+alias_ref<ReadableType> getTypeField(const char* fieldName) {
   static auto cls = ReadableType::javaClassStatic();
   auto field = cls->getStaticField<ReadableType::javaobject>(fieldName);
-  return cls->getStaticFieldValue(field);
-}
-
-alias_ref<ReadableType> getNullValue() {
-  static alias_ref<ReadableType> val = make_global(getTypeField("Null")).release();
-  return val;
-}
-
-alias_ref<ReadableType> getBooleanValue() {
-  static alias_ref<ReadableType> val = make_global(getTypeField("Boolean")).release();
-  return val;
-}
-
-alias_ref<ReadableType> getNumberValue() {
-  static alias_ref<ReadableType> val = make_global(getTypeField("Number")).release();
-  return val;
-}
-
-alias_ref<ReadableType> getStringValue() {
-  static alias_ref<ReadableType> val = make_global(getTypeField("String")).release();
-  return val;
-}
-
-alias_ref<ReadableType> getMapValue() {
-  static alias_ref<ReadableType> val = make_global(getTypeField("Map")).release();
-  return val;
-}
-
-alias_ref<ReadableType> getArrayValue() {
-  static alias_ref<ReadableType> val = make_global(getTypeField("Array")).release();
-  return val;
+  return make_global(cls->getStaticFieldValue(field)).release();
 }
 
 } // namespace
 
 local_ref<ReadableType> ReadableType::getType(folly::dynamic::Type type) {
   switch (type) {
-    case folly::dynamic::Type::NULLT:
-      return make_local(getNullValue());
-    case folly::dynamic::Type::BOOL:
-      return make_local(getBooleanValue());
+    case folly::dynamic::Type::NULLT: {
+      static alias_ref<ReadableType> val = getTypeField("Null");
+      return make_local(val);
+    }
+    case folly::dynamic::Type::BOOL: {
+      static alias_ref<ReadableType> val = getTypeField("Boolean");
+      return make_local(val);
+    }
     case folly::dynamic::Type::DOUBLE:
-    case folly::dynamic::Type::INT64:
-      return make_local(getNumberValue());
-    case folly::dynamic::Type::STRING:
-      return make_local(getStringValue());
-    case folly::dynamic::Type::OBJECT:
-      return make_local(getMapValue());
-    case folly::dynamic::Type::ARRAY:
-      return make_local(getArrayValue());
+    case folly::dynamic::Type::INT64: {
+      static alias_ref<ReadableType> val = getTypeField("Number");
+      return make_local(val);
+    }
+    case folly::dynamic::Type::STRING: {
+      static alias_ref<ReadableType> val = getTypeField("String");
+      return make_local(val);
+    }
+    case folly::dynamic::Type::OBJECT: {
+      static alias_ref<ReadableType> val = getTypeField("Map");
+      return make_local(val);
+    }
+    case folly::dynamic::Type::ARRAY: {
+      static alias_ref<ReadableType> val = getTypeField("Array");
+      return make_local(val);
+    }
     default:
       throwNewJavaException(exceptions::gUnexpectedNativeTypeExceptionClass, "Unknown type");
   }
