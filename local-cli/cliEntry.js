@@ -32,7 +32,12 @@ cli.version(pkg.version);
 
 const defaultOptParser = (val) => val;
 
-const handleError = (err) => console.error(err.message || err);
+const handleError = (err) => {
+  console.error();
+  console.error(err.message || err);
+  console.error();
+  process.exit(1);
+};
 
 const addCommand = (command, config) => {
   const options = command.options || [];
