@@ -193,7 +193,7 @@ public class ReactImageView extends GenericDraweeView {
             @Nullable Animatable animatable) {
           if (imageInfo != null) {
             mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD)
+              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD,imageInfo.getWidth(),imageInfo.getHeight())
             );
             mEventDispatcher.dispatchEvent(
               new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_END)
