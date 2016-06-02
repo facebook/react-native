@@ -176,13 +176,13 @@ module.exports = {
   options: [{
     command: '--install-debug',
   }, {
-    command: '--root [dir]',
+    command: '--root [string]',
     description: 'Override the root directory for the android build (which contains the android directory)',
     default: '',
   }, {
-    command: '--flavor [name]',
+    command: '--flavor [string]',
     description: '--flavor has been deprecated. Use --variant instead',
   }, {
-    command: '--variant [name]',
+    command: '--variant [string]',
   }],
 };

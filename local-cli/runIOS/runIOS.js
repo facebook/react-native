@@ -78,14 +78,14 @@ module.exports = {
   description: 'builds your app and starts it on iOS simulator',
   func: runIOS,
   options: [{
-    command: '--simulator [device]',
+    command: '--simulator [string]',
     description: 'Explicitly set simulator to use',
     default: 'iPhone 6',
   }, {
-    command: '--scheme [xcscheme]',
+    command: '--scheme [string]',
     description: 'Explicitly set Xcode scheme to use',
   }, {
-    command: '--project-path [dir]',
+    command: '--project-path [string]',
     description: 'Path relative to project root where the Xcode project '
      + '(.xcodeproj) lives. The default is \'ios\'.',
     default: 'ios',

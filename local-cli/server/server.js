@@ -70,11 +70,11 @@ module.exports = {
   func: server,
   description: 'starts the webserver',
   options: [{
-    command: '--port [port]',
+    command: '--port [number]',
     default: 8081,
     parse: (val) => Number(val),
   }, {
-    command: '--host [host]',
+    command: '--host [string]',
     default: '',
   }, {
     command: '--root [list]',
@@ -98,7 +98,7 @@ module.exports = {
     command: '--nonPersistent',
     description: 'Disable file watcher'
   }, {
-    command: '--transformer [path]',
+    command: '--transformer [string]',
     default: require.resolve('../../packager/transformer'),
     description: 'Specify a custom transformer to be used (absolute path)'
   }, {
