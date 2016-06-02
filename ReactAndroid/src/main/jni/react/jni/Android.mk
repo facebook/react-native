@@ -7,13 +7,19 @@ LOCAL_MODULE := libreactnativejni
 LOCAL_SRC_FILES := \
   JExecutorToken.cpp \
   JMessageQueueThread.cpp \
-  JniJSModulesUnbundle.cpp \
   JSCPerfLogging.cpp \
   JSLoader.cpp \
   JSLogging.cpp \
+  JniJSModulesUnbundle.cpp \
   NativeArray.cpp \
+  NativeCommon.cpp \
+  NativeMap.cpp \
   OnLoad.cpp \
   ProxyExecutor.cpp \
+  ReadableNativeArray.cpp \
+  ReadableNativeMap.cpp \
+  WritableNativeArray.cpp \
+  WritableNativeMap.cpp \
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../.. $(LOCAL_PATH)/..
