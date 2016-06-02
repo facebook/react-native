@@ -64,7 +64,7 @@ module.exports = {
   func: library,
   description: 'generates a native library bridge',
   options: [{
-    command: '--name <lib>',
+    command: '--name <string>',
     description: 'name of the library to generate',
     default: null,
   }],

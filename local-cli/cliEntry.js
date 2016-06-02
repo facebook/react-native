@@ -11,7 +11,6 @@
 const cli = require('commander');
 
 const Config = require('./util/Config');
-const Promise = require('promise');
 const childProcess = require('child_process');
 
 const path = require('path');
