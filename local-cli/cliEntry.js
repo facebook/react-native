@@ -12,7 +12,7 @@ const cli = require('commander');
 
 const Config = require('./util/Config');
 const childProcess = require('child_process');
-
+const Promise = require('promise');
 const path = require('path');
 const fs = require('fs');
 const gracefulFs = require('graceful-fs');
@@ -48,13 +48,12 @@ const addCommand = (command, config) => {
     .action(function runAction() {
       const passedOptions = this.opts();
 
-      try {
-        assertRequiredOptions(options, passedOptions);
-      } catch (e) {
-        return handleError(e);
-      }
-
-      command.func(arguments, config, passedOptions).catch(handleError);
+      Promise.resolve()
+        .then(() => {
+          assertRequiredOptions(options, passedOptions);
+          return command.func(arguments, config, passedOptions);
+        })
+        .catch(handleError);
     });
 
   options
