@@ -47,11 +47,12 @@ const addCommand = (command, config) => {
     .description(command.description)
     .action(function runAction() {
       const passedOptions = this.opts();
+      const argv = arguments;
 
       Promise.resolve()
         .then(() => {
           assertRequiredOptions(options, passedOptions);
-          return command.func(arguments, config, passedOptions);
+          return command.func(argv, config, passedOptions);
         })
         .catch(handleError);
     });
