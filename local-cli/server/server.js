@@ -72,6 +72,7 @@ module.exports = {
   options: [{
     command: '--port [port]',
     default: 8081,
+    parse: (val) => Number(val),
   }, {
     command: '--host [host]',
     default: '',
