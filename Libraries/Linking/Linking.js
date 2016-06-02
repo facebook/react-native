@@ -42,7 +42,7 @@ const LinkingManager = Platform.OS === 'android' ?
  * ```
  *
  * NOTE: For instructions on how to add support for deep linking on Android,
- * refer [Enabling Deep Links for App Content - Add Intent Filters for Your Deep Links](http://developer.android.com/training/app-indexing/deep-linking.html#adding-filters).
+ * refer to [Enabling Deep Links for App Content - Add Intent Filters for Your Deep Links](http://developer.android.com/training/app-indexing/deep-linking.html#adding-filters).
  *
  * NOTE: On iOS you'll need to link `RCTLinking` to your project by following
  * the steps described [here](docs/linking-libraries-ios.html#manual-linking).

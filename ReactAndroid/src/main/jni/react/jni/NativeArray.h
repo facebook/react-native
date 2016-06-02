@@ -17,7 +17,7 @@ class NativeArray : public jni::HybridClass<NativeArray> {
   bool isConsumed = false;
   folly::dynamic array;
 
-  jstring toString();
+  jni::local_ref<jstring> toString();
 
   static void registerNatives();
 

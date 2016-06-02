@@ -82,11 +82,12 @@ RCT_EXPORT_MODULE()
 NSString *const RCTErrorUnableToLoad = @"E_UNABLE_TO_LOAD";
 NSString *const RCTErrorUnableToSave = @"E_UNABLE_TO_SAVE";
 
-RCT_EXPORT_METHOD(saveImageWithTag:(NSString *)imageTag
+RCT_EXPORT_METHOD(saveImageWithTag:(NSURLRequest *)imageRequest
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  [_bridge.imageLoader loadImageWithTag:imageTag callback:^(NSError *loadError, UIImage *loadedImage) {
+  [_bridge.imageLoader loadImageWithURLRequest:imageRequest
+                                      callback:^(NSError *loadError, UIImage *loadedImage) {
     if (loadError) {
       reject(RCTErrorUnableToLoad, nil, loadError);
       return;
