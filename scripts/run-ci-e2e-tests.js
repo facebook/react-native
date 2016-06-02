@@ -195,12 +195,11 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
-// TODO disabled while flow 0.25.0 is crashing
-    // if (exec(`${ROOT}/node_modules/.bin/flow check`).code) {
-    //   echo('Flow check does not pass');
-    //   exitCode = 1;
-    //   throw Error(exitCode);
-    // }
+    if (exec(`${ROOT}/node_modules/.bin/flow check`).code) {
+      echo('Flow check does not pass');
+      exitCode = 1;
+      throw Error(exitCode);
+    }
   }
   exitCode = 0;
   
