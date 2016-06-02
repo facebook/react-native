@@ -11,6 +11,7 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import com.facebook.csslayout.CSSNode;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.OnLayoutEvent;
@@ -55,6 +56,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   private @Nullable DrawBackgroundColor mDrawBackground;
   private boolean mClipToBounds = false;
   private boolean mIsUpdated = true;
+  private boolean mForceMountChildrenToView;
   private float mClipLeft;
   private float mClipTop;
   private float mClipRight;
@@ -85,6 +87,20 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
           styles.hasKey(PROP_IMPORTANT_FOR_ACCESSIBILITY) ||
           styles.hasKey(PROP_REMOVE_CLIPPED_SUBVIEWS)) {
         forceMountToView();
+      }
+    }
+  }
+
+  /* package */ final void forceMountChildrenToView() {
+    if (mForceMountChildrenToView) {
+      return;
+    }
+
+    mForceMountChildrenToView = true;
+    for (int i = 0, childCount = getChildCount(); i != childCount; ++i) {
+      ReactShadowNode child = getChildAt(i);
+      if (child instanceof FlatShadowNode) {
+        ((FlatShadowNode) child).forceMountToView();
       }
     }
   }
@@ -155,6 +171,14 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   @Override
   public final int getScreenHeight() {
     return mViewBottom - mViewTop;
+  }
+
+  @Override
+  public void addChildAt(CSSNode child, int i) {
+    super.addChildAt(child, i);
+    if (mForceMountChildrenToView && child instanceof FlatShadowNode) {
+      ((FlatShadowNode) child).forceMountToView();
+    }
   }
 
   /**

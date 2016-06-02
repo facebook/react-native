@@ -23,6 +23,7 @@ import com.facebook.react.uimanager.ViewManager;
   @Nullable private final ReactShadowNode mReactShadowNode;
   private final boolean mNeedsCustomLayoutForChildren;
   private boolean mPaddingChanged = false;
+  private boolean mForceMountGrandChildrenToView;
 
   /* package */ NativeViewWrapper(ViewManager viewManager) {
     ReactShadowNode reactShadowNode = viewManager.createShadowNodeInstance();
@@ -36,11 +37,13 @@ import com.facebook.react.uimanager.ViewManager;
     if (viewManager instanceof ViewGroupManager) {
       ViewGroupManager viewGroupManager = (ViewGroupManager) viewManager;
       mNeedsCustomLayoutForChildren = viewGroupManager.needsCustomLayoutForChildren();
+      mForceMountGrandChildrenToView = viewGroupManager.shouldPromoteGrandchildren();
     } else {
       mNeedsCustomLayoutForChildren = false;
     }
 
     forceMountToView();
+    forceMountChildrenToView();
   }
 
   @Override
@@ -82,8 +85,8 @@ import com.facebook.react.uimanager.ViewManager;
   @Override
   public void addChildAt(CSSNode child, int i) {
     super.addChildAt(child, i);
-    if (child instanceof FlatShadowNode) {
-      ((FlatShadowNode) child).forceMountToView();
+    if (mForceMountGrandChildrenToView && child instanceof FlatShadowNode) {
+      ((FlatShadowNode) child).forceMountChildrenToView();
     }
   }
 
