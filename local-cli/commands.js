@@ -20,6 +20,7 @@ export type Command = {
   options?: Array<{
     command: string,
     description?: string,
+    parse?: (val: string) => any,
     default?: (config: Config) => any | any,
   }>,
 };
