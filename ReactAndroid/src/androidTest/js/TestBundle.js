@@ -15,6 +15,8 @@ console.disableYellowBox = true;
 // Include callable JS modules first, in case one of the other ones below throws
 require('ProgressBarTestModule');
 require('ViewRenderingTestModule');
+require('TestJavaToJSArgumentsModule');
+require('TestJSToJavaParametersModule');
 
 require('PickerAndroidTestModule');
 require('CatalystRootViewTestModule');
@@ -39,6 +41,10 @@ var apps = [
 {
   appKey: 'HorizontalScrollViewTestApp',
   component: () => require('ScrollViewTestModule').HorizontalScrollViewTestApp,
+},
+{
+  appKey: 'MultitouchHandlingTestAppModule',
+  component: () => require('MultitouchHandlingTestAppModule')
 },
 {
   appKey: 'PickerAndroidTestApp',
