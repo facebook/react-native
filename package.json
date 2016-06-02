@@ -168,7 +168,6 @@
     "node-haste": "~2.12.0",
     "npmlog": "^2.0.4",
     "opn": "^3.0.2",
-    "optimist": "^0.6.1",
     "plist": "^1.2.0",
     "progress": "^1.1.8",
     "promise": "^7.1.1",
