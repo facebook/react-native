@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
@@ -23,6 +25,8 @@ const assertRequiredOptions = require('./util/assertRequiredOptions');
 const pkg = require('../package.json');
 const defaultConfig = require('./default.config');
 
+import type { Command } from './commands';
+
 // graceful-fs helps on getting an error when we run out of file
 // descriptors. When that happens it will enqueue the operation and retry it.
 gracefulFs.gracefulify(fs);
@@ -38,7 +42,7 @@ const handleError = (err) => {
   process.exit(1);
 };
 
-const addCommand = (command, config) => {
+const addCommand = (command: Command, config: Config) => {
   const options = command.options || [];
 
   const cmd = cli
@@ -47,7 +51,7 @@ const addCommand = (command, config) => {
     .description(command.description)
     .action(function runAction() {
       const passedOptions = this.opts();
-      const argv = arguments;
+      const argv: Array<string> = arguments;
 
       Promise.resolve()
         .then(() => {
