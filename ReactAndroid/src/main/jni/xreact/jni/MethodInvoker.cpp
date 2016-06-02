@@ -144,7 +144,7 @@ jvalue extract(std::weak_ptr<Instance>& instance, ExecutorToken token, char type
       break;
     case 'M':
       // HACK: Workaround for constructing ReadableNativeMap
-      value.l = ExposedReadableNativeArray(folly::dynamic::array(arg)).getMap(0);
+      value.l = ExposedReadableNativeArray(folly::dynamic::array(arg)).getMap(0).release();
       break;
     case 'X':
       value.l = extractCallback(instance, token, arg).release();

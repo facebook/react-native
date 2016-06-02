@@ -20,11 +20,11 @@ var Text = require('Text');
 var TouchableHighlight = require('TouchableHighlight');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
-var {SourceCode} = require('NativeModules');
 var {fetch} = require('fetch');
 
 var flattenStyle = require('flattenStyle');
 var mapWithSeparator = require('mapWithSeparator');
+var getDevServer = require('getDevServer');
 
 var ElementProperties = React.createClass({
   propTypes: {
@@ -97,10 +97,7 @@ var ElementProperties = React.createClass({
   },
 
   _openFile: function(fileName: string, lineNumber: number) {
-    var match = SourceCode.scriptURL && SourceCode.scriptURL.match(/^https?:\/\/.*?\//);
-    var baseURL = match ? match[0] : 'http://localhost:8081/';
-
-    fetch(baseURL + 'open-stack-frame', {
+    fetch(getDevServer().url + 'open-stack-frame', {
       method: 'POST',
       body: JSON.stringify({file: fileName, lineNumber}),
     });

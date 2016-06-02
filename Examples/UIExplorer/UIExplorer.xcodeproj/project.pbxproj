@@ -1014,12 +1014,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = UIExplorer;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				WARNING_CFLAGS = (
-					"-Wextra",
-					"-Wall",
-					"-Wincompatible-pointer-types",
-					"-Wincompatible-pointer-types-discards-qualifiers",
-				);
 			};
 			name = Debug;
 		};
@@ -1039,12 +1033,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = UIExplorer;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				WARNING_CFLAGS = (
-					"-Wextra",
-					"-Wall",
-					"-Wincompatible-pointer-types",
-					"-Wincompatible-pointer-types-discards-qualifiers",
-				);
 			};
 			name = Release;
 		};
@@ -1149,6 +1137,8 @@
 					"-Wextra",
 					"-Wall",
 					"-Wincompatible-pointer-types",
+					"-Wincompatible-pointer-types-discards-qualifiers",
+					"-Wshadow",
 				);
 			};
 			name = Debug;
@@ -1212,6 +1202,8 @@
 					"-Wextra",
 					"-Wall",
 					"-Wincompatible-pointer-types",
+					"-Wincompatible-pointer-types-discards-qualifiers",
+					"-Wshadow",
 				);
 			};
 			name = Release;

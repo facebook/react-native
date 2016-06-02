@@ -9,7 +9,7 @@
 
 package com.facebook.react.bridge;
 
-import com.facebook.jni.Countable;
+import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 
@@ -17,18 +17,18 @@ import com.facebook.soloader.SoLoader;
  * Base class for a Map whose keys and values are stored in native code (C++).
  */
 @DoNotStrip
-public abstract class NativeMap extends Countable {
-
+public abstract class NativeMap {
   static {
     SoLoader.loadLibrary(ReactBridge.REACT_NATIVE_LIB);
   }
 
-  public NativeMap() {
-    initialize();
+  public NativeMap(HybridData hybridData) {
+    mHybridData = hybridData;
   }
 
   @Override
   public native String toString();
 
-  private native void initialize();
+  @DoNotStrip
+  private HybridData mHybridData;
 }

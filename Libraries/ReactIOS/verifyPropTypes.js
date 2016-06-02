@@ -49,7 +49,7 @@ function verifyPropTypes(
         message = '`' + componentName + '` has no propType for native prop `' +
         viewConfig.uiViewClassName + '.' + prop + '` of native type `' +
         nativeProps[prop] + '`';
-      };
+      }
       message += '\nIf you haven\'t changed this prop yourself, this usually means that ' +
         'your versions of the native code and JavaScript code are out of sync. Updating both ' +
         'should make this error go away.';
