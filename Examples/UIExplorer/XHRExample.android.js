@@ -227,7 +227,7 @@ class FormUploader extends React.Component {
       (param) => formdata.append(param.name, param.value)
     );
     if (this.state.randomPhoto) {
-      formdata.append('image', {...this.state.randomPhoto,type:'image/jpg', name: 'image.jpg'});
+      formdata.append('image', {...this.state.randomPhoto, type:'image/jpg', name: 'image.jpg'});
     }
     xhr.upload.onprogress = (event) => {
       console.log('upload onprogress', event);
