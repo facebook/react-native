@@ -27,6 +27,13 @@
 NSString *const RCTLocalNotificationReceived = @"LocalNotificationReceived";
 NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
 NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegistered";
+NSString *const RCTRegisterUserNotificationSettings = @"RegisterUserNotificationSettings";
+
+NSString *const RCTErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMISSIONS";
+
+@interface RCTPushNotificationManager ()
+@property (nonatomic, copy) RCTPromiseResolveBlock requestPermissionsResolveBlock;
+@end
 
 @implementation RCTConvert (UILocalNotification)
 
@@ -66,6 +73,10 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(handleRemoteNotificationsRegistered:)
                                                name:RCTRemoteNotificationsRegistered
                                              object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleRegisterUserNotificationSettings:)
+                                               name:RCTRegisterUserNotificationSettings
+                                             object:nil];
 }
 
 - (void)stopObserving
@@ -93,6 +104,9 @@ RCT_EXPORT_MODULE()
 {
   if ([UIApplication instancesRespondToSelector:@selector(registerForRemoteNotifications)]) {
     [[UIApplication sharedApplication] registerForRemoteNotifications];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTRegisterUserNotificationSettings
+                                                        object:self
+                                                      userInfo:notificationSettings];
   }
 }
 
@@ -145,6 +159,25 @@ RCT_EXPORT_MODULE()
   [self sendEventWithName:@"remoteNotificationsRegistered" body:notification.userInfo];
 }
 
+- (void)handleRegisterUserNotificationSettings:(NSNotification *)notification
+{
+  if (self.requestPermissionsResolveBlock == nil) return;
+
+  NSMutableDictionary* notificationTypes = [NSMutableDictionary dictionaryWithObjectsAndKeys:@NO, @"alert", @NO, @"badge", @NO, @"sound", nil];
+  UIUserNotificationSettings *notificationSettings = notification.userInfo;
+  if (notificationSettings.types & UIUserNotificationTypeAlert) {
+    notificationTypes[@"alert"] = @YES;
+  }
+  if (notificationSettings.types & UIUserNotificationTypeSound) {
+    notificationTypes[@"sound"] = @YES;
+  }
+  if (notificationSettings.types & UIUserNotificationTypeBadge) {
+    notificationTypes[@"badge"] = @YES;
+  }
+  self.requestPermissionsResolveBlock(notificationTypes);
+  self.requestPermissionsResolveBlock = nil;
+}
+
 /**
  * Update the application icon badge number on the home screen
  */
@@ -161,11 +194,21 @@ RCT_EXPORT_METHOD(getApplicationIconBadgeNumber:(RCTResponseSenderBlock)callback
   callback(@[@(RCTSharedApplication().applicationIconBadgeNumber)]);
 }
 
-RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions)
+RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
 {
   if (RCTRunningInAppExtension()) {
+    reject(RCTErrorUnableToRequestPermissions, nil, RCTErrorWithMessage(@"Requesting push notifications is currently unavailable in an app extension"));
     return;
   }
+
+  if (self.requestPermissionsResolveBlock != nil) {
+    NSString *message = @"Cannot call requestPermissions twice before the first has returned.";
+    [NSException raise:RCTFatalExceptionName format:@"%@", message];
+  }
+
+  self.requestPermissionsResolveBlock = resolve;
 
   UIUserNotificationType types = UIUserNotificationTypeNone;
   if (permissions) {
