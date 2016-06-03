@@ -1,7 +1,8 @@
-const fs = require('fs');
+'use strict';
+
+jest.autoMockOff();
+
 const path = require('path');
-const chai = require('chai');
-const expect = chai.expect;
 const makeSettingsPatch = require('../../../src/android/patches/makeSettingsPatch');
 
 const name = 'test';
@@ -15,9 +16,9 @@ const dependencyConfig = {
 
 describe('makeSettingsPatch', () => {
   it('should build a patch function', () => {
-    expect(
+    expect(Object.prototype.toString(
       makeSettingsPatch(name, dependencyConfig, {}, projectConfig)
-    ).to.be.an('object');
+    )).toBe('[object Object]');
   });
 
   it('should make a correct patch', () => {
@@ -27,7 +28,7 @@ describe('makeSettingsPatch', () => {
     );
 
     expect(makeSettingsPatch(name, dependencyConfig, projectConfig).patch)
-      .to.be.equal(
+      .toBe(
         `include ':${name}'\n` +
         `project(':${name}').projectDir = ` +
         `new File(rootProject.projectDir, '${projectDir}')\n`
