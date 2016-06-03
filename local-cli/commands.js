@@ -17,7 +17,7 @@ export type Command = {
   name: string,
   description?: string,
   usage?: string,
-  func: (argv: Array<string>, config: Config, args: Object) => ?Promise,
+  func: (argv: Array<string>, config: Config, args: Object) => ?Promise<void>,
   options?: Array<{
     command: string,
     description?: string,
