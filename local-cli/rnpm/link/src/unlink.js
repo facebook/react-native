@@ -59,7 +59,7 @@ const unlinkDependencyIOS = (iOSProject, dependency, packageName) => {
  * If optional argument [packageName] is provided, it's the only one
  * that's checked
  */
-module.exports = function unlink(config, args) {
+module.exports = function unlink(args, config) {
   const packageName = args[0];
 
   var project;

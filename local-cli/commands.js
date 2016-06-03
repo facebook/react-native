@@ -26,21 +26,6 @@ export type Command = {
   }>,
 };
 
-const withRnpmConfig = func => (argv, config, args) => func(rnpm, argv, args);
-
-// For now, define here all commands that need `rnpm` config instead
-// of default config. Once `Config` is merged, @Kureev - i think
-// we can just move them to `documentedCommands` ;)
-const rnpmCommands = [
-  require('./rnpm/link/link'),
-  require('./rnpm/link/unlink'),
-  require('./rnpm/install/install'),
-  require('./rnpm/install/uninstall'),
-].map(cmd => {
-  cmd.func = withRnpmConfig(cmd.func);
-  return cmd;
-});
-
 const documentedCommands = [
   require('./server/server'),
   require('./runIOS/runIOS'),
@@ -48,6 +33,10 @@ const documentedCommands = [
   require('./library/library'),
   require('./bundle/bundle'),
   require('./bundle/unbundle'),
+  require('./rnpm/link/link'),
+  require('./rnpm/link/unlink'),
+  require('./rnpm/install/install'),
+  require('./rnpm/install/uninstall'),
   // @todo(mike) start rewriting these files one by one
   // require('./upgrade/upgrade'),
 ];
@@ -68,7 +57,6 @@ const undocumentedCommands = [
 
 const commands: Array<Command> = [
   ...documentedCommands,
-  ...rnpmCommands,
   ...undocumentedCommands,
 ];
 
