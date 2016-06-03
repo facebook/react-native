@@ -106,7 +106,7 @@ RCT_EXPORT_MODULE()
     [[UIApplication sharedApplication] registerForRemoteNotifications];
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTRegisterUserNotificationSettings
                                                         object:self
-                                                      userInfo:notificationSettings];
+                                                      userInfo:@{@"notificationSettings": notificationSettings}];
   }
 }
 
@@ -164,7 +164,8 @@ RCT_EXPORT_MODULE()
   if (self.requestPermissionsResolveBlock == nil) {
     return;
   }
-  UIUserNotificationSettings *notificationSettings = notification.userInfo;
+
+  UIUserNotificationSettings *notificationSettings = notification.userInfo[@"notificationSettings"];
   NSDictionary *notificationTypes = @{
     @"alert": @((notificationSettings.types & UIUserNotificationTypeAlert) > 0),
     @"sound": @((notificationSettings.types & UIUserNotificationTypeSound) > 0),
