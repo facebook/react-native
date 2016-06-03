@@ -1,5 +1,7 @@
-const chai = require('chai');
-const expect = chai.expect;
+'use strict';
+
+jest.autoMockOff();
+
 const sinon = require('sinon');
 const promiseWaterfall = require('../src/promiseWaterfall');
 
@@ -9,7 +11,7 @@ describe('promiseWaterfall', () => {
     const tasks = [sinon.stub(), sinon.stub()];
 
     promiseWaterfall(tasks).then(() => {
-      expect(tasks[0].calledBefore(tasks[1])).to.be.true;
+      expect(tasks[0].calledBefore(tasks[1])).toBeTruthy();
       done();
     });
   });
@@ -18,7 +20,7 @@ describe('promiseWaterfall', () => {
     const tasks = [sinon.stub().returns(1), sinon.stub().returns(2)];
 
     promiseWaterfall(tasks).then(value => {
-      expect(value).to.equal(2);
+      expect(value).toEqual(2);
       done();
     });
   });
@@ -28,8 +30,8 @@ describe('promiseWaterfall', () => {
     const tasks = [sinon.stub().throws(error), sinon.stub().returns(2)];
 
     promiseWaterfall(tasks).catch(err => {
-      expect(err).to.equal(error);
-      expect(tasks[1].callCount).to.equal(0);
+      expect(err).toEqual(error);
+      expect(tasks[1].callCount).toEqual(0);
       done();
     });
   });

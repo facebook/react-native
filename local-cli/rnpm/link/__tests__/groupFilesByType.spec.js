@@ -1,5 +1,7 @@
-const chai = require('chai');
-const expect = chai.expect;
+'use strict';
+
+jest.autoMockOff();
+
 const groupFilesByType = require('../src/groupFilesByType');
 
 describe('groupFilesByType', () => {
@@ -16,8 +18,8 @@ describe('groupFilesByType', () => {
 
     const groupedFiles = groupFilesByType(fonts.concat(images));
 
-    expect(groupedFiles.font).to.deep.equal(fonts);
-    expect(groupedFiles.image).to.deep.equal(images);
+    expect(groupedFiles.font).toEqual(fonts);
+    expect(groupedFiles.image).toEqual(images);
   });
 
 });
