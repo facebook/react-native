@@ -1,28 +1,20 @@
-const chai = require('chai');
-const expect = chai.expect;
-const mock = require('mock-fs');
-const fs = require('fs');
+'use strict';
+
+jest.autoMockOff();
+
 const path = require('path');
 const isInstalled = require('../../src/android/isInstalled');
 
 const projectConfig = {
-  buildGradlePath: 'build.gradle',
+  buildGradlePath: path.join(__dirname, '../fixtures/android/patchedBuild.gradle'),
 };
 
 describe('android::isInstalled', () => {
-  before(() => mock({
-    'build.gradle': fs.readFileSync(
-      path.join(__dirname, '../fixtures/android/patchedBuild.gradle')
-    ),
-  }));
-
   it('should return true when project is already in build.gradle', () =>
-    expect(isInstalled(projectConfig, 'test')).to.be.true
+    expect(isInstalled(projectConfig, 'test')).toBeTruthy()
   );
 
   it('should return false when project is not in build.gradle', () =>
-    expect(isInstalled(projectConfig, 'test2')).to.be.false
+    expect(isInstalled(projectConfig, 'test2')).toBeFalsy()
   );
-
-  after(mock.restore);
 });
