@@ -384,7 +384,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     new GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
       @Override
       protected void doInBackgroundGuarded(Void... params) {
-        OkHttpCallUtil.cancelTag(mClient, requestId);
+        OkHttpCallUtil.cancelTag(mClient, Integer.valueOf(requestId));
       }
     }.execute();
   }
