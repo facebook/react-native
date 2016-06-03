@@ -216,6 +216,13 @@ var featured = [
 
 var apps = [
   {
+    name: 'AADPS',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple30/v4/f8/71/d3/f871d304-a6cc-7798-0788-28a0579ba22d/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/aadps-mei-guo-liu-xue-shen-qi/id1117744283?mt=8',
+    linkPlayStore: 'http://aadps.net/app.apk',
+    author: 'AADPS Inc.',
+  },
+  {
     name: 'Accio',
     icon: 'http://a3.mzstatic.com/us/r30/Purple3/v4/03/a1/5b/03a15b9f-04d7-a70a-620a-9c9850a859aa/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/accio-on-demand-delivery/id1047060673?mt=8',
