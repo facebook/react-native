@@ -51,7 +51,7 @@ const addCommand = (command: Command, config: Config) => {
     .description(command.description)
     .action(function runAction() {
       const passedOptions = this.opts();
-      const argv: Array<string> = arguments;
+      const argv: Array<string> = Array.from(arguments).slice(0, -1);
 
       Promise.resolve()
         .then(() => {
