@@ -25,10 +25,10 @@ function createCodeWithMap(bundle, dev) {
 
 function saveBundleAndMap(bundle, options, log) {
   const {
-    'bundle-output': bundleOutput,
-    'bundle-encoding': encoding,
+    bundleOutput,
+    bundleEncoding: encoding,
     dev,
-    'sourcemap-output': sourcemapOutput,
+    sourcemapOutput: sourcemapOutput,
   } = options;
 
   log('start');

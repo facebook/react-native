@@ -30,9 +30,9 @@ const MODULES_DIR = 'js-modules';
  */
 function saveAsAssets(bundle, options, log) {
   const {
-    'bundle-output': bundleOutput,
-    'bundle-encoding': encoding,
-    'sourcemap-output': sourcemapOutput,
+    bundleOutput: bundleOutput,
+    bundleEncoding: encoding,
+    sourcemapOutput: sourcemapOutput,
   } = options;
 
   log('start');

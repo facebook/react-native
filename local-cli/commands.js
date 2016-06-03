@@ -30,10 +30,9 @@ const documentedCommands: Array<Command> = [
   require('./runIOS/runIOS'),
   require('./runAndroid/runAndroid'),
   require('./library/library'),
+  require('./bundle/bundle'),
+  require('./bundle/unbundle'),
   // @todo(mike) start rewriting these files one by one
-  // require('./bundle/bundle'),
-  // require('./bundle/unbundle'),
-  //
   // require('./upgrade/upgrade'),
   // require('./link/link'),
   // require('./link/unlink'),

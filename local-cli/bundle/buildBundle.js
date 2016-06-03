@@ -20,59 +20,56 @@ function saveBundle(output, bundle, args) {
 }
 
 function buildBundle(args, config, output = outputBundle, packagerInstance) {
-  return new Promise((resolve, reject) => {
+  // This is used by a bazillion of npm modules we don't control so we don't
+  // have other choice than defining it as an env variable here.
+  process.env.NODE_ENV = args.dev ? 'development' : 'production';
 
-    // This is used by a bazillion of npm modules we don't control so we don't
-    // have other choice than defining it as an env variable here.
-    process.env.NODE_ENV = args.dev ? 'development' : 'production';
+  const options = {
+    projectRoots: config.getProjectRoots(),
+    assetRoots: config.getAssetRoots(),
+    blacklistRE: config.getBlacklistRE(args.platform),
+    getTransformOptionsModulePath: config.getTransformOptionsModulePath,
+    transformModulePath: args.transformer,
+    extraNodeModules: config.extraNodeModules,
+    nonPersistent: true,
+    resetCache: args.resetCache,
+  };
 
-    const options = {
-      projectRoots: config.getProjectRoots(),
-      assetRoots: config.getAssetRoots(),
-      blacklistRE: config.getBlacklistRE(args.platform),
-      getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-      transformModulePath: args.transformer,
-      extraNodeModules: config.extraNodeModules,
-      nonPersistent: true,
-      resetCache: args['reset-cache'],
-    };
+  const requestOpts = {
+    entryFile: args.entryFile,
+    sourceMapUrl: args.sourcemapOutput,
+    dev: args.dev,
+    minify: !args.dev,
+    platform: args.platform,
+  };
 
-    const requestOpts = {
-      entryFile: args['entry-file'],
-      sourceMapUrl: args['sourcemap-output'],
-      dev: args.dev,
-      minify: !args.dev,
-      platform: args.platform,
-    };
+  // If a packager instance was not provided, then just create one for this
+  // bundle command and close it down afterwards.
+  var shouldClosePackager = false;
+  if (!packagerInstance) {
+    packagerInstance = new Server(options);
+    shouldClosePackager = true;
+  }
 
-    // If a packager instance was not provided, then just create one for this
-    // bundle command and close it down afterwards.
-    var shouldClosePackager = false;
-    if (!packagerInstance) {
-      packagerInstance = new Server(options);
-      shouldClosePackager = true;
-    }
+  const bundlePromise = output.build(packagerInstance, requestOpts)
+    .then(bundle => {
+      if (shouldClosePackager) {
+        packagerInstance.end();
+      }
+      return saveBundle(output, bundle, args);
+    });
 
-    const bundlePromise = output.build(packagerInstance, requestOpts)
-      .then(bundle => {
-        if (shouldClosePackager) {
-          packagerInstance.end();
-        }
-        return saveBundle(output, bundle, args);
-      });
+  // Save the assets of the bundle
+  const assets = bundlePromise
+    .then(bundle => bundle.getAssets())
+    .then(outputAssets => saveAssets(
+      outputAssets,
+      args.platform,
+      args.assetsDest,
+    ));
 
-    // Save the assets of the bundle
-    const assets = bundlePromise
-      .then(bundle => bundle.getAssets())
-      .then(outputAssets => saveAssets(
-        outputAssets,
-        args.platform,
-        args['assets-dest']
-      ));
-
-    // When we're done saving bundle output and the assets, we're done.
-    resolve(assets);
-  });
+  // When we're done saving bundle output and the assets, we're done.
+  return assets;
 }
 
 module.exports = buildBundle;
