@@ -1,17 +1,18 @@
-const chai = require('chai');
-const expect = chai.expect;
-const makeBuildPatch = require('../../../src/android/patches/makeBuildPatch');
-const applyPatch = require('../../../src/android/patches/applyPatch');
+'use strict';
 
+jest.autoMockOff();
+
+const makeBuildPatch = require('../../../src/android/patches/makeBuildPatch');
 const name = 'test';
 
 describe('makeBuildPatch', () => {
   it('should build a patch function', () => {
-    expect(makeBuildPatch(name)).to.be.an('object');
+    expect(Object.prototype.toString(makeBuildPatch(name)))
+      .toBe('[object Object]');
   });
 
   it('should make a correct patch', () => {
     expect(makeBuildPatch(name).patch)
-      .to.be.equal(`    compile project(':${name}')\n`);
+      .toBe(`    compile project(':${name}')\n`);
   });
 });
