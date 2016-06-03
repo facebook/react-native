@@ -48,6 +48,14 @@
   _jsRequestingFirstResponder = NO;
 }
 
+- (void)didMoveToWindow
+{
+  if (_jsRequestingFirstResponder) {
+    [self becomeFirstResponder];
+    [self reactDidMakeFirstResponder];
+  }
+}
+
 @end
 
 @implementation RCTTextView
