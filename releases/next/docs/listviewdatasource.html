@@ -26,7 +26,7 @@ headers and rows.  If absent, data will be extracted with the
 following:</p><ul><li>getRowData(dataBlob, sectionID, rowID);</li><li>getSectionHeaderData(dataBlob, sectionID);</li><li>rowHasChanged(prevRowData, nextRowData);</li><li>sectionHeaderHasChanged(prevSectionData, nextSectionData);</li></ul></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="clonewithrows"></a>cloneWithRows<span class="propType">(dataBlob, rowIdentities)</span> <a class="hash-link" href="docs/listviewdatasource.html#clonewithrows">#</a></h4><div><p>Clones this <code>ListViewDataSource</code> with the specified <code>dataBlob</code> and
 <code>rowIdentities</code>. The <code>dataBlob</code> is just an arbitrary blob of data. At
 construction an extractor to get the interesting information was defined
-(or the default was used).</p><p>The <code>rowIdentities</code> is is a 2D array of identifiers for rows.
+(or the default was used).</p><p>The <code>rowIdentities</code> is a 2D array of identifiers for rows.
 ie. [[&#x27;a1&#x27;, &#x27;a2&#x27;], [&#x27;b1&#x27;, &#x27;b2&#x27;, &#x27;b3&#x27;], ...].  If not provided, it&#x27;s
 assumed that the keys of the section data are the row identities.</p><p>Note: This function does NOT clone the data in this data source. It simply
 passes the functions defined at construction to a new data source with
