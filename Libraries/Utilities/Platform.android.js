@@ -12,10 +12,17 @@
 
 'use strict';
 
-var Platform = {
+const Platform = {
   OS: 'android',
   get Version() { return require('NativeModules').AndroidConstants.Version; },
   select: (obj: Object) => obj.android,
+  lazySelect(obj: ?Object): ?Object {
+    if (!obj || !obj.android) {
+      return null;
+    }
+
+    return obj.android();
+  },
 };
 
 module.exports = Platform;

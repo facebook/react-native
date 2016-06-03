@@ -108,7 +108,7 @@ if (cli) {
   default:
     console.error(
       'Command `%s` unrecognized. ' +
-      'Did you mean to run this inside a react-native project?',
+      'Make sure that you have run `npm install` and that you are inside a react-native project.',
       commands[0]
     );
     process.exit(1);
