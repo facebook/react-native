@@ -201,8 +201,8 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions
   }
 
   if (self.requestPermissionsResolveBlock != nil) {
-    NSString *message = @"Cannot call requestPermissions twice before the first has returned.";
-    [NSException raise:RCTFatalExceptionName format:@"%@", message];
+    RCTLogError(@"Cannot call requestPermissions twice before the first has returned.");
+    return;
   }
 
   self.requestPermissionsResolveBlock = resolve;
