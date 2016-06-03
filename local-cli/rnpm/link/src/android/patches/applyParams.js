@@ -1,4 +1,4 @@
-const toCamelCase = require('lodash').camelCase;;
+const toCamelCase = require('lodash').camelCase;
 
 module.exports = function applyParams(str, params, prefix) {
   return str.replace(
