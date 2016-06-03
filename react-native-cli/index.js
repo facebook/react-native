@@ -213,11 +213,11 @@ function getInstallPackage(rnPackage) {
 }
 
 function run(root, projectName, rnPackage) {
-  exec('npm install --save ' + getInstallPackage(rnPackage), function(e, stdout, stderr) {
+  exec('npm install --save --save-exact ' + getInstallPackage(rnPackage), function(e, stdout, stderr) {
     if (e) {
       console.log(stdout);
       console.error(stderr);
-      console.error('`npm install --save react-native` failed');
+      console.error('`npm install --save --save-exact react-native` failed');
       process.exit(1);
     }
 
@@ -229,10 +229,10 @@ function run(root, projectName, rnPackage) {
 }
 
 function runVerbose(root, projectName, rnPackage) {
-  var proc = spawn('npm', ['install', '--verbose', '--save', getInstallPackage(rnPackage)], {stdio: 'inherit'});
+  var proc = spawn('npm', ['install', '--verbose', '--save', '--save-exact', getInstallPackage(rnPackage)], {stdio: 'inherit'});
   proc.on('close', function (code) {
     if (code !== 0) {
-      console.error('`npm install --save react-native` failed');
+      console.error('`npm install --save --save-exact react-native` failed');
       return;
     }
 
