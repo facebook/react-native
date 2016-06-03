@@ -166,9 +166,9 @@ RCT_EXPORT_MODULE()
   }
   UIUserNotificationSettings *notificationSettings = notification.userInfo;
   NSDictionary *notificationTypes = @{
-    @"alert": @((BOOL)notificationSettings.types & UIUserNotificationTypeAlert),
-    @"sound": @((BOOL)notificationSettings.types & UIUserNotificationTypeSound),
-    @"badge": @((BOOL)notificationSettings.types & UIUserNotificationTypeBadge),
+    @"alert": @((notificationSettings.types & UIUserNotificationTypeAlert) > 0),
+    @"sound": @((notificationSettings.types & UIUserNotificationTypeSound) > 0),
+    @"badge": @((notificationSettings.types & UIUserNotificationTypeBadge) > 0),
   };
 
   self.requestPermissionsResolveBlock(notificationTypes);
