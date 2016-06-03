@@ -2,7 +2,7 @@ const groupBy = require('lodash').groupBy;
 const mime = require('mime');
 
 /**
- * Since there are no officialy registered MIME types
+ * Since there are no officially registered MIME types
  * for ttf/otf yet http://www.iana.org/assignments/media-types/media-types.xhtml,
  * we define two non-standard ones for the sake of parsing
  */

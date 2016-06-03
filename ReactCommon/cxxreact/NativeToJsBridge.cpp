@@ -312,12 +312,15 @@ ExecutorToken NativeToJsBridge::getTokenForExecutor(JSExecutor& executor) {
 void NativeToJsBridge::destroy() {
   m_delegate->quitQueueSynchronous();
   auto* executorMessageQueueThread = getMessageQueueThread(m_mainExecutorToken);
+  // All calls made through runOnExecutorQueue have an early exit if
+  // m_destroyed is true. Setting this before the runOnQueueSync will cause
+  // pending work to be cancelled and we won't have to wait for it.
+  *m_destroyed = true;
   executorMessageQueueThread->runOnQueueSync([this, executorMessageQueueThread] {
     m_mainExecutor->destroy();
     executorMessageQueueThread->quitSynchronous();
     unregisterExecutor(*m_mainExecutor);
     m_mainExecutor = nullptr;
-    *m_destroyed = true;
   });
 }
 

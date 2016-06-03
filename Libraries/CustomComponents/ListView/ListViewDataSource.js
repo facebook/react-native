@@ -145,7 +145,7 @@ class ListViewDataSource {
    * construction an extractor to get the interesting information was defined
    * (or the default was used).
    *
-   * The `rowIdentities` is is a 2D array of identifiers for rows.
+   * The `rowIdentities` is a 2D array of identifiers for rows.
    * ie. [['a1', 'a2'], ['b1', 'b2', 'b3'], ...].  If not provided, it's
    * assumed that the keys of the section data are the row identities.
    *

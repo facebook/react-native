@@ -1,7 +1,7 @@
 const fs = require('fs');
 const getReactVersion = require('../getReactNativeVersion');
 const getPrefix = require('./getPrefix');
-const toCamelCase = require('to-camel-case');
+const toCamelCase = require('lodash').camelCase;
 
 const revokePatch = require('./patches/revokePatch');
 const makeSettingsPatch = require('./patches/makeSettingsPatch');
