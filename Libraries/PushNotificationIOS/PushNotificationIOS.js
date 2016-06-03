@@ -216,12 +216,20 @@ class PushNotificationIOS {
    *
    * If a map is provided to the method, only the permissions with truthy values
    * will be requested.
+
+   * This method returns a promise that will resolve when the user accepts,
+   * rejects, or if the permissions were previously rejected. The promise
+   * resolves to the current state of the permission.
    */
   static requestPermissions(permissions?: {
     alert?: boolean,
     badge?: boolean,
     sound?: boolean
-  }) {
+  }): Promise<{
+    alert: boolean,
+    badge: boolean,
+    sound: boolean
+  }> {
     var requestedPermissions = {};
     if (permissions) {
       requestedPermissions = {
@@ -236,7 +244,7 @@ class PushNotificationIOS {
         sound: true
       };
     }
-    RCTPushNotificationManager.requestPermissions(requestedPermissions);
+    return RCTPushNotificationManager.requestPermissions(requestedPermissions);
   }
 
   /**
