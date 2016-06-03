@@ -28,7 +28,7 @@ function saveBundleAndMap(bundle, options, log) {
     bundleOutput,
     bundleEncoding: encoding,
     dev,
-    sourcemapOutput: sourcemapOutput,
+    sourcemapOutput
   } = options;
 
   log('start');

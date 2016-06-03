@@ -28,7 +28,7 @@ function saveAsIndexedFile(bundle, options, log) {
   const {
     bundleOutput,
     bundleEncoding: encoding,
-    sourcemapOutput: sourcemapOutput,
+    sourcemapOutput
   } = options;
 
   log('start');
