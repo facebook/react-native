@@ -36,7 +36,7 @@ function init(projectDir, argsOrName) {
   );
 
   env.register(
-    require.resolve(path.join(__dirname, 'generator')),
+    require.resolve(path.join(__dirname, '../generator')),
     'react:app'
   );
 
