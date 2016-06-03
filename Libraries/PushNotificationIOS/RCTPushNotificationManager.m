@@ -161,19 +161,16 @@ RCT_EXPORT_MODULE()
 
 - (void)handleRegisterUserNotificationSettings:(NSNotification *)notification
 {
-  if (self.requestPermissionsResolveBlock == nil) return;
-
-  NSMutableDictionary* notificationTypes = [NSMutableDictionary dictionaryWithObjectsAndKeys:@NO, @"alert", @NO, @"badge", @NO, @"sound", nil];
+  if (self.requestPermissionsResolveBlock == nil) {
+    return;
+  }
   UIUserNotificationSettings *notificationSettings = notification.userInfo;
-  if (notificationSettings.types & UIUserNotificationTypeAlert) {
-    notificationTypes[@"alert"] = @YES;
-  }
-  if (notificationSettings.types & UIUserNotificationTypeSound) {
-    notificationTypes[@"sound"] = @YES;
-  }
-  if (notificationSettings.types & UIUserNotificationTypeBadge) {
-    notificationTypes[@"badge"] = @YES;
-  }
+  NSDictionary *notificationTypes = @{
+    @"alert": [NSNumber numberWithBool:notificationSettings.types & UIUserNotificationTypeAlert],
+    @"sound": [NSNumber numberWithBool:notificationSettings.types & UIUserNotificationTypeSound],
+    @"badge": [NSNumber numberWithBool:notificationSettings.types & UIUserNotificationTypeBadge],
+  };
+
   self.requestPermissionsResolveBlock(notificationTypes);
   self.requestPermissionsResolveBlock = nil;
 }
