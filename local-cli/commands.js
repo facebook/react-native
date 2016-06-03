@@ -11,7 +11,6 @@
 'use strict';
 
 const Config = require('./util/Config');
-const rnpm = require('./rnpm/core/src/config');
 
 export type Command = {
   name: string,
