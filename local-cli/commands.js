@@ -34,6 +34,8 @@ const withRnpmConfig = func => (argv, config, args) => func(rnpm, argv, args);
 const rnpmCommands = [
   require('./rnpm/link/link'),
   require('./rnpm/link/unlink'),
+  require('./rnpm/install/install'),
+  require('./rnpm/install/uninstall'),
 ].map(cmd => {
   cmd.func = withRnpmConfig(cmd.func);
   return cmd;
