@@ -26,7 +26,7 @@ const SIZEOF_UINT32 = 4;
  */
 function saveAsIndexedFile(bundle, options, log) {
   const {
-    bundleOutput: bundleOutput,
+    bundleOutput,
     bundleEncoding: encoding,
     sourcemapOutput: sourcemapOutput,
   } = options;
