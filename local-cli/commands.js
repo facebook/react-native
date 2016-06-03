@@ -37,8 +37,7 @@ const documentedCommands = [
   require('./rnpm/link/unlink'),
   require('./rnpm/install/install'),
   require('./rnpm/install/uninstall'),
-  // @todo(mike) start rewriting these files one by one
-  // require('./upgrade/upgrade'),
+  require('./upgrade/upgrade'),
 ];
 
 // The user should never get here because projects are inited by
