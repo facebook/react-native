@@ -11,6 +11,7 @@
 'use strict';
 
 const Config = require('./util/Config');
+const rnpm = require('./rnpm/core/src/config');
 
 export type Command = {
   name: string,
@@ -25,7 +26,20 @@ export type Command = {
   }>,
 };
 
-const documentedCommands: Array<Command> = [
+const withRnpmConfig = func => (argv, config, args) => func(rnpm, argv, args);
+
+// For now, define here all commands that need `rnpm` config instead
+// of default config. Once `Config` is merged, @Kureev - i think
+// we can just move them to `documentedCommands` ;)
+const rnpmCommands = [
+  require('./rnpm/link/link'),
+  require('./rnpm/link/unlink'),
+].map(cmd => {
+  cmd.func = withRnpmConfig(cmd.func);
+  return cmd;
+});
+
+const documentedCommands = [
   require('./server/server'),
   require('./runIOS/runIOS'),
   require('./runAndroid/runAndroid'),
@@ -34,13 +48,11 @@ const documentedCommands: Array<Command> = [
   require('./bundle/unbundle'),
   // @todo(mike) start rewriting these files one by one
   // require('./upgrade/upgrade'),
-  // require('./link/link'),
-  // require('./link/unlink'),
 ];
 
 // The user should never get here because projects are inited by
 // using `react-native-cli` from outside a project directory.
-const undocumentedCommands: Array<Command> = [
+const undocumentedCommands = [
   {
     name: 'init',
     func: () => {
@@ -52,4 +64,10 @@ const undocumentedCommands: Array<Command> = [
   },
 ];
 
-module.exports = documentedCommands.concat(undocumentedCommands);
+const commands: Array<Command> = [
+  ...documentedCommands,
+  ...rnpmCommands,
+  ...undocumentedCommands,
+];
+
+module.exports = commands;
