@@ -11,6 +11,7 @@
 'use strict';
 
 const Config = require('./util/Config');
+const getUserCommands = require('./rnpm/core/src/getCommands');
 
 export type Command = {
   name: string,
@@ -57,6 +58,7 @@ const undocumentedCommands = [
 const commands: Array<Command> = [
   ...documentedCommands,
   ...undocumentedCommands,
+  ...getUserCommands(),
 ];
 
 module.exports = commands;
