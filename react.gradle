@@ -49,7 +49,8 @@ gradle.projectsEvaluated {
             // Bundle task name for variant
             def bundleJsAndAssetsTaskName = "bundle${targetName}JsAndAssets"
 
-            // Additional packager commandline arguments
+            // Additional node and packager commandline arguments
+            def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
             def extraPackagerArgs = config.extraPackagerArgs ?: []
 
             def currentBundleTask = tasks.create(
@@ -75,10 +76,10 @@ gradle.projectsEvaluated {
                 // Set up dev mode
                 def devEnabled = !targetName.toLowerCase().contains("release")
                 if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                    commandLine("cmd", "/c", "node", "node_modules/react-native/local-cli/cli.js", "bundle", "--platform", "android", "--dev", "${devEnabled}",
+                    commandLine("cmd", "/c", *nodeExecutableAndArgs, "node_modules/react-native/local-cli/cli.js", "bundle", "--platform", "android", "--dev", "${devEnabled}",
                             "--reset-cache", "true", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraPackagerArgs)
                 } else {
-                    commandLine("node", "node_modules/react-native/local-cli/cli.js", "bundle", "--platform", "android", "--dev", "${devEnabled}",
+                    commandLine(*nodeExecutableAndArgs, "node_modules/react-native/local-cli/cli.js", "bundle", "--platform", "android", "--dev", "${devEnabled}",
                             "--reset-cache", "true", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraPackagerArgs)
                 }
 
