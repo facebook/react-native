@@ -19,7 +19,7 @@ var VALID_PARENT_STATES = [
   {routes: ['a','b'], index: 0},
   {routes: [{key: 'a'},{key: 'b', foo: 123}], index: 1},
   {routes: [{key: 'a'},{key: 'b'}], index: 0},
-  {routes: [{key: 'a'},{key: 'b'}], index: 2},
+  {routes: [{key: 'a'},{key: 'b'}], index: 1},
 ];
 var INVALID_PARENT_STATES = [
   'foo',
@@ -37,12 +37,12 @@ var INVALID_PARENT_STATES = [
 describe('NavigationStateUtils', () => {
 
   it('identifies parents correctly with getParent', () => {
-    for (var i = 0; i <= VALID_PARENT_STATES.length; i++) {
-      var navState = VALID_PARENT_STATES[0];
+    for (var i = 0; i < VALID_PARENT_STATES.length; i++) {
+      var navState = VALID_PARENT_STATES[i];
       expect(NavigationStateUtils.getParent(navState)).toBe(navState);
     }
-    for (var i = 0; i <= INVALID_PARENT_STATES.length; i++) {
-      var navState = INVALID_PARENT_STATES[0];
+    for (var i = 0; i < INVALID_PARENT_STATES.length; i++) {
+      var navState = INVALID_PARENT_STATES[i];
       expect(NavigationStateUtils.getParent(navState)).toBe(null);
     }
   });
