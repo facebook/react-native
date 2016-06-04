@@ -111,7 +111,7 @@ describe('getCommands', () => {
 
     afterEach(() => revert());
 
-    it('shoud load when installed locally', () => {
+    it('should load when installed locally', () => {
       revert = getCommands.__set__({
         __dirname: path.join(LOCAL_NODE_MODULES, 'rnpm/src'),
       });
