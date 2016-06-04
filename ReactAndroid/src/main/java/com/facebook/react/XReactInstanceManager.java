@@ -62,7 +62,8 @@ public abstract class XReactInstanceManager {
           Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
           mUIImplementationProvider,
           mNativeModuleCallExceptionHandler,
-          mJSCConfig);
+          mJSCConfig,
+          mRedBoxHandler);
     }
   }
 }

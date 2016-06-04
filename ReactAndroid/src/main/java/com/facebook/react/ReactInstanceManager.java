@@ -25,6 +25,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.devsupport.DevSupportManager;
+import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.ViewManager;
@@ -188,6 +189,7 @@ public abstract class ReactInstanceManager {
     protected @Nullable JSCConfig mJSCConfig;
     protected @Nullable Activity mCurrentActivity;
     protected @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
+    protected @Nullable RedBoxHandler mRedBoxHandler;
 
     protected Builder() {
     }
@@ -297,6 +299,11 @@ public abstract class ReactInstanceManager {
       return this;
     }
 
+    public Builder setRedBoxHandler(RedBoxHandler redBoxHandler) {
+      mRedBoxHandler = redBoxHandler;
+      return this;
+    }
+
     /**
      * Instantiates a new {@link ReactInstanceManagerImpl}.
      * Before calling {@code build}, the following must be called:
@@ -335,7 +342,8 @@ public abstract class ReactInstanceManager {
           Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
           mUIImplementationProvider,
           mNativeModuleCallExceptionHandler,
-          mJSCConfig);
+          mJSCConfig,
+          mRedBoxHandler);
     }
   }
 }

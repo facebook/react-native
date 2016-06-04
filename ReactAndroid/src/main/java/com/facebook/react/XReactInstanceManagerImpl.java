@@ -67,6 +67,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
+import com.facebook.react.devsupport.RedBoxHandler;
 
 import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_JS_MODULE_CONFIG_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_JS_MODULE_CONFIG_START;
@@ -125,6 +126,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final @Nullable JSCConfig mJSCConfig;
+  private @Nullable RedBoxHandler mRedBoxHandler;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -276,6 +278,37 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
       UIImplementationProvider uiImplementationProvider,
       NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
       @Nullable JSCConfig jscConfig) {
+
+    this(applicationContext,
+      currentActivity,
+      defaultHardwareBackBtnHandler,
+      jsBundleFile,
+      jsMainModuleName,
+      packages,
+      useDeveloperSupport,
+      bridgeIdleDebugListener,
+      initialLifecycleState,
+      uiImplementationProvider,
+      nativeModuleCallExceptionHandler,
+      jscConfig,
+      null);
+  }
+
+  /* package */ XReactInstanceManagerImpl(
+    Context applicationContext,
+    @Nullable Activity currentActivity,
+    @Nullable DefaultHardwareBackBtnHandler defaultHardwareBackBtnHandler,
+    @Nullable String jsBundleFile,
+    @Nullable String jsMainModuleName,
+    List<ReactPackage> packages,
+    boolean useDeveloperSupport,
+    @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
+    LifecycleState initialLifecycleState,
+    UIImplementationProvider uiImplementationProvider,
+    NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
+    @Nullable JSCConfig jscConfig,
+    @Nullable RedBoxHandler redBoxHandler) {
+
     initializeSoLoaderIfNecessary(applicationContext);
 
     // TODO(9577825): remove this
@@ -289,11 +322,13 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     mJSMainModuleName = jsMainModuleName;
     mPackages = packages;
     mUseDeveloperSupport = useDeveloperSupport;
+    mRedBoxHandler = redBoxHandler;
     mDevSupportManager = DevSupportManagerFactory.create(
         applicationContext,
         mDevInterface,
         mJSMainModuleName,
-        useDeveloperSupport);
+        useDeveloperSupport,
+        mRedBoxHandler);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
     mUIImplementationProvider = uiImplementationProvider;
