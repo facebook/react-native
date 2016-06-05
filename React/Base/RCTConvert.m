@@ -816,7 +816,9 @@ RCT_ENUM_CONVERTER(css_clip_t, (@{
 
 RCT_ENUM_CONVERTER(css_flex_direction_t, (@{
   @"row": @(CSS_FLEX_DIRECTION_ROW),
-  @"column": @(CSS_FLEX_DIRECTION_COLUMN)
+  @"row-reverse": @(CSS_FLEX_DIRECTION_ROW_REVERSE),
+  @"column": @(CSS_FLEX_DIRECTION_COLUMN),
+  @"column-reverse": @(CSS_FLEX_DIRECTION_COLUMN_REVERSE)
 }), CSS_FLEX_DIRECTION_COLUMN, intValue)
 
 RCT_ENUM_CONVERTER(css_justify_t, (@{

@@ -61,7 +61,8 @@ var LayoutPropTypes = {
   flexDirection: ReactPropTypes.oneOf([
     'row',
     'row-reverse',
-    'column'
+    'column',
+    'column-reverse'
   ]),
 
   // https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
