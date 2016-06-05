@@ -99,6 +99,7 @@
     "React",
     "React.podspec",
     "ReactAndroid",
+    "ReactCommon",
     "react.gradle",
     "android",
     "Libraries",
