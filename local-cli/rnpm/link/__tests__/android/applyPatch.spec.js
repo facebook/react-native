@@ -2,7 +2,7 @@
 
 jest.autoMockOff();
 
-const applyParams = require('../../../src/android/patches/applyParams');
+const applyParams = require('../../src/android/patches/applyParams');
 
 describe('applyParams', () => {
   it('apply params to the string', () => {

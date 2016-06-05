@@ -2,7 +2,7 @@
 
 jest.autoMockOff();
 
-const makeBuildPatch = require('../../../src/android/patches/makeBuildPatch');
+const makeBuildPatch = require('../../src/android/patches/makeBuildPatch');
 const name = 'test';
 
 describe('makeBuildPatch', () => {
@@ -12,7 +12,7 @@ describe('makeBuildPatch', () => {
   });
 
   it('should make a correct patch', () => {
-    expect(makeBuildPatch(name).patch)
-      .toBe(`    compile project(':${name}')\n`);
+    const {patch} = makeBuildPatch(name);
+    expect(patch).toBe(`    compile project(':${name}')\n`);
   });
 });

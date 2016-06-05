@@ -3,7 +3,7 @@
 jest.autoMockOff();
 
 const path = require('path');
-const makeSettingsPatch = require('../../../src/android/patches/makeSettingsPatch');
+const makeSettingsPatch = require('../../src/android/patches/makeSettingsPatch');
 
 const name = 'test';
 const projectConfig = {
@@ -27,7 +27,9 @@ describe('makeSettingsPatch', () => {
       dependencyConfig.sourceDir
     );
 
-    expect(makeSettingsPatch(name, dependencyConfig, projectConfig).patch)
+    const {patch} = makeSettingsPatch(name, dependencyConfig, projectConfig);
+
+    expect(patch)
       .toBe(
         `include ':${name}'\n` +
         `project(':${name}').projectDir = ` +
