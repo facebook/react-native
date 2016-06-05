@@ -1070,6 +1070,12 @@ var apps = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.cnyes.android',
     author: '鉅亨網',
   },
+  {
+    name: '厕所在哪',
+    icon: 'http://7xtp9h.com2.z0.glb.clouddn.com/toilet_icon.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/ce-suo-zai-na/id1114729267?l=en&mt=8'
+    author: 'lihua wang',
+  },
 ];
 
 var AppList = React.createClass({
