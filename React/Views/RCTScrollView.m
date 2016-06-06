@@ -378,6 +378,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSMutableArray<NSValue *> *_cachedChildFrames;
   BOOL _allowNextScrollNoMatterWhat;
   CGRect _lastClippedToRect;
+  CGSize _lastContentSize;
   uint16_t _coalescingKey;
   NSString *_lastEmittedEventName;
   NSHashTable *_scrollListeners;
@@ -398,6 +399,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     _contentInset = UIEdgeInsetsZero;
     _contentSize = CGSizeZero;
     _lastClippedToRect = CGRectNull;
+    _lastContentSize = CGSizeZero;
 
     _scrollEventThrottle = 0.0;
     _lastScrollDispatchTime = 0;
@@ -516,7 +518,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   const BOOL scrollsVertically = contentSize.height > bounds.size.height;
 
   const BOOL shouldClipAgain =
-    CGRectIsNull(_lastClippedToRect) ||
+    CGRectIsNull(_lastClippedToRect) || !CGSizeEqualToSize(_lastContentSize, contentSize) ||
     (scrollsHorizontally && (bounds.size.width < leeway || fabs(_lastClippedToRect.origin.x - bounds.origin.x) >= leeway)) ||
     (scrollsVertically && (bounds.size.height < leeway || fabs(_lastClippedToRect.origin.y - bounds.origin.y) >= leeway));
 
@@ -524,6 +526,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     const CGRect clipRect = CGRectInset(clipView.bounds, -leeway, -leeway);
     [self react_updateClippedSubviewsWithClipRect:clipRect relativeToView:clipView];
     _lastClippedToRect = bounds;
+    _contentSize = contentSize;
   }
 }
 
