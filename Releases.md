@@ -11,6 +11,7 @@ https://github.com/facebook/react-native/releases
 | 0.30.0  | week of July 4   | July 18        |
 | 0.31.0  | week of July 18  | Aug 1          |
 | 0.32.0  | week of Aug 1    | Aug 15         |
+| ...     | ...              | ...            |
 
 -------------------
 ## How to cut a new release branch
