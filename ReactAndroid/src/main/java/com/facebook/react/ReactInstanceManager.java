@@ -89,6 +89,11 @@ public abstract class ReactInstanceManager {
   public abstract void onBackPressed();
 
   /**
+   * This method will give JS the opportunity to receive intents via Linking.
+   */
+  public abstract void onNewIntent(Intent intent);
+
+  /**
    * Call this from {@link Activity#onPause()}. This notifies any listening modules so they can do
    * any necessary cleanup.
    */
