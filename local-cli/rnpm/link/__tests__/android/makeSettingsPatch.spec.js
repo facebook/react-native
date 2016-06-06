@@ -17,7 +17,7 @@ const dependencyConfig = {
 describe('makeSettingsPatch', () => {
   it('should build a patch function', () => {
     expect(Object.prototype.toString(
-      makeSettingsPatch(name, dependencyConfig, {}, projectConfig)
+      makeSettingsPatch(name, dependencyConfig, projectConfig)
     )).toBe('[object Object]');
   });
 
