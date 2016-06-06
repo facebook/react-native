@@ -77,8 +77,8 @@
                @"Expect to have 5 react subviews after calling manage children \
                with 5 tags to add, instead have %lu", (unsigned long)[[containerView reactSubviews] count]);
   for (UIView *view in addedViews) {
-    XCTAssertTrue([view superview] == containerView,
-                 @"Expected to have manage children successfully add children");
+    XCTAssertTrue([view reactSuperview] == containerView,
+                  @"Expected to have manage children successfully add children");
     [view removeFromSuperview];
   }
 }
@@ -95,7 +95,7 @@
   }
   for (NSInteger i = 2; i < 20; i++) {
     UIView *view = _uiManager.viewRegistry[@(i)];
-    [containerView addSubview:view];
+    [containerView insertReactSubview:view atIndex:containerView.reactSubviews.count];
   }
 
   // Remove views 1-5 from view 20
@@ -112,7 +112,7 @@
                with 5 tags to remove and 18 prior children, instead have %zd",
                containerView.reactSubviews.count);
   for (UIView *view in removedViews) {
-    XCTAssertTrue([view superview] == nil,
+    XCTAssertTrue([view reactSuperview] == nil,
                  @"Expected to have manage children successfully remove children");
     // After removing views are unregistered - we need to reregister
     _uiManager.viewRegistry[view.reactTag] = view;
@@ -155,7 +155,7 @@
 
   for (NSInteger i = 1; i < 11; i++) {
     UIView *view = _uiManager.viewRegistry[@(i)];
-    [containerView addSubview:view];
+    [containerView insertReactSubview:view atIndex:containerView.reactSubviews.count];
   }
 
   [_uiManager _manageChildren:@20

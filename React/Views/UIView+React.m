@@ -56,25 +56,37 @@
   return view.reactTag;
 }
 
-- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
-{
-  [self insertSubview:subview atIndex:atIndex];
-}
-
-- (void)removeReactSubview:(UIView *)subview
-{
-  RCTAssert(subview.superview == self, @"%@ is a not a subview of %@", subview, self);
-  [subview removeFromSuperview];
-}
-
 - (NSArray<UIView *> *)reactSubviews
 {
-  return self.subviews;
+  return objc_getAssociatedObject(self, _cmd);
 }
 
 - (UIView *)reactSuperview
 {
   return self.superview;
+}
+
+- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
+{
+  NSMutableArray *reactSubviews = (NSMutableArray *)self.reactSubviews;
+  if (!reactSubviews) {
+    reactSubviews = [NSMutableArray new];
+    objc_setAssociatedObject(self, @selector(reactSubviews), reactSubviews, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  }
+  [reactSubviews insertObject:subview atIndex:atIndex];
+}
+
+- (void)removeReactSubview:(UIView *)subview
+{
+  [(NSMutableArray *)self.reactSubviews removeObject:subview];
+  [subview removeFromSuperview];
+}
+
+- (void)didUpdateReactSubviews
+{
+  for (UIView *subview in self.reactSubviews) {
+    [self addSubview:subview];
+  }
 }
 
 - (void)reactSetFrame:(CGRect)frame

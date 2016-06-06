@@ -297,6 +297,11 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   return RCTIsReactRootView(self.reactTag);
 }
 
+- (void)didUpdateReactSubviews
+{
+  // Does nothing by default
+}
+
 - (void)dealloc
 {
   free_css_node(_cssNode);
