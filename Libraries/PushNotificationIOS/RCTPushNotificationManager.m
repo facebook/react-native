@@ -72,7 +72,7 @@ static NSDictionary *formatLocalNotification(UILocalNotification *notification)
   formattedLocalNotification[@"category"] = RCTNullIfNil(notification.category);
   formattedLocalNotification[@"soundName"] = RCTNullIfNil(notification.soundName);
   formattedLocalNotification[@"userInfo"] = RCTNullIfNil(RCTJSONClean(notification.userInfo));
-  return [NSDictionary dictionaryWithDictionary:formattedLocalNotification];
+  return formattedLocalNotification;
 }
 
 RCT_EXPORT_MODULE()
@@ -324,7 +324,6 @@ RCT_EXPORT_METHOD(getInitialNotification:(RCTPromiseResolveBlock)resolve
 }
 
 RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTResponseSenderBlock)callback)
-
 {
   NSArray<UILocalNotification *> *scheduledLocalNotifications = [UIApplication sharedApplication].scheduledLocalNotifications;
   NSMutableArray *formattedScheduledLocalNotifications = [[NSMutableArray alloc] init];
