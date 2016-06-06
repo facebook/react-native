@@ -2,8 +2,8 @@ const applyPatch = require('./patches/applyPatch');
 const makeStringsPatch = require('./patches/makeStringsPatch');
 const makeSettingsPatch = require('./patches/makeSettingsPatch');
 const makeBuildPatch = require('./patches/makeBuildPatch');
-const makeImportPatch = require('./makeImportPatch');
-const makePackagePatch = require('./makePackagePatch');
+const makeImportPatch = require('./patches/makeImportPatch');
+const makePackagePatch = require('./patches/makePackagePatch');
 
 module.exports = function registerNativeAndroidModule(
   name,

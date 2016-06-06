@@ -5,8 +5,8 @@ const revokePatch = require('./patches/revokePatch');
 const makeSettingsPatch = require('./patches/makeSettingsPatch');
 const makeBuildPatch = require('./patches/makeBuildPatch');
 const makeStringsPatch = require('./patches/makeStringsPatch');
-const makeImportPatch = require('./makeImportPatch');
-const makePackagePatch = require('./makePackagePatch');
+const makeImportPatch = require('./patches/makeImportPatch');
+const makePackagePatch = require('./patches/makePackagePatch');
 
 module.exports = function unregisterNativeAndroidModule(
   name,
