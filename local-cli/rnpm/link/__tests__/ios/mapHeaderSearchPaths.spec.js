@@ -12,7 +12,6 @@ const project = xcode.project(
 const reactPath = '"$(SRCROOT)/../node_modules/react-native/React/**"';
 
 describe('ios::mapHeaderSearchPaths', () => {
-
   beforeEach(() => {
     project.parseSync();
   });
@@ -22,5 +21,4 @@ describe('ios::mapHeaderSearchPaths', () => {
       expect(paths.find(p => p.indexOf(reactPath))).toBeDefined();
     });
   });
-
 });

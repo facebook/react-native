@@ -11,7 +11,6 @@ const project = xcode.project(
 );
 
 describe('ios::hasLibraryImported', () => {
-
   beforeEach(() => {
     project.parseSync();
   });
@@ -25,5 +24,4 @@ describe('ios::hasLibraryImported', () => {
     const libraries = project.pbxGroupByName('Libraries');
     expect(hasLibraryImported(libraries, 'ACME.xcodeproj')).toBeFalsy();
   });
-
 });

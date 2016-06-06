@@ -5,7 +5,6 @@ jest.autoMockOff();
 const getHeadersInFolder = require('../../src/ios/getHeadersInFolder');
 
 describe('ios::getHeadersInFolder', () => {
-
   xit('should return an array of all headers in given folder', () => {
     jest.setMock({
       'FileA.h': '',

@@ -12,7 +12,6 @@ const project = xcode.project(
 );
 
 describe('ios::addFileToProject', () => {
-
   beforeEach(() => {
     project.parseSync();
   });
@@ -25,5 +24,4 @@ describe('ios::addFileToProject', () => {
       )
     ).toBeTruthy();
   });
-
 });

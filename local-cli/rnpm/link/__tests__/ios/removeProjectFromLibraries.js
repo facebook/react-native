@@ -14,7 +14,6 @@ const project = xcode.project(
 );
 
 describe('ios::removeProjectFromLibraries', () => {
-
   beforeEach(() => {
     project.parseSync();
 
@@ -34,5 +33,4 @@ describe('ios::removeProjectFromLibraries', () => {
 
     expect(child.comment).not.toBe(file.basename);
   });
-
 });

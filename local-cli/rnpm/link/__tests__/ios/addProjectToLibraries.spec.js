@@ -13,7 +13,6 @@ const project = xcode.project(
 );
 
 describe('ios::addProjectToLibraries', () => {
-
   beforeEach(() => {
     project.parseSync();
   });
@@ -29,5 +28,4 @@ describe('ios::addProjectToLibraries', () => {
     expect((['value', 'comment']), child).toBeTruthy();
     expect(child.comment).toBe(file.basename);
   });
-
 });
