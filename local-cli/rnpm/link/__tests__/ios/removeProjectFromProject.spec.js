@@ -7,7 +7,6 @@ const pbxFile = require('xcode/lib/pbxFile');
 const addFileToProject = require('../../src/ios/addFileToProject');
 const removeProjectFromProject = require('../../src/ios/removeProjectFromProject');
 const path = require('path');
-const include = require('../include');
 
 const project = xcode.project(
   path.join(__dirname, '../fixtures/project.pbxproj')
