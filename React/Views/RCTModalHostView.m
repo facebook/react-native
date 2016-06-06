@@ -55,10 +55,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
   }
 }
 
-- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
+- (NSArray<UIView *> *)reactSubviews
+{
+  return _reactSubview ? @[_reactSubview] : @[];
+}
+
+- (void)insertReactSubview:(UIView *)subview atIndex:(__unused NSInteger)atIndex
 {
   RCTAssert(_reactSubview == nil, @"Modal view can only have one subview");
-  [super insertReactSubview:subview atIndex:atIndex];
   [subview addGestureRecognizer:_touchHandler];
   subview.autoresizingMask = UIViewAutoresizingFlexibleHeight |
                              UIViewAutoresizingFlexibleWidth;
@@ -70,14 +74,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 - (void)removeReactSubview:(UIView *)subview
 {
   RCTAssert(subview == _reactSubview, @"Cannot remove view other than modal view");
-  [super removeReactSubview:subview];
   [subview removeGestureRecognizer:_touchHandler];
+  [subview removeFromSuperview];
   _reactSubview = nil;
-}
-
-- (void)didUpdateReactSubviews
-{
-  // Do nothing, as subview (singular) is managed by `insertReactSubview:atIndex:`
 }
 
 - (void)dismissModalViewController

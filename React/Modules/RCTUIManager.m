@@ -893,18 +893,16 @@ static void RCTSetChildren(NSNumber *containerTag,
       [container insertReactSubview:view atIndex:index++];
     }
   }
-
-  [container didUpdateReactSubviews];
 }
 
-RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
+RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
                   moveFromIndices:(NSArray<NSNumber *> *)moveFromIndices
                   moveToIndices:(NSArray<NSNumber *> *)moveToIndices
                   addChildReactTags:(NSArray<NSNumber *> *)addChildReactTags
                   addAtIndices:(NSArray<NSNumber *> *)addAtIndices
                   removeAtIndices:(NSArray<NSNumber *> *)removeAtIndices)
 {
-  [self _manageChildren:containerTag
+  [self _manageChildren:containerReactTag
         moveFromIndices:moveFromIndices
           moveToIndices:moveToIndices
       addChildReactTags:addChildReactTags
@@ -913,7 +911,7 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
                registry:(NSMutableDictionary<NSNumber *, id<RCTComponent>> *)_shadowViewRegistry];
 
   [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
-    [uiManager _manageChildren:containerTag
+    [uiManager _manageChildren:containerReactTag
                moveFromIndices:moveFromIndices
                  moveToIndices:moveToIndices
              addChildReactTags:addChildReactTags
@@ -923,7 +921,7 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
   }];
 }
 
-- (void)_manageChildren:(NSNumber *)containerTag
+- (void)_manageChildren:(NSNumber *)containerReactTag
         moveFromIndices:(NSArray<NSNumber *> *)moveFromIndices
           moveToIndices:(NSArray<NSNumber *> *)moveToIndices
       addChildReactTags:(NSArray<NSNumber *> *)addChildReactTags
@@ -931,7 +929,7 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
         removeAtIndices:(NSArray<NSNumber *> *)removeAtIndices
                registry:(NSMutableDictionary<NSNumber *, id<RCTComponent>> *)registry
 {
-  id<RCTComponent> container = registry[containerTag];
+  id<RCTComponent> container = registry[containerReactTag];
   RCTAssert(moveFromIndices.count == moveToIndices.count, @"moveFromIndices had size %tu, moveToIndices had size %tu", moveFromIndices.count, moveToIndices.count);
   RCTAssert(addChildReactTags.count == addAtIndices.count, @"there should be at least one React child to add");
 
@@ -965,8 +963,6 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
     [container insertReactSubview:destinationsToChildrenToAdd[reactIndex]
                           atIndex:reactIndex.integerValue];
   }
-
-  [container didUpdateReactSubviews];
 }
 
 RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag

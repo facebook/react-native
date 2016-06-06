@@ -23,6 +23,7 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 {
   UIView *_legalLabel;
   CLLocationManager *_locationManager;
+  NSMutableArray<UIView *> *_reactSubviews;
 }
 
 - (instancetype)init
@@ -30,6 +31,7 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   if ((self = [super init])) {
 
     _hasStartedRendering = NO;
+    _reactSubviews = [NSMutableArray new];
 
     // Find Apple link label
     for (UIView *subview in self.subviews) {
@@ -49,9 +51,19 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   [_regionChangeObserveTimer invalidate];
 }
 
-- (void)reactUpdateSubviews
+- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
 {
-  // Do nothing, as annotation views are managed by `setAnnotations:` method
+  [_reactSubviews insertObject:subview atIndex:atIndex];
+}
+
+- (void)removeReactSubview:(UIView *)subview
+{
+  [_reactSubviews removeObject:subview];
+}
+
+- (NSArray<UIView *> *)reactSubviews
+{
+  return _reactSubviews;
 }
 
 - (void)layoutSubviews

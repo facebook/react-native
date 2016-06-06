@@ -17,19 +17,8 @@
 
 @interface UIView (React) <RCTComponent>
 
-/**
- * RCTComponent interface.
- */
-- (NSArray<UIView *> *)reactSubviews NS_REQUIRES_SUPER;
-- (UIView *)reactSuperview NS_REQUIRES_SUPER;
-- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex NS_REQUIRES_SUPER;
-- (void)removeReactSubview:(UIView *)subview NS_REQUIRES_SUPER;
-
-/**
- * Updates the subviews array based on the reactSubviews. Default behavior is
- * to insert the reactSubviews into the UIView.
- */
-- (void)didUpdateReactSubviews;
+- (NSArray<UIView *> *)reactSubviews;
+- (UIView *)reactSuperview;
 
 /**
  * Used by the UIIManager to set the view frame.
