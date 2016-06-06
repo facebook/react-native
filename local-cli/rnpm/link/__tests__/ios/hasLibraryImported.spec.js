@@ -1,9 +1,14 @@
-const chai = require('chai');
-const expect = chai.expect;
+'use strict';
+
+jest.autoMockOff();
+
 const xcode = require('xcode');
 const hasLibraryImported = require('../../src/ios/hasLibraryImported');
+const path = require('path');
 
-const project = xcode.project('test/fixtures/project.pbxproj');
+const project = xcode.project(
+  path.join(__dirname, '../fixtures/project.pbxproj')
+);
 
 describe('ios::hasLibraryImported', () => {
 
@@ -13,12 +18,12 @@ describe('ios::hasLibraryImported', () => {
 
   it('should return true if project has been already imported', () => {
     const libraries = project.pbxGroupByName('Libraries');
-    expect(hasLibraryImported(libraries, 'React.xcodeproj')).to.be.true;
+    expect(hasLibraryImported(libraries, 'React.xcodeproj')).toBeTruthy();
   });
 
   it('should return false if project is not imported', () => {
     const libraries = project.pbxGroupByName('Libraries');
-    expect(hasLibraryImported(libraries, 'ACME.xcodeproj')).to.be.false;
+    expect(hasLibraryImported(libraries, 'ACME.xcodeproj')).toBeFalsy();
   });
 
 });

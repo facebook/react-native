@@ -3,8 +3,8 @@
 jest.autoMockOff();
 
 const xcode = require('xcode');
-const path = require('path');
 const getPlistPath = require('../../src/ios/getPlistPath');
+const path = require('path');
 
 const project = xcode.project(
   path.join(__dirname, '../fixtures/project.pbxproj')

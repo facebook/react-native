@@ -1,20 +1,23 @@
-const chai = require('chai');
-const expect = chai.expect;
+'use strict';
+
+jest.autoMockOff();
+
 const xcode = require('xcode');
 const getProducts = require('../../src/ios/getProducts');
+const path = require('path');
 
-const project = xcode.project('test/fixtures/linearGradient.pbxproj');
+const project = xcode.project(
+  path.join(__dirname, '../fixtures/project.pbxproj')
+);
 
 describe('ios::getProducts', () => {
-
   beforeEach(() => {
     project.parseSync();
   });
 
   it('should return an array of static libraries project exports', () => {
     const products = getProducts(project);
-    expect(products.length).to.equals(1);
-    expect(products).to.contains('libBVLinearGradient.a');
+    expect(products.length).toBe(1);
+    expect(products).toContain('libRCTActionSheet.a');
   });
-
 });

@@ -1,12 +1,17 @@
-const chai = require('chai');
-const expect = chai.expect;
+'use strict';
+
+jest.autoMockOff();
+
 const xcode = require('xcode');
 const PbxFile = require('xcode/lib/pbxFile');
 const addProjectToLibraries = require('../../src/ios/addProjectToLibraries');
 const removeProjectFromLibraries = require('../../src/ios/removeProjectFromLibraries');
 const last = require('lodash').last;
+const path = require('path');
 
-const project = xcode.project('test/fixtures/project.pbxproj');
+const project = xcode.project(
+  path.join(__dirname, '../fixtures/project.pbxproj')
+);
 
 describe('ios::removeProjectFromLibraries', () => {
 
@@ -27,7 +32,7 @@ describe('ios::removeProjectFromLibraries', () => {
 
     const child = last(libraries.children);
 
-    expect(child.comment).to.not.equals(file.basename);
+    expect(child.comment).not.toBe(file.basename);
   });
 
 });

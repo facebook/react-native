@@ -1,21 +1,25 @@
-const chai = require('chai');
-const expect = chai.expect;
+'use strict';
+
+jest.autoMockOff();
+
 const xcode = require('xcode');
+const path = require('path');
 const createGroup = require('../../src/ios/createGroup');
 const getGroup = require('../../src/ios/getGroup');
 const last = require('lodash').last;
 
-const project = xcode.project('test/fixtures/project.pbxproj');
+const project = xcode.project(
+  path.join(__dirname, '../fixtures/project.pbxproj')
+);
 
 describe('ios::createGroup', () => {
-
   beforeEach(() => {
     project.parseSync();
   });
 
   it('should create a group with given name', () => {
     const createdGroup = createGroup(project, 'Resources');
-    expect(createdGroup.name).to.equals('Resources');
+    expect(createdGroup.name).toBe('Resources');
   });
 
   it('should attach group to main project group', () => {
@@ -24,7 +28,7 @@ describe('ios::createGroup', () => {
 
     expect(
       last(mainGroup.children).comment
-    ).to.equals(createdGroup.name);
+    ).toBe(createdGroup.name);
   });
 
   it('should create a nested group with given path', () => {
@@ -33,7 +37,7 @@ describe('ios::createGroup', () => {
 
     expect(
       last(outerGroup.children).comment
-    ).to.equals(createdGroup.name);
+    ).toBe(createdGroup.name);
   });
 
   it('should-not create already created groups', () => {
@@ -42,8 +46,11 @@ describe('ios::createGroup', () => {
     const mainGroup = getGroup(project);
 
     expect(
-      mainGroup.children.filter(group => group.comment === 'Libraries').length
-    ).to.equals(1);
-    expect(last(outerGroup.children).comment).to.equals(createdGroup.name);
+      mainGroup
+        .children
+        .filter(group => group.comment === 'Libraries')
+        .length
+    ).toBe(1);
+    expect(last(outerGroup.children).comment).toBe(createdGroup.name);
   });
 });

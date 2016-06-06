@@ -1,5 +1,7 @@
-const chai = require('chai');
-const expect = chai.expect;
+'use strict';
+
+jest.autoMockOff();
+
 const getHeaderSearchPath = require('../../src/ios/getHeaderSearchPath');
 const path = require('path');
 
@@ -18,7 +20,7 @@ describe('ios::getHeaderSearchPath', () => {
 
     const searchPath = getHeaderSearchPath(SRC_DIR, files);
 
-    expect(searchPath).to.equal(
+    expect(searchPath).toBe(
       `"${['$(SRCROOT)', '..', 'node_modules', 'package'].join(path.sep)}"`
     );
   });
@@ -34,7 +36,7 @@ describe('ios::getHeaderSearchPath', () => {
 
     const searchPath = getHeaderSearchPath(SRC_DIR, files);
 
-    expect(searchPath).to.equal(
+    expect(searchPath).toBe(
       `"${['$(SRCROOT)', '..', 'node_modules', 'package', 'src'].join(path.sep)}/**"`
     );
   });
@@ -51,7 +53,7 @@ describe('ios::getHeaderSearchPath', () => {
 
     const searchPath = getHeaderSearchPath(SRC_DIR, files);
 
-    expect(searchPath).to.equal(
+    expect(searchPath).toBe(
       `"${['$(SRCROOT)', '..', 'node_modules', 'package', 'src'].join(path.sep)}/**"`
     );
   });

@@ -1,9 +1,14 @@
-const chai = require('chai');
-const expect = chai.expect;
+'use strict';
+
+jest.autoMockOff();
+
 const xcode = require('xcode');
 const mapHeaderSearchPaths = require('../../src/ios/mapHeaderSearchPaths');
+const path = require('path');
 
-const project = xcode.project('test/fixtures/project.pbxproj');
+const project = xcode.project(
+  path.join(__dirname, '../fixtures/project.pbxproj')
+);
 const reactPath = '"$(SRCROOT)/../node_modules/react-native/React/**"';
 
 describe('ios::mapHeaderSearchPaths', () => {
@@ -13,10 +18,8 @@ describe('ios::mapHeaderSearchPaths', () => {
   });
 
   it('should iterate over headers with `react` added only', () => {
-    const path = '../../node_modules/path-to-module/**';
-
     mapHeaderSearchPaths(project, paths => {
-      expect(paths.find(path => path.indexOf(reactPath))).to.be.not.empty;
+      expect(paths.find(p => p.indexOf(reactPath))).toBeDefined();
     });
   });
 
