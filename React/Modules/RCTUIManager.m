@@ -778,12 +778,26 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
 
 - (void)_removeChildren:(NSArray<id<RCTComponent>> *)children
           fromContainer:(id<RCTComponent>)container
-              permanent:(BOOL)permanent
 {
-  RCTLayoutAnimation *layoutAnimation = _layoutAnimation;
-  RCTAnimation *deleteAnimation = layoutAnimation.deleteAnimation;
+  for (id<RCTComponent> removedChild in children) {
+    [container removeReactSubview:removedChild];
+  }
+}
+
+/**
+ * Remove children views from their parent with an animation.
+ *
+ * @returns Views that will actually be animated.
+ */
+- (NSArray<id<RCTComponent>> *)_removeChildren:(NSArray<id<RCTComponent>> *)children
+                                 fromContainer:(id<RCTComponent>)container
+                                 withAnimation:(RCTLayoutAnimation *)animation
+{
+  RCTAnimation *deleteAnimation = animation.deleteAnimation;
 
   __block NSUInteger completionsCalled = 0;
+
+  NSMutableArray<id<RCTComponent>> *animatedViews = [NSMutableArray new];
 
   for (id<RCTComponent> removedChild in children) {
 
@@ -792,17 +806,19 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
 
       [container removeReactSubview:removedChild];
 
-      if (layoutAnimation.callback && completionsCalled == children.count) {
-        layoutAnimation.callback(@[@(finished)]);
+      if (animation.callback && completionsCalled == children.count) {
+        animation.callback(@[@(finished)]);
 
         // It's unsafe to call this callback more than once, so we nil it out here
         // to make sure that doesn't happen.
-        layoutAnimation.callback = nil;
+        animation.callback = nil;
       }
     };
 
-    if (permanent && deleteAnimation && [removedChild isKindOfClass: [UIView class]]) {
+    if ([removedChild isKindOfClass: [UIView class]]) {
       UIView *view = (UIView *)removedChild;
+
+      [animatedViews addObject:view];
 
       // Disable user interaction while the view is animating since JS won't receive
       // the view events anyway.
@@ -823,7 +839,10 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
       [container removeReactSubview:removedChild];
     }
   }
+  
+  return animatedViews;
 }
+
 
 RCT_EXPORT_METHOD(removeRootView:(nonnull NSNumber *)rootReactTag)
 {
@@ -938,8 +957,17 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
     [self _childrenToRemoveFromContainer:container atIndices:removeAtIndices];
   NSArray<id<RCTComponent>> *temporarilyRemovedChildren =
     [self _childrenToRemoveFromContainer:container atIndices:moveFromIndices];
-  [self _removeChildren:permanentlyRemovedChildren fromContainer:container permanent:true];
-  [self _removeChildren:temporarilyRemovedChildren fromContainer:container permanent:false];
+
+  NSArray<id<RCTComponent>> *deleteAnimatedViews = nil;
+  if (_layoutAnimation.deleteAnimation) {
+    deleteAnimatedViews = [self _removeChildren:permanentlyRemovedChildren
+                                  fromContainer:container
+                                  withAnimation:_layoutAnimation];
+  } else {
+    [self _removeChildren:permanentlyRemovedChildren fromContainer:container];
+  }
+
+  [self _removeChildren:temporarilyRemovedChildren fromContainer:container];
 
   [self _purgeChildren:permanentlyRemovedChildren fromRegistry:registry];
 
@@ -960,8 +988,22 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
   NSArray<NSNumber *> *sortedIndices =
     [destinationsToChildrenToAdd.allKeys sortedArrayUsingSelector:@selector(compare:)];
   for (NSNumber *reactIndex in sortedIndices) {
+    NSInteger insertAtIndex = reactIndex.integerValue;
+
+    // When performing layout delete animations views are not removed immediatly
+    // from their container so we need to offset the insert index if a view
+    // that is going to be removed is before the view we want to insert.
+    if (deleteAnimatedViews) {
+      for (NSInteger index = 0; index < insertAtIndex; index++) {
+        id<RCTComponent> subview = [container reactSubviews][index];
+        if ([deleteAnimatedViews containsObject:subview]) {
+          insertAtIndex++;
+        }
+      }
+    }
+
     [container insertReactSubview:destinationsToChildrenToAdd[reactIndex]
-                          atIndex:reactIndex.integerValue];
+                          atIndex:insertAtIndex];
   }
 }
 
