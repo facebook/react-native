@@ -31,7 +31,7 @@ const View = require('View');
 
 const {PropTypes} = React;
 
-const emptyFunction = require('emptyFunction');
+const emptyFunction = require('fbjs/lib/emptyFunction');
 
 // Position of the left of the swipable item when closed
 const CLOSED_LEFT_POSITION = 0;
