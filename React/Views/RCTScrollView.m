@@ -418,9 +418,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // Does nothing
 }
 
-- (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
+- (void)insertReactSubview:(UIView *)view atIndex:(__unused NSInteger)atIndex
 {
-  [super insertReactSubview:view atIndex:atIndex];
   if ([view isKindOfClass:[RCTRefreshControl class]]) {
     _scrollView.refreshControl = (RCTRefreshControl*)view;
   } else {
@@ -432,18 +431,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)removeReactSubview:(UIView *)subview
 {
-  [super removeReactSubview:subview];
   if ([subview isKindOfClass:[RCTRefreshControl class]]) {
     _scrollView.refreshControl = nil;
   } else {
     RCTAssert(_contentView == subview, @"Attempted to remove non-existent subview");
     _contentView = nil;
+    [subview removeFromSuperview];
   }
 }
 
-- (void)didUpdateReactSubviews
+- (NSArray<UIView *> *)reactSubviews
 {
-  // Do nothing, as subviews are managed by `insertReactSubview:atIndex:`
+  if (_contentView && _scrollView.refreshControl) {
+    return @[_contentView, _scrollView.refreshControl];
+  }
+  return _contentView ? @[_contentView] : @[];
 }
 
 - (BOOL)centerContent
