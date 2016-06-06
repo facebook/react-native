@@ -57,26 +57,22 @@ NSString *const RCTErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMI
 
 @implementation RCTPushNotificationManager
 
-+ (NSMutableDictionary *)formatLocalNotification:(UILocalNotification *)notification
+static NSDictionary *formatLocalNotification(UILocalNotification *notification)
 {
   NSMutableDictionary *formattedLocalNotification = [NSMutableDictionary dictionary];
-  
   if (notification.fireDate) {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"];
     NSString *fireDateString = [formatter stringFromDate:notification.fireDate];
-    
     formattedLocalNotification[@"fireDate"] = fireDateString;
   }
-  
-  formattedLocalNotification[@"alertAction"]                = RCTNullIfNil(notification.alertAction);
-  formattedLocalNotification[@"alertBody"]                  = RCTNullIfNil(notification.alertBody);
-  formattedLocalNotification[@"applicationIconBadgeNumber"] = RCTNullIfNil(@(notification.applicationIconBadgeNumber));
-  formattedLocalNotification[@"category"]                   = RCTNullIfNil(notification.category);
-  formattedLocalNotification[@"soundName"]                  = RCTNullIfNil(notification.soundName);
-  formattedLocalNotification[@"userInfo"]                   = RCTNullIfNil(RCTJSONClean(notification.userInfo));
-  
-  return formattedLocalNotification;
+  formattedLocalNotification[@"alertAction"] = RCTNullIfNil(notification.alertAction);
+  formattedLocalNotification[@"alertBody"] = RCTNullIfNil(notification.alertBody);
+  formattedLocalNotification[@"applicationIconBadgeNumber"] = @(notification.applicationIconBadgeNumber);
+  formattedLocalNotification[@"category"] = RCTNullIfNil(notification.category);
+  formattedLocalNotification[@"soundName"] = RCTNullIfNil(notification.soundName);
+  formattedLocalNotification[@"userInfo"] = RCTNullIfNil(RCTJSONClean(notification.userInfo));
+  return [NSDictionary dictionaryWithDictionary:formattedLocalNotification];
 }
 
 RCT_EXPORT_MODULE()
@@ -331,15 +327,10 @@ RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTResponseSenderBlock)callbac
 
 {
   NSArray<UILocalNotification *> *scheduledLocalNotifications = [UIApplication sharedApplication].scheduledLocalNotifications;
-  
   NSMutableArray *formattedScheduledLocalNotifications = [[NSMutableArray alloc] init];
-  
   for (UILocalNotification *notification in scheduledLocalNotifications) {
-    
-    [formattedScheduledLocalNotifications addObject:[RCTPushNotificationManager formatLocalNotification:notification]];
-    
+    [formattedScheduledLocalNotifications addObject:formatLocalNotification(notification)];
   }
-  
   callback(@[formattedScheduledLocalNotifications]);
 }
 
