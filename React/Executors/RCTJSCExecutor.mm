@@ -135,6 +135,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   RandomAccessBundleData _randomAccessBundle;
 
   RCTJSCWrapper *_jscWrapper;
+  BOOL _useCustomJSCLibrary;
 }
 
 @synthesize valid = _valid;
@@ -262,21 +263,15 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   }
 }
 
-static BOOL useCustomJSCLibrary = NO;
-
-+ (void)setUseCustomJSCLibrary:(BOOL)useCustomLibrary
-{
-  useCustomJSCLibrary = useCustomLibrary;
-}
-
-+ (BOOL)useCustomJSCLibrary
-{
-  return useCustomJSCLibrary;
-}
-
 - (instancetype)init
 {
+  return [self initWithUseCustomJSCLibrary:NO];
+}
+
+- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
+{
   if (self = [super init]) {
+    _useCustomJSCLibrary = useCustomJSCLibrary;
     _valid = YES;
 
     _javaScriptThread = [[NSThread alloc] initWithTarget:[self class]
@@ -333,7 +328,7 @@ static BOOL useCustomJSCLibrary = NO;
       return;
     }
 
-    strongSelf->_jscWrapper = RCTJSCWrapperCreate(useCustomJSCLibrary);
+    strongSelf->_jscWrapper = RCTJSCWrapperCreate(strongSelf->_useCustomJSCLibrary);
   }];
 
 
