@@ -305,4 +305,53 @@ RCT_EXPORT_METHOD(getInitialNotification:(RCTPromiseResolveBlock)resolve
   resolve(RCTNullIfNil(initialNotification));
 }
 
+RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTResponseSenderBlock)callback)
+{
+  NSArray<UILocalNotification *> *scheduledLocalNotifications = [UIApplication sharedApplication].scheduledLocalNotifications;
+
+
+  NSMutableArray *formattedScheduledLocalNotifications = [[NSMutableArray alloc] init];
+
+  for (UILocalNotification *notification in scheduledLocalNotifications) {
+
+    NSMutableDictionary *formattedScheduledLocalNotification = [NSMutableDictionary dictionary];
+
+    if (notification.fireDate) {
+      NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+      [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"];
+      NSString *fireDateString = [formatter stringFromDate:notification.fireDate];
+
+      formattedScheduledLocalNotification[@"fireDate"] = fireDateString;
+    }
+
+    if (notification.alertBody) {
+      formattedScheduledLocalNotification[@"alertBody"] = notification.alertBody;
+    }
+
+    if (notification.alertAction) {
+      formattedScheduledLocalNotification[@"alertAction"] = notification.alertAction;
+    }
+
+    if (notification.soundName) {
+      formattedScheduledLocalNotification[@"soundName"] = notification.soundName;
+    }
+
+    if (notification.category) {
+      formattedScheduledLocalNotification[@"category"] = notification.category;
+    }
+
+    if (notification.applicationIconBadgeNumber) {
+      formattedScheduledLocalNotification[@"applicationIconBadgeNumber"] = @(notification.applicationIconBadgeNumber);
+    }
+
+    if (notification.userInfo) {
+      formattedScheduledLocalNotification[@"userInfo"] = RCTJSONClean(notification.userInfo);
+    }
+
+    [formattedScheduledLocalNotifications addObject:formattedScheduledLocalNotification];
+  }
+
+  callback(@[formattedScheduledLocalNotifications]);
+}
+
 @end
