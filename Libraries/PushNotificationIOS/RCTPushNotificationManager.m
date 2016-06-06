@@ -57,6 +57,28 @@ NSString *const RCTErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMI
 
 @implementation RCTPushNotificationManager
 
++ (NSMutableDictionary *)formatLocalNotification:(UILocalNotification *)notification
+{
+  NSMutableDictionary *formattedLocalNotification = [NSMutableDictionary dictionary];
+  
+  if (notification.fireDate) {
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"];
+    NSString *fireDateString = [formatter stringFromDate:notification.fireDate];
+    
+    formattedLocalNotification[@"fireDate"] = fireDateString;
+  }
+  
+  formattedLocalNotification[@"alertAction"]                = RCTNullIfNil(notification.alertAction);
+  formattedLocalNotification[@"alertBody"]                  = RCTNullIfNil(notification.alertBody);
+  formattedLocalNotification[@"applicationIconBadgeNumber"] = RCTNullIfNil(@(notification.applicationIconBadgeNumber));
+  formattedLocalNotification[@"category"]                   = RCTNullIfNil(notification.category);
+  formattedLocalNotification[@"soundName"]                  = RCTNullIfNil(notification.soundName);
+  formattedLocalNotification[@"userInfo"]                   = RCTNullIfNil(RCTJSONClean(notification.userInfo));
+  
+  return formattedLocalNotification;
+}
+
 RCT_EXPORT_MODULE()
 
 - (void)startObserving
@@ -306,51 +328,18 @@ RCT_EXPORT_METHOD(getInitialNotification:(RCTPromiseResolveBlock)resolve
 }
 
 RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTResponseSenderBlock)callback)
+
 {
   NSArray<UILocalNotification *> *scheduledLocalNotifications = [UIApplication sharedApplication].scheduledLocalNotifications;
-
-
+  
   NSMutableArray *formattedScheduledLocalNotifications = [[NSMutableArray alloc] init];
-
+  
   for (UILocalNotification *notification in scheduledLocalNotifications) {
-
-    NSMutableDictionary *formattedScheduledLocalNotification = [NSMutableDictionary dictionary];
-
-    if (notification.fireDate) {
-      NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-      [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"];
-      NSString *fireDateString = [formatter stringFromDate:notification.fireDate];
-
-      formattedScheduledLocalNotification[@"fireDate"] = fireDateString;
-    }
-
-    if (notification.alertBody) {
-      formattedScheduledLocalNotification[@"alertBody"] = notification.alertBody;
-    }
-
-    if (notification.alertAction) {
-      formattedScheduledLocalNotification[@"alertAction"] = notification.alertAction;
-    }
-
-    if (notification.soundName) {
-      formattedScheduledLocalNotification[@"soundName"] = notification.soundName;
-    }
-
-    if (notification.category) {
-      formattedScheduledLocalNotification[@"category"] = notification.category;
-    }
-
-    if (notification.applicationIconBadgeNumber) {
-      formattedScheduledLocalNotification[@"applicationIconBadgeNumber"] = @(notification.applicationIconBadgeNumber);
-    }
-
-    if (notification.userInfo) {
-      formattedScheduledLocalNotification[@"userInfo"] = RCTJSONClean(notification.userInfo);
-    }
-
-    [formattedScheduledLocalNotifications addObject:formattedScheduledLocalNotification];
+    
+    [formattedScheduledLocalNotifications addObject:[RCTPushNotificationManager formatLocalNotification:notification]];
+    
   }
-
+  
   callback(@[formattedScheduledLocalNotifications]);
 }
 
