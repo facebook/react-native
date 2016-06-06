@@ -884,7 +884,7 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
   }
 
   __block UIImage *image;
-  if (![NSThread isMainThread]) {
+  if (!RCTIsMainQueue()) {
     // It seems that none of the UIImage loading methods can be guaranteed
     // thread safe, so we'll pick the lesser of two evils here and block rather
     // than run the risk of crashing

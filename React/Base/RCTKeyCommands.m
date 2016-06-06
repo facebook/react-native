@@ -271,7 +271,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                       modifierFlags:(UIKeyModifierFlags)flags
                              action:(void (^)(UIKeyCommand *))block
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   if (input.length && flags && RCTIsIOS8OrEarlier()) {
 
@@ -296,7 +296,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)unregisterKeyCommandWithInput:(NSString *)input
                         modifierFlags:(UIKeyModifierFlags)flags
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   for (RCTKeyCommand *command in _commands.allObjects) {
     if ([command matchesInput:input flags:flags]) {
@@ -309,7 +309,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (BOOL)isKeyCommandRegisteredForInput:(NSString *)input
                          modifierFlags:(UIKeyModifierFlags)flags
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   for (RCTKeyCommand *command in _commands) {
     if ([command matchesInput:input flags:flags]) {
@@ -323,7 +323,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                       modifierFlags:(UIKeyModifierFlags)flags
                              action:(void (^)(UIKeyCommand *))block
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   if (input.length && flags && RCTIsIOS8OrEarlier()) {
 
@@ -348,7 +348,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)unregisterDoublePressKeyCommandWithInput:(NSString *)input
                         modifierFlags:(UIKeyModifierFlags)flags
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   for (RCTKeyCommand *command in _commands.allObjects) {
     if ([command matchesInput:input flags:flags]) {
@@ -361,7 +361,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (BOOL)isDoublePressKeyCommandRegisteredForInput:(NSString *)input
                          modifierFlags:(UIKeyModifierFlags)flags
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   for (RCTKeyCommand *command in _commands) {
     if ([command matchesInput:input flags:flags]) {

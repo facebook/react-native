@@ -117,7 +117,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
     _delegate = delegate;
     _launchOptions = [launchOptions copy];
     [self setUp];
-    RCTExecuteOnMainThread(^{ [self bindKeys]; }, NO);
+    RCTExecuteOnMainQueue(^{ [self bindKeys]; });
   }
   return self;
 }
@@ -134,7 +134,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
     _moduleProvider = block;
     _launchOptions = [launchOptions copy];
     [self setUp];
-    RCTExecuteOnMainThread(^{ [self bindKeys]; }, NO);
+    RCTExecuteOnMainQueue(^{ [self bindKeys]; });
   }
   return self;
 }
@@ -145,7 +145,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   /**
    * This runs only on the main thread, but crashes the subclass
-   * RCTAssertMainThread();
+   * RCTAssertMainQueue();
    */
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self invalidate];
@@ -153,7 +153,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)bindKeys
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(reload)
@@ -270,9 +270,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   self.batchedBridge = nil;
 
   if (batchedBridge) {
-    RCTExecuteOnMainThread(^{
+    RCTExecuteOnMainQueue(^{
       [batchedBridge invalidate];
-    }, NO);
+    });
   }
 }
 
