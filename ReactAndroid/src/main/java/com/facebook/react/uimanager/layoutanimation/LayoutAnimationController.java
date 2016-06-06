@@ -2,6 +2,9 @@
 
 package com.facebook.react.uimanager.layoutanimation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -28,6 +31,8 @@ public class LayoutAnimationController {
   private final AbstractLayoutAnimation mLayoutUpdateAnimation = new LayoutUpdateAnimation();
   private final AbstractLayoutAnimation mLayoutDeleteAnimation = new LayoutDeleteAnimation();
   private boolean mShouldAnimateLayout;
+
+  private List<View> mDeleteAnimatedViews = new ArrayList<>();
 
   public void initializeFromConfig(final @Nullable ReadableMap config) {
     if (!ENABLED) {
@@ -136,6 +141,41 @@ public class LayoutAnimationController {
     } else {
       listener.onAnimationEnd();
     }
+  }
+
+  /**
+   * Add a view to list of views that are being deleted with an animation.
+   *
+   * @param view View to add
+   */
+  public void addViewAnimatingDeletion(View view) {
+    mDeleteAnimatedViews.add(view);
+  }
+
+  /**
+   * Remove a view to list of views that are being deleted with an animation.
+   *
+   * @param view View to remove
+   */
+  public void removeViewAnimatingDeletion(View view) {
+    mDeleteAnimatedViews.remove(view);
+  }
+
+  /**
+   * Returns if the view is being deleted with an animation.
+   *
+   * @param view View to check
+   * @return If it is being animated
+   */
+  public boolean isViewAnimatingDeletion(View view) {
+    return mDeleteAnimatedViews.contains(view);
+  }
+
+  /**
+   * Returns if there are any view being deleted with an animation.
+   */
+  public boolean isAnimatingViewDeletion() {
+    return mDeleteAnimatedViews.size() > 0;
   }
 
   /**

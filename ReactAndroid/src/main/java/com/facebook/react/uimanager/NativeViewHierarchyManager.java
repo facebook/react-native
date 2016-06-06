@@ -352,6 +352,7 @@ public class NativeViewHierarchyManager {
             arrayContains(tagsToDelete, viewToRemove.getId())) {
           // The view will be removed and dropped by the 'delete' layout animation
           // instead, so do nothing
+          mLayoutAnimator.addViewAnimatingDeletion(viewToRemove);
         } else {
           viewManager.removeViewAt(viewToManage, indexToRemove);
         }
@@ -375,7 +376,20 @@ public class NativeViewHierarchyManager {
                       viewsToAdd,
                       tagsToDelete));
         }
-        viewManager.addView(viewToManage, viewToAdd, viewAtIndex.mIndex);
+
+        // When performing layout delete animations views are not removed immediately
+        // from their container so we need to offset the insert index if a view
+        // that is going to be removed is before the view we want to insert.
+        int addViewIndex = viewAtIndex.mIndex;
+        if (mLayoutAnimator.isAnimatingViewDeletion()) {
+          for(int index = 0; index < viewAtIndex.mIndex; index++) {
+            if (mLayoutAnimator.isViewAnimatingDeletion(viewManager.getChildAt(viewToManage, index))) {
+              addViewIndex++;
+            }
+          }
+        }
+
+        viewManager.addView(viewToManage, viewToAdd, addViewIndex);
       }
     }
 
@@ -399,6 +413,7 @@ public class NativeViewHierarchyManager {
           mLayoutAnimator.deleteView(viewToDestroy, new LayoutAnimationListener() {
             @Override
             public void onAnimationEnd() {
+              mLayoutAnimator.removeViewAnimatingDeletion(viewToDestroy);
               viewManager.removeView(viewToManage, viewToDestroy);
               dropView(viewToDestroy);
             }
