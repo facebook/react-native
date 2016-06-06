@@ -18,13 +18,15 @@ require('ViewRenderingTestModule');
 require('TestJavaToJSArgumentsModule');
 require('TestJSToJavaParametersModule');
 
-require('PickerAndroidTestModule');
 require('CatalystRootViewTestModule');
 require('DatePickerDialogTestModule');
+require('MeasureLayoutTestModule');
+require('PickerAndroidTestModule');
 require('ScrollViewTestModule');
 require('SwipeRefreshLayoutTestModule');
 require('TextInputTestModule');
 require('TimePickerDialogTestModule');
+
 
 // Define catalyst test apps used in integration tests
 var AppRegistry = require('AppRegistry');
@@ -41,6 +43,10 @@ var apps = [
 {
   appKey: 'HorizontalScrollViewTestApp',
   component: () => require('ScrollViewTestModule').HorizontalScrollViewTestApp,
+},
+{
+  appKey: 'MeasureLayoutTestApp',
+  component: () => require('MeasureLayoutTestModule').MeasureLayoutTestApp
 },
 {
   appKey: 'MultitouchHandlingTestAppModule',
