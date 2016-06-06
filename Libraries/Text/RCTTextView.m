@@ -86,6 +86,7 @@
 
     _textView = [[RCTUITextView alloc] initWithFrame:CGRectZero];
     _textView.backgroundColor = [UIColor clearColor];
+    _textView.textColor = [UIColor blackColor];
     _textView.scrollsToTop = NO;
     _textView.scrollEnabled = NO;
     _textView.delegate = self;
