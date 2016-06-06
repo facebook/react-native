@@ -113,15 +113,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
    * For example, double-pressing a key should type two characters into the text view,
    * not invoke a predefined keyboard shortcut.
    */
-  NSString *name = NSStringFromClass(self.class);
-  if ([name isEqualToString : @"AppDelegate"]) {
-    return nil;
-  }
-
   UIResponder *firstResponder = [UIResponder RCT_getFirstResponder: self];
   if ([firstResponder isKindOfClass:[UITextView class]] ||
       [firstResponder isKindOfClass:[UITextField class]] ||
-      [firstResponder conformsToProtocol:@protocol(UITextViewDelegate)]) {
+      [firstResponder conformsToProtocol:@protocol(UITextViewDelegate)] ||
+      [self conformsToProtocol:@protocol(UIApplicationDelegate)]) {
     return nil;
   }
 
