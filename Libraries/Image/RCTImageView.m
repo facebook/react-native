@@ -44,6 +44,8 @@ static BOOL RCTShouldReloadImageForSizeChange(CGSize currentSize, CGSize idealSi
 @property (nonatomic, copy) RCTDirectEventBlock onLoad;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadEnd;
 
+@property (nonatomic, assign, getter=isDisplayingSource) BOOL displayingSource;
+
 @end
 
 @implementation RCTImageView
@@ -151,6 +153,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   if (![source isEqual:_source]) {
     _source = source;
+    [self setDisplayingSource:NO];
     [self reloadImage];
   }
 }
@@ -185,6 +188,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self cancelImageLoad];
   [self.layer removeAnimationForKey:@"contents"];
   self.image = nil;
+  [self setDisplayingSource:NO];
 }
 
 - (void)clearImageIfDetached
@@ -239,6 +243,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
           // Bail out if source has changed since we started loading
           return;
         }
+        [self setDisplayingSource:YES];
         if (image.reactKeyframeAnimation) {
           [strongSelf.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
         } else {
@@ -305,7 +310,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       }
     } else {
       // Our existing image is good enough.
-      [self cancelImageLoad];
+      if ([self isDisplayingSource]) {
+        [self cancelImageLoad];
+      }
       _targetSize = imageSize;
     }
   }
