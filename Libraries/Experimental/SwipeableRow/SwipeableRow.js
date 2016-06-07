@@ -65,7 +65,10 @@ const RIGHT_SWIPE_THRESHOLD = 30 * SLOW_SPEED_SWIPE_FACTOR;
 
 /**
  * Creates a swipable row that allows taps on the main item and a custom View
- * on the item hidden behind the row
+ * on the item hidden behind the row. Typically this should be used in
+ * conjunction with SwipeableListView for additional functionality, but can be
+ * used in a normal ListView. See the renderRow for SwipeableListView to see how
+ * to use this component separately.
  */
 const SwipeableRow = React.createClass({
   _panResponder: {},

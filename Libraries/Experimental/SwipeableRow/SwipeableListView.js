@@ -32,7 +32,21 @@ const {PropTypes} = React;
 
 /**
  * A container component that renders multiple SwipeableRow's in a ListView
- * implementation.
+ * implementation. This is designed to be a drop-in replacement for the
+ * standard React Native `ListView`, so use it as if it were a ListView, but
+ * with extra props, i.e.
+ *
+ * let ds = SwipeableListView.getNewDataSource();
+ * ds.cloneWithRowsAndSections(dataBlob, ?sectionIDs, ?rowIDs);
+ * // ..
+ * <SwipeableListView renderRow={..} renderQuickActions={..} {..ListView props} />
+ *
+ * SwipeableRow can be used independently of this component, but the main
+ * benefit of using this component is
+ *
+ * - It ensures that at most 1 row is swiped open (auto closes others)
+ * - It can bounce the 1st row of the list so users know it's swipeable
+ * - More to come
  */
 const SwipeableListView = React.createClass({
   statics: {
@@ -50,8 +64,17 @@ const SwipeableListView = React.createClass({
   _shouldBounceFirstRowOnMount: false,
 
   propTypes: {
+    /**
+     * To alert the user that swiping is possible, the first row can bounce
+     * on component mount.
+     */
     bounceFirstRowOnMount: PropTypes.bool.isRequired,
+    /**
+     * Use `SwipeableListView.getNewDataSource()` to get a data source to use,
+     * then use it just like you would a normal ListView data source
+     */
     dataSource: PropTypes.instanceOf(SwipeableListViewDataSource).isRequired,
+    // Maximum distance to open to after a swipe
     maxSwipeDistance: PropTypes.number,
     // Callback method to render the swipeable view
     renderRow: PropTypes.func.isRequired,
