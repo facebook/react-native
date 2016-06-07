@@ -215,7 +215,7 @@ RCT_EXPORT_MODULE()
 
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
 {
-  RCTExecuteOnMainThread(block, NO);
+  RCTExecuteOnMainQueue(block);
 }
 
 - (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block

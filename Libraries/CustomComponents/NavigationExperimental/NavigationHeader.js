@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     backgroundColor: Platform.OS === 'ios' ? '#EFEFF2' : '#FFF',
     borderBottomColor: 'rgba(0, 0, 0, .15)',
     borderBottomWidth: Platform.OS === 'ios' ? StyleSheet.hairlineWidth : 0,
-    elevation: 2,
+    elevation: 4,
     flexDirection: 'row',
     height: APPBAR_HEIGHT + STATUSBAR_HEIGHT,
     justifyContent: 'flex-start',

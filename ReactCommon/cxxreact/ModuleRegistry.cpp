@@ -39,6 +39,7 @@ std::vector<std::string> ModuleRegistry::moduleNames() {
 }
 
 folly::dynamic ModuleRegistry::getConfig(const std::string& name) {
+  SystraceSection s("getConfig", "module", name);
   auto it = modulesByName_.find(name);
   if (it == modulesByName_.end()) {
     return nullptr;
@@ -51,8 +52,7 @@ folly::dynamic ModuleRegistry::getConfig(const std::string& name) {
   folly::dynamic config = folly::dynamic::array(name);
 
   {
-    SystraceSection s("getConfig constants",
-                      "module", name);
+    SystraceSection s("getConstants");
     folly::dynamic constants = module->getConstants();
     if (constants.isObject() && constants.size() > 0) {
       config.push_back(std::move(constants));
@@ -60,8 +60,7 @@ folly::dynamic ModuleRegistry::getConfig(const std::string& name) {
   }
 
   {
-    SystraceSection s("getConfig methods",
-                      "module", name);
+    SystraceSection s("getMethods");
     std::vector<MethodDescriptor> methods = module->getMethods();
 
     folly::dynamic methodNames = folly::dynamic::array;

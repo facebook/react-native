@@ -130,7 +130,7 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
       nextProps.configureTransition() :
       null;
 
-    const transtionSpec = {
+    const transitionSpec = {
       ...DefaultTransitionSpec,
       ...transitionUserSpec,
     };
@@ -141,7 +141,7 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
       Animated.timing(
         progress,
         {
-          ...transtionSpec,
+          ...transitionSpec,
           toValue: 1,
         },
       ),
@@ -152,7 +152,7 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
         Animated.timing(
           position,
           {
-            ...transtionSpec,
+            ...transitionSpec,
             toValue: nextProps.navigationState.index,
           },
         ),

@@ -83,6 +83,13 @@ local_ref<NativeMap::jhybridobject> ReadableNativeArray::getMap(jint index) {
   return ReadableNativeMap::createWithContents(std::move(array.at(index)));
 }
 
+namespace {
+// This is just to allow signature deduction below.
+local_ref<ReadableNativeMap::jhybridobject> getMapFixed(alias_ref<ReadableNativeArray::jhybridobject> array, jint index) {
+  return static_ref_cast<ReadableNativeMap::jhybridobject>(array->cthis()->getMap(index));
+}
+}
+
 void ReadableNativeArray::registerNatives() {
   registerHybrid({
     makeNativeMethod("size", ReadableNativeArray::getSize),
@@ -92,8 +99,7 @@ void ReadableNativeArray::registerNatives() {
     makeNativeMethod("getInt", ReadableNativeArray::getInt),
     makeNativeMethod("getString", ReadableNativeArray::getString),
     makeNativeMethod("getArray", ReadableNativeArray::getArray),
-    makeNativeMethod("getMap", jmethod_traits<ReadableNativeMap::jhybridobject(jint)>::descriptor(),
-        ReadableNativeArray::getMap),
+    makeNativeMethod("getMap", getMapFixed),
     makeNativeMethod("getType", ReadableNativeArray::getType),
   });
 }

@@ -44,8 +44,8 @@ const ViewabilityHelper = require('ViewabilityHelper');
 const clamp = require('clamp');
 const deepDiffer = require('deepDiffer');
 const infoLog = require('infoLog');
-const invariant = require('invariant');
-const nullthrows = require('nullthrows');
+const invariant = require('fbjs/lib/invariant');
+const nullthrows = require('fbjs/lib/nullthrows');
 
 import type ReactComponent from 'ReactComponent';
 
