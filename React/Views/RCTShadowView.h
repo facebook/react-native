@@ -130,6 +130,11 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) CGFloat flex;
 
 /**
+ * z-index, used to override sibling order in the view
+ */
+@property (nonatomic, assign) double zIndex;
+
+/**
  * Calculate property changes that need to be propagated to the view.
  * The applierBlocks set contains RCTApplierBlock functions that must be applied
  * on the main thread in order to update the view.

@@ -99,6 +99,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   UIColor *_backgroundColor;
 }
 
+@synthesize reactZIndex = _reactZIndex;
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
@@ -274,7 +276,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 - (void)react_remountAllSubviews
 {
   if (_removeClippedSubviews) {
-    for (UIView *view in self.reactSubviews) {
+    for (UIView *view in self.sortedReactSubviews) {
       if (view.superview != self) {
         [self addSubview:view];
         [view react_remountAllSubviews];
@@ -313,7 +315,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   clipView = self;
 
   // Mount / unmount views
-  for (UIView *view in self.reactSubviews) {
+  for (UIView *view in self.sortedReactSubviews) {
     if (!CGRectIsEmpty(CGRectIntersection(clipRect, view.frame))) {
 
       // View is at least partially visible, so remount it if unmounted

@@ -13,6 +13,7 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
+#import "UIView+Private.h"
 
 typedef void (^RCTActionBlock)(RCTShadowView *shadowViewSelf, id value);
 typedef void (^RCTResetActionBlock)(RCTShadowView *shadowViewSelf);
@@ -39,6 +40,7 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   BOOL _recomputePadding;
   BOOL _recomputeMargin;
   BOOL _recomputeBorder;
+  BOOL _didUpdateSubviews;
   float _paddingMetaProps[META_PROP_COUNT];
   float _marginMetaProps[META_PROP_COUNT];
   float _borderMetaProps[META_PROP_COUNT];
@@ -178,6 +180,16 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   // TODO: we always refresh all propagated properties when propagation is
   // dirtied, but really we should track which properties have changed and
   // only update those.
+
+  if (_didUpdateSubviews) {
+    _didUpdateSubviews = NO;
+    [self didUpdateReactSubviews];
+    [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+      UIView *view = viewRegistry[_reactTag];
+      [view clearSortedSubviews];
+      [view didUpdateReactSubviews];
+    }];
+  }
 
   if (!_backgroundColor) {
     UIColor *parentBackgroundColor = parentProperties[RCTBackgroundColorProp];
@@ -351,6 +363,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   [_reactSubviews insertObject:subview atIndex:atIndex];
   _cssNode->children_count = (int)_reactSubviews.count;
   subview->_superview = self;
+  _didUpdateSubviews = YES;
   [self dirtyText];
   [self dirtyLayout];
   [self dirtyPropagation];
@@ -361,6 +374,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   [subview dirtyText];
   [subview dirtyLayout];
   [subview dirtyPropagation];
+  _didUpdateSubviews = YES;
   subview->_superview = nil;
   [_reactSubviews removeObject:subview];
   _cssNode->children_count = (int)_reactSubviews.count;
@@ -594,6 +608,16 @@ RCT_STYLE_PROPERTY(FlexWrap, flexWrap, flex_wrap, css_wrap_type_t)
 {
   _backgroundColor = color;
   [self dirtyPropagation];
+}
+
+- (void)setZIndex:(double)zIndex
+{
+  _zIndex = zIndex;
+  if (_superview) {
+    // Changing zIndex means the subview order of the parent needs updating
+    _superview->_didUpdateSubviews = YES;
+    [_superview dirtyPropagation];
+  }
 }
 
 - (void)didUpdateReactSubviews
