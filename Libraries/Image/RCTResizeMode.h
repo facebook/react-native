@@ -13,6 +13,7 @@ typedef NS_ENUM(NSInteger, RCTResizeMode) {
   RCTResizeModeCover = UIViewContentModeScaleAspectFill,
   RCTResizeModeContain = UIViewContentModeScaleAspectFit,
   RCTResizeModeStretch = UIViewContentModeScaleToFill,
+  RCTResizeModeRepeat = 99, // Pick a high number to make sure we don't conflict with iOS enum values.
 };
 
 @interface RCTConvert(RCTResizeMode)
