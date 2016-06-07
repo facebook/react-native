@@ -211,7 +211,7 @@ var Image = React.createClass({
   },
 
   render: function() {
-    var source = resolveAssetSource(this.props.source) || { uri: null, width: undefined, height: undefined };
+    var source = resolveAssetSource(this.props.source) || { uri: undefined, width: undefined, height: undefined };
     var {width, height, uri} = source;
     var style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
 
@@ -225,11 +225,11 @@ var Image = React.createClass({
     if (isNetwork && (tintColor || this.props.blurRadius)) {
       RawImage = RCTImageView;
     }
-    
+
     if (uri === '') {
       console.warn('source.uri should not be an empty string');
     }
-    
+
     if (this.props.src) {
       console.warn('The <Image> component requires a `source` property rather than `src`.');
     }

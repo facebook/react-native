@@ -282,7 +282,7 @@ the Terminal should be something like:
 
 #### Python 2
 
-Fire up the Termimal and use Chocolatey to install Python 2.
+Fire up the Terminal and use Chocolatey to install Python 2.
 
 > Python 3 will currently not work when initializing a React Native project.
 

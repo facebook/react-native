@@ -12,33 +12,11 @@
 'use strict';
 
 const NativeEventEmitter = require('NativeEventEmitter');
-const StatusBar = require('StatusBar');
-const StatusBarManager = require('NativeModules').StatusBarManager;
-
-import type {StatusBarStyle, StatusBarAnimation} from 'StatusBar';
+const { StatusBarManager } = require('NativeModules');
 
 /**
- * Deprecated. Use `StatusBar` instead.
+ * Use `StatusBar` for mutating the status bar.
  */
-class StatusBarIOS extends NativeEventEmitter {
-
-  setStyle(style: StatusBarStyle, animated?: boolean) {
-    console.warn('`StatusBarIOS.setStyle` is deprecated. Use `StatusBar.setBarStyle` instead.');
-    StatusBar.setBarStyle(style, animated);
-  }
-
-  setHidden(hidden: boolean, animation?: StatusBarAnimation) {
-    console.warn('`StatusBarIOS.setHidden` is deprecated. Use `StatusBar.setHidden` instead.');
-    StatusBar.setHidden(hidden, animation);
-  }
-
-  setNetworkActivityIndicatorVisible(visible: boolean) {
-    console.warn(
-      '`StatusBarIOS.setNetworkActivityIndicatorVisible` is deprecated. ' +
-      'Use `StatusBar.setNetworkActivityIndicatorVisible` instead.'
-    );
-    StatusBar.setNetworkActivityIndicatorVisible(visible);
-  }
-}
+class StatusBarIOS extends NativeEventEmitter {}
 
 module.exports = new StatusBarIOS(StatusBarManager);

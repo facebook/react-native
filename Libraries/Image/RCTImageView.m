@@ -263,22 +263,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
         // Blur on a background thread to avoid blocking interaction
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
           UIImage *image = RCTBlurredImageWithRadius(loadedImage, blurRadius);
-          RCTExecuteOnMainThread(^{
+          RCTExecuteOnMainQueue(^{
             setImageBlock(image);
-          }, NO);
+          });
         });
       } else {
         // No blur, so try to set the image on the main thread synchronously to minimize image
         // flashing. (For instance, if this view gets attached to a window, then -didMoveToWindow
         // calls -reloadImage, and we want to set the image synchronously if possible so that the
         // image property is set in the same CATransaction that attaches this view to the window.)
-        if ([NSThread isMainThread]) {
+        RCTExecuteOnMainQueue(^{
           setImageBlock(loadedImage);
-        } else {
-          RCTExecuteOnMainThread(^{
-            setImageBlock(loadedImage);
-          }, NO);
-        }
+        });
       }
     }];
   } else {
