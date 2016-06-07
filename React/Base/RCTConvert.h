@@ -116,6 +116,7 @@ typedef BOOL css_clip_t, css_backface_visibility_t;
 + (css_clip_t)css_clip_t:(id)json;
 + (css_backface_visibility_t)css_backface_visibility_t:(id)json;
 + (css_flex_direction_t)css_flex_direction_t:(id)json;
++ (css_direction_t)css_direction_t:(id)json;
 + (css_justify_t)css_justify_t:(id)json;
 + (css_align_t)css_align_t:(id)json;
 + (css_position_type_t)css_position_type_t:(id)json;

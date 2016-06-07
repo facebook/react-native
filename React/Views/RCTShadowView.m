@@ -603,6 +603,7 @@ RCT_STYLE_PROPERTY(AlignSelf, alignSelf, align_self, css_align_t)
 RCT_STYLE_PROPERTY(AlignItems, alignItems, align_items, css_align_t)
 RCT_STYLE_PROPERTY(Position, position, position_type, css_position_type_t)
 RCT_STYLE_PROPERTY(FlexWrap, flexWrap, flex_wrap, css_wrap_type_t)
+RCT_STYLE_PROPERTY(Direction, direction, direction, css_direction_t)
 
 - (void)setBackgroundColor:(UIColor *)color
 {

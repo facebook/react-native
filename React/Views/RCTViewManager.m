@@ -289,6 +289,7 @@ RCT_EXPORT_SHADOW_PROPERTY(justifyContent, css_justify_t)
 RCT_EXPORT_SHADOW_PROPERTY(alignItems, css_align_t)
 RCT_EXPORT_SHADOW_PROPERTY(alignSelf, css_align_t)
 RCT_EXPORT_SHADOW_PROPERTY(position, css_position_type_t)
+RCT_EXPORT_SHADOW_PROPERTY(direction, css_direction_t)
 
 RCT_EXPORT_SHADOW_PROPERTY(onLayout, RCTDirectEventBlock)
 

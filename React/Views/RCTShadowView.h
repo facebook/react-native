@@ -129,6 +129,8 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) css_wrap_type_t flexWrap;
 @property (nonatomic, assign) CGFloat flex;
 
+@property (nonatomic, assign) css_direction_t direction;
+
 /**
  * z-index, used to override sibling order in the view
  */
