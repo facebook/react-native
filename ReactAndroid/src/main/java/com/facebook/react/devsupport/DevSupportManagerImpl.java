@@ -113,6 +113,21 @@ public class DevSupportManagerImpl implements DevSupportManager {
     ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
     @Nullable String packagerPathForJSBundleName,
     boolean enableOnCreate) {
+
+    this(applicationContext,
+      reactInstanceCommandsHandler,
+      packagerPathForJSBundleName,
+      enableOnCreate,
+      null);
+  }
+
+  public DevSupportManagerImpl(
+      Context applicationContext,
+      ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+      @Nullable String packagerPathForJSBundleName,
+      boolean enableOnCreate,
+      @Nullable RedBoxHandler redBoxHandler) {
+
     mReactInstanceCommandsHandler = reactInstanceCommandsHandler;
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
@@ -154,19 +169,6 @@ public class DevSupportManagerImpl implements DevSupportManager {
     mDefaultNativeModuleCallExceptionHandler = new DefaultNativeModuleCallExceptionHandler();
 
     setDevSupportEnabled(enableOnCreate);
-  }
-
-  public DevSupportManagerImpl(
-      Context applicationContext,
-      ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
-      @Nullable String packagerPathForJSBundleName,
-      boolean enableOnCreate,
-      @Nullable RedBoxHandler redBoxHandler) {
-
-    this(applicationContext,
-      reactInstanceCommandsHandler,
-      packagerPathForJSBundleName,
-      enableOnCreate);
 
     mRedBoxHandler = redBoxHandler;
   }

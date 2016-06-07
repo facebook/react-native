@@ -304,7 +304,7 @@ public abstract class ReactInstanceManager {
       return this;
     }
 
-    public Builder setRedBoxHandler(RedBoxHandler redBoxHandler) {
+    public Builder setRedBoxHandler(@Nullable RedBoxHandler redBoxHandler) {
       mRedBoxHandler = redBoxHandler;
       return this;
     }
