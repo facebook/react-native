@@ -9,6 +9,7 @@
 
 const log = require('../util/log').out('bundle');
 const outputBundle = require('./output/bundle');
+const path = require('path');
 const Promise = require('promise');
 const saveAssets = require('./saveAssets');
 const Server = require('../../packager/react-packager/src/Server');
@@ -31,7 +32,7 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
       assetRoots: config.getAssetRoots(),
       blacklistRE: config.getBlacklistRE(args.platform),
       getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-      transformModulePath: args.transformer,
+      transformModulePath: path.resolve(args.transformer),
       extraNodeModules: config.extraNodeModules,
       nonPersistent: true,
       resetCache: args['reset-cache'],

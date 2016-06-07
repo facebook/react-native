@@ -20,7 +20,7 @@ module.exports = [
     type: 'string',
   }, {
     command: 'transformer',
-    description: 'Specify a custom transformer to be used (absolute path)',
+    description: 'Specify a custom transformer to be used',
     type: 'string',
     default: require.resolve('../../packager/transformer'),
   }, {
