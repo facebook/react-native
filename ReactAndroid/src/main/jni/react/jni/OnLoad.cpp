@@ -22,6 +22,8 @@
 #include "JExecutorTokenFactory.h"
 #include "JNativeRunnable.h"
 #include "JSLoader.h"
+#include "NativeCommon.h"
+#include "ReadableNativeArray.h"
 #include "ProxyExecutor.h"
 #include "OnLoad.h"
 #include "JMessageQueueThread.h"
@@ -29,9 +31,7 @@
 #include "JSLogging.h"
 #include "JSCPerfLogging.h"
 #include "WebWorkers.h"
-
-#include <xreact/jni/ReadableNativeArray.h>
-#include <xreact/jni/WritableNativeMap.h>
+#include "WritableNativeMap.h"
 #include <algorithm>
 
 #ifdef WITH_FBSYSTRACE
@@ -456,8 +456,16 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     PerfLogging::installNativeHooks = addNativePerfLoggingHooks;
     JSLogging::nativeHook = nativeLoggingHook;
 
+    NativeArray::registerNatives();
+    ReadableNativeArray::registerNatives();
+    WritableNativeArray::registerNatives();
     JNativeRunnable::registerNatives();
     registerJSLoaderNatives();
+
+    NativeMap::registerNatives();
+    ReadableNativeMap::registerNatives();
+    WritableNativeMap::registerNatives();
+    ReadableNativeMapKeySetIterator::registerNatives();
 
     registerNatives("com/facebook/react/bridge/JSCJavaScriptExecutor", {
       makeNativeMethod("initialize", executors::createJSCExecutor),

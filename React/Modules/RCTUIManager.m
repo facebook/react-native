@@ -893,8 +893,6 @@ static void RCTSetChildren(NSNumber *containerTag,
       [container insertReactSubview:view atIndex:index++];
     }
   }
-
-  [container didUpdateReactSubviews];
 }
 
 RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
@@ -965,8 +963,6 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
     [container insertReactSubview:destinationsToChildrenToAdd[reactIndex]
                           atIndex:reactIndex.integerValue];
   }
-
-  [container didUpdateReactSubviews];
 }
 
 RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag

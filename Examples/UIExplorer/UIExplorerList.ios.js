@@ -41,6 +41,10 @@ const ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ImageExample'),
   },
   {
+    key: 'KeyboardAvoidingViewExample',
+    module: require('./KeyboardAvoidingViewExample'),
+  },
+  {
     key: 'LayoutEventsExample',
     module: require('./LayoutEventsExample'),
   },

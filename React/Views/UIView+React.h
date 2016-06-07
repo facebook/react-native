@@ -26,8 +26,19 @@
 - (void)removeReactSubview:(UIView *)subview NS_REQUIRES_SUPER;
 
 /**
+ * z-index, used to override sibling order in didUpdateReactSubviews.
+ */
+@property (nonatomic, assign) double reactZIndex;
+
+/**
+ * The reactSubviews array, sorted by zIndex. This value is cached and
+ * automatically recalculated if views are added or removed.
+ */
+@property (nonatomic, copy, readonly) NSArray<UIView *> *sortedReactSubviews;
+
+/**
  * Updates the subviews array based on the reactSubviews. Default behavior is
- * to insert the reactSubviews into the UIView.
+ * to insert the sortedReactSubviews into the UIView.
  */
 - (void)didUpdateReactSubviews;
 

@@ -87,9 +87,51 @@
   [subview removeFromSuperview];
 }
 
+- (double)reactZIndex
+{
+  return [objc_getAssociatedObject(self, _cmd) doubleValue];
+}
+
+- (void)setReactZIndex:(double)reactZIndex
+{
+  objc_setAssociatedObject(self, @selector(reactZIndex), @(reactZIndex), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSArray<UIView *> *)sortedReactSubviews
+{
+  NSArray *subviews = objc_getAssociatedObject(self, _cmd);
+  if (!subviews) {
+    // Check if sorting is required - in most cases it won't be
+    BOOL sortingRequired = NO;
+    for (UIView *subview in self.reactSubviews) {
+      if (subview.reactZIndex != 0) {
+        sortingRequired = YES;
+        break;
+      }
+    }
+    subviews = sortingRequired ? [self.reactSubviews sortedArrayUsingComparator:^NSComparisonResult(UIView *a, UIView *b) {
+      if (a.reactZIndex > b.reactZIndex) {
+        return NSOrderedDescending;
+      } else {
+        // ensure sorting is stable by treating equal zIndex as ascending so
+        // that original order is preserved
+        return NSOrderedAscending;
+      }
+    }] : self.reactSubviews;
+    objc_setAssociatedObject(self, _cmd, subviews, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  }
+  return subviews;
+}
+
+// private method, used to reset sort
+- (void)clearSortedSubviews
+{
+  objc_setAssociatedObject(self, @selector(sortedReactSubviews), nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
 - (void)didUpdateReactSubviews
 {
-  for (UIView *subview in self.reactSubviews) {
+  for (UIView *subview in self.sortedReactSubviews) {
     [self addSubview:subview];
   }
 }
