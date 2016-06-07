@@ -1087,7 +1087,7 @@ var AppList = React.createClass({
       <div>
         <img src={app.icon} alt={app.name} />
         <h3>{app.name}</h3>
-        {app.linkAppStore && app.linkPlayStore ? this._renderLinks(app) : null}
+        {app.linkAppStore || app.linkPlayStore ? this._renderLinks(app) : null}
         <p>By {app.author}</p>
         {this._renderBlogPosts(app)}
         {this._renderSourceLink(app)}
@@ -1167,11 +1167,14 @@ var AppList = React.createClass({
   },
 
   _renderLinks: function(app) {
+    var linkAppStore = app.linkAppStore ? <a href={app.linkAppStore} target="_blank">iOS</a> : '';
+    var linkPlayStore = app.linkPlayStore ? <a href={app.linkPlayStore} target="_blank">Android</a> : '';
+
     return (
       <p>
-        <a href={app.linkAppStore} target="_blank">iOS</a>
-        {' '}&middot;{' '}
-        <a href={app.linkPlayStore} target="_blank">Android</a>
+        {linkAppStore}
+        {linkAppStore && linkPlayStore ? ' · ' : ''}
+        {linkPlayStore}
       </p>
     );
   },
