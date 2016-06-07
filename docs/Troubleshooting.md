@@ -14,6 +14,8 @@ Enable iOS simulator's "Connect hardware keyboard" from menu Hardware > Keyboard
 
 If you are using a non-QWERTY/AZERTY keyboard layout you can use the `Hardware > Shake Gesture` to bring up the dev menu and click "Refresh". Alternatively, you can hit `Cmd-P` on Dvorak/Colemak layouts to reload the simulator.
 
+You can use Cmd+M on Android to bring up the dev menu.
+
 ## Port already in use red-screen
 ![red-screen](https://cloud.githubusercontent.com/assets/602176/6857442/63fd4f0a-d3cc-11e4-871f-875b0c784611.png)
 
@@ -107,3 +109,66 @@ import Firebase from 'firebase';
 Requiring firebase *before* react-native will result in a 'No transports available' redbox.
 
 Discovered thanks to issue [#3645](https://github.com/facebook/react-native/issues/3645). If you're curious, the polyfills are set up in [InitializeJavaScriptAppEngine.js](https://github.com/facebook/react-native/blob/master/Libraries/JavaScriptAppEngine/Initialization/InitializeJavaScriptAppEngine.js).
+
+
+## Virtual Device Not Created When Installing Android Studio
+
+There is a [known bug](https://code.google.com/p/android/issues/detail?id=207563) on some versions
+of Android Studio where a virtual device will not be created, even though you selected it in the
+installation sequence. You may see this at the end of the installation:
+
+```
+Creating Android virtual device
+Unable to create a virtual device: Unable to create Android virtual device
+```
+
+If you see this, run `android avd` and create the virtual device manually.
+
+![avd](img/react-native-android-studio-avd.png)
+
+Then select the new device in the AVD Manager window and click `Start...`.
+
+## Shell Command Unresponsive Exception
+
+If you encounter:
+
+```
+Execution failed for task ':app:installDebug'.
+  com.android.builder.testing.api.DeviceException: com.android.ddmlib.ShellCommandUnresponsiveException
+```
+
+Try downgrading your Gradle version to 1.2.3 in `<project-name>/android/build.gradle` (https://github.com/facebook/react-native/issues/2720)
+
+## Unable to run mksdcard SDK Tool
+
+When installing Android Studio, if you get the error:
+
+```
+Unable to run mksdcard SDK tool
+```
+
+then install the standard C++ library:
+
+```
+sudo apt-get install lib32stdc++6
+```
+
+## Using the Visual Studio Emulator for Android
+
+The [Visual Studio Emulator for Android](https://www.visualstudio.com/en-us/features/msft-android-emulator-vs.aspx)
+is a free android emulator that is hardware accelerated via Hyper-V. It is an alternative to the
+stock Google emulator that comes with Android Studio. It doesn't require you to install Visual
+Studio at all.
+
+To use it with react-native you just have to add a key and value to your registry:
+
+1. Open the Run Command (Windows+R)
+2. Enter `regedit.exe`
+3. In the Registry Editor navigate to `HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Android SDK Tools`
+4. Right Click on `Android SDK Tools` and choose `New > String Value`
+5. Set the name to `Path`
+6. Double Click the new `Path` Key and set the value to `C:\Program Files\Android\sdk`. The path value might be different on your machine.
+
+You will also need to run the command `adb reverse tcp:8081 tcp:8081` with this emulator.
+
+Then restart the emulator and when it runs you can just do `react-native run-android` as usual.
