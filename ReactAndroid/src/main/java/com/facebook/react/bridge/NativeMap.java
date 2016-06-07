@@ -19,7 +19,7 @@ import com.facebook.soloader.SoLoader;
 @DoNotStrip
 public abstract class NativeMap {
   static {
-    ReactBridge.staticInit();
+    SoLoader.loadLibrary(ReactBridge.REACT_NATIVE_LIB);
   }
 
   public NativeMap(HybridData hybridData) {

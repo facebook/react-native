@@ -13,6 +13,8 @@
 #include <jni/Countable.h>
 #include <jni/LocalReference.h>
 
+#include <react/jni/NativeArray.h>
+
 #include <cxxreact/Instance.h>
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/ModuleRegistry.h>
@@ -21,7 +23,6 @@
 #include "JavaScriptExecutorHolder.h"
 #include "JniJSModulesUnbundle.h"
 #include "ModuleRegistryHolder.h"
-#include "NativeArray.h"
 #include "JNativeRunnable.h"
 
 using namespace facebook::jni;
