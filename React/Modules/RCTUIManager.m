@@ -210,6 +210,7 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
 
   // Animation
   RCTLayoutAnimation *_layoutAnimation; // Main thread only
+  NSMutableArray<id<RCTComponent>> *_deleteAnimatedViews; // Main thread only
 
   NSMutableDictionary<NSNumber *, RCTShadowView *> *_shadowViewRegistry; // RCT thread only
   NSMutableDictionary<NSNumber *, UIView *> *_viewRegistry; // Main thread only
@@ -317,6 +318,8 @@ RCT_EXPORT_MODULE()
   _rootViewTags = [NSMutableSet new];
 
   _bridgeTransactionListeners = [NSMutableSet new];
+
+  _deleteAnimatedViews = [NSMutableArray new];
 
   // Get view managers from bridge
   NSMutableDictionary *componentDataByName = [NSMutableDictionary new];
@@ -786,24 +789,21 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
 
 /**
  * Remove children views from their parent with an animation.
- *
- * @returns Views that will actually be animated.
  */
-- (NSArray<id<RCTComponent>> *)_removeChildren:(NSArray<id<RCTComponent>> *)children
-                                 fromContainer:(id<RCTComponent>)container
-                                 withAnimation:(RCTLayoutAnimation *)animation
+- (void)_removeChildren:(NSArray<id<RCTComponent>> *)children
+          fromContainer:(id<RCTComponent>)container
+          withAnimation:(RCTLayoutAnimation *)animation
 {
   RCTAnimation *deleteAnimation = animation.deleteAnimation;
 
   __block NSUInteger completionsCalled = 0;
-
-  NSMutableArray<id<RCTComponent>> *animatedViews = [NSMutableArray new];
 
   for (id<RCTComponent> removedChild in children) {
 
     void (^completion)(BOOL) = ^(BOOL finished) {
       completionsCalled++;
 
+      [_deleteAnimatedViews removeObject: removedChild];
       [container removeReactSubview:removedChild];
 
       if (animation.callback && completionsCalled == children.count) {
@@ -818,7 +818,7 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
     if ([removedChild isKindOfClass: [UIView class]]) {
       UIView *view = (UIView *)removedChild;
 
-      [animatedViews addObject:view];
+      [_deleteAnimatedViews addObject: view];
 
       // Disable user interaction while the view is animating since JS won't receive
       // the view events anyway.
@@ -839,8 +839,6 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
       [container removeReactSubview:removedChild];
     }
   }
-  
-  return animatedViews;
 }
 
 
@@ -958,11 +956,10 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
   NSArray<id<RCTComponent>> *temporarilyRemovedChildren =
     [self _childrenToRemoveFromContainer:container atIndices:moveFromIndices];
 
-  NSArray<id<RCTComponent>> *deleteAnimatedViews = nil;
   if (_layoutAnimation.deleteAnimation) {
-    deleteAnimatedViews = [self _removeChildren:permanentlyRemovedChildren
-                                  fromContainer:container
-                                  withAnimation:_layoutAnimation];
+    [self _removeChildren:permanentlyRemovedChildren
+            fromContainer:container
+            withAnimation:_layoutAnimation];
   } else {
     [self _removeChildren:permanentlyRemovedChildren fromContainer:container];
   }
@@ -993,10 +990,10 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
     // When performing layout delete animations views are not removed immediatly
     // from their container so we need to offset the insert index if a view
     // that is going to be removed is before the view we want to insert.
-    if (deleteAnimatedViews) {
+    if ([_deleteAnimatedViews count] > 0) {
       for (NSInteger index = 0; index < insertAtIndex; index++) {
         id<RCTComponent> subview = [container reactSubviews][index];
-        if ([deleteAnimatedViews containsObject:subview]) {
+        if ([_deleteAnimatedViews containsObject:subview]) {
           insertAtIndex++;
         }
       }
