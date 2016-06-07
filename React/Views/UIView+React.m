@@ -56,25 +56,42 @@
   return view.reactTag;
 }
 
-- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
-{
-  [self insertSubview:subview atIndex:atIndex];
-}
-
-- (void)removeReactSubview:(UIView *)subview
-{
-  RCTAssert(subview.superview == self, @"%@ is a not a subview of %@", subview, self);
-  [subview removeFromSuperview];
-}
-
 - (NSArray<UIView *> *)reactSubviews
 {
-  return self.subviews;
+  return objc_getAssociatedObject(self, _cmd);
 }
 
 - (UIView *)reactSuperview
 {
   return self.superview;
+}
+
+- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
+{
+  // We access the associated object directly here in case someone overrides
+  // the `reactSubviews` getter method and returns an immutable array.
+  NSMutableArray *subviews = objc_getAssociatedObject(self, @selector(reactSubviews));
+  if (!subviews) {
+    subviews = [NSMutableArray new];
+    objc_setAssociatedObject(self, @selector(reactSubviews), subviews, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  }
+  [subviews insertObject:subview atIndex:atIndex];
+}
+
+- (void)removeReactSubview:(UIView *)subview
+{
+  // We access the associated object directly here in case someone overrides
+  // the `reactSubviews` getter method and returns an immutable array.
+  NSMutableArray *subviews = objc_getAssociatedObject(self, @selector(reactSubviews));
+  [subviews removeObject:subview];
+  [subview removeFromSuperview];
+}
+
+- (void)didUpdateReactSubviews
+{
+  for (UIView *subview in self.reactSubviews) {
+    [self addSubview:subview];
+  }
 }
 
 - (void)reactSetFrame:(CGRect)frame

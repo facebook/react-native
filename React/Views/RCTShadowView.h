@@ -35,8 +35,13 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  */
 @interface RCTShadowView : NSObject <RCTComponent>
 
-- (NSArray<RCTShadowView *> *)reactSubviews;
-- (RCTShadowView *)reactSuperview;
+/**
+ * RCTComponent interface.
+ */
+- (NSArray<RCTShadowView *> *)reactSubviews NS_REQUIRES_SUPER;
+- (RCTShadowView *)reactSuperview NS_REQUIRES_SUPER;
+- (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex NS_REQUIRES_SUPER;
+- (void)removeReactSubview:(RCTShadowView *)subview NS_REQUIRES_SUPER;
 
 @property (nonatomic, weak, readonly) RCTShadowView *superview;
 @property (nonatomic, assign, readonly) css_node_t *cssNode;
@@ -181,6 +186,10 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 - (void)setTextComputed NS_REQUIRES_SUPER;
 - (BOOL)isTextDirty;
 
+/**
+ * As described in RCTComponent protocol.
+ */
+- (void)didUpdateReactSubviews NS_REQUIRES_SUPER;
 - (void)didSetProps:(NSArray<NSString *> *)changedProps NS_REQUIRES_SUPER;
 
 /**

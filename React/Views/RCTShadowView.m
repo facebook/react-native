@@ -596,6 +596,11 @@ RCT_STYLE_PROPERTY(FlexWrap, flexWrap, flex_wrap, css_wrap_type_t)
   [self dirtyPropagation];
 }
 
+- (void)didUpdateReactSubviews
+{
+  // Does nothing by default
+}
+
 - (void)didSetProps:(__unused NSArray<NSString *> *)changedProps
 {
   if (_recomputePadding) {
