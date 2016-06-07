@@ -47,8 +47,10 @@ const SwipeableListView = React.createClass({
   },
 
   _listViewRef: (null: ?string),
+  _shouldBounceFirstRowOnMount: false,
 
   propTypes: {
+    bounceFirstRowOnMount: PropTypes.bool.isRequired,
     dataSource: PropTypes.instanceOf(SwipeableListViewDataSource).isRequired,
     maxSwipeDistance: PropTypes.number,
     // Callback method to render the swipeable view
@@ -59,6 +61,7 @@ const SwipeableListView = React.createClass({
 
   getDefaultProps(): Object {
     return {
+      bounceFirstRowOnMount: false,
       renderQuickActions: () => null,
     };
   },
@@ -67,6 +70,10 @@ const SwipeableListView = React.createClass({
     return {
       dataSource: this.props.dataSource,
     };
+  },
+
+  componentWillMount(): void {
+    this._shouldBounceFirstRowOnMount = this.props.bounceFirstRowOnMount;
   },
 
   componentWillReceiveProps(nextProps: Object): void {
@@ -114,12 +121,22 @@ const SwipeableListView = React.createClass({
     }
   },
 
-  _renderRow(rowData: Object, sectionID: string, rowID: string): ReactElement<any> {
+  _renderRow(
+    rowData: Object,
+    sectionID: string,
+    rowID: string,
+  ): ReactElement<any> {
     const slideoutView = this.props.renderQuickActions(rowData, sectionID, rowID);
 
     // If renderRowSlideout is unspecified or returns falsey, don't allow swipe
     if (!slideoutView) {
       return this.props.renderRow(rowData, sectionID, rowID);
+    }
+
+    let shouldBounceOnMount = false;
+    if (this._shouldBounceFirstRowOnMount) {
+      this._shouldBounceFirstRowOnMount = false;
+      shouldBounceOnMount = rowID === this.props.dataSource.getFirstRowID();
     }
 
     return (
@@ -130,7 +147,8 @@ const SwipeableListView = React.createClass({
         key={rowID}
         onOpen={() => this._onOpen(rowData.id)}
         onSwipeEnd={() => this._setListViewScrollable(true)}
-        onSwipeStart={() => this._setListViewScrollable(false)}>
+        onSwipeStart={() => this._setListViewScrollable(false)}
+        shouldBounceOnMount={shouldBounceOnMount}>
         {this.props.renderRow(rowData, sectionID, rowID)}
       </SwipeableRow>
     );
