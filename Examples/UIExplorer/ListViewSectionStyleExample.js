@@ -130,7 +130,7 @@ var ListViewSectionStyleExample = React.createClass({
     };
   },
 
-  renderRow: function(rowData: string, sectionID: string, rowID: string): ReactElement {
+  renderRow: function(rowData: string, sectionID: string, rowID: string) {
     return (<Thumb text={rowData}/>);
   },
 
