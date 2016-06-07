@@ -33,6 +33,7 @@ var ReactNative = Object.assign(Object.create(require('ReactNative')), {
   Image: require('Image'),
   ImageEditor: require('ImageEditor'),
   ImageStore: require('ImageStore'),
+  KeyboardAvoidingView: require('KeyboardAvoidingView'),
   ListView: require('ListView'),
   MapView: require('MapView'),
   Modal: require('Modal'),
