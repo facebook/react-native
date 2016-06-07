@@ -59,7 +59,8 @@ function _library(argv, config, resolve, reject) {
       return;
     }
 
-    const dest = f.replace(/Sample/g, args.name).replace(/^_/, '.');
+    const dest = f.replace(path.join(source, path.sep),'').replace(/Sample/g, args.name).replace(/^_/, '.');
+
     copyAndReplace(
       path.resolve(source, f),
       path.resolve(libraryDest, dest),
