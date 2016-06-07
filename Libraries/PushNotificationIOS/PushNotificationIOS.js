@@ -36,8 +36,8 @@ const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
  *
  * [Manually link](docs/linking-libraries-ios.html#manual-linking) the PushNotificationIOS library
  *
- * - Add the follwoing to your Project: `node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj`
- * - Add the follwing to `Link Binary With Libraries`: `libRCTPushNotification.a`
+ * - Add the following to your Project: `node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj`
+ * - Add the following to `Link Binary With Libraries`: `libRCTPushNotification.a`
  * - Add the following to your `Header Search Paths`:
  * `$(SRCROOT)/../node_modules/react-native/Libraries/PushNotificationIOS` and set the search to `recursive`
  *
