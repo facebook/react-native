@@ -73,6 +73,8 @@
               removeAtIndices:nil
                      registry:(NSMutableDictionary<NSNumber *, id<RCTComponent>> *)_uiManager.viewRegistry];
 
+  [_uiManager.viewRegistry[@20] didUpdateReactSubviews];
+
   XCTAssertTrue([[containerView reactSubviews] count] == 5,
                @"Expect to have 5 react subviews after calling manage children \
                with 5 tags to add, instead have %lu", (unsigned long)[[containerView reactSubviews] count]);
@@ -106,6 +108,8 @@
                  addAtIndices:nil
               removeAtIndices:removeAtIndices
                      registry:(NSMutableDictionary<NSNumber *, id<RCTComponent>> *)_uiManager.viewRegistry];
+
+ [_uiManager.viewRegistry[@20] didUpdateReactSubviews];
 
   XCTAssertEqual(containerView.reactSubviews.count, (NSUInteger)13,
                @"Expect to have 13 react subviews after calling manage children\
