@@ -33,10 +33,10 @@ if (typeof window === 'undefined') {
 }
 
 function setUpProcess() {
-  GLOBAL.process = GLOBAL.process || {};
-  GLOBAL.process.env = GLOBAL.process.env || {};
-  if (!GLOBAL.process.env.NODE_ENV) {
-    GLOBAL.process.env.NODE_ENV = __DEV__ ? 'development' : 'production';
+  global.process = global.process || {};
+  global.process.env = global.process.env || {};
+  if (!global.process.env.NODE_ENV) {
+    global.process.env.NODE_ENV = __DEV__ ? 'development' : 'production';
   }
 }
 
@@ -102,10 +102,10 @@ function polyfillLazyGlobal(name, valueFn, scope = global) {
     configurable: true,
     enumerable: enumerable !== false,
     get() {
-      return (this[name] = valueFn());
+      return (global[name] = valueFn());
     },
     set(value) {
-      Object.defineProperty(this, name, {
+      Object.defineProperty(global, name, {
         configurable: true,
         enumerable: enumerable !== false,
         writable: writable !== false,
