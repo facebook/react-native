@@ -9,8 +9,11 @@
 
 #import "RCTAnimationGeometry.h"
 
-double RemapValue(double value, double low1, double high1, double low2, double high2 ) {
-  return low2 + (value - low1) * (high2 - low2) / (high1 - low1);
+/**
+ * Interpolates value by remapping it linearly fromMin->fromMax to toMin->toMax
+ */
+CGFloat InterpolateValue(CGFloat value, CGFloat fromMin, CGFloat fromMax, CGFloat toMin, CGFloat toMax ) {
+  return toMin + (value - fromMin) * (toMax - toMin) / (fromMax - fromMin);
 }
 
 CGFloat RadiansToDegrees(CGFloat radians) {

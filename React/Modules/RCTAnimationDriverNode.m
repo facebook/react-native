@@ -21,13 +21,11 @@ const double SINGLE_FRAME_INTERVAL = 1.f / 60.f;
 
 @implementation RCTAnimationDriverNode {
   NSArray *_frames;
-  double _delay;
-  double _toValue;
-  double _fromValue;
-  double _animationStartTime;
-  double _animationCurrentTime;
-  double _animationEndTime;
-  double _animationDuration;
+  CGFloat _toValue;
+  CGFloat _fromValue;
+  NSTimeInterval _delay;
+  NSTimeInterval _animationStartTime;
+  NSTimeInterval _animationCurrentTime;
   RCTValueAnimatedNode *_valueNode;
 }
 
@@ -41,7 +39,7 @@ const double SINGLE_FRAME_INTERVAL = 1.f / 60.f;
   if (self) {
     _animationId = animationId;
     _toValue = toValue.doubleValue;
-    _fromValue = valueNode.value.doubleValue;
+    _fromValue = valueNode.value;
     _valueNode = valueNode;
     _delay = delay ? delay.doubleValue : 0;
     _frames = [NSArray arrayWithArray:frames];
@@ -58,32 +56,29 @@ const double SINGLE_FRAME_INTERVAL = 1.f / 60.f;
 }
 
 - (void)stopAnimation {
-  _animationHasFinished = true;
-  _animationEndTime = CACurrentMediaTime();
-  _animationDuration = _animationEndTime - _animationStartTime;
+  _animationHasFinished = YES;
 }
 
 - (void)removeAnimation {
   [self stopAnimation];
   _valueNode = nil;
   if (self.callback) {
-    self.callback(nil);
+    self.callback(@[[NSNull null]]);
   }
 }
 
 - (void)stepAnimation {
-  if (!self.animationHasBegun ||
-      self.animationHasFinished ||
+  if (!_animationHasBegun ||
+      _animationHasFinished ||
       _frames.count == 0) {
     // Animation has not begun or animation has already finished.
     return;
   }
   
-  double currentTime = CACurrentMediaTime();
-  double stepInterval = currentTime - _animationCurrentTime;
+  NSTimeInterval currentTime = CACurrentMediaTime();
+  NSTimeInterval stepInterval = currentTime - _animationCurrentTime;
   _animationCurrentTime = currentTime;
-  double currentDuration = _animationCurrentTime - _animationStartTime;
-  
+  NSTimeInterval currentDuration = _animationCurrentTime - _animationStartTime;
   
   if (_delay > 0) {
     // Decrement delay
@@ -108,19 +103,23 @@ const double SINGLE_FRAME_INTERVAL = 1.f / 60.f;
   // Do a linear remap of the two frames to safegaurd against variable framerates
   NSNumber *fromFrameValue = _frames[startIndex];
   NSNumber *toFrameValue = _frames[nextIndex];
-  double fromInterval = startIndex * SINGLE_FRAME_INTERVAL;
-  double toInterval = nextIndex * SINGLE_FRAME_INTERVAL;
+  NSTimeInterval fromInterval = startIndex * SINGLE_FRAME_INTERVAL;
+  NSTimeInterval toInterval = nextIndex * SINGLE_FRAME_INTERVAL;
+  
   // Interpolate between the individual frames to ensure the animations are
   //smooth and of the proper duration regardless of the framerate.
-  double frameOutput = RemapValue(currentDuration, fromInterval, toInterval,
-                                  fromFrameValue.doubleValue, toFrameValue.doubleValue);
+  CGFloat frameOutput = InterpolateValue(currentDuration,
+                                         fromInterval,
+                                         toInterval,
+                                         fromFrameValue.doubleValue,
+                                         toFrameValue.doubleValue);
   [self updateOutputWithFrameOutput:frameOutput];
 }
 
-- (void)updateOutputWithFrameOutput:(double)frameOutput {
-  double outputValue = RemapValue(frameOutput, 0, 1, _fromValue, _toValue);
+- (void)updateOutputWithFrameOutput:(CGFloat)frameOutput {
+  CGFloat outputValue = InterpolateValue(frameOutput, 0, 1, _fromValue, _toValue);
   _outputValue = @(outputValue);
-  _valueNode.value = _outputValue;
+  _valueNode.value = outputValue;
   [_valueNode setNeedsUpdate];
 }
 

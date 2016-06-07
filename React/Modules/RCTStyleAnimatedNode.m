@@ -40,7 +40,7 @@
     if (node && node.hasUpdated) {
       if ([node isKindOfClass:[RCTValueAnimatedNode class]]) {
         RCTValueAnimatedNode *parentNode = (RCTValueAnimatedNode *)node;
-        [_updatedPropsDictionary setObject:parentNode.value forKey:property];
+        [_updatedPropsDictionary setObject:@(parentNode.value) forKey:property];
       }
       if ([node isKindOfClass:[RCTTransformAnimatedNode class]]) {
         RCTTransformAnimatedNode *parentNode = (RCTTransformAnimatedNode *)node;

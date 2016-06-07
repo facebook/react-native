@@ -9,9 +9,10 @@
 
 #import "RCTAnimatedNode.h"
 
-@implementation RCTAnimatedNode {
-  NSMutableDictionary *_childNodes;
-  NSMutableDictionary *_parentNodes;
+@implementation RCTAnimatedNode
+{
+  NSMutableDictionary<NSNumber *, RCTAnimatedNode *> *_childNodes;
+  NSMutableDictionary<NSNumber *, RCTAnimatedNode *> *_parentNodes;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag config:(NSDictionary *)config {
@@ -23,11 +24,11 @@
   return self;
 }
 
-- (NSDictionary *)childNodes {
+- (NSDictionary<NSNumber *, RCTAnimatedNode *> *)childNodes {
   return _childNodes;
 }
 
-- (NSDictionary *)parentNodes {
+- (NSDictionary<NSNumber *, RCTAnimatedNode *> *)parentNodes {
   return _parentNodes;
 }
 
@@ -37,7 +38,7 @@
   }
   
   if (child) {
-    [_childNodes setObject:child forKey:child.nodeTag];
+    _childNodes[child.nodeTag] = child;
     [child onAttachedToNode:self];
   }
   
@@ -60,7 +61,7 @@
   }
   
   if (parent) {
-    [_parentNodes setObject:parent forKey:parent.nodeTag];
+    _parentNodes[parent.nodeTag] = parent;
   }
 }
 
@@ -75,12 +76,10 @@
 }
 
 - (void)dettachNode {
-  NSArray *parentNodes = [NSArray arrayWithArray:_parentNodes.allValues];
-  for (RCTAnimatedNode *parent in parentNodes) {
+  for (RCTAnimatedNode *parent in _parentNodes.allValues) {
     [parent removeChild:self];
   }
-  NSArray *childNodes = [NSArray arrayWithArray:_childNodes.allValues];
-  for (RCTAnimatedNode *child in childNodes) {
+  for (RCTAnimatedNode *child in _childNodes.allValues) {
     [self removeChild:child];
   }
 }
@@ -91,21 +90,26 @@
     return;
   }
   _needsUpdate = YES;
-  [_childNodes.allValues makeObjectsPerformSelector:@selector(setNeedsUpdate)];
+  for (RCTAnimatedNode *child in _childNodes.allValues) {
+    [child setNeedsUpdate];
+  }
 }
 
 - (void)cleanupAnimationUpdate {
   if (_hasUpdated) {
     _needsUpdate = NO;
     _hasUpdated = NO;
-    [_childNodes.allValues makeObjectsPerformSelector:@selector(cleanupAnimationUpdate)];
+    for (RCTAnimatedNode *child in _childNodes.allValues) {
+      [child cleanupAnimationUpdate];
+    }
   }
 }
 
 - (void)updateNodeIfNecessary {
   if (_needsUpdate && !_hasUpdated) {
-    // First make sure all parent nodes have been updated
-    [_parentNodes.allValues makeObjectsPerformSelector:@selector(updateNodeIfNecessary)];
+    for (RCTAnimatedNode *parent in _parentNodes.allValues) {
+      [parent updateNodeIfNecessary];
+    }
     [self performUpdate];
   }
 }

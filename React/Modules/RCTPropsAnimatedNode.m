@@ -9,6 +9,7 @@
 
 #import "RCTPropsAnimatedNode.h"
 #import "RCTAnimation.h"
+#import "RCTNativeAnimatedModule.h"
 
 @implementation RCTPropsAnimatedNode {
   RCTStyleAnimatedNode *_parentNode;
@@ -29,8 +30,8 @@
   }
 }
 
-- (void)connectToView:(NSNumber *)viewTag {
-  _propertyMapper = [[RCTViewPropertyMapper alloc] initWithViewTag:viewTag];
+- (void)connectToView:(NSNumber *)viewTag animatedModule:(RCTNativeAnimatedModule *)animationModule {
+  _propertyMapper = [[RCTViewPropertyMapper alloc] initWithViewTag:viewTag animationModule:animationModule];
 }
 
 - (void)disconnectFromView:(NSNumber *)viewTag {

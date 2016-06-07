@@ -9,12 +9,13 @@
 
 #import "RCTAnimatedNode.h"
 @class RCTViewPropertyMapper;
+@class RCTNativeAnimatedModule;
 
 @interface RCTPropsAnimatedNode : RCTAnimatedNode
 
 @property (nonatomic, readonly) RCTViewPropertyMapper *propertyMapper;
 
-- (void)connectToView:(NSNumber *)viewTag;
+- (void)connectToView:(NSNumber *)viewTag animatedModule:(RCTNativeAnimatedModule *)animationModule;
 - (void)disconnectFromView:(NSNumber *)viewTag;
 
 - (void)performViewUpdatesIfNecessary;

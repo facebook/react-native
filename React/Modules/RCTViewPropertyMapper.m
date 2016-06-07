@@ -10,76 +10,76 @@
 #import "RCTViewPropertyMapper.h"
 #import "RCTAnimation.h"
 #import "RCTNativeAnimatedModule.h"
-#import "RCTNativeAnimationManager.h"
 #import <UIKit/UIKit.h>
 #import "RCTBridge.h"
 #import "RCTUIManager.h"
+#import "RCTNativeAnimatedModule.h"
 
 @implementation RCTViewPropertyMapper {
-  CGFloat tX_;
-  CGFloat tY_;
-  CGFloat sX_;
-  CGFloat sY_;
-  CGFloat r_;
+  CGFloat _translateX;
+  CGFloat _translateY;
+  CGFloat _scaleX;
+  CGFloat _scaleY;
+  CGFloat _rotation;
+  RCTNativeAnimatedModule *_animationModule;
 }
 
-- (instancetype)initWithViewTag:(NSNumber *)viewTag {
+- (instancetype)initWithViewTag:(NSNumber *)viewTag animationModule:(RCTNativeAnimatedModule *)animationModule {
   self = [super init];
   if (self) {
+    _animationModule = animationModule;
     _viewTag = viewTag;
-    tX_ = 0;
-    tY_ = 0;
-    sX_ = 1;
-    sY_ = 1;
-    r_ = 0;
+    _translateX = 0;
+    _translateY = 0;
+    _scaleX = 1;
+    _scaleY = 1;
+    _rotation = 0;
   }
   return self;
 }
 
 - (void)updateViewWithDictionary:(NSDictionary *)updates {
   if (updates.count) {
-    RCTNativeAnimatedModule *animationModule =
-      [[RCTNativeAnimationManager sharedManager] nativeAnimationModule];
-    UIView *view = [animationModule.bridge.uiManager viewForReactTag:_viewTag];
+    UIView *view = [_animationModule.bridge.uiManager viewForReactTag:_viewTag];
     if (!view) {
       return;
     }
     
     NSNumber *opacity = updates[@"opacity"];
     if (opacity) {
-      view.alpha = opacity.floatValue;
+      view.alpha = opacity.doubleValue;
     }
     
     NSNumber *scale = updates[@"scale"];
     if (scale) {
-      sX_ = scale.floatValue;
-      sY_ = scale.floatValue;
+      _scaleX = scale.floatValue;
+      _scaleY = scale.floatValue;
     }
     NSNumber *scaleX = updates[@"scaleX"];
     if (scaleX) {
-      sX_ = scaleX.floatValue;
+      _scaleX = scaleX.floatValue;
     }
     NSNumber *scaleY = updates[@"scaleY"];
     if (scaleY) {
-      sY_ = scaleY.floatValue;
+      _scaleY = scaleY.floatValue;
     }
     NSNumber *translateX = updates[@"translateX"];
     if (translateX) {
-      tX_ = translateX.floatValue;
+      _translateX = translateX.floatValue;
     }
     NSNumber *translateY = updates[@"translateY"];
     if (translateY) {
-      tY_ = translateY.floatValue;
+      _translateY = translateY.floatValue;
     }
     NSNumber *rotation = updates[@"rotate"];
     if (rotation) {
-      r_ = rotation.floatValue;
+      _rotation = rotation.floatValue;
     }
     
     if (translateX || translateY || scale || scaleX || scaleY || rotation) {
-      CATransform3D xform = CATransform3DMakeScale(sX_, sY_, 0);
-      xform = CATransform3DTranslate(xform, tX_, tY_, 0);
-      xform = CATransform3DRotate(xform, r_, 0, 0, 1);
+      CATransform3D xform = CATransform3DMakeScale(_scaleX, _scaleY, 0);
+      xform = CATransform3DTranslate(xform, _translateX, _translateY, 0);
+      xform = CATransform3DRotate(xform, _rotation, 0, 0, 1);
       view.layer.allowsEdgeAntialiasing = YES;
       view.layer.transform = xform;
     }

@@ -18,7 +18,7 @@
     RCTValueAnimatedNode *parent1 = (RCTValueAnimatedNode *)self.parentNodes[inputNodes[0]];
     RCTValueAnimatedNode *parent2 = (RCTValueAnimatedNode *)self.parentNodes[inputNodes[1]];
     if (parent1 && parent2) {
-      self.value = @(parent1.value.floatValue + parent2.value.floatValue);
+      self.value = parent1.value + parent2.value;
     }
   }
 }

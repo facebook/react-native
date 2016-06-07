@@ -79,9 +79,16 @@ var PROPS_WHITELIST = {
     scaleX: true,
     scaleY: true,
     translateX: true,
-    translateY: true
+    translateY: true,
   },
 };
+
+var TRANSFORM_WHITELIST = {
+    translateX: true,
+    translateY: true,
+    scale: true,
+    rotate: true,
+  };
 
 function validateProps(params: Object): void {
   for (var key in params) {
@@ -92,13 +99,6 @@ function validateProps(params: Object): void {
 }
 
 function validateTransform(config: Object): void {
-  var TRANSFORM_WHITELIST = {
-    translateX: true,
-    translateY: true,
-    scale: true,
-    rotate: true
-  };
-
   for (var key in config) {
     if (!TRANSFORM_WHITELIST.hasOwnProperty(key)) {
       throw new Error(`Property '${key}' is not supported by native animated module`);

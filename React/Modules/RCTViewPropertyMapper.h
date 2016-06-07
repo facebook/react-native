@@ -8,11 +8,13 @@
  */
 #import <Foundation/Foundation.h>
 
+@class RCTNativeAnimatedModule;
+
 @interface RCTViewPropertyMapper : NSObject
 
 @property (nonatomic, readonly) NSNumber *viewTag;
 
-- (instancetype)initWithViewTag:(NSNumber *)viewTag;
+- (instancetype)initWithViewTag:(NSNumber *)viewTag animationModule:(RCTNativeAnimatedModule *)animationModule;
 
 - (void)updateViewWithDictionary:(NSDictionary *)updates;
 

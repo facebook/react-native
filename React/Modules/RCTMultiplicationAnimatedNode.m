@@ -21,7 +21,7 @@
     if (!parent1 || !parent2) {
       return;
     }
-    self.value = @(parent1.value.floatValue * parent2.value.floatValue);
+    self.value = parent1.value * parent2.value;
   }
 }
 

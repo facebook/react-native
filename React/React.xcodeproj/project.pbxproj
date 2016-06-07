@@ -93,7 +93,6 @@
 		628B30431CF37FBD00D8914E /* RCTAnimationDriverNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 628B30421CF37FBD00D8914E /* RCTAnimationDriverNode.m */; };
 		628B30591CF5103D00D8914E /* RCTAnimationGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 628B30581CF5103D00D8914E /* RCTAnimationGeometry.m */; };
 		6296D6BB1CE4FA4500A4303A /* RCTNativeAnimatedModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 6296D6BA1CE4FA4500A4303A /* RCTNativeAnimatedModule.m */; };
-		6296D6BE1CE53B6700A4303A /* RCTNativeAnimationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6296D6BD1CE53B6700A4303A /* RCTNativeAnimationManager.m */; };
 		6296D6C11CE6791C00A4303A /* RCTAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6296D6C01CE6791C00A4303A /* RCTAnimatedNode.m */; };
 		830A229E1A66C68A008503DA /* RCTRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = 830A229D1A66C68A008503DA /* RCTRootView.m */; };
 		832348161A77A5AA00B55238 /* Layout.c in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FC71A68125100A75B9A /* Layout.c */; };
@@ -311,8 +310,6 @@
 		628B30581CF5103D00D8914E /* RCTAnimationGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAnimationGeometry.m; sourceTree = "<group>"; };
 		6296D6B91CE4FA4500A4303A /* RCTNativeAnimatedModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTNativeAnimatedModule.h; sourceTree = "<group>"; };
 		6296D6BA1CE4FA4500A4303A /* RCTNativeAnimatedModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTNativeAnimatedModule.m; sourceTree = "<group>"; };
-		6296D6BC1CE53B6700A4303A /* RCTNativeAnimationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTNativeAnimationManager.h; sourceTree = "<group>"; };
-		6296D6BD1CE53B6700A4303A /* RCTNativeAnimationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTNativeAnimationManager.m; sourceTree = "<group>"; };
 		6296D6BF1CE6791C00A4303A /* RCTAnimatedNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTAnimatedNode.h; sourceTree = "<group>"; };
 		6296D6C01CE6791C00A4303A /* RCTAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAnimatedNode.m; sourceTree = "<group>"; };
 		6A15FB0C1BDF663500531DFB /* RCTRootViewInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRootViewInternal.h; sourceTree = "<group>"; };
@@ -549,8 +546,6 @@
 				628B30581CF5103D00D8914E /* RCTAnimationGeometry.m */,
 				6296D6B91CE4FA4500A4303A /* RCTNativeAnimatedModule.h */,
 				6296D6BA1CE4FA4500A4303A /* RCTNativeAnimatedModule.m */,
-				6296D6BC1CE53B6700A4303A /* RCTNativeAnimationManager.h */,
-				6296D6BD1CE53B6700A4303A /* RCTNativeAnimationManager.m */,
 				628B30411CF37FBD00D8914E /* RCTAnimationDriverNode.h */,
 				628B30421CF37FBD00D8914E /* RCTAnimationDriverNode.m */,
 				6296D6BF1CE6791C00A4303A /* RCTAnimatedNode.h */,
@@ -765,7 +760,6 @@
 				13B07FEF1A69327A00A75B9A /* RCTAlertManager.m in Sources */,
 				83CBBACC1A6023D300E9B192 /* RCTConvert.m in Sources */,
 				131B6AF41AF1093D00FFC3E0 /* RCTSegmentedControl.m in Sources */,
-				6296D6BE1CE53B6700A4303A /* RCTNativeAnimationManager.m in Sources */,
 				830A229E1A66C68A008503DA /* RCTRootView.m in Sources */,
 				13B07FF01A69327A00A75B9A /* RCTExceptionsManager.m in Sources */,
 				13B202041BFB948C00C07393 /* RCTMapAnnotation.m in Sources */,

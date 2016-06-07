@@ -11,6 +11,9 @@
 #import "RCTBridgeModule.h"
 
 @class RCTValueAnimatedNode;
+
+NS_ASSUME_NONNULL_BEGIN
+
 @interface RCTAnimationDriverNode : NSObject
 
 @property (nonatomic, readonly) NSNumber *animationId;
@@ -19,11 +22,11 @@
 @property (nonatomic, readonly) BOOL animationHasBegun;
 @property (nonatomic, readonly) BOOL animationHasFinished;
 
-- (instancetype)initWithId:(nonnull NSNumber *)animationId
+- (instancetype)initWithId:(NSNumber *)animationId
                      delay:(nullable NSNumber *)delay
-                   toValue:(nonnull NSNumber *)toValue
-                    frames:(nonnull NSArray *)frames
-                  forNode:(nonnull RCTValueAnimatedNode *)valueNode
+                   toValue:(NSNumber *)toValue
+                    frames:(NSArray *)frames
+                  forNode:(RCTValueAnimatedNode *)valueNode
                   callBack:(nullable RCTResponseSenderBlock)callback;
 
 - (void)startAnimation;
@@ -31,4 +34,7 @@
 - (void)stepAnimation;
 - (void)removeAnimation;
 - (void)cleanupAnimationUpdate;
+
 @end
+
+NS_ASSUME_NONNULL_END

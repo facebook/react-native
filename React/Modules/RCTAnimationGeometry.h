@@ -10,6 +10,6 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-double RemapValue(double value, double low1, double high1, double low2, double high2 );
+CGFloat InterpolateValue(CGFloat value, CGFloat fromMin, CGFloat fromMax, CGFloat toMin, CGFloat toMax );
 CGFloat RadiansToDegrees(CGFloat radians);
 CGFloat DegreesToRadians(CGFloat degrees);

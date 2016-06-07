@@ -63,11 +63,13 @@
   }
 }
 
-- (NSUInteger)findRangeIndexForValue:(NSNumber *)value {
+- (NSUInteger)findIndexOfNearestValue:(CGFloat)value inRange:(NSArray<NSNumber *> *)range {
   NSUInteger index;
-  for (index = 1; index < self.inputRange.count - 1; index++) {
-    NSNumber *inputValue = self.inputRange[index];
-    if (inputValue.doubleValue >= value.doubleValue) {
+  NSUInteger rangeCount = range.count;
+  
+  for (index = 1; index < rangeCount - 1; index++) {
+    NSNumber *inputValue = range[index];
+    if (inputValue.floatValue >= value) {
       break;
     }
   }
@@ -80,18 +82,18 @@
     return;
   }
   
-  NSUInteger rangeIndex = [self findRangeIndexForValue:self.parentNode.value];
+  NSUInteger rangeIndex = [self findIndexOfNearestValue:self.parentNode.value inRange:self.inputRange];
   NSNumber *inputMin = self.inputRange[rangeIndex];
   NSNumber *inputMax = self.inputRange[rangeIndex + 1];
   NSNumber *outputMin = self.outputRange[rangeIndex];
   NSNumber *outputMax = self.outputRange[rangeIndex + 1];
   
-  double outputValue = RemapValue(self.parentNode.value.doubleValue,
-                                  inputMin.doubleValue,
-                                  inputMax.doubleValue,
-                                  outputMin.doubleValue,
-                                  outputMax.doubleValue);
-  self.value = @(outputValue);
+  double outputValue = InterpolateValue(self.parentNode.value,
+                                        inputMin.floatValue,
+                                        inputMax.floatValue,
+                                        outputMin.floatValue,
+                                        outputMax.floatValue);
+  self.value = outputValue;
 }
 
 @end

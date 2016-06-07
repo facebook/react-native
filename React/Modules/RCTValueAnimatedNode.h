@@ -8,9 +8,10 @@
  */
 
 #import "RCTAnimatedNode.h"
+#import <UIKit/UIKit.h>
 
 @interface RCTValueAnimatedNode : RCTAnimatedNode
 
-@property (nonatomic, strong) NSNumber *value;
+@property (nonatomic, assign) CGFloat value;
 
 @end

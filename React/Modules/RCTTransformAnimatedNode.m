@@ -38,7 +38,7 @@
     RCTAnimatedNode *node = self.parentNodes[nodeTag];
     if (node && node.hasUpdated && [node isKindOfClass:[RCTValueAnimatedNode class]]) {
       RCTValueAnimatedNode *parentNode = (RCTValueAnimatedNode *)node;
-      [_updatedPropsDictionary setObject:parentNode.value forKey:property];
+      [_updatedPropsDictionary setObject:@(parentNode.value) forKey:property];
     }
   }
 }

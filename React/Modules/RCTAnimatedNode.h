@@ -14,24 +14,36 @@
 - (instancetype)initWithTag:(NSNumber *)tag config:(NSDictionary *)config;
 
 @property (nonatomic, readonly) NSNumber *nodeTag;
-@property (nonatomic, strong) NSDictionary *config;
+@property (nonatomic, copy) NSDictionary<NSString *, id> *config;
 
-@property (nonatomic, readonly) NSDictionary *childNodes;
-@property (nonatomic, readonly) NSDictionary *parentNodes;
+@property (nonatomic, readonly) NSDictionary<NSNumber *, RCTAnimatedNode *> *childNodes;
+@property (nonatomic, readonly) NSDictionary<NSNumber *, RCTAnimatedNode *> *parentNodes;
 
 @property (nonatomic, readonly) BOOL needsUpdate;
 @property (nonatomic, readonly) BOOL hasUpdated;
 
-// Marks a node and its children as needing update.
+/**
+ * Marks a node and its children as needing update.
+ */
+
 - (void)setNeedsUpdate;
 
-// The node will update its value if necesarry and only after its parents have updated.
+/**
+ * The node will update its value if necesarry and only after its parents have updated.
+ */
+
 - (void)updateNodeIfNecessary;
 
-// Where the actual update code lives. Called internally from updateNoeIfNecessary
-- (void)performUpdate;
+/**
+ * Where the actual update code lives. Called internally from updateNodeIfNecessary
+ */
 
-// Cleans up after a round of updates.
+- (void)performUpdate NS_REQUIRES_SUPER;
+
+/**
+ * Cleans up after a round of updates.
+ */
+
 - (void)cleanupAnimationUpdate;
 
 
