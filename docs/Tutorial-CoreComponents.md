@@ -89,7 +89,7 @@ This example creates a simple `TextInput` box with the `string` `Hello` as the p
 
 ```JavaScript
 import React from 'react';
-import { AppRegistry, TextInput, View } from 'react-native'
+import { AppRegistry, TextInput, View } from 'react-native';
 
 const App = () => {
   return (
