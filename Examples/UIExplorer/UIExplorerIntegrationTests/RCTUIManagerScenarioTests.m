@@ -95,7 +95,7 @@
   }
   for (NSInteger i = 2; i < 20; i++) {
     UIView *view = _uiManager.viewRegistry[@(i)];
-    [containerView addSubview:view];
+    [containerView insertReactSubview:view atIndex:containerView.reactSubviews.count];
   }
 
   // Remove views 1-5 from view 20
@@ -155,7 +155,7 @@
 
   for (NSInteger i = 1; i < 11; i++) {
     UIView *view = _uiManager.viewRegistry[@(i)];
-    [containerView addSubview:view];
+    [containerView insertReactSubview:view atIndex:containerView.reactSubviews.count];
   }
 
   [_uiManager _manageChildren:@20

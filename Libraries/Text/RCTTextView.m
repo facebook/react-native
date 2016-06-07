@@ -136,7 +136,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
-- (void)reactUpdateSubviews
+- (void)didUpdateReactSubviews
 {
   // Do nothing, as we don't allow non-text subviews
 }

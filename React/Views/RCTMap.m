@@ -14,6 +14,7 @@
 #import "RCTMapAnnotation.h"
 #import "RCTMapOverlay.h"
 #import "RCTUtils.h"
+#import "UIView+React.h"
 
 const CLLocationDegrees RCTMapDefaultSpan = 0.005;
 const NSTimeInterval RCTMapRegionChangeObserveInterval = 0.1;
@@ -49,7 +50,7 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   [_regionChangeObserveTimer invalidate];
 }
 
-- (void)reactUpdateSubviews
+- (void)didUpdateReactSubviews
 {
   // Do nothing, as annotation views are managed by `setAnnotations:` method
 }
