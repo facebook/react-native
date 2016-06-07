@@ -5,12 +5,12 @@ https://github.com/facebook/react-native/releases
 
 | Version | RC release       | Stable release |
 | ------- | ---------------- | -------------- |
-| 0.22.0  | week of Mar 7    | Mar 21         |
-| 0.23.0  | week of Mar 21   | Apr 4          |
-| 0.24.0  | week of Apr 4    | Apr 18         |
-| 0.25.0  | week of Apr 18   | May 2          |
-| 0.26.0  | week of May 2    | May 16         |
-| 0.27.0  | week of May 16   | May 30         |
+| 0.27.0  | week of May 16   | June 6         |
+| 0.28.0  | week of June 6   | June 20        |
+| 0.29.0  | week of June 20  | July 4         |
+| 0.30.0  | week of July 4   | July 18        |
+| 0.31.0  | week of July 18  | Aug 1          |
+| 0.32.0  | week of Aug 1    | Aug 15         |
 | ...     | ...              | ...            |
 
 -------------------

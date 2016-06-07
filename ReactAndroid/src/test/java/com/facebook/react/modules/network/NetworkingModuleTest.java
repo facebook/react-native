@@ -60,6 +60,8 @@ import static org.mockito.Mockito.when;
     Arguments.class,
     Call.class,
     RequestBodyUtil.class,
+    ProgressRequestBody.class,
+    ProgressRequestListener.class,
     MultipartBody.class,
     MultipartBody.Builder.class,
     NetworkingModule.class,
@@ -262,6 +264,7 @@ public class NetworkingModuleTest {
         .thenReturn(mock(InputStream.class));
     when(RequestBodyUtil.create(any(MediaType.class), any(InputStream.class)))
         .thenReturn(mock(RequestBody.class));
+    when(RequestBodyUtil.createProgressRequest(any(RequestBody.class), any(ProgressRequestListener.class))).thenCallRealMethod();
 
     JavaOnlyMap body = new JavaOnlyMap();
     JavaOnlyArray formData = new JavaOnlyArray();
@@ -316,6 +319,7 @@ public class NetworkingModuleTest {
         .thenReturn(mock(InputStream.class));
     when(RequestBodyUtil.create(any(MediaType.class), any(InputStream.class)))
         .thenReturn(mock(RequestBody.class));
+    when(RequestBodyUtil.createProgressRequest(any(RequestBody.class), any(ProgressRequestListener.class))).thenCallRealMethod();
 
     List<JavaOnlyArray> headers = Arrays.asList(
             JavaOnlyArray.of("Accept", "text/plain"),
@@ -378,6 +382,7 @@ public class NetworkingModuleTest {
     when(RequestBodyUtil.getFileInputStream(any(ReactContext.class), any(String.class)))
         .thenReturn(inputStream);
     when(RequestBodyUtil.create(any(MediaType.class), any(InputStream.class))).thenCallRealMethod();
+    when(RequestBodyUtil.createProgressRequest(any(RequestBody.class), any(ProgressRequestListener.class))).thenCallRealMethod();
     when(inputStream.available()).thenReturn("imageUri".length());
 
     final MultipartBody.Builder multipartBuilder = mock(MultipartBody.Builder.class);

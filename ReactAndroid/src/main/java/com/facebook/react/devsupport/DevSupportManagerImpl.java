@@ -111,12 +111,13 @@ public class DevSupportManagerImpl implements DevSupportManager {
   private boolean mIsDevSupportEnabled = false;
   private boolean mIsCurrentlyProfiling = false;
   private int     mProfileIndex = 0;
+  private @Nullable RedBoxHandler mRedBoxHandler;
 
   public DevSupportManagerImpl(
-      Context applicationContext,
-      ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
-      @Nullable String packagerPathForJSBundleName,
-      boolean enableOnCreate) {
+    Context applicationContext,
+    ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+    @Nullable String packagerPathForJSBundleName,
+    boolean enableOnCreate) {
     mReactInstanceCommandsHandler = reactInstanceCommandsHandler;
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
@@ -158,6 +159,21 @@ public class DevSupportManagerImpl implements DevSupportManager {
     mDefaultNativeModuleCallExceptionHandler = new DefaultNativeModuleCallExceptionHandler();
 
     setDevSupportEnabled(enableOnCreate);
+  }
+
+  public DevSupportManagerImpl(
+      Context applicationContext,
+      ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+      @Nullable String packagerPathForJSBundleName,
+      boolean enableOnCreate,
+      @Nullable RedBoxHandler redBoxHandler) {
+
+    this(applicationContext,
+      reactInstanceCommandsHandler,
+      packagerPathForJSBundleName,
+      enableOnCreate);
+
+    mRedBoxHandler = redBoxHandler;
   }
 
   @Override
@@ -209,9 +225,12 @@ public class DevSupportManagerImpl implements DevSupportManager {
                 errorCookie != mRedBoxDialog.getErrorCookie()) {
               return;
             }
-            mRedBoxDialog.setExceptionDetails(
-                message,
-                StackTraceHelper.convertJsStackTrace(details));
+            StackFrame[] stack = StackTraceHelper.convertJsStackTrace(details);
+            mRedBoxDialog.setExceptionDetails(message, stack);
+            mRedBoxDialog.setErrorCookie(errorCookie);
+            if (mRedBoxHandler != null) {
+              mRedBoxHandler.handleRedbox(message, stack);
+            }
             mRedBoxDialog.show();
           }
         });
@@ -244,6 +263,9 @@ public class DevSupportManagerImpl implements DevSupportManager {
             }
             mRedBoxDialog.setExceptionDetails(message, stack);
             mRedBoxDialog.setErrorCookie(errorCookie);
+            if (mRedBoxHandler != null) {
+              mRedBoxHandler.handleRedbox(message, stack);
+            }
             mRedBoxDialog.show();
           }
         });

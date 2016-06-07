@@ -244,10 +244,6 @@ const APIExamples: Array<UIExplorerExample> = [
     module: require('./SnapshotExample'),
   },
   {
-    key: 'StatusBarIOSExample',
-    module: require('./StatusBarIOSExample'),
-  },
-  {
     key: 'TimerExample',
     module: require('./TimerExample'),
   },
