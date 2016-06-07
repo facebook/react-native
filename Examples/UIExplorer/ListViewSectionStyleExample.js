@@ -144,7 +144,7 @@ var ListViewSectionStyleExample = React.createClass({
     );
   },
 
-  getSectionStyle: function(sectionID : string): ?JSON {
+  getSectionStyle: function(sectionID : string): ?Object {
     return parseInt(sectionID, 10) % 2 === 0 ? { backgroundColor: 'green' } : null;
   },
 
