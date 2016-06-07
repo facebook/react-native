@@ -48,6 +48,14 @@
   _jsRequestingFirstResponder = NO;
 }
 
+- (void)didMoveToWindow
+{
+  if (_jsRequestingFirstResponder) {
+    [self becomeFirstResponder];
+    [self reactDidMakeFirstResponder];
+  }
+}
+
 @end
 
 @implementation RCTTextView
@@ -79,6 +87,7 @@
 
     _textView = [[RCTUITextView alloc] initWithFrame:CGRectZero];
     _textView.backgroundColor = [UIColor clearColor];
+    _textView.textColor = [UIColor blackColor];
     _textView.scrollsToTop = NO;
     _textView.scrollEnabled = NO;
     _textView.delegate = self;

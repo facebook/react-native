@@ -102,6 +102,6 @@ exports.examples = [
     platform: 'ios',
     title: 'Memory Warnings',
     description: 'In the IOS simulator, hit Shift+Command+M to simulate a memory warning.',
-    render(): ReactElement { return <AppStateSubscription showMemoryWarnings={true} />; }
+    render(): ReactElement<any> { return <AppStateSubscription showMemoryWarnings={true} />; }
   },
 ];

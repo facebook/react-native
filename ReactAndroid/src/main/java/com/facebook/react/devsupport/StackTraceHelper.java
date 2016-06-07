@@ -17,7 +17,7 @@ import com.facebook.react.bridge.ReadableMap;
 /**
  * Helper class converting JS and Java stack traces into arrays of {@link StackFrame} objects.
  */
-/* package */ class StackTraceHelper {
+public class StackTraceHelper {
 
   /**
    * Represents a generic entry in a stack trace, be it originally from JS or Java.

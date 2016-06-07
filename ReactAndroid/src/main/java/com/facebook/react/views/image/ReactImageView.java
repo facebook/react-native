@@ -11,6 +11,8 @@ package com.facebook.react.views.image;
 
 import javax.annotation.Nullable;
 
+import java.util.Arrays;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
@@ -50,8 +52,6 @@ import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
-
-import java.util.Arrays;
 
 /**
  * Wrapper class around Fresco's GenericDraweeView, enabling persisting props across multiple view
@@ -135,6 +135,8 @@ public class ReactImageView extends GenericDraweeView {
     }
   }
 
+  private final ResourceDrawableIdHelper mResourceDrawableIdHelper;
+
   private @Nullable Uri mUri;
   private @Nullable Drawable mLoadingImageDrawable;
   private int mBorderColor;
@@ -163,12 +165,14 @@ public class ReactImageView extends GenericDraweeView {
   public ReactImageView(
       Context context,
       AbstractDraweeControllerBuilder draweeControllerBuilder,
-      @Nullable Object callerContext) {
+      @Nullable Object callerContext,
+      ResourceDrawableIdHelper resourceDrawableIdHelper) {
     super(context, buildHierarchy(context));
     mScaleType = ImageResizeMode.defaultValue();
     mDraweeControllerBuilder = draweeControllerBuilder;
     mRoundedCornerPostprocessor = new RoundedCornerPostprocessor();
     mCallerContext = callerContext;
+    mResourceDrawableIdHelper = resourceDrawableIdHelper;
   }
 
   public void setShouldNotifyLoadEvents(boolean shouldNotify) {
@@ -255,9 +259,7 @@ public class ReactImageView extends GenericDraweeView {
     mIsDirty = true;
   }
 
-  public void setSource(
-      @Nullable String source,
-      ResourceDrawableIdHelper resourceDrawableIdHelper) {
+  public void setSource(@Nullable String source) {
     mUri = null;
     if (source != null) {
       try {
@@ -270,7 +272,7 @@ public class ReactImageView extends GenericDraweeView {
         // ignore malformed uri, then attempt to extract resource ID.
       }
       if (mUri == null) {
-        mUri = resourceDrawableIdHelper.getResourceDrawableUri(getContext(), source);
+        mUri = mResourceDrawableIdHelper.getResourceDrawableUri(getContext(), source);
         mIsLocalImage = true;
       } else {
         mIsLocalImage = false;
@@ -279,10 +281,8 @@ public class ReactImageView extends GenericDraweeView {
     mIsDirty = true;
   }
 
-  public void setLoadingIndicatorSource(
-      @Nullable String name,
-      ResourceDrawableIdHelper resourceDrawableIdHelper) {
-    Drawable drawable = resourceDrawableIdHelper.getResourceDrawable(getContext(), name);
+  public void setLoadingIndicatorSource(@Nullable String name) {
+    Drawable drawable = mResourceDrawableIdHelper.getResourceDrawable(getContext(), name);
     mLoadingImageDrawable =
         drawable != null ? (Drawable) new AutoRotateDrawable(drawable, 1000) : null;
     mIsDirty = true;
@@ -313,7 +313,7 @@ public class ReactImageView extends GenericDraweeView {
     }
 
     boolean doResize = shouldResize(mUri);
-    if (doResize && (getWidth() <= 0 || getHeight() <=0)) {
+    if (doResize && (getWidth() <= 0 || getHeight() <= 0)) {
       // If need a resize and the size is not yet set, wait until the layout pass provides one
       return;
     }

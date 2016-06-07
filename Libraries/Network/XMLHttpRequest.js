@@ -85,7 +85,6 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
 
   readyState: number = UNSENT;
   responseHeaders: ?Object;
-  responseText: string = '';
   status: number = 0;
   timeout: number = 0;
   responseURL: ?string;
@@ -103,6 +102,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   _method: ?string = null;
   _response: string | ?Object;
   _responseType: ResponseType;
+  _responseText: string = '';
   _sent: boolean;
   _url: ?string = null;
   _timedOut: boolean = false;
@@ -116,7 +116,6 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   _reset(): void {
     this.readyState = this.UNSENT;
     this.responseHeaders = undefined;
-    this.responseText = '';
     this.status = 0;
     delete this.responseURL;
 
@@ -125,6 +124,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     this._cachedResponse = undefined;
     this._hasError = false;
     this._headers = {};
+    this._responseText = '';
     this._responseType = '';
     this._sent = false;
     this._lowerCaseResponseHeaders = {};
@@ -148,7 +148,9 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     }
     if (!SUPPORTED_RESPONSE_TYPES.hasOwnProperty(responseType)) {
       warning(
-        `The provided value '${responseType}' is not a valid 'responseType'.`);
+        false,
+        `The provided value '${responseType}' is not a valid 'responseType'.`
+      );
       return;
     }
 
@@ -161,12 +163,26 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   }
 
   // $FlowIssue #10784535
+  get responseText(): string {
+    if (this._responseType !== '' && this._responseType !== 'text') {
+      throw new Error(
+        `The 'responseText' property is only available if 'responseType' ` +
+        `is set to '' or 'text', but it is '${this._responseType}'.`
+      );
+    }
+    if (this.readyState < LOADING) {
+      return '';
+    }
+    return this._responseText;
+  }
+
+  // $FlowIssue #10784535
   get response(): Response {
     const {responseType} = this;
     if (responseType === '' || responseType === 'text') {
       return this.readyState < LOADING || this._hasError
         ? ''
-        : this.responseText;
+        : this._responseText;
     }
 
     if (this.readyState !== DONE) {
@@ -177,26 +193,26 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
       return this._cachedResponse;
     }
 
-    switch (this.responseType) {
+    switch (this._responseType) {
       case 'document':
         this._cachedResponse = null;
         break;
 
       case 'arraybuffer':
         this._cachedResponse = toArrayBuffer(
-          this.responseText, this.getResponseHeader('content-type') || '');
+          this._responseText, this.getResponseHeader('content-type') || '');
         break;
 
       case 'blob':
         this._cachedResponse = new global.Blob(
-          [this.responseText],
+          [this._responseText],
           {type: this.getResponseHeader('content-type') || ''}
         );
         break;
 
       case 'json':
         try {
-          this._cachedResponse = JSON.parse(this.responseText);
+          this._cachedResponse = JSON.parse(this._responseText);
         } catch (_) {
           this._cachedResponse = null;
         }
@@ -226,7 +242,12 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     }
   }
 
-  _didReceiveResponse(requestId: number, status: number, responseHeaders: ?Object, responseURL: ?string): void {
+  __didReceiveResponse(
+    requestId: number,
+    status: number,
+    responseHeaders: ?Object,
+    responseURL: ?string
+  ): void {
     if (requestId === this._requestId) {
       this.status = status;
       this.setResponseHeaders(responseHeaders);
@@ -239,12 +260,12 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     }
   }
 
-  _didReceiveData(requestId: number, responseText: string): void {
+  __didReceiveData(requestId: number, responseText: string): void {
     if (requestId === this._requestId) {
-      if (!this.responseText) {
-        this.responseText = responseText;
+      if (!this._responseText) {
+        this._responseText = responseText;
       } else {
-        this.responseText += responseText;
+        this._responseText += responseText;
       }
       this._cachedResponse = undefined; // force lazy recomputation
       this.setReadyState(this.LOADING);
@@ -252,10 +273,14 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   }
 
   // exposed for testing
-  __didCompleteResponse(requestId: number, error: string, timeOutError: boolean): void {
+  __didCompleteResponse(
+    requestId: number,
+    error: string,
+    timeOutError: boolean
+  ): void {
     if (requestId === this._requestId) {
       if (error) {
-        this.responseText = error;
+        this._responseText = error;
         this._hasError = true;
         if (timeOutError) {
           this._timedOut = true;
@@ -330,11 +355,11 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     ));
     this._subscriptions.push(RCTNetworking.addListener(
       'didReceiveNetworkResponse',
-      (args) => this._didReceiveResponse(...args)
+      (args) => this.__didReceiveResponse(...args)
     ));
     this._subscriptions.push(RCTNetworking.addListener(
       'didReceiveNetworkData',
-      (args) =>  this._didReceiveData(...args)
+      (args) =>  this.__didReceiveData(...args)
     ));
     this._subscriptions.push(RCTNetworking.addListener(
       'didCompleteNetworkResponse',

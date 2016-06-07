@@ -293,7 +293,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   __weak RCTImageLoader *weakSelf = self;
 
   void (^completionHandler)(NSError *error, id imageOrData) = ^(NSError *error, id imageOrData) {
-    if ([NSThread isMainThread]) {
+    if (RCTIsMainQueue()) {
 
       // Most loaders do not return on the main thread, so caller is probably not
       // expecting it, and may do expensive post-processing in the callback
@@ -545,7 +545,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
   __block volatile uint32_t cancelled = 0;
   void (^completionHandler)(NSError *, UIImage *) = ^(NSError *error, UIImage *image) {
-    if ([NSThread isMainThread]) {
+    if (RCTIsMainQueue()) {
       // Most loaders do not return on the main thread, so caller is probably not
       // expecting it, and may do expensive post-processing in the callback
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

@@ -312,43 +312,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (void)mountOrUnmountSubview:(UIView *)view withClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView
 {
-  if (view.clipsToBounds) {
+  if (!CGRectIsEmpty(CGRectIntersection(clipRect, view.frame))) {
 
-    // View has cliping enabled, so we can easily test if it is partially
-    // or completely within the clipRect, and mount or unmount it accordingly
-
-    if (!CGRectIsEmpty(CGRectIntersection(clipRect, view.frame))) {
-
-      // View is at least partially visible, so remount it if unmounted
-      if (view.superview == nil) {
-        [self remountSubview:view];
-      }
-
-      // Then test its subviews
-      if (CGRectContainsRect(clipRect, view.frame)) {
-        [view react_remountAllSubviews];
-      } else {
-        [view react_updateClippedSubviewsWithClipRect:clipRect relativeToView:clipView];
-      }
-
-    } else if (view.superview) {
-
-      // View is completely outside the clipRect, so unmount it
-      [view removeFromSuperview];
-    }
-
-  } else {
-
-    // View has clipping disabled, so there's no way to tell if it has
-    // any visible subviews without an expensive recursive test, so we'll
-    // just add it.
-
+    // View is at least partially visible, so remount it if unmounted
     if (view.superview == nil) {
       [self remountSubview:view];
     }
 
-    // Check if subviews need to be mounted/unmounted
-    [view react_updateClippedSubviewsWithClipRect:clipRect relativeToView:clipView];
+    // Then test its subviews
+    if (CGRectContainsRect(clipRect, view.frame)) {
+      [view react_remountAllSubviews];
+    } else {
+      [view react_updateClippedSubviewsWithClipRect:clipRect relativeToView:clipView];
+    }
+
+  } else if (view.superview) {
+
+    // View is completely outside the clipRect, so unmount it
+    [view removeFromSuperview];
   }
 }
 
@@ -375,10 +356,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
   // Convert clipping rect to local coordinates
   clipRect = [clipView convertRect:clipRect toView:self];
+  clipRect = CGRectIntersection(clipRect, self.bounds);
   clipView = self;
-  if (self.clipsToBounds) {
-    clipRect = CGRectIntersection(clipRect, self.bounds);
-  }
 
   // Mount / unmount views
   for (UIView *view in _reactSubviews) {

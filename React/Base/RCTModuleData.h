@@ -48,7 +48,7 @@
 /**
  * Returns YES if module instance must be created on the main thread.
  */
-@property (nonatomic, assign, readonly) BOOL requiresMainThreadSetup;
+@property (nonatomic, assign, readonly) BOOL requiresMainQueueSetup;
 
 /**
  * Returns YES if module has constants to export.
