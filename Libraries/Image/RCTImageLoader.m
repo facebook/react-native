@@ -397,7 +397,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
             return;
           }
 
-          NSURL *redirectURL = [NSURL URLWithString: location];
+          NSURL *redirectURL = [NSURL URLWithString: location relativeToURL: request.URL];
           request = [NSURLRequest requestWithURL:redirectURL];
           cachedResponse = [_URLCache cachedResponseForRequest:request];
           continue;
