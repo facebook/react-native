@@ -395,6 +395,8 @@ Congratulations! You've successfully run and modified your first React Native ap
 
 ## Testing your React Native Installation
 
+Use the React Native command line tools to generate a new React Native project called "AwesomeProject", then run `react-native run-android` inside the newly created folder.
+
 ```
 react-native init AwesomeProject
 cd AwesomeProject
