@@ -1,11 +1,13 @@
 ---
 id: debugging
-title: Debugging React Native Apps
+title: Debugging
 layout: docs
 category: Guides
 permalink: docs/debugging.html
 next: testing
 ---
+
+## In-app Errors and Warnings
 
 Errors and warnings are displayed inside your app in development builds.
 
