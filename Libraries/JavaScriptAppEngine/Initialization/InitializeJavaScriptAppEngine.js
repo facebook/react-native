@@ -20,7 +20,7 @@
  */
 
 /* eslint strict: 0 */
-/* globals GLOBAL: true, window: true */
+/* globals window: true */
 
 require('regenerator-runtime/runtime');
 
