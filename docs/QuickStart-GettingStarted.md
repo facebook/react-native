@@ -165,42 +165,19 @@ There's a few things you need to install first. You will need Node.js, the React
 
 <block class="linux windows android" />
 
-#### Node
+#### Node.js
 
 <block class="linux android" />
 
-Fire up the Terminal and type the following commands to install NodeJS from the NodeSource
-repository:
-
-```
-sudo apt-get install -y build-essential
-curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
-sudo apt-get install -y nodejs
-sudo ln -s /usr/bin/nodejs /usr/bin/node
-```
+Follow the [installation instructions for your Linux distribution](https://nodejs.org/en/download/package-manager/) to install Node.js 4 or newer.
 
 <block class='windows android' />
 
-We recommend installing Node.js via [Chocolatey](https://chocolatey.org), a popular package manager for Windows:
+We recommend installing Node.js via [Chocolatey](https://chocolatey.org), a popular package manager for Windows. Open a Command Prompt as Administrator, then run the following command:
 
 ```
 choco install nodejs.install
 ```
-
-<block class="windows linux android" />
-
-#### React Native Command Line Tools
-
-The React Native command line tools allow you to easily create and initialize projects, etc.
-
-```
-npm install -g react-native-cli
-```
-
-> If you see the error, `EACCES: permission denied`, please run the command:
-> `sudo npm install -g react-native-cli`.
-
-<block class="windows android" />
 
 ##### Python
 
@@ -209,6 +186,21 @@ The React Native command line tools require Python2 to initialize a new React Na
 ```
 choco install python2
 ```
+
+<block class="windows linux android" />
+
+#### React Native Command Line Tools
+
+Use Node's package manager to install the React Native command line tools. These will allow you to easily create your first React Native project.
+
+```
+npm install -g react-native-cli
+```
+
+> If you see the error, `EACCES: permission denied`, please run the command:
+> `sudo npm install -g react-native-cli`.
+
+<block class="windows linux android" />
 
 #### Android Studio
 
