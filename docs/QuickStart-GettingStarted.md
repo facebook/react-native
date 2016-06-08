@@ -78,7 +78,7 @@ We recommend installing Node.js via [Homebrew](http://brew.sh/), a popular packa
 brew install node
 ```
 
-#### React Native Command Line Tools
+#### React Native command line tools
 
 Use Node's package manager to install the React Native command line tools. These will allow you to easily create your first React Native project.
 
@@ -181,7 +181,7 @@ choco install nodejs.install
 
 ##### Python
 
-The React Native command line tools require Python2 to initialize a new React Native project. Install it using Chocolatey:
+The React Native command line tools require Python2. Install it using Chocolatey:
 
 ```
 choco install python2
@@ -189,7 +189,7 @@ choco install python2
 
 <block class="windows linux android" />
 
-#### React Native Command Line Tools
+#### React Native command line tools
 
 Use Node's package manager to install the React Native command line tools. These will allow you to easily create your first React Native project.
 
@@ -330,15 +330,19 @@ If your system supports KVM, you should install the
 
 <block class="mac ios android" />
 
-## Testing Installation
+## Testing your React Native Installation
 
 <block class="mac ios" />
+
+Use the React Native command line tools to generate a new React Native project called "AwesomeProject", then run `react-native run-ios` inside the newly created folder.
 
 ```
 react-native init AwesomeProject
 cd AwesomeProject
 react-native run-ios
 ```
+
+If everything is set up correctly, you should see your new app running in the iOS Simulator shortly.
 
 > You can also
 > [open the `AwesomeProject`](http://nuclide.io/docs/quick-start/getting-started/#adding-a-project)
@@ -348,11 +352,15 @@ react-native run-ios
 
 <block class="mac android" />
 
+Use the React Native command line tools to generate a new React Native project called "AwesomeProject", then run `react-native run-android` inside the newly created folder.
+
 ```
 react-native init AwesomeProject
 cd AwesomeProject
 react-native run-android
 ```
+
+If everything is set up correctly, you should see your new app running in your Android emulator shortly.
 
 > You can also
 > [open the `AwesomeProject`](http://nuclide.io/docs/quick-start/getting-started/#adding-a-project)
@@ -361,24 +369,23 @@ react-native run-android
 
 <block class="mac ios android" />
 
-### Modifying Project
+### Modifying your app
 
-Now that you successfully started the project, let's modify it:
+Now that you have successfully run the app, let's modify it.
 
 <block class="mac ios" />
 
-- Open `index.ios.js` in your text editor of choice (e.g. [Nuclide](http://nuclide.io/docs/platforms/react-native/)) and edit some lines.
-- Hit ⌘-R in your iOS simulator to reload the app and see your change!
+- Open `index.ios.js` in your text editor of choice and edit some lines.
+- Hit `Command⌘ + R` in your iOS Simulator to reload the app and see your change!
 
 <block class="mac android" />
 
-- Open `index.android.js` in your text editor of choice (e.g. [Nuclide](http://nuclide.io/docs/platforms/react-native/)) and edit some lines.
-- Press the `R` key twice **OR** open the menu (F2 by default, or ⌘-M in Genymotion) and select Reload JS to see your change!
-- Run `adb logcat *:S ReactNative:V ReactNativeJS:V` in a terminal to see your app's logs
+- Open `index.android.js` in your text editor of choice and edit some lines.
+- Press the `R` key twice or select `Reload` from the Developer Menu to see your change!
 
 <block class="mac ios android" />
 
-### That's It
+### That's it!
 
 Congratulations! You've successfully run and modified your first React Native app.
 
@@ -386,7 +393,7 @@ Congratulations! You've successfully run and modified your first React Native ap
 
 <block class="windows linux android" />
 
-## Testing Installation
+## Testing your React Native Installation
 
 ```
 react-native init AwesomeProject
@@ -394,33 +401,25 @@ cd AwesomeProject
 react-native run-android
 ```
 
-<block class="windows linux android" />
+If everything is set up correctly, you should see your new app running in your Android emulator shortly.
 
-### Troubleshooting Run
-
-A common issue is that the packager is not started automatically when you run
-`react-native run-android`. You can start it manually using:
-
-```
-cd AwesomeProject
-react-native start
-```
+> A common issue is that the packager is not started automatically when you run
+`react-native run-android`. You can start it manually using `react-native start`.
 
 <block class="windows android" />
 
-Or if you hit a `ERROR  Watcher took too long to load` on Windows, try increasing the timeout in [this file](https://github.com/facebook/react-native/blob/5fa33f3d07f8595a188f6fe04d6168a6ede1e721/packager/react-packager/src/DependencyResolver/FileWatcher/index.js#L16) (under your `node_modules/react-native/`).
+> If you hit a `ERROR  Watcher took too long to load` on Windows, try increasing the timeout in [this file](https://github.com/facebook/react-native/blob/5fa33f3d07f8595a188f6fe04d6168a6ede1e721/packager/react-packager/src/DependencyResolver/FileWatcher/index.js#L16) (under your `node_modules/react-native/`).
 
 <block class="windows linux android" />
 
-### Modifying Project
+### Modifying your app
 
-Now that you successfully started the project, let's modify it:
+Now that you have successfully run the app, let's modify it.
 
-- Open `index.android.js` in your text editor of choice (e.g. [Nuclide](http://nuclide.io/docs/platforms/react-native/)) and edit some lines.
-- Press the `R` key twice **OR** open the menu (F2 by default, or ctrl-M in the emulator) and select Reload JS to see your change!
-- Run `adb logcat *:S ReactNative:V ReactNativeJS:V` in a terminal to see your app's logs
+- Open `index.android.js` in your text editor of choice and edit some lines.
+- Press the `R` key twice or select `Reload` from the Developer Menu to see your change!
 
-### That's It
+### That's it!
 
 Congratulations! You've successfully run and modified your first React Native app.
 
@@ -440,8 +439,7 @@ Congratulations! You've successfully run and modified your first React Native ap
 
 <block class="mac ios android" />
 
-- If you run into any issues getting started, see the [Troubleshooting page](docs/troubleshooting.html#content).
-
+- If you run into any issues getting started, see the [Troubleshooting](docs/troubleshooting.html#content) and [Debugging](docs/debugging.html#content) pages.
 
 <block class="windows linux android" />
 
@@ -449,7 +447,7 @@ Congratulations! You've successfully run and modified your first React Native ap
 
 - If you want to run on a physical device, see the [Running on Android Device page](docs/running-on-device-android.html#content).
 
-- If you run into any issues getting started, see the [Troubleshooting page](docs/troubleshooting.html#content).
+- If you run into any issues getting started, see the [Troubleshooting](docs/troubleshooting.html#content) and [Debugging](docs/debugging.html#content) pages.
 
 <script>
 // Convert <div>...<span><block /></span>...</div>
