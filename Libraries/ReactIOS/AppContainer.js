@@ -33,7 +33,6 @@ var AppContainer = React.createClass({
     var inspector = !__DEV__ || this.state.inspector
       ? null
       : <Inspector
-          rootTag={this.props.rootTag}
           inspectedViewTag={ReactNative.findNodeHandle(this.refs.main)}
           onRequestRerenderApp={(updateInspectedViewTag) => {
             this.setState(
