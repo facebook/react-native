@@ -6,16 +6,14 @@
 
 #include <fb/fbjni.h>
 
-#include <Module/CxxModule.h>
-#include <Module/JsArgumentHelpers.h>
-
+#include <cxxreact/CxxModule.h>
 #include <cxxreact/Instance.h>
+#include <cxxreact/JsArgumentHelpers.h>
 #include <cxxreact/NativeModule.h>
-#include <react/jni/ReadableNativeArray.h>
-
-#include "MethodInvoker.h"
 
 #include "CatalystInstanceImpl.h"
+#include "MethodInvoker.h"
+#include "ReadableNativeArray.h"
 
 using facebook::xplat::module::CxxModule;
 

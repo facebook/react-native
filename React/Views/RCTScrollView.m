@@ -259,10 +259,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (contentView && _centerContent) {
     CGSize subviewSize = contentView.frame.size;
     CGSize scrollViewSize = self.bounds.size;
-    if (subviewSize.width < scrollViewSize.width) {
+    if (subviewSize.width <= scrollViewSize.width) {
       contentOffset.x = -(scrollViewSize.width - subviewSize.width) / 2.0;
     }
-    if (subviewSize.height < scrollViewSize.height) {
+    if (subviewSize.height <= scrollViewSize.height) {
       contentOffset.y = -(scrollViewSize.height - subviewSize.height) / 2.0;
     }
   }
@@ -418,8 +418,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // Does nothing
 }
 
-- (void)insertReactSubview:(UIView *)view atIndex:(__unused NSInteger)atIndex
+- (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
 {
+  [super insertReactSubview:view atIndex:atIndex];
   if ([view isKindOfClass:[RCTRefreshControl class]]) {
     _scrollView.refreshControl = (RCTRefreshControl*)view;
   } else {
@@ -431,21 +432,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)removeReactSubview:(UIView *)subview
 {
+  [super removeReactSubview:subview];
   if ([subview isKindOfClass:[RCTRefreshControl class]]) {
     _scrollView.refreshControl = nil;
   } else {
     RCTAssert(_contentView == subview, @"Attempted to remove non-existent subview");
     _contentView = nil;
-    [subview removeFromSuperview];
   }
 }
 
-- (NSArray<UIView *> *)reactSubviews
+- (void)didUpdateReactSubviews
 {
-  if (_contentView && _scrollView.refreshControl) {
-    return @[_contentView, _scrollView.refreshControl];
-  }
-  return _contentView ? @[_contentView] : @[];
+  // Do nothing, as subviews are managed by `insertReactSubview:atIndex:`
 }
 
 - (BOOL)centerContent
@@ -894,8 +892,13 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
                  lastIndex, subviewCount);
     }
   }
+}
 
-  [_scrollView dockClosestSectionHeader];
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+  if ([changedProps containsObject:@"stickyHeaderIndices"]) {
+    [_scrollView dockClosestSectionHeader];
+  }
 }
 
 // Note: setting several properties of UIScrollView has the effect of
@@ -933,34 +936,6 @@ RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, showsHorizontalSc
 RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
 RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIEdgeInsets);
-
-- (void)setOnRefreshStart:(RCTDirectEventBlock)onRefreshStart
-{
-  if (!onRefreshStart) {
-    _onRefreshStart = nil;
-    _scrollView.refreshControl = nil;
-    return;
-  }
-  _onRefreshStart = [onRefreshStart copy];
-
-  if (!_scrollView.refreshControl) {
-    RCTRefreshControl *refreshControl = [RCTRefreshControl new];
-    [refreshControl addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
-    _scrollView.refreshControl = refreshControl;
-  }
-}
-
-- (void)refreshControlValueChanged
-{
-  if (self.onRefreshStart) {
-    self.onRefreshStart(nil);
-  }
-}
-
-- (void)endRefreshing
-{
-  [_scrollView.refreshControl endRefreshing];
-}
 
 - (void)sendScrollEventWithName:(NSString *)eventName
                      scrollView:(UIScrollView *)scrollView

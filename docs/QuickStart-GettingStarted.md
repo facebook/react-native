@@ -219,7 +219,7 @@ Get started with Nuclide [here](http://nuclide.io/docs/quick-start/getting-start
 #### Genymotion
 
 Genymotion is an alternative to the stock Google emulator that comes with Android Studio.
-However, it's only free for personal use. If you want to use the stock Google emulator, see below.
+However, it's only free for personal use. If you want to use Genymotion, see below.
 
 1. Download and install [Genymotion](https://www.genymotion.com/).
 2. Open Genymotion. It might ask you to install VirtualBox unless you already have it.
@@ -282,7 +282,7 @@ the Terminal should be something like:
 
 #### Python 2
 
-Fire up the Termimal and use Chocolatey to install Python 2.
+Fire up the Terminal and use Chocolatey to install Python 2.
 
 > Python 3 will currently not work when initializing a React Native project.
 

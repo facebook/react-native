@@ -2,14 +2,10 @@
 
 #include "CxxModuleWrapper.h"
 
-#include <react/jni/ReadableNativeArray.h>
-
 #include <fb/fbjni.h>
 #include <fb/Environment.h>
 #include <jni/LocalString.h>
 #include <jni/Registration.h>
-
-#include <Module/JsArgumentHelpers.h>
 
 #include <android/log.h>
 
@@ -18,6 +14,12 @@
 
 #include <unordered_set>
 #include <dlfcn.h>
+
+#include <cxxreact/JsArgumentHelpers.h>
+#include <cxxreact/FollySupport.h>
+
+#include "ReadableNativeArray.h"
+
 
 using namespace facebook::jni;
 using namespace facebook::xplat::module;
@@ -190,7 +192,7 @@ std::string CxxModuleWrapper::getConstantsJson() {
     constsobject.insert(std::move(c.first), std::move(c.second));
   }
 
-  return folly::toJson(constsobject);
+  return facebook::react::detail::toStdString(folly::toJson(constsobject));
 }
 
 jobject CxxModuleWrapper::getMethods() {

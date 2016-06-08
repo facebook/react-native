@@ -1,3 +1,5 @@
+include_defs('//ReactAndroid/DEFS')
+
 cxx_library(
   name = 'perftests',
   srcs = [ 'OnLoad.cpp' ],
@@ -6,10 +8,10 @@ cxx_library(
     '-fexceptions',
   ],
   deps = [
-    '//native:base',
     '//native/fb:fb',
+    '//native:base',
     '//xplat/folly:molly',
-    '//xplat/react/module:module',
+    react_native_xplat_target('cxxreact:module'),
   ],
   visibility = [
     '//instrumentation_tests/com/facebook/react/...',

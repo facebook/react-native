@@ -89,7 +89,7 @@
     [copyButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
     [copyButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [copyButton addTarget:self action:@selector(copyStack) forControlEvents:UIControlEventTouchUpInside];
-    
+
     CGFloat buttonWidth = self.bounds.size.width / 3;
     dismissButton.frame = CGRectMake(0, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
     reloadButton.frame = CGRectMake(buttonWidth, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
@@ -147,7 +147,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)copyStack
 {
   NSMutableString *fullStackTrace;
-  
+
   if (_lastErrorMessage != nil) {
     fullStackTrace = [_lastErrorMessage mutableCopy];
     [fullStackTrace appendString:@"\n\n"];
@@ -155,20 +155,29 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   else {
     fullStackTrace = [NSMutableString string];
   }
-  
+
   for (NSDictionary *stackFrame in _lastStackTrace) {
     [fullStackTrace appendString:[NSString stringWithFormat:@"%@\n", stackFrame[@"methodName"]]];
     if (stackFrame[@"file"]) {
-      NSString *lineInfo = [NSString stringWithFormat:@"    %@ @ %zd:%zd\n",
-                            [stackFrame[@"file"] lastPathComponent],
-                            [stackFrame[@"lineNumber"] integerValue],
-                            [stackFrame[@"column"] integerValue]];
-      [fullStackTrace appendString:lineInfo];
+      [fullStackTrace appendFormat:@"    %@\n", [self formatFrameSource:stackFrame]];
     }
   }
-  
+
   UIPasteboard *pb = [UIPasteboard generalPasteboard];
   [pb setString:fullStackTrace];
+}
+
+- (NSString *)formatFrameSource:(NSDictionary *)stackFrame
+{
+  NSString *lineInfo = [NSString stringWithFormat:@"%@:%zd",
+                        [stackFrame[@"file"] lastPathComponent],
+                        [stackFrame[@"lineNumber"] integerValue]];
+
+  NSInteger column = [stackFrame[@"column"] integerValue];
+  if (column != 0) {
+    lineInfo = [lineInfo stringByAppendingFormat:@":%zd", column];
+  }
+  return lineInfo;
 }
 
 #pragma mark - TableView
@@ -231,10 +240,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   cell.textLabel.text = stackFrame[@"methodName"];
   if (stackFrame[@"file"]) {
-    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ @ %zd:%zd",
-                                 [stackFrame[@"file"] lastPathComponent],
-                                 [stackFrame[@"lineNumber"] integerValue],
-                                 [stackFrame[@"column"] integerValue]];
+    cell.detailTextLabel.text = [self formatFrameSource:stackFrame];
   } else {
     cell.detailTextLabel.text = @"";
   }

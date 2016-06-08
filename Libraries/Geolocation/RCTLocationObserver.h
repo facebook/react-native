@@ -7,8 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTBridgeModule.h"
+#import "RCTEventEmitter.h"
 
-@interface RCTLocationObserver : NSObject<RCTBridgeModule>
+@interface RCTLocationObserver : RCTEventEmitter
 
 @end

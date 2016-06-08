@@ -24,15 +24,21 @@ import com.facebook.soloader.SoLoader;
 @DoNotStrip
 public class ReactBridge extends Countable {
 
-  /* package */ static final String REACT_NATIVE_LIB = "reactnativejni";
+  private static final String REACT_NATIVE_LIB = "reactnativejni";
+  private static final String XREACT_NATIVE_LIB = "reactnativejnifb";
 
   static {
-    SoLoader.loadLibrary(REACT_NATIVE_LIB);
+    staticInit();
   }
 
   private final ReactCallback mCallback;
   private final JavaScriptExecutor mJSExecutor;
   private final MessageQueueThread mNativeModulesQueueThread;
+
+  public static void staticInit() {
+    SoLoader.loadLibrary(REACT_NATIVE_LIB);
+    SoLoader.loadLibrary(XREACT_NATIVE_LIB);
+  }
 
   /**
    * @param jsExecutor the JS executor to use to run JS
@@ -58,6 +64,9 @@ public class ReactBridge extends Countable {
 
   public void handleMemoryPressure(MemoryPressure level) {
     switch (level) {
+      case UI_HIDDEN:
+        handleMemoryPressureUiHidden();
+        break;
       case MODERATE:
         handleMemoryPressureModerate();
         break;
@@ -86,6 +95,7 @@ public class ReactBridge extends Countable {
   public native void startProfiler(String title);
   public native void stopProfiler(String title, String filename);
   public native ExecutorToken getMainExecutorToken();
+  private native void handleMemoryPressureUiHidden();
   private native void handleMemoryPressureModerate();
   private native void handleMemoryPressureCritical();
   public native void destroy();

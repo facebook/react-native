@@ -5,7 +5,7 @@
 #include <fb/fbjni.h>
 
 #include <cxxreact/ModuleRegistry.h>
-#include <react/jni/CxxModuleWrapper.h>
+#include "CxxModuleWrapper.h"
 
 namespace facebook {
 namespace react {

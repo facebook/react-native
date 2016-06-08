@@ -20,12 +20,9 @@ function cleanup {
 
     [ -f $REACT_PACKAGER_LOG ] && cat $REACT_PACKAGER_LOG
   fi
-  [ $SERVER_PID ] && kill -9 $SERVER_PID
 }
 trap cleanup EXIT
 
-./packager/packager.sh --nonPersistent &
-SERVER_PID=$!
 # TODO: We use xcodebuild because xctool would stall when collecting info about
 # the tests before running them. Switch back when this issue with xctool has
 # been resolved.

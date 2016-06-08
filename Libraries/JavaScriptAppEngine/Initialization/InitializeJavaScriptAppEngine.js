@@ -40,6 +40,11 @@ function setUpProcess() {
   }
 }
 
+function setUpProfile() {
+  const Systrace = require('Systrace');
+  Systrace.setEnabled(global.__RCTProfileIsProfiling || false);
+}
+
 function setUpConsole() {
   // ExceptionsManager transitively requires Promise so we install it after
   const ExceptionsManager = require('ExceptionsManager');
@@ -64,40 +69,47 @@ function setUpConsole() {
  * https://github.com/facebook/react-native/issues/934
  */
 function polyfillGlobal(name, newValue, scope = global) {
-  const descriptor = Object.getOwnPropertyDescriptor(scope, name) || {
-    // jest for some bad reasons runs the polyfill code multiple times. In jest
-    // environment, XmlHttpRequest doesn't exist so getOwnPropertyDescriptor
-    // returns undefined and defineProperty default for writable is false.
-    // Therefore, the second time it runs, defineProperty will fatal :(
-    writable: true,
-  };
-
-  if (scope[name] !== undefined) {
+  const descriptor = Object.getOwnPropertyDescriptor(scope, name);
+  if (descriptor) {
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
     Object.defineProperty(scope, backupName, {...descriptor, value: scope[name]});
   }
 
-  Object.defineProperty(scope, name, {...descriptor, value: newValue});
-}
+  const {enumerable, writable} = descriptor || {};
 
-function polyfillLazyGlobal(name, valueFn, scope = global) {
-  if (scope[name] !== undefined) {
-    const descriptor = Object.getOwnPropertyDescriptor(scope, name);
-    const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
-    Object.defineProperty(scope, backupName, {...descriptor, value: scope[name]});
-  }
+  // jest for some bad reasons runs the polyfill code multiple times. In jest
+  // environment, XmlHttpRequest doesn't exist so getOwnPropertyDescriptor
+  // returns undefined and defineProperty default for writable is false.
+  // Therefore, the second time it runs, defineProperty will fatal :(
 
   Object.defineProperty(scope, name, {
     configurable: true,
-    enumerable: true,
+    enumerable: enumerable !== false,
+    writable: writable !== false,
+    value: newValue,
+  });
+}
+
+function polyfillLazyGlobal(name, valueFn, scope = global) {
+  const descriptor = getPropertyDescriptor(scope, name);
+  if (descriptor) {
+    const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
+    Object.defineProperty(scope, backupName, descriptor);
+  }
+
+  const {enumerable, writable} = descriptor || {};
+  Object.defineProperty(scope, name, {
+    configurable: true,
+    enumerable: enumerable !== false,
     get() {
       return (this[name] = valueFn());
     },
     set(value) {
       Object.defineProperty(this, name, {
         configurable: true,
-        enumerable: true,
-        value
+        enumerable: enumerable !== false,
+        writable: writable !== false,
+        value,
       });
     }
   });
@@ -211,7 +223,18 @@ function setUpDevTools() {
   }
 }
 
+function getPropertyDescriptor(object, name) {
+  while (object) {
+    const descriptor = Object.getOwnPropertyDescriptor(object, name);
+    if (descriptor) {
+      return descriptor;
+    }
+    object = Object.getPrototypeOf(object);
+  }
+}
+
 setUpProcess();
+setUpProfile();
 setUpConsole();
 setUpTimers();
 setUpAlert();

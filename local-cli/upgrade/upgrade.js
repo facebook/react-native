@@ -45,7 +45,7 @@ module.exports = function upgrade(args, config) {
             )
           );
 
-          // >= v0.21.0, we require react to be a peer depdendency
+          // >= v0.21.0, we require react to be a peer dependency
           if (semver.gte(v, '0.21.0') && !pak.dependencies['react']) {
             console.log(
               chalk.yellow(

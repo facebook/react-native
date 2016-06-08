@@ -41,14 +41,15 @@ ProxyExecutor::~ProxyExecutor() {
 }
 
 void ProxyExecutor::loadApplicationScript(
-    const std::string& script,
+    const std::string&,
     const std::string& sourceURL) {
   static auto loadApplicationScript =
-    jni::findClassStatic(EXECUTOR_BASECLASS)->getMethod<void(jstring, jstring)>("loadApplicationScript");
+    jni::findClassStatic(EXECUTOR_BASECLASS)->getMethod<void(jstring)>("loadApplicationScript");
+
+  // The proxy ignores the script data passed in.
 
   loadApplicationScript(
     m_executor.get(),
-    jni::make_jstring(script).get(),
     jni::make_jstring(sourceURL).get());
 }
 

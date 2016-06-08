@@ -2,8 +2,8 @@
 
 #include <fb/log.h>
 #include <fb/fbjni.h>
-#include <Module/CxxModule.h>
-#include <Module/JsArgumentHelpers.h>
+#include <cxxreact/CxxModule.h>
+#include <cxxreact/JsArgumentHelpers.h>
 
 #include <mutex>
 #include <condition_variable>

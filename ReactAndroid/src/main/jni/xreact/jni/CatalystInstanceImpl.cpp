@@ -13,8 +13,6 @@
 #include <jni/Countable.h>
 #include <jni/LocalReference.h>
 
-#include <react/jni/NativeArray.h>
-
 #include <cxxreact/Instance.h>
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/ModuleRegistry.h>
@@ -23,6 +21,7 @@
 #include "JavaScriptExecutorHolder.h"
 #include "JniJSModulesUnbundle.h"
 #include "ModuleRegistryHolder.h"
+#include "NativeArray.h"
 #include "JNativeRunnable.h"
 
 using namespace facebook::jni;
@@ -106,6 +105,9 @@ void CatalystInstanceImpl::registerNatives() {
       makeNativeMethod("callJSCallback", CatalystInstanceImpl::callJSCallback),
       makeNativeMethod("getMainExecutorToken", CatalystInstanceImpl::getMainExecutorToken),
       makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
+      makeNativeMethod("handleMemoryPressureUiHidden", CatalystInstanceImpl::handleMemoryPressureUiHidden),
+      makeNativeMethod("handleMemoryPressureModerate", CatalystInstanceImpl::handleMemoryPressureModerate),
+      makeNativeMethod("handleMemoryPressureCritical", CatalystInstanceImpl::handleMemoryPressureCritical),
       makeNativeMethod("supportsProfiling", CatalystInstanceImpl::supportsProfiling),
       makeNativeMethod("startProfiler", CatalystInstanceImpl::startProfiler),
       makeNativeMethod("stopProfiler", CatalystInstanceImpl::stopProfiler),
@@ -202,6 +204,18 @@ void CatalystInstanceImpl::setGlobalVariable(std::string propName,
 
   instance_->setGlobalVariable(std::move(propName),
                                folly::make_unique<JSBigStdString>(std::move(jsonValue)));
+}
+
+void CatalystInstanceImpl::handleMemoryPressureUiHidden() {
+  instance_->handleMemoryPressureUiHidden();
+}
+
+void CatalystInstanceImpl::handleMemoryPressureModerate() {
+  instance_->handleMemoryPressureModerate();
+}
+
+void CatalystInstanceImpl::handleMemoryPressureCritical() {
+  instance_->handleMemoryPressureCritical();
 }
 
 jboolean CatalystInstanceImpl::supportsProfiling() {

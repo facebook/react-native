@@ -11,10 +11,10 @@
 
 #import "RCTBridgeModule.h"
 #import "RCTConvert.h"
-#import "RCTComponent.h"
 #import "RCTDefines.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "UIView+React.h"
 
 @class RCTBridge;
 @class RCTShadowView;

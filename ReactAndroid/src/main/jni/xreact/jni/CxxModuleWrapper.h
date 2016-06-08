@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <Module/CxxModule.h>
+#include <cxxreact/CxxModule.h>
 #include <fb/fbjni.h>
 #include <memory>
 #include <string>

@@ -11,22 +11,22 @@
 
 'use strict';
 
-var Inspector = require('Inspector');
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var React = require('React');
-var ReactNative = require('ReactNative');
-var StyleSheet = require('StyleSheet');
-var Subscribable = require('Subscribable');
-var View = require('View');
+const Inspector = require('Inspector');
+const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const React = require('React');
+const ReactNative = require('ReactNative');
+const StyleSheet = require('StyleSheet');
+const Subscribable = require('Subscribable');
+const View = require('View');
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
-var YellowBox = __DEV__ ? require('YellowBox') : null;
+const YellowBox = __DEV__ ? require('YellowBox') : null;
 
 // require BackAndroid so it sets the default handler that exits the app if no listeners respond
 require('BackAndroid');
 
-var AppContainer = React.createClass({
+const AppContainer = React.createClass({
   mixins: [Subscribable.Mixin],
 
   getInitialState: function() {
@@ -41,7 +41,7 @@ var AppContainer = React.createClass({
   toggleElementInspector: function() {
     this.setState({
       inspectorVisible: !this.state.inspectorVisible,
-      rootNodeHandle: ReactNative.findNodeHandle(this.refs.main),
+      rootNodeHandle: ReactNative.findNodeHandle(this._mainRef),
     });
   },
 
@@ -63,7 +63,7 @@ var AppContainer = React.createClass({
         onRequestRerenderApp={(updateInspectedViewTag) => {
           this.setState(
             (s) => ({mainKey: s.mainKey + 1}),
-            () => updateInspectedViewTag(ReactNative.findNodeHandle(this.refs.main))
+            () => updateInspectedViewTag(ReactNative.findNodeHandle(this._mainRef))
           );
         }}
       /> :
@@ -74,21 +74,26 @@ var AppContainer = React.createClass({
     this._unmounted = true;
   },
 
+  _setMainRef: function(ref) {
+    this._mainRef = ref;
+  },
+
   render: function() {
-    var RootComponent = this.props.rootComponent;
-    var appView =
+    const RootComponent = this.props.rootComponent;
+    const appView =
       <View
-        ref="main"
+        ref={this._setMainRef}
         key={this.state.mainKey}
         collapsable={!this.state.inspectorVisible}
-        style={styles.appContainer}>
+        style={StyleSheet.absoluteFill}>
         <RootComponent
           {...this.props.initialProps}
           rootTag={this.props.rootTag}
-          importantForAccessibility={this.state.rootImportanceForAccessibility}/>
+          importantForAccessibility={this.state.rootImportanceForAccessibility}
+        />
       </View>;
     return __DEV__ ?
-      <View style={styles.appContainer}>
+      <View style={StyleSheet.absoluteFill}>
         {appView}
         <YellowBox />
         {this.renderInspector()}
@@ -110,19 +115,10 @@ function renderApplication<D, P, S>(
     <AppContainer
       rootComponent={RootComponent}
       initialProps={initialProps}
-      rootTag={rootTag} />,
+      rootTag={rootTag}
+    />,
     rootTag
   );
 }
-
-var styles = StyleSheet.create({
-  appContainer: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    right: 0,
-    bottom: 0,
-  },
-});
 
 module.exports = renderApplication;

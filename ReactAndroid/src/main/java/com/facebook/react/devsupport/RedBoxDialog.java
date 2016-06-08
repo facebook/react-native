@@ -42,6 +42,7 @@ import org.json.JSONObject;
 /* package */ class RedBoxDialog extends Dialog implements AdapterView.OnItemClickListener {
 
   private final DevSupportManager mDevSupportManager;
+  private final DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
 
   private ListView mStackView;
   private Button mReloadJs;
@@ -124,7 +125,8 @@ import org.json.JSONObject;
         FrameViewHolder holder = (FrameViewHolder) convertView.getTag();
         holder.mMethodView.setText(frame.getMethod());
         final int column = frame.getColumn();
-        final String columnString = column < 0 ? "" : ":" + column;
+        // If the column is 0, don't show it in red box.
+        final String columnString = column <= 0 ? "" : ":" + column;
         holder.mFileView.setText(frame.getFileName() + ":" + frame.getLine() + columnString);
         return convertView;
       }
@@ -181,6 +183,7 @@ import org.json.JSONObject;
     setContentView(R.layout.redbox_view);
 
     mDevSupportManager = devSupportManager;
+    mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
 
     mStackView = (ListView) findViewById(R.id.rn_redbox_stack);
     mStackView.setOnItemClickListener(this);
@@ -218,7 +221,9 @@ import org.json.JSONObject;
       mDevSupportManager.showDevOptionsDialog();
       return true;
     }
-
+    if (mDoubleTapReloadRecognizer.didDoubleTapR(keyCode, getCurrentFocus())) {
+      mDevSupportManager.handleReloadJS();
+    }
     return super.onKeyUp(keyCode, event);
   }
 }

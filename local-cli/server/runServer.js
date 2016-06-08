@@ -13,13 +13,13 @@ const connect = require('connect');
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
 const http = require('http');
-const isAbsolutePath = require('absolute-path');
 const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
 const messageSocket = require('./util/messageSocket.js');
 const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInEditorMiddleware');
 const path = require('path');
 const ReactPackager = require('../../packager/react-packager');
 const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
+const indexPageMiddleware = require('./middleware/indexPage');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
@@ -36,6 +36,7 @@ function runServer(args, config, readyCallback) {
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
     .use(cpuProfilerMiddleware)
+    .use(indexPageMiddleware)
     .use(packagerServer.processRequest.bind(packagerServer));
 
   args.projectRoots.forEach(root => app.use(connect.static(root)));
@@ -66,18 +67,13 @@ function runServer(args, config, readyCallback) {
 }
 
 function getPackagerServer(args, config) {
-  let transformerPath = args.transformer;
-  if (!isAbsolutePath(transformerPath)) {
-    transformerPath = path.resolve(process.cwd(), transformerPath);
-  }
-
   return ReactPackager.createServer({
     nonPersistent: args.nonPersistent,
     projectRoots: args.projectRoots,
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-    transformModulePath: transformerPath,
+    transformModulePath: path.resolve(args.transformer),
     extraNodeModules: config.extraNodeModules,
     assetRoots: args.assetRoots,
     assetExts: [

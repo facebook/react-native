@@ -71,19 +71,20 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     return new ReactImageView(
         context,
         getDraweeControllerBuilder(),
-        getCallerContext());
+        getCallerContext(),
+        mResourceDrawableIdHelper);
   }
 
   // In JS this is Image.props.source.uri
   @ReactProp(name = "src")
   public void setSource(ReactImageView view, @Nullable String source) {
-    view.setSource(source, mResourceDrawableIdHelper);
+    view.setSource(source);
   }
 
   // In JS this is Image.props.loadingIndicatorSource.uri
   @ReactProp(name = "loadingIndicatorSrc")
   public void setLoadingIndicatorSource(ReactImageView view, @Nullable String source) {
-    view.setLoadingIndicatorSource(source, mResourceDrawableIdHelper);
+    view.setLoadingIndicatorSource(source);
   }
 
   @ReactProp(name = "borderColor", customType = "Color")

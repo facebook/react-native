@@ -44,8 +44,8 @@ const ViewabilityHelper = require('ViewabilityHelper');
 const clamp = require('clamp');
 const deepDiffer = require('deepDiffer');
 const infoLog = require('infoLog');
-const invariant = require('invariant');
-const nullthrows = require('nullthrows');
+const invariant = require('fbjs/lib/invariant');
+const nullthrows = require('fbjs/lib/nullthrows');
 
 import type ReactComponent from 'ReactComponent';
 
@@ -91,15 +91,15 @@ type Props = {
    */
   renderRow: (
     rowData: any, sectionIdx: number, rowIdx: number, rowKey: string
-  ) => ?ReactElement;
+  ) => ?ReactElement<any>;
   /**
    * Rendered when the list is scrolled faster than rows can be rendered.
    */
-  renderWindowBoundaryIndicator?: () => ?ReactElement;
+  renderWindowBoundaryIndicator?: () => ?ReactElement<any>;
   /**
    * Always rendered at the bottom of all the rows.
    */
-  renderFooter?: () => ?ReactElement;
+  renderFooter?: () => ?ReactElement<any>;
   /**
    * Pipes through normal onScroll events from the underlying `ScrollView`.
    */
@@ -139,7 +139,7 @@ type Props = {
    * A function that returns the scrollable component in which the list rows
    * are rendered. Defaults to returning a ScrollView with the given props.
    */
-  renderScrollComponent: (props: ?Object) => ReactElement;
+  renderScrollComponent: (props: ?Object) => ReactElement<any>;
   /**
    * Use to disable incremental rendering when not wanted, e.g. to speed up initial render.
    */
@@ -211,30 +211,35 @@ class WindowedListView extends React.Component {
       this._scrollRef.getScrollResponder();
   }
   shouldComponentUpdate(newProps: Props, newState: State): boolean {
+    DEBUG && infoLog('WLV: shouldComponentUpdate...');
     if (newState !== this.state) {
+      DEBUG && infoLog('  yes: ', {newState, oldState: this.state});
       return true;
     }
     for (const key in newProps) {
       if (key !== 'data' && newProps[key] !== this.props[key]) {
+        DEBUG && infoLog('  yes, non-data prop change: ', {key});
         return true;
       }
     }
     const newDataSubset = newProps.data.slice(newState.firstRow, newState.lastRow + 1);
     const prevDataSubset = this.props.data.slice(this.state.firstRow, this.state.lastRow + 1);
     if (newDataSubset.length !== prevDataSubset.length) {
+      DEBUG && infoLog('  yes, subset length: ', {newLen: newDataSubset.length, oldLen: prevDataSubset.length});
       return true;
     }
     for (let idx = 0; idx < newDataSubset.length; idx++) {
-      if (newDataSubset[idx] !== prevDataSubset[idx]) {
+      if (newDataSubset[idx].rowData !== prevDataSubset[idx].rowData ||
+          newDataSubset[idx].rowKey !== prevDataSubset[idx].rowKey) {
+        DEBUG && infoLog('  yes, data change: ', {idx, new: newDataSubset[idx], old: prevDataSubset[idx]});
         return true;
       }
     }
+    DEBUG && infoLog('  knope');
     return false;
   }
-  componentWillReceiveProps(newProps: Object) {
-    // This has to happen immediately otherwise we could crash, e.g. if the data
-    // array has gotten shorter.
-    this._computeRowsToRender(newProps);
+  componentWillReceiveProps() {
+    this._enqueueComputeRowsToRender();
   }
   _onMomentumScrollEnd = (e: Object) => {
     this._onScroll(e);
@@ -273,13 +278,13 @@ class WindowedListView extends React.Component {
         'record layout for row: ',
         {k: rowKey, h: layout.height, y: layout.y, x: layout.x, hp: layoutPrev.height, yp: layoutPrev.y}
       );
-    }
-    if (this._rowFrames[rowKey]) {
-      const deltaY = Math.abs(this._rowFrames[rowKey].y - layout.y);
-      const deltaH = Math.abs(this._rowFrames[rowKey].height - layout.height);
-      if (deltaY > 2 || deltaH > 2) {
-        const dataEntry = this.props.data.find((datum) => datum.rowKey === rowKey);
-        console.warn('layout jump: ', {dataEntry, prevLayout: this._rowFrames[rowKey], newLayout: layout});
+      if (this._rowFrames[rowKey]) {
+        const deltaY = Math.abs(this._rowFrames[rowKey].y - layout.y);
+        const deltaH = Math.abs(this._rowFrames[rowKey].height - layout.height);
+        if (deltaY > 2 || deltaH > 2) {
+          const dataEntry = this.props.data.find((datum) => datum.rowKey === rowKey);
+          console.warn('layout jump: ', {dataEntry, prevLayout: this._rowFrames[rowKey], newLayout: layout});
+        }
       }
     }
     this._rowFrames[rowKey] = {...layout, offscreenLayoutDone: true};
@@ -339,7 +344,7 @@ class WindowedListView extends React.Component {
     const rowFrames = this._rowFrames;
     let firstVisible = -1;
     let lastVisible = 0;
-    let lastRow = this.state.lastRow;
+    let lastRow = clamp(0, this.state.lastRow, totalRows - 1);
     const top = this._scrollOffsetY;
     const bottom = top + this._frameHeight;
     for (let idx = 0; idx < lastRow; idx++) {
@@ -430,8 +435,9 @@ class WindowedListView extends React.Component {
     this._firstVisible = newFirstVisible;
     this._lastVisible = newLastVisible;
   }
-  render(): ReactElement {
-    const {firstRow, lastRow} = this.state;
+  render(): ReactElement<any> {
+    const {firstRow} = this.state;
+    const lastRow = clamp(0, this.state.lastRow, this.props.data.length - 1);
     const rowFrames = this._rowFrames;
     const rows = [];
     let spacerHeight = 0;
@@ -574,7 +580,7 @@ type CellProps = {
    */
    renderRow: (
       rowData: mixed, sectionIdx: number, rowIdx: number, rowKey: string
-   ) => ?ReactElement;
+   ) => ?ReactElement<any>;
   /**
    * Index of the row, passed through to other callbacks.
    */
