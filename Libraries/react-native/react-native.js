@@ -88,6 +88,7 @@ var ReactNative = {
   get ImagePickerIOS() { return require('ImagePickerIOS'); },
   get IntentAndroid() { return require('IntentAndroid'); },
   get InteractionManager() { return require('InteractionManager'); },
+  get Keyboard() { return require('Keyboard'); },
   get LayoutAnimation() { return require('LayoutAnimation'); },
   get Linking() { return require('Linking'); },
   get LinkingIOS() { return require('LinkingIOS'); },
