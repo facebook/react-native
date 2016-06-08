@@ -412,7 +412,10 @@ public class NativeViewHierarchyManager {
     }
   }
 
-  private boolean arrayContains(int[] array, int ele) {
+  private boolean arrayContains(@Nullable int[] array, int ele) {
+    if (array == null) {
+      return false;
+    }
     for (int curEle : array) {
       if (curEle == ele) {
         return true;
