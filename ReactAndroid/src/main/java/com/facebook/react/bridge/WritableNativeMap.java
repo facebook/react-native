@@ -22,7 +22,7 @@ import com.facebook.soloader.SoLoader;
 @DoNotStrip
 public class WritableNativeMap extends ReadableNativeMap implements WritableMap {
   static {
-    ReactBridge.staticInit();
+    SoLoader.loadLibrary(ReactBridge.REACT_NATIVE_LIB);
   }
 
   @Override

@@ -24,21 +24,15 @@ import com.facebook.soloader.SoLoader;
 @DoNotStrip
 public class ReactBridge extends Countable {
 
-  private static final String REACT_NATIVE_LIB = "reactnativejni";
-  private static final String XREACT_NATIVE_LIB = "reactnativejnifb";
+  /* package */ static final String REACT_NATIVE_LIB = "reactnativejni";
 
   static {
-    staticInit();
+    SoLoader.loadLibrary(REACT_NATIVE_LIB);
   }
 
   private final ReactCallback mCallback;
   private final JavaScriptExecutor mJSExecutor;
   private final MessageQueueThread mNativeModulesQueueThread;
-
-  public static void staticInit() {
-    SoLoader.loadLibrary(REACT_NATIVE_LIB);
-    SoLoader.loadLibrary(XREACT_NATIVE_LIB);
-  }
 
   /**
    * @param jsExecutor the JS executor to use to run JS

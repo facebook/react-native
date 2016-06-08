@@ -7,7 +7,7 @@
 #include <folly/dynamic.h>
 #include <fb/fbjni.h>
 
-#include "NativeArray.h"
+#include <react/jni/NativeArray.h>
 
 namespace facebook {
 namespace react {

@@ -348,7 +348,8 @@ public class NativeViewHierarchyManager {
 
         View viewToRemove = viewManager.getChildAt(viewToManage, indexToRemove);
 
-        if (mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
+        if (mLayoutAnimationEnabled &&
+            mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
             arrayContains(tagsToDelete, viewToRemove.getId())) {
           // The view will be removed and dropped by the 'delete' layout animation
           // instead, so do nothing
@@ -395,7 +396,8 @@ public class NativeViewHierarchyManager {
                       tagsToDelete));
         }
 
-        if (mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
+        if (mLayoutAnimationEnabled &&
+            mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
           mLayoutAnimator.deleteView(viewToDestroy, new LayoutAnimationListener() {
             @Override
             public void onAnimationEnd() {
@@ -410,7 +412,10 @@ public class NativeViewHierarchyManager {
     }
   }
 
-  private boolean arrayContains(int[] array, int ele) {
+  private boolean arrayContains(@Nullable int[] array, int ele) {
+    if (array == null) {
+      return false;
+    }
     for (int curEle : array) {
       if (curEle == ele) {
         return true;
