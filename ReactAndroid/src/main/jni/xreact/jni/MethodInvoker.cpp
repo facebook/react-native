@@ -2,6 +2,7 @@
 
 #include "MethodInvoker.h"
 
+#include <react/jni/ReadableNativeArray.h>
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
 #endif
@@ -9,7 +10,6 @@
 #include "ModuleRegistryHolder.h"
 #include "JCallback.h"
 #include "JExecutorToken.h"
-#include "ReadableNativeArray.h"
 
 namespace facebook {
 namespace react {

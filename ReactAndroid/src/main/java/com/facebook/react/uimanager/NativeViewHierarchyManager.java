@@ -346,7 +346,7 @@ public class NativeViewHierarchyManager {
                       tagsToDelete));
         }
 
-        View viewToRemove = viewToManage.getChildAt(indexToRemove);
+        View viewToRemove = viewManager.getChildAt(viewToManage, indexToRemove);
 
         if (mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
             arrayContains(tagsToDelete, viewToRemove.getId())) {

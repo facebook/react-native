@@ -455,7 +455,6 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
   RCTSourceCode *sourceCodeModule = [self moduleForClass:[RCTSourceCode class]];
   sourceCodeModule.scriptURL = self.bundleURL;
-  sourceCodeModule.scriptData = sourceCode;
 
   [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:^(NSError *loadError) {
     if (!_valid) {

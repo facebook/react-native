@@ -19,7 +19,7 @@ import com.facebook.soloader.SoLoader;
 @DoNotStrip
 public abstract class NativeArray {
   static {
-    ReactBridge.staticInit();
+    SoLoader.loadLibrary(ReactBridge.REACT_NATIVE_LIB);
   }
 
   protected NativeArray(HybridData hybridData) {
