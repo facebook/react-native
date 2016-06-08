@@ -80,7 +80,7 @@ class YourApplication extends React.Component {
     switch (type) {
       case 'push':
         // push a new route.
-        const route = {key: Date.now()};
+        const route = {key: 'route-' + Date.now()};
         navigationState = NavigationStateUtils.push(navigationState, route);
         break;
 
