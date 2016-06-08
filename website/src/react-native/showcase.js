@@ -760,6 +760,13 @@ var apps = [
     author: 'Jonathan Solichin',
   },
   {
+    name: 'react-present remote',
+    icon: 'https://lh3.googleusercontent.com/o17riYlDAyKI6Yu6grtqfZadk0KFqdjWgqonC-p9-1RhhUTDh8Nh1ZFMToHo2hjA9Aw=w300-rw',
+    link: 'https://github.com/limscoder/react-present/tree/master/remote',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.github.limscoder.ReactPresent',
+    author: 'Dave Thompson @limscoder'
+  },
+  {
     name: 'Reading',
     icon: 'http://7xr0xq.com1.z0.glb.clouddn.com/about_logo.png',
     link: 'http://www.wandoujia.com/apps/com.reading',
