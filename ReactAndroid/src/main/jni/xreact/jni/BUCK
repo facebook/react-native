@@ -5,25 +5,19 @@ SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
 
 EXPORTED_HEADERS = [
   'CxxModuleWrapper.h',
-  'NativeArray.h',
-  'NativeCommon.h',
-  'NativeMap.h',
-  'ReadableNativeArray.h',
-  'ReadableNativeMap.h',
-  'WritableNativeArray.h',
-  'WritableNativeMap.h',
 ]
 
 cxx_library(
   name='jni',
   soname = 'libreactnativejnifb.so',
-  header_namespace = 'xreact/jni',
+  header_namespace = 'react/jni',
   supported_platforms_regex = SUPPORTED_PLATFORMS,
   deps = JSC_DEPS + [
     '//native/fb:fb',
     '//native/third-party/android-ndk:android',
     '//xplat/folly:molly',
     '//xplat/fbsystrace:fbsystrace',
+    react_native_target('jni/react/jni:jni'),
     react_native_xplat_target('cxxreact:bridge'),
     react_native_xplat_target('cxxreact:module'),
   ],
