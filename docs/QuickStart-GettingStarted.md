@@ -108,47 +108,7 @@ You can install Xcode via the [Mac App Store](https://itunes.apple.com/us/app/xc
 
 #### Android Studio
 
-Download and install [Android Studio](https://developer.android.com/studio/index.html).
-
-Android Studio will provide you the Android SDK and emulator required to run and test your React
-Native apps.
-
-> Unless otherwise mentioned, keep all the setup defaults intact. For example, the
-> `Android Support Repository` is installed automatically with Android Studio, and we need that
-> for React Native.
-
-You will need to customize your installation:
-
-- Choose a `Custom` installation
-
-![custom installation](img/react-native-android-studio-custom-install.png)
-
-- Choose both `Performance` and `Android Virtual Device`
-
-![additional installs](img/react-native-android-studio-additional-installs.png)
-
-- After installation, choose `Configure | SDK Manager` from the Android Studio welcome window.
-
-![configure sdk](img/react-native-android-studio-configure-sdk.png)
-
-- In the `SDK Platforms` window, choose `Show Package Details` and under `Android 6.0 (Marshmallow)`, make sure that `Google APIs`, `Intel x86 Atom System Image`, `Intel x86 Atom_64 System Image`, and `Google APIs Intel x86 Atom_64 System Image` are checked.
-
-![platforms](img/react-native-android-studio-android-sdk-platforms.png)
-
-- In the `SDK Tools` window, choose `Show Package Details` and under `Android SDK Build Tools`, make sure that `Android SDK Build-Tools 23.0.1` is selected.
-
-![build tools](img/react-native-android-studio-android-sdk-build-tools.png)
-
-##### ANDROID_HOME Environment Variable
-
-Ensure the `ANDROID_HOME` environment variable points to your existing Android SDK. To do that, add
-this to your `~/.bashrc`, `~/.bash_profile` (or whatever your shell uses) and re-open your terminal:
-
-```
-# If you installed the Android SDK without Android Studio, then it may be something like:
-# /usr/local/opt/android-sdk
-export ANDROID_HOME=~/Library/Android/sdk
-```
+Download and install [Android Studio](https://developer.android.com/studio/install.html).
 
 #### Gradle Daemon
 
@@ -204,105 +164,7 @@ npm install -g react-native-cli
 
 #### Android Studio
 
-Download and install [Android Studio](https://developer.android.com/studio/index.html).
-
-Android Studio will provide you the Android SDK and emulator required to run and test your React
-Native apps.
-
-> Unless otherwise mentioned, keep all the setup defaults intact. For example, the
-> `Android Support Repository` is installed automatically with Android Studio, and we need that
-> for React Native.
-
-<block class="linux android" />
-
-You will need to customize your installation:
-
-- Choose a `Custom` installation
-
-![custom installation](img/react-native-android-studio-custom-install-linux.png)
-
-- Choose `Android Virtual Device`
-
-![additional installs](img/react-native-android-studio-additional-installs-linux.png)
-
-<block class="windows android" />
-
-- Make sure all components are checked for the install, particularly the `Android SDK` and `Android Device Emulator`.
-
-- After the initial install, choose a `Custom` installation.
-
-![custom installation](img/react-native-android-studio-custom-install-windows.png)
-
-- Verify installed components, particularly the emulator and the HAXM accelerator. They should be checked.
-
-![verify installs](img/react-native-android-studio-verify-installs-windows.png)
-
-<block class="windows linux android" />
-
-- After installation, choose `Configure | SDK Manager` from the Android Studio welcome window.
-
-<block class="linux android" />
-
-![configure sdk](img/react-native-android-studio-configure-sdk-linux.png)
-
-<block class="windows android" />
-
-![configure sdk](img/react-native-android-studio-configure-sdk-windows.png)
-
-<block class="windows linux android" />
-
-- In the `SDK Platforms` window, choose `Show Package Details` and under `Android 6.0 (Marshmallow)`, make sure that `Google APIs`, `Intel x86 Atom System Image`, `Intel x86 Atom_64 System Image`, and `Google APIs Intel x86 Atom_64 System Image` are checked.
-
-<block class="linux android" />
-
-![platforms](img/react-native-android-studio-android-sdk-platforms-linux.png)
-
-<block class="windows android" />
-
-![platforms](img/react-native-android-studio-android-sdk-platforms-windows.png)
-
-<block class="windows linux android" />
-
-- In the `SDK Tools` window, choose `Show Package Details` and under `Android SDK Build Tools`, make sure that `Android SDK Build-Tools 23.0.1` is selected.
-
-<block class="linux android" />
-
-![build tools](img/react-native-android-studio-android-sdk-build-tools-linux.png)
-
-<block class="windows android" />
-
-![build tools](img/react-native-android-studio-android-sdk-build-tools-windows.png)
-
-<block class="windows linux android" />
-
-#### ANDROID_HOME Environment Variable
-
-Ensure the `ANDROID_HOME` environment variable points to your existing Android SDK.
-
-<block class="linux android" />
-
-To do that, add this to your `~/.bashrc`, `~/.bash_profile` (or whatever your shell uses) and
-re-open your terminal:
-
-```
-# If you installed the SDK without Android Studio, then it may be something like:
-# /usr/local/opt/android-sdk; Generally with Android Studio, the SDK is installed here...
-export ANDROID_HOME=~/Android/Sdk
-```
-
-> You need to restart the Terminal to apply the new environment variables (or `source` the relevant
-> bash file).
-
-<block class="windows android" />
-
-Go to `Control Panel` -> `System and Security` -> `System` -> `Change settings` ->
-`Advanced System Settings` -> `Environment variables` -> `New`
-
-> Your path to the SDK will vary to the one shown below.
-
-![env variable](img/react-native-android-sdk-environment-variable-windows.png)
-
-> You need to restart the Command Prompt (Windows) to apply the new environment variables.
+Download and install [Android Studio](https://developer.android.com/studio/install.html).
 
 <block class="linux android" />
 
@@ -316,17 +178,6 @@ it for better performance. You can follow the [Watchman installation guide](http
 #### Gradle Daemon
 
 While optional, enabling [Gradle Daemon](https://docs.gradle.org/2.9/userguide/gradle_daemon.html) will greatly improve incremental build times for changes in Java code.
-
-<block class="linux android" />
-
-#### Android Emulator Accelerator
-
-You may have seen the following screen when installing Android Studio.
-
-![accelerator](img/react-native-android-studio-kvm-linux.png)
-
-If your system supports KVM, you should install the
-[Intel Android Emulator Accelerator](https://software.intel.com/en-us/android/articles/speeding-up-the-android-emulator-on-intel-architecture#_Toc358213272).
 
 <block class="mac ios android" />
 

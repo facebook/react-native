@@ -30,7 +30,6 @@ then
 `$ kill -9 <cma process id>`
 
 
-
 ##### Change the port in Xcode
 Edit `AppDelegate.m` to use a different port.
 ```
@@ -111,23 +110,6 @@ Requiring firebase *before* react-native will result in a 'No transports availab
 Discovered thanks to issue [#3645](https://github.com/facebook/react-native/issues/3645). If you're curious, the polyfills are set up in [InitializeJavaScriptAppEngine.js](https://github.com/facebook/react-native/blob/master/Libraries/JavaScriptAppEngine/Initialization/InitializeJavaScriptAppEngine.js).
 
 
-## Virtual Device Not Created When Installing Android Studio
-
-There is a [known bug](https://code.google.com/p/android/issues/detail?id=207563) on some versions
-of Android Studio where a virtual device will not be created, even though you selected it in the
-installation sequence. You may see this at the end of the installation:
-
-```
-Creating Android virtual device
-Unable to create a virtual device: Unable to create Android virtual device
-```
-
-If you see this, run `android avd` and create the virtual device manually.
-
-![avd](img/react-native-android-studio-avd.png)
-
-Then select the new device in the AVD Manager window and click `Start...`.
-
 ## Shell Command Unresponsive Exception
 
 If you encounter:
@@ -138,17 +120,3 @@ Execution failed for task ':app:installDebug'.
 ```
 
 Try downgrading your Gradle version to 1.2.3 in `<project-name>/android/build.gradle` (https://github.com/facebook/react-native/issues/2720)
-
-## Unable to run mksdcard SDK Tool
-
-When installing Android Studio, if you get the error:
-
-```
-Unable to run mksdcard SDK tool
-```
-
-then install the standard C++ library:
-
-```
-sudo apt-get install lib32stdc++6
-```
