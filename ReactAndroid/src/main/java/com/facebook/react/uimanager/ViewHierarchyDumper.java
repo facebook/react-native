@@ -9,8 +9,6 @@
 
 package com.facebook.react.uimanager;
 
-import javax.annotation.Nullable;
-
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -22,31 +20,28 @@ import org.json.JSONObject;
 
 public class ViewHierarchyDumper {
 
-  public static @Nullable JSONObject toJSON(@Nullable View view) {
+  public static JSONObject toJSON(View view) throws JSONException {
     UiThreadUtil.assertOnUiThread();
-    if (view == null) {
-      return null;
-    }
+
     JSONObject result = new JSONObject();
-    try {
-      result.put("class", view.getClass().getSimpleName());
-      Object tag = view.getTag();
-      if (tag != null && tag instanceof String) {
-        result.put("id", tag);
-      }
-      if (view instanceof ViewGroup) {
-        ViewGroup viewGroup = (ViewGroup) view;
-        if (viewGroup.getChildCount() > 0) {
-          JSONArray children = new JSONArray();
-          for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            children.put(i, toJSON(viewGroup.getChildAt(i)));
-          }
-          result.put("children", children);
-        }
-      }
-    } catch (JSONException ex) {
-      return null;
+    result.put("n", view.getClass().getName());
+    result.put("i", System.identityHashCode(view));
+    Object tag = view.getTag();
+    if (tag != null && tag instanceof String) {
+      result.put("t", tag);
     }
+
+    if (view instanceof ViewGroup) {
+      ViewGroup viewGroup = (ViewGroup) view;
+      if (viewGroup.getChildCount() > 0) {
+        JSONArray children = new JSONArray();
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+          children.put(i, toJSON(viewGroup.getChildAt(i)));
+        }
+        result.put("c", children);
+      }
+    }
+
     return result;
   }
 }
