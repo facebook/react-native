@@ -342,7 +342,7 @@ class PushNotificationIOS {
   /**
    * Remote notification completion callback for remote notifications.
    */
-  remoteComplete(fetchResult) {
+  finish(fetchResult) {
     if (!this._notificationId) return;
     if (this._remoteNotificationCompleteCalllbackCalled) return;
     this._remoteNotificationCompleteCalllbackCalled = true;

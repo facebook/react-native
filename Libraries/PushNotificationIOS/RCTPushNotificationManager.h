@@ -11,9 +11,12 @@
 
 @interface RCTPushNotificationManager : RCTEventEmitter
 
+typedef void (^RemoteNotificationCallback)(UIBackgroundFetchResult result);
+
 + (void)didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification;
++ (void)didReceiveRemoteNotification:(NSDictionary *)notification fetchCompletionHandler:(RemoteNotificationCallback)completionHandler;
 + (void)didReceiveLocalNotification:(UILocalNotification *)notification;
 
 @end
