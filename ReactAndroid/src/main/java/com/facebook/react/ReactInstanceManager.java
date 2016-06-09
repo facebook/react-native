@@ -195,6 +195,7 @@ public abstract class ReactInstanceManager {
     protected @Nullable Activity mCurrentActivity;
     protected @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
     protected @Nullable RedBoxHandler mRedBoxHandler;
+    protected boolean mUseNewBridge;
 
     protected Builder() {
     }
@@ -304,8 +305,13 @@ public abstract class ReactInstanceManager {
       return this;
     }
 
-    public Builder setRedBoxHandler(RedBoxHandler redBoxHandler) {
+    public Builder setRedBoxHandler(@Nullable RedBoxHandler redBoxHandler) {
       mRedBoxHandler = redBoxHandler;
+      return this;
+    }
+
+    public Builder setUseNewBridge() {
+      mUseNewBridge = true;
       return this;
     }
 
@@ -333,22 +339,41 @@ public abstract class ReactInstanceManager {
         mUIImplementationProvider = new UIImplementationProvider();
       }
 
-      return new ReactInstanceManagerImpl(
-          Assertions.assertNotNull(
-              mApplication,
-              "Application property has not been set with this builder"),
-          mCurrentActivity,
-          mDefaultHardwareBackBtnHandler,
-          mJSBundleFile,
-          mJSMainModuleName,
-          mPackages,
-          mUseDeveloperSupport,
-          mBridgeIdleDebugListener,
-          Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
-          mUIImplementationProvider,
-          mNativeModuleCallExceptionHandler,
-          mJSCConfig,
-          mRedBoxHandler);
+      if (mUseNewBridge) {
+        return new XReactInstanceManagerImpl(
+            Assertions.assertNotNull(
+                mApplication,
+                "Application property has not been set with this builder"),
+            mCurrentActivity,
+            mDefaultHardwareBackBtnHandler,
+            mJSBundleFile,
+            mJSMainModuleName,
+            mPackages,
+            mUseDeveloperSupport,
+            mBridgeIdleDebugListener,
+            Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
+            mUIImplementationProvider,
+            mNativeModuleCallExceptionHandler,
+            mJSCConfig,
+            mRedBoxHandler);
+      } else {
+        return new ReactInstanceManagerImpl(
+            Assertions.assertNotNull(
+                mApplication,
+                "Application property has not been set with this builder"),
+            mCurrentActivity,
+            mDefaultHardwareBackBtnHandler,
+            mJSBundleFile,
+            mJSMainModuleName,
+            mPackages,
+            mUseDeveloperSupport,
+            mBridgeIdleDebugListener,
+            Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
+            mUIImplementationProvider,
+            mNativeModuleCallExceptionHandler,
+            mJSCConfig,
+            mRedBoxHandler);
+      }
     }
   }
 }

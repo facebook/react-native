@@ -2,10 +2,9 @@
 
 #include "JSCPerfLogging.h"
 
-#include <cxxreact/JSCHelpers.h>
-
 #include <fb/log.h>
 #include <fb/fbjni.h>
+#include <react/JSCHelpers.h>
 
 using namespace facebook::jni;
 

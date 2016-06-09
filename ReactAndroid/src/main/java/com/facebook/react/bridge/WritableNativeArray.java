@@ -21,8 +21,9 @@ import com.facebook.soloader.SoLoader;
  */
 @DoNotStrip
 public class WritableNativeArray extends ReadableNativeArray implements WritableArray {
+
   static {
-    ReactBridge.staticInit();
+    SoLoader.loadLibrary(ReactBridge.REACT_NATIVE_LIB);
   }
 
   public WritableNativeArray() {

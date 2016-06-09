@@ -18,7 +18,6 @@ def jni_library(**kwargs):
     ],
     deps = DEPS + JSC_DEPS + [
       react_native_target('jni/react:react'),
-      react_native_target('jni/xreact/jni:jni'),
     ],
     **kwargs
   )
@@ -34,8 +33,15 @@ jni_library(
     'JSLoader.cpp',
     'JSLogging.cpp',
     'JniJSModulesUnbundle.cpp',
+    'NativeArray.cpp',
+    'NativeCommon.cpp',
+    'NativeMap.cpp',
     'OnLoad.cpp',
     'ProxyExecutor.cpp',
+    'ReadableNativeArray.cpp',
+    'ReadableNativeMap.cpp',
+    'WritableNativeArray.cpp',
+    'WritableNativeMap.cpp',
   ],
   headers = [
     'JSLoader.h',
@@ -50,6 +56,13 @@ jni_library(
     'WebWorkers.h',
   ],
   exported_headers = [
+    'NativeCommon.h',
+    'NativeArray.h',
+    'NativeMap.h',
+    'ReadableNativeArray.h',
+    'ReadableNativeMap.h',
+    'WritableNativeArray.h',
+    'WritableNativeMap.h',
   ],
   preprocessor_flags = [
     '-DLOG_TAG="ReactNativeJNI"',

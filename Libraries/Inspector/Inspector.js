@@ -32,7 +32,6 @@ if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
 class Inspector extends React.Component {
   props: {
     inspectedViewTag: ?number,
-    rootTag: ?number,
     onRequestRerenderApp: (callback: (tag: ?number) => void) => void
   };
 
@@ -198,7 +197,6 @@ class Inspector extends React.Component {
       <View style={styles.container} pointerEvents="box-none">
         {this.state.inspecting &&
           <InspectorOverlay
-            rootTag={this.props.rootTag}
             inspected={this.state.inspected}
             inspectedViewTag={this.state.inspectedViewTag}
             onTouchInstance={this.onTouchInstance.bind(this)}
