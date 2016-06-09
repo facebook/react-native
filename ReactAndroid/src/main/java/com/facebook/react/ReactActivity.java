@@ -55,7 +55,7 @@ public abstract class ReactActivity extends Activity implements DefaultHardwareB
    * Returns a custom path of the bundle file. This is used in cases the bundle should be loaded
    * from a custom path. By default it is loaded from Android assets, from a path specified
    * by {@link getBundleAssetName}.
-   * e.g. "file://sdcard/myapp_cache/index.android.bundle"
+   * e.g. "/sdcard/myapp_cache/index.android.bundle"
    */
   protected @Nullable String getJSBundleFile() {
     return null;
