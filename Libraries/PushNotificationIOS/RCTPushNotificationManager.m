@@ -154,6 +154,15 @@ RCT_EXPORT_MODULE()
   if (notification.alertBody) {
     details[@"alertBody"] = notification.alertBody;
   }
+
+  if (notification.applicationIconBadgeNumber) {
+    details[@"applicationIconBadgeNumber"] = [NSNumber numberWithInteger:notification.applicationIconBadgeNumber];
+  }
+
+  if (notification.soundName) {
+    details[@"soundName"] = notification.soundName;
+  }
+
   if (notification.userInfo) {
     details[@"userInfo"] = RCTJSONClean(notification.userInfo);
   }
