@@ -172,6 +172,7 @@ class PushNotificationIOS {
       listener =  PushNotificationEmitter.addListener(
         DEVICE_NOTIF_EVENT,
         (notifData) => {
+          notifData.remote = true;
           handler(new PushNotificationIOS(notifData));
         }
       );
@@ -179,6 +180,7 @@ class PushNotificationIOS {
       listener = PushNotificationEmitter.addListener(
         DEVICE_LOCAL_NOTIF_EVENT,
         (notifData) => {
+          notifData.remote = false;
           handler(new PushNotificationIOS(notifData));
         }
       );
@@ -296,7 +298,7 @@ class PushNotificationIOS {
     _initialNotification = null;
     return initialNotification;
   }
-  
+
   /**
    * If the app launch was triggered by a push notification,
    * it will give the notification object, otherwise it will give `null`
@@ -315,19 +317,26 @@ class PushNotificationIOS {
   constructor(nativeNotif: Object) {
     this._data = {};
 
-    // Extract data from Apple's `aps` dict as specified here:
-    // https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
-
-    Object.keys(nativeNotif).forEach((notifKey) => {
-      var notifVal = nativeNotif[notifKey];
-      if (notifKey === 'aps') {
-        this._alert = notifVal.alert;
-        this._sound = notifVal.sound;
-        this._badgeCount = notifVal.badge;
-      } else {
-        this._data[notifKey] = notifVal;
-      }
-    });
+    if (nativeNotif.remote) {
+      // Extract data from Apple's `aps` dict as defined:
+      // https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
+      Object.keys(nativeNotif).forEach((notifKey) => {
+        var notifVal = nativeNotif[notifKey];
+        if (notifKey === 'aps') {
+          this._alert = notifVal.alert;
+          this._sound = notifVal.sound;
+          this._badgeCount = notifVal.badge;
+        } else {
+          this._data[notifKey] = notifVal;
+        }
+      });
+    } else {
+      // Local notifications aren't being sent down with `aps` dict.
+      this._badgeCount = nativeNotif.applicationIconBadgeNumber;
+      this._sound = nativeNotif.soundName;
+      this._alert = nativeNotif.alertBody;
+      this._data = nativeNotif.userInfo;
+    }
   }
 
   /**
