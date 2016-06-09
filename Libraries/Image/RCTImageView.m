@@ -315,7 +315,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   [super didMoveToWindow];
 
-  if (self.window && (!self.image || self.image == _defaultImage)) {
+  if (!self.window) {
+    // Cancel loading the image if we've moved offscreen. In addition to helping
+    // pritoritise image requests that are actually on-screen, this removes
+    // requests that have gotten "stuck" from the queue, unblocking other images
+    // from loading.
+    [self cancelImageLoad];
+  } else if (!self.image || self.image == _defaultImage) {
     [self reloadImage];
   }
 }
