@@ -80,6 +80,10 @@ var apps = [
   appKey: 'TimePickerDialogTestApp',
   component: () => require('TimePickerDialogTestModule').TimePickerDialogTestApp
 },
+{
+  appKey: 'TouchBubblingTestAppModule',
+  component: () => require('TouchBubblingTestAppModule')
+},
 
 ];
 
