@@ -44,13 +44,26 @@ export type UIExplorerNavigationState = {
 
 const defaultGetReducerForState = (initialState) => (state) => state || initialState;
 
+function getNavigationState(state: any): ?NavigationState {
+  if (
+    (state instanceof Object) &&
+    (state.routes instanceof Array) &&
+    (state.routes[0] !== undefined) &&
+    (typeof state.index === 'number') &&
+    (state.routes[state.index] !== undefined)
+  ) {
+    return state;
+  }
+  return null;
+}
+
 function StackReducer({initialState, getReducerForState, getPushedReducerForAction}: any): Function {
   const getReducerForStateWithDefault = getReducerForState || defaultGetReducerForState;
   return function (lastState: ?NavigationState, action: any): NavigationState {
     if (!lastState) {
       return initialState;
     }
-    const lastParentState = NavigationStateUtils.getParent(lastState);
+    const lastParentState = getNavigationState(lastState);
     if (!lastParentState) {
       return lastState;
     }
