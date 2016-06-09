@@ -132,7 +132,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 /**
  * z-index, used to override sibling order in the view
  */
-@property (nonatomic, assign) double zIndex;
+@property (nonatomic, assign) NSInteger zIndex;
 
 /**
  * Calculate property changes that need to be propagated to the view.

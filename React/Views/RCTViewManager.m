@@ -246,7 +246,7 @@ RCT_VIEW_BORDER_RADIUS_PROPERTY(TopRight)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomLeft)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomRight)
 
-RCT_REMAP_VIEW_PROPERTY(zIndex, reactZIndex, double)
+RCT_REMAP_VIEW_PROPERTY(zIndex, reactZIndex, NSInteger)
 
 #pragma mark - ShadowView properties
 
@@ -292,6 +292,6 @@ RCT_EXPORT_SHADOW_PROPERTY(position, css_position_type_t)
 
 RCT_EXPORT_SHADOW_PROPERTY(onLayout, RCTDirectEventBlock)
 
-RCT_EXPORT_SHADOW_PROPERTY(zIndex, double)
+RCT_EXPORT_SHADOW_PROPERTY(zIndex, NSInteger)
 
 @end
