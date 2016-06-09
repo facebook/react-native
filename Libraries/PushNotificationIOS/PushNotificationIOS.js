@@ -59,7 +59,16 @@ const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
  *    {
  *     [RCTPushNotificationManager didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
  *    }
- *    // Required for the notification event.
+ *    // Required for the notification event. You must call the completion handler after handling the remote notification.
+ *    - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+ *                                                           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+ *    {
+ *       [RCTPushNotificationManager didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+ *    }
+ *    // Optionally implement this method over the previous to receive remote notifications. However
+ *    // implement the application:didReceiveRemoteNotification:fetchCompletionHandler: method instead of this one whenever possible.
+ *    // If your delegate implements both methods, the app object calls the `application:didReceiveRemoteNotification:fetchCompletionHandler:` method
+ *    // Either this method or `application:didReceiveRemoteNotification:fetchCompletionHandler:` is required in order to receive remote notifications.
  *    - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
  *    {
  *     [RCTPushNotificationManager didReceiveRemoteNotification:notification];
@@ -77,6 +86,10 @@ class PushNotificationIOS {
   _sound: string;
   _badgeCount: number;
 
+  /**
+   * When calling the completion handler for a remote notification these are the
+   * available completion results.
+   */
   static FetchResult = {
     NewData: 'UIBackgroundFetchResultNewData',
     NoData: 'UIBackgroundFetchResultNoData',
@@ -340,7 +353,17 @@ class PushNotificationIOS {
   }
 
   /**
-   * Remote notification completion callback for remote notifications.
+   * This method is available for remote notifications that have been received via:
+   * `application:didReceiveRemoteNotification:fetchCompletionHandler:`
+   * https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplicationDelegate_Protocol/#//apple_ref/occ/intfm/UIApplicationDelegate/application:didReceiveRemoteNotification:fetchCompletionHandler:
+   *
+   * Call this to execute when the remote notification handling is complete. When
+   * calling this block, pass in the fetch result value that best describes
+   * the results of your operation. You *must* call this handler and should do so
+   * as soon as possible. For a list of possible values, see `PushNotificationIOS.FetchResult`.
+   *
+   * If you do not call this method your background remote notifications could
+   * be throttled, to read more about it see the above documentation link.
    */
   finish(fetchResult) {
     if (!this._notificationId) return;
