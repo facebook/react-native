@@ -25,7 +25,9 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
 
     // This is used by a bazillion of npm modules we don't control so we don't
     // have other choice than defining it as an env variable here.
-    process.env.NODE_ENV = args.dev ? 'development' : 'production';
+    // process.env.NODE_ENV can throw "property read only" TypeException.
+    var _env = process.env;
+    _env.NODE_ENV = args.dev ? 'development' : 'production';
 
     const options = {
       projectRoots: config.getProjectRoots(),
