@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import java.util.Collection;
 
+import android.graphics.Rect;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
@@ -67,10 +68,10 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
       @Nullable DrawCommand[] drawCommands,
       @Nullable AttachDetachListener[] listeners,
       @Nullable NodeRegion[] nodeRegions,
-      boolean hasOverflowingElements) {
+      Rect logicalAdjustment) {
     FlatViewGroup view = (FlatViewGroup) resolveView(reactTag);
     if (drawCommands != null) {
-      view.mountDrawCommands(drawCommands, hasOverflowingElements);
+      view.mountDrawCommands(drawCommands, logicalAdjustment);
     }
     if (listeners != null) {
       view.mountAttachDetachListeners(listeners);

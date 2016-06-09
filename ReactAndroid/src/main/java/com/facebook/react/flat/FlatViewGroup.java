@@ -82,6 +82,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
   private static final ArrayList<FlatViewGroup> LAYOUT_REQUESTS = new ArrayList<>();
   private static final Rect VIEW_BOUNDS = new Rect();
+  private static final Rect EMPTY_RECT = new Rect();
 
   private @Nullable InvalidateCallback mInvalidateCallback;
   private DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
@@ -101,8 +102,9 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   // lookups in o(1) instead of o(log n) - trade space for time
   private final Map<Integer, DrawView> mDrawViewMap = new HashMap<>();
   private final Map<Integer, FlatViewGroup> mClippedSubviews = new HashMap<>();
-  // whether or not this FlatViewGroup has elements that overflow its bounds
-  private boolean mHasOverflowingElements;
+  // for overflow visible, these adjustments are what we can apply to know the actual bounds of
+  // a ViewGroup while taking overflowing elements into account.
+  private Rect mLogicalAdjustments = EMPTY_RECT;
 
   /* package */ FlatViewGroup(Context context) {
     super(context);
@@ -393,9 +395,9 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     ++mDrawChildIndex;
   }
 
-  /* package */ void mountDrawCommands(DrawCommand[] drawCommands, boolean hasOverflowingElements) {
+  /* package */ void mountDrawCommands(DrawCommand[] drawCommands, Rect logicalAdjustments) {
     mDrawCommands = drawCommands;
-    mHasOverflowingElements = hasOverflowingElements;
+    mLogicalAdjustments = logicalAdjustments;
     if (mRemoveClippedSubviews) {
       mDrawViewMap.clear();
       for (DrawCommand drawCommand : mDrawCommands) {
@@ -602,10 +604,10 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
         if (flatViewGroup != null) {
           // invisible
           if (clippingRect.intersects(
-              flatViewGroup.getLeft(),
-              flatViewGroup.getTop(),
-              flatViewGroup.getRight(),
-              flatViewGroup.getBottom())) {
+              flatViewGroup.getLeft() + flatViewGroup.mLogicalAdjustments.left,
+              flatViewGroup.getTop() + flatViewGroup.mLogicalAdjustments.top,
+              flatViewGroup.getRight() + flatViewGroup.mLogicalAdjustments.right,
+              flatViewGroup.getBottom() + flatViewGroup.mLogicalAdjustments.bottom)) {
             // now on the screen
             attachViewToParent(
                 flatViewGroup,
@@ -623,12 +625,11 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
             Animation animation = flatChildView.getAnimation();
             boolean isAnimating = animation != null && !animation.hasEnded();
             if (!isAnimating &&
-                !flatChildView.mHasOverflowingElements &&
                 !clippingRect.intersects(
-                    view.getLeft(),
-                    view.getTop(),
-                    view.getRight(),
-                    view.getBottom())) {
+                    view.getLeft() + flatChildView.mLogicalAdjustments.left,
+                    view.getTop() + flatChildView.mLogicalAdjustments.top,
+                    view.getRight() + flatChildView.mLogicalAdjustments.right,
+                    view.getBottom() + flatChildView.mLogicalAdjustments.bottom)) {
               // now off the screen
               mClippedSubviews.put(view.getId(), flatChildView);
               detachViewFromParent(view);

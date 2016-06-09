@@ -337,7 +337,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
           drawCommands,
           listeners,
           nodeRegions,
-          node.getOverflowsContainer());
+          node.getLogicalOffset());
     }
 
     if (node.hasUnseenUpdates()) {

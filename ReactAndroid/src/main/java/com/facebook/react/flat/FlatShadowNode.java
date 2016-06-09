@@ -11,6 +11,8 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import android.graphics.Rect;
+
 import com.facebook.csslayout.CSSNode;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -40,6 +42,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   private static final String PROP_TRANSFORM = "transform";
   private static final String PROP_REMOVE_CLIPPED_SUBVIEWS =
       ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS;
+  private static final Rect LOGICAL_OFFSET_EMPTY = new Rect();
 
   private DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
   private AttachDetachListener[] mAttachDetachListeners = AttachDetachListener.EMPTY_ARRAY;
@@ -66,6 +69,9 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   // whether or not we can detach this Node in the context of a container with
   // setRemoveClippedSubviews enabled.
   private boolean mOverflowsContainer;
+  // this Rect contains the offset to get the "logical bounds" (i.e. bounds that include taking
+  // into account overflow visible).
+  private Rect mLogicalOffset = LOGICAL_OFFSET_EMPTY;
 
   // last OnLayoutEvent info, only used when shouldNotifyOnLayout() is true.
   private int mLayoutX;
@@ -246,7 +252,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
   /**
    * Sets an array of DrawCommands to perform during the View's draw pass. StateBuilder uses old
-   * draw commands to compare to new draw commands and see if the View neds to be redrawn.
+   * draw commands to compare to new draw commands and see if the View needs to be redrawn.
    */
   /* package */ final void setDrawCommands(DrawCommand[] drawCommands) {
     mDrawCommands = drawCommands;
@@ -296,12 +302,48 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     boolean overflowsContainer = false;
     int width = (int) (mNodeRegion.mRight - mNodeRegion.mLeft);
     int height = (int) (mNodeRegion.mBottom - mNodeRegion.mTop);
+
+    float leftBound = 0;
+    float rightBound = width;
+    float topBound = 0;
+    float bottomBound = height;
+    Rect logicalOffset = null;
+
+    // when we are overflow:visible, we try to figure out if any of the children are outside
+    // of the bounds of this view. since NodeRegion bounds are relative to their parent (i.e.
+    // 0, 0 is always the start), we see how much outside of the bounds we are (negative left
+    // or top, or bottom that's more than height or right that's more than width). we set these
+    // offsets in mLogicalOffset for being able to more intelligently determine whether or not
+    // to clip certain subviews.
     if (!mClipToBounds && height > 0 && width > 0) {
       for (NodeRegion region : mNodeRegions) {
-        if (region.mBottom - region.mTop > height || region.mRight - region.mLeft > width) {
+        if (region.mLeft < leftBound) {
+          leftBound = region.mLeft;
           overflowsContainer = true;
-          break;
         }
+
+        if (region.mRight > rightBound) {
+          rightBound = region.mRight;
+          overflowsContainer = true;
+        }
+
+        if (region.mTop < topBound) {
+          topBound = region.mTop;
+          overflowsContainer = true;
+        }
+
+        if (region.mBottom > bottomBound) {
+          bottomBound = region.mBottom;
+          overflowsContainer = true;
+        }
+      }
+
+      if (overflowsContainer) {
+        logicalOffset = new Rect(
+            (int) leftBound,
+            (int) topBound,
+            (int) (rightBound - width),
+            (int) (bottomBound - height));
       }
     }
 
@@ -312,13 +354,24 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     // by extension, so do all of its ancestors, sufficing here to only check the immediate
     // child's mOverflowsContainer value instead of recursively asking if each child overflows its
     // container.
-    if (!overflowsContainer) {
+    if (!overflowsContainer && mNodeRegion != NodeRegion.EMPTY) {
       int children = getChildCount();
       for (int i = 0; i < children; i++) {
         ReactShadowNode node = getChildAt(i);
         if (node instanceof FlatShadowNode && ((FlatShadowNode) node).mOverflowsContainer) {
+          Rect childLogicalOffset = ((FlatShadowNode) node).mLogicalOffset;
+          if (logicalOffset == null) {
+            logicalOffset = new Rect();
+          }
+          // TODO: t11674025 - improve this - a grandparent may end up having smaller logical
+          // bounds than its children (because the grandparent's size may be larger than that of
+          // its child, so the grandchild overflows its parent but not its grandparent). currently,
+          // if a 100x100 view has a 5x5 view, and inside it has a 10x10 view, the inner most view
+          // overflows its parent but not its grandparent - the logical bounds on the grandparent
+          // will still be 5x5 (because they're inherited from the child's logical bounds). this
+          // has the effect of causing us to clip 5px later than we really have to.
+          logicalOffset.union(childLogicalOffset);
           overflowsContainer = true;
-          break;
         }
       }
     }
@@ -329,11 +382,12 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     // as a result, the parent may not get the correct value for overflows container.
     if (mOverflowsContainer != overflowsContainer) {
       mOverflowsContainer = overflowsContainer;
+      mLogicalOffset = logicalOffset == null ? LOGICAL_OFFSET_EMPTY : logicalOffset;
     }
   }
 
-  /* package */ final boolean getOverflowsContainer() {
-    return mOverflowsContainer;
+  /* package */ final Rect getLogicalOffset() {
+    return mLogicalOffset;
   }
 
   /* package */ void updateNodeRegion(
@@ -350,6 +404,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
   protected final void setNodeRegion(NodeRegion nodeRegion) {
     mNodeRegion = nodeRegion;
+    updateOverflowsContainer();
   }
 
   /* package */ final NodeRegion getNodeRegion() {

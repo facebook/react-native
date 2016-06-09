@@ -11,6 +11,8 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import android.graphics.Rect;
+
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.NoSuchNativeViewException;
@@ -44,19 +46,19 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     private final @Nullable DrawCommand[] mDrawCommands;
     private final @Nullable AttachDetachListener[] mAttachDetachListeners;
     private final @Nullable NodeRegion[] mNodeRegions;
-    private final boolean mHasOverflowingElements;
+    private final Rect mLogicalAdjustment;
 
     private UpdateMountState(
         int reactTag,
         @Nullable DrawCommand[] drawCommands,
         @Nullable AttachDetachListener[] listeners,
         @Nullable NodeRegion[] nodeRegions,
-        boolean hasOverflowingElements) {
+        Rect logicalAdjustment) {
       mReactTag = reactTag;
       mDrawCommands = drawCommands;
       mAttachDetachListeners = listeners;
       mNodeRegions = nodeRegions;
-      mHasOverflowingElements = hasOverflowingElements;
+      mLogicalAdjustment = logicalAdjustment;
     }
 
     @Override
@@ -66,7 +68,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
           mDrawCommands,
           mAttachDetachListeners,
           mNodeRegions,
-          mHasOverflowingElements);
+          mLogicalAdjustment);
     }
   }
 
@@ -239,13 +241,13 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
       @Nullable DrawCommand[] drawCommands,
       @Nullable AttachDetachListener[] listeners,
       @Nullable NodeRegion[] nodeRegions,
-      boolean hasOverflowingElements) {
+      Rect logicalOffset) {
     enqueueUIOperation(new UpdateMountState(
         reactTag,
         drawCommands,
         listeners,
         nodeRegions,
-        hasOverflowingElements));
+        logicalOffset));
   }
 
   public void enqueueUpdateViewGroup(int reactTag, int[] viewsToAdd, int[] viewsToDetach) {
