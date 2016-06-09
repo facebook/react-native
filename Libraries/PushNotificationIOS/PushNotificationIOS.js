@@ -191,6 +191,7 @@ class PushNotificationIOS {
       listener =  PushNotificationEmitter.addListener(
         DEVICE_NOTIF_EVENT,
         (notifData) => {
+          notifData.isRemote = true;
           handler(new PushNotificationIOS(notifData));
         }
       );
@@ -198,6 +199,7 @@ class PushNotificationIOS {
       listener = PushNotificationEmitter.addListener(
         DEVICE_LOCAL_NOTIF_EVENT,
         (notifData) => {
+          notifData.isRemote = false;
           handler(new PushNotificationIOS(notifData));
         }
       );
@@ -334,8 +336,12 @@ class PushNotificationIOS {
   constructor(nativeNotif: Object) {
     this._data = {};
     this._remoteNotificationCompleteCalllbackCalled = false;
-    this._notificationId = nativeNotif.notificationId;
-    delete nativeNotif.notificationId;
+    this._isRemote = nativeNotif.isRemote;
+    if (this._isRemote) {
+      this._notificationId = nativeNotif.notificationId;
+      delete nativeNotif.notificationId;
+    }
+    delete nativeNotif.isRemote;
 
     // Extract data from Apple's `aps` dict as specified here:
     // https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
@@ -366,8 +372,9 @@ class PushNotificationIOS {
    * be throttled, to read more about it see the above documentation link.
    */
   finish(fetchResult) {
-    if (!this._notificationId) return;
-    if (this._remoteNotificationCompleteCalllbackCalled) return;
+    if (!this._isRemote || !this._notificationId || this._remoteNotificationCompleteCalllbackCalled) {
+      return;
+    }
     this._remoteNotificationCompleteCalllbackCalled = true;
 
     RCTPushNotificationManager.onFinishRemoteNotification(this._notificationId, fetchResult);
