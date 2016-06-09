@@ -77,6 +77,12 @@ class PushNotificationIOS {
   _sound: string;
   _badgeCount: number;
 
+  static FetchResult = {
+    NewData: 'UIBackgroundFetchResultNewData',
+    NoData: 'UIBackgroundFetchResultNoData',
+    ResultFailed: 'UIBackgroundFetchResultFailed',
+  };
+
   /**
    * Schedules the localNotification for immediate presentation.
    *
@@ -296,7 +302,7 @@ class PushNotificationIOS {
     _initialNotification = null;
     return initialNotification;
   }
-  
+
   /**
    * If the app launch was triggered by a push notification,
    * it will give the notification object, otherwise it will give `null`
@@ -314,6 +320,9 @@ class PushNotificationIOS {
    */
   constructor(nativeNotif: Object) {
     this._data = {};
+    this._remoteNotificationCompleteCalllbackCalled = false;
+    this._notificationId = nativeNotif.notificationId;
+    delete nativeNotif.notificationId;
 
     // Extract data from Apple's `aps` dict as specified here:
     // https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
@@ -328,6 +337,17 @@ class PushNotificationIOS {
         this._data[notifKey] = notifVal;
       }
     });
+  }
+
+  /**
+   * Remote notification completion callback for remote notifications.
+   */
+  remoteComplete(fetchResult) {
+    if (!this._notificationId) return;
+    if (this._remoteNotificationCompleteCalllbackCalled) return;
+    this._remoteNotificationCompleteCalllbackCalled = true;
+
+    RCTPushNotificationManager.onFinishRemoteNotification(this._notificationId, fetchResult);
   }
 
   /**
