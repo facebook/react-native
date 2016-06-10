@@ -151,6 +151,12 @@ var apps = [
     author: 'Rishabh Mehan',
   },
   {
+    name: 'DN Prio',
+    icon: 'https://dl.dropboxusercontent.com/u/12645300/prioicon.png',
+    link: 'https://itunes.apple.com/se/app/dn.prio/id941561366?l=en&mt=8',
+    author: 'Dagens Nyheter',
+  },
+  {
     name: 'DropBot',
     icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/fb/df/73/fbdf73e0-22d2-c936-3115-1defa195acba/icon175x175.png',
     link:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
