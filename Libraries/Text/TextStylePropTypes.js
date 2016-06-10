@@ -56,9 +56,6 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   textDecorationLine: ReactPropTypes.oneOf(
     ['none' /*default*/, 'underline', 'line-through', 'underline line-through']
   ),
-  /**
-   * @platform ios
-   */
   textDecorationStyle: ReactPropTypes.oneOf(
     ['solid' /*default*/, 'double', 'dotted','dashed']
   ),
