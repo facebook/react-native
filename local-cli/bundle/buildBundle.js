@@ -23,10 +23,6 @@ function saveBundle(output, bundle, args) {
 function buildBundle(args, config, output = outputBundle, packagerInstance) {
   return new Promise((resolve, reject) => {
 
-    // This is used by a bazillion of npm modules we don't control so we don't
-    // have other choice than defining it as an env variable here.
-    process.env.NODE_ENV = args.dev ? 'development' : 'production';
-
     const options = {
       projectRoots: config.getProjectRoots(),
       assetRoots: config.getAssetRoots(),
