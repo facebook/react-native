@@ -84,8 +84,8 @@ public class NetworkingModuleTest {
         return callMock;
       }
     });
-
-    NetworkingModule networkingModule = new NetworkingModule(null, "", httpClient);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
 
     networkingModule.sendRequest(
       mock(ExecutorToken.class),
@@ -196,8 +196,8 @@ public class NetworkingModuleTest {
             return callMock;
           }
         });
-
-    NetworkingModule networkingModule = new NetworkingModule(null, "", httpClient);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
 
     JavaOnlyMap body = new JavaOnlyMap();
     body.putString("string", "This is request body");
@@ -234,7 +234,8 @@ public class NetworkingModuleTest {
         return callMock;
       }
     });
-    NetworkingModule networkingModule = new NetworkingModule(null, "", httpClient);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
 
     List<JavaOnlyArray> headers = Arrays.asList(
         JavaOnlyArray.of("Accept", "text/plain"),
@@ -287,8 +288,8 @@ public class NetworkingModuleTest {
             return callMock;
           }
         });
-
-    NetworkingModule networkingModule = new NetworkingModule(null, "", httpClient);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
     networkingModule.sendRequest(
       mock(ExecutorToken.class),
       "POST",
@@ -347,8 +348,8 @@ public class NetworkingModuleTest {
             return callMock;
           }
         });
-
-    NetworkingModule networkingModule = new NetworkingModule(null, "", httpClient);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
     networkingModule.sendRequest(
       mock(ExecutorToken.class),
       "POST",
@@ -445,7 +446,8 @@ public class NetworkingModuleTest {
           }
         });
 
-    NetworkingModule networkingModule = new NetworkingModule(null, "", httpClient);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
     networkingModule.sendRequest(
       mock(ExecutorToken.class),
       "POST",
@@ -501,7 +503,8 @@ public class NetworkingModuleTest {
         return calls[(Integer) request.tag() - 1];
       }
     });
-    NetworkingModule networkingModule = new NetworkingModule(null, "", httpClient);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
     networkingModule.initialize();
 
     for (int idx = 0; idx < requests; idx++) {
@@ -547,7 +550,8 @@ public class NetworkingModuleTest {
         return calls[(Integer) request.tag() - 1];
       }
     });
-    NetworkingModule networkingModule = new NetworkingModule(null, "", httpClient);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
 
     for (int idx = 0; idx < requests; idx++) {
       networkingModule.sendRequest(

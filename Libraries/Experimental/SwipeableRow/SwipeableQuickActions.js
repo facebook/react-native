@@ -29,6 +29,16 @@ const View = require('View');
 
 const MAX_QUICK_ACTIONS = 2;
 
+/**
+ * A thin wrapper around standard quick action buttons that can, if the user
+ * chooses, be used with SwipeableListView. Sample usage is as follows, in the
+ * renderQuickActions callback:
+ *
+ * <SwipeableQuickActions>
+ *   <SwipeableQuickActionButton {..props} />
+ *   <SwipeableQuickActionButton {..props} />
+ * </SwipeableQuickActions>
+ */
 const SwipeableQuickActions = React.createClass({
   propTypes: {
     style: View.propTypes.style,

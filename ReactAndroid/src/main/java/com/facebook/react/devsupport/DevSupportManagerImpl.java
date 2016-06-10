@@ -87,9 +87,6 @@ public class DevSupportManagerImpl implements DevSupportManager {
   private static final String EXOPACKAGE_LOCATION_FORMAT
       = "/data/local/tmp/exopackage/%s//secondary-dex";
 
-  private static final int JAVA_SAMPLING_PROFILE_MEMORY_BYTES = 8 * 1024 * 1024;
-  private static final int JAVA_SAMPLING_PROFILE_DELTA_US = 100;
-
   private final Context mApplicationContext;
   private final ShakeDetector mShakeDetector;
   private final BroadcastReceiver mReloadAppBroadcastReceiver;
@@ -109,8 +106,6 @@ public class DevSupportManagerImpl implements DevSupportManager {
   private boolean mIsReceiverRegistered = false;
   private boolean mIsShakeDetectorStarted = false;
   private boolean mIsDevSupportEnabled = false;
-  private boolean mIsCurrentlyProfiling = false;
-  private int     mProfileIndex = 0;
   private @Nullable RedBoxHandler mRedBoxHandler;
 
   public DevSupportManagerImpl(
@@ -118,6 +113,21 @@ public class DevSupportManagerImpl implements DevSupportManager {
     ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
     @Nullable String packagerPathForJSBundleName,
     boolean enableOnCreate) {
+
+    this(applicationContext,
+      reactInstanceCommandsHandler,
+      packagerPathForJSBundleName,
+      enableOnCreate,
+      null);
+  }
+
+  public DevSupportManagerImpl(
+      Context applicationContext,
+      ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+      @Nullable String packagerPathForJSBundleName,
+      boolean enableOnCreate,
+      @Nullable RedBoxHandler redBoxHandler) {
+
     mReactInstanceCommandsHandler = reactInstanceCommandsHandler;
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
@@ -159,19 +169,6 @@ public class DevSupportManagerImpl implements DevSupportManager {
     mDefaultNativeModuleCallExceptionHandler = new DefaultNativeModuleCallExceptionHandler();
 
     setDevSupportEnabled(enableOnCreate);
-  }
-
-  public DevSupportManagerImpl(
-      Context applicationContext,
-      ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
-      @Nullable String packagerPathForJSBundleName,
-      boolean enableOnCreate,
-      @Nullable RedBoxHandler redBoxHandler) {
-
-    this(applicationContext,
-      reactInstanceCommandsHandler,
-      packagerPathForJSBundleName,
-      enableOnCreate);
 
     mRedBoxHandler = redBoxHandler;
   }
@@ -355,42 +352,6 @@ public class DevSupportManagerImpl implements DevSupportManager {
             }
           }
         });
-    if (mCurrentContext != null &&
-        mCurrentContext.getCatalystInstance() != null &&
-        !mCurrentContext.getCatalystInstance().isDestroyed() &&
-        mCurrentContext.getCatalystInstance().supportsProfiling()) {
-      options.put(
-          mApplicationContext.getString(
-            mIsCurrentlyProfiling ? R.string.catalyst_stop_profile :
-                  R.string.catalyst_start_profile),
-          new DevOptionHandler() {
-            @Override
-            public void onOptionSelected() {
-              if (mCurrentContext != null && mCurrentContext.hasActiveCatalystInstance()) {
-                String profileName = (Environment.getExternalStorageDirectory().getPath() +
-                    "/profile_" + mProfileIndex + ".json");
-                if (mIsCurrentlyProfiling) {
-                  mIsCurrentlyProfiling = false;
-                  mProfileIndex++;
-                  Debug.stopMethodTracing();
-                  mCurrentContext.getCatalystInstance()
-                      .stopProfiler("profile", profileName);
-                  Toast.makeText(
-                      mCurrentContext,
-                      "Profile output to " + profileName,
-                      Toast.LENGTH_LONG).show();
-                } else {
-                  mIsCurrentlyProfiling = true;
-                  mCurrentContext.getCatalystInstance().startProfiler("profile");
-                  Debug.startMethodTracingSampling(
-                      profileName,
-                      JAVA_SAMPLING_PROFILE_MEMORY_BYTES,
-                      JAVA_SAMPLING_PROFILE_DELTA_US);
-                }
-              }
-            }
-          });
-    }
     options.put(
         mApplicationContext.getString(R.string.catalyst_settings), new DevOptionHandler() {
           @Override
@@ -548,16 +509,6 @@ public class DevSupportManagerImpl implements DevSupportManager {
     if (mCurrentContext == reactContext) {
       // new context is the same as the old one - do nothing
       return;
-    }
-
-    // if currently profiling stop and write the profile file
-    if (mIsCurrentlyProfiling) {
-      mIsCurrentlyProfiling = false;
-      String profileName = (Environment.getExternalStorageDirectory().getPath() +
-          "/profile_" + mProfileIndex + ".json");
-      mProfileIndex++;
-      Debug.stopMethodTracing();
-      mCurrentContext.getCatalystInstance().stopProfiler("profile", profileName);
     }
 
     mCurrentContext = reactContext;

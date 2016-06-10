@@ -437,9 +437,6 @@ const MapView = React.createClass({
       onAnnotationDragStateChange = (event: Event) => {
         const annotation = findByAnnotationId(event.nativeEvent.annotationId);
         if (annotation) {
-          // Update location
-          annotation.latitude = event.nativeEvent.latitude;
-          annotation.longitude = event.nativeEvent.longitude;
           // Call callback
           annotation.onDragStateChange &&
             annotation.onDragStateChange(event.nativeEvent);

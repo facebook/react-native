@@ -134,7 +134,7 @@ __deprecated_msg("Use decodeImageData:size:scale:clipped:resizeMode:completionBl
 
 - (RCTImageLoaderCancellationBlock)getImageSize:(NSString *)imageTag
                                           block:(void(^)(NSError *error, CGSize size))completionBlock
-__deprecated_msg("Use getImageSizeWithURLRequest:callback: instead");
+__deprecated_msg("Use getImageSizeWithURLRequest:block: instead");
 
 @end
 

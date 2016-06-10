@@ -47,6 +47,14 @@ static NSString *const kDefaultPort = @"8081";
   [self settingsUpdated];
 }
 
+- (void)resetToDefaults
+{
+  for (NSString *key in [[self defaults] allKeys]) {
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+  }
+  [self setDefaults];
+}
+
 - (BOOL)isPackagerRunning:(NSString *)host
 {
   if (RCT_DEV) {
@@ -75,7 +83,6 @@ static NSString *serverRootWithHost(NSString *host)
   return nil;
 }
 
-
 - (NSString *)packagerServerRoot
 {
   NSString *location = [self jsLocation];
@@ -89,6 +96,12 @@ static NSString *serverRootWithHost(NSString *host)
       return serverRootWithHost(host);
     }
   }
+}
+
+- (NSURL *)packagerServerURL
+{
+  NSString *root = [self packagerServerRoot];
+  return root ? [NSURL URLWithString:root] : nil;
 }
 
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName
