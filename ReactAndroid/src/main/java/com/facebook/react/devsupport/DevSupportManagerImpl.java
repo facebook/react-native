@@ -87,9 +87,6 @@ public class DevSupportManagerImpl implements DevSupportManager {
   private static final String EXOPACKAGE_LOCATION_FORMAT
       = "/data/local/tmp/exopackage/%s//secondary-dex";
 
-  private static final int JAVA_SAMPLING_PROFILE_MEMORY_BYTES = 8 * 1024 * 1024;
-  private static final int JAVA_SAMPLING_PROFILE_DELTA_US = 100;
-
   private final Context mApplicationContext;
   private final ShakeDetector mShakeDetector;
   private final BroadcastReceiver mReloadAppBroadcastReceiver;
@@ -109,14 +106,28 @@ public class DevSupportManagerImpl implements DevSupportManager {
   private boolean mIsReceiverRegistered = false;
   private boolean mIsShakeDetectorStarted = false;
   private boolean mIsDevSupportEnabled = false;
-  private boolean mIsCurrentlyProfiling = false;
-  private int     mProfileIndex = 0;
+  private @Nullable RedBoxHandler mRedBoxHandler;
+
+  public DevSupportManagerImpl(
+    Context applicationContext,
+    ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+    @Nullable String packagerPathForJSBundleName,
+    boolean enableOnCreate) {
+
+    this(applicationContext,
+      reactInstanceCommandsHandler,
+      packagerPathForJSBundleName,
+      enableOnCreate,
+      null);
+  }
 
   public DevSupportManagerImpl(
       Context applicationContext,
       ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
       @Nullable String packagerPathForJSBundleName,
-      boolean enableOnCreate) {
+      boolean enableOnCreate,
+      @Nullable RedBoxHandler redBoxHandler) {
+
     mReactInstanceCommandsHandler = reactInstanceCommandsHandler;
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
@@ -158,6 +169,8 @@ public class DevSupportManagerImpl implements DevSupportManager {
     mDefaultNativeModuleCallExceptionHandler = new DefaultNativeModuleCallExceptionHandler();
 
     setDevSupportEnabled(enableOnCreate);
+
+    mRedBoxHandler = redBoxHandler;
   }
 
   @Override
@@ -209,9 +222,12 @@ public class DevSupportManagerImpl implements DevSupportManager {
                 errorCookie != mRedBoxDialog.getErrorCookie()) {
               return;
             }
-            mRedBoxDialog.setExceptionDetails(
-                message,
-                StackTraceHelper.convertJsStackTrace(details));
+            StackFrame[] stack = StackTraceHelper.convertJsStackTrace(details);
+            mRedBoxDialog.setExceptionDetails(message, stack);
+            mRedBoxDialog.setErrorCookie(errorCookie);
+            if (mRedBoxHandler != null) {
+              mRedBoxHandler.handleRedbox(message, stack);
+            }
             mRedBoxDialog.show();
           }
         });
@@ -244,6 +260,9 @@ public class DevSupportManagerImpl implements DevSupportManager {
             }
             mRedBoxDialog.setExceptionDetails(message, stack);
             mRedBoxDialog.setErrorCookie(errorCookie);
+            if (mRedBoxHandler != null) {
+              mRedBoxHandler.handleRedbox(message, stack);
+            }
             mRedBoxDialog.show();
           }
         });
@@ -275,6 +294,16 @@ public class DevSupportManagerImpl implements DevSupportManager {
           }
         });
     options.put(
+      mDevSettings.isReloadOnJSChangeEnabled()
+        ? mApplicationContext.getString(R.string.catalyst_live_reload_off)
+        : mApplicationContext.getString(R.string.catalyst_live_reload),
+      new DevOptionHandler() {
+        @Override
+        public void onOptionSelected() {
+          mDevSettings.setReloadOnJSChangeEnabled(!mDevSettings.isReloadOnJSChangeEnabled());
+        }
+      });
+    options.put(
             mDevSettings.isHotModuleReplacementEnabled()
                     ? mApplicationContext.getString(R.string.catalyst_hot_module_replacement_off)
                     : mApplicationContext.getString(R.string.catalyst_hot_module_replacement),
@@ -286,16 +315,6 @@ public class DevSupportManagerImpl implements DevSupportManager {
               }
             });
     options.put(
-        mDevSettings.isReloadOnJSChangeEnabled()
-            ? mApplicationContext.getString(R.string.catalyst_live_reload_off)
-            : mApplicationContext.getString(R.string.catalyst_live_reload),
-        new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            mDevSettings.setReloadOnJSChangeEnabled(!mDevSettings.isReloadOnJSChangeEnabled());
-          }
-        });
-    options.put(
       mApplicationContext.getString(R.string.catalyst_element_inspector),
         new DevOptionHandler() {
           @Override
@@ -304,6 +323,16 @@ public class DevSupportManagerImpl implements DevSupportManager {
             mReactInstanceCommandsHandler.toggleElementInspector();
           }
         });
+    options.put(
+      mDevSettings.isFpsDebugEnabled()
+        ? mApplicationContext.getString(R.string.catalyst_perf_monitor_off)
+        : mApplicationContext.getString(R.string.catalyst_perf_monitor),
+      new DevOptionHandler() {
+        @Override
+        public void onOptionSelected() {
+          mDevSettings.setFpsDebugEnabled(!mDevSettings.isFpsDebugEnabled());
+        }
+      });
     options.put(
         mApplicationContext.getString(R.string.catalyst_heap_capture),
         new DevOptionHandler() {
@@ -323,52 +352,6 @@ public class DevSupportManagerImpl implements DevSupportManager {
             }
           }
         });
-    options.put(
-        mDevSettings.isFpsDebugEnabled()
-            ? mApplicationContext.getString(R.string.catalyst_perf_monitor_off)
-            : mApplicationContext.getString(R.string.catalyst_perf_monitor),
-        new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            mDevSettings.setFpsDebugEnabled(!mDevSettings.isFpsDebugEnabled());
-          }
-        });
-    if (mCurrentContext != null &&
-        mCurrentContext.getCatalystInstance() != null &&
-        !mCurrentContext.getCatalystInstance().isDestroyed() &&
-        mCurrentContext.getCatalystInstance().supportsProfiling()) {
-      options.put(
-          mApplicationContext.getString(
-            mIsCurrentlyProfiling ? R.string.catalyst_stop_profile :
-                  R.string.catalyst_start_profile),
-          new DevOptionHandler() {
-            @Override
-            public void onOptionSelected() {
-              if (mCurrentContext != null && mCurrentContext.hasActiveCatalystInstance()) {
-                String profileName = (Environment.getExternalStorageDirectory().getPath() +
-                    "/profile_" + mProfileIndex + ".json");
-                if (mIsCurrentlyProfiling) {
-                  mIsCurrentlyProfiling = false;
-                  mProfileIndex++;
-                  Debug.stopMethodTracing();
-                  mCurrentContext.getCatalystInstance()
-                      .stopProfiler("profile", profileName);
-                  Toast.makeText(
-                      mCurrentContext,
-                      "Profile output to " + profileName,
-                      Toast.LENGTH_LONG).show();
-                } else {
-                  mIsCurrentlyProfiling = true;
-                  mCurrentContext.getCatalystInstance().startProfiler("profile");
-                  Debug.startMethodTracingSampling(
-                      profileName,
-                      JAVA_SAMPLING_PROFILE_MEMORY_BYTES,
-                      JAVA_SAMPLING_PROFILE_DELTA_US);
-                }
-              }
-            }
-          });
-    }
     options.put(
         mApplicationContext.getString(R.string.catalyst_settings), new DevOptionHandler() {
           @Override
@@ -526,16 +509,6 @@ public class DevSupportManagerImpl implements DevSupportManager {
     if (mCurrentContext == reactContext) {
       // new context is the same as the old one - do nothing
       return;
-    }
-
-    // if currently profiling stop and write the profile file
-    if (mIsCurrentlyProfiling) {
-      mIsCurrentlyProfiling = false;
-      String profileName = (Environment.getExternalStorageDirectory().getPath() +
-          "/profile_" + mProfileIndex + ".json");
-      mProfileIndex++;
-      Debug.stopMethodTracing();
-      mCurrentContext.getCatalystInstance().stopProfiler("profile", profileName);
     }
 
     mCurrentContext = reactContext;

@@ -7,7 +7,7 @@
  */
 
 // NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<9d48f3d4330e7b6cba0fff7d8f1e8b0c>>
+// @generated SignedSource<<ad69450666e601bed3648b9f7b990f4d>>
 
 package com.facebook.csslayout;
 
@@ -20,4 +20,5 @@ package com.facebook.csslayout;
  */
 public class CSSLayoutContext {
   /*package*/ final MeasureOutput measureOutput = new MeasureOutput();
+  int currentGenerationCount;
 }

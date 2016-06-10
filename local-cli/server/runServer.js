@@ -13,7 +13,6 @@ const connect = require('connect');
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
 const http = require('http');
-const isAbsolutePath = require('absolute-path');
 const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
 const messageSocket = require('./util/messageSocket.js');
 const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInEditorMiddleware');
@@ -68,18 +67,13 @@ function runServer(args, config, readyCallback) {
 }
 
 function getPackagerServer(args, config) {
-  let transformerPath = args.transformer;
-  if (!isAbsolutePath(transformerPath)) {
-    transformerPath = path.resolve(process.cwd(), transformerPath);
-  }
-
   return ReactPackager.createServer({
     nonPersistent: args.nonPersistent,
     projectRoots: args.projectRoots,
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-    transformModulePath: transformerPath,
+    transformModulePath: path.resolve(args.transformer),
     extraNodeModules: config.extraNodeModules,
     assetRoots: args.assetRoots,
     assetExts: [

@@ -223,7 +223,7 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       throw new RuntimeException("Cannot send a message. Unknown WebSocket id " + id);
     }
     try {
-      client.sendMessage(RequestBody.create(WebSocket.TEXT, ByteString.decodeBase64(base64String)));
+      client.sendMessage(RequestBody.create(WebSocket.BINARY, ByteString.decodeBase64(base64String)));
     } catch (IOException | IllegalStateException e) {
       notifyWebSocketFailed(id, e.getMessage());
     }

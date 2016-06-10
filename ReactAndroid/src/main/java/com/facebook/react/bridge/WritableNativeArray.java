@@ -57,7 +57,7 @@ public class WritableNativeArray extends ReadableNativeArray implements Writable
     pushNativeMap((WritableNativeMap) map);
   }
 
-  private native static HybridData initHybrid();
+  private static native HybridData initHybrid();
   private native void pushNativeArray(WritableNativeArray array);
   private native void pushNativeMap(WritableNativeMap map);
 }

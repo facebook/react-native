@@ -396,6 +396,13 @@ var apps = [
     author: 'Genki Takiuchi (s21g Inc.)',
   },
   {
+    name: 'Dohop Flights',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple60/v4/3e/94/e9/3e94e9b3-f9a0-7b27-1824-b3da732ec967/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/dohop-flights-your-new-flight/id964170399',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.dohop',
+    author: 'Dohop',
+  },
+  {
     name: 'DONUT chatrooms for communities',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple49/v4/d4/2d/e5/d42de510-6802-2694-1b60-ca80ffa1e2cb/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/fr/app/donut-chat/id1067579321',
@@ -533,6 +540,13 @@ var apps = [
     icon: 'https://s3.amazonaws.com/theartistunion-production/Jukebox-logo.png',
     link: 'https://itunes.apple.com/us/app/jukebox-offline-music-player/id1072583255?ls=1&mt=8',
     author: 'The Beat Drop Inc'
+  },
+  {
+    name: 'JS Air',
+    icon: 'http://a1.mzstatic.com/eu/r30/Purple60/v4/56/94/66/56946608-34ac-dd5a-622f-75ef0073a7cd/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/fr/app/js-air/id1112141070?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.jsair',
+    author: 'Erwan DATIN',
   },
   {
     name: 'Kakapo',
@@ -696,6 +710,12 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/app/passpoints/id930988932',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.passpointsreactnative',
     author: 'passpoints.de',
+  },
+  {
+    name: 'PermisPts',
+    icon: 'http://a3.mzstatic.com/eu/r30/Purple20/v4/02/62/ee/0262eef2-170e-4ca2-8f8a-8079482a393b/icon175x175.png',
+    link: 'https://itunes.apple.com/fr/app/permispts/id950595671?mt=8',
+    author: 'Erwan DATIN',
   },
   {
     name: 'Pimmr',
@@ -1087,7 +1107,7 @@ var AppList = React.createClass({
       <div>
         <img src={app.icon} alt={app.name} />
         <h3>{app.name}</h3>
-        {app.linkAppStore && app.linkPlayStore ? this._renderLinks(app) : null}
+        {app.linkAppStore || app.linkPlayStore ? this._renderLinks(app) : null}
         <p>By {app.author}</p>
         {this._renderBlogPosts(app)}
         {this._renderSourceLink(app)}
@@ -1167,11 +1187,14 @@ var AppList = React.createClass({
   },
 
   _renderLinks: function(app) {
+    var linkAppStore = app.linkAppStore ? <a href={app.linkAppStore} target="_blank">iOS</a> : '';
+    var linkPlayStore = app.linkPlayStore ? <a href={app.linkPlayStore} target="_blank">Android</a> : '';
+
     return (
       <p>
-        <a href={app.linkAppStore} target="_blank">iOS</a>
-        {' '}&middot;{' '}
-        <a href={app.linkPlayStore} target="_blank">Android</a>
+        {linkAppStore}
+        {linkAppStore && linkPlayStore ? ' · ' : ''}
+        {linkPlayStore}
       </p>
     );
   },

@@ -36,9 +36,10 @@ const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
  *
  * [Manually link](docs/linking-libraries-ios.html#manual-linking) the PushNotificationIOS library
  *
- * - Be sure to add the following to your `Header Search Paths`:
- * `$(SRCROOT)/../node_modules/react-native/Libraries/PushNotificationIOS`
- * - Set the search to `recursive`
+ * - Add the following to your Project: `node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj`
+ * - Add the following to `Link Binary With Libraries`: `libRCTPushNotification.a`
+ * - Add the following to your `Header Search Paths`:
+ * `$(SRCROOT)/../node_modules/react-native/Libraries/PushNotificationIOS` and set the search to `recursive`
  *
  * Finally, to enable support for `notification` and `register` events you need to augment your AppDelegate.
  *
@@ -143,6 +144,13 @@ class PushNotificationIOS {
   }
 
   /**
+   * Gets the local notifications that are currently scheduled.
+   */
+  static getScheduledLocalNotifications(callback: Function) {
+    RCTPushNotificationManager.getScheduledLocalNotifications(callback);
+  }
+
+  /**
    * Attaches a listener to remote or local notification events while the app is running
    * in the foreground or the background.
    *
@@ -216,12 +224,20 @@ class PushNotificationIOS {
    *
    * If a map is provided to the method, only the permissions with truthy values
    * will be requested.
+
+   * This method returns a promise that will resolve when the user accepts,
+   * rejects, or if the permissions were previously rejected. The promise
+   * resolves to the current state of the permission.
    */
   static requestPermissions(permissions?: {
     alert?: boolean,
     badge?: boolean,
     sound?: boolean
-  }) {
+  }): Promise<{
+    alert: boolean,
+    badge: boolean,
+    sound: boolean
+  }> {
     var requestedPermissions = {};
     if (permissions) {
       requestedPermissions = {
@@ -236,7 +252,7 @@ class PushNotificationIOS {
         sound: true
       };
     }
-    RCTPushNotificationManager.requestPermissions(requestedPermissions);
+    return RCTPushNotificationManager.requestPermissions(requestedPermissions);
   }
 
   /**

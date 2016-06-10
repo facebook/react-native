@@ -37,12 +37,20 @@ public class TouchEvent extends Event<TouchEvent> {
       TouchEventType touchEventType,
       MotionEvent motionEventToCopy,
       float viewX,
-      float viewY) {
+      float viewY,
+      TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
     TouchEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new TouchEvent();
     }
-    event.init(viewTag, timestampMs, touchEventType, motionEventToCopy, viewX, viewY);
+    event.init(
+      viewTag,
+      timestampMs,
+      touchEventType,
+      motionEventToCopy,
+      viewX,
+      viewY,
+      touchEventCoalescingKeyHelper);
     return event;
   }
 
@@ -63,28 +71,29 @@ public class TouchEvent extends Event<TouchEvent> {
       TouchEventType touchEventType,
       MotionEvent motionEventToCopy,
       float viewX,
-      float viewY) {
+      float viewY,
+      TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
     super.init(viewTag, timestampMs);
 
     short coalescingKey = 0;
     int action = (motionEventToCopy.getAction() & MotionEvent.ACTION_MASK);
     switch (action) {
       case MotionEvent.ACTION_DOWN:
-        TouchEventCoalescingKeyHelper.addCoalescingKey(motionEventToCopy.getDownTime());
+        touchEventCoalescingKeyHelper.addCoalescingKey(motionEventToCopy.getDownTime());
         break;
       case MotionEvent.ACTION_UP:
-        TouchEventCoalescingKeyHelper.removeCoalescingKey(motionEventToCopy.getDownTime());
+        touchEventCoalescingKeyHelper.removeCoalescingKey(motionEventToCopy.getDownTime());
         break;
       case MotionEvent.ACTION_POINTER_DOWN:
       case MotionEvent.ACTION_POINTER_UP:
-        TouchEventCoalescingKeyHelper.incrementCoalescingKey(motionEventToCopy.getDownTime());
+        touchEventCoalescingKeyHelper.incrementCoalescingKey(motionEventToCopy.getDownTime());
         break;
       case MotionEvent.ACTION_MOVE:
         coalescingKey =
-            TouchEventCoalescingKeyHelper.getCoalescingKey(motionEventToCopy.getDownTime());
+          touchEventCoalescingKeyHelper.getCoalescingKey(motionEventToCopy.getDownTime());
         break;
       case MotionEvent.ACTION_CANCEL:
-        TouchEventCoalescingKeyHelper.removeCoalescingKey(motionEventToCopy.getDownTime());
+        touchEventCoalescingKeyHelper.removeCoalescingKey(motionEventToCopy.getDownTime());
         break;
       default:
         throw new RuntimeException("Unhandled MotionEvent action: " + action);

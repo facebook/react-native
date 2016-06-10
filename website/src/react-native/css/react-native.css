@@ -482,41 +482,52 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 }
 
 @media only screen and (max-device-width: 1024px) {
+  @-webkit-keyframes slide-in {
+    0% { top: -30px; opacity: 0; }
+    100% { top: 0; opacity: 1; }
+  }
+  @-moz-keyframes slide-in {
+    0% { top: -30px; opacity: 0; }
+    100% { top: 0; opacity: 1; }
+  }
+  @-o-keyframes slide-in {
+    0% { top: -30px; opacity: 0; }
+    100% { top: 0; opacity: 1; }
+  }
+  @keyframes slide-in {
+    0% { top: -30px; opacity: 0; }
+    100% { top: 0; opacity: 1; }
+  }
+
   .nav-docs {
     position: fixed;
     z-index: 90;
-    top: 0;
+    top: -100%;
     left: 0;
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 53px 0 0 0;
     background: #3B3738;
-    /* Transition these properties */
-    transition: opacity 0.3s, visibility 0.3s;
-    visibility: hidden;
-    opacity: 0;
   }
 
   .nav-docs-viewport {
     border-top: 1px solid rgb(5, 165, 209);
-    height: 100%;
     padding: 25px;
     overflow: scroll;
     -webkit-overflow-scrolling: touch;
-    top: -30px;
     position: relative;
-    transition: top 0.3s;
+    width: 100%;
+    height: 100%;
   }
 
   /* Active state */
   .nav-docs.in {
-    visibility: visible;
-    opacity: 1;
-  }
-
-  .nav-docs.in .nav-docs-viewport {
     top: 0;
+    -webkit-animation: slide-in 0.3s forwards;
+    -moz-animation: slide-in 0.3s forwards;
+    -o-animation: slide-in 0.3s forwards;
+    animation: slide-in 0.3s forwards;
   }
 
   .nav-docs * {

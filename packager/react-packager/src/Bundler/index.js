@@ -250,11 +250,6 @@ class Bundler {
   }) {
     const onResolutionResponse = response => {
       bundle.setMainModuleId(response.getModuleId(getMainModule(response)));
-      if (bundle.setNumPrependedModules) {
-        bundle.setNumPrependedModules(
-          response.numPrependedDependencies + moduleSystemDeps.length
-        );
-      }
       if (entryModuleOnly) {
         response.dependencies = response.dependencies.filter(module =>
           module.path.endsWith(entryFile)
