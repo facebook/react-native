@@ -85,6 +85,8 @@ class PushNotificationIOS {
   _alert: string | Object;
   _sound: string;
   _badgeCount: number;
+  _notificationId: string;
+  _isRemote: boolean;
 
   /**
    * When calling the completion handler for a remote notification these are the
