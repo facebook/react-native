@@ -87,12 +87,12 @@
   [subview removeFromSuperview];
 }
 
-- (double)reactZIndex
+- (NSInteger)reactZIndex
 {
-  return [objc_getAssociatedObject(self, _cmd) doubleValue];
+  return [objc_getAssociatedObject(self, _cmd) integerValue];
 }
 
-- (void)setReactZIndex:(double)reactZIndex
+- (void)setReactZIndex:(NSInteger)reactZIndex
 {
   objc_setAssociatedObject(self, @selector(reactZIndex), @(reactZIndex), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }

@@ -542,6 +542,13 @@ var apps = [
     author: 'The Beat Drop Inc'
   },
   {
+    name: 'JS Air',
+    icon: 'http://a1.mzstatic.com/eu/r30/Purple60/v4/56/94/66/56946608-34ac-dd5a-622f-75ef0073a7cd/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/fr/app/js-air/id1112141070?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.jsair',
+    author: 'Erwan DATIN',
+  },
+  {
     name: 'Kakapo',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple3/v4/12/ab/2a/12ab2a01-3a3c-9482-b8df-ab38ad281165/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/gb/app/kakapo/id1046673139?ls=1&mt=8',
@@ -703,6 +710,12 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/app/passpoints/id930988932',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.passpointsreactnative',
     author: 'passpoints.de',
+  },
+  {
+    name: 'PermisPts',
+    icon: 'http://a3.mzstatic.com/eu/r30/Purple20/v4/02/62/ee/0262eef2-170e-4ca2-8f8a-8079482a393b/icon175x175.png',
+    link: 'https://itunes.apple.com/fr/app/permispts/id950595671?mt=8',
+    author: 'Erwan DATIN',
   },
   {
     name: 'Pimmr',

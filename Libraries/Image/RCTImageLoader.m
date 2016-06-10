@@ -67,7 +67,7 @@ RCT_EXPORT_MODULE()
   // Set defaults
   _maxConcurrentLoadingTasks = _maxConcurrentLoadingTasks ?: 4;
   _maxConcurrentDecodingTasks = _maxConcurrentDecodingTasks ?: 2;
-  _maxConcurrentDecodingBytes = _maxConcurrentDecodingBytes ?: 30 * 1024 *1024; // 30MB
+  _maxConcurrentDecodingBytes = _maxConcurrentDecodingBytes ?: 30 * 1024 * 1024; // 30MB
 
   _URLCacheQueue = dispatch_queue_create("com.facebook.react.ImageLoaderURLCacheQueue", DISPATCH_QUEUE_SERIAL);
 
@@ -241,8 +241,15 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
           _activeTasks--;
           break;
         case RCTNetworkTaskPending:
+          break;
         case RCTNetworkTaskInProgress:
-          // Do nothing
+          // Check task isn't "stuck"
+          if (task.requestToken == nil) {
+            RCTLogWarn(@"Task orphaned for request %@", task.request);
+            [_pendingTasks removeObject:task];
+            _activeTasks--;
+            [task cancel];
+          }
           break;
       }
     }
@@ -412,6 +419,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     RCTNetworkTask *task = [_bridge.networking networkTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
       if (error) {
         completionHandler(error, nil);
+        [weakSelf dequeueTasks];
         return;
       }
 
@@ -429,7 +437,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         // Process image data
         processResponse(response, data, nil);
 
-        //clean up
+        // Prepare for next task
         [weakSelf dequeueTasks];
 
       });
@@ -442,10 +450,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     }
     if (task) {
       [_pendingTasks addObject:task];
-      if (MAX(_activeTasks, _scheduledDecodes) < _maxConcurrentLoadingTasks) {
-        [task start];
-        _activeTasks++;
-      }
+      [weakSelf dequeueTasks];
     }
 
     cancelLoad = ^{

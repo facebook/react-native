@@ -55,7 +55,7 @@ const ON_MOUNT_BOUNCE_DELAY = 700;
 const ON_MOUNT_BOUNCE_DURATION = 200;
 
 // Distance left of closed position to bounce back when right-swiping from closed
-const RIGHT_SWIPE_BOUNCE_BACK_DISTANCE = 30;
+const RIGHT_SWIPE_BOUNCE_BACK_DISTANCE = 50;
 /**
  * Max distance of right swipe to allow (right swipes do functionally nothing).
  * Must be multiplied by SLOW_SPEED_SWIPE_FACTOR because gestureState.dx tracks

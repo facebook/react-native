@@ -46,7 +46,7 @@
  * inherited from UIView+React, but we override it here to reduce the boxing
  * and associated object overheads.
  */
-@property (nonatomic, assign) double reactZIndex;
+@property (nonatomic, assign) NSInteger reactZIndex;
 
 /**
  * This is an optimization used to improve performance

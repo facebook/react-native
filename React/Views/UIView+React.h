@@ -28,7 +28,7 @@
 /**
  * z-index, used to override sibling order in didUpdateReactSubviews.
  */
-@property (nonatomic, assign) double reactZIndex;
+@property (nonatomic, assign) NSInteger reactZIndex;
 
 /**
  * The reactSubviews array, sorted by zIndex. This value is cached and

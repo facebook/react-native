@@ -610,7 +610,7 @@ RCT_STYLE_PROPERTY(FlexWrap, flexWrap, flex_wrap, css_wrap_type_t)
   [self dirtyPropagation];
 }
 
-- (void)setZIndex:(double)zIndex
+- (void)setZIndex:(NSInteger)zIndex
 {
   _zIndex = zIndex;
   if (_superview) {

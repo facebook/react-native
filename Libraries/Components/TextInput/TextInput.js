@@ -501,6 +501,7 @@ var TextInput = React.createClass({
 
     return (
       <TouchableWithoutFeedback
+        onLayout={props.onLayout}
         onPress={this._onPress}
         rejectResponderTermination={true}
         accessible={props.accessible}

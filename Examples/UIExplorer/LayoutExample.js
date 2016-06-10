@@ -29,11 +29,12 @@ var UIExplorerPage = require('./UIExplorerPage');
 var Circle = React.createClass({
   render: function() {
     var size = this.props.size || 20;
+    var backgroundColor = this.props.bgColor || '#527fe4';
     return (
       <View
         style={{
           borderRadius: size / 2,
-          backgroundColor: '#527fe4',
+          backgroundColor: backgroundColor,
           width: size,
           height: size,
           margin: 1,
@@ -69,16 +70,32 @@ var LayoutExample = React.createClass({
   displayName: 'LayoutExample',
 
   render: function() {
+    var fiveColoredCircles = [
+      <Circle bgColor="#527fe4" key="blue" />,
+      <Circle bgColor="#D443E3" key="violet" />,
+      <Circle bgColor="#FF9049" key="orange" />,
+      <Circle bgColor="#FFE649" key="yellow" />,
+      <Circle bgColor="#7FE040" key="green" />
+    ];
+
     return (
       <UIExplorerPage title={this.props.navigator ? null : 'Layout'}>
         <UIExplorerBlock title="Flex Direction">
           <Text>row</Text>
           <CircleBlock style={{flexDirection: 'row'}}>
-            <Circle /><Circle /><Circle /><Circle /><Circle />
+            {fiveColoredCircles}
+          </CircleBlock>
+          <Text>row-reverse</Text>
+          <CircleBlock style={{flexDirection: 'row-reverse'}}>
+            {fiveColoredCircles}
           </CircleBlock>
           <Text>column</Text>
           <CircleBlock style={{flexDirection: 'column'}}>
-            <Circle /><Circle /><Circle /><Circle /><Circle />
+            {fiveColoredCircles}
+          </CircleBlock>
+          <Text>column-reverse</Text>
+          <CircleBlock style={{flexDirection: 'column-reverse'}}>
+            {fiveColoredCircles}
           </CircleBlock>
           <View style={[styles.overlay, {position: 'absolute', top: 15, left: 160}]}>
             <Text>{'top: 15, left: 160'}</Text>
@@ -88,23 +105,23 @@ var LayoutExample = React.createClass({
         <UIExplorerBlock title="Justify Content - Main Direction">
           <Text>flex-start</Text>
           <CircleBlock style={{justifyContent: 'flex-start'}}>
-            <Circle /><Circle /><Circle /><Circle /><Circle />
+            {fiveColoredCircles}
           </CircleBlock>
           <Text>center</Text>
           <CircleBlock style={{justifyContent: 'center'}}>
-            <Circle /><Circle /><Circle /><Circle /><Circle />
+            {fiveColoredCircles}
           </CircleBlock>
           <Text>flex-end</Text>
           <CircleBlock style={{justifyContent: 'flex-end'}}>
-            <Circle /><Circle /><Circle /><Circle /><Circle />
+            {fiveColoredCircles}
           </CircleBlock>
           <Text>space-between</Text>
           <CircleBlock style={{justifyContent: 'space-between'}}>
-            <Circle /><Circle /><Circle /><Circle /><Circle />
+            {fiveColoredCircles}
           </CircleBlock>
           <Text>space-around</Text>
           <CircleBlock style={{justifyContent: 'space-around'}}>
-            <Circle /><Circle /><Circle /><Circle /><Circle />
+            {fiveColoredCircles}
           </CircleBlock>
         </UIExplorerBlock>
         <UIExplorerBlock title="Align Items - Other Direction">
