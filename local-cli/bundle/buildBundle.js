@@ -25,7 +25,12 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
 
     // This is used by a bazillion of npm modules we don't control so we don't
     // have other choice than defining it as an env variable here.
-    process.env.NODE_ENV = args.dev ? 'development' : 'production';
+    if (!process.env.NODE_ENV) {
+      // If you're inlining environment variables, you can use babel to remove
+      // this line:
+      // https://www.npmjs.com/package/babel-remove-process-env-assignment
+      process.env.NODE_ENV = args.dev ? 'development' : 'production';
+    }
 
     const options = {
       projectRoots: config.getProjectRoots(),
