@@ -182,7 +182,7 @@ RCT_EXPORT_MODULE()
   }
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTLocalNotificationReceived
                                                       object:self
-                                                    userInfo:RCTFormatLocalNotification(notification)];
+                                                    userInfo:details];
 }
 
 - (void)handleLocalNotificationReceived:(NSNotification *)notification
