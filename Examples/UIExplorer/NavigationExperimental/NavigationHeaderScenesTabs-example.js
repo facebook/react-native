@@ -249,6 +249,7 @@ const YourNavigator = createAppNavigationContainer(class extends Component {
   // This sets up the methods (e.g. Pop, Push) for navigation.
   constructor(props: any, context: any) {
     super(props, context);
+    this._back = this._back.bind(this);
     this._renderHeader = this._renderHeader.bind(this);
     this._renderScene = this._renderScene.bind(this);
   }
@@ -264,7 +265,7 @@ const YourNavigator = createAppNavigationContainer(class extends Component {
       <View style={styles.navigator}>
         <NavigationCardStack
           key={'stack_' + tabKey}
-          onNavigate={this.props.navigate}
+          onNavigateBack={this._back}
           navigationState={scenes}
           renderOverlay={this._renderHeader}
           renderScene={this._renderScene}
@@ -298,6 +299,10 @@ const YourNavigator = createAppNavigationContainer(class extends Component {
       />
     );
   }
+
+  _back() {
+    this.props.navigate({type: 'pop'});
+  }
 });
 
 // Next step.
@@ -310,6 +315,7 @@ const YourHeader = createAppNavigationContainer(class extends Component {
 
   constructor(props: Object, context: any) {
     super(props, context);
+    this._back = this._back.bind(this);
     this._renderTitleComponent = this._renderTitleComponent.bind(this);
   }
 
@@ -318,9 +324,13 @@ const YourHeader = createAppNavigationContainer(class extends Component {
       <NavigationHeader
         {...this.props}
         renderTitleComponent={this._renderTitleComponent}
-        onNavigate={this.props.navigate}
+        onNavigateBack={this._back}
       />
     );
+  }
+
+  _back(): void {
+    this.props.navigate({type: 'pop'});
   }
 
   _renderTitleComponent(): ReactElement {

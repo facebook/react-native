@@ -30,8 +30,6 @@ export type NavigationState = {
   routes: Array<NavigationRoute>,
 };
 
-export type NavigationAction = any;
-
 export type NavigationLayout = {
   height: NavigationAnimatedValue,
   initHeight: number,
@@ -53,9 +51,6 @@ export type NavigationSceneRendererProps = {
 
   // The navigation state of the containing view.
   navigationState: NavigationState,
-
-  // Callback to navigation with an action.
-  onNavigate: NavigationActionCaller,
 
   // The progressive index of the containing view's navigation state.
   position: NavigationAnimatedValue,
@@ -97,23 +92,11 @@ export type NavigationTransitionSpec = {
 
 // Functions.
 
-export type NavigationActionCaller = Function;
-
 export type NavigationAnimationSetter = (
   position: NavigationAnimatedValue,
   newState: NavigationState,
   lastState: NavigationState,
 ) => void;
-
-export type NavigationRenderer = (
-  navigationState: ?NavigationRoute,
-  onNavigate: NavigationActionCaller,
-) => ReactElement<any>;
-
-export type NavigationReducer = (
-  state: ?NavigationRoute,
-  action: ?NavigationAction,
-) => NavigationRoute;
 
 export type NavigationSceneRenderer = (
   props: NavigationSceneRendererProps,
