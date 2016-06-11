@@ -271,6 +271,7 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
       NSFontAttributeName : (_textView.font ? _textView.font : [self defaultPlaceholderFont]),
       NSForegroundColorAttributeName : _placeholderTextColor
     }];
+    _placeholderView.textAlignment = _textView.textAlignment;
 
     [self insertSubview:_placeholderView belowSubview:_textView];
     [self _setPlaceholderVisibility];
