@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -550,19 +549,18 @@ public class DevSupportManagerImpl implements DevSupportManager {
       mRedBoxDialog.dismiss();
     }
 
-    ProgressDialog progressDialog = new ProgressDialog(mApplicationContext);
-    progressDialog.setTitle(R.string.catalyst_jsload_title);
-    progressDialog.setMessage(mApplicationContext.getString(
-        mDevSettings.isRemoteJSDebugEnabled() ? R.string.catalyst_remotedbg_message : R.string.catalyst_jsload_message));
-    progressDialog.setIndeterminate(true);
-    progressDialog.setCancelable(false);
-    progressDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-    progressDialog.show();
+    AlertDialog dialog = new AlertDialog.Builder(mApplicationContext)
+      .setTitle(R.string.catalyst_jsload_title)
+      .setMessage(mApplicationContext.getString(
+          mDevSettings.isRemoteJSDebugEnabled() ? R.string.catalyst_remotedbg_message : R.string.catalyst_jsload_message))
+      .create();
+    dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+    dialog.show();
 
     if (mDevSettings.isRemoteJSDebugEnabled()) {
-      reloadJSInProxyMode(progressDialog);
+      reloadJSInProxyMode(dialog);
     } else {
-      reloadJSFromServer(progressDialog);
+      reloadJSFromServer(dialog);
     }
   }
 
@@ -571,7 +569,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
     mDevServerHelper.isPackagerRunning(callback);
   }
 
-  private void reloadJSInProxyMode(final ProgressDialog progressDialog) {
+  private void reloadJSInProxyMode(final AlertDialog progressDialog) {
     // When using js proxy, there is no need to fetch JS bundle as proxy executor will do that
     // anyway
     mDevServerHelper.launchJSDevtools();
@@ -599,7 +597,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
   }
 
   private WebsocketJavaScriptExecutor.JSExecutorConnectCallback getExecutorConnectCallback(
-      final ProgressDialog progressDialog,
+      final AlertDialog progressDialog,
       final SimpleSettableFuture<Boolean> future) {
     return new WebsocketJavaScriptExecutor.JSExecutorConnectCallback() {
       @Override
@@ -619,7 +617,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
     };
   }
 
-  private void reloadJSFromServer(final ProgressDialog progressDialog) {
+  private void reloadJSFromServer(final AlertDialog progressDialog) {
     mDevServerHelper.downloadBundleFromURL(
         new DevServerHelper.BundleDownloadCallback() {
           @Override

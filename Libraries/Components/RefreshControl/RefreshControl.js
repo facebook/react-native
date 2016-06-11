@@ -68,7 +68,7 @@ if (Platform.OS === 'android') {
  * ```
  *
  * __Note:__ `refreshing` is a controlled prop, this is why it needs to be set to true
- * in the `onRefresh` function otherwise the refresh indicator will stop immediatly.
+ * in the `onRefresh` function otherwise the refresh indicator will stop immediately.
  */
 const RefreshControl = React.createClass({
   statics: {

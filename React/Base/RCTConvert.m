@@ -252,6 +252,7 @@ RCT_ENUM_CONVERTER(NSLineBreakMode, (@{
   @"head": @(NSLineBreakByTruncatingHead),
   @"tail": @(NSLineBreakByTruncatingTail),
   @"middle": @(NSLineBreakByTruncatingMiddle),
+  @"wordWrapping": @(NSLineBreakByWordWrapping),
 }), NSLineBreakByTruncatingTail, integerValue)
 
 RCT_ENUM_CONVERTER(NSTextAlignment, (@{
