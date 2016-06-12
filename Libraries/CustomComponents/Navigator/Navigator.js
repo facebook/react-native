@@ -373,7 +373,7 @@ var Navigator = React.createClass({
   },
 
   _transitionTo: function(destIndex, velocity, jumpSpringTo, cb) {
-    if (destIndex === this.state.presentedIndex) {
+    if (destIndex === this.state.presentedIndex && this.state.transitionQueue.length > 0) {
       return;
     }
     if (this.state.transitionFromIndex !== null) {
