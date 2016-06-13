@@ -27,7 +27,7 @@ static NSString *ipGuess;
 {
   NSString *ipPath = [[NSBundle mainBundle] pathForResource:@"ip" ofType:@"txt"];
   NSString *ip = [NSString stringWithContentsOfFile:ipPath encoding:NSUTF8StringEncoding error:nil];
-  ipGuess = [ip stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\n"]];
+  ipGuess = [ip stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
 }
 
 - (NSDictionary *)defaults
