@@ -23,14 +23,14 @@ static NSString *ipGuess;
 
 @implementation RCTBundleURLProvider
 
+#if RCT_DEV
 + (void)initialize
 {
-#if RCT_DEV
   NSString *ipPath = [[NSBundle mainBundle] pathForResource:@"ip" ofType:@"txt"];
   NSString *ip = [NSString stringWithContentsOfFile:ipPath encoding:NSUTF8StringEncoding error:nil];
   ipGuess = [ip stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
-#endif
 }
+#endif
 
 - (NSDictionary *)defaults
 {
