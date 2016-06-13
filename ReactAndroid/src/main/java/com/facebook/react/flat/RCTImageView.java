@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import com.facebook.csslayout.Spacing;
 import com.facebook.drawee.drawable.ScalingUtils.ScaleType;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ViewProps;
@@ -86,7 +87,9 @@ import com.facebook.react.views.image.ImageResizeMode;
   }
 
   @ReactProp(name = "src")
-  public void setSource(@Nullable String source) {
+  public void setSource(@Nullable ReadableArray sources) {
+    final String source =
+        (sources == null || sources.size() == 0) ? null : sources.getMap(0).getString("uri");
     getMutableDrawImage().setImageRequest(
         ImageRequestHelper.createImageRequest(getThemedContext(), source));
   }

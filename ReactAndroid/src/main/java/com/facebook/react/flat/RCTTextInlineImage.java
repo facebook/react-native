@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 /**
@@ -65,7 +66,9 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   }
 
   @ReactProp(name = "src")
-  public void setSource(@Nullable String source) {
+  public void setSource(@Nullable ReadableArray sources) {
+    final String source =
+        (sources == null || sources.size() == 0) ? null : sources.getMap(0).getString("uri");
     getMutableSpan().setImageRequest(
         ImageRequestHelper.createImageRequest(getThemedContext(), source));
   }
