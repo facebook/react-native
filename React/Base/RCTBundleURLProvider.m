@@ -25,9 +25,11 @@ static NSString *ipGuess;
 
 + (void)initialize
 {
+#if RCT_DEV
   NSString *ipPath = [[NSBundle mainBundle] pathForResource:@"ip" ofType:@"txt"];
   NSString *ip = [NSString stringWithContentsOfFile:ipPath encoding:NSUTF8StringEncoding error:nil];
   ipGuess = [ip stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+#endif
 }
 
 - (NSDictionary *)defaults
@@ -83,7 +85,7 @@ static NSString *serverRootWithHost(NSString *host)
 
 - (NSString *)guessPackagerHost
 {
-  NSString *host = ipGuess ? ipGuess : @"localhost";
+  NSString *host = ipGuess ?: @"localhost";
   if ([self isPackagerRunning:host]) {
     return host;
   }
