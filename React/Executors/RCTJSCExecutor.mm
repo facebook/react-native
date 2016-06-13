@@ -389,7 +389,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     return @(CACurrentMediaTime() * 1000);
   }];
 
-#if RCT_DEV
+#if RCT_PROFILE
   if (RCTProfileIsProfiling()) {
     // Cheating, since it's not a "hook", but meh
     [self addSynchronousHookWithName:@"__RCTProfileIsProfiling" usingBlock:@YES];
@@ -415,13 +415,13 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     CFDictionaryRemoveValue(strongSelf->_cookieMap, (const void *)cookie);
   }];
 
-  [self addSynchronousHookWithName:@"nativeTraceBeginSection" usingBlock:^(NSNumber *tag, NSString *profileName){
+  [self addSynchronousHookWithName:@"nativeTraceBeginSection" usingBlock:^(NSNumber *tag, NSString *profileName, NSDictionary *args) {
     static int profileCounter = 1;
     if (!profileName) {
       profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
     }
 
-    RCT_PROFILE_BEGIN_EVENT(tag.longLongValue, profileName, nil);
+    RCT_PROFILE_BEGIN_EVENT(tag.longLongValue, profileName, args);
   }];
 
   [self addSynchronousHookWithName:@"nativeTraceEndSection" usingBlock:^(NSNumber *tag) {
@@ -468,7 +468,9 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
                                                  name:event
                                                object:nil];
   }
+#endif
 
+#if RCT_DEV
   // Inject handler used by HMR
   [self addSynchronousHookWithName:@"nativeInjectHMRUpdate" usingBlock:^(NSString *sourceCode, NSString *sourceCodeURL) {
     RCTJSCExecutor *strongSelf = weakSelf;

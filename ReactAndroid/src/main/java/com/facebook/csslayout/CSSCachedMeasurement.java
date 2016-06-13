@@ -7,7 +7,7 @@
  */
 
 // NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<fe2172034939f4e8919ad4b533f27703>>
+// @generated SignedSource<<7463b170625c103400318b8a42378786>>
 
 package com.facebook.csslayout;
 
@@ -16,7 +16,7 @@ public class CSSCachedMeasurement {
   public float availableHeight;
   public CSSMeasureMode widthMeasureMode = null;
   public CSSMeasureMode heightMeasureMode = null;
-  
+
   public float computedWidth;
   public float computedHeight;
 }
