@@ -108,14 +108,6 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     this._renderScene = this._renderScene.bind(this);
   }
 
-  shouldComponentUpdate(nextProps: Object, nextState: void): boolean {
-    return ReactComponentWithPureRenderMixin.shouldComponentUpdate.call(
-      this,
-      nextProps,
-      nextState
-    );
-  }
-
   render(): ReactElement<any> {
     return (
       <NavigationAnimatedView
