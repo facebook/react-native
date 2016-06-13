@@ -415,13 +415,13 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     CFDictionaryRemoveValue(strongSelf->_cookieMap, (const void *)cookie);
   }];
 
-  [self addSynchronousHookWithName:@"nativeTraceBeginSection" usingBlock:^(NSNumber *tag, NSString *profileName){
+  [self addSynchronousHookWithName:@"nativeTraceBeginSection" usingBlock:^(NSNumber *tag, NSString *profileName, NSDictionary *args) {
     static int profileCounter = 1;
     if (!profileName) {
       profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
     }
 
-    RCT_PROFILE_BEGIN_EVENT(tag.longLongValue, profileName, nil);
+    RCT_PROFILE_BEGIN_EVENT(tag.longLongValue, profileName, args);
   }];
 
   [self addSynchronousHookWithName:@"nativeTraceEndSection" usingBlock:^(NSNumber *tag) {
