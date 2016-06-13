@@ -19,8 +19,17 @@ static NSString *const kRCTEnableDevKey = @"RCT_enableDev";
 static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
 
 static NSString *const kDefaultPort = @"8081";
+static NSString *ipGuess;
 
 @implementation RCTBundleURLProvider
+
++ (void)initialize
+{
+  NSString *ipPath = [[NSBundle mainBundle] pathForResource:@"ip" ofType:@"txt"];
+  NSString *ip = [NSString stringWithContentsOfFile:ipPath encoding:NSUTF8StringEncoding error:nil];
+  ip = [ip stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\n"]];
+  ipGuess = ip;
+}
 
 - (NSDictionary *)defaults
 {
@@ -75,8 +84,7 @@ static NSString *serverRootWithHost(NSString *host)
 
 - (NSString *)guessPackagerHost
 {
-  NSString *host = @"localhost";
-  //TODO: Implement automatic IP address detection
+  NSString *host = ipGuess ? ipGuess : @"localhost";
   if ([self isPackagerRunning:host]) {
     return host;
   }
