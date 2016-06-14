@@ -18,9 +18,12 @@ var ReactNative = require('ReactNative');
 
 var invariant = require('fbjs/lib/invariant');
 
-function renderApplication<P>(
-  RootComponent: ReactClass<P>,
-  initialProps: P,
+// require BackAndroid so it sets the default handler that exits the app if no listeners respond
+require('BackAndroid');
+
+function renderApplication<Props>(
+  RootComponent: ReactClass<Props>,
+  initialProps: Props,
   rootTag: any
 ) {
   invariant(
@@ -37,6 +40,5 @@ function renderApplication<P>(
     rootTag
   );
 }
-
 
 module.exports = renderApplication;

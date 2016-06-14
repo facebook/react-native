@@ -498,7 +498,7 @@ class WindowedListView extends React.Component {
               this.setState({boundaryIndicatorHeight: layout.height});
             }
           }}>
-          {this.props.renderWindowBoundaryIndicator()}
+          {this.props.renderWindowBoundaryIndicator(showIndicator)}
         </View>
       );
     }
@@ -530,7 +530,7 @@ class WindowedListView extends React.Component {
         <View
           key="ind-footer"
           style={showFooter ? styles.include : styles.remove}>
-          {this.props.renderFooter()}
+          {this.props.renderFooter(showFooter)}
         </View>
       );
     }
@@ -545,7 +545,7 @@ class WindowedListView extends React.Component {
               this.setState({boundaryIndicatorHeight: layout.height});
             }
           }}>
-          {this.props.renderWindowBoundaryIndicator()}
+          {this.props.renderWindowBoundaryIndicator(!showFooter)}
         </View>
       );
     }

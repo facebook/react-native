@@ -13,6 +13,7 @@
 
 #import "RCTWebSocketExecutor.h"
 
+#import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
@@ -36,6 +37,8 @@ typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary<NSString *, id
 
 RCT_EXPORT_MODULE()
 
+@synthesize bridge = _bridge;
+
 - (instancetype)initWithURL:(NSURL *)URL
 {
   RCTAssertParam(URL);
@@ -51,7 +54,11 @@ RCT_EXPORT_MODULE()
   if (!_url) {
     NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
     NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"] ?: 8081;
-    NSString *URLString = [NSString stringWithFormat:@"http://localhost:%zd/debugger-proxy?role=client", port];
+    NSString *host = [[_bridge bundleURL] host];
+    if (!host) {
+      host = @"localhost";
+    }
+    NSString *URLString = [NSString stringWithFormat:@"http://%@:%zd/debugger-proxy?role=client", host, port];
     _url = [RCTConvert NSURL:URLString];
   }
 
