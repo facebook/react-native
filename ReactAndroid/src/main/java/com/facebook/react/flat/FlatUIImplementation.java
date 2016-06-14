@@ -244,6 +244,10 @@ public class FlatUIImplementation extends UIImplementation {
   @Override
   public void dispatchViewManagerCommand(int reactTag, int commandId, ReadableArray commandArgs) {
     ensureMountsToViewAndBackingViewIsCreated(reactTag);
+    // need to make sure any ui operations (UpdateViewGroup, for example, etc) have already
+    // happened before we actually dispatch the view manager command (since otherwise, the command
+    // may go to an empty shell parent without its children, which is against the specs).
+    mStateBuilder.applyUpdates((FlatShadowNode) resolveShadowNode(reactTag));
     super.dispatchViewManagerCommand(reactTag, commandId, commandArgs);
   }
 
