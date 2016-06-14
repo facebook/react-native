@@ -108,19 +108,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (NSArray<UIKeyCommand *> *)RCT_keyCommands
 {
-  /*
-   * If current first responder is UITextView or UITextField, disable the shortcut key commands.
-   * For example, double-pressing a key should type two characters into the text view,
-   * not invoke a predefined keyboard shortcut.
-   */
-  UIResponder *firstResponder = [UIResponder RCT_getFirstResponder: self];
-  if ([firstResponder isKindOfClass:[UITextView class]] ||
-      [firstResponder isKindOfClass:[UITextField class]] ||
-      [firstResponder conformsToProtocol:@protocol(UITextViewDelegate)] ||
-      [self conformsToProtocol:@protocol(UIApplicationDelegate)]) {
-    return nil;
-  }
-
   NSSet<RCTKeyCommand *> *commands = [RCTKeyCommands sharedInstance].commands;
   return [[commands valueForKeyPath:@"keyCommand"] allObjects];
 }

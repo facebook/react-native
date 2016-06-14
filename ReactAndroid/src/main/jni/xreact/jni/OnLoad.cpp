@@ -7,7 +7,6 @@
 #include <cxxreact/JSCExecutor.h>
 #include <cxxreact/Platform.h>
 #include <cxxreact/Value.h>
-#include <react/jni/ReadableNativeArray.h>
 #include "CatalystInstanceImpl.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JSCPerfLogging.h"
@@ -16,6 +15,9 @@
 #include "ProxyExecutor.h"
 #include "WebWorkers.h"
 #include "JCallback.h"
+
+#include "WritableNativeMap.h"
+#include "WritableNativeArray.h"
 
 #include <string>
 
@@ -180,6 +182,14 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     CxxModuleWrapper::registerNatives();
     JCallbackImpl::registerNatives();
     registerJSLoaderNatives();
+
+    NativeArray::registerNatives();
+    ReadableNativeArray::registerNatives();
+    WritableNativeArray::registerNatives();
+    NativeMap::registerNatives();
+    ReadableNativeMap::registerNatives();
+    WritableNativeMap::registerNatives();
+    ReadableNativeMapKeySetIterator::registerNatives();
   });
 }
 

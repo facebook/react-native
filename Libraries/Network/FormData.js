@@ -65,7 +65,6 @@ class FormData {
     return this._parts.map(([name, value]) => {
       var contentDisposition = 'form-data; name="' + name + '"';
 
-      /* $FlowIssue(>=0.20.1) #9463928 */
       var headers: Headers = {'content-disposition': contentDisposition};
 
       // The body part is a "blob", which in React Native just means

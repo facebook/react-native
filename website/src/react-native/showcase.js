@@ -54,6 +54,9 @@ var featured = [
     icon: 'http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg',
     link:  'https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8',
     author: 'Hammer & Chisel',
+    blogs: [
+      "https://discord.engineering/react-native-deep-dive-91fd5e949933#.5jnqftgof",
+    ],
   },
   {
     name: 'Discovery VR',
@@ -294,6 +297,13 @@ var apps = [
     icon: 'http://rnfdigital.com/wp-content/uploads/2016/04/FieldProIcon.png',
     link: 'http://rnfdigital.com/react-native-a-game-changer-for-enterprise-mobile-development/',
     author: 'RNF Digital',
+  },
+  {
+    name: 'camigo - the camping app',
+    icon: 'http://cdn.socialbit.de/default/0001/01/thumb_988_default_original.png',
+    linkAppStore: 'https://itunes.apple.com/de/app/camigo/id1088876278?l=de&ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.mobileemotion.camigo',
+    author: 'Socialbit GmbH',
   },
   {
     name: 'CANDDi',
