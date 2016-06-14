@@ -299,6 +299,13 @@ var apps = [
     author: 'RNF Digital',
   },
   {
+    name: 'camigo - the camping app',
+    icon: 'http://cdn.socialbit.de/default/0001/01/thumb_988_default_original.png',
+    linkAppStore: 'https://itunes.apple.com/de/app/camigo/id1088876278?l=de&ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.mobileemotion.camigo',
+    author: 'Socialbit GmbH',
+  },
+  {
     name: 'CANDDi',
     icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/c4/e4/85/c4e48546-7127-a133-29f2-3e2e1aa0f9af/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/gb/app/canddi/id1018168131?mt=8',
