@@ -296,8 +296,8 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   __block void(^cancelLoad)(void) = nil;
   __weak RCTImageLoader *weakSelf = self;
   // Find suitable image URL loader
-  __block id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:imageURLRequest.URL];
-  __block BOOL cacheResult = [loadHandler respondsToSelector:@selector(shouldCacheLoadedImages)] ?
+  id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:imageURLRequest.URL];
+  BOOL cacheResult = [loadHandler respondsToSelector:@selector(shouldCacheLoadedImages)] ?
       [loadHandler shouldCacheLoadedImages] : YES;
   BOOL requiresScheduling = [loadHandler respondsToSelector:@selector(requiresScheduling)] ?
       [loadHandler requiresScheduling] : YES;
