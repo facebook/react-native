@@ -11,7 +11,6 @@
  */
 'use strict';
 
-var Easing = require('Easing');
 var InteractionManager = require('InteractionManager');
 var Interpolation = require('Interpolation');
 var React = require('React');
@@ -220,7 +219,14 @@ type TimingAnimationConfigSingle = AnimationConfig & {
   delay?: number;
 };
 
-var easeInOut = Easing.inOut(Easing.ease);
+let _easeInOut;
+function easeInOut() {
+  if (!_easeInOut) {
+    const Easing = require('Easing');
+    _easeInOut = Easing.inOut(Easing.ease);
+  }
+  return _easeInOut;
+}
 
 class TimingAnimation extends Animation {
   _startTime: number;
@@ -239,7 +245,7 @@ class TimingAnimation extends Animation {
   ) {
     super();
     this._toValue = config.toValue;
-    this._easing = config.easing !== undefined ? config.easing : easeInOut;
+    this._easing = config.easing !== undefined ? config.easing : easeInOut();
     this._duration = config.duration !== undefined ? config.duration : 500;
     this._delay = config.delay !== undefined ? config.delay : 0;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
