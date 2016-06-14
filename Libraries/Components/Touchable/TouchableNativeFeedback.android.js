@@ -185,7 +185,9 @@ var TouchableNativeFeedback = React.createClass({
 
   _handleResponderMove: function(e) {
     this.touchableHandleResponderMove(e);
-    this._dispatchHotspotUpdate(e.nativeEvent.pageX, e.nativeEvent.pageY);
+    var elementHeight = this.pressInLocation.pageY - e.nativeEvent.locationY,
+        elementWidth = this.pressInLocation.pageX - e.nativeEvent.locationX
+    this._dispatchHotspotUpdate(e.nativeEvent.pageX - elementWidth, e.nativeEvent.pageY - elementHeight);
   },
 
   _dispatchHotspotUpdate: function(destX, destY) {
