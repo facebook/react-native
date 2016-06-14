@@ -9,7 +9,7 @@ const ReactNative <span class="token operator">=</span> <span class="token funct
 const <span class="token punctuation">{</span>
   CameraRoll<span class="token punctuation">,</span>
   Image<span class="token punctuation">,</span>
-  SliderIOS<span class="token punctuation">,</span>
+  Slider<span class="token punctuation">,</span>
   StyleSheet<span class="token punctuation">,</span>
   Switch<span class="token punctuation">,</span>
   Text<span class="token punctuation">,</span>
@@ -40,7 +40,7 @@ const CameraRollExample <span class="token operator">=</span> React<span class="
           onValueChange<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_onSwitchChange<span class="token punctuation">}</span>
           value<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>bigImages<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
         &lt;Text<span class="token operator">&gt;</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>bigImages <span class="token operator">?</span> <span class="token string">&#x27;Big&#x27;</span> <span class="token punctuation">:</span> <span class="token string">&#x27;Small&#x27;</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">&#x27; Images&#x27;</span><span class="token punctuation">}</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
-        &lt;SliderIOS
+        &lt;Slider
           value<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>sliderValue<span class="token punctuation">}</span>
           onValueChange<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_onSliderChange<span class="token punctuation">}</span>
         <span class="token operator">/</span><span class="token operator">&gt;</span>
