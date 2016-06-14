@@ -61,6 +61,10 @@ var apps = [
   component: () => require('ScrollViewTestModule').ScrollViewTestApp,
 },
 {
+  appKey: 'SubviewsClippingTestApp',
+  component: () => require('SubviewsClippingTestModule').App,
+},
+{
   appKey: 'SwipeRefreshLayoutTestApp',
   component: () => require('SwipeRefreshLayoutTestModule').SwipeRefreshLayoutTestApp
 },
@@ -75,6 +79,10 @@ var apps = [
 {
   appKey: 'TimePickerDialogTestApp',
   component: () => require('TimePickerDialogTestModule').TimePickerDialogTestApp
+},
+{
+  appKey: 'TouchBubblingTestAppModule',
+  component: () => require('TouchBubblingTestAppModule')
 },
 
 ];

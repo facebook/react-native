@@ -135,6 +135,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   RandomAccessBundleData _randomAccessBundle;
 
   RCTJSCWrapper *_jscWrapper;
+  BOOL _useCustomJSCLibrary;
 }
 
 @synthesize valid = _valid;
@@ -262,21 +263,15 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   }
 }
 
-static BOOL useCustomJSCLibrary = NO;
-
-+ (void)setUseCustomJSCLibrary:(BOOL)useCustomLibrary
-{
-  useCustomJSCLibrary = useCustomLibrary;
-}
-
-+ (BOOL)useCustomJSCLibrary
-{
-  return useCustomJSCLibrary;
-}
-
 - (instancetype)init
 {
+  return [self initWithUseCustomJSCLibrary:NO];
+}
+
+- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
+{
   if (self = [super init]) {
+    _useCustomJSCLibrary = useCustomJSCLibrary;
     _valid = YES;
 
     _javaScriptThread = [[NSThread alloc] initWithTarget:[self class]
@@ -333,7 +328,7 @@ static BOOL useCustomJSCLibrary = NO;
       return;
     }
 
-    strongSelf->_jscWrapper = RCTJSCWrapperCreate(useCustomJSCLibrary);
+    strongSelf->_jscWrapper = RCTJSCWrapperCreate(strongSelf->_useCustomJSCLibrary);
   }];
 
 
@@ -394,7 +389,7 @@ static BOOL useCustomJSCLibrary = NO;
     return @(CACurrentMediaTime() * 1000);
   }];
 
-#if RCT_DEV
+#if RCT_PROFILE
   if (RCTProfileIsProfiling()) {
     // Cheating, since it's not a "hook", but meh
     [self addSynchronousHookWithName:@"__RCTProfileIsProfiling" usingBlock:@YES];
@@ -420,13 +415,13 @@ static BOOL useCustomJSCLibrary = NO;
     CFDictionaryRemoveValue(strongSelf->_cookieMap, (const void *)cookie);
   }];
 
-  [self addSynchronousHookWithName:@"nativeTraceBeginSection" usingBlock:^(NSNumber *tag, NSString *profileName){
+  [self addSynchronousHookWithName:@"nativeTraceBeginSection" usingBlock:^(NSNumber *tag, NSString *profileName, NSDictionary *args) {
     static int profileCounter = 1;
     if (!profileName) {
       profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
     }
 
-    RCT_PROFILE_BEGIN_EVENT(tag.longLongValue, profileName, nil);
+    RCT_PROFILE_BEGIN_EVENT(tag.longLongValue, profileName, args);
   }];
 
   [self addSynchronousHookWithName:@"nativeTraceEndSection" usingBlock:^(NSNumber *tag) {
@@ -473,7 +468,9 @@ static BOOL useCustomJSCLibrary = NO;
                                                  name:event
                                                object:nil];
   }
+#endif
 
+#if RCT_DEV
   // Inject handler used by HMR
   [self addSynchronousHookWithName:@"nativeInjectHMRUpdate" usingBlock:^(NSString *sourceCode, NSString *sourceCodeURL) {
     RCTJSCExecutor *strongSelf = weakSelf;

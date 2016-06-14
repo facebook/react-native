@@ -25,24 +25,15 @@ import com.facebook.react.bridge.WritableNativeMap;
  */
 public class SourceCodeModule extends BaseJavaModule {
 
-  private final String mSourceMapUrl;
   private final String mSourceUrl;
 
-  public SourceCodeModule(String sourceUrl, String sourceMapUrl) {
-    mSourceMapUrl = sourceMapUrl;
+  public SourceCodeModule(String sourceUrl) {
     mSourceUrl = sourceUrl;
   }
 
   @Override
   public String getName() {
     return "RCTSourceCode";
-  }
-
-  @ReactMethod
-  public void getScriptText(final Promise promise) {
-    WritableMap map = new WritableNativeMap();
-    map.putString("fullSourceMappingURL", mSourceMapUrl);
-    promise.resolve(map);
   }
 
   @Override
