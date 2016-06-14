@@ -185,6 +185,18 @@ __deprecated_msg("Use getImageSizeWithURLRequest:block: instead");
  */
 - (float)loaderPriority;
 
+/**
+ * If the loader must be called on the serial url cache queue. If this is NO,
+ * the loader will be called from the main queue. Defaults to YES.
+ */
+- (BOOL)requiresScheduling;
+
+/**
+ * If images loaded by the loader should be cached in the decoded image cache.
+ * Defaults to YES.
+ */
+- (BOOL)shouldCacheLoadedImages;
+
 @end
 
 /**

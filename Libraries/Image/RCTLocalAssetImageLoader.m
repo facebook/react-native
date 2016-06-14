@@ -22,6 +22,20 @@ RCT_EXPORT_MODULE()
   return RCTIsLocalAssetURL(requestURL);
 }
 
+- (BOOL)requiresScheduling
+{
+  // Don't schedule this loader on the URL queue so we can load the
+  // local assets synchronously to avoid flickers.
+  return NO;
+}
+
+- (BOOL)shouldCacheLoadedImages
+{
+  // UIImage imageNamed handles the caching automatically so we don't want
+  // to add it to the image cache.
+  return NO;
+}
+
  - (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
                                                size:(CGSize)size
                                               scale:(CGFloat)scale
@@ -37,9 +51,6 @@ RCT_EXPORT_MODULE()
     }
 
     NSString *imageName = RCTBundlePathForURL(imageURL);
-
-    // imageNamed handles the caching automatically so there is no
-    // need to do any manual caching.
     UIImage *image = [UIImage imageNamed:imageName];
     if (image) {
       if (progressHandler) {
