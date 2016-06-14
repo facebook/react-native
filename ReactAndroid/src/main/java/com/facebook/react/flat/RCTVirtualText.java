@@ -229,6 +229,13 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   protected final int getFontSize() {
     return mFontStylingSpan.getFontSize();
   }
+  /**
+   * Returns font style for this node.
+   */
+  protected final int getFontStyle() {
+    int style = mFontStylingSpan.getFontStyle();
+    return style >= 0 ? style : Typeface.NORMAL;
+  }
 
   protected int getDefaultFontSize() {
     return -1;

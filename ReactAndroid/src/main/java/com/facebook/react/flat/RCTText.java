@@ -12,17 +12,14 @@ package com.facebook.react.flat;
 import javax.annotation.Nullable;
 
 import android.support.v4.text.TextDirectionHeuristicsCompat;
-import android.text.BoringLayout;
 import android.text.Layout;
-import android.text.StaticLayout;
-import android.text.TextPaint;
 import android.text.TextUtils;
 
 import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.csslayout.Spacing;
-import com.facebook.fbui.widget.text.staticlayouthelper.StaticLayoutHelper;
+import com.facebook.fbui.widget.text.layoutbuilder.TextLayoutBuilder;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ViewDefaults;
@@ -38,15 +35,11 @@ import com.facebook.react.uimanager.annotations.ReactProp;
  */
 /* package */ final class RCTText extends RCTVirtualText implements CSSNode.MeasureFunction {
 
-  private static final boolean INCLUDE_PADDING = true;
-  private static final TextPaint PAINT = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-
-  // this is optional, and helps saving a few BoringLayout.Metrics allocations during measure().
-  private static @Nullable BoringLayout.Metrics sBoringLayoutMetrics;
+  private static final TextLayoutBuilder sTextLayoutBuilder =
+      new TextLayoutBuilder().setShouldCacheLayout(false);
 
   private @Nullable CharSequence mText;
   private @Nullable DrawTextLayout mDrawCommand;
-  private @Nullable BoringLayout.Metrics mBoringLayoutMetrics;
   private float mSpacingMult = 1.0f;
   private float mSpacingAdd = 0.0f;
   private int mNumberOfLines = Integer.MAX_VALUE;
@@ -75,6 +68,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
       float height,
       CSSMeasureMode heightMode,
       MeasureOutput measureOutput) {
+
     CharSequence text = getText();
     if (TextUtils.isEmpty(text)) {
       // to indicate that we don't have anything to display
@@ -82,64 +76,23 @@ import com.facebook.react.uimanager.annotations.ReactProp;
       measureOutput.width = 0;
       measureOutput.height = 0;
       return;
+    } else {
+      mText = text;
     }
 
-    mText = text;
-
-    // technically, width should never be negative, but there is currently a bug in
-    boolean unconstrainedWidth = widthMode == CSSMeasureMode.UNDEFINED || width < 0;
-
-    BoringLayout.Metrics metrics = BoringLayout.isBoring(text, PAINT, sBoringLayoutMetrics);
-    if (metrics != null) {
-      sBoringLayoutMetrics = mBoringLayoutMetrics;
-      if (sBoringLayoutMetrics != null) {
-        // make sure it's always empty, reported metrics can be incorrect otherwise
-        sBoringLayoutMetrics.top = 0;
-        sBoringLayoutMetrics.ascent = 0;
-        sBoringLayoutMetrics.descent = 0;
-        sBoringLayoutMetrics.bottom = 0;
-        sBoringLayoutMetrics.leading = 0;
-      }
-
-      mBoringLayoutMetrics = metrics;
-
-      float measuredWidth = (float) metrics.width;
-      if (unconstrainedWidth || measuredWidth <= width) {
-        measureOutput.width = measuredWidth;
-        measureOutput.height = getMetricsHeight(metrics, INCLUDE_PADDING);
-
-        // to indicate that text layout was not created during the measure pass
-        mDrawCommand = null;
-
-        return;
-      }
-
-      // width < measuredWidth -> more that a single line -> not boring
-    }
-
-    int maximumWidth = unconstrainedWidth ? Integer.MAX_VALUE : (int) width;
-
-    // Make sure we update the paint's text size. If we don't do this, ellipsis might be measured
-    // incorrecly (but drawn correctly, which almost feels like an Android bug, because width of the
-    // created layout may exceed the requested width). This is safe to do without making a copy per
-    // RCTText instance because that size is ONLY used to measure the ellipsis but not to draw it.
-    PAINT.setTextSize(getFontSize());
-
-    // at this point we need to create a StaticLayout to measure the text
-    StaticLayout layout = StaticLayoutHelper.make(
-        text,
-        0,
-        text.length(),
-        PAINT,
-        maximumWidth,
-        mAlignment,
-        mSpacingMult,
-        mSpacingAdd,
-        INCLUDE_PADDING,
+    Layout layout = createTextLayout(
+        (int) Math.ceil(width),
+        widthMode,
         TextUtils.TruncateAt.END,
-        maximumWidth,
+        true,
         mNumberOfLines,
-        TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR);
+        mNumberOfLines == 1,
+        text,
+        getFontSize(),
+        mSpacingAdd,
+        mSpacingMult,
+        getFontStyle(),
+        mAlignment);
 
     if (mDrawCommand != null && !mDrawCommand.isFrozen()) {
       mDrawCommand.setLayout(layout);
@@ -181,16 +134,19 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
     boolean updateNodeRegion = false;
     if (mDrawCommand == null) {
-      // Layout was not created during the measure pass, must be Boring, create it now
-      mDrawCommand = new DrawTextLayout(new BoringLayout(
+      mDrawCommand = new DrawTextLayout(createTextLayout(
+          (int) Math.ceil(right - left),
+          CSSMeasureMode.EXACTLY,
+          TextUtils.TruncateAt.END,
+          true,
+          mNumberOfLines,
+          mNumberOfLines == 1,
           mText,
-          PAINT,
-          (int) (right - left),
-          mAlignment,
-          mSpacingMult,
+          getFontSize(),
           mSpacingAdd,
-          mBoringLayoutMetrics,
-          INCLUDE_PADDING));
+          mSpacingMult,
+          getFontStyle(),
+          mAlignment));
       updateNodeRegion = true;
     }
 
@@ -304,14 +260,58 @@ import com.facebook.react.uimanager.annotations.ReactProp;
     notifyChanged(false);
   }
 
-  /**
-   * Returns measured line height according to an includePadding flag.
-   */
-  private static int getMetricsHeight(BoringLayout.Metrics metrics, boolean includePadding) {
-    if (includePadding) {
-      return metrics.bottom - metrics.top;
-    } else {
-      return metrics.descent - metrics.ascent;
+  private static Layout createTextLayout(
+      int width,
+      CSSMeasureMode widthMode,
+      TextUtils.TruncateAt ellipsize,
+      boolean shouldIncludeFontPadding,
+      int maxLines,
+      boolean isSingleLine,
+      CharSequence text,
+      int textSize,
+      float extraSpacing,
+      float spacingMultiplier,
+      int textStyle,
+      Layout.Alignment textAlignment) {
+    Layout newLayout;
+
+    TextLayoutBuilder layoutBuilder = sTextLayoutBuilder;
+
+    final @TextLayoutBuilder.MeasureMode int textMeasureMode;
+    switch (widthMode) {
+      case UNDEFINED:
+        textMeasureMode = TextLayoutBuilder.MEASURE_MODE_UNSPECIFIED;
+        break;
+      case EXACTLY:
+        textMeasureMode = TextLayoutBuilder.MEASURE_MODE_EXACTLY;
+        break;
+      case AT_MOST:
+        textMeasureMode = TextLayoutBuilder.MEASURE_MODE_AT_MOST;
+        break;
+      default:
+        throw new IllegalStateException("Unexpected size mode: " + widthMode);
     }
+
+    layoutBuilder
+        .setEllipsize(ellipsize)
+        .setMaxLines(maxLines)
+        .setSingleLine(isSingleLine)
+        .setText(text)
+        .setTextSize(textSize)
+        .setWidth(width, textMeasureMode);
+
+    layoutBuilder.setTextStyle(textStyle);
+
+    layoutBuilder.textDirection(TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR);
+    layoutBuilder.setIncludeFontPadding(shouldIncludeFontPadding);
+    layoutBuilder.setTextSpacingExtra(extraSpacing);
+    layoutBuilder.setTextSpacingMultiplier(spacingMultiplier);
+    layoutBuilder.setAlignment(textAlignment);
+
+    newLayout = layoutBuilder.build();
+
+    layoutBuilder.setText(null);
+
+    return newLayout;
   }
 }

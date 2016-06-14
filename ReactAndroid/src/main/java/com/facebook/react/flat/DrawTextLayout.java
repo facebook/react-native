@@ -12,6 +12,8 @@ package com.facebook.react.flat;
 import android.graphics.Canvas;
 import android.text.Layout;
 
+import com.facebook.fbui.widget.text.LayoutMeasureUtil;
+
 /**
  * DrawTextLayout is a DrawCommand that draw {@link Layout}.
  */
@@ -19,6 +21,7 @@ import android.text.Layout;
 
   private Layout mLayout;
   private float mLayoutWidth;
+  private float mLayoutHeight;
 
   /* package */ DrawTextLayout(Layout layout) {
     setLayout(layout);
@@ -29,15 +32,8 @@ import android.text.Layout;
    */
   public void setLayout(Layout layout) {
     mLayout = layout;
-
-    // determine how wide we actually are
-    float maxLineWidth = 0;
-    int lineCount = layout.getLineCount();
-    for (int i = 0; i != lineCount; ++i) {
-      maxLineWidth = Math.max(maxLineWidth, layout.getLineMax(i));
-    }
-
-    mLayoutWidth = maxLineWidth;
+    mLayoutWidth = layout.getWidth();
+    mLayoutHeight = LayoutMeasureUtil.getHeight(layout);
   }
 
   public Layout getLayout() {
@@ -50,7 +46,7 @@ import android.text.Layout;
   }
 
   public float getLayoutHeight() {
-    return mLayout.getHeight();
+    return mLayoutHeight;
   }
 
   @Override
