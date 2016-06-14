@@ -433,6 +433,13 @@ var apps = [
     author: 'Sharath Prabhal',
   },
   {
+    name: 'Emoj3 - The emoji only social network',
+    icon: 'https://emoj3.com/images/favicon/apple-touch-icon-152x152.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/emoj3/id1078999427?mt=8',
+    link: 'https://emoj3.com',
+    author: 'Waffle and Toast'
+  },
+  {
     name: 'Emoji Poetry',
     icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/31/b5/09/31b509b2-aaec-760f-ccec-2ce72fe7134e/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/us/app/emoji-poetry/id1068972506?l=en&mt=8',
