@@ -63,11 +63,12 @@ type State = UIExplorerNavigationState & {
 const APP_STATE_KEY = 'UIExplorerAppState.v1';
 
 class UIExplorerApp extends React.Component {
+  _handleBack: Function;
+  _handleAction: Function;
+  _renderCard: Function;
   _renderOverlay: Function;
   _renderScene: Function;
-  _renderCard: Function;
   _renderTitleComponent: Function;
-  _handleAction: Function;
   state: State;
 
   constructor(props: Props) {
@@ -76,6 +77,7 @@ class UIExplorerApp extends React.Component {
 
   componentWillMount() {
     this._handleAction = this._handleAction.bind(this);
+    this._handleBack = this._handleAction.bind(this, {type: 'back'});
     this._renderOverlay = this._renderOverlay.bind(this);
     this._renderScene = this._renderScene.bind(this);
     this._renderTitleComponent = this._renderTitleComponent.bind(this);
@@ -137,7 +139,7 @@ class UIExplorerApp extends React.Component {
         style={styles.container}
         renderOverlay={this._renderOverlay}
         renderScene={this._renderScene}
-        onNavigate={this._handleAction}
+
       />
     );
   }
@@ -146,6 +148,7 @@ class UIExplorerApp extends React.Component {
     return (
       <NavigationHeader
         {...props}
+        onNavigateBack={this._handleBack}
         renderTitleComponent={this._renderTitleComponent}
       />
     );

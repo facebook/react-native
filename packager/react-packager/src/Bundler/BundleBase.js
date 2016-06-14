@@ -32,7 +32,7 @@ class BundleBase {
 
   addModule(module) {
     if (!(module instanceof ModuleTransport)) {
-      throw new Error('Expeceted a ModuleTransport object');
+      throw new Error('Expected a ModuleTransport object');
     }
 
     return this._modules.push(module) - 1;

@@ -243,7 +243,7 @@ class TimingAnimation extends Animation {
     this._duration = config.duration !== undefined ? config.duration : 500;
     this._delay = config.delay !== undefined ? config.delay : 0;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
-    this._useNativeDriver = !!config.useNativeDriver;
+    this._useNativeDriver = config.useNativeDriver !== undefined ? config.useNativeDriver : false;
   }
 
   _getNativeAnimationConfig(): any {
@@ -256,6 +256,7 @@ class TimingAnimation extends Animation {
       type: 'frames',
       frames,
       toValue: this._toValue,
+      delay: this._delay
     };
   }
 
@@ -1086,6 +1087,18 @@ class AnimatedTransform extends AnimatedWithChildren {
     this._transforms = transforms;
   }
 
+  __makeNative() {
+    super.__makeNative();
+    this._transforms.forEach(transform => {
+      for (var key in transform) {
+        var value = transform[key];
+        if (value instanceof Animated) {
+          value.__makeNative();
+        }
+      }
+    });
+  }
+
   __getValue(): Array<Object> {
     return this._transforms.map(transform => {
       var result = {};
@@ -1137,6 +1150,25 @@ class AnimatedTransform extends AnimatedWithChildren {
         }
       }
     });
+  }
+
+  __getNativeConfig(): any {
+    var transConfig = {};
+
+    this._transforms.forEach(transform => {
+      for (var key in transform) {
+        var value = transform[key];
+        if (value instanceof Animated) {
+          transConfig[key] = value.__getNativeTag();
+        }
+      }
+    });
+
+    NativeAnimatedHelper.validateTransform(transConfig);
+    return {
+      type: 'transform',
+      transform: transConfig,
+    };
   }
 }
 
