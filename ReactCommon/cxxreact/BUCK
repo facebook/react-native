@@ -108,6 +108,7 @@ react_library(
   header_namespace = 'cxxreact',
   force_static = True,
   srcs = [
+    'CxxMessageQueue.cpp',
     'Instance.cpp',
     'JSCExecutor.cpp',
     'JSCHelpers.cpp',
@@ -131,6 +132,7 @@ react_library(
     'JSCTracing.h',
   ],
   exported_headers = [
+    'CxxMessageQueue.h',
     'Executor.h',
     'ExecutorToken.h',
     'ExecutorTokenFactory.h',
