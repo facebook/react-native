@@ -9,6 +9,6 @@
 
 #import "RCTImageLoader.h"
 
-@interface RCTXCAssetImageLoader : NSObject <RCTImageURLLoader>
+@interface RCTLocalAssetImageLoader : NSObject <RCTImageURLLoader>
 
 @end

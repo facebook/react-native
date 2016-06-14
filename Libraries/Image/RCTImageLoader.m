@@ -330,16 +330,6 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
     // Find suitable image URL loader
     NSURLRequest *request = imageURLRequest; // Use a local variable so we can reassign it in this block
-    id<RCTImageURLLoader> loadHandler = [strongSelf imageURLLoaderForURL:request.URL];
-    if (loadHandler) {
-      cancelLoad = [loadHandler loadImageForURL:request.URL
-                                           size:size
-                                          scale:scale
-                                     resizeMode:resizeMode
-                                progressHandler:progressHandler
-                              completionHandler:completionHandler] ?: ^{};
-      return;
-    }
 
     // Check if networking module is available
     if (RCT_DEBUG && ![_bridge respondsToSelector:@selector(networking)]) {
@@ -479,6 +469,18 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   __block volatile uint32_t cancelled = 0;
   __block void(^cancelLoad)(void) = nil;
   __weak RCTImageLoader *weakSelf = self;
+
+  // Load handlers are executed before the generic caching logic so they are responsible
+  // for caching the images if necessary.
+  id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:imageURLRequest.URL];
+  if (loadHandler) {
+    return [loadHandler loadImageForURL:imageURLRequest.URL
+                                   size:size
+                                  scale:scale
+                             resizeMode:resizeMode
+                        progressHandler:progressHandler
+                      completionHandler:completionBlock] ?: ^{};
+  }
 
   // Check decoded image cache
   NSString *cacheKey = RCTCacheKeyForImage(imageURLRequest.URL.absoluteString, size, scale, resizeMode);

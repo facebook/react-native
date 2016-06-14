@@ -7,19 +7,19 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTXCAssetImageLoader.h"
+#import "RCTLocalAssetImageLoader.h"
 
 #import <libkern/OSAtomic.h>
 
 #import "RCTUtils.h"
 
-@implementation RCTXCAssetImageLoader
+@implementation RCTLocalAssetImageLoader
 
 RCT_EXPORT_MODULE()
 
 - (BOOL)canLoadImageURL:(NSURL *)requestURL
 {
-  return RCTIsXCAssetURL(requestURL);
+  return RCTIsLocalAssetURL(requestURL);
 }
 
  - (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
@@ -30,12 +30,16 @@ RCT_EXPORT_MODULE()
                                   completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   __block volatile uint32_t cancelled = 0;
-  dispatch_async(dispatch_get_main_queue(), ^{
 
+  RCTExecuteOnMainQueue(^{
     if (cancelled) {
       return;
     }
+
     NSString *imageName = RCTBundlePathForURL(imageURL);
+
+    // imageNamed handles the caching automatically so there is no
+    // need to do any manual caching.
     UIImage *image = [UIImage imageNamed:imageName];
     if (image) {
       if (progressHandler) {
