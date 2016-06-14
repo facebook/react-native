@@ -371,11 +371,13 @@ typedef NS_ENUM(NSUInteger, FBTestSnapshotFileNameType) {
   CGContextRef context = UIGraphicsGetCurrentContext();
   NSAssert1(context, @"Could not generate context for layer %@", layer);
 
+  UIGraphicsPushContext(context);
   CGContextSaveGState(context);
   {
     [layer renderInContext:context];
   }
   CGContextRestoreGState(context);
+  UIGraphicsPopContext();
 
   UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
