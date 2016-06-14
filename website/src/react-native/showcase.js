@@ -54,6 +54,9 @@ var featured = [
     icon: 'http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg',
     link:  'https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8',
     author: 'Hammer & Chisel',
+    blogs: [
+      "https://discord.engineering/react-native-deep-dive-91fd5e949933#.5jnqftgof",
+    ],
   },
   {
     name: 'Discovery VR',
