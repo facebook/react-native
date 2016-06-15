@@ -23,28 +23,49 @@ RCT_ENUM_CONVERTER(UIActivityIndicatorViewStyle, (@{
 
 @end
 
+@interface RCTActivityIndicatorView : UIActivityIndicatorView
+@end
+
+@implementation RCTActivityIndicatorView {
+  BOOL _animating;
+}
+
+- (void)layoutSubviews
+{
+  [super layoutSubviews];
+
+  if (!_animating) {
+    [self stopAnimating];
+  }
+}
+
+- (void)setAnimating:(BOOL)animating
+{
+  _animating = animating;
+
+  if (_animating != [self isAnimating]) {
+    if (_animating) {
+      [self startAnimating];
+    } else {
+      [self stopAnimating];
+    }
+  }
+}
+
+@end
+
 @implementation RCTActivityIndicatorViewManager
 
 RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [UIActivityIndicatorView new];
+  return [RCTActivityIndicatorView new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(color, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(hidesWhenStopped, BOOL)
 RCT_REMAP_VIEW_PROPERTY(size, activityIndicatorViewStyle, UIActivityIndicatorViewStyle)
-RCT_CUSTOM_VIEW_PROPERTY(animating, BOOL, UIActivityIndicatorView)
-{
-  BOOL animating = json ? [RCTConvert BOOL:json] : [defaultView isAnimating];
-  if (animating != [view isAnimating]) {
-    if (animating) {
-      [view startAnimating];
-    } else {
-      [view stopAnimating];
-    }
-  }
-}
+RCT_EXPORT_VIEW_PROPERTY(animating, BOOL)
 
 @end
