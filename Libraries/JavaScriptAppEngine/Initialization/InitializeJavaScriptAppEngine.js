@@ -213,7 +213,7 @@ function setUpMapAndSet() {
 function setUpDevTools() {
   if (__DEV__) {
     // not when debugging in chrome
-    if (!window.document) {
+    if (!window.document && require('Platform').OS === 'ios') {
       const setupDevtools = require('setupDevtools');
       setupDevtools();
     }
