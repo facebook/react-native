@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var _bezier = require('bezier');
+let ease;
 
 /**
  * This class implements common easing functions. The math is pretty obscure,
@@ -32,6 +32,9 @@ class Easing {
   }
 
   static ease(t: number): number {
+    if (!ease) {
+      ease = Easing.bezier(0.42, 0, 1, 1);
+    }
     return ease(t);
   }
 
@@ -70,7 +73,7 @@ class Easing {
    *   http://tiny.cc/elastic_b_3 (bounciness = 3)
    */
   static elastic(bounciness: number = 1): (t: number) => number {
-    var p = bounciness * Math.PI;
+    const p = bounciness * Math.PI;
     return (t) => 1 - Math.pow(Math.cos(t * Math.PI / 2), 3) * Math.cos(t * p);
   }
 
@@ -106,6 +109,7 @@ class Easing {
     x2: number,
     y2: number
   ): (t: number) => number {
+    const _bezier = require('bezier');
     return _bezier(x1, y1, x2, y2);
   }
 
@@ -138,9 +142,5 @@ class Easing {
     };
   }
 }
-
-var ease = Easing.bezier(0.42, 0, 1, 1);
-
-
 
 module.exports = Easing;
