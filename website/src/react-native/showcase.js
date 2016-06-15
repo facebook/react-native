@@ -881,6 +881,12 @@ var apps = [
     author: 'sneat'
   },
   {
+    name: 'SCTV Sports',
+    icon: 'https://farm8.staticflickr.com/7353/27553089935_a3928f2097_o.png',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.sctvsport.bongdatructuyen',
+    author: 'SCTV Digital',
+  },  
+  {
     name: 'Software Interview Preparation',
     icon: 'https://lh3.googleusercontent.com/11AuzaeCnxrRnIp1E_a_6WWiQIRRoWhrvFr20eCRJX4ZMW6O3tGjZLiUw3thKUgGaC8X=w300',
     link: 'https://play.google.com/store/apps/details?id=com.SoftwareInterview',
