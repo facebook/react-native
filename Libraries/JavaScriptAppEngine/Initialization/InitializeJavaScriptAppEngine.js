@@ -50,7 +50,9 @@ function setUpConsole() {
   const ExceptionsManager = require('ExceptionsManager');
   ExceptionsManager.installConsoleErrorReporter();
 
-  require('RCTLog');
+  if (__DEV__) {
+    require('RCTLog');
+  }
 }
 
 /**
