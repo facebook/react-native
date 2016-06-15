@@ -515,6 +515,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   const BOOL shouldClipAgain =
     CGRectIsNull(_lastClippedToRect) ||
+    !CGRectEqualToRect(_lastClippedToRect, bounds) ||
     (scrollsHorizontally && (bounds.size.width < leeway || fabs(_lastClippedToRect.origin.x - bounds.origin.x) >= leeway)) ||
     (scrollsVertically && (bounds.size.height < leeway || fabs(_lastClippedToRect.origin.y - bounds.origin.y) >= leeway));
 
