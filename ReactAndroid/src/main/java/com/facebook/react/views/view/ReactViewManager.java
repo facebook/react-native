@@ -195,7 +195,6 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     } else {
       parent.addView(child, index);
     }
-    super.reorderChildrenByZIndex(parent);
   }
 
   @Override

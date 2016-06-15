@@ -29,21 +29,19 @@ import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactPointerEventsView;
-import com.facebook.react.uimanager.ReactZIndexView;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
  * initializes most of the storage needed for them.
  */
 public class ReactViewGroup extends ViewGroup implements
-    ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView, ReactZIndexView {
+    ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
   private static final LayoutParams sDefaultLayoutParam = new ViewGroup.LayoutParams(0, 0);
   /* should only be used in {@link #updateClippingToRect} */
   private static final Rect sHelperRect = new Rect();
-  private @Nullable float mZIndex;
 
   /**
    * This listener will be set for child views when removeClippedSubview property is enabled. When
@@ -530,14 +528,6 @@ public class ReactViewGroup extends ViewGroup implements
 
   public void setHitSlopRect(@Nullable Rect rect) {
     mHitSlopRect = rect;
-  }
-
-  public void setZIndex(float zIndex) {
-    mZIndex = zIndex;
-  }
-
-  public float getZIndex() {
-    return mZIndex;
   }
 
 }

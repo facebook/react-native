@@ -12,8 +12,6 @@ package com.facebook.react.views.viewpager;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.MotionEvent;
@@ -22,7 +20,6 @@ import android.view.ViewGroup;
 
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.SystemClock;
-import com.facebook.react.uimanager.ReactZIndexView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
@@ -32,7 +29,7 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
  * views to custom {@link PagerAdapter} instance which is used by {@link NativeViewHierarchyManager}
  * to add children nodes according to react views hierarchy.
  */
-/* package */ class ReactViewPager extends ViewPager implements ReactZIndexView {
+/* package */ class ReactViewPager extends ViewPager {
 
   private class Adapter extends PagerAdapter {
 
@@ -129,7 +126,6 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
   private final EventDispatcher mEventDispatcher;
   private boolean mIsCurrentItemFromJs;
   private boolean mScrollEnabled = true;
-  private @Nullable float mZIndex;
 
   public ReactViewPager(ReactContext reactContext) {
     super(reactContext);
@@ -190,13 +186,5 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 
   /*package*/ View getViewFromAdapter(int index) {
     return getAdapter().getViewAt(index);
-  }
-
-  public void setZIndex(float zIndex) {
-    mZIndex = zIndex;
-  }
-
-  public float getZIndex() {
-    return mZIndex;
   }
 }

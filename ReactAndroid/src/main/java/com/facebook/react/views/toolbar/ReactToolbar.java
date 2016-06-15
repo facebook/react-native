@@ -30,7 +30,6 @@ import com.facebook.imagepipeline.image.QualityInfo;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.ReactZIndexView;
 
 import javax.annotation.Nullable;
 
@@ -38,7 +37,7 @@ import javax.annotation.Nullable;
  * Custom implementation of the {@link Toolbar} widget that adds support for remote images in logo
  * and navigationIcon using fresco.
  */
-public class ReactToolbar extends Toolbar implements ReactZIndexView {
+public class ReactToolbar extends Toolbar {
 
   private static final String PROP_ACTION_ICON = "icon";
   private static final String PROP_ACTION_SHOW = "show";
@@ -58,8 +57,6 @@ public class ReactToolbar extends Toolbar implements ReactZIndexView {
   private IconControllerListener mLogoControllerListener;
   private IconControllerListener mNavIconControllerListener;
   private IconControllerListener mOverflowIconControllerListener;
-
-  private @Nullable float mZIndex;
 
   /**
    * Attaches specific icon width & height to a BaseControllerListener which will be used to
@@ -333,11 +330,4 @@ public class ReactToolbar extends Toolbar implements ReactZIndexView {
     }
   }
 
-  public void setZIndex(float zIndex) {
-    mZIndex = zIndex;
-  }
-
-  public float getZIndex() {
-    return mZIndex;
-  }
 }

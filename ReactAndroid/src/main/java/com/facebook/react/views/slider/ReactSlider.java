@@ -13,8 +13,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.SeekBar;
 
-import com.facebook.react.uimanager.ReactZIndexView;
-
 import javax.annotation.Nullable;
 
 /**
@@ -27,12 +25,12 @@ import javax.annotation.Nullable;
  * Note that the slider is _not_ a controlled component (setValue isn't called
  * during dragging).
  */
-public class ReactSlider extends SeekBar implements ReactZIndexView {
+public class ReactSlider extends SeekBar {
 
   /**
    * If step is 0 (unset) we default to this total number of steps.
    * Don't use 100 which leads to rounding errors (0.200000000001).
-   */
+   */ 
   private static int DEFAULT_TOTAL_STEPS = 128;
 
   /**
@@ -52,8 +50,6 @@ public class ReactSlider extends SeekBar implements ReactZIndexView {
    * If zero it's determined automatically.
    */
   private double mStep = 0;
-
-  private @Nullable float mZIndex;
 
   public ReactSlider(Context context, @Nullable AttributeSet attrs, int style) {
     super(context, attrs, style);
@@ -111,13 +107,5 @@ public class ReactSlider extends SeekBar implements ReactZIndexView {
 
   private int getTotalSteps() {
     return (int) Math.ceil((mMaxValue - mMinValue) / mStep);
-  }
-
-  public void setZIndex(float zIndex) {
-    mZIndex = zIndex;
-  }
-
-  public float getZIndex() {
-    return mZIndex;
   }
 }

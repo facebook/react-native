@@ -12,10 +12,6 @@ package com.facebook.react.uimanager;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
 /**
  * Class providing children management API for view managers of classes extending ViewGroup.
  */
@@ -38,38 +34,6 @@ public abstract class ViewGroupManager <T extends ViewGroup>
 
   public void addView(T parent, View child, int index) {
     parent.addView(child, index);
-    reorderChildrenByZIndex(parent);
-  }
-
-  public static void reorderChildrenByZIndex(ViewGroup view) {
-    // This gets called in a ReactZIndexView in setIndex with
-    // the view.getParent(). The view may not have been added
-    // to the window yet though, so the parent might be null
-    if (view == null) {
-      return;
-    }
-
-    // Collect all the children that are ZIndexViews
-    ArrayList<ReactZIndexView> zIndexViewsToSort = new ArrayList<ReactZIndexView>();
-    for (int i = 0; i < view.getChildCount(); i++) {
-      View sibling = view.getChildAt(i);
-      if (sibling instanceof ReactZIndexView) {
-        zIndexViewsToSort.add((ReactZIndexView)sibling);
-      }
-    }
-    // Sort the views by zindex
-    Collections.sort(zIndexViewsToSort, new Comparator<ReactZIndexView>() {
-      @Override
-      public int compare(ReactZIndexView view1, ReactZIndexView view2) {
-        return (int)view1.getZIndex() - (int)view2.getZIndex();
-      }
-    });
-    // Call .bringToFront on the sorted list of views
-    for (int i = 0; i < zIndexViewsToSort.size(); i++) {
-      View sortedView = (View)zIndexViewsToSort.get(i);
-      sortedView.bringToFront();
-    }
-    view.invalidate();
   }
 
   public int getChildCount(T parent) {
