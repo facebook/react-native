@@ -71,7 +71,8 @@ test:
     # run installed apk with tests
     - node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
 
-    - ./gradlew :ReactAndroid:testDebugUnitTest
+    # gradle may invalidate bridge build cache, so we pass single-threaded setting just in case
+    - ./gradlew :ReactAndroid:testDebugUnitTest -Pjobs=1
     # Deprecated: these tests are executed using Buck above, while we support Gradle we just make sure the test code compiles
     - ./gradlew :ReactAndroid:assembleDebugAndroidTest
 

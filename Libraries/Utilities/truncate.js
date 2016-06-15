@@ -11,27 +11,25 @@
  */
 'use strict';
 
-var merge = require('merge');
-
 type truncateOptions = {
   breakOnWords: boolean;
   minDelta: number;
   elipsis: string;
 }
 
-var defaultOptions = {
+const defaultOptions = {
   breakOnWords: true,
   minDelta: 10, // Prevents truncating a tiny bit off the end
   elipsis: '...',
 };
 
 // maxChars (including ellipsis)
-var truncate = function(
+const truncate = function(
   str: ?string,
   maxChars: number,
   options: truncateOptions
 ): ?string {
-  options = merge(defaultOptions, options);
+  options = Object.assign({}, defaultOptions, options);
   if (str && str.length &&
       str.length - options.minDelta + options.elipsis.length >= maxChars) {
     str = str.slice(0, maxChars - options.elipsis.length + 1);

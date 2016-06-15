@@ -34,7 +34,7 @@ NSString *const RCTProfileDidEndProfiling = @"RCTProfileDidEndProfiling";
 
 const uint64_t RCTProfileTagAlways = 1L << 0;
 
-#if RCT_DEV
+#if RCT_PROFILE
 
 #pragma mark - Constants
 

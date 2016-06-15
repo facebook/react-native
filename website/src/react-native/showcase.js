@@ -54,6 +54,9 @@ var featured = [
     icon: 'http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg',
     link:  'https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8',
     author: 'Hammer & Chisel',
+    blogs: [
+      "https://discord.engineering/react-native-deep-dive-91fd5e949933#.5jnqftgof",
+    ],
   },
   {
     name: 'Discovery VR',
@@ -296,6 +299,13 @@ var apps = [
     author: 'RNF Digital',
   },
   {
+    name: 'camigo - the camping app',
+    icon: 'http://cdn.socialbit.de/default/0001/01/thumb_988_default_original.png',
+    linkAppStore: 'https://itunes.apple.com/de/app/camigo/id1088876278?l=de&ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.mobileemotion.camigo',
+    author: 'Socialbit GmbH',
+  },
+  {
     name: 'CANDDi',
     icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/c4/e4/85/c4e48546-7127-a133-29f2-3e2e1aa0f9af/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/gb/app/canddi/id1018168131?mt=8',
@@ -368,6 +378,12 @@ var apps = [
     ],
   },
   {
+    name: 'Convoy Driver',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple30/v4/5a/74/56/5a74567d-4491-a298-65cd-722c8a7211ac/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/convoy-driver/id1045368390?mt=8',
+    author: 'Convoy',
+  },
+  {
     name: 'DareU',
     icon: 'http://a3.mzstatic.com/us/r30/Purple6/v4/10/fb/6a/10fb6a50-57c8-061a-d865-503777bf7f00/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/dareu-dare-your-friends-dare/id1046434563?mt=8',
@@ -421,6 +437,13 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/us/app/eat-or-not/id1054565697?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.eon',
     author: 'Sharath Prabhal',
+  },
+  {
+    name: 'Emoj3 - The emoji only social network',
+    icon: 'https://emoj3.com/images/favicon/apple-touch-icon-152x152.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/emoj3/id1078999427?mt=8',
+    link: 'https://emoj3.com',
+    author: 'Waffle and Toast'
   },
   {
     name: 'Emoji Poetry',

@@ -60,7 +60,7 @@ var AppContainer = React.createClass({
     return (
       <View style={styles.appContainer}>
         <View
-          collapsable={false}
+          collapsable={!this.state.inspector}
           key={this.state.mainKey}
           style={styles.appContainer} ref="main">
           {this.props.children}
