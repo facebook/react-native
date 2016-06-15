@@ -35,28 +35,43 @@ var COMMON_EDITORS = {
 };
 
 function getArgumentsForLineNumber(editor, fileName, lineNumber) {
-  switch (path.basename(editor)) {
-    case 'vim':
-    case 'mvim':
-      return [fileName, '+' + lineNumber];
-    case 'atom':
-    case 'subl':
-    case 'sublime':
-      return [fileName + ':' + lineNumber];
-    case 'joe':
-    case 'emacs':
-    case 'emacsclient':
-      return ['+' + lineNumber, fileName];
-    case 'rmate':
-    case 'mate':
-    case 'mine':
-      return ['--line', lineNumber, fileName];
-  }
-
-  // For all others, drop the lineNumber until we have
-  // a mapping above, since providing the lineNumber incorrectly
+  // For all unknown situations, drop the lineNumber until we have
+  // a mapping, since providing the lineNumber incorrectly
   // can result in errors or confusing behavior.
-  return [fileName];
+	var lineFormat = "%f";
+
+	// Syntax for lineFormat:
+	// %f gets replaced with file name
+	// %l gets replaced with line number
+	// | splits arguments
+
+  if (process.env.REACT_EDITOR_LINEFORMAT) {
+    lineFormat = process.env.REACT_EDITOR_LINEFORMAT;
+  } else {
+		switch (path.basename(editor)) {
+			case 'vim':
+			case 'mvim':
+				lineFormat = "%f|+%l";
+				break;
+			case 'atom':
+			case 'subl':
+			case 'sublime':
+				lineFormat = "%f:%l";
+				break;
+			case 'joe':
+			case 'emacs':
+			case 'emacsclient':
+				lineFormat = "+%l|%f";
+				break;
+			case 'rmate':
+			case 'mate':
+			case 'mine':
+				lineFormat = "--line|%l|%f";
+				break;
+		}
+	}
+
+  return lineFormat.replace( /%f/g, fileName ).replace( /%l/g, lineNumber ).split( "|" );
 }
 
 function guessEditor() {
