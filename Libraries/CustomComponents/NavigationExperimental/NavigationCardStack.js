@@ -94,7 +94,6 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     onNavigateBack: PropTypes.func,
     renderOverlay: PropTypes.func,
     renderScene: PropTypes.func.isRequired,
-    cardStyle: React.View.propTypes.style,
   };
 
   static defaultProps: DefaultProps = {
