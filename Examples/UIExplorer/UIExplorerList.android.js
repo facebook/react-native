@@ -170,6 +170,10 @@ const APIExamples = [
     module: require('./PanResponderExample'),
   },
   {
+    key: 'PermissionsExampleAndroid',
+    module: require('./PermissionsExampleAndroid'),
+  },
+  {
     key: 'PointerEventsExample',
     module: require('./PointerEventsExample'),
   },

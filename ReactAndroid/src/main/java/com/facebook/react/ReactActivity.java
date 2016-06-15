@@ -9,33 +9,35 @@
 
 package com.facebook.react;
 
+import javax.annotation.Nullable;
+
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.view.KeyEvent;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
-
-import java.util.List;
-
-import javax.annotation.Nullable;
+import com.facebook.react.modules.core.PermissionAwareActivity;
+import com.facebook.react.modules.core.PermissionListener;
 
 /**
  * Base Activity for React Native applications.
  */
-public abstract class ReactActivity extends Activity implements DefaultHardwareBackBtnHandler {
+public abstract class ReactActivity extends Activity
+    implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
 
   private static final String REDBOX_PERMISSION_MESSAGE =
       "Overlay permissions needs to be granted in order for react native apps to run in dev mode";
 
+  private @Nullable PermissionListener mPermissionListener;
   private @Nullable ReactInstanceManager mReactInstanceManager;
   private @Nullable ReactRootView mReactRootView;
   private LifecycleState mLifecycleState = LifecycleState.BEFORE_RESUME;
@@ -231,6 +233,26 @@ public abstract class ReactActivity extends Activity implements DefaultHardwareB
       mReactInstanceManager.onNewIntent(intent);
     } else {
       super.onNewIntent(intent);
+    }
+  }
+
+  @Override
+  public void requestPermissions(
+      String[] permissions,
+      int requestCode,
+      PermissionListener listener) {
+    mPermissionListener = listener;
+    this.requestPermissions(permissions, requestCode);
+  }
+
+  @Override
+  public void onRequestPermissionsResult(
+      int requestCode,
+      String[] permissions,
+      int[] grantResults) {
+    if (mPermissionListener != null &&
+        mPermissionListener.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
+      mPermissionListener = null;
     }
   }
 }
