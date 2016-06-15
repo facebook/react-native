@@ -551,12 +551,4 @@ public class ReactImageView extends GenericDraweeView {
       UriUtil.isLocalContentUri(imageSource.getUri()) ||
       UriUtil.isLocalFileUri(imageSource.getUri());
   }
-
-  public void setZIndex(float zIndex) {
-    mZIndex = zIndex;
-  }
-
-  public float getZIndex() {
-    return mZIndex;
-  }
 }
