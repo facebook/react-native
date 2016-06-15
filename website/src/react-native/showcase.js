@@ -439,6 +439,13 @@ var apps = [
     author: 'Sharath Prabhal',
   },
   {
+    name: '儿戏亲子游',
+    icon: 'http://www.mmww.com/images/logo_512x512.png',
+    linkAppStore: 'https://itunes.apple.com/app/apple-store/id1037700232?pt=95940818&ct=comment&mt=8',
+    link: 'http://www.mmww.com/',
+    author: 'Jiang Xiaoming',
+  },
+  {
     name: 'Emoj3 - The emoji only social network',
     icon: 'https://emoj3.com/images/favicon/apple-touch-icon-152x152.png',
     linkAppStore: 'https://itunes.apple.com/us/app/emoj3/id1078999427?mt=8',
