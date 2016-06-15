@@ -411,6 +411,20 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   }
 
   /**
+   * Finds a NodeRegion which matches the said reactTag
+   * @param reactTag the reactTag to look for
+   * @return the NodeRegion, or NodeRegion.EMPTY
+   */
+  /* package */ NodeRegion getNodeRegionForTag(int reactTag) {
+    for (NodeRegion region : mNodeRegions) {
+      if (region.matchesTag(reactTag)) {
+        return region;
+      }
+    }
+    return NodeRegion.EMPTY;
+  }
+
+  /**
    * Return a list of FlatViewGroups that are detached (due to being clipped) but that we have a
    * strong reference to. This is used by the FlatNativeViewHierarchyManager to explicitly clean up
    * those views when removing this parent.

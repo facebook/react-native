@@ -59,4 +59,22 @@ import android.text.Spanned;
 
     return super.getReactTag(touchX, touchY);
   }
+
+  @Override
+  boolean matchesTag(int tag) {
+    if (super.matchesTag(tag)) {
+      return true;
+    }
+
+    if (mLayout != null) {
+      Spanned text = (Spanned) mLayout.getText();
+      RCTRawText[] spans = text.getSpans(0, text.length(), RCTRawText.class);
+      for (RCTRawText span : spans) {
+        if (span.getReactTag() == tag) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 }

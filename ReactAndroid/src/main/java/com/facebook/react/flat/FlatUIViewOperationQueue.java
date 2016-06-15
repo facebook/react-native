@@ -12,11 +12,15 @@ package com.facebook.react.flat;
 import javax.annotation.Nullable;
 
 import android.graphics.Rect;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.NoSuchNativeViewException;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.TouchTargetHelper;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 
 /**
@@ -225,6 +229,78 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     }
   }
 
+  private final class FindTargetForTouchOperation implements UIOperation {
+
+    private final int mReactTag;
+    private final float mTargetX;
+    private final float mTargetY;
+    private final Callback mCallback;
+    private final int[] NATIVE_VIEW_BUFFER = new int[1];
+
+    private FindTargetForTouchOperation(
+        final int reactTag,
+        final float targetX,
+        final float targetY,
+        final Callback callback) {
+      super();
+      mReactTag = reactTag;
+      mTargetX = targetX;
+      mTargetY = targetY;
+      mCallback = callback;
+    }
+
+    @Override
+    public void execute() {
+      try {
+        mNativeViewHierarchyManager.measure(mReactTag, MEASURE_BUFFER);
+      } catch (IllegalViewOperationException e) {
+        mCallback.invoke();
+        return;
+      }
+
+      // Because React coordinates are relative to root container, and measure() operates
+      // on screen coordinates, we need to offset values using root container location.
+      final float containerX = (float) MEASURE_BUFFER[0];
+      final float containerY = (float) MEASURE_BUFFER[1];
+
+      View view = mNativeViewHierarchyManager.getView(mReactTag);
+      final int touchTargetReactTag = TouchTargetHelper.findTargetTagForTouch(
+          mTargetX,
+          mTargetY,
+          (ViewGroup) view,
+          NATIVE_VIEW_BUFFER);
+
+      try {
+        mNativeViewHierarchyManager.measure(
+            NATIVE_VIEW_BUFFER[0],
+            MEASURE_BUFFER);
+      } catch (IllegalViewOperationException e) {
+        mCallback.invoke();
+        return;
+      }
+
+      NodeRegion region = NodeRegion.EMPTY;
+      boolean isNativeView = NATIVE_VIEW_BUFFER[0] == touchTargetReactTag;
+      if (!isNativeView) {
+        // NATIVE_VIEW_BUFFER[0] is a FlatViewGroup, touchTargetReactTag is the touch target and
+        // isn't an Android View - try to get its NodeRegion
+        view = mNativeViewHierarchyManager.getView(NATIVE_VIEW_BUFFER[0]);
+        if (view instanceof FlatViewGroup) {
+          region = ((FlatViewGroup) view).getNodeRegionForTag(mReactTag);
+        }
+      }
+
+      int resultTag = region == NodeRegion.EMPTY ? touchTargetReactTag : region.mTag;
+      float x = PixelUtil.toDIPFromPixel(region.mLeft + MEASURE_BUFFER[0] - containerX);
+      float y = PixelUtil.toDIPFromPixel(region.mTop + MEASURE_BUFFER[1] - containerY);
+      float width = PixelUtil.toDIPFromPixel(isNativeView ?
+          MEASURE_BUFFER[2] : region.mRight - region.mLeft);
+      float height = PixelUtil.toDIPFromPixel(isNativeView ?
+          MEASURE_BUFFER[3] : region.mBottom - region.mTop);
+      mCallback.invoke(resultTag, x, y, width, height);
+    }
+  }
+
   public FlatUIViewOperationQueue(
       ReactApplicationContext reactContext,
       FlatNativeViewHierarchyManager nativeViewHierarchyManager) {
@@ -308,5 +384,15 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     DetachAllChildrenFromViews op = new DetachAllChildrenFromViews();
     enqueueUIOperation(op);
     return op;
+  }
+
+  @Override
+  public void enqueueFindTargetForTouch(
+      final int reactTag,
+      final float targetX,
+      final float targetY,
+      final Callback callback) {
+    enqueueUIOperation(
+        new FindTargetForTouchOperation(reactTag, targetX, targetY, callback));
   }
 }

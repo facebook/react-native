@@ -42,4 +42,8 @@ package com.facebook.react.flat;
   /* package */ int getReactTag(float touchX, float touchY) {
     return mTag;
   }
+
+  /* package */ boolean matchesTag(int tag) {
+    return mTag == tag;
+  }
 }
