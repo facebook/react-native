@@ -81,7 +81,6 @@ import com.facebook.react.modules.debug.DeveloperSettings;
 public class DevSupportManagerImpl implements DevSupportManager {
 
   private static final int JAVA_ERROR_COOKIE = -1;
-  private static final String JS_BUNDLE_FILE_NAME = "ReactNativeDevBundle.js";
 
   private static final String EXOPACKAGE_LOCATION_FORMAT
       = "/data/local/tmp/exopackage/%s//secondary-dex";
@@ -158,12 +157,9 @@ public class DevSupportManagerImpl implements DevSupportManager {
       }
     };
 
-    // We store JS bundle loaded from dev server in a single destination in app's data dir.
-    // In case when someone schedule 2 subsequent reloads it may happen that JS thread will
-    // start reading first reload output while the second reload starts writing to the same
-    // file. As this should only be the case in dev mode we leave it as it is.
+    // We store JS bundle loaded from dev server by bundle name in different destination in app's data dir.
     // TODO(6418010): Fix readers-writers problem in debug reload from HTTP server
-    mJSBundleTempFile = new File(applicationContext.getFilesDir(), JS_BUNDLE_FILE_NAME);
+    mJSBundleTempFile = new File(applicationContext.getFilesDir(), mJSAppBundleName);
 
     mDefaultNativeModuleCallExceptionHandler = new DefaultNativeModuleCallExceptionHandler();
 
