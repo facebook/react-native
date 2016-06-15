@@ -63,6 +63,7 @@ type Props = {
   renderOverlay: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
   style: any,
+  cardStyle: any,
 };
 
 type DefaultProps = {
@@ -93,7 +94,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     onNavigateBack: PropTypes.func,
     renderOverlay: PropTypes.func,
     renderScene: PropTypes.func.isRequired,
-    cardStyle: React.propTypes.style,
+    cardStyle: React.View.propTypes.style,
   };
 
   static defaultProps: DefaultProps = {
