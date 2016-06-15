@@ -78,6 +78,7 @@ const SwipeableRow = React.createClass({
   mixins: [TimerMixin],
 
   propTypes: {
+    children: PropTypes.any,
     isOpen: PropTypes.bool,
     maxSwipeDistance: PropTypes.number.isRequired,
     onOpen: PropTypes.func.isRequired,
@@ -206,12 +207,10 @@ const SwipeableRow = React.createClass({
   },
 
   _onSwipeableViewLayout(event: Object): void {
-    if (!this.state.isSwipeableViewRendered) {
-      this.setState({
-        isSwipeableViewRendered: true,
-        rowHeight: event.nativeEvent.layout.height,
-      });
-    }
+    this.setState({
+      isSwipeableViewRendered: true,
+      rowHeight: event.nativeEvent.layout.height,
+    });
   },
 
   _handleMoveShouldSetPanResponderCapture(

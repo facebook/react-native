@@ -12,6 +12,8 @@ package com.facebook.react.views.image;
 import javax.annotation.Nullable;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -48,6 +50,8 @@ import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.imagepipeline.request.Postprocessor;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -136,6 +140,7 @@ public class ReactImageView extends GenericDraweeView {
   }
 
   private final ResourceDrawableIdHelper mResourceDrawableIdHelper;
+  private final Map<String, Double> mSources;
 
   private @Nullable Uri mUri;
   private @Nullable Drawable mLoadingImageDrawable;
@@ -173,6 +178,7 @@ public class ReactImageView extends GenericDraweeView {
     mRoundedCornerPostprocessor = new RoundedCornerPostprocessor();
     mCallerContext = callerContext;
     mResourceDrawableIdHelper = resourceDrawableIdHelper;
+    mSources = new HashMap<>();
   }
 
   public void setShouldNotifyLoadEvents(boolean shouldNotify) {
@@ -259,23 +265,19 @@ public class ReactImageView extends GenericDraweeView {
     mIsDirty = true;
   }
 
-  public void setSource(@Nullable String source) {
-    mUri = null;
-    if (source != null) {
-      try {
-        mUri = Uri.parse(source);
-        // Verify scheme is set, so that relative uri (used by static resources) are not handled.
-        if (mUri.getScheme() == null) {
-          mUri = null;
-        }
-      } catch (Exception e) {
-        // ignore malformed uri, then attempt to extract resource ID.
-      }
-      if (mUri == null) {
-        mUri = mResourceDrawableIdHelper.getResourceDrawableUri(getContext(), source);
-        mIsLocalImage = true;
+  public void setSource(@Nullable ReadableArray sources) {
+    mSources.clear();
+    if (sources != null && sources.size() != 0) {
+      // Optimize for the case where we have just one uri, case in which we don't need the sizes
+      if (sources.size() == 1) {
+        mSources.put(sources.getMap(0).getString("uri"), 0.0);
       } else {
-        mIsLocalImage = false;
+        for (int idx = 0; idx < sources.size(); idx++) {
+          ReadableMap source = sources.getMap(idx);
+          mSources.put(
+            source.getString("uri"),
+            source.getDouble("width") * source.getDouble("height"));
+        }
       }
     }
     mIsDirty = true;
@@ -309,6 +311,16 @@ public class ReactImageView extends GenericDraweeView {
 
   public void maybeUpdateView() {
     if (!mIsDirty) {
+      return;
+    }
+
+    if (hasMultipleSources() && (getWidth() <= 0 || getHeight() <= 0)) {
+      // If we need to choose from multiple uris but the size is not yet set, wait for layout pass
+      return;
+    }
+
+    computeSourceUri();
+    if (mUri == null) {
       return;
     }
 
@@ -398,6 +410,7 @@ public class ReactImageView extends GenericDraweeView {
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
     super.onSizeChanged(w, h, oldw, oldh);
     if (w > 0 && h > 0) {
+      mIsDirty = mIsDirty || hasMultipleSources();
       maybeUpdateView();
     }
   }
@@ -410,10 +423,65 @@ public class ReactImageView extends GenericDraweeView {
     return false;
   }
 
-  private static boolean shouldResize(@Nullable Uri uri) {
+  private boolean hasMultipleSources() {
+    return mSources.size() > 1;
+  }
+
+  private void computeSourceUri() {
+    mUri = null;
+    if (mSources.isEmpty()) {
+      return;
+    }
+    if (hasMultipleSources()) {
+      setUriFromMultipleSources();
+      return;
+    }
+
+    final String singleSource = mSources.keySet().iterator().next();
+    setUriFromSingleSource(singleSource);
+  }
+
+  private void setUriFromSingleSource(String source) {
+    try {
+      mUri = Uri.parse(source);
+      // Verify scheme is set, so that relative uri (used by static resources) are not handled.
+      if (mUri.getScheme() == null) {
+        mUri = null;
+      }
+    } catch (Exception e) {
+      // ignore malformed uri, then attempt to extract resource ID.
+    }
+    if (mUri == null) {
+      mUri = mResourceDrawableIdHelper.getResourceDrawableUri(getContext(), source);
+      mIsLocalImage = true;
+    } else {
+      mIsLocalImage = false;
+    }
+  }
+
+  /**
+   * Chooses the uri with the size closest to the target image size. Must be called only after the
+   * layout pass when the sizes of the target image have been computed, and when there are at least
+   * two sources to choose from.
+   */
+  private void setUriFromMultipleSources() {
+    final double targetImageSize = getWidth() * getHeight();
+    double bestPrecision = Double.MAX_VALUE;
+    String bestUri = null;
+    for (Map.Entry<String, Double> source : mSources.entrySet()) {
+      final double precision = Math.abs(1.0 - (source.getValue()) / targetImageSize);
+      if (precision < bestPrecision) {
+        bestPrecision = precision;
+        bestUri = source.getKey();
+      }
+    }
+    setUriFromSingleSource(bestUri);
+  }
+
+  private static boolean shouldResize(Uri uri) {
     // Resizing is inferior to scaling. See http://frescolib.org/docs/resizing-rotating.html#_
     // We resize here only for images likely to be from the device's camera, where the app developer
     // has no control over the original size
-    return uri != null && (UriUtil.isLocalContentUri(uri) || UriUtil.isLocalFileUri(uri));
+    return UriUtil.isLocalContentUri(uri) || UriUtil.isLocalFileUri(uri);
   }
 }
