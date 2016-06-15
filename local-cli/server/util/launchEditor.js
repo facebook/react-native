@@ -110,7 +110,10 @@ function printInstructions(title) {
     '  editor of choice. It will first look at REACT_EDITOR environment ',
     '  variable, then at EDITOR. To set it up, you can add something like ',
     '  export REACT_EDITOR=atom to your ~/.bashrc or ~/.zshrc depending on ',
-    '  which shell you use.',
+    '  which shell you use. You can also define REACT_EDITOR_LINEFORMAT env',
+		'  variable to define how line number should be passed to your editor.',
+		'  Use %f for filename, %l for line number and | for splitting args, e.g.',
+		'  REACT_EDITOR_LINEFORMAT="--line|%l|%f"',
     ''
   ].join('\n'));
 }
