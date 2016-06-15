@@ -45,14 +45,14 @@ export type NavigationScene = {
   route: NavigationRoute,
 };
 
-export type NavigationSceneRendererProps = {
-  // The layout of the containing view of the scenes.
+export type NavigationTransitionProps = {
+  // The layout of the transitioner of the scenes.
   layout: NavigationLayout,
 
-  // The navigation state of the containing view.
+  // The navigation state of the transitioner.
   navigationState: NavigationState,
 
-  // The progressive index of the containing view's navigation state.
+  // The progressive index of the transitioner's navigation state.
   position: NavigationAnimatedValue,
 
   // The value that represents the progress of the transition when navigation
@@ -62,11 +62,19 @@ export type NavigationSceneRendererProps = {
   //  progress.__getAnimatedValue() == 1 : transtion completes.
   progress: NavigationAnimatedValue,
 
+  // All the scenes of the transitioner.
+  scenes: Array<NavigationScene>,
+};
+
+export type NavigationSceneRendererProps = {
+  layout: NavigationLayout,
+  navigationState: NavigationState,
+  position: NavigationAnimatedValue,
+  progress: NavigationAnimatedValue,
+  scenes: Array<NavigationScene>,
+
   // The scene to render.
   scene: NavigationScene,
-
-  // All the scenes of the containing view's.
-  scenes: Array<NavigationScene>,
 };
 
 export type NavigationPanPanHandlers = {

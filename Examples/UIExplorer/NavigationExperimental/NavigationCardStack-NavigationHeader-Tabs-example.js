@@ -204,7 +204,7 @@ class YourApplication extends Component {
   // This public method is optional. If exists, the UI explorer will call it
   // the "back button" is pressed. Normally this is the cases for Android only.
   handleBackAction(): boolean {
-    return this._onNavigate({type: 'pop'});
+    return this._navigate({type: 'pop'});
   }
 
   // This handles the navigation state changes. You're free and responsible
