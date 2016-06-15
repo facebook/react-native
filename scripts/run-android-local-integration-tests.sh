@@ -5,7 +5,7 @@
 
 set -e
 
-which buck > /dev/null || { 
+which buck > /dev/null || {
   echo "React Native uses the Buck build tool to run tests. Please install Buck: https://buckbuild.com/setup/install.html";
   exit 1;
 }
