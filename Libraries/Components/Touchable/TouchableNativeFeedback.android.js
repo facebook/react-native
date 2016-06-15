@@ -186,7 +186,7 @@ var TouchableNativeFeedback = React.createClass({
   _handleResponderMove: function(e) {
     this.touchableHandleResponderMove(e);
     if (this.pressInLocation) {
-      // the elements width and height must be calcuclated in order to  
+      // the elements width and height must be calcuclated in order to
       // determine the current position of the touch event since
       // we only get updated absolute values through e.nativeEvent. page = absolute, location = relative.
       var [elementWidth, elementHeight] = [this.pressInLocation.pageX - e.nativeEvent.locationX, this.pressInLocation.pageY - e.nativeEvent.locationY];
