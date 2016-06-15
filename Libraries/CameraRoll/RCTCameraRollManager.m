@@ -205,7 +205,7 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
           }];
         }
       }];
-    } else {
+    } else if (group == nil) {
       // Sometimes the enumeration continues even if we set stop above, so we guard against resolving the promise
       // multiple times here.
       if (!resolvedPromise) {
