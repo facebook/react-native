@@ -14,6 +14,7 @@ Since React makes no assumptions about the rest of your technology stack – it�
 - [CocoaPods](http://cocoapods.org/) – `gem install cocoapods`
 - [Node.js](http://nodejs.org)
   - Install **nvm** with [its setup instructions here](https://github.com/creationix/nvm#installation). Then run `nvm install node && nvm alias default node`, which installs the latest version of Node.js and sets up your terminal so you can run it by typing `node`.  With nvm you can install multiple versions of Node.js and easily switch between them.
+- Create a required `package.json` file by following the wizard at `npm init`
 - Install the `react-native` package from npm by running the following command in the root directory of your project:
   - `npm install react-native`
 
@@ -125,7 +126,7 @@ __NOTE__ For Swift apps there is no need for that.
 
 Here I disabled **AutoLayout** for simplicity. In real production world, you should turn on AutoLayout and setup constraints by yourself.
 
-## Add RCTRootView To Container View
+## Objective-C: Add RCTRootView To Container View
 
 Ready for the most interesting part? Now we shall create the `RCTRootView`, where your React Native app lives.
 
