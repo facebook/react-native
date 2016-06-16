@@ -11,11 +11,26 @@ Since React makes no assumptions about the rest of your technology stack – it�
 
 ## Requirements
 
+- Xcode project - If you don't have native app, create a sample Xcode project now. 
 - [CocoaPods](http://cocoapods.org/) – `gem install cocoapods`
 - [Node.js](http://nodejs.org)
   - Install **nvm** with [its setup instructions here](https://github.com/creationix/nvm#installation). Then run `nvm install node && nvm alias default node`, which installs the latest version of Node.js and sets up your terminal so you can run it by typing `node`.  With nvm you can install multiple versions of Node.js and easily switch between them.
+- Create a `package.json` file in your root directory with these contents:
+```
+{
+  "name": "embedded",
+  "version": "1.0.0",
+  "description": "Integrating React Native with Existing Apps",
+  "main": "index.js",
+  "homepage": "https://facebook.github.io/react-native/docs/embedded-app-ios.html",
+  "dependencies": {
+    "react-native": "^0.26.0",
+    "react": "~15.0.2"
+  }
+}
+```
 - Install the `react-native` package from npm by running the following command in the root directory of your project:
-  - `npm install react-native`
+  `$ npm install`
 
 At this point you should have the React Native package installed under a directory named `node_modules` as a sibling to your `.xcodeproj` file.
 
@@ -46,6 +61,11 @@ Then install your pods:
 ```
 $ pod install
 ```
+
+If you are using Xcode 7.3 or later, add `libc++.tbd` to your target. 
+- Select View -> Standard Editor -> Show Standard Editor
+- Click on your project in the Navigator pane, then the Target, then General.
+- Under Linked Frameworks and Libraries add `libc++.tbd`
 
 ## Create Your React Native App
 
@@ -132,25 +152,26 @@ Ready for the most interesting part? Now we shall create the `RCTRootView`, wher
 In `ReactView.m`, we need to first initiate `RCTRootView` with the URI of your `index.ios.bundle`. `index.ios.bundle` will be created by packager and served by React Native server, which will be discussed later on.
 
 ```
-NSURL *jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle?platform=ios"];
-// For production use, this `NSURL` could instead point to a pre-bundled file on disk:
-//
-//   NSURL *jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
-//
-// To generate that file, run the curl command and add the output to your main Xcode build target:
-//
-//   curl http://localhost:8081/index.ios.bundle -o main.jsbundle
-RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
+#import "RCTRootView.h"
+
+-(void)awakeFromNib {
+  NSURL *jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle?platform=ios"];
+  // For production use, this `NSURL` could instead point to a pre-bundled file on disk:
+  //
+  //   NSURL *jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  //
+  // To generate that file, run the curl command and add the output to your main Xcode build target:
+  //
+  //   curl http://localhost:8081/index.ios.bundle -o main.jsbundle
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                     moduleName: @"SimpleApp"
                                              initialProperties:nil
                                                  launchOptions:nil];
-```
 
-Then add it as a subview of the `ReactView`.
-
-```
-[self addSubview:rootView];
-rootView.frame = self.bounds;
+  // Then add it as a subview of the `ReactView`.
+  [self addSubview:rootView];
+  rootView.frame = self.bounds;
+}
 ```
 
 ### Swift apps
