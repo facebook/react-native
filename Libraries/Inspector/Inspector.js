@@ -129,7 +129,7 @@ class Inspector extends React.Component {
     // therefore we use the internal _instance property directly.
     var publicInstance = instance['_instance'] || {};
     var source = instance['_currentElement'] && instance['_currentElement']['_source'];
-    UIManager.measure(instance.getNativeNode(), (x, y, width, height, left, top) => {
+    UIManager.measure(instance.getHostNode(), (x, y, width, height, left, top) => {
       this.setState({
         inspected: {
           frame: {left, top, width, height},
