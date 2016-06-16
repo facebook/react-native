@@ -412,13 +412,6 @@ var apps = [
     author: 'Genki Takiuchi (s21g Inc.)',
   },
   {
-    name: '儿戏亲子游',
-    icon: 'http://www.mmww.com/images/logo_512x512.png',
-    linkAppStore: 'https://itunes.apple.com/cn/app/er-xi-qin-zi-huo-dong-zhou/id1037700232?mt=8',
-    link: 'http://www.mmww.com/',
-    author: 'Jiang Xiaoming',
-  },
-  {
     name: 'Dohop Flights',
     icon: 'http://a5.mzstatic.com/us/r30/Purple60/v4/3e/94/e9/3e94e9b3-f9a0-7b27-1824-b3da732ec967/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/us/app/dohop-flights-your-new-flight/id964170399',
@@ -461,6 +454,13 @@ var apps = [
     blogs: [
       'http://arzamas.academy/special/emoji/english',
     ],
+  },
+  {
+    name: '儿戏亲子游',
+    icon: 'http://www.mmww.com/images/logo_512x512.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/er-xi-qin-zi-huo-dong-zhou/id1037700232?mt=8',
+    link: 'http://android.myapp.com/myapp/detail.htm?apkName=com.mmww.erxi',
+    author: 'Jiang Xiaoming',
   },
   {
     name: 'Fan of it',
@@ -892,7 +892,7 @@ var apps = [
     icon: 'https://farm8.staticflickr.com/7353/27553089935_a3928f2097_o.png',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.sctvsport.bongdatructuyen',
     author: 'SCTV Digital',
-  },  
+  },
   {
     name: 'Software Interview Preparation',
     icon: 'https://lh3.googleusercontent.com/11AuzaeCnxrRnIp1E_a_6WWiQIRRoWhrvFr20eCRJX4ZMW6O3tGjZLiUw3thKUgGaC8X=w300',
