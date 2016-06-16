@@ -13,6 +13,11 @@ import javax.annotation.Nullable;
 
 import java.util.Map;
 
+import android.net.Uri;
+
+import com.facebook.imagepipeline.core.ImagePipeline;
+import com.facebook.imagepipeline.core.ImagePipelineFactory;
+
 /**
  * Helper class for computing the source to be used for an Image.
  */
@@ -23,18 +28,34 @@ import java.util.Map;
    * after the layout pass when the sizes of the target image have been computed, and when there
    * are at least two sources to choose from.
    */
-  public static @Nullable String getImageSourceFromMultipleSources(
+  public static @Nullable String[] getImageSourceFromMultipleSources(
       double targetImageSize,
       Map<String, Double> sources) {
+    ImagePipeline imagePipeline = ImagePipelineFactory.getInstance().getImagePipeline();
     double bestPrecision = Double.MAX_VALUE;
+    double bestCachePrecision = Double.MAX_VALUE;
     String imageSource = null;
+    String cachedImageSource = null;
     for (Map.Entry<String, Double> source : sources.entrySet()) {
       final double precision = Math.abs(1.0 - (source.getValue()) / targetImageSize);
       if (precision < bestPrecision) {
         bestPrecision = precision;
         imageSource = source.getKey();
       }
+
+      Uri sourceUri = Uri.parse(source.getKey());
+      if (precision < bestCachePrecision &&
+          (imagePipeline.isInBitmapMemoryCache(sourceUri) ||
+              imagePipeline.isInDiskCacheSync(sourceUri))) {
+        bestCachePrecision = precision;
+        cachedImageSource = source.getKey();
+      }
     }
-    return imageSource;
+
+    // don't use cached image source if it's the same as the image source
+    if (cachedImageSource != null && cachedImageSource.equals(imageSource)) {
+      cachedImageSource = null;
+    }
+    return new String[]{imageSource, cachedImageSource};
   }
 }

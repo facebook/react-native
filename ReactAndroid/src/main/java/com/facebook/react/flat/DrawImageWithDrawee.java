@@ -40,7 +40,6 @@ import com.facebook.react.views.image.ReactImageView;
     implements DrawImage, ControllerListener {
 
   private @Nullable Map<String, Double> mSources;
-  private @Nullable String mImageSource;
   private @Nullable Context mContext;
   private @Nullable DraweeRequestHelper mRequestHelper;
   private @Nullable PorterDuffColorFilter mColorFilter;
@@ -228,18 +227,25 @@ import com.facebook.react.views.image.ReactImageView;
   }
 
   private void computeRequestHelper() {
-    mImageSource = getSourceImage();
-    if (mImageSource == null) {
+    String[] imageSources = getImageSources();
+    if (imageSources == null) {
       mRequestHelper = null;
       return;
     }
     ImageRequest imageRequest =
-        ImageRequestHelper.createImageRequest(Assertions.assertNotNull(mContext),
-        mImageSource);
-    mRequestHelper = new DraweeRequestHelper(Assertions.assertNotNull(imageRequest), this);
+        ImageRequestHelper.createImageRequest(Assertions.assertNotNull(mContext), imageSources[0]);
+
+    ImageRequest cachedImageRequest = null;
+    if (imageSources.length >= 2 && imageSources[1] != null) {
+      cachedImageRequest = ImageRequestHelper.createImageRequest(
+          Assertions.assumeNotNull(mContext),
+          imageSources[1]);
+    }
+    mRequestHelper = new
+      DraweeRequestHelper(Assertions.assertNotNull(imageRequest), cachedImageRequest, this);
   }
 
-  private @Nullable String getSourceImage() {
+  private @Nullable String[] getImageSources() {
     if (mSources == null || mSources.isEmpty()) {
       return null;
     }
@@ -247,7 +253,7 @@ import com.facebook.react.views.image.ReactImageView;
       final double targetImageSize = (getRight() - getLeft()) * (getBottom() - getTop());
       return MultiSourceImageHelper.getImageSourceFromMultipleSources(targetImageSize, mSources);
     }
-    return mSources.keySet().iterator().next();
+    return new String[]{mSources.keySet().iterator().next()};
   }
 
   private boolean hasMultipleSources() {

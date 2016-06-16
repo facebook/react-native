@@ -44,7 +44,6 @@ import com.facebook.react.views.image.ReactImageView;
   private static final int BORDER_BITMAP_PATH_DIRTY = 1 << 1;
 
   private @Nullable Map<String, Double> mSources;
-  private @Nullable String mImageSource;
   private @Nullable Context mContext;
   private final Matrix mTransform = new Matrix();
   private ScaleType mScaleType = ImageResizeMode.defaultValue();
@@ -226,18 +225,18 @@ import com.facebook.react.views.image.ReactImageView;
   }
 
   private void computeRequestHelper() {
-    mImageSource = getSourceImage();
-    if (mImageSource == null) {
+    String[] imageSources = getImageSources();
+    if (imageSources == null) {
       mRequestHelper = null;
       return;
     }
     ImageRequest imageRequest =
-        ImageRequestHelper.createImageRequest(Assertions.assertNotNull(mContext),
-        mImageSource);
+        ImageRequestHelper.createImageRequest(Assertions.assertNotNull(mContext), imageSources[0]);
+    // DrawImageWithPipeline does now support displaying low res cache images before request
     mRequestHelper = new PipelineRequestHelper(Assertions.assertNotNull(imageRequest));
   }
 
-  private String getSourceImage() {
+  private @Nullable String[] getImageSources() {
     if (mSources == null || mSources.isEmpty()) {
       return null;
     }
@@ -245,7 +244,7 @@ import com.facebook.react.views.image.ReactImageView;
       final double targetImageSize = (getRight() - getLeft()) * (getBottom() - getTop());
       return MultiSourceImageHelper.getImageSourceFromMultipleSources(targetImageSize, mSources);
     }
-    return mSources.keySet().iterator().next();
+    return new String[]{mSources.keySet().iterator().next()};
   }
 
   private boolean hasMultipleSources() {
