@@ -32,7 +32,21 @@ const {PropTypes} = React;
 
 /**
  * A container component that renders multiple SwipeableRow's in a ListView
- * implementation.
+ * implementation. This is designed to be a drop-in replacement for the
+ * standard React Native `ListView`, so use it as if it were a ListView, but
+ * with extra props, i.e.
+ *
+ * let ds = SwipeableListView.getNewDataSource();
+ * ds.cloneWithRowsAndSections(dataBlob, ?sectionIDs, ?rowIDs);
+ * // ..
+ * <SwipeableListView renderRow={..} renderQuickActions={..} {..ListView props} />
+ *
+ * SwipeableRow can be used independently of this component, but the main
+ * benefit of using this component is
+ *
+ * - It ensures that at most 1 row is swiped open (auto closes others)
+ * - It can bounce the 1st row of the list so users know it's swipeable
+ * - More to come
  */
 const SwipeableListView = React.createClass({
   statics: {
@@ -47,9 +61,20 @@ const SwipeableListView = React.createClass({
   },
 
   _listViewRef: (null: ?string),
+  _shouldBounceFirstRowOnMount: false,
 
   propTypes: {
+    /**
+     * To alert the user that swiping is possible, the first row can bounce
+     * on component mount.
+     */
+    bounceFirstRowOnMount: PropTypes.bool.isRequired,
+    /**
+     * Use `SwipeableListView.getNewDataSource()` to get a data source to use,
+     * then use it just like you would a normal ListView data source
+     */
     dataSource: PropTypes.instanceOf(SwipeableListViewDataSource).isRequired,
+    // Maximum distance to open to after a swipe
     maxSwipeDistance: PropTypes.number,
     // Callback method to render the swipeable view
     renderRow: PropTypes.func.isRequired,
@@ -59,6 +84,7 @@ const SwipeableListView = React.createClass({
 
   getDefaultProps(): Object {
     return {
+      bounceFirstRowOnMount: false,
       renderQuickActions: () => null,
     };
   },
@@ -67,6 +93,10 @@ const SwipeableListView = React.createClass({
     return {
       dataSource: this.props.dataSource,
     };
+  },
+
+  componentWillMount(): void {
+    this._shouldBounceFirstRowOnMount = this.props.bounceFirstRowOnMount;
   },
 
   componentWillReceiveProps(nextProps: Object): void {
@@ -79,7 +109,7 @@ const SwipeableListView = React.createClass({
     }
   },
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     return (
       <ListView
         {...this.props}
@@ -114,12 +144,22 @@ const SwipeableListView = React.createClass({
     }
   },
 
-  _renderRow(rowData: Object, sectionID: string, rowID: string): ReactElement {
+  _renderRow(
+    rowData: Object,
+    sectionID: string,
+    rowID: string,
+  ): ReactElement<any> {
     const slideoutView = this.props.renderQuickActions(rowData, sectionID, rowID);
 
     // If renderRowSlideout is unspecified or returns falsey, don't allow swipe
     if (!slideoutView) {
       return this.props.renderRow(rowData, sectionID, rowID);
+    }
+
+    let shouldBounceOnMount = false;
+    if (this._shouldBounceFirstRowOnMount) {
+      this._shouldBounceFirstRowOnMount = false;
+      shouldBounceOnMount = rowID === this.props.dataSource.getFirstRowID();
     }
 
     return (
@@ -130,7 +170,8 @@ const SwipeableListView = React.createClass({
         key={rowID}
         onOpen={() => this._onOpen(rowData.id)}
         onSwipeEnd={() => this._setListViewScrollable(true)}
-        onSwipeStart={() => this._setListViewScrollable(false)}>
+        onSwipeStart={() => this._setListViewScrollable(false)}
+        shouldBounceOnMount={shouldBounceOnMount}>
         {this.props.renderRow(rowData, sectionID, rowID)}
       </SwipeableRow>
     );

@@ -35,6 +35,7 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
+import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
@@ -294,8 +295,8 @@ public class NativeViewHierarchyManager {
       @Nullable int[] indicesToRemove,
       @Nullable ViewAtIndex[] viewsToAdd,
       @Nullable int[] tagsToDelete) {
-    ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
-    ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
+    final ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
+    final ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
     if (viewToManage == null) {
       throw new IllegalViewOperationException("Trying to manageChildren view with tag " + tag +
         " which doesn't exist\n detail: " +
@@ -344,7 +345,18 @@ public class NativeViewHierarchyManager {
                       viewsToAdd,
                       tagsToDelete));
         }
-        viewManager.removeViewAt(viewToManage, indicesToRemove[i]);
+
+        View viewToRemove = viewManager.getChildAt(viewToManage, indexToRemove);
+
+        if (mLayoutAnimationEnabled &&
+            mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
+            arrayContains(tagsToDelete, viewToRemove.getId())) {
+          // The view will be removed and dropped by the 'delete' layout animation
+          // instead, so do nothing
+        } else {
+          viewManager.removeViewAt(viewToManage, indexToRemove);
+        }
+
         lastIndexToRemove = indexToRemove;
       }
     }
@@ -371,7 +383,7 @@ public class NativeViewHierarchyManager {
     if (tagsToDelete != null) {
       for (int i = 0; i < tagsToDelete.length; i++) {
         int tagToDelete = tagsToDelete[i];
-        View viewToDestroy = mTagsToViews.get(tagToDelete);
+        final View viewToDestroy = mTagsToViews.get(tagToDelete);
         if (viewToDestroy == null) {
           throw new IllegalViewOperationException(
               "Trying to destroy unknown view tag: "
@@ -383,9 +395,33 @@ public class NativeViewHierarchyManager {
                       viewsToAdd,
                       tagsToDelete));
         }
-        dropView(viewToDestroy);
+
+        if (mLayoutAnimationEnabled &&
+            mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
+          mLayoutAnimator.deleteView(viewToDestroy, new LayoutAnimationListener() {
+            @Override
+            public void onAnimationEnd() {
+              viewManager.removeView(viewToManage, viewToDestroy);
+              dropView(viewToDestroy);
+            }
+          });
+        } else {
+          dropView(viewToDestroy);
+        }
       }
     }
+  }
+
+  private boolean arrayContains(@Nullable int[] array, int ele) {
+    if (array == null) {
+      return false;
+    }
+    for (int curEle : array) {
+      if (curEle == ele) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -466,7 +502,7 @@ public class NativeViewHierarchyManager {
   /**
    * Releases all references to given native View.
    */
-  protected final void dropView(View view) {
+  protected void dropView(View view) {
     UiThreadUtil.assertOnUiThread();
     if (!mRootTags.get(view.getId())) {
       // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}

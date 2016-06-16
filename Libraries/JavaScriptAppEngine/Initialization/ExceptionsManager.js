@@ -18,6 +18,7 @@ let exceptionID = 0;
  */
 function reportException(e: Error, isFatal: bool) {
   const parseErrorStack = require('parseErrorStack');
+  const symbolicateStackTrace = require('symbolicateStackTrace');
   const RCTExceptionsManager = require('NativeModules').ExceptionsManager;
 
   const currentExceptionID = ++exceptionID;
@@ -29,19 +30,12 @@ function reportException(e: Error, isFatal: bool) {
       RCTExceptionsManager.reportSoftException(e.message, stack, currentExceptionID);
     }
     if (__DEV__) {
-      require('SourceMapsCache').getSourceMaps().then(sourceMaps => {
-        const prettyStack = parseErrorStack(e, sourceMaps);
-        RCTExceptionsManager.updateExceptionMessage(
-          e.message,
-          prettyStack,
-          currentExceptionID,
-        );
-      })
-      .catch(error => {
-        // This can happen in a variety of normal situations, such as
-        // Network module not being available, or when running locally
-        console.warn('Unable to load source map: ' + error.message);
-      });
+      symbolicateStackTrace(stack).then(
+        (prettyStack) =>
+          RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack, currentExceptionID),
+        (error) =>
+          console.warn('Unable to symbolicate stack trace: ' + error.message)
+      );
     }
   }
 }

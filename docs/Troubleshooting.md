@@ -14,6 +14,8 @@ Enable iOS simulator's "Connect hardware keyboard" from menu Hardware > Keyboard
 
 If you are using a non-QWERTY/AZERTY keyboard layout you can use the `Hardware > Shake Gesture` to bring up the dev menu and click "Refresh". Alternatively, you can hit `Cmd-P` on Dvorak/Colemak layouts to reload the simulator.
 
+You can use Cmd+M on Android to bring up the dev menu.
+
 ## Port already in use red-screen
 ![red-screen](https://cloud.githubusercontent.com/assets/602176/6857442/63fd4f0a-d3cc-11e4-871f-875b0c784611.png)
 
@@ -26,7 +28,6 @@ Something is probably already running on port 8081. You can either kill it or tr
 then
 
 `$ kill -9 <cma process id>`
-
 
 
 ##### Change the port in Xcode
@@ -107,3 +108,15 @@ import Firebase from 'firebase';
 Requiring firebase *before* react-native will result in a 'No transports available' redbox.
 
 Discovered thanks to issue [#3645](https://github.com/facebook/react-native/issues/3645). If you're curious, the polyfills are set up in [InitializeJavaScriptAppEngine.js](https://github.com/facebook/react-native/blob/master/Libraries/JavaScriptAppEngine/Initialization/InitializeJavaScriptAppEngine.js).
+
+
+## Shell Command Unresponsive Exception
+
+If you encounter:
+
+```
+Execution failed for task ':app:installDebug'.
+  com.android.builder.testing.api.DeviceException: com.android.ddmlib.ShellCommandUnresponsiveException
+```
+
+Try downgrading your Gradle version to 1.2.3 in `<project-name>/android/build.gradle` (https://github.com/facebook/react-native/issues/2720)

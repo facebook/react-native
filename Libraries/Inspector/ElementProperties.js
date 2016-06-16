@@ -20,11 +20,11 @@ var Text = require('Text');
 var TouchableHighlight = require('TouchableHighlight');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
-var {SourceCode} = require('NativeModules');
 var {fetch} = require('fetch');
 
 var flattenStyle = require('flattenStyle');
 var mapWithSeparator = require('mapWithSeparator');
+var getDevServer = require('getDevServer');
 
 var ElementProperties = React.createClass({
   propTypes: {
@@ -73,7 +73,7 @@ var ElementProperties = React.createClass({
                   style={[styles.breadItem, i === selection && styles.selected]}
                   onPress={() => this.props.setSelection(i)}>
                   <Text style={styles.breadItemText}>
-                    {item.getName ? item.getName() : 'Unknown'}
+                    {getInstanceName(item)}
                   </Text>
                 </TouchableHighlight>
               ),
@@ -97,15 +97,22 @@ var ElementProperties = React.createClass({
   },
 
   _openFile: function(fileName: string, lineNumber: number) {
-    var match = SourceCode.scriptURL && SourceCode.scriptURL.match(/^https?:\/\/.*?\//);
-    var baseURL = match ? match[0] : 'http://localhost:8081/';
-
-    fetch(baseURL + 'open-stack-frame', {
+    fetch(getDevServer().url + 'open-stack-frame', {
       method: 'POST',
       body: JSON.stringify({file: fileName, lineNumber}),
     });
   },
 });
+
+function getInstanceName(instance) {
+  if (instance.getName) {
+    return instance.getName();
+  }
+  if (instance.constructor && instance.constructor.displayName) {
+    return instance.constructor.displayName;
+  }
+  return 'Unknown';
+}
 
 var styles = StyleSheet.create({
   breadSep: {
@@ -115,6 +122,7 @@ var styles = StyleSheet.create({
   breadcrumb: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    alignItems: 'flex-start',
     marginBottom: 5,
   },
   selected: {

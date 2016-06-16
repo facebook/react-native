@@ -35,8 +35,13 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  */
 @interface RCTShadowView : NSObject <RCTComponent>
 
-- (NSArray<RCTShadowView *> *)reactSubviews;
-- (RCTShadowView *)reactSuperview;
+/**
+ * RCTComponent interface.
+ */
+- (NSArray<RCTShadowView *> *)reactSubviews NS_REQUIRES_SUPER;
+- (RCTShadowView *)reactSuperview NS_REQUIRES_SUPER;
+- (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex NS_REQUIRES_SUPER;
+- (void)removeReactSubview:(RCTShadowView *)subview NS_REQUIRES_SUPER;
 
 @property (nonatomic, weak, readonly) RCTShadowView *superview;
 @property (nonatomic, assign, readonly) css_node_t *cssNode;
@@ -69,6 +74,12 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 
 @property (nonatomic, assign) CGFloat width;
 @property (nonatomic, assign) CGFloat height;
+
+@property (nonatomic, assign) CGFloat minWidth;
+@property (nonatomic, assign) CGFloat maxWidth;
+@property (nonatomic, assign) CGFloat minHeight;
+@property (nonatomic, assign) CGFloat maxHeight;
+
 @property (nonatomic, assign) CGRect frame;
 
 - (void)setTopLeft:(CGPoint)topLeft;
@@ -125,6 +136,11 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) CGFloat flex;
 
 /**
+ * z-index, used to override sibling order in the view
+ */
+@property (nonatomic, assign) NSInteger zIndex;
+
+/**
  * Calculate property changes that need to be propagated to the view.
  * The applierBlocks set contains RCTApplierBlock functions that must be applied
  * on the main thread in order to update the view.
@@ -151,17 +167,18 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
             absolutePosition:(CGPoint)absolutePosition;
 
 /**
- * Recursively apply layout to children.
- * The job of applyLayoutNode:viewsWithNewFrame:absolutePosition is to apply the layout to
- * this node.
- * The job of applyLayoutToChildren:viewsWithNewFrame:absolutePosition is to enumerate the
- * children and tell them to apply layout.
- * The functionality is split into two methods so subclasses can override applyLayoutToChildren
- * while using the default implementation of applyLayoutNode.
+ * Apply the CSS layout.
+ * This method also calls `applyLayoutToChildren:` internally. The functionality
+ * is split into two methods so subclasses can override `applyLayoutToChildren:`
+ * while using default implementation of `applyLayoutNode:`.
  */
 - (void)applyLayoutNode:(css_node_t *)node
       viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
        absolutePosition:(CGPoint)absolutePosition NS_REQUIRES_SUPER;
+
+/**
+ * Enumerate the child nodes and tell them to apply layout.
+ */
 - (void)applyLayoutToChildren:(css_node_t *)node
             viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
              absolutePosition:(CGPoint)absolutePosition;
@@ -180,6 +197,10 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 - (void)setTextComputed NS_REQUIRES_SUPER;
 - (BOOL)isTextDirty;
 
+/**
+ * As described in RCTComponent protocol.
+ */
+- (void)didUpdateReactSubviews NS_REQUIRES_SUPER;
 - (void)didSetProps:(NSArray<NSString *> *)changedProps NS_REQUIRES_SUPER;
 
 /**

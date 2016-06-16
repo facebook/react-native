@@ -60,12 +60,15 @@ type State = UIExplorerNavigationState & {
   externalExample?: string,
 };
 
+const APP_STATE_KEY = 'UIExplorerAppState.v1';
+
 class UIExplorerApp extends React.Component {
+  _handleBack: Function;
+  _handleAction: Function;
+  _renderCard: Function;
   _renderOverlay: Function;
   _renderScene: Function;
-  _renderCard: Function;
   _renderTitleComponent: Function;
-  _handleAction: Function;
   state: State;
 
   constructor(props: Props) {
@@ -74,6 +77,7 @@ class UIExplorerApp extends React.Component {
 
   componentWillMount() {
     this._handleAction = this._handleAction.bind(this);
+    this._handleBack = this._handleAction.bind(this, {type: 'back'});
     this._renderOverlay = this._renderOverlay.bind(this);
     this._renderScene = this._renderScene.bind(this);
     this._renderTitleComponent = this._renderTitleComponent.bind(this);
@@ -81,7 +85,7 @@ class UIExplorerApp extends React.Component {
 
   componentDidMount() {
     Linking.getInitialURL().then((url) => {
-      AsyncStorage.getItem('UIExplorerAppState', (err, storedString) => {
+      AsyncStorage.getItem(APP_STATE_KEY, (err, storedString) => {
         const exampleAction = URIActionMap(this.props.exampleFromAppetizeParams);
         const urlAction = URIActionMap(url);
         const launchAction = exampleAction || urlAction;
@@ -111,7 +115,7 @@ class UIExplorerApp extends React.Component {
     const newState = UIExplorerNavigationReducer(this.state, action);
     if (this.state !== newState) {
       this.setState(newState);
-      AsyncStorage.setItem('UIExplorerAppState', JSON.stringify(this.state));
+      AsyncStorage.setItem(APP_STATE_KEY, JSON.stringify(this.state));
     }
   }
 
@@ -135,30 +139,31 @@ class UIExplorerApp extends React.Component {
         style={styles.container}
         renderOverlay={this._renderOverlay}
         renderScene={this._renderScene}
-        onNavigate={this._handleAction}
+
       />
     );
   }
 
-  _renderOverlay(props: NavigationSceneRendererProps): ReactElement {
+  _renderOverlay(props: NavigationSceneRendererProps): ReactElement<any> {
     return (
       <NavigationHeader
         {...props}
+        onNavigateBack={this._handleBack}
         renderTitleComponent={this._renderTitleComponent}
       />
     );
   }
 
-  _renderTitleComponent(props: NavigationSceneRendererProps): ReactElement {
+  _renderTitleComponent(props: NavigationSceneRendererProps): ReactElement<any> {
     return (
       <NavigationHeader.Title>
-        {UIExplorerStateTitleMap(props.scene.navigationState)}
+        {UIExplorerStateTitleMap(props.scene.route)}
       </NavigationHeader.Title>
     );
   }
 
-  _renderScene(props: NavigationSceneRendererProps): ?ReactElement {
-    const state = props.scene.navigationState;
+  _renderScene(props: NavigationSceneRendererProps): ?ReactElement<any> {
+    const state = props.scene.route;
     if (state.key === 'AppList') {
       return (
         <UIExplorerExampleList

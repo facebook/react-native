@@ -41,10 +41,15 @@
 
 RCT_EXPORT_MODULE()
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
+
 - (NSArray<NSString *> *)customDirectEventTypes
 {
   return @[@"foo"];
 }
+
+#pragma clang diagnostic pop
 
 @end
 

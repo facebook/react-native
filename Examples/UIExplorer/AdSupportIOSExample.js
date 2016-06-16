@@ -31,7 +31,7 @@ exports.description = 'Example of using the ad support API.';
 exports.examples = [
   {
     title: 'Ad Support IOS',
-    render: function(): ReactElement {
+    render: function(): ReactElement<any> {
       return <AdSupportIOSExample />;
     },
   }

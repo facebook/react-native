@@ -11,26 +11,23 @@
  */
 'use strict';
 
-var EdgeInsetsPropType = require('EdgeInsetsPropType');
-var ImageResizeMode = require('ImageResizeMode');
-var ImageStylePropTypes = require('ImageStylePropTypes');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModules = require('NativeModules');
-var PropTypes = require('ReactPropTypes');
-var React = require('React');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var StyleSheet = require('StyleSheet');
-var StyleSheetPropType = require('StyleSheetPropType');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const ImageResizeMode = require('ImageResizeMode');
+const ImageSourcePropType = require('ImageSourcePropType');
+const ImageStylePropTypes = require('ImageStylePropTypes');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const NativeModules = require('NativeModules');
+const PropTypes = require('ReactPropTypes');
+const React = require('React');
+const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+const StyleSheet = require('StyleSheet');
+const StyleSheetPropType = require('StyleSheetPropType');
 
-var flattenStyle = require('flattenStyle');
-var requireNativeComponent = require('requireNativeComponent');
-var resolveAssetSource = require('resolveAssetSource');
+const flattenStyle = require('flattenStyle');
+const requireNativeComponent = require('requireNativeComponent');
+const resolveAssetSource = require('resolveAssetSource');
 
-var {
-  ImageLoader,
-  ImageViewManager,
-  NetworkImageViewManager,
-} = NativeModules;
+const ImageViewManager = NativeModules.ImageViewManager;
 
 /**
  * A React component for displaying different types of images,
@@ -56,28 +53,36 @@ var {
  * },
  * ```
  */
-var Image = React.createClass({
+const Image = React.createClass({
   propTypes: {
     style: StyleSheetPropType(ImageStylePropTypes),
     /**
-     * `uri` is a string representing the resource identifier for the image, which
-     * could be an http address, a local file path, or the name of a static image
-     * resource (which should be wrapped in the `require('./path/to/image.png')` function).
+     * The image source (either a remote URL or a local file resource).
      */
-    source: PropTypes.oneOfType([
-      PropTypes.shape({
-        uri: PropTypes.string,
-      }),
-      // Opaque type returned by require('./image.jpg')
-      PropTypes.number,
-    ]),
+    source: ImageSourcePropType,
     /**
      * A static image to display while loading the image source.
      * @platform ios
      */
     defaultSource: PropTypes.oneOfType([
       PropTypes.shape({
+        /**
+         * `uri` is a string representing the resource identifier for the image, which
+         * should be either a local file path or the name of a static image resource
+         * (which should be wrapped in the `require('./path/to/image.png')` function).
+         */
         uri: PropTypes.string,
+        /**
+         * `width` and `height` can be specified if known at build time, in which case
+         * these will be used to set the default `<Image/>` component dimensions.
+         */
+        width: PropTypes.number,
+        height: PropTypes.number,
+        /**
+         * `scale` is used to indicate the scale factor of the image. Defaults to 1.0 if
+         * unspecified, meaning that one image pixel equates to one display point / DIP.
+         */
+        scale: PropTypes.number,
       }),
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
@@ -186,7 +191,7 @@ var Image = React.createClass({
      * cache
      */
     prefetch(url: string) {
-      return ImageLoader.prefetchImage(url);
+      return ImageViewManager.prefetchImage(url);
     },
   },
 
@@ -202,19 +207,14 @@ var Image = React.createClass({
   },
 
   render: function() {
-    var source = resolveAssetSource(this.props.source) || {};
-    var {width, height, uri} = source;
-    var style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
+    const source = resolveAssetSource(this.props.source) || { uri: undefined, width: undefined, height: undefined };
+    const {width, height, uri} = source;
+    const style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
+    const resizeMode = this.props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
+    const tintColor = (style || {}).tintColor; // Workaround for flow bug t7737108
 
-    var isNetwork = uri && uri.match(/^https?:/);
-    var RawImage = isNetwork ? RCTNetworkImageView : RCTImageView;
-    var resizeMode = this.props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
-    var tintColor = (style || {}).tintColor; // Workaround for flow bug t7737108
-
-    // This is a workaround for #8243665. RCTNetworkImageView does not support tintColor
-    // TODO: Remove this hack once we have one image implementation #8389274
-    if (isNetwork && (tintColor || this.props.blurRadius)) {
-      RawImage = RCTImageView;
+    if (uri === '') {
+      console.warn('source.uri should not be an empty string');
     }
 
     if (this.props.src) {
@@ -222,7 +222,7 @@ var Image = React.createClass({
     }
 
     return (
-      <RawImage
+      <RCTImageView
         {...this.props}
         style={style}
         resizeMode={resizeMode}
@@ -233,14 +233,12 @@ var Image = React.createClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   base: {
     overflow: 'hidden',
   },
 });
 
-var RCTImageView = requireNativeComponent('RCTImageView', Image);
-var RCTNetworkImageView = NetworkImageViewManager ? requireNativeComponent('RCTNetworkImageView', Image) : RCTImageView;
-
+const RCTImageView = requireNativeComponent('RCTImageView', Image);
 
 module.exports = Image;

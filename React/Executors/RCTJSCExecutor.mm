@@ -12,13 +12,8 @@
 #import <cinttypes>
 #import <memory>
 #import <pthread.h>
+#import <string>
 
-#ifdef WITH_FB_JSC_TUNING
-#include <string>
-#include <fbjsc/jsc_config_ios.h>
-#endif
-
-#import <JavaScriptCore/JavaScriptCore.h>
 #import <UIKit/UIDevice.h>
 
 #import "RCTAssert.h"
@@ -33,6 +28,7 @@
 #import "RCTJSCProfiler.h"
 #import "RCTRedBox.h"
 #import "RCTSourceCode.h"
+#import "RCTJSCWrapper.h"
 
 NSString *const RCTJSCThreadName = @"com.facebook.react.JavaScript";
 
@@ -47,14 +43,13 @@ struct __attribute__((packed)) ModuleData {
 
 using file_ptr = std::unique_ptr<FILE, decltype(&fclose)>;
 using memory_ptr = std::unique_ptr<void, decltype(&free)>;
-using table_ptr = std::unique_ptr<ModuleData[], decltype(&free)>;
 
 struct RandomAccessBundleData {
   file_ptr bundle;
   size_t baseOffset;
   size_t numTableEntries;
-  table_ptr table;
-  RandomAccessBundleData(): bundle(nullptr, fclose), table(nullptr, free) {}
+  std::unique_ptr<ModuleData[]> table;
+  RandomAccessBundleData(): bundle(nullptr, fclose) {}
 };
 
 struct RandomAccessBundleStartupCode {
@@ -136,8 +131,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   NSThread *_javaScriptThread;
   CFMutableDictionaryRef _cookieMap;
 
-  JSStringRef _bundleURL;
   RandomAccessBundleData _randomAccessBundle;
+  JSValueRef _batchedBridgeRef;
+
+  RCTJSCWrapper *_jscWrapper;
+  BOOL _useCustomJSCLibrary;
 }
 
 @synthesize valid = _valid;
@@ -145,36 +143,36 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 RCT_EXPORT_MODULE()
 
-static NSString *RCTJSValueToNSString(JSContextRef context, JSValueRef value, JSValueRef *exception)
+static NSString *RCTJSValueToNSString(RCTJSCWrapper *jscWrapper, JSContextRef context, JSValueRef value, JSValueRef *exception)
 {
-  JSStringRef JSString = JSValueToStringCopy(context, value, exception);
+  JSStringRef JSString = jscWrapper->JSValueToStringCopy(context, value, exception);
   if (!JSString) {
     return nil;
   }
 
-  CFStringRef string = JSStringCopyCFString(kCFAllocatorDefault, JSString);
-  JSStringRelease(JSString);
+  CFStringRef string = jscWrapper->JSStringCopyCFString(kCFAllocatorDefault, JSString);
+  jscWrapper->JSStringRelease(JSString);
 
   return (__bridge_transfer NSString *)string;
 }
 
-static NSString *RCTJSValueToJSONString(JSContextRef context, JSValueRef value, JSValueRef *exception, unsigned indent)
+static NSString *RCTJSValueToJSONString(RCTJSCWrapper *jscWrapper, JSContextRef context, JSValueRef value, JSValueRef *exception, unsigned indent)
 {
-  JSStringRef JSString = JSValueCreateJSONString(context, value, indent, exception);
-  CFStringRef string = JSStringCopyCFString(kCFAllocatorDefault, JSString);
-  JSStringRelease(JSString);
+  JSStringRef jsString = jscWrapper->JSValueCreateJSONString(context, value, indent, exception);
+  CFStringRef string = jscWrapper->JSStringCopyCFString(kCFAllocatorDefault, jsString);
+  jscWrapper->JSStringRelease(jsString);
 
   return (__bridge_transfer NSString *)string;
 }
 
-NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
+static NSError *RCTNSErrorFromJSError(RCTJSCWrapper *jscWrapper, JSContextRef context, JSValueRef jsError)
 {
   NSMutableDictionary *errorInfo = [NSMutableDictionary new];
 
-  NSString *description = jsError ? RCTJSValueToNSString(context, jsError, NULL) : @"Unknown JS error";
+  NSString *description = jsError ? RCTJSValueToNSString(jscWrapper, context, jsError, NULL) : @"Unknown JS error";
   errorInfo[NSLocalizedDescriptionKey] = [@"Unhandled JS Exception: " stringByAppendingString:description];
 
-  NSString *details = jsError ? RCTJSValueToJSONString(context, jsError, NULL, 0) : nil;
+  NSString *details = jsError ? RCTJSValueToJSONString(jscWrapper, context, jsError, NULL, 0) : nil;
   if (details) {
     errorInfo[NSLocalizedFailureReasonErrorKey] = details;
 
@@ -220,6 +218,11 @@ NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
   return [NSError errorWithDomain:RCTErrorDomain code:1 userInfo:errorInfo];
 }
 
+- (NSError *)convertJSErrorToNSError:(JSValueRef)jsError context:(JSContextRef)context
+{
+  return RCTNSErrorFromJSError(_jscWrapper, context, jsError);
+}
+
 #if RCT_DEV
 
 static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
@@ -262,7 +265,13 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
 - (instancetype)init
 {
+  return [self initWithUseCustomJSCLibrary:NO];
+}
+
+- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
+{
   if (self = [super init]) {
+    _useCustomJSCLibrary = useCustomJSCLibrary;
     _valid = YES;
 
     _javaScriptThread = [[NSThread alloc] initWithTarget:[self class]
@@ -291,7 +300,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   }
 
   if (!_context) {
-    JSContext *context = [JSContext new];
+    JSContext *context = [_jscWrapper->JSContext new];
     _context = [[RCTJavaScriptContext alloc] initWithJSContext:context onThread:_javaScriptThread];
 
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptContextCreatedNotification
@@ -313,10 +322,23 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 {
   __weak RCTJSCExecutor *weakSelf = self;
 
-#ifdef WITH_FB_JSC_TUNING
   [self executeBlockOnJavaScriptQueue:^{
     RCTJSCExecutor *strongSelf = weakSelf;
     if (!strongSelf.valid) {
+      return;
+    }
+
+    strongSelf->_jscWrapper = RCTJSCWrapperCreate(strongSelf->_useCustomJSCLibrary);
+  }];
+
+
+  [self executeBlockOnJavaScriptQueue:^{
+    RCTJSCExecutor *strongSelf = weakSelf;
+    if (!strongSelf.valid) {
+      return;
+    }
+
+    if (strongSelf->_jscWrapper->configureJSContextForIOS == NULL) {
       return;
     }
 
@@ -324,10 +346,9 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     RCTAssert(cachesPath != nil, @"cachesPath should not be nil");
     if (cachesPath) {
       std::string path = std::string([cachesPath UTF8String]);
-      configureJSContextForIOS(strongSelf.context.ctx, path);
+      strongSelf->_jscWrapper->configureJSContextForIOS(strongSelf.context.ctx, path);
     }
   }];
-#endif
 
   [self addSynchronousHookWithName:@"noop" usingBlock:^{}];
 
@@ -368,7 +389,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     return @(CACurrentMediaTime() * 1000);
   }];
 
-#if RCT_DEV
+#if RCT_PROFILE
   if (RCTProfileIsProfiling()) {
     // Cheating, since it's not a "hook", but meh
     [self addSynchronousHookWithName:@"__RCTProfileIsProfiling" usingBlock:@YES];
@@ -394,13 +415,13 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     CFDictionaryRemoveValue(strongSelf->_cookieMap, (const void *)cookie);
   }];
 
-  [self addSynchronousHookWithName:@"nativeTraceBeginSection" usingBlock:^(NSNumber *tag, NSString *profileName){
+  [self addSynchronousHookWithName:@"nativeTraceBeginSection" usingBlock:^(NSNumber *tag, NSString *profileName, NSDictionary *args) {
     static int profileCounter = 1;
     if (!profileName) {
       profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
     }
 
-    RCT_PROFILE_BEGIN_EVENT(tag.longLongValue, profileName, nil);
+    RCT_PROFILE_BEGIN_EVENT(tag.longLongValue, profileName, args);
   }];
 
   [self addSynchronousHookWithName:@"nativeTraceEndSection" usingBlock:^(NSNumber *tag) {
@@ -447,7 +468,9 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
                                                  name:event
                                                object:nil];
   }
+#endif
 
+#if RCT_DEV
   // Inject handler used by HMR
   [self addSynchronousHookWithName:@"nativeInjectHMRUpdate" usingBlock:^(NSString *sourceCode, NSString *sourceCodeURL) {
     RCTJSCExecutor *strongSelf = weakSelf;
@@ -455,11 +478,12 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return;
     }
 
-    JSStringRef execJSString = JSStringCreateWithUTF8CString(sourceCode.UTF8String);
-    JSStringRef jsURL = JSStringCreateWithUTF8CString(sourceCodeURL.UTF8String);
-    JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, jsURL, 0, NULL);
-    JSStringRelease(jsURL);
-    JSStringRelease(execJSString);
+    RCTJSCWrapper *jscWrapper = strongSelf->_jscWrapper;
+    JSStringRef execJSString = jscWrapper->JSStringCreateWithUTF8CString(sourceCode.UTF8String);
+    JSStringRef jsURL = jscWrapper->JSStringCreateWithUTF8CString(sourceCodeURL.UTF8String);
+    jscWrapper->JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, jsURL, 0, NULL);
+    jscWrapper->JSStringRelease(jsURL);
+    jscWrapper->JSStringRelease(execJSString);
   }];
 #endif
 }
@@ -497,6 +521,12 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
   _randomAccessBundle.bundle.reset();
   _randomAccessBundle.table.reset();
+
+  if (_jscWrapper) {
+    RCTJSCWrapperRelease(_jscWrapper);
+    _jscWrapper = NULL;
+  }
+
   if (_cookieMap) {
     CFRelease(_cookieMap);
   }
@@ -540,41 +570,46 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
     JSValueRef errorJSRef = NULL;
     JSValueRef resultJSRef = NULL;
-    JSGlobalContextRef contextJSRef = JSContextGetGlobalContext(strongSelf->_context.ctx);
+    RCTJSCWrapper *jscWrapper = strongSelf->_jscWrapper;
+    JSGlobalContextRef contextJSRef = jscWrapper->JSContextGetGlobalContext(strongSelf->_context.ctx);
     JSContext *context = strongSelf->_context.context;
-    JSObjectRef globalObjectJSRef = JSContextGetGlobalObject(strongSelf->_context.ctx);
+    JSObjectRef globalObjectJSRef = jscWrapper->JSContextGetGlobalObject(strongSelf->_context.ctx);
 
     // get the BatchedBridge object
-    JSStringRef moduleNameJSStringRef = JSStringCreateWithUTF8CString("__fbBatchedBridge");
-    JSValueRef moduleJSRef = JSObjectGetProperty(contextJSRef, globalObjectJSRef, moduleNameJSStringRef, &errorJSRef);
-    JSStringRelease(moduleNameJSStringRef);
+    JSValueRef batchedBridgeRef = strongSelf->_batchedBridgeRef;
+    if (!batchedBridgeRef) {
+      JSStringRef moduleNameJSStringRef = jscWrapper->JSStringCreateWithUTF8CString("__fbBatchedBridge");
+      batchedBridgeRef = jscWrapper->JSObjectGetProperty(contextJSRef, globalObjectJSRef, moduleNameJSStringRef, &errorJSRef);
+      jscWrapper->JSStringRelease(moduleNameJSStringRef);
+      strongSelf->_batchedBridgeRef = batchedBridgeRef;
+    }
 
-    if (moduleJSRef != NULL && errorJSRef == NULL && !JSValueIsUndefined(contextJSRef, moduleJSRef)) {
+    if (batchedBridgeRef != NULL && errorJSRef == NULL && !jscWrapper->JSValueIsUndefined(contextJSRef, batchedBridgeRef)) {
       // get method
-      JSStringRef methodNameJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)method);
-      JSValueRef methodJSRef = JSObjectGetProperty(contextJSRef, (JSObjectRef)moduleJSRef, methodNameJSStringRef, &errorJSRef);
-      JSStringRelease(methodNameJSStringRef);
+      JSStringRef methodNameJSStringRef = jscWrapper->JSStringCreateWithCFString((__bridge CFStringRef)method);
+      JSValueRef methodJSRef = jscWrapper->JSObjectGetProperty(contextJSRef, (JSObjectRef)batchedBridgeRef, methodNameJSStringRef, &errorJSRef);
+      jscWrapper->JSStringRelease(methodNameJSStringRef);
 
-      if (methodJSRef != NULL && errorJSRef == NULL && !JSValueIsUndefined(contextJSRef, methodJSRef)) {
+      if (methodJSRef != NULL && errorJSRef == NULL && !jscWrapper->JSValueIsUndefined(contextJSRef, methodJSRef)) {
         JSValueRef jsArgs[arguments.count];
         for (NSUInteger i = 0; i < arguments.count; i++) {
-          jsArgs[i] = [JSValue valueWithObject:arguments[i] inContext:context].JSValueRef;
+          jsArgs[i] = [jscWrapper->JSValue valueWithObject:arguments[i] inContext:context].JSValueRef;
         }
-        resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, arguments.count, jsArgs, &errorJSRef);
+        resultJSRef = jscWrapper->JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)batchedBridgeRef, arguments.count, jsArgs, &errorJSRef);
       } else {
-        if (!errorJSRef && JSValueIsUndefined(contextJSRef, methodJSRef)) {
+        if (!errorJSRef && jscWrapper->JSValueIsUndefined(contextJSRef, methodJSRef)) {
           error = RCTErrorWithMessage([NSString stringWithFormat:@"Unable to execute JS call: method %@ is undefined", method]);
         }
       }
     } else {
-      if (!errorJSRef && JSValueIsUndefined(contextJSRef, moduleJSRef)) {
+      if (!errorJSRef && jscWrapper->JSValueIsUndefined(contextJSRef, batchedBridgeRef)) {
         error = RCTErrorWithMessage(@"Unable to execute JS call: __fbBatchedBridge is undefined");
       }
     }
 
     if (errorJSRef || error) {
       if (!error) {
-        error = RCTNSErrorFromJSError(contextJSRef, errorJSRef);
+        error = RCTNSErrorFromJSError(jscWrapper, contextJSRef, errorJSRef);
       }
       onComplete(nil, error);
       return;
@@ -586,8 +621,8 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     id objcValue;
     // We often return `null` from JS when there is nothing for native side. JSONKit takes an extra hundred microseconds
     // to handle this simple case, so we are adding a shortcut to make executeJSCall method even faster
-    if (!JSValueIsNull(contextJSRef, resultJSRef)) {
-      objcValue = [[JSValue valueWithJSValueRef:resultJSRef inContext:context] toObject];
+    if (!jscWrapper->JSValueIsNull(contextJSRef, resultJSRef)) {
+      objcValue = [[jscWrapper->JSValue valueWithJSValueRef:resultJSRef inContext:context] toObject];
     }
 
     onComplete(objcValue, nil);
@@ -625,8 +660,6 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     script = nullTerminatedScript;
   }
 
-  _bundleURL = JSStringCreateWithUTF8CString(sourceURL.absoluteString.UTF8String);
-
   __weak RCTJSCExecutor *weakSelf = self;
 
   [self executeBlockOnJavaScriptQueue:RCTProfileBlock((^{
@@ -638,15 +671,18 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     RCTPerformanceLoggerStart(RCTPLScriptExecution);
 
     JSValueRef jsError = NULL;
-    JSStringRef execJSString = JSStringCreateWithUTF8CString((const char *)script.bytes);
-    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, _bundleURL, 0, &jsError);
-    JSStringRelease(execJSString);
+    RCTJSCWrapper *jscWrapper = strongSelf->_jscWrapper;
+    JSStringRef execJSString = jscWrapper->JSStringCreateWithUTF8CString((const char *)script.bytes);
+    JSStringRef bundleURL = jscWrapper->JSStringCreateWithUTF8CString(sourceURL.absoluteString.UTF8String);
+    JSValueRef result = jscWrapper->JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, bundleURL, 0, &jsError);
+    jscWrapper->JSStringRelease(bundleURL);
+    jscWrapper->JSStringRelease(execJSString);
     RCTPerformanceLoggerEnd(RCTPLScriptExecution);
 
     if (onComplete) {
       NSError *error;
       if (!result) {
-        error = RCTNSErrorFromJSError(strongSelf->_context.ctx, jsError);
+        error = RCTNSErrorFromJSError(jscWrapper, strongSelf->_context.ctx, jsError);
       }
       onComplete(error);
     }
@@ -685,9 +721,11 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     if (!strongSelf || !strongSelf.isValid) {
       return;
     }
-    JSStringRef execJSString = JSStringCreateWithCFString((__bridge CFStringRef)script);
-    JSValueRef valueToInject = JSValueMakeFromJSONString(strongSelf->_context.ctx, execJSString);
-    JSStringRelease(execJSString);
+
+    RCTJSCWrapper *jscWrapper = strongSelf->_jscWrapper;
+    JSStringRef execJSString = jscWrapper->JSStringCreateWithCFString((__bridge CFStringRef)script);
+    JSValueRef valueToInject = jscWrapper->JSValueMakeFromJSONString(strongSelf->_context.ctx, execJSString);
+    jscWrapper->JSStringRelease(execJSString);
 
     if (!valueToInject) {
       NSString *errorDesc = [NSString stringWithFormat:@"Can't make JSON value from script '%@'", script];
@@ -700,17 +738,17 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return;
     }
 
-    JSObjectRef globalObject = JSContextGetGlobalObject(strongSelf->_context.ctx);
-    JSStringRef JSName = JSStringCreateWithCFString((__bridge CFStringRef)objectName);
-    JSObjectSetProperty(strongSelf->_context.ctx, globalObject, JSName, valueToInject, kJSPropertyAttributeNone, NULL);
-    JSStringRelease(JSName);
+    JSObjectRef globalObject = jscWrapper->JSContextGetGlobalObject(strongSelf->_context.ctx);
+    JSStringRef JSName = jscWrapper->JSStringCreateWithCFString((__bridge CFStringRef)objectName);
+    jscWrapper->JSObjectSetProperty(strongSelf->_context.ctx, globalObject, JSName, valueToInject, kJSPropertyAttributeNone, NULL);
+    jscWrapper->JSStringRelease(JSName);
     if (onComplete) {
       onComplete(nil);
     }
   }), 0, @"js_call,json_call", (@{@"objectName": objectName}))];
 }
 
-static bool readRandomAccessModule(const RandomAccessBundleData& bundleData, size_t offset, size_t size, char *data)
+static bool readRandomAccessModule(const RandomAccessBundleData &bundleData, size_t offset, size_t size, char *data)
 {
   return fseek(bundleData.bundle.get(), offset + bundleData.baseOffset, SEEK_SET) == 0 &&
          fread(data, 1, size, bundleData.bundle.get()) == size;
@@ -718,26 +756,27 @@ static bool readRandomAccessModule(const RandomAccessBundleData& bundleData, siz
 
 static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleID, size_t offset, size_t size)
 {
-  auto data = std::unique_ptr<char[]>(new char[size]);
+  auto data = std::make_unique<char[]>(size);
   if (!readRandomAccessModule(executor->_randomAccessBundle, offset, size, data.get())) {
     RCTFatal(RCTErrorWithMessage(@"Error loading RAM module"));
     return;
   }
 
-  static char url[14]; // 10 = maximum decimal digits in a 32bit unsigned int + ".js" + null byte
+  char url[14]; // 10 = maximum decimal digits in a 32bit unsigned int + ".js" + null byte
   sprintf(url, "%" PRIu32 ".js", moduleID);
 
-  JSStringRef code = JSStringCreateWithUTF8CString(data.get());
+  RCTJSCWrapper *jscWrapper = executor->_jscWrapper;
+  JSStringRef code = jscWrapper->JSStringCreateWithUTF8CString(data.get());
   JSValueRef jsError = NULL;
-  JSStringRef sourceURL = JSStringCreateWithUTF8CString(url);
-  JSValueRef result = JSEvaluateScript(executor->_context.ctx, code, NULL, sourceURL, 0, &jsError);
+  JSStringRef sourceURL = jscWrapper->JSStringCreateWithUTF8CString(url);
+  JSValueRef result = jscWrapper->JSEvaluateScript(executor->_context.ctx, code, NULL, sourceURL, 0, &jsError);
 
-  JSStringRelease(code);
-  JSStringRelease(sourceURL);
+  jscWrapper->JSStringRelease(code);
+  jscWrapper->JSStringRelease(sourceURL);
 
   if (!result) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      RCTFatal(RCTNSErrorFromJSError(executor->_context.ctx, jsError));
+      RCTFatal(RCTNSErrorFromJSError(jscWrapper, executor->_context.ctx, jsError));
       [executor invalidate];
     });
   }
@@ -758,7 +797,7 @@ static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleI
 
     RCTPerformanceLoggerAdd(RCTPLRAMNativeRequiresCount, 1);
     RCTPerformanceLoggerAppendStart(RCTPLRAMNativeRequires);
-    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, 
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
                             [@"nativeRequire_" stringByAppendingFormat:@"%@", moduleID], nil);
 
     const uint32_t ID = [moduleID unsignedIntValue];
@@ -781,7 +820,7 @@ static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleI
   }];
 }
 
-static RandomAccessBundleStartupCode readRAMBundle(file_ptr bundle, RandomAccessBundleData& randomAccessBundle)
+static RandomAccessBundleStartupCode readRAMBundle(file_ptr bundle, RandomAccessBundleData &randomAccessBundle)
 {
   // read in magic header, number of entries, and length of the startup section
   uint32_t header[3];
@@ -794,7 +833,7 @@ static RandomAccessBundleStartupCode readRAMBundle(file_ptr bundle, RandomAccess
   const size_t tableSize = numTableEntries * sizeof(ModuleData);
 
   // allocate memory for meta data and lookup table. malloc instead of new to avoid constructor calls
-  table_ptr table(static_cast<ModuleData *>(malloc(tableSize)), free);
+  auto table = std::make_unique<ModuleData[]>(numTableEntries);
   if (!table) {
     return RandomAccessBundleStartupCode::empty();
   }
@@ -847,13 +886,10 @@ static RandomAccessBundleStartupCode readRAMBundle(file_ptr bundle, RandomAccess
 
 RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)name)
 {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wtautological-pointer-compare"
-  if (JSGlobalContextSetName != NULL) {
-#pragma clang diagnostic pop
-    JSStringRef JSName = JSStringCreateWithCFString((__bridge CFStringRef)name);
-    JSGlobalContextSetName(_context.ctx, JSName);
-    JSStringRelease(JSName);
+  if (_jscWrapper->JSGlobalContextSetName != NULL) {
+    JSStringRef JSName = _jscWrapper->JSStringCreateWithCFString((__bridge CFStringRef)name);
+    _jscWrapper->JSGlobalContextSetName(_context.ctx, JSName);
+    _jscWrapper->JSStringRelease(JSName);
   }
 }
 

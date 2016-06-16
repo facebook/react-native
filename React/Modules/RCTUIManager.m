@@ -57,8 +57,6 @@ NSString *const RCTUIManagerRootViewKey = @"RCTUIManagerRootViewKey";
 @property (nonatomic, readonly) NSTimeInterval duration;
 @property (nonatomic, readonly) NSTimeInterval delay;
 @property (nonatomic, readonly, copy) NSString *property;
-@property (nonatomic, readonly) id fromValue;
-@property (nonatomic, readonly) id toValue;
 @property (nonatomic, readonly) CGFloat springDamping;
 @property (nonatomic, readonly) CGFloat initialVelocity;
 @property (nonatomic, readonly) RCTAnimationType animationType;
@@ -136,8 +134,6 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
       _springDamping = [RCTConvert CGFloat:config[@"springDamping"]];
       _initialVelocity = [RCTConvert CGFloat:config[@"initialVelocity"]];
     }
-    _fromValue = config[@"fromValue"];
-    _toValue = config[@"toValue"];
   }
   return self;
 }
@@ -214,6 +210,7 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
 
   // Animation
   RCTLayoutAnimation *_layoutAnimation; // Main thread only
+  NSMutableSet<UIView *> *_viewsToBeDeleted; // Main thread only
 
   NSMutableDictionary<NSNumber *, RCTShadowView *> *_shadowViewRegistry; // RCT thread only
   NSMutableDictionary<NSNumber *, UIView *> *_viewRegistry; // Main thread only
@@ -253,8 +250,11 @@ RCT_EXPORT_MODULE()
       !UIInterfaceOrientationIsPortrait(nextOrientation)) ||
       (UIInterfaceOrientationIsLandscape(_currentInterfaceOrientation) &&
       !UIInterfaceOrientationIsLandscape(nextOrientation))) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
                                                 body:RCTExportedDimensions(YES)];
+#pragma clang diagnostic pop
   }
 
   _currentInterfaceOrientation = nextOrientation;
@@ -319,6 +319,8 @@ RCT_EXPORT_MODULE()
 
   _bridgeTransactionListeners = [NSMutableSet new];
 
+  _viewsToBeDeleted = [NSMutableSet new];
+
   // Get view managers from bridge
   NSMutableDictionary *componentDataByName = [NSMutableDictionary new];
   for (Class moduleClass in _bridge.moduleClasses) {
@@ -340,7 +342,6 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(interfaceOrientationWillChange:)
                                                name:UIApplicationWillChangeStatusBarOrientationNotification
                                              object:nil];
-
   [RCTAnimation initializeStatics];
 }
 
@@ -367,7 +368,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
 - (void)registerRootView:(UIView *)rootView withSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   NSNumber *reactTag = rootView.reactTag;
   RCTAssert(RCTIsReactRootView(reactTag),
@@ -405,13 +406,13 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
 - (UIView *)viewForReactTag:(NSNumber *)reactTag
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
   return _viewRegistry[reactTag];
 }
 
 - (void)setFrame:(CGRect)frame forView:(UIView *)view
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   // The following variable has no meaning if the view is not a react root view
   RCTRootViewSizeFlexibility sizeFlexibility = RCTRootViewSizeFlexibilityNone;
@@ -454,7 +455,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
 - (void)setIntrinsicContentSize:(CGSize)size forView:(UIView *)view
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   NSNumber *reactTag = view.reactTag;
   dispatch_async(RCTGetUIManagerQueue(), ^{
@@ -469,7 +470,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
 - (void)setBackgroundColor:(UIColor *)color forView:(UIView *)view
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   NSNumber *reactTag = view.reactTag;
 
@@ -535,7 +536,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
 - (RCTViewManagerUIBlock)uiBlockWithLayoutUpdateForRootView:(RCTRootShadowView *)rootShadowView
 {
-  RCTAssert(![NSThread isMainThread], @"Should be called on shadow thread");
+  RCTAssert(!RCTIsMainQueue(), @"Should be called on shadow queue");
 
   // This is nuanced. In the JS thread, we create a new update buffer
   // `frameTags`/`frames` that is created/mutated in the JS thread. We access
@@ -549,42 +550,47 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
     return nil;
   }
 
-  // Parallel arrays are built and then handed off to main thread
-  NSMutableArray<NSNumber *> *frameReactTags =
-    [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
-  NSMutableArray<NSValue *> *frames =
-    [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
-  NSMutableArray<NSNumber *> *areNew =
-    [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
-  NSMutableArray<NSNumber *> *parentsAreNew =
-    [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
-  NSMutableDictionary<NSNumber *, RCTViewManagerUIBlock> *updateBlocks =
-    [NSMutableDictionary new];
-  NSMutableArray<NSNumber *> *areHidden =
-    [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
+  typedef struct {
+    CGRect frame;
+    BOOL isNew;
+    BOOL parentIsNew;
+    BOOL isHidden;
+  } RCTFrameData;
 
-  for (RCTShadowView *shadowView in viewsWithNewFrames) {
-    [frameReactTags addObject:shadowView.reactTag];
-    [frames addObject:[NSValue valueWithCGRect:shadowView.frame]];
-    [areNew addObject:@(shadowView.isNewView)];
-    [parentsAreNew addObject:@(shadowView.superview.isNewView)];
-    [areHidden addObject:@(shadowView.isHidden)];
-  }
-
-  for (RCTShadowView *shadowView in viewsWithNewFrames) {
-    // We have to do this after we build the parentsAreNew array.
-    shadowView.newView = NO;
+  // Construct arrays then hand off to main thread
+  NSInteger count = viewsWithNewFrames.count;
+  NSMutableArray *reactTags = [[NSMutableArray alloc] initWithCapacity:count];
+  NSMutableData *framesData = [[NSMutableData alloc] initWithLength:sizeof(RCTFrameData) * count];
+  {
+    NSInteger index = 0;
+    RCTFrameData *frameDataArray = (RCTFrameData *)framesData.mutableBytes;
+    for (RCTShadowView *shadowView in viewsWithNewFrames) {
+      reactTags[index] = shadowView.reactTag;
+      frameDataArray[index++] = (RCTFrameData){
+        shadowView.frame,
+        shadowView.isNewView,
+        shadowView.superview.isNewView,
+        shadowView.isHidden,
+      };
+    }
   }
 
   // These are blocks to be executed on each view, immediately after
   // reactSetFrame: has been called. Note that if reactSetFrame: is not called,
   // these won't be called either, so this is not a suitable place to update
   // properties that aren't related to layout.
+  NSMutableDictionary<NSNumber *, RCTViewManagerUIBlock> *updateBlocks =
+  [NSMutableDictionary new];
   for (RCTShadowView *shadowView in viewsWithNewFrames) {
+
+    // We have to do this after we build the parentsAreNew array.
+    shadowView.newView = NO;
+
+    NSNumber *reactTag = shadowView.reactTag;
     RCTViewManager *manager = [_componentDataByName[shadowView.viewName] manager];
     RCTViewManagerUIBlock block = [manager uiBlockToAmendWithShadowView:shadowView];
     if (block) {
-      updateBlocks[shadowView.reactTag] = block;
+      updateBlocks[reactTag] = block;
     }
 
     if (shadowView.onLayout) {
@@ -599,8 +605,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
       });
     }
 
-    if (RCTIsReactRootView(shadowView.reactTag)) {
-      NSNumber *reactTag = shadowView.reactTag;
+    if (RCTIsReactRootView(reactTag)) {
       CGSize contentSize = shadowView.frame.size;
 
       dispatch_async(dispatch_get_main_queue(), ^{
@@ -615,23 +620,28 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
   // Perform layout (possibly animated)
   return ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    RCTLayoutAnimation *layoutAnimation = _layoutAnimation;
+
+    const RCTFrameData *frameDataArray = (const RCTFrameData *)framesData.bytes;
+    RCTLayoutAnimation *layoutAnimation = uiManager->_layoutAnimation;
 
     __block NSUInteger completionsCalled = 0;
-    for (NSUInteger ii = 0; ii < frames.count; ii++) {
-      NSNumber *reactTag = frameReactTags[ii];
-      UIView *view = viewRegistry[reactTag];
-      CGRect frame = [frames[ii] CGRectValue];
 
-      BOOL isHidden = [areHidden[ii] boolValue];
-      BOOL isNew = [areNew[ii] boolValue];
+    NSInteger index = 0;
+    for (NSNumber *reactTag in reactTags) {
+      RCTFrameData frameData = frameDataArray[index++];
+
+      UIView *view = viewRegistry[reactTag];
+      CGRect frame = frameData.frame;
+
+      BOOL isHidden = frameData.isHidden;
+      BOOL isNew = frameData.isNew;
       RCTAnimation *updateAnimation = isNew ? nil : layoutAnimation.updateAnimation;
-      BOOL shouldAnimateCreation = isNew && ![parentsAreNew[ii] boolValue];
+      BOOL shouldAnimateCreation = isNew && !frameData.parentIsNew;
       RCTAnimation *createAnimation = shouldAnimateCreation ? layoutAnimation.createAnimation : nil;
 
       void (^completion)(BOOL) = ^(BOOL finished) {
         completionsCalled++;
-        if (layoutAnimation.callback && completionsCalled == frames.count) {
+        if (layoutAnimation.callback && completionsCalled == count) {
           layoutAnimation.callback(@[@(finished)]);
 
           // It's unsafe to call this callback more than once, so we nil it out here
@@ -644,58 +654,59 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
         view.hidden = isHidden;
       }
 
-      // Animate view creation
+      RCTViewManagerUIBlock updateBlock = updateBlocks[reactTag];
       if (createAnimation) {
+
+        // Animate view creation
         [view reactSetFrame:frame];
 
         CATransform3D finalTransform = view.layer.transform;
         CGFloat finalOpacity = view.layer.opacity;
-        if ([createAnimation.property isEqualToString:@"scaleXY"]) {
+
+        NSString *property = createAnimation.property;
+        if ([property isEqualToString:@"scaleXY"]) {
           view.layer.transform = CATransform3DMakeScale(0, 0, 0);
-        } else if ([createAnimation.property isEqualToString:@"opacity"]) {
+        } else if ([property isEqualToString:@"opacity"]) {
           view.layer.opacity = 0.0;
+        } else {
+          RCTLogError(@"Unsupported layout animation createConfig property %@",
+                      createAnimation.property);
         }
 
         [createAnimation performAnimations:^{
-          if ([createAnimation.property isEqual:@"scaleXY"]) {
+          if ([property isEqualToString:@"scaleXY"]) {
             view.layer.transform = finalTransform;
-          } else if ([createAnimation.property isEqual:@"opacity"]) {
+          } else if ([property isEqualToString:@"opacity"]) {
             view.layer.opacity = finalOpacity;
-          } else {
-            RCTLogError(@"Unsupported layout animation createConfig property %@",
-                        createAnimation.property);
           }
-
-          RCTViewManagerUIBlock updateBlock = updateBlocks[reactTag];
           if (updateBlock) {
-            updateBlock(self, _viewRegistry);
+            updateBlock(self, viewRegistry);
           }
         } withCompletionBlock:completion];
 
-      // Animate view update
       } else if (updateAnimation) {
+
+        // Animate view update
         [updateAnimation performAnimations:^{
           [view reactSetFrame:frame];
-
-          RCTViewManagerUIBlock updateBlock = updateBlocks[reactTag];
           if (updateBlock) {
-            updateBlock(self, _viewRegistry);
+            updateBlock(self, viewRegistry);
           }
         } withCompletionBlock:completion];
 
-      // Update without animation
       } else {
-        [view reactSetFrame:frame];
 
-        RCTViewManagerUIBlock updateBlock = updateBlocks[reactTag];
+        // Update without animation
+        [view reactSetFrame:frame];
         if (updateBlock) {
-          updateBlock(self, _viewRegistry);
+          updateBlock(self, viewRegistry);
         }
         completion(YES);
       }
     }
 
-    _layoutAnimation = nil;
+    // Clean up
+    uiManager->_layoutAnimation = nil;
   };
 }
 
@@ -769,51 +780,60 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
 
 - (void)_removeChildren:(NSArray<id<RCTComponent>> *)children
           fromContainer:(id<RCTComponent>)container
-              permanent:(BOOL)permanent
 {
-  RCTLayoutAnimation *layoutAnimation = _layoutAnimation;
-  RCTAnimation *deleteAnimation = layoutAnimation.deleteAnimation;
+  for (id<RCTComponent> removedChild in children) {
+    [container removeReactSubview:removedChild];
+  }
+}
+
+/**
+ * Remove subviews from their parent with an animation.
+ */
+- (void)_removeChildren:(NSArray<UIView *> *)children
+          fromContainer:(UIView *)container
+          withAnimation:(RCTLayoutAnimation *)animation
+{
+  RCTAssertMainQueue();
+  RCTAnimation *deleteAnimation = animation.deleteAnimation;
 
   __block NSUInteger completionsCalled = 0;
-
-  for (id<RCTComponent> removedChild in children) {
+  for (UIView *removedChild in children) {
 
     void (^completion)(BOOL) = ^(BOOL finished) {
       completionsCalled++;
 
+      [_viewsToBeDeleted removeObject:removedChild];
       [container removeReactSubview:removedChild];
 
-      if (layoutAnimation.callback && completionsCalled == children.count) {
-        layoutAnimation.callback(@[@(finished)]);
+      if (animation.callback && completionsCalled == children.count) {
+        animation.callback(@[@(finished)]);
 
         // It's unsafe to call this callback more than once, so we nil it out here
         // to make sure that doesn't happen.
-        layoutAnimation.callback = nil;
+        animation.callback = nil;
       }
     };
 
-    if (permanent && deleteAnimation && [removedChild isKindOfClass: [UIView class]]) {
-      UIView *view = (UIView *)removedChild;
+    [_viewsToBeDeleted addObject:removedChild];
 
-      // Disable user interaction while the view is animating since JS won't receive
-      // the view events anyway.
-      view.userInteractionEnabled = NO;
+    // Disable user interaction while the view is animating since JS won't receive
+    // the view events anyway.
+    removedChild.userInteractionEnabled = NO;
 
-      [deleteAnimation performAnimations:^{
-        if ([deleteAnimation.property isEqual:@"scaleXY"]) {
-          view.layer.transform = CATransform3DMakeScale(0, 0, 0);
-        } else if ([deleteAnimation.property isEqual:@"opacity"]) {
-          view.layer.opacity = 0.0;
-        } else {
-          RCTLogError(@"Unsupported layout animation createConfig property %@",
-                      deleteAnimation.property);
-        }
-      } withCompletionBlock:completion];
-    } else {
-      [container removeReactSubview:removedChild];
-    }
+    NSString *property = deleteAnimation.property;
+    [deleteAnimation performAnimations:^{
+      if ([property isEqualToString:@"scaleXY"]) {
+        removedChild.layer.transform = CATransform3DMakeScale(0, 0, 0);
+      } else if ([property isEqualToString:@"opacity"]) {
+        removedChild.layer.opacity = 0.0;
+      } else {
+        RCTLogError(@"Unsupported layout animation createConfig property %@",
+                    deleteAnimation.property);
+      }
+    } withCompletionBlock:completion];
   }
 }
+
 
 RCT_EXPORT_METHOD(removeRootView:(nonnull NSNumber *)rootReactTag)
 {
@@ -825,7 +845,7 @@ RCT_EXPORT_METHOD(removeRootView:(nonnull NSNumber *)rootReactTag)
   [_rootViewTags removeObject:rootReactTag];
 
   [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
-    RCTAssertMainThread();
+    RCTAssertMainQueue();
     UIView *rootView = viewRegistry[rootReactTag];
     [uiManager _purgeChildren:(NSArray<id<RCTComponent>> *)rootView.reactSubviews
                  fromRegistry:(NSMutableDictionary<NSNumber *, id<RCTComponent>> *)viewRegistry];
@@ -885,14 +905,14 @@ static void RCTSetChildren(NSNumber *containerTag,
   }
 }
 
-RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
+RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
                   moveFromIndices:(NSArray<NSNumber *> *)moveFromIndices
                   moveToIndices:(NSArray<NSNumber *> *)moveToIndices
                   addChildReactTags:(NSArray<NSNumber *> *)addChildReactTags
                   addAtIndices:(NSArray<NSNumber *> *)addAtIndices
                   removeAtIndices:(NSArray<NSNumber *> *)removeAtIndices)
 {
-  [self _manageChildren:containerReactTag
+  [self _manageChildren:containerTag
         moveFromIndices:moveFromIndices
           moveToIndices:moveToIndices
       addChildReactTags:addChildReactTags
@@ -901,7 +921,7 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
                registry:(NSMutableDictionary<NSNumber *, id<RCTComponent>> *)_shadowViewRegistry];
 
   [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
-    [uiManager _manageChildren:containerReactTag
+    [uiManager _manageChildren:containerTag
                moveFromIndices:moveFromIndices
                  moveToIndices:moveToIndices
              addChildReactTags:addChildReactTags
@@ -911,7 +931,7 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
   }];
 }
 
-- (void)_manageChildren:(NSNumber *)containerReactTag
+- (void)_manageChildren:(NSNumber *)containerTag
         moveFromIndices:(NSArray<NSNumber *> *)moveFromIndices
           moveToIndices:(NSArray<NSNumber *> *)moveToIndices
       addChildReactTags:(NSArray<NSNumber *> *)addChildReactTags
@@ -919,7 +939,7 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
         removeAtIndices:(NSArray<NSNumber *> *)removeAtIndices
                registry:(NSMutableDictionary<NSNumber *, id<RCTComponent>> *)registry
 {
-  id<RCTComponent> container = registry[containerReactTag];
+  id<RCTComponent> container = registry[containerTag];
   RCTAssert(moveFromIndices.count == moveToIndices.count, @"moveFromIndices had size %tu, moveToIndices had size %tu", moveFromIndices.count, moveToIndices.count);
   RCTAssert(addChildReactTags.count == addAtIndices.count, @"there should be at least one React child to add");
 
@@ -928,12 +948,18 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
     [self _childrenToRemoveFromContainer:container atIndices:removeAtIndices];
   NSArray<id<RCTComponent>> *temporarilyRemovedChildren =
     [self _childrenToRemoveFromContainer:container atIndices:moveFromIndices];
-  [self _removeChildren:permanentlyRemovedChildren fromContainer:container permanent:true];
-  [self _removeChildren:temporarilyRemovedChildren fromContainer:container permanent:false];
 
+  BOOL isUIViewRegistry = ((id)registry == (id)_viewRegistry);
+  if (isUIViewRegistry && _layoutAnimation.deleteAnimation) {
+    [self _removeChildren:(NSArray<UIView *> *)permanentlyRemovedChildren
+            fromContainer:(UIView *)container
+            withAnimation:_layoutAnimation];
+  } else {
+    [self _removeChildren:permanentlyRemovedChildren fromContainer:container];
+  }
+
+  [self _removeChildren:temporarilyRemovedChildren fromContainer:container];
   [self _purgeChildren:permanentlyRemovedChildren fromRegistry:registry];
-
-  // TODO (#5906496): optimize all these loops - constantly calling array.count is not efficient
 
   // Figure out what to insert - merge temporary inserts and adds
   NSMutableDictionary *destinationsToChildrenToAdd = [NSMutableDictionary dictionary];
@@ -950,8 +976,22 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
   NSArray<NSNumber *> *sortedIndices =
     [destinationsToChildrenToAdd.allKeys sortedArrayUsingSelector:@selector(compare:)];
   for (NSNumber *reactIndex in sortedIndices) {
+    NSInteger insertAtIndex = reactIndex.integerValue;
+
+    // When performing a delete animation, views are not removed immediately
+    // from their container so we need to offset the insertion index if a view
+    // that will be removed appears earlier than the view we are inserting.
+    if (isUIViewRegistry && _viewsToBeDeleted.count > 0) {
+      for (NSInteger index = 0; index < insertAtIndex; index++) {
+        UIView *subview = ((UIView *)container).reactSubviews[index];
+        if ([_viewsToBeDeleted containsObject:subview]) {
+          insertAtIndex++;
+        }
+      }
+    }
+
     [container insertReactSubview:destinationsToChildrenToAdd[reactIndex]
-                          atIndex:reactIndex.integerValue];
+                          atIndex:insertAtIndex];
   }
 }
 
@@ -1022,8 +1062,9 @@ RCT_EXPORT_METHOD(focus:(nonnull NSNumber *)reactTag)
   [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     UIView *newResponder = viewRegistry[reactTag];
     [newResponder reactWillMakeFirstResponder];
-    [newResponder becomeFirstResponder];
-    [newResponder reactDidMakeFirstResponder];
+    if ([newResponder becomeFirstResponder]) {
+      [newResponder reactDidMakeFirstResponder];
+    }
   }];
 }
 
@@ -1477,7 +1518,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
 
 static NSDictionary *RCTExportedDimensions(BOOL rotateBounds)
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   // Don't use RCTScreenSize since it the interface orientation doesn't apply to it
   CGRect screenSize = [[UIScreen mainScreen] bounds];

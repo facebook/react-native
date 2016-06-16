@@ -17,6 +17,7 @@
 #import "RCTShadowRawText.h"
 #import "RCTText.h"
 #import "RCTUtils.h"
+#import "RCTConvert.h"
 
 NSString *const RCTShadowViewAttributeName = @"RCTShadowViewAttributeName";
 NSString *const RCTIsHighlightedAttributeName = @"IsHighlightedAttributeName";
@@ -125,7 +126,7 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
   NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
   [layoutManager.textStorage enumerateAttribute:RCTShadowViewAttributeName inRange:characterRange options:0 usingBlock:^(RCTShadowView *child, NSRange range, BOOL *_) {
-    if (child != nil) {
+    if (child) {
       css_node_t *childNode = child.cssNode;
       float width = childNode->style.dimensions[CSS_WIDTH];
       float height = childNode->style.dimensions[CSS_HEIGHT];
@@ -166,7 +167,13 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
 
   NSTextContainer *textContainer = [NSTextContainer new];
   textContainer.lineFragmentPadding = 0.0;
-  textContainer.lineBreakMode = _numberOfLines > 0 ? NSLineBreakByTruncatingTail : NSLineBreakByClipping;
+  
+  if (_numberOfLines > 0) {
+    textContainer.lineBreakMode = _lineBreakMode;
+  } else {
+    textContainer.lineBreakMode = NSLineBreakByClipping;
+  }
+  
   textContainer.maximumNumberOfLines = _numberOfLines;
   textContainer.size = (CGSize){widthMode == CSS_MEASURE_MODE_UNDEFINED ? CGFLOAT_MAX : width, CGFLOAT_MAX};
 
@@ -443,6 +450,7 @@ RCT_TEXT_PROPERTY(IsHighlighted, _isHighlighted, BOOL)
 RCT_TEXT_PROPERTY(LetterSpacing, _letterSpacing, CGFloat)
 RCT_TEXT_PROPERTY(LineHeight, _lineHeight, CGFloat)
 RCT_TEXT_PROPERTY(NumberOfLines, _numberOfLines, NSUInteger)
+RCT_TEXT_PROPERTY(LineBreakMode, _lineBreakMode, NSLineBreakMode)
 RCT_TEXT_PROPERTY(TextAlign, _textAlign, NSTextAlignment)
 RCT_TEXT_PROPERTY(TextDecorationColor, _textDecorationColor, UIColor *);
 RCT_TEXT_PROPERTY(TextDecorationLine, _textDecorationLine, RCTTextDecorationLineType);
