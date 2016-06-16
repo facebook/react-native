@@ -11,6 +11,7 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
@@ -37,6 +38,8 @@ import com.facebook.react.views.image.ReactImageView;
   private static final Paint PAINT = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
   private static final int BORDER_BITMAP_PATH_DIRTY = 1 << 1;
 
+  private @Nullable String mSource;
+  private @Nullable Context mContext;
   private final Matrix mTransform = new Matrix();
   private ScaleType mScaleType = ImageResizeMode.defaultValue();
   private @Nullable PipelineRequestHelper mRequestHelper;
@@ -58,14 +61,10 @@ import com.facebook.react.views.image.ReactImageView;
   }
 
   @Override
-  public void setImageRequest(@Nullable ImageRequest imageRequest) {
+  public void setSource(Context context, @Nullable String source) {
+    mSource = source;
+    mContext = context;
     mBitmapShader = null;
-
-    if (imageRequest == null) {
-      mRequestHelper = null;
-    } else {
-      mRequestHelper = new PipelineRequestHelper(imageRequest);
-    }
   }
 
   @Override
@@ -184,6 +183,7 @@ import com.facebook.react.views.image.ReactImageView;
   protected void onBoundsChanged() {
     super.onBoundsChanged();
     setFlag(BORDER_BITMAP_PATH_DIRTY);
+    maybeComputeRequestHelper();
   }
 
   @Override
@@ -201,6 +201,20 @@ import com.facebook.react.views.image.ReactImageView;
     if (mReactTag != 0 && mCallback != null) {
       mCallback.dispatchImageLoadEvent(mReactTag, imageLoadEvent);
     }
+  }
+
+  private void maybeComputeRequestHelper() {
+    if (mRequestHelper == null) {
+      return;
+    }
+
+    if (mSource == null) {
+      mRequestHelper = null;
+      return;
+    }
+    ImageRequest imageRequest =
+        ImageRequestHelper.createImageRequest(Assertions.assertNotNull(mContext), mSource);
+    mRequestHelper = new PipelineRequestHelper(Assertions.assertNotNull(imageRequest));
   }
 
   /* package */ void updateBounds(Bitmap bitmap) {

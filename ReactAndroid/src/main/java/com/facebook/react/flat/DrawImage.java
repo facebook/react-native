@@ -11,8 +11,9 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import android.content.Context;
+
 import com.facebook.drawee.drawable.ScalingUtils.ScaleType;
-import com.facebook.imagepipeline.request.ImageRequest;
 
 /**
  * Common interface for DrawImageWithPipeline and DrawImageWithDrawee.
@@ -25,9 +26,9 @@ import com.facebook.imagepipeline.request.ImageRequest;
   boolean hasImageRequest();
 
   /**
-   * Assigns a new image request to the DrawImage, or null to clear the image request.
+   * Assigns a new image source to the DrawImage, or null to clear the image request.
    */
-  void setImageRequest(@Nullable ImageRequest imageRequest);
+  void setSource(Context context, @Nullable String source);
 
   /**
    * Assigns a tint color to apply to the image drawn.

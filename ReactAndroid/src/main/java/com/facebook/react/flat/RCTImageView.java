@@ -15,8 +15,8 @@ import com.facebook.csslayout.Spacing;
 import com.facebook.drawee.drawable.ScalingUtils.ScaleType;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.image.ImageResizeMode;
 
 /**
@@ -90,8 +90,7 @@ import com.facebook.react.views.image.ImageResizeMode;
   public void setSource(@Nullable ReadableArray sources) {
     final String source =
         (sources == null || sources.size() == 0) ? null : sources.getMap(0).getString("uri");
-    getMutableDrawImage().setImageRequest(
-        ImageRequestHelper.createImageRequest(getThemedContext(), source));
+    getMutableDrawImage().setSource(getThemedContext(), source);
   }
 
   @ReactProp(name = "tintColor")
@@ -142,9 +141,5 @@ import com.facebook.react.views.image.ImageResizeMode;
     }
 
     return mDrawImage;
-  }
-
-  private static boolean isNetworkResource(String source) {
-    return source.startsWith("http://") || source.startsWith("https://");
   }
 }

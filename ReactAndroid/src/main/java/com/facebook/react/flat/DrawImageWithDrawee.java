@@ -11,6 +11,7 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -33,6 +34,8 @@ import com.facebook.react.views.image.ReactImageView;
 /* package */ final class DrawImageWithDrawee extends AbstractDrawCommand
     implements DrawImage, ControllerListener {
 
+  private @Nullable String mSource;
+  private @Nullable Context mContext;
   private @Nullable DraweeRequestHelper mRequestHelper;
   private @Nullable PorterDuffColorFilter mColorFilter;
   private ScaleType mScaleType = ImageResizeMode.defaultValue();
@@ -45,16 +48,13 @@ import com.facebook.react.views.image.ReactImageView;
 
   @Override
   public boolean hasImageRequest() {
-    return mRequestHelper != null;
+    return mSource != null;
   }
 
   @Override
-  public void setImageRequest(@Nullable ImageRequest imageRequest) {
-    if (imageRequest == null) {
-      mRequestHelper = null;
-    } else {
-      mRequestHelper = new DraweeRequestHelper(imageRequest, this);
-    }
+  public void setSource(Context context, @Nullable String source) {
+    mSource = source;
+    mContext = context;
   }
 
   @Override
@@ -197,6 +197,26 @@ import com.facebook.react.views.image.ReactImageView;
 
   @Override
   public void onRelease(String id) {
+  }
+
+  @Override
+  protected void onBoundsChanged() {
+    super.onBoundsChanged();
+    maybeComputeRequestHelper();
+  }
+
+  private void maybeComputeRequestHelper() {
+    if (mRequestHelper != null) {
+      return;
+    }
+
+    if (mSource == null) {
+      mRequestHelper = null;
+      return;
+    }
+    ImageRequest imageRequest =
+        ImageRequestHelper.createImageRequest(Assertions.assertNotNull(mContext), mSource);
+    mRequestHelper = new DraweeRequestHelper(Assertions.assertNotNull(imageRequest), this);
   }
 
   private boolean shouldDisplayBorder() {
