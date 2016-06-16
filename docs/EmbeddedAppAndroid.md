@@ -140,6 +140,7 @@ That's it, your activity is ready to run some JavaScript code.
 In your app's root folder, run:
 
     $ npm init
+    $ npm install --save react
     $ npm install --save react-native
     $ curl -o .flowconfig https://raw.githubusercontent.com/facebook/react-native/master/.flowconfig
 
