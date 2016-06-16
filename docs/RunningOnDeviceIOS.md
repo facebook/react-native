@@ -4,7 +4,7 @@ title: Running On Device
 layout: docs
 category: Guides (iOS)
 permalink: docs/running-on-device-ios.html
-next: embedded-app-ios
+next: communication-ios
 ---
 
 Note that running on device requires [Apple Developer account](https://developer.apple.com/register) and provisioning your iPhone. This guide covers only React Native specific topic.
