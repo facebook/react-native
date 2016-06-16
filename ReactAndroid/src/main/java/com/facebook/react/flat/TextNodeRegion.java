@@ -39,19 +39,22 @@ import android.text.Spanned;
 
   /* package */ int getReactTag(float touchX, float touchY) {
     if (mLayout != null) {
-      int y = Math.round(touchY - mTop);
-      if (y >= mLayout.getLineTop(0) && y < mLayout.getLineBottom(mLayout.getLineCount() - 1)) {
-        float x = Math.round(touchX - mLeft);
-        int line = mLayout.getLineForVertical(y);
+      CharSequence text = mLayout.getText();
+      if (text instanceof Spanned) {
+        int y = Math.round(touchY - mTop);
+        if (y >= mLayout.getLineTop(0) && y < mLayout.getLineBottom(mLayout.getLineCount() - 1)) {
+          float x = Math.round(touchX - mLeft);
+          int line = mLayout.getLineForVertical(y);
 
-        if (mLayout.getLineLeft(line) <= x && x <= mLayout.getLineRight(line)) {
-          int off = mLayout.getOffsetForHorizontal(line, x);
+          if (mLayout.getLineLeft(line) <= x && x <= mLayout.getLineRight(line)) {
+            int off = mLayout.getOffsetForHorizontal(line, x);
 
-          Spanned text = (Spanned) mLayout.getText();
-          RCTRawText[] link = text.getSpans(off, off, RCTRawText.class);
+            Spanned spanned = (Spanned) text;
+            RCTRawText[] link = spanned.getSpans(off, off, RCTRawText.class);
 
-          if (link.length != 0) {
-            return link[0].getReactTag();
+            if (link.length != 0) {
+              return link[0].getReactTag();
+            }
           }
         }
       }
