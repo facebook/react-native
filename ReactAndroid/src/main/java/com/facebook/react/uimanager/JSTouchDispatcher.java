@@ -77,7 +77,8 @@ public class JSTouchDispatcher {
         ev.getX(),
         ev.getY(),
         mRootViewGroup,
-        mTargetCoordinates);
+        mTargetCoordinates,
+        null);
       eventDispatcher.dispatchEvent(
         TouchEvent.obtain(
           mTargetTag,

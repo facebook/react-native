@@ -6,6 +6,7 @@ robolectric3_test(
   name = 'modules',
   srcs = glob(['**/*.java']),
   deps = [
+    react_native_dep('java/com/facebook/catalyst/js/react-native-github/ReactAndroid/src/main/java/com/facebook/react/devsupport:devsupport'),
     react_native_dep('libraries/fbcore/src/test/java/com/facebook/powermock:powermock'),
     react_native_dep('third-party/java/fest:fest'),
     react_native_dep('third-party/java/junit:junit'),
