@@ -11,6 +11,9 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
@@ -25,6 +28,8 @@ import android.graphics.Shader;
 import com.facebook.drawee.drawable.ScalingUtils.ScaleType;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.views.image.ImageResizeMode;
 import com.facebook.react.views.image.ReactImageView;
 
@@ -38,7 +43,8 @@ import com.facebook.react.views.image.ReactImageView;
   private static final Paint PAINT = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
   private static final int BORDER_BITMAP_PATH_DIRTY = 1 << 1;
 
-  private @Nullable String mSource;
+  private @Nullable Map<String, Double> mSources;
+  private @Nullable String mImageSource;
   private @Nullable Context mContext;
   private final Matrix mTransform = new Matrix();
   private ScaleType mScaleType = ImageResizeMode.defaultValue();
@@ -61,8 +67,24 @@ import com.facebook.react.views.image.ReactImageView;
   }
 
   @Override
-  public void setSource(Context context, @Nullable String source) {
-    mSource = source;
+  public void setSource(Context context, @Nullable ReadableArray sources) {
+    if (mSources == null) {
+      mSources = new HashMap<>();
+    }
+    mSources.clear();
+    if (sources != null && sources.size() != 0) {
+      // Optimize for the case where we have just one uri, case in which we don't need the sizes
+      if (sources.size() == 1) {
+        mSources.put(sources.getMap(0).getString("uri"), 0.0d);
+      } else {
+        for (int idx = 0; idx < sources.size(); idx++) {
+          ReadableMap source = sources.getMap(idx);
+          mSources.put(
+              source.getString("uri"),
+              source.getDouble("width") * source.getDouble("height"));
+        }
+      }
+    }
     mContext = context;
     mBitmapShader = null;
   }
@@ -183,7 +205,7 @@ import com.facebook.react.views.image.ReactImageView;
   protected void onBoundsChanged() {
     super.onBoundsChanged();
     setFlag(BORDER_BITMAP_PATH_DIRTY);
-    maybeComputeRequestHelper();
+    computeRequestHelper();
   }
 
   @Override
@@ -203,18 +225,31 @@ import com.facebook.react.views.image.ReactImageView;
     }
   }
 
-  private void maybeComputeRequestHelper() {
-    if (mRequestHelper == null) {
-      return;
-    }
-
-    if (mSource == null) {
+  private void computeRequestHelper() {
+    mImageSource = getSourceImage();
+    if (mImageSource == null) {
       mRequestHelper = null;
       return;
     }
     ImageRequest imageRequest =
-        ImageRequestHelper.createImageRequest(Assertions.assertNotNull(mContext), mSource);
+        ImageRequestHelper.createImageRequest(Assertions.assertNotNull(mContext),
+        mImageSource);
     mRequestHelper = new PipelineRequestHelper(Assertions.assertNotNull(imageRequest));
+  }
+
+  private String getSourceImage() {
+    if (mSources == null || mSources.isEmpty()) {
+      return null;
+    }
+    if (hasMultipleSources()) {
+      final double targetImageSize = (getRight() - getLeft()) * (getBottom() - getTop());
+      return MultiSourceImageHelper.getImageSourceFromMultipleSources(targetImageSize, mSources);
+    }
+    return mSources.keySet().iterator().next();
+  }
+
+  private boolean hasMultipleSources() {
+    return Assertions.assertNotNull(mSources).size() > 1;
   }
 
   /* package */ void updateBounds(Bitmap bitmap) {

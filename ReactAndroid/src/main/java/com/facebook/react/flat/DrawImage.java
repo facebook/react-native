@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import android.content.Context;
 
 import com.facebook.drawee.drawable.ScalingUtils.ScaleType;
+import com.facebook.react.bridge.ReadableArray;
 
 /**
  * Common interface for DrawImageWithPipeline and DrawImageWithDrawee.
@@ -28,7 +29,7 @@ import com.facebook.drawee.drawable.ScalingUtils.ScaleType;
   /**
    * Assigns a new image source to the DrawImage, or null to clear the image request.
    */
-  void setSource(Context context, @Nullable String source);
+  void setSource(Context context, @Nullable ReadableArray sources);
 
   /**
    * Assigns a tint color to apply to the image drawn.

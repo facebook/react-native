@@ -11,6 +11,9 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
@@ -23,6 +26,8 @@ import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.views.image.ImageLoadEvent;
 import com.facebook.react.views.image.ImageResizeMode;
 import com.facebook.react.views.image.ReactImageView;
@@ -34,7 +39,8 @@ import com.facebook.react.views.image.ReactImageView;
 /* package */ final class DrawImageWithDrawee extends AbstractDrawCommand
     implements DrawImage, ControllerListener {
 
-  private @Nullable String mSource;
+  private @Nullable Map<String, Double> mSources;
+  private @Nullable String mImageSource;
   private @Nullable Context mContext;
   private @Nullable DraweeRequestHelper mRequestHelper;
   private @Nullable PorterDuffColorFilter mColorFilter;
@@ -48,12 +54,28 @@ import com.facebook.react.views.image.ReactImageView;
 
   @Override
   public boolean hasImageRequest() {
-    return mSource != null;
+    return mSources != null && !mSources.isEmpty();
   }
 
   @Override
-  public void setSource(Context context, @Nullable String source) {
-    mSource = source;
+  public void setSource(Context context, @Nullable ReadableArray sources) {
+    if (mSources == null) {
+      mSources = new HashMap<>();
+    }
+    mSources.clear();
+    if (sources != null && sources.size() != 0) {
+      // Optimize for the case where we have just one uri, case in which we don't need the sizes
+      if (sources.size() == 1) {
+        mSources.put(sources.getMap(0).getString("uri"), 0.0d);
+      } else {
+        for (int idx = 0; idx < sources.size(); idx++) {
+          ReadableMap source = sources.getMap(idx);
+          mSources.put(
+              source.getString("uri"),
+              source.getDouble("width") * source.getDouble("height"));
+        }
+      }
+    }
     mContext = context;
   }
 
@@ -202,21 +224,34 @@ import com.facebook.react.views.image.ReactImageView;
   @Override
   protected void onBoundsChanged() {
     super.onBoundsChanged();
-    maybeComputeRequestHelper();
+    computeRequestHelper();
   }
 
-  private void maybeComputeRequestHelper() {
-    if (mRequestHelper != null) {
-      return;
-    }
-
-    if (mSource == null) {
+  private void computeRequestHelper() {
+    mImageSource = getSourceImage();
+    if (mImageSource == null) {
       mRequestHelper = null;
       return;
     }
     ImageRequest imageRequest =
-        ImageRequestHelper.createImageRequest(Assertions.assertNotNull(mContext), mSource);
+        ImageRequestHelper.createImageRequest(Assertions.assertNotNull(mContext),
+        mImageSource);
     mRequestHelper = new DraweeRequestHelper(Assertions.assertNotNull(imageRequest), this);
+  }
+
+  private @Nullable String getSourceImage() {
+    if (mSources == null || mSources.isEmpty()) {
+      return null;
+    }
+    if (hasMultipleSources()) {
+      final double targetImageSize = (getRight() - getLeft()) * (getBottom() - getTop());
+      return MultiSourceImageHelper.getImageSourceFromMultipleSources(targetImageSize, mSources);
+    }
+    return mSources.keySet().iterator().next();
+  }
+
+  private boolean hasMultipleSources() {
+    return Assertions.assertNotNull(mSources).size() > 1;
   }
 
   private boolean shouldDisplayBorder() {

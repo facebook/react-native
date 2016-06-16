@@ -88,9 +88,7 @@ import com.facebook.react.views.image.ImageResizeMode;
 
   @ReactProp(name = "src")
   public void setSource(@Nullable ReadableArray sources) {
-    final String source =
-        (sources == null || sources.size() == 0) ? null : sources.getMap(0).getString("uri");
-    getMutableDrawImage().setSource(getThemedContext(), source);
+    getMutableDrawImage().setSource(getThemedContext(), sources);
   }
 
   @ReactProp(name = "tintColor")
