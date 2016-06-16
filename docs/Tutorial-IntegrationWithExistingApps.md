@@ -43,7 +43,7 @@ block { display: none; }
 
 ## Key Concepts
 
-React Native is great when you are starting a new mobile app from scratch. However, it also works well for adding a single view or user flow to existing applications. With a few steps, you can begin to integrate React Native to add new components to your existing app, or convert current components to React Native.
+React Native is great when you are starting a new mobile app from scratch. However, it also works well for adding a single view or user flow to existing native applications. With a few steps, you can add new React Native based features, screens, views, etc.
 
 <block class="objc swift" />
 
@@ -51,12 +51,12 @@ The keys to integrating React Native components into your iOS application are to
 
 1. Understand what React Native components you want to integrate.
 2. Create a `Podfile` with `subspec`s for all the React Native components you will need for your integration.
-3. Create your actual React Native components in JavaScript - either all directly in a `index.ios.js` file, or in a `index.ios.js` file and multiple other files.
+3. Create your actual React Native components in JavaScript.
 4. Add a new event handler that creates a `RCTRootView` that points to your React Native component and its `AppRegistry` name that you defined in `index.ios.js`.
 5. Start the React Native server and run your native application.
 6. Optionally add more React Native components.
-7. Debug.
-8. Prepare for deployment (e.g., via the `react-native-xcode.sh` script).
+7. [Debug](/react-native/releases/next/docs/debugging.html).
+8. Prepare for [deployment](/react-native/docs/running-on-device-ios.html) (e.g., via the `react-native-xcode.sh` script).
 9. Deploy and Profit!
 
 <block class="android" />
@@ -65,13 +65,13 @@ The keys to integrating React Native components into your iOS application are to
 
 1. Understand what React Native components you want to integrate.
 2. Install `react-native` in your Android application root directory to create `node_modules/` directory.
-3. Create your actual React Native components in JavaScript - either all directly in a `index.android.js` file, or in a `index.android.js` file and multiple other files.
+3. Create your actual React Native components in JavaScript.
 4. Add `com.facebook.react:react-native:+` and a `maven` pointing to the `react-native` binaries in `node_nodules/` to your `build.gradle` file.
 4. Create a custom React Native specific `Activity` that creates a `ReactRootView`.
 5. Start the React Native server and run your native application.
 6. Optionally add more React Native components.
-7. Debug.
-8. Prepare for deployment.
+7. [Debug](/react-native/releases/next/docs/debugging.html).
+8. [Prepare](/react-native/releases/next/docs/signed-apk-android.html) for [deployment](/react-native/docs/running-on-device-android.html).
 9. Deploy and Profit!
 
 <block class="objc swift android" />
@@ -125,7 +125,7 @@ We will add the package dependencies to a `package.json` file. Create this file 
 
 Below is an example of what your `package.json` file should minimally contain.
 
-> Version numbers will vary according to your needs. Normally the latest versions for each will be sufficient.
+> Version numbers will vary according to your needs. Normally the latest versions for both [React](https://github.com/facebook/react/releases) and [React Native](https://github.com/facebook/react/releases) will be sufficient.
 
 <block class="objc" />
 
@@ -168,7 +168,8 @@ Below is an example of what your `package.json` file should minimally contain.
 Install the React and React Native modules via the Node package manager. The Node modules will be installed into a `node_modules/` directory in the root of your project.
 
 ```bash
-# From the *root directory* of your project, install the modules into node_modules/
+# From the directory containing package.json project, install the modules
+# The modules will be installed in node_modules/
 $ npm install
 ```
 
@@ -178,7 +179,7 @@ The React Native Framework was installed as Node module in your project [above](
 
 ### Subspecs
 
-Before you integrate React Native into your application, you will want to decide what React Native components you would like to integrate. That is where `subspec`s come in. When you create your `Podfile`, you are going to specify React Native library dependencies that you will want installed so that your application can use those libraries. Each library will become a `subspec` in the `Podfile`.
+Before you integrate React Native into your application, you will want to decide what parts of the React Native Framework you would like to integrate. That is where `subspec`s come in. When you create your `Podfile`, you are going to specify React Native library dependencies that you will want installed so that your application can use those libraries. Each library will become a `subspec` in the `Podfile`.
 
 
 The list of supported `subspec`s are in [`node_modules/react-native/React.podspec`](https://github.com/facebook/react-native/blob/master/React.podspec). They are generally named by functionality. For example, you will generally always want the `Core` `subspec`. That will get you the `AppRegistry`, `StyleSheet`, `View` and other core React Native libraries. If you want to add the React Native `Text` library (e.g., for `<Text>` elements), then you will need the `RCTText` `subspec`. If you want the `Image` library (e.g., for `<Image>` elements), then you will need the `RCTImage` `subspec`.
@@ -207,7 +208,7 @@ target 'NumberTileGame' do
   pod 'React', :path => '../node_modules/react-native', :subspecs => [
     'Core',
     'RCTText',
-    'RCTWebSocket', # needed for localhost testing of your app
+    'RCTWebSocket', # needed for debugging
     # Add any other subspecs you want to use in your project
   ]
 
@@ -231,7 +232,7 @@ target 'swift-2048' do
   pod 'React', :path => '../node_modules/react-native', :subspecs => [
     'Core',
     'RCTText',
-    'RCTWebSocket', # needed for localhost testing of your app
+    'RCTWebSocket', # needed for debugging
     # Add any other subspecs you want to use in your project
   ]
 
@@ -303,7 +304,6 @@ import {
 
 class RNHighScores extends React.Component {
   render() {
-    console.log(this.props["scores"]);
     var contents = this.props["scores"].map(
       score => <Text key={score.name}>{score.name}:{score.value}{"\n"}</Text>
     );
@@ -347,7 +347,7 @@ AppRegistry.registerComponent('RNHighScores', () => RNHighScores);
 
 ## The Magic: `RCTRootView`
 
-Now that your React Native component is created via `index.ios.js`, you need add to that component to a new or existing `ViewController`. The easiest path is to take is to optionally create an event path to your component and then add that component to an existing `ViewController`.
+Now that your React Native component is created via `index.ios.js`, you need to add that component to a new or existing `ViewController`. The easiest path is to take is to optionally create an event path to your component and then add that component to an existing `ViewController`.
 
 We will tie our React Native component with a new native view in the `ViewController` that will actually host it called `RCTRootView` .
 
@@ -363,7 +363,7 @@ We will now add an event handler from the menu link. A method will be added to t
 
 When you build a React Native application, you use the React Native packager to create an `index.ios.bundle` that will be served by the React Native server. Inside `index.ios.bundle` will be our `RNHighScore` module. So, we need to point our `RCTRootView` to the location of the `index.ios.bundle` resource (via `NSURL`) and tie it to the module.
 
-We will, for debugging purposes, log that the event handler was invoked. Then create a string with the location of our React Native code inside the `index.ios.bundle` and then create the main `RCTRootView`. Notice how we provide `RNHighScores` as the `moduleName` that we created [above](#the-react-native-component) when writing the code for our React Native component.
+We will, for debugging purposes, log that the event handler was invoked. Then, we will create a string with the location of our React Native code that exists inside the `index.ios.bundle`. Finally, we will create the main `RCTRootView`. Notice how we provide `RNHighScores` as the `moduleName` that we created [above](#the-react-native-component) when writing the code for our React Native component.
 
 <block class="objc" />
 
@@ -380,23 +380,23 @@ First `import` the `RCTRootView` library.
     NSLog(@"High Score Button Pressed");
     NSURL *jsCodeLocation = [NSURL
                              URLWithString:@"http://localhost:8081/index.ios.bundle?platform=ios"];
-    RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL : jsCodeLocation
-                                                 moduleName        : @"RNHighScores"
-                                                 initialProperties:
-  @{
-     @"scores" : @[
-       @{
-          @"name" : @"Alex",
-          @"value": @"42"
-        },
-       @{
-         @"name" : @"Joel",
-         @"value": @"10"
-        }
-     ]
-   }
-                                                 launchOptions:nil
-                             ];
+    RCTRootView *rootView =
+      [[RCTRootView alloc] initWithBundleURL : jsCodeLocation
+                           moduleName        : @"RNHighScores"
+                           initialProperties :
+                             @{
+                               @"scores" : @[
+                                 @{
+                                   @"name" : @"Alex",
+                                   @"value": @"42"
+                                  },
+                                 @{
+                                   @"name" : @"Joel",
+                                   @"value": @"10"
+                                 }
+                               ]
+                             }
+                           launchOptions    : nil];
     UIViewController *vc = [[UIViewController alloc] init];
     vc.view = rootView;
     [self presentViewController:vc animated:YES completion:nil];
@@ -442,7 +442,7 @@ import React
 
 <block class="objc" />
 
-> When moving your app to production, the `NSURL` can point to a pre-bundled file on disk via something like `[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];`. You can use the `react-native-xcode.sh` script in `node_modules/react-native/packager/` to generate that pre-bundled file.
+> When moving your app to production, the `NSURL` can point to a pre-bundled file on disk via something like `[[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];`. You can use the `react-native-xcode.sh` script in `node_modules/react-native/packager/` to generate that pre-bundled file.
 
 <block class="swift" />
 
@@ -457,7 +457,6 @@ Wire up the new link in the main menu to the newly added event handler method.
 ![Event Path](img/react-native-add-react-native-integration-wire-up.png)
 
 > One of the easier ways to do this is to open the view in the storyboard and right click on the new link. Select something such as the `Touch Up Inside` event, drag that to the storyboard and then select the created method from the list provided.
-
 
 ## Test Your Integration
 
