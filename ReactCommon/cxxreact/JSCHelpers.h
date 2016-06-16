@@ -12,28 +12,8 @@
 #include <stdexcept>
 #include <algorithm>
 
-#include "Value.h"
-
 namespace facebook {
 namespace react {
-
-class JSException : public std::runtime_error {
-public:
-  explicit JSException(const char* msg)
-    : std::runtime_error(msg)
-    , stack_("") {}
-
-  JSException(const char* msg, const char* stack)
-    : std::runtime_error(msg)
-    , stack_(stack) {}
-
-  const std::string& getStack() const {
-    return stack_;
-  }
-
-private:
-  std::string stack_;
-};
 
 inline void throwJSExecutionException(const char* msg) {
   throw JSException(msg);
