@@ -15,6 +15,7 @@ Since React makes no assumptions about the rest of your technology stack â€“ itâ
 - [Node.js](http://nodejs.org)
   - Install **nvm** with [its setup instructions here](https://github.com/creationix/nvm#installation). Then run `nvm install node && nvm alias default node`, which installs the latest version of Node.js and sets up your terminal so you can run it by typing `node`.  With nvm you can install multiple versions of Node.js and easily switch between them.
 - Install the `react-native` package from npm by running the following command in the root directory of your project:
+  - `npm install react`
   - `npm install react-native`
 
 At this point you should have the React Native package installed under a directory named `node_modules` as a sibling to your `.xcodeproj` file.
