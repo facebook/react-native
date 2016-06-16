@@ -56,15 +56,53 @@ describe('XMLHttpRequest', function(){
 		handleLoad = null;
 	});
 
-  it('should transition readyState correctly', function() {
-		expect(xhr.readyState).toBe(xhr.UNSENT);
+	it('should transition readyState correctly', function() {
+
+	  expect(xhr.readyState).toBe(xhr.UNSENT);
 
 		xhr.open('GET', 'blabla');
 
 		expect(xhr.onreadystatechange.mock.calls.length).toBe(1);
 		expect(handleReadyStateChange.mock.calls.length).toBe(1);
 		expect(xhr.readyState).toBe(xhr.OPENED);
-    });
+	});
+
+	it('should expose responseType correctly', function() {
+		expect(xhr.responseType).toBe('');
+
+		// Setting responseType to an unsupported value has no effect.
+		xhr.responseType = 'arrayblobbuffertextfile';
+		expect(xhr.responseType).toBe('');
+
+		xhr.responseType = 'arraybuffer';
+		expect(xhr.responseType).toBe('arraybuffer');
+
+		// Can't change responseType after first data has been received.
+		xhr.__didReceiveData(1, 'Some data');
+		expect(() => { xhr.responseType = 'text'; }).toThrow();
+	});
+
+	it('should expose responseText correctly', function() {
+		xhr.responseType = '';
+		expect(xhr.responseText).toBe('');
+		expect(xhr.response).toBe('');
+
+		xhr.responseType = 'arraybuffer';
+		expect(() => xhr.responseText).toThrow();
+		expect(xhr.response).toBe(null);
+
+		xhr.responseType = 'text';
+		expect(xhr.responseText).toBe('');
+		expect(xhr.response).toBe('');
+
+		// responseText is read-only.
+		expect(() => { xhr.responseText = 'hi'; }).toThrow();
+		expect(xhr.responseText).toBe('');
+		expect(xhr.response).toBe('');
+
+		xhr.__didReceiveData(1, 'Some data');
+		expect(xhr.responseText).toBe('Some data');
+	});
 
 	it('should call ontimeout function when the request times out', function(){
 		xhr.__didCompleteResponse(1, 'Timeout', true);

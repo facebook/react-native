@@ -133,6 +133,23 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
     if ([method isEqualToString:@"GET"] && headers == nil && body == nil) {
       return [NSURLRequest requestWithURL:URL];
     }
+
+    if (headers) {
+      __block BOOL allHeadersAreStrings = YES;
+      [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id header, BOOL *stop) {
+        if (![header isKindOfClass:[NSString class]]) {
+          RCTLogError(@"Values of HTTP headers passed must be  of type string. "
+                      "Value of header '%@' is not a string.", key);
+          allHeadersAreStrings = NO;
+          *stop = YES;
+        }
+      }];
+      if (!allHeadersAreStrings) {
+        // Set headers to nil here to avoid crashing later.
+        headers = nil;
+      }
+    }
+
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
     request.HTTPBody = body;
     request.HTTPMethod = method;
@@ -231,13 +248,12 @@ NSNumber *RCTConvertMultiEnumValue(const char *typeName, NSDictionary *mapping, 
 }
 
 RCT_ENUM_CONVERTER(NSLineBreakMode, (@{
+  @"clip": @(NSLineBreakByClipping),
+  @"head": @(NSLineBreakByTruncatingHead),
+  @"tail": @(NSLineBreakByTruncatingTail),
+  @"middle": @(NSLineBreakByTruncatingMiddle),
   @"wordWrapping": @(NSLineBreakByWordWrapping),
-  @"charWrapping": @(NSLineBreakByCharWrapping),
-  @"clipping": @(NSLineBreakByClipping),
-  @"truncatingHead": @(NSLineBreakByTruncatingHead),
-  @"truncatingTail": @(NSLineBreakByTruncatingTail),
-  @"truncatingMiddle": @(NSLineBreakByTruncatingMiddle),
-}), NSLineBreakByWordWrapping, integerValue)
+}), NSLineBreakByTruncatingTail, integerValue)
 
 RCT_ENUM_CONVERTER(NSTextAlignment, (@{
   @"auto": @(NSTextAlignmentNatural),
@@ -799,7 +815,9 @@ RCT_ENUM_CONVERTER(css_clip_t, (@{
 
 RCT_ENUM_CONVERTER(css_flex_direction_t, (@{
   @"row": @(CSS_FLEX_DIRECTION_ROW),
-  @"column": @(CSS_FLEX_DIRECTION_COLUMN)
+  @"row-reverse": @(CSS_FLEX_DIRECTION_ROW_REVERSE),
+  @"column": @(CSS_FLEX_DIRECTION_COLUMN),
+  @"column-reverse": @(CSS_FLEX_DIRECTION_COLUMN_REVERSE)
 }), CSS_FLEX_DIRECTION_COLUMN, intValue)
 
 RCT_ENUM_CONVERTER(css_justify_t, (@{
@@ -867,7 +885,7 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
   }
 
   __block UIImage *image;
-  if (![NSThread isMainThread]) {
+  if (!RCTIsMainQueue()) {
     // It seems that none of the UIImage loading methods can be guaranteed
     // thread safe, so we'll pick the lesser of two evils here and block rather
     // than run the risk of crashing
@@ -878,7 +896,7 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
     return image;
   }
 
-  NSURL *URL = imageSource.imageURL;
+  NSURL *URL = imageSource.request.URL;
   NSString *scheme = URL.scheme.lowercaseString;
   if ([scheme isEqualToString:@"file"]) {
     NSString *assetName = RCTBundlePathForURL(URL);
@@ -913,8 +931,10 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
 
   if (!CGSizeEqualToSize(imageSource.size, CGSizeZero) &&
       !CGSizeEqualToSize(imageSource.size, image.size)) {
-    RCTLogError(@"Image source size %@ does not match loaded image size %@.",
-                NSStringFromCGSize(imageSource.size), NSStringFromCGSize(image.size));
+    RCTLogError(@"Image source %@ size %@ does not match loaded image size %@.",
+                URL.path.lastPathComponent,
+                NSStringFromCGSize(imageSource.size),
+                NSStringFromCGSize(image.size));
   }
 
   return image;

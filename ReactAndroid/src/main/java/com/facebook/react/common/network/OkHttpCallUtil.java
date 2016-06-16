@@ -24,16 +24,14 @@ public class OkHttpCallUtil {
     for (Call call : client.dispatcher().queuedCalls()) {
       if (tag.equals(call.request().tag())) {
         call.cancel();
+        return;
       }
     }
     for (Call call : client.dispatcher().runningCalls()) {
       if (tag.equals(call.request().tag())) {
         call.cancel();
+        return;
       }
     }
-  }
-  
-  public static void cancelAll(OkHttpClient client) {
-    client.dispatcher().cancelAll();
   }
 }

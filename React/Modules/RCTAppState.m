@@ -16,7 +16,7 @@
 
 static NSString *RCTCurrentAppBackgroundState()
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   static NSDictionary *states;
   static dispatch_once_t onceToken;

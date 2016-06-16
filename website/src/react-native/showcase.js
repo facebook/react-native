@@ -54,6 +54,9 @@ var featured = [
     icon: 'http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg',
     link:  'https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8',
     author: 'Hammer & Chisel',
+    blogs: [
+      "https://discord.engineering/react-native-deep-dive-91fd5e949933#.5jnqftgof",
+    ],
   },
   {
     name: 'Discovery VR',
@@ -296,6 +299,13 @@ var apps = [
     author: 'RNF Digital',
   },
   {
+    name: 'camigo - the camping app',
+    icon: 'http://cdn.socialbit.de/default/0001/01/thumb_988_default_original.png',
+    linkAppStore: 'https://itunes.apple.com/de/app/camigo/id1088876278?l=de&ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.mobileemotion.camigo',
+    author: 'Socialbit GmbH',
+  },
+  {
     name: 'CANDDi',
     icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/c4/e4/85/c4e48546-7127-a133-29f2-3e2e1aa0f9af/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/gb/app/canddi/id1018168131?mt=8',
@@ -368,6 +378,12 @@ var apps = [
     ],
   },
   {
+    name: 'Convoy Driver',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple30/v4/5a/74/56/5a74567d-4491-a298-65cd-722c8a7211ac/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/convoy-driver/id1045368390?mt=8',
+    author: 'Convoy',
+  },
+  {
     name: 'DareU',
     icon: 'http://a3.mzstatic.com/us/r30/Purple6/v4/10/fb/6a/10fb6a50-57c8-061a-d865-503777bf7f00/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/dareu-dare-your-friends-dare/id1046434563?mt=8',
@@ -396,6 +412,13 @@ var apps = [
     author: 'Genki Takiuchi (s21g Inc.)',
   },
   {
+    name: 'Dohop Flights',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple60/v4/3e/94/e9/3e94e9b3-f9a0-7b27-1824-b3da732ec967/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/dohop-flights-your-new-flight/id964170399',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.dohop',
+    author: 'Dohop',
+  },
+  {
     name: 'DONUT chatrooms for communities',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple49/v4/d4/2d/e5/d42de510-6802-2694-1b60-ca80ffa1e2cb/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/fr/app/donut-chat/id1067579321',
@@ -414,6 +437,13 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/us/app/eat-or-not/id1054565697?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.eon',
     author: 'Sharath Prabhal',
+  },
+  {
+    name: 'Emoj3 - The emoji only social network',
+    icon: 'https://emoj3.com/images/favicon/apple-touch-icon-152x152.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/emoj3/id1078999427?mt=8',
+    link: 'https://emoj3.com',
+    author: 'Waffle and Toast'
   },
   {
     name: 'Emoji Poetry',
@@ -533,6 +563,13 @@ var apps = [
     icon: 'https://s3.amazonaws.com/theartistunion-production/Jukebox-logo.png',
     link: 'https://itunes.apple.com/us/app/jukebox-offline-music-player/id1072583255?ls=1&mt=8',
     author: 'The Beat Drop Inc'
+  },
+  {
+    name: 'JS Air',
+    icon: 'http://a1.mzstatic.com/eu/r30/Purple60/v4/56/94/66/56946608-34ac-dd5a-622f-75ef0073a7cd/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/fr/app/js-air/id1112141070?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.jsair',
+    author: 'Erwan DATIN',
   },
   {
     name: 'Kakapo',
@@ -698,6 +735,12 @@ var apps = [
     author: 'passpoints.de',
   },
   {
+    name: 'PermisPts',
+    icon: 'http://a3.mzstatic.com/eu/r30/Purple20/v4/02/62/ee/0262eef2-170e-4ca2-8f8a-8079482a393b/icon175x175.png',
+    link: 'https://itunes.apple.com/fr/app/permispts/id950595671?mt=8',
+    author: 'Erwan DATIN',
+  },
+  {
     name: 'Pimmr',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple69/v4/99/da/0e/99da0ee6-bc87-e1a6-1d95-7027c78f50e1/icon175x175.jpeg',
     link: 'https://itunes.apple.com/nl/app/pimmr/id1023343303?mt=8',
@@ -837,6 +880,12 @@ var apps = [
     link: 'https://itunes.apple.com/fr/app/sneat-reservez-les-meilleurs/id1062510079?l=en&mt=8',
     author: 'sneat'
   },
+  {
+    name: 'SCTV Sports',
+    icon: 'https://farm8.staticflickr.com/7353/27553089935_a3928f2097_o.png',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.sctvsport.bongdatructuyen',
+    author: 'SCTV Digital',
+  },  
   {
     name: 'Software Interview Preparation',
     icon: 'https://lh3.googleusercontent.com/11AuzaeCnxrRnIp1E_a_6WWiQIRRoWhrvFr20eCRJX4ZMW6O3tGjZLiUw3thKUgGaC8X=w300',
@@ -1063,6 +1112,13 @@ var apps = [
     link: 'https://emberall.com/',
     author: 'Kyle Corbitt',
   },
+  {
+    name: '鉅亨財經新聞',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple18/v4/1e/b1/dd/1eb1dd6e-0d9e-03cf-22f9-1b6fd816814d/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/ju-heng-cai-jing-xin-wen/id1071014509?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.cnyes.android',
+    author: '鉅亨網',
+  },
 ];
 
 var AppList = React.createClass({
@@ -1080,7 +1136,7 @@ var AppList = React.createClass({
       <div>
         <img src={app.icon} alt={app.name} />
         <h3>{app.name}</h3>
-        {app.linkAppStore && app.linkPlayStore ? this._renderLinks(app) : null}
+        {app.linkAppStore || app.linkPlayStore ? this._renderLinks(app) : null}
         <p>By {app.author}</p>
         {this._renderBlogPosts(app)}
         {this._renderSourceLink(app)}
@@ -1160,11 +1216,14 @@ var AppList = React.createClass({
   },
 
   _renderLinks: function(app) {
+    var linkAppStore = app.linkAppStore ? <a href={app.linkAppStore} target="_blank">iOS</a> : '';
+    var linkPlayStore = app.linkPlayStore ? <a href={app.linkPlayStore} target="_blank">Android</a> : '';
+
     return (
       <p>
-        <a href={app.linkAppStore} target="_blank">iOS</a>
-        {' '}&middot;{' '}
-        <a href={app.linkPlayStore} target="_blank">Android</a>
+        {linkAppStore}
+        {linkAppStore && linkPlayStore ? ' · ' : ''}
+        {linkPlayStore}
       </p>
     );
   },

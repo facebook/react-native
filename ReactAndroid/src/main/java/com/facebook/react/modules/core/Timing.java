@@ -30,6 +30,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.SystemClock;
+import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.uimanager.ReactChoreographer;
 
 /**
@@ -37,6 +38,8 @@ import com.facebook.react.uimanager.ReactChoreographer;
  */
 public final class Timing extends ReactContextBaseJavaModule implements LifecycleEventListener,
   OnExecutorUnregisteredListener {
+
+  private final DevSupportManager mDevSupportManager;
 
   private static class Timer {
 
@@ -112,8 +115,9 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   private @Nullable ReactChoreographer mReactChoreographer;
   private boolean mFrameCallbackPosted = false;
 
-  public Timing(ReactApplicationContext reactContext) {
+  public Timing(ReactApplicationContext reactContext, DevSupportManager devSupportManager) {
     super(reactContext);
+    mDevSupportManager = devSupportManager;
     // We store timers sorted by finish time.
     mTimers = new PriorityQueue<Timer>(
         11, // Default capacity: for some reason they don't expose a (Comparator) constructor
@@ -213,6 +217,12 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
       final int duration,
       final double jsSchedulingTime,
       final boolean repeat) {
+    // If the times on the server and device have drifted throw an exception to warn the developer
+    // that things might not work or results may not be accurate. This is required only for
+    // developer builds.
+    if (mDevSupportManager.getDevSupportEnabled() && Math.abs(jsSchedulingTime - System.currentTimeMillis()) > 1000) {
+      throw new RuntimeException("System and emulator/device times have drifted. Please correct this by running adb shell \"date `date +%m%d%H%M%Y.%S`\" on your dev machine");
+    }
     // Adjust for the amount of time it took for native to receive the timer registration call
     long adjustedDuration = (long) Math.max(
         0,

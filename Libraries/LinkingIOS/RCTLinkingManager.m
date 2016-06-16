@@ -17,48 +17,24 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 
 @implementation RCTLinkingManager
 
-@synthesize bridge = _bridge;
-
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
+- (void)startObserving
 {
-  // We're only overriding this to ensure the module gets created at startup
-  // TODO (t11106126): Remove once we have more declarative control over module setup.
-  return [super init];
-}
-
-- (void)setBridge:(RCTBridge *)bridge
-{
-  _bridge = bridge;
-
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleOpenURLNotification:)
                                                name:RCTOpenURLNotification
                                              object:nil];
 }
 
-- (NSDictionary<NSString *, id> *)constantsToExport
-{
-  NSURL *initialURL;
-
-  if (_bridge.launchOptions[UIApplicationLaunchOptionsURLKey]) {
-    initialURL = _bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
-  } else if (&UIApplicationLaunchOptionsUserActivityDictionaryKey &&
-      _bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]) {
-    NSDictionary *userActivityDictionary = _bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
-
-    if ([userActivityDictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual:NSUserActivityTypeBrowsingWeb]) {
-      initialURL = ((NSUserActivity *)userActivityDictionary[@"UIApplicationLaunchOptionsUserActivityKey"]).webpageURL;
-    }
-  }
-
-  return @{@"initialURL": RCTNullIfNil(initialURL.absoluteString)};
-}
-
-- (void)dealloc
+- (void)stopObserving
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[@"url"];
 }
 
 + (BOOL)application:(UIApplication *)application
@@ -88,19 +64,19 @@ continueUserActivity:(NSUserActivity *)userActivity
 
 - (void)handleOpenURLNotification:(NSNotification *)notification
 {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"openURL"
-                                              body:notification.userInfo];
-#pragma clang diagnostic pop
+  [self sendEventWithName:@"url" body:notification.userInfo];
 }
 
 RCT_EXPORT_METHOD(openURL:(NSURL *)URL
                   resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(__unused RCTPromiseRejectBlock)reject)
+                  reject:(RCTPromiseRejectBlock)reject)
 {
   BOOL opened = [RCTSharedApplication() openURL:URL];
-  resolve(@(opened));
+  if (opened) {
+    resolve(nil);
+  } else {
+    reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
+  }
 }
 
 RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
@@ -114,9 +90,31 @@ RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
     return;
   }
 
+  // TODO: on iOS9 this will fail if URL isn't included in the plist
+  // we should probably check for that and reject in that case instead of
+  // simply resolving with NO
+
   // This can be expensive, so we deliberately don't call on main thread
   BOOL canOpen = [RCTSharedApplication() canOpenURL:URL];
   resolve(@(canOpen));
+}
+
+RCT_EXPORT_METHOD(getInitialURL:(RCTPromiseResolveBlock)resolve
+                  reject:(__unused RCTPromiseRejectBlock)reject)
+{
+  NSURL *initialURL = nil;
+  if (self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey]) {
+    initialURL = self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
+  } else if (&UIApplicationLaunchOptionsUserActivityDictionaryKey &&
+             self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]) {
+    NSDictionary *userActivityDictionary =
+      self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
+
+    if ([userActivityDictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual:NSUserActivityTypeBrowsingWeb]) {
+      initialURL = ((NSUserActivity *)userActivityDictionary[@"UIApplicationLaunchOptionsUserActivityKey"]).webpageURL;
+    }
+  }
+  resolve(RCTNullIfNil(initialURL.absoluteString));
 }
 
 @end

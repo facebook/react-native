@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var ActivityIndicatorIOS = require('ActivityIndicatorIOS');
+var ActivityIndicator = require('ActivityIndicator');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
 var ReactNative = require('ReactNative');
@@ -61,7 +61,7 @@ type Event = Object;
 
 var defaultRenderLoading = () => (
   <View style={styles.loadingView}>
-    <ActivityIndicatorIOS />
+    <ActivityIndicator />
   </View>
 );
 var defaultRenderError = (errorDomain, errorCode, errorDesc) => (

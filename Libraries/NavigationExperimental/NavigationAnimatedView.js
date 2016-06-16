@@ -24,7 +24,6 @@ const StyleSheet = require('StyleSheet');
 const View = require('View');
 
 import type {
-  NavigationActionCaller,
   NavigationAnimatedValue,
   NavigationAnimationSetter,
   NavigationLayout,
@@ -36,7 +35,6 @@ import type {
 type Props = {
   applyAnimation: NavigationAnimationSetter,
   navigationState: NavigationState,
-  onNavigate: NavigationActionCaller,
   renderOverlay: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
   style: any,
@@ -77,7 +75,6 @@ class NavigationAnimatedView
   static propTypes = {
     applyAnimation: PropTypes.func,
     navigationState: NavigationPropTypes.navigationState.isRequired,
-    onNavigate: PropTypes.func.isRequired,
     renderOverlay: PropTypes.func,
     renderScene: PropTypes.func.isRequired,
   };
@@ -182,7 +179,6 @@ class NavigationAnimatedView
   _renderScene(scene: NavigationScene): ?ReactElement<any> {
     const {
       navigationState,
-      onNavigate,
       renderScene,
     } = this.props;
 
@@ -195,7 +191,6 @@ class NavigationAnimatedView
     return renderScene({
       layout: this.state.layout,
       navigationState,
-      onNavigate,
       position,
       progress,
       scene,
@@ -207,7 +202,6 @@ class NavigationAnimatedView
     if (this.props.renderOverlay) {
       const {
         navigationState,
-        onNavigate,
         renderOverlay,
       } = this.props;
 
@@ -220,7 +214,6 @@ class NavigationAnimatedView
       return renderOverlay({
         layout: this.state.layout,
         navigationState,
-        onNavigate,
         position,
         progress,
         scene: scenes[navigationState.index],

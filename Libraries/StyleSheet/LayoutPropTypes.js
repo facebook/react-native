@@ -32,6 +32,10 @@ var LayoutPropTypes = {
   left: ReactPropTypes.number,
   right: ReactPropTypes.number,
   bottom: ReactPropTypes.number,
+  minWidth: ReactPropTypes.number,
+  maxWidth: ReactPropTypes.number,
+  minHeight: ReactPropTypes.number,
+  maxHeight: ReactPropTypes.number,
   margin: ReactPropTypes.number,
   marginVertical: ReactPropTypes.number,
   marginHorizontal: ReactPropTypes.number,
@@ -60,7 +64,9 @@ var LayoutPropTypes = {
   // https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
   flexDirection: ReactPropTypes.oneOf([
     'row',
-    'column'
+    'row-reverse',
+    'column',
+    'column-reverse'
   ]),
 
   // https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
@@ -100,6 +106,9 @@ var LayoutPropTypes = {
 
   // https://developer.mozilla.org/en-US/docs/Web/CSS/flex
   flex: ReactPropTypes.number,
+
+  // https://developer.mozilla.org/en-US/docs/Web/CSS/z-index
+  zIndex: ReactPropTypes.number,
 };
 
 module.exports = LayoutPropTypes;

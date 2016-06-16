@@ -34,7 +34,6 @@ There are properties that work on one platform only, either because they can inh
 There are known cases where the APIs could be made more consistent across iOS and Android:
 
 - `<ViewPagerAndroid>` and `<ScrollView pagingEnabled={true}>` on iOS do a similar thing. We might want to unify them to `<ViewPager>`.
-- `ActivityIndicator` could render a native spinning indicator on both platforms (currently this is done using `ActivityIndicatorIOS` on iOS and `ProgressBarAndroid` on Android).
 - `ProgressBar` could render a horizontal progress bar on both platforms (on iOS this is `ProgressViewIOS`, on Android it's `ProgressBarAndroid`).
 
 ### The `overflow` style property defaults to `hidden` and cannot be changed on Android
@@ -71,3 +70,17 @@ Try running `react-native init` with `--verbose` and see [#2797](https://github.
 ### Text Input Border
 
 The text input has by default a border at the bottom of its view. This border has its padding set by the background image provided by the system, and it cannot be changed. Solutions to avoid this is to either not set height explicitly, case in which the system will take care of displaying the border in the correct position, or to not display the border by setting underlineColorAndroid to transparent.
+
+### iOS App Transport Security and loading HTTP resources
+
+As of iOS 9, new Xcode projects enable App Transport Security by default, which rejects all HTTP requests that are not sent over HTTPS. This can result in HTTP traffic being blocked (including the developer React Native server) with the following console errors:
+
+```
+App Transport Security has blocked a cleartext HTTP (http://) resource load since it is insecure. Temporary exceptions can be configured via your app's Info.plist file.
+```
+
+```
+NSURLSession/NSURLConnection HTTP load failed (kCFStreamErrorDomainSSL, -9802)
+```
+
+See our guide for [running on an iOS device](RunningOnDeviceIOS.md) and working around the ATS issues, or [several](http://useyourloaf.com/blog/app-transport-security/) [community](https://www.hackingwithswift.com/example-code/system/how-to-handle-the-https-requirements-in-ios-9-with-app-transport-security) [posts](https://ste.vn/2015/06/10/configuring-app-transport-security-ios-9-osx-10-11/) on handling common cases like [whitelisting specific domains](http://stackoverflow.com/a/30732693) for non-HTTPS traffic.
