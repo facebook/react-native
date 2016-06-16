@@ -17,12 +17,26 @@
 namespace facebook {
 namespace react {
 
-struct JsException : std::runtime_error {
-  using std::runtime_error::runtime_error;
+class JSException : public std::runtime_error {
+public:
+  explicit JSException(const char* msg)
+    : std::runtime_error(msg)
+    , stack_("") {}
+
+  JSException(const char* msg, const char* stack)
+    : std::runtime_error(msg)
+    , stack_(stack) {}
+
+  const std::string& getStack() const {
+    return stack_;
+  }
+
+private:
+  std::string stack_;
 };
 
 inline void throwJSExecutionException(const char* msg) {
-  throw JsException(msg);
+  throw JSException(msg);
 }
 
 template <typename... Args>
@@ -31,7 +45,12 @@ inline void throwJSExecutionException(const char* fmt, Args... args) {
   msgSize = std::min(512, msgSize + 1);
   char *msg = (char*) alloca(msgSize);
   snprintf(msg, msgSize, fmt, args...);
-  throw JsException(msg);
+  throw JSException(msg);
+}
+
+template <typename... Args>
+inline void throwJSExecutionExceptionWithStack(const char* msg, const char* stack) {
+  throw JSException(msg, stack);
 }
 
 void installGlobalFunction(
