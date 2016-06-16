@@ -414,7 +414,7 @@ var apps = [
   {
     name: '儿戏亲子游',
     icon: 'http://www.mmww.com/images/logo_512x512.png',
-    linkAppStore: 'https://itunes.apple.com/app/apple-store/id1037700232?pt=95940818&ct=comment&mt=8',
+    linkAppStore: 'https://itunes.apple.com/cn/app/er-xi-qin-zi-huo-dong-zhou/id1037700232?mt=8',
     link: 'http://www.mmww.com/',
     author: 'Jiang Xiaoming',
   },
