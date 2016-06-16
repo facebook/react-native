@@ -13,13 +13,22 @@
 'use strict';
 
 const EventEmitter = require('EventEmitter');
-import type EmitterSubscription from 'EmitterSubscription';
 const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
+const symbolicateStackTrace = require('symbolicateStackTrace');
+const parseErrorStack = require('parseErrorStack');
+
+import type EmitterSubscription from 'EmitterSubscription';
+import type {StackFrame} from 'parseErrorStack';
+
+type WarningInfo = {
+  count: number;
+  stacktrace: Array<StackFrame>;
+};
 
 const _warningEmitter = new EventEmitter();
-const _warningMap = new Map();
+const _warningMap: Map<string, WarningInfo> = new Map();
 
 /**
  * YellowBox renders warnings at the bottom of the app being developed.
@@ -82,9 +91,28 @@ function updateWarningMap(format, ...args): void {
     ...args.slice(argCount).map(stringifySafe),
   ].join(' ');
 
-  const count = _warningMap.has(warning) ? _warningMap.get(warning) : 0;
-  _warningMap.set(warning, count + 1);
+  var warningInfo = _warningMap.get(warning);
+  if (warningInfo) {
+    warningInfo.count += 1;
+  } else {
+    warningInfo = {count: 1, stacktrace: []};
+  }
+
+  _warningMap.set(warning, warningInfo);
   _warningEmitter.emit('warning', _warningMap);
+
+  var error : any = new Error();
+  error.framesToPop = 2;
+
+  symbolicateStackTrace(parseErrorStack(error)).then(stack => {
+    warningInfo = _warningMap.get(warning);
+    if (warningInfo) {
+      warningInfo.stacktrace = stack;
+
+      _warningMap.set(warning, warningInfo);
+      _warningEmitter.emit('warning', _warningMap);
+    }
+  }, () => { /* Do nothing when can't load source map */ });
 }
 
 function isWarningIgnored(warning: string): boolean {
@@ -121,22 +149,44 @@ const WarningRow = ({count, warning, onPress}) => {
   );
 };
 
+type StackRowProps = { frame: StackFrame };
+const StackRow = ({frame}: StackRowProps) => {
+  const Text = require('Text');
+  const fileParts = frame.file.split('/');
+  const fileName = fileParts[fileParts.length - 1];
+  return (
+    <Text style={styles.inspectorCountText}>
+      {`${fileName}:${frame.lineNumber}`}
+    </Text>
+  );
+};
+
 const WarningInspector = ({
-  count,
+  warningInfo,
   warning,
+  stacktraceVisible,
   onClose,
   onDismiss,
   onDismissAll,
+  toggleStacktrace,
 }) => {
   const ScrollView = require('ScrollView');
   const Text = require('Text');
   const TouchableHighlight = require('TouchableHighlight');
   const View = require('View');
+  const {count, stacktrace} = warningInfo || {};
 
   const countSentence =
-    /* $FlowFixMe(>=0.26.0) - count can be undefined! Look at WarningInspector
-     * usage! */
     'Warning encountered ' + count + ' time' + (count - 1 ? 's' : '') + '.';
+
+  let stacktraceList;
+  if (stacktraceVisible && stacktrace) {
+    stacktraceList = (
+      <View>
+        {stacktrace.map((frame, ii) => <StackRow frame={frame} key={ii} />)}
+      </View>
+    );
+  }
 
   return (
     <TouchableHighlight
@@ -147,8 +197,18 @@ const WarningInspector = ({
       <View style={styles.inspectorContent}>
         <View style={styles.inspectorCount}>
           <Text style={styles.inspectorCountText}>{countSentence}</Text>
+          <TouchableHighlight
+            activeOpacity={0.5}
+            onPress={toggleStacktrace}
+            style={styles.stacktraceButton}
+            underlayColor="transparent">
+            <Text style={styles.inspectorButtonText}>
+              {stacktraceVisible ? 'Hide' : 'Show'} stacktrace
+            </Text>
+          </TouchableHighlight>
         </View>
         <ScrollView style={styles.inspectorWarning}>
+          {stacktraceList}
           <Text style={styles.inspectorWarningText}>{warning}</Text>
         </ScrollView>
         <View style={styles.inspectorButtons}>
@@ -178,6 +238,7 @@ const WarningInspector = ({
 
 class YellowBox extends React.Component {
   state: {
+    stacktraceVisible: boolean;
     inspecting: ?string;
     warningMap: Map<any, any>;
   };
@@ -188,6 +249,7 @@ class YellowBox extends React.Component {
     super(props, context);
     this.state = {
       inspecting: null,
+      stacktraceVisible: false,
       warningMap: _warningMap,
     };
     this.dismissWarning = warning => {
@@ -231,24 +293,26 @@ class YellowBox extends React.Component {
     const ScrollView = require('ScrollView');
     const View = require('View');
 
-    const inspecting = this.state.inspecting;
+    const {inspecting, stacktraceVisible} = this.state;
     const inspector = inspecting !== null ?
       <WarningInspector
-        count={this.state.warningMap.get(inspecting)}
+        warningInfo={this.state.warningMap.get(inspecting)}
         warning={inspecting}
+        stacktraceVisible={stacktraceVisible}
         onClose={() => this.setState({inspecting: null})}
         onDismiss={() => this.dismissWarning(inspecting)}
         onDismissAll={() => this.dismissWarning(null)}
+        toggleStacktrace={() => this.setState({stacktraceVisible: !stacktraceVisible})}
       /> :
       null;
 
     const rows = [];
-    this.state.warningMap.forEach((count, warning) => {
+    this.state.warningMap.forEach((warningInfo, warning) => {
       if (!isWarningIgnored(warning)) {
         rows.push(
           <WarningRow
             key={warning}
-            count={count}
+            count={warningInfo.count}
             warning={warning}
             onPress={() => this.setState({inspecting: warning})}
             onDismiss={() => this.dismissWarning(warning)}
@@ -304,6 +368,11 @@ var styles = StyleSheet.create({
   inspectorButton: {
     flex: 1,
     padding: 22,
+    backgroundColor: backgroundColor(1),
+  },
+  stacktraceButton: {
+    flex: 1,
+    padding: 5,
   },
   inspectorButtonText: {
     color: textColor,
@@ -324,10 +393,7 @@ var styles = StyleSheet.create({
     fontSize: 14,
   },
   inspectorWarning: {
-    padding: 15,
-    position: 'absolute',
-    top: 39,
-    bottom: 60,
+    paddingHorizontal: 15,
   },
   inspectorWarningText: {
     color: textColor,

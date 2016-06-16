@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
 
 type SimpleTask = {
@@ -63,6 +64,20 @@ class TaskQueue {
     this._getCurrentQueue().push(task);
   }
 
+  enqueueTasks(tasks: Array<Task>): void {
+    tasks.forEach((task) => this.enqueue(task));
+  }
+
+  cancelTasks(tasksToCancel: Array<Task>): void {
+    // search through all tasks and remove them.
+    this._queueStack = this._queueStack
+      .map((queue) => ({
+        ...queue,
+        tasks: queue.tasks.filter((task) => tasksToCancel.indexOf(task) === -1),
+      }))
+      .filter((queue) => queue.tasks.length > 0);
+  }
+
   /**
    * Check to see if `processNext` should be called.
    *
@@ -86,10 +101,10 @@ class TaskQueue {
       const task = queue.shift();
       try {
         if (task.gen) {
-          DEBUG && console.log('genPromise for task ' + task.name);
+          DEBUG && infoLog('genPromise for task ' + task.name);
           this._genPromise((task: any)); // Rather than annoying tagged union
         } else if (task.run) {
-          DEBUG && console.log('run task ' + task.name);
+          DEBUG && infoLog('run task ' + task.name);
           task.run();
         } else {
           invariant(
@@ -97,7 +112,7 @@ class TaskQueue {
             'Expected Function, SimpleTask, or PromiseTask, but got:\n' +
               JSON.stringify(task, null, 2)
           );
-          DEBUG && console.log('run anonymous task');
+          DEBUG && infoLog('run anonymous task');
           task();
         }
       } catch (e) {
@@ -118,7 +133,7 @@ class TaskQueue {
         queue.tasks.length === 0 &&
         this._queueStack.length > 1) {
       this._queueStack.pop();
-      DEBUG && console.log('popped queue: ', {stackIdx, queueStackSize: this._queueStack.length});
+      DEBUG && infoLog('popped queue: ', {stackIdx, queueStackSize: this._queueStack.length});
       return this._getCurrentQueue();
     } else {
       return queue.tasks;
@@ -132,11 +147,11 @@ class TaskQueue {
     // happens once it is fully processed.
     this._queueStack.push({tasks: [], popable: false});
     const stackIdx = this._queueStack.length - 1;
-    DEBUG && console.log('push new queue: ', {stackIdx});
-    DEBUG && console.log('exec gen task ' + task.name);
+    DEBUG && infoLog('push new queue: ', {stackIdx});
+    DEBUG && infoLog('exec gen task ' + task.name);
     task.gen()
       .then(() => {
-        DEBUG && console.log('onThen for gen task ' + task.name, {stackIdx, queueStackSize: this._queueStack.length});
+        DEBUG && infoLog('onThen for gen task ' + task.name, {stackIdx, queueStackSize: this._queueStack.length});
         this._queueStack[stackIdx].popable = true;
         this.hasTasksToProcess() && this._onMoreTasks();
       })

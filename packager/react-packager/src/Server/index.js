@@ -362,7 +362,7 @@ class Server {
         e => {
           res.writeHead(500);
           res.end('Internal Error');
-          console.log(e.stack);
+          console.log(e.stack); // eslint-disable-line no-console-disallow
         }
       );
     } else if (parts[1] === 'graph'){
@@ -491,24 +491,37 @@ class Server {
 
       // In case of multiple bundles / HMR, some stack frames can have
       // different URLs from others
-      const urls = stack.map(frame => frame.file);
-      const uniqueUrls = urls.filter((elem, idx) => urls.indexOf(elem) === idx);
+      const urlIndexes = {};
+      const uniqueUrls = [];
+      stack.forEach(frame => {
+        const sourceUrl = frame.file;
+        // Skip `/debuggerWorker.js` which drives remote debugging because it
+        // does not need to symbolication.
+        if (!urlIndexes.hasOwnProperty(sourceUrl) &&
+            !sourceUrl.endsWith('/debuggerWorker.js')) {
+          urlIndexes[sourceUrl] = uniqueUrls.length;
+          uniqueUrls.push(sourceUrl);
+        }
+      });
 
-      const sourceMaps = uniqueUrls.map(sourceUrl => this._sourceMapForURL(sourceUrl));
+      const sourceMaps = uniqueUrls.map(
+        sourceUrl => this._sourceMapForURL(sourceUrl)
+      );
       return Promise.all(sourceMaps).then(consumers => {
         return stack.map(frame => {
-          const idx = uniqueUrls.indexOf(frame.file);
+          const sourceUrl = frame.file;
+          if (!urlIndexes.hasOwnProperty(sourceUrl)) {
+            return frame;
+          }
+          const idx = urlIndexes[sourceUrl];
           const consumer = consumers[idx];
-
           const original = consumer.originalPositionFor({
             line: frame.lineNumber,
             column: frame.column,
           });
-
           if (!original) {
             return frame;
           }
-
           return Object.assign({}, frame, {
             file: original.source,
             lineNumber: original.line,
