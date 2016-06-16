@@ -258,6 +258,12 @@ public class ReactContext extends ContextWrapper {
     return mCurrentActivity != null && mCurrentActivity.get() != null;
   }
 
+  public boolean isCurrentActivityFinishing() {
+    return mCurrentActivity != null &&
+           mCurrentActivity.get() != null &&
+           mCurrentActivity.get().isFinishing();
+  }
+
   /**
    * Same as {@link Activity#startActivityForResult(Intent, int)}, this just redirects the call to
    * the current activity. Returns whether the activity was started, as this might fail if this

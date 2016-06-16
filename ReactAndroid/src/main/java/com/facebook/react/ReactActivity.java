@@ -22,6 +22,7 @@ import android.view.KeyEvent;
 import android.widget.Toast;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -187,6 +188,14 @@ public abstract class ReactActivity extends Activity
     mReactRootView = null;
 
     if (mReactInstanceManager != null) {
+      // Destroy react instance manager only if the current activity is finishing or undefined
+      ReactContext currentReactContext = mReactInstanceManager.getCurrentReactContext();
+      if (currentReactContext != null &&
+          currentReactContext.hasCurrentActivity() &&
+          !currentReactContext.isCurrentActivityFinishing()) {
+        return;
+      }
+
       mReactInstanceManager.destroy();
     }
   }
