@@ -13,7 +13,10 @@ const meta = require('./meta');
 const writeFile = require('./writeFile');
 
 function buildBundle(packagerClient, requestOptions) {
-  return packagerClient.buildBundle(requestOptions);
+  return packagerClient.buildBundle({
+    ...requestOptions,
+    isolateModuleIDs: true,
+  });
 }
 
 function createCodeWithMap(bundle, dev) {
