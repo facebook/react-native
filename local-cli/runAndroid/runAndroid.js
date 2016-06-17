@@ -177,24 +177,24 @@ function buildAndRun(args, reject) {
 function findMainInManifest(manifest) {
   const manifestXml = new xml.XmlDocument(manifest);
 
-  var application = manifestXml.childNamed('application');
+  const application = manifestXml.childNamed('application');
   if (!application) {
     return null;
   }
 
-  var activities = application.childrenNamed('activity');
+  const activities = application.childrenNamed('activity');
 
   if (activities.length === 0) {
     return null;
   }
 
   for (let i = 0; i < activities.length; i++) {
-    let activity = activities[i];
+    const activity = activities[i];
 
-    var intentFilter = activity.childNamed('intent-filter');
+    const intentFilter = activity.childNamed('intent-filter');
 
     if (intentFilter) {
-      if (intentFilter.childWithAttribute('android:name","android.intent.action.MAIN') !== undefined) {
+      if (intentFilter.childWithAttribute('android:name','android.intent.action.MAIN') !== undefined) {
         return activity.attr['android:name'];
       }
     }
