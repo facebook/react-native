@@ -21,6 +21,9 @@ import android.text.TextUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebChromeClient;
+import android.util.Log;
+import android.view.View;
+import android.webkit.WebSettings;
 
 import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
@@ -76,6 +79,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public static final int COMMAND_GO_FORWARD = 2;
   public static final int COMMAND_RELOAD = 3;
   public static final int COMMAND_STOP_LOADING = 4;
+  public static final int COMMAND_DESTROY = 5;
 
   // Use `webView.loadUrl("about:blank")` to reliably reset the view
   // state and release page resources (including any running JavaScript).
@@ -90,6 +94,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     @Override
     public void onPageFinished(WebView webView, String url) {
       super.onPageFinished(webView, url);
+      Log.w("BFWebView" + webView.getId(), "Page load finished!");
 
       if (!mLastLoadFailed) {
         ReactWebView reactWebView = (ReactWebView) webView;
@@ -102,6 +107,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     public void onPageStarted(WebView webView, String url, Bitmap favicon) {
       super.onPageStarted(webView, url, favicon);
       mLastLoadFailed = false;
+      Log.w("BFWebView" + webView.getId(), "Page load started!"));
 
       dispatchEvent(
           webView,
@@ -221,6 +227,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     }
 
     private void cleanupCallbacksAndDestroy() {
+      Log.w("BFWebView", "cleanupCallbacksAndDestroy");
       setWebViewClient(null);
       destroy();
     }
@@ -249,6 +256,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     reactContext.addLifecycleEventListener(webView);
     mWebViewConfig.configWebView(webView);
 
+    // BF changes
+    Log.w("BFWebView" + webView.getId(), "Initialize web view");
+    // webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+    // webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+    // end BF changes
     if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
       WebView.setWebContentsDebuggingEnabled(true);
     }
@@ -352,7 +364,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         "goBack", COMMAND_GO_BACK,
         "goForward", COMMAND_GO_FORWARD,
         "reload", COMMAND_RELOAD,
-        "stopLoading", COMMAND_STOP_LOADING);
+        "stopLoading", COMMAND_STOP_LOADING,
+        "destroy", COMMAND_DESTROY);
   }
 
   @Override
@@ -369,6 +382,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         break;
       case COMMAND_STOP_LOADING:
         root.stopLoading();
+        break;
+      case COMMAND_DESTROY:
+        ((ReactWebView) root).cleanupCallbacksAndDestroy();
         break;
     }
   }
