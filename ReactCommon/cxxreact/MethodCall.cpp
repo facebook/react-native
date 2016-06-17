@@ -13,7 +13,7 @@ namespace react {
 #define REQUEST_PARAMSS 2
 #define REQUEST_CALLID 3
 
-std::vector<MethodCall> parseMethodCalls(const std::string& json) {
+std::vector<MethodCall> parseMethodCalls(const std::string& json) throw(std::invalid_argument) {
   folly::dynamic jsonData = folly::parseJson(json);
 
   if (jsonData.isNull()) {

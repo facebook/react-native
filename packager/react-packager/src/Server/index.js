@@ -348,7 +348,6 @@ class Server {
     const parts = pathname.split('/').filter(Boolean);
     if (parts.length === 1) {
       ret += '<div><a href="/debug/bundles">Cached Bundles</a></div>';
-      ret += '<div><a href="/debug/graph">Dependency Graph</a></div>';
       res.end(ret);
     } else if (parts[1] === 'bundles') {
       ret += '<h1> Cached Bundles </h1>';
@@ -365,10 +364,6 @@ class Server {
           console.log(e.stack); // eslint-disable-line no-console-disallow
         }
       );
-    } else if (parts[1] === 'graph'){
-      ret += '<h1> Dependency Graph </h2>';
-      ret += this._bundler.getGraphDebugInfo();
-      res.end(ret);
     } else {
       res.writeHead('404');
       res.end('Invalid debug request');

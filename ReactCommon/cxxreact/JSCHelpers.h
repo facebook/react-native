@@ -12,17 +12,11 @@
 #include <stdexcept>
 #include <algorithm>
 
-#include "Value.h"
-
 namespace facebook {
 namespace react {
 
-struct JsException : std::runtime_error {
-  using std::runtime_error::runtime_error;
-};
-
 inline void throwJSExecutionException(const char* msg) {
-  throw JsException(msg);
+  throw JSException(msg);
 }
 
 template <typename... Args>
@@ -31,7 +25,12 @@ inline void throwJSExecutionException(const char* fmt, Args... args) {
   msgSize = std::min(512, msgSize + 1);
   char *msg = (char*) alloca(msgSize);
   snprintf(msg, msgSize, fmt, args...);
-  throw JsException(msg);
+  throw JSException(msg);
+}
+
+template <typename... Args>
+inline void throwJSExecutionExceptionWithStack(const char* msg, const char* stack) {
+  throw JSException(msg, stack);
 }
 
 void installGlobalFunction(

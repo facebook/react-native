@@ -59,7 +59,7 @@ import type {
 type Props = {
   direction: NavigationGestureDirection,
   navigationState: NavigationState,
-  onNavigateBack: ?Function,
+  onNavigateBack?: Function,
   renderOverlay: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
   style: any,
