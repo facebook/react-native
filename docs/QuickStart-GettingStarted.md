@@ -195,7 +195,6 @@ react-native run-ios
 
 If everything is set up correctly, you should see your new app running in the iOS Simulator shortly.
 
-
 > You can also
 > [open the `AwesomeProject`](http://nuclide.io/docs/quick-start/getting-started/#adding-a-project)
 > folder in [Nuclide](http://nuclide.io) and
