@@ -72,12 +72,10 @@ Here are the current options the packager accepts:
 
 ### /debug
 
-This is a page used for debugging, it has links to two pages:
+This is a page used for debugging, it offers a link to a single page :
 
 * Cached Packages: which shows you the packages that's been already
   generated and cached
-* Dependency Graph: is the in-memory graph of all the modules and
-  their dependencies
 
 ## Programmatic API
 

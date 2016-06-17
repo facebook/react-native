@@ -93,7 +93,7 @@ static JSValueRef nativeInjectHMRUpdate(
 static std::string executeJSCallWithJSC(
     JSGlobalContextRef ctx,
     const std::string& methodName,
-    const std::vector<folly::dynamic>& arguments) {
+    const std::vector<folly::dynamic>& arguments) throw(JSException) {
   SystraceSection s("JSCExecutor.executeJSCall",
                     "method", methodName);
 
@@ -115,7 +115,7 @@ std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
 JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
                          std::shared_ptr<MessageQueueThread> messageQueueThread,
                          const std::string& cacheDir,
-                         const folly::dynamic& jscConfig) :
+                         const folly::dynamic& jscConfig) throw(JSException) :
     m_delegate(delegate),
     m_deviceCacheDir(cacheDir),
     m_messageQueueThread(messageQueueThread),
@@ -199,7 +199,7 @@ void JSCExecutor::destroy() {
   });
 }
 
-void JSCExecutor::initOnJSVMThread() {
+void JSCExecutor::initOnJSVMThread() throw(JSException) {
   SystraceSection s("JSCExecutor.initOnJSVMThread");
 
   #if defined(WITH_FB_JSC_TUNING)
@@ -269,7 +269,7 @@ void JSCExecutor::terminateOnJSVMThread() {
   m_context = nullptr;
 }
 
-void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) {
+void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) throw(JSException) {
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
 
@@ -300,14 +300,15 @@ void JSCExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> unbund
   m_unbundle = std::move(unbundle);
 }
 
-void JSCExecutor::flush() {
+void JSCExecutor::flush() throw(JSException) {
   // TODO: Make this a first class function instead of evaling. #9317773
   std::string calls = executeJSCallWithJSC(m_context, "flushedQueue", std::vector<folly::dynamic>());
   m_delegate->callNativeModules(*this, std::move(calls), true);
 }
 
-void JSCExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
+void JSCExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) throw(JSException) {
   // TODO:  Make this a first class function instead of evaling. #9317773
+  // TODO(cjhopman): This copies args.
   std::vector<folly::dynamic> call{
     moduleId,
     methodId,
@@ -317,8 +318,9 @@ void JSCExecutor::callFunction(const std::string& moduleId, const std::string& m
   m_delegate->callNativeModules(*this, std::move(calls), true);
 }
 
-void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
+void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) throw(JSException) {
   // TODO: Make this a first class function instead of evaling. #9317773
+  // TODO(cjhopman): This copies args.
   std::vector<folly::dynamic> call{
     (double) callbackId,
     std::move(arguments)
@@ -327,7 +329,7 @@ void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& 
   m_delegate->callNativeModules(*this, std::move(calls), true);
 }
 
-void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) {
+void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) throw(JSException) {
   SystraceSection s("JSCExecutor.setGlobalVariable",
                     "propName", propName);
 

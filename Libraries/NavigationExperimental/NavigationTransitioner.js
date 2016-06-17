@@ -19,15 +19,13 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
-const invariant = require('fbjs/lib/invariant');
-
 import type {
   NavigationAnimatedValue,
   NavigationLayout,
-  NavigationState,
   NavigationScene,
-  NavigationSceneRenderer,
+  NavigationState,
   NavigationTransitionConfigurator,
+  NavigationTransitionProps,
 } from 'NavigationTypeDefinition';
 
 type Props = {
@@ -35,8 +33,7 @@ type Props = {
   navigationState: NavigationState,
   onTransitionEnd: () => void,
   onTransitionStart: () => void,
-  renderOverlay: ?NavigationSceneRenderer,
-  renderScene: NavigationSceneRenderer,
+  render: (props: NavigationTransitionProps) => any,
   style: any,
 };
 
@@ -71,8 +68,7 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
     navigationState: NavigationPropTypes.navigationState.isRequired,
     onTransitionEnd: PropTypes.func,
     onTransitionStart: PropTypes.func,
-    renderOverlay: PropTypes.func,
-    renderScene: PropTypes.func.isRequired,
+    render: PropTypes.func.isRequired,
   };
 
   constructor(props: Props, context: any) {
@@ -162,79 +158,13 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
   }
 
   render(): ReactElement<any> {
-    const overlay = this._renderOverlay();
-    const scenes = this._renderScenes();
     return (
       <View
         onLayout={this._onLayout}
-        style={this.props.style}>
-        <View style={styles.scenes} key="scenes">
-          {scenes}
-        </View>
-        {overlay}
+        style={[styles.main, this.props.style]}>
+        {this.props.render(this._buildTransitionProps())}
       </View>
     );
-  }
-
-  _renderScenes(): Array<?ReactElement<any>> {
-    return this.state.scenes.map(this._renderScene, this);
-  }
-
-  _renderScene(scene: NavigationScene): ?ReactElement<any> {
-    const {
-      navigationState,
-      renderScene,
-    } = this.props;
-
-    const {
-      position,
-      progress,
-      scenes,
-    } = this.state;
-
-    return renderScene({
-      layout: this.state.layout,
-      navigationState,
-      position,
-      progress,
-      scene,
-      scenes,
-    });
-  }
-
-  _renderOverlay(): ?ReactElement<any> {
-    if (this.props.renderOverlay) {
-      const {
-        navigationState,
-        renderOverlay,
-      } = this.props;
-
-      const {
-        position,
-        progress,
-        scenes,
-      } = this.state;
-
-      const route = navigationState.routes[navigationState.index];
-
-      const activeScene = scenes.find(scene => {
-        return (!scene.isStale && scene.route === route) ?
-          scene :
-          undefined;
-      });
-
-      invariant(!!activeScene, 'no active scene found');
-
-      return renderOverlay({
-        layout: this.state.layout,
-        navigationState,
-        position,
-        progress,
-        scene: activeScene,
-        scenes,
-      });
-    }
-    return null;
   }
 
   _onLayout(event: any): void {
@@ -260,10 +190,31 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
     }
     this.props.onTransitionEnd && this.props.onTransitionEnd();
   }
+
+  _buildTransitionProps(): NavigationTransitionProps {
+    const {
+      navigationState,
+    } = this.props;
+
+    const {
+      layout,
+      position,
+      progress,
+      scenes,
+    } = this.state;
+
+    return {
+      layout,
+      navigationState,
+      position,
+      progress,
+      scenes,
+    };
+  }
 }
 
 const styles = StyleSheet.create({
-  scenes: {
+  main: {
     flex: 1,
   },
 });

@@ -378,6 +378,12 @@ var apps = [
     ],
   },
   {
+    name: 'Convoy Driver',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple30/v4/5a/74/56/5a74567d-4491-a298-65cd-722c8a7211ac/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/convoy-driver/id1045368390?mt=8',
+    author: 'Convoy',
+  },
+  {
     name: 'DareU',
     icon: 'http://a3.mzstatic.com/us/r30/Purple6/v4/10/fb/6a/10fb6a50-57c8-061a-d865-503777bf7f00/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/dareu-dare-your-friends-dare/id1046434563?mt=8',
@@ -431,6 +437,13 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/us/app/eat-or-not/id1054565697?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.eon',
     author: 'Sharath Prabhal',
+  },
+  {
+    name: 'Emoj3 - The emoji only social network',
+    icon: 'https://emoj3.com/images/favicon/apple-touch-icon-152x152.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/emoj3/id1078999427?mt=8',
+    link: 'https://emoj3.com',
+    author: 'Waffle and Toast'
   },
   {
     name: 'Emoji Poetry',
@@ -867,6 +880,12 @@ var apps = [
     link: 'https://itunes.apple.com/fr/app/sneat-reservez-les-meilleurs/id1062510079?l=en&mt=8',
     author: 'sneat'
   },
+  {
+    name: 'SCTV Sports',
+    icon: 'https://farm8.staticflickr.com/7353/27553089935_a3928f2097_o.png',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.sctvsport.bongdatructuyen',
+    author: 'SCTV Digital',
+  },  
   {
     name: 'Software Interview Preparation',
     icon: 'https://lh3.googleusercontent.com/11AuzaeCnxrRnIp1E_a_6WWiQIRRoWhrvFr20eCRJX4ZMW6O3tGjZLiUw3thKUgGaC8X=w300',

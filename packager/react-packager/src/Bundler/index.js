@@ -566,10 +566,6 @@ class Bundler {
     });
   }
 
-  getGraphDebugInfo() {
-    return this._resolver.getDebugInfo();
-  }
-
   _generateAssetModule_DEPRECATED(bundle, module, getModuleId) {
     return Promise.all([
       sizeOf(module.path),

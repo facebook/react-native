@@ -1,71 +1,13 @@
 [ignore]
 
 # We fork some components by platform.
-.*/*.web.js
 .*/*.android.js
 
-# Some modules have their own node_modules with overlap
-.*/node_modules/node-haste/.*
-
-# Ugh
-.*/node_modules/babel.*
-.*/node_modules/babylon.*
-.*/node_modules/invariant.*
-
-# Ignore react and fbjs where there are overlaps, but don't ignore
-# anything that react-native relies on
-.*/node_modules/fbjs/lib/Map.js
-.*/node_modules/fbjs/lib/ErrorUtils.js
-
-# Flow has a built-in definition for the 'react' module which we prefer to use
-# over the currently-untyped source
-.*/node_modules/react/react.js
-.*/node_modules/react/lib/React.js
-.*/node_modules/react/lib/ReactDOM.js
-
-.*/__mocks__/.*
-.*/__tests__/.*
-
-.*/commoner/test/source/widget/share.js
-
-# Ignore commoner tests
-.*/node_modules/commoner/test/.*
-
-# See https://github.com/facebook/flow/issues/442
-.*/react-tools/node_modules/commoner/lib/reader.js
-
-# Ignore jest
-.*/node_modules/jest-cli/.*
-
-# Ignore Website
-.*/website/.*
-
-# Ignore generators
+# Ignore templates with `@flow` in header
 .*/local-cli/generator.*
 
-# Ignore BUCK generated folders
-.*\.buckd/
-
-# Ignore RNPM
-.*/local-cli/rnpm/.*
-
-.*/node_modules/is-my-json-valid/test/.*\.json
-.*/node_modules/iconv-lite/encodings/tables/.*\.json
+# Ignore malformed json
 .*/node_modules/y18n/test/.*\.json
-.*/node_modules/spdx-license-ids/spdx-license-ids.json
-.*/node_modules/spdx-exceptions/index.json
-.*/node_modules/resolve/test/subdirs/node_modules/a/b/c/x.json
-.*/node_modules/resolve/lib/core.json
-.*/node_modules/jsonparse/samplejson/.*\.json
-.*/node_modules/json5/test/.*\.json
-.*/node_modules/ua-parser-js/test/.*\.json
-.*/node_modules/builtin-modules/builtin-modules.json
-.*/node_modules/binary-extensions/binary-extensions.json
-.*/node_modules/url-regex/tlds.json
-.*/node_modules/joi/.*\.json
-.*/node_modules/isemail/.*\.json
-.*/node_modules/tr46/.*\.json
-
 
 [include]
 
