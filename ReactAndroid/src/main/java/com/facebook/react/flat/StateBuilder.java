@@ -147,15 +147,16 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     mStylesToUpdate.add(styles);
   }
 
-  /* package */ void ensureBackingViewIsCreated(FlatShadowNode node) {
+  /* package */ boolean ensureBackingViewIsCreated(FlatShadowNode node) {
     if (node.isBackingViewCreated()) {
-      return;
+      return false;
     }
 
     int tag = node.getReactTag();
     mOperationsQueue.enqueueCreateView(node.getThemedContext(), tag, node.getViewClass(), null);
 
     node.signalBackingViewIsCreated();
+    return true;
   }
 
   /* package */ void dropView(FlatShadowNode node) {

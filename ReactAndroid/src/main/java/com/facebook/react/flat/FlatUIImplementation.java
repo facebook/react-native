@@ -217,10 +217,12 @@ public class FlatUIImplementation extends UIImplementation {
         callback);
   }
 
-  private void ensureMountsToViewAndBackingViewIsCreated(int reactTag) {
+  private boolean ensureMountsToViewAndBackingViewIsCreated(int reactTag) {
     FlatShadowNode node = (FlatShadowNode) resolveShadowNode(reactTag);
+    boolean didUpdate = !node.mountsToView();
     node.forceMountToView();
-    mStateBuilder.ensureBackingViewIsCreated(node);
+    didUpdate = didUpdate || mStateBuilder.ensureBackingViewIsCreated(node);
+    return didUpdate;
   }
 
   @Override
@@ -243,11 +245,15 @@ public class FlatUIImplementation extends UIImplementation {
 
   @Override
   public void dispatchViewManagerCommand(int reactTag, int commandId, ReadableArray commandArgs) {
-    ensureMountsToViewAndBackingViewIsCreated(reactTag);
-    // need to make sure any ui operations (UpdateViewGroup, for example, etc) have already
-    // happened before we actually dispatch the view manager command (since otherwise, the command
-    // may go to an empty shell parent without its children, which is against the specs).
-    mStateBuilder.applyUpdates((FlatShadowNode) resolveShadowNode(reactTag));
+    if (ensureMountsToViewAndBackingViewIsCreated(reactTag)) {
+      // need to make sure any ui operations (UpdateViewGroup, for example, etc) have already
+      // happened before we actually dispatch the view manager command (since otherwise, the command
+      // may go to an empty shell parent without its children, which is against the specs). note
+      // that we only want to applyUpdates if the view has not yet been created so that it does
+      // get created (otherwise, we may end up changing the View's position when we're not supposed
+      // to, for example).
+      mStateBuilder.applyUpdates((FlatShadowNode) resolveShadowNode(reactTag));
+    }
     super.dispatchViewManagerCommand(reactTag, commandId, commandArgs);
   }
 
