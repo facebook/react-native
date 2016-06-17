@@ -384,9 +384,11 @@ var Navigator = React.createClass({
       });
       return;
     }
-    this.state.transitionFromIndex = this.state.presentedIndex;
-    this.state.presentedIndex = destIndex;
-    this.state.transitionCb = cb;
+    this.setState({
+      transitionFromIndex: this.state.presentedIndex,
+      presentedIndex: destIndex,
+      transitionCb: cb,
+    });
     this._onAnimationStart();
     if (AnimationsDebugModule) {
       AnimationsDebugModule.startRecordingFps();
