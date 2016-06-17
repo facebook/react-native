@@ -188,25 +188,25 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     @Override
     public void onDrawerSlide(View view, float v) {
       mEventDispatcher.dispatchEvent(
-          new DrawerSlideEvent(mDrawerLayout.getId(), SystemClock.nanoTime(), v));
+          new DrawerSlideEvent(mDrawerLayout.getId(), SystemClock.elapsedRealtime(), v));
     }
 
     @Override
     public void onDrawerOpened(View view) {
       mEventDispatcher.dispatchEvent(
-        new DrawerOpenedEvent(mDrawerLayout.getId(), SystemClock.nanoTime()));
+        new DrawerOpenedEvent(mDrawerLayout.getId(), SystemClock.elapsedRealtime()));
     }
 
     @Override
     public void onDrawerClosed(View view) {
       mEventDispatcher.dispatchEvent(
-          new DrawerClosedEvent(mDrawerLayout.getId(), SystemClock.nanoTime()));
+          new DrawerClosedEvent(mDrawerLayout.getId(), SystemClock.elapsedRealtime()));
     }
 
     @Override
     public void onDrawerStateChanged(int i) {
       mEventDispatcher.dispatchEvent(
-          new DrawerStateChangedEvent(mDrawerLayout.getId(), SystemClock.nanoTime(), i));
+          new DrawerStateChangedEvent(mDrawerLayout.getId(), SystemClock.elapsedRealtime(), i));
     }
   }
 }
