@@ -195,9 +195,6 @@ react-native run-ios
 
 If everything is set up correctly, you should see your new app running in the iOS Simulator shortly.
 
-> You can specify the device the simulator should run with the `--simulator` flag, followed by the device name as a string. The default is `"iPhone 6"`. Example: `react-natvie run-ios --simulator "iPhone 4s"`.
-> The device names corresponds to the list of devices available in xcode. You can check your available devices by running `xcrun simctl list devices` from the console.
-
 
 > You can also
 > [open the `AwesomeProject`](http://nuclide.io/docs/quick-start/getting-started/#adding-a-project)
