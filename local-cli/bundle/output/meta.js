@@ -10,14 +10,23 @@
 
 const crypto = require('crypto');
 
-const createHash = () => crypto.createHash('sha1');
 const isUTF8 = encoding => /^utf-?8$/i.test(encoding);
 
-exports.appendToString = (string, encoding) => {
-  const hash = createHash();
-  hash.update(string, encoding);
-  encoding = tryAsciiPromotion(string, encoding);
-  return string + formatSignature(encoding, hash);
+const constantFor = encoding =>
+  /^ascii$/i.test(encoding) ? 1 :
+  isUTF8(encoding) ? 2 :
+  /^(?:utf-?16(?:le)?|ucs-?2)$/ ? 3 : 0;
+
+module.exports = function(code, encoding) {
+  const hash = crypto.createHash('sha1');
+  hash.update(code, encoding);
+  const digest = hash.digest('binary');
+  const signature = Buffer(digest.length + 1);
+  signature.write(digest, 'binary');
+  signature.writeUInt8(
+    constantFor(tryAsciiPromotion(code, encoding)),
+    signature.length - 1);
+  return signature;
 };
 
 function tryAsciiPromotion(string, encoding) {
@@ -26,8 +35,4 @@ function tryAsciiPromotion(string, encoding) {
     if (string.charCodeAt(i) > 0x7f) { return encoding; }
   }
   return 'ascii';
-}
-
-function formatSignature(encoding, hash) {
-  return `/*${encoding}:${hash.digest('hex')}*/`;
 }
