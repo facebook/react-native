@@ -31,8 +31,6 @@ var ReactNativeInternal = (require('ReactNative'): {
   ) => ?ReactComponent<any, any, any>,
   // findNodeHandle
   findNodeHandle: (componentOrHandle: any) => ?number,
-  // NativeMethodsMixin
-  NativeMethodsMixin: Object
 });
 
 // export
@@ -40,7 +38,6 @@ var ReactNative = {
   // from ReactNative internal
   findNodeHandle: ReactNativeInternal.findNodeHandle,
   render: ReactNativeInternal.render,
-  NativeMethodsMixin: ReactNativeInternal.NativeMethodsMixin,
   // Components
   ActivityIndicator: require('ActivityIndicator'),
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
