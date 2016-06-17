@@ -16,6 +16,7 @@ const parseCommandLine = require('../util/parseCommandLine');
 const isPackagerRunning = require('../util/isPackagerRunning');
 const Promise = require('promise');
 const adb = require('./adb');
+const xml = require('xmldoc');
 
 /**
  * Starts the app on a connected Android emulator or device.
@@ -121,10 +122,16 @@ function buildAndRun(args, reject) {
   }
 
   try {
-    const packageName = fs.readFileSync(
+    const manifest = fs.readFileSync(
       'app/src/main/AndroidManifest.xml',
       'utf8'
-    ).match(/package="(.+?)"/)[1];
+    );
+
+    const packageName = manifest.match(/package="(.+?)"/)[1];
+
+    const activityFromManifest = findMainInManifest(manifest);
+    const activityToStart =  activityFromManifest === null
+      ? '.MainActivity' : activityFromManifest;
 
     const adbPath = process.env.ANDROID_HOME
       ? process.env.ANDROID_HOME + '/platform-tools/adb'
@@ -135,7 +142,7 @@ function buildAndRun(args, reject) {
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
 
-        const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
+        const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/' + activityToStart];
 
         console.log(chalk.bold(
           `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
@@ -165,6 +172,35 @@ function buildAndRun(args, reject) {
     reject();
     return;
   }
+}
+
+function findMainInManifest(manifest) {
+  const manifestXml = new xml.XmlDocument(manifest);
+
+  var application = manifestXml.childNamed('application');
+  if (!application) {
+    return null;
+  }
+
+  var activities = application.childrenNamed('activity');
+
+  if (activities.length === 0) {
+    return null;
+  }
+
+  for (let i = 0; i < activities.length; i++) {
+    let activity = activities[i];
+
+    var intentFilter = activity.childNamed('intent-filter');
+
+    if (intentFilter) {
+      if (intentFilter.childWithAttribute('android:name","android.intent.action.MAIN') !== undefined) {
+        return activity.attr['android:name'];
+      }
+    }
+  }
+
+  return null;
 }
 
 function startServerInNewWindow() {
