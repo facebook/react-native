@@ -254,14 +254,18 @@ android {
     lintOptions {
         abortOnError false
     }
+    packagingOptions {
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.android.support:recyclerview-v7:23.0.1'
-    compile 'com.facebook.fresco:fresco:0.10.0'
-    compile 'com.facebook.fresco:imagepipeline-okhttp3:0.10.0'
+    compile 'com.facebook.fresco:fresco:0.11.0'
+    compile 'com.facebook.fresco:imagepipeline-okhttp3:0.11.0'
     compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
@@ -280,6 +284,7 @@ dependencies {
     testCompile "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
 
     androidTestCompile 'com.android.support.test:runner:0.3'
+    androidTestCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
 }
 
 apply from: 'release.gradle'

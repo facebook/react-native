@@ -35,7 +35,7 @@ import com.facebook.react.modules.core.Timing;
 
 import com.facebook.soloader.SoLoader;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * Use this class for writing integration tests of catalyst. This class will run all JNI call

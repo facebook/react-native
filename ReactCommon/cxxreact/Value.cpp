@@ -30,7 +30,7 @@ JSContextRef Value::context() const {
   return m_context;
 }
 
-std::string Value::toJSONString(unsigned indent) const {
+std::string Value::toJSONString(unsigned indent) const throw(JSException) {
   JSValueRef exn;
   auto stringToAdopt = JSValueCreateJSONString(m_context, m_value, indent, &exn);
   if (stringToAdopt == nullptr) {
@@ -41,7 +41,7 @@ std::string Value::toJSONString(unsigned indent) const {
 }
 
 /* static */
-Value Value::fromJSON(JSContextRef ctx, const String& json) {
+Value Value::fromJSON(JSContextRef ctx, const String& json) throw(JSException) {
   auto result = JSValueMakeFromJSONString(ctx, json);
   if (!result) {
     throwJSExecutionException("Failed to create String from JSON");
