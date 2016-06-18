@@ -50,6 +50,7 @@ import type {
   NavigationState,
   NavigationSceneRenderer,
   NavigationSceneRendererProps,
+  NavigationAnimationSetter,
 } from 'NavigationTypeDefinition';
 
 import type {
@@ -88,6 +89,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   _renderScene : NavigationSceneRenderer;
 
   static propTypes = {
+    applyAnimation: NavigationAnimationSetter,
     direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
     navigationState: NavigationPropTypes.navigationState.isRequired,
     onNavigateBack: PropTypes.func,
@@ -119,6 +121,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   render(): ReactElement<any> {
     return (
       <NavigationAnimatedView
+        applyAnimation={this.props.applyAnimation}
         navigationState={this.props.navigationState}
         renderOverlay={this.props.renderOverlay}
         renderScene={this._renderScene}
