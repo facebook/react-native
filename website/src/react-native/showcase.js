@@ -456,6 +456,13 @@ var apps = [
     ],
   },
   {
+    name: '儿戏亲子游',
+    icon: 'http://www.mmww.com/images/logo_512x512.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/er-xi-qin-zi-huo-dong-zhou/id1037700232?mt=8',
+    link: 'http://android.myapp.com/myapp/detail.htm?apkName=com.mmww.erxi',
+    author: 'Jiang Xiaoming',
+  },
+  {
     name: 'Fan of it',
     icon: 'http://a4.mzstatic.com/us/r30/Purple3/v4/c9/3f/e8/c93fe8fb-9332-e744-f04a-0f4f78e42aa8/icon350x350.png',
     link: 'https://itunes.apple.com/za/app/fan-of-it/id1017025530?mt=8',
@@ -891,7 +898,7 @@ var apps = [
     icon: 'https://farm8.staticflickr.com/7353/27553089935_a3928f2097_o.png',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.sctvsport.bongdatructuyen',
     author: 'SCTV Digital',
-  },  
+  },
   {
     name: 'Software Interview Preparation',
     icon: 'https://lh3.googleusercontent.com/11AuzaeCnxrRnIp1E_a_6WWiQIRRoWhrvFr20eCRJX4ZMW6O3tGjZLiUw3thKUgGaC8X=w300',
