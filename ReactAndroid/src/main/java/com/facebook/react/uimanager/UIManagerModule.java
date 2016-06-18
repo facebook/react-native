@@ -473,4 +473,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public void sendAccessibilityEvent(int tag, int eventType) {
     mUIImplementation.sendAccessibilityEvent(tag, eventType);
   }
+
+  public void addUIBlock (UIBlock block) {
+    mUIImplementation.addUIBlock(block);
+  }
 }
