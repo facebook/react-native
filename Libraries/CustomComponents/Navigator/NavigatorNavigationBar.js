@@ -188,7 +188,7 @@ var NavigatorNavigationBar = React.createClass({
     /*object*/route,
     /*number*/index
   ) /*?Object*/ {
-    if (this._descriptors[componentName].includes(route)) {
+    if (this._descriptors[componentName].has(route)) {
       return this._descriptors[componentName].get(route);
     }
 
