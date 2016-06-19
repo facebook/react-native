@@ -27,28 +27,14 @@ RCT_ENUM_CONVERTER(UIActivityIndicatorViewStyle, (@{
 @end
 
 @implementation RCTActivityIndicatorView {
-  BOOL _animating;
 }
 
-- (void)layoutSubviews
+- (void)setHidden:(BOOL)_hidden
 {
-  [super layoutSubviews];
-
-  if (!_animating) {
-    [self stopAnimating];
-  }
-}
-
-- (void)setAnimating:(BOOL)animating
-{
-  _animating = animating;
-
-  if (_animating != [self isAnimating]) {
-    if (_animating) {
-      [self startAnimating];
-    } else {
-      [self stopAnimating];
-    }
+  if ([self hidesWhenStopped] && ![self isAnimating]) {
+    [super setHidden: YES];
+  } else {
+    [super setHidden: _hidden];
   }
 }
 
