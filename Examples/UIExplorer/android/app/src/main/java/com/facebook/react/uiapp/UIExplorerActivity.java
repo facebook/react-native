@@ -11,7 +11,8 @@
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.facebook.react.movies;
+
+package com.facebook.react.uiapp;
 
 import android.os.Bundle;
 
@@ -25,40 +26,60 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-public class MoviesActivity extends ReactActivity {
+public class UIExplorerActivity extends ReactActivity {
+  private final String PARAM_ROUTE = "route";
+  private Bundle mInitialProps = null;
   private ReactNativeHost mReactNativeHost;
 
   @Override
-  protected String getMainComponentName() {
-    return "MoviesApp";
-  }
-
-  @Override
   protected void onCreate(Bundle savedInstanceState) {
-    mReactNativeHost = new ReactNativeHost(getApplication()) {
+    // Get remote param before calling super which uses it
+    Bundle bundle = getIntent().getExtras();
+    if (bundle != null && bundle.containsKey(PARAM_ROUTE)) {
+      String routeUri = new StringBuilder("rnuiexplorer://example/")
+        .append(bundle.getString(PARAM_ROUTE))
+        .append("Example")
+        .toString();
+      mInitialProps = new Bundle();
+      mInitialProps.putString("exampleFromAppetizeParams", routeUri);
+    }
+
+    mReactNativeHost = new ReactNativeHost(this.getApplication()) {
       @Override
       public String getJSMainModuleName() {
-        return "Examples/Movies/MoviesApp.android";
+        return "Examples/UIExplorer/UIExplorerApp.android";
       }
 
       @Override
-      public @Nullable String getBundleAssetName() {
-        return "MoviesApp.android.bundle";
+      public  @Nullable
+      String getBundleAssetName() {
+        return "UIExplorerApp.android.bundle";
       }
 
       @Override
-      protected boolean getUseDeveloperSupport() {
+      public boolean getUseDeveloperSupport() {
         return true;
       }
 
       @Override
-      protected List<ReactPackage> getPackages() {
+      public List<ReactPackage> getPackages() {
         return Arrays.<ReactPackage>asList(
           new MainReactPackage()
         );
       }
     };
+
     super.onCreate(savedInstanceState);
+  }
+
+  @Override
+  protected Bundle getLaunchOptions() {
+    return mInitialProps;
+  }
+
+  @Override
+  protected String getMainComponentName() {
+    return "UIExplorerApp";
   }
 
   @Override
