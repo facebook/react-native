@@ -54,12 +54,10 @@ public class UIExplorerActivity extends ReactActivity {
       return "UIExplorerApp";
   }
 
-  @Override
   protected @Nullable String getBundleAssetName() {
     return "UIExplorerApp.android.bundle";
   };
 
-  @Override
   protected String getJSMainModuleName() {
     return "Examples/UIExplorer/UIExplorerApp.android";
   }
@@ -69,7 +67,6 @@ public class UIExplorerActivity extends ReactActivity {
       return true;
   }
 
-  @Override
   protected List<ReactPackage> getPackages() {
     return Arrays.<ReactPackage>asList(
       new MainReactPackage()
