@@ -796,6 +796,12 @@ var apps = [
     author: 'Jonathan Solichin',
   },
   {
+    name: 'ReacTube',
+    icon: 'https://raw.githubusercontent.com/alexkendall/ReacTube/master/images/RTIconAlternative.png?token=AH3CygkR6xhSOsgO7YZ3kDNcMZ-y-3Qgks5XYuPwwA%3D%3D',
+    link: 'https://play.google.com/store/apps/details?id=com.reactube',
+    author: 'Icon Interactive',
+  },
+  {
     name: 'Reading',
     icon: 'http://7xr0xq.com1.z0.glb.clouddn.com/about_logo.png',
     link: 'http://www.wandoujia.com/apps/com.reading',

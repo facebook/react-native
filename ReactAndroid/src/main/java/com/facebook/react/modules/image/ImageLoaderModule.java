@@ -11,9 +11,6 @@ package com.facebook.react.modules.image;
 
 import android.net.Uri;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
@@ -23,10 +20,12 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableMap;
 
 public class ImageLoaderModule extends ReactContextBaseJavaModule {
 
@@ -83,27 +82,20 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule {
               sizes.putInt("width", image.getWidth());
               sizes.putInt("height", image.getHeight());
 
-              image.close();
               promise.resolve(sizes);
             } catch (Exception e) {
               promise.reject(ERROR_GET_SIZE_FAILURE, e);
             } finally {
               CloseableReference.closeSafely(ref);
-              dataSource.close();
             }
           } else {
-            dataSource.close();
             promise.reject(ERROR_GET_SIZE_FAILURE);
           }
         }
 
         @Override
         protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
-          try {
-            promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.getFailureCause());
-          } finally {
-            dataSource.close();
-          }
+          promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.getFailureCause());
         }
       };
     dataSource.subscribe(dataSubscriber, CallerThreadExecutor.getInstance());

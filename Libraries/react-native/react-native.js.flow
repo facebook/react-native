@@ -16,14 +16,28 @@
  */
 'use strict';
 
-// Export ReactNative, plus some native additions.
+// Export some ReactNative properties, plus native additions.
 //
-// The use of Object.create/assign is to work around a Flow bug (#6560135).
-// Once that is fixed, change this back to
+
+// Our ReactNative.js has had its types stripped, so here we
+// need to enumerate and type the properties we need access to.
 //
-//   var ReactNative = {...require('React'), /* additions */}
-//
-var ReactNative = Object.assign(Object.create(require('ReactNative')), {
+var ReactNativeInternal = (require('ReactNative'): {
+  // render
+  render: (
+    element: ReactElement<any>,
+    mountInto: number,
+    callback?: ?(() => void)
+  ) => ?ReactComponent<any, any, any>,
+  // findNodeHandle
+  findNodeHandle: (componentOrHandle: any) => ?number,
+});
+
+// export
+var ReactNative = {
+  // from ReactNative internal
+  findNodeHandle: ReactNativeInternal.findNodeHandle,
+  render: ReactNativeInternal.render,
   // Components
   ActivityIndicator: require('ActivityIndicator'),
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
@@ -118,6 +132,6 @@ var ReactNative = Object.assign(Object.create(require('ReactNative')), {
   ColorPropType: require('ColorPropType'),
   EdgeInsetsPropType: require('EdgeInsetsPropType'),
   PointPropType: require('PointPropType'),
-});
+};
 
 module.exports = ReactNative;
