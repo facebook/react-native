@@ -1,10 +1,10 @@
 ---
-id: tutorial-component-text
+id: basics-component-text
 title: Text
 layout: docs
-category: Tutorials
-permalink: docs/tutorial-component-text.html
-next: tutorial-component-image
+category: Basics
+permalink: docs/basics-component-text.html
+next: basics-component-image
 ---
 
 The most basic component in React Native is the [`Text`](/react-native/docs/text.html#content) component. The `Text` component simply renders text.

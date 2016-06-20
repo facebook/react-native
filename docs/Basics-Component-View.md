@@ -1,10 +1,10 @@
 ---
-id: tutorial-component-view
+id: basics-component-view
 title: View
 layout: docs
-category: Tutorials
-permalink: docs/tutorial-component-view.html
-next: tutorial-component-textinput
+category: Basics
+permalink: docs/basics-component-view.html
+next: basics-component-textinput
 ---
 
 A [`View`](/react-native/docs/view.html#content) is the most basic building block for a React Native application. The `View` is an abstraction on top of the target platform's native equivalent, such as iOS's `UIView`.
