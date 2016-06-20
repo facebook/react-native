@@ -282,6 +282,8 @@ Congratulations! You've successfully run and modified your first React Native ap
 
 ## Common Followups
 
+- Learn how to access the Developer Menu, reload your JavaScript, access logs, and more in the [Debugging guide](docs/debugging.html#content).
+
 <block class="mac ios" />
 
 - If you want to run on a physical device, see the [Running on iOS Device page](docs/running-on-device-ios.html#content).
@@ -292,15 +294,17 @@ Congratulations! You've successfully run and modified your first React Native ap
 
 <block class="mac ios android" />
 
-- If you run into any issues getting started, see the [Troubleshooting](docs/troubleshooting.html#content) and [Debugging](docs/debugging.html#content) pages.
+- If you run into any issues getting started, see the [Troubleshooting](docs/troubleshooting.html#content) page.
 
 <block class="windows linux android" />
 
 ## Common Followups
 
+- Learn how to access the Developer Menu, reload your JavaScript, access logs, and more in the [Debugging guide](docs/debugging.html#content).
+
 - If you want to run on a physical device, see the [Running on Android Device page](docs/running-on-device-android.html#content).
 
-- If you run into any issues getting started, see the [Troubleshooting](docs/troubleshooting.html#content) and [Debugging](docs/debugging.html#content) pages.
+- If you run into any issues getting started, see the [Troubleshooting](docs/troubleshooting.html#content) page.
 
 <script>
 // Convert <div>...<span><block /></span>...</div>
