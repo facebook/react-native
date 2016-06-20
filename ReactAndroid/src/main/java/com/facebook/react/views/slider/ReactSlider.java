@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
- * <p/>
+ *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
@@ -23,11 +23,11 @@ import javax.annotation.Nullable;
 
 /**
  * Slider that behaves more like the iOS one, for consistency.
- * <p/>
+ *
  * On iOS, the value is 0..1. Android SeekBar only supports integer values.
  * For consistency, we pretend in JS that the value is 0..1 but set the
  * SeekBar value to 0..100.
- * <p/>
+ *
  * Note that the slider is _not_ a controlled component (setValue isn't called
  * during dragging).
  */
@@ -118,8 +118,6 @@ public class ReactSlider extends SeekBar {
 
   public void setThumbImage(ReadableMap source) {
     String uri = source != null ? source.getString(PROP_ICON_URI) : null;
-
-
     if (uri != null) {
       Drawable thumd = getDrawableByName(uri);
       setThumb(thumd);
