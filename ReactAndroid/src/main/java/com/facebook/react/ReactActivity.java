@@ -86,7 +86,7 @@ public abstract class ReactActivity extends Activity
    * determining this (default just checks {@code BuildConfig}).
    */
   protected boolean getUseDeveloperSupport() {
-    return getReactNativeHost().getUseDeveloperSupport();
+    return ((ReactApplication) getApplication()).getReactNativeHost().getUseDeveloperSupport();
   }
 
   @Override

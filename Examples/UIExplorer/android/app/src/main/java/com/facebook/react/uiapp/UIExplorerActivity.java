@@ -17,19 +17,10 @@ package com.facebook.react.uiapp;
 import android.os.Bundle;
 
 import com.facebook.react.ReactActivity;
-import com.facebook.react.ReactNativeHost;
-import com.facebook.react.ReactPackage;
-import com.facebook.react.shell.MainReactPackage;
-
-import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.Nullable;
 
 public class UIExplorerActivity extends ReactActivity {
   private final String PARAM_ROUTE = "route";
   private Bundle mInitialProps = null;
-  private ReactNativeHost mReactNativeHost;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -43,32 +34,6 @@ public class UIExplorerActivity extends ReactActivity {
       mInitialProps = new Bundle();
       mInitialProps.putString("exampleFromAppetizeParams", routeUri);
     }
-
-    mReactNativeHost = new ReactNativeHost(this.getApplication()) {
-      @Override
-      public String getJSMainModuleName() {
-        return "Examples/UIExplorer/UIExplorerApp.android";
-      }
-
-      @Override
-      public  @Nullable
-      String getBundleAssetName() {
-        return "UIExplorerApp.android.bundle";
-      }
-
-      @Override
-      public boolean getUseDeveloperSupport() {
-        return true;
-      }
-
-      @Override
-      public List<ReactPackage> getPackages() {
-        return Arrays.<ReactPackage>asList(
-          new MainReactPackage()
-        );
-      }
-    };
-
     super.onCreate(savedInstanceState);
   }
 
@@ -80,10 +45,5 @@ public class UIExplorerActivity extends ReactActivity {
   @Override
   protected String getMainComponentName() {
     return "UIExplorerApp";
-  }
-
-  @Override
-  public ReactNativeHost getReactNativeHost() {
-    return mReactNativeHost;
   }
 }
