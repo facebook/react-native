@@ -82,9 +82,11 @@ function _runIOS(argv, config, resolve, reject) {
     '-derivedDataPath', 'build',
   ];
   console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
-  child_process.spawnSync('xcodebuild', xcodebuildArgs, {stdio: 'inherit'});
+  const xcodeBuildProcess = child_process.spawnSync('xcodebuild', xcodebuildArgs, {stdio: 'pipe'});
+  console.log(xcodeBuildProcess.output[1].toString());
 
-  const appPath = `build/Build/Products/Debug-iphonesimulator/${inferredSchemeName}.app`;
+  const productName = xcodeBuildProcess.output[1].toString().match(/Touch (build\/Build\/Products\/.*\/.*\.app)/);
+  const appPath = productName ? productName[1] : `build/Build/Products/Debug-iphonesimulator/${inferredSchemeName}.app`;
   console.log(`Installing ${appPath}`);
   child_process.spawnSync('xcrun', ['simctl', 'install', 'booted', appPath], {stdio: 'inherit'});
 
