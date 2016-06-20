@@ -70,6 +70,10 @@ const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
  *    {
  *     [RCTPushNotificationManager didReceiveLocalNotification:notification];
  *    }
+ *    - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+ *    {
+ *      NSLog(@"%@", error);
+ *    }
  *   ```
  */
 class PushNotificationIOS {

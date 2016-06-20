@@ -6,8 +6,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = 'fresco-binary-aar',
-    url = 'mvn:com.facebook.fresco:fresco:aar:0.10.0',
-    sha1 = '8576630feea3d08eb681dec389a472623179f84d',
+    url = 'mvn:com.facebook.fresco:fresco:aar:0.11.0',
+    sha1 = '86df1ab4b0074e1aeceb419593d2ea6d97cdc3b4',
 )
 
 android_prebuilt_aar(
@@ -18,8 +18,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = 'drawee-binary-aar',
-    url = 'mvn:com.facebook.fresco:drawee:aar:0.10.0',
-    sha1 = 'c594f9c23f844d08ecd4c0e42df40d80767d4b18',
+    url = 'mvn:com.facebook.fresco:drawee:aar:0.11.0',
+    sha1 = '7c8a4d211b2334b6d52b9de614b52423b16f7704',
 )
 
 android_library(
@@ -40,8 +40,8 @@ android_prebuilt_aar(
 
 remote_file(
   name = 'imagepipeline-base-aar',
-  url = 'mvn:com.facebook.fresco:imagepipeline-base:aar:0.10.0',
-  sha1 = '1390f28d0e4f16b0008fed481eb1b107d93f35b8',
+  url = 'mvn:com.facebook.fresco:imagepipeline-base:aar:0.11.0',
+  sha1 = '0f450cd58350ef5d6734f9772bc780b67cc538c5',
 )
 
 android_prebuilt_aar(
@@ -52,8 +52,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = 'imagepipeline-aar',
-    url = 'mvn:com.facebook.fresco:imagepipeline:aar:0.10.0',
-    sha1 = 'ecec308b714039dd9e0cf4b7595a427765f43a01',
+    url = 'mvn:com.facebook.fresco:imagepipeline:aar:0.11.0',
+    sha1 = 'd57b234db14899af8c36876d7937d63fddca5b12',
 )
 
 prebuilt_jar(
@@ -76,8 +76,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = 'fbcore-aar',
-    url = 'mvn:com.facebook.fresco:fbcore:aar:0.10.0',
-    sha1 = '4650dd9a46064c254e0468bba23804e8f32e6144',
+    url = 'mvn:com.facebook.fresco:fbcore:aar:0.11.0',
+    sha1 = 'e732e63ea19b19d053eebfe46870157ee79ad034',
 )
 
 android_prebuilt_aar(
@@ -88,6 +88,6 @@ android_prebuilt_aar(
 
 remote_file(
     name = 'imagepipeline-okhttp3-binary-aar',
-    url = 'mvn:com.facebook.fresco:imagepipeline-okhttp3:aar:0.10.0',
-    sha1 = 'a3e95483f116b528bdf2d06f7ff2212cb9b372e2',
+    url = 'mvn:com.facebook.fresco:imagepipeline-okhttp3:aar:0.11.0',
+    sha1 = '3d7e6d1a2f2e973a596aae7d523667b5a3d6d8a5',
 )

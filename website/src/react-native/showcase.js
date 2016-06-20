@@ -797,6 +797,12 @@ var apps = [
     author: 'Jonathan Solichin',
   },
   {
+    name: 'ReacTube',
+    icon: 'https://raw.githubusercontent.com/alexkendall/ReacTube/master/images/RTIconAlternative.png?token=AH3CygkR6xhSOsgO7YZ3kDNcMZ-y-3Qgks5XYuPwwA%3D%3D',
+    link: 'https://play.google.com/store/apps/details?id=com.reactube',
+    author: 'Icon Interactive',
+  },
+  {
     name: 'Reading',
     icon: 'http://7xr0xq.com1.z0.glb.clouddn.com/about_logo.png',
     link: 'http://www.wandoujia.com/apps/com.reading',
@@ -881,6 +887,12 @@ var apps = [
     link: 'https://itunes.apple.com/fr/app/sneat-reservez-les-meilleurs/id1062510079?l=en&mt=8',
     author: 'sneat'
   },
+  {
+    name: 'SCTV Sports',
+    icon: 'https://farm8.staticflickr.com/7353/27553089935_a3928f2097_o.png',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.sctvsport.bongdatructuyen',
+    author: 'SCTV Digital',
+  },  
   {
     name: 'Software Interview Preparation',
     icon: 'https://lh3.googleusercontent.com/11AuzaeCnxrRnIp1E_a_6WWiQIRRoWhrvFr20eCRJX4ZMW6O3tGjZLiUw3thKUgGaC8X=w300',

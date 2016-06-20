@@ -82,6 +82,10 @@ public class DevSupportManagerImpl implements DevSupportManager {
 
   private static final int JAVA_ERROR_COOKIE = -1;
   private static final String JS_BUNDLE_FILE_NAME = "ReactNativeDevBundle.js";
+  private static enum ErrorType {
+    JS,
+    NATIVE
+  }
 
   private static final String EXOPACKAGE_LOCATION_FORMAT
       = "/data/local/tmp/exopackage/%s//secondary-dex";
@@ -184,7 +188,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
 
   @Override
   public void showNewJavaError(String message, Throwable e) {
-    showNewError(message, StackTraceHelper.convertJavaStackTrace(e), JAVA_ERROR_COOKIE);
+    showNewError(message, StackTraceHelper.convertJavaStackTrace(e), JAVA_ERROR_COOKIE, ErrorType.NATIVE);
   }
 
   /**
@@ -201,7 +205,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
 
   @Override
   public void showNewJSError(String message, ReadableArray details, int errorCookie) {
-    showNewError(message, StackTraceHelper.convertJsStackTrace(details), errorCookie);
+    showNewError(message, StackTraceHelper.convertJsStackTrace(details), errorCookie, ErrorType.JS);
   }
 
   @Override
@@ -224,8 +228,9 @@ public class DevSupportManagerImpl implements DevSupportManager {
             StackFrame[] stack = StackTraceHelper.convertJsStackTrace(details);
             mRedBoxDialog.setExceptionDetails(message, stack);
             mRedBoxDialog.setErrorCookie(errorCookie);
+            // JS errors are reported here after source mapping.
             if (mRedBoxHandler != null) {
-              mRedBoxHandler.handleRedbox(message, stack);
+              mRedBoxHandler.handleRedbox(message, stack, RedBoxHandler.ErrorType.JS);
             }
             mRedBoxDialog.show();
           }
@@ -243,7 +248,8 @@ public class DevSupportManagerImpl implements DevSupportManager {
   private void showNewError(
       final String message,
       final StackFrame[] stack,
-      final int errorCookie) {
+      final int errorCookie,
+      final ErrorType errorType) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -259,8 +265,10 @@ public class DevSupportManagerImpl implements DevSupportManager {
             }
             mRedBoxDialog.setExceptionDetails(message, stack);
             mRedBoxDialog.setErrorCookie(errorCookie);
-            if (mRedBoxHandler != null) {
-              mRedBoxHandler.handleRedbox(message, stack);
+            // Only report native errors here. JS errors are reported
+            // inside {@link #updateJSError} after source mapping.
+            if (mRedBoxHandler != null && errorType == ErrorType.NATIVE) {
+              mRedBoxHandler.handleRedbox(message, stack, RedBoxHandler.ErrorType.NATIVE);
             }
             mRedBoxDialog.show();
           }

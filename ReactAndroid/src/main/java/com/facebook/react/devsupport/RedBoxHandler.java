@@ -17,5 +17,17 @@ import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
  * The implementation should be passed by {@link #setRedBoxHandler} in {@link ReactInstanceManager}.
  */
 public interface RedBoxHandler {
-  void handleRedbox(String title, StackFrame[] stack);
+  enum ErrorType {
+    JS("JS"),
+    NATIVE("Native");
+
+    private final String name;
+    ErrorType(String name) {
+      this.name = name;
+    }
+    public String getName() {
+      return name;
+    }
+  }
+  void handleRedbox(String title, StackFrame[] stack, ErrorType errorType);
 }

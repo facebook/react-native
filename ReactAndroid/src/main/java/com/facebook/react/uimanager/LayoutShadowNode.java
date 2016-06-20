@@ -26,9 +26,29 @@ public class LayoutShadowNode extends ReactShadowNode {
     setStyleWidth(CSSConstants.isUndefined(width) ? width : PixelUtil.toPixelFromDIP(width));
   }
 
+  @ReactProp(name = ViewProps.MIN_WIDTH, defaultFloat = CSSConstants.UNDEFINED)
+  public void setMinWidth(float minWidth) {
+    setStyleMinWidth(CSSConstants.isUndefined(minWidth) ? minWidth : PixelUtil.toPixelFromDIP(minWidth));
+  }
+
+  @ReactProp(name = ViewProps.MAX_WIDTH, defaultFloat = CSSConstants.UNDEFINED)
+  public void setMaxWidth(float maxWidth) {
+    setStyleMaxWidth(CSSConstants.isUndefined(maxWidth) ? maxWidth : PixelUtil.toPixelFromDIP(maxWidth));
+  }
+
   @ReactProp(name = ViewProps.HEIGHT, defaultFloat = CSSConstants.UNDEFINED)
   public void setHeight(float height) {
     setStyleHeight(CSSConstants.isUndefined(height) ? height : PixelUtil.toPixelFromDIP(height));
+  }
+
+  @ReactProp(name = ViewProps.MIN_HEIGHT, defaultFloat = CSSConstants.UNDEFINED)
+  public void setMinHeight(float minHeight) {
+    setStyleMinHeight(CSSConstants.isUndefined(minHeight) ? minHeight : PixelUtil.toPixelFromDIP(minHeight));
+  }
+
+  @ReactProp(name = ViewProps.MAX_HEIGHT, defaultFloat = CSSConstants.UNDEFINED)
+  public void setMaxHeight(float maxHeight) {
+    setStyleMaxHeight(CSSConstants.isUndefined(maxHeight) ? maxHeight : PixelUtil.toPixelFromDIP(maxHeight));
   }
 
   @ReactProp(name = ViewProps.LEFT, defaultFloat = CSSConstants.UNDEFINED)
