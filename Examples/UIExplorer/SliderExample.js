@@ -170,21 +170,21 @@ exports.examples = [
   {
     title: 'Custom thumb image',
     platform: 'android',
-    render(): ReactElement {
+    render(): ReactElement<any> {
       return <SliderExample thumbImage={require('image!slider')} />;
     }
   },
   {
     title: 'Custom thumb color',
     platform: 'android',
-    render(): ReactElement {
+    render(): ReactElement<any> {
       return <SliderExample thumbColor={'blue'} />;
     }
   },
   {
     title: 'Custom progress/progressBackgroundColor track tint color',
     platform: 'android',
-    render(): ReactElement {
+    render(): ReactElement<any> {
       return (
         <SliderExample
           progressColor={'red'}
