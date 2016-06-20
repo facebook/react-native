@@ -130,19 +130,25 @@ var Slider = React.createClass({
 
     /**
      * The color used for the progress
-     * @platform android >=21
+     *
+     * *using in android >= 21*
+     * @platform android
      */
     progressColor: PropTypes.string,
 
     /**
      * The color used for the progressBackgroundColor
-     * @platform android >=21
+     *
+     * *using in android >= 21*
+     * @platform android
      */
     progressBackgroundColor: PropTypes.string,
 
     /**
      * The color used for the thumbColor
-     * @platform android >=21
+     *
+     * *using in android >= 21*
+     * @platform android
      */
     thumbColor: PropTypes.string,
 
