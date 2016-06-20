@@ -111,12 +111,16 @@ var TestIdTestApp = React.createClass({
 
         <View testID="View" />
 
-        <WebView
+        {/*
+          Webview gets tests crashing or stalling occasionally
+          e.g. https://circleci.com/gh/facebook/react-native/7054
+          TODO t11449130
+          <WebView
           testID="WebView"
           url={'http://newsroom.fb.com'}
           renderError={() => <View /> }
           style={styles.base}
-        />
+        />*/}
 
       </View>
     );

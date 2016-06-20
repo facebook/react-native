@@ -87,7 +87,7 @@ void RCTPerformBlockWithAssertFunction(void (^block)(void), RCTAssertFunction as
 NSString *RCTCurrentThreadName(void)
 {
   NSThread *thread = [NSThread currentThread];
-  NSString *threadName = thread.isMainThread ? @"main" : thread.name;
+  NSString *threadName = RCTIsMainQueue() || thread.isMainThread ? @"main" : thread.name;
   if (threadName.length == 0) {
     const char *label = dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL);
     if (label && strlen(label) > 0) {

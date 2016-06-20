@@ -12,10 +12,12 @@
 'use strict';
 
 const invariant = require('fbjs/lib/invariant');
+const shallowEqual = require('fbjs/lib/shallowEqual');
 
 import type {
-  NavigationParentState,
+  NavigationRoute,
   NavigationScene,
+  NavigationState,
 } from 'NavigationTypeDefinition';
 
 const SCENE_KEY_PREFIX = 'scene_';
@@ -54,6 +56,9 @@ function compareScenes(
   );
 }
 
+/**
+ * Whether two routes are the same.
+ */
 function areScenesShallowEqual(
   one: NavigationScene,
   two: NavigationScene,
@@ -62,23 +67,40 @@ function areScenesShallowEqual(
     one.key === two.key &&
     one.index === two.index &&
     one.isStale === two.isStale &&
-    one.navigationState === two.navigationState &&
-    one.navigationState.key === two.navigationState.key
+    areRoutesShallowEqual(one.route, two.route)
   );
+}
+
+/**
+ * Whether two routes are the same.
+ */
+function areRoutesShallowEqual(
+  one: ?NavigationRoute,
+  two: ?NavigationRoute,
+): boolean {
+  if (!one || !two) {
+    return one === two;
+  }
+
+  if (one.key !== two.key) {
+    return false;
+  }
+
+  return shallowEqual(one, two);
 }
 
 function NavigationScenesReducer(
   scenes: Array<NavigationScene>,
-  nextState: NavigationParentState,
-  prevState: ?NavigationParentState,
+  nextState: NavigationState,
+  prevState: ?NavigationState,
 ): Array<NavigationScene> {
   if (prevState === nextState) {
     return scenes;
   }
 
-  const prevScenes = new Map();
-  const freshScenes = new Map();
-  const staleScenes = new Map();
+  const prevScenes: Map<string, NavigationScene> = new Map();
+  const freshScenes: Map<string, NavigationScene> = new Map();
+  const staleScenes: Map<string, NavigationScene> = new Map();
 
   // Populate stale scenes from previous scenes marked as stale.
   scenes.forEach(scene => {
@@ -90,18 +112,18 @@ function NavigationScenesReducer(
   });
 
   const nextKeys = new Set();
-  nextState.children.forEach((navigationState, index) => {
-    const key = SCENE_KEY_PREFIX + navigationState.key;
+  nextState.routes.forEach((route, index) => {
+    const key = SCENE_KEY_PREFIX + route.key;
     const scene = {
       index,
       isStale: false,
       key,
-      navigationState,
+      route,
     };
     invariant(
       !nextKeys.has(key),
-      `navigationState.children[${index}].key "${key}" conflicts with` +
-        'another child!'
+      `navigationState.routes[${index}].key "${key}" conflicts with ` +
+        'another route!'
     );
     nextKeys.add(key);
 
@@ -114,9 +136,9 @@ function NavigationScenesReducer(
   });
 
   if (prevState) {
-    // Look at the previous children and classify any removed scenes as `stale`.
-    prevState.children.forEach((navigationState, index) => {
-      const key = SCENE_KEY_PREFIX + navigationState.key;
+    // Look at the previous routes and classify any removed scenes as `stale`.
+    prevState.routes.forEach((route: NavigationRoute, index) => {
+      const key = SCENE_KEY_PREFIX + route.key;
       if (freshScenes.has(key)) {
         return;
       }
@@ -124,7 +146,7 @@ function NavigationScenesReducer(
         index,
         isStale: true,
         key,
-        navigationState,
+        route,
       });
     });
   }
@@ -146,7 +168,20 @@ function NavigationScenesReducer(
   staleScenes.forEach(mergeScene);
   freshScenes.forEach(mergeScene);
 
-  return nextScenes.sort(compareScenes);
+  nextScenes.sort(compareScenes);
+
+  if (nextScenes.length !== scenes.length) {
+    return nextScenes;
+  }
+
+  if (nextScenes.some(
+    (scene, index) => !areScenesShallowEqual(scenes[index], scene)
+  )) {
+    return nextScenes;
+  }
+
+  // scenes haven't changed.
+  return scenes;
 }
 
 module.exports = NavigationScenesReducer;

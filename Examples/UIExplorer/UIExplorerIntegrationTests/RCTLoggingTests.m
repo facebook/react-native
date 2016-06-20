@@ -34,13 +34,15 @@
 
 - (void)setUp
 {
-#if RUNNING_ON_CI
-  NSURL *scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
-  RCTAssert(scriptURL != nil, @"Could not locate main.jsBundle");
-#else
-  NSString *app = @"Examples/UIExplorer/UIExplorerIntegrationTests/js/IntegrationTestsApp";
-  NSURL *scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true", app]];
-#endif
+  NSURL *scriptURL;
+  if (getenv("CI_USE_PACKAGER")) {
+    NSString *app = @"Examples/UIExplorer/UIExplorerIntegrationTests/js/IntegrationTestsApp";
+    scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true", app]];
+    RCTAssert(scriptURL != nil, @"No scriptURL set");
+  } else {
+    scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
+    RCTAssert(scriptURL != nil, @"Could not locate main.jsBundle");
+  }
 
   _bridge = [[RCTBridge alloc] initWithBundleURL:scriptURL moduleProvider:NULL launchOptions:nil];
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:5];

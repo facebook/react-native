@@ -61,8 +61,10 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
         AnimatedPropertyType.fromString(data.getString("property")) : null;
     mDurationMs = data.hasKey("duration") ? data.getInt("duration") : globalDuration;
     mDelayMs = data.hasKey("delay") ? data.getInt("delay") : 0;
-    mInterpolator = data.hasKey("type") ?
-        getInterpolator(InterpolatorType.fromString(data.getString("type"))) : null;
+    if (!data.hasKey("type")) {
+      throw new IllegalArgumentException("Missing interpolation type.");
+    }
+    mInterpolator = getInterpolator(InterpolatorType.fromString(data.getString("type")));
 
     if (!isValid()) {
       throw new IllegalViewOperationException("Invalid layout animation : " + data);

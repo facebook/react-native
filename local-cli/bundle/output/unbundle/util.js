@@ -17,7 +17,7 @@ function lineToLineSourceMap(source, filename) {
   const firstLine = 'AAAA;';
 
   // Most other lines in our mappings are all zeros (for module, column etc)
-  // except for the lineno mappinp: curLineno - prevLineno = 1; Which is C.
+  // except for the lineno mapping: curLineno - prevLineno = 1; Which is C.
   const line = 'AACA;';
 
   return {

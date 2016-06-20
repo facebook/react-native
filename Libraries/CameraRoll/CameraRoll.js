@@ -115,33 +115,45 @@ class CameraRoll {
 
   static GroupTypesOptions: Array<string>;
   static AssetTypeOptions: Array<string>;
+
+  static saveImageWithTag(tag: string):Promise<*> {
+    console.warn('CameraRoll.saveImageWithTag is deprecated. Use CameraRoll.saveToCameraRoll instead');
+    return this.saveToCameraRoll(tag, 'photo');
+  }
+
   /**
-   * Saves the image to the camera roll / gallery.
+   * Saves the photo or video to the camera roll / gallery.
    *
-   * On Android, the tag is a local URI, such as `"file:///sdcard/img.png"`.
+   * On Android, the tag must be a local image or video URI, such as `"file:///sdcard/img.png"`.
    *
-   * On iOS, the tag can be one of the following:
+   * On iOS, the tag can be any image URI (including local, remote asset-library and base64 data URIs)
+   * or a local video file URI (remote or data URIs are not supported for saving video at this time).
    *
-   *   - local URI
-   *   - assets-library tag
-   *   - a tag not matching any of the above, which means the image data will
-   * be stored in memory (and consume memory as long as the process is alive)
+   * If the tag has a file extension of .mov or .mp4, it will be inferred as a video. Otherwise
+   * it will be treated as a photo. To override the automatic choice, you can pass an optional
+   * `type` parameter that must be one of 'photo' or 'video'.
    *
-   * Returns a Promise which when resolved will be passed the new URI.
+   * Returns a Promise which will resolve with the new URI.
    */
-  static saveImageWithTag(tag) {
+  static saveToCameraRoll(tag: string, type?: 'photo' | 'video'): Promise<*> {
     invariant(
       typeof tag === 'string',
-      'CameraRoll.saveImageWithTag tag must be a valid string.'
+      'CameraRoll.saveToCameraRoll must be a valid string.'
     );
-    if (arguments.length > 1) {
-      console.warn('CameraRoll.saveImageWithTag(tag, success, error) is deprecated.  Use the returned Promise instead');
-      const successCallback = arguments[1];
-      const errorCallback = arguments[2] || ( () => {} );
-      RCTCameraRollManager.saveImageWithTag(tag).then(successCallback, errorCallback);
-      return;
+
+    invariant(
+      type === 'photo' || type === 'video' || type === undefined,
+      `The second argument to saveToCameraRoll must be 'photo' or 'video'. You passed ${type}`
+    );
+
+    let mediaType = 'photo';
+    if (type) {
+      mediaType = type;
+    } else if (['mov', 'mp4'].indexOf(tag.split('.').slice(-1)[0]) >= 0) {
+      mediaType = 'video';
     }
-    return RCTCameraRollManager.saveImageWithTag(tag);
+
+    return RCTCameraRollManager.saveToCameraRoll(tag, mediaType);
   }
 
   /**

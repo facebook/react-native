@@ -52,7 +52,7 @@ const MIN_POSITION_OFFSET = 0.01;
  */
 function create(
   Component: ReactClass<any>,
-): ReactClass {
+): ReactClass<any> {
 
   class Container extends React.Component<any, Props, any> {
 
@@ -86,7 +86,7 @@ function create(
       this._bindPosition(nextProps);
     }
 
-    render(): ReactElement  {
+    render(): ReactElement<any>  {
       this._pointerEvents = this._computePointerEvents();
       return (
         <Component

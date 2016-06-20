@@ -150,7 +150,7 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
   [_pickerCallbacks addObject:callback];
   [_pickerCancelCallbacks addObject:cancelCallback];
 
-  UIViewController *rootViewController = RCTKeyWindow().rootViewController;
+  UIViewController *rootViewController = RCTPresentedViewController();
   [rootViewController presentViewController:imagePicker animated:YES completion:nil];
 }
 
@@ -164,7 +164,7 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
   [_pickerCallbacks removeObjectAtIndex:index];
   [_pickerCancelCallbacks removeObjectAtIndex:index];
 
-  UIViewController *rootViewController = RCTKeyWindow().rootViewController;
+  UIViewController *rootViewController = RCTPresentedViewController();
   [rootViewController dismissViewControllerAnimated:YES completion:nil];
 
   if (args) {
