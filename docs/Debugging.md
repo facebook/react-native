@@ -7,27 +7,11 @@ permalink: docs/debugging.html
 next: testing
 ---
 
-## In-app Errors and Warnings
-
-Errors and warnings are displayed inside your app in development builds.
-
-### Errors
-
-In-app errors are displayed in a full screen alert with a red background inside your app. This screen is known as a RedBox. You can use `console.error()` to manually trigger one.
-
-### Warnings
-
-Warnings will be displayed on screen with a yellow background. These alerts are known as YellowBoxes. Click on the alerts to show more information or to dismiss them.
-
-As with a RedBox, you can use `console.warn()` to trigger a YellowBox.
-
-YellowBoxes can be disabled during development by using `console.disableYellowBox = true;`. Specific warnings can be ignored programmatically by setting an array of prefixes that should be ignored: `console.ignoredYellowBox = ['Warning: ...'];`
-
-> RedBoxes and YellowBoxes are automatically disabled in release (production) builds.
-
 ## Accessing the In-App Developer Menu
 
 You can access the developer menu by shaking your device or by selecting "Shake Gesture" inside the Hardware menu in the iOS Simulator. You can also use the `Command⌘ + D` keyboard shortcut when your app is running in the iPhone Simulator, or `Command⌘ + M` when running in an Android emulator.
+
+![](img/DeveloperMenu.png)
 
 > The Developer Menu is disabled in release (production) builds.
 
@@ -49,6 +33,24 @@ You will need to rebuild your app for changes to take effect in certain situatio
 You may enable Live Reload to automatically trigger a reload whenever your JavaScript code changes.
 
 Live Reload is available on iOS via the Developer Menu. On Android, select "Dev Settings" from the Developer Menu and enable "Auto reload on JS change".
+
+## In-app Errors and Warnings
+
+Errors and warnings are displayed inside your app in development builds.
+
+### Errors
+
+In-app errors are displayed in a full screen alert with a red background inside your app. This screen is known as a RedBox. You can use `console.error()` to manually trigger one.
+
+### Warnings
+
+Warnings will be displayed on screen with a yellow background. These alerts are known as YellowBoxes. Click on the alerts to show more information or to dismiss them.
+
+As with a RedBox, you can use `console.warn()` to trigger a YellowBox.
+
+YellowBoxes can be disabled during development by using `console.disableYellowBox = true;`. Specific warnings can be ignored programmatically by setting an array of prefixes that should be ignored: `console.ignoredYellowBox = ['Warning: ...'];`
+
+> RedBoxes and YellowBoxes are automatically disabled in release (production) builds.
 
 ## Accessing logs
 
