@@ -5,8 +5,7 @@
 
 jest.dontMock('../getImageSource');
 
-//see https://github.com/facebook/jest/issues/666
-const getImageSource = require('../getImageSource').default;
+import getImageSource from '../getImageSource';
 
 describe('getImageSource', () => {
   it('returns null for invalid input', () => {

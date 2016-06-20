@@ -15,15 +15,16 @@
  */
 'use strict';
 
-import React, {
-  Component,
+import React, { Component } from 'react';
+
+import {
   Image,
   Platform,
   StyleSheet,
   Text,
   TouchableHighlight,
   TouchableNativeFeedback,
-  View
+  View,
 } from 'react-native';
 
 import getStyleFromScore from './getStyleFromScore';

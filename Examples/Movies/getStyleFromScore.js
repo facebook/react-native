@@ -15,9 +15,7 @@
  */
 'use strict';
 
-import React, {
-  StyleSheet,
-} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const MAX_VALUE = 200;
 

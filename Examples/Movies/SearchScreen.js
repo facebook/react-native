@@ -15,9 +15,9 @@
  */
 'use strict';
 
-import React, {
+import React, { Component } from 'react';
+import {
   ActivityIndicatorIOS,
-  Component,
   ListView,
   Platform,
   ProgressBarAndroid,
