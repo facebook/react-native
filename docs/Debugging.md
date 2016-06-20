@@ -7,59 +7,73 @@ permalink: docs/debugging.html
 next: testing
 ---
 
-## Debugging React Native Apps
-To access the in-app developer menu:
+## In-app Errors and Warnings
 
-1. On iOS shake the device or press `control + ⌘ + z` in the simulator.
-2. On Android shake the device or press hardware menu button (available on older devices and in most of the emulators, e.g. in [genymotion](https://www.genymotion.com) you can press `⌘ + m` or `F2` to simulate hardware menu button click). You can also install [Frappé](http://getfrappe.com), a tool for OS X, which allows you to emulate shaking of devices remotely. You can use `⌘ + Shift + R` as a shortcut to trigger a **shake** from Frappé.
+Errors and warnings are displayed inside your app in development builds.
 
-> Hint
+### Errors
 
-> To disable the developer menu for production builds:
->
-> 1. For iOS open your project in Xcode and select `Product` → `Scheme` → `Edit Scheme...` (or press `⌘ + <`). Next, select `Run` from the menu on the left and change the Build Configuration to `Release`.
-> 2. For Android, by default, developer menu will be disabled in release builds done by gradle (e.g with gradle `assembleRelease` task). Although this behavior can be customized by passing proper value to `ReactInstanceManager#setUseDeveloperSupport`.
+In-app errors are displayed in a full screen alert with a red background inside your app. This screen is known as a RedBox. You can use `console.error()` to manually trigger one.
 
-### Android logging
-Run `adb logcat *:S ReactNative:V ReactNativeJS:V` in a terminal to see your Android app's logs.
+### Warnings
 
-### Reload
-Selecting `Reload` (or pressing `⌘ + r` in the iOS simulator) will reload the JavaScript that powers your application. If you have added new resources (such as an image to `Images.xcassets` on iOS or to `res/drawable` folder on Android) or modified any native code (Objective-C/Swift code on iOS or Java/C++ code on Android), you will need to re-build the app for the changes to take effect.
+Warnings will be displayed on screen with a yellow background. These alerts are known as YellowBoxes. Click on the alerts to show more information or to dismiss them.
 
-### YellowBox/RedBox
-Using `console.warn` will display an on-screen log on a yellow background. Click on this warning to show more information about it full screen and/or dismiss the warning.
+As with a RedBox, you can use `console.warn()` to trigger a YellowBox.
 
-You can use `console.error` to display a full screen error on a red background.
+YellowBoxes can be disabled during development by using `console.disableYellowBox = true;`. Specific warnings can be ignored programmatically by setting an array of prefixes that should be ignored: `console.ignoredYellowBox = ['Warning: ...'];`
 
-By default, the warning box is enabled in `__DEV__`. Set the following flag to disable it:
-```js
-console.disableYellowBox = true;
-console.warn('YellowBox is disabled.');
-```
-Specific warnings can be ignored programmatically by setting the array:
-```js
-console.ignoredYellowBox = ['Warning: ...'];
-```
-Strings in `console.ignoredYellowBox` can be a prefix of the warning that should be ignored.
+> RedBoxes and YellowBoxes are automatically disabled in release (production) builds.
 
-### Chrome Developer Tools
-To debug the JavaScript code in Chrome, select `Debug JS Remotely` from the developer menu. This will open a new tab at [http://localhost:8081/debugger-ui](http://localhost:8081/debugger-ui).
+## Accessing the In-App Developer Menu
 
-In Chrome, press `⌘ + option + i` or select `View` → `Developer` → `Developer Tools` to toggle the developer tools console. Enable [Pause On Caught Exceptions](http://stackoverflow.com/questions/2233339/javascript-is-there-a-way-to-get-chrome-to-break-on-all-errors/17324511#17324511) for a better debugging experience.
+You can access the developer menu by shaking your device. You can also use the `Command⌘ + D` keyboard shortcut when your app is running in the iPhone Simulator, or `Command⌘ + M` when running in an Android emulator.
 
-To debug on a real device:
+> The Developer Menu is disabled in release (production) builds.
 
-1. On iOS - open the file [`RCTWebSocketExecutor.m`](https://github.com/facebook/react-native/blob/master/Libraries/WebSocket/RCTWebSocketExecutor.m) and change `localhost` to the IP address of your computer. Shake the device to open the development menu with the option to start debugging.
-2. On Android, if you're running Android 5.0+ device connected via USB you can use `adb` command line tool to setup port forwarding from the device to your computer. For that run: `adb reverse tcp:8081 tcp:8081` (see [this link](http://developer.android.com/tools/help/adb.html) for help on `adb` command). Alternatively, you can [open dev menu](#debugging-react-native-apps) on the device and select `Dev Settings`, then update `Debug server host for device` setting to the IP address of your computer.
+## Reloading JavaScript
 
-### Custom JavaScript debugger
-To use a custom JavaScript debugger define the `REACT_DEBUGGER` environment variable to a command that will start your custom debugger. That variable will be read from the Packager process. If that environment variable is set, selecting `Debug JS Remotely` from the developer menu will execute that command instead of opening Chrome. The exact command to be executed is the contents of the REACT_DEBUGGER environment variable followed by the space separated paths of all project roots (e.g. If you set REACT_DEBUGGER="node /path/to/launchDebugger.js --port 2345 --type ReactNative" then the command "node /path/to/launchDebugger.js --port 2345 --type ReactNative /path/to/reactNative/app" will end up being executed). Custom debugger commands executed this way should be short-lived processes, and they shouldn't produce more than 200 kilobytes of output.
+Selecting `Reload` from the Developer Menu will reload the JavaScript that powers your application. You can also press `Command⌘ + R` in the iOS Simulator, or press `R` twice on Android emulators.
 
-### Live Reload
-This option allows for your JS changes to trigger automatic reload on the connected device/emulator. To enable this option:
+You will need to rebuild your app for changes to take effect in certain situations:
 
-1. On iOS, select `Enable Live Reload` via the developer menu to have the application automatically reload when changes are made to the JavaScript.
-2. On Android, [launch dev menu](#debugging-react-native-apps), go to `Dev Settings` and select `Auto reload on JS change` option
+* You have added new resources to your native app's bundle, such as an image in `Images.xcassets` on iOS or in `res/drawable` folder on Android.
+* You have modified native code (Objective-C/Swift on iOS or Java/C++ on Android).
 
-### FPS (Frames per Second) Monitor
-On `0.5.0-rc` and higher versions, you can enable a FPS graph overlay in the developers menu in order to help you debug performance problems.
+### Automatic reloading
+
+You may enable Live Reload to automatically trigger a reload whenever your JavaScript code changes.
+
+Live Reload is available on iOS via the Developer Menu. On Android, select "Dev Settings" from the Developer Menu and enable "Auto reload on JS change".
+
+## Accessing logs
+
+To view detailed logs on iOS, open your app in Xcode, then Build and Run your app on a device or the iPhone Simulator. The console should appear automatically after the app launches.
+
+Run `adb logcat *:S ReactNative:V ReactNativeJS:V` in a terminal to display the logs for an Android app running on a device or an emulator.
+
+## Chrome Developer Tools
+
+To debug the JavaScript code in Chrome, select `Debug JS Remotely` from the Developer Menu. This will open a new tab at [http://localhost:8081/debugger-ui](http://localhost:8081/debugger-ui).
+
+In Chrome, press `Command⌘ + Option⌥ + I` or select `View` → `Developer` → `Developer Tools` to toggle the developer tools console. Enable [Pause On Caught Exceptions](http://stackoverflow.com/questions/2233339/javascript-is-there-a-way-to-get-chrome-to-break-on-all-errors/17324511#17324511) for a better debugging experience.
+
+### Debugging on a device with Chrome Developer Tools
+
+On iOS devices, open the file [`RCTWebSocketExecutor.m`](https://github.com/facebook/react-native/blob/master/Libraries/WebSocket/RCTWebSocketExecutor.m) and change `localhost` to the IP address of your computer, then select `Debug JS Remotely` from the Developer Menu.
+
+On Android 5.0+ devices connected via USB, you can use the [`adb` command line tool](http://developer.android.com/tools/help/adb.html) to setup port forwarding from the device to your computer:
+
+`adb reverse tcp:8081 tcp:8081`
+
+Alternatively, select `Dev Settings` from the Developer Menu, then update the `Debug server host for device` setting to match the IP address of your computer.
+
+### Debugging using a custom JavaScript debugger
+
+To use a custom JavaScript debugger in place of Chrome Developer Tools, set the `REACT_DEBUGGER` environment variable to a command that will start your custom debugger. You can then select `Debug JS Remotely` from the Developer Menu to start debugging.
+
+> The debugger will receive a list of all project roots, separated by a space. For example, if you set `REACT_DEBUGGER="node /path/to/launchDebugger.js --port 2345 --type ReactNative"`, then the command `node /path/to/launchDebugger.js --port 2345 --type ReactNative /path/to/reactNative/app` will be used to start your debugger. Custom debugger commands executed this way should be short-lived processes, and they shouldn't produce more than 200 kilobytes of output.
+
+## FPS (Frames per Second) Monitor
+
+You can enable a FPS graph overlay in the Developer Menu in order to help you debug performance problems.

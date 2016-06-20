@@ -19,7 +19,7 @@ import com.facebook.cache.disk.DiskCacheConfig;
 import com.facebook.common.internal.AndroidPredicates;
 import com.facebook.common.soloader.SoLoaderShim;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.imagepipeline.backends.okhttp.OkHttpImagePipelineConfigFactory;
+import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.facebook.imagepipeline.listener.RequestListener;
@@ -29,7 +29,7 @@ import com.facebook.react.modules.common.ModuleDataCleaner;
 import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.facebook.soloader.SoLoader;
 
-import com.squareup.okhttp.OkHttpClient;
+import okhttp3.OkHttpClient;
 
 /**
  * Module to initialize the Fresco library.
@@ -84,8 +84,8 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     ImagePipelineFactory imagePipelineFactory = Fresco.getImagePipelineFactory();
     imagePipelineFactory.getBitmapMemoryCache().removeAll(AndroidPredicates.<CacheKey>True());
     imagePipelineFactory.getEncodedMemoryCache().removeAll(AndroidPredicates.<CacheKey>True());
-    imagePipelineFactory.getMainDiskStorageCache().clearAll();
-    imagePipelineFactory.getSmallImageDiskStorageCache().clearAll();
+    imagePipelineFactory.getMainFileCache().clearAll();
+    imagePipelineFactory.getSmallImageFileCache().clearAll();
   }
 
   private static ImagePipelineConfig getDefaultConfig(

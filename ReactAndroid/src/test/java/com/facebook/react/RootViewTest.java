@@ -22,6 +22,7 @@ import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.events.Event;
@@ -51,7 +52,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@PrepareForTest(Arguments.class)
+@PrepareForTest({Arguments.class, SystemClock.class})
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 public class RootViewTest {
@@ -64,6 +65,7 @@ public class RootViewTest {
 
   @Before
   public void setUp() {
+    final long ts = SystemClock.nanoTime();
     PowerMockito.mockStatic(Arguments.class);
     PowerMockito.when(Arguments.createArray()).thenAnswer(new Answer<Object>() {
       @Override
@@ -75,6 +77,13 @@ public class RootViewTest {
       @Override
       public Object answer(InvocationOnMock invocation) throws Throwable {
         return new JavaOnlyMap();
+      }
+    });
+    PowerMockito.mockStatic(SystemClock.class);
+    PowerMockito.when(SystemClock.nanoTime()).thenAnswer(new Answer<Object>() {
+      @Override
+      public Object answer(InvocationOnMock invocation) throws Throwable {
+        return ts;
       }
     });
 
@@ -107,7 +116,7 @@ public class RootViewTest {
     rootView.startReactApplication(instanceManager, "");
     rootView.simulateAttachForTesting();
 
-    long ts = new Date().getTime();
+    long ts = SystemClock.nanoTime();
 
     // Test ACTION_DOWN event
     rootView.onTouchEvent(

@@ -32,7 +32,21 @@ const {PropTypes} = React;
 
 /**
  * A container component that renders multiple SwipeableRow's in a ListView
- * implementation.
+ * implementation. This is designed to be a drop-in replacement for the
+ * standard React Native `ListView`, so use it as if it were a ListView, but
+ * with extra props, i.e.
+ *
+ * let ds = SwipeableListView.getNewDataSource();
+ * ds.cloneWithRowsAndSections(dataBlob, ?sectionIDs, ?rowIDs);
+ * // ..
+ * <SwipeableListView renderRow={..} renderQuickActions={..} {..ListView props} />
+ *
+ * SwipeableRow can be used independently of this component, but the main
+ * benefit of using this component is
+ *
+ * - It ensures that at most 1 row is swiped open (auto closes others)
+ * - It can bounce the 1st row of the list so users know it's swipeable
+ * - More to come
  */
 const SwipeableListView = React.createClass({
   statics: {
@@ -46,8 +60,21 @@ const SwipeableListView = React.createClass({
     },
   },
 
+  _listViewRef: (null: ?string),
+  _shouldBounceFirstRowOnMount: false,
+
   propTypes: {
-    dataSource: PropTypes.object.isRequired, // SwipeableListViewDataSource
+    /**
+     * To alert the user that swiping is possible, the first row can bounce
+     * on component mount.
+     */
+    bounceFirstRowOnMount: PropTypes.bool.isRequired,
+    /**
+     * Use `SwipeableListView.getNewDataSource()` to get a data source to use,
+     * then use it just like you would a normal ListView data source
+     */
+    dataSource: PropTypes.instanceOf(SwipeableListViewDataSource).isRequired,
+    // Maximum distance to open to after a swipe
     maxSwipeDistance: PropTypes.number,
     // Callback method to render the swipeable view
     renderRow: PropTypes.func.isRequired,
@@ -57,40 +84,82 @@ const SwipeableListView = React.createClass({
 
   getDefaultProps(): Object {
     return {
+      bounceFirstRowOnMount: false,
       renderQuickActions: () => null,
     };
   },
 
   getInitialState(): Object {
     return {
-      dataSource: this.props.dataSource.getDataSource(),
+      dataSource: this.props.dataSource,
     };
   },
 
+  componentWillMount(): void {
+    this._shouldBounceFirstRowOnMount = this.props.bounceFirstRowOnMount;
+  },
+
   componentWillReceiveProps(nextProps: Object): void {
-    if ('dataSource' in nextProps && this.state.dataSource !== nextProps.dataSource) {
+    if (
+      this.state.dataSource.getDataSource() !== nextProps.dataSource.getDataSource()
+    ) {
       this.setState({
-        dataSource: nextProps.dataSource.getDataSource(),
+        dataSource: nextProps.dataSource,
       });
     }
   },
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     return (
       <ListView
         {...this.props}
-        dataSource={this.state.dataSource}
+        ref={(ref) => {
+          this._listViewRef = ref;
+        }}
+        dataSource={this.state.dataSource.getDataSource()}
         renderRow={this._renderRow}
+        scrollEnabled={this.state.scrollEnabled}
       />
     );
   },
 
-  _renderRow(rowData: Object, sectionID: string, rowID: string): ReactElement {
+  /**
+   * This is a work-around to lock vertical `ListView` scrolling on iOS and
+   * mimic Android behaviour. Locking vertical scrolling when horizontal
+   * scrolling is active allows us to significantly improve framerates
+   * (from high 20s to almost consistently 60 fps)
+   */
+  _setListViewScrollable(value: boolean): void {
+    if (this._listViewRef && this._listViewRef.setNativeProps) {
+      this._listViewRef.setNativeProps({
+        scrollEnabled: value,
+      });
+    }
+  },
+
+  // Passing through ListView's getScrollResponder() function
+  getScrollResponder(): ?Object {
+    if (this._listViewRef && this._listViewRef.getScrollResponder) {
+      return this._listViewRef.getScrollResponder();
+    }
+  },
+
+  _renderRow(
+    rowData: Object,
+    sectionID: string,
+    rowID: string,
+  ): ReactElement<any> {
     const slideoutView = this.props.renderQuickActions(rowData, sectionID, rowID);
 
     // If renderRowSlideout is unspecified or returns falsey, don't allow swipe
     if (!slideoutView) {
       return this.props.renderRow(rowData, sectionID, rowID);
+    }
+
+    let shouldBounceOnMount = false;
+    if (this._shouldBounceFirstRowOnMount) {
+      this._shouldBounceFirstRowOnMount = false;
+      shouldBounceOnMount = rowID === this.props.dataSource.getFirstRowID();
     }
 
     return (
@@ -99,7 +168,10 @@ const SwipeableListView = React.createClass({
         isOpen={rowData.id === this.props.dataSource.getOpenRowID()}
         maxSwipeDistance={this.props.maxSwipeDistance}
         key={rowID}
-        onOpen={() => this._onOpen(rowData.id)}>
+        onOpen={() => this._onOpen(rowData.id)}
+        onSwipeEnd={() => this._setListViewScrollable(true)}
+        onSwipeStart={() => this._setListViewScrollable(false)}
+        shouldBounceOnMount={shouldBounceOnMount}>
         {this.props.renderRow(rowData, sectionID, rowID)}
       </SwipeableRow>
     );
@@ -107,7 +179,7 @@ const SwipeableListView = React.createClass({
 
   _onOpen(rowID: string): void {
     this.setState({
-      dataSource: this.props.dataSource.setOpenRowID(rowID),
+      dataSource: this.state.dataSource.setOpenRowID(rowID),
     });
   },
 });

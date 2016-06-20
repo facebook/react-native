@@ -11,6 +11,11 @@
  */
 'use strict';
 
+/**
+ * WARNING: NavigationAnimatedView will be deprecated soon.
+ * Use NavigationTransitioner instead.
+ */
+
 const Animated = require('Animated');
 const NavigationPropTypes = require('NavigationPropTypes');
 const NavigationScenesReducer = require('NavigationScenesReducer');
@@ -19,19 +24,17 @@ const StyleSheet = require('StyleSheet');
 const View = require('View');
 
 import type {
-  NavigationActionCaller,
   NavigationAnimatedValue,
   NavigationAnimationSetter,
   NavigationLayout,
-  NavigationParentState,
+  NavigationState,
   NavigationScene,
   NavigationSceneRenderer,
 } from 'NavigationTypeDefinition';
 
 type Props = {
   applyAnimation: NavigationAnimationSetter,
-  navigationState: NavigationParentState,
-  onNavigate: NavigationActionCaller,
+  navigationState: NavigationState,
   renderOverlay: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
   style: any,
@@ -40,6 +43,7 @@ type Props = {
 type State = {
   layout: NavigationLayout,
   position: NavigationAnimatedValue,
+  progress: NavigationAnimatedValue,
   scenes: Array<NavigationScene>,
 };
 
@@ -47,7 +51,7 @@ const {PropTypes} = React;
 
 function applyDefaultAnimation(
   position: NavigationAnimatedValue,
-  navigationState: NavigationParentState,
+  navigationState: NavigationState,
 ): void {
   Animated.spring(
     position,
@@ -71,7 +75,6 @@ class NavigationAnimatedView
   static propTypes = {
     applyAnimation: PropTypes.func,
     navigationState: NavigationPropTypes.navigationState.isRequired,
-    onNavigate: PropTypes.func.isRequired,
     renderOverlay: PropTypes.func,
     renderScene: PropTypes.func.isRequired,
   };
@@ -96,6 +99,9 @@ class NavigationAnimatedView
     this.state = {
       layout,
       position: new Animated.Value(this.props.navigationState.index),
+      // This `progress` is a adummy placeholder value to meet the values
+      // as `NavigationSceneRendererProps` requires.
+      progress: new Animated.Value(1),
       scenes: NavigationScenesReducer([], this.props.navigationState),
     };
   }
@@ -151,7 +157,7 @@ class NavigationAnimatedView
     }
   }
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     const overlay = this._renderOverlay();
     const scenes = this._renderScenes();
     return (
@@ -166,50 +172,50 @@ class NavigationAnimatedView
     );
   }
 
-  _renderScenes(): Array<?ReactElement> {
+  _renderScenes(): Array<?ReactElement<any>> {
     return this.state.scenes.map(this._renderScene, this);
   }
 
-  _renderScene(scene: NavigationScene): ?ReactElement {
+  _renderScene(scene: NavigationScene): ?ReactElement<any> {
     const {
       navigationState,
-      onNavigate,
       renderScene,
     } = this.props;
 
     const {
       position,
+      progress,
       scenes,
     } = this.state;
 
     return renderScene({
       layout: this.state.layout,
       navigationState,
-      onNavigate,
       position,
+      progress,
       scene,
       scenes,
     });
   }
 
-  _renderOverlay(): ?ReactElement {
+  _renderOverlay(): ?ReactElement<any> {
     if (this.props.renderOverlay) {
       const {
         navigationState,
-        onNavigate,
         renderOverlay,
       } = this.props;
 
       const {
         position,
+        progress,
         scenes,
       } = this.state;
 
       return renderOverlay({
         layout: this.state.layout,
         navigationState,
-        onNavigate,
         position,
+        progress,
         scene: scenes[navigationState.index],
         scenes,
       });

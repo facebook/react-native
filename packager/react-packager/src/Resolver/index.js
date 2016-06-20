@@ -47,10 +47,6 @@ const validateOpts = declareOpts({
     type: 'object',
     required: true,
   },
-  getModuleId: {
-    type: 'function',
-    required: true,
-  },
   transformCode: {
     type: 'function',
   },
@@ -99,13 +95,14 @@ class Resolver {
       providesModuleNodeModules: [
         'react',
         'react-native',
+        'react-native-windows',
         // Parse requires AsyncStorage. They will
         // change that to require('react-native') which
         // should work after this release and we can
         // remove it from here.
         'parse',
       ],
-      platforms: ['ios', 'android'],
+      platforms: ['ios', 'android', 'windows', 'web'],
       preferNativePlatform: true,
       fileWatcher: opts.fileWatcher,
       cache: opts.cache,
@@ -115,7 +112,6 @@ class Resolver {
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
     });
 
-    this._getModuleId = options.getModuleId;
     this._minifyCode = opts.minifyCode;
     this._polyfillModuleNames = opts.polyfillModuleNames || [];
 
@@ -137,7 +133,7 @@ class Resolver {
     return this._depGraph.getModuleForPath(entryFile);
   }
 
-  getDependencies(entryPath, options, transformOptions, onProgress) {
+  getDependencies(entryPath, options, transformOptions, onProgress, getModuleId) {
     const {platform, recursive} = getDependenciesValidateOpts(options);
     return this._depGraph.getDependencies({
       entryPath,
@@ -150,8 +146,7 @@ class Resolver {
         polyfill => resolutionResponse.prependDependency(polyfill)
       );
 
-      // currently used by HMR
-      resolutionResponse.getModuleId = this._getModuleId;
+      resolutionResponse.getModuleId = getModuleId;
       return resolutionResponse.finalize();
     });
   }
@@ -205,7 +200,7 @@ class Resolver {
     resolutionResponse.getResolvedDependencyPairs(module)
       .forEach(([depName, depModule]) => {
         if (depModule) {
-          resolvedDeps[depName] = this._getModuleId(depModule);
+          resolvedDeps[depName] = resolutionResponse.getModuleId(depModule);
         }
       });
 
@@ -251,7 +246,7 @@ class Resolver {
     if (module.isPolyfill()) {
       code = definePolyfillCode(code);
     } else {
-      const moduleId = this._getModuleId(module);
+      const moduleId = resolutionResponse.getModuleId(module);
       code = this.resolveRequires(
         resolutionResponse,
         module,
@@ -269,10 +264,6 @@ class Resolver {
 
   minifyModule({path, code, map}) {
     return this._minifyCode(path, code, map);
-  }
-
-  getDebugInfo() {
-    return this._depGraph.getDebugInfo();
   }
 }
 

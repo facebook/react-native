@@ -29,8 +29,8 @@ export type UIExplorerExample = {
 
 const ComponentExamples: Array<UIExplorerExample> = [
   {
-    key: 'ActivityIndicatorIOSExample',
-    module: require('./ActivityIndicatorIOSExample'),
+    key: 'ActivityIndicatorExample',
+    module: require('./ActivityIndicatorExample'),
   },
   {
     key: 'DatePickerIOSExample',
@@ -39,6 +39,10 @@ const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'ImageExample',
     module: require('./ImageExample'),
+  },
+  {
+    key: 'KeyboardAvoidingViewExample',
+    module: require('./KeyboardAvoidingViewExample'),
   },
   {
     key: 'LayoutEventsExample',
@@ -63,6 +67,10 @@ const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'ModalExample',
     module: require('./ModalExample'),
+  },
+  {
+    key: 'NativeAnimationsExample',
+    module: require('./NativeAnimationsExample'),
   },
   {
     key: 'NavigatorExample',
@@ -172,10 +180,6 @@ const APIExamples: Array<UIExplorerExample> = [
     module: require('./AnimatedGratuitousApp/AnExApp'),
   },
   {
-    key: 'AppStateIOSExample',
-    module: require('./AppStateIOSExample'),
-  },
-  {
     key: 'AppStateExample',
     module: require('./AppStateExample'),
   },
@@ -246,10 +250,6 @@ const APIExamples: Array<UIExplorerExample> = [
   {
     key: 'SnapshotExample',
     module: require('./SnapshotExample'),
-  },
-  {
-    key: 'StatusBarIOSExample',
-    module: require('./StatusBarIOSExample'),
   },
   {
     key: 'TimerExample',

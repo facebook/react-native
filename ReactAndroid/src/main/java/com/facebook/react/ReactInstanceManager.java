@@ -25,6 +25,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.devsupport.DevSupportManager;
+import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.ViewManager;
@@ -86,6 +87,11 @@ public abstract class ReactInstanceManager {
    * consume the event, mDefaultBackButtonImpl will be invoked at the end of the round trip to JS.
    */
   public abstract void onBackPressed();
+
+  /**
+   * This method will give JS the opportunity to receive intents via Linking.
+   */
+  public abstract void onNewIntent(Intent intent);
 
   /**
    * Call this from {@link Activity#onPause()}. This notifies any listening modules so they can do
@@ -188,6 +194,8 @@ public abstract class ReactInstanceManager {
     protected @Nullable JSCConfig mJSCConfig;
     protected @Nullable Activity mCurrentActivity;
     protected @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
+    protected @Nullable RedBoxHandler mRedBoxHandler;
+    protected boolean mUseNewBridge;
 
     protected Builder() {
     }
@@ -297,6 +305,16 @@ public abstract class ReactInstanceManager {
       return this;
     }
 
+    public Builder setRedBoxHandler(@Nullable RedBoxHandler redBoxHandler) {
+      mRedBoxHandler = redBoxHandler;
+      return this;
+    }
+
+    public Builder setUseNewBridge() {
+      mUseNewBridge = true;
+      return this;
+    }
+
     /**
      * Instantiates a new {@link ReactInstanceManagerImpl}.
      * Before calling {@code build}, the following must be called:
@@ -321,21 +339,41 @@ public abstract class ReactInstanceManager {
         mUIImplementationProvider = new UIImplementationProvider();
       }
 
-      return new ReactInstanceManagerImpl(
-          Assertions.assertNotNull(
-              mApplication,
-              "Application property has not been set with this builder"),
-          mCurrentActivity,
-          mDefaultHardwareBackBtnHandler,
-          mJSBundleFile,
-          mJSMainModuleName,
-          mPackages,
-          mUseDeveloperSupport,
-          mBridgeIdleDebugListener,
-          Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
-          mUIImplementationProvider,
-          mNativeModuleCallExceptionHandler,
-          mJSCConfig);
+      if (mUseNewBridge) {
+        return new XReactInstanceManagerImpl(
+            Assertions.assertNotNull(
+                mApplication,
+                "Application property has not been set with this builder"),
+            mCurrentActivity,
+            mDefaultHardwareBackBtnHandler,
+            mJSBundleFile,
+            mJSMainModuleName,
+            mPackages,
+            mUseDeveloperSupport,
+            mBridgeIdleDebugListener,
+            Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
+            mUIImplementationProvider,
+            mNativeModuleCallExceptionHandler,
+            mJSCConfig,
+            mRedBoxHandler);
+      } else {
+        return new ReactInstanceManagerImpl(
+            Assertions.assertNotNull(
+                mApplication,
+                "Application property has not been set with this builder"),
+            mCurrentActivity,
+            mDefaultHardwareBackBtnHandler,
+            mJSBundleFile,
+            mJSMainModuleName,
+            mPackages,
+            mUseDeveloperSupport,
+            mBridgeIdleDebugListener,
+            Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
+            mUIImplementationProvider,
+            mNativeModuleCallExceptionHandler,
+            mJSCConfig,
+            mRedBoxHandler);
+      }
     }
   }
 }

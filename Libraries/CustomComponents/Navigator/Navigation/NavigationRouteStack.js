@@ -117,7 +117,7 @@ class RouteStack {
     return this._routeNodes.findIndex(finder, this);
   }
 
-  slice(begin: ?number, end: ?number): RouteStack {
+  slice(begin?: number, end?: number): RouteStack {
     var routeNodes = this._routeNodes.slice(begin, end);
     var index = Math.min(this._index, routeNodes.size - 1);
     return this._update(index, routeNodes);
@@ -149,7 +149,7 @@ class RouteStack {
    * excluding the last index in this stack.
    */
   pop(): RouteStack {
-    invariant(this._routeNodes.size > 1, 'shoud not pop routeNodes stack to empty');
+    invariant(this._routeNodes.size > 1, 'should not pop routeNodes stack to empty');
 
     // When popping, removes the rest of the routes past the current index.
     var routeNodes = this._routeNodes.slice(0, this._index);

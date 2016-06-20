@@ -26,13 +26,11 @@
 {
   BOOL _tabsChanged;
   UITabBarController *_tabController;
-  NSMutableArray<RCTTabBarItem *> *_tabViews;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
-    _tabViews = [NSMutableArray new];
     _tabController = [UITabBarController new];
     _tabController.delegate = self;
     [self addSubview:_tabController.view];
@@ -53,29 +51,29 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_tabController removeFromParentViewController];
 }
 
-- (NSArray<RCTTabBarItem *> *)reactSubviews
+- (void)insertReactSubview:(RCTTabBarItem *)subview atIndex:(NSInteger)atIndex
 {
-  return _tabViews;
-}
-
-- (void)insertReactSubview:(RCTTabBarItem *)view atIndex:(NSInteger)atIndex
-{
-  if (![view isKindOfClass:[RCTTabBarItem class]]) {
+  if (![subview isKindOfClass:[RCTTabBarItem class]]) {
     RCTLogError(@"subview should be of type RCTTabBarItem");
     return;
   }
-  [_tabViews insertObject:view atIndex:atIndex];
+  [super insertReactSubview:subview atIndex:atIndex];
   _tabsChanged = YES;
 }
 
 - (void)removeReactSubview:(RCTTabBarItem *)subview
 {
-  if (_tabViews.count == 0) {
+  if (self.reactSubviews.count == 0) {
     RCTLogError(@"should have at least one view to remove a subview");
     return;
   }
-  [_tabViews removeObject:subview];
+  [super removeReactSubview:subview];
   _tabsChanged = YES;
+}
+
+- (void)didUpdateReactSubviews
+{
+  // Do nothing, as subviews are managed by `reactBridgeDidFinishTransaction`
 }
 
 - (void)layoutSubviews
@@ -106,15 +104,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _tabsChanged = NO;
   }
 
-  [_tabViews enumerateObjectsUsingBlock:
-   ^(RCTTabBarItem *tab, NSUInteger index, __unused BOOL *stop) {
+  [self.reactSubviews enumerateObjectsUsingBlock:^(UIView *view, NSUInteger index, __unused BOOL *stop) {
+
+    RCTTabBarItem *tab = (RCTTabBarItem *)view;
     UIViewController *controller = _tabController.viewControllers[index];
     if (_unselectedTintColor) {
       [tab.barItem setTitleTextAttributes:@{NSForegroundColorAttributeName: _unselectedTintColor} forState:UIControlStateNormal];
     }
-    
+
     [tab.barItem setTitleTextAttributes:@{NSForegroundColorAttributeName: self.tintColor} forState:UIControlStateSelected];
-    
+
     controller.tabBarItem = tab.barItem;
     if (tab.selected) {
       _tabController.selectedViewController = controller;
@@ -150,12 +149,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _tabController.tabBar.translucent = translucent;
 }
 
+- (UITabBarItemPositioning)itemPositoning
+{
+  return _tabController.tabBar.itemPositioning;
+}
+
+- (void)setItemPositioning:(UITabBarItemPositioning)itemPositioning
+{
+  _tabController.tabBar.itemPositioning = itemPositioning;
+}
+
 #pragma mark - UITabBarControllerDelegate
 
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController
 {
   NSUInteger index = [tabBarController.viewControllers indexOfObject:viewController];
-  RCTTabBarItem *tab = _tabViews[index];
+  RCTTabBarItem *tab = (RCTTabBarItem *)self.reactSubviews[index];
   if (tab.onPress) tab.onPress(nil);
   return NO;
 }

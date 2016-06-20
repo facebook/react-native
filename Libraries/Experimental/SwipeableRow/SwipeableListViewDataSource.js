@@ -88,15 +88,29 @@ class SwipeableListViewDataSource {
     return this._openRowID;
   }
 
-  setOpenRowID(rowID: string): ListViewDataSource {
+  getFirstRowID(): ?string {
+    /**
+     * If rowIdentities is specified, find the first data row from there since
+     * we don't want to attempt to bounce section headers. If unspecified, find
+     * the first data row from _dataBlob.
+     */
+    if (this.rowIdentities) {
+      return this.rowIdentities[0] && this.rowIdentities[0][0];
+    }
+    return Object.keys(this._dataBlob)[0];
+  }
+
+  setOpenRowID(rowID: string): SwipeableListViewDataSource {
     this._previousOpenRowID = this._openRowID;
     this._openRowID = rowID;
 
-    return this._dataSource.cloneWithRowsAndSections(
+    this._dataSource = this._dataSource.cloneWithRowsAndSections(
       this._dataBlob,
       this.sectionIdentities,
       this.rowIdentities
     );
+
+    return this;
   }
 }
 

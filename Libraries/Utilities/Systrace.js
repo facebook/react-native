@@ -23,65 +23,54 @@ type RelayProfiler = {
   ): void,
 };
 
-var TRACE_TAG_REACT_APPS = 1 << 17;
-var TRACE_TAG_JSC_CALLS = 1 << 27;
+/* eslint no-bitwise: 0 */
+const TRACE_TAG_REACT_APPS = 1 << 17;
+const TRACE_TAG_JSC_CALLS = 1 << 27;
 
-var _enabled = false;
-var _asyncCookie = 0;
-var _ReactDebugTool = null;
-var _ReactComponentTreeDevtool = null;
-function ReactDebugTool() {
-  if (!_ReactDebugTool) {
-    _ReactDebugTool = require('ReactDebugTool');
-  }
-  return _ReactDebugTool;
-}
-function ReactComponentTreeDevtool() {
-  if (!_ReactComponentTreeDevtool) {
-    _ReactComponentTreeDevtool = require('ReactComponentTreeDevtool');
-  }
-  return _ReactComponentTreeDevtool;
-}
+let _enabled = false;
+let _asyncCookie = 0;
 
-var ReactSystraceDevtool = {
+const ReactSystraceDevtool = __DEV__ ? {
   onBeginReconcilerTimer(debugID, timerType) {
-    var displayName = ReactComponentTreeDevtool().getDisplayName(debugID);
+    const displayName = require('ReactComponentTreeDevtool').getDisplayName(debugID);
     Systrace.beginEvent(`ReactReconciler.${timerType}(${displayName})`);
   },
   onEndReconcilerTimer(debugID, timerType) {
     Systrace.endEvent();
   },
   onBeginLifeCycleTimer(debugID, timerType) {
-    var displayName = ReactComponentTreeDevtool().getDisplayName(debugID);
+    const displayName = require('ReactComponentTreeDevtool').getDisplayName(debugID);
     Systrace.beginEvent(`${displayName}.${timerType}()`);
   },
   onEndLifeCycleTimer(debugID, timerType) {
     Systrace.endEvent();
   },
-};
+} : null;
 
-var Systrace = {
+const Systrace = {
   setEnabled(enabled: boolean) {
     if (_enabled !== enabled) {
-      if (enabled) {
-        global.nativeTraceBeginLegacy && global.nativeTraceBeginLegacy(TRACE_TAG_JSC_CALLS);
-        ReactDebugTool().addDevtool(ReactSystraceDevtool);
-      } else {
-        global.nativeTraceEndLegacy && global.nativeTraceEndLegacy(TRACE_TAG_JSC_CALLS);
-        ReactDebugTool().removeDevtool(ReactSystraceDevtool);
+      if (__DEV__) {
+        if (enabled) {
+          global.nativeTraceBeginLegacy && global.nativeTraceBeginLegacy(TRACE_TAG_JSC_CALLS);
+          require('ReactDebugTool').addDevtool(ReactSystraceDevtool);
+        } else {
+          global.nativeTraceEndLegacy && global.nativeTraceEndLegacy(TRACE_TAG_JSC_CALLS);
+          require('ReactDebugTool').removeDevtool(ReactSystraceDevtool);
+        }
       }
+      _enabled = enabled;
     }
-    _enabled = enabled;
   },
 
   /**
    * beginEvent/endEvent for starting and then ending a profile within the same call stack frame
   **/
-  beginEvent(profileName?: any) {
+  beginEvent(profileName?: any, args?: any) {
     if (_enabled) {
       profileName = typeof profileName === 'function' ?
         profileName() : profileName;
-      global.nativeTraceBeginSection(TRACE_TAG_REACT_APPS, profileName);
+      global.nativeTraceBeginSection(TRACE_TAG_REACT_APPS, profileName, args);
     }
   },
 
@@ -97,7 +86,7 @@ var Systrace = {
    * the returned cookie variable should be used as input into the endAsyncEvent call to end the profile
   **/
   beginAsyncEvent(profileName?: any): any {
-    var cookie = _asyncCookie;
+    const cookie = _asyncCookie;
     if (_enabled) {
       _asyncCookie++;
       profileName = typeof profileName === 'function' ?
@@ -133,7 +122,7 @@ var Systrace = {
   **/
   attachToRelayProfiler(relayProfiler: RelayProfiler) {
     relayProfiler.attachProfileHandler('*', (name) => {
-      var cookie = Systrace.beginAsyncEvent(name);
+      const cookie = Systrace.beginAsyncEvent(name);
       return () => {
         Systrace.endAsyncEvent(name, cookie);
       };
@@ -191,21 +180,19 @@ var Systrace = {
      return func;
    }
 
-   var profileName = `${objName}.${fnName}`;
+   const profileName = `${objName}.${fnName}`;
    return function() {
      if (!_enabled) {
        return func.apply(this, arguments);
      }
 
      Systrace.beginEvent(profileName);
-     var ret = func.apply(this, arguments);
+     const ret = func.apply(this, arguments);
      Systrace.endEvent();
      return ret;
    };
  },
 };
-
-Systrace.setEnabled(global.__RCTProfileIsProfiling || false);
 
 if (__DEV__) {
   // This is needed, because require callis in polyfills are not processed as

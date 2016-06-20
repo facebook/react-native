@@ -44,11 +44,22 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   private boolean mRemoveClippedSubviews;
   private boolean mScrollEnabled = true;
   private boolean mSendMomentumEvents;
+  private @Nullable FpsListener mFpsListener = null;
+  private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
 
   public ReactHorizontalScrollView(Context context) {
+    this(context, null);
+  }
+
+  public ReactHorizontalScrollView(Context context, @Nullable FpsListener fpsListener) {
     super(context);
+    mFpsListener = fpsListener;
+  }
+
+  public void setScrollPerfTag(@Nullable String scrollPerfTag) {
+    mScrollPerfTag = scrollPerfTag;
   }
 
   @Override
@@ -117,6 +128,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       NativeGestureUtil.notifyNativeGestureStarted(this, ev);
       ReactScrollViewHelper.emitScrollBeginDragEvent(this);
       mDragging = true;
+      enableFpsListener();
       return true;
     }
 
@@ -193,6 +205,26 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     }
   }
 
+  private void enableFpsListener() {
+    if (isScrollPerfLoggingEnabled()) {
+      Assertions.assertNotNull(mFpsListener);
+      Assertions.assertNotNull(mScrollPerfTag);
+      mFpsListener.enable(mScrollPerfTag);
+    }
+  }
+
+  private void disableFpsListener() {
+    if (isScrollPerfLoggingEnabled()) {
+      Assertions.assertNotNull(mFpsListener);
+      Assertions.assertNotNull(mScrollPerfTag);
+      mFpsListener.disable(mScrollPerfTag);
+    }
+  }
+
+  private boolean isScrollPerfLoggingEnabled() {
+    return mFpsListener != null && mScrollPerfTag != null && !mScrollPerfTag.isEmpty();
+  }
+
   @Override
   public void draw(Canvas canvas) {
     if (mEndFillColor != Color.TRANSPARENT) {
@@ -214,7 +246,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   @TargetApi(16)
   private void handlePostTouchScrolling() {
     // If we aren't going to do anything (send events or snap to page), we can early out.
-    if (!mSendMomentumEvents && !mPagingEnabled) {
+    if (!mSendMomentumEvents && !mPagingEnabled && !isScrollPerfLoggingEnabled()) {
       return;
     }
 
@@ -253,6 +285,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
               ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactHorizontalScrollView.this);
             }
             ReactHorizontalScrollView.this.mPostTouchRunnable = null;
+            disableFpsListener();
           } else {
             ReactHorizontalScrollView.this.postOnAnimationDelayed(this, ReactScrollViewHelper.MOMENTUM_DELAY);
           }

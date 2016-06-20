@@ -30,6 +30,15 @@ public class ReactHorizontalScrollViewManager
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactHorizontalScrollView> {
 
   private static final String REACT_CLASS = "AndroidHorizontalScrollView";
+  private @Nullable FpsListener mFpsListener = null;
+
+  public ReactHorizontalScrollViewManager() {
+    this(null);
+  }
+
+  public ReactHorizontalScrollViewManager(@Nullable FpsListener fpsListener) {
+    mFpsListener = fpsListener;
+  }
 
   @Override
   public String getName() {
@@ -38,7 +47,7 @@ public class ReactHorizontalScrollViewManager
 
   @Override
   public ReactHorizontalScrollView createViewInstance(ThemedReactContext context) {
-    return new ReactHorizontalScrollView(context);
+    return new ReactHorizontalScrollView(context, mFpsListener);
   }
 
   @ReactProp(name = "scrollEnabled", defaultBoolean = true)
@@ -67,6 +76,18 @@ public class ReactHorizontalScrollViewManager
   @ReactProp(name = "sendMomentumEvents")
   public void setSendMomentumEvents(ReactHorizontalScrollView view, boolean sendMomentumEvents) {
     view.setSendMomentumEvents(sendMomentumEvents);
+  }
+
+  /**
+   * Tag used for logging scroll performance on this scroll view. Will force momentum events to be
+   * turned on (see setSendMomentumEvents).
+   *
+   * @param view
+   * @param scrollPerfTag
+   */
+  @ReactProp(name = "scrollPerfTag")
+  public void setScrollPerfTag(ReactHorizontalScrollView view, String scrollPerfTag) {
+    view.setScrollPerfTag(scrollPerfTag);
   }
 
   @ReactProp(name = "pagingEnabled")
