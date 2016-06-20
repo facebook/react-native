@@ -239,11 +239,12 @@ RCT_EXPORT_MODULE()
 - (NSURL *)packagerURL
 {
   NSString *host = [_bridge.bundleURL host];
+  NSString *scheme = [_bridge.bundleURL scheme];
   if (!host) {
-    return nil;
+    host = @"localhost";
+    scheme = @"http";
   }
 
-  NSString *scheme = [_bridge.bundleURL scheme];
   NSNumber *port = [_bridge.bundleURL port];
   if (!port) {
     port = @8081; // Packager default port
