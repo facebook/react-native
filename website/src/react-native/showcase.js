@@ -499,6 +499,13 @@ var apps = [
     author: 'beijing qingfengyun Technology Co., Ltd.',
   },
   {
+    name: 'Gank',
+    icon: 'https://github.com/zhongjie-chen/rn_rank/blob/master/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png',
+    linkStore:  'http://apk.gfan.com/Product/App1099977.html',
+    source: 'https://github.com/zhongjie-chen/rn_rank',
+    author: 'zhongjie-chen',
+  },
+  {
     name: 'HackerWeb',
     icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/5a/bd/39/5abd3951-782c-ef12-8e40-33ebe1e43768/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/us/app/id1084209377',
