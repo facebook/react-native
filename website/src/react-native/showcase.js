@@ -747,6 +747,13 @@ var apps = [
     author: 'Pimmr'
   },
   {
+    name: 'Player.me',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple20/v4/bb/d1/ff/bbd1ffd1-70a1-37f1-4b63-c8d650ef6a45/icon175x175.jpeg',
+    link: 'https://player.me',
+    linkAppStore: 'https://itunes.apple.com/us/app/player.me/id1080930262?mt=8',
+    author: 'Player.me'
+  },
+  {
     name: 'Posyt - Tinder for ideas',
     icon: 'http://a3.mzstatic.com/us/r30/Purple6/v4/a5/b3/86/a5b38618-a5e9-6089-7425-7fa51ecd5d30/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/posyt-anonymously-meet-right/id1037842845?mt=8',
@@ -897,7 +904,7 @@ var apps = [
     icon: 'https://farm8.staticflickr.com/7353/27553089935_a3928f2097_o.png',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.sctvsport.bongdatructuyen',
     author: 'SCTV Digital',
-  },  
+  },
   {
     name: 'Software Interview Preparation',
     icon: 'https://lh3.googleusercontent.com/11AuzaeCnxrRnIp1E_a_6WWiQIRRoWhrvFr20eCRJX4ZMW6O3tGjZLiUw3thKUgGaC8X=w300',
