@@ -7,6 +7,33 @@ permalink: docs/debugging.html
 next: testing
 ---
 
+## Accessing the In-App Developer Menu
+
+You can access the developer menu by shaking your device or by selecting "Shake Gesture" inside the Hardware menu in the iOS Simulator. You can also use the `Command⌘ + D` keyboard shortcut when your app is running in the iPhone Simulator, or `Command⌘ + M` when running in an Android emulator.
+
+![](img/DeveloperMenu.png)
+
+> The Developer Menu is disabled in release (production) builds.
+
+## Reloading JavaScript
+
+Selecting `Reload` from the Developer Menu will reload the JavaScript that powers your application. You can also press `Command⌘ + R` in the iOS Simulator, or press `R` twice on Android emulators.
+
+> If you are using a Dvorak/Colemak layout, use the `Command⌘ + P` keyboard shortcut to reload the simulator.
+
+You will need to rebuild your app for changes to take effect in certain situations:
+
+* You have added new resources to your native app's bundle, such as an image in `Images.xcassets` on iOS or in `res/drawable` folder on Android.
+* You have modified native code (Objective-C/Swift on iOS or Java/C++ on Android).
+
+> If the `Command⌘ + R` keyboard shortcut does not seem to reload the iOS Simulator, go to the Hardware menu, select Keyboard, and make sure that "Connect Hardware Keyboard" is checked.
+
+### Automatic reloading
+
+You may enable Live Reload to automatically trigger a reload whenever your JavaScript code changes.
+
+Live Reload is available on iOS via the Developer Menu. On Android, select "Dev Settings" from the Developer Menu and enable "Auto reload on JS change".
+
 ## In-app Errors and Warnings
 
 Errors and warnings are displayed inside your app in development builds.
@@ -25,30 +52,9 @@ YellowBoxes can be disabled during development by using `console.disableYellowBo
 
 > RedBoxes and YellowBoxes are automatically disabled in release (production) builds.
 
-## Accessing the In-App Developer Menu
-
-You can access the developer menu by shaking your device. You can also use the `Command⌘ + D` keyboard shortcut when your app is running in the iPhone Simulator, or `Command⌘ + M` when running in an Android emulator.
-
-> The Developer Menu is disabled in release (production) builds.
-
-## Reloading JavaScript
-
-Selecting `Reload` from the Developer Menu will reload the JavaScript that powers your application. You can also press `Command⌘ + R` in the iOS Simulator, or press `R` twice on Android emulators.
-
-You will need to rebuild your app for changes to take effect in certain situations:
-
-* You have added new resources to your native app's bundle, such as an image in `Images.xcassets` on iOS or in `res/drawable` folder on Android.
-* You have modified native code (Objective-C/Swift on iOS or Java/C++ on Android).
-
-### Automatic reloading
-
-You may enable Live Reload to automatically trigger a reload whenever your JavaScript code changes.
-
-Live Reload is available on iOS via the Developer Menu. On Android, select "Dev Settings" from the Developer Menu and enable "Auto reload on JS change".
-
 ## Accessing logs
 
-To view detailed logs on iOS, open your app in Xcode, then Build and Run your app on a device or the iPhone Simulator. The console should appear automatically after the app launches.
+To view detailed logs on iOS, open your app in Xcode, then Build and Run your app on a device or the iPhone Simulator. The console should appear automatically after the app launches. If your app is failing to build, check the Issues Navigator in Xcode.
 
 Run `adb logcat *:S ReactNative:V ReactNativeJS:V` in a terminal to display the logs for an Android app running on a device or an emulator.
 
@@ -67,6 +73,8 @@ On Android 5.0+ devices connected via USB, you can use the [`adb` command line t
 `adb reverse tcp:8081 tcp:8081`
 
 Alternatively, select `Dev Settings` from the Developer Menu, then update the `Debug server host for device` setting to match the IP address of your computer.
+
+> If you run into any issues, it may be possible that one of your Chrome extensions is interacting in unexpected ways with the debugger. Try disabling all of your extensions and re-enabling them one-by-one until you find the problematic extension.
 
 ### Debugging using a custom JavaScript debugger
 

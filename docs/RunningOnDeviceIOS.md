@@ -11,7 +11,7 @@ Note that running on device requires [Apple Developer account](https://developer
 
 ## Accessing development server from device
 
-You can iterate quickly on device using development server. To do that, your laptop and your phone have to be on the same wifi network.
+You can iterate quickly on device using development server. Ensure that you are on the same WiFi network as your computer.
 
 1. Open `AwesomeApp/ios/AwesomeApp/AppDelegate.m`
 2. Change the IP in the URL from `localhost` to your laptop's IP. On Mac, you can find the IP address in System Preferences / Network.
