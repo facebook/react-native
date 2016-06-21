@@ -1131,6 +1131,12 @@ var apps = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.cnyes.android',
     author: '鉅亨網',
   },
+  {
+    name: 'stitchchat',
+    icon: 'https://github.com/ramsundark5/stitchchat/blob/master/screenshots/icons/AppIconDesign.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/stitchchat/id1124511781?mt=8',
+    author: 'Ram Kuppusamy',
+  },
 ];
 
 var AppList = React.createClass({
