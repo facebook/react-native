@@ -192,6 +192,13 @@ var featured = [
     infoTitle: 'Pimmr helps you find the needle in the haystack',
   },
   {
+    name: 'Project September',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple30/v4/95/51/b7/9551b72a-d80a-5b1c-5c6d-7fc77d745d31/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/project-september/id1074075331?ls=1&mt=8&_branch_match_id=273849075056044546',
+    infoLink: 'http://fortune.com/2016/04/14/project-september-alexis-maybank/',
+    infoTitle: 'Former Gilt CEO Launches New Mobile App',
+  },
+  {
     name: 'QQ',
     icon: 'http://pp.myapp.com/ma_icon/0/icon_6633_1461768893/96',
     linkPlayStore: 'http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.mobileqq',
