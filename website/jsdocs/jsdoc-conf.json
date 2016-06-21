@@ -1,0 +1,15 @@
+{
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc","closure"]
+    },
+    "source": {
+        "includePattern": ".+\\.js(doc)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "plugins": ["./jsdocs/jsdoc-plugin-values"],
+    "templates": {
+        "cleverLinks": true,
+        "monospaceLinks": false
+    }
+}
