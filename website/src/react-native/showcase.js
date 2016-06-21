@@ -558,6 +558,12 @@ var apps = [
     link: 'https://play.google.com/store/apps/details?id=com.hubhopper',
     author: 'Soch Technologies',
   },
+    {
+    name: 'Immerse',
+    icon: 'http://res.cloudinary.com/verbling/image/upload/v1466534725/Icon-83.5_2x_e2gie7.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/verbling-immerse/id1082009763',
+    author: 'Verbling',
+  },
   {
     name: 'Jukebox',
     icon: 'https://s3.amazonaws.com/theartistunion-production/Jukebox-logo.png',
