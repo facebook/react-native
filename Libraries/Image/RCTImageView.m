@@ -95,10 +95,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     image = [image imageWithRenderingMode:_renderingMode];
   }
 
-  // Applying capInsets of 0 will switch the "resizingMode" of the image to "tile" which is undesired
-  if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, _capInsets) || _resizeMode == RCTResizeModeRepeat) {
-    UIImageResizingMode resizingMode = _resizeMode == RCTResizeModeRepeat ? UIImageResizingModeTile : UIImageResizingModeTile;
-    image = [image resizableImageWithCapInsets:_capInsets resizingMode:resizingMode];
+  if (_resizeMode == RCTResizeModeRepeat) {
+    image = [image resizableImageWithCapInsets:_capInsets resizingMode:UIImageResizingModeTile];
+  } else if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, _capInsets)) {
+    // Applying capInsets of 0 will switch the "resizingMode" of the image to "tile" which is undesired
+    image = [image resizableImageWithCapInsets:_capInsets resizingMode:UIImageResizingModeStretch];
   }
   // Apply trilinear filtering to smooth out mis-sized images
   self.layer.minificationFilter = kCAFilterTrilinear;

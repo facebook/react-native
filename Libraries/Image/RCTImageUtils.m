@@ -208,7 +208,7 @@ BOOL RCTUpscalingRequired(CGSize sourceSize, CGFloat sourceScale,
 
     case RCTResizeModeRepeat:
 
-      return false;
+      return NO;
   }
 }
 
