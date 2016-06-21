@@ -91,51 +91,12 @@ class AwkwardScrollingImageWithText extends Component {
 
           <h2>Don't Waste Time Recompiling</h2>
           <p>
-            React Native lets you build your app faster. Instead of recompiling, you can reload your app instantly. With hot loading, you can even run new code while retaining your application state. Give it a try - it's a magical experience.
+            React Native lets you build your app faster. Instead of recompiling, you can reload your app instantly. With hot reloading, you can even run new code while retaining your application state. Give it a try - it's a magical experience.
           </p>
-          <Prism>
-{`// iOS & Android
+          <br />
+          <img src='https://media.giphy.com/media/13WZniThXy0hSE/giphy.gif' />
 
-import React, {
-  Component,
-} from 'react';
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-
-class ReactNative extends Component {
-  render() {
-    return (
-      <View style={styles.row}>
-        <Image
-          source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
-          style={styles.image}
-        />
-        <View style={styles.text}>
-          <Text style={styles.title}>
-            React Native
-          </Text>
-          <Text style={styles.subtitle}>
-            Build high quality mobile apps using React
-          </Text>
-        </View>
-      </View>
-    );
-  }
-}
-var styles = StyleSheet.create({
-  row: { flexDirection: 'row', margin: 40 },
-  image: { width: 40, height: 40, marginRight: 10 },
-  text: { flex: 1, justifyContent: 'center'},
-  title: { fontSize: 11, fontWeight: 'bold' },
-  subtitle: { fontSize: 10 },
-});`}
-          </Prism>
-
-          <h2>Polyfills</h2>
+          <h2>Use Native Code When You Need To</h2>
           <p>
             React Native is focused on changing the way view code is written.  For the rest, we look to the web for universal standards and polyfill those APIs where appropriate. You can use npm to install JavaScript libraries that work on top of the functionality baked into React Native, such as XMLHttpRequest, window.requestAnimationFrame, and navigator.geolocation.  We are working on expanding the available APIs, and are excited for the Open Source community to contribute as well.
           </p>
