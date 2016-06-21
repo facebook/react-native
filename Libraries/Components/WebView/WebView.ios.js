@@ -362,6 +362,7 @@ var WebView = React.createClass({
    * Reloads the current page.
    */
   reload: function() {
+    this.setState({viewState: WebViewState.LOADING});
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.reload,
