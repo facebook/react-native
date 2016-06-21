@@ -456,6 +456,13 @@ var apps = [
     ],
   },
   {
+    name: 'Epic Fail Videos',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple18/v4/1c/b9/ad/1cb9add6-6f18-5d52-b2f7-c0447dafd2b4/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/epic-fail-videos-best-fail/id1115219339?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.hazuu.epicfailvideos',
+    author: 'Don Nguyen',
+  },
+  {
     name: 'Fan of it',
     icon: 'http://a4.mzstatic.com/us/r30/Purple3/v4/c9/3f/e8/c93fe8fb-9332-e744-f04a-0f4f78e42aa8/icon350x350.png',
     link: 'https://itunes.apple.com/za/app/fan-of-it/id1017025530?mt=8',
