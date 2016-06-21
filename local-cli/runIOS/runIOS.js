@@ -20,84 +20,106 @@ const Promise = require('promise');
  * Starts the app on iOS simulator
  */
 function runIOS(argv, config) {
-  return new Promise((resolve, reject) => {
-    _runIOS(argv, config, resolve, reject);
-    resolve();
-  });
+  return _runIOS(argv, config);
 }
 
-function _runIOS(argv, config, resolve, reject) {
-  const args = parseCommandLine([
-    {
-      command: 'simulator',
-      description: 'Explicitly set simulator to use',
-      type: 'string',
-      required: false,
-      default: 'iPhone 6',
-    }, {
-      command: 'scheme',
-      description: 'Explicitly set Xcode scheme to use',
-      type: 'string',
-      required: false,
-    }, {
-      command: 'project-path',
-      description: 'Path relative to project root where the Xcode project (.xcodeproj) lives. The default is \'ios\'.',
-      type: 'string',
-      required: false,
-      default: 'ios',
+function _runIOS(argv, config,) {
+  return new Promise((resolve, reject) => {
+    const args = parseCommandLine([
+      {
+        command: 'simulator',
+        description: 'Explicitly set simulator to use',
+        type: 'string',
+        required: false,
+        default: 'iPhone 6',
+      }, {
+        command: 'scheme',
+        description: 'Explicitly set Xcode scheme to use',
+        type: 'string',
+        required: false,
+      }, {
+        command: 'project-path',
+        description: 'Path relative to project root where the Xcode project (.xcodeproj) lives. The default is \'ios\'.',
+        type: 'string',
+        required: false,
+        default: 'ios',
+      }
+    ], argv);
+
+    process.chdir(args['project-path']);
+    const xcodeProject = findXcodeProject(fs.readdirSync('.'));
+    if (!xcodeProject) {
+      reject(new Error(`Could not find Xcode project files in ios folder`));
     }
-  ], argv);
 
-  process.chdir(args['project-path']);
-  const xcodeProject = findXcodeProject(fs.readdirSync('.'));
-  if (!xcodeProject) {
-    throw new Error(`Could not find Xcode project files in ios folder`);
-  }
+    const inferredSchemeName = path.basename(xcodeProject.name, path.extname(xcodeProject.name));
+    const scheme = args.scheme || inferredSchemeName;
+    console.log(`Found Xcode ${xcodeProject.isWorkspace ? 'workspace' : 'project'} ${xcodeProject.name}`);
 
-  const inferredSchemeName = path.basename(xcodeProject.name, path.extname(xcodeProject.name));
-  const scheme = args.scheme || inferredSchemeName;
-  console.log(`Found Xcode ${xcodeProject.isWorkspace ? 'workspace' : 'project'} ${xcodeProject.name}`);
+    const simulators = parseIOSSimulatorsList(
+        child_process.execFileSync('xcrun', ['simctl', 'list', 'devices'], {encoding: 'utf8'})
+    );
+    const selectedSimulator = matchingSimulator(simulators, args.simulator);
+    if (!selectedSimulator) {
+      reject(new Error(`Cound't find ${args.simulator} simulator`));
+    }
 
-  const simulators = parseIOSSimulatorsList(
-    child_process.execFileSync('xcrun', ['simctl', 'list', 'devices'], {encoding: 'utf8'})
-  );
-  const selectedSimulator = matchingSimulator(simulators, args.simulator);
-  if (!selectedSimulator) {
-    throw new Error(`Cound't find ${args.simulator} simulator`);
-  }
+    const simulatorFullName = `${selectedSimulator.name} (${selectedSimulator.version})`;
+    console.log(`Launching ${simulatorFullName}...`);
+    try {
+      child_process.spawnSync('xcrun', ['instruments', '-w', simulatorFullName]);
+    } catch (e) {
+      // instruments always fail with 255 because it expects more arguments,
+      // but we want it to only launch the simulator
+    }
 
-  const simulatorFullName = `${selectedSimulator.name} (${selectedSimulator.version})`;
-  console.log(`Launching ${simulatorFullName}...`);
-  try {
-    child_process.spawnSync('xcrun', ['instruments', '-w', simulatorFullName]);
-  } catch(e) {
-    // instruments always fail with 255 because it expects more arguments,
-    // but we want it to only launch the simulator
-  }
+    const xcodebuildArgs = [
+      xcodeProject.isWorkspace ? '-workspace' : '-project', xcodeProject.name,
+      '-scheme', scheme,
+      '-destination', `id=${selectedSimulator.udid}`,
+      '-derivedDataPath', 'build',
+    ];
+    console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
 
-  const xcodebuildArgs = [
-    xcodeProject.isWorkspace ? '-workspace' : '-project', xcodeProject.name,
-    '-scheme', scheme,
-    '-destination', `id=${selectedSimulator.udid}`,
-    '-derivedDataPath', 'build',
-  ];
-  console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
-  const xcodeBuildProcess = child_process.spawnSync('xcodebuild', xcodebuildArgs, {stdio: 'pipe'});
-  console.log(xcodeBuildProcess.output[1].toString());
+    const xcodeBuildProcess = child_process.spawn('xcodebuild', xcodebuildArgs);
+    var appPath = `build/Build/Products/Debug-iphonesimulator/${inferredSchemeName}.app`;
 
-  const productName = xcodeBuildProcess.output[1].toString().match(/Touch (build\/Build\/Products\/.*\/.*\.app)/);
-  const appPath = productName ? productName[1] : `build/Build/Products/Debug-iphonesimulator/${inferredSchemeName}.app`;
-  console.log(`Installing ${appPath}`);
-  child_process.spawnSync('xcrun', ['simctl', 'install', 'booted', appPath], {stdio: 'inherit'});
+    xcodeBuildProcess.stdout.on('data', (data) => {
+      console.log(data.toString());
 
-  const bundleID = child_process.execFileSync(
-    '/usr/libexec/PlistBuddy',
-    ['-c', 'Print:CFBundleIdentifier', path.join(appPath, 'Info.plist')],
-    {encoding: 'utf8'}
-  ).trim();
+      // search this part of the process output for a path to the generated app and replace default
+      var appPathFromLog = data.toString().match(/Touch (build\/Build\/Products\/.*\/.*\.app)/);
+      if (appPathFromLog) {
+        appPath = appPathFromLog[1];
+      }
+    });
 
-  console.log(`Launching ${bundleID}`);
-  child_process.spawnSync('xcrun', ['simctl', 'launch', 'booted', bundleID], {stdio: 'inherit'});
+    xcodeBuildProcess.stderr.on('data', (data) => {
+      console.log(`stderr: ${data}`);
+    });
+
+    xcodeBuildProcess.on('close', (code) => {
+      if (code !== 0) {
+        reject(new Error(`xcodebuild process exited with code ${code}`));
+        return;
+      }
+
+      console.log(`Installing ${appPath}`);
+      child_process.spawnSync('xcrun', ['simctl', 'install', 'booted', appPath], {stdio: 'inherit'});
+
+      const bundleID = child_process.execFileSync(
+          '/usr/libexec/PlistBuddy',
+          ['-c', 'Print:CFBundleIdentifier', path.join(appPath, 'Info.plist')],
+          {encoding: 'utf8'}
+      ).trim();
+
+      console.log(`Launching ${bundleID}`);
+      child_process.spawnSync('xcrun', ['simctl', 'launch', 'booted', bundleID], {stdio: 'inherit'});
+
+      resolve();
+    });
+
+  });
 }
 
 function matchingSimulator(simulators, simulatorName) {
