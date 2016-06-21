@@ -12,6 +12,8 @@
 #include <JavaScriptCore/JSStringRef.h>
 #include <JavaScriptCore/JSValueRef.h>
 
+#include <folly/dynamic.h>
+
 #include "noncopyable.h"
 
 #if WITH_FBJSCEXTENSIONS
@@ -148,6 +150,13 @@ public:
     }
   }
 
+  Object& operator=(Object&& other) {
+    std::swap(m_context, other.m_context);
+    std::swap(m_obj, other.m_obj);
+    std::swap(m_isProtected, other.m_isProtected);
+    return *this;
+  }
+
   operator JSObjectRef() const {
     return m_obj;
   }
@@ -158,7 +167,9 @@ public:
     return JSObjectIsFunction(m_context, m_obj);
   }
 
-  Value callAsFunction(int nArgs, JSValueRef args[]);
+  Value callAsFunction(std::initializer_list<JSValueRef> args) const;
+
+  Value callAsFunction(int nArgs, const JSValueRef args[]) const;
 
   Value getProperty(const String& propName) const;
   Value getProperty(const char *propName) const;
@@ -253,6 +264,7 @@ public:
 
   std::string toJSONString(unsigned indent = 0) const throw(JSException);
   static Value fromJSON(JSContextRef ctx, const String& json) throw(JSException);
+  static Value fromDynamic(JSContextRef ctx, folly::dynamic value) throw(JSException);
 protected:
   JSContextRef context() const;
   JSContextRef m_context;

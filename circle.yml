@@ -74,7 +74,7 @@ test:
     # gradle may invalidate bridge build cache, so we pass single-threaded setting just in case
     - ./gradlew :ReactAndroid:testDebugUnitTest -Pjobs=1
     # Deprecated: these tests are executed using Buck above, while we support Gradle we just make sure the test code compiles
-    - ./gradlew :ReactAndroid:assembleDebugAndroidTest
+    - ./gradlew :ReactAndroid:assembleDebugAndroidTest -Pjobs=1
 
     # Android e2e test
     - node ./scripts/run-ci-e2e-tests.js --android --js --retries 3
