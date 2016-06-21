@@ -171,6 +171,13 @@ var featured = [
     infoTitle: 'Leanpub: How to Turn Your Blog into an Instant E-Book',
   },
   {
+    name: 'li.st',
+    icon: 'https://lh3.googleusercontent.com/tXt0HgJ7dCgOnuQ-lQr1P7E57mnOYfwXhRsV9lGcPwHPVvrDAN6YmpLVFgy88qKrkFI=w300',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=st.li.listapp',
+    infoLink: 'https://www.youtube.com/watch?v=cI9bDvDEsYE',
+    infoTitle: 'Building li.st for Android with React Native',
+  },
+  {
     name: 'Lugg – Your On-Demand Mover',
     icon: 'https://lh3.googleusercontent.com/EV9z7kRRME2KPMBRNHnje7bBNEl_Why2CFq-MfKzBC88uSFJTYr1HO3-nPt-JuVJwKFb=w300',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.lugg',
@@ -210,7 +217,7 @@ var featured = [
     icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/ed/e9/ff/ede9ff34-a9f6-5eb6-2a23-fcb014b326f2/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/us/app/samanage/id1033018362',
     infoLink: 'https://techcrunch.com/2015/05/20/samanage-raises-16m-as-asset-management-business-grows/',
-    infoTitle: 'Samanage raises $16M As Asset Management Expands',
+    infoTitle: 'Samanage raises $16M as Asset Management Expands',
   },
   {
     name: 'ShareWis',
@@ -233,6 +240,13 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.ticketea.geminis',
     infoLink: 'https://techcrunch.com/2013/05/27/ticket-to-ride/',
     infoTitle: 'Ticketea raises $4 Million to Beat Ticketmaster',
+  },
+  {
+    name: 'Townske',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/8b/42/20/8b4220af-5165-91fd-0f05-014332df73ef/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/townske-stunning-city-guides/id1018136179?ls=1&mt=8',
+    infoLink: 'https://hackernoon.com/townske-app-in-react-native-6ad557de7a7c',
+    infoTitle: '"I would recommend React Native in a heartbeat."',
   },
   {
     name: 'uSwitch - Energy switching app',
