@@ -22,7 +22,6 @@ For each app in the showcase, use infoLink and infoTitle to reference content th
 
 var React = require('React');
 var Site = require('Site');
-var center = require('center');
 
 var featured = [
   {
@@ -45,7 +44,7 @@ var featured = [
     icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple5/v4/9e/16/86/9e1686ef-cc55-805a-c977-538ddb5e6832/mzl.gqbhwitj.png',
     linkAppStore: 'https://itunes.apple.com/us/app/facebook-ads-manager/id964397083?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.facebook.adsmanager',
-    infoLink: "https://code.facebook.com/posts/1189117404435352/react-native-for-android-how-we-built-the-first-cross-platform-react-native-app/",
+    infoLink: 'https://code.facebook.com/posts/1189117404435352/react-native-for-android-how-we-built-the-first-cross-platform-react-native-app/',
     infoTitle: 'How We Built the First Cross-Platform React Native App',
   },
   {
@@ -53,14 +52,14 @@ var featured = [
     icon: 'https://raw.githubusercontent.com/fbsamples/f8app/master/ios/F8v2/Images.xcassets/AppIcon.appiconset/AppIcon%402x.png',
     linkAppStore: 'https://itunes.apple.com/us/app/f8/id853467066?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.facebook.f8',
-    infoLink: "http://makeitopen.com/tutorials/building-the-f8-app/planning/",
+    infoLink: 'http://makeitopen.com/tutorials/building-the-f8-app/planning/',
     infoTitle: 'Building the F8 App',
   },
   {
     name: 'Discord',
     icon: 'http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg',
     linkAppStore:  'https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8',
-    infoLink: "https://discord.engineering/react-native-deep-dive-91fd5e949933#.5jnqftgof",
+    infoLink: 'https://discord.engineering/react-native-deep-dive-91fd5e949933#.5jnqftgof',
     infoTitle: 'Using React Native: One Year Later',
   },
   {
@@ -69,7 +68,7 @@ var featured = [
     linkAppStore: 'https://itunes.apple.com/us/app/discovery-vr/id1030815031?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.discovery.DiscoveryVR',
     author: 'Discovery Communications',
-    infoLink: "https://medium.com/ios-os-x-development/an-ios-developer-on-react-native-1f24786c29f0",
+    infoLink: 'https://medium.com/ios-os-x-development/an-ios-developer-on-react-native-1f24786c29f0',
     infoTitle: '"I may never write an iOS app in Objective-C or Swift again."',
   },
   {
@@ -291,7 +290,7 @@ var AppList = React.createClass({
       <div>
         {this.props.apps.map(this._renderApp)}
       </div>
-    )
+    );
   },
 
   _renderApp: function(app, i) {
