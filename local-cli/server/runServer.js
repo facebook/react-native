@@ -32,7 +32,7 @@ function runServer(args, config, readyCallback) {
     .use(connect.compress())
     .use(getDevToolsMiddleware(args, () => wsProxy && wsProxy.isChromeConnected()))
     .use(getDevToolsMiddleware(args, () => ms && ms.isChromeConnected()))
-    .use(openStackFrameInEditorMiddleware)
+    .use(openStackFrameInEditorMiddleware(args))
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
     .use(cpuProfilerMiddleware)
