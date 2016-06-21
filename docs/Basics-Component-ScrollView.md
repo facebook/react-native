@@ -11,11 +11,11 @@ Given the screen sizes of mobile devices, the ability to scroll through data is 
 
 The [`ScrollView`](/react-native/docs/scrollview.html) is a generic scrolling container that can host multiple components and views. The scrollable items need not be homogenous, and you can scroll both vertically and horizontally (by setting the `horizontal` property).
 
-All the elements and views of a `ScrollView` are rendered a priori, even if they are not currently shown on the screen. Contrast this with a `ListView`, which render only those views that are on the screen and remove views that go off-screen.
+`ScrollView` works best to present a list of short, static items of a known quantity. All the elements and views of a `ScrollView` are rendered a priori, even if they are not currently shown on the screen. Contrast this with a `ListView`, which render only those views that are on the screen and remove views that go off-screen.
 
 > [`TextView`](/react-native/docs/basics-component-textview.html) and [`ListView`](/react-native/docs/basics-component-listview.html) are specialized scrollable containers.
 
-The `ScrollView` requires
+This contrived example creates a horizontal `ScrollView` with a static amount of heterogenous elements (images and text).
 
 ```JavaScript
 import React, { AppRegistry, ScrollView, Image, Text, View } from 'react-native'
