@@ -862,6 +862,12 @@ var apps = [
     author: 'Samanage'
   },
   {
+    name: 'Save a Stray',
+    icon: 'https://raw.githubusercontent.com/mixophrygian/Icon/master/SaveAStrayIcon.png',
+    link: 'http://saveastrayapp.com',
+    author: 'Eleanor Weigert',
+  },
+  {
     name: 'SG Toto 4d',
     icon: 'http://a4.mzstatic.com/us/r30/Purple7/v4/d2/bc/46/d2bc4696-84d6-9681-a49f-7f660d6b04a7/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/sg-toto-4d/id1006371481?mt=8',
