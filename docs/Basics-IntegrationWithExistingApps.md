@@ -1,9 +1,9 @@
 ---
-id: tutorial-integration-with-existing-apps
+id: basics-integration-with-existing-apps
 title: Integration With Existing Apps
 layout: docs
-category: Tutorials
-permalink: docs/tutorial-integration-with-existing-apps.html
+category: Basics
+permalink: docs/basics-integration-with-existing-apps.html
 next: sample-application-movies
 ---
 
