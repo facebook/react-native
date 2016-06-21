@@ -248,6 +248,12 @@ var apps = [
     ],
   },
   {
+    name: 'Baby Feeds',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple20/v4/b6/4f/00/b64f00aa-aa8f-04df-76bc-818a0dd48782/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/baby-feeds-breastfeeding-nursing/id1110896581?mt=8',
+    author: 'Dotan Nahum',
+  },  
+  {
     name: 'Beetroot',
     icon: 'http://is1.mzstatic.com/image/pf/us/r30/Purple5/v4/66/fd/dd/66fddd70-f848-4fc5-43ee-4d52197ccab8/pr_source.png',
     link: 'https://itunes.apple.com/us/app/beetroot/id1016159001?ls=1&mt=8',
