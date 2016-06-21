@@ -767,8 +767,9 @@ var apps = [
   {
     name: 'QQ空间',
     icon: 'http://pp.myapp.com/ma_icon/0/icon_9959_1460036593/96',
-    link: 'http://android.myapp.com/myapp/detail.htm?apkName=com.qzone',
-    author: '薛丰',
+    linkAppStore: 'https://itunes.apple.com/cn/app/qq-kong-jian-ku-xuan-zhi-bo/id364183992?mt=8',
+    linkPlayStore: 'http://android.myapp.com/myapp/detail.htm?apkName=com.qzone',
+    author: '薛丰&华有为',
   },
   {
     name: 'QQ音乐',
