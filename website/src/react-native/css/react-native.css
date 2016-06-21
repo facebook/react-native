@@ -1512,3 +1512,53 @@ input#algolia-doc-search:focus {
   background-color: hsl(198, 100%, 96%);
   color: #3B3738;
 }
+
+.params, .props
+{
+    border-spacing: 0;
+    border: 0;
+    border-collapse: collapse;
+}
+
+.params .name, .props .name, .name code {
+    color: #4D4E53;
+}
+
+.params td, .params th, .props td, .props th
+{
+    border: 1px solid #ddd;
+    margin: 0px;
+    text-align: left;
+    vertical-align: top;
+    padding: 4px 6px;
+    display: table-cell;
+}
+
+.params thead tr, .props thead tr
+{
+    background-color: hsl(198, 75%, 88%);
+    font-weight: bold;
+}
+
+.params .params thead tr, .props .props thead tr
+{
+    background-color: #fff;
+    font-weight: bold;
+}
+
+.params th, .props th { border-right: 1px solid #aaa; }
+.params thead .last, .props thead .last { border-right: 1px solid #ddd; }
+
+.params td.description > div > p:first-child,
+.props td.description > div > p:first-child
+{
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.params td.description > p:last-child,
+.props td.description > p:last-child
+{
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
