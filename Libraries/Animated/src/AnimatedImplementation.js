@@ -11,7 +11,6 @@
  */
 'use strict';
 
-var Easing = require('Easing');
 var InteractionManager = require('InteractionManager');
 var Interpolation = require('Interpolation');
 var React = require('React');
@@ -220,7 +219,14 @@ type TimingAnimationConfigSingle = AnimationConfig & {
   delay?: number;
 };
 
-var easeInOut = Easing.inOut(Easing.ease);
+let _easeInOut;
+function easeInOut() {
+  if (!_easeInOut) {
+    const Easing = require('Easing');
+    _easeInOut = Easing.inOut(Easing.ease);
+  }
+  return _easeInOut;
+}
 
 class TimingAnimation extends Animation {
   _startTime: number;
@@ -239,11 +245,11 @@ class TimingAnimation extends Animation {
   ) {
     super();
     this._toValue = config.toValue;
-    this._easing = config.easing !== undefined ? config.easing : easeInOut;
+    this._easing = config.easing !== undefined ? config.easing : easeInOut();
     this._duration = config.duration !== undefined ? config.duration : 500;
     this._delay = config.delay !== undefined ? config.delay : 0;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
-    this._useNativeDriver = !!config.useNativeDriver;
+    this._useNativeDriver = config.useNativeDriver !== undefined ? config.useNativeDriver : false;
   }
 
   _getNativeAnimationConfig(): any {
@@ -256,6 +262,7 @@ class TimingAnimation extends Animation {
       type: 'frames',
       frames,
       toValue: this._toValue,
+      delay: this._delay
     };
   }
 
@@ -1086,6 +1093,18 @@ class AnimatedTransform extends AnimatedWithChildren {
     this._transforms = transforms;
   }
 
+  __makeNative() {
+    super.__makeNative();
+    this._transforms.forEach(transform => {
+      for (var key in transform) {
+        var value = transform[key];
+        if (value instanceof Animated) {
+          value.__makeNative();
+        }
+      }
+    });
+  }
+
   __getValue(): Array<Object> {
     return this._transforms.map(transform => {
       var result = {};
@@ -1137,6 +1156,25 @@ class AnimatedTransform extends AnimatedWithChildren {
         }
       }
     });
+  }
+
+  __getNativeConfig(): any {
+    var transConfig = {};
+
+    this._transforms.forEach(transform => {
+      for (var key in transform) {
+        var value = transform[key];
+        if (value instanceof Animated) {
+          transConfig[key] = value.__getNativeTag();
+        }
+      }
+    });
+
+    NativeAnimatedHelper.validateTransform(transConfig);
+    return {
+      type: 'transform',
+      transform: transConfig,
+    };
   }
 }
 

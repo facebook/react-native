@@ -52,7 +52,8 @@ JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef 
     // file/resource, or was a constructed statement.  The location
     // info will include that source, if any.
     std::string locationInfo = source != nullptr ? String::ref(source).str() : "";
-    auto line = exception.asObject().getProperty("line");
+    Object exObject = exception.asObject();
+    auto line = exObject.getProperty("line");
     if (line != nullptr && line.isNumber()) {
       if (locationInfo.empty() && line.asInteger() != 1) {
         // If there is a non-trivial line number, but there was no
@@ -71,7 +72,15 @@ JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef 
     }
 
     LOG(ERROR) << "Got JS Exception: " << exceptionText;
-    throwJSExecutionException("%s", exceptionText.c_str());
+
+    Value jsStack = exObject.getProperty("stack");
+    if (jsStack.isNull() || !jsStack.isString()) {
+      throwJSExecutionException("%s", exceptionText.c_str());
+    } else {
+      LOG(ERROR) << "Got JS Stack: " << jsStack.toString().str();
+      throwJSExecutionExceptionWithStack(
+        exceptionText.c_str(), jsStack.toString().str().c_str());
+    }
   }
   return result;
 }

@@ -34,7 +34,6 @@ There are properties that work on one platform only, either because they can inh
 There are known cases where the APIs could be made more consistent across iOS and Android:
 
 - `<ViewPagerAndroid>` and `<ScrollView pagingEnabled={true}>` on iOS do a similar thing. We might want to unify them to `<ViewPager>`.
-- `ActivityIndicator` could render a native spinning indicator on both platforms (currently this is done using `ActivityIndicatorIOS` on iOS and `ProgressBarAndroid` on Android).
 - `ProgressBar` could render a horizontal progress bar on both platforms (on iOS this is `ProgressViewIOS`, on Android it's `ProgressBarAndroid`).
 
 ### The `overflow` style property defaults to `hidden` and cannot be changed on Android
@@ -67,6 +66,10 @@ React Native Android depends on [Fresco](https://github.com/facebook/fresco) for
 ### react-native init hangs
 
 Try running `react-native init` with `--verbose` and see [#2797](https://github.com/facebook/react-native/issues/2797) for common causes.
+
+### Moving folder after iOS build
+
+Moving a React Native project after it has been compiled in iOS can sometimes cause errors with pre-compiled headers e.g. `mv MyAwesomeProject/ newDir/MyAwesomeProject`. This results in a message resembling: `error: PCH was compiled with module cache path ...`.  If you were compiling using Xcode you can [hold option when you clean the build](http://stackoverflow.com/a/15463219/3110982).  If you're using `react-native run-ios` you can manually clean the header cache by deleting the contents of your ModuleCache folder. e.g. `rm -rf ios/build/ModuleCache/*`
 
 ### Text Input Border
 

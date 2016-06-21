@@ -39,9 +39,9 @@ const emptyFunction = require('fbjs/lib/emptyFunction');
 // Position of the left of the swipable item when closed
 const CLOSED_LEFT_POSITION = 0;
 // Minimum swipe distance before we recognize it as such
-const HORIZONTAL_SWIPE_DISTANCE_THRESHOLD = 15;
+const HORIZONTAL_SWIPE_DISTANCE_THRESHOLD = 10;
 // Minimum swipe speed before we fully animate the user's action (open/close)
-const HORIZONTAL_FULL_SWIPE_SPEED_THRESHOLD = 0.5;
+const HORIZONTAL_FULL_SWIPE_SPEED_THRESHOLD = 0.3;
 // Factor to divide by to get slow speed; i.e. 4 means 1/4 of full speed
 const SLOW_SPEED_SWIPE_FACTOR = 4;
 // Time, in milliseconds, of how long the animated swipe should be
@@ -52,10 +52,11 @@ const SWIPE_DURATION = 200;
  * possible to swipe
  */
 const ON_MOUNT_BOUNCE_DELAY = 700;
-const ON_MOUNT_BOUNCE_DURATION = 200;
+const ON_MOUNT_BOUNCE_DURATION = 400;
 
 // Distance left of closed position to bounce back when right-swiping from closed
-const RIGHT_SWIPE_BOUNCE_BACK_DISTANCE = 30;
+const RIGHT_SWIPE_BOUNCE_BACK_DISTANCE = 50;
+const RIGHT_SWIPE_BOUNCE_BACK_DURATION = 400;
 /**
  * Max distance of right swipe to allow (right swipes do functionally nothing).
  * Must be multiplied by SLOW_SPEED_SWIPE_FACTOR because gestureState.dx tracks
@@ -77,6 +78,7 @@ const SwipeableRow = React.createClass({
   mixins: [TimerMixin],
 
   propTypes: {
+    children: PropTypes.any,
     isOpen: PropTypes.bool,
     maxSwipeDistance: PropTypes.number.isRequired,
     onOpen: PropTypes.func.isRequired,
@@ -205,12 +207,10 @@ const SwipeableRow = React.createClass({
   },
 
   _onSwipeableViewLayout(event: Object): void {
-    if (!this.state.isSwipeableViewRendered) {
-      this.setState({
-        isSwipeableViewRendered: true,
-        rowHeight: event.nativeEvent.layout.height,
-      });
-    }
+    this.setState({
+      isSwipeableViewRendered: true,
+      rowHeight: event.nativeEvent.layout.height,
+    });
   },
 
   _handleMoveShouldSetPanResponderCapture(
@@ -293,11 +293,15 @@ const SwipeableRow = React.createClass({
     this._animateTo(-this.props.maxSwipeDistance);
   },
 
-  _animateToClosedPosition(): void {
-    this._animateTo(CLOSED_LEFT_POSITION);
+  _animateToClosedPosition(duration: number = SWIPE_DURATION): void {
+    this._animateTo(CLOSED_LEFT_POSITION, duration);
   },
 
-  _animateBounceBack(duration: number = SWIPE_DURATION): void {
+  _animateToClosedPositionDuringBounce(): void {
+    this._animateToClosedPosition(RIGHT_SWIPE_BOUNCE_BACK_DURATION);
+  },
+
+  _animateBounceBack(duration: number): void {
     /**
      * When swiping right, we want to bounce back past closed position on release
      * so users know they should swipe right to get content.
@@ -305,7 +309,7 @@ const SwipeableRow = React.createClass({
     this._animateTo(
       -RIGHT_SWIPE_BOUNCE_BACK_DISTANCE,
       duration,
-      this._animateToClosedPosition,
+      this._animateToClosedPositionDuringBounce,
     );
   },
 
@@ -330,7 +334,7 @@ const SwipeableRow = React.createClass({
 
     if (this._isSwipingRightFromClosed(gestureState)) {
       this.props.onOpen();
-      this._animateBounceBack();
+      this._animateBounceBack(RIGHT_SWIPE_BOUNCE_BACK_DURATION);
     } else if (this._shouldAnimateRemainder(gestureState)) {
       if (horizontalDistance < 0) {
         // Swiped left

@@ -102,7 +102,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
       }
     }
 
-    if (RCTProfileIsProfiling()) {
+    if (_instance && RCTProfileIsProfiling()) {
       RCTProfileHookInstance(_instance);
     }
 

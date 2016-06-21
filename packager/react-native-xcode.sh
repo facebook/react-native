@@ -68,6 +68,15 @@ type $NODE_BINARY >/dev/null 2>&1 || nodejs_not_found
 set -x
 DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 
+if [[ "$CONFIGURATION" = "Debug" && "$PLATFORM_NAME" != "iphonesimulator" ]]; then
+  PLISTBUDDY='/usr/libexec/PlistBuddy'
+  PLIST=$TARGET_BUILD_DIR/$INFOPLIST_PATH
+  IP=$(ipconfig getifaddr en0)
+  $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:localhost:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" $PLIST
+  $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:$IP.xip.io:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" $PLIST
+  echo "$IP.xip.io" > "$DEST/ip.txt"
+fi
+
 $NODE_BINARY "$REACT_NATIVE_DIR/local-cli/cli.js" bundle \
   --entry-file index.ios.js \
   --platform ios \

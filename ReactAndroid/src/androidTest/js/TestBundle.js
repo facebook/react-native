@@ -16,6 +16,7 @@ console.disableYellowBox = true;
 require('ProgressBarTestModule');
 require('ViewRenderingTestModule');
 require('TestJavaToJSArgumentsModule');
+require('TestJSLocaleModule');
 require('TestJSToJavaParametersModule');
 
 require('CatalystRootViewTestModule');
@@ -41,8 +42,20 @@ var apps = [
   component: () => require('DatePickerDialogTestModule').DatePickerDialogTestApp
 },
 {
+  appKey: 'JSResponderTestApp',
+  component: () => require('JSResponderTestApp'),
+},
+{
   appKey: 'HorizontalScrollViewTestApp',
   component: () => require('ScrollViewTestModule').HorizontalScrollViewTestApp,
+},
+{
+  appKey: 'InitialPropsTestApp',
+  component: () => require('InitialPropsTestApp'),
+},
+{
+  appKey: 'LayoutEventsTestApp',
+  component: () => require('LayoutEventsTestApp'),
 },
 {
   appKey: 'MeasureLayoutTestApp',
@@ -61,6 +74,10 @@ var apps = [
   component: () => require('ScrollViewTestModule').ScrollViewTestApp,
 },
 {
+  appKey: 'SubviewsClippingTestApp',
+  component: () => require('SubviewsClippingTestModule').App,
+},
+{
   appKey: 'SwipeRefreshLayoutTestApp',
   component: () => require('SwipeRefreshLayoutTestModule').SwipeRefreshLayoutTestApp
 },
@@ -75,6 +92,10 @@ var apps = [
 {
   appKey: 'TimePickerDialogTestApp',
   component: () => require('TimePickerDialogTestModule').TimePickerDialogTestApp
+},
+{
+  appKey: 'TouchBubblingTestAppModule',
+  component: () => require('TouchBubblingTestAppModule')
 },
 
 ];

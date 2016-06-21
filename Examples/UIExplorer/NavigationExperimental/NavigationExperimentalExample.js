@@ -33,8 +33,8 @@ const View = require('View');
  * To learn how to use the Navigation API, take a look at the following example files:
  */
 const EXAMPLES = {
-  'NavigationCardStack Example': require('./NavigationCardStack-example'),
-  'Header + Scenes + Tabs Example': require('./NavigationHeaderScenesTabs-example'),
+  'CardStack + Header + Tabs Example': require('./NavigationCardStack-NavigationHeader-Tabs-example'),
+  'CardStack Example': require('./NavigationCardStack-example'),
 };
 
 const EXAMPLE_STORAGE_KEY = 'NavigationExperimentalExample';
