@@ -480,6 +480,12 @@ var apps = [
     author: 'kf (@7kfpun)',
   },
   {
+    name: 'FingerFrame',
+    icon: 'https://lh3.googleusercontent.com/UZLlQR2XRt0r4QJgUufSBSL4Q58IEgF-9aHS-gOx7Jy0C7x4ux-vIEKVrwcQKbDVAMg=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.fingerframe',
+    author: 'FingerFrame',
+  },
+  {
     name: 'Fixt',
     icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/46/bc/66/46bc66a2-7775-4d24-235d-e1fe28d55d7f/icon175x175.png',
     linkAppStore:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
@@ -897,7 +903,7 @@ var apps = [
     icon: 'https://farm8.staticflickr.com/7353/27553089935_a3928f2097_o.png',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.sctvsport.bongdatructuyen',
     author: 'SCTV Digital',
-  },  
+  },
   {
     name: 'Software Interview Preparation',
     icon: 'https://lh3.googleusercontent.com/11AuzaeCnxrRnIp1E_a_6WWiQIRRoWhrvFr20eCRJX4ZMW6O3tGjZLiUw3thKUgGaC8X=w300',
