@@ -9,6 +9,8 @@
  * @providesModule AutodocsLayout
  */
 
+'use strict';
+
 var DocsSidebar = require('DocsSidebar');
 var H = require('Header');
 var Header = require('Header');
@@ -93,6 +95,45 @@ function renderType(type) {
   return type.name;
 }
 
+function renderTypeNameLink(typeName, docPath, namedTypes) {
+  const ignoreTypes = [
+    'string',
+    'number',
+    'boolean',
+    'object',
+    'function',
+    'array',
+  ];
+  const typeNameLower = typeName.toLowerCase();
+  if (ignoreTypes.indexOf(typeNameLower) !== -1 || !namedTypes[typeNameLower]) {
+    return typeName;
+  }
+  return <a href={docPath + '#' + typeNameLower}>{typeName}</a>;
+}
+
+function renderTypeWithLinks(type, docTitle, namedTypes) {
+  if (!type || !type.names) {
+    return null;
+  }
+
+  const docPath = docTitle ? 'docs/' + docTitle.toLowerCase() + '.html' : 'docs/';
+  return (
+    <div>
+      {
+        type.names.map((typeName, index, array) => {
+          let separator = index < array.length - 1 && ' | ';
+          return (
+            <span key={index}>
+              {renderTypeNameLink(typeName, docPath, namedTypes)}
+              {separator}
+            </span>
+          );
+        })
+      }
+    </div>
+  );
+}
+
 function sortByPlatform(props, nameA, nameB) {
   var a = props[nameA];
   var b = props[nameB];
@@ -132,6 +173,17 @@ function removeCommentsFromDocblock(docblock) {
       return line.trim().replace(/^\* ?/, '');
     })
     .join('\n');
+}
+
+function getNamedTypes(typedefs) {
+  let namedTypes = {};
+  typedefs && typedefs.forEach(typedef => {
+    if (typedef.name) {
+      const type = typedef.name.toLowerCase();
+      namedTypes[type] = 1;
+    }
+  });
+  return namedTypes;
 }
 
 var ComponentDoc = React.createClass({
@@ -254,20 +306,22 @@ var ComponentDoc = React.createClass({
     }
   },
 
-  renderMethod: function(method) {
+  renderMethod: function(method, namedTypes) {
     return (
       <Method
         key={method.name}
         name={method.name}
         description={method.description}
         params={method.params}
-        modifiers={method.modifiers}
+        modifiers={method.scope ? [method.scope] : method.modifiers}
+        examples={method.examples}
         returns={method.returns}
+        namedTypes={namedTypes}
       />
     );
   },
 
-  renderMethods: function(methods) {
+  renderMethods: function(methods, namedTypes) {
     if (!methods || !methods.length) {
       return null;
     }
@@ -277,7 +331,38 @@ var ComponentDoc = React.createClass({
         <div className="props">
           {methods.filter((method) => {
             return method.name[0] !== '_';
-          }).map(this.renderMethod)}
+          }).map(method => this.renderMethod(method, namedTypes))}
+        </div>
+      </span>
+    );
+  },
+
+  renderTypeDef: function(typedef, namedTypes) {
+    return (
+      <TypeDef
+        key={typedef.name}
+        name={typedef.name}
+        description={typedef.description}
+        type={typedef.type}
+        properties={typedef.properties}
+        values={typedef.values}
+        apiName={this.props.apiName}
+        namedTypes={namedTypes}
+      />
+    );
+  },
+
+  renderTypeDefs: function(typedefs, namedTypes) {
+    if (!typedefs || !typedefs.length) {
+      return null;
+    }
+    return (
+      <span>
+        <H level={3}>Type Definitions</H>
+        <div className="props">
+          {typedefs.map((typedef) => {
+            return this.renderTypeDef(typedef, namedTypes);
+          })}
         </div>
       </span>
     );
@@ -286,6 +371,7 @@ var ComponentDoc = React.createClass({
   render: function() {
     var content = this.props.content;
     this.extractPlatformFromProps(content.props);
+    const namedTypes = getNamedTypes(content.typedef);
     return (
       <div>
         <Marked>
@@ -293,7 +379,8 @@ var ComponentDoc = React.createClass({
         </Marked>
         <H level={3}>Props</H>
         {this.renderProps(content.props, content.composes)}
-        {this.renderMethods(content.methods)}
+        {this.renderMethods(content.methods, namedTypes)}
+        {this.renderTypeDefs(content.typedef, namedTypes)}
       </div>
     );
   }
@@ -301,19 +388,22 @@ var ComponentDoc = React.createClass({
 
 var APIDoc = React.createClass({
 
-  renderMethod: function(method) {
+  renderMethod: function(method, namedTypes) {
     return (
       <Method
         key={method.name}
         name={method.name}
-        description={method.docblock && removeCommentsFromDocblock(method.docblock)}
+        description={method.description || method.docblock && removeCommentsFromDocblock(method.docblock)}
         params={method.params}
-        modifiers={method.modifiers}
+        modifiers={method.scope ? [method.scope] : method.modifiers}
+        examples={method.examples}
+        apiName={this.props.apiName}
+        namedTypes={namedTypes}
       />
     );
   },
 
-  renderMethods: function(methods) {
+  renderMethods: function(methods, namedTypes) {
     if (!methods.length) {
       return null;
     }
@@ -323,7 +413,7 @@ var APIDoc = React.createClass({
         <div className="props">
           {methods.filter((method) => {
             return method.name[0] !== '_';
-          }).map(this.renderMethod)}
+          }).map(method => this.renderMethod(method, namedTypes))}
         </div>
       </span>
     );
@@ -363,7 +453,7 @@ var APIDoc = React.createClass({
     );
   },
 
-  renderClasses: function(classes) {
+  renderClasses: function(classes, namedTypes) {
     if (!classes || !classes.length) {
       return null;
     }
@@ -382,7 +472,7 @@ var APIDoc = React.createClass({
                   {cls.docblock && <Marked>
                     {removeCommentsFromDocblock(cls.docblock)}
                   </Marked>}
-                  {this.renderMethods(cls.methods)}
+                  {this.renderMethods(cls.methods, namedTypes)}
                   {this.renderProperties(cls.properties)}
                 </ul>
               </span>
@@ -393,6 +483,55 @@ var APIDoc = React.createClass({
     );
   },
 
+  renderTypeDef: function(typedef, namedTypes) {
+    return (
+      <TypeDef
+        key={typedef.name}
+        name={typedef.name}
+        description={typedef.description}
+        type={typedef.type}
+        properties={typedef.properties}
+        values={typedef.values}
+        apiName={this.props.apiName}
+        namedTypes={namedTypes}
+      />
+    );
+  },
+
+  renderTypeDefs: function(typedefs, namedTypes) {
+    if (!typedefs || !typedefs.length) {
+      return null;
+    }
+    return (
+      <span>
+        <H level={3}>Type Definitions</H>
+        <div className="props">
+          {typedefs.map((typedef) => {
+            return this.renderTypeDef(typedef, namedTypes);
+          })}
+        </div>
+      </span>
+    );
+  },
+
+  renderMainDescription: function(content) {
+    if (content.docblock) {
+      return (
+        <Marked>
+          {removeCommentsFromDocblock(content.docblock)}
+        </Marked>
+      );
+    }
+    if (content.class && content.class.length && content.class[0].description) {
+      return (
+        <Marked>
+          {content.class[0].description}
+        </Marked>
+      );
+    }
+    return null;
+  },
+
   render: function() {
     var content = this.props.content;
     if (!content.methods) {
@@ -400,14 +539,14 @@ var APIDoc = React.createClass({
         'No component methods found for ' + content.componentName
       );
     }
+    const namedTypes = getNamedTypes(content.typedef);
     return (
       <div>
-        <Marked>
-          {removeCommentsFromDocblock(content.docblock)}
-        </Marked>
-        {this.renderMethods(content.methods)}
+        {this.renderMainDescription(content)}
+        {this.renderMethods(content.methods, namedTypes)}
         {this.renderProperties(content.properties)}
-        {this.renderClasses(content.classes)}
+        {this.renderClasses(content.classes, namedTypes)}
+        {this.renderTypeDefs(content.typedef, namedTypes)}
       </div>
     );
   }
@@ -440,11 +579,73 @@ var Method = React.createClass({
     return this.renderTypehintRec(typehint);
   },
 
+  renderMethodExamples: function(examples) {
+    if (!examples || !examples.length) {
+      return null;
+    }
+    return examples.map((example) => {
+      const re = /<caption>(.*?)<\/caption>/ig;
+      const result = re.exec(example);
+      const caption = result ? result[1] + ':' : 'Example:';
+      const code = example.replace(/<caption>.*?<\/caption>/ig, '')
+        .replace(/^\n\n/, '');
+      return (
+        <div>
+          <br/>
+          {caption}
+          <Prism>
+            {code}
+          </Prism>
+        </div>
+      );
+    });
+  },
+
+  renderMethodParameters: function(params) {
+    if (!params || !params.length) {
+      return null;
+    }
+    if (!params[0].type || !params[0].type.names) {
+      return null;
+    }
+    const foundDescription = params.find(p => p.description);
+    if (!foundDescription) {
+      return null;
+    }
+    return (
+      <div>
+        <strong>Parameters:</strong>
+          <table className="params">
+            <thead>
+              <tr>
+                <th>Name and Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {params.map((param) => {
+                return (
+                  <tr>
+                    <td>
+                      {param.optional ? '[' + param.name + ']' : param.name}
+                      <br/><br/>
+                      {renderTypeWithLinks(param.type, this.props.apiName, this.props.namedTypes)}
+                    </td>
+                    <td className="description"><Marked>{param.description}</Marked></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+      </div>
+    );
+  },
+
   render: function() {
     return (
       <div className="prop">
         <Header level={4} className="propTitle" toSlug={this.props.name}>
-          {this.props.modifiers.length && <span className="propType">
+          {this.props.modifiers && this.props.modifiers.length && <span className="propType">
             {this.props.modifiers.join(' ') + ' '}
           </span> || ''}
           {this.props.name}
@@ -452,9 +653,7 @@ var Method = React.createClass({
             ({this.props.params
               .map((param) => {
                 var res = param.name;
-                if (param.type) {
-                  res += ': ' + this.renderTypehint(param.type);
-                }
+                res += param.optional ? '?' : '';
                 return res;
               })
               .join(', ')})
@@ -464,6 +663,100 @@ var Method = React.createClass({
         {this.props.description && <Marked>
           {this.props.description}
         </Marked>}
+        {this.renderMethodParameters(this.props.params)}
+        {this.renderMethodExamples(this.props.examples)}
+      </div>
+    );
+  },
+});
+
+var TypeDef = React.createClass({
+  renderProperties: function(properties) {
+    if (!properties || !properties.length) {
+      return null;
+    }
+    if (!properties[0].type || !properties[0].type.names) {
+      return null;
+    }
+    return (
+      <div>
+        <br/>
+        <strong>Properties:</strong>
+          <table className="params">
+            <thead>
+              <tr>
+                <th>Name and Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {properties.map((property) => {
+                return (
+                  <tr>
+                    <td>
+                      {property.optional ? '[' + property.name + ']' : property.name}
+                      <br/><br/>
+                      {renderTypeWithLinks(property.type, this.props.apiName, this.props.namedTypes)}
+                    </td>
+                    <td className="description"><Marked>{property.description}</Marked></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+      </div>
+    );
+  },
+
+  renderValues: function(values) {
+    if (!values || !values.length) {
+      return null;
+    }
+    if (!values[0].type || !values[0].type.names) {
+      return null;
+    }
+    return (
+      <div>
+        <br/>
+        <strong>Constants:</strong>
+        <table className="params">
+          <thead>
+            <tr>
+              <th>Value</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {values.map((value) => {
+              return (
+                <tr>
+                  <td>
+                    {value.name}
+                  </td>
+                  <td className="description"><Marked>{value.description}</Marked></td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
+  },
+
+  render: function() {
+    return (
+      <div className="prop">
+        <Header level={4} className="propTitle" toSlug={this.props.name}>
+          {this.props.name}
+        </Header>
+        {this.props.description && <Marked>
+          {this.props.description}
+        </Marked>}
+        <strong>Type:</strong>
+        <br/>
+        {this.props.type.names.join(' | ')}
+        {this.renderProperties(this.props.properties)}
+        {this.renderValues(this.props.values)}
       </div>
     );
   },

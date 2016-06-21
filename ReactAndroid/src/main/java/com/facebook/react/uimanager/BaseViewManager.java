@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
 
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
@@ -17,14 +18,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     extends ViewManager<T, C> {
 
   private static final String PROP_BACKGROUND_COLOR = ViewProps.BACKGROUND_COLOR;
-  private static final String PROP_DECOMPOSED_MATRIX = "decomposedMatrix";
-  private static final String PROP_DECOMPOSED_MATRIX_ROTATE = "rotate";
-  private static final String PROP_DECOMPOSED_MATRIX_ROTATE_X = "rotateX";
-  private static final String PROP_DECOMPOSED_MATRIX_ROTATE_Y = "rotateY";
-  private static final String PROP_DECOMPOSED_MATRIX_SCALE_X = "scaleX";
-  private static final String PROP_DECOMPOSED_MATRIX_SCALE_Y = "scaleY";
-  private static final String PROP_DECOMPOSED_MATRIX_TRANSLATE_X = "translateX";
-  private static final String PROP_DECOMPOSED_MATRIX_TRANSLATE_Y = "translateY";
   private static final String PROP_TRANSFORM = "transform";
   private static final String PROP_OPACITY = "opacity";
   private static final String PROP_ELEVATION = "elevation";
@@ -46,28 +39,21 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
    */
   public static final String PROP_TEST_ID = "testID";
 
+  private static MatrixMathHelper.MatrixDecompositionContext sMatrixDecompositionContext =
+      new MatrixMathHelper.MatrixDecompositionContext();
+  private static double[] sTransformDecompositionArray = new double[16];
 
   @ReactProp(name = PROP_BACKGROUND_COLOR, defaultInt = Color.TRANSPARENT, customType = "Color")
   public void setBackgroundColor(T view, int backgroundColor) {
     view.setBackgroundColor(backgroundColor);
   }
 
-  // TODO: t11041683 Remove this duplicate property name.
-  @ReactProp(name = PROP_DECOMPOSED_MATRIX)
-  public void setDecomposedMatrix(T view, ReadableMap decomposedMatrix) {
-    if (decomposedMatrix == null) {
-      resetTransformMatrix(view);
-    } else {
-      setTransformMatrix(view, decomposedMatrix);
-    }
-  }
-
   @ReactProp(name = PROP_TRANSFORM)
-  public void setTransform(T view, ReadableMap decomposedMatrix) {
-    if (decomposedMatrix == null) {
+  public void setTransform(T view, ReadableArray matrix) {
+    if (matrix == null) {
       resetTransformMatrix(view);
     } else {
-      setTransformMatrix(view, decomposedMatrix);
+      setTransformMatrix(view, matrix);
     }
   }
 
@@ -160,21 +146,20 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  private static void setTransformMatrix(View view, ReadableMap matrix) {
-    view.setTranslationX(PixelUtil.toPixelFromDIP(
-            (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_TRANSLATE_X)));
-    view.setTranslationY(PixelUtil.toPixelFromDIP(
-            (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_TRANSLATE_Y)));
-    view.setRotation(
-        (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_ROTATE));
-    view.setRotationX(
-        (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_ROTATE_X));
-    view.setRotationY(
-        (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_ROTATE_Y));
-    view.setScaleX(
-        (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_SCALE_X));
-    view.setScaleY(
-        (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_SCALE_Y));
+  private static void setTransformMatrix(View view, ReadableArray matrix) {
+    for (int i = 0; i < 16; i++) {
+      sTransformDecompositionArray[i] = matrix.getDouble(i);
+    }
+    MatrixMathHelper.decomposeMatrix(sTransformDecompositionArray, sMatrixDecompositionContext);
+    view.setTranslationX(
+        PixelUtil.toPixelFromDIP((float) sMatrixDecompositionContext.translation[0]));
+    view.setTranslationY(
+        PixelUtil.toPixelFromDIP((float) sMatrixDecompositionContext.translation[1]));
+    view.setRotation((float) sMatrixDecompositionContext.rotationDegrees[2]);
+    view.setRotationX((float) sMatrixDecompositionContext.rotationDegrees[0]);
+    view.setRotationY((float) sMatrixDecompositionContext.rotationDegrees[1]);
+    view.setScaleX((float) sMatrixDecompositionContext.scale[0]);
+    view.setScaleY((float) sMatrixDecompositionContext.scale[1]);
   }
 
   private static void resetTransformMatrix(View view) {

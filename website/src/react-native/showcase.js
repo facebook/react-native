@@ -67,7 +67,6 @@ var featured = [
     icon: 'http://a2.mzstatic.com/us/r30/Purple6/v4/d1/d5/f4/d1d5f437-9f6b-b5aa-5fe7-47bd19f934bf/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/us/app/discovery-vr/id1030815031?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.discovery.DiscoveryVR',
-    author: 'Discovery Communications',
     infoLink: 'https://medium.com/ios-os-x-development/an-ios-developer-on-react-native-1f24786c29f0',
     infoTitle: '"I may never write an iOS app in Objective-C or Swift again."',
   },

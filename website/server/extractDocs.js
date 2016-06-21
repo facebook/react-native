@@ -15,6 +15,9 @@ const fs = require('fs');
 const jsDocs = require('../jsdocs/jsdocs.js');
 const path = require('path');
 const slugify = require('../core/slugify');
+const babel = require('babel-core');
+const jsdocApi = require('jsdoc-api');
+const deepAssign = require('deep-assign');
 
 const ANDROID_SUFFIX = 'android';
 const CROSS_SUFFIX = 'cross';
@@ -58,8 +61,8 @@ function getPlatformFromPath(filepath) {
 }
 
 function getExamplePaths(componentName, componentPlatform) {
-  var componentExample = '../Examples/UIExplorer/' + componentName + 'Example.';
-  var pathsToCheck = [
+  const componentExample = '../Examples/UIExplorer/' + componentName + 'Example.';
+  let pathsToCheck = [
     componentExample + 'js',
     componentExample + componentPlatform + '.js',
   ];
@@ -69,7 +72,7 @@ function getExamplePaths(componentName, componentPlatform) {
       componentExample + ANDROID_SUFFIX + '.js'
     );
   }
-  var paths = [];
+  let paths = [];
   pathsToCheck.map((p) => {
     if (fs.existsSync(p)) {
       paths.push(p);
@@ -79,12 +82,12 @@ function getExamplePaths(componentName, componentPlatform) {
 }
 
 function getExamples(componentName, componentPlatform) {
-  var paths = getExamplePaths(componentName, componentPlatform);
+  const paths = getExamplePaths(componentName, componentPlatform);
   if (paths) {
-    var examples = [];
+    let examples = [];
     paths.map((p) => {
-      var platform = p.match(/Example\.(.*)\.js$/);
-      var title = '';
+      const platform = p.match(/Example\.(.*)\.js$/);
+      let title = '';
       if ((componentPlatform === CROSS_SUFFIX) && (platform !== null)) {
         title = platform[1].toUpperCase();
       }
@@ -128,7 +131,7 @@ function filterMethods(method) {
 // Determines whether a component should have a link to a runnable example
 
 function isRunnable(componentName, componentPlatform) {
-  var paths = getExamplePaths(componentName, componentPlatform);
+  const paths = getExamplePaths(componentName, componentPlatform);
   if (paths && paths.length > 0) {
     return true;
   } else {
@@ -206,30 +209,229 @@ function componentsToMarkdown(type, json, filepath, idx, styles) {
 
 let componentCount;
 
+function getTypedef(filepath, fileContent, json) {
+  let typedefDocgen;
+  try {
+    typedefDocgen = docgen.parse(
+      fileContent,
+      docgenHelpers.findExportedType,
+      [docgenHelpers.typedefHandler]
+    ).map((type) => type.typedef);
+  } catch (e) {
+    // Ignore errors due to missing exported type definitions
+    if (e.message.indexOf(docgen.ERROR_MISSING_DEFINITION) !== -1) {
+      console.error('Cannot parse file', filepath, e);
+    }
+  }
+  if (!json) {
+    return typedefDocgen;
+  }
+  let typedef = typedefDocgen;
+  if (json.typedef && json.typedef.length !== 0) {
+    json.typedef.forEach(def => {
+      const typedefMatch = typedefDocgen.find(t => t.name === def.name);
+      if (typedefMatch) {
+        typedef.name = Object.assign(typedefMatch, def);
+      } else {
+        typedef.push(def);
+      }
+    });
+  }
+  return typedef;
+}
+
 function renderComponent(filepath) {
+  const fileContent = fs.readFileSync(filepath);
   const json = docgen.parse(
-    fs.readFileSync(filepath),
+    fileContent,
     docgenHelpers.findExportedOrFirst,
     docgen.defaultHandlers.concat([
       docgenHelpers.stylePropTypeHandler,
       docgenHelpers.deprecatedPropTypeHandler,
+      docgenHelpers.jsDocFormatHandler,
     ])
   );
+  json.typedef = getTypedef(filepath, fileContent);
 
   return componentsToMarkdown('component', json, filepath, componentCount++, styleDocs);
 }
 
-function renderAPI(type) {
-  return function(filepath) {
-    let json;
-    try {
-      json = jsDocs(fs.readFileSync(filepath).toString());
-    } catch (e) {
-      console.error('Cannot parse file', filepath, e);
-      json = {};
-    }
-    return componentsToMarkdown(type, json, filepath, componentCount++);
+function isJsDocFormat(fileContent) {
+  const reComment = /\/\*\*[\s\S]+?\*\//g;
+  const comments = fileContent.match(reComment);
+  if (!comments) {
+    return false;
+  }
+  return !!comments[0].match(/\s*\*\s+@jsdoc/);
+}
+
+function parseAPIJsDocFormat(filepath, fileContent) {
+  const fileName = path.basename(filepath);
+  const babelRC = {
+    'filename': fileName,
+    'sourceFileName': fileName,
+    'plugins': [
+      'transform-flow-strip-types',
+      'babel-plugin-syntax-trailing-function-commas',
+    ]
   };
+  // Babel transform
+  const code = babel.transform(fileContent, babelRC).code;
+  // Parse via jsdocs
+  let jsonParsed = jsdocApi.explainSync({
+    source: code,
+    configure: './jsdocs/jsdoc-conf.json'
+  });
+  // Cleanup jsdocs return
+  jsonParsed = jsonParsed.filter(i => {
+    return !i.undocumented && !/package|file/.test(i.kind);
+  });
+  jsonParsed = jsonParsed.map((identifier) => {
+    delete identifier.comment;
+    return identifier;
+  });
+  jsonParsed.forEach((identifier, index) => {
+    identifier.order = index;
+  });
+  // Group by "kind"
+  let json = {};
+  jsonParsed.forEach((identifier, index) => {
+    let kind = identifier.kind;
+    if (kind === 'function') {
+      kind = 'methods';
+    }
+    if (!json[kind]) {
+      json[kind] = [];
+    }
+    delete identifier.kind;
+    json[kind].push(identifier);
+  });
+  json.typedef = getTypedef(filepath, fileContent, json);
+  return json;
+}
+
+function parseAPIInferred(filepath, fileContent) {
+  let json;
+  try {
+    json = jsDocs(fileContent);
+  } catch (e) {
+    console.error('Cannot parse file', filepath, e);
+    json = {};
+  }
+  return json;
+}
+
+function getTypeName(type) {
+  let typeName;
+  switch (type.name) {
+    case 'signature':
+      typeName = type.type;
+      break;
+    case 'union':
+      typeName = type.value ?
+        type.value.map(getTypeName) :
+        type.elements.map(getTypeName);
+      break;
+    case 'enum':
+      if (typeof type.value === 'string') {
+        typeName = type.value;
+      } else {
+        typeName = 'enum';
+      }
+      break;
+    case '$Enum':
+      if (type.elements[0].signature.properties) {
+        typeName = type.elements[0].signature.properties.map(p => p.key);
+      }
+      break;
+    case 'arrayOf':
+      typeName = getTypeName(type.value);
+      break;
+    case 'instanceOf':
+      typeName = type.value;
+      break;
+    case 'func':
+      typeName = 'function';
+      break;
+    default:
+      typeName = type.alias ? type.alias : type.name;
+      break;
+  }
+  return typeName;
+}
+
+function getTypehintRec(typehint) {
+  if (typehint.type === 'simple') {
+    return typehint.value;
+  }
+  if (typehint.type === 'generic') {
+    return getTypehintRec(typehint.value[0]) +
+      '<' + getTypehintRec(typehint.value[1]) + '>';
+  }
+  return JSON.stringify(typehint);
+}
+
+function getTypehint(typehint) {
+  if (typeof typehint === 'object' && typehint.name) {
+    return getTypeName(typehint);
+  }
+  try {
+    var typehint = JSON.parse(typehint);
+  } catch (e) {
+    return typehint.split('|').map(type => type.trim());
+  }
+  return getTypehintRec(typehint);
+}
+
+function getJsDocFormatType(entities) {
+  let modEntities = entities;
+  if (entities) {
+    if (typeof entities === 'object' && entities.length) {
+      entities.map((entity, entityIndex) => {
+        if (entity.typehint) {
+          const typeNames = [].concat(getTypehint(entity.typehint));
+          modEntities[entityIndex].type = { names: typeNames };
+          delete modEntities[entityIndex].typehint;
+        }
+        if (entity.name) {
+          const regexOptionalType = /\?$/;
+          if (regexOptionalType.test(entity.name)) {
+            modEntities[entityIndex].optional = true;
+            modEntities[entityIndex].name =
+              entity.name.replace(regexOptionalType, '');
+          }
+        }
+      });
+    } else {
+      const typeNames = [].concat(getTypehint(entities));
+      return { type: { names : typeNames } };
+    }
+  }
+  return modEntities;
+}
+
+function renderAPI(filepath, type) {
+  const fileContent = fs.readFileSync(filepath).toString();
+  let json = parseAPIInferred(filepath, fileContent);
+  if (isJsDocFormat(fileContent)) {
+    let jsonJsDoc = parseAPIJsDocFormat(filepath, fileContent);
+    // Combine method info with jsdoc fomatted content
+    const methods = json.methods;
+    if (methods && methods.length) {
+      let modMethods = methods;
+      methods.map((method, methodIndex) => {
+        modMethods[methodIndex].params = getJsDocFormatType(method.params);
+        modMethods[methodIndex].returns =
+          getJsDocFormatType(method.returntypehint);
+        delete modMethods[methodIndex].returntypehint;
+      });
+      json.methods = modMethods;
+      // Use deep Object.assign so duplicate properties are overwritten.
+      deepAssign(jsonJsDoc.methods, json.methods);
+    }
+    json = jsonJsDoc;
+  }
+  return componentsToMarkdown(type, json, filepath, componentCount++);
 }
 
 function renderStyle(filepath) {
@@ -355,8 +557,12 @@ module.exports = function() {
   componentCount = 0;
   return [].concat(
     components.map(renderComponent),
-    apis.map(renderAPI('api')),
+    apis.map((filepath) => {
+      return renderAPI(filepath, 'api');
+    }),
     stylesWithPermalink.map(renderStyle),
-    polyfills.map(renderAPI('Polyfill'))
+    polyfills.map((filepath) => {
+      return renderAPI(filepath, 'Polyfill');
+    })
   );
 };
