@@ -117,20 +117,48 @@ function typedefHandler(documentation, path) {
   documentation.set('typedef', typedef);
 }
 
-function jsDocFormatHandler(documentation, path) {
-  const methods = documentation.get('methods');
-  let modMethods = methods;
-  methods.map((method, methodIndex) => {
-    if (method.params && method.params.length !== 0) {
-      let modParams = method.params;
-      method.params.map((param, paramIndex) => {
-        if (param.type) {
-          const typeAlias = param.type.alias ? param.type.alias : param.type.name;
-          modParams[paramIndex].type = { names: [typeAlias] };
+function getTypeName(type) {
+  let typeName;
+  switch (type.name) {
+    case 'signature':
+      typeName = type.type;
+      break;
+    case 'union':
+      typeName = type.elements.map(getTypeName);
+      break;
+    default:
+      typeName = type.alias ? type.alias : type.name;
+      break;
+  }
+  return typeName;
+}
+
+function jsDocFormatType(entities) {
+  let modEntities = entities;
+  if (entities) {
+    if (typeof entities === 'object' && entities.length) {
+      entities.map((entity, entityIndex) => {
+        if (entity.type) {
+          const typeNames = [].concat(getTypeName(entity.type));
+          modEntities[entityIndex].type = { names: typeNames };
         }
       });
-      modMethods[methodIndex].params = modParams;
+    } else {
+      modEntities.type = [].concat(getTypeName(entities));
     }
+  }
+  return modEntities;
+}
+
+function jsDocFormatHandler(documentation, path) {
+  const methods = documentation.get('methods');
+  if (!methods || methods.length === 0) {
+    return;
+  }
+  let modMethods = methods;
+  methods.map((method, methodIndex) => {
+    modMethods[methodIndex].params = jsDocFormatType(method.params);
+    modMethods[methodIndex].returns = jsDocFormatType(method.returns);
   });
   documentation.set('methods', modMethods);
 }

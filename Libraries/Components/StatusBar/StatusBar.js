@@ -159,8 +159,8 @@ const StatusBar = React.createClass({
 
     /**
      * Show or hide the status bar
-     * @param {boolean} hidden The dialog's title.
-     * @param {StatusBarAnimation=} animation Optional animation when
+     * @param hidden The dialog's title.
+     * @param animation Optional animation when
      *    changing the status bar hidden property.
      */
     setHidden(hidden: boolean, animation?: StatusBarAnimation) {
@@ -175,8 +175,8 @@ const StatusBar = React.createClass({
 
     /**
      * Set the status bar style
-     * @param {StatusBarStyle} style Status bar style to set
-     * @param {boolean=} animated Animate the style change.
+     * @param style Status bar style to set
+     * @param animated Animate the style change.
      */
     setBarStyle(style: StatusBarStyle, animated?: boolean) {
       if (Platform.OS !== 'ios') {
@@ -190,7 +190,7 @@ const StatusBar = React.createClass({
 
     /**
      * Control the visibility of the network activity indicator
-     * @param {boolean} visible Show the indicator.
+     * @param visible Show the indicator.
      */
     setNetworkActivityIndicatorVisible(visible: boolean) {
       if (Platform.OS !== 'ios') {
@@ -203,8 +203,8 @@ const StatusBar = React.createClass({
 
     /**
      * Set the background color for the status bar
-     * @param {string} color Background color.
-     * @param {boolean=} animated Animate the style change.
+     * @param color Background color.
+     * @param animated Animate the style change.
      */
     setBackgroundColor(color: string, animated?: boolean) {
       if (Platform.OS !== 'android') {
@@ -218,7 +218,7 @@ const StatusBar = React.createClass({
 
     /**
      * Control the translucency of the status bar
-     * @param {boolean} translucent Set as translucent.
+     * @param translucent Set as translucent.
      */
     setTranslucent(translucent: boolean) {
       if (Platform.OS !== 'android') {

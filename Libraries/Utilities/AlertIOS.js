@@ -109,17 +109,17 @@ class AlertIOS {
    * Create and display a popup alert.
    * @static
    * @method alert
-   * @param {string} title The dialog's title.
-   * @param {string=} message An optional message that appears below
+   * @param title The dialog's title.
+   * @param message An optional message that appears below
    *     the dialog's title.
-   * @param {(Function|ButtonsArray)=} callbackOrButtons This optional argument should
+   * @param callbackOrButtons This optional argument should
    *    be either a single-argument function or an array of buttons. If passed
    *    a function, it will be called when the user taps 'OK'.
    *
    *    If passed an array of button configurations, each button should include
    *    a `text` key, as well as optional `onPress` and `style` keys. `style`
    *    should be one of 'default', 'cancel' or 'destructive'.
-   * @param {AlertType=} type Deprecated, do not use.
+   * @param type Deprecated, do not use.
    *
    * @example <caption>Example with custom buttons</caption>
    *
@@ -150,10 +150,10 @@ class AlertIOS {
    * Create and display a prompt to enter some text.
    * @static
    * @method prompt
-   * @param {string} title The dialog's title.
-   * @param {string=} message An optional message that appears above the text
+   * @param title The dialog's title.
+   * @param message An optional message that appears above the text
    *    input.
-   * @param {(Function|ButtonsArray)=} callbackOrButtons This optional argument should
+   * @param callbackOrButtons This optional argument should
    *    be either a single-argument function or an array of buttons. If passed
    *    a function, it will be called with the prompt's value when the user
    *    taps 'OK'.
@@ -161,9 +161,9 @@ class AlertIOS {
    *    If passed an array of button configurations, each button should include
    *    a `text` key, as well as optional `onPress` and `style` keys (see
    *    example). `style` should be one of 'default', 'cancel' or 'destructive'.
-   * @param {AlertType=} type This configures the text input. One of 'plain-text',
+   * @param type This configures the text input. One of 'plain-text',
    *    'secure-text' or 'login-password'.
-   * @param {string} defaultValue The dialog's title.
+   * @param defaultValue The dialog's title.
    *
    * @example <caption>Example with custom buttons</caption>
    *

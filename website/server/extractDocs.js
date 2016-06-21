@@ -17,6 +17,7 @@ const path = require('path');
 const slugify = require('../core/slugify');
 const babel = require('babel-core');
 const jsdocApi = require('jsdoc-api');
+const deepAssign = require('deep-assign');
 
 const ANDROID_SUFFIX = 'android';
 const CROSS_SUFFIX = 'cross';
@@ -208,11 +209,11 @@ function componentsToMarkdown(type, json, filepath, idx, styles) {
 
 let componentCount;
 
-function getTypedef(filepath, fileContents, json) {
+function getTypedef(filepath, fileContent, json) {
   let typedefDocgen;
   try {
     typedefDocgen = docgen.parse(
-      fileContents,
+      fileContent,
       docgenHelpers.findExportedType,
       [docgenHelpers.typedefHandler]
     ).map((type) => type.typedef);
@@ -320,13 +321,115 @@ function parseAPIInferred(filepath, fileContent) {
   return json;
 }
 
+function getTypeName(type) {
+  let typeName;
+  switch (type.name) {
+    case 'signature':
+      typeName = type.type;
+      break;
+    case 'union':
+      typeName = type.value ?
+        type.value.map(getTypeName) :
+        type.elements.map(getTypeName);
+      break;
+    case 'enum':
+      if (typeof type.value === 'string') {
+        typeName = type.value;
+      } else {
+        typeName = 'enum';
+      }
+      break;
+    case '$Enum':
+      if (type.elements[0].signature.properties) {
+        typeName = type.elements[0].signature.properties.map(p => p.key);
+      }
+      break;
+    case 'arrayOf':
+      typeName = getTypeName(type.value);
+      break;
+    case 'instanceOf':
+      typeName = type.value;
+      break;
+    case 'func':
+      typeName = 'function';
+      break;
+    default:
+      typeName = type.alias ? type.alias : type.name;
+      break;
+  }
+  return typeName;
+}
+
+function getTypehintRec(typehint) {
+  if (typehint.type === 'simple') {
+    return typehint.value;
+  }
+  if (typehint.type === 'generic') {
+    return getTypehintRec(typehint.value[0]) +
+      '<' + getTypehintRec(typehint.value[1]) + '>';
+  }
+  return JSON.stringify(typehint);
+}
+
+function getTypehint(typehint) {
+  if (typeof typehint === 'object' && typehint.name) {
+    return getTypeName(typehint);
+  }
+  try {
+    var typehint = JSON.parse(typehint);
+  } catch (e) {
+    return typehint.split('|').map(type => type.trim());
+  }
+  return getTypehintRec(typehint);
+}
+
+function getJsDocFormatType(entities) {
+  let modEntities = entities;
+  if (entities) {
+    if (typeof entities === 'object' && entities.length) {
+      entities.map((entity, entityIndex) => {
+        if (entity.typehint) {
+          const typeNames = [].concat(getTypehint(entity.typehint));
+          modEntities[entityIndex].type = { names: typeNames };
+          delete modEntities[entityIndex].typehint;
+        }
+        if (entity.name) {
+          const regexOptionalType = /\?$/;
+          if (regexOptionalType.test(entity.name)) {
+            modEntities[entityIndex].optional = true;
+            modEntities[entityIndex].name =
+              entity.name.replace(regexOptionalType, '');
+          }
+        }
+      });
+    } else {
+      const typeNames = [].concat(getTypehint(entities));
+      return { type: { names : typeNames } };
+    }
+  }
+  return modEntities;
+}
+
 function renderAPI(filepath, type) {
-  let json;
   const fileContent = fs.readFileSync(filepath).toString();
+  let json = parseAPIInferred(filepath, fileContent);
   if (isJsDocFormat(fileContent)) {
-    json = parseAPIJsDocFormat(filepath, fileContent);
-  } else {
-    json = parseAPIInferred(filepath, fileContent);
+    let jsonJsDoc = parseAPIJsDocFormat(filepath, fileContent);
+    // Combine method info with jsdoc fomatted content
+    const methods = json.methods;
+    if (methods && methods.length) {
+      let modMethods = methods;
+      methods.map((method, methodIndex) => {
+        modMethods[methodIndex].params = getJsDocFormatType(method.params);
+        modMethods[methodIndex].returns =
+          getJsDocFormatType(method.returntypehint);
+        delete modMethods[methodIndex].returntypehint;
+      });
+      json.methods = modMethods;
+      // Use deep Object.assign so duplicate properties are overwritten.
+      deepAssign(jsonJsDoc.methods, json.methods);
+    }
+    json = jsonJsDoc;
   }
   return componentsToMarkdown(type, json, filepath, componentCount++);
 }
