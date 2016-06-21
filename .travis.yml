@@ -14,6 +14,7 @@ install:
   - npm config set progress=false
   - npm install
 
+
 script:
   - if [[ "$TEST_TYPE" = objc ]]; then travis_wait travis_retry ./scripts/objc-test.sh; fi
   - if [[ "$TEST_TYPE" = e2e-objc ]]; then travis_wait node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3; fi
