@@ -196,6 +196,7 @@
   "devDependencies": {
     "babel-eslint": "^6.0.0",
     "eslint": "^2.5.3",
+    "eslint-plugin-babel": "^3.2.0",
     "eslint-plugin-flow-vars": "^0.2.1",
     "eslint-plugin-react": "^4.2.1",
     "flow-bin": "^0.27.0",
