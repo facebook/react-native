@@ -51,6 +51,7 @@ const {PropTypes} = React;
 const DefaultTransitionSpec = {
   duration: 250,
   easing: Easing.inOut(Easing.ease),
+  timing: Animated.timing,
 };
 
 function isSceneNotStale(scene: NavigationScene): boolean {
@@ -132,7 +133,10 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
 
     // get the transition spec.
     const transitionUserSpec = nextProps.configureTransition ?
-      nextProps.configureTransition() :
+      nextProps.configureTransition(
+        this._transitionProps,
+        this._prevTransitionProps
+      ) :
       null;
 
     const transitionSpec = {
@@ -142,11 +146,16 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
 
     progress.setValue(0);
 
+    const {
+      timing,
+      ...animationConfig
+    } = transitionSpec;
+
     const animations = [
-      Animated.timing(
+      timing(
         progress,
         {
-          ...transitionSpec,
+          ...animationConfig,
           toValue: 1,
         },
       ),
@@ -154,10 +163,10 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
 
     if (nextProps.navigationState.index !== this.props.navigationState.index) {
       animations.push(
-        Animated.timing(
+        timing(
           position,
           {
-            ...transitionSpec,
+            ...animationConfig,
             toValue: nextProps.navigationState.index,
           },
         ),
