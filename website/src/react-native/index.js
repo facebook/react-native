@@ -19,121 +19,79 @@ var index = React.createClass({
           <div className="wrap">
             <div className="text"><strong>React Native</strong></div>
             <div className="minitext">
-              A framework for building native apps using React
+              Learn once, write anywhere: Build mobile apps with React
             </div>
-          </div>
-        </div>
-
-        <section className="content wrap">
-          <div style={{margin: '40px auto', maxWidth: 800}}>
-
-          <p>
-            React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and
-            {' '}<a href="http://facebook.github.io/react/" >React</a>{'. '}
-            The focus of React Native is on developer efficiency across all the platforms you care about &mdash; learn once, write anywhere.
-            Facebook uses React Native in multiple production apps and will continue investing in React Native.
-          </p>
           </div>
 
           <div className="buttons-unit">
             <a href="docs/getting-started.html#content" className="button">Get started with React Native</a>
           </div>
+        </div>
+
+        <section className="content wrap">
 
           <div style={{margin: '40px auto', maxWidth: 800}}>
 
-          <h2>Native Components</h2>
+          <h2>Build Native Mobile Apps using JavaScript and React</h2>
           <p>
-            With React Native, you can use the standard platform components such as UITabBar on iOS and Drawer on Android.  This gives your app a consistent look and feel with the rest of the platform ecosystem, and keeps the quality bar high.  These components are easily incorporated into your app using their React component counterparts, such as TabBarIOS and DrawerLayoutAndroid.
+            React Native lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components.
           </p>
+
           <Prism>
-{`// iOS
 
-import React, {
-  Component,
-} from 'react';
-import {
-  TabBarIOS,
-  NavigatorIOS,
-} from 'react-native';
+{`import React, { Component } from 'react';
+import { Text, View } from 'react-native';
 
-class App extends Component {
+class WhyReactNativeIsSoGreat extends Component {
   render() {
     return (
-      <TabBarIOS>
-        <TabBarIOS.Item title="React Native" selected={true}>
-          <NavigatorIOS initialRoute={{ title: 'React Native' }} />
-        </TabBarIOS.Item>
-      </TabBarIOS>
+      <View>
+        <Text>
+          If you like React on the web, you'll like React Native.
+        </Text>
+        <Text>
+          You just use native components like '<View>' and '<Text>',
+          instead of web components like '<div>' and '<a>'.
+        </Text>
+      </View>
     );
   }
 }`}
           </Prism>
 
-<Prism>
-{`// Android
-
-import React, {
-  Component,
-} from 'react';
-import {
-  DrawerLayoutAndroid,
-  ProgressBarAndroid,
-  Text,
-} from 'react-native';
-
-class App extends Component {
-  render() {
-    return (
-      <DrawerLayoutAndroid
-        renderNavigationView={() => <Text>React Native</Text>}>
-        <ProgressBarAndroid />
-      </DrawerLayoutAndroid>
-    );
-  }
-}`}
-          </Prism>
-
-          <h2>Asynchronous Execution</h2>
+          <h2>A React Native App is a Real Mobile App</h2>
           <p>
-            All operations between the JavaScript application code and the native platform are performed asynchronously, and the native modules can also make use of additional threads as well.  This means we can decode images off of the main thread, save to disk in the background, measure text and compute layouts without blocking the UI, and more.  As a result, React Native apps are naturally fluid and responsive.  The communication is also fully serializable, which allows us to leverage Chrome Developer Tools to debug the JavaScript while running the complete app, either in the simulator or on a physical device.
+            With React Native, you don't build a “mobile web app”, an “HTML5 app”, or a “hybrid app”. You build a real mobile app that's indistinguishable from an app built using Objective-C or Java. React Native uses the same fundamental UI building blocks as regular iOS and Android apps. You just put those building blocks together using JavaScript and React.
           </p>
-          <p>
-            See <a href="docs/debugging.html#content">Debugging</a>.
-          </p>
-          <img src="img/chrome_breakpoint.png" width="800" height="443" />
 
-          <h2>Touch Handling</h2>
-          <p>
-            React Native implements a powerful system to negotiate touches in complex view hierarchies and provides high level components such as TouchableHighlight that integrate properly with scroll views and other elements without any additional configuration.
-          </p>
           <Prism>
-{`// iOS & Android
+{`import React, { Component } from 'react';
+import { Image, ScrollView, Text } from 'react-native';
 
-import React, {
-  Component,
-} from 'react';
-import {
-  ScrollView,
-  TouchableHighlight,
-  Text,
-} from 'react-native';
-
-class TouchDemo extends Component {
+class AwkwardScrollingImageWithText extends Component {
   render() {
     return (
       <ScrollView>
-        <TouchableHighlight onPress={() => console.log('pressed')}>
-          <Text>Proper Touch Handling</Text>
-        </TouchableHighlight>
+        <Image source={{uri: 'http://facebook.github.io/react/thats-amazing.png'}} />
+        <Text>
+          On iOS, a React Native '<ScrollView>' uses a native UIScrollView.
+          On Android, it uses a native ScrollView.
+
+          On iOS, a React Native '<Image>' uses a native UIImageView.
+          On Android, it uses a native ImageView.
+
+          React Native wraps the fundamental native components, giving you
+          the performance of a native app, plus the clean design of React.
+        </Text>
       </ScrollView>
     );
   }
 }`}
           </Prism>
 
-          <h2>Flexbox and Styling</h2>
+          <h2>Don't Waste Time Recompiling</h2>
           <p>
-            Laying out views should be easy, which is why we brought the flexbox layout model from the web to React Native.  Flexbox makes it simple to build the most common UI layouts, such as stacked and nested boxes with margin and padding.  React Native also supports common web styles, such as fontWeight, and the StyleSheet abstraction provides an optimized mechanism to declare all your styles and layout right along with the components that use them and apply them inline.
+            React Native lets you build your app faster. Instead of recompiling, you can reload your app instantly. With hot loading, you can even run new code while retaining your application state. Give it a try - it's a magical experience.
           </p>
           <Prism>
 {`// iOS & Android
