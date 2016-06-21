@@ -456,6 +456,13 @@ var apps = [
     ],
   },
   {
+    name: '儿戏亲子游',
+    icon: 'http://www.mmww.com/images/logo_512x512.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/er-xi-qin-zi-huo-dong-zhou/id1037700232?mt=8',
+    link: 'http://android.myapp.com/myapp/detail.htm?apkName=com.mmww.erxi',
+    author: 'Jiang Xiaoming',
+  },
+  {
     name: 'Fan of it',
     icon: 'http://a4.mzstatic.com/us/r30/Purple3/v4/c9/3f/e8/c93fe8fb-9332-e744-f04a-0f4f78e42aa8/icon350x350.png',
     link: 'https://itunes.apple.com/za/app/fan-of-it/id1017025530?mt=8',
