@@ -914,7 +914,7 @@ var apps = [
   {
     name: 'Splash: On-Demand Auto Detailing',
     icon: 'http://a2.mzstatic.com/us/r30/Purple30/v4/c3/14/74/c314748f-ff16-c7ec-77c5-1a84657d9154/icon175x175.jpeg',
-    linkAppStore: 'https://itunes.apple.com/us/app/splash-on-demand-auto-detailing/id1111109177',
+    link: 'https://itunes.apple.com/us/app/splash-on-demand-auto-detailing/id1111109177',
     author: 'Alex Leventer'
   },
   {
@@ -960,6 +960,13 @@ var apps = [
     icon: 'http://a3.mzstatic.com/us/r30/Purple1/v4/7d/52/a7/7d52a71f-9532-82a5-b92f-87076624fdb2/icon175x175.jpeg',
     link: 'https://itunes.apple.com/cn/app/tong-xing-wang/id914254459?mt=8',
     author: 'Ho Yin Tsun Eugene',
+  },
+  {
+    name: 'TRED: Sell My Car For More',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple18/v4/de/11/a9/de11a9ee-098a-bbaa-837f-ee3451c26dd5/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/tred-sell-my-car-for-more/id1070071394?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.tredmobile',
+    author: 'TRED',
   },
   {
     name: 'Trump Blocker - That Filters Every Link',
