@@ -2,7 +2,7 @@
 id: basics-component-image
 title: Image
 layout: docs
-category: Basics
+category: The Basics
 permalink: docs/basics-component-image.html
 next: basics-component-view
 ---

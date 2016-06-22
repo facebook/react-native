@@ -2,7 +2,7 @@
 id: basics-component-view
 title: View
 layout: docs
-category: Basics
+category: The Basics
 permalink: docs/basics-component-view.html
 next: basics-component-textinput
 ---

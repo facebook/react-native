@@ -2,7 +2,7 @@
 id: basics-components
 title: Components
 layout: docs
-category: Basics
+category: The Basics
 permalink: docs/basics-components.html
 next: basics-component-text
 ---

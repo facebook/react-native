@@ -2,7 +2,7 @@
 id: quick-start-getting-started
 title: Getting Started
 layout: docs
-category: Quick Start
+category: The Basics
 permalink: docs/getting-started.html
 next: basics-components
 ---

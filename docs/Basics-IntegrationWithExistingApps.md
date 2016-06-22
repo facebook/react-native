@@ -2,9 +2,9 @@
 id: basics-integration-with-existing-apps
 title: Integration With Existing Apps
 layout: docs
-category: Basics
+category: The Basics
 permalink: docs/basics-integration-with-existing-apps.html
-next: sample-application-movies
+next: more-resources
 ---
 
 <div class="integration-toggler">
