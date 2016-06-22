@@ -2,8 +2,9 @@
 id: colors
 title: Colors
 layout: docs
-category: Polyfills
+category: Guides
 permalink: docs/colors.html
+next: gesture-responder-system
 ---
 
 The following formats are supported:
