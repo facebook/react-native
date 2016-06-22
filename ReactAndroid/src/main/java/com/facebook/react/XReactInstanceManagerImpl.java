@@ -272,35 +272,6 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   }
 
   /* package */ XReactInstanceManagerImpl(
-      Context applicationContext,
-      @Nullable Activity currentActivity,
-      @Nullable DefaultHardwareBackBtnHandler defaultHardwareBackBtnHandler,
-      @Nullable String jsBundleFile,
-      @Nullable String jsMainModuleName,
-      List<ReactPackage> packages,
-      boolean useDeveloperSupport,
-      @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
-      LifecycleState initialLifecycleState,
-      UIImplementationProvider uiImplementationProvider,
-      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
-      JSCConfig jscConfig) {
-
-    this(applicationContext,
-      currentActivity,
-      defaultHardwareBackBtnHandler,
-      jsBundleFile,
-      jsMainModuleName,
-      packages,
-      useDeveloperSupport,
-      bridgeIdleDebugListener,
-      initialLifecycleState,
-      uiImplementationProvider,
-      nativeModuleCallExceptionHandler,
-      jscConfig,
-      null);
-  }
-
-  /* package */ XReactInstanceManagerImpl(
     Context applicationContext,
     @Nullable Activity currentActivity,
     @Nullable DefaultHardwareBackBtnHandler defaultHardwareBackBtnHandler,
