@@ -2,7 +2,7 @@
 id: basics-component-scrollview
 title: ScrollView
 layout: docs
-category: Basics
+category: The Basics
 permalink: docs/basics-component-scrollview.html
 next: basics-component-listview
 ---

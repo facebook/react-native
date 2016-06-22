@@ -2,7 +2,7 @@
 id: basics-component-textinput
 title: TextInput
 layout: docs
-category: Basics
+category: The Basics
 permalink: docs/basics-component-textinput.html
 next: basics-component-scrollview
 ---
