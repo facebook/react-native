@@ -7,8 +7,27 @@
   document.addEventListener('DOMContentLoaded', init);
 
   function init() {
-    if (isMobile()) {
+    var mobile = isMobile();
+
+    if (mobile) {
       document.querySelector('.nav-site-wrapper a[data-target]').addEventListener('click', toggleTarget);
+    }
+
+    var webPlayerList = document.querySelectorAll('.web-player');
+
+    // Either show interactive or static code block, depending on desktop or mobile
+    for (var i = 0; i < webPlayerList.length; ++i) {
+      webPlayerList[i].classList.add(mobile ? 'mobile' : 'desktop');
+
+      if (!mobile) {
+
+        // Determine location to look up required assets
+        var assetRoot = encodeURIComponent(document.location.origin + '/react-native');
+
+        // Set iframe src. Do this dynamically so the iframe never loads on mobile.
+        var iframe = webPlayerList[i].querySelector('iframe');
+        iframe.src = iframe.getAttribute('data-src') + '&assetRoot=' + assetRoot;
+      }
     }
 
     var backdrop = document.querySelector('.modal-backdrop');
