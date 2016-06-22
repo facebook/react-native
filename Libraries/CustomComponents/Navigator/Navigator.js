@@ -139,22 +139,22 @@ var GESTURE_ACTIONS = [
  * renders the scene for each route object.
  *
  * ```
- * import React from 'react';
- * import { AppRegistry, Text, Navigator } from 'react-native';
+ * import React, { Component } from 'react';
+ * import { Text, Navigator } from 'react-native';
  *
- * const App = () => {
- *   return (
- *     <Navigator
- *       initialRoute={{name: 'Awesome Scene'}}
- *       renderScene={(route, navigator) =>
- *         <Text>Hello {route.name}!</Text>
- *       }
- *       style={{padding: 100}}
- *     />
- *   );
+ * class NavAllDay extends Component {
+ *   render() {
+ *     return (
+ *       <Navigator
+ *         initialRoute={{name: 'Awesome Scene'}}
+ *         renderScene={(route, navigator) =>
+ *           <Text>Hello {route.name}!</Text>
+ *         }
+ *         style={{padding: 100}}
+ *       />
+ *     );
+ *   }
  * }
- *
- * AppRegistry.registerComponent('NavApp', () => App);
  * ```
  *
  * In the above example, `initialRoute` is used to specify the first route. It
@@ -167,16 +167,17 @@ var GESTURE_ACTIONS = [
  * the `initialRouteStack` prop to `Navigator`:
  *
  * ```
- * const routes = [
- *  {name: 'First Scene', index: 0},
- *  {name: 'Second Scene', index: 1},
- * ];
- * return (
- *   <Navigator
- *     initialRoute={routes[0]}
- *     initialRouteStack={routes}
- *     renderScene={(route, navigator) =>
- *       <TouchableHighlight onPress={() => {
+ * render() {
+ *   const routes = [
+ *     {name: 'First Scene', index: 0},
+ *     {name: 'Second Scene', index: 1},
+ *   ];
+ *   return (
+ *     <Navigator
+ *       initialRoute={routes[0]}
+ *       initialRouteStack={routes}
+ *       renderScene={(route, navigator) =>
+ *         <TouchableHighlight onPress={() => {
  *           if (route.index === 0) {
  *             navigator.push(routes[1]);
  *           } else {
@@ -184,11 +185,12 @@ var GESTURE_ACTIONS = [
  *           }
  *         }}>
  *         <Text>Hello {route.name}!</Text>
- *       </TouchableHighlight>
- *     }
- *     style={{padding: 100}}
- *   />
- * );
+ *         </TouchableHighlight>
+ *       }
+ *       style={{padding: 100}}
+ *     />
+ *   );
+ * }
  * ```
  *
  * In the above example, a `routes` variable is defined with two route objects
