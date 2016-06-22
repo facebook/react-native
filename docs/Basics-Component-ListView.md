@@ -9,7 +9,7 @@ next: basics-integration-with-existing-apps
 
 On mobile devices, lists are a core element in many applications. The [`ListView`](/react-native/docs/listview.html#content) component is a special type of [`View`](/react-native/docs/tutorial-component-view.html) that displays a vertically scrolling list of changing data.
 
-The `ListView` component requires two properties, `dataSource` and `renderRow`. `dataSource` is the source of information for the list. `renderRow` takes one item from the source source and returns a formatted component to render.
+The `ListView` component requires two properties, `dataSource` and `renderRow`. `dataSource` is the source of information for the list. `renderRow` takes one item from the source and returns a formatted component to render.
 
 This example creates a simple `ListView` of hardcoded data. It first initializes the `dataSource` that will be used to populate the `ListView`. Each item in the `dataSource` is then rendered as a `Text` component. Finally it renders the `ListView` and all `Text` components.
 

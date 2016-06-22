@@ -12,7 +12,7 @@ The most basic component in React Native is the [`Text`](/react-native/docs/text
 This example displays the `string` `"Hello World!"` on the device.
 
 ```JavaScript
-import React, { Component } from 'react';
+import React from 'react';
 import { AppRegistry, Text } from 'react-native';
 
 const AwesomeProject = () => {
@@ -28,7 +28,7 @@ AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
 In this slightly more advanced example we will display the `string` `"Hello World"` retrieved from this.state on the device and stored in the `text` variable. The value of the `text` variable is rendered by using `{text}`.
 
 ```JavaScript
-import React, { Component } from 'react';
+import React from 'react';
 import { AppRegistry, Text } from 'react-native';
 
 var AwesomeProject = React.createClass({
