@@ -125,7 +125,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   private final UIImplementationProvider mUIImplementationProvider;
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
-  private final @Nullable JSCConfig mJSCConfig;
+  private final JSCConfig mJSCConfig;
   private @Nullable RedBoxHandler mRedBoxHandler;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
@@ -283,7 +283,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
       LifecycleState initialLifecycleState,
       UIImplementationProvider uiImplementationProvider,
       NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
-      @Nullable JSCConfig jscConfig) {
+      JSCConfig jscConfig) {
 
     this(applicationContext,
       currentActivity,
@@ -312,7 +312,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     LifecycleState initialLifecycleState,
     UIImplementationProvider uiImplementationProvider,
     NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
-    @Nullable JSCConfig jscConfig,
+    JSCConfig jscConfig,
     @Nullable RedBoxHandler redBoxHandler) {
 
     initializeSoLoaderIfNecessary(applicationContext);
@@ -443,8 +443,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
   private void recreateReactContextInBackgroundFromBundleFile() {
     recreateReactContextInBackground(
-        new JSCJavaScriptExecutor.Factory(
-            mJSCConfig == null ? new WritableNativeMap() : mJSCConfig.getConfigMap()),
+        new JSCJavaScriptExecutor.Factory(mJSCConfig.getConfigMap()),
         JSBundleLoader.createFileLoader(mApplicationContext, mJSBundleFile));
   }
 
@@ -721,8 +720,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
   private void onJSBundleLoadedFromServer() {
     recreateReactContextInBackground(
-        new JSCJavaScriptExecutor.Factory(
-            mJSCConfig == null ? new WritableNativeMap() : mJSCConfig.getConfigMap()),
+        new JSCJavaScriptExecutor.Factory(mJSCConfig.getConfigMap()),
         JSBundleLoader.createCachedBundleFromNetworkLoader(
             mDevSupportManager.getSourceUrl(),
             mDevSupportManager.getDownloadedJSBundleFile()));
