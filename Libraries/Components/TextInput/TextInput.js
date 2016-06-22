@@ -11,6 +11,7 @@
  */
 'use strict';
 
+var ColorPropType = require('ColorPropType');
 var DocumentSelectionState = require('DocumentSelectionState');
 var EventEmitter = require('EventEmitter');
 var NativeMethodsMixin = require('NativeMethodsMixin');
@@ -26,7 +27,6 @@ var TimerMixin = require('react-timer-mixin');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var UIManager = require('UIManager');
 var View = require('View');
-var ColorPropType = require('ColorPropType');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var emptyFunction = require('fbjs/lib/emptyFunction');
