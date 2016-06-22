@@ -126,7 +126,6 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final JSCConfig mJSCConfig;
-  private @Nullable RedBoxHandler mRedBoxHandler;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -299,13 +298,12 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     mJSMainModuleName = jsMainModuleName;
     mPackages = packages;
     mUseDeveloperSupport = useDeveloperSupport;
-    mRedBoxHandler = redBoxHandler;
     mDevSupportManager = DevSupportManagerFactory.create(
         applicationContext,
         mDevInterface,
         mJSMainModuleName,
         useDeveloperSupport,
-        mRedBoxHandler);
+        redBoxHandler);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
     mUIImplementationProvider = uiImplementationProvider;
