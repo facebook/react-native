@@ -32,7 +32,7 @@ function runServer(args, config, readyCallback) {
     .use(connect.compress())
     .use(getDevToolsMiddleware(args, () => wsProxy && wsProxy.isChromeConnected()))
     .use(getDevToolsMiddleware(args, () => ms && ms.isChromeConnected()))
-    .use(openStackFrameInEditorMiddleware)
+    .use(openStackFrameInEditorMiddleware(args))
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
     .use(cpuProfilerMiddleware)
@@ -67,13 +67,17 @@ function runServer(args, config, readyCallback) {
 }
 
 function getPackagerServer(args, config) {
+  const transformModulePath = args.transformer ?
+    path.resolve(args.transformer) :
+    config.getTransformModulePath();
+
   return ReactPackager.createServer({
     nonPersistent: args.nonPersistent,
     projectRoots: args.projectRoots,
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-    transformModulePath: path.resolve(args.transformer),
+    transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
     assetRoots: args.assetRoots,
     assetExts: [

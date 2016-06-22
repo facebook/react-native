@@ -1,10 +1,10 @@
 ---
-id: network
+id: basics-network
 title: Network
 layout: docs
-category: Polyfills
+category: Basics
 permalink: docs/network.html
-next: timers
+next: basics-integration-with-existing-apps
 ---
 
 One of React Native's goals is to be a playground where we can experiment with different architectures and crazy ideas. Since browsers are not flexible enough, we had no choice but to reimplement the entire stack. In the places that we did not intend to change anything, we tried to be as faithful as possible to the browser APIs. The networking stack is a great example.
@@ -122,7 +122,7 @@ request.open('GET', 'https://mywebsite.com/endpoint.php');
 request.send();
 ```
 
-You can also use - 
+You can also use -
 
 ```js
 var request = new XMLHttpRequest();

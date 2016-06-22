@@ -377,7 +377,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 }
 
 .hero {
-  background: #05A5D1;
+  background: #2D2D2D;
   padding: 50px 0;
   color: #FDF3E7;
   font-weight: 300;
@@ -1326,13 +1326,8 @@ div[data-twttr-id] iframe {
 @media only screen
   and (min-device-width: 1024px) {
   .showcase {
-    width: 20%;
+    width: 25%;
   }
-}
-
-.showcase:hover {
-  text-decoration: none;
-  opacity: 0.8;
 }
 
 .showcase h3 {
@@ -1373,43 +1368,10 @@ div[data-twttr-id] iframe {
   background-color: hsl(198, 100%, 94%);
 }
 
-.survey {
-  padding: 10px;
-  padding-top: 0;
-  background-color: rgba(5, 165, 209, 0.05);
-  border: 2px solid #05A5D1;
-  position: relative;
-}
-
-.survey-image {
-  float: left;
-  height: 128px;
-  width: 128px;
-  background-image: url('../img/survey.png');
-}
-
-.survey p {
-  margin-left: 130px;
-}
-
-.survey .button {
-  font-size: 24px;
-  background: #05A5D1;
-  color: #fafafa;
-}
-
 @media only screen
   and (max-device-width: 1024px) {
   #content {
     display: inline;
-  }
-
-  .survey-image {
-    position: static;
-    margin: 10px auto;
-  }
-  .survey p {
-    margin-left: 0px;
   }
 
   .container {
@@ -1544,4 +1506,54 @@ input#algolia-doc-search:focus {
   border-right-color: hsl(198, 100%, 94%);
   background-color: hsl(198, 100%, 96%);
   color: #3B3738;
+}
+
+.params, .props
+{
+    border-spacing: 0;
+    border: 0;
+    border-collapse: collapse;
+}
+
+.params .name, .props .name, .name code {
+    color: #4D4E53;
+}
+
+.params td, .params th, .props td, .props th
+{
+    border: 1px solid #ddd;
+    margin: 0px;
+    text-align: left;
+    vertical-align: top;
+    padding: 4px 6px;
+    display: table-cell;
+}
+
+.params thead tr, .props thead tr
+{
+    background-color: hsl(198, 75%, 88%);
+    font-weight: bold;
+}
+
+.params .params thead tr, .props .props thead tr
+{
+    background-color: #fff;
+    font-weight: bold;
+}
+
+.params th, .props th { border-right: 1px solid #aaa; }
+.params thead .last, .props thead .last { border-right: 1px solid #ddd; }
+
+.params td.description > div > p:first-child,
+.props td.description > div > p:first-child
+{
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.params td.description > p:last-child,
+.props td.description > p:last-child
+{
+    margin-bottom: 0;
+    padding-bottom: 0;
 }

@@ -95,11 +95,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     image = [image imageWithRenderingMode:_renderingMode];
   }
 
-  // Applying capInsets of 0 will switch the "resizingMode" of the image to "tile" which is undesired
-  if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, _capInsets)) {
+  if (_resizeMode == RCTResizeModeRepeat) {
+    image = [image resizableImageWithCapInsets:_capInsets resizingMode:UIImageResizingModeTile];
+  } else if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, _capInsets)) {
+    // Applying capInsets of 0 will switch the "resizingMode" of the image to "tile" which is undesired
     image = [image resizableImageWithCapInsets:_capInsets resizingMode:UIImageResizingModeStretch];
   }
-
   // Apply trilinear filtering to smooth out mis-sized images
   self.layer.minificationFilter = kCAFilterTrilinear;
   self.layer.magnificationFilter = kCAFilterTrilinear;
@@ -161,10 +162,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return UIEdgeInsetsEqualToEdgeInsets(_capInsets, UIEdgeInsetsZero);
 }
 
-- (void)setContentMode:(UIViewContentMode)contentMode
+- (void)setResizeMode:(RCTResizeMode)resizeMode
 {
-  if (self.contentMode != contentMode) {
-    super.contentMode = contentMode;
+  if (_resizeMode != resizeMode) {
+    _resizeMode = resizeMode;
+
+    if (_resizeMode == RCTResizeModeRepeat) {
+      // Repeat resize mode is handled by the UIImage. Use scale to fill
+      // so the repeated image fills the UIImageView.
+      self.contentMode = UIViewContentModeScaleToFill;
+    } else {
+      self.contentMode = (UIViewContentMode)resizeMode;
+    }
+
     if ([self sourceNeedsReload]) {
       [self reloadImage];
     }
@@ -229,7 +239,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                             size:imageSize
                                            scale:imageScale
                                          clipped:NO
-                                      resizeMode:(RCTResizeMode)self.contentMode
+                                      resizeMode:_resizeMode
                                    progressBlock:progressHandler
                                  completionBlock:^(NSError *error, UIImage *loadedImage) {
 

@@ -40,7 +40,7 @@ function _dependencies(argv, config, resolve, reject, packagerInstance) {
     }, {
       command: 'transformer',
       type: 'string',
-      default: require.resolve('../../packager/transformer'),
+      default: null,
       description: 'Specify a custom transformer to be used'
     }, {
       command: 'verbose',
@@ -54,12 +54,16 @@ function _dependencies(argv, config, resolve, reject, packagerInstance) {
     reject(`File ${rootModuleAbsolutePath} does not exist`);
   }
 
+  const transformModulePath = args.transformer ?
+    path.resolve(args.transformer) :
+    config.getTransformModulePath();
+
   const packageOpts = {
     projectRoots: config.getProjectRoots(),
     assetRoots: config.getAssetRoots(),
     blacklistRE: config.getBlacklistRE(args.platform),
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-    transformModulePath: path.resolve(args.transformer),
+    transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
     verbose: config.verbose,
   };

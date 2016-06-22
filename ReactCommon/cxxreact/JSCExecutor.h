@@ -9,6 +9,7 @@
 #include <JavaScriptCore/JSContextRef.h>
 
 #include <folly/json.h>
+#include <folly/Optional.h>
 
 #include "Executor.h"
 #include "ExecutorToken.h"
@@ -91,6 +92,10 @@ private:
   std::unique_ptr<JSModulesUnbundle> m_unbundle;
   folly::dynamic m_jscConfig;
 
+  folly::Optional<Object> m_invokeCallbackAndReturnFlushedQueueJS;
+  folly::Optional<Object> m_callFunctionReturnFlushedQueueJS;
+  folly::Optional<Object> m_flushedQueueJS;
+
   /**
    * WebWorker constructor. Must be invoked from thread this Executor will run on.
    */
@@ -105,6 +110,7 @@ private:
 
   void initOnJSVMThread() throw(JSException);
   void terminateOnJSVMThread();
+  void bindBridge() throw(JSException);
   void flush() throw(JSException);
   void flushQueueImmediate(std::string queueJSON);
   void loadModule(uint32_t moduleId);
