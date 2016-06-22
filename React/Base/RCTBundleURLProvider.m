@@ -162,7 +162,7 @@ static NSString *serverRootWithHost(NSString *host)
   [self updateDefaults:@(enableDev) forKey:kRCTEnableDevKey];
 }
 
-- (void)setEnableEnableLiveReload:(BOOL)enableLiveReload
+- (void)setEnableLiveReload:(BOOL)enableLiveReload
 {
   [self updateDefaults:@(enableLiveReload) forKey:kRCTEnableLiveReloadKey];
 }
