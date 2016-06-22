@@ -148,8 +148,8 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
     if (view instanceof FlatViewGroup) {
       FlatViewGroup flatViewGroup = (FlatViewGroup) view;
       if (flatViewGroup.getRemoveClippedSubviews()) {
-        Collection<FlatViewGroup> detachedViews = flatViewGroup.getDetachedViews();
-        for (FlatViewGroup detachedChild : detachedViews) {
+        Collection<View> detachedViews = flatViewGroup.getDetachedViews();
+        for (View detachedChild : detachedViews) {
           // we can do super here because removeClippedSubviews is currently not recursive. if/when
           // we become recursive one day, this should call vanilla dropView to be recursive as well.
           super.dropView(detachedChild);

@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -101,7 +102,9 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   private @Nullable Rect mClippingRect;
   // lookups in o(1) instead of o(log n) - trade space for time
   private final Map<Integer, DrawView> mDrawViewMap = new HashMap<>();
-  private final Map<Integer, FlatViewGroup> mClippedSubviews = new HashMap<>();
+  // When grandchildren are promoted, these can only be FlatViewGroups, but we need to handle the
+  // case that we clip subviews and don't promote grandchildren.
+  private final Map<Integer, View> mClippedSubviews = new HashMap<>();
   // for overflow visible, these adjustments are what we can apply to know the actual bounds of
   // a ViewGroup while taking overflowing elements into account.
   private Rect mLogicalAdjustments = EMPTY_RECT;
@@ -117,6 +120,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   }
 
   @Override
+  @SuppressLint("MissingSuperCall")
   public void requestLayout() {
     if (mIsLayoutRequested) {
       return;
@@ -203,6 +207,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   }
 
   @Override
+  @SuppressLint("MissingSuperCall")
   protected boolean verifyDrawable(Drawable who) {
     return true;
   }
@@ -431,7 +436,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
    *
    * @return a Collection of FlatViewGroups to clean up
    */
-  Collection<FlatViewGroup> getDetachedViews() {
+  Collection<View> getDetachedViews() {
     return mClippedSubviews.values();
   }
 
@@ -440,10 +445,10 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
    * This is used during cleanup to trigger onDetachedFromWindow on any views that were in a
    * temporary detached state due to them being clipped. This is called for cleanup of said views
    * by FlatNativeViewHierarchyManager.
-   * @param flatViewGroup the detached FlatViewGroup to remove
+   * @param view the detached View to remove
    */
-  void removeDetachedView(FlatViewGroup flatViewGroup) {
-    removeDetachedView(flatViewGroup, false);
+  void removeDetachedView(View view) {
+    removeDetachedView(view, false);
   }
 
   /* package */ void mountAttachDetachListeners(AttachDetachListener[] listeners) {
@@ -504,7 +509,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     invalidate();
   }
 
-  /* package */ void processLayoutRequest() {
+  private void processLayoutRequest() {
     mIsLayoutRequested = false;
     for (int i = 0, childCount = getChildCount(); i != childCount; ++i) {
       View child = getChildAt(i);
@@ -595,6 +600,30 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     return generateDefaultLayoutParams();
   }
 
+  // Returns true if a view is currently animating.
+  static boolean animating(View view, Rect clippingRect) {
+    Animation animation = view.getAnimation();
+    return animation != null && !animation.hasEnded();
+  }
+
+  // Return true if a view is currently onscreen.
+  static boolean withinBounds(View view, Rect clippingRect) {
+    if (view instanceof FlatViewGroup) {
+      FlatViewGroup flatChildView = (FlatViewGroup) view;
+      return clippingRect.intersects(
+          flatChildView.getLeft() + flatChildView.mLogicalAdjustments.left,
+          flatChildView.getTop() + flatChildView.mLogicalAdjustments.top,
+          flatChildView.getRight() + flatChildView.mLogicalAdjustments.right,
+          flatChildView.getBottom() + flatChildView.mLogicalAdjustments.bottom);
+    } else {
+      return clippingRect.intersects(
+          view.getLeft(),
+          view.getTop(),
+          view.getRight(),
+          view.getBottom());
+    }
+  }
+
   @Override
   public void updateClippingRect() {
     if (!mRemoveClippedSubviews) {
@@ -614,43 +643,29 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     for (DrawCommand drawCommand : mDrawCommands) {
       if (drawCommand instanceof DrawView) {
         DrawView drawView = (DrawView) drawCommand;
-        FlatViewGroup flatViewGroup = mClippedSubviews.get(drawView.reactTag);
-        if (flatViewGroup != null) {
-          // invisible
-          if (clippingRect.intersects(
-              flatViewGroup.getLeft() + flatViewGroup.mLogicalAdjustments.left,
-              flatViewGroup.getTop() + flatViewGroup.mLogicalAdjustments.top,
-              flatViewGroup.getRight() + flatViewGroup.mLogicalAdjustments.right,
-              flatViewGroup.getBottom() + flatViewGroup.mLogicalAdjustments.bottom)) {
-            // now on the screen
-            attachViewToParent(
-                flatViewGroup,
-                index++,
-                ensureLayoutParams(flatViewGroup.getLayoutParams()));
-            mClippedSubviews.remove(flatViewGroup.getId());
-            drawView.isViewGroupClipped = false;
-            needsInvalidate = true;
+        View view = mClippedSubviews.get(drawView.reactTag);
+        if (view == null) {
+          // Not clipped, visible
+          view = getChildAt(index++);
+          if (!animating(view, clippingRect) && !withinBounds(view, clippingRect)) {
+            // Now off the screen.  Don't invalidate in this case, as the canvas should not be
+            // redrawn unless new elements are coming onscreen.
+            mClippedSubviews.put(view.getId(), view);
+            detachViewFromParent(view);
+            drawView.isViewGroupClipped = true;
+            index--;
           }
         } else {
-          // visible
-          View view = getChildAt(index++);
-          if (view instanceof FlatViewGroup) {
-            FlatViewGroup flatChildView = (FlatViewGroup) view;
-            Animation animation = flatChildView.getAnimation();
-            boolean isAnimating = animation != null && !animation.hasEnded();
-            if (!isAnimating &&
-                !clippingRect.intersects(
-                    view.getLeft() + flatChildView.mLogicalAdjustments.left,
-                    view.getTop() + flatChildView.mLogicalAdjustments.top,
-                    view.getRight() + flatChildView.mLogicalAdjustments.right,
-                    view.getBottom() + flatChildView.mLogicalAdjustments.bottom)) {
-              // now off the screen
-              mClippedSubviews.put(view.getId(), flatChildView);
-              detachViewFromParent(view);
-              drawView.isViewGroupClipped = true;
-              index--;
-              needsInvalidate = true;
-            }
+          // Clipped, invisible.
+          if (withinBounds(view, clippingRect)) {
+            // Now on the screen.  Invalidate as we have a new element to draw.
+            attachViewToParent(
+                view,
+                index++,
+                ensureLayoutParams(view.getLayoutParams()));
+            mClippedSubviews.remove(view.getId());
+            drawView.isViewGroupClipped = false;
+            needsInvalidate = true;
           }
         }
       }
