@@ -17,7 +17,7 @@ The [`ScrollView`](/react-native/docs/scrollview.html) is a generic scrolling co
 
 This contrived example creates a horizontal `ScrollView` with a static amount of heterogenous elements (images and text).
 
-```JavaScript
+```ReactNativeWebPlayer
 import React, { AppRegistry, ScrollView, Image, Text, View } from 'react-native'
 
 var SimpleScrollView = React.createClass({
@@ -25,13 +25,13 @@ var SimpleScrollView = React.createClass({
       return(
         <ScrollView horizontal={true}>
           <View>
-            <Image source={require('./img/check.png')} />
+            <Image source={require('./img/favicon.png')} />
           </View>
           <View>
-            <Image source={require('./img/check.png')} />
+            <Image source={require('./img/favicon.png')} />
           </View>
           <View>
-            <Image source={require('./img/check.png')} />
+            <Image source={require('./img/favicon.png')} />
           </View>
           <View>
             <Text style={{fontSize:96}}>Text1</Text>
@@ -46,13 +46,13 @@ var SimpleScrollView = React.createClass({
             <Text style={{fontSize:96}}>Text4</Text>
           </View>
           <View>
-            <Image source={require('./img/check.png')} />
+            <Image source={require('./img/favicon.png')} />
           </View>
           <View>
-            <Image source={require('./img/check.png')} />
+            <Image source={require('./img/favicon.png')} />
           </View>
           <View>
-            <Image source={require('./img/check.png')} />
+            <Image source={require('./img/favicon.png')} />
           </View>
           <View>
             <Text style={{fontSize:96}}>Text5</Text>
@@ -66,5 +66,5 @@ var SimpleScrollView = React.createClass({
 });
 
 
-AppRegistry.registerComponent('MyApp', () => SimpleScrollView);
+AppRegistry.registerComponent('AwesomeProject', () => SimpleScrollView);
 ```
