@@ -31,6 +31,9 @@
 @property (nonatomic, readonly) UIBarButtonItem *leftButtonItem;
 @property (nonatomic, readonly) UIBarButtonItem *rightButtonItem;
 
+@property (nonatomic, strong) UIImage *titleViewImage;
+@property (nonatomic, readonly) UIView * titleView;
+
 @property (nonatomic, copy) RCTBubblingEventBlock onLeftButtonPress;
 @property (nonatomic, copy) RCTBubblingEventBlock onRightButtonPress;
 
