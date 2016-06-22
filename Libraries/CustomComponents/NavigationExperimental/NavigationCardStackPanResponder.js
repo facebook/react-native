@@ -59,8 +59,7 @@ type Props = NavigationSceneRendererProps & {
   /**
   * The distance from the edge of the navigator which gesture response can start for.
   **/
-  verticalGestureHeightDetection: ?number,
-  horizontalGestureWidthDetection: ?number,
+  gestureResponseDistance: ?number,
 };
 
 /**
@@ -83,15 +82,6 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
   _isVertical: boolean;
   _props: Props;
   _startValue: number;
-
-  static defaultProps: {
-    verticalGestureHeightDetection: null,
-    /**
-    * For horizontal scroll views, a distance of 30 from the left of the screen is the
-    * standard maximum position to start touch responsiveness.
-    */
-    horizontalGestureWidthDetection: 30,
-  };
 
   constructor(
     direction: NavigationGestureDirection,
@@ -121,8 +111,12 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
       layout.width.__getValue();
 
     const positionMax = isVertical ?
-      props.verticalGestureHeightDetection :
-      props.horizontalGestureWidthDetection;
+      props.gestureResponseDistance :
+      /**
+      * For horizontal scroll views, a distance of 30 from the left of the screen is the
+      * standard maximum position to start touch responsiveness.
+      */
+      props.gestureResponseDistance || 30;
 
     if (positionMax != null && currentDragPosition > positionMax) {
       return false;

@@ -64,8 +64,7 @@ type Props = {
   renderScene: NavigationSceneRenderer,
   cardStyle?: any,
   style: any,
-  verticalGestureHeightDetection: ?number,
-  horizontalGestureWidthDetection: ?number,
+  gestureResponseDistance: ?number,
 };
 
 type DefaultProps = {
@@ -97,6 +96,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     renderOverlay: PropTypes.func,
     renderScene: PropTypes.func.isRequired,
     cardStyle: View.propTypes.style,
+    gestureResponseDistance: PropTypes.number,
   };
 
   static defaultProps: DefaultProps = {
@@ -166,8 +166,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     const panHandlersProps = {
       ...props,
       onNavigateBack: this.props.onNavigateBack,
-      verticalGestureHeightDetection: this.props.verticalGestureHeightDetection,
-      horizontalGestureWidthDetection: this.props.horizontalGestureWidthDetection,
+      gestureResponseDistance: this.props.gestureResponseDistance,
     };
     const panHandlers = isVertical ?
       NavigationCardStackPanResponder.forVertical(panHandlersProps) :
