@@ -462,7 +462,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
   }
 
   /**
-   * @return {@code true} if {@link ReactInstanceManager} should use downloaded JS bundle file
+   * @return {@code true} if {@link com.facebook.react.ReactInstanceManager} should use downloaded JS bundle file
    * instead of using JS file from assets. This may happen when app has not been updated since
    * the last time we fetched the bundle.
    */
