@@ -19,398 +19,106 @@ var index = React.createClass({
           <div className="wrap">
             <div className="text"><strong>React Native</strong></div>
             <div className="minitext">
-              A framework for building native apps using React
+              Learn once, write anywhere: Build mobile apps with React
             </div>
-          </div>
-        </div>
-
-        <section className="content wrap">
-          <div style={{margin: '40px auto', maxWidth: 800}}>
-
-          <p>
-            React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and
-            {' '}<a href="http://facebook.github.io/react/" >React</a>{'. '}
-            The focus of React Native is on developer efficiency across all the platforms you care about &mdash; learn once, write anywhere.
-            Facebook uses React Native in multiple production apps and will continue investing in React Native.
-          </p>
           </div>
 
           <div className="buttons-unit">
             <a href="docs/getting-started.html#content" className="button">Get started with React Native</a>
           </div>
+        </div>
+
+        <section className="content wrap">
 
           <div style={{margin: '40px auto', maxWidth: 800}}>
 
-          <h2>Native Components</h2>
+          <h2>Build Native Mobile Apps using JavaScript and React</h2>
           <p>
-            With React Native, you can use the standard platform components such as UITabBar on iOS and Drawer on Android.  This gives your app a consistent look and feel with the rest of the platform ecosystem, and keeps the quality bar high.  These components are easily incorporated into your app using their React component counterparts, such as TabBarIOS and DrawerLayoutAndroid.
+            React Native lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components.
           </p>
+
           <Prism>
-{`// iOS
 
-import React, {
-  Component,
-} from 'react';
-import {
-  TabBarIOS,
-  NavigatorIOS,
-} from 'react-native';
+{`import React, { Component } from 'react';
+import { Text, View } from 'react-native';
 
-class App extends Component {
+class WhyReactNativeIsSoGreat extends Component {
   render() {
     return (
-      <TabBarIOS>
-        <TabBarIOS.Item title="React Native" selected={true}>
-          <NavigatorIOS initialRoute={{ title: 'React Native' }} />
-        </TabBarIOS.Item>
-      </TabBarIOS>
+      <View>
+        <Text>
+          If you like React on the web, you'll like React Native.
+        </Text>
+        <Text>
+          You just use native components like '<View>' and '<Text>',
+          instead of web components like '<div>' and '<a>'.
+        </Text>
+      </View>
     );
   }
 }`}
           </Prism>
 
-<Prism>
-{`// Android
-
-import React, {
-  Component,
-} from 'react';
-import {
-  DrawerLayoutAndroid,
-  ProgressBarAndroid,
-  Text,
-} from 'react-native';
-
-class App extends Component {
-  render() {
-    return (
-      <DrawerLayoutAndroid
-        renderNavigationView={() => <Text>React Native</Text>}>
-        <ProgressBarAndroid />
-      </DrawerLayoutAndroid>
-    );
-  }
-}`}
-          </Prism>
-
-          <h2>Asynchronous Execution</h2>
+          <h2>A React Native App is a Real Mobile App</h2>
           <p>
-            All operations between the JavaScript application code and the native platform are performed asynchronously, and the native modules can also make use of additional threads as well.  This means we can decode images off of the main thread, save to disk in the background, measure text and compute layouts without blocking the UI, and more.  As a result, React Native apps are naturally fluid and responsive.  The communication is also fully serializable, which allows us to leverage Chrome Developer Tools to debug the JavaScript while running the complete app, either in the simulator or on a physical device.
+            With React Native, you don't build a “mobile web app”, an “HTML5 app”, or a “hybrid app”. You build a real mobile app that's indistinguishable from an app built using Objective-C or Java. React Native uses the same fundamental UI building blocks as regular iOS and Android apps. You just put those building blocks together using JavaScript and React.
           </p>
-          <p>
-            See <a href="docs/debugging.html#content">Debugging</a>.
-          </p>
-          <img src="img/chrome_breakpoint.png" width="800" height="443" />
 
-          <h2>Touch Handling</h2>
-          <p>
-            React Native implements a powerful system to negotiate touches in complex view hierarchies and provides high level components such as TouchableHighlight that integrate properly with scroll views and other elements without any additional configuration.
-          </p>
           <Prism>
-{`// iOS & Android
+{`import React, { Component } from 'react';
+import { Image, ScrollView, Text } from 'react-native';
 
-import React, {
-  Component,
-} from 'react';
-import {
-  ScrollView,
-  TouchableHighlight,
-  Text,
-} from 'react-native';
-
-class TouchDemo extends Component {
+class AwkwardScrollingImageWithText extends Component {
   render() {
     return (
       <ScrollView>
-        <TouchableHighlight onPress={() => console.log('pressed')}>
-          <Text>Proper Touch Handling</Text>
-        </TouchableHighlight>
+        <Image source={{uri: 'http://facebook.github.io/react/thats-amazing.png'}} />
+        <Text>
+          On iOS, a React Native '<ScrollView>' uses a native UIScrollView.
+          On Android, it uses a native ScrollView.
+
+          On iOS, a React Native '<Image>' uses a native UIImageView.
+          On Android, it uses a native ImageView.
+
+          React Native wraps the fundamental native components, giving you
+          the performance of a native app, plus the clean design of React.
+        </Text>
       </ScrollView>
     );
   }
 }`}
           </Prism>
 
-          <h2>Flexbox and Styling</h2>
+          <h2>Don't Waste Time Recompiling</h2>
           <p>
-            Laying out views should be easy, which is why we brought the flexbox layout model from the web to React Native.  Flexbox makes it simple to build the most common UI layouts, such as stacked and nested boxes with margin and padding.  React Native also supports common web styles, such as fontWeight, and the StyleSheet abstraction provides an optimized mechanism to declare all your styles and layout right along with the components that use them and apply them inline.
+            React Native lets you build your app faster. Instead of recompiling, you can reload your app instantly. With hot reloading, you can even run new code while retaining your application state. Give it a try - it's a magical experience.
           </p>
+          <br />
+          <img src='https://media.giphy.com/media/13WZniThXy0hSE/giphy.gif' />
+
+          <h2>Use Native Code When You Need To</h2>
+          <p>
+            React Native combines smoothly with components written in Objective-C, Java, or Swift. It's simple to drop down to native code if you need to optimize a few aspects of your application. It's also easy to build part of your app in React Native, and part of your app using native code directly - that's how the Facebook app works.
+          </p>
+
           <Prism>
-{`// iOS & Android
+{`import React, { Component } from 'react';
+import { Text, View } from 'react-native';
+import { TheGreatestComponentInTheWorld } from './your-native-code';
 
-import React, {
-  Component,
-} from 'react';
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-
-class ReactNative extends Component {
+class SomethingFast extends Component {
   render() {
     return (
-      <View style={styles.row}>
-        <Image
-          source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
-          style={styles.image}
-        />
-        <View style={styles.text}>
-          <Text style={styles.title}>
-            React Native
-          </Text>
-          <Text style={styles.subtitle}>
-            Build high quality mobile apps using React
-          </Text>
-        </View>
+      <View>
+        <TheGreatestComponentInTheWorld />
+        <Text>
+          TheGreatestComponentInTheWorld could use native Objective-C,
+          Java, or Swift - the product development process is the same.
+        </Text>
       </View>
     );
   }
-}
-var styles = StyleSheet.create({
-  row: { flexDirection: 'row', margin: 40 },
-  image: { width: 40, height: 40, marginRight: 10 },
-  text: { flex: 1, justifyContent: 'center'},
-  title: { fontSize: 11, fontWeight: 'bold' },
-  subtitle: { fontSize: 10 },
-});`}
-          </Prism>
-
-          <h2>Polyfills</h2>
-          <p>
-            React Native is focused on changing the way view code is written.  For the rest, we look to the web for universal standards and polyfill those APIs where appropriate. You can use npm to install JavaScript libraries that work on top of the functionality baked into React Native, such as XMLHttpRequest, window.requestAnimationFrame, and navigator.geolocation.  We are working on expanding the available APIs, and are excited for the Open Source community to contribute as well.
-          </p>
-          <Prism>
-{`// iOS & Android
-
-import React, {
-  Component,
-} from 'react';
-import {
-  Text,
-} from 'react-native';
-
-class GeoInfo extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { position: 'unknown' };
-  },
-  componentDidMount() {
-    navigator.geolocation.getCurrentPosition(
-      (position) => this.setState({position}),
-      (error) => console.error(error)
-    );
-  }
-  render() {
-    return (
-      <Text>
-        Position: {JSON.stringify(this.state.position)}
-      </Text>
-    );
-  }
 }`}
-          </Prism>
-
-          <h2>Extensibility</h2>
-          <p>
-            It is certainly possible to create a great app using React Native without writing a single line of native code, but React Native is also designed to be easily extended with custom native views and modules - that means you can reuse anything you{"'"}ve already built, and can import and use your favorite native libraries.
-          </p>
-          <h3>Creating iOS modules</h3>
-          <p>
-            To create a simple iOS module, create a new class that implements the RCTBridgeModule protocol, and wrap the function that you want to make available to JavaScript in RCT_EXPORT_METHOD. Additionally, the class itself must be explicitly exported with RCT_EXPORT_MODULE();.
-          </p>
-          <Prism>
-{`// Objective-C
-
-#import "RCTBridgeModule.h"
-
-@interface MyCustomModule : NSObject <RCTBridgeModule>
-@end
-
-@implementation MyCustomModule
-
-RCT_EXPORT_MODULE();
-
-// Available as NativeModules.MyCustomModule.processString
-RCT_EXPORT_METHOD(processString:(NSString *)input callback:(RCTResponseSenderBlock)callback)
-{
-  callback(@[[input stringByReplacingOccurrencesOfString:@"Goodbye" withString:@"Hello"]]);
-}
-@end`}
-          </Prism>
-          <Prism>
-{`// JavaScript
-
-import React, {
-  Component,
-} from 'react';
-import {
-  NativeModules,
-  Text,
-} from 'react-native';
-
-class Message extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { text: 'Goodbye World.' };
-  }
-  componentDidMount() {
-    NativeModules.MyCustomModule.processString(this.state.text, (text) => {
-      this.setState({text});
-    });
-  }
-  render() {
-    return (
-      <Text>{this.state.text}</Text>
-    );
-  }
-}`}
-          </Prism>
-
-          <h3>Creating iOS views</h3>
-          <p>
-            Custom iOS views can be exposed by subclassing RCTViewManager, implementing a -(UIView *)view method, and exporting properties with the RCT_EXPORT_VIEW_PROPERTY macro.  Then a simple JavaScript file connects the dots.
-          </p>
-          <Prism>
-{`// Objective-C
-
-#import "RCTViewManager.h"
-
-@interface MyCustomViewManager : RCTViewManager
-@end
-
-@implementation MyCustomViewManager
-
-RCT_EXPORT_MODULE()
-
-- (UIView *)view
-{
-  return [[MyCustomView alloc] init];
-}
-
-RCT_EXPORT_VIEW_PROPERTY(myCustomProperty, NSString);
-@end`}
-          </Prism>
-          <Prism>
-{`// JavaScript
-
-import React, {
-  Component,
-} from 'react';
-import {
-  requireNativeComponent,
-} from 'react-native';
-
-var NativeMyCustomView = requireNativeComponent('MyCustomView', MyCustomView);
-
-export default class MyCustomView extends Component {
-  static propTypes = {
-    myCustomProperty: React.PropTypes.oneOf(['a', 'b']),
-  };
-  render() {
-    return <NativeMyCustomView {...this.props} />;
-  }
-}
-`}
-          </Prism>
-
-          <h3>Creating Android modules</h3>
-          <p>
-            Likewise, Android also supports custom extensions, the methods are just slightly different.
-          </p>
-          <p>
-            To create a simple module in Android, create a new class that extends the ReactContextBaseJavaModule class, and annotate the function that you want to make available to JavaScript with @ReactMethod. Additionally, the class itself must be registered in the ReactPackage of your React Native application.
-          </p>
-          <Prism>
-{`// Java
-
-public class MyCustomModule extends ReactContextBaseJavaModule {
-
-// Available as NativeModules.MyCustomModule.processString
-  @ReactMethod
-  public void processString(String input, Callback callback) {
-    callback.invoke(input.replace("Goodbye", "Hello"));
-  }
-}
-`}
-</Prism>
-
-<Prism>
-{`// JavaScript
-
-import React, {
-  Component,
-} from 'react';
-import {
-  NativeModules,
-  Text,
-} from 'react-native';
-class Message extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { text: 'Goodbye World.' };
-  },
-  componentDidMount() {
-    NativeModules.MyCustomModule.processString(this.state.text, (text) => {
-      this.setState({text});
-    });
-  }
-  render() {
-    return (
-      <Text>{this.state.text}</Text>
-    );
-  }
-}
-`}
-          </Prism>
-
-          <h3>Creating Android views</h3>
-          <p>
-          Custom Android views can be exposed by extending SimpleViewManager, implementing a createViewInstance and getName methods, and exporting properties with the @ReactProp annotation. Then a simple JavaScript file connects the dots.
-          </p>
-          <Prism>
-{`// Java
-
-public class MyCustomViewManager extends SimpleViewManager<MyCustomView> {
-  @Override
-  public String getName() {
-    return "MyCustomView";
-  }
-
-  @Override
-  protected MyCustomView createViewInstance(ThemedReactContext reactContext) {
-    return new MyCustomView(reactContext);
-  }
-
-  @ReactProp(name = "myCustomProperty")
-  public void setMyCustomProperty(MyCustomView view, String value) {
-    view.setMyCustomProperty(value);
-  }
-}
-`}
-          </Prism>
-          <Prism>
-{`// JavaScript
-
-import React, {
-  Component,
-} from 'react';
-import {
-  requireNativeComponent,
-} from 'react-native';
-
-var NativeMyCustomView = requireNativeComponent('MyCustomView', MyCustomView);
-
-export default class MyCustomView extends Component {
-  static propTypes = {
-    myCustomProperty: React.PropTypes.oneOf(['a', 'b']),
-  };
-  render() {
-    return <NativeMyCustomView {...this.props} />;
-  }
-}
-`}
           </Prism>
           </div>
           <section className="home-bottom-section">
