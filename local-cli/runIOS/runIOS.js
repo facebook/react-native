@@ -83,20 +83,18 @@ function _runIOS(argv, config, resolve, reject) {
   console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
 
   let appPath = `build/Build/Products/Debug-iphonesimulator/${inferredSchemeName}.app`;
-  const xcodeBuildProcess = child_process.spawn('xcodebuild', xcodebuildArgs);
+  const xcodeBuildProcess = child_process.spawn('xcodebuild', xcodebuildArgs, {
+    stdio: [process.stdin, 'pipe', process.stderr]
+  });
 
   xcodeBuildProcess.stdout.on('data', (data) => {
-    console.log(data.toString().replace(/\s+$/g, ''));
+    process.stdout.write(data);
 
     // search this part of the process output for a path to the generated app and replace default
     const appPathFromLog = data.toString().match(/Touch (build\/Build\/Products\/.*\/.*\.app)/);
     if (appPathFromLog) {
       appPath = appPathFromLog[1];
     }
-  });
-
-  xcodeBuildProcess.stderr.on('data', (data) => {
-    console.log(`stderr: ${data}`);
   });
 
   xcodeBuildProcess.on('close', (code) => {
