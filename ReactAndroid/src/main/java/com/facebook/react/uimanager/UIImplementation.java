@@ -774,4 +774,8 @@ public class UIImplementation {
     }
     cssNode.markUpdateSeen();
   }
+
+  public void addUIBlock(UIBlock block) {
+    mOperationsQueue.enqueueUIBlock(block);
+  }
 }
