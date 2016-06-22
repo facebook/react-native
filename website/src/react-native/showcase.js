@@ -276,6 +276,14 @@ var featured = [
     infoLink: 'http://www.nydailynews.com/life-style/wego-concerts-app-links-music-fans-article-1.2066776',
     infoTitle: 'Wego Concerts: Like the love child of Tinder and StubHub',
   },
+  {
+    name: 'Table Tennis Match',
+    icon: 'https://lh3.googleusercontent.com/ErKf1dwOvsMa08hMDg-i-Rww7WVrTZvRgdtCvvs0dTD2eIguDNOpptHH4Z4npFoj4wtq=w300',
+    linkAppStore: 'https://itunes.apple.com/in/app/table-tennis-match/id1097458883?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.tabletennismatch',
+    infoLink: 'http://tabletennismatch.com/',
+    infoTitle: 'Table Tennis Match app for table tennis sports enthusiasts',
+  },
 ];
 
 featured.sort(function(a, b) {
