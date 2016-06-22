@@ -2,7 +2,7 @@
 id: basics-component-listview
 title: ListView
 layout: docs
-category: Basics
+category: The Basics
 permalink: docs/basics-component-listview.html
 next: basics-network
 ---
