@@ -1,10 +1,10 @@
 ---
-id: basics-integration-with-existing-apps
+id: integration-with-existing-apps
 title: Integration With Existing Apps
 layout: docs
-category: Basics
-permalink: docs/basics-integration-with-existing-apps.html
-next: sample-application-movies
+category: Guides
+permalink: docs/integration-with-existing-apps.html
+next: style
 ---
 
 <div class="integration-toggler">

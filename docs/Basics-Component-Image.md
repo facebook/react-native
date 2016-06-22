@@ -2,7 +2,7 @@
 id: basics-component-image
 title: Image
 layout: docs
-category: Basics
+category: The Basics
 permalink: docs/basics-component-image.html
 next: basics-component-view
 ---
@@ -15,13 +15,13 @@ The simplest way to render an image is to provide a source file to that image vi
 
 This example displays a checkbox `Image` on the device.
 
-```JavaScript
+```ReactNativeWebPlayer
 import React from 'react';
 import { AppRegistry, Image } from 'react-native';
 
 const AwesomeProject = () => {
   return (
-    <Image source={require('./img/check.png')} />
+    <Image source={require('./img/favicon.png')} />
   );
 }
 
