@@ -19,6 +19,7 @@
 #import <zlib.h>
 #import <dlfcn.h>
 
+#import "RCTAssert.h"
 #import "RCTLog.h"
 
 NSString *const RCTErrorUnspecified = @"EUNSPECIFIED";
@@ -228,9 +229,31 @@ NSString *RCTMD5Hash(NSString *string)
   ];
 }
 
+BOOL RCTIsMainQueue()
+{
+  static void *mainQueueKey = &mainQueueKey;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    dispatch_queue_set_specific(dispatch_get_main_queue(),
+                                mainQueueKey, mainQueueKey, NULL);
+  });
+  return dispatch_get_specific(mainQueueKey) == mainQueueKey;
+}
+
+void RCTExecuteOnMainQueue(dispatch_block_t block)
+{
+  if (RCTIsMainQueue()) {
+    block();
+  } else {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      block();
+    });
+  }
+}
+
 void RCTExecuteOnMainThread(dispatch_block_t block, BOOL sync)
 {
-  if ([NSThread isMainThread]) {
+  if (RCTIsMainQueue()) {
     block();
   } else if (sync) {
     dispatch_sync(dispatch_get_main_queue(), ^{
@@ -258,6 +281,10 @@ CGFloat RCTScreenScale()
 
 CGSize RCTScreenSize()
 {
+  // FIXME: this caches the bounds at app start, whatever those were, and then
+  // doesn't update when the device is rotated. We need to find another thread-
+  // safe way to get the screen size.
+
   static CGSize size;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -433,6 +460,21 @@ UIWindow *__nullable RCTKeyWindow(void)
 
   // TODO: replace with a more robust solution
   return RCTSharedApplication().keyWindow;
+}
+
+UIViewController *__nullable RCTPresentedViewController(void)
+{
+  if (RCTRunningInAppExtension()) {
+    return nil;
+  }
+
+  UIViewController *controller = RCTKeyWindow().rootViewController;
+
+  while (controller.presentedViewController) {
+    controller = controller.presentedViewController;
+  }
+
+  return controller;
 }
 
 BOOL RCTForceTouchAvailable(void)

@@ -63,6 +63,11 @@ var TabBarItemIOS = React.createClass({
      */
     onPress: React.PropTypes.func,
     /**
+     * If set to true it renders the image as original,
+     * it defaults to being displayed as a template
+     */
+    renderAsOriginal: React.PropTypes.bool,
+    /**
      * It specifies whether the children are visible or not. If you see a
      * blank content, you probably forgot to add a selected one.
      */

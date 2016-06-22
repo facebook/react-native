@@ -42,8 +42,8 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
-                     reactTag:(NSNumber *)reactTag NS_DESIGNATED_INITIALIZER;
-
+                     reactTag:(NSNumber *)reactTag
+               sizeFlexiblity:(RCTRootViewSizeFlexibility)sizeFlexibility NS_DESIGNATED_INITIALIZER;
 @end
 
 @implementation RCTRootView
@@ -58,11 +58,11 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
   RCTAssert(bridge, @"A bridge instance is required to create an RCTRootView");
   RCTAssert(moduleName, @"A moduleName is required to create an RCTRootView");
 
-  RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTRootView init]", nil);
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTRootView init]", nil);
 
   if ((self = [super initWithFrame:CGRectZero])) {
 
@@ -74,6 +74,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     _loadingViewFadeDelay = 0.25;
     _loadingViewFadeDuration = 0.25;
     _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
+    self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeDidReload)
@@ -97,7 +98,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     [self showLoadingView];
   }
 
-  RCT_PROFILE_END_EVENT(0, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
 
   return self;
 }
@@ -174,7 +175,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (NSNumber *)reactTag
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
   if (!super.reactTag) {
     /**
      * Every root view that is created must have a unique react tag.
@@ -190,14 +191,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)bridgeDidReload
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
   // Clear the reactTag so it can be re-assigned
   self.reactTag = nil;
 }
 
 - (void)javaScriptDidLoad:(NSNotification *)notification
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
   RCTBridge *bridge = notification.userInfo[@"bridge"];
   [self bundleFinishedLoading:bridge];
 }
@@ -211,7 +212,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_contentView removeFromSuperview];
   _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds
                                                     bridge:bridge
-                                                  reactTag:self.reactTag];
+                                                  reactTag:self.reactTag
+                                            sizeFlexiblity:self.sizeFlexibility];
   [self runApplication:bridge];
 
   _contentView.backgroundColor = self.backgroundColor;
@@ -248,7 +250,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setAppProperties:(NSDictionary *)appProperties
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   if ([_appProperties isEqualToDictionary:appProperties]) {
     return;
@@ -319,13 +321,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
                      reactTag:(NSNumber *)reactTag
+               sizeFlexiblity:(RCTRootViewSizeFlexibility)sizeFlexibility
 {
   if ((self = [super initWithFrame:frame])) {
     _bridge = bridge;
     self.reactTag = reactTag;
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
     [self addGestureRecognizer:_touchHandler];
-    [_bridge.uiManager registerRootView:self];
+    [_bridge.uiManager registerRootView:self withSizeFlexibility:sizeFlexibility];
     self.layer.backgroundColor = NULL;
   }
   return self;
@@ -334,7 +337,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
 
-- (void)insertReactSubview:(id<RCTComponent>)subview atIndex:(NSInteger)atIndex
+- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
 {
   [super insertReactSubview:subview atIndex:atIndex];
   RCTPerformanceLoggerEnd(RCTPLTTI);
@@ -359,7 +362,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
 {
   _backgroundColor = backgroundColor;
   if (self.reactTag && _bridge.isValid) {
-    [_bridge.uiManager setBackgroundColor:backgroundColor forRootView:self];
+    [_bridge.uiManager setBackgroundColor:backgroundColor forView:self];
   }
 }
 

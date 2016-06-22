@@ -12,7 +12,11 @@ package com.facebook.react.views.scroll;
 import javax.annotation.Nullable;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ScrollView;
@@ -41,13 +45,26 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   private boolean mRemoveClippedSubviews;
   private boolean mScrollEnabled = true;
   private boolean mSendMomentumEvents;
+  private @Nullable FpsListener mFpsListener = null;
+  private @Nullable String mScrollPerfTag;
+  private @Nullable Drawable mEndBackground;
+  private int mEndFillColor = Color.TRANSPARENT;
 
   public ReactScrollView(Context context) {
+    this(context, null);
+  }
+
+  public ReactScrollView(Context context, @Nullable FpsListener fpsListener) {
     super(context);
+    mFpsListener = fpsListener;
   }
 
   public void setSendMomentumEvents(boolean sendMomentumEvents) {
     mSendMomentumEvents = sendMomentumEvents;
+  }
+
+  public void setScrollPerfTag(String scrollPerfTag) {
+    mScrollPerfTag = scrollPerfTag;
   }
 
   public void setScrollEnabled(boolean scrollEnabled) {
@@ -112,6 +129,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       NativeGestureUtil.notifyNativeGestureStarted(this, ev);
       ReactScrollViewHelper.emitScrollBeginDragEvent(this);
       mDragging = true;
+      enableFpsListener();
       return true;
     }
 
@@ -128,6 +146,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     if (action == MotionEvent.ACTION_UP && mDragging) {
       ReactScrollViewHelper.emitScrollEndDragEvent(this);
       mDragging = false;
+      disableFpsListener();
     }
     return super.onTouchEvent(ev);
   }
@@ -169,14 +188,16 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   @Override
   public void fling(int velocityY) {
     super.fling(velocityY);
-    if (mSendMomentumEvents) {
+    if (mSendMomentumEvents || isScrollPerfLoggingEnabled()) {
       mFlinging = true;
+      enableFpsListener();
       ReactScrollViewHelper.emitScrollMomentumBeginEvent(this);
       Runnable r = new Runnable() {
         @Override
         public void run() {
           if (mDoneFlinging) {
             mFlinging = false;
+            disableFpsListener();
             ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactScrollView.this);
           } else {
             mDoneFlinging = true;
@@ -185,6 +206,45 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
         }
       };
       postOnAnimationDelayed(r, ReactScrollViewHelper.MOMENTUM_DELAY);
+    }
+  }
+
+  private void enableFpsListener() {
+    if (isScrollPerfLoggingEnabled()) {
+      Assertions.assertNotNull(mFpsListener);
+      Assertions.assertNotNull(mScrollPerfTag);
+      mFpsListener.enable(mScrollPerfTag);
+    }
+  }
+
+  private void disableFpsListener() {
+    if (isScrollPerfLoggingEnabled()) {
+      Assertions.assertNotNull(mFpsListener);
+      Assertions.assertNotNull(mScrollPerfTag);
+      mFpsListener.disable(mScrollPerfTag);
+    }
+  }
+
+  private boolean isScrollPerfLoggingEnabled() {
+    return mFpsListener != null && mScrollPerfTag != null && !mScrollPerfTag.isEmpty();
+  }
+
+  @Override
+  public void draw(Canvas canvas) {
+    if (mEndFillColor != Color.TRANSPARENT) {
+      final View content = getChildAt(0);
+      if (mEndBackground != null && content != null && content.getBottom() < getHeight()) {
+        mEndBackground.setBounds(0, content.getBottom(), getWidth(), getHeight());
+        mEndBackground.draw(canvas);
+      }
+    }
+    super.draw(canvas);
+  }
+
+  public void setEndFillColor(int color) {
+    if (color != mEndFillColor) {
+      mEndFillColor = color;
+      mEndBackground = new ColorDrawable(mEndFillColor);
     }
   }
 }

@@ -27,6 +27,8 @@
 
 RCT_EXPORT_MODULE()
 
+@synthesize bridge = _bridge;
+
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
@@ -61,15 +63,13 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   }
 
   NSString *title = [RCTConvert NSString:options[@"title"]];
+  NSString *message = [RCTConvert NSString:options[@"message"]];
   NSArray<NSString *> *buttons = [RCTConvert NSStringArray:options[@"options"]];
   NSInteger destructiveButtonIndex = options[@"destructiveButtonIndex"] ? [RCTConvert NSInteger:options[@"destructiveButtonIndex"]] : -1;
   NSInteger cancelButtonIndex = options[@"cancelButtonIndex"] ? [RCTConvert NSInteger:options[@"cancelButtonIndex"]] : -1;
 
-  UIViewController *controller = RCTKeyWindow().rootViewController;
-  while (controller.presentedViewController) {
-    controller = controller.presentedViewController;
-  }
-    
+  UIViewController *controller = RCTPresentedViewController();
+
   if (controller == nil) {
     RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", options);
     return;
@@ -113,7 +113,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   {
     UIAlertController *alertController =
     [UIAlertController alertControllerWithTitle:title
-                                        message:nil
+                                        message:message
                                  preferredStyle:UIAlertControllerStyleActionSheet];
 
     NSInteger index = 0;
@@ -194,7 +194,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
     shareController.excludedActivityTypes = excludedActivityTypes;
   }
 
-  UIViewController *controller = RCTKeyWindow().rootViewController;
+  UIViewController *controller = RCTPresentedViewController();
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 

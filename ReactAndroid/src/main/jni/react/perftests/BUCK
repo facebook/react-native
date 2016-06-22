@@ -9,10 +9,10 @@ cxx_library(
   ],
   deps = [
     '//native:base',
-    '//native/jni:jni',
+    '//native/fb:fb',
   ],
   visibility = [
-    '//instrumentation_tests/com/facebook/catalyst/...',
+    '//instrumentation_tests/com/facebook/react/...',
   ],
 )
 

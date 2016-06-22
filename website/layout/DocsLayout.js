@@ -14,14 +14,19 @@ var HeaderWithGithub = require('HeaderWithGithub');
 var Marked = require('Marked');
 var React = require('React');
 var Site = require('Site');
+var Metadata = require('Metadata');
 
 var DocsLayout = React.createClass({
   childContextTypes: {
-    permalink: React.PropTypes.string
+    permalink: React.PropTypes.string,
+    version: React.PropTypes.string
   },
 
   getChildContext: function() {
-    return {permalink: this.props.metadata.permalink};
+    return {
+      permalink: this.props.metadata.permalink,
+      version: Metadata.config.RN_VERSION || 'next'
+    };
   },
 
   render: function() {

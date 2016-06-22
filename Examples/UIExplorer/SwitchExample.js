@@ -15,12 +15,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
+  Platform,
   Switch,
   Text,
   View
-} = React;
+} = ReactNative;
 
 var BasicSwitchExample = React.createClass({
   getInitialState() {
@@ -107,7 +109,7 @@ var EventSwitchExample = React.createClass({
             onValueChange={(value) => this.setState({eventSwitchIsOn: value})}
             style={{marginBottom: 10}}
             value={this.state.eventSwitchIsOn} />
-            <Text>{this.state.eventSwitchIsOn ? 'On' : 'Off'}</Text>
+          <Text>{this.state.eventSwitchIsOn ? 'On' : 'Off'}</Text>
         </View>
         <View>
           <Switch
@@ -128,26 +130,26 @@ var EventSwitchExample = React.createClass({
 var examples = [
   {
     title: 'Switches can be set to true or false',
-    render(): ReactElement { return <BasicSwitchExample />; }
+    render(): ReactElement<any> { return <BasicSwitchExample />; }
   },
   {
     title: 'Switches can be disabled',
-    render(): ReactElement { return <DisabledSwitchExample />; }
+    render(): ReactElement<any> { return <DisabledSwitchExample />; }
   },
   {
     title: 'Change events can be detected',
-    render(): ReactElement { return <EventSwitchExample />; }
+    render(): ReactElement<any> { return <EventSwitchExample />; }
   },
   {
     title: 'Switches are controlled components',
-    render(): ReactElement { return <Switch />; }
+    render(): ReactElement<any> { return <Switch />; }
   }
 ];
 
-if (React.Platform.OS === 'ios') {
+if (Platform.OS === 'ios') {
   examples.push({
     title: 'Custom colors can be provided',
-    render(): ReactElement { return <ColorSwitchExample />; }
+    render(): ReactElement<any> { return <ColorSwitchExample />; }
   });
 }
 

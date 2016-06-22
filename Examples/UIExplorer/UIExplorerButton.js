@@ -15,12 +15,13 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   StyleSheet,
   Text,
   TouchableHighlight,
-} = React;
+} = ReactNative;
 
 var UIExplorerButton = React.createClass({
   propTypes: {

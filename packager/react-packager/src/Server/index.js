@@ -14,6 +14,7 @@ const FileWatcher = require('node-haste').FileWatcher;
 const getPlatformExtension = require('node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const Promise = require('promise');
+const SourceMapConsumer = require('source-map').SourceMapConsumer;
 
 const _ = require('lodash');
 const declareOpts = require('../lib/declareOpts');
@@ -45,7 +46,11 @@ const validateOpts = declareOpts({
     default: false,
   },
   transformModulePath: {
-    type:'string',
+    type: 'string',
+    required: false,
+  },
+  extraNodeModules: {
+    type: 'object',
     required: false,
   },
   nonPersistent: {
@@ -62,7 +67,7 @@ const validateOpts = declareOpts({
       'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'svg', 'webp', // Image formats
       'm4v', 'mov', 'mp4', 'mpeg', 'mpg', 'webm', // Video formats
       'aac', 'aiff', 'caf', 'm4a', 'mp3', 'wav', // Audio formats
-      'html', // Document formats
+      'html', 'pdf', // Document formats
     ],
   },
   transformTimeoutInterval: {
@@ -127,6 +132,10 @@ const bundleOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
+  isolateModuleIDs: {
+    type: 'boolean',
+    default: false
+  }
 });
 
 const dependencyOpts = declareOpts({
@@ -163,7 +172,7 @@ class Server {
 
     const assetGlobs = opts.assetExts.map(ext => '**/*.' + ext);
 
-    var watchRootConfigs = opts.projectRoots.map(dir => {
+    let watchRootConfigs = opts.projectRoots.map(dir => {
       return {
         dir: dir,
         globs: [
@@ -217,6 +226,12 @@ class Server {
     this._hmrFileChangeListener = listener;
   }
 
+  addFileChangeListener(listener) {
+    if (this._fileChangeListeners.indexOf(listener) === -1) {
+      this._fileChangeListeners.push(listener);
+    }
+  }
+
   buildBundle(options) {
     return Promise.resolve().then(() => {
       if (!options.platform) {
@@ -248,8 +263,15 @@ class Server {
     return this._bundler.hmrBundle(modules, host, port);
   }
 
-  getShallowDependencies(entryFile) {
-    return this._bundler.getShallowDependencies(entryFile);
+  getShallowDependencies(options) {
+    return Promise.resolve().then(() => {
+      if (!options.platform) {
+        options.platform = getPlatformExtension(options.entryFile);
+      }
+
+      const opts = dependencyOpts(options);
+      return this._bundler.getShallowDependencies(opts);
+    });
   }
 
   getModuleForPath(entryFile) {
@@ -288,6 +310,15 @@ class Server {
       return;
     }
 
+    Promise.all(
+      this._fileChangeListeners.map(listener => listener(absPath))
+    ).then(
+      () => this._onFileChangeComplete(absPath),
+      () => this._onFileChangeComplete(absPath)
+    );
+  }
+
+  _onFileChangeComplete(absPath) {
     // Make sure the file watcher event runs through the system before
     // we rebuild the bundles.
     this._debouncedFileChangeHandler(absPath);
@@ -312,12 +343,11 @@ class Server {
   }
 
   _processDebugRequest(reqUrl, res) {
-    var ret = '<!doctype html>';
+    let ret = '<!doctype html>';
     const pathname = url.parse(reqUrl).pathname;
     const parts = pathname.split('/').filter(Boolean);
     if (parts.length === 1) {
       ret += '<div><a href="/debug/bundles">Cached Bundles</a></div>';
-      ret += '<div><a href="/debug/graph">Dependency Graph</a></div>';
       res.end(ret);
     } else if (parts[1] === 'bundles') {
       ret += '<h1> Cached Bundles </h1>';
@@ -331,13 +361,9 @@ class Server {
         e => {
           res.writeHead(500);
           res.end('Internal Error');
-          console.log(e.stack);
+          console.log(e.stack); // eslint-disable-line no-console-disallow
         }
       );
-    } else if (parts[1] === 'graph'){
-      ret += '<h1> Dependency Graph </h2>';
-      ret += this._bundler.getGraphDebugInfo();
-      res.end(ret);
     } else {
       res.writeHead('404');
       res.end('Invalid debug request');
@@ -380,9 +406,9 @@ class Server {
 
   processRequest(req, res, next) {
     const urlObj = url.parse(req.url, true);
-    var pathname = urlObj.pathname;
+    const pathname = urlObj.pathname;
 
-    var requestType;
+    let requestType;
     if (pathname.match(/\.bundle$/)) {
       requestType = 'bundle';
     } else if (pathname.match(/\.map$/)) {
@@ -398,6 +424,9 @@ class Server {
     } else if (pathname.match(/^\/assets\//)) {
       this._processAssetsRequest(req, res);
       return;
+    } else if (pathname === '/symbolicate') {
+      this._symbolicate(req, res);
+      return;
     } else {
       next();
       return;
@@ -412,7 +441,7 @@ class Server {
     building.then(
       p => {
         if (requestType === 'bundle') {
-          var bundleSource = p.getSource({
+          const bundleSource = p.getSource({
             inlineSourceMap: options.inlineSourceMap,
             minify: options.minify,
             dev: options.dev,
@@ -427,7 +456,7 @@ class Server {
           }
           Activity.endEvent(startReqEventId);
         } else if (requestType === 'map') {
-          var sourceMap = p.getSourceMap({
+          let sourceMap = p.getSourceMap({
             minify: options.minify,
             dev: options.dev,
           });
@@ -440,7 +469,7 @@ class Server {
           res.end(sourceMap);
           Activity.endEvent(startReqEventId);
         } else if (requestType === 'assets') {
-          var assetsList = JSON.stringify(p.getAssets());
+          const assetsList = JSON.stringify(p.getAssets());
           res.setHeader('Content-Type', 'application/json');
           res.end(assetsList);
           Activity.endEvent(startReqEventId);
@@ -448,6 +477,77 @@ class Server {
       },
       this._handleError.bind(this, res, optionsJson)
     ).done();
+  }
+
+  _symbolicate(req, res) {
+    const startReqEventId = Activity.startEvent('symbolicate');
+    new Promise.resolve(req.rawBody).then(body => {
+      const stack = JSON.parse(body).stack;
+
+      // In case of multiple bundles / HMR, some stack frames can have
+      // different URLs from others
+      const urlIndexes = {};
+      const uniqueUrls = [];
+      stack.forEach(frame => {
+        const sourceUrl = frame.file;
+        // Skip `/debuggerWorker.js` which drives remote debugging because it
+        // does not need to symbolication.
+        if (!urlIndexes.hasOwnProperty(sourceUrl) &&
+            !sourceUrl.endsWith('/debuggerWorker.js')) {
+          urlIndexes[sourceUrl] = uniqueUrls.length;
+          uniqueUrls.push(sourceUrl);
+        }
+      });
+
+      const sourceMaps = uniqueUrls.map(
+        sourceUrl => this._sourceMapForURL(sourceUrl)
+      );
+      return Promise.all(sourceMaps).then(consumers => {
+        return stack.map(frame => {
+          const sourceUrl = frame.file;
+          if (!urlIndexes.hasOwnProperty(sourceUrl)) {
+            return frame;
+          }
+          const idx = urlIndexes[sourceUrl];
+          const consumer = consumers[idx];
+          const original = consumer.originalPositionFor({
+            line: frame.lineNumber,
+            column: frame.column,
+          });
+          if (!original) {
+            return frame;
+          }
+          return Object.assign({}, frame, {
+            file: original.source,
+            lineNumber: original.line,
+            column: original.column,
+          });
+        });
+      });
+    }).then(
+      stack => res.end(JSON.stringify({stack: stack})),
+      error => {
+        console.error(error.stack || error);
+        res.statusCode = 500;
+        res.end(JSON.stringify({error: error.message}));
+      }
+    ).done(() => {
+      Activity.endEvent(startReqEventId);
+    });
+  }
+
+  _sourceMapForURL(reqUrl) {
+    const options = this._getOptionsFromUrl(reqUrl);
+    const optionsJson = JSON.stringify(options);
+    const building = this._bundles[optionsJson] || this.buildBundle(options);
+    this._bundles[optionsJson] = building;
+    return building.then(p => {
+      const sourceMap = p.getSourceMap({
+        minify: options.minify,
+        dev: options.dev,
+      });
+      return new SourceMapConsumer(sourceMap);
+    });
   }
 
   _handleError(res, bundleID, error) {

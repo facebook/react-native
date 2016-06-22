@@ -11,9 +11,10 @@
  */
 'use strict';
 
-var ActivityIndicatorIOS = require('ActivityIndicatorIOS');
+var ActivityIndicator = require('ActivityIndicator');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var UIManager = require('UIManager');
@@ -60,7 +61,7 @@ type Event = Object;
 
 var defaultRenderLoading = () => (
   <View style={styles.loadingView}>
-    <ActivityIndicatorIOS />
+    <ActivityIndicator />
   </View>
 );
 var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
@@ -212,6 +213,13 @@ var WebView = React.createClass({
     injectedJavaScript: PropTypes.string,
 
     /**
+     * Sets the user-agent for this WebView. The user-agent can also be set in native using
+     * WebViewConfig. This prop will overwrite that config.
+     * @platform android
+     */
+    userAgent: PropTypes.string,
+
+    /**
      * Sets whether the webpage scales to fit the view and the user can change the scale.
      */
     scalesPageToFit: PropTypes.bool,
@@ -233,6 +241,12 @@ var WebView = React.createClass({
      * @platform ios
      */
     allowsInlineMediaPlayback: PropTypes.bool,
+
+    /**
+     * Determines whether HTML5 audio & videos require the user to tap before they can
+     * start playing. The default value is `false`.
+     */
+    mediaPlaybackRequiresUserAction: PropTypes.bool,
   },
 
   getInitialState: function() {
@@ -305,12 +319,13 @@ var WebView = React.createClass({
         decelerationRate={decelerationRate}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
-        onLoadingStart={this.onLoadingStart}
-        onLoadingFinish={this.onLoadingFinish}
-        onLoadingError={this.onLoadingError}
+        onLoadingStart={this._onLoadingStart}
+        onLoadingFinish={this._onLoadingFinish}
+        onLoadingError={this._onLoadingError}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         scalesPageToFit={this.props.scalesPageToFit}
         allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
+        mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
       />;
 
     return (
@@ -321,6 +336,9 @@ var WebView = React.createClass({
     );
   },
 
+  /**
+   * Go forward one page in the webview's history.
+   */
   goForward: function() {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
@@ -329,6 +347,9 @@ var WebView = React.createClass({
     );
   },
 
+  /**
+   * Go back one page in the webview's history.
+   */
   goBack: function() {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
@@ -337,10 +358,22 @@ var WebView = React.createClass({
     );
   },
 
+  /**
+   * Reloads the current page.
+   */
   reload: function() {
+    this.setState({viewState: WebViewState.LOADING});
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.reload,
+      null
+    );
+  },
+
+  stopLoading: function() {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.stopLoading,
       null
     );
   },
@@ -349,23 +382,26 @@ var WebView = React.createClass({
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
    */
-  updateNavigationState: function(event: Event) {
+  _updateNavigationState: function(event: Event) {
     if (this.props.onNavigationStateChange) {
       this.props.onNavigationStateChange(event.nativeEvent);
     }
   },
 
+  /**
+   * Returns the native webview node.
+   */
   getWebViewHandle: function(): any {
-    return React.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
+    return ReactNative.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
   },
 
-  onLoadingStart: function(event: Event) {
+  _onLoadingStart: function(event: Event) {
     var onLoadStart = this.props.onLoadStart;
     onLoadStart && onLoadStart(event);
-    this.updateNavigationState(event);
+    this._updateNavigationState(event);
   },
 
-  onLoadingError: function(event: Event) {
+  _onLoadingError: function(event: Event) {
     event.persist(); // persist this event because we need to store it
     var {onError, onLoadEnd} = this.props;
     onError && onError(event);
@@ -378,14 +414,14 @@ var WebView = React.createClass({
     });
   },
 
-  onLoadingFinish: function(event: Event) {
+  _onLoadingFinish: function(event: Event) {
     var {onLoad, onLoadEnd} = this.props;
     onLoad && onLoad(event);
     onLoadEnd && onLoadEnd(event);
     this.setState({
       viewState: WebViewState.IDLE,
     });
-    this.updateNavigationState(event);
+    this._updateNavigationState(event);
   },
 });
 

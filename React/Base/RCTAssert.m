@@ -87,7 +87,7 @@ void RCTPerformBlockWithAssertFunction(void (^block)(void), RCTAssertFunction as
 NSString *RCTCurrentThreadName(void)
 {
   NSThread *thread = [NSThread currentThread];
-  NSString *threadName = thread.isMainThread ? @"main" : thread.name;
+  NSString *threadName = RCTIsMainQueue() || thread.isMainThread ? @"main" : thread.name;
   if (threadName.length == 0) {
     const char *label = dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL);
     if (label && strlen(label) > 0) {
@@ -156,8 +156,19 @@ NSString *RCTFormatError(NSString *message, NSArray<NSDictionary<NSString *, id>
   NSMutableString *prettyStack = [NSMutableString string];
   if (stackTrace) {
     [prettyStack appendString:@", stack:\n"];
+
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^(\\d+\\.js)$"
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:NULL];
     for (NSDictionary<NSString *, id> *frame in stackTrace) {
-      [prettyStack appendFormat:@"%@@%@:%@\n", frame[@"methodName"], frame[@"lineNumber"], frame[@"column"]];
+      NSString *fileName = [frame[@"file"] lastPathComponent];
+      if (fileName && [regex numberOfMatchesInString:fileName options:0 range:NSMakeRange(0, [fileName length])]) {
+        fileName = [fileName stringByAppendingString:@":"];
+      } else {
+        fileName = @"";
+      }
+
+      [prettyStack appendFormat:@"%@@%@%@:%@\n", frame[@"methodName"], fileName, frame[@"lineNumber"], frame[@"column"]];
     }
   }
 

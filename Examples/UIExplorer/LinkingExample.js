@@ -13,14 +13,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Linking,
   StyleSheet,
   Text,
-  TouchableNativeFeedback,
+  TouchableOpacity,
   View,
-} = React;
+} = ReactNative;
 var UIExplorerBlock = require('./UIExplorerBlock');
 
 var OpenURLButton = React.createClass({
@@ -41,12 +42,12 @@ var OpenURLButton = React.createClass({
 
   render: function() {
     return (
-      <TouchableNativeFeedback
+      <TouchableOpacity
         onPress={this.handleClick}>
         <View style={styles.button}>
           <Text style={styles.text}>Open {this.props.url}</Text>
         </View>
-      </TouchableNativeFeedback>
+      </TouchableOpacity>
     );
   }
 });

@@ -15,13 +15,13 @@
 #import "RCTProfile.h"
 
 static int64_t RCTPLData[RCTPLSize][2] = {};
-static int64_t RCTPLCookies[RCTPLSize] = {};
+static NSUInteger RCTPLCookies[RCTPLSize] = {};
 
 void RCTPerformanceLoggerStart(RCTPLTag tag)
 {
   if (RCTProfileIsProfiling()) {
     NSString *label = RCTPerformanceLoggerLabels()[tag];
-    RCTPLCookies[tag] = RCTProfileBeginAsyncEvent(0, label, nil);
+    RCTPLCookies[tag] = RCTProfileBeginAsyncEvent(RCTProfileTagAlways, label, nil);
   }
 
   RCTPLData[tag][0] = CACurrentMediaTime() * 1000;
@@ -35,7 +35,7 @@ void RCTPerformanceLoggerEnd(RCTPLTag tag)
 
     if (RCTProfileIsProfiling()) {
       NSString *label = RCTPerformanceLoggerLabels()[tag];
-      RCTProfileEndAsyncEvent(0, @"native", RCTPLCookies[tag], label, @"RCTPerformanceLogger", nil);
+      RCTProfileEndAsyncEvent(RCTProfileTagAlways, @"native", RCTPLCookies[tag], label, @"RCTPerformanceLogger", nil);
     }
   } else {
     RCTLogInfo(@"Unbalanced calls start/end for tag %li", (unsigned long)tag);
@@ -46,6 +46,12 @@ void RCTPerformanceLoggerSet(RCTPLTag tag, int64_t value)
 {
   RCTPLData[tag][0] = 0;
   RCTPLData[tag][1] = value;
+}
+
+void RCTPerformanceLoggerAdd(RCTPLTag tag, int64_t value)
+{
+  RCTPLData[tag][0] = 0;
+  RCTPLData[tag][1] += value;
 }
 
 void RCTPerformanceLoggerAppendStart(RCTPLTag tag)
@@ -65,26 +71,12 @@ void RCTPerformanceLoggerAppendEnd(RCTPLTag tag)
 
 NSArray<NSNumber *> *RCTPerformanceLoggerOutput(void)
 {
-  return @[
-    @(RCTPLData[RCTPLScriptDownload][0]),
-    @(RCTPLData[RCTPLScriptDownload][1]),
-    @(RCTPLData[RCTPLScriptExecution][0]),
-    @(RCTPLData[RCTPLScriptExecution][1]),
-    @(RCTPLData[RCTPLNativeModuleInit][0]),
-    @(RCTPLData[RCTPLNativeModuleInit][1]),
-    @(RCTPLData[RCTPLNativeModuleMainThread][0]),
-    @(RCTPLData[RCTPLNativeModuleMainThread][1]),
-    @(RCTPLData[RCTPLNativeModulePrepareConfig][0]),
-    @(RCTPLData[RCTPLNativeModulePrepareConfig][1]),
-    @(RCTPLData[RCTPLNativeModuleInjectConfig][0]),
-    @(RCTPLData[RCTPLNativeModuleInjectConfig][1]),
-    @(RCTPLData[RCTPLJSCExecutorSetup][0]),
-    @(RCTPLData[RCTPLJSCExecutorSetup][1]),
-    @(RCTPLData[RCTPLTTI][0]),
-    @(RCTPLData[RCTPLTTI][1]),
-    @(RCTPLData[RCTPLBundleSize][0]),
-    @(RCTPLData[RCTPLBundleSize][1]),
-  ];
+  NSMutableArray *result = [NSMutableArray array];
+  for (NSUInteger index = 0; index < RCTPLSize; index++) {
+    [result addObject:@(RCTPLData[index][0])];
+    [result addObject:@(RCTPLData[index][1])];
+  }
+  return result;
 }
 
 NSArray *RCTPerformanceLoggerLabels(void)
@@ -95,11 +87,20 @@ NSArray *RCTPerformanceLoggerLabels(void)
     labels = @[
       @"ScriptDownload",
       @"ScriptExecution",
+      @"RAMBundleLoad",
+      @"RAMStartupCodeSize",
+      @"RAMNativeRequires",
+      @"RAMNativeRequiresCount",
+      @"RAMNativeRequiresSize",
       @"NativeModuleInit",
       @"NativeModuleMainThread",
       @"NativeModulePrepareConfig",
       @"NativeModuleInjectConfig",
+      @"NativeModuleMainThreadUsesCount",
+      @"JSCWrapperOpenLibrary",
+      @"JSCWrapperLoadFunctions",
       @"JSCExecutorSetup",
+      @"BridgeStartup",
       @"RootViewTTI",
       @"BundleSize",
     ];
@@ -116,6 +117,13 @@ NSArray *RCTPerformanceLoggerLabels(void)
 RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
+
+- (instancetype)init
+{
+  // We're only overriding this to ensure the module gets created at startup
+  // TODO (t11106126): Remove once we have more declarative control over module setup.
+  return [super init];
+}
 
 - (void)setBridge:(RCTBridge *)bridge
 {

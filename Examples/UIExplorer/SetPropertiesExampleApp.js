@@ -15,11 +15,12 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const {
   Text,
   View,
-} = React;
+} = ReactNative;
 
 class SetPropertiesExampleApp extends React.Component {
 

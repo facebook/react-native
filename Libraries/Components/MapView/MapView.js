@@ -35,6 +35,15 @@ export type AnnotationDragState = $Enum<{
   ending: string;
 }>;
 
+/**
+ * A component for displaying embeddable maps and annotations using the native
+ * iOS MKMapView class. The Android version is not currently available in the
+ * open source React Native project, but you can use Leland Richardson's
+ * cross-platform and more feature-complete
+ * [react-native-maps](https://github.com/lelandrichardson/react-native-maps)
+ * instead.
+ */
+
 const MapView = React.createClass({
 
   mixins: [NativeMethodsMixin],
@@ -351,6 +360,7 @@ const MapView = React.createClass({
         }
         var viewIndex = children.length;
         children.push(React.cloneElement(view, {
+          // $FlowFixMe - An array of styles should be fine
           style: [styles.annotationView, view.props.style || {}]
         }));
       }
@@ -436,9 +446,6 @@ const MapView = React.createClass({
       onAnnotationDragStateChange = (event: Event) => {
         const annotation = findByAnnotationId(event.nativeEvent.annotationId);
         if (annotation) {
-          // Update location
-          annotation.latitude = event.nativeEvent.latitude;
-          annotation.longitude = event.nativeEvent.longitude;
           // Call callback
           annotation.onDragStateChange &&
             annotation.onDragStateChange(event.nativeEvent);

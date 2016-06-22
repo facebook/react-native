@@ -6,10 +6,8 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-'use strict';
 
 const fs = require('fs');
-const log = require('../util/log').out('dependencies');
 const parseCommandLine = require('../util/parseCommandLine');
 const path = require('path');
 const Promise = require('promise');
@@ -18,13 +16,13 @@ const ReactPackager = require('../../packager/react-packager');
 /**
  * Returns the dependencies an entry path has.
  */
-function dependencies(argv, config) {
+function dependencies(argv, config, packagerInstance) {
   return new Promise((resolve, reject) => {
-    _dependencies(argv, config, resolve, reject);
+    _dependencies(argv, config, resolve, reject, packagerInstance);
   });
 }
 
-function _dependencies(argv, config, resolve, reject) {
+function _dependencies(argv, config, resolve, reject, packagerInstance) {
   const args = parseCommandLine([
     {
       command: 'entry-file',
@@ -42,8 +40,8 @@ function _dependencies(argv, config, resolve, reject) {
     }, {
       command: 'transformer',
       type: 'string',
-      default: require.resolve('../../packager/transformer'),
-      description: 'Specify a custom transformer to be used (absolute path)'
+      default: null,
+      description: 'Specify a custom transformer to be used'
     }, {
       command: 'verbose',
       description: 'Enables logging',
@@ -56,12 +54,17 @@ function _dependencies(argv, config, resolve, reject) {
     reject(`File ${rootModuleAbsolutePath} does not exist`);
   }
 
+  const transformModulePath = args.transformer ?
+    path.resolve(args.transformer) :
+    config.getTransformModulePath();
+
   const packageOpts = {
     projectRoots: config.getProjectRoots(),
     assetRoots: config.getAssetRoots(),
     blacklistRE: config.getBlacklistRE(args.platform),
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-    transformModulePath: args.transformer,
+    transformModulePath: transformModulePath,
+    extraNodeModules: config.extraNodeModules,
     verbose: config.verbose,
   };
 
@@ -82,35 +85,28 @@ function _dependencies(argv, config, resolve, reject) {
     ? fs.createWriteStream(args.output)
     : process.stdout;
 
-  // TODO: allow to configure which logging namespaces should get logged
-  // log('Running ReactPackager');
-  // log('Waiting for the packager.');
-  resolve(ReactPackager.createClientFor(packageOpts).then(client => {
-    // log('Packager client was created');
-    return client.getOrderedDependencyPaths(options)
-      .then(deps => {
-        // log('Packager returned dependencies');
-        client.close();
+  resolve((packagerInstance ?
+    packagerInstance.getOrderedDependencyPaths(options) :
+    ReactPackager.getOrderedDependencyPaths(packageOpts, options)).then(
+    deps => {
+      deps.forEach(modulePath => {
+        // Temporary hack to disable listing dependencies not under this directory.
+        // Long term, we need either
+        // (a) JS code to not depend on anything outside this directory, or
+        // (b) Come up with a way to declare this dependency in Buck.
+        const isInsideProjectRoots = packageOpts.projectRoots.filter(
+          root => modulePath.startsWith(root)
+        ).length > 0;
 
-        deps.forEach(modulePath => {
-          // Temporary hack to disable listing dependencies not under this directory.
-          // Long term, we need either
-          // (a) JS code to not depend on anything outside this directory, or
-          // (b) Come up with a way to declare this dependency in Buck.
-          const isInsideProjectRoots = packageOpts.projectRoots.filter(
-            root => modulePath.startsWith(root)
-          ).length > 0;
-
-          if (isInsideProjectRoots) {
-            outStream.write(modulePath + '\n');
-          }
-        });
-        return writeToFile
-          ? Promise.denodeify(outStream.end).bind(outStream)()
-          : Promise.resolve();
-        // log('Wrote dependencies to output file');
+        if (isInsideProjectRoots) {
+          outStream.write(modulePath + '\n');
+        }
       });
-  }));
+      return writeToFile
+        ? Promise.denodeify(outStream.end).bind(outStream)()
+        : Promise.resolve();
+    }
+  ));
 }
 
 module.exports = dependencies;

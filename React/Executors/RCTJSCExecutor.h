@@ -31,16 +31,24 @@ RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
 @interface RCTJSCExecutor : NSObject <RCTJavaScriptExecutor>
 
 /**
- * Configures the executor to run JavaScript on a specific thread with a given JS context.
- * You probably don't want to use this; use -init instead.
+ * Returns whether executor uses custom JSC library.
+ * This value is used to initialize RCTJSCWrapper.
+ * @default is NO.
  */
-- (instancetype)initWithJavaScriptThread:(NSThread *)javaScriptThread
-                                 context:(JSContext *)context NS_DESIGNATED_INITIALIZER;
+@property (nonatomic, readonly, assign) BOOL useCustomJSCLibrary;
 
 /**
- * Like -[initWithJavaScriptThread:context:] but uses JSGlobalContextRef from JavaScriptCore's C API.
+ * Inits a new executor instance with given flag that's used
+ * to initialize RCTJSCWrapper.
  */
-- (instancetype)initWithJavaScriptThread:(NSThread *)javaScriptThread
-                        globalContextRef:(JSGlobalContextRef)contextRef;
+- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
+
+/**
+ * Create a NSError from a JSError object.
+ *
+ * If available, the error's userInfo property will contain the JS stacktrace under
+ * the RCTJSStackTraceKey key.
+ */
+- (NSError *)convertJSErrorToNSError:(JSValueRef)jsError context:(JSContextRef)context;
 
 @end

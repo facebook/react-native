@@ -43,6 +43,9 @@ function transformCode(transform, filename, sourceCode, options, callback) {
 
     if (isJson) {
       code = code.replace(/^\w+\.exports=/, '');
+    } else {
+      // Remove shebang
+      code = code.replace(/^#!.*/, '');
     }
 
     const result = isJson || options.extern

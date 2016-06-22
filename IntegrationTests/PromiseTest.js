@@ -10,8 +10,10 @@
  */
 'use strict';
 
-var React = require('react-native');
-var { TestModule } = React.NativeModules;
+var React = require('react');
+var ReactNative = require('react-native');
+var { View } = ReactNative;
+var { TestModule } = ReactNative.NativeModules;
 
 var PromiseTest = React.createClass({
   shouldResolve: false,
@@ -45,7 +47,7 @@ var PromiseTest = React.createClass({
       .catch(() => this.shouldReject = true);
   },
 
-  async testShouldSucceedAsync() : Promise {
+  async testShouldSucceedAsync() : Promise<any> {
     try {
       await TestModule.shouldResolve();
       this.shouldSucceedAsync = true;
@@ -54,7 +56,7 @@ var PromiseTest = React.createClass({
     }
   },
 
-  async testShouldThrowAsync() : Promise {
+  async testShouldThrowAsync() : Promise<any> {
     try {
       await TestModule.shouldReject();
       this.shouldThrowAsync = false;
@@ -63,8 +65,8 @@ var PromiseTest = React.createClass({
     }
   },
 
-  render() : ReactElement {
-    return <React.View />;
+  render() : ReactElement<any> {
+    return <View />;
   }
 
 });

@@ -11,6 +11,10 @@
  */
 'use strict';
 
+import type  {
+  NavigationSceneRendererProps,
+} from 'NavigationTypeDefinition';
+
 /**
  * React component PropTypes Definitions. Consider using this as a supplementary
  * measure with `NavigationTypeDefinition`. This helps to capture the propType
@@ -19,7 +23,7 @@
  */
 
 const Animated = require('Animated');
-const React = require('react-native');
+const React = require('React');
 
 const {PropTypes} = React;
 
@@ -31,16 +35,15 @@ const action =  PropTypes.shape({
 /* NavigationAnimatedValue  */
 const animatedValue = PropTypes.instanceOf(Animated.Value);
 
-/* NavigationState  */
-const navigationState = PropTypes.shape({
+/* NavigationRoute  */
+const navigationRoute = PropTypes.shape({
   key: PropTypes.string.isRequired,
 });
 
-/* NavigationParentState  */
-const navigationParentState = PropTypes.shape({
+/* navigationRoute  */
+const navigationState = PropTypes.shape({
   index: PropTypes.number.isRequired,
-  key: PropTypes.string.isRequired,
-  children: PropTypes.arrayOf(navigationState),
+  routes: PropTypes.arrayOf(navigationRoute),
 });
 
 /* NavigationLayout */
@@ -48,6 +51,7 @@ const layout = PropTypes.shape({
   height: animatedValue,
   initHeight: PropTypes.number.isRequired,
   initWidth: PropTypes.number.isRequired,
+  isMeasured: PropTypes.bool.isRequired,
   width: animatedValue,
 });
 
@@ -55,18 +59,21 @@ const layout = PropTypes.shape({
 const scene = PropTypes.shape({
   index: PropTypes.number.isRequired,
   isStale: PropTypes.bool.isRequired,
-  navigationState,
+  key: PropTypes.string.isRequired,
+  route: navigationRoute.isRequired,
 });
 
 /* NavigationSceneRendererProps */
-const SceneRenderer = {
+const SceneRendererProps = {
   layout: layout.isRequired,
-  navigationState: navigationParentState.isRequired,
-  onNavigate: PropTypes.func.isRequired,
+  navigationState: navigationState.isRequired,
   position: animatedValue.isRequired,
+  progress: animatedValue.isRequired,
   scene: scene.isRequired,
   scenes: PropTypes.arrayOf(scene).isRequired,
 };
+
+const SceneRenderer = PropTypes.shape(SceneRendererProps);
 
 /* NavigationPanPanHandlers */
 const panHandlers = PropTypes.shape({
@@ -84,10 +91,33 @@ const panHandlers = PropTypes.shape({
   onStartShouldSetResponderCapture: PropTypes.func.isRequired,
 });
 
+/**
+ * Helper function that extracts the props needed for scene renderer.
+ */
+function extractSceneRendererProps(
+  props: NavigationSceneRendererProps,
+): NavigationSceneRendererProps {
+  return {
+    layout: props.layout,
+    navigationState: props.navigationState,
+    position: props.position,
+    progress: props.progress,
+    scene: props.scene,
+    scenes: props.scenes,
+  };
+}
+
 module.exports = {
+  // helpers
+  extractSceneRendererProps,
+
+  // Bundled propTypes.
+  SceneRendererProps,
+
+  // propTypes
   SceneRenderer,
   action,
-  navigationParentState,
   navigationState,
+  navigationRoute,
   panHandlers,
 };

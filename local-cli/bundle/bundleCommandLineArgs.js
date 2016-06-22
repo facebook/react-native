@@ -20,9 +20,9 @@ module.exports = [
     type: 'string',
   }, {
     command: 'transformer',
-    description: 'Specify a custom transformer to be used (absolute path)',
+    description: 'Specify a custom transformer to be used',
     type: 'string',
-    default: require.resolve('../../packager/transformer'),
+    default: null,
   }, {
     command: 'dev',
     description: 'If false, warnings are disabled and the bundle is minified',
@@ -57,5 +57,9 @@ module.exports = [
     command: 'verbose',
     description: 'Enables logging',
     default: false,
+  }, {
+    command: 'reset-cache',
+    description: 'Removes cached files',
+    default: false
   }
 ];

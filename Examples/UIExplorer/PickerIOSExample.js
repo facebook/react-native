@@ -15,12 +15,13 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   PickerIOS,
   Text,
   View,
-} = React;
+} = ReactNative;
 
 var PickerItemIOS = PickerIOS.Item;
 
@@ -143,13 +144,13 @@ exports.description = 'Render lists of selectable options with UIPickerView.';
 exports.examples = [
 {
   title: '<PickerIOS>',
-  render: function(): ReactElement {
+  render: function(): ReactElement<any> {
     return <PickerExample />;
   },
 },
 {
   title: '<PickerIOS> with custom styling',
-  render: function(): ReactElement {
+  render: function(): ReactElement<any> {
     return <PickerStyleExample />;
   },
 }];

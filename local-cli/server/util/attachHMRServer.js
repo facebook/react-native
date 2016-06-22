@@ -48,7 +48,12 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           if (dep.isAsset() || dep.isAsset_DEPRECATED() || dep.isJSON()) {
             return Promise.resolve({path: dep.path, deps: []});
           }
-          return packagerServer.getShallowDependencies(dep.path)
+          return packagerServer.getShallowDependencies({
+            platform: platform,
+            dev: true,
+            hot: true,
+            entryFile: dep.path
+          })
             .then(deps => {
               return {
                 path: dep.path,
@@ -147,7 +152,12 @@ function attachHMRServer({httpServer, path, packagerServer}) {
 
           client.ws.send(JSON.stringify({type: 'update-start'}));
           stat.then(() => {
-            return packagerServer.getShallowDependencies(filename)
+            return packagerServer.getShallowDependencies({
+              entryFile: filename,
+              platform: client.platform,
+              dev: true,
+              hot: true,
+            })
               .then(deps => {
                 if (!client) {
                   return [];
@@ -179,10 +189,10 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                 // dependencies we used to have with the one we now have
                 return getDependencies(client.platform, client.bundleEntry)
                   .then(({
-                    depsCache,
-                    depsModulesCache,
-                    shallowDeps,
-                    inverseDepsCache,
+                    dependenciesCache: depsCache,
+                    dependenciesModulesCache: depsModulesCache,
+                    shallowDependencies: shallowDeps,
+                    inverseDependenciesCache: inverseDepsCache,
                     resolutionResponse,
                   }) => {
                     if (!client) {
@@ -192,7 +202,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                     // build list of modules for which we'll send HMR updates
                     const modulesToUpdate = [packagerServer.getModuleForPath(filename)];
                     Object.keys(depsModulesCache).forEach(module => {
-                      if (!client.depsModulesCache[module]) {
+                      if (!client.dependenciesModulesCache[module]) {
                         modulesToUpdate.push(depsModulesCache[module]);
                       }
                     });
@@ -252,7 +262,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                 return JSON.stringify({
                   type: 'update',
                   body: {
-                    modules: bundle.getModulesNamesAndCode(),
+                    modules: bundle.getModulesIdsAndCode(),
                     inverseDependencies: client.inverseDependenciesCache,
                     sourceURLs: bundle.getSourceURLs(),
                     sourceMappingURLs: bundle.getSourceMappingURLs(),

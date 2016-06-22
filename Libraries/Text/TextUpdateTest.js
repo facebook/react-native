@@ -16,13 +16,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var TimerMixin = require('react-timer-mixin');
 var {
   NativeModules,
   StyleSheet,
   Text,
-} = React;
+} = ReactNative;
 
 var TestManager = NativeModules.TestManager || NativeModules.SnapshotTestManager;
 

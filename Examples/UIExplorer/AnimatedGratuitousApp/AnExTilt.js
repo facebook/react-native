@@ -16,14 +16,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Animated,
   Image,
   PanResponder,
   StyleSheet,
   View,
-} = React;
+} = ReactNative;
 
 class AnExTilt extends React.Component {
   state: any;
@@ -89,7 +90,7 @@ class AnExTilt extends React.Component {
     this._startBurnsZoom();
   }
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     return (
       <Animated.View
         {...this.state.tiltPanResponder.panHandlers}

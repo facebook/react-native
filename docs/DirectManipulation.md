@@ -23,7 +23,7 @@ properties directly on a DOM node.
 > and stores state in the native layer (DOM, UIView, etc.) and not
 > within your React components, which makes your code more difficult to
 > reason about. Before you use it, try to solve your problem with `setState`
-> and [shouldComponentUpdate](react-native/docs/direct-manipulation.html#setnativeprops-shouldcomponentupdate).
+> and [shouldComponentUpdate](http://facebook.github.io/react/docs/advanced-performance.html#shouldcomponentupdate-in-action).
 
 ## setNativeProps with TouchableOpacity
 
@@ -49,7 +49,7 @@ any knowledge of that fact or requiring any changes to its implementation:
   <View style={styles.button}>
     <Text>Press me!</Text>
   </View>
-<TouchableOpacity>
+</TouchableOpacity>
 ```
 
 Let's imagine that `setNativeProps` was not available. One way that we

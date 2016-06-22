@@ -10,9 +10,24 @@
  */
 'use strict';
 
+const warning = require('fbjs/lib/warning');
+
+if (__DEV__) {
+  const warningDedupe = {};
+  const addonWarn = function(prevName, newPackageName) {
+    warning(
+      warningDedupe[prevName],
+      'React.addons.' + prevName + ' is deprecated. Please import the "' +
+      newPackageName + '" package instead.'
+    );
+    warningDedupe[prevName] = true;
+  };
+}
+
 // Export React, plus some native additions.
-var ReactNative = {
+const ReactNative = {
   // Components
+  get ActivityIndicator() { return require('ActivityIndicator'); },
   get ActivityIndicatorIOS() { return require('ActivityIndicatorIOS'); },
   get ART() { return require('ReactNativeART'); },
   get DatePickerIOS() { return require('DatePickerIOS'); },
@@ -20,6 +35,7 @@ var ReactNative = {
   get Image() { return require('Image'); },
   get ImageEditor() { return require('ImageEditor'); },
   get ImageStore() { return require('ImageStore'); },
+  get KeyboardAvoidingView() { return require('KeyboardAvoidingView'); },
   get ListView() { return require('ListView'); },
   get MapView() { return require('MapView'); },
   get Modal() { return require('Modal'); },
@@ -31,10 +47,10 @@ var ReactNative = {
   get ProgressViewIOS() { return require('ProgressViewIOS'); },
   get ScrollView() { return require('ScrollView'); },
   get SegmentedControlIOS() { return require('SegmentedControlIOS'); },
+  get Slider() { return require('Slider'); },
   get SliderIOS() { return require('SliderIOS'); },
   get SnapshotViewIOS() { return require('SnapshotViewIOS'); },
   get Switch() { return require('Switch'); },
-  get PullToRefreshViewAndroid() { return require('PullToRefreshViewAndroid'); },
   get RecyclerViewBackedScrollView() { return require('RecyclerViewBackedScrollView'); },
   get RefreshControl() { return require('RefreshControl'); },
   get StatusBar() { return require('StatusBar'); },
@@ -73,9 +89,11 @@ var ReactNative = {
   get ImagePickerIOS() { return require('ImagePickerIOS'); },
   get IntentAndroid() { return require('IntentAndroid'); },
   get InteractionManager() { return require('InteractionManager'); },
+  get Keyboard() { return require('Keyboard'); },
   get LayoutAnimation() { return require('LayoutAnimation'); },
   get Linking() { return require('Linking'); },
   get LinkingIOS() { return require('LinkingIOS'); },
+  get NativeEventEmitter() { return require('NativeEventEmitter'); },
   get NavigationExperimental() { return require('NavigationExperimental'); },
   get NetInfo() { return require('NetInfo'); },
   get PanResponder() { return require('PanResponder'); },
@@ -84,6 +102,7 @@ var ReactNative = {
   get Settings() { return require('Settings'); },
   get StatusBarIOS() { return require('StatusBarIOS'); },
   get StyleSheet() { return require('StyleSheet'); },
+  get Systrace() { return require('Systrace'); },
   get TimePickerAndroid() { return require('TimePickerAndroid'); },
   get UIManager() { return require('UIManager'); },
   get Vibration() { return require('Vibration'); },
@@ -104,30 +123,107 @@ var ReactNative = {
 
   // See http://facebook.github.io/react/docs/addons.html
   addons: {
-    get LinkedStateMixin() { return require('LinkedStateMixin'); },
+    get LinkedStateMixin() {
+      if (__DEV__) {
+        addonWarn('LinkedStateMixin', 'react-addons-linked-state-mixin');
+      }
+      return require('LinkedStateMixin');
+    },
     Perf: undefined,
-    get PureRenderMixin() { return require('ReactComponentWithPureRenderMixin'); },
-    get TestModule() { return require('NativeModules').TestModule; },
+    get PureRenderMixin() {
+      if (__DEV__) {
+        addonWarn('PureRenderMixin', 'react-addons-pure-render-mixin');
+      }
+      return require('ReactComponentWithPureRenderMixin');
+    },
+    get TestModule() {
+      if (__DEV__) {
+        warning(
+          warningDedupe.TestModule,
+          'React.addons.TestModule is deprecated. ' +
+          'Use ReactNative.NativeModules.TestModule instead.'
+        );
+        warningDedupe.TestModule = true;
+      }
+      return require('NativeModules').TestModule;
+    },
     TestUtils: undefined,
-    get batchedUpdates() { return require('ReactUpdates').batchedUpdates; },
-    get cloneWithProps() { return require('cloneWithProps'); },
-    get createFragment() { return require('ReactFragment').create; },
-    get update() { return require('update'); },
+    get batchedUpdates() {
+      if (__DEV__) {
+        warning(
+          warningDedupe.batchedUpdates,
+          'React.addons.batchedUpdates is deprecated. ' +
+          'Use ReactNative.unstable_batchedUpdates instead.'
+        );
+        warningDedupe.batchedUpdates = true;
+      }
+      return require('ReactUpdates').batchedUpdates;
+    },
+    get createFragment() {
+      if (__DEV__) {
+        addonWarn('createFragment', 'react-addons-create-fragment');
+      }
+      return require('ReactFragment').create;
+    },
+    get update() {
+      if (__DEV__) {
+        addonWarn('update', 'react-addons-update');
+      }
+      return require('update');
+    },
   },
-
-  // Note: this must be placed last to prevent eager
-  // evaluation of the getter-wrapped submodules above
-  ...require('React'),
 };
+
+// Better error messages when accessing React APIs on ReactNative
+if (__DEV__) {
+  const throwOnWrongReactAPI = require('throwOnWrongReactAPI');
+  const reactAPIs = [ 'createClass', 'Component' ];
+
+  for (const key of reactAPIs) {
+    Object.defineProperty(ReactNative, key, {
+      get() { throwOnWrongReactAPI(key); },
+      enumerable: false,
+      configurable: false
+    });
+  }
+}
+
+// Preserve getters with warnings on the internal ReactNative copy without
+// invoking them.
+const ReactNativeInternal = require('ReactNative');
+function applyForwarding(key) {
+  if (__DEV__) {
+    Object.defineProperty(
+      ReactNative,
+      key,
+      Object.getOwnPropertyDescriptor(ReactNativeInternal, key)
+    );
+    return;
+  }
+  ReactNative[key] = ReactNativeInternal[key];
+}
+for (const key in ReactNativeInternal) {
+  applyForwarding(key);
+}
 
 if (__DEV__) {
   Object.defineProperty(ReactNative.addons, 'Perf', {
     enumerable: true,
-    get: () => require('ReactDefaultPerf'),
+    get: () => {
+      if (__DEV__) {
+        addonWarn('Perf', 'react-addons-perf');
+      }
+      return require('ReactPerf');
+    }
   });
   Object.defineProperty(ReactNative.addons, 'TestUtils', {
     enumerable: true,
-    get: () => require('ReactTestUtils'),
+    get: () => {
+      if (__DEV__) {
+        addonWarn('update', 'react-addons-test-utils');
+      }
+      return require('ReactTestUtils');
+    }
   });
 }
 

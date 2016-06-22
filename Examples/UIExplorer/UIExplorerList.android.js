@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -15,7 +22,7 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('React');
 
 export type UIExplorerExample = {
   key: string;
@@ -23,6 +30,14 @@ export type UIExplorerExample = {
 };
 
 var ComponentExamples: Array<UIExplorerExample> = [
+  {
+    key: 'ActivityIndicatorExample',
+    module: require('./ActivityIndicatorExample'),
+  },
+  {
+    key: 'SliderExample',
+    module: require('./SliderExample'),
+  },
   {
     key: 'ImageExample',
     module: require('./ImageExample'),
@@ -32,8 +47,12 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ListViewExample'),
   },
   {
-    key: 'PickerAndroidExample',
-    module: require('./PickerAndroidExample'),
+    key: 'ModalExample',
+    module: require('./ModalExample'),
+  },
+  {
+    key: 'PickerExample',
+    module: require('./PickerExample'),
   },
   {
     key: 'ProgressBarAndroidExample',
@@ -131,6 +150,10 @@ const APIExamples = [
     module: require('./LinkingExample'),
   },
   {
+    key: 'LayoutAnimationExample',
+    module: require('./LayoutAnimationExample'),
+  },
+  {
     key: 'LayoutExample',
     module: require('./LayoutExample'),
   },
@@ -145,6 +168,10 @@ const APIExamples = [
   {
     key: 'PanResponderExample',
     module: require('./PanResponderExample'),
+  },
+  {
+    key: 'PermissionsExampleAndroid',
+    module: require('./PermissionsExampleAndroid'),
   },
   {
     key: 'PointerEventsExample',
@@ -163,8 +190,16 @@ const APIExamples = [
     module: require('./ToastAndroidExample'),
   },
   {
+    key: 'TransformExample',
+    module: require('./TransformExample'),
+  },
+  {
     key: 'VibrationExample',
     module: require('./VibrationExample'),
+  },
+  {
+    key: 'WebSocketExample',
+    module: require('./WebSocketExample'),
   },
   {
     key: 'XHRExample',

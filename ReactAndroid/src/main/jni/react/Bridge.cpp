@@ -19,7 +19,7 @@ Bridge::Bridge(
     std::unique_ptr<ExecutorTokenFactory> executorTokenFactory,
     std::unique_ptr<BridgeCallback> callback) :
   m_callback(std::move(callback)),
-  m_destroyed(std::make_shared<bool>(false)),
+  m_destroyed(std::make_shared<std::atomic_bool>(false)),
   m_executorTokenFactory(std::move(executorTokenFactory)) {
   std::unique_ptr<JSExecutor> mainExecutor = jsExecutorFactory->createJSExecutor(this);
   // cached to avoid locked map lookup in the common case
@@ -31,7 +31,7 @@ Bridge::Bridge(
 
 // This must be called on the same thread on which the constructor was called.
 Bridge::~Bridge() {
-  CHECK(*m_destroyed) << "Bridge::destroy() must be called before deallocating the Bridge!";
+  CHECK(m_destroyed->load(std::memory_order_acquire)) << "Bridge::destroy() must be called before deallocating the Bridge!";
 }
 
 void Bridge::loadApplicationScript(const std::string& script, const std::string& sourceURL) {
@@ -51,10 +51,6 @@ void Bridge::callFunction(
     const std::string& methodId,
     const folly::dynamic& arguments,
     const std::string& tracingName) {
-  if (*m_destroyed) {
-    return;
-  }
-
   #ifdef WITH_FBSYSTRACE
   int systraceCookie = m_systraceCookie++;
   FbSystraceAsyncFlow::begin(
@@ -63,32 +59,16 @@ void Bridge::callFunction(
       systraceCookie);
   #endif
 
-  auto executorMessageQueueThread = getMessageQueueThread(executorToken);
-  if (executorMessageQueueThread == nullptr) {
-    LOG(WARNING) << "Dropping JS call for executor that has been unregistered...";
-    return;
-  }
-
-  std::shared_ptr<bool> isDestroyed = m_destroyed;
-  executorMessageQueueThread->runOnQueue([=] () {
-    #ifdef WITH_FBSYSTRACE
+  #ifdef WITH_FBSYSTRACE
+  runOnExecutorQueue(executorToken, [moduleId, methodId, arguments, tracingName, systraceCookie] (JSExecutor* executor) {
     FbSystraceAsyncFlow::end(
         TRACE_TAG_REACT_CXX_BRIDGE,
         tracingName.c_str(),
         systraceCookie);
     FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, tracingName.c_str());
-    #endif
-
-    if (*isDestroyed) {
-      return;
-    }
-
-    JSExecutor *executor = getExecutor(executorToken);
-    if (executor == nullptr) {
-      LOG(WARNING) << "Dropping JS call for executor that has been unregistered...";
-      return;
-    }
-
+  #else
+  runOnExecutorQueue(executorToken, [moduleId, methodId, arguments, tracingName] (JSExecutor* executor) {
+  #endif
     // This is safe because we are running on the executor's thread: it won't
     // destruct until after it's been unregistered (which we check above) and
     // that will happen on this thread
@@ -97,10 +77,6 @@ void Bridge::callFunction(
 }
 
 void Bridge::invokeCallback(ExecutorToken executorToken, const double callbackId, const folly::dynamic& arguments) {
-  if (*m_destroyed) {
-    return;
-  }
-
   #ifdef WITH_FBSYSTRACE
   int systraceCookie = m_systraceCookie++;
   FbSystraceAsyncFlow::begin(
@@ -109,71 +85,67 @@ void Bridge::invokeCallback(ExecutorToken executorToken, const double callbackId
       systraceCookie);
   #endif
 
-  auto executorMessageQueueThread = getMessageQueueThread(executorToken);
-  if (executorMessageQueueThread == nullptr) {
-    LOG(WARNING) << "Dropping JS call for executor that has been unregistered...";
-    return;
-  }
-
-  std::shared_ptr<bool> isDestroyed = m_destroyed;
-  executorMessageQueueThread->runOnQueue([=] () {
-    #ifdef WITH_FBSYSTRACE
+  #ifdef WITH_FBSYSTRACE
+  runOnExecutorQueue(executorToken, [callbackId, arguments, systraceCookie] (JSExecutor* executor) {
     FbSystraceAsyncFlow::end(
         TRACE_TAG_REACT_CXX_BRIDGE,
         "<callback>",
         systraceCookie);
     FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "Bridge.invokeCallback");
-    #endif
-
-    if (*isDestroyed) {
-      return;
-    }
-
-    JSExecutor *executor = getExecutor(executorToken);
-    if (executor == nullptr) {
-      LOG(WARNING) << "Dropping JS call for executor that has been unregistered...";
-      return;
-    }
-
-    // This is safe because we are running on the executor's thread: it won't
-    // destruct until after it's been unregistered (which we check above) and
-    // that will happen on this thread
+  #else
+  runOnExecutorQueue(executorToken, [callbackId, arguments] (JSExecutor* executor) {
+  #endif
     executor->invokeCallback(callbackId, arguments);
   });
 }
 
 void Bridge::setGlobalVariable(const std::string& propName, const std::string& jsonValue) {
-  m_mainExecutor->setGlobalVariable(propName, jsonValue);
+  runOnExecutorQueue(*m_mainExecutorToken, [=] (JSExecutor* executor) {
+    executor->setGlobalVariable(propName, jsonValue);
+  });
 }
 
 void* Bridge::getJavaScriptContext() {
+  // TODO(cjhopman): this seems unsafe unless we require that it is only called on the main js queue.
   return m_mainExecutor->getJavaScriptContext();
 }
 
 bool Bridge::supportsProfiling() {
+  // Intentionally doesn't post to jsqueue. supportsProfiling() can be called from any thread.
   return m_mainExecutor->supportsProfiling();
 }
 
 void Bridge::startProfiler(const std::string& title) {
-  m_mainExecutor->startProfiler(title);
+  runOnExecutorQueue(*m_mainExecutorToken, [=] (JSExecutor* executor) {
+    executor->startProfiler(title);
+  });
 }
 
 void Bridge::stopProfiler(const std::string& title, const std::string& filename) {
-  m_mainExecutor->stopProfiler(title, filename);
+  runOnExecutorQueue(*m_mainExecutorToken, [=] (JSExecutor* executor) {
+    executor->stopProfiler(title, filename);
+  });
+}
+
+void Bridge::handleMemoryPressureUiHidden() {
+  runOnExecutorQueue(*m_mainExecutorToken, [=] (JSExecutor* executor) {
+    executor->handleMemoryPressureUiHidden();
+  });
 }
 
 void Bridge::handleMemoryPressureModerate() {
-  m_mainExecutor->handleMemoryPressureModerate();
+  runOnExecutorQueue(*m_mainExecutorToken, [=] (JSExecutor* executor) {
+    executor->handleMemoryPressureModerate();
+  });
 }
 
 void Bridge::handleMemoryPressureCritical() {
-  m_mainExecutor->handleMemoryPressureCritical();
+  runOnExecutorQueue(*m_mainExecutorToken, [=] (JSExecutor* executor) {
+    executor->handleMemoryPressureCritical();
+  });
 }
 
 void Bridge::callNativeModules(JSExecutor& executor, const std::string& callJSON, bool isEndOfBatch) {
-  if (*m_destroyed) {
-    return;
-  }
   m_callback->onCallNativeModules(getTokenForExecutor(executor), callJSON, isEndOfBatch);
 }
 
@@ -243,10 +215,41 @@ ExecutorToken Bridge::getTokenForExecutor(JSExecutor& executor) {
 }
 
 void Bridge::destroy() {
-  *m_destroyed = true;
+  m_destroyed->store(true, std::memory_order_release);
+  m_mainExecutor = nullptr;
   std::unique_ptr<JSExecutor> mainExecutor = unregisterExecutor(*m_mainExecutorToken);
-  m_mainExecutor->destroy();
-  mainExecutor.reset();
+  mainExecutor->destroy();
+}
+
+void Bridge::runOnExecutorQueue(ExecutorToken executorToken, std::function<void(JSExecutor*)> task) {
+  if (m_destroyed->load(std::memory_order_acquire)) {
+    return;
+  }
+
+  auto executorMessageQueueThread = getMessageQueueThread(executorToken);
+  if (executorMessageQueueThread == nullptr) {
+    LOG(WARNING) << "Dropping JS action for executor that has been unregistered...";
+    return;
+  }
+
+  std::shared_ptr<std::atomic_bool> isDestroyed = m_destroyed;
+  executorMessageQueueThread->runOnQueue([this, isDestroyed, executorToken, task=std::move(task)] {
+    if (isDestroyed->load(std::memory_order_acquire)) {
+      return;
+    }
+
+    JSExecutor *executor = getExecutor(executorToken);
+    if (executor == nullptr) {
+      LOG(WARNING) << "Dropping JS call for executor that has been unregistered...";
+      return;
+    }
+
+    // The executor is guaranteed to be valid for the duration of the task because:
+    // 1. the executor is only destroyed after it is unregistered
+    // 2. the executor is unregistered on this queue
+    // 3. we just confirmed that the executor hasn't been unregistered above
+    task(executor);
+  });
 }
 
 } }
