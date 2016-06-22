@@ -1326,13 +1326,8 @@ div[data-twttr-id] iframe {
 @media only screen
   and (min-device-width: 1024px) {
   .showcase {
-    width: 20%;
+    width: 25%;
   }
-}
-
-.showcase:hover {
-  text-decoration: none;
-  opacity: 0.8;
 }
 
 .showcase h3 {
