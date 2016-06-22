@@ -98,9 +98,6 @@ type Event = Object;
  * [`Navigator`](/docs/navigator.html) for a similar solution for your
  * cross-platform needs.
  *
- * > **NOTE**: This component is not maintained by Facebook and is the
- * > community's responsibility.
- *
  * To set up the navigator, provide the `initialRoute` prop with a route
  * object. A route object is used to describe each scene that your app
  * navigates to. `initialRoute` represents the first route in your navigator.
