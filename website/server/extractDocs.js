@@ -159,9 +159,8 @@ function getNextComponent(idx) {
     } else {
       return getNextComponent(idx + 1);
     }
-  } else {
-    return 'network';
   }
+  return null;
 }
 
 function componentsToMarkdown(type, json, filepath, idx, styles) {
@@ -185,8 +184,8 @@ function componentsToMarkdown(type, json, filepath, idx, styles) {
     json.methods = json.methods.filter(filterMethods);
   }
 
-  // Put Flexbox into the Polyfills category
-  const category = (type === 'style' ? 'Polyfills' : type + 's');
+  // Put styles (e.g. Flexbox) into the API category
+  const category = (type === 'style' ? 'apis' : type + 's');
   const next = getNextComponent(idx);
 
   const res = [
@@ -499,6 +498,7 @@ const apis = [
   '../Libraries/Components/Clipboard/Clipboard.js',
   '../Libraries/Components/DatePickerAndroid/DatePickerAndroid.android.js',
   '../Libraries/Utilities/Dimensions.js',
+  '../Libraries/Geolocation/Geolocation.js',
   '../Libraries/Components/Intent/IntentAndroid.android.js',
   '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
@@ -529,14 +529,9 @@ const stylesForEmbed = [
   '../Libraries/Image/ImageStylePropTypes.js',
 ];
 
-const polyfills = [
-  '../Libraries/Geolocation/Geolocation.js',
-];
-
 const all = components
   .concat(apis)
-  .concat(stylesWithPermalink)
-  .concat(polyfills);
+  .concat(stylesWithPermalink);
 
 const styleDocs = stylesForEmbed.reduce(function(docs, filepath) {
   docs[path.basename(filepath).replace(path.extname(filepath), '')] =
@@ -560,9 +555,6 @@ module.exports = function() {
     apis.map((filepath) => {
       return renderAPI(filepath, 'api');
     }),
-    stylesWithPermalink.map(renderStyle),
-    polyfills.map((filepath) => {
-      return renderAPI(filepath, 'Polyfill');
-    })
+    stylesWithPermalink.map(renderStyle)
   );
 };
