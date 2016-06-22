@@ -11,7 +11,7 @@
 'use strict';
 
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
-var ProgressBarAndroid = require('ProgressBarAndroid');
+var ActivityIndicator = require('ActivityIndicator');
 var React = require('React');
 var ReactNative = require('ReactNative');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
@@ -37,9 +37,8 @@ var WebViewState = keyMirror({
 
 var defaultRenderLoading = () => (
   <View style={styles.loadingView}>
-    <ProgressBarAndroid
+    <ActivityIndicator
       style={styles.loadingProgressBar}
-      styleAttr="Inverse"
     />
   </View>
 );
@@ -260,6 +259,14 @@ var WebView = React.createClass({
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.reload,
+      null
+    );
+  },
+
+  stopLoading: function() {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.stopLoading,
       null
     );
   },

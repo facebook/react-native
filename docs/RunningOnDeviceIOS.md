@@ -4,18 +4,22 @@ title: Running On Device
 layout: docs
 category: Guides (iOS)
 permalink: docs/running-on-device-ios.html
-next: embedded-app-ios
+next: running-on-simulator-ios
 ---
 
 Note that running on device requires [Apple Developer account](https://developer.apple.com/register) and provisioning your iPhone. This guide covers only React Native specific topic.
 
 ## Accessing development server from device
 
-You can iterate quickly on device using development server. To do that, your laptop and your phone have to be on the same wifi network.
+You can iterate quickly on device using development server. Ensure that you are on the same WiFi network as your computer.
 
 1. Open `AwesomeApp/ios/AwesomeApp/AppDelegate.m`
 2. Change the IP in the URL from `localhost` to your laptop's IP. On Mac, you can find the IP address in System Preferences / Network.
-3. In Xcode select your phone as build target and press "Build and run"
+3. Temporarily disable App Transport Security (ATS) by [adding the `NSAllowsArbitraryLoads` entry to your `Info.plist` file][gpl]. Since ATS does not allow insecure HTTP requests to IP addresses, you must completely disable it to run on a device. This is only a requirement for development on a device, and unless you can't workaround an issue you should leave ATS enabled for production builds. For more information, see [this post on configuring ATS][bats].
+4. In Xcode select your phone as build target and press "Build and run"
+
+[gpl]: https://gist.github.com/andrewsardone/91797ff9923b9ac6ea64
+[bats]: http://ste.vn/2015/06/10/configuring-app-transport-security-ios-9-osx-10-11/
 
 > Hint
 >

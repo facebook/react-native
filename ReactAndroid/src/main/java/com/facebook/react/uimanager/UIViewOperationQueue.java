@@ -180,6 +180,25 @@ public class UIViewOperationQueue {
     }
   }
 
+  private final class SetChildrenOperation extends ViewOperation {
+
+    private final ReadableArray mChildrenTags;
+
+    public SetChildrenOperation(
+      int tag,
+      ReadableArray childrenTags) {
+      super(tag);
+      mChildrenTags = childrenTags;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.setChildren(
+        mTag,
+        mChildrenTags);
+    }
+  }
+
   private final class UpdateViewExtraData extends ViewOperation {
 
     private final Object mExtraData;
@@ -502,8 +521,8 @@ public class UIViewOperationQueue {
   private ArrayList<UIOperation> mOperations = new ArrayList<>();
   @GuardedBy("mNonBatchedOperationsLock")
   private ArrayDeque<UIOperation> mNonBatchedOperations = new ArrayDeque<>();
-
   private @Nullable NotThreadSafeViewHierarchyUpdateDebugListener mViewHierarchyUpdateDebugListener;
+  private boolean mIsDispatchUIFrameCallbackEnqueued = false;
 
   public UIViewOperationQueue(
       ReactApplicationContext reactContext,
@@ -640,6 +659,13 @@ public class UIViewOperationQueue {
         new ManageChildrenOperation(reactTag, indicesToRemove, viewsToAdd, tagsToDelete));
   }
 
+  public void enqueueSetChildren(
+    int reactTag,
+    ReadableArray childrenTags) {
+    mOperations.add(
+      new SetChildrenOperation(reactTag, childrenTags));
+  }
+
   public void enqueueRegisterAnimation(Animation animation) {
     mOperations.add(new RegisterAnimationOperation(animation));
   }
@@ -753,17 +779,41 @@ public class UIViewOperationQueue {
              }
            });
     }
+
+    // In the case where the frame callback isn't enqueued, the UI isn't being displayed or is being
+    // destroyed. In this case it's no longer important to align to frames, but it is imporant to make
+    // sure any late-arriving UI commands are executed.
+    if (!mIsDispatchUIFrameCallbackEnqueued) {
+      UiThreadUtil.runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              flushPendingBatches();
+            }
+          });
+    }
   }
 
   /* package */ void resumeFrameCallback() {
+    mIsDispatchUIFrameCallbackEnqueued = true;
     ReactChoreographer.getInstance()
         .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
   }
 
   /* package */ void pauseFrameCallback() {
-
+    mIsDispatchUIFrameCallbackEnqueued = false;
     ReactChoreographer.getInstance()
         .removeFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+    flushPendingBatches();
+  }
+
+  private void flushPendingBatches() {
+    synchronized (mDispatchRunnablesLock) {
+      for (int i = 0; i < mDispatchUIRunnables.size(); i++) {
+        mDispatchUIRunnables.get(i).run();
+      }
+      mDispatchUIRunnables.clear();
+    }
   }
 
   /**
@@ -799,12 +849,7 @@ public class UIViewOperationQueue {
         Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       }
 
-      synchronized (mDispatchRunnablesLock) {
-        for (int i = 0; i < mDispatchUIRunnables.size(); i++) {
-          mDispatchUIRunnables.get(i).run();
-        }
-        mDispatchUIRunnables.clear();
-      }
+      flushPendingBatches();
 
       ReactChoreographer.getInstance().postFrameCallback(
         ReactChoreographer.CallbackType.DISPATCH_UI, this);

@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * Wrapper on-top of `optimist` in order to properly support boolean flags
- * and have a slightly less akward API.
+ * and have a slightly less awkward API.
  *
  * Usage example:
  *   var argv = parseCommandLine([{

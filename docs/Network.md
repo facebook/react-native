@@ -102,7 +102,7 @@ ws.onclose = (e) => {
 
 ## XMLHttpRequest
 
-XMLHttpRequest API is implemented on-top of [iOS networking apis](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/URLLoadingSystem/URLLoadingSystem.html). The notable difference from web is the security model: you can read from arbitrary websites on the internet since there is no concept of [CORS](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing).
+XMLHttpRequest API is implemented on-top of [iOS networking apis](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/URLLoadingSystem/URLLoadingSystem.html) and [OkHttp](http://square.github.io/okhttp/). The notable difference from web is the security model: you can read from arbitrary websites on the internet since there is no concept of [CORS](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing).
 
 ```js
 var request = new XMLHttpRequest();
@@ -121,6 +121,34 @@ request.onreadystatechange = (e) => {
 request.open('GET', 'https://mywebsite.com/endpoint.php');
 request.send();
 ```
+
+You can also use - 
+
+```js
+var request = new XMLHttpRequest();
+
+function onLoad() {
+    console.log(request.status);
+    console.log(request.responseText);
+};
+
+function onTimeout() {
+    console.log('Timeout');
+    console.log(request.responseText);
+};
+
+function onError() {
+    console.log('General network error');
+    console.log(request.responseText);
+};
+
+request.onload = onLoad;
+request.ontimeout = onTimeout;
+request.onerror = onError;
+request.open('GET', 'https://mywebsite.com/endpoint.php');
+request.send();
+```
+
 
 Please follow the [MDN Documentation](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) for a complete description of the API.
 

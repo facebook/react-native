@@ -11,6 +11,7 @@
 
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
+#import "RCTShadowText.h"
 #import "RCTText.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
@@ -47,6 +48,14 @@
   _jsRequestingFirstResponder = NO;
 }
 
+- (void)didMoveToWindow
+{
+  if (_jsRequestingFirstResponder) {
+    [self becomeFirstResponder];
+    [self reactDidMakeFirstResponder];
+  }
+}
+
 @end
 
 @implementation RCTTextView
@@ -58,7 +67,6 @@
   NSInteger _nativeEventCount;
   RCTText *_richTextView;
   NSAttributedString *_pendingAttributedText;
-  NSMutableArray<UIView *> *_subviews;
   BOOL _blockTextShouldChange;
   UITextRange *_previousSelectionRange;
   NSUInteger _previousTextLength;
@@ -78,6 +86,7 @@
 
     _textView = [[RCTUITextView alloc] initWithFrame:CGRectZero];
     _textView.backgroundColor = [UIColor clearColor];
+    _textView.textColor = [UIColor blackColor];
     _textView.scrollsToTop = NO;
     _textView.scrollEnabled = NO;
     _textView.delegate = self;
@@ -88,7 +97,6 @@
 
     _previousSelectionRange = _textView.selectedTextRange;
 
-    _subviews = [NSMutableArray new];
     [self addSubview:_scrollView];
   }
   return self;
@@ -97,34 +105,40 @@
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
-- (NSArray<UIView *> *)reactSubviews
-{
-  return _subviews;
-}
-
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)index
 {
+  [super insertReactSubview:subview atIndex:index];
   if ([subview isKindOfClass:[RCTText class]]) {
     if (_richTextView) {
       RCTLogError(@"Tried to insert a second <Text> into <TextInput> - there can only be one.");
     }
     _richTextView = (RCTText *)subview;
-    [_subviews insertObject:_richTextView atIndex:index];
-  } else {
-    [_subviews insertObject:subview atIndex:index];
-    [self insertSubview:subview atIndex:index];
+
+    // If this <TextInput> is in rich text editing mode, and the child <Text> node providing rich text
+    // styling has a backgroundColor, then the attributedText produced by the child <Text> node will have an
+    // NSBackgroundColor attribute. We need to forward this attribute to the text view manually because the text view
+    // always has a clear background color in -initWithEventDispatcher:.
+    //
+    // TODO: This should be removed when the related hack in -performPendingTextUpdate is removed.
+    if (subview.backgroundColor) {
+      NSMutableDictionary<NSString *, id> *attrs = [_textView.typingAttributes mutableCopy];
+      attrs[NSBackgroundColorAttributeName] = subview.backgroundColor;
+      _textView.typingAttributes = attrs;
+    }
   }
 }
 
 - (void)removeReactSubview:(UIView *)subview
 {
+  [super removeReactSubview:subview];
   if (_richTextView == subview) {
-    [_subviews removeObject:_richTextView];
     _richTextView = nil;
-  } else {
-    [_subviews removeObject:subview];
-    [subview removeFromSuperview];
   }
+}
+
+- (void)didUpdateReactSubviews
+{
+  // Do nothing, as we don't allow non-text subviews
 }
 
 - (void)setMostRecentEventCount:(NSInteger)mostRecentEventCount
@@ -149,11 +163,30 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
+{
+  if (string.length == 0) {
+    return string;
+  } else {
+    NSMutableAttributedString *mutableString = [[NSMutableAttributedString alloc] initWithAttributedString:string];
+    [mutableString removeAttribute:RCTReactTagAttributeName range:NSMakeRange(0, mutableString.length)];
+    return mutableString;
+  }
+}
+
 - (void)performPendingTextUpdate
 {
   if (!_pendingAttributedText || _mostRecentEventCount < _nativeEventCount) {
     return;
   }
+
+  // The underlying <Text> node that produces _pendingAttributedText has a react tag attribute on it that causes the
+  // -isEqualToAttributedString: comparison below to spuriously fail. We don't want that comparison to fail unless it
+  // needs to because when the comparison fails, we end up setting attributedText on the text view, which clears
+  // autocomplete state for CKJ text input.
+  //
+  // TODO: Kill this after we finish passing all style/attribute info into JS.
+  _pendingAttributedText = removeReactTagFromString(_pendingAttributedText);
 
   if ([_textView.attributedText isEqualToAttributedString:_pendingAttributedText]) {
     _pendingAttributedText = nil; // Don't try again.
@@ -238,6 +271,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       NSFontAttributeName : (_textView.font ? _textView.font : [self defaultPlaceholderFont]),
       NSForegroundColorAttributeName : _placeholderTextColor
     }];
+    _placeholderView.textAlignment = _textView.textAlignment;
 
     [self insertSubview:_placeholderView belowSubview:_textView];
     [self _setPlaceholderVisibility];
@@ -440,7 +474,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [self _setPlaceholderVisibility];
   _nativeEventCount++;
 
-  if (!self.reactTag) {
+  if (!self.reactTag || !_onChange) {
     return;
   }
 
@@ -458,8 +492,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
   _previousTextLength = textLength;
   _previousContentHeight = contentHeight;
-
-  NSDictionary *event = @{
+  _onChange(@{
     @"text": self.text,
     @"contentSize": @{
       @"height": @(contentHeight),
@@ -467,8 +500,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     },
     @"target": self.reactTag,
     @"eventCount": @(_nativeEventCount),
-  };
-  [_eventDispatcher sendInputEventWithName:@"change" body:event];
+  });
 }
 
 - (void)textViewDidEndEditing:(UITextView *)textView

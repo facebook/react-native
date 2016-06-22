@@ -54,6 +54,7 @@ var TabBarExample = React.createClass({
   render: function() {
     return (
       <TabBarIOS
+        unselectedTintColor="yellow"
         tintColor="white"
         barTintColor="darkslateblue">
         <TabBarIOS.Item
@@ -81,6 +82,8 @@ var TabBarExample = React.createClass({
         </TabBarIOS.Item>
         <TabBarIOS.Item
           icon={require('./flux.png')}
+          selectedIcon={require('./relay.png')}
+          renderAsOriginal
           title="More"
           selected={this.state.selectedTab === 'greenTab'}
           onPress={() => {

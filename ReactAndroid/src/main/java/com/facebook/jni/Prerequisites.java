@@ -29,7 +29,7 @@ public class Prerequisites {
   private static final int EGL_OPENGL_ES2_BIT = 0x0004;
 
   public static void ensure() {
-    SoLoader.loadLibrary("fbjni");
+    SoLoader.loadLibrary("fb");
   }
 
   // Code is simplified version of getDetectedVersion()

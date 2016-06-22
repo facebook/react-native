@@ -9,7 +9,6 @@
 'use strict';
 
 const chalk = require('chalk');
-const checkNodeVersion = require('./checkNodeVersion');
 const formatBanner = require('./formatBanner');
 const parseCommandLine = require('../util/parseCommandLine');
 const path = require('path');
@@ -56,7 +55,7 @@ function _server(argv, config, resolve, reject) {
     command: 'transformer',
     type: 'string',
     default: require.resolve('../../packager/transformer'),
-    description: 'Specify a custom transformer to be used (absolute path)'
+    description: 'Specify a custom transformer to be used'
   }, {
     command: 'resetCache',
     description: 'Removes cached files',
@@ -87,8 +86,6 @@ function _server(argv, config, resolve, reject) {
       path.resolve(process.cwd(), dir)
     )
     : config.getAssetRoots();
-
-  checkNodeVersion();
 
   console.log(formatBanner(
     'Running packager on port ' + args.port + '.\n\n' +

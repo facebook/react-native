@@ -65,8 +65,26 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
       view.setGravityHorizontal(Gravity.RIGHT);
     } else if ("center".equals(textAlign)) {
       view.setGravityHorizontal(Gravity.CENTER_HORIZONTAL);
+    } else if ("justify".equals(textAlign)) {
+      // Fallback gracefully for cross-platform compat instead of error
+      view.setGravityHorizontal(Gravity.LEFT);
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
+    }
+  }
+
+  @ReactProp(name = ViewProps.LINE_BREAK_MODE)
+  public void setLineBreakMode(ReactTextView view, @Nullable String lineBreakMode) {
+    if(lineBreakMode == null) {
+      return;
+    }
+
+    if (lineBreakMode.equals("head")) {
+      view.setEllipsize(TextUtils.TruncateAt.START);
+    } else if (lineBreakMode.equals("middle")) {
+      view.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+    } else if (lineBreakMode.equals("tail")) {
+      view.setEllipsize(TextUtils.TruncateAt.END);
     }
   }
 

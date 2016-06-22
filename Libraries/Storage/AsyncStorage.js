@@ -122,7 +122,7 @@ var AsyncStorage = {
    *  traits: {eyes: 'blue', shoe_size: 10}
    * };
 
-   * AsyncStorage.setItem(store_key, JSON.stringify(UID123_object), () => {
+   * AsyncStorage.setItem('UID123', JSON.stringify(UID123_object), () => {
    *   AsyncStorage.mergeItem('UID123', JSON.stringify(UID123_delta), () => {
    *     AsyncStorage.getItem('UID123', (err, result) => {
    *       console.log(result);

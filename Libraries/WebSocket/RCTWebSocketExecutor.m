@@ -13,6 +13,7 @@
 
 #import "RCTWebSocketExecutor.h"
 
+#import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
@@ -36,6 +37,8 @@ typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary<NSString *, id
 
 RCT_EXPORT_MODULE()
 
+@synthesize bridge = _bridge;
+
 - (instancetype)initWithURL:(NSURL *)URL
 {
   RCTAssertParam(URL);
@@ -51,7 +54,11 @@ RCT_EXPORT_MODULE()
   if (!_url) {
     NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
     NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"] ?: 8081;
-    NSString *URLString = [NSString stringWithFormat:@"http://localhost:%zd/debugger-proxy?role=client", port];
+    NSString *host = [[_bridge bundleURL] host];
+    if (!host) {
+      host = @"localhost";
+    }
+    NSString *URLString = [NSString stringWithFormat:@"http://%@:%zd/debugger-proxy?role=client", host, port];
     _url = [RCTConvert NSURL:URLString];
   }
 
@@ -92,7 +99,7 @@ RCT_EXPORT_MODULE()
 {
   _socketOpenSemaphore = dispatch_semaphore_create(0);
   [_socket open];
-  long connected = dispatch_semaphore_wait(_socketOpenSemaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2));
+  long connected = dispatch_semaphore_wait(_socketOpenSemaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 10));
   return connected == 0;
 }
 
@@ -215,7 +222,7 @@ RCT_EXPORT_MODULE()
 
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
 {
-  RCTExecuteOnMainThread(block, NO);
+  RCTExecuteOnMainQueue(block);
 }
 
 - (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block

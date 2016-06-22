@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.dontMock('../');
+jest.unmock('../');
 jest.mock('path');
 
 const Promise = require('promise');
@@ -16,7 +16,7 @@ const Resolver = require('../');
 
 const path = require('path');
 
-let DependencyGraph = jest.genMockFn();
+let DependencyGraph = jest.fn();
 jest.setMock('node-haste', DependencyGraph);
 let Module;
 let Polyfill;
@@ -24,32 +24,33 @@ let Polyfill;
 describe('Resolver', function() {
   beforeEach(function() {
     DependencyGraph.mockClear();
-    Module = jest.genMockFn().mockImpl(function() {
-      this.getName = jest.genMockFn();
-      this.getDependencies = jest.genMockFn();
-      this.isPolyfill = jest.genMockFn().mockReturnValue(false);
-      this.isJSON = jest.genMockFn().mockReturnValue(false);
+    Module = jest.fn(function() {
+      this.getName = jest.fn();
+      this.getDependencies = jest.fn();
+      this.isPolyfill = jest.fn().mockReturnValue(false);
+      this.isJSON = jest.fn().mockReturnValue(false);
     });
-    Polyfill = jest.genMockFn().mockImpl(function() {
+    Polyfill = jest.fn(function() {
       var polyfill = new Module();
       polyfill.isPolyfill.mockReturnValue(true);
       return polyfill;
     });
 
     DependencyGraph.replacePatterns = require.requireActual('node-haste/lib/lib/replacePatterns');
-    DependencyGraph.prototype.createPolyfill = jest.genMockFn();
-    DependencyGraph.prototype.getDependencies = jest.genMockFn();
+    DependencyGraph.prototype.createPolyfill = jest.fn();
+    DependencyGraph.prototype.getDependencies = jest.fn();
 
     // For the polyfillDeps
-    path.join = jest.genMockFn().mockImpl((a, b) => b);
+    path.join = jest.fn((a, b) => b);
 
-    DependencyGraph.prototype.load = jest.genMockFn().mockImpl(() => Promise.resolve());
+    DependencyGraph.prototype.load = jest.fn(() => Promise.resolve());
   });
 
   class ResolutionResponseMock {
     constructor({dependencies, mainModuleId}) {
       this.dependencies = dependencies;
       this.mainModuleId = mainModuleId;
+      this.getModuleId = createGetModuleId();
     }
 
     prependDependency(dependency) {
@@ -81,9 +82,9 @@ describe('Resolver', function() {
 
   function createPolyfill(id, dependencies) {
     var polyfill = new Polyfill({});
-    polyfill.getName = jest.genMockFn().mockImpl(() => Promise.resolve(id));
+    polyfill.getName = jest.fn(() => Promise.resolve(id));
     polyfill.getDependencies =
-      jest.genMockFn().mockImpl(() => Promise.resolve(dependencies));
+      jest.fn(() => Promise.resolve(dependencies));
     return polyfill;
   }
 
@@ -95,7 +96,7 @@ describe('Resolver', function() {
 
       DependencyGraph.prototype.getDependencies.mockImplementation(
         () => Promise.reject());
-      new Resolver({projectRoot: '/root', })
+      new Resolver({projectRoot: '/root'})
         .getDependencies(entry, {platform}, transformOptions);
       expect(DependencyGraph.prototype.getDependencies).toBeCalledWith({
         entryPath: entry,
@@ -110,7 +111,6 @@ describe('Resolver', function() {
       var deps = [module];
 
       var depResolver = new Resolver({
-        getModuleId: createGetModuleId(),
         projectRoot: '/root',
       });
 
@@ -121,8 +121,14 @@ describe('Resolver', function() {
         }));
       });
 
-      return depResolver.getDependencies('/root/index.js', { dev: false })
-        .then(function(result) {
+      return depResolver
+        .getDependencies(
+          '/root/index.js',
+          { dev: false },
+          undefined,
+          undefined,
+          createGetModuleId()
+        ).then(function(result) {
           expect(result.mainModuleId).toEqual('index');
           expect(result.dependencies[result.dependencies.length - 1]).toBe(module);
           expect(DependencyGraph.prototype.createPolyfill.mock.calls.map((call) => call[0])).toEqual([
@@ -143,12 +149,21 @@ describe('Resolver', function() {
                 'polyfills/console.js'
               ],
             },
+            { id: 'polyfills/Number.es6.js',
+              file: 'polyfills/Number.es6.js',
+              dependencies: [
+                'polyfills/polyfills.js',
+                'polyfills/console.js',
+                'polyfills/error-guard.js'
+              ],
+            },
             { id: 'polyfills/String.prototype.es6.js',
               file: 'polyfills/String.prototype.es6.js',
               dependencies: [
                 'polyfills/polyfills.js',
                 'polyfills/console.js',
-                'polyfills/error-guard.js'
+                'polyfills/error-guard.js',
+                'polyfills/Number.es6.js',
               ],
             },
             { id: 'polyfills/Array.prototype.es6.js',
@@ -157,6 +172,7 @@ describe('Resolver', function() {
                 'polyfills/polyfills.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
+                'polyfills/Number.es6.js',
                 'polyfills/String.prototype.es6.js',
               ],
             },
@@ -166,6 +182,7 @@ describe('Resolver', function() {
                 'polyfills/polyfills.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
+                'polyfills/Number.es6.js',
                 'polyfills/String.prototype.es6.js',
                 'polyfills/Array.prototype.es6.js',
               ],
@@ -176,6 +193,7 @@ describe('Resolver', function() {
                 'polyfills/polyfills.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
+                'polyfills/Number.es6.js',
                 'polyfills/String.prototype.es6.js',
                 'polyfills/Array.prototype.es6.js',
                 'polyfills/Array.es6.js',
@@ -187,6 +205,7 @@ describe('Resolver', function() {
                 'polyfills/polyfills.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
+                'polyfills/Number.es6.js',
                 'polyfills/String.prototype.es6.js',
                 'polyfills/Array.prototype.es6.js',
                 'polyfills/Array.es6.js',
@@ -214,8 +233,14 @@ describe('Resolver', function() {
 
       const polyfill = {};
       DependencyGraph.prototype.createPolyfill.mockReturnValueOnce(polyfill);
-      return depResolver.getDependencies('/root/index.js', { dev: true })
-        .then(function(result) {
+      return depResolver
+        .getDependencies(
+          '/root/index.js',
+          { dev: true },
+          undefined,
+          undefined,
+          createGetModuleId()
+        ).then(function(result) {
           expect(result.mainModuleId).toEqual('index');
           expect(DependencyGraph.mock.instances[0].getDependencies)
               .toBeCalledWith({entryPath: '/root/index.js', recursive: true});
@@ -241,8 +266,14 @@ describe('Resolver', function() {
         }));
       });
 
-      return depResolver.getDependencies('/root/index.js', { dev: false })
-        .then((result) => {
+      return depResolver
+        .getDependencies(
+          '/root/index.js',
+          { dev: false },
+          undefined,
+          undefined,
+          createGetModuleId()
+        ).then((result) => {
           expect(result.mainModuleId).toEqual('index');
           expect(DependencyGraph.prototype.createPolyfill.mock.calls[result.dependencies.length - 2]).toEqual([
             { file: 'some module',
@@ -251,6 +282,7 @@ describe('Resolver', function() {
                 'polyfills/polyfills.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
+                'polyfills/Number.es6.js',
                 'polyfills/String.prototype.es6.js',
                 'polyfills/Array.prototype.es6.js',
                 'polyfills/Array.es6.js',
@@ -264,12 +296,10 @@ describe('Resolver', function() {
   });
 
   describe('wrapModule', function() {
-    let depResolver, getModuleId;
+    let depResolver;
     beforeEach(() => {
-      getModuleId = createGetModuleId();
       depResolver = new Resolver({
         depResolver,
-        getModuleId,
         projectRoot: '/root',
       });
     });
@@ -311,7 +341,8 @@ describe('Resolver', function() {
       const moduleIds = new Map(
         resolutionResponse
           .getResolvedDependencyPairs()
-          .map(([importId, module]) => [importId, getModuleId(module)])
+          .map(([importId, module]) =>
+            [importId, resolutionResponse.getModuleId(module)])
       );
 
       return depResolver.wrapModule({
@@ -319,10 +350,11 @@ describe('Resolver', function() {
         module: module,
         name: 'test module',
         code,
-        meta: {dependencyOffsets}
+        meta: {dependencyOffsets},
+        dev: false,
       }).then(({code: processedCode}) => {
         expect(processedCode).toEqual([
-          `__d(${getModuleId(module)} /* test module */, function(global, require, module, exports) {` +
+          `__d(${resolutionResponse.getModuleId(module)} /* test module */, function(global, require, module, exports) {` +
           // require
           `require(${moduleIds.get('x')} /* x */)`,
           `require(${moduleIds.get('y')} /* y */)`,
@@ -332,6 +364,28 @@ describe('Resolver', function() {
           '});',
         ].join('\n'));
       });
+    });
+
+    pit('should add module transport names as third argument to `__d`', () => {
+      const module = createModule('test module');
+      const code = 'arbitrary(code)'
+      const resolutionResponse = new ResolutionResponseMock({
+        dependencies: [module],
+        mainModuleId: 'test module',
+      });
+      return depResolver.wrapModule({
+        resolutionResponse,
+        code,
+        module,
+        name: 'test module',
+        dev: true,
+      }).then(({code: processedCode}) =>
+        expect(processedCode).toEqual([
+          `__d(${resolutionResponse.getModuleId(module)} /* test module */, function(global, require, module, exports) {` +
+            code,
+          '}, "test module");'
+        ].join('\n'))
+      );
     });
 
     pit('should pass through passed-in source maps', () => {
@@ -376,7 +430,7 @@ describe('Resolver', function() {
       let depResolver, module, resolutionResponse;
 
       beforeEach(() => {
-        depResolver = new Resolver({getModuleId, projectRoot: '/root'});
+        depResolver = new Resolver({projectRoot: '/root'});
         module = createJsonModule(id);
         resolutionResponse = new ResolutionResponseMock({
           dependencies: [module],
@@ -386,10 +440,10 @@ describe('Resolver', function() {
 
       pit('should prefix JSON files with `module.exports=`', () => {
         return depResolver
-          .wrapModule({resolutionResponse, module, name: id, code})
+          .wrapModule({resolutionResponse, module, name: id, code, dev: false})
           .then(({code: processedCode}) =>
             expect(processedCode).toEqual([
-              `__d(${getModuleId(module)} /* ${id} */, function(global, require, module, exports) {`,
+              `__d(${resolutionResponse.getModuleId(module)} /* ${id} */, function(global, require, module, exports) {`,
               `module.exports = ${code}\n});`,
             ].join('')));
       });
@@ -401,12 +455,11 @@ describe('Resolver', function() {
       let depResolver, minifyCode, module, resolutionResponse, sourceMap;
 
       beforeEach(() => {
-        minifyCode = jest.genMockFn().mockImpl((filename, code, map) =>
+        minifyCode = jest.fn((filename, code, map) =>
           Promise.resolve({code, map}));
         depResolver = new Resolver({
           projectRoot: '/root',
-          getModuleId,
-          minifyCode
+          minifyCode,
         });
         module = createModule(id);
         module.path = '/arbitrary/path.js';
@@ -418,7 +471,7 @@ describe('Resolver', function() {
       });
 
       pit('should invoke the minifier with the wrapped code', () => {
-        const wrappedCode = `__d(${getModuleId(module)} /* ${id} */, function(global, require, module, exports) {${code}\n});`
+        const wrappedCode = `__d(${resolutionResponse.getModuleId(module)} /* ${id} */, function(global, require, module, exports) {${code}\n});`
         return depResolver
           .wrapModule({
             resolutionResponse,
@@ -426,7 +479,8 @@ describe('Resolver', function() {
             name: id,
             code,
             map: sourceMap,
-            minify: true
+            minify: true,
+            dev: false,
           }).then(() => {
             expect(minifyCode).toBeCalledWith(module.path, wrappedCode, sourceMap);
           });

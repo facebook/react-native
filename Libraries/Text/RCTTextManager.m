@@ -20,6 +20,18 @@
 #import "RCTTextView.h"
 #import "UIView+React.h"
 
+static void collectDirtyNonTextDescendants(RCTShadowText *shadowView, NSMutableArray *nonTextDescendants) {
+  for (RCTShadowView *child in shadowView.reactSubviews) {
+    if ([child isKindOfClass:[RCTShadowText class]]) {
+      collectDirtyNonTextDescendants((RCTShadowText *)child, nonTextDescendants);
+    } else if ([child isKindOfClass:[RCTShadowRawText class]]) {
+      // no-op
+    } else if ([child isTextDirty]) {
+      [nonTextDescendants addObject:child];
+    }
+  }
+}
+
 @interface RCTShadowText (Private)
 
 - (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width widthMode:(css_measure_mode_t)widthMode;
@@ -52,6 +64,7 @@ RCT_EXPORT_SHADOW_PROPERTY(isHighlighted, BOOL)
 RCT_EXPORT_SHADOW_PROPERTY(letterSpacing, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(lineHeight, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(numberOfLines, NSUInteger)
+RCT_EXPORT_SHADOW_PROPERTY(lineBreakMode, NSLineBreakMode)
 RCT_EXPORT_SHADOW_PROPERTY(textAlign, NSTextAlignment)
 RCT_EXPORT_SHADOW_PROPERTY(textDecorationStyle, NSUnderlineStyle)
 RCT_EXPORT_SHADOW_PROPERTY(textDecorationColor, UIColor)
@@ -85,6 +98,7 @@ RCT_EXPORT_SHADOW_PROPERTY(textShadowColor, UIColor)
       if ([shadowView isKindOfClass:[RCTShadowText class]]) {
         ((RCTShadowText *)shadowView).fontSizeMultiplier = self.bridge.accessibilityManager.multiplier;
         [(RCTShadowText *)shadowView recomputeText];
+        collectDirtyNonTextDescendants((RCTShadowText *)shadowView, queue);
       } else if ([shadowView isKindOfClass:[RCTShadowRawText class]]) {
         RCTLogError(@"Raw text cannot be used outside of a <Text> tag. Not rendering string: '%@'",
                     [(RCTShadowRawText *)shadowView text]);
@@ -115,10 +129,9 @@ RCT_EXPORT_SHADOW_PROPERTY(textShadowColor, UIColor)
 
   /**
    * NOTE: this logic is included to support rich text editing inside multiline
-   * `<TextInput>` controls, a feature which is not yet supported in open source.
-   * It is required in order to ensure that the textStorage (aka attributed
-   * string) is copied over from the RCTShadowText to the RCTText view in time
-   * to be used to update the editable text content.
+   * `<TextInput>` controls. It is required in order to ensure that the
+   * textStorage (aka attributed string) is copied over from the RCTShadowText
+   * to the RCTText view in time to be used to update the editable text content.
    */
   if (textViewTagsToUpdate.count) {
 
@@ -136,9 +149,7 @@ RCT_EXPORT_SHADOW_PROPERTY(textShadowColor, UIColor)
       UIEdgeInsets padding = shadowText.paddingAsInsets;
       CGFloat width = shadowText.frame.size.width - (padding.left + padding.right);
 
-      // HACK (t10802067)
-      NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width widthMode:isnan(width) ? CSS_MEASURE_MODE_UNDEFINED : CSS_MEASURE_MODE_EXACTLY];
-
+      NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width widthMode:CSS_MEASURE_MODE_EXACTLY];
       [uiBlocks addObject:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTTextView *> *viewRegistry) {
         RCTTextView *textView = viewRegistry[reactTag];
         RCTText *text;

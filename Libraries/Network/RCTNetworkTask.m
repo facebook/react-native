@@ -63,35 +63,40 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)cancel
 {
+  _status = RCTNetworkTaskFinished;
   __strong id strongToken = _requestToken;
   if (strongToken && [_handler respondsToSelector:@selector(cancelRequest:)]) {
     [_handler cancelRequest:strongToken];
   }
   [self invalidate];
-  _status = RCTNetworkTaskFinished;
 }
 
 - (BOOL)validateRequestToken:(id)requestToken
 {
+  BOOL valid = YES;
   if (_requestToken == nil) {
     if (requestToken == nil) {
-      return NO;
+      if (RCT_DEBUG) {
+        RCTLogError(@"Missing request token for request: %@", _request);
+      }
+      valid = NO;
     }
     _requestToken = requestToken;
-  }
-  if (![requestToken isEqual:_requestToken]) {
+  } else if (![requestToken isEqual:_requestToken]) {
     if (RCT_DEBUG) {
       RCTLogError(@"Unrecognized request token: %@ expected: %@", requestToken, _requestToken);
     }
+    valid = NO;
+  }
+  if (!valid) {
+    _status = RCTNetworkTaskFinished;
     if (_completionBlock) {
-      _completionBlock(_response, _data, [NSError errorWithDomain:RCTErrorDomain code:0
-        userInfo:@{NSLocalizedDescriptionKey: @"Unrecognized request token."}]);
+      _completionBlock(_response, nil, [NSError errorWithDomain:RCTErrorDomain code:0
+        userInfo:@{NSLocalizedDescriptionKey: @"Invalid request token."}]);
     }
     [self invalidate];
-    _status = RCTNetworkTaskFinished;
-    return NO;
   }
-  return YES;
+  return valid;
 }
 
 - (void)URLRequest:(id)requestToken didSendDataWithProgress:(int64_t)bytesSent
@@ -132,11 +137,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)URLRequest:(id)requestToken didCompleteWithError:(NSError *)error
 {
   if ([self validateRequestToken:requestToken]) {
+    _status = RCTNetworkTaskFinished;
     if (_completionBlock) {
       _completionBlock(_response, _data, error);
     }
     [self invalidate];
-    _status = RCTNetworkTaskFinished;
   }
 }
 

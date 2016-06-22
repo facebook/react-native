@@ -66,8 +66,8 @@ public:
    */
   void callFunction(
     ExecutorToken executorToken,
-    const std::string& moduleId,
-    const std::string& methodId,
+    const std::string& module,
+    const std::string& method,
     const folly::dynamic& args,
     const std::string& tracingName);
 
@@ -96,6 +96,7 @@ public:
   bool supportsProfiling();
   void startProfiler(const std::string& title);
   void stopProfiler(const std::string& title, const std::string& filename);
+  void handleMemoryPressureUiHidden();
   void handleMemoryPressureModerate();
   void handleMemoryPressureCritical();
 

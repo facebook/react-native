@@ -14,6 +14,8 @@
 const InteractionManager = require('InteractionManager');
 const React = require('React');
 
+const infoLog = require('infoLog');
+
 const DEBUG = false;
 
 /**
@@ -87,17 +89,30 @@ export type Props = {
   * Tags instances and associated tasks for easier debugging.
   */
  name: string;
- children: any;
+ children?: any;
 };
-class Incremental extends React.Component {
+type DefaultProps = {
+  name: string,
+};
+type State = {
+  doIncrementalRender: boolean,
+};
+class Incremental extends React.Component<DefaultProps, Props, State> {
   props: Props;
-  state: {
-    doIncrementalRender: boolean;
-  };
+  state: State;
   context: Context;
   _incrementId: number;
   _mounted: boolean;
   _rendered: boolean;
+
+  static defaultProps = {
+    name: '',
+  };
+
+  static contextTypes = {
+    incrementalGroup: React.PropTypes.object,
+    incrementalGroupEnabled: React.PropTypes.bool,
+  };
 
   constructor(props: Props, context: Context) {
     super(props, context);
@@ -108,12 +123,12 @@ class Incremental extends React.Component {
   }
 
   getName(): string {
-    var ctx = this.context.incrementalGroup || {};
+    const ctx = this.context.incrementalGroup || {};
     return ctx.groupId + ':' + this._incrementId + '-' + this.props.name;
   }
 
   componentWillMount() {
-    var ctx = this.context.incrementalGroup;
+    const ctx = this.context.incrementalGroup;
     if (!ctx) {
       return;
     }
@@ -121,15 +136,15 @@ class Incremental extends React.Component {
     InteractionManager.runAfterInteractions({
       name: 'Incremental:' + this.getName(),
       gen: () => new Promise(resolve => {
-        if (!this._mounted) {
+        if (!this._mounted || this._rendered) {
           resolve();
           return;
         }
-        DEBUG && console.log('set doIncrementalRender for ' + this.getName());
+        DEBUG && infoLog('set doIncrementalRender for ' + this.getName());
         this.setState({doIncrementalRender: true}, resolve);
       }),
     }).then(() => {
-      DEBUG && console.log('call onDone for ' + this.getName());
+      DEBUG && infoLog('call onDone for ' + this.getName());
       this._mounted && this.props.onDone && this.props.onDone();
     }).catch((ex) => {
       ex.message = `Incremental render failed for ${this.getName()}: ${ex.message}`;
@@ -137,11 +152,11 @@ class Incremental extends React.Component {
     }).done();
   }
 
-  render(): ?ReactElement {
+  render(): ?ReactElement<any> {
     if (this._rendered || // Make sure that once we render once, we stay rendered even if incrementalGroupEnabled gets flipped.
         !this.context.incrementalGroupEnabled ||
         this.state.doIncrementalRender) {
-      DEBUG && console.log('render ' + this.getName());
+      DEBUG && infoLog('render ' + this.getName());
       this._rendered = true;
       return this.props.children;
     }
@@ -159,13 +174,6 @@ class Incremental extends React.Component {
     this._mounted = false;
   }
 }
-Incremental.defaultProps = {
-  name: '',
-};
-Incremental.contextTypes = {
-  incrementalGroup: React.PropTypes.object,
-  incrementalGroupEnabled: React.PropTypes.bool,
-};
 
 export type Context = {
   incrementalGroupEnabled: boolean;

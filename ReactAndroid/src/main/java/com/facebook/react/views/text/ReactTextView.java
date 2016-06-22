@@ -23,6 +23,7 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   private boolean mContainsImages;
   private int mDefaultGravityHorizontal;
   private int mDefaultGravityVertical;
+  private boolean mTextIsSelectable;
 
   public ReactTextView(Context context) {
     super(context);
@@ -79,6 +80,12 @@ public class ReactTextView extends TextView implements ReactCompoundView {
     }
 
     return target;
+  }
+
+  @Override
+  public void setTextIsSelectable(boolean selectable) {
+    mTextIsSelectable = selectable;
+    super.setTextIsSelectable(selectable);
   }
 
   @Override

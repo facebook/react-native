@@ -11,14 +11,16 @@
  */
 'use strict';
 
-var Platform = require('Platform');
-var PropTypes = require('ReactPropTypes');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var View = require('View');
+const Platform = require('Platform');
+const PropTypes = require('ReactPropTypes');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const UIManager = require('UIManager');
+const View = require('View');
+const deprecatedPropType = require('deprecatedPropType');
 
-var requireNativeComponent = require('requireNativeComponent');
-var RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
+const requireNativeComponent = require('requireNativeComponent');
+const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
 
 /**
  * A Modal component covers the native view (e.g. UIViewController, Activity)
@@ -34,43 +36,64 @@ var RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  * configureScene property.
  */
 class Modal extends React.Component {
-  render(): ?ReactElement {
+  static propTypes = {
+    animated: deprecatedPropType(
+      PropTypes.bool,
+      'Use the `animationType` prop instead.'
+    ),
+    animationType: PropTypes.oneOf(['none', 'slide', 'fade']),
+    transparent: PropTypes.bool,
+    visible: PropTypes.bool,
+    onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
+    onShow: PropTypes.func,
+  };
+
+  static defaultProps = {
+    visible: true,
+  };
+
+  render(): ?ReactElement<any> {
     if (this.props.visible === false) {
       return null;
     }
 
-    if (this.props.transparent) {
-      var containerBackgroundColor = {backgroundColor: 'transparent'};
+    const containerStyles = {
+      backgroundColor: this.props.transparent ? 'transparent' : 'white',
+      top: Platform.OS === 'android' && Platform.Version >= 19 ? UIManager.RCTModalHostView.Constants.StatusBarHeight : 0,
+    };
+
+    let animationType = this.props.animationType;
+    if (!animationType) {
+      // manually setting default prop here to keep support for the deprecated 'animated' prop
+      animationType = 'none';
+      if (this.props.animated) {
+        animationType = 'slide';
+      }
     }
 
     return (
       <RCTModalHostView
-        animated={this.props.animated}
+        animationType={animationType}
         transparent={this.props.transparent}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
-        style={styles.modal}>
-        <View style={[styles.container, containerBackgroundColor]}>
+        style={styles.modal}
+        onStartShouldSetResponder={this._shouldSetResponder}
+        >
+        <View style={[styles.container, containerStyles]}>
           {this.props.children}
         </View>
       </RCTModalHostView>
     );
   }
+
+  // We don't want any responder events bubbling out of the modal.
+  _shouldSetResponder(): boolean {
+    return true;
+  }
 }
 
-Modal.propTypes = {
-  animated: PropTypes.bool,
-  transparent: PropTypes.bool,
-  visible: PropTypes.bool,
-  onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
-  onShow: PropTypes.func,
-};
-
-Modal.defaultProps = {
-  visible: true,
-};
-
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   modal: {
     position: 'absolute',
   },

@@ -19,7 +19,7 @@
 var React = require('react');
 var ReactNative = require('react-native');
 var {
-  ActivityIndicatorIOS,
+  ActivityIndicator,
   CameraRoll,
   Image,
   ListView,
@@ -141,7 +141,7 @@ var CameraRollView = React.createClass({
       groupTypes: this.props.groupTypes,
       assetType: this.props.assetType,
     };
-    if (Platform.OS === "android") {
+    if (Platform.OS === 'android') {
       // not supported in android
       delete fetchParams.groupTypes;
     }
@@ -191,7 +191,7 @@ var CameraRollView = React.createClass({
 
   _renderFooterSpinner: function() {
     if (!this.state.noMore) {
-      return <ActivityIndicatorIOS style={styles.spinner} />;
+      return <ActivityIndicator style={styles.spinner} />;
     }
     return null;
   },

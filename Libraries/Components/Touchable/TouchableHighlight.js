@@ -227,7 +227,7 @@ var TouchableHighlight = React.createClass({
   render: function() {
     return (
       <View
-        accessible={true}
+        accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}
         accessibilityTraits={this.props.accessibilityTraits}
@@ -248,6 +248,7 @@ var TouchableHighlight = React.createClass({
             ref: CHILD_REF,
           }
         )}
+        {Touchable.renderDebugView({color: 'green', hitSlop: this.props.hitSlop})}
       </View>
     );
   }

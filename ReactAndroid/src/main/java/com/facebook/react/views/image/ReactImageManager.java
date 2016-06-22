@@ -19,13 +19,14 @@ import android.graphics.PorterDuff.Mode;
 import com.facebook.csslayout.CSSConstants;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
 public class ReactImageManager extends SimpleViewManager<ReactImageView> {
 
@@ -71,19 +72,20 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     return new ReactImageView(
         context,
         getDraweeControllerBuilder(),
-        getCallerContext());
+        getCallerContext(),
+        mResourceDrawableIdHelper);
   }
 
-  // In JS this is Image.props.source.uri
+  // In JS this is Image.props.source
   @ReactProp(name = "src")
-  public void setSource(ReactImageView view, @Nullable String source) {
-    view.setSource(source, mResourceDrawableIdHelper);
+  public void setSource(ReactImageView view, @Nullable ReadableArray sources) {
+    view.setSource(sources);
   }
 
   // In JS this is Image.props.loadingIndicatorSource.uri
   @ReactProp(name = "loadingIndicatorSrc")
   public void setLoadingIndicatorSource(ReactImageView view, @Nullable String source) {
-    view.setLoadingIndicatorSource(source, mResourceDrawableIdHelper);
+    view.setLoadingIndicatorSource(source);
   }
 
   @ReactProp(name = "borderColor", customType = "Color")
