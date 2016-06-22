@@ -98,15 +98,18 @@ public:
 
   static String createExpectingAscii(const char* utf8, size_t len) {
   #if WITH_FBJSCEXTENSIONS
-    return String(
-      JSStringCreateWithUTF8CStringExpectAscii(utf8, len), true);
+    return String(JSStringCreateWithUTF8CStringExpectAscii(utf8, len), true);
   #else
-    return String(JSStringCreateWithUTF8CString(utf8), true);
+    return createExpectingAscii(std::string(utf8, len));
   #endif
   }
 
   static String createExpectingAscii(std::string const &utf8) {
-    return String::createExpectingAscii(utf8.c_str(), utf8.size());
+#if WITH_FBJSCEXTENSIONS
+    return createExpectingAscii(utf8.c_str(), utf8.size());
+#else
+    return String(JSStringCreateWithUTF8CString(utf8.c_str()), true);
+#endif
   }
 
   static String ref(JSStringRef string) {
