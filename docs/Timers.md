@@ -2,9 +2,9 @@
 id: timers
 title: Timers
 layout: docs
-category: Polyfills
+category: Guides
 permalink: docs/timers.html
-next: colors
+next: direct-manipulation
 ---
 
 Timers are an important part of an application and React Native implements the [browser timers](https://developer.mozilla.org/en-US/Add-ons/Code_snippets/Timers).
