@@ -28,6 +28,7 @@ import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactTextUpdate;
+import com.facebook.react.views.view.MeasureUtil;
 
 import static com.facebook.react.views.text.ReactTextShadowNode.PROP_TEXT;
 import static com.facebook.react.views.text.ReactTextShadowNode.UNSET;
@@ -82,7 +83,6 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
     EditText editText = Assertions.assertNotNull(mEditText);
 
     int fontSize = getFontSize();
-    measureOutput.width = width;
     editText.setTextSize(
         TypedValue.COMPLEX_UNIT_PX,
         fontSize == UNSET ?
@@ -98,7 +98,10 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
       editText.setLines(mNumberOfLines);
     }
 
-    editText.measure(0 /* unspecified */, 0 /* unspecified */);
+    editText.measure(
+        MeasureUtil.getMeasureSpec(width, widthMode),
+        MeasureUtil.getMeasureSpec(height, heightMode));
+    measureOutput.width = editText.getMeasuredWidth();
     measureOutput.height = editText.getMeasuredHeight();
   }
 
