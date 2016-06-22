@@ -135,7 +135,19 @@ public class DevSupportManagerImpl implements DevSupportManager {
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this);
-    mDevServerHelper = new DevServerHelper(mDevSettings);
+    mDevServerHelper = new DevServerHelper(
+        mDevSettings,
+        new DevServerHelper.PackagerCommandListener() {
+          @Override
+          public void onReload() {
+            UiThreadUtil.runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                handleReloadJS();
+              }
+            });
+          }
+        });
 
     // Prepare shake gesture detector (will be started/stopped from #reload)
     mShakeDetector = new ShakeDetector(new ShakeDetector.ShakeListener() {

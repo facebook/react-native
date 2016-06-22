@@ -51,9 +51,9 @@ type differType = (data1: any, data2: any) => bool;
 
 type ParamType = {
   rowHasChanged: differType;
-  getRowData: ?typeof defaultGetRowData;
-  sectionHeaderHasChanged: ?differType;
-  getSectionHeaderData: ?typeof defaultGetSectionHeaderData;
+  getRowData?: ?typeof defaultGetRowData;
+  sectionHeaderHasChanged?: ?differType;
+  getSectionHeaderData?: ?typeof defaultGetSectionHeaderData;
 }
 
 /**

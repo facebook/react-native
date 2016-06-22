@@ -4,7 +4,7 @@ title: Style
 layout: docs
 category: Guides
 permalink: docs/style.html
-next: images
+next: colors
 ---
 
 React Native doesn't implement CSS but instead relies on JavaScript to let you style your application. This has been a controversial decision and you can read through those slides for the rationale behind it.
