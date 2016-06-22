@@ -81,6 +81,10 @@ but their receipt is not necessary for the scroll to occur).
 
 ### Common sources of performance problems
 
+#### Console.log statements 
+
+When running a bundled app, these statements can cause a big bottleneck in the JavaScript thread. This includes calls from debugging libraries such as [redux-logger](https://github.com/evgenyrodionov/redux-logger), so make sure to remove them before bundling.
+
 #### Development mode (dev=true)
 
 JavaScript thread performance suffers greatly when running in dev mode.
