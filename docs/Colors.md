@@ -4,7 +4,7 @@ title: Colors
 layout: docs
 category: Guides
 permalink: docs/colors.html
-next: gesture-responder-system
+next: images
 ---
 
 The following formats are supported:

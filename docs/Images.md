@@ -4,7 +4,7 @@ title: Images
 layout: docs
 category: Guides
 permalink: docs/images.html
-next: colors
+next: gesture-responder-system
 ---
 
 ## Static Image Resources

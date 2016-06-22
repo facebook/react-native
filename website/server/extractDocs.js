@@ -151,7 +151,6 @@ function shouldDisplayInSidebar(componentName) {
 }
 
 function getNextComponent(idx) {
-  console.log(all[idx]);
   if (all[idx + 1]) {
     const nextComponentName = getNameFromPath(all[idx + 1]);
 
