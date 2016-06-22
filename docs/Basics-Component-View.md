@@ -15,7 +15,7 @@ It is recommended that you wrap your components in a `View` to style and control
 
 The example below creates a `View` that aligns the `string` `Hello` in the top center of the device, something which could not be done with a `Text` component alone (i.e., a `Text` component without a `View` would place the `string` in a fixed location in the upper corner):
 
-```JavaScript
+```ReactNativeWebPlayer
 import React from 'react';
 import { AppRegistry, Text, View } from 'react-native';
 
