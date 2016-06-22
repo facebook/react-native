@@ -8,7 +8,7 @@
  */
 
 #import "RCTActivityIndicatorViewManager.h"
-
+#import "RCTActivityIndicatorView.h"
 #import "RCTConvert.h"
 
 @implementation RCTConvert (UIActivityIndicatorView)
@@ -20,23 +20,6 @@ RCT_ENUM_CONVERTER(UIActivityIndicatorViewStyle, (@{
   @"large": @(UIActivityIndicatorViewStyleWhiteLarge),
   @"small": @(UIActivityIndicatorViewStyleWhite),
 }), UIActivityIndicatorViewStyleWhiteLarge, integerValue)
-
-@end
-
-@interface RCTActivityIndicatorView : UIActivityIndicatorView
-@end
-
-@implementation RCTActivityIndicatorView {
-}
-
-- (void)setHidden:(BOOL)_hidden
-{
-  if ([self hidesWhenStopped] && ![self isAnimating]) {
-    [super setHidden: YES];
-  } else {
-    [super setHidden: _hidden];
-  }
-}
 
 @end
 
