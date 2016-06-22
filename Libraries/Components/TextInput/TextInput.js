@@ -26,6 +26,7 @@ var TimerMixin = require('react-timer-mixin');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var UIManager = require('UIManager');
 var View = require('View');
+var ColorPropType = require('ColorPropType');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var emptyFunction = require('fbjs/lib/emptyFunction');
@@ -269,7 +270,7 @@ var TextInput = React.createClass({
     /**
      * The text color of the placeholder string
      */
-    placeholderTextColor: PropTypes.string,
+    placeholderTextColor: ColorPropType,
     /**
      * If true, the text input obscures the text entered so that sensitive text
      * like passwords stay secure. The default value is false.
@@ -278,7 +279,7 @@ var TextInput = React.createClass({
     /**
     * The highlight (and cursor on ios) color of the text input
     */
-    selectionColor: PropTypes.string,
+    selectionColor: ColorPropType,
     /**
      * See DocumentSelectionState.js, some state that is responsible for
      * maintaining selection information for a document
@@ -336,7 +337,7 @@ var TextInput = React.createClass({
      * The color of the textInput underline.
      * @platform android
      */
-    underlineColorAndroid: PropTypes.string,
+    underlineColorAndroid: ColorPropType,
   },
 
   /**
