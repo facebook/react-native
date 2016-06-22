@@ -198,7 +198,7 @@ var GESTURE_ACTIONS = [
  * manage the scene being rendered. The `renderScene` method is changed to
  * either push or pop the navigator depending on the current route's index.
  * Finally, the `Text` component in the scene is now wrapped in a
- * `TouchableHightlight` component to help trigger the navigator transitions.
+ * `TouchableHighlight` component to help trigger the navigator transitions.
  *
  * ### Navigation Bar
  *
@@ -339,7 +339,7 @@ var Navigator = React.createClass({
 
     /**
      * Pass in a function to get notified with the target route when
-     * the naivgator component is mounted and before each navigator transition.
+     * the navigator component is mounted and before each navigator transition.
      */
     onWillFocus: PropTypes.func,
 
