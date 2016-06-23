@@ -4,7 +4,7 @@ title: Integration With Existing Apps
 layout: docs
 category: Guides
 permalink: docs/integration-with-existing-apps.html
-next: style
+next: colors
 ---
 
 <div class="integration-toggler">
