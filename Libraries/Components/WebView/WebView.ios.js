@@ -101,7 +101,7 @@ var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
  *```
  *
  * You can use this component to navigate back and forth in the web view's
- * history and configure various properties for the web content. 
+ * history and configure various properties for the web content.
  */
 var WebView = React.createClass({
   statics: {
@@ -128,7 +128,7 @@ var WebView = React.createClass({
     source: PropTypes.oneOfType([
       PropTypes.shape({
         /*
-         * The URI to load in the web view. Can be a local or remote file.
+         * The URI to load in the `WebView`. Can be a local or remote file.
          */
         uri: PropTypes.string,
         /*
@@ -174,19 +174,19 @@ var WebView = React.createClass({
      */
     renderLoading: PropTypes.func,
     /**
-     * Function that is invoked when the web view has finished loading.
+     * Function that is invoked when the `WebView` has finished loading.
      */
     onLoad: PropTypes.func,
     /**
-     * Function that is invoked when the web view load succeeds or fails.
+     * Function that is invoked when the `WebView` load succeeds or fails.
      */
     onLoadEnd: PropTypes.func,
     /**
-     * Function that is invoked when the web view starts loading.
+     * Function that is invoked when the `WebView` starts loading.
      */
     onLoadStart: PropTypes.func,
     /**
-     * Function that is invoked when the web view load fails.
+     * Function that is invoked when the `WebView` load fails.
      */
     onError: PropTypes.func,
     /**
@@ -209,7 +209,7 @@ var WebView = React.createClass({
     decelerationRate: ScrollView.propTypes.decelerationRate,
     /**
      * Boolean value that determines whether scrolling is enabled in the
-     * web view. The default value is `true`.
+     * `WebView`. The default value is `true`.
      * @platform ios
      */
     scrollEnabled: PropTypes.bool,
@@ -225,22 +225,23 @@ var WebView = React.createClass({
      */
     contentInset: EdgeInsetsPropType,
     /**
-     * Function that is invoked when the web view loading starts or ends.
+     * Function that is invoked when the `WebView` loading starts or ends.
      */
     onNavigationStateChange: PropTypes.func,
     /**
-     * Boolean value that forces the web view to show the loading view
+     * Boolean value that forces the `WebView` to show the loading view
      * on the first load.
      */
     startInLoadingState: PropTypes.bool,
     /**
-     * The style to apply to the web view.
+     * The style to apply to the `WebView`.
      */
     style: View.propTypes.style,
 
     /**
-     * Boolean value to enable JavaScript in the web view. Used on Android only
+     * Boolean value to enable JavaScript in the `WebView`. Used on Android only
      * as JavaScript is enabled by default on iOS. The default value is `true`.
+     * @platform android
      */
     javaScriptEnabled: PropTypes.bool,
 
@@ -258,7 +259,7 @@ var WebView = React.createClass({
     injectedJavaScript: PropTypes.string,
 
     /**
-     * Sets the user-agent for the web view.
+     * Sets the user-agent for the `WebView`.
      * @platform android
      */
     userAgent: PropTypes.string,
@@ -439,7 +440,7 @@ var WebView = React.createClass({
   },
 
   /**
-   * Returns the native web view node.
+   * Returns the native `WebView` node.
    */
   getWebViewHandle: function(): any {
     return ReactNative.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
