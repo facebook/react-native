@@ -56,6 +56,9 @@ RCT_EXPORT_MODULE()
     NSOperationQueue *callbackQueue = [NSOperationQueue new];
     callbackQueue.maxConcurrentOperationCount = 1;
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    [ configuration setHTTPShouldSetCookies:YES];
+    [ configuration setHTTPCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+    [ configuration setHTTPCookieStorage:[NSHTTPCookieStorage sharedHTTPCookieStorage]];
     _session = [NSURLSession sessionWithConfiguration:configuration
                                              delegate:self
                                         delegateQueue:callbackQueue];
