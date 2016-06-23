@@ -20,6 +20,7 @@ var StyleSheet = require('StyleSheet');
 var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
+var resolveAssetSource = require('resolveAssetSource');
 
 type Event = Object;
 
@@ -108,7 +109,6 @@ var Slider = React.createClass({
 
     /**
      * Sets an image for the thumb. Only static images are supported.
-     * @platform ios
      */
     thumbImage: Image.propTypes.source,
 
@@ -166,7 +166,7 @@ var Slider = React.createClass({
   },
 
   render: function() {
-    let {style, onValueChange, onSlidingComplete, ...props} = this.props;
+    let {style, onValueChange, onSlidingComplete, thumbImage, ...props} = this.props;
     props.style = [styles.slider, style];
 
     props.onValueChange = onValueChange && ((event: Event) => {
@@ -184,9 +184,10 @@ var Slider = React.createClass({
     props.onSlidingComplete = onSlidingComplete && ((event: Event) => {
       onSlidingComplete && onSlidingComplete(event.nativeEvent.value);
     });
-
-    return <RCTSlider 
+    thumbImage=resolveAssetSource(thumbImage);
+    return <RCTSlider
       {...props}
+      thumbImage={thumbImage}
       enabled={!this.props.disabled}
       onStartShouldSetResponder={() => true}
       onResponderTerminationRequest={() => false}

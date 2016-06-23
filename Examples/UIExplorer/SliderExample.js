@@ -171,7 +171,7 @@ exports.examples = [
     title: 'Custom thumb image',
     platform: 'android',
     render(): ReactElement<any> {
-      return <SliderExample thumbImage={require('image!slider')} />;
+      return <SliderExample style={{height:50}} thumbImage={require('./uie_thumb_big.png')} />;
     }
   },
   {

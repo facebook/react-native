@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
- *
+ * <p/>
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
@@ -12,22 +12,36 @@ package com.facebook.react.views.slider;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.SeekBar;
 
+import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.DataSource;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.react.bridge.ReadableMap;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.annotation.Nullable;
 
 /**
  * Slider that behaves more like the iOS one, for consistency.
- *
+ * <p/>
  * On iOS, the value is 0..1. Android SeekBar only supports integer values.
  * For consistency, we pretend in JS that the value is 0..1 but set the
  * SeekBar value to 0..100.
- *
+ * <p/>
  * Note that the slider is _not_ a controlled component (setValue isn't called
  * during dragging).
  */
@@ -119,9 +133,35 @@ public class ReactSlider extends SeekBar {
   public void setThumbImage(ReadableMap source) {
     String uri = source != null ? source.getString(PROP_ICON_URI) : null;
     if (uri != null) {
-      Drawable thumd = getDrawableByName(uri);
-      setThumb(thumd);
+      if (uri.startsWith("http://") || uri.startsWith("https://")) {
+        setThumbFormUrl(uri);
+      } else {
+        Drawable thumd = getDrawableByName(uri);
+        setThumb(thumd);
+      }
     }
+  }
+
+  private void setThumbFormUrl(final String uri) {
+    ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(Uri.parse(uri))
+      .setAutoRotateEnabled(true)
+      .build();
+    DataSource<CloseableReference<CloseableImage>> dataSource = Fresco.getImagePipeline().fetchDecodedImage(imageRequest, null);
+    Executor executor = Executors.newSingleThreadExecutor();
+    dataSource.subscribe(new BaseBitmapDataSubscriber() {
+      @Override
+      public void onNewResultImpl(@Nullable Bitmap bitmap) {
+        if (bitmap != null) {
+          setThumb(new BitmapDrawable(getResources(), bitmap));
+        }
+      }
+
+      @Override
+      public void onFailureImpl(DataSource dataSource) {
+        Log.e("ReactSlider", String.format("onFailureImpl:uri-> %s is error", uri));
+      }
+    }, executor);
+
 
   }
 
@@ -135,7 +175,7 @@ public class ReactSlider extends SeekBar {
   private Drawable getDrawableByName(String name) {
     int drawableResId = getDrawableResourceByName(name);
     if (drawableResId != 0) {
-      return getResources().getDrawable(getDrawableResourceByName(name));
+      return getResources().getDrawable(drawableResId);
     } else {
       return null;
     }
