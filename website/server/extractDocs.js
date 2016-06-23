@@ -437,7 +437,10 @@ function renderStyle(filepath) {
   const json = docgen.parse(
     fs.readFileSync(filepath),
     docgenHelpers.findExportedObject,
-    [docgen.handlers.propTypeHandler]
+    [
+      docgen.handlers.propTypeHandler,
+      docgen.handlers.propDocBlockHandler,
+    ]
   );
 
   // Remove deprecated transform props from docs
