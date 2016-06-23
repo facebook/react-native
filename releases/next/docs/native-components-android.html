@@ -58,7 +58,8 @@ module<span class="token punctuation">.</span>exports <span class="token operato
 <span class="token punctuation">}</span></div><p>The event name <code>topChange</code> maps to the <code>onChange</code> callback prop in JavaScript (mappings are in <code>UIManagerModuleConstants.java</code>). This callback is invoked with the raw event, which we typically process in the wrapper component to make a simpler API:</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// MyCustomView.js
 </span>
 class <span class="token class-name">MyCustomView</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
-  <span class="token function">constructor<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">constructor<span class="token punctuation">(</span></span>props<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">super<span class="token punctuation">(</span></span>props<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>_onChange <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_onChange<span class="token punctuation">.</span><span class="token function">bind<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
   <span class="token function">_onChange<span class="token punctuation">(</span></span>event<span class="token punctuation">:</span> Event<span class="token punctuation">)</span> <span class="token punctuation">{</span>
