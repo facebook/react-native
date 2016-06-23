@@ -125,6 +125,33 @@ html * {
   rendering-intent: auto;
 }
 
+.example-container {
+  position: relative;
+}
+
+.embedded-simulator, .embedded-simulator * {
+  box-sizing: border-box;
+}
+
+.embedded-simulator p {
+  text-align: center;
+  color: #999;
+}
+
+.embedded-simulator {
+  width: 210px;
+  position: absolute;
+  right: -200px;
+  top: 0;
+}
+
+@media screen and (max-width: 680px) {
+  .embedded-simulator {
+    position: relative;
+    right: 0;
+  }
+}
+
 .prism {
   white-space: pre-wrap;
   font-family: 'source-code-pro', Menlo, 'Courier New', Consolas, monospace;
@@ -1025,21 +1052,6 @@ small code, li code, p code {
 
 .downloadSection:hover {
   text-decoration: none !important;
-}
-
-.column-left, .column-left * {
-  box-sizing: border-box;
-}
-
-.column-left p {
-  text-align: center;
-  color: #999;
-}
-
-.column-left {
-  float: left;
-  padding: 20px;
-  width: 210px;
 }
 
 /* Modal */
