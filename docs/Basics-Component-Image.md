@@ -16,7 +16,7 @@ The simplest way to render an image is to provide a source file to that image vi
 This example displays a checkbox `Image` on the device.
 
 ```ReactNativeWebPlayer
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { AppRegistry, Image } from 'react-native';
 
 class ImageBasics extends Component {
