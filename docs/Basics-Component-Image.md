@@ -16,15 +16,17 @@ The simplest way to render an image is to provide a source file to that image vi
 This example displays a checkbox `Image` on the device.
 
 ```ReactNativeWebPlayer
-import React from 'react';
+import React, { Component } from 'react';
 import { AppRegistry, Image } from 'react-native';
 
-const AwesomeProject = () => {
-  return (
-    <Image source={require('./img/favicon.png')} />
-  );
+class ImageBasics extends Component {
+  render() {
+    return (
+      <Image source={require('./img/favicon.png')} />
+    );
+  }
 }
 
 // App registration and rendering
-AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
+AppRegistry.registerComponent('AwesomeProject', () => ImageBasics);
 ```
