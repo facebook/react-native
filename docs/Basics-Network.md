@@ -1,25 +1,25 @@
 ---
 id: basics-network
-title: Network
+title: Networking
 layout: docs
 category: The Basics
 permalink: docs/network.html
 next: more-resources
 ---
 
-One of React Native's goals is to be a playground where we can experiment with different architectures and crazy ideas. Since browsers are not flexible enough, we had no choice but to reimplement the entire stack. In the places that we did not intend to change anything, we tried to be as faithful as possible to the browser APIs. The networking stack is a great example.
+Many modern mobile apps will at some point find the need to load resources from a remote endpoint. You may want to integrate with a third party REST API, or you may simply need to fetch a chunk of static content from another server.
 
-## Fetch
+## Using Fetch
 
-[fetch](https://fetch.spec.whatwg.org/) is a better networking API being worked on by the standards committee and is already available in Chrome. It is available in React Native by default.
+React Native provides the [Fetch API](https://fetch.spec.whatwg.org/) for your networking needs. This standard is currently being worked on, and is not available in all web browsers yet, but you can start using it today in your React Native apps without any additional work.
 
-#### Usage
+Fetch works generally like this. In order to fetch content from an arbitrary endpoint,
 
 ```js
 fetch('https://mywebsite.com/endpoint/')
 ```
 
-Include a request object as the optional second argument to customize the HTTP request:
+Fetch also takes an optional second argument that allows you to customize the HTTP request:
 
 ```js
 fetch('https://mywebsite.com/endpoint/', {
@@ -35,9 +35,11 @@ fetch('https://mywebsite.com/endpoint/', {
 })
 ```
 
-#### Async
+### Asynchronous
 
-`fetch` returns a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that can be processed in two ways:
+Networking is an inherently asynchronous operation. Fetch methods will return a  [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that make it straightforward to write code that works in an asynchronous manner.
+
+// clean up these examples, they should be completely identical save for await, try, catch
 
 1.  Using `then` and `catch` in synchronous code:
 
@@ -70,86 +72,12 @@ fetch('https://mywebsite.com/endpoint/', {
   }
   ```
 
-- Note: Errors thrown by rejected Promises need to be caught, or they will be swallowed silently
+Always make sure to catch any errors that may thrown by fetch. Unhandled errors will be dropped silently.
 
-## WebSocket
+## Advanced networking
 
-WebSocket is a protocol providing full-duplex communication channels over a single TCP connection.
+React Native also comes with support for [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket).
 
-```js
-var ws = new WebSocket('ws://host.com/path');
+## Networking in third party libraries
 
-ws.onopen = () => {
-  // connection opened
-  ws.send('something');
-};
-
-ws.onmessage = (e) => {
-  // a message was received
-  console.log(e.data);
-};
-
-ws.onerror = (e) => {
-  // an error occurred
-  console.log(e.message);
-};
-
-ws.onclose = (e) => {
-  // connection closed
-  console.log(e.code, e.reason);
-};
-```
-
-## XMLHttpRequest
-
-XMLHttpRequest API is implemented on-top of [iOS networking apis](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/URLLoadingSystem/URLLoadingSystem.html) and [OkHttp](http://square.github.io/okhttp/). The notable difference from web is the security model: you can read from arbitrary websites on the internet since there is no concept of [CORS](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing).
-
-```js
-var request = new XMLHttpRequest();
-request.onreadystatechange = (e) => {
-  if (request.readyState !== 4) {
-    return;
-  }
-
-  if (request.status === 200) {
-    console.log('success', request.responseText);
-  } else {
-    console.warn('error');
-  }
-};
-
-request.open('GET', 'https://mywebsite.com/endpoint.php');
-request.send();
-```
-
-You can also use -
-
-```js
-var request = new XMLHttpRequest();
-
-function onLoad() {
-    console.log(request.status);
-    console.log(request.responseText);
-};
-
-function onTimeout() {
-    console.log('Timeout');
-    console.log(request.responseText);
-};
-
-function onError() {
-    console.log('General network error');
-    console.log(request.responseText);
-};
-
-request.onload = onLoad;
-request.ontimeout = onTimeout;
-request.onerror = onError;
-request.open('GET', 'https://mywebsite.com/endpoint.php');
-request.send();
-```
-
-
-Please follow the [MDN Documentation](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) for a complete description of the API.
-
-As a developer, you're probably not going to use XMLHttpRequest directly as its API is very tedious to work with. But the fact that it is implemented and compatible with the browser API gives you the ability to use third-party libraries such as [frisbee](https://github.com/niftylettuce/frisbee) or [axios](https://github.com/mzabriskie/axios) directly from npm.
+Many third party libraries use the `XMLHttpRequest` API. This API is also built in to React Native, which means that you can use third party libraries such as [frisbee](https://github.com/niftylettuce/frisbee) or [axios](https://github.com/mzabriskie/axios) directly from NPM.
