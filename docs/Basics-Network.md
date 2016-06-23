@@ -76,7 +76,7 @@ Don't forget to catch any errors that may be thrown by `fetch`, otherwise they w
 
 ## WebSocket Support
 
-React Native supports [WebSocket]((https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)), a protocol which provides full-duplex communication channels over a single TCP connection.
+React Native supports [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket), a protocol which provides full-duplex communication channels over a single TCP connection.
 
 React Native also comes with support for [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket).
 
