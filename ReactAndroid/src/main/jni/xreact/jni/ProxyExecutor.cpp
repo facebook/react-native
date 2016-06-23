@@ -58,6 +58,9 @@ ProxyExecutor::ProxyExecutor(jni::global_ref<jobject>&& executorInstance,
   setGlobalVariable(
     "__fbBatchedBridgeConfig",
     folly::make_unique<JSBigStdString>(detail::toStdString(folly::toJson(config))));
+  setGlobalVariable(
+    "__fbBatchedBridgeSerializeNativeParams",
+    folly::make_unique<JSBigStdString>("1"));
 }
 
 ProxyExecutor::~ProxyExecutor() {

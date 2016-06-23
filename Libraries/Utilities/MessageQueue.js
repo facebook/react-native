@@ -49,7 +49,7 @@ type Config = {
 };
 
 class MessageQueue {
-  constructor(configProvider: () => Config) {
+  constructor(configProvider: () => Config, serializeNativeParams: boolean) {
     this._callableModules = {};
     this._queue = [[], [], [], 0];
     this._callbacks = [];
@@ -57,6 +57,7 @@ class MessageQueue {
     this._callID = 0;
     this._lastFlush = 0;
     this._eventLoopStartTime = new Date().getTime();
+    this._serializeNativeParams = serializeNativeParams;
 
     if (__DEV__) {
       this._debugInfo = {};
@@ -150,6 +151,7 @@ class MessageQueue {
       onSucc && params.push(this._callbackID);
       this._callbacks[this._callbackID++] = onSucc;
     }
+    var preparedParams = this._serializeNativeParams ? JSON.stringify(params) : params;
 
     if (__DEV__) {
       global.nativeTraceBeginAsyncFlow &&
@@ -159,7 +161,7 @@ class MessageQueue {
 
     this._queue[MODULE_IDS].push(module);
     this._queue[METHOD_IDS].push(method);
-    this._queue[PARAMS].push(params);
+    this._queue[PARAMS].push(preparedParams);
 
     const now = new Date().getTime();
     if (global.nativeFlushQueueImmediate &&
