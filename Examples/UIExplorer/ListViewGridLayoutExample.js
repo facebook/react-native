@@ -123,7 +123,8 @@ var styles = StyleSheet.create({
   list: {
     justifyContent: 'space-around',
     flexDirection: 'row',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    alignItems: 'flex-start'
   },
   row: {
     justifyContent: 'center',

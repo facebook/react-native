@@ -8,15 +8,15 @@
  */
 'use strict';
 
-const {combineSourceMaps} = require('./util');
+const {combineSourceMaps, joinModules} = require('./util');
 
-module.exports = ({startupModules, modules}) => {
+module.exports = ({startupModules, lazyModules}) => {
   const startupModule = {
-    code: startupModules.map(m => m.code).join('\n'),
+    code: joinModules(startupModules),
     map: combineSourceMaps({modules: startupModules}),
   };
   return combineSourceMaps({
-    modules: [startupModule].concat(modules),
+    modules: [startupModule].concat(lazyModules),
     withCustomOffsets: true,
   });
 };

@@ -17,13 +17,13 @@ const crypto = require('crypto');
 const SOURCEMAPPING_URL = '\n\/\/# sourceMappingURL=';
 
 class Bundle extends BundleBase {
-  constructor({sourceMapUrl, minify} = {}) {
+  constructor({sourceMapUrl, dev, minify} = {}) {
     super();
     this._sourceMap = false;
     this._sourceMapUrl = sourceMapUrl;
     this._shouldCombineSourceMaps = false;
-    this._numPrependedModules = 0;
     this._numRequireCalls = 0;
+    this._dev = dev;
     this._minify = minify;
 
     this._ramBundle = null; // cached RAM Bundle
@@ -39,6 +39,7 @@ class Bundle extends BundleBase {
       map: moduleTransport.map,
       meta: moduleTransport.meta,
       minify: this._minify,
+      dev: this._dev,
     }).then(({code, map}) => {
       // If we get a map from the transformer we'll switch to a mode
       // were we're combining the source maps as opposed to
@@ -49,10 +50,6 @@ class Bundle extends BundleBase {
       this.replaceModuleAt(
         index, new ModuleTransport({...moduleTransport, code, map}));
     });
-  }
-
-  setNumPrependedModules(n) {
-    this._numPrependedModules = n;
   }
 
   finalize(options) {
@@ -107,59 +104,21 @@ class Bundle extends BundleBase {
   }
 
   getUnbundle(type) {
-    if (this._ramBundle) {
-      return this._ramBundle;
-    }
+    this.assertFinalized();
+    if (!this._ramBundle) {
+      const modules = this.getModules().slice();
 
-    switch (type) {
-      case 'INDEX':
-        this._ramBundle = this._getAsIndexedFileUnbundle();
-        break;
-      case 'ASSETS':
-        this._ramBundle = this._getAsAssetsUnbundle();
-        break;
-      default:
-        throw new Error('Unkown RAM Bundle type:', type);
+      // separate modules we need to preload from the ones we don't
+      const [startupModules, lazyModules] = partition(modules, shouldPreload);
+
+      this._ramBundle = {
+        startupModules,
+        lazyModules,
+        allModules: modules,
+      };
     }
 
     return this._ramBundle;
-  }
-
-  _getAsIndexedFileUnbundle() {
-    const modules = this.getModules();
-
-    // separate modules we need to preload from the ones we don't
-    const shouldPreload = (module) => module.meta && module.meta.preloaded;
-    const preloaded = modules.filter(module => shouldPreload(module));
-    const notPreloaded = modules.filter(module => !shouldPreload(module));
-
-    // code that will be executed on bridge start up
-    const startupCode = preloaded.map(({code}) => code).join('\n');
-
-    return {
-      // include copy of all modules on the order they're writen on the bundle:
-      // polyfills, preloaded, additional requires, non preloaded
-      allModules: preloaded.concat(notPreloaded),
-      startupCode,  // no entries on the index for these modules, only the code
-      modules: notPreloaded, // we include both the code and entries on the index
-    };
-  }
-
-  _getAsAssetsUnbundle() {
-    const allModules = this.getModules().slice();
-    const prependedModules = this._numPrependedModules;
-    const requireCalls = this._numRequireCalls;
-
-    const modules =
-      allModules
-        .splice(prependedModules, allModules.length - requireCalls - prependedModules);
-    const startupCode = allModules.map(({code}) => code).join('\n');
-
-    return {
-      startupCode,
-      startupModules: allModules,
-      modules,
-    };
   }
 
   /**
@@ -313,7 +272,6 @@ class Bundle extends BundleBase {
     return {
       ...super.toJSON(),
       sourceMapUrl: this._sourceMapUrl,
-      numPrependedModules: this._numPrependedModules,
       numRequireCalls: this._numRequireCalls,
       shouldCombineSourceMaps: this._shouldCombineSourceMaps,
     };
@@ -323,7 +281,6 @@ class Bundle extends BundleBase {
     const bundle = new Bundle({sourceMapUrl: json.sourceMapUrl});
 
     bundle._sourceMapUrl = json.sourceMapUrl;
-    bundle._numPrependedModules = json.numPrependedModules;
     bundle._numRequireCalls = json.numRequireCalls;
     bundle._shouldCombineSourceMaps = json.shouldCombineSourceMaps;
 
@@ -349,6 +306,17 @@ function generateSourceMapForVirtualModule(module) {
     file: module.sourcePath,
     sourcesContent: [ module.sourceCode ],
   };
+}
+
+function shouldPreload({meta}) {
+  return meta && meta.preloaded;
+}
+
+function partition(array, predicate) {
+  const included = [];
+  const excluded = [];
+  array.forEach(item => (predicate(item) ? included : excluded).push(item));
+  return [included, excluded];
 }
 
 module.exports = Bundle;

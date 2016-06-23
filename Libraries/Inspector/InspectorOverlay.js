@@ -15,7 +15,7 @@ var Dimensions = require('Dimensions');
 var InspectorUtils = require('InspectorUtils');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
-var UIManager = require('NativeModules').UIManager;
+var UIManager = require('UIManager');
 var View = require('View');
 var ElementBox = require('ElementBox');
 
@@ -41,7 +41,7 @@ var InspectorOverlay = React.createClass({
       this.props.inspectedViewTag,
       [locationX, locationY],
       (nativeViewTag, left, top, width, height) => {
-        var instance = InspectorUtils.findInstanceByNativeTag(this.props.rootTag, nativeViewTag);
+        var instance = InspectorUtils.findInstanceByNativeTag(nativeViewTag);
         if (!instance) {
           return;
         }

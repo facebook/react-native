@@ -55,14 +55,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
   }
 }
 
-- (NSArray<UIView *> *)reactSubviews
-{
-  return _reactSubview ? @[_reactSubview] : @[];
-}
-
-- (void)insertReactSubview:(UIView *)subview atIndex:(__unused NSInteger)atIndex
+- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
 {
   RCTAssert(_reactSubview == nil, @"Modal view can only have one subview");
+  [super insertReactSubview:subview atIndex:atIndex];
   [subview addGestureRecognizer:_touchHandler];
   subview.autoresizingMask = UIViewAutoresizingFlexibleHeight |
                              UIViewAutoresizingFlexibleWidth;
@@ -74,15 +70,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 - (void)removeReactSubview:(UIView *)subview
 {
   RCTAssert(subview == _reactSubview, @"Cannot remove view other than modal view");
+  [super removeReactSubview:subview];
   [subview removeGestureRecognizer:_touchHandler];
-  [subview removeFromSuperview];
   _reactSubview = nil;
+}
+
+- (void)didUpdateReactSubviews
+{
+  // Do nothing, as subview (singular) is managed by `insertReactSubview:atIndex:`
 }
 
 - (void)dismissModalViewController
 {
   if (_isPresented) {
-    [_modalViewController dismissViewControllerAnimated:self.animated completion:nil];
+    [_modalViewController dismissViewControllerAnimated:[self hasAnimationType] completion:nil];
     _isPresented = NO;
   }
 }
@@ -93,7 +94,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 
   if (!_isPresented && self.window) {
     RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
-    [self.reactViewController presentViewController:_modalViewController animated:self.animated completion:^{
+
+    if ([self.animationType isEqualToString:@"fade"]) {
+      _modalViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    } else if ([self.animationType isEqualToString:@"slide"]) {
+      _modalViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    }
+    [self.reactViewController presentViewController:_modalViewController animated:[self hasAnimationType] completion:^{
       if (_onShow) {
         _onShow(nil);
       }
@@ -121,6 +128,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 - (BOOL)isTransparent
 {
   return _modalViewController.modalPresentationStyle == UIModalPresentationCustom;
+}
+
+- (BOOL)hasAnimationType
+{
+  return ![self.animationType isEqualToString:@"none"];
 }
 
 - (void)setTransparent:(BOOL)transparent

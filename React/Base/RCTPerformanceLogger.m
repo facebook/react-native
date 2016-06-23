@@ -21,7 +21,7 @@ void RCTPerformanceLoggerStart(RCTPLTag tag)
 {
   if (RCTProfileIsProfiling()) {
     NSString *label = RCTPerformanceLoggerLabels()[tag];
-    RCTPLCookies[tag] = RCTProfileBeginAsyncEvent(0, label, nil);
+    RCTPLCookies[tag] = RCTProfileBeginAsyncEvent(RCTProfileTagAlways, label, nil);
   }
 
   RCTPLData[tag][0] = CACurrentMediaTime() * 1000;
@@ -35,7 +35,7 @@ void RCTPerformanceLoggerEnd(RCTPLTag tag)
 
     if (RCTProfileIsProfiling()) {
       NSString *label = RCTPerformanceLoggerLabels()[tag];
-      RCTProfileEndAsyncEvent(0, @"native", RCTPLCookies[tag], label, @"RCTPerformanceLogger", nil);
+      RCTProfileEndAsyncEvent(RCTProfileTagAlways, @"native", RCTPLCookies[tag], label, @"RCTPerformanceLogger", nil);
     }
   } else {
     RCTLogInfo(@"Unbalanced calls start/end for tag %li", (unsigned long)tag);
@@ -97,6 +97,8 @@ NSArray *RCTPerformanceLoggerLabels(void)
       @"NativeModulePrepareConfig",
       @"NativeModuleInjectConfig",
       @"NativeModuleMainThreadUsesCount",
+      @"JSCWrapperOpenLibrary",
+      @"JSCWrapperLoadFunctions",
       @"JSCExecutorSetup",
       @"BridgeStartup",
       @"RootViewTTI",
@@ -115,6 +117,13 @@ NSArray *RCTPerformanceLoggerLabels(void)
 RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
+
+- (instancetype)init
+{
+  // We're only overriding this to ensure the module gets created at startup
+  // TODO (t11106126): Remove once we have more declarative control over module setup.
+  return [super init];
+}
 
 - (void)setBridge:(RCTBridge *)bridge
 {

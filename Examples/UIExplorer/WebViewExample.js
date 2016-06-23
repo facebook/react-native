@@ -336,15 +336,15 @@ exports.description = 'Base component to display web content';
 exports.examples = [
   {
     title: 'Simple Browser',
-    render(): ReactElement { return <WebViewExample />; }
+    render(): ReactElement<any> { return <WebViewExample />; }
   },
   {
     title: 'Scale Page to Fit',
-    render(): ReactElement { return <ScaledWebView/>; }
+    render(): ReactElement<any> { return <ScaledWebView/>; }
   },
   {
     title: 'Bundled HTML',
-    render(): ReactElement {
+    render(): ReactElement<any> {
       return (
         <WebView
           style={{
@@ -359,7 +359,7 @@ exports.examples = [
   },
   {
     title: 'Static HTML',
-    render(): ReactElement {
+    render(): ReactElement<any> {
       return (
         <WebView
           style={{
@@ -374,7 +374,7 @@ exports.examples = [
   },
   {
     title: 'POST Test',
-    render(): ReactElement {
+    render(): ReactElement<any> {
       return (
         <WebView
           style={{

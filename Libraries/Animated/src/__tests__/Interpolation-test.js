@@ -9,9 +9,9 @@
 'use strict';
 
 jest
-  .dontMock('Interpolation')
-  .dontMock('Easing')
-  .dontMock('normalizeColor');
+  .unmock('Interpolation')
+  .unmock('Easing')
+  .unmock('normalizeColor');
 
 var Interpolation = require('Interpolation');
 var Easing = require('Easing');
@@ -293,5 +293,15 @@ describe('Interpolation', () => {
       inputRange: [0, 1],
       outputRange: ['20deg', '30rad'],
     })).toThrow();
+  });
+
+  it('should round the alpha channel of a color to the nearest thousandth', () => {
+    var interpolation = Interpolation.create({
+      inputRange: [0, 1],
+      outputRange: ['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)'],
+    });
+
+    expect(interpolation(1e-12)).toBe('rgba(0, 0, 0, 0)');
+    expect(interpolation(2 / 3)).toBe('rgba(0, 0, 0, 0.667)');
   });
 });

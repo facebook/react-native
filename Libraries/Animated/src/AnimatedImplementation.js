@@ -11,7 +11,6 @@
  */
 'use strict';
 
-var Easing = require('Easing');
 var InteractionManager = require('InteractionManager');
 var Interpolation = require('Interpolation');
 var React = require('React');
@@ -69,6 +68,7 @@ class Animated {
   __getNativeConfig(): Object {
     throw new Error('This JS animated node type cannot be used as native animated node');
   }
+  toJSON(): any { return this.__getValue(); }
 }
 
 type AnimationConfig = {
@@ -219,7 +219,14 @@ type TimingAnimationConfigSingle = AnimationConfig & {
   delay?: number;
 };
 
-var easeInOut = Easing.inOut(Easing.ease);
+let _easeInOut;
+function easeInOut() {
+  if (!_easeInOut) {
+    const Easing = require('Easing');
+    _easeInOut = Easing.inOut(Easing.ease);
+  }
+  return _easeInOut;
+}
 
 class TimingAnimation extends Animation {
   _startTime: number;
@@ -238,11 +245,11 @@ class TimingAnimation extends Animation {
   ) {
     super();
     this._toValue = config.toValue;
-    this._easing = config.easing !== undefined ? config.easing : easeInOut;
+    this._easing = config.easing !== undefined ? config.easing : easeInOut();
     this._duration = config.duration !== undefined ? config.duration : 500;
     this._delay = config.delay !== undefined ? config.delay : 0;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
-    this._useNativeDriver = !!config.useNativeDriver;
+    this._useNativeDriver = config.useNativeDriver !== undefined ? config.useNativeDriver : false;
   }
 
   _getNativeAnimationConfig(): any {
@@ -255,6 +262,7 @@ class TimingAnimation extends Animation {
       type: 'frames',
       frames,
       toValue: this._toValue,
+      delay: this._delay
     };
   }
 
@@ -652,7 +660,7 @@ class AnimatedValue extends AnimatedWithChildren {
       this._animation.stop();
       this._animation = null;
     }
-    this._updateValue(value);
+    this._updateValue(value, !this.__isNative /* don't perform a flush for natively driven values */);
     if (this.__isNative) {
       NativeAnimatedAPI.setAnimatedNodeValue(this.__getNativeTag(), value);
     }
@@ -730,7 +738,9 @@ class AnimatedValue extends AnimatedWithChildren {
     animation.start(
       this._value,
       (value) => {
-        this._updateValue(value);
+        // Natively driven animations will never call into that callback, therefore we can always pass `flush = true`
+        // to allow the updated value to propagate to native with `setNativeProps`
+        this._updateValue(value, true /* flush */);
       },
       (result) => {
         this._animation = null;
@@ -760,9 +770,11 @@ class AnimatedValue extends AnimatedWithChildren {
     this._tracking = tracking;
   }
 
-  _updateValue(value: number): void {
+  _updateValue(value: number, flush: bool): void {
     this._value = value;
-    _flush(this);
+    if (flush) {
+      _flush(this);
+    }
     for (var key in this._listeners) {
       this._listeners[key]({value: this.__getValue()});
     }
@@ -1081,6 +1093,18 @@ class AnimatedTransform extends AnimatedWithChildren {
     this._transforms = transforms;
   }
 
+  __makeNative() {
+    super.__makeNative();
+    this._transforms.forEach(transform => {
+      for (var key in transform) {
+        var value = transform[key];
+        if (value instanceof Animated) {
+          value.__makeNative();
+        }
+      }
+    });
+  }
+
   __getValue(): Array<Object> {
     return this._transforms.map(transform => {
       var result = {};
@@ -1132,6 +1156,25 @@ class AnimatedTransform extends AnimatedWithChildren {
         }
       }
     });
+  }
+
+  __getNativeConfig(): any {
+    var transConfig = {};
+
+    this._transforms.forEach(transform => {
+      for (var key in transform) {
+        var value = transform[key];
+        if (value instanceof Animated) {
+          transConfig[key] = value.__getNativeTag();
+        }
+      }
+    });
+
+    NativeAnimatedHelper.validateTransform(transConfig);
+    return {
+      type: 'transform',
+      transform: transConfig,
+    };
   }
 }
 

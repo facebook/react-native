@@ -37,6 +37,12 @@ var TouchableBounce = React.createClass({
   mixins: [Touchable.Mixin, NativeMethodsMixin],
 
   propTypes: {
+    /**
+     * When true, indicates that the view is an accessibility element. By default,
+     * all the touchable elements are accessible.
+     */
+    accessible: React.PropTypes.bool,
+
     onPress: React.PropTypes.func,
     onPressIn: React.PropTypes.func,
     onPressOut: React.PropTypes.func,
@@ -125,11 +131,11 @@ var TouchableBounce = React.createClass({
     return 0;
   },
 
-  render: function(): ReactElement {
+  render: function(): ReactElement<any> {
     return (
       <Animated.View
         style={[{transform: [{scale: this.state.scale}]}, this.props.style]}
-        accessible={true}
+        accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}
         accessibilityTraits={this.props.accessibilityTraits}

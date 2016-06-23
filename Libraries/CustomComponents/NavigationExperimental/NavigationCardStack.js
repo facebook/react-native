@@ -32,15 +32,15 @@
  */
 'use strict';
 
-const NavigationAnimatedView = require('NavigationAnimatedView');
+const NavigationTransitioner = require('NavigationTransitioner');
 const NavigationCard = require('NavigationCard');
 const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleInterpolator');
-const NavigationContainer = require('NavigationContainer');
 const NavigationCardStackPanResponder = require('NavigationCardStackPanResponder');
 const NavigationPropTypes = require('NavigationPropTypes');
 const React = require('React');
 const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
 const StyleSheet = require('StyleSheet');
+const View = require('View');
 
 const emptyFunction = require('fbjs/lib/emptyFunction');
 
@@ -48,9 +48,10 @@ const {PropTypes} = React;
 const {Directions} = NavigationCardStackPanResponder;
 
 import type {
-  NavigationParentState,
+  NavigationState,
   NavigationSceneRenderer,
   NavigationSceneRendererProps,
+  NavigationTransitionProps,
 } from 'NavigationTypeDefinition';
 
 import type {
@@ -59,9 +60,11 @@ import type {
 
 type Props = {
   direction: NavigationGestureDirection,
-  navigationState: NavigationParentState,
+  navigationState: NavigationState,
+  onNavigateBack?: Function,
   renderOverlay: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
+  style: any,
 };
 
 type DefaultProps = {
@@ -84,11 +87,13 @@ type DefaultProps = {
  *     +------------+
  */
 class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
+  _render : NavigationSceneRenderer;
   _renderScene : NavigationSceneRenderer;
 
   static propTypes = {
     direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
-    navigationState: NavigationPropTypes.navigationParentState.isRequired,
+    navigationState: NavigationPropTypes.navigationState.isRequired,
+    onNavigateBack: PropTypes.func,
     renderOverlay: PropTypes.func,
     renderScene: PropTypes.func.isRequired,
   };
@@ -103,6 +108,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   }
 
   componentWillMount(): void {
+    this._render = this._render.bind(this);
     this._renderScene = this._renderScene.bind(this);
   }
 
@@ -114,28 +120,71 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     );
   }
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     return (
-      <NavigationAnimatedView
+      <NavigationTransitioner
         navigationState={this.props.navigationState}
-        renderOverlay={this.props.renderOverlay}
-        renderScene={this._renderScene}
-        // $FlowFixMe - style should be declared
-        style={[styles.animatedView, this.props.style]}
+        render={this._render}
+        style={this.props.style}
       />
     );
   }
 
-  _renderScene(props: NavigationSceneRendererProps): ReactElement {
+  _render(props: NavigationTransitionProps): ReactElement<any> {
+    const {
+       navigationState,
+     } = props;
+
+    let overlay = null;
+    const renderOverlay = this.props.renderOverlay;
+
+    if (renderOverlay) {
+      const route = navigationState.routes[navigationState.index];
+
+      const activeScene = props.scenes.find(
+       scene => !scene.isStale && scene.route === route ? scene : undefined
+      );
+
+      overlay = renderOverlay({
+       ...props,
+       scene: activeScene
+      });
+    }
+
+    const scenes = props.scenes.map(
+     scene => this._renderScene({
+       ...props,
+       scene,
+     }),
+     this
+    );
+
+    return (
+      <View
+        style={styles.container}>
+        <View
+          style={styles.scenes}>
+          {scenes}
+        </View>
+        {overlay}
+      </View>
+    );
+  }
+
+  _renderScene(props: NavigationSceneRendererProps): ReactElement<any> {
     const isVertical = this.props.direction === 'vertical';
 
     const style = isVertical ?
       NavigationCardStackStyleInterpolator.forVertical(props) :
       NavigationCardStackStyleInterpolator.forHorizontal(props);
 
+    const panHandlersProps = {
+      ...props,
+      onNavigateBack: this.props.onNavigateBack,
+    };
     const panHandlers = isVertical ?
-      NavigationCardStackPanResponder.forVertical(props) :
-      NavigationCardStackPanResponder.forHorizontal(props);
+      NavigationCardStackPanResponder.forVertical(panHandlersProps) :
+      NavigationCardStackPanResponder.forHorizontal(panHandlersProps);
 
     return (
       <NavigationCard
@@ -150,9 +199,12 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
 }
 
 const styles = StyleSheet.create({
-  animatedView: {
+  container: {
+    flex: 1,
+  },
+  scenes: {
     flex: 1,
   },
 });
 
-module.exports = NavigationContainer.create(NavigationCardStack);
+module.exports = NavigationCardStack;

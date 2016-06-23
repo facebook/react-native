@@ -3,7 +3,7 @@
  */
 'use strict';
 
-jest.dontMock('WebSocket');
+jest.unmock('WebSocket');
 jest.setMock('NativeModules', {
   WebSocketModule: {
     connect: () => {}

@@ -16,15 +16,30 @@
  */
 'use strict';
 
-// Export ReactNative, plus some native additions.
+// Export some ReactNative properties, plus native additions.
 //
-// The use of Object.create/assign is to work around a Flow bug (#6560135).
-// Once that is fixed, change this back to
+
+// Our ReactNative.js has had its types stripped, so here we
+// need to enumerate and type the properties we need access to.
 //
-//   var ReactNative = {...require('React'), /* additions */}
-//
-var ReactNative = Object.assign(Object.create(require('ReactNative')), {
+var ReactNativeInternal = (require('ReactNative'): {
+  // render
+  render: (
+    element: ReactElement<any>,
+    mountInto: number,
+    callback?: ?(() => void)
+  ) => ?ReactComponent<any, any, any>,
+  // findNodeHandle
+  findNodeHandle: (componentOrHandle: any) => ?number,
+});
+
+// export
+var ReactNative = {
+  // from ReactNative internal
+  findNodeHandle: ReactNativeInternal.findNodeHandle,
+  render: ReactNativeInternal.render,
   // Components
+  ActivityIndicator: require('ActivityIndicator'),
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
   ART: require('ReactNativeART'),
   DatePickerIOS: require('DatePickerIOS'),
@@ -32,6 +47,7 @@ var ReactNative = Object.assign(Object.create(require('ReactNative')), {
   Image: require('Image'),
   ImageEditor: require('ImageEditor'),
   ImageStore: require('ImageStore'),
+  KeyboardAvoidingView: require('KeyboardAvoidingView'),
   ListView: require('ListView'),
   MapView: require('MapView'),
   Modal: require('Modal'),
@@ -48,7 +64,6 @@ var ReactNative = Object.assign(Object.create(require('ReactNative')), {
   SnapshotViewIOS: require('SnapshotViewIOS'),
   StatusBar: require('StatusBar'),
   Switch: require('Switch'),
-  PullToRefreshViewAndroid: require('PullToRefreshViewAndroid'),
   RecyclerViewBackedScrollView: require('RecyclerViewBackedScrollView'),
   RefreshControl: require('RefreshControl'),
   SwitchAndroid: require('SwitchAndroid'),
@@ -86,9 +101,11 @@ var ReactNative = Object.assign(Object.create(require('ReactNative')), {
   ImagePickerIOS: require('ImagePickerIOS'),
   IntentAndroid: require('IntentAndroid'),
   InteractionManager: require('InteractionManager'),
+  Keyboard: require('Keyboard'),
   LayoutAnimation: require('LayoutAnimation'),
   Linking: require('Linking'),
   LinkingIOS: require('LinkingIOS'),
+  NativeEventEmitter: require('NativeEventEmitter'),
   NavigationExperimental: require('NavigationExperimental'),
   NetInfo: require('NetInfo'),
   PanResponder: require('PanResponder'),
@@ -97,6 +114,7 @@ var ReactNative = Object.assign(Object.create(require('ReactNative')), {
   Settings: require('Settings'),
   StatusBarIOS: require('StatusBarIOS'),
   StyleSheet: require('StyleSheet'),
+  Systrace: require('Systrace'),
   TimePickerAndroid: require('TimePickerAndroid'),
   UIManager: require('UIManager'),
   Vibration: require('Vibration'),
@@ -114,6 +132,6 @@ var ReactNative = Object.assign(Object.create(require('ReactNative')), {
   ColorPropType: require('ColorPropType'),
   EdgeInsetsPropType: require('EdgeInsetsPropType'),
   PointPropType: require('PointPropType'),
-});
+};
 
 module.exports = ReactNative;

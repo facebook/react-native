@@ -24,7 +24,9 @@ def react_library(**kwargs):
       react_native_target('jni/react/jni:jni'),
     ],
     deps = DEPS + JSC_DEPS,
-    preprocessor_flags = PREPROCESSOR_FLAGS,
+    preprocessor_flags = PREPROCESSOR_FLAGS + [
+      '-DWITH_FB_MEMORY_PROFILING=1',
+    ],
     **kwargs
   )
 

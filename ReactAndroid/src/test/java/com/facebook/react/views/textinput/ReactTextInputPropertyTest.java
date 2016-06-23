@@ -12,6 +12,7 @@ package com.facebook.react.views.textinput;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.text.InputType;
+import android.text.InputFilter;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.widget.EditText;
@@ -241,13 +242,13 @@ public class ReactTextInputPropertyTest {
     mManager.updateProperties(view, buildStyles());
     assertThat(view.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD).isZero();
 
-    mManager.updateProperties(view, buildStyles("password", false));
+    mManager.updateProperties(view, buildStyles("secureTextEntry", false));
     assertThat(view.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD).isZero();
 
-    mManager.updateProperties(view, buildStyles("password", true));
+    mManager.updateProperties(view, buildStyles("secureTextEntry", true));
     assertThat(view.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD).isNotZero();
 
-    mManager.updateProperties(view, buildStyles("password", null));
+    mManager.updateProperties(view, buildStyles("secureTextEntry", null));
     assertThat(view.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD).isZero();
   }
 
@@ -329,5 +330,14 @@ public class ReactTextInputPropertyTest {
       view,
       buildStyles("textAlign", null, "textAlignVertical", null));
     assertThat(view.getGravity()).isEqualTo(defaultGravity);
+  }
+  
+  @Test
+  public void testMaxLength() {
+    ReactEditText view = mManager.createViewInstance(mThemedContext);
+    InputFilter[] filters = new InputFilter[] { new InputFilter.AllCaps() };
+    view.setFilters(filters);
+    mManager.setMaxLength(view, null);
+    assertThat(view.getFilters()).isEqualTo(filters);
   }
 }

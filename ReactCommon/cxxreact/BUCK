@@ -1,0 +1,168 @@
+CXX_LIBRARY_COMPILER_FLAGS = []
+REACT_LIBRARY_EXTRA_COMPILER_FLAGS = []
+if THIS_IS_FBOBJC:
+  inherited_buck_flags = buck_flags(STATIC_LIBRARY_IOS_FLAGS)
+  CXX_LIBRARY_COMPILER_FLAGS = inherited_buck_flags.combined_flags_as_dict()['compiler_flags']
+  REACT_LIBRARY_EXTRA_COMPILER_FLAGS = ['-Wno-shadow', '-Wno-missing-prototypes', '-Wno-global-constructors']
+
+def kwargs_add(base_kwargs, **new_kwargs):
+  ret_kwargs = dict(base_kwargs)
+  for name, add_value in new_kwargs.iteritems():
+    if name in ret_kwargs:
+      # Don't use +=, it will modify base_kwargs
+      ret_kwargs[name] = ret_kwargs[name] + add_value
+    else:
+      ret_kwargs[name] = add_value
+  return ret_kwargs
+
+if THIS_IS_FBANDROID:
+  include_defs('//ReactAndroid/DEFS')
+
+  def react_library(**kwargs):
+    kwargs = kwargs_add(
+      kwargs,
+      # We depend on JSC, support the same platforms
+      supported_platforms_regex = '^android-(armv7|x86)$',
+      compiler_flags = [
+        '-Wno-pessimizing-move',
+      ],
+      deps = [
+        '//xplat/folly:molly',
+      ])
+
+    cxx_library(
+      name = 'bridge',
+      **kwargs_add(
+        kwargs,
+        preprocessor_flags = [
+          '-DWITH_JSC_EXTRA_TRACING=1',
+          '-DWITH_JSC_MEMORY_PRESSURE=1',
+          '-DWITH_REACT_INTERNAL_SETTINGS=1',
+          '-DWITH_FB_MEMORY_PROFILING=1',
+        ],
+        deps = JSC_DEPS
+      )
+    )
+
+elif THIS_IS_FBOBJC:
+  def react_library(**kwargs):
+    ios_library(
+      name = 'bridge',
+      header_path_prefix = "cxxreact",
+      inherited_buck_flags = buck_flags(STATIC_LIBRARY_IOS_FLAGS),
+      frameworks = [
+        '$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework',
+      ],
+      **kwargs_add(
+        kwargs,
+        preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS,
+        deps = [
+          '//xplat/folly:molly',
+        ]
+      )
+    )
+
+cxx_library(
+  name = 'module',
+  force_static = True,
+  compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
+  exported_headers = [
+    'CxxModule.h',
+    'FollySupport.h',
+    'JsArgumentHelpers.h',
+    'JsArgumentHelpers-inl.h',
+  ],
+  header_namespace = 'cxxreact',
+  deps = [
+    '//xplat/folly:molly',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+cxx_library(
+  name = 'samplemodule',
+  soname = 'libxplat_react_module_samplemodule.so',
+  srcs = ['SampleCxxModule.cpp'],
+  exported_headers = ['SampleCxxModule.h'],
+  header_namespace = '',
+  compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
+    '-fno-omit-frame-pointer',
+    '-Wall',
+    '-Werror',
+    '-std=c++11',
+    '-fexceptions',
+  ],
+  deps = [
+    ':module',
+    '//xplat/folly:molly',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+react_library(
+  soname = 'libreactnativefb.so',
+  header_namespace = 'cxxreact',
+  force_static = True,
+  srcs = [
+    'CxxMessageQueue.cpp',
+    'Instance.cpp',
+    'JSCExecutor.cpp',
+    'JSCHelpers.cpp',
+    'JSCLegacyProfiler.cpp',
+    'JSCLegacyTracing.cpp',
+    'JSCMemory.cpp',
+    'JSCPerfStats.cpp',
+    'JSCTracing.cpp',
+    'JSCWebWorker.cpp',
+    'MethodCall.cpp',
+    'ModuleRegistry.cpp',
+    'NativeToJsBridge.cpp',
+    'Platform.cpp',
+    'Value.cpp',
+  ],
+  headers = [
+    'JSCLegacyProfiler.h',
+    'JSCLegacyTracing.h',
+    'JSCMemory.h',
+    'JSCPerfStats.h',
+    'JSCTracing.h',
+  ],
+  exported_headers = [
+    'CxxMessageQueue.h',
+    'Executor.h',
+    'ExecutorToken.h',
+    'ExecutorTokenFactory.h',
+    'Instance.h',
+    'JSCExecutor.h',
+    'JSCHelpers.h',
+    'JSCWebWorker.h',
+    'JSModulesUnbundle.h',
+    'MessageQueueThread.h',
+    'MethodCall.h',
+    'ModuleRegistry.h',
+    'NativeModule.h',
+    'NativeToJsBridge.h',
+    'noncopyable.h',
+    'Platform.h',
+    'SystraceSection.h',
+    'Value.h',
+  ],
+  preprocessor_flags = [
+    '-DLOG_TAG="ReactNative"',
+    '-DWITH_FBSYSTRACE=1',
+  ],
+  compiler_flags = [
+    '-Wall',
+    '-fexceptions',
+    '-fvisibility=hidden',
+    '-frtti',
+  ] + REACT_LIBRARY_EXTRA_COMPILER_FLAGS,
+  deps = [
+    '//xplat/fbsystrace:fbsystrace',
+  ],
+  visibility = [ 'PUBLIC' ],
+)
