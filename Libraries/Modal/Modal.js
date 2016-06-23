@@ -28,22 +28,21 @@ const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  * _Note: If you need more control over how to present modals over the rest of your app,
  * then consider using a top-level Navigator. Go [here](/react-native/docs/navigator-comparison.html) to compare navigation options._
  *
- * 
  * ```javascript
- * var React = require('react');
- * var ReactNative = require('react-native');
- * var {
- *   Modal, Text, TouchableHighlight, View, AppRegistry,
- * } = ReactNative;
- * var ModalExample = React.createClass({
- *   getInitialState() {
- *     return {
- *       modalVisible: false,
- *     };
- *   },
+ * import React, { Component } from 'react';
+ * import { Modal, Text, TouchableHighlight, View } from 'react-native';
+ * 
+ * class ModalExample extends Component {
+ *  
+ *   constructor(props) {
+ *     super(props);
+ *     this.state = {modalVisible: false};
+ *   }
+ * 
  *   setModalVisible(visible) {
  *     this.setState({modalVisible: visible});
- *   },
+ *   }
+ * 
  *   render() {
  *     return (
  *       <View style={{marginTop: 22}}>
@@ -66,18 +65,18 @@ const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  *           </View>
  *          </View>
  *         </Modal>
+ * 
  *         <TouchableHighlight onPress={() => {
  *           this.setModalVisible(true)
  *         }}>
  *           <Text>Show Modal</Text>
  *         </TouchableHighlight>
+ * 
  *       </View>
  *     );
- *   },
- * });
- * 
- * // App registration and rendering
- * AppRegistry.registerComponent('AwesomeProject', () => ModalExample);* ```
+ *   }
+ * }
+ * ```
  */
 class Modal extends React.Component {
   static propTypes = {
