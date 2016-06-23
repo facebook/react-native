@@ -191,7 +191,7 @@ public abstract class ReactInstanceManager {
     protected @Nullable LifecycleState mInitialLifecycleState;
     protected @Nullable UIImplementationProvider mUIImplementationProvider;
     protected @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
-    protected @Nullable JSCConfig mJSCConfig;
+    protected JSCConfig mJSCConfig = JSCConfig.EMPTY;
     protected @Nullable Activity mCurrentActivity;
     protected @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
     protected @Nullable RedBoxHandler mRedBoxHandler;

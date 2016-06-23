@@ -2,7 +2,7 @@
 id: quick-start-getting-started
 title: Getting Started
 layout: docs
-category: Quick Start
+category: The Basics
 permalink: docs/getting-started.html
 next: basics-components
 ---
@@ -50,7 +50,7 @@ block { display: none; }
 
 ## Unsupported
 
-<div>Unfortunately, Apple only lets you develop for iOS on a Mac machine. Please check out the <a href="" onclick="display('platform', 'android')">Android</a> instructions instead.</div>
+<div>Unfortunately, Apple only lets you develop for iOS on a Mac. If you want to build an iOS app but you don't have a Mac yet, you can try starting with the <a href="" onclick="display('platform', 'android')">Android</a> instructions instead.</div>
 
 <center><img src="img/react-native-sorry-not-supported.png" width="150"></img></center>
 
@@ -58,74 +58,51 @@ block { display: none; }
 
 <block class="mac ios" />
 
-## Installing React Native
+## Dependencies
 
-There's a few things you need to install first. You will need Node.js, the React Native command line tools, Watchman, and Xcode.
+You will need Xcode, node.js, the React Native command line tools, and Watchman.
 
 <block class="mac android" />
 
-## Installing React Native
+## Dependencies
 
-There's a few things you need to install first. You will need Node.js, the React Native command line tools, Watchman, and Android Studio.
+You will need Android Studio, node.js, the React Native command line tools, and Watchman.
 
 <block class="mac ios android" />
 
-#### Node.js
-
-We recommend installing Node.js via [Homebrew](http://brew.sh/), a popular package manager for OS X:
+We recommend installing node and watchman via [Homebrew](http://brew.sh/).
 
 ```
 brew install node
+brew install watchman
 ```
 
-#### React Native command line tools
-
-Use Node's package manager to install the React Native command line tools. These will allow you to easily create your first React Native project.
+Node comes with npm, which lets you install the React Native command line interface.
 
 ```
 npm install -g react-native-cli
 ```
 
-> If you see the error, `EACCES: permission denied`, please run the command:
-> `sudo npm install -g react-native-cli`.
-
-#### Watchman
-
-[Watchman](https://facebook.github.io/watchman/docs/install.html) is a tool by Facebook for watching
-changes in the filesystem. It is recommended you install it for better performance.
-
-```
-brew install watchman
-```
+If you get a permission error, try with sudo: `sudo npm install -g react-native-cli`.
 
 <block class="mac ios" />
 
-#### Xcode
-
-You can install Xcode via the [Mac App Store](https://itunes.apple.com/us/app/xcode/id497799835?mt=12), or download it directly from the [Apple Developer portal](https://developer.apple.com/xcode/downloads/).
+The easiest way to install Xcode is via the [Mac App Store](https://itunes.apple.com/us/app/xcode/id497799835?mt=12).
 
 <block class="mac android" />
 
-#### Android Studio
-
 Download and install [Android Studio](https://developer.android.com/studio/install.html).
 
-#### Gradle Daemon
-
-While optional, enabling [Gradle Daemon](https://docs.gradle.org/2.9/userguide/gradle_daemon.html) will greatly improve incremental build times for changes in Java code.
+If you plan to make changes in Java code, we recommend [Gradle Daemon](https://docs.gradle.org/2.9/userguide/gradle_daemon.html) which speeds up the build.
 
 
 <!-- ######### LINUX and WINDOWS for ANDROID ##################### -->
 
 <block class="linux windows android" />
 
-## Installing React Native
+## Dependencies
 
-There's a few things you need to install first. You will need Node.js, the React Native command line tools, Watchman, and Android Studio.
-
-<block class="linux windows android" />
-
-#### Node.js
+You will need node.js, the React Native command line tools, Watchman, and Android Studio.
 
 <block class="linux android" />
 
@@ -133,51 +110,33 @@ Follow the [installation instructions for your Linux distribution](https://nodej
 
 <block class='windows android' />
 
-We recommend installing Node.js via [Chocolatey](https://chocolatey.org), a popular package manager for Windows. Open a Command Prompt as Administrator, then run the following command:
+We recommend installing node.js and Python2 via [Chocolatey](https://chocolatey.org), a popular package manager for Windows. Open a Command Prompt as Administrator, then run:
 
 ```
 choco install nodejs.install
-```
-
-##### Python
-
-The React Native command line tools require Python2. Install it using Chocolatey:
-
-```
 choco install python2
 ```
 
 <block class="windows linux android" />
 
-#### React Native command line tools
-
-Use Node's package manager to install the React Native command line tools. These will allow you to easily create your first React Native project.
+Node comes with npm, which lets you install the React Native command line interface.
 
 ```
 npm install -g react-native-cli
 ```
 
-> If you see the error, `EACCES: permission denied`, please run the command:
-> `sudo npm install -g react-native-cli`.
-
 <block class="windows linux android" />
-
-#### Android Studio
 
 Download and install [Android Studio](https://developer.android.com/studio/install.html).
 
 <block class="linux android" />
 
-#### Watchman
-
-[Watchman](https://facebook.github.io/watchman) is a tool by Facebook for watching changes in the filesystem. It is recommended you install
-it for better performance. You can follow the [Watchman installation guide](https://facebook.github.io/watchman/docs/install.html#installing-from-source) to compile and install from source.
+[Watchman](https://facebook.github.io/watchman) is a tool by Facebook for watching changes in the filesystem. Installing it should
+improve performance, but you can also try not installing it, if the installation process is too annoying. You can follow the [Watchman installation guide](https://facebook.github.io/watchman/docs/install.html#installing-from-source) to compile and install from source.
 
 <block class="windows linux android" />
 
-#### Gradle Daemon
-
-While optional, enabling [Gradle Daemon](https://docs.gradle.org/2.9/userguide/gradle_daemon.html) will greatly improve incremental build times for changes in Java code.
+If you plan to make changes in Java code, we recommend [Gradle Daemon](https://docs.gradle.org/2.9/userguide/gradle_daemon.html) which speeds up the build.
 
 <block class="mac ios android" />
 
@@ -193,13 +152,7 @@ cd AwesomeProject
 react-native run-ios
 ```
 
-If everything is set up correctly, you should see your new app running in the iOS Simulator shortly.
-
-> You can also
-> [open the `AwesomeProject`](http://nuclide.io/docs/quick-start/getting-started/#adding-a-project)
-> folder in [Nuclide](http://nuclide.io) and
-> [run the application](http://nuclide.io/docs/platforms/react-native/#command-line), or open
-> `ios/AwesomeProject.xcodeproj` and hit the `Run` button in Xcode.
+You should see your new app running in the iOS Simulator shortly. `react-native run-ios` is just one way to run your app - you can also run it directly from within Xcode or Nuclide.
 
 <block class="mac android" />
 
@@ -211,12 +164,7 @@ cd AwesomeProject
 react-native run-android
 ```
 
-If everything is set up correctly, you should see your new app running in your Android emulator shortly.
-
-> You can also
-> [open the `AwesomeProject`](http://nuclide.io/docs/quick-start/getting-started/#adding-a-project)
-> folder in [Nuclide](http://nuclide.io) and
-> [run the application](http://nuclide.io/docs/platforms/react-native/#command-line).
+If everything is set up correctly, you should see your new app running in your Android emulator shortly. `react-native run-android` is just one way to run your app - you can also run it directly from within Android Studio or Nuclide.
 
 <block class="mac ios android" />
 
@@ -274,35 +222,15 @@ Now that you have successfully run the app, let's modify it.
 
 ### That's it!
 
-Congratulations! You've successfully run and modified your first React Native app.
+Congratulations! You've successfully run and modified a React Native app.
 
 <center><img src="img/react-native-congratulations.png" width="150"></img></center>
 
-<block class="mac ios android" />
+<block class="mac windows linux ios android" />
 
-## Common Followups
+## Special Cases
 
-- Learn how to access the Developer Menu, reload your JavaScript, access logs, and more in the [Debugging guide](docs/debugging.html#content).
-
-<block class="mac ios" />
-
-- If you want to run on a physical device, see the [Running on iOS Device page](docs/running-on-device-ios.html#content).
-
-<block class="mac android" />
-
-- If you want to run on a physical device, see the [Running on Android Device page](docs/running-on-device-android.html#content).
-
-<block class="mac ios android" />
-
-- If you run into any issues getting started, see the [Troubleshooting](docs/troubleshooting.html#content) page.
-
-<block class="windows linux android" />
-
-## Common Followups
-
-- Learn how to access the Developer Menu, reload your JavaScript, access logs, and more in the [Debugging guide](docs/debugging.html#content).
-
-- If you want to run on a physical device, see the [Running on Android Device page](docs/running-on-device-android.html#content).
+- This page explains how to create a new React Native app. If you are adding React Native components to an existing application, check out the [Integration guide](docs/integration-with-existing-apps.html).
 
 - If you run into any issues getting started, see the [Troubleshooting](docs/troubleshooting.html#content) page.
 
@@ -330,7 +258,6 @@ function display(type, value) {
   var container = document.getElementsByTagName('block')[0].parentNode;
   container.className = 'display-' + type + '-' + value + ' ' +
     container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
-  event && event.preventDefault();
 }
 
 // If we are coming to the page with a hash in it (i.e. from a search, for example), try to get

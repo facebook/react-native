@@ -90,22 +90,6 @@ static JSValueRef nativeInjectHMRUpdate(
     const JSValueRef arguments[],
     JSValueRef *exception);
 
-static std::string executeJSCallWithJSC(
-    JSGlobalContextRef ctx,
-    const std::string& methodName,
-    const std::vector<folly::dynamic>& arguments) throw(JSException) {
-  SystraceSection s("JSCExecutor.executeJSCall",
-                    "method", methodName);
-
-  // Evaluate script with JSC
-  folly::dynamic jsonArgs(arguments.begin(), arguments.end());
-  auto js = folly::to<folly::fbstring>(
-      "__fbBatchedBridge.", methodName, ".apply(null, ",
-      folly::toJson(jsonArgs), ")");
-  auto result = evaluateScript(ctx, String(js.c_str()), nullptr);
-  return Value(ctx, result).toJSONString();
-}
-
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
     std::shared_ptr<ExecutorDelegate> delegate, std::shared_ptr<MessageQueueThread> jsQueue) {
   return std::unique_ptr<JSExecutor>(
@@ -289,6 +273,9 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
 
   String jsSourceURL(sourceURL.c_str());
   evaluateScript(m_context, jsScript, jsSourceURL);
+
+  bindBridge();
+
   flush();
   ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
 }
@@ -300,32 +287,41 @@ void JSCExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> unbund
   m_unbundle = std::move(unbundle);
 }
 
+void JSCExecutor::bindBridge() throw(JSException) {
+  auto global = Object::getGlobalObject(m_context);
+  auto batchedBridgeValue = global.getProperty("__fbBatchedBridge");
+  if (batchedBridgeValue.isUndefined()) {
+    throwJSExecutionException("Could not get BatchedBridge, make sure your bundle is packaged correctly");
+  }
+
+  auto batchedBridge = batchedBridgeValue.asObject();
+  m_callFunctionReturnFlushedQueueJS = batchedBridge.getProperty("callFunctionReturnFlushedQueue").asObject();
+  m_invokeCallbackAndReturnFlushedQueueJS = batchedBridge.getProperty("invokeCallbackAndReturnFlushedQueue").asObject();
+  m_flushedQueueJS = batchedBridge.getProperty("flushedQueue").asObject();
+}
+
 void JSCExecutor::flush() throw(JSException) {
-  // TODO: Make this a first class function instead of evaling. #9317773
-  std::string calls = executeJSCallWithJSC(m_context, "flushedQueue", std::vector<folly::dynamic>());
+  auto result = m_flushedQueueJS->callAsFunction({});
+  auto calls = Value(m_context, result).toJSONString();
   m_delegate->callNativeModules(*this, std::move(calls), true);
 }
 
 void JSCExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) throw(JSException) {
-  // TODO:  Make this a first class function instead of evaling. #9317773
-  // TODO(cjhopman): This copies args.
-  std::vector<folly::dynamic> call{
-    moduleId,
-    methodId,
-    std::move(arguments),
-  };
-  std::string calls = executeJSCallWithJSC(m_context, "callFunctionReturnFlushedQueue", std::move(call));
+  auto result = m_callFunctionReturnFlushedQueueJS->callAsFunction({
+    Value(m_context, String::createExpectingAscii(moduleId)),
+    Value(m_context, String::createExpectingAscii(methodId)),
+    Value::fromDynamic(m_context, std::move(arguments))
+  });
+  auto calls = Value(m_context, result).toJSONString();
   m_delegate->callNativeModules(*this, std::move(calls), true);
 }
 
 void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) throw(JSException) {
-  // TODO: Make this a first class function instead of evaling. #9317773
-  // TODO(cjhopman): This copies args.
-  std::vector<folly::dynamic> call{
-    (double) callbackId,
-    std::move(arguments)
-  };
-  std::string calls = executeJSCallWithJSC(m_context, "invokeCallbackAndReturnFlushedQueue", std::move(call));
+  auto result = m_invokeCallbackAndReturnFlushedQueueJS->callAsFunction({
+    JSValueMakeNumber(m_context, callbackId),
+    Value::fromDynamic(m_context, std::move(arguments))
+  });
+  auto calls = Value(m_context, result).toJSONString();
   m_delegate->callNativeModules(*this, std::move(calls), true);
 }
 

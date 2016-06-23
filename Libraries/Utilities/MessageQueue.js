@@ -151,8 +151,10 @@ class MessageQueue {
       this._callbacks[this._callbackID++] = onSucc;
     }
 
-    global.nativeTraceBeginAsyncFlow &&
-      global.nativeTraceBeginAsyncFlow(TRACE_TAG_REACT_APPS, 'native', this._callID);
+    if (__DEV__) {
+      global.nativeTraceBeginAsyncFlow &&
+        global.nativeTraceBeginAsyncFlow(TRACE_TAG_REACT_APPS, 'native', this._callID);
+    }
     this._callID++;
 
     this._queue[MODULE_IDS].push(module);

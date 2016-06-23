@@ -83,7 +83,7 @@ public class NativeViewHierarchyManager {
     mRootTags = new SparseBooleanArray();
   }
 
-  protected final View resolveView(int tag) {
+  public final View resolveView(int tag) {
     View view = mTagsToViews.get(tag);
     if (view == null) {
       throw new IllegalViewOperationException("Trying to resolve view with tag " + tag
@@ -92,7 +92,7 @@ public class NativeViewHierarchyManager {
     return view;
   }
 
-  protected final ViewManager resolveViewManager(int tag) {
+  public final ViewManager resolveViewManager(int tag) {
     ViewManager viewManager = mTagsToViewManagers.get(tag);
     if (viewManager == null) {
       throw new IllegalViewOperationException("ViewManager for tag " + tag + " could not be found");

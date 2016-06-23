@@ -505,6 +505,18 @@ exports.examples = [
                     source={image}
                   />
                 </View>
+                { Platform.OS === 'ios' ?
+                  <View style={styles.leftMargin}>
+                    <Text style={[styles.resizeModeText]}>
+                      Repeat
+                    </Text>
+                    <Image
+                      style={styles.resizeMode}
+                      resizeMode={Image.resizeMode.repeat}
+                      source={image}
+                    />
+                  </View>
+                : null }
                 { Platform.OS === 'android' ?
                   <View style={styles.leftMargin}>
                     <Text style={[styles.resizeModeText]}>
