@@ -464,7 +464,7 @@ var apps = [
   },
   {
     name: 'Gitify',
-    icon: 'http://a2.mzstatic.com/us/r30/Purple5/v4/42/50/5a/42505a8d-3c7a-e49a-16e3-422315f24cf1/icon350x350.png',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple30/v4/6f/c6/12/6fc61257-3171-0aa7-c902-e5c20878a72a/icon350x350.jpeg',
     linkAppStore: 'https://itunes.apple.com/us/app/gitify/id1123311036?ls=1&mt=8',
     linkPlayStore:  'http://play.google.com/store/apps/details?id=com.gitify',
     author: 'Emmanouil Konstantinidis',
