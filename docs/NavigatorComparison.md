@@ -4,7 +4,7 @@ title: Navigator Comparison
 layout: docs
 category: Guides
 permalink: docs/navigator-comparison.html
-next: known-issues
+next: performance
 ---
 
 The differences between [Navigator](docs/navigator.html)
