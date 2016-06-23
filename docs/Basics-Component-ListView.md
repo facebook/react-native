@@ -4,7 +4,7 @@ title: ListView
 layout: docs
 category: The Basics
 permalink: docs/basics-component-listview.html
-next: basics-dimensions
+next: basics-network
 ---
 
 On mobile devices, lists are a core element in many applications. The [`ListView`](/react-native/docs/listview.html#content) component is a special type of [`View`](/react-native/docs/basics-component-view.html) that displays a *vertically* scrolling list of changing, but similarly structured, data.
