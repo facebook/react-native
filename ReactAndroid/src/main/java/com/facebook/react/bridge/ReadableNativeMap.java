@@ -22,9 +22,8 @@ import java.util.HashMap;
  */
 @DoNotStrip
 public class ReadableNativeMap extends NativeMap implements ReadableMap {
-
   static {
-    SoLoader.loadLibrary(ReactBridge.REACT_NATIVE_LIB);
+    ReactBridge.staticInit();
   }
 
   protected ReadableNativeMap(HybridData hybridData) {

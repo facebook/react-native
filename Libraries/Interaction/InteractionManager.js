@@ -16,6 +16,7 @@ const EventEmitter = require('EventEmitter');
 const Set = require('Set');
 const TaskQueue = require('TaskQueue');
 
+const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
 const keyMirror = require('fbjs/lib/keyMirror');
 const setImmediate = require('setImmediate');
@@ -84,24 +85,33 @@ var InteractionManager = {
   }),
 
   /**
-   * Schedule a function to run after all interactions have completed.
+   * Schedule a function to run after all interactions have completed. Returns a cancellable
+   * "promise".
    */
-  runAfterInteractions(task: ?Task): Promise<any> {
-    return new Promise(resolve => {
+  runAfterInteractions(task: ?Task): {then: Function, done: Function, cancel: Function} {
+    const tasks = [];
+    const promise = new Promise(resolve => {
       _scheduleUpdate();
       if (task) {
-        _taskQueue.enqueue(task);
+        tasks.push(task);
       }
-      const name = task && task.name || '?';
-      _taskQueue.enqueue({run: resolve, name: 'resolve ' + name});
+      tasks.push({run: resolve, name: 'resolve ' + (task && task.name || '?')});
+      _taskQueue.enqueueTasks(tasks);
     });
+    return {
+      then: promise.then.bind(promise),
+      done: promise.done.bind(promise),
+      cancel: function() {
+        _taskQueue.cancelTasks(tasks);
+      },
+    };
   },
 
   /**
    * Notify manager that an interaction has started.
    */
   createInteractionHandle(): Handle {
-    DEBUG && console.log('create interaction handle');
+    DEBUG && infoLog('create interaction handle');
     _scheduleUpdate();
     var handle = ++_inc;
     _addInteractionSet.add(handle);
@@ -112,7 +122,7 @@ var InteractionManager = {
    * Notify manager that an interaction has completed.
    */
   clearInteractionHandle(handle: Handle) {
-    DEBUG && console.log('clear interaction handle');
+    DEBUG && infoLog('clear interaction handle');
     invariant(
       !!handle,
       'Must provide a handle to clear.'

@@ -30,8 +30,6 @@ export type NavigationState = {
   routes: Array<NavigationRoute>,
 };
 
-export type NavigationAction = any;
-
 export type NavigationLayout = {
   height: NavigationAnimatedValue,
   initHeight: number,
@@ -47,17 +45,14 @@ export type NavigationScene = {
   route: NavigationRoute,
 };
 
-export type NavigationSceneRendererProps = {
-  // The layout of the containing view of the scenes.
+export type NavigationTransitionProps = {
+  // The layout of the transitioner of the scenes.
   layout: NavigationLayout,
 
-  // The navigation state of the containing view.
+  // The navigation state of the transitioner.
   navigationState: NavigationState,
 
-  // Callback to navigation with an action.
-  onNavigate: NavigationActionCaller,
-
-  // The progressive index of the containing view's navigation state.
+  // The progressive index of the transitioner's navigation state.
   position: NavigationAnimatedValue,
 
   // The value that represents the progress of the transition when navigation
@@ -67,12 +62,17 @@ export type NavigationSceneRendererProps = {
   //  progress.__getAnimatedValue() == 1 : transtion completes.
   progress: NavigationAnimatedValue,
 
-  // The scene to render.
-  scene: NavigationScene,
-
-  // All the scenes of the containing view's.
+  // All the scenes of the transitioner.
   scenes: Array<NavigationScene>,
+
+  // The active scene, corresponding to the route at
+  // `navigationState.routes[navigationState.index]`.
+  scene: NavigationScene,
 };
+
+// Similar to `NavigationTransitionProps`, except that the prop `scene`
+// represents the scene for the renderer to render.
+export type NavigationSceneRendererProps = NavigationTransitionProps;
 
 export type NavigationPanPanHandlers = {
   onMoveShouldSetResponder: Function,
@@ -97,23 +97,11 @@ export type NavigationTransitionSpec = {
 
 // Functions.
 
-export type NavigationActionCaller = Function;
-
 export type NavigationAnimationSetter = (
   position: NavigationAnimatedValue,
   newState: NavigationState,
   lastState: NavigationState,
 ) => void;
-
-export type NavigationRenderer = (
-  navigationState: ?NavigationRoute,
-  onNavigate: NavigationActionCaller,
-) => ReactElement<any>;
-
-export type NavigationReducer = (
-  state: ?NavigationRoute,
-  action: ?NavigationAction,
-) => NavigationRoute;
 
 export type NavigationSceneRenderer = (
   props: NavigationSceneRendererProps,

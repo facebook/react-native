@@ -108,23 +108,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (NSArray<UIKeyCommand *> *)RCT_keyCommands
 {
-  /*
-   * If current first responder is UITextView or UITextField, disable the shortcut key commands.
-   * For example, double-pressing a key should type two characters into the text view,
-   * not invoke a predefined keyboard shortcut.
-   */
-  NSString *name = NSStringFromClass(self.class);
-  if ([name isEqualToString : @"AppDelegate"]) {
-    return nil;
-  }
-
-  UIResponder *firstResponder = [UIResponder RCT_getFirstResponder: self];
-  if ([firstResponder isKindOfClass:[UITextView class]] ||
-      [firstResponder isKindOfClass:[UITextField class]] ||
-      [firstResponder conformsToProtocol:@protocol(UITextViewDelegate)]) {
-    return nil;
-  }
-
   NSSet<RCTKeyCommand *> *commands = [RCTKeyCommands sharedInstance].commands;
   return [[commands valueForKeyPath:@"keyCommand"] allObjects];
 }
@@ -271,7 +254,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                       modifierFlags:(UIKeyModifierFlags)flags
                              action:(void (^)(UIKeyCommand *))block
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   if (input.length && flags && RCTIsIOS8OrEarlier()) {
 
@@ -296,7 +279,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)unregisterKeyCommandWithInput:(NSString *)input
                         modifierFlags:(UIKeyModifierFlags)flags
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   for (RCTKeyCommand *command in _commands.allObjects) {
     if ([command matchesInput:input flags:flags]) {
@@ -309,7 +292,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (BOOL)isKeyCommandRegisteredForInput:(NSString *)input
                          modifierFlags:(UIKeyModifierFlags)flags
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   for (RCTKeyCommand *command in _commands) {
     if ([command matchesInput:input flags:flags]) {
@@ -323,7 +306,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                       modifierFlags:(UIKeyModifierFlags)flags
                              action:(void (^)(UIKeyCommand *))block
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   if (input.length && flags && RCTIsIOS8OrEarlier()) {
 
@@ -348,7 +331,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)unregisterDoublePressKeyCommandWithInput:(NSString *)input
                         modifierFlags:(UIKeyModifierFlags)flags
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   for (RCTKeyCommand *command in _commands.allObjects) {
     if ([command matchesInput:input flags:flags]) {
@@ -361,7 +344,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (BOOL)isDoublePressKeyCommandRegisteredForInput:(NSString *)input
                          modifierFlags:(UIKeyModifierFlags)flags
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   for (RCTKeyCommand *command in _commands) {
     if ([command matchesInput:input flags:flags]) {

@@ -20,9 +20,6 @@
 #import "RCTNetworking.h"
 #import "RCTUtils.h"
 
-static NSString *const RCTErrorInvalidURI = @"E_INVALID_URI";
-static NSString *const RCTErrorPrefetchFailure = @"E_PREFETCH_FAILURE";
-
 static const NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 1048576; // 1MB
 
 static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size,
@@ -70,7 +67,7 @@ RCT_EXPORT_MODULE()
   // Set defaults
   _maxConcurrentLoadingTasks = _maxConcurrentLoadingTasks ?: 4;
   _maxConcurrentDecodingTasks = _maxConcurrentDecodingTasks ?: 2;
-  _maxConcurrentDecodingBytes = _maxConcurrentDecodingBytes ?: 30 * 1024 *1024; // 30MB
+  _maxConcurrentDecodingBytes = _maxConcurrentDecodingBytes ?: 30 * 1024 * 1024; // 30MB
 
   _URLCacheQueue = dispatch_queue_create("com.facebook.react.ImageLoaderURLCacheQueue", DISPATCH_QUEUE_SERIAL);
 
@@ -244,8 +241,15 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
           _activeTasks--;
           break;
         case RCTNetworkTaskPending:
+          break;
         case RCTNetworkTaskInProgress:
-          // Do nothing
+          // Check task isn't "stuck"
+          if (task.requestToken == nil) {
+            RCTLogWarn(@"Task orphaned for request %@", task.request);
+            [_pendingTasks removeObject:task];
+            _activeTasks--;
+            [task cancel];
+          }
           break;
       }
     }
@@ -293,7 +297,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   __weak RCTImageLoader *weakSelf = self;
 
   void (^completionHandler)(NSError *error, id imageOrData) = ^(NSError *error, id imageOrData) {
-    if ([NSThread isMainThread]) {
+    if (RCTIsMainQueue()) {
 
       // Most loaders do not return on the main thread, so caller is probably not
       // expecting it, and may do expensive post-processing in the callback
@@ -400,7 +404,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
             return;
           }
 
-          NSURL *redirectURL = [NSURL URLWithString: location];
+          NSURL *redirectURL = [NSURL URLWithString: location relativeToURL: request.URL];
           request = [NSURLRequest requestWithURL:redirectURL];
           cachedResponse = [_URLCache cachedResponseForRequest:request];
           continue;
@@ -415,6 +419,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     RCTNetworkTask *task = [_bridge.networking networkTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
       if (error) {
         completionHandler(error, nil);
+        [weakSelf dequeueTasks];
         return;
       }
 
@@ -432,7 +437,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         // Process image data
         processResponse(response, data, nil);
 
-        //clean up
+        // Prepare for next task
         [weakSelf dequeueTasks];
 
       });
@@ -445,10 +450,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     }
     if (task) {
       [_pendingTasks addObject:task];
-      if (MAX(_activeTasks, _scheduledDecodes) < _maxConcurrentLoadingTasks) {
-        [task start];
-        _activeTasks++;
-      }
+      [weakSelf dequeueTasks];
     }
 
     cancelLoad = ^{
@@ -545,7 +547,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
   __block volatile uint32_t cancelled = 0;
   void (^completionHandler)(NSError *, UIImage *) = ^(NSError *error, UIImage *image) {
-    if ([NSThread isMainThread]) {
+    if (RCTIsMainQueue()) {
       // Most loaders do not return on the main thread, so caller is probably not
       // expecting it, and may do expensive post-processing in the callback
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -667,27 +669,6 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                         }
                         completionBlock(error, size);
                       }];
-}
-
-#pragma mark - Bridged methods
-
-RCT_EXPORT_METHOD(prefetchImage:(NSString *)uri
-                        resolve:(RCTPromiseResolveBlock)resolve
-                         reject:(RCTPromiseRejectBlock)reject)
-{
-  if (!uri.length) {
-    reject(RCTErrorInvalidURI, @"Cannot prefetch an image for an empty URI", nil);
-    return;
-  }
-
-  [_bridge.imageLoader loadImageWithURLRequest:[RCTConvert NSURLRequest:uri] callback:^(NSError *error, UIImage *image) {
-    if (error) {
-      reject(RCTErrorPrefetchFailure, nil, error);
-      return;
-    }
-
-    resolve(@YES);
-  }];
 }
 
 #pragma mark - RCTURLRequestHandler

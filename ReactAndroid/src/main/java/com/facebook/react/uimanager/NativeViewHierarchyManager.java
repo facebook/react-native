@@ -70,20 +70,25 @@ public class NativeViewHierarchyManager {
   private final SparseBooleanArray mRootTags;
   private final ViewManagerRegistry mViewManagers;
   private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
-  private final RootViewManager mRootViewManager = new RootViewManager();
+  private final RootViewManager mRootViewManager;
   private final LayoutAnimationController mLayoutAnimator = new LayoutAnimationController();
 
   private boolean mLayoutAnimationEnabled;
 
   public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
+    this(viewManagers, new RootViewManager());
+  }
+
+  public NativeViewHierarchyManager(ViewManagerRegistry viewManagers, RootViewManager manager) {
     mAnimationRegistry = new AnimationRegistry();
     mViewManagers = viewManagers;
     mTagsToViews = new SparseArray<>();
     mTagsToViewManagers = new SparseArray<>();
     mRootTags = new SparseBooleanArray();
+    mRootViewManager = manager;
   }
 
-  protected final View resolveView(int tag) {
+  public final View resolveView(int tag) {
     View view = mTagsToViews.get(tag);
     if (view == null) {
       throw new IllegalViewOperationException("Trying to resolve view with tag " + tag
@@ -92,7 +97,7 @@ public class NativeViewHierarchyManager {
     return view;
   }
 
-  protected final ViewManager resolveViewManager(int tag) {
+  public final ViewManager resolveViewManager(int tag) {
     ViewManager viewManager = mTagsToViewManagers.get(tag);
     if (viewManager == null) {
       throw new IllegalViewOperationException("ViewManager for tag " + tag + " could not be found");
@@ -346,7 +351,7 @@ public class NativeViewHierarchyManager {
                       tagsToDelete));
         }
 
-        View viewToRemove = viewToManage.getChildAt(indexToRemove);
+        View viewToRemove = viewManager.getChildAt(viewToManage, indexToRemove);
 
         if (mLayoutAnimationEnabled &&
             mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
@@ -412,7 +417,10 @@ public class NativeViewHierarchyManager {
     }
   }
 
-  private boolean arrayContains(int[] array, int ele) {
+  private boolean arrayContains(@Nullable int[] array, int ele) {
+    if (array == null) {
+      return false;
+    }
     for (int curEle : array) {
       if (curEle == ele) {
         return true;

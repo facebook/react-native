@@ -54,8 +54,8 @@ function _server(argv, config, resolve, reject) {
   }, {
     command: 'transformer',
     type: 'string',
-    default: require.resolve('../../packager/transformer'),
-    description: 'Specify a custom transformer to be used (absolute path)'
+    default: null,
+    description: 'Specify a custom transformer to be used'
   }, {
     command: 'resetCache',
     description: 'Removes cached files',

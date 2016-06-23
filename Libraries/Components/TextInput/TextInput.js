@@ -11,6 +11,7 @@
  */
 'use strict';
 
+var ColorPropType = require('ColorPropType');
 var DocumentSelectionState = require('DocumentSelectionState');
 var EventEmitter = require('EventEmitter');
 var NativeMethodsMixin = require('NativeMethodsMixin');
@@ -269,7 +270,7 @@ var TextInput = React.createClass({
     /**
      * The text color of the placeholder string
      */
-    placeholderTextColor: PropTypes.string,
+    placeholderTextColor: ColorPropType,
     /**
      * If true, the text input obscures the text entered so that sensitive text
      * like passwords stay secure. The default value is false.
@@ -278,7 +279,7 @@ var TextInput = React.createClass({
     /**
     * The highlight (and cursor on ios) color of the text input
     */
-    selectionColor: PropTypes.string,
+    selectionColor: ColorPropType,
     /**
      * See DocumentSelectionState.js, some state that is responsible for
      * maintaining selection information for a document
@@ -336,7 +337,7 @@ var TextInput = React.createClass({
      * The color of the textInput underline.
      * @platform android
      */
-    underlineColorAndroid: PropTypes.string,
+    underlineColorAndroid: ColorPropType,
   },
 
   /**
@@ -501,6 +502,7 @@ var TextInput = React.createClass({
 
     return (
       <TouchableWithoutFeedback
+        onLayout={props.onLayout}
         onPress={this._onPress}
         rejectResponderTermination={true}
         accessible={props.accessible}
@@ -557,9 +559,9 @@ var TextInput = React.createClass({
         onSubmitEditing={this.props.onSubmitEditing}
         blurOnSubmit={this.props.blurOnSubmit}
         onLayout={this.props.onLayout}
-        password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}
         placeholderTextColor={this.props.placeholderTextColor}
+        secureTextEntry={this.props.secureTextEntry}
         selectionColor={this.props.selectionColor}
         text={this._getText()}
         underlineColorAndroid={this.props.underlineColorAndroid}

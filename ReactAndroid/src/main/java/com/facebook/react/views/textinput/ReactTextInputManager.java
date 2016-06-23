@@ -394,8 +394,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         multiline ? InputType.TYPE_TEXT_FLAG_MULTI_LINE : 0);
   }
 
-  @ReactProp(name = "password", defaultBoolean = false)
-  public void setPassword(ReactEditText view, boolean password) {
+  @ReactProp(name = "secureTextEntry", defaultBoolean = false)
+  public void setSecureTextEntry(ReactEditText view, boolean password) {
     updateStagedInputTypeFlag(
         view,
         password ? 0 :
