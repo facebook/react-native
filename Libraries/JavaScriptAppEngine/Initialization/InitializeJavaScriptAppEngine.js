@@ -17,6 +17,7 @@
  * 2. Bridged modules.
  *
  * @providesModule InitializeJavaScriptAppEngine
+ * @flow
  */
 
 /* eslint strict: 0 */
@@ -24,15 +25,15 @@
 
 require('regenerator-runtime/runtime');
 
-if (typeof GLOBAL === 'undefined') {
+if (global.GLOBAL === undefined) {
   global.GLOBAL = global;
 }
 
-if (typeof window === 'undefined') {
+if (global.window === undefined) {
   global.window = global;
 }
 
-function setUpProcess() {
+function setUpProcess(): void {
   global.process = global.process || {};
   global.process.env = global.process.env || {};
   if (!global.process.env.NODE_ENV) {
@@ -40,12 +41,12 @@ function setUpProcess() {
   }
 }
 
-function setUpProfile() {
+function setUpProfile(): void {
   const Systrace = require('Systrace');
   Systrace.setEnabled(global.__RCTProfileIsProfiling || false);
 }
 
-function setUpConsole() {
+function setUpConsole(): void {
   // ExceptionsManager transitively requires Promise so we install it after
   const ExceptionsManager = require('ExceptionsManager');
   ExceptionsManager.installConsoleErrorReporter();
@@ -56,35 +57,29 @@ function setUpConsole() {
 }
 
 /**
- * Assigns a new global property, replacing the existing one if there is one.
+ * Sets an object's property. If a property with the same name exists, this will
+ * replace it but maintain its descriptor configuration.
  *
- * Existing properties are preserved as `originalPropertyName`. Both properties
- * will maintain the same enumerability & configurability.
+ * The original property value will be preserved as `original[PropertyName]` so
+ * that, if necessary, it can be restored. For example, if you want to route
+ * network requests through DevTools (to trace them):
  *
- * This allows you to undo the more aggressive polyfills, should you need to.
- * For example, if you want to route network requests through DevTools (to trace
- * them):
+ *   global.XMLHttpRequest = global.originalXMLHttpRequest;
  *
- *     global.XMLHttpRequest = global.originalXMLHttpRequest;
- *
- * For more info on that particular case, see:
- * https://github.com/facebook/react-native/issues/934
+ * @see https://github.com/facebook/react-native/issues/934
  */
-function polyfillGlobal(name, newValue, scope = global) {
-  const descriptor = Object.getOwnPropertyDescriptor(scope, name);
+function defineProperty(object: Object, name: string, newValue: mixed): void {
+  const descriptor = Object.getOwnPropertyDescriptor(object, name);
   if (descriptor) {
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
-    Object.defineProperty(scope, backupName, {...descriptor, value: scope[name]});
+    Object.defineProperty(object, backupName, {
+      ...descriptor,
+      value: object[name],
+    });
   }
 
   const {enumerable, writable} = descriptor || {};
-
-  // jest for some bad reasons runs the polyfill code multiple times. In jest
-  // environment, XmlHttpRequest doesn't exist so getOwnPropertyDescriptor
-  // returns undefined and defineProperty default for writable is false.
-  // Therefore, the second time it runs, defineProperty will fatal :(
-
-  Object.defineProperty(scope, name, {
+  Object.defineProperty(object, name, {
     configurable: true,
     enumerable: enumerable !== false,
     writable: writable !== false,
@@ -92,22 +87,26 @@ function polyfillGlobal(name, newValue, scope = global) {
   });
 }
 
-function polyfillLazyGlobal(name, valueFn, scope = global) {
-  const descriptor = getPropertyDescriptor(scope, name);
+function defineLazyProperty(
+  object: Object,
+  name: string,
+  getValue: () => mixed
+): void {
+  const descriptor = getPropertyDescriptor(object, name);
   if (descriptor) {
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
-    Object.defineProperty(scope, backupName, descriptor);
+    Object.defineProperty(object, backupName, descriptor);
   }
 
   const {enumerable, writable} = descriptor || {};
-  Object.defineProperty(scope, name, {
+  Object.defineProperty(object, name, {
     configurable: true,
     enumerable: enumerable !== false,
     get() {
-      return (global[name] = valueFn());
+      return (object[name] = getValue());
     },
     set(value) {
-      Object.defineProperty(global, name, {
+      Object.defineProperty(object, name, {
         configurable: true,
         enumerable: enumerable !== false,
         writable: writable !== false,
@@ -117,16 +116,7 @@ function polyfillLazyGlobal(name, valueFn, scope = global) {
   });
 }
 
-/**
- * Polyfill a module if it is not already defined in `scope`.
- */
-function polyfillIfNeeded(name, polyfill, scope = global, descriptor = {}) {
-  if (scope[name] === undefined) {
-    Object.defineProperty(scope, name, {...descriptor, value: polyfill});
-  }
-}
-
-function setUpErrorHandler() {
+function setUpErrorHandler(): void {
   if (global.__fbDisableExceptionsManager) {
     return;
   }
@@ -135,7 +125,9 @@ function setUpErrorHandler() {
     try {
       require('ExceptionsManager').handleException(e, isFatal);
     } catch (ee) {
+      /* eslint-disable no-console-disallow */
       console.log('Failed to print error: ', ee.message);
+      /* eslint-enable no-console-disallow */
       throw e;
     }
   }
@@ -151,9 +143,9 @@ function setUpErrorHandler() {
  * implement our own custom timing bridge that should be immune to
  * unexplainably dropped timing signals.
  */
-function setUpTimers() {
-  const defineLazyTimer = (name) => {
-    polyfillLazyGlobal(name, () => require('JSTimers')[name]);
+function setUpTimers(): void {
+  const defineLazyTimer = name => {
+    defineLazyProperty(global, name, () => require('JSTimers')[name]);
   };
   defineLazyTimer('setTimeout');
   defineLazyTimer('setInterval');
@@ -165,7 +157,7 @@ function setUpTimers() {
   defineLazyTimer('cancelAnimationFrame');
 }
 
-function setUpAlert() {
+function setUpAlert(): void {
   if (!global.alert) {
     global.alert = function(text) {
       // Require Alert on demand. Requiring it too early can lead to issues
@@ -175,45 +167,48 @@ function setUpAlert() {
   }
 }
 
-function setUpPromise() {
+function setUpPromise(): void {
   // The native Promise implementation throws the following error:
   // ERROR: Event loop not supported.
-  polyfillLazyGlobal('Promise', () => require('Promise'));
+  defineLazyProperty(global, 'Promise', () => require('Promise'));
 }
 
-function setUpXHR() {
+function setUpXHR(): void {
   // The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
   // let you fetch anything from the internet
-  polyfillLazyGlobal('XMLHttpRequest', () => require('XMLHttpRequest'));
-  polyfillLazyGlobal('FormData', () => require('FormData'));
+  defineLazyProperty(global, 'XMLHttpRequest', () => require('XMLHttpRequest'));
+  defineLazyProperty(global, 'FormData', () => require('FormData'));
 
-  polyfillLazyGlobal('fetch', () => require('fetch').fetch);
-  polyfillLazyGlobal('Headers', () => require('fetch').Headers);
-  polyfillLazyGlobal('Request', () => require('fetch').Request);
-  polyfillLazyGlobal('Response', () => require('fetch').Response);
+  defineLazyProperty(global, 'fetch', () => require('fetch').fetch);
+  defineLazyProperty(global, 'Headers', () => require('fetch').Headers);
+  defineLazyProperty(global, 'Request', () => require('fetch').Request);
+  defineLazyProperty(global, 'Response', () => require('fetch').Response);
 
-  polyfillLazyGlobal('WebSocket', () => require('WebSocket'));
+  defineLazyProperty(global, 'WebSocket', () => require('WebSocket'));
 }
 
-function setUpGeolocation() {
-  polyfillIfNeeded('navigator', {}, global, {
-    writable: true,
-    enumerable: true,
-    configurable: true,
-  });
-  Object.defineProperty(global.navigator, 'product', {value: 'ReactNative'});
-
-  polyfillLazyGlobal('geolocation', () => require('Geolocation'), global.navigator);
+function setUpGeolocation(): void {
+  if (global.navigator === undefined) {
+    Object.defineProperty(global, 'navigator', {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: {},
+    });
+  }
+  const {navigator} = global;
+  Object.defineProperty(navigator, 'product', {value: 'ReactNative'});
+  defineLazyProperty(navigator, 'geolocation', () => require('Geolocation'));
 }
 
-function setUpMapAndSet() {
-  // We can't make these lazy as Map checks the global.Map to see if it's
-  // available but in our case it'll be a lazy getter.
-  polyfillGlobal('Map', require('Map'));
-  polyfillGlobal('Set', require('Set'));
+function setUpCollections(): void {
+  // We can't make these lazy because `Map` checks for `global.Map` (which would
+  // not exist if it were lazily defined).
+  defineProperty(global, 'Map', require('Map'));
+  defineProperty(global, 'Set', require('Set'));
 }
 
-function setUpDevTools() {
+function setUpDevTools(): void {
   if (__DEV__) {
     // not when debugging in chrome
     if (!window.document && require('Platform').OS === 'ios') {
@@ -226,7 +221,7 @@ function setUpDevTools() {
   }
 }
 
-function getPropertyDescriptor(object, name) {
+function getPropertyDescriptor(object: Object, name: string): any {
   while (object) {
     const descriptor = Object.getOwnPropertyDescriptor(object, name);
     if (descriptor) {
@@ -245,7 +240,7 @@ setUpPromise();
 setUpErrorHandler();
 setUpXHR();
 setUpGeolocation();
-setUpMapAndSet();
+setUpCollections();
 setUpDevTools();
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has
