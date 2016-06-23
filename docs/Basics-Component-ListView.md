@@ -20,7 +20,7 @@ This example creates a simple `ListView` of hardcoded data. It first initializes
 > A `rowHasChanged` function is required to use `ListView`. Here we just say a row has changed if the row we are on is not the same as the previous row.
 
 ```JavaScript
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { AppRegistry, ListView, Text, View } from 'react-native';
 
 class ListViewBasics extends Component {
