@@ -36,12 +36,16 @@ export type AnnotationDragState = $Enum<{
 }>;
 
 /**
- * A component for displaying embeddable maps and annotations using the native
- * iOS MKMapView class. The Android version is not currently available in the
- * open source React Native project, but you can use Leland Richardson's
- * cross-platform and more feature-complete
+ * `MapView` is used to display embeddable maps and annotations using
+ * `MKMapView`. This component is only supported on iOS.
+ *
+ * For a cross-platform solution, check out
  * [react-native-maps](https://github.com/lelandrichardson/react-native-maps)
- * instead.
+ * by Leland Richardson.
+ *
+ * ```
+ * ```
+ *
  */
 
 const MapView = React.createClass({
