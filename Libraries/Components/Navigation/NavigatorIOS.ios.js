@@ -24,7 +24,6 @@ var View = require('View');
 var invariant = require('fbjs/lib/invariant');
 var logError = require('logError');
 var requireNativeComponent = require('requireNativeComponent');
-var resolveAssetSource = require('resolveAssetSource');
 
 var TRANSITIONER_REF = 'transitionerRef';
 
@@ -52,30 +51,31 @@ var NavigatorTransitionerIOS = React.createClass({
 });
 
 type Route = {
-  component: Function;
-  title: string;
-  passProps?: Object;
-  backButtonTitle?: string;
-  backButtonIcon?: Object;
-  leftButtonTitle?: string;
-  leftButtonIcon?: Object;
-  onLeftButtonPress?: Function;
-  rightButtonTitle?: string;
-  rightButtonIcon?: Object;
-  onRightButtonPress?: Function;
-  wrapperStyle?: any;
+  component: Function,
+  title: string,
+  titleImage?: Object,
+  passProps?: Object,
+  backButtonTitle?: string,
+  backButtonIcon?: Object,
+  leftButtonTitle?: string,
+  leftButtonIcon?: Object,
+  onLeftButtonPress?: Function,
+  rightButtonTitle?: string,
+  rightButtonIcon?: Object,
+  onRightButtonPress?: Function,
+  wrapperStyle?: any,
 };
 
 type State = {
-  idStack: Array<number>;
-  routeStack: Array<Route>;
-  requestedTopOfStack: number;
-  observedTopOfStack: number;
-  progress: number;
-  fromIndex: number;
-  toIndex: number;
-  makingNavigatorRequest: boolean;
-  updatingAllIndicesAtOrBeyond: ?number;
+  idStack: Array<number>,
+  routeStack: Array<Route>,
+  requestedTopOfStack: number,
+  observedTopOfStack: number,
+  progress: number,
+  fromIndex: number,
+  toIndex: number,
+  makingNavigatorRequest: boolean,
+  updatingAllIndicesAtOrBeyond: ?number,
 }
 
 type Event = Object;
@@ -184,6 +184,11 @@ var NavigatorIOS = React.createClass({
        * The title displayed in the nav bar and back button for this route
        */
       title: PropTypes.string.isRequired,
+
+      /**
+       * If set, the image will appear instead of the text title
+       */
+      titleImage: Image.propTypes.source,
 
       /**
        * Specify additional props passed to the component. NavigatorIOS will
@@ -404,8 +409,8 @@ var NavigatorIOS = React.createClass({
   },
 
   getChildContext: function(): {
-    onFocusRequested: Function;
-    focusEmitter: EventEmitter;
+    onFocusRequested: Function,
+    focusEmitter: EventEmitter,
   } {
     return {
       onFocusRequested: this._handleFocusRequest,
