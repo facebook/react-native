@@ -19,7 +19,9 @@ const link = require('./rnpm/link/src/link');
 const path = require('path');
 const Promise = require('promise');
 const runAndroid = require('./runAndroid/runAndroid');
+const logAndroid = require('./logAndroid/logAndroid');
 const runIOS = require('./runIOS/runIOS');
+const logIOS = require('./logIOS/logIOS');
 const server = require('./server/server');
 const TerminalAdapter = require('yeoman-environment/lib/adapter.js');
 const yeoman = require('yeoman-environment');
@@ -49,7 +51,9 @@ const documentedCommands = {
   'new-library': [library, 'generates a native library bridge'],
   'android': [generateWrapper, 'generates an Android project for your app'],
   'run-android': [runAndroid, 'builds your app and starts it on a connected Android emulator or device'],
+  'log-android': [logAndroid, 'print Android logs'],
   'run-ios': [runIOS, 'builds your app and starts it on iOS simulator'],
+  'log-ios': [logIOS, 'print iOS logs'],
   'upgrade': [upgrade, 'upgrade your app\'s template files to the latest version; run this after ' +
                        'updating the react-native version in your package.json and running npm install'],
   'link': [linkWrapper, 'link a library'],
