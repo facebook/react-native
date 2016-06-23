@@ -93,86 +93,179 @@ type Event = Object;
  */
 
 /**
- * NavigatorIOS wraps UIKit navigation and allows you to add back-swipe
- * functionality across your app.
+ * `NavigatorIOS` is a wrapper around UIKit navigation, enabling you to
+ * implement back-swipe functionality in your iOS app. Take a look at
+ * [`Navigator`](/docs/navigator.html) for a similar solution for your
+ * cross-platform needs.
  *
- * > **NOTE**: This Component is not maintained by Facebook
- * >
- * > This component is under community responsibility.
- * > If a pure JavaScript solution fits your needs you may try the `Navigator`
- * > component instead.
+ * > **NOTE**: This component is not maintained by Facebook and is the
+ * > community's responsibility.
  *
- * #### Routes
- * A route is an object used to describe each page in the navigator. The first
- * route is provided to NavigatorIOS as `initialRoute`:
- *
- * ```
- * render: function() {
- *   return (
- *     <NavigatorIOS
- *       initialRoute={{
- *         component: MyView,
- *         title: 'My View Title',
- *         passProps: { myProp: 'foo' },
- *       }}
- *     />
- *   );
- * },
- * ```
- *
- * Now MyView will be rendered by the navigator. It will receive the route
- * object in the `route` prop, a navigator, and all of the props specified in
- * `passProps`.
- *
- * See the initialRoute propType for a complete definition of a route.
- *
- * #### Navigator
- *
- * A `navigator` is an object of navigation functions that a view can call. It
- * is passed as a prop to any component rendered by NavigatorIOS.
+ * To set up the navigator, provide the `initialRoute` prop with a route
+ * object. A route object is used to describe each scene that your app
+ * navigates to. `initialRoute` represents the first route in your navigator.
  *
  * ```
- * var MyView = React.createClass({
- *   _handleBackButtonPress: function() {
+ * import React, { Component } from 'react';
+ * import { NavigatorIOS, Text } from 'react-native';
+ *
+ * class NavvyIOS extends Component {
+ *   render() {
+ *     return (
+ *       <NavigatorIOS
+ *         initialRoute={{
+ *           component: MyView,
+ *           title: 'My View Title',
+ *         }}
+ *         style={{flex: 1}}
+ *       />
+ *     );
+ *   }
+ * }
+ *
+ * class MyView extends Component {
+ *   render() {
+ *     return(
+ *       <Text style={{marginTop: 200, alignSelf: 'center'}}>
+ *         See you on the other nav!
+ *       </Text>
+ *     );
+ *   }
+ * }
+ * ```
+ *
+ * In this code, the navigator sets its title and renders `MyView`. The
+ * component specified in `initialRoute` will receive a `route` prop and a
+ * `navigator` prop representing the navigator.
+ *
+ * You can optionally pass in a `passProps` property to your `initialRoute`.
+ * `NavigatorIOS` passes this in as props to the rendered component:
+ *
+ * ```
+ * initialRoute={{
+ *   component: MyView,
+ *   title: 'Foo This',
+ *   passProps: { myProp: 'foo' }
+ * }}
+ * ```
+ *
+ * You can then access the props passed in:
+ *
+ * ```
+ * <Text style={{marginTop: 200, alignSelf: 'center'}}>
+ *   See you on the other nav {this.props.myProp}!
+ * </Text>
+ * ```
+ *
+ * #### Handling Navigation
+ *
+ * To trigger navigation functionality such as pushing or popping a view, you
+ * have access to a `navigator` object. The object is passed in as a prop to any
+ * component that is rendered by `NavigatorIOS`. You can then call the
+ * relevant methods to perform the navigation action you need:
+ *
+ * ```
+ * class MyView extends Component {
+ *   _handleBackPress() {
  *     this.props.navigator.pop();
- *   },
- *   _handleNextButtonPress: function() {
+ *   }
+ *
+ *   _handleNextPress(nextRoute) {
  *     this.props.navigator.push(nextRoute);
- *   },
- *   ...
- * });
+ *   }
+ *
+ *   render() {
+ *     const nextRoute = {
+ *       component: MyView,
+ *       title: 'Bar That',
+ *       passProps: { myProp: 'bar' }
+ *     };
+ *     return(
+ *       <TouchableHighlight onPress={() => this._handleNextPress(nextRoute)}>
+ *         <Text style={{marginTop: 200, alignSelf: 'center'}}>
+ *           See you on the other nav {this.props.myProp}!
+ *         </Text>
+ *       </TouchableHighlight>
+ *     );
+ *   }
+ * }
  * ```
  *
- * Navigator functions are also available on the NavigatorIOS component:
+ * You can also trigger navigator functionality from the `NavigatorIOS`
+ * component:
  *
  * ```
- * var MyView = React.createClass({
- *   _handleNavigationRequest: function() {
- *     this.refs.nav.push(otherRoute);
- *   },
- *   render: () => (
- *     <NavigatorIOS
- *       ref="nav"
- *       initialRoute={...}
- *     />
- *   ),
- * });
+ * class NavvyIOS extends Component {
+ *   _handleNavigationRequest() {
+ *     this.refs.nav.push({
+ *       component: MyView,
+ *       title: 'Genius',
+ *       passProps: { myProp: 'genius' },
+ *     });
+ *   }
+ *
+ *   render() {
+ *     return (
+ *       <NavigatorIOS
+ *         ref='nav'
+ *         initialRoute={{
+ *           component: MyView,
+ *           title: 'Foo This',
+ *           passProps: { myProp: 'foo' },
+ *           rightButtonTitle: 'Add',
+ *           onRightButtonPress: () => this._handleNavigationRequest(),
+ *         }}
+ *         style={{flex: 1}}
+ *       />
+ *     );
+ *   }
+ * }
  * ```
  *
- * Props passed to the NavigatorIOS component will set the default configuration
+ * The code above adds a `_handleNavigationRequest` private method that is
+ * invoked from the `NavigatorIOS` component when the right navigation bar item
+ * is pressed. To get access to the navigator functionality, a reference to it
+ * is saved in the `ref` prop and later referenced to push a new scene into the
+ * navigation stack.
+ *
+ * #### Navigation Bar Configuration
+ *
+ * Props passed to `NavigatorIOS` will set the default configuration
  * for the navigation bar. Props passed as properties to a route object will set
  * the configuration for that route's navigation bar, overriding any props
- * passed to the NavigatorIOS component.
+ * passed to the `NavigatorIOS` component.
  *
+ * ```
+ * _handleNavigationRequest() {
+ *   this.refs.nav.push({
+ *     //...
+ *     passProps: { myProp: 'genius' },
+ *     barTintColor: '#996699',
+ *   });
+ * }
+ *
+ * render() {
+ *   return (
+ *     <NavigatorIOS
+ *       //...
+ *       style={{flex: 1}}
+ *       barTintColor='#ffffcc'
+ *     />
+ *   );
+ * }
+ * ```
+ *
+ * In the example above the navigation bar color is changed when the new route
+ * is pushed.
  */
 var NavigatorIOS = React.createClass({
 
   propTypes: {
 
     /**
-     * NavigatorIOS uses "route" objects to identify child views, their props,
-     * and navigation bar configuration. "push" and all the other navigation
-     * operations expect routes to be like this:
+     * NavigatorIOS uses `route` objects to identify child views, their props,
+     * and navigation bar configuration. Navigation operations such as push
+     * operations expect routes to look like this the `initialRoute`.
      */
     initialRoute: PropTypes.shape({
       /**
@@ -181,144 +274,159 @@ var NavigatorIOS = React.createClass({
       component: PropTypes.func.isRequired,
 
       /**
-       * The title displayed in the nav bar and back button for this route
+       * The title displayed in the navigation bar and the back button for this
+       * route.
        */
       title: PropTypes.string.isRequired,
 
       /**
-       * If set, the image will appear instead of the text title
+       * If set, a title image will appear instead of the text title.
        */
       titleImage: Image.propTypes.source,
 
       /**
-       * Specify additional props passed to the component. NavigatorIOS will
-       * automatically provide "route" and "navigator" components
+       * Use this to specify additional props to pass to the rendered
+       * component. `NavigatorIOS` will automatically pass in `route` and
+       * `navigator` props to the comoponent.
        */
       passProps: PropTypes.object,
 
       /**
-       * If set, the left header button image will appear with this source. Note
-       * that this doesn't apply for the header of the current view, but the
-       * ones of the views that are pushed afterward.
+       * If set, the left navigation button image will be displayed using this
+       * source. Note that this doesn't apply to the header of the current
+       * view, but to those views that are subsequently pushed.
        */
       backButtonIcon: Image.propTypes.source,
 
       /**
-       * If set, the left header button will appear with this name. Note that
-       * this doesn't apply for the header of the current view, but the ones
-       * of the views that are pushed afterward.
+       * If set, the left navigation button text will be set to this. Note that
+       * this doesn't apply to the left button of the current view, but to
+       * those views that are subsequently pushed
        */
       backButtonTitle: PropTypes.string,
 
       /**
-       * If set, the left header button image will appear with this source
+       * If set, the left navigation button image will be displayed using
+       * this source.
        */
       leftButtonIcon: Image.propTypes.source,
 
       /**
-       * If set, the left header button will appear with this name
+       * If set, the left navigation button will display this text.
        */
       leftButtonTitle: PropTypes.string,
 
       /**
-       * Called when the left header button is pressed
+       * This function will be invoked when the left navigation bar item is
+       * pressed.
        */
       onLeftButtonPress: PropTypes.func,
 
       /**
-       * If set, the right header button image will appear with this source
+       * If set, the right navigation button image will be displayed using
+       * this source.
        */
       rightButtonIcon: Image.propTypes.source,
 
       /**
-       * If set, the right header button will appear with this name
+       * If set, the right navigation button will display this text.
        */
       rightButtonTitle: PropTypes.string,
 
       /**
-       * Called when the right header button is pressed
+       * This function will be invoked when the right navigation bar item is
+       * pressed.
        */
       onRightButtonPress: PropTypes.func,
 
       /**
-       * Styles for the navigation item containing the component
+       * Styles for the navigation item containing the component.
        */
       wrapperStyle: View.propTypes.style,
 
       /**
-       * A Boolean value that indicates whether the navigation bar is hidden
+       * Boolean value that indicates whether the navigation bar is hidden.
        */
       navigationBarHidden: PropTypes.bool,
 
       /**
-       * A Boolean value that indicates whether to hide the 1px hairline shadow
+       * Boolean value that indicates whether to hide the 1px hairline
+       * shadow.
        */
       shadowHidden: PropTypes.bool,
 
       /**
-       * The color used for buttons in the navigation bar
+       * The color used for the buttons in the navigation bar.
        */
       tintColor: PropTypes.string,
 
       /**
-       * The background color of the navigation bar
+       * The background color of the navigation bar.
        */
       barTintColor: PropTypes.string,
 
        /**
-       * The text color of the navigation bar title
+       * The text color of the navigation bar title.
        */
       titleTextColor: PropTypes.string,
 
        /**
-       * A Boolean value that indicates whether the navigation bar is translucent
+       * Bboolean value that indicates whether the navigation bar is
+       * translucent.
        */
       translucent: PropTypes.bool,
 
     }).isRequired,
 
     /**
-     * A Boolean value that indicates whether the navigation bar is hidden by default
+     * Boolean value that indicates whether the navigation bar is hidden
+     * by default.
      */
     navigationBarHidden: PropTypes.bool,
 
     /**
-     * A Boolean value that indicates whether to hide the 1px hairline shadow by default
+     * Boolean value that indicates whether to hide the 1px hairline shadow
+     * by default.
      */
     shadowHidden: PropTypes.bool,
 
     /**
      * The default wrapper style for components in the navigator.
-     * A common use case is to set the backgroundColor for every page
+     * A common use case is to set the `backgroundColor` for every scene.
      */
     itemWrapperStyle: View.propTypes.style,
 
     /**
-     * The default color used for buttons in the navigation bar
+     * The default color used for the buttons in the navigation bar.
      */
     tintColor: PropTypes.string,
 
     /**
-     * The default background color of the navigation bar
+     * The default background color of the navigation bar.
      */
     barTintColor: PropTypes.string,
 
     /**
-     * The default text color of the navigation bar title
+     * The default text color of the navigation bar title.
      */
     titleTextColor: PropTypes.string,
 
     /**
-     * A Boolean value that indicates whether the navigation bar is translucent by default
+     * Boolean value that indicates whether the navigation bar is
+     * translucent by default
      */
     translucent: PropTypes.bool,
 
     /**
-     * A Boolean value that indicates whether the interactive pop gesture is enabled. Useful
-     * for enabling/disabling the back swipe navigation gesture. If this prop is not provided,
-     * the default behavior is for the back swipe gesture to be enabled when the navigation bar
-     * is shown and disabled when the navigation bar is hidden. Once you've provided
-     * the interactivePopGestureEnabled prop, you can never restore the default behavior.
+     * Boolean value that indicates whether the interactive pop gesture is
+     * enabled. This is useful for enabling/disabling the back swipe navigation
+     * gesture.
+     *
+     * If this prop is not provided, the default behavior is for the back swipe
+     * gesture to be enabled when the navigation bar is shown and disabled when
+     * the navigation bar is hidden. Once you've provided the
+     * `interactivePopGestureEnabled` prop, you can never restore the default
+     * behavior.
      */
     interactivePopGestureEnabled: PropTypes.bool,
 
@@ -493,7 +601,8 @@ var NavigatorIOS = React.createClass({
   },
 
   /**
-   * Navigate forward to a new route
+   * Navigate forward to a new route.
+   * @param route The new route to navigate to.
    */
   push: function(route: Route) {
     invariant(!!route, 'Must supply route to push');
@@ -518,7 +627,8 @@ var NavigatorIOS = React.createClass({
   },
 
   /**
-   * Go back N pages at once. When N=1, behavior matches `pop()`
+   * Go back N scenes at once. When N=1, behavior matches `pop()`.
+   * @param n The number of scenes to pop.
    */
   popN: function(n: number) {
     if (n === 0) {
@@ -542,7 +652,7 @@ var NavigatorIOS = React.createClass({
   },
 
   /**
-   * Go back one page
+   * Pop back to the previous scene.
    */
   pop: function() {
     this.popN(1);
@@ -551,8 +661,9 @@ var NavigatorIOS = React.createClass({
   /**
    * Replace a route in the navigation stack.
    *
-   * `index` specifies the route in the stack that should be replaced.
-   * If it's negative, it counts from the back.
+   * @param route The new route that will replace the specified one.
+   * @param index The route into the stack that should be replaced.
+   *    If it is negative, it counts from the back of the stack.
    */
   replaceAtIndex: function(route: Route, index: number) {
     invariant(!!route, 'Must supply route to replace');
@@ -583,29 +694,32 @@ var NavigatorIOS = React.createClass({
   },
 
   /**
-   * Replace the route for the current page and immediately
+   * Replace the route for the current scene and immediately
    * load the view for the new route.
+   * @param route The new route to navigate to.
    */
   replace: function(route: Route) {
     this.replaceAtIndex(route, -1);
   },
 
   /**
-   * Replace the route/view for the previous page.
+   * Replace the route/view for the previous scene.
+   * @param route The new route to will replace the previous scene.
    */
   replacePrevious: function(route: Route) {
     this.replaceAtIndex(route, -2);
   },
 
   /**
-   * Go back to the top item
+   * Go back to the topmost item in the navigation stack.
    */
   popToTop: function() {
     this.popToRoute(this.state.routeStack[0]);
   },
 
   /**
-   * Go back to the item for a particular route object
+   * Go back to the item for a particular route object.
+   * @param route The new route to navigate to.
    */
   popToRoute: function(route: Route) {
     var indexOfRoute = this.state.routeStack.indexOf(route);
@@ -619,6 +733,7 @@ var NavigatorIOS = React.createClass({
 
   /**
    * Replaces the previous route/view and transitions back to it.
+   * @param route The new route that replaces the previous scene.
    */
   replacePreviousAndPop: function(route: Route) {
     // Make sure all previous requests are caught up first. Otherwise reject.
@@ -638,7 +753,8 @@ var NavigatorIOS = React.createClass({
   },
 
   /**
-   * Replaces the top item and popToTop
+   * Replaces the top item and pop to it.
+   * @param route The new route that will replace the topmost item.
    */
   resetTo: function(route: Route) {
     invariant(!!route, 'Must supply route to push');
