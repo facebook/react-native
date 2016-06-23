@@ -74,7 +74,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = PROP_Z_INDEX)
   public void setZIndex(T view, float zIndex) {
-    Integer integerZIndex = Math.round(zIndex);
+    int integerZIndex = Math.round(zIndex);
     ViewGroupManager.setViewZIndex(view, integerZIndex);
   }
 

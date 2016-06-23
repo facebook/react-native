@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.WeakHashMap;
@@ -42,12 +43,12 @@ public abstract class ViewGroupManager <T extends ViewGroup>
   public void addView(T parent, View child, int index) {
     parent.addView(child, index);
     reorderChildrenByZIndex(parent);
-   }
+  }
 
   public static void setViewZIndex(View view, int zIndex) {
     mZIndexHash.put(view, zIndex);
     // zIndex prop gets set BEFORE the view is added, so parent may be null.
-    ViewGroup parent = (ViewGroup)view.getParent();
+    ViewGroup parent = (ViewGroup) view.getParent();
     if (parent != null) {
       reorderChildrenByZIndex(parent);
     }
