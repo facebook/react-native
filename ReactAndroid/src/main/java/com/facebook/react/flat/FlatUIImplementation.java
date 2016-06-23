@@ -12,6 +12,7 @@ package com.facebook.react.flat;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.facebook.infer.annotation.Assertions;
@@ -286,14 +287,27 @@ public class FlatUIImplementation extends UIImplementation {
     int moveFromIndex = mMoveProxy.size() - 1;
     int moveFromChildIndex = (moveFromIndex == -1) ? -1 : mMoveProxy.getMoveFrom(moveFromIndex);
 
+    int numToRemove = removeFrom == null ? 0 : removeFrom.size();
+    int[] indicesToRemove = new int[numToRemove];
+    if (numToRemove > 0) {
+      Assertions.assertNotNull(removeFrom);
+      for (int i = 0; i < numToRemove; i++) {
+        int indexToRemove = removeFrom.getInt(i);
+        indicesToRemove[i] = indexToRemove;
+      }
+    }
+
+    // this isn't guaranteed to be sorted actually
+    Arrays.sort(indicesToRemove);
+
     int removeFromIndex;
     int removeFromChildIndex;
     if (removeFrom == null) {
       removeFromIndex = -1;
       removeFromChildIndex = -1;
     } else {
-      removeFromIndex = removeFrom.size() - 1;
-      removeFromChildIndex = removeFrom.getInt(removeFromIndex);
+      removeFromIndex = indicesToRemove.length - 1;
+      removeFromChildIndex = indicesToRemove[removeFromIndex];
     }
 
     // both moveFrom and removeFrom are already sorted, but combined order is not sorted. Use
@@ -311,7 +325,7 @@ public class FlatUIImplementation extends UIImplementation {
         prevIndex = removeFromChildIndex;
 
         --removeFromIndex;
-        removeFromChildIndex = (removeFromIndex == -1) ? -1 : removeFrom.getInt(removeFromIndex);
+        removeFromChildIndex = (removeFromIndex == -1) ? -1 : indicesToRemove[removeFromIndex];
       } else {
         // moveFromChildIndex == removeFromChildIndex can only be if both are equal to -1
         // which means that we exhausted both arrays, and all children are removed.
