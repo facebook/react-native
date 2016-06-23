@@ -15,6 +15,13 @@
 @synthesize leftButtonItem = _leftButtonItem;
 @synthesize rightButtonItem = _rightButtonItem;
 
+-(id)init {
+  if (self = [super init]) {
+    _rightButtonSystemItem = -1;
+  }
+  return self;
+}
+
 - (void)setBackButtonTitle:(NSString *)backButtonTitle
 {
   _backButtonTitle = backButtonTitle;
@@ -101,6 +108,12 @@
   _rightButtonItem = nil;
 }
 
+- (void)setRightButtonSystemItem:(UIBarButtonSystemItem)rightButtonSystemItem
+{
+  _rightButtonSystemItem = rightButtonSystemItem;
+  _rightButtonItem = nil;
+}
+
 - (UIBarButtonItem *)rightButtonItem
 {
   if (!_rightButtonItem) {
@@ -115,6 +128,11 @@
       _rightButtonItem =
       [[UIBarButtonItem alloc] initWithTitle:_rightButtonTitle
                                        style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:@selector(handleRightButtonPress)];
+    } else if (_rightButtonSystemItem >= 0) {
+      _rightButtonItem =
+      [[UIBarButtonItem alloc] initWithBarButtonSystemItem:_rightButtonSystemItem
                                       target:self
                                       action:@selector(handleRightButtonPress)];
     } else {

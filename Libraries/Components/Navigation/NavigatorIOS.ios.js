@@ -26,6 +26,8 @@ var logError = require('logError');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
 
+var keyMirror = require('keyMirror');
+
 var TRANSITIONER_REF = 'transitionerRef';
 
 var PropTypes = React.PropTypes;
@@ -51,6 +53,36 @@ var NavigatorTransitionerIOS = React.createClass({
   },
 });
 
+var SystemItemsLabels = {
+  done: true,
+  cancel: true,
+  edit: true,
+  save: true,
+  add: true,
+  'flexible-space': true,
+  'fixed-space': true,
+  compose: true,
+  reply: true,
+  action: true,
+  organize: true,
+  bookmarks: true,
+  search: true,
+  refresh: true,
+  stop: true,
+  camera: true,
+  trash: true,
+  play: true,
+  pause: true,
+  rewind: true,
+  'fast-forward': true,
+  undo: true,
+  redo: true,
+  'page-curl': true,
+}
+var SystemItems = keyMirror(SystemItemsLabels);
+
+type BarButtonSystemItem = $Enum<typeof SystemItemsLabels>;
+
 type Route = {
   component: Function;
   title: string;
@@ -62,6 +94,7 @@ type Route = {
   onLeftButtonPress?: Function;
   rightButtonTitle?: string;
   rightButtonIcon?: Object;
+  rightButtonSystemItem?: BarButtonSystemItem;
   onRightButtonPress?: Function;
   wrapperStyle?: any;
 };
@@ -229,6 +262,11 @@ var NavigatorIOS = React.createClass({
        * If set, the right header button will appear with this name
        */
       rightButtonTitle: PropTypes.string,
+
+      /**
+       * If set, the right header button will appear with this system icon
+       */
+      rightButtonSystemItem: PropTypes.oneOf(Object.keys(SystemItems)),
 
       /**
        * Called when the right header button is pressed
