@@ -151,8 +151,10 @@ class MessageQueue {
       this._callbacks[this._callbackID++] = onSucc;
     }
 
-    global.nativeTraceBeginAsyncFlow &&
-      global.nativeTraceBeginAsyncFlow(TRACE_TAG_REACT_APPS, 'native', this._callID);
+    if (__DEV__) {
+      global.nativeTraceBeginAsyncFlow &&
+        global.nativeTraceBeginAsyncFlow(TRACE_TAG_REACT_APPS, 'native', this._callID);
+    }
     this._callID++;
 
     this._queue[MODULE_IDS].push(module);
@@ -200,7 +202,7 @@ class MessageQueue {
       const module = debug && this._remoteModuleTable[debug[0]];
       const method = debug && this._remoteMethodTable[debug[0]][debug[1]];
       if (!callback) {
-        const errorMessage = `Callback with id ${cbID}: ${module}.${method}() not found`;
+        let errorMessage = `Callback with id ${cbID}: ${module}.${method}() not found`;
         if (method) {
           errorMessage = `The callback ${method}() exists in module ${module}, `
           + `but only one callback may be registered to a function in a native module.`;

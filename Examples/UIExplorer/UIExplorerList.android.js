@@ -190,6 +190,10 @@ const APIExamples = [
     module: require('./ToastAndroidExample'),
   },
   {
+    key: 'TransformExample',
+    module: require('./TransformExample'),
+  },
+  {
     key: 'VibrationExample',
     module: require('./VibrationExample'),
   },

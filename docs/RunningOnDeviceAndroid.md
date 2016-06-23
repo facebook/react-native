@@ -93,6 +93,22 @@ Have your device connected via USB with debugging enabled (see paragraph above o
 1. Run `adb reverse tcp:8081 tcp:8081`
 2. You can use `Reload JS` and other development options with no extra configuration
 
+
+### Running packager on a non-standard port
+
+Launch the packager manually with `react-native start --port [PORT]`
+
+For Android: Use the developer menu by clicking the menu button or shake. Select 'Debug server host & port for device' to set a different port.
+<center>
+  <img src="img/AndroidDeveloperMenu.png" width="162" />
+  <img src="img/AndroidDevSettings.png" width="150" />
+  <img src="img/AndroidDevServerDialog.png" width="150" />
+</center>
+
+For IOS: Edit the AppDelegate.m and change the line below to match the port number you're running:
+
+```jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle?platform=ios&dev=true"];```
+
 ### Configure your app to connect to the local dev server via Wi-Fi
 
 1. Make sure your laptop and your phone are on the **same Wi-Fi network**.

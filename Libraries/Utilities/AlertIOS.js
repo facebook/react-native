@@ -8,64 +8,129 @@
  *
  * @providesModule AlertIOS
  * @flow
+ * @jsdoc
  */
 'use strict';
 
 var RCTAlertManager = require('NativeModules').AlertManager;
 
+/**
+ * An Alert button type
+ */
 export type AlertType = $Enum<{
+  /**
+   * Default alert with no inputs
+   */
   'default': string;
+  /**
+   * Plain text input alert
+   */
   'plain-text': string;
+  /**
+   * Secure text input alert
+   */
   'secure-text': string;
+  /**
+   * Login and password alert
+   */
   'login-password': string;
 }>;
 
+/**
+ * An Alert button style
+ */
 export type AlertButtonStyle = $Enum<{
+  /**
+   * Default button style
+   */
   'default': string;
+  /**
+   * Cancel button style
+   */
   'cancel': string;
+  /**
+   * Destructive button style
+   */
   'destructive': string;
 }>;
 
+/**
+ * Array or buttons
+ * @typedef {Array} ButtonsArray
+ * @property {string=} text Button label
+ * @property {Function=} onPress Callback function when button pressed
+ * @property {AlertButtonStyle=} style Button style
+ */
 type ButtonsArray = Array<{
+  /**
+   * Button label
+   */
   text?: string;
+  /**
+   * Callback function when button pressed
+   */
   onPress?: ?Function;
+  /**
+   * Button style
+   */
   style?: AlertButtonStyle;
 }>;
 
 /**
- * The AlertsIOS utility provides two functions: `alert` and `prompt`. All
- * functionality available through `AlertIOS.alert` is also available in the
- * cross-platform `Alert.alert`, which we recommend you use if you don't need
- * iOS-specific functionality.
+ * @description
+ * `AlertIOS` provides functionality to create an iOS alert dialog with a
+ * message or create a prompt for user input.
  *
- * `AlertIOS.prompt` allows you to prompt the user for input inside of an
- * alert popup.
+ * Creating an iOS alert:
+ *
+ * ```
+ * AlertIOS.alert(
+ *  'Sync Complete',
+ *  'All your data are belong to us.'
+ * );
+ * ```
+ *
+ * Creating an iOS prompt:
+ *
+ * ```
+ * AlertIOS.prompt(
+ *   'Enter a value',
+ *   null,
+ *   text => console.log("You entered "+text)
+ * );
+ * ```
+ *
+ * We recommend using the [`Alert.alert`](/docs/alert.html) method for
+ * cross-platform support if you don't need to create iOS-only prompts.
  *
  */
 class AlertIOS {
   /**
-   * Creates a popup to alert the user. See
-   * [Alert](docs/alert.html).
-   *
-   *  - title: string -- The dialog's title.
-   *  - message: string -- An optional message that appears above the text input.
-   *  - callbackOrButtons -- This optional argument should be either a
-   *    single-argument function or an array of buttons. If passed a function,
-   *    it will be called when the user taps 'OK'.
+   * Create and display a popup alert.
+   * @static
+   * @method alert
+   * @param title The dialog's title.
+   * @param message An optional message that appears below
+   *     the dialog's title.
+   * @param callbackOrButtons This optional argument should
+   *    be either a single-argument function or an array of buttons. If passed
+   *    a function, it will be called when the user taps 'OK'.
    *
    *    If passed an array of button configurations, each button should include
-   *    a `text` key, as well as optional `onPress` and `style` keys.
-   *    `style` should be one of 'default', 'cancel' or 'destructive'.
-   *  - type -- *deprecated, do not use*
+   *    a `text` key, as well as optional `onPress` and `style` keys. `style`
+   *    should be one of 'default', 'cancel' or 'destructive'.
+   * @param type Deprecated, do not use.
    *
-   * Example:
+   * @example <caption>Example with custom buttons</caption>
    *
-   * ```
    * AlertIOS.alert(
-   *  'Sync Complete',
-   *  'All your data are belong to us.'
+   *  'Update available',
+   *  'Keep your app up to date to enjoy the latest features',
+   *  [
+   *    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+   *    {text: 'Install', onPress: () => console.log('Install Pressed')},
+   *  ],
    * );
-   * ```
    */
   static alert(
     title: ?string,
@@ -82,23 +147,26 @@ class AlertIOS {
   }
 
   /**
-   * Prompt the user to enter some text.
-   *
-   *  - title: string -- The dialog's title.
-   *  - message: string -- An optional message that appears above the text input.
-   *  - callbackOrButtons -- This optional argument should be either a
-   *    single-argument function or an array of buttons. If passed a function,
-   *    it will be called with the prompt's value when the user taps 'OK'.
+   * Create and display a prompt to enter some text.
+   * @static
+   * @method prompt
+   * @param title The dialog's title.
+   * @param message An optional message that appears above the text
+   *    input.
+   * @param callbackOrButtons This optional argument should
+   *    be either a single-argument function or an array of buttons. If passed
+   *    a function, it will be called with the prompt's value when the user
+   *    taps 'OK'.
    *
    *    If passed an array of button configurations, each button should include
-   *    a `text` key, as well as optional `onPress` and `style` keys (see example).
-   *    `style` should be one of 'default', 'cancel' or 'destructive'.
-   *  - type: string -- This configures the text input. One of 'plain-text',
+   *    a `text` key, as well as optional `onPress` and `style` keys (see
+   *    example). `style` should be one of 'default', 'cancel' or 'destructive'.
+   * @param type This configures the text input. One of 'plain-text',
    *    'secure-text' or 'login-password'.
-   *  - defaultValue: string -- the default value for the text field.
+   * @param defaultValue The dialog's title.
    *
-   * Example with custom buttons:
-   * ```
+   * @example <caption>Example with custom buttons</caption>
+   *
    * AlertIOS.prompt(
    *   'Enter password',
    *   'Enter your password to claim your $1.5B in lottery winnings',
@@ -108,18 +176,16 @@ class AlertIOS {
    *   ],
    *   'secure-text'
    * );
-   * ```
    *
-   * Example with the default button and a custom callback:
-   * ```
+   * @example <caption>Example with the default button and a custom callback</caption>
+   *
    * AlertIOS.prompt(
    *   'Update username',
    *   null,
    *   text => console.log("Your username is "+text),
    *   null,
    *   'default'
-   * )
-   * ```
+   * );
    */
   static prompt(
     title: ?string,

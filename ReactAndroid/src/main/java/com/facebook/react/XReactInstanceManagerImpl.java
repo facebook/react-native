@@ -125,8 +125,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   private final UIImplementationProvider mUIImplementationProvider;
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
-  private final @Nullable JSCConfig mJSCConfig;
-  private @Nullable RedBoxHandler mRedBoxHandler;
+  private final JSCConfig mJSCConfig;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -272,35 +271,6 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   }
 
   /* package */ XReactInstanceManagerImpl(
-      Context applicationContext,
-      @Nullable Activity currentActivity,
-      @Nullable DefaultHardwareBackBtnHandler defaultHardwareBackBtnHandler,
-      @Nullable String jsBundleFile,
-      @Nullable String jsMainModuleName,
-      List<ReactPackage> packages,
-      boolean useDeveloperSupport,
-      @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
-      LifecycleState initialLifecycleState,
-      UIImplementationProvider uiImplementationProvider,
-      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
-      @Nullable JSCConfig jscConfig) {
-
-    this(applicationContext,
-      currentActivity,
-      defaultHardwareBackBtnHandler,
-      jsBundleFile,
-      jsMainModuleName,
-      packages,
-      useDeveloperSupport,
-      bridgeIdleDebugListener,
-      initialLifecycleState,
-      uiImplementationProvider,
-      nativeModuleCallExceptionHandler,
-      jscConfig,
-      null);
-  }
-
-  /* package */ XReactInstanceManagerImpl(
     Context applicationContext,
     @Nullable Activity currentActivity,
     @Nullable DefaultHardwareBackBtnHandler defaultHardwareBackBtnHandler,
@@ -312,7 +282,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     LifecycleState initialLifecycleState,
     UIImplementationProvider uiImplementationProvider,
     NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
-    @Nullable JSCConfig jscConfig,
+    JSCConfig jscConfig,
     @Nullable RedBoxHandler redBoxHandler) {
 
     initializeSoLoaderIfNecessary(applicationContext);
@@ -328,13 +298,12 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     mJSMainModuleName = jsMainModuleName;
     mPackages = packages;
     mUseDeveloperSupport = useDeveloperSupport;
-    mRedBoxHandler = redBoxHandler;
     mDevSupportManager = DevSupportManagerFactory.create(
         applicationContext,
         mDevInterface,
         mJSMainModuleName,
         useDeveloperSupport,
-        mRedBoxHandler);
+        redBoxHandler);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
     mUIImplementationProvider = uiImplementationProvider;
@@ -443,8 +412,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
   private void recreateReactContextInBackgroundFromBundleFile() {
     recreateReactContextInBackground(
-        new JSCJavaScriptExecutor.Factory(
-            mJSCConfig == null ? new WritableNativeMap() : mJSCConfig.getConfigMap()),
+        new JSCJavaScriptExecutor.Factory(mJSCConfig.getConfigMap()),
         JSBundleLoader.createFileLoader(mApplicationContext, mJSBundleFile));
   }
 
@@ -721,8 +689,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
   private void onJSBundleLoadedFromServer() {
     recreateReactContextInBackground(
-        new JSCJavaScriptExecutor.Factory(
-            mJSCConfig == null ? new WritableNativeMap() : mJSCConfig.getConfigMap()),
+        new JSCJavaScriptExecutor.Factory(mJSCConfig.getConfigMap()),
         JSBundleLoader.createCachedBundleFromNetworkLoader(
             mDevSupportManager.getSourceUrl(),
             mDevSupportManager.getDownloadedJSBundleFile()));
@@ -914,8 +881,14 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
             return null;
           }
         }).get();
-    } catch (InterruptedException | ExecutionException e) {
+    } catch (InterruptedException e) {
       throw new RuntimeException(e);
+    } catch (ExecutionException e) {
+      if (e.getCause() instanceof RuntimeException) {
+        throw (RuntimeException) e.getCause();
+      } else {
+        throw new RuntimeException(e);
+      }
     }
 
     return reactContext;
