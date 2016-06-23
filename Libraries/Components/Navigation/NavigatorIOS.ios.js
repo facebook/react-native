@@ -134,8 +134,8 @@ type Event = Object;
  * }
  * ```
  *
- * In this code the navigator sets the naviation bar title and renders `MyView`.
- * The component specified in `initialRoute` will receive the `route` prop and a
+ * In this code, the navigator sets its title and renders `MyView`. The
+ * component specified in `initialRoute` will receive a `route` prop and a
  * `navigator` prop representing the navigator.
  *
  * You can optionally pass in a `passProps` property to your `initialRoute`.
@@ -345,12 +345,12 @@ var NavigatorIOS = React.createClass({
       wrapperStyle: View.propTypes.style,
 
       /**
-       * A `boolean` value that indicates whether the navigation bar is hidden.
+       * Boolean value that indicates whether the navigation bar is hidden.
        */
       navigationBarHidden: PropTypes.bool,
 
       /**
-       * A `boolean` value that indicates whether to hide the 1px hairline
+       * Boolean value that indicates whether to hide the 1px hairline
        * shadow.
        */
       shadowHidden: PropTypes.bool,
@@ -371,7 +371,7 @@ var NavigatorIOS = React.createClass({
       titleTextColor: PropTypes.string,
 
        /**
-       * A `boolean` value that indicates whether the navigation bar is
+       * Bboolean value that indicates whether the navigation bar is
        * translucent.
        */
       translucent: PropTypes.bool,
@@ -379,13 +379,13 @@ var NavigatorIOS = React.createClass({
     }).isRequired,
 
     /**
-     * A `boolean` value that indicates whether the navigation bar is hidden
+     * Boolean value that indicates whether the navigation bar is hidden
      * by default.
      */
     navigationBarHidden: PropTypes.bool,
 
     /**
-     * A `boolean` value that indicates whether to hide the 1px hairline shadow
+     * Boolean value that indicates whether to hide the 1px hairline shadow
      * by default.
      */
     shadowHidden: PropTypes.bool,
@@ -412,13 +412,13 @@ var NavigatorIOS = React.createClass({
     titleTextColor: PropTypes.string,
 
     /**
-     * A `boolean` value that indicates whether the navigation bar is
+     * Boolean value that indicates whether the navigation bar is
      * translucent by default
      */
     translucent: PropTypes.bool,
 
     /**
-     * A `boolean` value that indicates whether the interactive pop gesture is
+     * Boolean value that indicates whether the interactive pop gesture is
      * enabled. This is useful for enabling/disabling the back swipe navigation
      * gesture.
      *
