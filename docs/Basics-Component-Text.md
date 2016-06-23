@@ -12,7 +12,7 @@ The most basic component in React Native is the [`Text`](/react-native/docs/text
 This example displays the `string` `"Hello World!"` on the device.
 
 ```ReactNativeWebPlayer
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { AppRegistry, Text } from 'react-native';
 
 class TextBasics extends Component {
