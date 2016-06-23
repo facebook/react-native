@@ -28,6 +28,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @providesModule ListView
+ * @flow
  */
 'use strict';
 
@@ -102,6 +103,13 @@ var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
  */
 
 var ListView = React.createClass({
+  _childFrames: ([]: Array<Object>),
+  _sentEndForContentLength: (null: ?number),
+  _scrollComponent: (null: any),
+  _prevRenderedRowsCount: 0,
+  _visibleRows: ({}: Object),
+  scrollProperties: ({}: Object),
+
   mixins: [ScrollResponder.Mixin, TimerMixin],
 
   statics: {
@@ -148,7 +156,7 @@ var ListView = React.createClass({
      * it so that the first screen worth of data appears at one time instead of
      * over the course of multiple frames.
      */
-    initialListSize: PropTypes.number,
+    initialListSize: PropTypes.number.isRequired,
     /**
      * Called when all rows have been rendered and the list has been scrolled
      * to within onEndReachedThreshold of the bottom.  The native scroll
@@ -158,7 +166,7 @@ var ListView = React.createClass({
     /**
      * Threshold in pixels (virtual, not physical) for calling onEndReached.
      */
-    onEndReachedThreshold: PropTypes.number,
+    onEndReachedThreshold: PropTypes.number.isRequired,
     /**
      * Number of rows to render per event loop. Note: if your 'rows' are actually
      * cells, i.e. they don't span the full width of your view (as in the
@@ -166,7 +174,7 @@ var ListView = React.createClass({
      * of the number of cells per row, otherwise you're likely to see gaps at
      * the edge of the ListView as new pages are loaded.
      */
-    pageSize: PropTypes.number,
+    pageSize: PropTypes.number.isRequired,
     /**
      * () => renderable
      *
@@ -198,7 +206,7 @@ var ListView = React.createClass({
      * How early to start rendering rows before they come on screen, in
      * pixels.
      */
-    scrollRenderAheadDistance: React.PropTypes.number,
+    scrollRenderAheadDistance: React.PropTypes.number.isRequired,
     /**
      * (visibleRows, changedRows) => void
      *
@@ -223,7 +231,7 @@ var ListView = React.createClass({
      * with `horizontal={true}`.
      * @platform ios
      */
-    stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number),
+    stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number).isRequired,
     /**
      * Flag indicating whether empty section headers should be rendered. In the future release
      * empty section headers will be rendered by default, and the flag will be deprecated.
@@ -260,13 +268,13 @@ var ListView = React.createClass({
    *
    * See `ScrollView#scrollTo`.
    */
-  scrollTo: function(...args) {
+  scrollTo: function(...args: Array<mixed>) {
     if (this._scrollComponent && this._scrollComponent.scrollTo) {
       this._scrollComponent.scrollTo(...args);
     }
   },
 
-  setNativeProps: function(props) {
+  setNativeProps: function(props: Object) {
     if (this._scrollComponent) {
       this._scrollComponent.setNativeProps(props);
     }
@@ -290,7 +298,7 @@ var ListView = React.createClass({
   getInitialState: function() {
     return {
       curRenderedRowsCount: this.props.initialListSize,
-      highlightedRow: {},
+      highlightedRow: ({} : Object),
     };
   },
 
@@ -319,7 +327,7 @@ var ListView = React.createClass({
     });
   },
 
-  componentWillReceiveProps: function(nextProps) {
+  componentWillReceiveProps: function(nextProps: Object) {
     if (this.props.dataSource !== nextProps.dataSource ||
         this.props.initialListSize !== nextProps.initialListSize) {
       this.setState((state, props) => {
@@ -343,7 +351,7 @@ var ListView = React.createClass({
     });
   },
 
-  _onRowHighlighted: function(sectionID, rowID) {
+  _onRowHighlighted: function(sectionID: string, rowID: string) {
     this.setState({highlightedRow: {sectionID, rowID}});
   },
 
@@ -489,11 +497,11 @@ var ListView = React.createClass({
       );
   },
 
-  _setScrollComponentRef: function(scrollComponent) {
+  _setScrollComponentRef: function(scrollComponent: Object) {
     this._scrollComponent = scrollComponent;
   },
 
-  _onContentSizeChange: function(width, height) {
+  _onContentSizeChange: function(width: number, height: number) {
     var contentLength = !this.props.horizontal ? height : width;
     if (contentLength !== this.scrollProperties.contentLength) {
       this.scrollProperties.contentLength = contentLength;
@@ -503,7 +511,7 @@ var ListView = React.createClass({
     this.props.onContentSizeChange && this.props.onContentSizeChange(width, height);
   },
 
-  _onLayout: function(event) {
+  _onLayout: function(event: Object) {
     var {width, height} = event.nativeEvent.layout;
     var visibleLength = !this.props.horizontal ? height : width;
     if (visibleLength !== this.scrollProperties.visibleLength) {
@@ -514,7 +522,7 @@ var ListView = React.createClass({
     this.props.onLayout && this.props.onLayout(event);
   },
 
-  _maybeCallOnEndReached: function(event) {
+  _maybeCallOnEndReached: function(event?: Object) {
     if (this.props.onEndReached &&
         this.scrollProperties.contentLength !== this._sentEndForContentLength &&
         this._getDistanceFromEnd(this.scrollProperties) < this.props.onEndReachedThreshold &&
@@ -556,11 +564,11 @@ var ListView = React.createClass({
     });
   },
 
-  _getDistanceFromEnd: function(scrollProperties) {
+  _getDistanceFromEnd: function(scrollProperties: Object) {
     return scrollProperties.contentLength - scrollProperties.visibleLength - scrollProperties.offset;
   },
 
-  _updateVisibleRows: function(updatedFrames) {
+  _updateVisibleRows: function(updatedFrames?: Array<Object>) {
     if (!this.props.onChangeVisibleRows) {
       return; // No need to compute visible rows if there is no callback
     }
@@ -596,7 +604,7 @@ var ListView = React.createClass({
         var rowID = rowIDs[rowIdx];
         var frame = this._childFrames[totalIndex];
         totalIndex++;
-        if(this.props.renderSeparator &&
+        if (this.props.renderSeparator &&
            (rowIdx !== rowIDs.length - 1 || sectionIdx === allRowIDs.length - 1)){
           totalIndex++;
         }
@@ -636,7 +644,7 @@ var ListView = React.createClass({
     visibilityChanged && this.props.onChangeVisibleRows(this._visibleRows, changedRows);
   },
 
-  _onScroll: function(e) {
+  _onScroll: function(e: Object) {
     var isVertical = !this.props.horizontal;
     this.scrollProperties.visibleLength = e.nativeEvent.layoutMeasurement[
       isVertical ? 'height' : 'width'
