@@ -7,18 +7,18 @@ permalink: docs/network.html
 next: more-resources
 ---
 
-Many modern mobile apps will at some point find the need to load resources from a remote endpoint. You may want to make a POST request to a REST API, or you may simply need to fetch a chunk of static content from another server.
-
-React Native provides the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) for your networking needs.
+Many mobile apps need to load resources from a remote URL. You may want to make a POST request to a REST API, or you may simply need to fetch a chunk of static content from another server.
 
 ## Using Fetch
 
-Fetch will seem familiar if you have used `XMLHttpRequest` or other networking APIs before. You may refer to MDN's guide on [Using Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch) for additional information.
+React Native provides the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) for your networking needs. Fetch will seem familiar if you have used `XMLHttpRequest` or other networking APIs before. You may refer to MDN's guide on [Using Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch) for additional information.
 
-In order to fetch content from an arbitrary endpoint, just pass the URL to fetch:
+#### Making requests
+
+In order to fetch content from an arbitrary URL, just pass the URL to fetch:
 
 ```js
-fetch('https://mywebsite.com/endpoint/')
+fetch('https://mywebsite.com/mydata.json')
 ```
 
 Fetch also takes an optional second argument that allows you to customize the HTTP request. You may want to specify additional headers, or make a POST request:
@@ -39,7 +39,7 @@ fetch('https://mywebsite.com/endpoint/', {
 
 Take a look at the [Fetch Request docs](https://developer.mozilla.org/en-US/docs/Web/API/Request) for a full list of properties.
 
-### Handling the response
+#### Handling the response
 
 The above examples show how you can make a request. In many cases, you will want to do something with the response.
 
@@ -74,10 +74,54 @@ You can also use ES7's `async`/`await` syntax in React Native app:
 
 Don't forget to catch any errors that may be thrown by `fetch`, otherwise they will be dropped silently.
 
+### Using Other Networking Libraries
+
+The [XMLHttpRequest API](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) is built in to React Native. This means that you can use third party libraries such as [frisbee](https://github.com/niftylettuce/frisbee) or [axios](https://github.com/mzabriskie/axios) that depend on it, or you can use the XMLHttpRequest API directly if you prefer.
+
+```js
+var request = new XMLHttpRequest();
+request.onreadystatechange = (e) => {
+  if (request.readyState !== 4) {
+    return;
+  }
+
+  if (request.status === 200) {
+    console.log('success', request.responseText);
+  } else {
+    console.warn('error');
+  }
+};
+
+request.open('GET', 'https://mywebsite.com/endpoint/');
+request.send();
+```
+
+> The security model for XMLHttpRequest is different than on web as there is no concept of [CORS](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing) in native apps.
+
 ## WebSocket Support
 
 React Native supports [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket), a protocol which provides full-duplex communication channels over a single TCP connection.
 
-## Using Other Networking Libraries
+```js
+var ws = new WebSocket('ws://host.com/path');
 
-The `XMLHttpRequest` API, used by many networking libraries, is built in to React Native. This means that you can use third party libraries such as [frisbee](https://github.com/niftylettuce/frisbee) or [axios](https://github.com/mzabriskie/axios) if you prefer.
+ws.onopen = () => {
+  // connection opened
+  ws.send('something');
+};
+
+ws.onmessage = (e) => {
+  // a message was received
+  console.log(e.data);
+};
+
+ws.onerror = (e) => {
+  // an error occurred
+  console.log(e.message);
+};
+
+ws.onclose = (e) => {
+  // connection closed
+  console.log(e.code, e.reason);
+};
+```
