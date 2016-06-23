@@ -55,7 +55,21 @@ public abstract class ViewGroupManager <T extends ViewGroup>
   }
 
   public static void reorderChildrenByZIndex(ViewGroup view) {
-    // Collect all the children that are in the zIndexHash
+    // Optimization: loop through the zIndexHash to test if there are any non-zero zIndexes
+    // If there aren't any, we can just return out
+    Collection<Integer> zIndexes = mZIndexHash.values();
+    boolean containsZIndexedElement = false;
+    for (Integer zIndex : zIndexes) {
+      if (zIndex != 0) {
+        containsZIndexedElement = true;
+        break;
+      }
+    }
+    if (!containsZIndexedElement) {
+      return;
+    }
+
+    // Add all children to a sortable ArrayList
     ArrayList<View> viewsToSort = new ArrayList<>();
     for (int i = 0; i < view.getChildCount(); i++) {
       viewsToSort.add(view.getChildAt(i));
