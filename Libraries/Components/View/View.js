@@ -8,7 +8,6 @@
  *
  * @providesModule View
  * @flow
- * @jsdoc
  */
 'use strict';
 
@@ -134,7 +133,7 @@ const View = React.createClass({
 
   propTypes: {
     /**
-     * When true, indicates that the view is an accessibility element. By default,
+     * When `true`, indicates that the view is an accessibility element. By default,
      * all the touchable elements are accessible.
      */
     accessible: PropTypes.bool,
@@ -142,7 +141,7 @@ const View = React.createClass({
     /**
      * Overrides the text that's read by the screen reader when the user interacts
      * with the element. By default, the label is constructed by traversing all the
-     * children and accumulating all the Text nodes separated by space.
+     * children and accumulating all the `Text` nodes separated by space.
      */
     accessibilityLabel: PropTypes.string,
 
@@ -250,14 +249,15 @@ const View = React.createClass({
     onAccessibilityTap: PropTypes.func,
 
     /**
-     * When `accessible` is true, the system will invoke this function when the
+     * When `accessible` is `true`, the system will invoke this function when the
      * user performs the magic tap gesture.
      */
     onMagicTap: PropTypes.func,
 
     /**
-     * Used to locate this view in end-to-end tests. NB: disables the 'layout-only
-     * view removal' optimization for this view!
+     * Used to locate this view in end-to-end tests.
+     *
+     * > This disables the 'layout-only view removal' optimization for this view!
      */
     testID: PropTypes.string,
 
@@ -285,7 +285,7 @@ const View = React.createClass({
     onResponderMove: PropTypes.func,
 
     /**
-     * Another responser is already active and will not release it to that `View` asking to be
+     * Another responder is already active and will not release it to that `View` asking to be
      * the responder.
      *
      * `View.props.onResponderReject: (event) => {}`, where `event` is a synthetic touch event as
@@ -296,7 +296,7 @@ const View = React.createClass({
     /**
      * Fired at the end of the touch.
      *
-     * `View.props.onResponderRelease`: (event) => {}`, where `event` is a synthetic touch event as
+     * `View.props.onResponderRelease: (event) => {}`, where `event` is a synthetic touch event as
      * described above.
      */
     onResponderRelease: PropTypes.func,
@@ -381,7 +381,7 @@ const View = React.createClass({
     onLayout: PropTypes.func,
 
     /**
-     * Controls whether the View can be the target of touch events.
+     * Controls whether the `View` can be the target of touch events.
      *
      *   - `'auto'`: The View can be the target of touch events.
      *   - `'none'`: The View is never the target of touch events.
@@ -426,7 +426,7 @@ const View = React.createClass({
      * for scrolling content when there are many subviews, most of which are
      * offscreen. For this property to be effective, it must be applied to a
      * view that contains many subviews that extend outside its bound. The
-     * subviews must also have overflow: hidden, as should the containing view
+     * subviews must also have `overflow: hidden`, as should the containing view
      * (or one of its superviews).
      */
     removeClippedSubviews: PropTypes.bool,
