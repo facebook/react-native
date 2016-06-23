@@ -66,6 +66,8 @@ To debug the JavaScript code in Chrome, select `Debug JS Remotely` from the Deve
 
 In Chrome, press `Command⌘ + Option⌥ + I` or select `View` → `Developer` → `Developer Tools` to toggle the developer tools console. Enable [Pause On Caught Exceptions](http://stackoverflow.com/questions/2233339/javascript-is-there-a-way-to-get-chrome-to-break-on-all-errors/17324511#17324511) for a better debugging experience.
 
+> It is [currently not possible](https://github.com/facebook/react-devtools/issues/229) to use the "React" tab in the Chrome Developer Tools to inspect app widgets. You can use Nuclide's "React Native Inspector" as a workaround.
+
 ### Debugging on a device with Chrome Developer Tools
 
 On iOS devices, open the file [`RCTWebSocketExecutor.m`](https://github.com/facebook/react-native/blob/master/Libraries/WebSocket/RCTWebSocketExecutor.m) and change `localhost` to the IP address of your computer, then select `Debug JS Remotely` from the Developer Menu.
@@ -77,6 +79,7 @@ On Android 5.0+ devices connected via USB, you can use the [`adb` command line t
 Alternatively, select `Dev Settings` from the Developer Menu, then update the `Debug server host for device` setting to match the IP address of your computer.
 
 > If you run into any issues, it may be possible that one of your Chrome extensions is interacting in unexpected ways with the debugger. Try disabling all of your extensions and re-enabling them one-by-one until you find the problematic extension.
+
 
 ### Debugging using a custom JavaScript debugger
 
