@@ -12,7 +12,7 @@ Direct text-based user input is a foundation for many apps. Writing a post or co
 This example creates a simple `TextInput` box with the `string` `Type something here` as the placeholder when the `TextInput` is empty.
 
 ```ReactNativeWebPlayer
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { AppRegistry, Text, TextInput, View } from 'react-native';
 
 class TextInputBasics extends Component {
