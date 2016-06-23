@@ -11,6 +11,7 @@
  */
 'use strict';
 
+var ColorPropType = require('ColorPropType');
 var DocumentSelectionState = require('DocumentSelectionState');
 var EventEmitter = require('EventEmitter');
 var NativeMethodsMixin = require('NativeMethodsMixin');
@@ -80,6 +81,14 @@ type Event = Object;
  *    <TextInput {...props} />
  *  </View>
  * ```
+ *
+ * `TextInput` has by default a border at the bottom of its view. This border
+ * has its padding set by the background image provided by the system, and it
+ * cannot be changed. Solutions to avoid this is to either not set height
+ * explicitly, case in which the system will take care of displaying the border
+ * in the correct position, or to not display the border by setting
+ * `underlineColorAndroid` to transparent.
+ *
  */
 var TextInput = React.createClass({
   statics: {
@@ -269,7 +278,7 @@ var TextInput = React.createClass({
     /**
      * The text color of the placeholder string
      */
-    placeholderTextColor: PropTypes.string,
+    placeholderTextColor: ColorPropType,
     /**
      * If true, the text input obscures the text entered so that sensitive text
      * like passwords stay secure. The default value is false.
@@ -278,7 +287,7 @@ var TextInput = React.createClass({
     /**
     * The highlight (and cursor on ios) color of the text input
     */
-    selectionColor: PropTypes.string,
+    selectionColor: ColorPropType,
     /**
      * See DocumentSelectionState.js, some state that is responsible for
      * maintaining selection information for a document
@@ -336,7 +345,7 @@ var TextInput = React.createClass({
      * The color of the textInput underline.
      * @platform android
      */
-    underlineColorAndroid: PropTypes.string,
+    underlineColorAndroid: ColorPropType,
   },
 
   /**

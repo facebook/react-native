@@ -18,10 +18,11 @@ The [`ScrollView`](/react-native/docs/scrollview.html) is a generic scrolling co
 This contrived example creates a horizontal `ScrollView` with a static amount of heterogenous elements (images and text).
 
 ```ReactNativeWebPlayer
-import React, { AppRegistry, ScrollView, Image, Text, View } from 'react-native'
+import React, { Component } from 'react';
+import{ AppRegistry, ScrollView, Image, Text, View } from 'react-native'
 
-var SimpleScrollView = React.createClass({
-  render(){
+class ScrollViewBasics extends Component {
+  render() {
       return(
         <ScrollView horizontal={true}>
           <View>
@@ -63,8 +64,8 @@ var SimpleScrollView = React.createClass({
         </ScrollView>
     );
   }
-});
+}
 
 
-AppRegistry.registerComponent('AwesomeProject', () => SimpleScrollView);
+AppRegistry.registerComponent('AwesomeProject', () => ScrollViewBasics);
 ```

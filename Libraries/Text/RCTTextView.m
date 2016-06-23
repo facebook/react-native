@@ -125,6 +125,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       attrs[NSBackgroundColorAttributeName] = subview.backgroundColor;
       _textView.typingAttributes = attrs;
     }
+
+    [self performTextUpdate];
   }
 }
 
@@ -133,6 +135,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [super removeReactSubview:subview];
   if (_richTextView == subview) {
     _richTextView = nil;
+    [self performTextUpdate];
   }
 }
 

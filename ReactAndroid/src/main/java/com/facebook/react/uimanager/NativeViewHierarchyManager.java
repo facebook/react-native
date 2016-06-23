@@ -70,17 +70,22 @@ public class NativeViewHierarchyManager {
   private final SparseBooleanArray mRootTags;
   private final ViewManagerRegistry mViewManagers;
   private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
-  private final RootViewManager mRootViewManager = new RootViewManager();
+  private final RootViewManager mRootViewManager;
   private final LayoutAnimationController mLayoutAnimator = new LayoutAnimationController();
 
   private boolean mLayoutAnimationEnabled;
 
   public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
+    this(viewManagers, new RootViewManager());
+  }
+
+  public NativeViewHierarchyManager(ViewManagerRegistry viewManagers, RootViewManager manager) {
     mAnimationRegistry = new AnimationRegistry();
     mViewManagers = viewManagers;
     mTagsToViews = new SparseArray<>();
     mTagsToViewManagers = new SparseArray<>();
     mRootTags = new SparseBooleanArray();
+    mRootViewManager = manager;
   }
 
   public final View resolveView(int tag) {
