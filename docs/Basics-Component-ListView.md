@@ -4,7 +4,7 @@ title: ListView
 layout: docs
 category: The Basics
 permalink: docs/basics-component-listview.html
-next: basics-network
+next: basics-dimensions
 ---
 
 On mobile devices, lists are a core element in many applications. The [`ListView`](/react-native/docs/listview.html#content) component is a special type of [`View`](/react-native/docs/basics-component-view.html) that displays a *vertically* scrolling list of changing, but similarly structured, data.
@@ -20,20 +20,21 @@ This example creates a simple `ListView` of hardcoded data. It first initializes
 > A `rowHasChanged` function is required to use `ListView`. Here we just say a row has changed if the row we are on is not the same as the previous row.
 
 ```JavaScript
-import React from 'react';
+import React, { Component } from 'react';
 import { AppRegistry, ListView, Text, View } from 'react-native';
 
-var AwesomeList = React.createClass({
+class ListViewBasics extends Component {
   // Initialize the hardcoded data
-  getInitialState: function() {
-    var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    return {
+  constructor(props) {
+    super(props);
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    this.state = {
       dataSource: ds.cloneWithRows([
-        'John', 'Joel', 'James', 'Jimmy', 'Jackson', 'Jillian', 'Julie'
-        ])
+        'John', 'Joel', 'James', 'Jimmy', 'Jackson', 'Jillian', 'Julie', 'Devin'
+      ])
     };
-  },
-  render: function() {
+  }
+  render() {
     return (
       <View style={{paddingTop: 22}}>
         <ListView
@@ -43,8 +44,8 @@ var AwesomeList = React.createClass({
       </View>
     );
   }
-});
+}
 
 // App registration and rendering
-AppRegistry.registerComponent('AwesomeProject', () => AwesomeList);
+AppRegistry.registerComponent('AwesomeProject', () => ListViewBasics);
 ```
