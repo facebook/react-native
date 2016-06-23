@@ -7,19 +7,21 @@ permalink: docs/network.html
 next: more-resources
 ---
 
-Many modern mobile apps will at some point find the need to load resources from a remote endpoint. You may want to integrate with a third party REST API, or you may simply need to fetch a chunk of static content from another server.
+Many modern mobile apps will at some point find the need to load resources from a remote endpoint. You may want to make a POST request to a REST API, or you may simply need to fetch a chunk of static content from another server.
+
+React Native provides the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) for your networking needs.
 
 ## Using Fetch
 
-React Native provides the [Fetch API](https://fetch.spec.whatwg.org/) for your networking needs. This standard is currently being worked on, and is not available in all web browsers yet, but you can start using it today in your React Native apps without any additional work.
+Fetch will seem familiar if you have used `XMLHttpRequest` or other networking APIs before. You may refer to MDN's guide on [Using Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch) for additional information.
 
-Fetch works generally like this. In order to fetch content from an arbitrary endpoint,
+In order to fetch content from an arbitrary endpoint, just pass the URL to fetch:
 
 ```js
 fetch('https://mywebsite.com/endpoint/')
 ```
 
-Fetch also takes an optional second argument that allows you to customize the HTTP request:
+Fetch also takes an optional second argument that allows you to customize the HTTP request. You may want to specify additional headers, or make a POST request:
 
 ```js
 fetch('https://mywebsite.com/endpoint/', {
@@ -35,49 +37,49 @@ fetch('https://mywebsite.com/endpoint/', {
 })
 ```
 
-### Asynchronous
+Take a look at the [Fetch Request docs](https://developer.mozilla.org/en-US/docs/Web/API/Request) for a full list of properties.
 
-Networking is an inherently asynchronous operation. Fetch methods will return a  [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that make it straightforward to write code that works in an asynchronous manner.
+### Handling the response
 
-// clean up these examples, they should be completely identical save for await, try, catch
+The above examples show how you can make a request. In many cases, you will want to do something with the response.
 
-1.  Using `then` and `catch` in synchronous code:
-
-  ```js
-  fetch('https://mywebsite.com/endpoint.php')
-    .then((response) => response.text())
-    .then((responseText) => {
-      console.log(responseText);
-    })
-    .catch((error) => {
-      console.warn(error);
-    });
-  ```
-2.  Called within an asynchronous function using ES7 `async`/`await` syntax:
+Networking is an inherently asynchronous operation. Fetch methods will return a  [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that make it straightforward to write code that works in an asynchronous manner:
 
   ```js
-  class MyComponent extends React.Component {
-    ...
-    async getUsersFromApi() {
-      try {
-        let response = await fetch('https://mywebsite.com/endpoint/');
-        let responseJson = await response.json();
-        return responseJson.users;
-      } catch(error) {
-        // Handle error
+  getMoviesFromApiAsync() {
+    return fetch('http://facebook.github.io/react-native/movies.json')
+      .then((response) => response.json())
+      .then((responseJson) => {
+        return responseJson.movies;
+      })
+      .catch((error) => {
         console.error(error);
-      }
-    }
-    ...
+      });
   }
   ```
 
-Always make sure to catch any errors that may thrown by fetch. Unhandled errors will be dropped silently.
+You can also use ES7's `async`/`await` syntax in React Native app:
 
-## Advanced networking
+  ```js
+  async getMoviesFromApi() {
+    try {
+      let response = await fetch('http://facebook.github.io/react-native/movies.json');
+      let responseJson = await response.json();
+      return responseJson.movies;
+    } catch(error) {
+      console.error(error);
+    }
+  }
+  ```
+
+Don't forget to catch any errors that may be thrown by `fetch`, otherwise they will be dropped silently.
+
+## WebSocket Support
+
+React Native supports [WebSocket]((https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)), a protocol which provides full-duplex communication channels over a single TCP connection.
 
 React Native also comes with support for [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket).
 
-## Networking in third party libraries
+## Using Other Networking Libraries
 
-Many third party libraries use the `XMLHttpRequest` API. This API is also built in to React Native, which means that you can use third party libraries such as [frisbee](https://github.com/niftylettuce/frisbee) or [axios](https://github.com/mzabriskie/axios) directly from NPM.
+The `XMLHttpRequest` API, used by many networking libraries, is built in to React Native. This means that you can use third party libraries such as [frisbee](https://github.com/niftylettuce/frisbee) or [axios](https://github.com/mzabriskie/axios) if you prefer.
