@@ -28,11 +28,61 @@ const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  * _Note: If you need more control over how to present modals over the rest of your app,
  * then consider using a top-level Navigator. Go [here](/react-native/docs/navigator-comparison.html) to compare navigation options._
  *
+ * 
+ * ```javascript
+ * var React = require('react');
+ * var ReactNative = require('react-native');
+ * var {
+ *   Modal, Text, TouchableHighlight, View, AppRegistry,
+ * } = ReactNative;
+ * var ModalExample = React.createClass({
+ *   getInitialState() {
+ *     return {
+ *       modalVisible: false,
+ *     };
+ *   },
+ *   setModalVisible(visible) {
+ *     this.setState({modalVisible: visible});
+ *   },
+ *   render() {
+ *     return (
+ *       <View style={{marginTop: 22}}>
+ *         <Modal
+ *           animationType={"slide"}
+ *           transparent={false}
+ *           visible={this.state.modalVisible}
+ *           onRequestClose={() => {alert("Modal has been closed.")}}
+ *           >
+ *          <View style={{marginTop: 22}}>
+ *           <View>
+ *             <Text>Hello World!</Text>
+ * 
+ *             <TouchableHighlight onPress={() => {
+ *               this.setModalVisible(!this.state.modalVisible)
+ *             }}>
+ *               <Text>Hide Modal</Text>
+ *             </TouchableHighlight>
+ * 
+ *           </View>
+ *          </View>
+ *         </Modal>
+ *         <TouchableHighlight onPress={() => {
+ *           this.setModalVisible(true)
+ *         }}>
+ *           <Text>Show Modal</Text>
+ *         </TouchableHighlight>
+ *       </View>
+ *     );
+ *   },
+ * });
+ * 
+ * // App registration and rendering
+ * AppRegistry.registerComponent('AwesomeProject', () => ModalExample);* ```
  */
 class Modal extends React.Component {
   static propTypes = {
     /**
-     * The `animationType` property controls how the modal animates.
+     * The `animationType` prop controls how the modal animates.
      *
      * - `slide` slides in from the bottom
      * - `fade` fades into view
@@ -40,21 +90,21 @@ class Modal extends React.Component {
      */
     animationType: PropTypes.oneOf(['none', 'slide', 'fade']),
     /**
-     * The `transparent` property determines whether your modal will fill the entire view. Setting this to `true` will render the modal over a transparent background.
+     * The `transparent` prop determines whether your modal will fill the entire view. Setting this to `true` will render the modal over a transparent background.
      */
     transparent: PropTypes.bool,
     /**
-     * The `visible` property determines whether your modal is visible.
+     * The `visible` prop determines whether your modal is visible.
      */
     visible: PropTypes.bool,
     /**
-     * The `onRequestClose` property allows passing a function that will be called once the modal has been dismissed.
+     * The `onRequestClose` prop allows passing a function that will be called once the modal has been dismissed.
      * 
      * _On the Android platform, this is a required function._
      */
     onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
     /**
-     * The `onShow` property allows passing a function that will be called once the modal has been shown.
+     * The `onShow` prop allows passing a function that will be called once the modal has been shown.
      */
     onShow: PropTypes.func,
     animated: deprecatedPropType(
