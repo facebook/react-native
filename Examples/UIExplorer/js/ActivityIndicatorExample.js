@@ -22,34 +22,31 @@
  */
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {
-  ActivityIndicator,
-  StyleSheet,
-  View,
-} = ReactNative;
-const TimerMixin = require('react-timer-mixin');
+import React, { Component } from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-const ToggleAnimatingActivityIndicator = React.createClass({
-  mixins: [TimerMixin],
-
-  getInitialState() {
-    return {
+class ToggleAnimatingActivityIndicator extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
       animating: true,
     };
-  },
-
-  setToggleTimeout() {
-    this.setTimeout(() => {
-      this.setState({animating: !this.state.animating});
-      this.setToggleTimeout();
-    }, 2000);
-  },
+  }
 
   componentDidMount() {
     this.setToggleTimeout();
-  },
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this._timer);
+  }
+
+  setToggleTimeout() {
+    this._timer = setTimeout(() => {
+      this.setState({animating: !this.state.animating});
+      this.setToggleTimeout();
+    }, 2000);
+  }
 
   render() {
     return (
@@ -60,7 +57,9 @@ const ToggleAnimatingActivityIndicator = React.createClass({
       />
     );
   }
-});
+}
+
+
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
