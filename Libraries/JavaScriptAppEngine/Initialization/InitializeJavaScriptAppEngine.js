@@ -136,6 +136,7 @@ function setUpErrorHandler() {
       require('ExceptionsManager').handleException(e, isFatal);
     } catch (ee) {
       console.log('Failed to print error: ', ee.message);
+      throw e;
     }
   }
 
