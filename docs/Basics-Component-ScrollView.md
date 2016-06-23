@@ -18,7 +18,7 @@ The [`ScrollView`](/react-native/docs/scrollview.html) is a generic scrolling co
 This contrived example creates a horizontal `ScrollView` with a static amount of heterogenous elements (images and text).
 
 ```ReactNativeWebPlayer
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import{ AppRegistry, ScrollView, Image, Text, View } from 'react-native'
 
 class ScrollViewBasics extends Component {
