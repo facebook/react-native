@@ -258,7 +258,6 @@ function display(type, value) {
   var container = document.getElementsByTagName('block')[0].parentNode;
   container.className = 'display-' + type + '-' + value + ' ' +
     container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
-  event && event.preventDefault();
 }
 
 // If we are coming to the page with a hash in it (i.e. from a search, for example), try to get
