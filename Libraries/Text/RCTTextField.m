@@ -141,6 +141,14 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 
 - (void)textFieldDidChange
 {
+  // modify by xiaozh
+  if(_maxLength){
+    if (self.text.length > _maxLength.intValue) {
+          self.text = [self.text substringToIndex:_maxLength.intValue];
+        }
+  }
+  // end
+  
   _nativeEventCount++;
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeChange
                                  reactTag:self.reactTag
