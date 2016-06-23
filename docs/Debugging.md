@@ -61,6 +61,9 @@ Run `adb logcat *:S ReactNative:V ReactNativeJS:V` in a terminal to display the 
 ## Chrome Developer Tools
 
 To debug the JavaScript code in Chrome, select `Debug JS Remotely` from the Developer Menu. This will open a new tab at [http://localhost:8081/debugger-ui](http://localhost:8081/debugger-ui).
+> Hint
+>
+> Most modern android devices don't have a hardware menu button, which we use to trigger the developer menu. In that case you can shake the device to open the dev menu (to reload, debug, etc.). Alternatively, you can run the command `adb shell input keyevent 82` to open the dev menu (82 being the [Menu](http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU) key code).
 
 In Chrome, press `Command⌘ + Option⌥ + I` or select `View` → `Developer` → `Developer Tools` to toggle the developer tools console. Enable [Pause On Caught Exceptions](http://stackoverflow.com/questions/2233339/javascript-is-there-a-way-to-get-chrome-to-break-on-all-errors/17324511#17324511) for a better debugging experience.
 
