@@ -54,9 +54,11 @@ YellowBoxes can be disabled during development by using `console.disableYellowBo
 
 ## Accessing logs
 
-To view detailed logs on iOS, open your app in Xcode, then Build and Run your app on a device or the iPhone Simulator. The console should appear automatically after the app launches. If your app is failing to build, check the Issues Navigator in Xcode.
+Run `react-native log-ios` in a terminal to display the logs for an iOS app running on a device or a simulator.
 
-Run `adb logcat *:S ReactNative:V ReactNativeJS:V` in a terminal to display the logs for an Android app running on a device or an emulator.
+You can also view the iOS logs in Xcode: open your app in Xcode, then Build and Run your app on a device or the iPhone Simulator. The console should appear automatically after the app launches. If your app is failing to build, check the Issues Navigator in Xcode.
+
+Run `react-native log-android` in a terminal to display the logs for an Android app running on a device or an emulator.
 
 ## Chrome Developer Tools
 
