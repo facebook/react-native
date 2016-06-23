@@ -451,6 +451,16 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     removeDetachedView(view, false);
   }
 
+  @Override
+  public void removeAllViewsInLayout() {
+    // whenever we want to remove all views in a layout, we also want to remove all the
+    // DrawCommands, otherwise, we can have a mismatch between the DrawView DrawCommands
+    // and the Views to draw (note that because removeAllViewsInLayout doesn't call invalidate,
+    // we don't actually need to modify mDrawCommands, but we do it just in case).
+    mDrawCommands = DrawCommand.EMPTY_ARRAY;
+    super.removeAllViewsInLayout();
+  }
+
   /* package */ void mountAttachDetachListeners(AttachDetachListener[] listeners) {
     if (mIsAttached) {
       // Ordering of the following 2 statements is very important. While logically it makes sense to

@@ -32,7 +32,7 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
     implements ViewResolver {
 
   /* package */ FlatNativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
-    super(viewManagers);
+    super(viewManagers, new FlatRootViewManager());
   }
 
   @Override

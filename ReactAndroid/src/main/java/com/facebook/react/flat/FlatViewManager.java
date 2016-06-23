@@ -23,4 +23,9 @@ abstract class FlatViewManager extends ViewGroupManager<FlatViewGroup> {
   public void setBackgroundColor(FlatViewGroup view, int backgroundColor) {
     // suppress
   }
+
+  @Override
+  public void removeAllViews(FlatViewGroup parent) {
+    parent.removeAllViewsInLayout();
+  }
 }
