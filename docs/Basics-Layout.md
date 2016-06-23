@@ -18,10 +18,10 @@ You will normally use a combination of `flexDirection`, `alignItems`, and `justi
 Adding `flexDirection` to a component's `style` determines the **primary axis** of its layout. Should the children be organized horizontally (`row`) or vertically (`column`)? The default is `column`.
 
 ```ReactNativeWebPlayer
-import React from 'react';
+import React, { Component } from 'react';
 import { AppRegistry, View } from 'react-native';
 
-class AwesomeProject {
+class FlexDirectionBasics extends Component {
   render() {
     return (
       // Try setting `flexDirection` to `column`.
@@ -34,7 +34,7 @@ class AwesomeProject {
   }
 };
 
-AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
+AppRegistry.registerComponent('AwesomeProject', () => FlexDirectionBasics);
 ```
 
 #### Justify Content
@@ -42,10 +42,10 @@ AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
 Adding `justifyContent` to a component's style determines the **distribution** of children along the **primary axis**. Should children be distributed at the start, the center, the end, or spaced evenly? Available options are `flex-start`, `center`, `flex-end`, `space-around`, and `space-between`.
 
 ```ReactNativeWebPlayer
-import React from 'react';
+import React, { Component } from 'react';
 import { AppRegistry, View } from 'react-native';
 
-class AwesomeProject {
+class JustifyContentBasics extends Component {
   render() {
     return (
       // Try setting `justifyContent` to `center`.
@@ -63,7 +63,7 @@ class AwesomeProject {
   }
 };
 
-AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
+AppRegistry.registerComponent('AwesomeProject', () => JustifyContentBasics);
 ```
 
 #### Align Items
@@ -73,10 +73,10 @@ Adding `alignItems` to a component's style determines the **alignment** of child
 > For `stretch` to have an effect, children must not have a fixed dimension along the secondary axis. In the following example, setting `alignItems: stretch` does nothing until the `width: 50` is removed from the children.
 
 ```ReactNativeWebPlayer
-import React from 'react';
+import React, { Component } from 'react';
 import { AppRegistry, View } from 'react-native';
 
-class AwesomeProject {
+class AlignItemsBasics {
   render() {
     return (
       // Try setting `alignItems` to 'flex-start'
@@ -96,7 +96,7 @@ class AwesomeProject {
   }
 };
 
-AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
+AppRegistry.registerComponent('AwesomeProject', () => AlignItemsBasics);
 ```
 
 #### API Reference
