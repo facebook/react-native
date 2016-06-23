@@ -65,6 +65,13 @@ const NavigatorIOSExamplePage = React.createClass({
               component: createExamplePage(null, ViewExample),
             });
           })}
+          {this._renderRow('Custom title image Example', () => {
+            this.props.navigator.push({
+              title: 'Custom title image Example',
+              titleImage: require('./relay.png'),
+              component: createExamplePage(null, ViewExample),
+            });
+          })}
           {this._renderRow('Custom Right Button', () => {
             this.props.navigator.push({
               title: NavigatorIOSExample.title,
