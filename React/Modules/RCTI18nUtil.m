@@ -24,7 +24,9 @@
 
 - (BOOL)isRTL
 {
-  if ([self forceRTL]) return YES;
+  if ([self forceRTL] && [self isDevicePreferredLanguageRTL]) {
+    return YES;
+  }
   return NO;
 }
 
@@ -39,6 +41,12 @@
 {
   [[NSUserDefaults standardUserDefaults] setBool:rtlStatus forKey:@"RCTI18nUtil_forceRTL"];
   [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (BOOL)isDevicePreferredLanguageRTL
+{
+  NSLocaleLanguageDirection direction = [NSLocale characterDirectionForLanguage:[[NSLocale preferredLanguages] objectAtIndex:0]];
+  return direction == NSLocaleLanguageDirectionRightToLeft;
 }
 
 @end
