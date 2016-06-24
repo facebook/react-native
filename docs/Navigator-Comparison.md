@@ -1,9 +1,9 @@
 ---
-id: navigation
+id: navigator-comparison
 title: Navigation
 layout: docs
 category: Guides
-permalink: docs/navigation.html
+permalink: docs/navigator-comparison.html
 next: performance
 ---
 

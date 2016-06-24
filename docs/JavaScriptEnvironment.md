@@ -4,7 +4,7 @@ title: JavaScript Environment
 layout: docs
 category: Guides
 permalink: docs/javascript-environment.html
-next: navigation
+next: navigator-comparison
 ---
 
 ## JavaScript Runtime

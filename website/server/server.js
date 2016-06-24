@@ -14,7 +14,6 @@ var optimist = require('optimist');
 var path = require('path');
 var reactMiddleware = require('react-page-middleware');
 var convert = require('./convert.js');
-var redirect = require('connect-redirection');
 
 var argv = optimist.argv;
 
@@ -43,13 +42,7 @@ var buildOptions = {
 };
 
 var app = connect()
-  .use(redirect())
   .use(function(req, res, next) {
-    // Handle redirects
-    if (req.url === '/react-native/docs/navigator-comparison.html') {
-      res.redirect('/react-native/docs/navigation.html');
-    }
-
     // convert all the md files on every request. This is not optimal
     // but fast enough that we don't really need to care right now.
     if (!server.noconvert && req.url.match(/\.html|\/$/)) {
