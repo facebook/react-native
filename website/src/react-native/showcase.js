@@ -276,6 +276,13 @@ var featured = [
     infoLink: 'http://www.nydailynews.com/life-style/wego-concerts-app-links-music-fans-article-1.2066776',
     infoTitle: 'Wego Concerts: Like the love child of Tinder and StubHub',
   },
+  {
+    name: 'Аптеки 2ГИС',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple20/v4/6d/d4/f2/6dd4f2e3-bada-2954-cc3d-0ce1c9be82b8/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/ru/app/apteki-2gis/id1114768395?mt=8',
+    infoLink: 'http://sib.fm/news/2016/06/23/2gis-zapustil-prilozhenie-dlja-poiska-lekarstv-v-aptekakh-sibiri',
+    infoTitle: '2ГИС запустил приложение для поиска лекарств в аптеках Сибири',
+  },
 ];
 
 featured.sort(function(a, b) {
