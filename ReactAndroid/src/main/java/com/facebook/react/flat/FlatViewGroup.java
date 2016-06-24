@@ -492,13 +492,14 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
         addViewInLayout(view, -1, ensureLayoutParams(view.getLayoutParams()), true);
       } else {
         View view = ensureViewHasNoParent(viewResolver.getView(-viewToAdd));
-        attachViewToParent(view, -1, ensureLayoutParams(view.getLayoutParams()));
         if (mRemoveClippedSubviews) {
-          mClippedSubviews.remove(-viewToAdd);
-          DrawView drawView = mDrawViewMap.get(-viewToAdd);
-          if (drawView != null) {
-            drawView.isViewGroupClipped = false;
+          DrawView drawView = Assertions.assertNotNull(mDrawViewMap.get(-viewToAdd));
+          // If the view is clipped, we don't need to attach it.
+          if (!drawView.isViewGroupClipped) {
+            attachViewToParent(view, -1, ensureLayoutParams(view.getLayoutParams()));
           }
+        } else {
+          attachViewToParent(view, -1, ensureLayoutParams(view.getLayoutParams()));
         }
       }
     }
