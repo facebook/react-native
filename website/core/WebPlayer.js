@@ -44,7 +44,7 @@ var WebPlayer = React.createClass({
   },
 
   render: function() {
-    var hash = `#code=${encodeURIComponent(this.props.children)}&runApp=AwesomeProject`;
+    var hash = `#code=${encodeURIComponent(this.props.children)}`;
 
     if (this.props.params) {
       hash += `&${this.props.params}`;
@@ -57,7 +57,7 @@ var WebPlayer = React.createClass({
           style={{marginTop: 4}}
           width='880'
           height={this.parseParams(this.props.params).platform === 'android' ? '425' : '420'}
-          data-src={`//cdn.rawgit.com/dabbott/react-native-web-player/v0.1.2/index.html${hash}`}
+          data-src={`//cdn.rawgit.com/dabbott/react-native-web-player/v0.1.3/index.html${hash}`}
           frameBorder='0'
         />
       </div>
