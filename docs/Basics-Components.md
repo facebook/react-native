@@ -4,7 +4,7 @@ title: Components
 layout: docs
 category: The Basics
 permalink: docs/basics-components.html
-next: basics-component-text
+next: displaying-text
 ---
 
 Components are the building blocks for a React Native application. A React Native user interface (UI) is specified by declaring components, often nested. Those components are then mapped to the native UI on the targeted platform.

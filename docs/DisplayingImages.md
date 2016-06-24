@@ -1,10 +1,10 @@
 ---
-id: basics-component-image
-title: Image
+id: displaying-images
+title: Displaying Images
 layout: docs
 category: The Basics
-permalink: docs/basics-component-image.html
-next: basics-component-view
+permalink: docs/displaying-images.html
+next: using-views
 ---
 
 Another basic React Native component is the [`Image`](/react-native/docs/image.html#content) component. Like `Text`, the `Image` component simply renders an image.

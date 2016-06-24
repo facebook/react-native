@@ -1,5 +1,5 @@
 ---
-id: basics-network
+id: networking
 title: Networking
 layout: docs
 category: The Basics

@@ -1,10 +1,10 @@
 ---
-id: basics-component-scrollview
-title: ScrollView
+id: using-a-scrollview
+title: Using a ScrollView
 layout: docs
 category: The Basics
-permalink: docs/basics-component-scrollview.html
-next: basics-component-listview
+permalink: docs/using-a-scrollview.html
+next: using-a-listview
 ---
 
 Given the screen sizes of mobile devices, the ability to scroll through data is generally paramount for a proper usability experience.

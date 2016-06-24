@@ -1,10 +1,10 @@
 ---
-id: basics-component-textinput
-title: TextInput
+id: handling-text-input
+title: Handling Text Input
 layout: docs
 category: The Basics
-permalink: docs/basics-component-textinput.html
-next: basics-component-scrollview
+permalink: docs/handling-text-input.html
+next: using-a-scrollview
 ---
 
 Direct text-based user input is a foundation for many apps. Writing a post or comment on a page is a canonical example of this. [`TextInput`](/react-native/docs/textinput.html#content) is a basic component that allows the user to enter text.

@@ -1,13 +1,13 @@
 ---
-id: basics-dimensions
-title: Dimensions
+id: height-and-width
+title: Height and Width
 layout: docs
 category: The Basics
-permalink: docs/basics-dimensions.html
-next: basics-layout
+permalink: docs/height-and-width.html
+next: layout-with-flexbox
 ---
 
-A component's dimensions determine its size on the screen.
+A component's height and width determine its size on the screen.
 
 #### Fixed Dimensions
 

@@ -1,9 +1,9 @@
 ---
-id: basics-component-view
-title: View
+id: using-views
+title: Using Views
 layout: docs
 category: The Basics
-permalink: docs/basics-component-view.html
+permalink: docs/using-views.html
 next: style
 ---
 
