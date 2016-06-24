@@ -229,9 +229,23 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
           null);
         return;
       }
+      RequestBody requestBody = RequestBodyUtil.create(MediaType.parse(contentType), fileInputStream);
       requestBuilder.method(
           method,
-          RequestBodyUtil.create(MediaType.parse(contentType), fileInputStream));
+          RequestBodyUtil.createProgressRequest(
+            requestBody,
+            new ProgressRequestListener() {
+              long last = System.nanoTime();
+
+              @Override
+              public void onRequestProgress(long bytesWritten, long contentLength, boolean done) {
+                long now = System.nanoTime();
+                if (done || shouldDispatch(now, last)) {
+                  ResponseUtil.onDataSend(eventEmitter, requestId, bytesWritten, contentLength);
+                  last = now;
+                }
+              }
+            }));
     } else if (data.hasKey(REQUEST_BODY_KEY_FORMDATA)) {
       if (contentType == null) {
         contentType = "multipart/form-data";
