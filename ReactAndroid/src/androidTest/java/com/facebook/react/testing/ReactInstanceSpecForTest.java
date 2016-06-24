@@ -9,6 +9,7 @@
 package com.facebook.react.testing;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -26,7 +27,8 @@ import com.facebook.react.ReactPackage;
 @SuppressLint("JavatestsIncorrectFolder")
 public class ReactInstanceSpecForTest {
 
-  private final List<NativeModule> mNativeModules = new ArrayList<>();
+  private final List<NativeModule> mNativeModules =
+    new ArrayList<NativeModule>(Arrays.asList(new FakeWebSocketModule()));
   private final List<Class<? extends JavaScriptModule>> mJSModuleSpecs = new ArrayList<>();
   private final List<ViewManager> mViewManagers = new ArrayList<>();
   private ReactPackage mReactPackage = null;

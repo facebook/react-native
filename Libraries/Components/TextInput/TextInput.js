@@ -11,35 +11,30 @@
  */
 'use strict';
 
-var ColorPropType = require('ColorPropType');
-var DocumentSelectionState = require('DocumentSelectionState');
-var EventEmitter = require('EventEmitter');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var Platform = require('Platform');
-var PropTypes = require('ReactPropTypes');
-var React = require('React');
-var ReactNative = require('ReactNative');
-var ReactChildren = require('ReactChildren');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var TextInputState = require('TextInputState');
-var TimerMixin = require('react-timer-mixin');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-var UIManager = require('UIManager');
-var View = require('View');
+const ColorPropType = require('ColorPropType');
+const DocumentSelectionState = require('DocumentSelectionState');
+const EventEmitter = require('EventEmitter');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const Platform = require('Platform');
+const PropTypes = require('ReactPropTypes');
+const React = require('React');
+const ReactNative = require('ReactNative');
+const ReactChildren = require('ReactChildren');
+const StyleSheet = require('StyleSheet');
+const Text = require('Text');
+const TextInputState = require('TextInputState');
+const TimerMixin = require('react-timer-mixin');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const UIManager = require('UIManager');
+const View = require('View');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
-var emptyFunction = require('fbjs/lib/emptyFunction');
-var invariant = require('fbjs/lib/invariant');
-var requireNativeComponent = require('requireNativeComponent');
+const emptyFunction = require('fbjs/lib/emptyFunction');
+const invariant = require('fbjs/lib/invariant');
+const requireNativeComponent = require('requireNativeComponent');
 
-var onlyMultiline = {
-  onTextInput: true, // not supported in Open Source yet
+const onlyMultiline = {
+  onTextInput: true,
   children: true,
-};
-
-var notMultiline = {
-  // nothing yet
 };
 
 if (Platform.OS === 'android') {
@@ -90,7 +85,7 @@ type Event = Object;
  * `underlineColorAndroid` to transparent.
  *
  */
-var TextInput = React.createClass({
+const TextInput = React.createClass({
   statics: {
     /* TODO(brentvatne) docs are needed for this */
     State: TextInputState,
@@ -472,14 +467,6 @@ var TextInput = React.createClass({
           text={this._getText()}
         />;
     } else {
-      for (var propKey in notMultiline) {
-        if (props[propKey]) {
-          throw new Error(
-            'TextInput prop `' + propKey + '` cannot be used with multiline.'
-          );
-        }
-      }
-
       var children = props.children;
       var childCount = 0;
       ReactChildren.forEach(children, () => ++childCount);
