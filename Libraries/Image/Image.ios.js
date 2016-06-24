@@ -49,7 +49,6 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *           source={require('./img/favicon.png')}
  *         />
  *         <Image
- *           //style={styles.logo}
  *           source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
  *         />
  *       </View>
@@ -61,7 +60,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * AppRegistry.registerComponent('DisplayAnImage', () => DisplayAnImage);
  * ```
  *
- * You can also add `style` to an image as well.
+ * You can also add `style` to an image:
  *
  * ```ReactNativeWebPlayer
  * import React, { Component } from 'react';
@@ -98,7 +97,7 @@ const Image = React.createClass({
   propTypes: {
     /**
      * > `ImageResizeMode` is an `Enum` for different image resizing modes, set via the
-     * > `resizeMode` style property on `<Image>` components. The values are `contain`, `cover`,
+     * > `resizeMode` style property on `Image` components. The values are `contain`, `cover`,
      * > `stretch`, `center`, `repeat`.
      */
     style: StyleSheetPropType(ImageStylePropTypes),
