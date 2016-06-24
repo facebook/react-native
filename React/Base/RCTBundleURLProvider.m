@@ -183,6 +183,7 @@ static NSString *serverRootWithHost(NSString *host)
   static dispatch_once_t once_token;
   dispatch_once(&once_token, ^{
     sharedInstance = [RCTBundleURLProvider new];
+    [sharedInstance setDefaults];
   });
   return sharedInstance;
 }
