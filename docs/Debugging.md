@@ -54,15 +54,19 @@ YellowBoxes can be disabled during development by using `console.disableYellowBo
 
 ## Accessing logs
 
-To view detailed logs on iOS, open your app in Xcode, then Build and Run your app on a device or the iPhone Simulator. The console should appear automatically after the app launches. If your app is failing to build, check the Issues Navigator in Xcode.
+Run `react-native log-ios` in a terminal to display the logs for an iOS app running on a device or a simulator.
 
-Run `adb logcat *:S ReactNative:V ReactNativeJS:V` in a terminal to display the logs for an Android app running on a device or an emulator.
+You can also view the iOS logs in Xcode: open your app in Xcode, then Build and Run your app on a device or the iPhone Simulator. The console should appear automatically after the app launches. If your app is failing to build, check the Issues Navigator in Xcode.
+
+Run `react-native log-android` in a terminal to display the logs for an Android app running on a device or an emulator.
 
 ## Chrome Developer Tools
 
 To debug the JavaScript code in Chrome, select `Debug JS Remotely` from the Developer Menu. This will open a new tab at [http://localhost:8081/debugger-ui](http://localhost:8081/debugger-ui).
 
 In Chrome, press `Command⌘ + Option⌥ + I` or select `View` → `Developer` → `Developer Tools` to toggle the developer tools console. Enable [Pause On Caught Exceptions](http://stackoverflow.com/questions/2233339/javascript-is-there-a-way-to-get-chrome-to-break-on-all-errors/17324511#17324511) for a better debugging experience.
+
+> It is [currently not possible](https://github.com/facebook/react-devtools/issues/229) to use the "React" tab in the Chrome Developer Tools to inspect app widgets. You can use Nuclide's "React Native Inspector" as a workaround.
 
 ### Debugging on a device with Chrome Developer Tools
 
@@ -75,6 +79,7 @@ On Android 5.0+ devices connected via USB, you can use the [`adb` command line t
 Alternatively, select `Dev Settings` from the Developer Menu, then update the `Debug server host for device` setting to match the IP address of your computer.
 
 > If you run into any issues, it may be possible that one of your Chrome extensions is interacting in unexpected ways with the debugger. Try disabling all of your extensions and re-enabling them one-by-one until you find the problematic extension.
+
 
 ### Debugging using a custom JavaScript debugger
 

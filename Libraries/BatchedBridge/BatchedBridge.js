@@ -12,8 +12,11 @@
 
 const MessageQueue = require('MessageQueue');
 
+const serializeNativeParams = typeof global.__fbBatchedBridgeSerializeNativeParams !== 'undefined';
+
 const BatchedBridge = new MessageQueue(
-  () => global.__fbBatchedBridgeConfig
+  () => global.__fbBatchedBridgeConfig,
+  serializeNativeParams
 );
 
 // TODO: Move these around to solve the cycle in a cleaner way.
