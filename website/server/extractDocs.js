@@ -377,7 +377,7 @@ function getTypehint(typehint) {
   try {
     var typehint = JSON.parse(typehint);
   } catch (e) {
-    return typehint.split('|').map(type => type.trim());
+    return typehint.toString().split('|').map(type => type.trim());
   }
   return getTypehintRec(typehint);
 }
