@@ -130,9 +130,10 @@ var GESTURE_ACTIONS = [
 
 /**
  * `Navigator` handles the transition between different scenes in your app.
- * You should consider using this component instead of `NavigatorIOS` if you're
- * building a cross-platform app. `Navigator` is implemented in JavaScript
- * whereas `NavigatorIOS` is a wrapper around `UINavigationController`.
+ * It is implemented in JavaScript and is available on both iOS and Android. If
+ * you are targeting iOS only, you may also want to consider using
+ * [`NavigatorIOS`](docs/navigatorios.html) as it leverages native UIKit
+ * navigation.
  *
  * To set up the `Navigator` you provide one or more objects called routes,
  * to identify each scene. You also provide a `renderScene` function that
@@ -142,13 +143,13 @@ var GESTURE_ACTIONS = [
  * import React, { Component } from 'react';
  * import { Text, Navigator } from 'react-native';
  *
- * class NavAllDay extends Component {
+ * export default class NavAllDay extends Component {
  *   render() {
  *     return (
  *       <Navigator
- *         initialRoute={{name: 'Awesome Scene'}}
+ *         initialRoute={{ title: 'Awesome Scene', index: 0 }}
  *         renderScene={(route, navigator) =>
- *           <Text>Hello {route.name}!</Text>
+ *           <Text>Hello {route.title}!</Text>
  *         }
  *         style={{padding: 100}}
  *       />
@@ -158,8 +159,8 @@ var GESTURE_ACTIONS = [
  * ```
  *
  * In the above example, `initialRoute` is used to specify the first route. It
- * contains a `name` property that identifies the route. The `renderScene`
- * prop returns a function that displays text based on the route's name.
+ * contains a `title` property that identifies the route. The `renderScene`
+ * prop returns a function that displays text based on the route's title.
  *
  * ### Additional Scenes
  *
@@ -169,8 +170,8 @@ var GESTURE_ACTIONS = [
  * ```
  * render() {
  *   const routes = [
- *     {name: 'First Scene', index: 0},
- *     {name: 'Second Scene', index: 1},
+ *     {title: 'First Scene', index: 0},
+ *     {title: 'Second Scene', index: 1},
  *   ];
  *   return (
  *     <Navigator
@@ -184,7 +185,7 @@ var GESTURE_ACTIONS = [
  *             navigator.pop();
  *           }
  *         }}>
- *         <Text>Hello {route.name}!</Text>
+ *         <Text>Hello {route.title}!</Text>
  *         </TouchableHighlight>
  *       }
  *       style={{padding: 100}}
@@ -255,6 +256,12 @@ var GESTURE_ACTIONS = [
  *
  * This sets up a left navigator bar button that's visible on scenes after the
  * the first one. When the button is tapped the navigator is popped.
+ *
+ * Another type of navigation bar, with breadcrumbs, is provided by
+ * `Navigator.BreadcrumbNavigationBar`. You can also provide your own navigation
+ * bar by passing it through the `navigationBar` prop. See the
+ * [UIExplorer](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer)
+ * demo to try out both built-in navigation bars out and see how to use them.
  *
  * ### Scene Transitions
  *
