@@ -102,3 +102,5 @@ AppRegistry.registerComponent('AwesomeProject', () => AlignItemsBasics);
 #### Going Deeper
 
 We've covered the basics, but there are many other styles you may need for layouts. The full list of props that control layout is documented [here](./docs/layout-props.html).
+
+We're getting close to being able to build a real application. One thing we are still missing is a way to take user input, so let's move on to [learn how to handle text input with the TextInput component](/react-native/docs/handling-text-input.html).
