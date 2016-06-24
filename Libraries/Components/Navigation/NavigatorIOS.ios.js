@@ -93,10 +93,17 @@ type Event = Object;
  */
 
 /**
- * `NavigatorIOS` is a wrapper around UIKit navigation, enabling you to
- * implement back-swipe functionality in your iOS app. Take a look at
+ * `NavigatorIOS` is a wrapper around
+ * [`UINavigationController`](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UINavigationController_Class/),
+ * enabling you to implement a navigation stack. It works exactly the same as it
+ * would on a native app using `UINavigationController`, providing the same
+ * animations and behavior from UIKIt.
+ *
+ * As the name implies, it is only available on iOS. Take a look at
  * [`Navigator`](/docs/navigator.html) for a similar solution for your
- * cross-platform needs.
+ * cross-platform needs, or check out
+ * [react-native-navigation](https://github.com/wix/react-native-navigation), a
+ * component that aims to provide native navigation on both iOS and Android.
  *
  * To set up the navigator, provide the `initialRoute` prop with a route
  * object. A route object is used to describe each scene that your app
@@ -106,13 +113,13 @@ type Event = Object;
  * import React, { Component } from 'react';
  * import { NavigatorIOS, Text } from 'react-native';
  *
- * class NavvyIOS extends Component {
+ * export default class NavigatorIOSApp extends Component {
  *   render() {
  *     return (
  *       <NavigatorIOS
  *         initialRoute={{
- *           component: MyView,
- *           title: 'My View Title',
+ *           component: MyScene,
+ *           title: 'My Initial Scene',
  *         }}
  *         style={{flex: 1}}
  *       />
@@ -120,39 +127,54 @@ type Event = Object;
  *   }
  * }
  *
- * class MyView extends Component {
+ * class MyScene extends Component {
+ *   static propTypes = {
+ *     title: PropTypes.string.isRequired,
+ *     navigator: PropTypes.object.isRequired,
+ *   }
+ *
+ *   constructor(props, context) {
+ *     super(props, context);
+ *     this._onForward = this._onForward.bind(this);
+ *     this._onBack = this._onBack.bind(this);
+ *   }
+ *
+ *   _onForward() {
+ *     this.props.navigator.push({
+ *       title: 'Scene ' + nextIndex,
+ *     });
+ *   }
+ *
  *   render() {
- *     return(
- *       <Text style={{marginTop: 200, alignSelf: 'center'}}>
- *         See you on the other nav!
- *       </Text>
- *     );
+ *     return (
+ *       <View>
+ *         <Text>Current Scene: { this.props.title }</Text>
+ *         <TouchableHighlight onPress={this._onForward}>
+ *           <Text>Tap me to load the next scene</Text>
+ *         </TouchableHighlight>
+ *       </View>
+ *     )
  *   }
  * }
  * ```
  *
- * In this code, the navigator sets its title and renders `MyView`. The
- * component specified in `initialRoute` will receive a `route` prop and a
- * `navigator` prop representing the navigator.
+ * In this code, the navigator renders the component specified in initialRoute,
+ * which in this case is `MyScene`. This component will receive a `route` prop
+ * and a `navigator` prop representing the navigator. The navigator's navigation
+ * bar will render the title for the current scene, "My Initial Scene".
  *
  * You can optionally pass in a `passProps` property to your `initialRoute`.
  * `NavigatorIOS` passes this in as props to the rendered component:
  *
  * ```
  * initialRoute={{
- *   component: MyView,
- *   title: 'Foo This',
+ *   component: MyScene,
+ *   title: 'My Initial Scene',
  *   passProps: { myProp: 'foo' }
  * }}
  * ```
  *
- * You can then access the props passed in:
- *
- * ```
- * <Text style={{marginTop: 200, alignSelf: 'center'}}>
- *   See you on the other nav {this.props.myProp}!
- * </Text>
- * ```
+ * You can then access the props passed in via `{this.props.myProp}`.
  *
  * #### Handling Navigation
  *
@@ -254,6 +276,7 @@ type Event = Object;
  *
  * In the example above the navigation bar color is changed when the new route
  * is pushed.
+ *
  */
 var NavigatorIOS = React.createClass({
 
