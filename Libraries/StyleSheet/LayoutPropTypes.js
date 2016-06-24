@@ -286,7 +286,7 @@ var LayoutPropTypes = {
   ]),
 
   /** `justifyContent` aligns children in the main direction.
-   *  For example, if children are flowing vertically, justifyContent
+   *  For example, if children are flowing vertically, `justifyContent`
    *  controls how they align vertically.
    *  It works like `justify-content` in CSS. See
    *  https://css-tricks.com/almanac/properties/j/justify-content/
@@ -301,7 +301,7 @@ var LayoutPropTypes = {
   ]),
 
   /** `alignItems` aligns children in the cross direction.
-   *  For example, if children are flowing vertically, alignItems
+   *  For example, if children are flowing vertically, `alignItems`
    *  controls how they align horizontally.
    *  It works like `align-items` in CSS, except the default value
    *  is `stretch` instead of `flex-start`. See
@@ -316,7 +316,7 @@ var LayoutPropTypes = {
   ]),
 
   /** `alignSelf` controls how a child aligns in the cross direction,
-   *  overriding the alignItems of the parent. It works like 'align-self'
+   *  overriding the `alignItems` of the parent. It works like `align-self`
    *  in CSS. See
    *  https://css-tricks.com/almanac/properties/a/align-self/
    *  for more detail.
@@ -330,11 +330,21 @@ var LayoutPropTypes = {
   ]),
 
   /** In React Native `flex` does not work the same way that it does in CSS.
-   *  parameter. `flex` is a number rather than a string, and it works
+   *  `flex` is a number rather than a string, and it works
    *  according to the `css-layout` library
-   *  at https://github.com/facebook/css-layout . Typically, you set `flex`
-   *  to be a positive number that controls how much of the available space
-   *  this component should take up.
+   *  at https://github.com/facebook/css-layout .
+   *
+   *  When `flex` is a positive number, it makes the component flexible
+   *  and it will be sized proportional to its flex value. So a
+   *  component with `flex` set to 2 will take twice the space as a
+   *  component with `flex` set to 1.
+   *
+   *  When `flex` is 0, the component is sized according to `width`
+   *  and `height` and it is inflexible.
+   *
+   *  When `flex` is -1, the component is normally sized according
+   *  `width` and `height`. However, if there's not enough space,
+   *  the component will shrink to its `minWidth` and `minHeight`.
    */
   flex: ReactPropTypes.number,
 
