@@ -1,9 +1,9 @@
 ---
 id: basics-layout
-title: Layout
+title: Layout with Flexbox
 layout: docs
 category: The Basics
-permalink: docs/basics-layout.html
+permalink: docs/flexbox.html
 next: basics-component-textinput
 ---
 
@@ -11,7 +11,7 @@ A component can specify the layout of its children using the flexbox algorithm. 
 
 You will normally use a combination of `flexDirection`, `alignItems`, and `justifyContent` to achieve the right layout.
 
-> Flexbox works the same way in React Native as it does in CSS on the web, with a few exceptions. The most notable one: the defaults are different, with `flexDirection`  defaulting to `column` instead of `row`, and `alignItems` defaulting to `stretch` instead of `flex-start`.
+> Flexbox works the same way in React Native as it does in CSS on the web, with a few exceptions. The defaults are different, with `flexDirection` defaulting to `column` instead of `row`, and `alignItems` defaulting to `stretch` instead of `flex-start`, and the `flex` parameter only supports a single number.
 
 #### Flex Direction
 
@@ -99,6 +99,6 @@ class AlignItemsBasics {
 AppRegistry.registerComponent('AwesomeProject', () => AlignItemsBasics);
 ```
 
-#### API Reference
+#### Going Deeper
 
-We've covered the basics, but there are many other styles you may need for layouts. The full list is available [here](./docs/flexbox.html).
+We've covered the basics, but there are many other styles you may need for layouts. The full list of props that control layout is documented [here](./docs/layout-props.html).
