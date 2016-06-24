@@ -105,14 +105,18 @@ type Event = Object;
  *       <TextInput
  *         {...this.props} // Inherit any props passed to it; e.g., multiline, numberOfLines below
  *         editable = {true}
+ *         maxLength = {40}
  *       />
  *     );
  *   }
  * }
  *
- * class UselessTextInputMultiline extends UselessTextInput {
+ * class UselessTextInputMultiline extends Component {
  *   constructor(props) {
  *     super(props);
+ *     this.state = {
+ *       text: 'Useless Multiline Placeholder',
+ *     };
  *   }
  *
  *   // If you type something in the text box that is a color, the background will change to that
