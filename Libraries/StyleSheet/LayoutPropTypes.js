@@ -239,13 +239,12 @@ var LayoutPropTypes = {
   borderLeftWidth: ReactPropTypes.number,
 
   /** `position` in React Native is similar to regular CSS, but
-   *  everything is set to `relative` by default.
+   *  everything is set to `relative` by default, so `absolute`
+   *  positioning is always just relative to the parent.
    *
    *  If you want to position a child using specific numbers of logical
    *  pixels relative to its parent, set the child to have `absolute`
-   *  position. If you have nested `absolute` components, they all
-   *  are positioned relative to the closest parent that has the default
-   * `relative` positioning.
+   *  position.
    *
    *  If you want to position a child relative to something
    *  that is not its parent, just don't use styles for that. Use the
