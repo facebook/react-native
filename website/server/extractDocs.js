@@ -39,7 +39,9 @@ function removeExtName(filepath) {
 function getNameFromPath(filepath) {
   filepath = removeExtName(filepath);
   if (filepath === 'LayoutPropTypes') {
-    return 'Flexbox';
+    return 'Layout Props';
+  } else if (filepath == 'ShadowPropTypesIOS') {
+    return 'Shadow Props';
   } else if (filepath === 'TransformPropTypes') {
     return 'Transforms';
   } else if (filepath === 'TabBarItemIOS') {
