@@ -77,7 +77,6 @@ function defineProperty(object: Object, name: string, newValue: mixed): void {
       value: object[name],
     });
   }
-
   const {enumerable, writable} = descriptor || {};
   Object.defineProperty(object, name, {
     configurable: true,
@@ -87,32 +86,42 @@ function defineProperty(object: Object, name: string, newValue: mixed): void {
   });
 }
 
-function defineLazyProperty(
+function defineLazyProperty<T>(
   object: Object,
   name: string,
-  getValue: () => mixed
+  getNewValue: () => T
 ): void {
   const descriptor = getPropertyDescriptor(object, name);
   if (descriptor) {
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
     Object.defineProperty(object, backupName, descriptor);
   }
-
-  const {enumerable, writable} = descriptor || {};
-  Object.defineProperty(object, name, {
+  const config = {
     configurable: true,
-    enumerable: enumerable !== false,
-    get() {
-      return (object[name] = getValue());
-    },
-    set(value) {
-      Object.defineProperty(object, name, {
-        configurable: true,
-        enumerable: enumerable !== false,
-        writable: writable !== false,
-        value,
-      });
+    enumerable: descriptor ? descriptor.enumerable !== false : true,
+    writable: descriptor ? descriptor.writable !== false : true,
+  };
+  let value;
+  let valueSet = false;
+  function getValue(): T {
+    // WORKAROUND: A weird infinite loop occurs where calling `getValue` calls
+    // `setValue` which calls `Object.defineProperty` which somehow triggers
+    // `getValue` again. Adding `valueSet` breaks this loop.
+    if (!valueSet) {
+      setValue(getNewValue());
     }
+    return value;
+  }
+  function setValue(newValue: T): void {
+    value = newValue;
+    valueSet = true;
+    Object.defineProperty(object, name, {...config, value: newValue});
+  }
+  Object.defineProperty(object, name, {
+    configurable: config.configurable,
+    enumerable: config.enumerable,
+    get: getValue,
+    set: setValue,
   });
 }
 
