@@ -54,8 +54,10 @@ export type AnnotationDragState = $Enum<{
 }>;
 
 /**
+ * **This component is only supported on iOS.**
+ *
  * `MapView` is used to display embeddable maps and annotations using
- * `MKMapView`. This component is only supported on iOS.
+ * `MKMapView`.
  *
  * For a cross-platform solution, check out
  * [react-native-maps](https://github.com/lelandrichardson/react-native-maps)
