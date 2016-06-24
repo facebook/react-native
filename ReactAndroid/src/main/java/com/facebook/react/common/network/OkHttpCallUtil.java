@@ -21,6 +21,10 @@ public class OkHttpCallUtil {
   }
 
   public static void cancelTag(OkHttpClient client, Object tag) {
+    if (tag == null) {
+      return;
+    }
+
     for (Call call : client.dispatcher().queuedCalls()) {
       if (tag.equals(call.request().tag())) {
         call.cancel();
