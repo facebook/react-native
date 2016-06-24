@@ -332,6 +332,12 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         completionHandler(error, nil);
         return;
       }
+      if(!response)
+      {
+        completionHandler([NSError errorWithDomain:RCTErrorDomain code:0
+        userInfo:@{NSLocalizedDescriptionKey: @"the response is nil."}], nil);
+        return;
+      }
 
       dispatch_async(_URLCacheQueue, ^{
 
