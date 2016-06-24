@@ -44,7 +44,7 @@ var LayoutPropTypes = {
   height: ReactPropTypes.number,
 
   /** `top` is the number of logical pixels to offset the top edge of
-   *  this component. It only applies when using absolute or relative position.
+   *  this component.
    *
    *  It works similarly to `top` in CSS, but in React Native you must
    *  use logical pixel units, rather than percents, ems, or any of that.
@@ -55,7 +55,7 @@ var LayoutPropTypes = {
   top: ReactPropTypes.number,
 
   /** `left` is the number of logical pixels to offset the left edge of
-   *  this component. It only applies when using absolute or relative position.
+   *  this component.
    *
    *  It works similarly to `left` in CSS, but in React Native you must
    *  use logical pixel units, rather than percents, ems, or any of that.
@@ -66,7 +66,7 @@ var LayoutPropTypes = {
   left: ReactPropTypes.number,
 
   /** `right` is the number of logical pixels to offset the right edge of
-   *  this component. It only applies when using absolute or relative position.
+   *  this component.
    *
    *  It works similarly to `right` in CSS, but in React Native you must
    *  use logical pixel units, rather than percents, ems, or any of that.
@@ -77,7 +77,7 @@ var LayoutPropTypes = {
   right: ReactPropTypes.number,
 
   /** `bottom` is the number of logical pixels to offset the bottom edge of
-   *  this component. It only applies when using absolute or relative position.
+   *  this component.
    *
    *  It works similarly to `bottom` in CSS, but in React Native you must
    *  use logical pixel units, rather than percents, ems, or any of that.
@@ -238,18 +238,22 @@ var LayoutPropTypes = {
    */
   borderLeftWidth: ReactPropTypes.number,
 
-  /** Set `position` if you wish to position components using
-   *  specific numbers of logical pixels rather than using Flexbox.
-   *  You then use a combination of `top`, `left`, `right`, and
-   *  `bottom` to position the component.
+  /** `position` in React Native is similar to regular CSS, but
+   *  everything is set to `relative` by default.
    *
-   *  It works like `position` in CSS, but in React Native you can
-   *  only set it to `absolute` or `relative`. Use `absolute` when you
-   *  want to position something relative to a parent. Use `relative`
-   *  when you want to position something relative to where it would be
-   *  positioned in the normal flow. See
-   *  https://css-tricks.com/almanac/properties/p/position/
-   *  for more details.
+   *  If you want to position a child using specific numbers of logical
+   *  pixels relative to its parent, set the child to have `absolute`
+   *  position. If you have nested `absolute` components, they all
+   *  are positioned relative to the closest parent that has the default
+   * `relative` positioning.
+   *
+   *  If you want to position a child relative to something
+   *  that is not its parent, just don't use styles for that. Use the
+   *  component tree.
+   *
+   *  See https://github.com/facebook/css-layout
+   *  for more details on how `position` differs between React Native
+   *  and CSS.
    */
   position: ReactPropTypes.oneOf([
     'absolute',
