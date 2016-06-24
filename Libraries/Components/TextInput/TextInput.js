@@ -93,13 +93,6 @@ type Event = Object;
  * import { AppRegistry, View, TextInput } from 'react-native';
  *
  * class UselessTextInput extends Component {
- *   constructor(props) {
- *     super(props);
- *     this.state = {
- *       text: 'Useless Placeholder',
- *     };
- *   }
- *
  *   render() {
  *     return (
  *       <TextInput
@@ -285,7 +278,7 @@ const TextInput = React.createClass({
     maxLength: PropTypes.number,
     /**
      * Sets the number of lines for a `TextInput`. Use it with multiline set to
-     * true to be able to fill the lines.
+     * `true` to be able to fill the lines.
      * @platform android
      */
     numberOfLines: PropTypes.number,
@@ -369,7 +362,7 @@ const TextInput = React.createClass({
      * - `update()`
      *
      * > You can refernce `DocumentSelectionState` in
-     * > `vendor/document/selection/DocumentSelectionState.js`
+     * > [`vendor/document/selection/DocumentSelectionState.js`](https://github.com/facebook/react-native/blob/master/Libraries/vendor/document/selection/DocumentSelectionState.js)
      *
      * @platform ios
      */
