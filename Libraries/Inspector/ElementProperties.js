@@ -24,7 +24,7 @@ var {fetch} = require('fetch');
 
 var flattenStyle = require('flattenStyle');
 var mapWithSeparator = require('mapWithSeparator');
-var getDevServer = require('getDevServer');
+var openFileInEditor = require('openFileInEditor');
 
 var ElementProperties = React.createClass({
   propTypes: {
@@ -52,7 +52,7 @@ var ElementProperties = React.createClass({
       openFileButton = (
         <TouchableHighlight
           style={styles.openButton}
-          onPress={this._openFile.bind(null, fileName, lineNumber)}>
+          onPress={openFileInEditor.bind(null, fileName, lineNumber)}>
           <Text style={styles.openButtonTitle} numberOfLines={1}>
             {fileNameShort}:{lineNumber}
           </Text>
@@ -94,13 +94,6 @@ var ElementProperties = React.createClass({
         </View>
       </TouchableWithoutFeedback>
     );
-  },
-
-  _openFile: function(fileName: string, lineNumber: number) {
-    fetch(getDevServer().url + 'open-stack-frame', {
-      method: 'POST',
-      body: JSON.stringify({file: fileName, lineNumber}),
-    });
   },
 });
 
