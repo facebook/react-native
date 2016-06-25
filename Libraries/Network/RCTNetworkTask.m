@@ -126,7 +126,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     }
     [_data appendData:data];
     if (_incrementalDataBlock) {
-      _incrementalDataBlock(data);
+      _incrementalDataBlock(data, _data.length, _response.expectedContentLength);
     }
     if (_downloadProgressBlock && _response.expectedContentLength > 0) {
       _downloadProgressBlock(_data.length, _response.expectedContentLength);

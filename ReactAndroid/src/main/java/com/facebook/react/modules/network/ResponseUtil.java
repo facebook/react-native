@@ -33,6 +33,34 @@ public class ResponseUtil {
     eventEmitter.emit("didSendNetworkData", args);
   }
 
+  public static void onIncrementalDataReceived(
+    RCTDeviceEventEmitter eventEmitter,
+    int requestId,
+    String data,
+    long progress,
+    long total) {
+    WritableArray args = Arguments.createArray();
+    args.pushInt(requestId);
+    args.pushString(data);
+    args.pushInt((int) progress);
+    args.pushInt((int) total);
+
+    eventEmitter.emit("didReceiveNetworkIncrementalData", args);
+  }
+
+  public static void onDataReceivedProgress(
+    RCTDeviceEventEmitter eventEmitter,
+    int requestId,
+    long progress,
+    long total) {
+    WritableArray args = Arguments.createArray();
+    args.pushInt(requestId);
+    args.pushInt((int) progress);
+    args.pushInt((int) total);
+
+    eventEmitter.emit("didReceiveNetworkDataProgress", args);
+  }
+
   public static void onDataReceived(
     RCTDeviceEventEmitter eventEmitter,
     int requestId,
