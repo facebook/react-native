@@ -15,10 +15,9 @@ var Metadata = require('Metadata');
 
 var Site = React.createClass({
   render: function() {
-    const path = Metadata.config.RN_DEPLOYMENT_PATH;
     const version = Metadata.config.RN_VERSION;
     const algoliaVersion = version === 'next' ? 'master' : version;
-    var basePath = '/react-native/' + (path ? path + '/' : '');
+    var basePath = Metadata.config.RN_DEPLOYMENT_PATH;
     var title = this.props.title ? this.props.title + ' – ' : '';
     var currentYear = (new Date()).getFullYear();
     title += 'React Native | A framework for building native apps using React';

@@ -15,8 +15,6 @@ const CIRCLE_BRANCH = process.env.CIRCLE_BRANCH;
 const CIRCLE_PROJECT_USERNAME = process.env.CIRCLE_PROJECT_USERNAME;
 const PULL_REQUEST_NUMBER = process.env.CIRCLE_PR_NUMBER;
 const GIT_USER = process.env.GIT_USER;
-const stableDocsRepo = `https://${GIT_USER}@github.com/facebook/react-native.git`;
-const prDocsRepo = `https://${GIT_USER}@github.com/facebook/react-native-pr-docs.git`;
 
 if (!which(`git`)) {
   echo(`Sorry, this script requires git`);
@@ -24,19 +22,20 @@ if (!which(`git`)) {
 }
 
 let version;
-let repo;
 let isBlogToBeDeployed = false;
+let site;
 if (CIRCLE_BRANCH.indexOf(`-stable`) !== -1 && CIRCLE_PROJECT_USERNAME === `facebook`) {
   version = CIRCLE_BRANCH.slice(0, CIRCLE_BRANCH.indexOf(`-stable`));
-  repo = stableDocsRepo;
+  site = `react-native`;
 } else if (CIRCLE_BRANCH === `master` && CIRCLE_PROJECT_USERNAME === `facebook`) {
   version = `next`;
   isBlogToBeDeployed = true;
-  repo = stableDocsRepo;
+  site = `react-native`;
 } else if (PULL_REQUEST_NUMBER) {
   version = PULL_REQUEST_NUMBER;
-  repo = prDocsRepo;
+  site = `react-native-pr-docs`;
 }
+const repo = `https://${GIT_USER}@github.com/facebook/${site}.git`;
 
 rm(`-rf`, `build`);
 mkdir(`-p`, `build`);
@@ -86,7 +85,7 @@ if (repo && version) {
     rm(`-rf`, `releases/${version}`);
     mkdir(`-p`, `releases/${version}`);
     cd(`../..`);
-    if (exec(`RN_DEPLOYMENT_PATH=releases/${version} RN_VERSION=${version} RN_LATEST_VERSION=${latestVersion} \
+    if (exec(`RN_DEPLOYMENT_PATH=/${site}/releases/${version}/ RN_VERSION=${version} RN_LATEST_VERSION=${latestVersion} \
     RN_AVAILABLE_DOCS_VERSIONS=${versions.join(',')} node server/generate.js`).code !== 0) {
       echo(`Error: Generating HTML failed`);
       exit(1);
@@ -105,7 +104,7 @@ if (repo && version) {
     // leave only releases and blog folder
     rm(`-rf`, ls(`*`).filter(name => (name !== 'releases') && (name !== 'blog')));
     cd(`../..`);
-    if (exec(`RN_VERSION=${version} RN_LATEST_VERSION=${latestVersion} \
+    if (exec(`RN_DEPLOYMENT_PATH=/${site}/ RN_VERSION=${version} RN_LATEST_VERSION=${latestVersion} \
     RN_AVAILABLE_DOCS_VERSIONS=${versions} node server/generate.js`).code !== 0) {
       echo(`Error: Generating HTML failed`);
       exit(1);
