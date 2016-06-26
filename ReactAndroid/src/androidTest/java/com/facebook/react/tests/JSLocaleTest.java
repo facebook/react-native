@@ -11,7 +11,6 @@ package com.facebook.react.tests;
 import java.util.Arrays;
 import java.util.List;
 
-import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactIntegrationTestCase;
 import com.facebook.react.testing.ReactTestHelper;
 import com.facebook.react.testing.StringRecordingModule;
@@ -60,9 +59,9 @@ public class JSLocaleTest extends ReactIntegrationTestCase {
     mInstance = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(mStringRecordingModule)
         .addNativeModule(mUIManager)
-        .addNativeModule(new FakeWebSocketModule())
         .addJSModule(TestJSLocaleModule.class)
         .build();
+
   }
 
   public void testToUpper() {
@@ -101,4 +100,6 @@ public class JSLocaleTest extends ReactIntegrationTestCase {
     assertEquals("γαζίες καὶ μυρτιὲς δὲν θὰ βρῶ πιὰ στὸ χρυσαφὶ ξέφωτο", answers[3]);
     assertEquals("chinese: 幓 厏吪吙 鈊釿閍 碞碠粻 曮禷", answers[4]);
   }
+
+
 }
