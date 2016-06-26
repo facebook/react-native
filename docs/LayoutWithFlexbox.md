@@ -1,5 +1,5 @@
 ---
-id: layout-with-flexbox
+id: flexbox
 title: Layout with Flexbox
 layout: docs
 category: The Basics

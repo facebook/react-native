@@ -4,7 +4,7 @@ title: Using a ListView
 layout: docs
 category: The Basics
 permalink: docs/using-a-listview.html
-next: networking
+next: network
 ---
 
 The `ListView` component displays a vertically scrolling list of changing, but similarly structured, data.
@@ -48,4 +48,4 @@ class ListViewBasics extends Component {
 AppRegistry.registerComponent('AwesomeProject', () => ListViewBasics);
 ```
 
-One of the most common uses for a `ListView` is displaying data that you fetch from a server. To do that, you will need to [learn about networking in React Native](/react-native/docs/networking.html).
+One of the most common uses for a `ListView` is displaying data that you fetch from a server. To do that, you will need to [learn about networking in React Native](/react-native/docs/network.html).

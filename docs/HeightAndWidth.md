@@ -4,7 +4,7 @@ title: Height and Width
 layout: docs
 category: The Basics
 permalink: docs/height-and-width.html
-next: layout-with-flexbox
+next: flexbox
 ---
 
 A component's height and width determine its size on the screen.
@@ -62,4 +62,4 @@ class FlexDimensionsBasics extends Component {
 AppRegistry.registerComponent('AwesomeProject', () => FlexDimensionsBasics);
 ```
 
-After you can control a component's size, the next step is to [learn how to lay it out on the screen](/react-native/docs/layout-with-flexbox.html).
+After you can control a component's size, the next step is to [learn how to lay it out on the screen](/react-native/docs/flexbox.html).
