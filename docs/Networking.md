@@ -1,5 +1,5 @@
 ---
-id: basics-network
+id: network
 title: Networking
 layout: docs
 category: The Basics
@@ -125,3 +125,5 @@ ws.onclose = (e) => {
   console.log(e.code, e.reason);
 };
 ```
+
+If you've gotten here by reading linearly through the tutorial, then you are a pretty impressive human being. Congratulations. Next, you might want to check out [all the cool stuff the community does with React Native](/react-native/docs/more-resource.html).
