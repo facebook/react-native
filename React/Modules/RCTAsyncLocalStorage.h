@@ -30,7 +30,4 @@
 // Clear the RCTAsyncLocalStorage data from native code
 - (void)clearAllData;
 
-// For clearing data when the bridge may not exist, e.g. when logging out.
-+ (void)clearAllData;
-
 @end
