@@ -89,7 +89,7 @@ test:
     # TODO circle does not understand Buck's report, maybe need to transform xml slightly
     #- find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
 
-deployment:  
+deployment: 
   stable:
     branch: [/.*-stable/, /master/]
     commands:
