@@ -36,7 +36,11 @@ RCT_EXPORT_VIEW_PROPERTY(color, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(hidesWhenStopped, BOOL)
 RCT_REMAP_VIEW_PROPERTY(size, activityIndicatorViewStyle, UIActivityIndicatorViewStyle)
 RCT_CUSTOM_VIEW_PROPERTY(animating, BOOL, UIActivityIndicatorView)
-{
+{ 
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [view setHidesWhenStopped:[view hidesWhenStopped] ? YES : NO];
+  });
+
   BOOL animating = json ? [RCTConvert BOOL:json] : [defaultView isAnimating];
   if (animating != [view isAnimating]) {
     if (animating) {
