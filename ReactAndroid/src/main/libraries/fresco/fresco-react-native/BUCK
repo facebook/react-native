@@ -28,6 +28,9 @@ android_library(
       ':imagepipeline-base',
       ':imagepipeline-core',
       ':bolts',
+      ':fresco-animated-gif',
+      ':fresco-animated-webp',
+      ':fresco-webpsupport'
   ],
   visibility = ['//ReactAndroid/...',],
 )
@@ -90,4 +93,40 @@ remote_file(
     name = 'imagepipeline-okhttp3-binary-aar',
     url = 'mvn:com.facebook.fresco:imagepipeline-okhttp3:aar:0.11.0',
     sha1 = '3d7e6d1a2f2e973a596aae7d523667b5a3d6d8a5',
+)
+
+android_prebuilt_aar(
+    name = 'fresco-animated-gif',
+    aar = ':fresco-animated-gif-binary-aar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'fresco-animated-gif-binary-aar',
+    url = 'mvn:com.facebook.fresco:animated-gif:aar:0.11.0',
+    sha1 = '5ec1cbdd5c4689c81009fae745c347982c8af71d',
+)
+
+android_prebuilt_aar(
+    name = 'fresco-animated-webp',
+    aar = ':fresco-animated-webp-binary-aar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'fresco-animated-webp-binary-aar',
+    url = 'mvn:com.facebook.fresco:animated-webp:aar:0.11.0',
+    sha1 = 'ce9955c2dd7c906448ec586bb5360fe796d93667',
+)
+
+android_prebuilt_aar(
+    name = 'fresco-webpsupport',
+    aar = ':fresco-webpsupport-binary-aar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'fresco-webpsupport-binary-aar',
+    url = 'mvn:com.facebook.fresco:webpsupport:aar:0.11.0',
+    sha1 = '2e1ea9a0c400f0cbe4aa1dd38d8a55dfbe51833d',
 )
