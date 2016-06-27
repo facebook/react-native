@@ -650,7 +650,7 @@ var Method = React.createClass({
           </span> || ''}
           {this.props.name}
           <span className="propType">
-            ({this.props.params
+            ({this.props.params && this.props.params.length && this.props.params
               .map((param) => {
                 var res = param.name;
                 res += param.optional ? '?' : '';

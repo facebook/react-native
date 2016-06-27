@@ -38,4 +38,3 @@ function retry3 {
     }
   done
 }
-

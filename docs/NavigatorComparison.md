@@ -1,49 +1,165 @@
 ---
 id: navigator-comparison
-title: Navigator Comparison
+title: Navigation
 layout: docs
 category: Guides
 permalink: docs/navigator-comparison.html
 next: performance
 ---
 
-The differences between [Navigator](docs/navigator.html)
-and [NavigatorIOS](docs/navigatorios.html) are a common
-source of confusion for newcomers.
+Mobile apps rarely consist of just one screen or scene. As soon as you add a second scene to your app, you will have to take into consideration how the user will navigate from one scene to the other.
 
-Both `Navigator` and `NavigatorIOS` are components that allow you to
-manage the navigation in your app between various "scenes" (another word
-for screens). They manage a route stack and allow you to pop, push, and
-replace states. In this way, [they are similar to the html5 history
-API](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Manipulating_the_browser_history).
-The primary distinction between the two is that `NavigatorIOS` leverages
-the iOS
-[UINavigationController](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UINavigationController_Class/)
-class, and `Navigator` re-implements that functionality entirely in
-JavaScript as a React component. A corollary of this is that `Navigator`
-will be compatible with Android and iOS, whereas `NavigatorIOS` will
-only work on the one platform. Below is an itemized list of differences
-between the two.
+Navigators in React Native allow you to push and pop scenes in a master/detail stack, or to pop up modal scenes. Navigators handle the transitions between scenes, and also maintain the navigational state of your application.
+
+If you are just getting started with React Native, you will probably want to start with the `Navigator` component.
 
 ## Navigator
 
-- Extensive API makes it completely customizable from JavaScript.
-- Under active development from the React Native team.
-- Written in JavaScript.
-- Works on iOS and Android.
-- Includes a simple navigation bar component similar to the default `NavigatorIOS` bar: `Navigator.NavigationBar`, and another with breadcrumbs called `Navigator.BreadcrumbNavigationBar`. See the UIExplorer demo to try them out and see how to use them.
-  - Currently animations are good and improving, but they are still less refined than Apple's, which you get from `NavigatorIOS`.
-- You can provide your own navigation bar by passing it through the `navigationBar` prop.
+`Navigator` is a cross-platform implementation of a navigation stack, so it works on both iOS and Android. It is easy to customize and includes simple navigation bars.
+
+```js
+<Navigator
+  initialRoute={{ title: 'My Initial Scene', index: 0}}
+  renderScene={(route, navigator) => {
+      // We'll get to this function soon.
+  }}
+/>
+```
+
+Something you will encounter a lot when dealing with navigation is the concept of routes. A route is an object that contains information about a scene. It is used to provide all the context the `renderScene` function needs to render a scene.
+
+The `push` and `pop` functions provided by Navigator can be used to push and pop routes into the navigation stack. A more complete example that demonstrates the pushing and popping of routes could therefore look something like this:
+
+```js
+class MyScene extends Component {
+  static propTypes = {
+    title: PropTypes.string.isRequired,
+    onForward: PropTypes.func.isRequired,
+    onBack: PropTypes.func.isRequired,
+  }
+  render() {
+    return (
+      <View>
+        <Text>Current Scene: { this.props.title }</Text>
+        <TouchableHighlight onPress={this.props.onForward}>
+          <Text>Tap me to load the next scene</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={this.props.onBack}>
+          <Text>Tap me to go back</Text>
+        </TouchableHighlight>
+      </View>
+    )
+  }
+}
+
+class SimpleNavigationApp extends Component {
+  render() {
+    return (
+      <Navigator
+        initialRoute={{ title: 'My Initial Scene', index: 0 }}
+        renderScene={(route, navigator) =>
+          <MyScene
+            title={route.title}
+            onForward={ () => {
+              const nextIndex = route.index + 1;
+              navigator.push({
+                title: 'Scene ' + nextIndex,
+                index: nextIndex,
+              });
+            }}
+            onBack={() => {
+              if (route.index > 0) {
+                navigator.pop();
+              }
+            }}
+          />
+        }
+      />
+    )
+  }
+}
+```
+
+In this example, the `MyScene` component is passed the title of the current route via the `title` prop. It displays two tappable components that call the `onForward` and `onBack` functions passed through its props, which in turn will call `navigator.push()` and `navigator.pop()` as needed.
+
+While this is a very basic example, it can easily be adapted to render an entirely different component based on the route that is passed to the `renderScene` function. Navigator will push new scenes from the right by default, and you can control this behavior by using the `configureScene` function. Check out the [Navigator API reference](docs/navigator.html) to learn more.
 
 ## NavigatorIOS
 
-- Small, limited API makes it much less customizable than `Navigator` in its current form.
-- Development belongs to open-source community - not used by the React Native team on their apps.
-  - A result of this is that there is currently a backlog of unresolved bugs, nobody who uses this has stepped up to take ownership for it yet.
-  - You may find an alternative in the community project [react-native-navigation](https://github.com/wix/react-native-navigation) which replaces `NavigatorIOS`.
-- Wraps UIKit, so it works exactly the same as it would on another native app. Lives in Objective-C and JavaScript.
-  - Consequently, you get the animations and behavior that Apple has developed.
-- iOS only.
-- Includes a navigation bar by default; this navigation bar is not a React Native view component and the style can only be slightly modified.
+If you are targeting iOS only, you may also want to consider using `NavigatorIOS`. It looks and feels just like `UINavigationController`, because it is actually built on top of it.
 
-For most non-trivial apps, you will want to use `Navigator` - it won't be long before you run into issues when trying to do anything complex with `NavigatorIOS`.
+```js
+<NavigatorIOS
+  initialRoute={{
+    component: MyScene,
+    title: 'My Initial Scene',
+    passProps: { myProp: 'foo' },
+  }}
+/>
+```
+
+Just like Navigator, it it uses routes to represent scenes, with some important differences. The actual component that will be rendered can be specified using the `component` key in the route, and any props that should be passed to this component can be specified in `passProps`. A navigator object is automatically passed as a prop to the component, allowing you to call `push` and `pop` as needed.
+
+Check out the [NavigatorIOS reference docs](docs/navigatorios.html) to learn more about this component.
+
+```js
+class MyScene extends Component {
+  static propTypes = {
+    title: PropTypes.string.isRequired,
+    navigator: PropTypes.object.isRequired,
+  }
+
+  constructor(props, context) {
+    super(props, context);
+    this._onForward = this._onForward.bind(this);
+    this._onBack = this._onBack.bind(this);
+  }
+
+  _onForward() {
+    this.props.navigator.push({
+      title: 'Scene ' + nextIndex,
+    });
+  }
+
+  _onBack() {
+    this.props.navigator.pop();
+  }
+
+  render() {
+    return (
+      <View>
+        <Text>Current Scene: { this.props.title }</Text>
+        <TouchableHighlight onPress={this._onForward}>
+          <Text>Tap me to load the next scene</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={this._onBack}>
+          <Text>Tap me to go back</Text>
+        </TouchableHighlight>
+      </View>
+    )
+  }
+}
+
+class NavigatorIOSApp extends Component {
+  render() {
+    return (
+      <NavigatorIOS
+        initialRoute={{
+          component: MyScene,
+          title: 'My Initial Scene',
+          index: 0
+        }}
+        renderScene={ (route, navigator) =>
+          <MyScene title={route.title} />
+        }
+      />
+    )
+  }
+}
+```
+
+> You may also want to check out [react-native-navigation](https://github.com/wix/react-native-navigation), a component that aims to provide native navigation on both iOS and Android.
+
+## Navigation (Experimental)
+
+If you are looking for a more powerful navigation API, check out [NavigationExperimental](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer/NavigationExperimental). It provides greater customization over your transitions, uses single-directional data flow using reducers to manipulate state at a top-level object, and offloads transition animations to the GPU.
