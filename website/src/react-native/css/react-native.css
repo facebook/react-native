@@ -1237,6 +1237,23 @@ div[data-twttr-id] iframe {
   margin-left: 20px;
 }
 
+.methodTitle {
+  font-weight: bold;
+  font-size: 24px;
+  color: #E9967A;
+}
+
+.compactProps .methodTitle {
+  font-size: 14px;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.compactProps .methodTitle div {
+  font-weight: normal;
+  margin-left: 20px;
+}
+
 .prop {
   padding: 5px 10px;
 }
@@ -1251,6 +1268,16 @@ div[data-twttr-id] iframe {
 }
 
 .compactProps .propType {
+  font-weight: normal;
+  font-size: 13px;
+}
+
+.methodType {
+  font-weight: normal;
+  font-size: 24px;
+}
+
+.compactProps .methodType {
   font-weight: normal;
   font-size: 13px;
 }
