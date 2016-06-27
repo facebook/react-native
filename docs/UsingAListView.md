@@ -1,19 +1,17 @@
 ---
-id: basics-component-listview
-title: ListView
+id: using-a-listview
+title: Using a ListView
 layout: docs
 category: The Basics
-permalink: docs/basics-component-listview.html
-next: basics-network
+permalink: docs/using-a-listview.html
+next: network
 ---
 
-On mobile devices, lists are a core element in many applications. The [`ListView`](/react-native/docs/listview.html#content) component is a special type of [`View`](/react-native/docs/basics-component-view.html) that displays a *vertically* scrolling list of changing, but similarly structured, data.
+The `ListView` component displays a vertically scrolling list of changing, but similarly structured, data.
 
-`ListView` works best for possibly lengthy datasources (e.g., from an endpoint or database), where the number of items may not be known a priori.
+`ListView` works well for long lists of data, where the number of items might change over time. Unlike the more generic [`ScrollView`](/react-native/docs/using-a-scrollview.html), the `ListView` only renders elements that are currently showing on the screen, not all the elements at once.
 
-> Unlike the more generic [`ScrollView`](/react-native/docs/basics-component-scrollview.html), the `ListView` only renders elements that are currently showing on the screen, not all the elements at once.
-
-The `ListView` component requires two properties, `dataSource` and `renderRow`. `dataSource` is the source of information for the list. `renderRow` takes one item from the source and returns a formatted component to render.
+The `ListView` component requires two props: `dataSource` and `renderRow`. `dataSource` is the source of information for the list. `renderRow` takes one item from the source and returns a formatted component to render.
 
 This example creates a simple `ListView` of hardcoded data. It first initializes the `dataSource` that will be used to populate the `ListView`. Each item in the `dataSource` is then rendered as a `Text` component. Finally it renders the `ListView` and all `Text` components.
 
@@ -49,3 +47,5 @@ class ListViewBasics extends Component {
 // App registration and rendering
 AppRegistry.registerComponent('AwesomeProject', () => ListViewBasics);
 ```
+
+One of the most common uses for a `ListView` is displaying data that you fetch from a server. To do that, you will need to [learn about networking in React Native](/react-native/docs/network.html).
