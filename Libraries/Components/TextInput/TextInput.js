@@ -311,6 +311,11 @@ const TextInput = React.createClass({
      */
     onChangeText: PropTypes.func,
     /**
+     * Callback this is called when the text input's content size changes.
+     * The new content size is passed as an argument to the callback.
+     */
+    onContentSizeChange: PropTypes.func,
+    /**
      * Callback that is called when text input ends.
      */
     onEndEditing: PropTypes.func,
@@ -566,6 +571,7 @@ const TextInput = React.createClass({
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
+          onContentSizeChange={this._onContentSizeChange}
           onSelectionChange={onSelectionChange}
           onTextInput={this._onTextInput}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
@@ -670,6 +676,12 @@ const TextInput = React.createClass({
   _onPress: function(event: Event) {
     if (this.props.editable || this.props.editable === undefined) {
       this.focus();
+    }
+  },
+
+  _onContentSizeChange(event: Event) {
+    if (this.props.onContentSizeChange) {
+      this.props.onContentSizeChange(event.nativeEvent.contentSize);
     }
   },
 
