@@ -75,6 +75,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final NativeModuleRegistry mJavaRegistry;
   private final NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private boolean mInitialized = false;
+  private volatile boolean mAcceptCalls = false;
 
   private boolean mJSBundleHasLoaded;
 
@@ -165,6 +166,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public void runJSBundle() {
+    // This should really be done when we post the task that runs the JS bundle
+    // (don't even need to wait for it to finish). Since that is currently done
+    // synchronously, marking it here is fine.
+    mAcceptCalls = true;
     Assertions.assertCondition(!mJSBundleHasLoaded, "JS bundle was already loaded!");
     mJSBundleHasLoaded = true;
     // incrementPendingJSCalls();
@@ -191,8 +196,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
       FLog.w(ReactConstants.TAG, "Calling JS function after bridge has been destroyed.");
       return;
     }
-    if (!mInitialized) {
-      throw new RuntimeException("Attempt to call JS function before instance initialization.");
+    if (!mAcceptCalls) {
+      throw new RuntimeException("Attempt to call JS function before JS bundle is loaded.");
     }
 
     callJSFunction(executorToken, module, method, arguments, tracingName);
@@ -253,6 +258,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
     Assertions.assertCondition(
         !mInitialized,
         "This catalyst instance has already been initialized");
+    // We assume that the instance manager blocks on running the JS bundle. If
+    // that changes, then we need to set mAcceptCalls just after posting the
+    // task that will run the js bundle.
+    Assertions.assertCondition(
+        mAcceptCalls,
+        "RunJSBundle hasn't completed.");
     mInitialized = true;
     mJavaRegistry.notifyCatalystInstanceInitialized();
   }

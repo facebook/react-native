@@ -18,6 +18,7 @@
 #import "RCTText.h"
 #import "RCTUtils.h"
 #import "RCTConvert.h"
+#import "RCTTextView.h"
 
 NSString *const RCTShadowViewAttributeName = @"RCTShadowViewAttributeName";
 NSString *const RCTIsHighlightedAttributeName = @"IsHighlightedAttributeName";
@@ -98,10 +99,24 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
   UIEdgeInsets padding = self.paddingAsInsets;
   CGFloat width = self.frame.size.width - (padding.left + padding.right);
 
+  NSNumber *parentTag = [[self reactSuperview] reactTag];
   NSTextStorage *textStorage = [self buildTextStorageForWidth:width widthMode:CSS_MEASURE_MODE_EXACTLY];
-  [applierBlocks addObject:^(NSDictionary<NSNumber *, RCTText *> *viewRegistry) {
-    RCTText *view = viewRegistry[self.reactTag];
+  [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    RCTText *view = (RCTText *)viewRegistry[self.reactTag];
     view.textStorage = textStorage;
+
+    /**
+     * NOTE: this logic is included to support rich text editing inside multiline
+     * `<TextInput>` controls. It is required in order to ensure that the
+     * textStorage (aka attributed string) is copied over from the RCTShadowText
+     * to the RCTText view in time to be used to update the editable text content.
+     * TODO: we should establish a delegate relationship betweeen RCTTextView
+     * and its contaned RCTText element when they get inserted and get rid of this
+     */
+    UIView *parentView = viewRegistry[parentTag];
+    if ([parentView respondsToSelector:@selector(performTextUpdate)]) {
+      [(RCTTextView *)parentView performTextUpdate];
+    }
   }];
 
   return parentProperties;
@@ -167,13 +182,13 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
 
   NSTextContainer *textContainer = [NSTextContainer new];
   textContainer.lineFragmentPadding = 0.0;
-  
+
   if (_numberOfLines > 0) {
     textContainer.lineBreakMode = _lineBreakMode;
   } else {
     textContainer.lineBreakMode = NSLineBreakByClipping;
   }
-  
+
   textContainer.maximumNumberOfLines = _numberOfLines;
   textContainer.size = (CGSize){widthMode == CSS_MEASURE_MODE_UNDEFINED ? CGFLOAT_MAX : width, CGFLOAT_MAX};
 

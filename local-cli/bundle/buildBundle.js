@@ -32,12 +32,16 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
       process.env.NODE_ENV = args.dev ? 'development' : 'production';
     }
 
+    const transformModulePath = args.transformer ?
+      path.resolve(args.transformer) :
+      config.getTransformModulePath();
+
     const options = {
       projectRoots: config.getProjectRoots(),
       assetRoots: config.getAssetRoots(),
       blacklistRE: config.getBlacklistRE(args.platform),
       getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-      transformModulePath: path.resolve(args.transformer),
+      transformModulePath: transformModulePath,
       extraNodeModules: config.extraNodeModules,
       nonPersistent: true,
       resetCache: args['reset-cache'],

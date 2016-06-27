@@ -33,7 +33,7 @@ type Props = {
   navigationState: NavigationState,
   onTransitionEnd: () => void,
   onTransitionStart: () => void,
-  render: (props: NavigationTransitionProps) => any,
+  render: (a: NavigationTransitionProps, b: ?NavigationTransitionProps) => any,
   style: any,
 };
 
@@ -51,14 +51,11 @@ const DefaultTransitionSpec = {
   easing: Easing.inOut(Easing.ease),
 };
 
-function isSceneNotStale(scene: NavigationScene): boolean {
-  return !scene.isStale;
-}
-
 class NavigationTransitioner extends React.Component<any, Props, State> {
-
   _onLayout: (event: any) => void;
   _onTransitionEnd: () => void;
+  _prevTransitionProps: ?NavigationTransitionProps;
+  _transitionProps: NavigationTransitionProps;
 
   props: Props;
   state: State;
@@ -90,6 +87,9 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
       progress: new Animated.Value(1),
       scenes: NavigationScenesReducer([], this.props.navigationState),
     };
+
+    this._prevTransitionProps = null;
+    this._transitionProps = buildTransitionProps(props, this.state);
   }
 
   componentWillMount(): void {
@@ -108,15 +108,21 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
       return;
     }
 
+    const nextState = {
+      ...this.state,
+      scenes: nextScenes,
+    };
+
+    this._prevTransitionProps = this._transitionProps;
+    this._transitionProps = buildTransitionProps(nextProps, nextState);
+
     const {
       position,
       progress,
-    } = this.state;
+    } = nextState;
 
     // update scenes.
-    this.setState({
-      scenes: nextScenes,
-    });
+    this.setState(nextState);
 
     // get the transition spec.
     const transitionUserSpec = nextProps.configureTransition ?
@@ -153,7 +159,10 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
     }
 
     // play the transition.
-    nextProps.onTransitionStart && nextProps.onTransitionStart();
+    nextProps.onTransitionStart && nextProps.onTransitionStart(
+      this._transitionProps,
+      this._prevTransitionProps,
+    );
     Animated.parallel(animations).start(this._onTransitionEnd);
   }
 
@@ -162,7 +171,7 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
       <View
         onLayout={this._onLayout}
         style={[styles.main, this.props.style]}>
-        {this.props.render(this._buildTransitionProps())}
+        {this.props.render(this._transitionProps, this._prevTransitionProps)}
       </View>
     );
   }
@@ -180,37 +189,65 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
     layout.height.setValue(height);
     layout.width.setValue(width);
 
-    this.setState({ layout });
+    const nextState = {
+      ...this.state,
+      layout,
+    };
+
+    this._transitionProps = buildTransitionProps(this.props, nextState);
+    this.setState(nextState);
   }
 
   _onTransitionEnd(): void {
-    const scenes = this.state.scenes.filter(isSceneNotStale);
-    if (scenes.length !== this.state.scenes.length) {
-      this.setState({ scenes });
-    }
-    this.props.onTransitionEnd && this.props.onTransitionEnd();
-  }
+    const prevTransitionProps = this._prevTransitionProps;
+    this._prevTransitionProps = null;
 
-  _buildTransitionProps(): NavigationTransitionProps {
-    const {
-      navigationState,
-    } = this.props;
-
-    const {
-      layout,
-      position,
-      progress,
-      scenes,
-    } = this.state;
-
-    return {
-      layout,
-      navigationState,
-      position,
-      progress,
-      scenes,
+    const nextState = {
+      ...this.state,
+      scenes: this.state.scenes.filter(isSceneNotStale),
     };
+
+    this._transitionProps = buildTransitionProps(this.props, nextState);
+    this.setState(nextState);
+
+    this.props.onTransitionEnd && this.props.onTransitionEnd(
+      this._transitionProps,
+      prevTransitionProps,
+    );
   }
+}
+
+function buildTransitionProps(
+  props: Props,
+  state: State,
+): NavigationTransitionProps {
+  const {
+    navigationState,
+  } = props;
+
+  const {
+    layout,
+    position,
+    progress,
+    scenes,
+  } = state;
+
+  return {
+    layout,
+    navigationState,
+    position,
+    progress,
+    scenes,
+    scene: scenes.find(isSceneActive),
+  };
+}
+
+function isSceneNotStale(scene: NavigationScene): boolean {
+  return !scene.isStale;
+}
+
+function isSceneActive(scene: NavigationScene): boolean {
+  return scene.isActive;
 }
 
 const styles = StyleSheet.create({

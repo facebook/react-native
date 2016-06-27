@@ -49,7 +49,7 @@ type Config = {
 };
 
 class MessageQueue {
-  constructor(configProvider: () => Config) {
+  constructor(configProvider: () => Config, serializeNativeParams: boolean) {
     this._callableModules = {};
     this._queue = [[], [], [], 0];
     this._callbacks = [];
@@ -57,6 +57,7 @@ class MessageQueue {
     this._callID = 0;
     this._lastFlush = 0;
     this._eventLoopStartTime = new Date().getTime();
+    this._serializeNativeParams = serializeNativeParams;
 
     if (__DEV__) {
       this._debugInfo = {};
@@ -150,14 +151,17 @@ class MessageQueue {
       onSucc && params.push(this._callbackID);
       this._callbacks[this._callbackID++] = onSucc;
     }
+    var preparedParams = this._serializeNativeParams ? JSON.stringify(params) : params;
 
-    global.nativeTraceBeginAsyncFlow &&
-      global.nativeTraceBeginAsyncFlow(TRACE_TAG_REACT_APPS, 'native', this._callID);
+    if (__DEV__) {
+      global.nativeTraceBeginAsyncFlow &&
+        global.nativeTraceBeginAsyncFlow(TRACE_TAG_REACT_APPS, 'native', this._callID);
+    }
     this._callID++;
 
     this._queue[MODULE_IDS].push(module);
     this._queue[METHOD_IDS].push(method);
-    this._queue[PARAMS].push(params);
+    this._queue[PARAMS].push(preparedParams);
 
     const now = new Date().getTime();
     if (global.nativeFlushQueueImmediate &&
@@ -200,7 +204,7 @@ class MessageQueue {
       const module = debug && this._remoteModuleTable[debug[0]];
       const method = debug && this._remoteMethodTable[debug[0]][debug[1]];
       if (!callback) {
-        const errorMessage = `Callback with id ${cbID}: ${module}.${method}() not found`;
+        let errorMessage = `Callback with id ${cbID}: ${module}.${method}() not found`;
         if (method) {
           errorMessage = `The callback ${method}() exists in module ${module}, `
           + `but only one callback may be registered to a function in a native module.`;

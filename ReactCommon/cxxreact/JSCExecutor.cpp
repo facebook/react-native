@@ -119,12 +119,17 @@ JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
   }
 
   folly::dynamic config =
-    folly::dynamic::object("remoteModuleConfig", std::move(nativeModuleConfig));
+    folly::dynamic::object
+      ("remoteModuleConfig", std::move(nativeModuleConfig));
+
 
   SystraceSection t("setGlobalVariable");
   setGlobalVariable(
     "__fbBatchedBridgeConfig",
     folly::make_unique<JSBigStdString>(detail::toStdString(folly::toJson(config))));
+  setGlobalVariable(
+    "__fbBatchedBridgeSerializeNativeParams",
+    folly::make_unique<JSBigStdString>(""));
 }
 
 JSCExecutor::JSCExecutor(

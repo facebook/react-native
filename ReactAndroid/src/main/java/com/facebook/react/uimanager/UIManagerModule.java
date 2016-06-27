@@ -473,4 +473,24 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public void sendAccessibilityEvent(int tag, int eventType) {
     mUIImplementation.sendAccessibilityEvent(tag, eventType);
   }
+
+  /**
+   * Schedule a block to be executed on the UI thread. Useful if you need to execute
+   * view logic after all currently queued view updates have completed.
+   *
+   * @param block that contains UI logic you want to execute.
+   *
+   * Usage Example:
+
+   UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+   uiManager.addUIBlock(new UIBlock() {
+     public void execute (NativeViewHierarchyManager nvhm) {
+       View view = nvhm.resolveView(tag);
+       // ...execute your code on View (e.g. snapshot the view)
+     }
+   });
+     */
+  public void addUIBlock (UIBlock block) {
+    mUIImplementation.addUIBlock(block);
+  }
 }

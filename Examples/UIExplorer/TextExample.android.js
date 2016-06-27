@@ -378,6 +378,11 @@ var TextExample = React.createClass({
             No maximum lines specified no matter now much I write here. If I keep writing it{"'"}ll just keep going and going
           </Text>
         </UIExplorerBlock>
+        <UIExplorerBlock title="selectable attribute">
+          <Text selectable={true}>
+            This text is selectable if you click-and-hold, and will offer the native Android selection menus.
+          </Text>
+        </UIExplorerBlock>
         <UIExplorerBlock title="Inline images">
           <Text>
             This text contains an inline image <Image source={require('./flux.png')}/>. Neat, huh?
