@@ -40,6 +40,7 @@ export type NavigationLayout = {
 
 export type NavigationScene = {
   index: number,
+  isActive: boolean,
   isStale: boolean,
   key: string,
   route: NavigationRoute,
