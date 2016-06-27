@@ -62,7 +62,7 @@ import com.facebook.react.views.image.ReactImageView;
 
   @Override
   public boolean hasImageRequest() {
-    return mRequestHelper != null;
+    return mSources != null && !mSources.isEmpty();
   }
 
   @Override
