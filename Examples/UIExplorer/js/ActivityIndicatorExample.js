@@ -28,15 +28,15 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 /**
  * Optional Flowtype state and timer types definition
  */
-type StateT = { animating: boolean; };
-type TimerT = number;
+type State = { animating: boolean; };
+type Timer = number;
 
 class ToggleAnimatingActivityIndicator extends Component {
   /**
    * Optional Flowtype state and timer types
    */
-  state: StateT;
-  _timer: TimerT;
+  state: State;
+  _timer: Timer;
 
   constructor(props) {
     super(props);
