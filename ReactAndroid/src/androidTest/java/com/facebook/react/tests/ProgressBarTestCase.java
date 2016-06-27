@@ -30,7 +30,6 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
 import com.facebook.react.views.view.ReactViewManager;
-import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactIntegrationTestCase;
 import com.facebook.react.testing.ReactTestHelper;
 
@@ -84,7 +83,6 @@ public class ProgressBarTestCase extends ReactIntegrationTestCase {
     mInstance = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(mUIManager)
         .addNativeModule(new AndroidInfoModule())
-        .addNativeModule(new FakeWebSocketModule())
         .addJSModule(ProgressBarTestModule.class)
         .build();
 

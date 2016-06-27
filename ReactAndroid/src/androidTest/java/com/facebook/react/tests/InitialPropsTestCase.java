@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactInstanceSpecForTest;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
@@ -71,7 +70,6 @@ public class InitialPropsTestCase extends
           @Override
           public void run() {
             ReactInstanceSpecForTest catalystInstanceSpec = new ReactInstanceSpecForTest();
-            catalystInstanceSpec.addNativeModule(new FakeWebSocketModule());
             catalystInstanceSpec.addNativeModule(mRecordingModule);
             Bundle props = new Bundle();
             props.putString("key1", "string");
