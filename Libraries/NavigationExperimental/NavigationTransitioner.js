@@ -19,8 +19,6 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
-const invariant = require('fbjs/lib/invariant');
-
 import type {
   NavigationAnimatedValue,
   NavigationLayout,
@@ -52,10 +50,6 @@ const DefaultTransitionSpec = {
   duration: 250,
   easing: Easing.inOut(Easing.ease),
 };
-
-function isSceneNotStale(scene: NavigationScene): boolean {
-  return !scene.isStale;
-}
 
 class NavigationTransitioner extends React.Component<any, Props, State> {
   _onLayout: (event: any) => void;
@@ -244,21 +238,16 @@ function buildTransitionProps(
     position,
     progress,
     scenes,
-    scene: findActiveScene(scenes, navigationState.index),
+    scene: scenes.find(isSceneActive),
   };
 }
 
-function findActiveScene(
-  scenes: Array<NavigationScene>,
-  index: number,
-): NavigationScene {
-  for (let ii = 0, jj = scenes.length; ii < jj; ii++) {
-    const scene = scenes[ii];
-    if (!scene.isStale && scene.index === index) {
-      return scene;
-    }
-  }
-  invariant(false, 'scenes must have an active scene');
+function isSceneNotStale(scene: NavigationScene): boolean {
+  return !scene.isStale;
+}
+
+function isSceneActive(scene: NavigationScene): boolean {
+  return scene.isActive;
 }
 
 const styles = StyleSheet.create({
