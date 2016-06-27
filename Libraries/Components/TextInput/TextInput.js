@@ -311,7 +311,7 @@ const TextInput = React.createClass({
      */
     onChangeText: PropTypes.func,
     /**
-     * Callback this is called when the text input's content size changes.
+     * Callback that is called when the text input's content size changes.
      * The new content size is passed as an argument to the callback.
      */
     onContentSizeChange: PropTypes.func,
