@@ -162,6 +162,14 @@ public class ReactContext extends ContextWrapper {
     }
   }
 
+  public void onNewIntent(@Nullable Activity activity, Intent intent) {
+    UiThreadUtil.assertOnUiThread();
+    mCurrentActivity = new WeakReference(activity);
+    for (ActivityEventListener listener : mActivityEventListeners) {
+      listener.onNewIntent(intent);
+    }
+  }
+
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onPause}
    */
