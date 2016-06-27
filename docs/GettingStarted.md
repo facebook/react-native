@@ -4,9 +4,17 @@ title: Getting Started
 layout: docs
 category: The Basics
 permalink: docs/getting-started.html
-next: basics-components
+next: tutorial
 ---
 
+Welcome to React Native! This page will help you install React Native on
+your system, so that you can build apps with it right away. If you already
+have React Native installed, you can skip ahead to the
+[Tutorial](/react-native/docs/tutorial.html).
+
+The instructions are a bit different depending on your development operating system, and whether you want to start developing for iOS or Android. If you
+want to develop for both iOS and Android, that's fine - you just have to pick
+one to start with, since the setup is a bit different.
 
 <div class="toggler">
 <style>
@@ -35,7 +43,7 @@ block { display: none; }
 .display-platform-android.display-os-windows .android.windows {
   display: block;
 }</style>
-<span>Target:</span>
+<span>Mobile OS:</span>
 <a href="javascript:void(0);" class="button-ios" onclick="display('platform', 'ios')">iOS</a>
 <a href="javascript:void(0);" class="button-android" onclick="display('platform', 'android')">Android</a>
 <span>Development OS:</span>
@@ -58,13 +66,13 @@ block { display: none; }
 
 <block class="mac ios" />
 
-## Dependencies
+## Dependencies for Mac + iOS
 
 You will need Xcode, node.js, the React Native command line tools, and Watchman.
 
 <block class="mac android" />
 
-## Dependencies
+## Dependencies for Mac + Android
 
 You will need Android Studio, node.js, the React Native command line tools, and Watchman.
 
@@ -98,9 +106,15 @@ If you plan to make changes in Java code, we recommend [Gradle Daemon](https://d
 
 <!-- ######### LINUX and WINDOWS for ANDROID ##################### -->
 
-<block class="linux windows android" />
+<block class="linux android" />
 
-## Dependencies
+## Dependencies for Linux + Android
+
+<block class="windows android" />
+
+## Dependencies for Windows + Android
+
+<block class="linux windows android" />
 
 You will need node.js, the React Native command line tools, Watchman, and Android Studio.
 
@@ -228,11 +242,14 @@ Congratulations! You've successfully run and modified a React Native app.
 
 <block class="mac windows linux ios android" />
 
-## Special Cases
+## Now What?
 
-- This page explains how to create a new React Native app. If you are adding React Native components to an existing application, check out the [Integration guide](docs/integration-with-existing-apps.html).
+- If you want to add this new React Native code to an existing application, check out the [Integration guide](docs/integration-with-existing-apps.html).
 
-- If you run into any issues getting started, see the [Troubleshooting](docs/troubleshooting.html#content) page.
+- If you can't get this to work, see the [Troubleshooting](docs/troubleshooting.html#content) page.
+
+- If you're curious to learn more about React Native, continue on
+to the [Tutorial](docs/tutorial.html).
 
 <script>
 // Convert <div>...<span><block /></span>...</div>

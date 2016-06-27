@@ -524,7 +524,7 @@ RCT_DIMENSION_PROPERTY(Height, height, HEIGHT, dimensions)
 RCT_DIMENSION_PROPERTY(MinWidth, minWidth, WIDTH, minDimensions)
 RCT_DIMENSION_PROPERTY(MaxWidth, maxWidth, WIDTH, maxDimensions)
 RCT_DIMENSION_PROPERTY(MinHeight, minHeight, HEIGHT, minDimensions)
-RCT_DIMENSION_PROPERTY(maxHeight, maxHeight, HEIGHT, maxDimensions)
+RCT_DIMENSION_PROPERTY(MaxHeight, maxHeight, HEIGHT, maxDimensions)
 
 // Position
 
