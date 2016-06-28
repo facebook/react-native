@@ -245,7 +245,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   @ReactProp(name = "onContentSizeChange", defaultBoolean = false)
-  public void setOnChangecontentSize(final ReactEditText view, boolean onContentSizeChange) {
+  public void setOnContentSizeChange(final ReactEditText view, boolean onContentSizeChange) {
     if (onContentSizeChange) {
       view.setContentSizeWatcher(new ReactContentSizeWatcher(view));
     } else {

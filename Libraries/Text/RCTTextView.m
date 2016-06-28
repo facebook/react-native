@@ -648,10 +648,10 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
 {
   [super layoutSubviews];
 
-  // Start sending content size updates only after the view has been layed out
-  // otherwise we send multiple events with bad dimentions on initial render.
+  // Start sending content size updates only after the view has been laid out
+  // otherwise we send multiple events with bad dimensions on initial render.
   _sendContentSizeUpdates = YES;
-  
+
   [self updateFrames];
 }
 
