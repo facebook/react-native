@@ -75,7 +75,7 @@ const SwipeableListView = React.createClass({
      */
     dataSource: PropTypes.instanceOf(SwipeableListViewDataSource).isRequired,
     // Maximum distance to open to after a swipe
-    maxSwipeDistance: PropTypes.number,
+    maxSwipeDistance: PropTypes.number.isRequired,
     // Callback method to render the swipeable view
     renderRow: PropTypes.func.isRequired,
     // Callback method to render the view that will be unveiled on swipe
