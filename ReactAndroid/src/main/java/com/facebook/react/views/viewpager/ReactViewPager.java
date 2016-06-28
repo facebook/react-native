@@ -145,14 +145,14 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
       if (!mScrollEnabled) {
           return false;
       }
-      try{
+      try {
           if (super.onInterceptTouchEvent(ev)) {
               NativeGestureUtil.notifyNativeGestureStarted(this, ev);
               return true;
           }
           return false;
       }
-      catch(Exception e){
+      catch (Exception e) {
           return false;
       }
   }
