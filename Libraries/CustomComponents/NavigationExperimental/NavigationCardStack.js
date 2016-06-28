@@ -64,6 +64,7 @@ type Props = {
   onNavigateBack?: Function,
   renderOverlay: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
+  cardStyle?: any,
   style: any,
 };
 
