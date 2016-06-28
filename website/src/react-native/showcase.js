@@ -114,6 +114,13 @@ var featured = [
     infoTitle: 'Refinery29 debuts its first app',
   },
   {
+    name: 'Zribbble',
+    icon: 'http://zribbble.com/images/appstore-logo.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/zribbble/id1124550060?ls=1&mt=8',
+    infoLink: 'http://zribbble.com',
+    infoTitle: 'Zribbble - Dribbble client for iOS',
+  },
+  {
     name: 'Bitt Wallet',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/5b/00/34/5b003497-cc85-a0d0-0d3e-4fb3bc6f95cd/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/us/app/bitt-wallet/id1081954916?mt=8',
