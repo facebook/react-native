@@ -361,7 +361,7 @@ const TextInput = React.createClass({
      * - `focus()`
      * - `update()`
      *
-     * > You can refernce `DocumentSelectionState` in
+     * > You can reference `DocumentSelectionState` in
      * > [`vendor/document/selection/DocumentSelectionState.js`](https://github.com/facebook/react-native/blob/master/Libraries/vendor/document/selection/DocumentSelectionState.js)
      *
      * @platform ios
@@ -407,7 +407,7 @@ const TextInput = React.createClass({
      * The default value is true for single-line fields and false for
      * multiline fields. Note that for multiline fields, setting `blurOnSubmit`
      * to `true` means that pressing return will blur the field and trigger the
-     * `onSubmitEditin`g event instead of inserting a newline into the field.
+     * `onSubmitEditing` event instead of inserting a newline into the field.
      */
     blurOnSubmit: PropTypes.bool,
     /**
