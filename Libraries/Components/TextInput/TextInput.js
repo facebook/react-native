@@ -419,6 +419,18 @@ const TextInput = React.createClass({
      * @platform android
      */
     underlineColorAndroid: ColorPropType,
+
+    /**
+     * If defined, the provided image resource will be rendered on the left.
+     * @platform android
+     */
+    inlineImageLeft: PropTypes.string,
+
+    /**
+     * Padding between the inline image, if any, and the text input itself.
+     * @platform android
+     */
+    inlineImagePadding: PropTypes.number,
   },
 
   /**
@@ -638,6 +650,8 @@ const TextInput = React.createClass({
         selectionColor={this.props.selectionColor}
         text={this._getText()}
         underlineColorAndroid={this.props.underlineColorAndroid}
+        inlineImageLeft={this.props.inlineImageLeft}
+        inlineImagePadding={this.props.inlineImagePadding}
         children={children}
         editable={this.props.editable}
         selectTextOnFocus={this.props.selectTextOnFocus}

@@ -412,19 +412,19 @@ exports.examples = [
     render: function() {
       return (
         <View>
-          <TextInput 
+          <TextInput
             style={[styles.singleLine, {fontFamily: 'sans-serif'}]}
             placeholder="Custom fonts like Sans-Serif are supported"
           />
-          <TextInput 
+          <TextInput
             style={[styles.singleLine, {fontFamily: 'sans-serif', fontWeight: 'bold'}]}
             placeholder="Sans-Serif bold"
           />
-          <TextInput 
+          <TextInput
             style={[styles.singleLine, {fontFamily: 'sans-serif', fontStyle: 'italic'}]}
             placeholder="Sans-Serif italic"
           />
-          <TextInput 
+          <TextInput
             style={[styles.singleLine, {fontFamily: 'serif'}]}
             placeholder="Serif"
           />
@@ -568,6 +568,30 @@ exports.examples = [
         );
       });
       return <View>{examples}{types}</View>;
+    }
+  },
+  {
+    title: 'Inline Images',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            inlineImageLeft="ic_menu_black_24dp"
+            placeholder="This has drawableLeft set"
+            style={styles.singleLine}
+          />
+          <TextInput
+            inlineImageLeft="ic_menu_black_24dp"
+            inlineImagePadding={30}
+            placeholder="This has drawableLeft and drawablePadding set"
+            style={styles.singleLine}
+          />
+          <TextInput
+            placeholder="This does not have drawable props set"
+            style={styles.singleLine}
+          />
+        </View>
+      );
     }
   },
 ];
