@@ -43,6 +43,7 @@ import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.TextInlineImageSpan;
@@ -321,6 +322,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid textAlignVertical: " + textAlignVertical);
     }
+  }
+
+  @ReactProp(name = "inlineImageLeft")
+  public void setInlineImageLeft(ReactEditText view, @Nullable String resource) {
+    int id = ResourceDrawableIdHelper.getInstance().getResourceDrawableId(view.getContext(), resource);
+    view.setCompoundDrawablesWithIntrinsicBounds(id, 0, 0, 0);
+  }
+
+  @ReactProp(name = "inlineImagePadding")
+  public void setInlineImagePadding(ReactEditText view, int padding) {
+    view.setCompoundDrawablePadding(padding);
   }
 
   @ReactProp(name = "editable", defaultBoolean = true)
