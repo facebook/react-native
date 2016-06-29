@@ -1,9 +1,9 @@
 ---
-id: navigator-comparison
+id: navigation
 title: Navigation
 layout: docs
 category: Guides
-permalink: docs/navigator-comparison.html
+permalink: docs/navigation.html
 next: performance
 ---
 
@@ -13,85 +13,11 @@ You can use navigators to transition between multiple scenes. These transitions 
 
 ## Navigator
 
-React Native has several built-in navigation components, but for your first app you will probably want to use `Navigator`. It provides a JavaScript implementation of a navigation stack, so it works on both iOS and Android and is easy to customize.
+React Native has several built-in navigation components, but for your first app you will probably want to use `Navigator`. It provides a JavaScript implementation of a navigation stack, so it works on both iOS and Android and is easy to customize. The `Navigator` component was introduced earlier in [navigators](docs/navigators.html).
 
 ![](img/NavigationStack-Navigator.gif)
 
-Something you will encounter a lot when dealing with navigation is the concept of routes. A route is an object that contains information about a scene. It is used to provide all the context that the navigator's `renderScene` function needs to render a scene. A basic `Navigator` implementation may look like this:
-
-```js
-<Navigator
-  initialRoute={{ title: 'My Initial Scene', index: 0 }}
-  renderScene={(route, navigator) => {
-    <MyScene title={route.title} />
-  }}
-/>
-```
-
-The above example will display a single scene, but in order to push a new scene onto screen you will need to learn about `push` and `pop`. These two methods are provided by the `navigator` object that is passed to your `renderScene` function. They can be used, as you may have realized, to push and pop routes into your navigation stack.
-
-A more complete example that demonstrates the pushing and popping of routes could therefore look something like this:
-
-```js
-import React, { Component, PropTypes } from 'react';
-import { Navigator, Text, TouchableHighlight, View } from 'react-native';
-
-export default class SimpleNavigationApp extends Component {
-  render() {
-    return (
-      <Navigator
-        initialRoute={{ title: 'My Initial Scene', index: 0 }}
-        renderScene={(route, navigator) =>
-          <MyScene
-            title={route.title}
-
-            // Function to call when a new scene should be displayed           
-            onForward={ () => {    
-              const nextIndex = route.index + 1;
-              navigator.push({
-                title: 'Scene ' + nextIndex,
-                index: nextIndex,
-              });
-            }}
-
-            // Function to call to go back to the previous scene
-            onBack={() => {
-              if (route.index > 0) {
-                navigator.pop();
-              }
-            }}
-          />
-        }
-      />
-    )
-  }
-}
-
-class MyScene extends Component {
-  static propTypes = {
-    title: PropTypes.string.isRequired,
-    onForward: PropTypes.func.isRequired,
-    onBack: PropTypes.func.isRequired,
-  }
-  render() {
-    return (
-      <View>
-        <Text>Current Scene: { this.props.title }</Text>
-        <TouchableHighlight onPress={this.props.onForward}>
-          <Text>Tap me to load the next scene</Text>
-        </TouchableHighlight>
-        <TouchableHighlight onPress={this.props.onBack}>
-          <Text>Tap me to go back</Text>
-        </TouchableHighlight>
-      </View>
-    )
-  }
-}
-```
-
-In this example, the `MyScene` component is passed the title of the current route via the `title` prop. It displays two tappable components that call the `onForward` and `onBack` functions passed through its props, which in turn will call `navigator.push()` and `navigator.pop()` as needed.
-
-While this is a very basic example, it can easily be adapted to render an entirely different component based on the route that is passed to the `renderScene` function. Navigator will push new scenes from the right by default, and you can control this behavior by using the `configureScene` function. You can also configure a navigation bar through the `navigationBar` prop.
+** talk about navigation bars, and iOS vs Android
 
 Check out the [Navigator API reference](docs/navigator.html) for more code samples.
 
