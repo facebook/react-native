@@ -276,6 +276,13 @@ var featured = [
     infoLink: 'http://www.nydailynews.com/life-style/wego-concerts-app-links-music-fans-article-1.2066776',
     infoTitle: 'Wego Concerts: Like the love child of Tinder and StubHub',
   },
+  {
+    name: 'Zribbble',
+    icon: 'http://zribbble.com/images/appstore-logo.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/zribbble/id1124550060?ls=1&mt=8',
+    infoLink: 'http://zribbble.com',
+    infoTitle: 'Zribbble - Dribbble client for iOS',
+  }
 ];
 
 featured.sort(function(a, b) {
