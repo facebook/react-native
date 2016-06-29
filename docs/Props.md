@@ -22,7 +22,7 @@ class Bananas extends Component {
       uri: 'https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg'
     };
     return (
-      <Image source={pic} />
+      <Image source={pic} style={{width: 193, height: 110}}/>
     );
   }
 }
