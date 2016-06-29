@@ -94,6 +94,8 @@ export type NavigationTransitionSpec = {
   duration?: number,
   // An easing function from `Easing`.
   easing?: () => any,
+  // An animation function from `Animated` e.g. Animated.timing
+  timing?: NavigationTransitionTiming,
 };
 
 // Functions.
@@ -112,4 +114,12 @@ export type NavigationStyleInterpolator = (
   props: NavigationSceneRendererProps,
 ) => Object;
 
-export type NavigationTransitionConfigurator = () => NavigationTransitionSpec;
+export type NavigationTransitionConfigurator = (
+  transitionProps: NavigationTransitionProps,
+  prevTransitionProps: ?NavigationTransitionProps,
+) => NavigationTransitionSpec;
+
+export type NavigationTransitionTiming = (
+  value: NavigationAnimatedValue,
+  config: Object,
+) => Object;
