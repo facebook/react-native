@@ -134,6 +134,8 @@ const WarningInspector = ({
   const View = require('View');
 
   const countSentence =
+    /* $FlowFixMe(>=0.26.0) - count can be undefined! Look at WarningInspector
+     * usage! */
     'Warning encountered ' + count + ' time' + (count - 1 ? 's' : '') + '.';
 
   return (
@@ -177,7 +179,7 @@ const WarningInspector = ({
 class YellowBox extends React.Component {
   state: {
     inspecting: ?string;
-    warningMap: Map;
+    warningMap: Map<any, any>;
   };
   _listener: ?EmitterSubscription;
   dismissWarning: (warning: ?string) => void;

@@ -35,21 +35,14 @@ Bridge::~Bridge() {
 }
 
 void Bridge::loadApplicationScript(const std::string& script, const std::string& sourceURL) {
-  runOnExecutorQueue(*m_mainExecutorToken, [=] (JSExecutor* executor) {
-    executor->loadApplicationScript(script, sourceURL);
-  });
+  m_mainExecutor->loadApplicationScript(script, sourceURL);
 }
 
 void Bridge::loadApplicationUnbundle(
     std::unique_ptr<JSModulesUnbundle> unbundle,
     const std::string& startupCode,
     const std::string& sourceURL) {
-  runOnExecutorQueue(
-      *m_mainExecutorToken,
-      [holder=std::make_shared<std::unique_ptr<JSModulesUnbundle>>(std::move(unbundle)), startupCode, sourceURL]
-        (JSExecutor* executor) mutable {
-    executor->loadApplicationUnbundle(std::move(*holder), startupCode, sourceURL);
-  });
+  m_mainExecutor->loadApplicationUnbundle(std::move(unbundle), startupCode, sourceURL);
 }
 
 void Bridge::callFunction(
@@ -131,6 +124,12 @@ void Bridge::startProfiler(const std::string& title) {
 void Bridge::stopProfiler(const std::string& title, const std::string& filename) {
   runOnExecutorQueue(*m_mainExecutorToken, [=] (JSExecutor* executor) {
     executor->stopProfiler(title, filename);
+  });
+}
+
+void Bridge::handleMemoryPressureUiHidden() {
+  runOnExecutorQueue(*m_mainExecutorToken, [=] (JSExecutor* executor) {
+    executor->handleMemoryPressureUiHidden();
   });
 }
 

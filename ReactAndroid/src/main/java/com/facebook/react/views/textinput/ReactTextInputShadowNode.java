@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import android.text.Spannable;
 import android.util.TypedValue;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
@@ -75,7 +76,6 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     // measure() should never be called before setThemedContext()
     EditText editText = Assertions.assertNotNull(mEditText);
 
-    measureOutput.width = widthMode == CSSMeasureMode.UNDEFINED ? CSSConstants.UNDEFINED : width;
     editText.setTextSize(
         TypedValue.COMPLEX_UNIT_PX,
         mFontSize == UNSET ?
@@ -91,8 +91,19 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
       editText.setLines(mNumberOfLines);
     }
 
-    editText.measure(0 /* unspecified */, 0 /* unspecified */);
+    editText.measure(getMeasureSpec(width, widthMode), getMeasureSpec(height, heightMode));
+    measureOutput.width = editText.getMeasuredWidth();
     measureOutput.height = editText.getMeasuredHeight();
+  }
+
+  private int getMeasureSpec(float size, CSSMeasureMode mode) {
+    if (mode == CSSMeasureMode.EXACTLY) {
+      return MeasureSpec.makeMeasureSpec((int) size, MeasureSpec.EXACTLY);
+    } else if (mode == CSSMeasureMode.AT_MOST) {
+      return MeasureSpec.makeMeasureSpec((int) size, MeasureSpec.AT_MOST);
+    } else {
+      return MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+    }
   }
 
   @Override

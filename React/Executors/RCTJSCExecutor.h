@@ -26,16 +26,30 @@ RCT_EXTERN NSString *const RCTJSCThreadName;
 RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
 
 /**
+ * Uses a JavaScriptCore context as the execution engine.
+ */
+@interface RCTJSCExecutor : NSObject <RCTJavaScriptExecutor>
+
+/**
+ * Sets a type of JSC library (system or custom) that's used
+ * to initialize RCTJSCWrapper.
+ * @default is NO.
+ */
++ (void)setUseCustomJSCLibrary:(BOOL)useCustomLibrary;
+
+/**
+ * Gets a type of JSC library (system or custom) that's used
+ * to initialize RCTJSCWrapper.
+ * @default is NO.
+ */
++ (BOOL)useCustomJSCLibrary;
+
+/**
  * Create a NSError from a JSError object.
  *
  * If available, the error's userInfo property will contain the JS stacktrace under
  * the RCTJSStackTraceKey key.
  */
-RCT_EXTERN NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError);
-
-/**
- * Uses a JavaScriptCore context as the execution engine.
- */
-@interface RCTJSCExecutor : NSObject <RCTJavaScriptExecutor>
+- (NSError *)convertJSErrorToNSError:(JSValueRef)jsError context:(JSContextRef)context;
 
 @end

@@ -41,6 +41,8 @@
 //
 #pragma once
 
+#include <fb/visibility.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -48,35 +50,36 @@ extern "C" {
 #ifdef ANDROID
 #include <android/log.h>
 #else
-    // These declarations are needed for our internal use even on non-Android builds.
-    // (they are borrowed from <android/log.h>)
+// These declarations are needed for our internal use even on non-Android
+// builds.
+// (they are borrowed from <android/log.h>)
 
-    /*
-     * Android log priority values, in ascending priority order.
-     */
-    typedef enum android_LogPriority {
-        ANDROID_LOG_UNKNOWN = 0,
-        ANDROID_LOG_DEFAULT,    /* only for SetMinPriority() */
-        ANDROID_LOG_VERBOSE,
-        ANDROID_LOG_DEBUG,
-        ANDROID_LOG_INFO,
-        ANDROID_LOG_WARN,
-        ANDROID_LOG_ERROR,
-        ANDROID_LOG_FATAL,
-        ANDROID_LOG_SILENT,     /* only for SetMinPriority(); must be last */
-    } android_LogPriority;
+/*
+ * Android log priority values, in ascending priority order.
+ */
+typedef enum android_LogPriority {
+  ANDROID_LOG_UNKNOWN = 0,
+  ANDROID_LOG_DEFAULT, /* only for SetMinPriority() */
+  ANDROID_LOG_VERBOSE,
+  ANDROID_LOG_DEBUG,
+  ANDROID_LOG_INFO,
+  ANDROID_LOG_WARN,
+  ANDROID_LOG_ERROR,
+  ANDROID_LOG_FATAL,
+  ANDROID_LOG_SILENT, /* only for SetMinPriority(); must be last */
+} android_LogPriority;
 
-    /*
-     * Send a simple string to the log.
-     */
-    int __android_log_write(int prio, const char *tag, const char *text);
+/*
+ * Send a simple string to the log.
+ */
+int __android_log_write(int prio, const char *tag, const char *text);
 
-    /*
-     * Send a formatted string to the log, used like printf(fmt,...)
-     */
-    int __android_log_print(int prio, const char *tag,  const char *fmt, ...)
+/*
+ * Send a formatted string to the log, used like printf(fmt,...)
+ */
+int __android_log_print(int prio, const char *tag, const char *fmt, ...)
 #if defined(__GNUC__)
-    __attribute__ ((format(printf, 3, 4)))
+    __attribute__((format(printf, 3, 4)))
 #endif
     ;
 
@@ -113,22 +116,21 @@ extern "C" {
  */
 #ifndef FBLOGV
 #if FBLOG_NDEBUG
-#define FBLOGV(...)   ((void)0)
+#define FBLOGV(...) ((void)0)
 #else
 #define FBLOGV(...) ((void)FBLOG(LOG_VERBOSE, LOG_TAG, __VA_ARGS__))
 #endif
 #endif
 
-#define CONDITION(cond)     (__builtin_expect((cond)!=0, 0))
+#define CONDITION(cond) (__builtin_expect((cond) != 0, 0))
 
 #ifndef FBLOGV_IF
 #if FBLOG_NDEBUG
-#define FBLOGV_IF(cond, ...)   ((void)0)
+#define FBLOGV_IF(cond, ...) ((void)0)
 #else
-#define FBLOGV_IF(cond, ...) \
-    ( (CONDITION(cond)) \
-    ? ((void)FBLOG(LOG_VERBOSE, LOG_TAG, __VA_ARGS__)) \
-    : (void)0 )
+#define FBLOGV_IF(cond, ...)                                            \
+  ((CONDITION(cond)) ? ((void)FBLOG(LOG_VERBOSE, LOG_TAG, __VA_ARGS__)) \
+                     : (void)0)
 #endif
 #endif
 
@@ -141,9 +143,7 @@ extern "C" {
 
 #ifndef FBLOGD_IF
 #define FBLOGD_IF(cond, ...) \
-    ( (CONDITION(cond)) \
-    ? ((void)FBLOG(LOG_DEBUG, LOG_TAG, __VA_ARGS__)) \
-    : (void)0 )
+  ((CONDITION(cond)) ? ((void)FBLOG(LOG_DEBUG, LOG_TAG, __VA_ARGS__)) : (void)0)
 #endif
 
 /*
@@ -155,9 +155,7 @@ extern "C" {
 
 #ifndef FBLOGI_IF
 #define FBLOGI_IF(cond, ...) \
-    ( (CONDITION(cond)) \
-    ? ((void)FBLOG(LOG_INFO, LOG_TAG, __VA_ARGS__)) \
-    : (void)0 )
+  ((CONDITION(cond)) ? ((void)FBLOG(LOG_INFO, LOG_TAG, __VA_ARGS__)) : (void)0)
 #endif
 
 /*
@@ -169,9 +167,7 @@ extern "C" {
 
 #ifndef FBLOGW_IF
 #define FBLOGW_IF(cond, ...) \
-    ( (CONDITION(cond)) \
-    ? ((void)FBLOG(LOG_WARN, LOG_TAG, __VA_ARGS__)) \
-    : (void)0 )
+  ((CONDITION(cond)) ? ((void)FBLOG(LOG_WARN, LOG_TAG, __VA_ARGS__)) : (void)0)
 #endif
 
 /*
@@ -183,9 +179,7 @@ extern "C" {
 
 #ifndef FBLOGE_IF
 #define FBLOGE_IF(cond, ...) \
-    ( (CONDITION(cond)) \
-    ? ((void)FBLOG(LOG_ERROR, LOG_TAG, __VA_ARGS__)) \
-    : (void)0 )
+  ((CONDITION(cond)) ? ((void)FBLOG(LOG_ERROR, LOG_TAG, __VA_ARGS__)) : (void)0)
 #endif
 
 // ---------------------------------------------------------------------
@@ -234,7 +228,6 @@ extern "C" {
 #define IF_FBLOGE() IF_FBLOG(LOG_ERROR, LOG_TAG)
 #endif
 
-
 // ---------------------------------------------------------------------
 
 /*
@@ -243,13 +236,12 @@ extern "C" {
  * It is NOT stripped from release builds.  Note that the condition test
  * is -inverted- from the normal assert() semantics.
  */
-#define FBLOG_ALWAYS_FATAL_IF(cond, ...) \
-    ( (CONDITION(cond)) \
-    ? ((void)fb_printAssert(#cond, LOG_TAG, __VA_ARGS__)) \
-    : (void)0 )
+#define FBLOG_ALWAYS_FATAL_IF(cond, ...)                                   \
+  ((CONDITION(cond)) ? ((void)fb_printAssert(#cond, LOG_TAG, __VA_ARGS__)) \
+                     : (void)0)
 
 #define FBLOG_ALWAYS_FATAL(...) \
-    ( ((void)fb_printAssert(NULL, LOG_TAG, __VA_ARGS__)) )
+  (((void)fb_printAssert(NULL, LOG_TAG, __VA_ARGS__)))
 
 /*
  * Versions of LOG_ALWAYS_FATAL_IF and LOG_ALWAYS_FATAL that
@@ -286,20 +278,19 @@ extern "C" {
  */
 #ifndef FBLOG
 #define FBLOG(priority, tag, ...) \
-    FBLOG_PRI(ANDROID_##priority, tag, __VA_ARGS__)
+  FBLOG_PRI(ANDROID_##priority, tag, __VA_ARGS__)
 #endif
 
 #ifndef FBLOG_BY_DELIMS
 #define FBLOG_BY_DELIMS(priority, tag, delims, msg, ...) \
-    logPrintByDelims(ANDROID_##priority, tag, delims, msg, ##__VA_ARGS__)
+  logPrintByDelims(ANDROID_##priority, tag, delims, msg, ##__VA_ARGS__)
 #endif
 
 /*
  * Log macro that allows you to specify a number for the priority.
  */
 #ifndef FBLOG_PRI
-#define FBLOG_PRI(priority, tag, ...) \
-    fb_printLog(priority, tag, __VA_ARGS__)
+#define FBLOG_PRI(priority, tag, ...) fb_printLog(priority, tag, __VA_ARGS__)
 #endif
 
 /*
@@ -307,44 +298,40 @@ extern "C" {
  */
 #ifndef FBLOG_PRI_VA
 #define FBLOG_PRI_VA(priority, tag, fmt, args) \
-    fb_vprintLog(priority, NULL, tag, fmt, args)
+  fb_vprintLog(priority, NULL, tag, fmt, args)
 #endif
 
 /*
  * Conditional given a desired logging priority and tag.
  */
 #ifndef IF_FBLOG
-#define IF_FBLOG(priority, tag) \
-    if (fb_testLog(ANDROID_##priority, tag))
+#define IF_FBLOG(priority, tag) if (fb_testLog(ANDROID_##priority, tag))
 #endif
 
 typedef void (*LogHandler)(int priority, const char* tag, const char* message);
-void setLogHandler(LogHandler logHandler);
+FBEXPORT void setLogHandler(LogHandler logHandler);
 
 /*
  * ===========================================================================
  *
  * The stuff in the rest of this file should not be used directly.
  */
-int fb_printLog(int prio, const char *tag,  const char *fmt, ...)
+FBEXPORT int fb_printLog(int prio, const char* tag, const char* fmt, ...)
 #if defined(__GNUC__)
-    __attribute__ ((format(printf, 3, 4)))
+    __attribute__((format(printf, 3, 4)))
 #endif
-;
+    ;
 
 #define fb_vprintLog(prio, cond, tag, fmt...) \
-    __android_log_vprint(prio, tag, fmt)
+  __android_log_vprint(prio, tag, fmt)
 
-#define fb_printAssert(cond, tag, fmt...) \
-    __android_log_assert(cond, tag, fmt)
+#define fb_printAssert(cond, tag, fmt...) __android_log_assert(cond, tag, fmt)
 
-#define fb_writeLog(prio, tag, text) \
-    __android_log_write(prio, tag, text)
+#define fb_writeLog(prio, tag, text) __android_log_write(prio, tag, text)
 
-#define fb_bWriteLog(tag, payload, len) \
-    __android_log_bwrite(tag, payload, len)
+#define fb_bWriteLog(tag, payload, len) __android_log_bwrite(tag, payload, len)
 #define fb_btWriteLog(tag, type, payload, len) \
-    __android_log_btwrite(tag, type, payload, len)
+  __android_log_btwrite(tag, type, payload, len)
 
 #define fb_testLog(prio, tag) (1)
 
@@ -354,8 +341,6 @@ int fb_printLog(int prio, const char *tag,  const char *fmt, ...)
 void logPrintByDelims(int priority, const char* tag, const char* delims,
                       const char* msg, ...);
 
-
 #ifdef __cplusplus
 }
 #endif
-

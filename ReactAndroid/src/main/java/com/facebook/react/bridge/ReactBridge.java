@@ -58,6 +58,9 @@ public class ReactBridge extends Countable {
 
   public void handleMemoryPressure(MemoryPressure level) {
     switch (level) {
+      case UI_HIDDEN:
+        handleMemoryPressureUiHidden();
+        break;
       case MODERATE:
         handleMemoryPressureModerate();
         break;
@@ -79,13 +82,14 @@ public class ReactBridge extends Countable {
    */
   public native void loadScriptFromAssets(AssetManager assetManager, String assetName);
   public native void loadScriptFromFile(@Nullable String fileName, @Nullable String sourceURL);
-  public native void callFunction(ExecutorToken executorToken, int moduleId, int methodId, NativeArray arguments, String tracingName);
+  public native void callFunction(ExecutorToken executorToken, String module, String method, NativeArray arguments, String tracingName);
   public native void invokeCallback(ExecutorToken executorToken, int callbackID, NativeArray arguments);
   public native void setGlobalVariable(String propertyName, String jsonEncodedArgument);
   public native boolean supportsProfiling();
   public native void startProfiler(String title);
   public native void stopProfiler(String title, String filename);
   public native ExecutorToken getMainExecutorToken();
+  private native void handleMemoryPressureUiHidden();
   private native void handleMemoryPressureModerate();
   private native void handleMemoryPressureCritical();
   public native void destroy();

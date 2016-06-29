@@ -197,7 +197,7 @@ your use case.
 If we had a list with 2000 items and rendered them all immediately that
 would be a poor use of both memory and computational resources. It would
 also probably cause some pretty awful jank. So the scrollRenderAhead
-distance allows us to specify for far beyond the current viewport we
+distance allows us to specify how far beyond the current viewport we
 should continue to render rows.
 
 ##### removeClippedSubviews

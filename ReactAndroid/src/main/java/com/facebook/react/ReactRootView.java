@@ -59,8 +59,6 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   private @Nullable KeyboardListener mKeyboardListener;
   private @Nullable OnGenericMotionListener mOnGenericMotionListener;
   private boolean mWasMeasured = false;
-  private boolean mAttachScheduled = false;
-  private boolean mIsAttachedToWindow = false;
   private boolean mIsAttachedToInstance = false;
   private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
 
@@ -92,18 +90,13 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         MeasureSpec.getSize(heightMeasureSpec));
 
     mWasMeasured = true;
-    if (mAttachScheduled && mReactInstanceManager != null && mIsAttachedToWindow) {
-      // Scheduled from {@link #startReactApplication} call in case when the view measurements are
-      // not available
-      mAttachScheduled = false;
+    // Check if we were waiting for onMeasure to attach the root view
+    if (mReactInstanceManager != null && !mIsAttachedToInstance) {
       // Enqueue it to UIThread not to block onMeasure waiting for the catalyst instance creation
       UiThreadUtil.runOnUiThread(new Runnable() {
         @Override
         public void run() {
-          Assertions.assertNotNull(mReactInstanceManager)
-              .attachMeasuredRootView(ReactRootView.this);
-          mIsAttachedToInstance = true;
-          getViewTreeObserver().addOnGlobalLayoutListener(getKeyboardListener());
+          attachToReactInstanceManager();
         }
       });
     }
@@ -173,28 +166,18 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   }
 
   @Override
-  protected void onDetachedFromWindow() {
-    super.onDetachedFromWindow();
-
-    mIsAttachedToWindow = false;
-
-    if (mReactInstanceManager != null && !mAttachScheduled) {
-      mReactInstanceManager.detachRootView(this);
-      mIsAttachedToInstance = false;
-      getViewTreeObserver().removeOnGlobalLayoutListener(getKeyboardListener());
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    if (mIsAttachedToInstance) {
+      getViewTreeObserver().addOnGlobalLayoutListener(getKeyboardListener());
     }
   }
 
   @Override
-  protected void onAttachedToWindow() {
-    super.onAttachedToWindow();
-
-    mIsAttachedToWindow = true;
-
-    // If the view re-attached and catalyst instance has been set before, we'd attach again to the
-    // catalyst instance (expecting measure to be called after {@link onAttachedToWindow})
-    if (mReactInstanceManager != null) {
-      mAttachScheduled = true;
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    if (mIsAttachedToInstance) {
+      getViewTreeObserver().removeOnGlobalLayoutListener(getKeyboardListener());
     }
   }
 
@@ -222,8 +205,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     // it in the case of re-creating the catalyst instance
     Assertions.assertCondition(
         mReactInstanceManager == null,
-        "This root view has already " +
-          "been attached to a catalyst instance manager");
+        "This root view has already been attached to a catalyst instance manager");
 
     mReactInstanceManager = reactInstanceManager;
     mJSModuleName = moduleName;
@@ -233,15 +215,23 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       mReactInstanceManager.createReactContextInBackground();
     }
 
-    // We need to wait for the initial onMeasure, if this view has not yet been measured, we set
-    // mAttachScheduled flag, which will make this view startReactApplication itself to instance
-    // manager once onMeasure is called.
-    if (mWasMeasured && mIsAttachedToWindow) {
-      mReactInstanceManager.attachMeasuredRootView(this);
-      mIsAttachedToInstance = true;
-      getViewTreeObserver().addOnGlobalLayoutListener(getKeyboardListener());
-    } else {
-      mAttachScheduled = true;
+    // We need to wait for the initial onMeasure, if this view has not yet been measured, we set which
+    // will make this view startReactApplication itself to instance manager once onMeasure is called.
+    if (mWasMeasured) {
+      attachToReactInstanceManager();
+    }
+  }
+
+  /**
+   * Unmount the react application at this root view, reclaiming any JS memory associated with that
+   * application. If {@link #startReactApplication} is called, this method must be called before the
+   * ReactRootView is garbage collected (typically in your Activity's onDestroy, or in your Fragment's
+   * onDestroyView).
+   */
+  public void unmountReactApplication() {
+    if (mReactInstanceManager != null && mIsAttachedToInstance) {
+      mReactInstanceManager.detachRootView(this);
+      mIsAttachedToInstance = false;
     }
   }
 
@@ -259,7 +249,6 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
    */
   @VisibleForTesting
   /* package */ void simulateAttachForTesting() {
-    mIsAttachedToWindow = true;
     mIsAttachedToInstance = true;
     mWasMeasured = true;
   }
@@ -269,6 +258,27 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       mKeyboardListener = new KeyboardListener();
     }
     return mKeyboardListener;
+  }
+
+  private void attachToReactInstanceManager() {
+    if (mIsAttachedToInstance) {
+      return;
+    }
+
+    mIsAttachedToInstance = true;
+    Assertions.assertNotNull(mReactInstanceManager).attachMeasuredRootView(this);
+    getViewTreeObserver().addOnGlobalLayoutListener(getKeyboardListener());
+  }
+
+  @Override
+  protected void finalize() throws Throwable {
+    super.finalize();
+    Assertions.assertCondition(
+      !mIsAttachedToInstance,
+      "The application this ReactRootView was rendering was not unmounted before the ReactRootView " +
+        "was garbage collected. This usually means that your application is leaking large amounts of " +
+        "memory. To solve this, make sure to call ReactRootView#unmountReactApplication in the onDestroy() " +
+        "of your hosting Activity or in the onDestroyView() of your hosting Fragment.");
   }
 
   private class KeyboardListener implements ViewTreeObserver.OnGlobalLayoutListener {

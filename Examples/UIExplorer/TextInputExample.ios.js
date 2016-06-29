@@ -524,7 +524,7 @@ exports.examples = [
       return (
         <View>
           <WithLabel label="true">
-            <TextInput password={true} style={styles.default} defaultValue="abc" />
+            <TextInput secureTextEntry={true} style={styles.default} defaultValue="abc" />
           </WithLabel>
         </View>
       );
@@ -532,7 +532,7 @@ exports.examples = [
   },
   {
     title: 'Event handling',
-    render: function(): ReactElement { return <TextEventsExample />; },
+    render: function(): ReactElement<any> { return <TextEventsExample />; },
   },
   {
     title: 'Colored input text',
@@ -630,7 +630,7 @@ exports.examples = [
   },
   {
     title: 'Blur on submit',
-    render: function(): ReactElement { return <BlurOnSubmitExample />; },
+    render: function(): ReactElement<any> { return <BlurOnSubmitExample />; },
   },
   {
     title: 'Multiline blur on submit',

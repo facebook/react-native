@@ -28,14 +28,14 @@ RCT_EXPORT_MODULE()
 /**
  * Crops an image and adds the result to the image store.
  *
- * @param imageTag A URL, a string identifying an asset etc.
+ * @param imageRequest An image URL
  * @param cropData Dictionary with `offset`, `size` and `displaySize`.
  *        `offset` and `size` are relative to the full-resolution image size.
  *        `displaySize` is an optimization - if specified, the image will
  *        be scaled down to `displaySize` rather than `size`.
  *        All units are in px (not points).
  */
-RCT_EXPORT_METHOD(cropImage:(NSString *)imageTag
+RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
                   cropData:(NSDictionary *)cropData
                   successCallback:(RCTResponseSenderBlock)successCallback
                   errorCallback:(RCTResponseErrorBlock)errorCallback)
@@ -45,7 +45,7 @@ RCT_EXPORT_METHOD(cropImage:(NSString *)imageTag
     [RCTConvert CGSize:cropData[@"size"]]
   };
 
-  [_bridge.imageLoader loadImageWithTag:imageTag callback:^(NSError *error, UIImage *image) {
+  [_bridge.imageLoader loadImageWithURLRequest:imageRequest callback:^(NSError *error, UIImage *image) {
     if (error) {
       errorCallback(error);
       return;

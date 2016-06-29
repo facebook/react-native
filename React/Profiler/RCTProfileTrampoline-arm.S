@@ -35,7 +35,10 @@ SYMBOL_NAME(RCTProfileTrampoline):
    * profile
    */
   mov r0, #0xc
-  ldr ip, =L_malloc
+  movw	ip, :lower16:(L_malloc-(LPC1_0+4))
+  movt	ip, :upper16:(L_malloc-(LPC1_0+4))
+LPC1_0:
+  add ip, pc
   ldr ip, [ip]
   blx ip
   /**
@@ -89,7 +92,10 @@ SYMBOL_NAME(RCTProfileTrampoline):
   ldr r1, [r4, #0x8]
   ldr r4, [r4]
   push {r1} // save the caller on the stack
-  ldr ip, =L_free
+  movw	ip, :lower16:(L_free-(LPC1_1+4))
+  movt	ip, :upper16:(L_free-(LPC1_1+4))
+LPC1_1:
+  add ip, pc
   ldr ip, [ip]
   blx ip
 

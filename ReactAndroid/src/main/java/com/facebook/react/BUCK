@@ -1,22 +1,41 @@
 include_defs('//ReactAndroid/DEFS')
 
+XREACT_SRCS = [
+  'XReactInstanceManager.java',
+  'XReactInstanceManagerImpl.java',
+]
+
+DEPS = [
+  react_native_target('java/com/facebook/react/bridge:bridge'),
+  react_native_target('java/com/facebook/react/common:common'),
+  react_native_target('java/com/facebook/react/devsupport:devsupport'),
+  react_native_target('java/com/facebook/react/modules/core:core'),
+  react_native_target('java/com/facebook/react/modules/debug:debug'),
+  react_native_target('java/com/facebook/react/modules/systeminfo:systeminfo'),
+  react_native_target('java/com/facebook/react/modules/toast:toast'),
+  react_native_target('java/com/facebook/react/uimanager:uimanager'),
+  react_native_dep('java/com/facebook/systrace:systrace'),
+  react_native_dep('libraries/fbcore/src/main/java/com/facebook/common/logging:logging'),
+  react_native_dep('libraries/soloader/java/com/facebook/soloader:soloader'),
+  react_native_dep('third-party/java/infer-annotations:infer-annotations'),
+  react_native_dep('third-party/java/jsr-305:jsr-305'),
+]
+
 android_library(
   name = 'react',
-  srcs = glob(['*.java']),
-  deps = [
-    react_native_target('java/com/facebook/react/bridge:bridge'),
-    react_native_target('java/com/facebook/react/common:common'),
-    react_native_target('java/com/facebook/react/devsupport:devsupport'),
-    react_native_target('java/com/facebook/react/modules/core:core'),
-    react_native_target('java/com/facebook/react/modules/debug:debug'),
-    react_native_target('java/com/facebook/react/modules/systeminfo:systeminfo'),
-    react_native_target('java/com/facebook/react/modules/toast:toast'),
-    react_native_target('java/com/facebook/react/uimanager:uimanager'),
-    react_native_dep('java/com/facebook/systrace:systrace'),
-    react_native_dep('libraries/fbcore/src/main/java/com/facebook/common/logging:logging'),
-    react_native_dep('libraries/soloader/java/com/facebook/soloader:soloader'),
-    react_native_dep('third-party/java/infer-annotations:infer-annotations'),
-    react_native_dep('third-party/java/jsr-305:jsr-305'),
+  srcs = glob(['*.java'], excludes=XREACT_SRCS),
+  deps = DEPS,
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+android_library(
+  name = 'xreact',
+  srcs = XREACT_SRCS,
+  deps = DEPS + [
+    ':react',
+    react_native_target('java/com/facebook/react/cxxbridge:bridge'),
   ],
   visibility = [
     'PUBLIC',

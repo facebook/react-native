@@ -9,6 +9,7 @@
 
 #import "RCTEventEmitter.h"
 #import "RCTAssert.h"
+#import "RCTUtils.h"
 #import "RCTLog.h"
 
 @implementation RCTEventEmitter
@@ -21,6 +22,14 @@
   return @"";
 }
 
++ (void)initialize
+{
+  if (self != [RCTEventEmitter class]) {
+    RCTAssert(RCTClassOverridesInstanceMethod(self, @selector(supportedEvents)),
+              @"You must override the `supportedEvents` method of %@", self);
+  }
+}
+
 - (NSArray<NSString *> *)supportedEvents
 {
   return nil;
@@ -28,13 +37,20 @@
 
 - (void)sendEventWithName:(NSString *)eventName body:(id)body
 {
-  RCTAssert(self.bridge != nil, @"bridge is not set.");
+  RCTAssert(_bridge != nil, @"bridge is not set. This is probably because you've "
+            "explicitly synthesized the bridge in %@, even though it's inherited "
+            "from RCTEventEmitter.", [self class]);
 
   if (RCT_DEBUG && ![[self supportedEvents] containsObject:eventName]) {
-    RCTLogError(@"`%@` is not a supported event type for %@", eventName, [self class]);
+    RCTLogError(@"`%@` is not a supported event type for %@. Supported events are: `%@`",
+                eventName, [self class], [[self supportedEvents] componentsJoinedByString:@"`, `"]);
   }
-  [self.bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
-                        args:body ? @[eventName, body] : @[eventName]];
+  if (_listenerCount > 0) {
+    [_bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
+                      args:body ? @[eventName, body] : @[eventName]];
+  } else {
+    RCTLogWarn(@"Sending `%@` with no listeners registered.", eventName);
+  }
 }
 
 - (void)startObserving
@@ -57,7 +73,8 @@
 RCT_EXPORT_METHOD(addListener:(NSString *)eventName)
 {
   if (RCT_DEBUG && ![[self supportedEvents] containsObject:eventName]) {
-    RCTLogError(@"`%@` is not a supported event type for %@", eventName, [self class]);
+    RCTLogError(@"`%@` is not a supported event type for %@. Supported events are: `%@`",
+                eventName, [self class], [[self supportedEvents] componentsJoinedByString:@"`, `"]);
   }
   if (_listenerCount == 0) {
     [self startObserving];
@@ -67,7 +84,9 @@ RCT_EXPORT_METHOD(addListener:(NSString *)eventName)
 
 RCT_EXPORT_METHOD(removeListeners:(NSInteger)count)
 {
-  RCTAssert(count <= _listenerCount, @"Attempted to remove more listeners than added");
+  if (RCT_DEBUG && count > _listenerCount) {
+    RCTLogError(@"Attempted to remove more %@ listeners than added", [self class]);
+  }
   if (count == _listenerCount) {
     [self stopObserving];
   }

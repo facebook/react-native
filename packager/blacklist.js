@@ -28,14 +28,22 @@ var platformBlacklists = {
     '.ios.js',
     '.android.js',
     '.native.js',
+    '.windows.js'
   ],
   ios: [
     '.web.js',
     '.android.js',
+    '.windows.js',
   ],
   android: [
     '.web.js',
     '.ios.js',
+    '.windows.js'
+  ],
+  windows: [
+    '.web.js',
+    '.ios.js',
+    '.android.js'
   ],
 };
 

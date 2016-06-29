@@ -12,5 +12,6 @@
 'use strict';
 
 const NativeEventEmitter = require('NativeEventEmitter');
+const KeyboardObserver = require('NativeModules').KeyboardObserver;
 
-module.exports = new NativeEventEmitter('KeyboardObserver');
+module.exports = new NativeEventEmitter(KeyboardObserver);

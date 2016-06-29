@@ -11,9 +11,9 @@
  */
 'use strict';
 
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-const RCTWebSocketModule = require('NativeModules').WebSocketModule;
+const NativeEventEmitter = require('NativeEventEmitter');
 const Platform = require('Platform');
+const RCTWebSocketModule = require('NativeModules').WebSocketModule;
 const WebSocketEvent = require('WebSocketEvent');
 
 const EventTarget = require('event-target-shim');
@@ -67,6 +67,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
   CLOSED: number = CLOSED;
 
   _socketId: number;
+  _eventEmitter: NativeEventEmitter;
   _subscriptions: Array<EventSubscription>;
 
   onclose: ?Function;
@@ -91,6 +92,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
       protocols = null;
     }
 
+    this._eventEmitter = new NativeEventEmitter(RCTWebSocketModule);
     this._socketId = nextWebSocketId++;
     RCTWebSocketModule.connect(url, protocols, options, this._socketId);
     this._registerEvents();
@@ -136,8 +138,8 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
   _close(code?: number, reason?: string): void {
     if (Platform.OS === 'android') {
       // See https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
-      var statusCode = typeof code === 'number' ? code : CLOSE_NORMAL;
-      var closeReason = typeof reason === 'string' ? reason : '';
+      const statusCode = typeof code === 'number' ? code : CLOSE_NORMAL;
+      const closeReason = typeof reason === 'string' ? reason : '';
       RCTWebSocketModule.close(statusCode, closeReason, this._socketId);
     } else {
       RCTWebSocketModule.close(this._socketId);
@@ -151,47 +153,43 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
 
   _registerEvents(): void {
     this._subscriptions = [
-      RCTDeviceEventEmitter.addListener('websocketMessage', ev => {
+      this._eventEmitter.addListener('websocketMessage', ev => {
         if (ev.id !== this._socketId) {
           return;
         }
-        var event = new WebSocketEvent('message', {
+        this.dispatchEvent(new WebSocketEvent('message', {
           data: (ev.type === 'binary') ? base64.toByteArray(ev.data).buffer : ev.data
-        });
-        this.dispatchEvent(event);
+        }));
       }),
-      RCTDeviceEventEmitter.addListener('websocketOpen', ev => {
+      this._eventEmitter.addListener('websocketOpen', ev => {
         if (ev.id !== this._socketId) {
           return;
         }
         this.readyState = this.OPEN;
-        var event = new WebSocketEvent('open');
-        this.dispatchEvent(event);
+        this.dispatchEvent(new WebSocketEvent('open'));
       }),
-      RCTDeviceEventEmitter.addListener('websocketClosed', ev => {
+      this._eventEmitter.addListener('websocketClosed', ev => {
         if (ev.id !== this._socketId) {
           return;
         }
         this.readyState = this.CLOSED;
-        var event = new WebSocketEvent('close');
-        event.code = ev.code;
-        event.reason = ev.reason;
-        this.dispatchEvent(event);
+        this.dispatchEvent(new WebSocketEvent('close', {
+          code: ev.code,
+          reason: ev.reason,
+        }));
         this._unregisterEvents();
         this.close();
       }),
-      RCTDeviceEventEmitter.addListener('websocketFailed', ev => {
+      this._eventEmitter.addListener('websocketFailed', ev => {
         if (ev.id !== this._socketId) {
           return;
         }
-        var event = new WebSocketEvent('error');
-        event.message = ev.message;
-        this.dispatchEvent(event);
-
-        event = new WebSocketEvent('close');
-        event.message = ev.message;
-        this.dispatchEvent(event);
-
+        this.dispatchEvent(new WebSocketEvent('error', {
+          message: ev.message,
+        }));
+        this.dispatchEvent(new WebSocketEvent('close', {
+          message: ev.message,
+        }));
         this._unregisterEvents();
         this.close();
       })

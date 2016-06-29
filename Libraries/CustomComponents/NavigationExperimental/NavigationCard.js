@@ -35,7 +35,6 @@
 const Animated = require('Animated');
 const NavigationCardStackPanResponder = require('NavigationCardStackPanResponder');
 const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleInterpolator');
-const NavigationContainer = require('NavigationContainer');
 const NavigationPagerPanResponder = require('NavigationPagerPanResponder');
 const NavigationPagerStyleInterpolator = require('NavigationPagerStyleInterpolator');
 const NavigationPointerEventsContainer = require('NavigationPointerEventsContainer');
@@ -75,12 +74,12 @@ class SceneView extends React.Component<any, SceneViewProps, any> {
 
   shouldComponentUpdate(nextProps: SceneViewProps, nextState: any): boolean {
     return (
-      nextProps.sceneRendererProps.scene.navigationState !==
-        this.props.sceneRendererProps.scene.navigationState
+      nextProps.sceneRendererProps.scene.route !==
+        this.props.sceneRendererProps.scene.route
     );
   }
 
-  render(): ?ReactElement {
+  render(): ?ReactElement<any> {
     return this.props.sceneRenderer(this.props.sceneRendererProps);
   }
 }
@@ -92,7 +91,7 @@ class NavigationCard extends React.Component<any, Props, any> {
   props: Props;
 
   static propTypes = {
-    ...NavigationPropTypes.SceneRenderer,
+    ...NavigationPropTypes.SceneRendererProps,
     onComponentRef: PropTypes.func.isRequired,
     panHandlers: NavigationPropTypes.panHandlers,
     pointerEvents: PropTypes.string.isRequired,
@@ -108,7 +107,7 @@ class NavigationCard extends React.Component<any, Props, any> {
     );
   }
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     const {
       panHandlers,
       pointerEvents,
@@ -156,9 +155,7 @@ const styles = StyleSheet.create({
 });
 
 NavigationCard = NavigationPointerEventsContainer.create(NavigationCard);
-NavigationCard = NavigationContainer.create(NavigationCard);
 
-// Export these buil-in interaction modules.
 NavigationCard.CardStackPanResponder = NavigationCardStackPanResponder;
 NavigationCard.CardStackStyleInterpolator = NavigationCardStackStyleInterpolator;
 NavigationCard.PagerPanResponder = NavigationPagerPanResponder;
