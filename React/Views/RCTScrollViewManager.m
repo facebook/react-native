@@ -80,6 +80,13 @@ RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollBegin, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollEnd, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onScrollAnimationEnd, RCTDirectEventBlock)
 
+// <Even>
+
+RCT_EXPORT_VIEW_PROPERTY(disableTopPull, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(disableBottomPull, BOOL)
+
+// </Even>
+
 RCT_EXPORT_METHOD(getContentSize:(nonnull NSNumber *)reactTag
                   callback:(RCTResponseSenderBlock)callback)
 {

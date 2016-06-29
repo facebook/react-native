@@ -333,6 +333,13 @@ var ScrollView = React.createClass({
      * @platform android
      */
     endFillColor: ColorPropType,
+
+    // <Even>
+
+    disableTopPull: PropTypes.bool,
+    disableBottomPull: PropTypes.bool,
+
+    // </Even>
   },
 
   mixins: [ScrollResponder.Mixin],

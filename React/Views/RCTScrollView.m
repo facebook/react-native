@@ -142,6 +142,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 @property (nonatomic, assign) BOOL centerContent;
 @property (nonatomic, strong) RCTRefreshControl *refreshControl;
 
+// <Even>
+
+@property (nonatomic, assign) BOOL disableTopPull;
+@property (nonatomic, assign) BOOL disableBottomPull;
+@property (nonatomic, assign) CGPoint firstDragPoint;
+@property (nonatomic, assign) CGPoint lastDragPoint;
+@property (nonatomic, assign) CGPoint lastTouchPoint;
+
+// </Even>
+
 @end
 
 
@@ -192,7 +202,63 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     // self.scrollEnabled = NO;
     // self.scrollEnabled = YES;
   }
+    
+    // <Even>
+    
+    switch (self.panGestureRecognizer.state) {
+        case UIGestureRecognizerStateBegan:
+            self.firstDragPoint = [self.panGestureRecognizer locationInView:nil];
+            break;
+        case UIGestureRecognizerStateEnded:
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateFailed:
+            self.lastDragPoint = [self.panGestureRecognizer locationInView:nil];
+            break;
+        default:
+            break;
+    }
+    
+    // </Even>
 }
+
+// <Even>
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    self.lastTouchPoint = [touch locationInView:nil];
+    return YES;
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)gestureRecognizer {
+    if (self.disableTopPull) {
+        CGFloat topContentOffset = 0;
+        BOOL isAtTop = self.contentOffset.y <= topContentOffset;
+        CGFloat velocity = [gestureRecognizer velocityInView:nil].y;
+        if (isAtTop && velocity > 0) {
+            return NO;
+        }
+        BOOL isBouncingAtTop = self.contentOffset.y < topContentOffset;
+        BOOL probablyReversingDirection = self.lastTouchPoint.y > (self.firstDragPoint.y + self.lastDragPoint.y) / 2.0;
+        if (isBouncingAtTop && !probablyReversingDirection) {
+            return NO;
+        }
+    }
+    if (self.disableBottomPull) {
+        CGFloat bottomContentOffset = self.contentSize.height - self.bounds.size.height;
+        BOOL isAtBottom = self.contentOffset.y >= bottomContentOffset;
+        CGFloat velocity = [gestureRecognizer velocityInView:nil].y;
+        if (isAtBottom && velocity < 0) {
+            return NO;
+        }
+        BOOL isBouncingAtBottom = self.contentOffset.y > bottomContentOffset;
+        BOOL probablyReversingDirection = self.lastTouchPoint.y < (self.firstDragPoint.y + self.lastDragPoint.y) / 2.0;
+        if (isBouncingAtBottom && !probablyReversingDirection) {
+            return NO;
+        }
+    }
+    return [super gestureRecognizerShouldBegin:gestureRecognizer];
+}
+
+// </Even>
 
 - (void)scrollRectToVisible:(__unused CGRect)rect animated:(__unused BOOL)animated
 {
@@ -876,6 +942,13 @@ RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, showsHorizontalSc
 RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
 RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIEdgeInsets);
+
+// <Even>
+
+RCT_SET_AND_PRESERVE_OFFSET(setDisableTopPull, disableTopPull, BOOL);
+RCT_SET_AND_PRESERVE_OFFSET(setDisableBottomPull, disableBottomPull, BOOL);
+
+// </Even>
 
 - (void)setOnRefreshStart:(RCTDirectEventBlock)onRefreshStart
 {
