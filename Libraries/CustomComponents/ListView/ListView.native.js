@@ -401,20 +401,13 @@ var ListView = React.createClass({
         var comboID = sectionID + '_' + rowID;
         var shouldUpdateRow = rowCount >= this._prevRenderedRowsCount &&
           dataSource.rowShouldUpdate(sectionIdx, rowIdx);
-        var rowData = dataSource.getRowData(sectionIdx, rowIdx);
-        var key;
-        if (dataSource.keyForRow) {
-          key = dataSource.keyForRow(rowData);
-        } else {
-          key = 'r_' + comboID;
-        }
         var row =
           <StaticRenderer
-            key={key}
+            key={'r_' + comboID}
             shouldUpdate={!!shouldUpdateRow}
             render={this.props.renderRow.bind(
               null,
-              rowData,
+              dataSource.getRowData(sectionIdx, rowIdx),
               sectionID,
               rowID,
               this._onRowHighlighted
@@ -430,11 +423,17 @@ var ListView = React.createClass({
               this.state.highlightedRow.rowID === rowID ||
               this.state.highlightedRow.rowID === rowIDs[rowIdx + 1]
             );
-          var separator = this.props.renderSeparator(
-            sectionID,
-            rowID,
-            adjacentRowHighlighted
-          );
+          var separator = 
+            <StaticRenderer
+              key={'s_' + comboID}
+              shouldUpdate={!!shouldUpdateRow}
+              render={this.props.renderSeparator.bind(
+                null,
+                sectionID,
+                rowID,
+                adjacentRowHighlighted
+              )}
+            />;
           if (separator) {
             bodyComponents.push(separator);
             totalIndex++;
