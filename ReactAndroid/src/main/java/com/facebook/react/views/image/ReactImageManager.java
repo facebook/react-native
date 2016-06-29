@@ -37,6 +37,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     return REACT_CLASS;
   }
 
+  private ResourceDrawableIdHelper mResourceDrawableIdHelper;
   private @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
 
@@ -45,12 +46,14 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
       Object callerContext) {
     mDraweeControllerBuilder = draweeControllerBuilder;
     mCallerContext = callerContext;
+    mResourceDrawableIdHelper = new ResourceDrawableIdHelper();
   }
 
   public ReactImageManager() {
     // Lazily initialize as FrescoModule have not been initialized yet
     mDraweeControllerBuilder = null;
     mCallerContext = null;
+    mResourceDrawableIdHelper = new ResourceDrawableIdHelper();
   }
 
   public AbstractDraweeControllerBuilder getDraweeControllerBuilder() {
@@ -69,7 +72,8 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     return new ReactImageView(
         context,
         getDraweeControllerBuilder(),
-        getCallerContext());
+        getCallerContext(),
+        mResourceDrawableIdHelper);
   }
 
   // In JS this is Image.props.source

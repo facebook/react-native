@@ -61,7 +61,6 @@ import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.uimanager.AppRegistry;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.UIImplementationProvider;
@@ -563,8 +562,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
       mHasStartedCreatingInitialContext = false;
     }
     mCurrentActivity = null;
-
-    ResourceDrawableIdHelper.getInstance().clear();
   }
 
   private void moveToResumedLifecycleState(boolean force) {

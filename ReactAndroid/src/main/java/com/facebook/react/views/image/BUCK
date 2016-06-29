@@ -9,7 +9,6 @@ android_library(
     react_native_target('java/com/facebook/csslayout:csslayout'),
     react_native_target('java/com/facebook/react/uimanager:uimanager'),
     react_native_target('java/com/facebook/react/uimanager/annotations:annotations'),
-    react_native_target('java/com/facebook/react/views/imagehelper:imagehelper'),
     react_native_dep('libraries/fresco/fresco-react-native:fbcore'),
     react_native_dep('libraries/fresco/fresco-react-native:fresco-react-native'),
     react_native_dep('libraries/fresco/fresco-react-native:fresco-drawee'),
