@@ -24,11 +24,14 @@ var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
 
 var flattenStyle = require('flattenStyle');
-var invariant = require('fbjs/lib/invariant');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
+
+var {
+  ImageLoader,
+} = NativeModules;
 
 /**
  * <Image> - A react component for displaying different types of images,
@@ -122,6 +125,13 @@ var Image = React.createClass({
 
   statics: {
     resizeMode: ImageResizeMode,
+    /**
+     * Prefetches a remote image for later use by downloading it to the disk
+     * cache
+     */
+    prefetch(url: string) {
+      return ImageLoader.prefetchImage(url);
+    },
   },
 
   mixins: [NativeMethodsMixin],

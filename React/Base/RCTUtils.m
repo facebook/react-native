@@ -258,6 +258,10 @@ CGFloat RCTScreenScale()
 
 CGSize RCTScreenSize()
 {
+  // FIXME: this caches the bounds at app start, whatever those were, and then
+  // doesn't update when the device is rotated. We need to find another thread-
+  // safe way to get the screen size.
+
   static CGSize size;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -372,7 +376,8 @@ NSDictionary<NSString *, id> *RCTMakeAndLogError(NSString *message,
 
 NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error)
 {
-  return RCTJSErrorFromCodeMessageAndNSError(RCTErrorUnspecified,
+  NSString *codeWithDomain = [NSString stringWithFormat:@"E%@%zd", error.domain.uppercaseString, error.code];
+  return RCTJSErrorFromCodeMessageAndNSError(codeWithDomain,
                                              error.localizedDescription,
                                              error);
 }

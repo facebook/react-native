@@ -13,13 +13,14 @@
 */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const {
   NavigationExperimental,
   ScrollView,
   StyleSheet,
   View,
-} = React;
+} = ReactNative;
 const {
   Container: NavigationContainer,
   RootContainer: NavigationRootContainer,

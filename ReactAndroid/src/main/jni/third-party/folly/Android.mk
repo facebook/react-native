@@ -7,7 +7,6 @@ LOCAL_SRC_FILES:= \
 	folly/Conv.cpp \
   folly/detail/FunctionalExcept.cpp \
   folly/detail/MallocImpl.cpp \
-  folly/Malloc.cpp \
   folly/StringBase.cpp \
   folly/dynamic.cpp \
 

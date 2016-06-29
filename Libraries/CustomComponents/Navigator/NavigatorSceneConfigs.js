@@ -34,6 +34,22 @@ var buildStyleInterpolator = require('buildStyleInterpolator');
 var SCREEN_WIDTH = Dimensions.get('window').width;
 var SCREEN_HEIGHT = Dimensions.get('window').height;
 
+var ToTheLeftIOS = {
+  transformTranslate: {
+    from: {x: 0, y: 0, z: 0},
+    to: {x: -SCREEN_WIDTH * 0.3, y: 0, z: 0},
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
+  opacity: {
+    value: 1.0,
+    type: 'constant',
+  },
+};
+
 var FadeToTheLeft = {
   // Rotate *requires* you to break out each individual component of
   // rotation (x, y, z, w)
@@ -507,7 +523,10 @@ var BaseConfig = {
 var NavigatorSceneConfigs = {
   PushFromRight: {
     ...BaseConfig,
-    // We will want to customize this soon
+    animationInterpolators: {
+      into: buildStyleInterpolator(FromTheRight),
+      out: buildStyleInterpolator(ToTheLeftIOS),
+    },
   },
   FloatFromRight: {
     ...BaseConfig,

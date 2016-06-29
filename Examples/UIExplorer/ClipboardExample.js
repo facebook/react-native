@@ -15,12 +15,13 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Clipboard,
   View,
   Text,
-} = React;
+} = ReactNative;
 
 var ClipboardExample = React.createClass({
   getInitialState() {

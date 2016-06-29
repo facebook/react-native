@@ -15,13 +15,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Image,
   StyleSheet,
   View,
   ScrollView
-} = React;
+} = ReactNative;
 
 var AssetScaledImageExample = React.createClass({
 

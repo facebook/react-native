@@ -83,6 +83,14 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     reactContext.addLifecycleEventListener(this);
   }
 
+  /**
+   * This method gives an access to the {@link UIImplementation} object that can be used to execute
+   * operations on the view hierarchy.
+   */
+  public UIImplementation getUIImplementation() {
+    return mUIImplementation;
+  }
+
   @Override
   public String getName() {
     return "RKUIManager";
@@ -221,6 +229,20 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
         addChildTags,
         addAtIndices,
         removeFrom);
+  }
+
+  /**
+   * Interface for fast tracking the initial adding of views.  Children view tags are assumed to be
+   * in order
+   *
+   * @param viewTag the view tag of the parent view
+   * @param childrenTags An array of tags to add to the parent in order
+   */
+  @ReactMethod
+  public void setChildren(
+    int viewTag,
+    ReadableArray childrenTags) {
+    mUIImplementation.setChildren(viewTag, childrenTags);
   }
 
   /**

@@ -12,8 +12,6 @@ package com.facebook.react.bridge;
 import java.io.IOException;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-
 /**
  * A native module whose API can be provided to JS catalyst instances.  {@link NativeModule}s whose
  * implementation is written in Java should extend {@link BaseJavaModule} or {@link
@@ -25,6 +23,13 @@ public interface NativeModule {
   interface NativeMethod {
     void invoke(CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray parameters);
     String getType();
+  }
+
+  /**
+   * A method that can be called from JS synchronously on the JS thread and return a result.
+   * @see ReactSyncHook
+   */
+  interface SyncNativeHook {
   }
 
   /**
@@ -42,7 +47,7 @@ public interface NativeModule {
    * Append a field which represents the constants this module exports
    * to JS.  If no constants are exported this should do nothing.
    */
-  void writeConstantsField(JsonGenerator jg, String fieldName) throws IOException;
+  void writeConstantsField(JsonWriter writer, String fieldName) throws IOException;
 
   /**
    * This is called at the end of {@link CatalystApplicationFragment#createCatalystInstance()}

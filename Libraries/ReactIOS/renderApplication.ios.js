@@ -14,6 +14,7 @@
 
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var StyleSheet = require('StyleSheet');
 var Subscribable = require('Subscribable');
 var View = require('View');
@@ -28,7 +29,7 @@ var AppContainer = React.createClass({
   mixins: [Subscribable.Mixin],
 
   getInitialState: function() {
-    return { inspector: null };
+    return { inspector: null, mainKey: 1 };
   },
 
   toggleElementInspector: function() {
@@ -37,6 +38,12 @@ var AppContainer = React.createClass({
       : <Inspector
           rootTag={this.props.rootTag}
           inspectedViewTag={findNodeHandle(this.refs.main)}
+          onRequestRerenderApp={(updateInspectedViewTag) => {
+            this.setState(
+              (s) => ({mainKey: s.mainKey + 1}),
+              () => updateInspectedViewTag(findNodeHandle(this.refs.main))
+            );
+          }}
         />;
     this.setState({inspector});
   },
@@ -56,7 +63,10 @@ var AppContainer = React.createClass({
     }
     return (
       <View style={styles.appContainer}>
-        <View collapsible={false} style={styles.appContainer} ref="main">
+        <View
+          collapsible={false}
+          key={this.state.mainKey}
+          style={styles.appContainer} ref="main">
           {this.props.children}
         </View>
         {yellowBox}
@@ -67,7 +77,7 @@ var AppContainer = React.createClass({
 });
 
 function renderApplication<D, P, S>(
-  RootComponent: ReactClass<D, P, S>,
+  RootComponent: ReactClass<P>,
   initialProps: P,
   rootTag: any
 ) {
@@ -76,7 +86,7 @@ function renderApplication<D, P, S>(
     'Expect to have a valid rootTag, instead got ', rootTag
   );
   /* eslint-disable jsx-no-undef-with-namespace */
-  React.render(
+  ReactNative.render(
     <AppContainer rootTag={rootTag}>
       <RootComponent
         {...initialProps}

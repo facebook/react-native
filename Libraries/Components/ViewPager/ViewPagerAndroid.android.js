@@ -1,15 +1,19 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ViewPagerAndroid
  * @flow
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var ReactElement = require('ReactElement');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var ReactPropTypes = require('ReactPropTypes');
 var UIManager = require('UIManager');
 var View = require('View');
@@ -106,6 +110,12 @@ var ViewPagerAndroid = React.createClass({
     onPageSelected: ReactPropTypes.func,
 
     /**
+     * Blank space to show between pages. This is only visible while scrolling, pages are still
+     * edge-to-edge.
+     */
+    pageMargin: ReactPropTypes.number,
+
+    /**
      * Determines whether the keyboard gets dismissed in response to a drag.
      *   - 'none' (the default), drags do not dismiss the keyboard.
      *   - 'on-drag', the keyboard is dismissed when a drag begins.
@@ -114,6 +124,12 @@ var ViewPagerAndroid = React.createClass({
       'none', // default
       'on-drag',
     ]),
+
+    /**
+    * When false, the content does not scroll.
+    * The default value is true.
+    */
+    scrollEnabled: React.PropTypes.bool,
   },
 
   componentDidMount: function() {
@@ -205,6 +221,7 @@ var ViewPagerAndroid = React.createClass({
   render: function() {
     return (
       <NativeAndroidViewPager
+        {...this.props}
         ref={VIEWPAGER_REF}
         style={this.props.style}
         onPageScroll={this._onPageScroll}

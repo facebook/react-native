@@ -11,7 +11,6 @@ package com.facebook.react.bridge;
 
 import javax.annotation.Nullable;
 
-import java.lang.Class;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -29,14 +28,14 @@ import com.facebook.react.common.ReactConstants;
  * to the bridge using the corresponding module and method ids so the proper function is executed in
  * JavaScript.
  */
-/*package*/ class JavaScriptModuleRegistry {
+public class JavaScriptModuleRegistry {
 
-  private final CatalystInstanceImpl mCatalystInstance;
+  private final CatalystInstance mCatalystInstance;
   private final WeakHashMap<ExecutorToken, HashMap<Class<? extends JavaScriptModule>, JavaScriptModule>> mModuleInstances;
   private final HashMap<Class<? extends JavaScriptModule>, JavaScriptModuleRegistration> mModuleRegistrations;
 
   public JavaScriptModuleRegistry(
-      CatalystInstanceImpl instance,
+      CatalystInstance instance,
       JavaScriptModulesConfig config) {
     mCatalystInstance = instance;
     mModuleInstances = new WeakHashMap<>();
@@ -74,12 +73,12 @@ import com.facebook.react.common.ReactConstants;
   private static class JavaScriptModuleInvocationHandler implements InvocationHandler {
 
     private final WeakReference<ExecutorToken> mExecutorToken;
-    private final CatalystInstanceImpl mCatalystInstance;
+    private final CatalystInstance mCatalystInstance;
     private final JavaScriptModuleRegistration mModuleRegistration;
 
     public JavaScriptModuleInvocationHandler(
         ExecutorToken executorToken,
-        CatalystInstanceImpl catalystInstance,
+        CatalystInstance catalystInstance,
         JavaScriptModuleRegistration moduleRegistration) {
       mExecutorToken = new WeakReference<>(executorToken);
       mCatalystInstance = catalystInstance;
@@ -87,19 +86,20 @@ import com.facebook.react.common.ReactConstants;
     }
 
     @Override
-    public @Nullable Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public @Nullable Object invoke(Object proxy, Method method, @Nullable Object[] args) throws Throwable {
       ExecutorToken executorToken = mExecutorToken.get();
       if (executorToken == null) {
         FLog.w(ReactConstants.TAG, "Dropping JS call, ExecutorToken went away...");
         return null;
       }
       String tracingName = mModuleRegistration.getTracingName(method);
+      NativeArray jsArgs = args != null ? Arguments.fromJavaArgs(args) : new WritableNativeArray();
       mCatalystInstance.callFunction(
         executorToken,
-          mModuleRegistration.getModuleId(),
-          mModuleRegistration.getMethodId(method),
-          Arguments.fromJavaArgs(args),
-          tracingName);
+        mModuleRegistration.getModuleId(),
+        mModuleRegistration.getMethodId(method),
+        jsArgs,
+        tracingName);
       return null;
     }
   }

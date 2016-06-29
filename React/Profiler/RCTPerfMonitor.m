@@ -125,6 +125,25 @@ static vm_size_t RCTGetResidentMemorySize(void)
 
 RCT_EXPORT_MODULE()
 
+- (instancetype)init
+{
+  // We're only overriding this to ensure the module gets created at startup
+  // TODO (D3175632): Remove once we have more declarative control over module setup.
+  return [super init];
+}
+
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
+- (void)setBridge:(RCTBridge *)bridge
+{
+  _bridge = bridge;
+
+  [_bridge.devMenu addItem:self.devMenuItem];
+}
+
 - (void)invalidate
 {
   [self hide];
@@ -270,18 +289,6 @@ RCT_EXPORT_MODULE()
   }
 
   return _metrics;
-}
-
-- (dispatch_queue_t)methodQueue
-{
-  return dispatch_get_main_queue();
-}
-
-- (void)setBridge:(RCTBridge *)bridge
-{
-  _bridge = bridge;
-
-  [_bridge.devMenu addItem:self.devMenuItem];
 }
 
 - (void)show
@@ -506,7 +513,12 @@ RCT_EXPORT_MODULE()
   NSArray<NSNumber *> *values = RCTPerformanceLoggerOutput();
   for (NSString *label in RCTPerformanceLoggerLabels()) {
     long long value = values[i+1].longLongValue - values[i].longLongValue;
-    NSString *unit = [label isEqualToString:@"BundleSize"] ? @"b" : @"ms";
+    NSString *unit = @"ms";
+    if ([label hasSuffix:@"Size"]) {
+      unit = @"b";
+    } else if ([label hasSuffix:@"Count"]) {
+      unit = @"";
+    }
     [data addObject:[NSString stringWithFormat:@"%@: %lld%@", label, value, unit]];
     i += 2;
   }

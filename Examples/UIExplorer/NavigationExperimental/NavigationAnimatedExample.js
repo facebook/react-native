@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -13,20 +20,24 @@
 */
 'use strict';
 
-var React = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+
+const {
   Animated,
   NavigationExperimental,
   StyleSheet,
   ScrollView,
-} = React;
-var NavigationExampleRow = require('./NavigationExampleRow');
-var {
+} = ReactNative;
+
+const  NavigationExampleRow = require('./NavigationExampleRow');
+
+const  {
   AnimatedView: NavigationAnimatedView,
   Card: NavigationCard,
-  RootContainer: NavigationRootContainer,
-  Reducer: NavigationReducer,
   Header: NavigationHeader,
+  Reducer: NavigationReducer,
+  RootContainer: NavigationRootContainer,
 } = NavigationExperimental;
 
 const NavigationBasicReducer = NavigationReducer.StackReducer({
@@ -48,10 +59,11 @@ const NavigationBasicReducer = NavigationReducer.StackReducer({
 
 class NavigationAnimatedExample extends React.Component {
   componentWillMount() {
-    this._renderNavigation = this._renderNavigation.bind(this);
     this._renderCard = this._renderCard.bind(this);
-    this._renderScene = this._renderScene.bind(this);
     this._renderHeader = this._renderHeader.bind(this);
+    this._renderNavigation = this._renderNavigation.bind(this);
+    this._renderScene = this._renderScene.bind(this);
+    this._renderTitleComponent = this._renderTitleComponent.bind(this);
   }
   render() {
     return (
@@ -78,8 +90,8 @@ class NavigationAnimatedExample extends React.Component {
         navigationState={navigationState}
         style={styles.animatedView}
         renderOverlay={this._renderHeader}
-        setTiming={(pos, navState) => {
-          Animated.timing(pos, {toValue: navState.index, duration: 1000}).start();
+        applyAnimation={(pos, navState) => {
+          Animated.timing(pos, {toValue: navState.index, duration: 500}).start();
         }}
         renderScene={this._renderCard}
       />
@@ -90,8 +102,16 @@ class NavigationAnimatedExample extends React.Component {
     return (
       <NavigationHeader
         {...props}
-        getTitle={state => state.key}
+        renderTitleComponent={this._renderTitleComponent}
       />
+    );
+  }
+
+  _renderTitleComponent(/*NavigationSceneRendererProps*/ props) {
+    return (
+      <NavigationHeader.Title>
+        {props.scene.navigationState.key}
+      </NavigationHeader.Title>
     );
   }
 
@@ -134,7 +154,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollView: {
-    marginTop: 64
+    marginTop: NavigationHeader.HEIGHT,
   },
 });
 

@@ -38,13 +38,13 @@ prebuilt_jar(
 
 genrule(
     name = 'classes-unpacker-cmd',
-    cmd = '$(exe :aar-unpacker) $(location :appcompat-binary-aar) "classes.jar" $OUT',
+    cmd = '$(exe :aar-unpacker) $(location :appcompat-binary-aar) classes.jar $OUT',
     out = 'classes.jar',
 )
 
 genrule(
     name = 'res-unpacker-cmd',
-    cmd = '$(exe :aar-unpacker) $(location :appcompat-binary-aar) "res/" $OUT',
+    cmd = '$(exe :aar-unpacker) $(location :appcompat-binary-aar) res/ $OUT',
     out = 'res',
     visibility = ['//ReactAndroid/...',],
 )

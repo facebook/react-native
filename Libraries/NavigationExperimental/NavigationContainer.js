@@ -15,8 +15,8 @@ var React = require('React');
 var NavigationRootContainer = require('NavigationRootContainer');
 
 function createNavigationContainer(
-  Component: ReactClass<any, any, any>,
-): ReactClass {
+  Component: ReactClass<any>,
+): ReactClass & Object {
   class NavigationComponent extends React.Component {
     render() {
       return (

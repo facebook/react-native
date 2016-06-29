@@ -15,6 +15,7 @@ const path = require('path');
 const parseCommandLine = require('../util/parseCommandLine');
 const isPackagerRunning = require('../util/isPackagerRunning');
 const Promise = require('promise');
+const adb = require('./adb');
 
 /**
  * Starts the app on a connected Android emulator or device.
@@ -38,6 +39,10 @@ function _runAndroid(argv, config, resolve, reject) {
     command: 'flavor',
     type: 'string',
     required: false,
+  }, {
+    command: 'variant',
+    type: 'string',
+    required: false,
   }], argv);
 
   args.root = args.root || '';
@@ -49,12 +54,12 @@ function _runAndroid(argv, config, resolve, reject) {
 
   resolve(isPackagerRunning().then(result => {
     if (result === 'running') {
-      console.log(chalk.bold('JS server already running.'));
+      console.log(chalk.bold(`JS server already running.`));
     } else if (result === 'unrecognized') {
-      console.warn(chalk.yellow('JS server not recognized, continuing with build...'));
+      console.warn(chalk.yellow(`JS server not recognized, continuing with build...`));
     } else {
       // result == 'not_running'
-      console.log(chalk.bold('Starting JS server...'));
+      console.log(chalk.bold(`Starting JS server...`));
       startServerInNewWindow();
     }
     buildAndRun(args, reject);
@@ -75,7 +80,14 @@ function buildAndRun(args, reject) {
       : './gradlew';
 
     const gradleArgs = [];
-    if (args['flavor']) {
+    if (args['variant']) {
+        gradleArgs.push('install' +
+          args['variant'][0].toUpperCase() + args['variant'].slice(1)
+        );
+    } else if (args['flavor']) {
+        console.warn(chalk.yellow(
+          `--flavor has been deprecated. Use --variant instead`
+        ));
         gradleArgs.push('install' +
           args['flavor'][0].toUpperCase() + args['flavor'].slice(1)
         );
@@ -88,8 +100,7 @@ function buildAndRun(args, reject) {
     }
 
     console.log(chalk.bold(
-      'Building and installing the app on the device (cd android && ' + cmd +
-      ' ' + gradleArgs.join(' ') + ')...'
+      `Building and installing the app on the device (cd android && ${cmd} ${gradleArgs.join(' ')}...`
     ));
 
     child_process.execFileSync(cmd, gradleArgs, {
@@ -119,18 +130,34 @@ function buildAndRun(args, reject) {
       ? process.env.ANDROID_HOME + '/platform-tools/adb'
       : 'adb';
 
-    const adbArgs = [
-      'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
-    ];
+    const devices = adb.getDevices();
 
-    console.log(chalk.bold(
-      'Starting the app (' + adbPath + ' ' + adbArgs.join(' ') + ')...'
-    ));
+    if (devices && devices.length > 0) {
+      devices.forEach((device) => {
 
-    child_process.spawnSync(adbPath, adbArgs, {stdio: 'inherit'});
+        const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
+
+        console.log(chalk.bold(
+          `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
+        ));
+
+        child_process.spawnSync(adbPath, adbArgs, {stdio: 'inherit'});
+      });
+    } else {
+      // If we cannot execute based on adb devices output, fall back to
+      // shell am start
+      const fallbackAdbArgs = [
+        'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
+      ];
+      console.log(chalk.bold(
+        `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
+      ));
+      child_process.spawnSync(adbPath, fallbackAdbArgs, {stdio: 'inherit'});
+    }
+
   } catch (e) {
     console.log(chalk.red(
-      'adb invocation failed. Do you have adb in your PATH?'
+      `adb invocation failed. Do you have adb in your PATH?`
     ));
     // stderr is automatically piped from the gradle process, so the user
     // should see the error already, there is no need to do
@@ -141,35 +168,33 @@ function buildAndRun(args, reject) {
 }
 
 function startServerInNewWindow() {
-  var yargV = require('yargs').argv;
-
-  const launchPackagerScript = path.resolve(
-    __dirname, '..', '..', 'packager', 'launchPackager.command'
-  );
+  const yargV = require('yargs').argv;
+  const scriptFile = /^win/.test(process.platform) ?
+    'launchPackager.bat' :
+    'launchPackager.command';
+  const packagerDir = path.resolve(__dirname, '..', '..', 'packager');
+  const launchPackagerScript = path.resolve(packagerDir, scriptFile);
+  const procConfig = {cwd: packagerDir};
 
   if (process.platform === 'darwin') {
     if (yargV.open) {
-      return child_process.spawnSync('open', ['-a', yargV.open, launchPackagerScript]);
+      return child_process.spawnSync('open', ['-a', yargV.open, launchPackagerScript], procConfig);
     }
-    return child_process.spawnSync('open', [launchPackagerScript]);
+    return child_process.spawnSync('open', [launchPackagerScript], procConfig);
 
   } else if (process.platform === 'linux') {
+    procConfig.detached = true;
     if (yargV.open){
-      return child_process.spawn(yargV.open,['-e', 'sh', launchPackagerScript], {detached: true});
+      return child_process.spawn(yargV.open,['-e', 'sh', launchPackagerScript], procConfig);
     }
-    return child_process.spawn('xterm',['-e', 'sh', launchPackagerScript],{detached: true});
+    return child_process.spawn('sh', [launchPackagerScript], procConfig);
 
   } else if (/^win/.test(process.platform)) {
-    console.log(chalk.yellow('Starting the packager in a new window ' +
-      'is not supported on Windows yet.\nPlease start it manually using ' +
-      '\'react-native start\'.'));
-    console.log('We believe the best Windows ' +
-      'support will come from a community of people\nusing React Native on ' +
-      'Windows on a daily basis.\n' +
-      'Would you be up for sending a pull request?');
+    procConfig.detached = true;
+    procConfig.stdio = 'ignore';
+    return child_process.spawn('cmd.exe', ['/C', 'start', launchPackagerScript], procConfig);
   } else {
-    console.log(chalk.red('Cannot start the packager. Unknown platform ' +
-      process.platform));
+    console.log(chalk.red(`Cannot start the packager. Unknown platform ${process.platform}`));
   }
 }
 

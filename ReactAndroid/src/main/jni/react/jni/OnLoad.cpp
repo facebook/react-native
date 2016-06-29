@@ -3,6 +3,7 @@
 #include <android/asset_manager_jni.h>
 #include <android/input.h>
 #include <fb/log.h>
+#include <fb/glog_init.h>
 #include <folly/json.h>
 #include <jni/Countable.h>
 #include <jni/Environment.h>
@@ -15,6 +16,7 @@
 #include <react/Executor.h>
 #include <react/JSCExecutor.h>
 #include <react/JSModulesUnbundle.h>
+#include <react/MethodCall.h>
 #include <react/Platform.h>
 #include "JExecutorToken.h"
 #include "JExecutorTokenFactory.h"
@@ -202,6 +204,8 @@ jni::local_ref<ReadableNativeArray::jhybridobject> ReadableNativeArray::getArray
   }
 }
 
+// Export getMap() so we can workaround constructing ReadableNativeMap
+__attribute__((visibility("default")))
 jobject ReadableNativeArray::getMap(jint index) {
   return createReadableNativeMapWithContents(Environment::current(), array.at(index));
 }
@@ -233,7 +237,7 @@ struct WritableNativeArray
   static constexpr const char* kJavaDescriptor = "Lcom/facebook/react/bridge/WritableNativeArray;";
 
   WritableNativeArray()
-      : HybridBase(folly::dynamic({})) {}
+      : HybridBase(folly::dynamic::array()) {}
 
   static local_ref<jhybriddata> initHybrid(alias_ref<jclass>) {
     return makeCxxInstance();
@@ -647,11 +651,11 @@ public:
 
   virtual void onCallNativeModules(
       ExecutorToken executorToken,
-      std::vector<MethodCall>&& calls,
+      const std::string& callJSON,
       bool isEndOfBatch) override {
-    executeCallbackOnCallbackQueueThread([executorToken, calls, isEndOfBatch] (ResolvedWeakReference& callback) {
+    executeCallbackOnCallbackQueueThread([executorToken, callJSON, isEndOfBatch] (ResolvedWeakReference& callback) {
       JNIEnv* env = Environment::current();
-      for (auto& call : calls) {
+      for (auto& call : react::parseMethodCalls(callJSON)) {
         makeJavaCall(env, executorToken, callback, call);
         if (env->ExceptionCheck()) {
           return;
@@ -741,7 +745,7 @@ static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
 
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromAssets_read"));
   if (JniJSModulesUnbundle::isUnbundle(manager, assetNameStr)) {
-    loadApplicationUnbundle(bridge, manager, script, "file://" + assetNameStr);
+    loadApplicationUnbundle(bridge, manager, script, assetNameStr);
   } else {
     loadApplicationScript(bridge, script, "file://" + assetNameStr);
   }
@@ -779,8 +783,8 @@ static void callFunction(JNIEnv* env, jobject obj, JExecutorToken::jhybridobject
   try {
     bridge->callFunction(
       cthis(wrap_alias(jExecutorToken))->getExecutorToken(wrap_alias(jExecutorToken)),
-      (double) moduleId,
-      (double) methodId,
+      folly::to<std::string>(moduleId),
+      folly::to<std::string>(methodId),
       std::move(arguments->array),
       fromJString(env, tracingName)
     );
@@ -849,7 +853,7 @@ static void handleMemoryPressureCritical(JNIEnv* env, jobject obj) {
 
 namespace executors {
 
-std::string getDeviceCacheDir() {
+static std::string getApplicationDir(const char* methodName) {
   // Get the Application Context object
   auto getApplicationClass = findClassLocal(
                               "com/facebook/react/common/ApplicationHolder");
@@ -860,23 +864,32 @@ std::string getDeviceCacheDir() {
   auto application = getApplicationMethod(getApplicationClass);
 
   // Get getCacheDir() from the context
-  auto getCacheDirMethod = findClassLocal("android/app/Application")
-                            ->getMethod<jobject()>("getCacheDir",
-                                                   "()Ljava/io/File;"
+  auto getDirMethod = findClassLocal("android/app/Application")
+                       ->getMethod<jobject()>(methodName,
+                                              "()Ljava/io/File;"
                                                   );
-  auto cacheDirObj = getCacheDirMethod(application);
+  auto dirObj = getDirMethod(application);
 
   // Call getAbsolutePath() on the returned File object
   auto getAbsolutePathMethod = findClassLocal("java/io/File")
                                 ->getMethod<jstring()>("getAbsolutePath");
-  return getAbsolutePathMethod(cacheDirObj)->toStdString();
+  return getAbsolutePathMethod(dirObj)->toStdString();
+}
+
+static std::string getApplicationCacheDir() {
+  return getApplicationDir("getCacheDir");
+}
+
+static std::string getApplicationPersistentDir() {
+  return getApplicationDir("getFilesDir");
 }
 
 struct CountableJSCExecutorFactory : CountableJSExecutorFactory  {
 public:
   CountableJSCExecutorFactory(folly::dynamic jscConfig) : m_jscConfig(jscConfig) {}
   virtual std::unique_ptr<JSExecutor> createJSExecutor(Bridge *bridge) override {
-    return JSCExecutorFactory(getDeviceCacheDir(), m_jscConfig).createJSExecutor(bridge);
+    m_jscConfig["PersistentDirectory"] = getApplicationPersistentDir();
+    return JSCExecutorFactory(getApplicationCacheDir(), m_jscConfig).createJSExecutor(bridge);
   }
 
 private:
@@ -907,6 +920,7 @@ jmethodID getLogMarkerMethod() {
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
+    facebook::gloginit::initialize();
     // Inject some behavior into react/
     ReactMarker::logMarker = bridge::logMarker;
     WebWorkerUtil::createWebWorkerThread = WebWorkers::createWebWorkerThread;

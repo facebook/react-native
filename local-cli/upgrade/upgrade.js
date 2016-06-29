@@ -60,7 +60,7 @@ module.exports = function upgrade(args, config) {
         } else {
           console.log(
             chalk.yellow(
-              'A valid version number for \'react-native\' is not specified your \'package.json\' file.'
+              'A valid version number for \'react-native\' is not specified in your \'package.json\' file.'
             )
           );
         }

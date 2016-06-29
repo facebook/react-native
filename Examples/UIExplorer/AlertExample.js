@@ -15,14 +15,15 @@
 
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Alert,
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 
 var UIExplorerBlock = require('./UIExplorerBlock');
 

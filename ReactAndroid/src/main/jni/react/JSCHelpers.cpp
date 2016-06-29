@@ -8,7 +8,7 @@
 #include "Value.h"
 
 #if WITH_FBJSCEXTENSIONS
-#include <jsc_function_info_cache.h>
+#include <jsc_preparsing_cache.h>
 #endif
 
 namespace facebook {
@@ -35,19 +35,9 @@ JSValueRef makeJSCException(
   return JSValueToObject(ctx, exceptionString, NULL);
 }
 
-JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef source, const char *cachePath) {
+JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef source) {
   JSValueRef exn, result;
-#if WITH_FBJSCEXTENSIONS
-  if (source){
-    // If evaluating an application script, send it through `JSEvaluateScriptWithCache()`
-    //  to add cache support.
-    result = JSEvaluateScriptWithCache(context, script, NULL, source, 0, &exn, cachePath);
-  } else {
-    result = JSEvaluateScript(context, script, NULL, source, 0, &exn);
-  }
-#else
   result = JSEvaluateScript(context, script, NULL, source, 0, &exn);
-#endif
   if (result == nullptr) {
     Value exception = Value(context, exn);
     std::string exceptionText = exception.toString().str();

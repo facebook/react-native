@@ -20,7 +20,9 @@ var requireNativeComponent = require('requireNativeComponent');
 var SWITCH = 'switch';
 
 /**
- * Standard Android two-state toggle component
+ * @deprecated
+ *
+ * Use <Switch> instead for cross-platform compatibility.
  */
 var SwitchAndroid = React.createClass({
   mixins: [NativeMethodsMixin],

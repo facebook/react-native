@@ -13,6 +13,7 @@
 #import "RCTBridge+Private.h"
 #import "RCTModuleMethod.h"
 #import "RCTLog.h"
+#import "RCTProfile.h"
 #import "RCTUtils.h"
 
 @implementation RCTModuleData
@@ -36,19 +37,15 @@
   _instanceLock = [NSLock new];
 
   static IMP objectInitMethod;
-  static SEL setBridgeSelector;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     objectInitMethod = [NSObject instanceMethodForSelector:@selector(init)];
-    setBridgeSelector = NSSelectorFromString(@"setBridge:");
   });
 
-  // If a module overrides `init`, `setBridge:` then we must assume that it
-  // expects for both of those methods to be called on the main thread, because
-  // they may need to access UIKit.
-  _requiresMainThreadSetup =
-  [_moduleClass instancesRespondToSelector:setBridgeSelector] ||
-  (!_instance && [_moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod);
+  // If a module overrides `init` then we must assume that it expects to be
+  // initialized on the main thread, because it may need to access UIKit.
+  _requiresMainThreadSetup = !_instance &&
+  [_moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
 
   // If a module overrides `constantsToExport` then we must assume that it
   // must be called on the main thread, because it may need to access UIKit.
@@ -156,7 +153,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     if (!_methodQueue && _bridge.valid) {
 
       // Create new queue (store queueName, as it isn't retained by dispatch_queue)
-      _queueName = [NSString stringWithFormat:@"com.facebook.React.%@Queue", self.name];
+      _queueName = [NSString stringWithFormat:@"com.facebook.react.%@Queue", self.name];
       _methodQueue = dispatch_queue_create(_queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
 
       // assign it to the module
@@ -185,6 +182,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 - (id<RCTBridgeModule>)instance
 {
   if (!_setupComplete) {
+    RCT_PROFILE_BEGIN_EVENT(0, [NSString stringWithFormat:@"[RCTModuleData instanceForClass:%@]", _moduleClass], nil);
     if (_requiresMainThreadSetup) {
       // The chances of deadlock here are low, because module init very rarely
       // calls out to other threads, however we can't control when a module might
@@ -196,6 +194,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     } else {
       [self setUpInstanceAndBridge];
     }
+    RCT_PROFILE_END_EVENT(0, @"", nil);
   }
   return _instance;
 }
@@ -216,25 +215,29 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     }
 
     unsigned int methodCount;
-    Method *methods = class_copyMethodList(object_getClass(_moduleClass), &methodCount);
+    Class cls = _moduleClass;
+    while (cls && cls != [NSObject class] && cls != [NSProxy class]) {
+      Method *methods = class_copyMethodList(object_getClass(cls), &methodCount);
 
-    for (unsigned int i = 0; i < methodCount; i++) {
-      Method method = methods[i];
-      SEL selector = method_getName(method);
-      if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
-        IMP imp = method_getImplementation(method);
-        NSArray<NSString *> *entries =
-          ((NSArray<NSString *> *(*)(id, SEL))imp)(_moduleClass, selector);
-        id<RCTBridgeMethod> moduleMethod =
-          [[RCTModuleMethod alloc] initWithMethodSignature:entries[1]
-                                              JSMethodName:entries[0]
-                                               moduleClass:_moduleClass];
+      for (unsigned int i = 0; i < methodCount; i++) {
+        Method method = methods[i];
+        SEL selector = method_getName(method);
+        if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
+          IMP imp = method_getImplementation(method);
+          NSArray<NSString *> *entries =
+            ((NSArray<NSString *> *(*)(id, SEL))imp)(_moduleClass, selector);
+          id<RCTBridgeMethod> moduleMethod =
+            [[RCTModuleMethod alloc] initWithMethodSignature:entries[1]
+                                                JSMethodName:entries[0]
+                                                 moduleClass:_moduleClass];
 
-        [moduleMethods addObject:moduleMethod];
+          [moduleMethods addObject:moduleMethod];
+        }
       }
-    }
 
-    free(methods);
+      free(methods);
+      cls = class_getSuperclass(cls);
+    }
 
     _methods = [moduleMethods copy];
   }

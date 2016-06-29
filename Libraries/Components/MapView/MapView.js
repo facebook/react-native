@@ -16,8 +16,6 @@ const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Image = require('Image');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
-const RCTMapConfig = require('UIManager').RCTMap;
-const RCTMapConstants = RCTMapConfig && RCTMapConfig.Constants;
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
@@ -310,6 +308,21 @@ const MapView = React.createClass({
     active: React.PropTypes.bool,
   },
 
+  statics: {
+    /**
+     * Standard iOS MapView pin color constants, to be used with the
+     * `annotation.tintColor` property. On iOS 8 and earlier these are the
+     * only supported values when using regular pins. On iOS 9 and later
+     * you are not obliged to use these, but they are useful for matching
+     * the standard iOS look and feel.
+     */
+    PinColors: {
+      RED: '#ff3b30',
+      GREEN: '#4cd964',
+      PURPLE: '#c969e0',
+    },
+  },
+
   render: function() {
     let children = [], {annotations, overlays, followUserLocation} = this.props;
     annotations = annotations && annotations.map((annotation: Object) => {
@@ -338,6 +351,7 @@ const MapView = React.createClass({
         }
         var viewIndex = children.length;
         children.push(React.cloneElement(view, {
+          // $FlowFixMe - An array of styles should be fine
           style: [styles.annotationView, view.props.style || {}]
         }));
       }
@@ -490,20 +504,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
 });
-
-/**
- * Standard iOS MapView pin color constants, to be used with the
- * `annotation.tintColor` property. On iOS 8 and earlier these are the
- * only supported values when using regular pins. On iOS 9 and later
- * you are not obliged to use these, but they are useful for matching
- * the standard iOS look and feel.
- */
-const PinColors = RCTMapConstants && RCTMapConstants.PinColors;
-MapView.PinColors = PinColors && {
-  RED: PinColors.RED,
-  GREEN: PinColors.GREEN,
-  PURPLE: PinColors.PURPLE,
-};
 
 const RCTMap = requireNativeComponent('RCTMap', MapView, {
   nativeOnly: {

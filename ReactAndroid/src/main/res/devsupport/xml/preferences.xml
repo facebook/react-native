@@ -14,6 +14,12 @@
         android:defaultValue="true"
         />
     <CheckBoxPreference
+        android:key="js_minify_debug"
+        android:title="JS Minify"
+        android:summary="Load JavaScript bundle with minify=true for debugging minification issues."
+        android:defaultValue="false"
+        />
+    <CheckBoxPreference
         android:key="animations_debug"
         android:title="Animations FPS Summaries"
         android:summary="At the end of animations, Toasts and logs to logcat debug information about the FPS during that transition. Currently only supported for transitions (animated navigations)."
