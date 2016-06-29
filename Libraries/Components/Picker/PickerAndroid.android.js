@@ -40,6 +40,8 @@ type Event = Object;
  */
 var PickerAndroid = React.createClass({
 
+  _lastNativePosition: 0,
+
   propTypes: {
     ...View.propTypes,
     style: pickerStyleType,
