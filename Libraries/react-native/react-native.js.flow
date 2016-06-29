@@ -63,6 +63,7 @@ var ReactNative = {
   Slider: require('Slider'),
   SnapshotViewIOS: require('SnapshotViewIOS'),
   StatusBar: require('StatusBar'),
+  SwipeableListView: require('SwipeableListView'),
   Switch: require('Switch'),
   RecyclerViewBackedScrollView: require('RecyclerViewBackedScrollView'),
   RefreshControl: require('RefreshControl'),
