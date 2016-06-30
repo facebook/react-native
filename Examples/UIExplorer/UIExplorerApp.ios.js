@@ -139,7 +139,7 @@ class UIExplorerApp extends React.Component {
         style={styles.container}
         renderOverlay={this._renderOverlay}
         renderScene={this._renderScene}
-
+        onNavigateBack={this._handleBack}
       />
     );
   }
