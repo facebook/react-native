@@ -361,7 +361,7 @@ const TextInput = React.createClass({
      * - `focus()`
      * - `update()`
      *
-     * > You can refernce `DocumentSelectionState` in
+     * > You can reference `DocumentSelectionState` in
      * > [`vendor/document/selection/DocumentSelectionState.js`](https://github.com/facebook/react-native/blob/master/Libraries/vendor/document/selection/DocumentSelectionState.js)
      *
      * @platform ios
@@ -407,7 +407,7 @@ const TextInput = React.createClass({
      * The default value is true for single-line fields and false for
      * multiline fields. Note that for multiline fields, setting `blurOnSubmit`
      * to `true` means that pressing return will blur the field and trigger the
-     * `onSubmitEditin`g event instead of inserting a newline into the field.
+     * `onSubmitEditing` event instead of inserting a newline into the field.
      */
     blurOnSubmit: PropTypes.bool,
     /**
@@ -419,6 +419,18 @@ const TextInput = React.createClass({
      * @platform android
      */
     underlineColorAndroid: ColorPropType,
+
+    /**
+     * If defined, the provided image resource will be rendered on the left.
+     * @platform android
+     */
+    inlineImageLeft: PropTypes.string,
+
+    /**
+     * Padding between the inline image, if any, and the text input itself.
+     * @platform android
+     */
+    inlineImagePadding: PropTypes.number,
   },
 
   /**
@@ -638,6 +650,8 @@ const TextInput = React.createClass({
         selectionColor={this.props.selectionColor}
         text={this._getText()}
         underlineColorAndroid={this.props.underlineColorAndroid}
+        inlineImageLeft={this.props.inlineImageLeft}
+        inlineImagePadding={this.props.inlineImagePadding}
         children={children}
         editable={this.props.editable}
         selectTextOnFocus={this.props.selectTextOnFocus}

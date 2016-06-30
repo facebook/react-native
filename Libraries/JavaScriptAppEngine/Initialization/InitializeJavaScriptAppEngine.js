@@ -91,37 +91,17 @@ function defineLazyProperty<T>(
   name: string,
   getNewValue: () => T
 ): void {
+  const defineLazyObjectProperty = require('defineLazyObjectProperty');
+
   const descriptor = getPropertyDescriptor(object, name);
   if (descriptor) {
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
     Object.defineProperty(object, backupName, descriptor);
   }
-  const config = {
-    configurable: true,
+  defineLazyObjectProperty(object, name, {
+    get: getNewValue,
     enumerable: descriptor ? descriptor.enumerable !== false : true,
     writable: descriptor ? descriptor.writable !== false : true,
-  };
-  let value;
-  let valueSet = false;
-  function getValue(): T {
-    // WORKAROUND: A weird infinite loop occurs where calling `getValue` calls
-    // `setValue` which calls `Object.defineProperty` which somehow triggers
-    // `getValue` again. Adding `valueSet` breaks this loop.
-    if (!valueSet) {
-      setValue(getNewValue());
-    }
-    return value;
-  }
-  function setValue(newValue: T): void {
-    value = newValue;
-    valueSet = true;
-    Object.defineProperty(object, name, {...config, value: newValue});
-  }
-  Object.defineProperty(object, name, {
-    configurable: config.configurable,
-    enumerable: config.enumerable,
-    get: getValue,
-    set: setValue,
   });
 }
 

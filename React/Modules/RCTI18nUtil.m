@@ -22,26 +22,26 @@
    return sharedRCTI18nUtilInstance;
 }
 
-// If currnent using language is RTL language and meanwhile set forceRTL on the JS side,
+// If current using language is RTL language and meanwhile set allowRTL on the JS side,
 // the RN app will automatically have a RTL layout.
 - (BOOL)isRTL
 {
-  if ([self forceRTL] && [self isApplicationPreferredLanguageRTL]) {
+  if ([self allowRTL] && [self isApplicationPreferredLanguageRTL]) {
     return YES;
   }
   return NO;
 }
 
-- (BOOL)forceRTL
+- (BOOL)allowRTL
 {
   BOOL rtlStatus = [[NSUserDefaults standardUserDefaults]
-                            boolForKey:@"RCTI18nUtil_forceRTL"];
+                            boolForKey:@"RCTI18nUtil_allowRTL"];
   return rtlStatus;
 }
 
-- (void)setForceRTL:(BOOL)rtlStatus
+- (void)setAllowRTL:(BOOL)rtlStatus
 {
-  [[NSUserDefaults standardUserDefaults] setBool:rtlStatus forKey:@"RCTI18nUtil_forceRTL"];
+  [[NSUserDefaults standardUserDefaults] setBool:rtlStatus forKey:@"RCTI18nUtil_allowRTL"];
   [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
