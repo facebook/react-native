@@ -22,6 +22,8 @@ var ShadowPropTypesIOS = {
   shadowColor: ColorPropType,
   /**
    * Sets the drop shadow offset
+   * height moves the shadow up (negative) and down (positive)
+   * width moves the shadow left (negative) and right (positive)
    * @platform ios
    */
   shadowOffset: ReactPropTypes.shape(
@@ -29,11 +31,14 @@ var ShadowPropTypesIOS = {
   ),
   /**
    * Sets the drop shadow opacity (multiplied by the color's alpha component)
+   * 0 is transparent and 1 is opaque
    * @platform ios
    */
   shadowOpacity: ReactPropTypes.number,
   /**
    * Sets the drop shadow blur radius
+   * Larger numbers have larger, but lighter shadow
+   * 0 has a solid edge
    * @platform ios
    */
   shadowRadius: ReactPropTypes.number,
