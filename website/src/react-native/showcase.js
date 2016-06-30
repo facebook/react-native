@@ -276,6 +276,13 @@ var featured = [
     infoLink: 'http://www.nydailynews.com/life-style/wego-concerts-app-links-music-fans-article-1.2066776',
     infoTitle: 'Wego Concerts: Like the love child of Tinder and StubHub',
   },
+  {
+    name: 'Bdsdiet',
+    icon: 'http://s3.ap-northeast-2.amazonaws.com/bdsdiet-bucket/media/store-icon.png',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.bdsdiet_app',
+    infoLink: 'https://www.crunchbase.com/organization/bds-diet#/entity',
+    infoTitle: 'Bdsdiet provides real estate brokerage services through web and live agents in Korea.',
+  },
 ];
 
 featured.sort(function(a, b) {
