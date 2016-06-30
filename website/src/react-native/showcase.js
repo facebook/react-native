@@ -60,7 +60,7 @@ var featured = [
     icon: 'https://media.gyrosco.pe/images/magneto/180x180.png',
     linkAppStore: 'https://itunes.apple.com/app/apple-store/id1104085053?pt=117927205&ct=website&mt=8',
     infoLink: 'https://blog.gyrosco.pe/building-the-app-1dac1a97d253',
-    infoTitle: '"Our visualization experience building with React Native."',
+    infoTitle: '"Building a visualization experience with React Native."',
 
   },
   {
