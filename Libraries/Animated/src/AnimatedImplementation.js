@@ -326,7 +326,7 @@ class TimingAnimation extends Animation {
     super.stop();
     this.__active = false;
     clearTimeout(this._timeout);
-    window.cancelAnimationFrame(this._animationFrame);
+    global.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
   }
 }
@@ -396,7 +396,7 @@ class DecayAnimation extends Animation {
   stop(): void {
     super.stop();
     this.__active = false;
-    window.cancelAnimationFrame(this._animationFrame);
+    global.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
   }
 }
@@ -611,7 +611,7 @@ class SpringAnimation extends Animation {
   stop(): void {
     super.stop();
     this.__active = false;
-    window.cancelAnimationFrame(this._animationFrame);
+    global.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
   }
 }
