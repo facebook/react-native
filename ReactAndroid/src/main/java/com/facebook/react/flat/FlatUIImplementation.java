@@ -464,7 +464,6 @@ public class FlatUIImplementation extends UIImplementation {
 
   @Override
   protected void updateViewHierarchy(EventDispatcher eventDispatcher) {
-    mStateBuilder.beforeUpdateViewHierarchy();
     super.updateViewHierarchy(eventDispatcher);
     mStateBuilder.afterUpdateViewHierarchy(eventDispatcher);
   }
