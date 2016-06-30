@@ -56,6 +56,14 @@ var featured = [
     infoTitle: 'Building the F8 App',
   },
   {
+    name: 'Gyroscope',
+    icon: 'https://media.gyrosco.pe/images/magneto/180x180.png',
+    linkAppStore: 'https://itunes.apple.com/app/apple-store/id1104085053?pt=117927205&ct=website&mt=8',
+    infoLink: 'https://blog.gyrosco.pe/building-the-app-1dac1a97d253',
+    infoTitle: '"Building a visualization experience with React Native."',
+
+  },
+  {
     name: 'Discord',
     icon: 'http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg',
     linkAppStore:  'https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8',
