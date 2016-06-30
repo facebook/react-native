@@ -9,11 +9,15 @@ next: more-resources
 
 Mobile apps rarely consist of just one screen. As soon as you add a second screen to your app, you will have to take into consideration how the user will navigate from one screen to the other.
 
-You can use navigators to transition between multiple screens. These transitions can be typical side-to-side animations down a master/detail stack, or vertical modal popups. React Native has several built-in navigation components, but for your first app you will probably want to use `Navigator`. It provides a JavaScript implementation of a navigation stack, so it works on both iOS and Android and is easy to customize.
+You can use navigators to transition between multiple screens. These transitions can be typical side-to-side animations down a master/detail stack, or vertical modal popups.
 
-**some image of a navigation stack**
+## Navigator
 
-## Working with Scenes
+React Native has several built-in navigation components, but for your first app you will probably want to use `Navigator`. It provides a JavaScript implementation of a navigation stack, so it works on both iOS and Android and is easy to customize.
+
+![](img/NavigationStack-Navigator.gif)
+
+### Working with Scenes
 
 At this point you should feel comfortable rendering all sorts of components in your app, be it a simple `View` with `Text` inside, or a `ScrollView` with a list of `Image`s. Together, these components make up a scene (another word for screen) in your app.
 
@@ -21,7 +25,7 @@ A scene is nothing other than a React component that is typically rendered full 
 
 For simplicity's sake, lets define a simple scene that displays a bit of text. We will come back to this scene later as we add navigation to our app. Create a new file called "MyScene.js" with the following contents:
 
-```js
+```javascript
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 
@@ -44,7 +48,7 @@ export default class MyScene extends Component {
 
 Notice the `export default` in front of the component declaration. This will _export_ the component, and in turn allow other components to _import_ it later on, like so:
 
-```js
+```javascript
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 
@@ -63,11 +67,11 @@ AppRegistry.registerComponent('YoDawgApp', () => YoDawgApp);
 
 We now have a simple app that renders your scene and nothing else. In this case, `MyScene` is a simple example of a [reusable React component](https://facebook.github.io/react/docs/reusable-components.html).
 
-## Using Navigator
+### Using Navigator
 
 Enough about scenes, lets start navigating. We will start by rendering a `Navigator`, and then let the `Navigator` render the scene for you by passing in your own render function to its `renderScene` prop.
 
-```js
+```javascript
 render() {
   return (
     <Navigator
@@ -82,13 +86,22 @@ render() {
 
 Something you will encounter a lot when dealing with navigation is the concept of routes. A route is an object that contains information about a scene. It is used to provide all the context that the navigator's `renderScene` function needs to render a scene. In the example above, we can distinguish between different scenes through the `title` key in the route.
 
-### Pushing Scenes Onto the Stack
+#### Pushing scenes onto the stack
 
 In order to transition to a new scene, you will need to learn about `push` and `pop`. These two methods are provided by the `navigator` object that is passed to your `renderScene` function above. They can be used, as you may have realized, to push and pop routes into your navigation stack.
 
+```javascript
+navigator.push({
+  title: 'Next Scene',
+  index: 1,
+});
+
+navigator.pop();
+```
+
 A more complete example that demonstrates the pushing and popping of routes could therefore look something like this:
 
-```js
+```javascript
 import React, { Component, PropTypes } from 'react';
 import { Navigator, Text, TouchableHighlight, View } from 'react-native';
 
@@ -147,13 +160,8 @@ class MyScene extends Component {
 
 In this example, the `MyScene` component is passed the title of the current route via the `title` prop. It displays two tappable components that call the `onForward` and `onBack` functions passed through its props, which in turn will call `navigator.push()` and `navigator.pop()` as needed.
 
-## Going Deeper
+Check out the [Navigator API reference](docs/navigator.html) for more `Navigator` code samples, or read through the [Navigation guide](docs/navigation.html) for other examples of what you can do with navigators.
 
-While this is a very basic example, it can easily be adapted to render an entirely different component based on the route that is passed to the `renderScene` function. Navigator will push new scenes from the right by default, and you can control this behavior by using the `configureScene` function. You can also configure a navigation bar through the `navigationBar` prop.
-
-Check out the [Navigation guide](docs/navigation.html) for more examples of what you can do with navigators.
-
-
-# High Five!
+## High Five!
 
 If you've gotten here by reading linearly through the tutorial, then you are a pretty impressive human being. Congratulations. Next, you might want to check out [all the cool stuff the community does with React Native](/react-native/docs/more-resources.html).

@@ -7,19 +7,17 @@ permalink: docs/navigation.html
 next: performance
 ---
 
-Mobile apps rarely consist of just one scene (another word for screen). As soon as you add a second scene to your app, you will have to take into consideration how the user will navigate from one scene to the other.
-
-You can use navigators to transition between multiple scenes. These transitions can be typical side-to-side animations down a master/detail stack, or vertical modal popups.
+This guide covers the various navigation components available in React Native. If you are just getting started with navigation, I recommend you check out the
 
 ## Navigator
 
-React Native has several built-in navigation components, but for your first app you will probably want to use `Navigator`. It provides a JavaScript implementation of a navigation stack, so it works on both iOS and Android and is easy to customize. The `Navigator` component was introduced earlier in [navigators](docs/navigators.html).
+`Navigator` provides a JavaScript implementation of a navigation stack, so it works on both iOS and Android and is easy to customize. This is the same component you used to build your first navigation stack in the [navigators tutorial](docs/navigators.html).
 
 ![](img/NavigationStack-Navigator.gif)
 
-** talk about navigation bars, and iOS vs Android
+`Navigator` can easily be adapted to render different components based on the current route in its `renderScene` function. It will transition new scenes onto screen by sliding in from the right by default, but you can control this behavior by using the `configureScene` function. You can also configure a navigation bar through the `navigationBar` prop.
 
-Check out the [Navigator API reference](docs/navigator.html) for more code samples.
+Check out the [Navigator API reference](docs/navigator.html) for specific examples that cover each of these scenarios.
 
 ## NavigatorIOS
 
@@ -27,7 +25,7 @@ If you are targeting iOS only, you may also want to consider using [NavigatorIOS
 
 ![](img/NavigationStack-NavigatorIOS.gif)
 
-```js
+```javascript
 <NavigatorIOS
   initialRoute={{
     component: MyScene,
@@ -37,13 +35,11 @@ If you are targeting iOS only, you may also want to consider using [NavigatorIOS
 />
 ```
 
-Just like Navigator, NavigatorIOS uses routes to represent scenes, with some important differences. The actual component that will be rendered can be specified using the `component` key in the route, and any props that should be passed to this component can be specified in `passProps`. A "navigator" object is automatically passed as a prop to the component, allowing you to call `push` and `pop` as needed.
+Just like `Navigator`, `NavigatorIOS` uses routes to represent scenes, with some important differences. The actual component that will be rendered can be specified using the `component` key in the route, and any props that should be passed to this component can be specified in `passProps`. A "navigator" object is automatically passed as a prop to the component, allowing you to call `push` and `pop` as needed.
 
-As NavigatorIOS leverages native UIKit navigation, it will automatically render a navigation bar with a back button and title.
+As `NavigatorIOS` leverages native UIKit navigation, it will automatically render a navigation bar with a back button and title.
 
-Check out the [NavigatorIOS reference docs](docs/navigatorios.html) to learn more about this component.
-
-```js
+```javascript
 import React, { Component, PropTypes } from 'react';
 import { NavigatorIOS, Text, TouchableHighlight, View } from 'react-native';
 
@@ -91,13 +87,15 @@ class MyScene extends Component {
 }
 ```
 
+Check out the [`NavigatorIOS` reference docs](docs/navigatorios.html) to learn more about this component.
+
 > You may also want to check out [react-native-navigation](https://github.com/wix/react-native-navigation), a component that aims to provide native navigation on both iOS and Android.
 
 ## NavigationExperimental
 
-Navigator and NavigatorIOS are both stateful components. If your app has multiple of these, it can become tricky to coordinate navigation transitions between them. NavigationExperimental provides a different approach to navigation, allowing any view to act as a navigation view and using reducers to manipulate state at a top-level object. It is bleeding edge as the name implies, but you might want to check it out if you are craving greater control over your app's navigation.
+`Navigator` and `NavigatorIOS` are both stateful components. If your app has multiple of these, it can become tricky to coordinate navigation transitions between them. NavigationExperimental provides a different approach to navigation, allowing any view to act as a navigation view and using reducers to manipulate state at a top-level object. It is bleeding edge as the name implies, but you might want to check it out if you are craving greater control over your app's navigation.
 
-```js
+```javascript
 <NavigationCardStack
   onNavigateBack={onPopRouteFunc}
   navigationState={myNavigationState}
@@ -105,9 +103,9 @@ Navigator and NavigatorIOS are both stateful components. If your app has multipl
 />
 ```
 
-You can import NavigationExperimental like any other component in React Native. Once you have that, you can deconstruct any additional components from NavigationExperimental that you may find useful. Since I am feeling like building navigation stacks today, I'll go ahead and pick out NavigationCardStack and NavigationStateUtils.
+You can import `NavigationExperimental` like any other component in React Native. Once you have that, you can deconstruct any additional components from `NavigationExperimental` that you may find useful. Since I am feeling like building navigation stacks today, I'll go ahead and pick out `NavigationCardStack` and `NavigationStateUtils`.
 
-```js
+```javascript
 import React, { Component } from 'react';
 import { NavigationExperimental } from 'react-native';
 
@@ -117,13 +115,13 @@ const {
 } = NavigationExperimental;
 ```
 
-As I said earlier, NavigationExperimental takes a different approach than Navigator and NavigatorIOS. Using it to build a navigation stack requires a few more steps than the stateful components, but the payoff is worth it.
+As I said earlier, `NavigationExperimental` takes a different approach than `Navigator` and `NavigatorIOS`. Using it to build a navigation stack requires a few more steps than the stateful components, but the payoff is worth it.
 
 ### Step 1. Define Initial State and Top Level Component
 
 Create a new component for your application. This will be the top-level object, so we will define the initial state here. The navigation state will be defined in the `navigationState` key, where we define our initial route:
 
-```js
+```javascript
 class BleedingEdgeApplication extends Component {
   constructor(props, context) {
     super(props, context);
@@ -162,7 +160,7 @@ NavigationExperimental comes built-in with a some useful reducers, and they are 
 
 We can use them to write our `_onNavigationChange` function which, given a "push" or "pop" action, will reduce the state accordingly.
 
-```js
+```javascript
 _onNavigationChange(type) {
   // Extract the navigationState from the current state:
   let {navigationState} = this.state;
@@ -202,7 +200,7 @@ I am still missing the initial scene that will be rendered (as well as the actua
 
 First I want to define a Row component out of convenience. It displays some text and can call some function when pressed.
 
-```js
+```javascript
 class TappableRow extends Component {
   render() {
     return (
@@ -221,7 +219,7 @@ class TappableRow extends Component {
 
 Now I will define my actual scene. It uses a scroll view to display a vertical list of items. The first row displays the current route's key, and two more rows will call our theoretical navigator's push and pop functions.
 
-```js
+```javascript
 class MyVeryComplexScene extends Component {
   render() {
     return (
@@ -247,7 +245,7 @@ class MyVeryComplexScene extends Component {
 
 Now that I have defined the state and a function to manage it, I think I can go ahead and create a proper navigator component now. While I'm at it, I'll render my scene after configuring it with the current route's props.
 
-```js
+```javascript
 class MyVerySimpleNavigator extends Component {
 
   // This sets up the methods (e.g. Pop, Push) for navigation.
@@ -292,7 +290,7 @@ class MyVerySimpleNavigator extends Component {
 
 That's it -- so close to the finish line I can smell it. Lets plug our new navigator into our top-level component:
 
-```js
+```javascript
 class BleedingEdgeApplication extends Component {
 
   // constructor and other methods omitted for clarity
@@ -315,7 +313,7 @@ We're done! Bask in the glory of NavigationExperimental.
 
 (Oh yes, sorry about that -- here's our missing imports and styles.)
 
-```js
+```javascript
 import { NavigationExperimental, PixelRatio, ScrollView, StyleSheet, Text, TouchableHighlight } from 'react-native';
 
 const styles = StyleSheet.create({
