@@ -141,9 +141,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    * CatalystApplicationFragment as an example.
    *
    * TODO(6242243): Make addMeasuredRootView thread safe
-   * NB: this method is horribly not-thread-safe, the only reason it works right now is because
-   * it's called exactly once and is called before any JS calls are made. As soon as that fact no
-   * longer holds, this method will need to be fixed.
+   * NB: this method is horribly not-thread-safe.
    */
   public int addMeasuredRootView(final SizeMonitoringFrameLayout rootView) {
     final int tag = mNextRootViewTag;
