@@ -3,7 +3,7 @@ id: navigators
 title: Using Navigators
 layout: docs
 category: The Basics
-permalink: docs/navigators.html
+permalink: docs/using-navigators.html
 next: more-resources
 ---
 
@@ -23,7 +23,7 @@ At this point you should feel comfortable rendering all sorts of components in y
 
 A scene is nothing other than a React component that is typically rendered full screen. This is in contrast to a `Text`, an `Image`, or even a custom `SpinningBeachball` component that is meant to be rendered as part of a screen. You may have already used one without realizing it - the ["HelloWorldApp"](docs/tutorial.html), the ["FlexDirectionBasics"](docs/flexbox.html), and the ["ListViewBasics"](docs/using-a-listview.html) components covered earlier in the tutorial are all examples of scenes.
 
-For simplicity's sake, lets define a simple scene that displays a bit of text. We will come back to this scene later as we add navigation to our app. Create a new file called "MyScene.js" with the following contents:
+For simplicity's sake, let's define a simple scene that displays a bit of text. We will come back to this scene later as we add navigation to our app. Create a new file called "MyScene.js" with the following contents:
 
 ```javascript
 import React, { Component } from 'react';
@@ -69,7 +69,7 @@ We now have a simple app that renders your scene and nothing else. In this case,
 
 ### Using Navigator
 
-Enough about scenes, lets start navigating. We will start by rendering a `Navigator`, and then let the `Navigator` render the scene for you by passing in your own render function to its `renderScene` prop.
+Enough about scenes, let's start navigating. We will start by rendering a `Navigator`, and then let the `Navigator` render the scene for you by passing in your own render function to its `renderScene` prop.
 
 ```javascript
 render() {

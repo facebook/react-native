@@ -7,7 +7,7 @@ permalink: docs/navigation.html
 next: performance
 ---
 
-This guide covers the various navigation components available in React Native. If you are just getting started with navigation, I recommend you check out the
+This guide covers the various navigation components available in React Native. If you are just getting started with navigation, you will probably want to use  `Navigator`. If you are only targeting iOS and would like to stick to the native look and feel, check out `NavigatorIOS`. If you are looking for greater control over your navigation stack, you can't go wrong with `NavigationExperimental`.
 
 ## Navigator
 
@@ -15,7 +15,7 @@ This guide covers the various navigation components available in React Native. I
 
 ![](img/NavigationStack-Navigator.gif)
 
-`Navigator` can easily be adapted to render different components based on the current route in its `renderScene` function. It will transition new scenes onto screen by sliding in from the right by default, but you can control this behavior by using the `configureScene` function. You can also configure a navigation bar through the `navigationBar` prop.
+`Navigator` can easily be adapted to render different components based on the current route in its `renderScene` function. It will transition new scenes onto the screen by sliding in from the right by default, but you can control this behavior by using the `configureScene` function. You can also configure a navigation bar through the `navigationBar` prop.
 
 Check out the [Navigator API reference](docs/navigator.html) for specific examples that cover each of these scenarios.
 
@@ -194,7 +194,7 @@ _onNavigationChange(type) {
 
 Cool. I'm getting the hang of this. This is the heart of NavigationExperimental. We are only handling two actions here, but a more complex application could also take into account a "back" action (e.g. Android back button), as well as handle the transition between several tabs in a tabbed application.
 
-I am still missing the initial scene that will be rendered (as well as the actual navigator that will wrap it, but lets not get ahead of ourselves).
+I am still missing the initial scene that will be rendered (as well as the actual navigator that will wrap it, but let's not get ahead of ourselves).
 
 ### Step 3. Define Scenes
 
@@ -288,7 +288,7 @@ class MyVerySimpleNavigator extends Component {
 }
 ```
 
-That's it -- so close to the finish line I can smell it. Lets plug our new navigator into our top-level component:
+That's it -- so close to the finish line I can smell it. Let's plug our new navigator into our top-level component:
 
 ```javascript
 class BleedingEdgeApplication extends Component {
