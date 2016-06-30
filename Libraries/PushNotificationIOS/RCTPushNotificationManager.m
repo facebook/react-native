@@ -27,6 +27,13 @@
 NSString *const RCTLocalNotificationReceived = @"LocalNotificationReceived";
 NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
 NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegistered";
+NSString *const RCTRegisterUserNotificationSettings = @"RegisterUserNotificationSettings";
+
+NSString *const RCTErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMISSIONS";
+
+@interface RCTPushNotificationManager ()
+@property (nonatomic, copy) RCTPromiseResolveBlock requestPermissionsResolveBlock;
+@end
 
 @implementation RCTConvert (UILocalNotification)
 
@@ -52,17 +59,8 @@ NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegister
 
 RCT_EXPORT_MODULE()
 
-@synthesize bridge = _bridge;
-
-- (void)dealloc
+- (void)startObserving
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)setBridge:(RCTBridge *)bridge
-{
-  _bridge = bridge;
-
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleLocalNotificationReceived:)
                                                name:RCTLocalNotificationReceived
@@ -75,12 +73,30 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(handleRemoteNotificationsRegistered:)
                                                name:RCTRemoteNotificationsRegistered
                                              object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleRegisterUserNotificationSettings:)
+                                               name:RCTRegisterUserNotificationSettings
+                                             object:nil];
 }
 
+- (void)stopObserving
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[@"localNotificationReceived",
+           @"remoteNotificationReceived",
+           @"remoteNotificationsRegistered"];
+}
+
+// TODO: Once all JS call sites for popInitialNotification have
+// been removed we can get rid of this
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
   NSDictionary<NSString *, id> *initialNotification =
-    [_bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] copy];
+    [self.bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] copy];
   return @{@"initialNotification": RCTNullIfNil(initialNotification)};
 }
 
@@ -88,6 +104,9 @@ RCT_EXPORT_MODULE()
 {
   if ([UIApplication instancesRespondToSelector:@selector(registerForRemoteNotifications)]) {
     [[UIApplication sharedApplication] registerForRemoteNotifications];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTRegisterUserNotificationSettings
+                                                        object:self
+                                                      userInfo:@{@"notificationSettings": notificationSettings}];
   }
 }
 
@@ -127,20 +146,34 @@ RCT_EXPORT_MODULE()
 
 - (void)handleLocalNotificationReceived:(NSNotification *)notification
 {
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"localNotificationReceived"
-                                              body:notification.userInfo];
+  [self sendEventWithName:@"localNotificationReceived" body:notification.userInfo];
 }
 
 - (void)handleRemoteNotificationReceived:(NSNotification *)notification
 {
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationReceived"
-                                              body:notification.userInfo];
+  [self sendEventWithName:@"remoteNotificationReceived" body:notification.userInfo];
 }
 
 - (void)handleRemoteNotificationsRegistered:(NSNotification *)notification
 {
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationsRegistered"
-                                              body:notification.userInfo];
+  [self sendEventWithName:@"remoteNotificationsRegistered" body:notification.userInfo];
+}
+
+- (void)handleRegisterUserNotificationSettings:(NSNotification *)notification
+{
+  if (self.requestPermissionsResolveBlock == nil) {
+    return;
+  }
+
+  UIUserNotificationSettings *notificationSettings = notification.userInfo[@"notificationSettings"];
+  NSDictionary *notificationTypes = @{
+    @"alert": @((notificationSettings.types & UIUserNotificationTypeAlert) > 0),
+    @"sound": @((notificationSettings.types & UIUserNotificationTypeSound) > 0),
+    @"badge": @((notificationSettings.types & UIUserNotificationTypeBadge) > 0),
+  };
+
+  self.requestPermissionsResolveBlock(notificationTypes);
+  self.requestPermissionsResolveBlock = nil;
 }
 
 /**
@@ -159,11 +192,21 @@ RCT_EXPORT_METHOD(getApplicationIconBadgeNumber:(RCTResponseSenderBlock)callback
   callback(@[@(RCTSharedApplication().applicationIconBadgeNumber)]);
 }
 
-RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions)
+RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
 {
   if (RCTRunningInAppExtension()) {
+    reject(RCTErrorUnableToRequestPermissions, nil, RCTErrorWithMessage(@"Requesting push notifications is currently unavailable in an app extension"));
     return;
   }
+
+  if (self.requestPermissionsResolveBlock != nil) {
+    RCTLogError(@"Cannot call requestPermissions twice before the first has returned.");
+    return;
+  }
+
+  self.requestPermissionsResolveBlock = resolve;
 
   UIUserNotificationType types = UIUserNotificationTypeNone;
   if (permissions) {
@@ -252,6 +295,14 @@ RCT_EXPORT_METHOD(cancelLocalNotifications:(NSDictionary *)userInfo)
       [[UIApplication sharedApplication] cancelLocalNotification:notification];
     }
   }
+}
+
+RCT_EXPORT_METHOD(getInitialNotification:(RCTPromiseResolveBlock)resolve
+                  reject:(__unused RCTPromiseRejectBlock)reject)
+{
+  NSDictionary<NSString *, id> *initialNotification =
+    [self.bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] copy];
+  resolve(RCTNullIfNil(initialNotification));
 }
 
 @end

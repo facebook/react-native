@@ -19,7 +19,7 @@ type SimpleTask = {
 };
 type PromiseTask = {
   name: string;
-  gen: () => Promise;
+  gen: () => Promise<any>;
 };
 export type Task = Function | SimpleTask | PromiseTask;
 

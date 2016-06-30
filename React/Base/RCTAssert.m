@@ -156,8 +156,19 @@ NSString *RCTFormatError(NSString *message, NSArray<NSDictionary<NSString *, id>
   NSMutableString *prettyStack = [NSMutableString string];
   if (stackTrace) {
     [prettyStack appendString:@", stack:\n"];
+
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^(\\d+\\.js)$"
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:NULL];
     for (NSDictionary<NSString *, id> *frame in stackTrace) {
-      [prettyStack appendFormat:@"%@@%@:%@\n", frame[@"methodName"], frame[@"lineNumber"], frame[@"column"]];
+      NSString *fileName = [frame[@"file"] lastPathComponent];
+      if (fileName && [regex numberOfMatchesInString:fileName options:0 range:NSMakeRange(0, [fileName length])]) {
+        fileName = [fileName stringByAppendingString:@":"];
+      } else {
+        fileName = @"";
+      }
+
+      [prettyStack appendFormat:@"%@@%@%@:%@\n", frame[@"methodName"], fileName, frame[@"lineNumber"], frame[@"column"]];
     }
   }
 

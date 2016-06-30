@@ -32,6 +32,7 @@ public class ReactProgressBarViewManager extends
   /* package */ static final String PROP_STYLE = "styleAttr";
   /* package */ static final String PROP_INDETERMINATE = "indeterminate";
   /* package */ static final String PROP_PROGRESS = "progress";
+  /* package */ static final String PROP_ANIMATING = "animating";
 
   /* package */ static final String REACT_CLASS = "AndroidProgressBar";
   /* package */ static final String DEFAULT_STYLE = "Normal";
@@ -77,6 +78,11 @@ public class ReactProgressBarViewManager extends
   @ReactProp(name = PROP_PROGRESS)
   public void setProgress(ProgressBarContainerView view, double progress) {
     view.setProgress(progress);
+  }
+
+  @ReactProp(name = PROP_ANIMATING)
+  public void setAnimating(ProgressBarContainerView view, boolean animating) {
+    view.setAnimating(animating);
   }
 
   @Override

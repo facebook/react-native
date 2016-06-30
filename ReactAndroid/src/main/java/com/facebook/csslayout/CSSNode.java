@@ -7,7 +7,7 @@
  */
 
 // NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<e87a0b3f12fe2e671deb259075a51dc0>>
+// @generated SignedSource<<67fbba6df7c2472877c7b04327fb1863>>
 
 package com.facebook.csslayout;
 
@@ -66,9 +66,8 @@ public class CSSNode {
 
   public int lineIndex = 0;
 
-  /*package*/ CSSNode nextAbsoluteChild;
-  /*package*/ CSSNode nextFlexChild;
-
+  /*package*/ CSSNode nextChild;
+  
   private @Nullable ArrayList<CSSNode> mChildren;
   private @Nullable CSSNode mParent;
   private @Nullable MeasureFunction mMeasureFunction = null;
@@ -142,7 +141,6 @@ public class CSSNode {
    * Performs the actual layout and saves the results in {@link #layout}
    */
   public void calculateLayout(CSSLayoutContext layoutContext) {
-    layout.resetResult();
     LayoutEngine.layoutNode(layoutContext, this, CSSConstants.UNDEFINED, CSSConstants.UNDEFINED, null);
   }
 

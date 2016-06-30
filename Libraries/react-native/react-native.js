@@ -10,11 +10,11 @@
  */
 'use strict';
 
-var warning = require('fbjs/lib/warning');
+const warning = require('fbjs/lib/warning');
 
 if (__DEV__) {
-  var warningDedupe = {};
-  var addonWarn = function(prevName, newPackageName) {
+  const warningDedupe = {};
+  const addonWarn = function(prevName, newPackageName) {
     warning(
       warningDedupe[prevName],
       'React.addons.' + prevName + ' is deprecated. Please import the "' +
@@ -25,8 +25,9 @@ if (__DEV__) {
 }
 
 // Export React, plus some native additions.
-var ReactNative = {
+const ReactNative = {
   // Components
+  // get ActivityIndicator() { return require('ActivityIndicator'); },
   // get ActivityIndicatorIOS() { return require('ActivityIndicatorIOS'); },
   // get ART() { return require('ReactNativeART'); },
   // get DatePickerIOS() { return require('DatePickerIOS'); },
@@ -49,7 +50,6 @@ var ReactNative = {
   // get SliderIOS() { return require('SliderIOS'); },
   // get SnapshotViewIOS() { return require('SnapshotViewIOS'); },
   get Switch() { return require('Switch'); },
-  // get PullToRefreshViewAndroid() { return require('PullToRefreshViewAndroid'); },
   // get RecyclerViewBackedScrollView() { return require('RecyclerViewBackedScrollView'); },
   // get RefreshControl() { return require('RefreshControl'); },
   get StatusBar() { return require('StatusBar'); },
@@ -88,9 +88,11 @@ var ReactNative = {
   get ImagePickerIOS() { return require('ImagePickerIOS'); },
   // get IntentAndroid() { return require('IntentAndroid'); },
   get InteractionManager() { return require('InteractionManager'); },
+  get Keyboard() { return require('Keyboard'); },
   get LayoutAnimation() { return require('LayoutAnimation'); },
   get Linking() { return require('Linking'); },
   get LinkingIOS() { return require('LinkingIOS'); },
+  // get NativeEventEmitter() { return require('NativeEventEmitter'); },
   // get NavigationExperimental() { return require('NavigationExperimental'); },
   get NetInfo() { return require('NetInfo'); },
   get PanResponder() { return require('PanResponder'); },
@@ -99,6 +101,7 @@ var ReactNative = {
   // get Settings() { return require('Settings'); },
   get StatusBarIOS() { return require('StatusBarIOS'); },
   get StyleSheet() { return require('StyleSheet'); },
+  // get Systrace() { return require('Systrace'); },
   // get TimePickerAndroid() { return require('TimePickerAndroid'); },
   get UIManager() { return require('UIManager'); },
   // get Vibration() { return require('Vibration'); },
@@ -170,6 +173,20 @@ var ReactNative = {
   },
 };
 
+// Better error messages when accessing React APIs on ReactNative
+if (__DEV__) {
+  const throwOnWrongReactAPI = require('throwOnWrongReactAPI');
+  const reactAPIs = [ 'createClass', 'Component' ];
+
+  for (const key of reactAPIs) {
+    Object.defineProperty(ReactNative, key, {
+      get() { throwOnWrongReactAPI(key); },
+      enumerable: false,
+      configurable: false
+    });
+  }
+}
+
 // Preserve getters with warnings on the internal ReactNative copy without
 // invoking them.
 // [Even] changed import to not conflict with ReactDOM
@@ -185,7 +202,7 @@ function applyForwarding(key) {
   }
   ReactNative[key] = ReactNativeInternal[key];
 }
-for (var key in ReactNativeInternal) {
+for (const key in ReactNativeInternal) {
   applyForwarding(key);
 }
 
@@ -196,7 +213,7 @@ if (__DEV__) {
       if (__DEV__) {
         addonWarn('Perf', 'react-addons-perf');
       }
-      return require('ReactDefaultPerf');
+      return require('ReactPerf');
     }
   });
   Object.defineProperty(ReactNative.addons, 'TestUtils', {

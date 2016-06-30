@@ -14,14 +14,19 @@ var HeaderWithGithub = require('HeaderWithGithub');
 var Marked = require('Marked');
 var React = require('React');
 var Site = require('Site');
+var Metadata = require('Metadata');
 
 var DocsLayout = React.createClass({
   childContextTypes: {
-    permalink: React.PropTypes.string
+    permalink: React.PropTypes.string,
+    version: React.PropTypes.string
   },
 
   getChildContext: function() {
-    return {permalink: this.props.metadata.permalink};
+    return {
+      permalink: this.props.metadata.permalink,
+      version: Metadata.config.RN_VERSION || 'next'
+    };
   },
 
   render: function() {
@@ -42,6 +47,15 @@ var DocsLayout = React.createClass({
             <div className="docs-prevnext">
               {metadata.previous && <a className="docs-prev" href={'docs/' + metadata.previous + '.html#content'}>&larr; Prev</a>}
               {metadata.next && <a className="docs-next" href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>}
+            </div>
+            <div className="survey">
+              <div className="survey-image" />
+              <p>
+                We are planning improvements to the React Native documentation. Your responses to this short survey will go a long way in helping us provide valuable content. Thank you!
+              </p>
+              <center>
+                <a className="button" href="https://www.facebook.com/survey?oid=681969738611332">Take Survey</a>
+              </center>
             </div>
           </div>
         </section>

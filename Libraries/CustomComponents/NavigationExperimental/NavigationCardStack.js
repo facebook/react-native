@@ -35,7 +35,6 @@
 const NavigationAnimatedView = require('NavigationAnimatedView');
 const NavigationCard = require('NavigationCard');
 const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleInterpolator');
-const NavigationContainer = require('NavigationContainer');
 const NavigationCardStackPanResponder = require('NavigationCardStackPanResponder');
 const NavigationPropTypes = require('NavigationPropTypes');
 const React = require('React');
@@ -48,7 +47,8 @@ const {PropTypes} = React;
 const {Directions} = NavigationCardStackPanResponder;
 
 import type {
-  NavigationParentState,
+  NavigationActionCaller,
+  NavigationState,
   NavigationSceneRenderer,
   NavigationSceneRendererProps,
 } from 'NavigationTypeDefinition';
@@ -59,7 +59,8 @@ import type {
 
 type Props = {
   direction: NavigationGestureDirection,
-  navigationState: NavigationParentState,
+  navigationState: NavigationState,
+  onNavigate: NavigationActionCaller,
   renderOverlay: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
 };
@@ -88,7 +89,8 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
 
   static propTypes = {
     direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
-    navigationState: NavigationPropTypes.navigationParentState.isRequired,
+    navigationState: NavigationPropTypes.navigationState.isRequired,
+    onNavigate: NavigationPropTypes.SceneRendererProps.onNavigate,
     renderOverlay: PropTypes.func,
     renderScene: PropTypes.func.isRequired,
   };
@@ -114,19 +116,20 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     );
   }
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     return (
       <NavigationAnimatedView
         navigationState={this.props.navigationState}
         renderOverlay={this.props.renderOverlay}
         renderScene={this._renderScene}
+        onNavigate={this.props.onNavigate}
         // $FlowFixMe - style should be declared
         style={[styles.animatedView, this.props.style]}
       />
     );
   }
 
-  _renderScene(props: NavigationSceneRendererProps): ReactElement {
+  _renderScene(props: NavigationSceneRendererProps): ReactElement<any> {
     const isVertical = this.props.direction === 'vertical';
 
     const style = isVertical ?
@@ -155,4 +158,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = NavigationContainer.create(NavigationCardStack);
+module.exports = NavigationCardStack;

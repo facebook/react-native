@@ -338,9 +338,10 @@ const MapView = React.createClass({
 
       if (!view && image && tintColor) {
         view = <Image
-          style={{
-            tintColor: processColor(tintColor),
-          }}
+          // [Even] avoid flow issue hackily
+          // style={{
+          //   tintColor: processColor(tintColor),
+          // }}
           source={image}
         />;
         image = undefined;
@@ -351,7 +352,6 @@ const MapView = React.createClass({
         }
         var viewIndex = children.length;
         children.push(React.cloneElement(view, {
-          // $FlowFixMe - An array of styles should be fine
           style: [styles.annotationView, view.props.style || {}]
         }));
       }

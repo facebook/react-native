@@ -27,7 +27,6 @@ const React = require('react');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TextInput = require('TextInput');
-const NavigationContainer = require('NavigationContainer');
 const TouchableHighlight = require('TouchableHighlight');
 const View = require('View');
 const UIExplorerActions = require('./UIExplorerActions');
@@ -56,7 +55,14 @@ class UIExplorerExampleList extends React.Component {
   }) {
 
   }
-  render(): ?ReactElement {
+
+  static makeRenderable(example: any): ReactClass<any> {
+    return example.examples ?
+      createExamplePage(null, example) :
+      example;
+  }
+
+  render(): ?ReactElement<any> {
     const filterText = this.props.filter || '';
     const filterRegex = new RegExp(String(filterText), 'i');
     const filter = (example) => filterRegex.test(example.module.title);
@@ -82,7 +88,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderTitleRow(): ?ReactElement {
+  _renderTitleRow(): ?ReactElement<any> {
     if (!this.props.displayTitleRow) {
       return null;
     }
@@ -98,7 +104,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderTextInput(): ?ReactElement {
+  _renderTextInput(): ?ReactElement<any> {
     if (this.props.disableSearch) {
       return null;
     }
@@ -120,7 +126,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderSectionHeader(data: any, section: string): ?ReactElement {
+  _renderSectionHeader(data: any, section: string): ?ReactElement<any> {
     return (
       <Text style={styles.sectionHeader}>
         {section.toUpperCase()}
@@ -128,7 +134,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderExampleRow(example: {key: string, module: Object}): ?ReactElement {
+  _renderExampleRow(example: {key: string, module: Object}): ?ReactElement<any> {
     return this._renderRow(
       example.module.title,
       example.module.description,
@@ -137,7 +143,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderRow(title: string, description: string, key: ?string, handler: ?Function): ?ReactElement {
+  _renderRow(title: string, description: string, key: ?string, handler: ?Function): ?ReactElement<any> {
     return (
       <View key={key || title}>
         <TouchableHighlight onPress={handler}>
@@ -159,15 +165,6 @@ class UIExplorerExampleList extends React.Component {
     this.props.onNavigate(UIExplorerActions.ExampleAction(exampleKey));
   }
 }
-
-function makeRenderable(example: any): ReactClass<any> {
-  return example.examples ?
-    createExamplePage(null, example) :
-    example;
-}
-
-UIExplorerExampleList = NavigationContainer.create(UIExplorerExampleList);
-UIExplorerExampleList.makeRenderable = makeRenderable;
 
 const styles = StyleSheet.create({
   listContainer: {

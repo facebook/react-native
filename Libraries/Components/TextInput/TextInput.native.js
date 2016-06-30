@@ -121,6 +121,7 @@ var TextInput = React.createClass({
      * Determines which keyboard to open, e.g.`numeric`.
      *
      * The following values work across platforms:
+     *
      * - default
      * - numeric
      * - email-address
@@ -151,22 +152,54 @@ var TextInput = React.createClass({
       'dark',
     ]),
     /**
-     * Determines how the return key should look.
-     * @platform ios
+     * Determines how the return key should look. On Android you can also use
+     * `returnKeyLabel`.
+     *
+     * The following values work across platforms:
+     *
+     * - done
+     * - go
+     * - next
+     * - search
+     * - send
+     *
+     * The following values work on Android only:
+     *
+     * - none
+     * - previous
+     *
+     * The following values work on iOS only:
+     *
+     * - default
+     * - emergency-call
+     * - google
+     * - join
+     * - route
+     * - yahoo
      */
     returnKeyType: PropTypes.oneOf([
-      'default',
+      // Cross-platform
+      'done',
       'go',
-      'google',
-      'join',
       'next',
-      'route',
       'search',
       'send',
-      'yahoo',
-      'done',
+      // Android-only
+      'none',
+      'previous',
+      // iOS-only
+      'default',
       'emergency-call',
+      'google',
+      'join',
+      'route',
+      'yahoo',
     ]),
+    /**
+     * Sets the return key to the label. Use it instead of `returnKeyType`.
+     * @platform android
+     */
+     returnKeyLabel: PropTypes.string,
     /**
      * Limits the maximum number of characters that can be entered. Use this
      * instead of implementing the logic in JS to avoid flicker.
@@ -338,8 +371,10 @@ var TextInput = React.createClass({
   },
 
   _focusSubscription: (undefined: ?Function),
+  _lastNativeText: (undefined: ?string),
 
   componentDidMount: function() {
+    this._lastNativeText = this.props.value;
     if (!this.context.focusEmitter) {
       if (this.props.autoFocus) {
         this.requestAnimationFrame(this.focus);
@@ -537,6 +572,8 @@ var TextInput = React.createClass({
         editable={this.props.editable}
         selectTextOnFocus={this.props.selectTextOnFocus}
         manualInput={this.props.manualInput}
+        returnKeyType={this.props.returnKeyType}
+        returnKeyLabel={this.props.returnKeyLabel}
       />;
 
     return (
@@ -584,10 +621,15 @@ var TextInput = React.createClass({
       return;
     }
 
+    this._lastNativeText = text;
+    this.forceUpdate();
+  },
+
+  componentDidUpdate: function () {
     // This is necessary in case native updates the text and JS decides
     // that the update should be ignored and we should stick with the value
     // that we have in JS.
-    if (text !== this.props.value && typeof this.props.value === 'string') {
+    if (this._lastNativeText !== this.props.value && typeof this.props.value === 'string') {
       this.refs.input.setNativeProps({
         text: this.props.value,
       });

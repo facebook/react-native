@@ -531,4 +531,43 @@ exports.examples = [
       return <TokenizedTextExample />;
     }
   },
+  {
+    title: 'Return key',
+    render: function() {
+      var returnKeyTypes = [
+        'none',
+        'go',
+        'search',
+        'send',
+        'done',
+        'previous',
+        'next',
+      ];
+      var returnKeyLabels = [
+        'Compile',
+        'React Native',
+      ];
+      var examples = returnKeyTypes.map((type) => {
+        return (
+          <TextInput
+            key={type}
+            returnKeyType={type}
+            placeholder={'returnKeyType: ' + type}
+            style={styles.singleLine}
+          />
+        );
+      });
+      var types = returnKeyLabels.map((type) => {
+        return (
+          <TextInput
+            key={type}
+            returnKeyLabel={type}
+            placeholder={'returnKeyLabel: ' + type}
+            style={styles.singleLine}
+          />
+        );
+      });
+      return <View>{examples}{types}</View>;
+    }
+  },
 ];

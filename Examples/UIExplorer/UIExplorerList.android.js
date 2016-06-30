@@ -24,6 +24,10 @@ export type UIExplorerExample = {
 
 var ComponentExamples: Array<UIExplorerExample> = [
   {
+    key: 'ActivityIndicatorExample',
+    module: require('./ActivityIndicatorExample'),
+  },
+  {
     key: 'SliderExample',
     module: require('./SliderExample'),
   },
@@ -40,8 +44,8 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ModalExample'),
   },
   {
-    key: 'PickerAndroidExample',
-    module: require('./PickerAndroidExample'),
+    key: 'PickerExample',
+    module: require('./PickerExample'),
   },
   {
     key: 'ProgressBarAndroidExample',

@@ -1565,10 +1565,14 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
     scheme = @"http";
   }
 
-  if (self.port) {
-    return [NSString stringWithFormat:@"%@://%@:%@/", scheme, self.host, self.port];
+  int defaultPort = ([scheme isEqualToString:@"https"] ? 443 :
+                     [scheme isEqualToString:@"http"] ? 80 :
+                     -1);
+  int port = self.port.intValue;
+  if (port > 0 && port != defaultPort) {
+    return [NSString stringWithFormat:@"%@://%@:%d", scheme, self.host, port];
   } else {
-    return [NSString stringWithFormat:@"%@://%@/", scheme, self.host];
+    return [NSString stringWithFormat:@"%@://%@", scheme, self.host];
   }
 }
 
