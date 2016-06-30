@@ -32,7 +32,7 @@ class BundleBase {
 
   addModule(module) {
     if (!(module instanceof ModuleTransport)) {
-      throw new Error('Expeceted a ModuleTransport object');
+      throw new Error('Expected a ModuleTransport object');
     }
 
     return this._modules.push(module) - 1;
@@ -60,9 +60,8 @@ class BundleBase {
 
   finalize(options) {
     Object.freeze(this._modules);
-    Object.seal(this._modules);
     Object.freeze(this._assets);
-    Object.seal(this._assets);
+
     this._finalized = true;
   }
 
@@ -97,9 +96,8 @@ class BundleBase {
     bundle.setMainModuleId(json.mainModuleId);
 
     Object.freeze(bundle._modules);
-    Object.seal(bundle._modules);
     Object.freeze(bundle._assets);
-    Object.seal(bundle._assets);
+
     bundle._finalized = true;
   }
 }

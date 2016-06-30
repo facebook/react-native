@@ -16,6 +16,7 @@ import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.csslayout.Spacing;
@@ -26,6 +27,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.views.view.MeasureUtil;
 import com.facebook.react.views.text.ReactTextShadowNode;
 import com.facebook.react.views.text.ReactTextUpdate;
 
@@ -63,11 +65,16 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   }
 
   @Override
-  public void measure(CSSNode node, float width, float height, MeasureOutput measureOutput) {
+  public void measure(
+      CSSNode node,
+      float width,
+      CSSMeasureMode widthMode,
+      float height,
+      CSSMeasureMode heightMode,
+      MeasureOutput measureOutput) {
     // measure() should never be called before setThemedContext()
     EditText editText = Assertions.assertNotNull(mEditText);
 
-    measureOutput.width = width;
     editText.setTextSize(
         TypedValue.COMPLEX_UNIT_PX,
         mFontSize == UNSET ?
@@ -83,7 +90,10 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
       editText.setLines(mNumberOfLines);
     }
 
-    editText.measure(0 /* unspecified */, 0 /* unspecified */);
+    editText.measure(
+        MeasureUtil.getMeasureSpec(width, widthMode),
+        MeasureUtil.getMeasureSpec(height, heightMode));
+    measureOutput.width = editText.getMeasuredWidth();
     measureOutput.height = editText.getMeasuredHeight();
   }
 

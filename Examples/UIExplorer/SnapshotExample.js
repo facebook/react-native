@@ -15,14 +15,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Image,
   StyleSheet,
   Text,
   UIManager,
   View,
-} = React;
+} = ReactNative;
 
 var ScreenshotExample = React.createClass({
   getInitialState() {
@@ -68,6 +69,6 @@ exports.description = 'API to capture images from the screen.';
 exports.examples = [
   {
     title: 'Take screenshot',
-    render(): ReactElement { return <ScreenshotExample />; }
+    render(): ReactElement<any> { return <ScreenshotExample />; }
   },
 ];

@@ -40,7 +40,7 @@ var animChecker = createStrictShapeTypeChecker({
   initialVelocity: PropTypes.number,
   type: PropTypes.oneOf(
     Object.keys(Types)
-  ),
+  ).isRequired,
   property: PropTypes.oneOf( // Only applies to create/delete
     Object.keys(Properties)
   ),
@@ -86,6 +86,10 @@ function create(duration: number, type, creationProp): Config {
     update: {
       type,
     },
+    delete: {
+      type,
+      property: creationProp,
+    },
   };
 }
 
@@ -105,6 +109,10 @@ var Presets = {
     update: {
       type: Types.spring,
       springDamping: 0.4,
+    },
+    delete: {
+      type: Types.linear,
+      property: Properties.opacity,
     },
   },
 };

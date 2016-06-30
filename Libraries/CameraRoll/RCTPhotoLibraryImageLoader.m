@@ -66,7 +66,7 @@ RCT_EXPORT_MODULE()
     targetSize = PHImageManagerMaximumSize;
     imageOptions.resizeMode = PHImageRequestOptionsResizeModeNone;
   } else {
-    targetSize = size;
+    targetSize = CGSizeApplyAffineTransform(size, CGAffineTransformMakeScale(scale, scale));
     imageOptions.resizeMode = PHImageRequestOptionsResizeModeFast;
   }
 

@@ -27,11 +27,35 @@ var Platform = require('Platform');
  */
 
 var Vibration = {
-  vibrate: function(duration: number = 400) {
+  vibrate: function(pattern: number | Array<number> = 400, repeat: boolean = false) {
     if (Platform.OS === 'android') {
-      RCTVibration.vibrate(duration);
+      if (typeof pattern === 'number') {
+        RCTVibration.vibrate(pattern);
+      } else if (Array.isArray(pattern)) {
+        RCTVibration.vibrateByPattern(pattern, repeat ? 0 : -1);
+      } else {
+        throw new Error('Vibration pattern should be a number or array');
+      }
     } else {
-      RCTVibration.vibrate();
+      if (typeof pattern === 'number') {
+        RCTVibration.vibrate();
+      } else if (Array.isArray(pattern)) {
+        console.warn('Vibration patterns are not supported on iOS');
+      } else {
+        throw new Error('Vibration pattern should be a number or array');
+      }
+    }
+  },
+  /**
+   * Stop vibration
+   *
+   * @platform android
+   */
+  cancel: function() {
+    if (Platform.OS === 'ios') {
+      console.warn('Vibration.cancel is not supported on iOS');
+    } else {
+      RCTVibration.cancel();
     }
   }
 };

@@ -71,6 +71,7 @@ public:
   virtual bool supportsProfiling() override;
   virtual void startProfiler(const std::string &titleString) override;
   virtual void stopProfiler(const std::string &titleString, const std::string &filename) override;
+  virtual void handleMemoryPressureUiHidden() override;
   virtual void handleMemoryPressureModerate() override;
   virtual void handleMemoryPressureCritical() override;
   virtual void destroy() override;
@@ -88,6 +89,8 @@ private:
   std::shared_ptr<MessageQueueThread> m_messageQueueThread;
   std::unique_ptr<JSModulesUnbundle> m_unbundle;
   folly::dynamic m_jscConfig;
+  std::unique_ptr<Object> m_batchedBridge;
+  std::unique_ptr<Object> m_flushedQueueObj;
 
   /**
    * WebWorker constructor. Must be invoked from thread this Executor will run on.
@@ -105,6 +108,7 @@ private:
   void flush();
   void flushQueueImmediate(std::string queueJSON);
   void loadModule(uint32_t moduleId);
+  bool ensureBatchedBridgeObject();
 
   int addWebWorker(const std::string& script, JSValueRef workerRef, JSValueRef globalObjRef);
   void postMessageToOwnedWebWorker(int worker, JSValueRef message, JSValueRef *exn);

@@ -16,14 +16,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Animated,
   PanResponder,
   StyleSheet,
   Text,
   View,
-} = React;
+} = ReactNative;
 
 var AnExBobble = require('./AnExBobble');
 var AnExChained = require('./AnExChained');
@@ -44,7 +45,7 @@ class AnExSet extends React.Component {
       openColor: randColor(),
     };
   }
-  render(): ReactElement {
+  render(): ReactElement<any> {
     var backgroundColor = this.props.openVal ?
       this.props.openVal.interpolate({
         inputRange: [0, 1],

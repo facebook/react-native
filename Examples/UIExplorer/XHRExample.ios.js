@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -15,22 +22,24 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   AlertIOS,
   CameraRoll,
   Image,
-  LinkingIOS,
+  Linking,
   ProgressViewIOS,
   StyleSheet,
   Text,
   TextInput,
   TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 
 var XHRExampleHeaders = require('./XHRExampleHeaders');
 var XHRExampleFetch = require('./XHRExampleFetch');
+var XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
 
 class Downloader extends React.Component {
   state: any;
@@ -146,7 +155,8 @@ class FormUploader extends React.Component {
 
   _fetchRandomPhoto() {
     CameraRoll.getPhotos(
-      {first: PAGE_SIZE},
+      {first: PAGE_SIZE}
+    ).then(
       (data) => {
         if (!this._isMounted) {
           return;
@@ -212,7 +222,7 @@ class FormUploader extends React.Component {
         return;
       }
       var url = xhr.responseText.slice(index).split('\n')[0];
-      LinkingIOS.openURL(url);
+      Linking.openURL(url);
     };
     var formdata = new FormData();
     if (this.state.randomPhoto) {
@@ -221,14 +231,13 @@ class FormUploader extends React.Component {
     this.state.textParams.forEach(
       (param) => formdata.append(param.name, param.value)
     );
-    if (xhr.upload) {
-      xhr.upload.onprogress = (event) => {
-        console.log('upload onprogress', event);
-        if (event.lengthComputable) {
-          this.setState({uploadProgress: event.loaded / event.total});
-        }
-      };
-    }
+    xhr.upload.onprogress = (event) => {
+      console.log('upload onprogress', event);
+      if (event.lengthComputable) {
+        this.setState({uploadProgress: event.loaded / event.total});
+      }
+    };
+
     xhr.send(formdata);
     this.setState({isUploading: true});
   }
@@ -328,6 +337,11 @@ exports.examples = [{
   title: 'Headers',
   render() {
     return <XHRExampleHeaders/>;
+  }
+}, {
+  title: 'Time Out Test',
+  render() {
+    return <XHRExampleOnTimeOut/>;
   }
 }];
 

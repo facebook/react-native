@@ -16,16 +16,17 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
-  ActivityIndicatorIOS,
+  ActivityIndicator,
   CameraRoll,
   Image,
   ListView,
   Platform,
   StyleSheet,
   View,
-} = React;
+} = ReactNative;
 
 var groupByEveryN = require('groupByEveryN');
 var logError = require('logError');
@@ -140,7 +141,7 @@ var CameraRollView = React.createClass({
       groupTypes: this.props.groupTypes,
       assetType: this.props.assetType,
     };
-    if (Platform.OS === "android") {
+    if (Platform.OS === 'android') {
       // not supported in android
       delete fetchParams.groupTypes;
     }
@@ -148,7 +149,8 @@ var CameraRollView = React.createClass({
       fetchParams.after = this.state.lastCursor;
     }
 
-    CameraRoll.getPhotos(fetchParams, this._appendAssets, logError);
+    CameraRoll.getPhotos(fetchParams)
+      .then((data) => this._appendAssets(data), (e) => logError(e));
   },
 
   /**
@@ -189,7 +191,7 @@ var CameraRollView = React.createClass({
 
   _renderFooterSpinner: function() {
     if (!this.state.noMore) {
-      return <ActivityIndicatorIOS style={styles.spinner} />;
+      return <ActivityIndicator style={styles.spinner} />;
     }
     return null;
   },

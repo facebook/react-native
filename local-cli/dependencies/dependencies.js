@@ -40,8 +40,8 @@ function _dependencies(argv, config, resolve, reject, packagerInstance) {
     }, {
       command: 'transformer',
       type: 'string',
-      default: require.resolve('../../packager/transformer'),
-      description: 'Specify a custom transformer to be used (absolute path)'
+      default: null,
+      description: 'Specify a custom transformer to be used'
     }, {
       command: 'verbose',
       description: 'Enables logging',
@@ -54,12 +54,17 @@ function _dependencies(argv, config, resolve, reject, packagerInstance) {
     reject(`File ${rootModuleAbsolutePath} does not exist`);
   }
 
+  const transformModulePath = args.transformer ?
+    path.resolve(args.transformer) :
+    config.getTransformModulePath();
+
   const packageOpts = {
     projectRoots: config.getProjectRoots(),
     assetRoots: config.getAssetRoots(),
     blacklistRE: config.getBlacklistRE(args.platform),
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-    transformModulePath: args.transformer,
+    transformModulePath: transformModulePath,
+    extraNodeModules: config.extraNodeModules,
     verbose: config.verbose,
   };
 
@@ -80,50 +85,28 @@ function _dependencies(argv, config, resolve, reject, packagerInstance) {
     ? fs.createWriteStream(args.output)
     : process.stdout;
 
-  if (packagerInstance) {
-    resolve(packagerInstance.getOrderedDependencyPaths(options).then(
-      deps => {
-        return _dependenciesHandler(
-          deps,
-          packageOpts.projectRoots,
-          outStream,
-          writeToFile
-        );
-      }
-    ));
-  } else {
-    resolve(ReactPackager.createClientFor(packageOpts).then(client => {
-      return client.getOrderedDependencyPaths(options)
-        .then(deps => {
-          client.close();
-          return _dependenciesHandler(
-            deps,
-            packageOpts.projectRoots,
-            outStream,
-            writeToFile
-          );
-        });
-    }));
-  }
-}
+  resolve((packagerInstance ?
+    packagerInstance.getOrderedDependencyPaths(options) :
+    ReactPackager.getOrderedDependencyPaths(packageOpts, options)).then(
+    deps => {
+      deps.forEach(modulePath => {
+        // Temporary hack to disable listing dependencies not under this directory.
+        // Long term, we need either
+        // (a) JS code to not depend on anything outside this directory, or
+        // (b) Come up with a way to declare this dependency in Buck.
+        const isInsideProjectRoots = packageOpts.projectRoots.filter(
+          root => modulePath.startsWith(root)
+        ).length > 0;
 
-function _dependenciesHandler(deps, projectRoots, outStream, writeToFile) {
-  deps.forEach(modulePath => {
-    // Temporary hack to disable listing dependencies not under this directory.
-    // Long term, we need either
-    // (a) JS code to not depend on anything outside this directory, or
-    // (b) Come up with a way to declare this dependency in Buck.
-    const isInsideProjectRoots = projectRoots.filter(
-      root => modulePath.startsWith(root)
-    ).length > 0;
-
-    if (isInsideProjectRoots) {
-      outStream.write(modulePath + '\n');
+        if (isInsideProjectRoots) {
+          outStream.write(modulePath + '\n');
+        }
+      });
+      return writeToFile
+        ? Promise.denodeify(outStream.end).bind(outStream)()
+        : Promise.resolve();
     }
-  });
-  return writeToFile
-    ? Promise.denodeify(outStream.end).bind(outStream)()
-    : Promise.resolve();
+  ));
 }
 
 module.exports = dependencies;

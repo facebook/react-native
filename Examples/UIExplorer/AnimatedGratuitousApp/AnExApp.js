@@ -16,14 +16,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Animated,
   LayoutAnimation,
   PanResponder,
   StyleSheet,
   View,
-} = React;
+} = ReactNative;
 
 var AnExSet = require('AnExSet');
 
@@ -81,7 +82,7 @@ class Circle extends React.Component {
     });
   }
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     if (this.state.panResponder) {
       var handlers = this.state.panResponder.panHandlers;
       var dragStyle = {                 //  Used to position while dragging
@@ -182,7 +183,7 @@ class AnExApp extends React.Component {
     this._onMove = this._onMove.bind(this);
   }
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     var circles = this.state.keys.map((key, idx) => {
       if (key === this.state.activeKey) {
         return <Circle key={key + 'd'} dummy={true} />;
@@ -280,7 +281,6 @@ function moveToClosest({activeKey, keys, restLayouts}, position) {
 var styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 64, // push content below nav bar
   },
   grid: {
     flex: 1,

@@ -66,32 +66,31 @@
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
+- (void)setBridge:(RCTBridge *)bridge
 {
-  if ((self = [super init])) {
-    _paused = YES;
-    _timers = [NSMutableDictionary new];
+  RCTAssert(!_bridge, @"Should never be initialized twice!");
 
-    for (NSString *name in @[UIApplicationWillResignActiveNotification,
-                             UIApplicationDidEnterBackgroundNotification,
-                             UIApplicationWillTerminateNotification]) {
+  _paused = YES;
+  _timers = [NSMutableDictionary new];
 
-      [[NSNotificationCenter defaultCenter] addObserver:self
-                                               selector:@selector(stopTimers)
-                                                   name:name
-                                                 object:nil];
-    }
-
-    for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
-                             UIApplicationWillEnterForegroundNotification]) {
-
-      [[NSNotificationCenter defaultCenter] addObserver:self
-                                               selector:@selector(startTimers)
-                                                   name:name
-                                                 object:nil];
-    }
+  for (NSString *name in @[UIApplicationWillResignActiveNotification,
+                           UIApplicationDidEnterBackgroundNotification,
+                           UIApplicationWillTerminateNotification]) {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(stopTimers)
+                                                 name:name
+                                               object:nil];
   }
-  return self;
+
+  for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
+                           UIApplicationWillEnterForegroundNotification]) {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(startTimers)
+                                                 name:name
+                                               object:nil];
+  }
+
+  _bridge = bridge;
 }
 
 - (void)dealloc

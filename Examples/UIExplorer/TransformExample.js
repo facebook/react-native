@@ -14,13 +14,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Animated,
   StyleSheet,
   Text,
   View,
-} = React;
+} = ReactNative;
 
 var Flip = React.createClass({
   getInitialState() {
@@ -207,7 +208,7 @@ exports.examples = [
   {
     title: 'Perspective',
     description: 'perspective: 850, rotateX: Animated.timing(0 -> 360)',
-    render(): ReactElement { return <Flip />; }
+    render(): ReactElement<any> { return <Flip />; }
   },
   {
     title: 'Translate, Rotate, Scale',

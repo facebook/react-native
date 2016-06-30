@@ -30,7 +30,12 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ApplicationHolder;
 import com.facebook.react.common.futures.SimpleSettableFuture;
+import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.modules.core.Timing;
+
+import com.facebook.soloader.SoLoader;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * Use this class for writing integration tests of catalyst. This class will run all JNI call
@@ -134,7 +139,7 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
         new Runnable() {
           @Override
           public void run() {
-            Timing timing = new Timing(getContext());
+            Timing timing = new Timing(getContext(), mock(DevSupportManager.class));
             simpleSettableFuture.set(timing);
           }
         });
@@ -170,6 +175,7 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
+    SoLoader.init(getContext(), /* native exopackage */ false);
     ApplicationHolder.setApplication((Application) getContext().getApplicationContext());
   }
 

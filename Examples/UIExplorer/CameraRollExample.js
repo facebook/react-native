@@ -15,17 +15,18 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const {
   CameraRoll,
   Image,
-  SliderIOS,
+  Slider,
   StyleSheet,
   Switch,
   Text,
   View,
   TouchableOpacity
-} = React;
+} = ReactNative;
 
 const CameraRollView = require('./CameraRollView');
 
@@ -50,7 +51,7 @@ const CameraRollExample = React.createClass({
           onValueChange={this._onSwitchChange}
           value={this.state.bigImages} />
         <Text>{(this.state.bigImages ? 'Big' : 'Small') + ' Images'}</Text>
-        <SliderIOS
+        <Slider
           value={this.state.sliderValue}
           onValueChange={this._onSliderChange}
         />
@@ -136,6 +137,6 @@ exports.description = 'Example component that uses CameraRoll to list user\'s ph
 exports.examples = [
   {
     title: 'Photos',
-    render(): ReactElement { return <CameraRollExample />; }
+    render(): ReactElement<any> { return <CameraRollExample />; }
   }
 ];

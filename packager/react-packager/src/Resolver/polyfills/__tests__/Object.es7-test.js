@@ -6,7 +6,7 @@
 
  /* eslint-disable fb-www/object-create-only-one-param */
 
-jest.autoMockOff();
+jest.disableAutomock();
 
 describe('Object (ES7)', () => {
   beforeEach(() => {

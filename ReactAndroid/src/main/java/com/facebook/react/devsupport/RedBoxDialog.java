@@ -30,10 +30,10 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
 
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 /**
@@ -42,6 +42,7 @@ import org.json.JSONObject;
 /* package */ class RedBoxDialog extends Dialog implements AdapterView.OnItemClickListener {
 
   private final DevSupportManager mDevSupportManager;
+  private final DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
 
   private ListView mStackView;
   private Button mReloadJs;
@@ -123,7 +124,10 @@ import org.json.JSONObject;
         StackFrame frame = mStack[position - 1];
         FrameViewHolder holder = (FrameViewHolder) convertView.getTag();
         holder.mMethodView.setText(frame.getMethod());
-        holder.mFileView.setText(frame.getFileName() + ":" + frame.getLine());
+        final int column = frame.getColumn();
+        // If the column is 0, don't show it in red box.
+        final String columnString = column <= 0 ? "" : ":" + column;
+        holder.mFileView.setText(frame.getFileName() + ":" + frame.getLine() + columnString);
         return convertView;
       }
     }
@@ -179,6 +183,7 @@ import org.json.JSONObject;
     setContentView(R.layout.redbox_view);
 
     mDevSupportManager = devSupportManager;
+    mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
 
     mStackView = (ListView) findViewById(R.id.rn_redbox_stack);
     mStackView.setOnItemClickListener(this);
@@ -216,7 +221,9 @@ import org.json.JSONObject;
       mDevSupportManager.showDevOptionsDialog();
       return true;
     }
-
+    if (mDoubleTapReloadRecognizer.didDoubleTapR(keyCode, getCurrentFocus())) {
+      mDevSupportManager.handleReloadJS();
+    }
     return super.onKeyUp(keyCode, event);
   }
 }

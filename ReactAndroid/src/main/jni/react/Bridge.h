@@ -66,8 +66,8 @@ public:
    */
   void callFunction(
     ExecutorToken executorToken,
-    const std::string& moduleId,
-    const std::string& methodId,
+    const std::string& module,
+    const std::string& method,
     const folly::dynamic& args,
     const std::string& tracingName);
 
@@ -96,6 +96,7 @@ public:
   bool supportsProfiling();
   void startProfiler(const std::string& title);
   void stopProfiler(const std::string& title, const std::string& filename);
+  void handleMemoryPressureUiHidden();
   void handleMemoryPressureModerate();
   void handleMemoryPressureCritical();
 
@@ -143,7 +144,7 @@ private:
   // This is used to avoid a race condition where a proxyCallback gets queued after ~Bridge(),
   // on the same thread. In that case, the callback will try to run the task on m_callback which
   // will have been destroyed within ~Bridge(), thus causing a SIGSEGV.
-  std::shared_ptr<bool> m_destroyed;
+  std::shared_ptr<std::atomic_bool> m_destroyed;
   JSExecutor* m_mainExecutor;
   std::unique_ptr<ExecutorToken> m_mainExecutorToken;
   std::unique_ptr<ExecutorTokenFactory> m_executorTokenFactory;

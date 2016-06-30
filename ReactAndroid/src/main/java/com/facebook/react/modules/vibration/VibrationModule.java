@@ -15,6 +15,7 @@ import android.os.Vibrator;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 
 public class VibrationModule extends ReactContextBaseJavaModule {
 
@@ -32,6 +33,27 @@ public class VibrationModule extends ReactContextBaseJavaModule {
     Vibrator v = (Vibrator) getReactApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
     if (v != null) {
       v.vibrate(duration);
+    }
+  }
+
+  @ReactMethod
+  public void vibrateByPattern(ReadableArray pattern, int repeat) {
+    long[] patternLong = new long[pattern.size()];
+    for (int i = 0; i < pattern.size(); i++) {
+      patternLong[i] = pattern.getInt(i);
+    }
+
+    Vibrator v = (Vibrator) getReactApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+    if (v != null) {
+      v.vibrate(patternLong, repeat);
+    }
+  }
+
+  @ReactMethod
+  public void cancel() {
+    Vibrator v = (Vibrator) getReactApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+    if (v != null) {
+      v.cancel();
     }
   }
 }

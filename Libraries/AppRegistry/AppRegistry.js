@@ -12,10 +12,12 @@
 'use strict';
 
 var BatchedBridge = require('BatchedBridge');
+var BugReporting = require('BugReporting');
 var ReactNative = require('ReactNative');
 
 var invariant = require('fbjs/lib/invariant');
 var renderApplication = require('renderApplication');
+const infoLog = require('infoLog');
 
 if (__DEV__) {
   // In order to use Cmd+P to record/dump perf data, we need to make sure
@@ -24,6 +26,7 @@ if (__DEV__) {
 }
 
 var runnables = {};
+var runCount = 1;
 
 type ComponentProvider = () => ReactClass<any>;
 
@@ -79,13 +82,14 @@ var AppRegistry = {
   },
 
   runApplication: function(appKey: string, appParameters: any): void {
-    console.log(
+    const msg =
       'Running application "' + appKey + '" with appParams: ' +
       JSON.stringify(appParameters) + '. ' +
       '__DEV__ === ' + String(__DEV__) +
       ', development-level warning are ' + (__DEV__ ? 'ON' : 'OFF') +
-      ', performance optimizations are ' + (__DEV__ ? 'OFF' : 'ON')
-    );
+      ', performance optimizations are ' + (__DEV__ ? 'OFF' : 'ON');
+    infoLog(msg);
+    BugReporting.addSource('AppRegistry.runApplication' + runCount++, () => msg);
     invariant(
       runnables[appKey] && runnables[appKey].run,
       'Application ' + appKey + ' has not been registered. This ' +

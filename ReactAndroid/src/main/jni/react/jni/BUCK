@@ -5,7 +5,7 @@ SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
 
 DEPS = [
   FBGLOGINIT_TARGET,
-  '//native/jni:jni',
+  '//native/fb:fb',
   '//native/third-party/android-ndk:android',
   '//xplat/folly:molly',
 ]
@@ -18,15 +18,7 @@ def jni_library(**kwargs):
     ],
     deps = DEPS + JSC_DEPS + [
       react_native_target('jni/react:react'),
-    ],
-    **kwargs
-  )
-
-  cxx_library(
-    name='jni-internal',
-    visibility = [INTERNAL_APP],
-    deps = DEPS + JSC_INTERNAL_DEPS + [
-      react_native_target('jni/react:react-internal'),
+      react_native_target('jni/xreact/jni:jni'),
     ],
     **kwargs
   )
@@ -40,11 +32,10 @@ jni_library(
     'JMessageQueueThread.cpp',
     'JSCPerfLogging.cpp',
     'JSLoader.cpp',
+    'JSLogging.cpp',
     'JniJSModulesUnbundle.cpp',
-    'NativeArray.cpp',
     'OnLoad.cpp',
     'ProxyExecutor.cpp',
-    'JSLogging.cpp',
   ],
   headers = [
     'JSLoader.h',
@@ -59,8 +50,6 @@ jni_library(
     'WebWorkers.h',
   ],
   exported_headers = [
-    'NativeArray.h',
-    'ReadableNativeArray.h',
   ],
   preprocessor_flags = [
     '-DLOG_TAG="ReactNativeJNI"',

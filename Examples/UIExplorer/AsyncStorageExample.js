@@ -15,13 +15,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   AsyncStorage,
   PickerIOS,
   Text,
   View
-} = React;
+} = ReactNative;
 var PickerItemIOS = PickerIOS.Item;
 
 var STORAGE_KEY = '@AsyncStorageExample:key';
@@ -114,6 +115,6 @@ exports.description = 'Asynchronous local disk storage.';
 exports.examples = [
   {
     title: 'Basics - getItem, setItem, removeItem',
-    render(): ReactElement { return <BasicStorageExample />; }
+    render(): ReactElement<any> { return <BasicStorageExample />; }
   },
 ];

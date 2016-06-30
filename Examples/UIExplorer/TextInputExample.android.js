@@ -15,13 +15,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Text,
   TextInput,
   View,
   StyleSheet,
-} = React;
+} = ReactNative;
 
 var TextEventsExample = React.createClass({
   getInitialState: function() {
@@ -407,6 +408,31 @@ exports.examples = [
     }
   },
   {
+    title: 'fontFamily, fontWeight and fontStyle',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            style={[styles.singleLine, {fontFamily: 'sans-serif'}]}
+            placeholder="Custom fonts like Sans-Serif are supported"
+          />
+          <TextInput
+            style={[styles.singleLine, {fontFamily: 'sans-serif', fontWeight: 'bold'}]}
+            placeholder="Sans-Serif bold"
+          />
+          <TextInput
+            style={[styles.singleLine, {fontFamily: 'sans-serif', fontStyle: 'italic'}]}
+            placeholder="Sans-Serif italic"
+          />
+          <TextInput
+            style={[styles.singleLine, {fontFamily: 'serif'}]}
+            placeholder="Serif"
+          />
+        </View>
+      );
+    }
+  },
+  {
     title: 'Passwords',
     render: function() {
       return (
@@ -416,7 +442,7 @@ exports.examples = [
             secureTextEntry={true}
             style={styles.singleLine}
           />
-          <TextInput 
+          <TextInput
             secureTextEntry={true}
             style={[styles.singleLine, {color: 'red'}]}
             placeholder="color is supported too"
@@ -503,6 +529,69 @@ exports.examples = [
     title: 'Attributed text',
     render: function() {
       return <TokenizedTextExample />;
+    }
+  },
+  {
+    title: 'Return key',
+    render: function() {
+      var returnKeyTypes = [
+        'none',
+        'go',
+        'search',
+        'send',
+        'done',
+        'previous',
+        'next',
+      ];
+      var returnKeyLabels = [
+        'Compile',
+        'React Native',
+      ];
+      var examples = returnKeyTypes.map((type) => {
+        return (
+          <TextInput
+            key={type}
+            returnKeyType={type}
+            placeholder={'returnKeyType: ' + type}
+            style={styles.singleLine}
+          />
+        );
+      });
+      var types = returnKeyLabels.map((type) => {
+        return (
+          <TextInput
+            key={type}
+            returnKeyLabel={type}
+            placeholder={'returnKeyLabel: ' + type}
+            style={styles.singleLine}
+          />
+        );
+      });
+      return <View>{examples}{types}</View>;
+    }
+  },
+  {
+    title: 'Inline Images',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            inlineImageLeft="ic_menu_black_24dp"
+            placeholder="This has drawableLeft set"
+            style={styles.singleLine}
+          />
+          <TextInput
+            inlineImageLeft="ic_menu_black_24dp"
+            inlineImagePadding={30}
+            placeholder="This has drawableLeft and drawablePadding set"
+            style={styles.singleLine}
+          />
+          <TextInput
+            placeholder="This does not have drawable props set"
+            style={styles.singleLine}
+          />
+        </View>
+      );
     }
   },
 ];

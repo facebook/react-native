@@ -15,14 +15,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Image,
   LayoutAnimation,
   StyleSheet,
   Text,
   View,
-} = React;
+} = ReactNative;
 
 type Layout = {
   x: number;
@@ -157,7 +158,7 @@ exports.description = 'Examples that show how Layout events can be used to ' +
 exports.examples = [
 {
   title: 'LayoutEventExample',
-  render: function(): ReactElement {
+  render: function(): ReactElement<any> {
     return <LayoutEventExample />;
   },
 }];

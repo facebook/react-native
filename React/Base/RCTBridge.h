@@ -64,11 +64,6 @@ typedef NSArray<id<RCTBridgeModule>> *(^RCTBridgeModuleProviderBlock)(void);
 RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 
 /**
- * This function checks if a class has been registered
- */
-RCT_EXTERN BOOL RCTBridgeModuleClassIsRegistered(Class);
-
-/**
  * Async batched bridge used to communicate with the JavaScript application.
  */
 @interface RCTBridge : NSObject <RCTInvalidating>
@@ -124,7 +119,7 @@ RCT_EXTERN BOOL RCTBridgeModuleClassIsRegistered(Class);
 
 /**
  * Test if a module has been initialized. Use this prior to calling
- * `moduleForClass:` or `moduleForName:` if you do not want to cause the module 
+ * `moduleForClass:` or `moduleForName:` if you do not want to cause the module
  * to be instantiated if it hasn't been already.
  */
 - (BOOL)moduleIsInitialized:(Class)moduleClass;
@@ -149,17 +144,6 @@ RCT_EXTERN BOOL RCTBridgeModuleClassIsRegistered(Class);
  * The delegate provided during the bridge initialization
  */
 @property (nonatomic, weak, readonly) id<RCTBridgeDelegate> delegate;
-
-/**
- * The event dispatcher is a wrapper around -enqueueJSCall:args: that provides a
- * higher-level interface for sending UI events such as touches and text input.
- *
- * NOTE: RCTEventDispatcher is now a bridge module, this is implemented as a
- * category but remains declared in the bridge to avoid breaking changes
- *
- * To be moved.
- */
-@property (nonatomic, readonly) RCTEventDispatcher *eventDispatcher;
 
 /**
  * The launch options that were used to initialize the bridge.

@@ -72,12 +72,10 @@ Here are the current options the packager accepts:
 
 ### /debug
 
-This is a page used for debugging, it has links to two pages:
+This is a page used for debugging, it offers a link to a single page :
 
 * Cached Packages: which shows you the packages that's been already
   generated and cached
-* Dependency Graph: is the in-memory graph of all the modules and
-  their dependencies
 
 ## Programmatic API
 
@@ -132,9 +130,9 @@ is passed to `ReactPackager.middleware`
 To get verbose output when running the packager, define an environment variable:
 
     export DEBUG=ReactNativePackager:*
-    
+
 You can combine this with other values, e.g. `DEBUG=babel,ReactNativePackager:*`. Under the hood this uses the [`debug`](https://www.npmjs.com/package/debug) package, see its documentation for all the available options.
-    
+
 The `/debug` endpoint discussed above is also useful.
 
 ## FAQ
