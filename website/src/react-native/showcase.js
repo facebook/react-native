@@ -281,7 +281,7 @@ var featured = [
     icon: 'http://s3.ap-northeast-2.amazonaws.com/bdsdiet-bucket/media/store-icon.png',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.bdsdiet_app',
     infoLink: 'https://www.crunchbase.com/organization/bds-diet#/entity',
-    infoTitle: 'Apartments real estate brokerage O2O service in South Korea.',
+    infoTitle: 'Bdsdiet provides real estate brokerage services through web and live agents in Korea.',
   },
 ];
 
