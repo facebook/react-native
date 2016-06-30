@@ -24,12 +24,15 @@ import type {
   NavigationLayout,
   NavigationScene,
   NavigationState,
-  NavigationTransitionConfigurator,
   NavigationTransitionProps,
+  NavigationTransitionSpec,
 } from 'NavigationTypeDefinition';
 
 type Props = {
-  configureTransition: NavigationTransitionConfigurator,
+  configureTransition: (
+    a: NavigationTransitionProps,
+    b: ?NavigationTransitionProps,
+  ) => NavigationTransitionSpec,
   navigationState: NavigationState,
   onTransitionEnd: () => void,
   onTransitionStart: () => void,
@@ -49,6 +52,7 @@ const {PropTypes} = React;
 const DefaultTransitionSpec = {
   duration: 250,
   easing: Easing.inOut(Easing.ease),
+  timing: Animated.timing,
 };
 
 class NavigationTransitioner extends React.Component<any, Props, State> {
@@ -126,7 +130,10 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
 
     // get the transition spec.
     const transitionUserSpec = nextProps.configureTransition ?
-      nextProps.configureTransition() :
+      nextProps.configureTransition(
+        this._transitionProps,
+        this._prevTransitionProps,
+      ) :
       null;
 
     const transitionSpec = {
@@ -134,10 +141,13 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
       ...transitionUserSpec,
     };
 
+    const {timing} = transitionSpec;
+    delete transitionSpec.timing;
+
     progress.setValue(0);
 
     const animations = [
-      Animated.timing(
+      timing(
         progress,
         {
           ...transitionSpec,
@@ -148,7 +158,7 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
 
     if (nextProps.navigationState.index !== this.props.navigationState.index) {
       animations.push(
-        Animated.timing(
+        timing(
           position,
           {
             ...transitionSpec,
