@@ -40,6 +40,7 @@ export type NavigationLayout = {
 
 export type NavigationScene = {
   index: number,
+  isActive: boolean,
   isStale: boolean,
   key: string,
   route: NavigationRoute,
@@ -93,6 +94,8 @@ export type NavigationTransitionSpec = {
   duration?: number,
   // An easing function from `Easing`.
   easing?: () => any,
+  // A timing function such as `Animated.timing`.
+  timing?: (value: NavigationAnimatedValue, config: any) => any,
 };
 
 // Functions.
@@ -110,5 +113,3 @@ export type NavigationSceneRenderer = (
 export type NavigationStyleInterpolator = (
   props: NavigationSceneRendererProps,
 ) => Object;
-
-export type NavigationTransitionConfigurator = () => NavigationTransitionSpec;

@@ -93,7 +93,7 @@ class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
     return (
       Math.abs(gesture[axis]) > RESPOND_THRESHOLD &&
       distance > 0 &&
-      index > 0
+      index >= 0
     );
   }
 

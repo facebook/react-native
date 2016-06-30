@@ -38,6 +38,9 @@ if (__DEV__) {
 // would export it. A possible fix would be to trim the dependencies in
 // MessageQueue to its minimal features and embed that in the native runtime.
 
-Object.defineProperty(global, '__fbBatchedBridge', { value: BatchedBridge });
+Object.defineProperty(global, '__fbBatchedBridge', {
+  configurable: true,
+  value: BatchedBridge,
+});
 
 module.exports = BatchedBridge;

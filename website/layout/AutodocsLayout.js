@@ -644,12 +644,12 @@ var Method = React.createClass({
   render: function() {
     return (
       <div className="prop">
-        <Header level={4} className="propTitle" toSlug={this.props.name}>
-          {this.props.modifiers && this.props.modifiers.length && <span className="propType">
+        <Header level={4} className="methodTitle" toSlug={this.props.name}>
+          {this.props.modifiers && this.props.modifiers.length && <span className="methodType">
             {this.props.modifiers.join(' ') + ' '}
           </span> || ''}
           {this.props.name}
-          <span className="propType">
+          <span className="methodType">
             ({this.props.params && this.props.params.length && this.props.params
               .map((param) => {
                 var res = param.name;

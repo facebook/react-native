@@ -13,4 +13,9 @@ public interface ActivityEventListener {
    * Called when host (activity/service) receives an {@link Activity#onActivityResult} call.
    */
   void onActivityResult(int requestCode, int resultCode, Intent data);
+
+  /**
+   * Called when a new intent is passed to the activity
+   */
+  void onNewIntent(Intent intent);
 }
