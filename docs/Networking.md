@@ -4,7 +4,7 @@ title: Networking
 layout: docs
 category: The Basics
 permalink: docs/network.html
-next: more-resources
+next: navigators
 ---
 
 Many mobile apps need to load resources from a remote URL. You may want to make a POST request to a REST API, or you may simply need to fetch a chunk of static content from another server.
@@ -100,14 +100,15 @@ request.send();
 
 ## WebSocket Support
 
-React Native supports [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket), a protocol which provides full-duplex communication channels over a single TCP connection.
+React Native also supports [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket), a protocol which provides full-duplex communication channels over a single TCP connection.
 
 ```js
 var ws = new WebSocket('ws://host.com/path');
 
 ws.onopen = () => {
   // connection opened
-  ws.send('something');
+
+  ws.send('something'); // send a message
 };
 
 ws.onmessage = (e) => {
@@ -126,4 +127,4 @@ ws.onclose = (e) => {
 };
 ```
 
-If you've gotten here by reading linearly through the tutorial, then you are a pretty impressive human being. Congratulations. Next, you might want to check out [all the cool stuff the community does with React Native](/react-native/docs/more-resource.html).
+Your app can now display all sorts of data and you may soon need to organize this content into several screens. To manage the transition between these screens, you will need to learn about [navigators](/react-native/docs/using-navigators.html).
