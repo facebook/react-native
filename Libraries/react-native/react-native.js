@@ -120,6 +120,15 @@ const ReactNative = {
   get EdgeInsetsPropType() { return require('EdgeInsetsPropType'); },
   get PointPropType() { return require('PointPropType'); },
 
+  // <Even>
+  get TextInputState() { return require('TextInputState'); },
+  get DocumentSelectionState() { return require('DocumentSelectionState'); },
+  get InvertibleScrollView() { return require('InvertibleScrollView'); },
+  get dismissKeyboard() { return require('dismissKeyboard'); },
+  get flattenStyle() { return require('flattenStyle'); },
+  get webifyStyle() { return require('webifyStyle'); },
+  get deepDiffer() { return require('deepDiffer'); },
+
   // See http://facebook.github.io/react/docs/addons.html
   addons: {
     get LinkedStateMixin() {
