@@ -170,6 +170,11 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
   }
 
   @Override
+  boolean isEditable() {
+    return true;
+  }
+
+  @Override
   protected void performCollectText(SpannableStringBuilder builder) {
     if (mText != null) {
       builder.append(mText);

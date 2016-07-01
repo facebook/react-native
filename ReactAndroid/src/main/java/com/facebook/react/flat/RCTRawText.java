@@ -31,7 +31,11 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   }
 
   @Override
-  protected void performApplySpans(SpannableStringBuilder builder, int begin, int end) {
+  protected void performApplySpans(
+      SpannableStringBuilder builder,
+      int begin,
+      int end,
+      boolean isEditable) {
     builder.setSpan(
         this,
         begin,

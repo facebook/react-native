@@ -233,7 +233,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       float clipBottom) {
     boolean hasUpdates = node.hasNewLayout();
 
-    boolean expectingUpdate = hasUpdates || node.isUpdated() ||
+    boolean expectingUpdate = hasUpdates || node.isUpdated() || node.hasUnseenUpdates() ||
         node.clipBoundsChanged(clipLeft, clipTop, clipRight, clipBottom);
     if (SKIP_UP_TO_DATE_NODES && !expectingUpdate) {
       return false;

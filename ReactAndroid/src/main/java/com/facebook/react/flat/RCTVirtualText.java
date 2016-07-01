@@ -54,14 +54,19 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   }
 
   @Override
-  protected void performApplySpans(SpannableStringBuilder builder, int begin, int end) {
+  protected void performApplySpans(SpannableStringBuilder builder, int begin, int end, boolean isEditable) {
     mFontStylingSpan.freeze();
 
     // All spans will automatically extend to the right of the text, but not the left - except
     // for spans that start at the beginning of the text.
-    final int flag = begin == 0 ?
-        Spannable.SPAN_INCLUSIVE_INCLUSIVE :
-        Spannable.SPAN_EXCLUSIVE_INCLUSIVE;
+    final int flag;
+    if (isEditable) {
+      flag = Spannable.SPAN_EXCLUSIVE_EXCLUSIVE;
+    } else {
+      flag = begin == 0 ?
+          Spannable.SPAN_INCLUSIVE_INCLUSIVE :
+          Spannable.SPAN_EXCLUSIVE_INCLUSIVE;
+    }
 
     builder.setSpan(
         mFontStylingSpan,
@@ -81,7 +86,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
     for (int i = 0, childCount = getChildCount(); i < childCount; ++i) {
       FlatTextShadowNode child = (FlatTextShadowNode) getChildAt(i);
-      child.applySpans(builder);
+      child.applySpans(builder, isEditable);
     }
   }
 
@@ -259,7 +264,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   /* package */ final SpannableStringBuilder getText() {
     SpannableStringBuilder sb = new SpannableStringBuilder();
     collectText(sb);
-    applySpans(sb);
+    applySpans(sb, isEditable());
     return sb;
   }
 

@@ -59,17 +59,25 @@ import com.facebook.react.uimanager.ReactShadowNode;
     return false;
   }
 
+  /* package */ boolean isEditable() {
+    return false;
+  }
+
   /**
    * Recursively visits FlatTextShadowNode and its children,
    * applying spans to SpannableStringBuilder.
    */
-  /* package */ final void applySpans(SpannableStringBuilder builder) {
+  /* package */ final void applySpans(SpannableStringBuilder builder, boolean isEditable) {
     if (mTextBegin != mTextEnd || shouldAllowEmptySpans()) {
-      performApplySpans(builder, mTextBegin, mTextEnd);
+      performApplySpans(builder, mTextBegin, mTextEnd, isEditable);
     }
   }
 
   protected abstract void performCollectText(SpannableStringBuilder builder);
-  protected abstract void performApplySpans(SpannableStringBuilder builder, int begin, int end);
+  protected abstract void performApplySpans(
+      SpannableStringBuilder builder,
+      int begin,
+      int end,
+      boolean isEditable);
   protected abstract void performCollectAttachDetachListeners(StateBuilder stateBuilder);
 }
