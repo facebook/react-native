@@ -39,7 +39,9 @@ function removeExtName(filepath) {
 function getNameFromPath(filepath) {
   filepath = removeExtName(filepath);
   if (filepath === 'LayoutPropTypes') {
-    return 'Flexbox';
+    return 'Layout Props';
+  } else if (filepath == 'ShadowPropTypesIOS') {
+    return 'Shadow Props';
   } else if (filepath === 'TransformPropTypes') {
     return 'Transforms';
   } else if (filepath === 'TabBarItemIOS') {
@@ -377,7 +379,7 @@ function getTypehint(typehint) {
   try {
     var typehint = JSON.parse(typehint);
   } catch (e) {
-    return typehint.split('|').map(type => type.trim());
+    return typehint.toString().split('|').map(type => type.trim());
   }
   return getTypehintRec(typehint);
 }
@@ -437,7 +439,10 @@ function renderStyle(filepath) {
   const json = docgen.parse(
     fs.readFileSync(filepath),
     docgenHelpers.findExportedObject,
-    [docgen.handlers.propTypeHandler]
+    [
+      docgen.handlers.propTypeHandler,
+      docgen.handlers.propDocBlockHandler,
+    ]
   );
 
   // Remove deprecated transform props from docs

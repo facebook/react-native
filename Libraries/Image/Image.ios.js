@@ -34,27 +34,72 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * including network images, static resources, temporary local images, and
  * images from local disk, such as the camera roll.
  *
- * Example usage:
+ * This exmaples shows both fetching and displaying an image from local storage as well as on from
+ * network.
  *
+ * ```ReactNativeWebPlayer
+ * import React, { Component } from 'react';
+ * import { AppRegistry, View, Image } from 'react-native';
+ *
+ * class DisplayAnImage extends Component {
+ *   render() {
+ *     return (
+ *       <View>
+ *         <Image
+ *           source={require('./img/favicon.png')}
+ *         />
+ *         <Image
+ *           source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
+ *         />
+ *       </View>
+ *     );
+ *   }
+ * }
+ *
+ * // App registration and rendering
+ * AppRegistry.registerComponent('DisplayAnImage', () => DisplayAnImage);
  * ```
- * renderImages: function() {
- *   return (
- *     <View>
- *       <Image
- *         style={styles.icon}
- *         source={require('./myIcon.png')}
- *       />
- *       <Image
- *         style={styles.logo}
- *         source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
- *       />
- *     </View>
- *   );
- * },
+ *
+ * You can also add `style` to an image:
+ *
+ * ```ReactNativeWebPlayer
+ * import React, { Component } from 'react';
+ * import { AppRegistry, View, Image, StyleSheet} from 'react-native';
+ *
+ * const styles = StyleSheet.create({
+ *   stretch: {
+ *     width: 50,
+ *     height: 200
+ *   }
+ * });
+ *
+  *class DisplayAnImageWithStyle extends Component {
+ *   render() {
+ *     return (
+ *       <View>
+ *         <Image
+ *           style={styles.stretch}
+ *           source={require('./img/favicon.png')}
+ *         />
+ *       </View>
+ *     );
+ *   }
+ * }
+ *
+ * // App registration and rendering
+ * AppRegistry.registerComponent(
+ *   'DisplayAnImageWithStyle',
+ *   () => DisplayAnImageWithStyle
+ * );
  * ```
  */
 const Image = React.createClass({
   propTypes: {
+    /**
+     * > `ImageResizeMode` is an `Enum` for different image resizing modes, set via the
+     * > `resizeMode` style property on `Image` components. The values are `contain`, `cover`,
+     * > `stretch`, `center`, `repeat`.
+     */
     style: StyleSheetPropType(ImageStylePropTypes),
     /**
      * The image source (either a remote URL or a local file resource).
@@ -62,29 +107,26 @@ const Image = React.createClass({
     source: ImageSourcePropType,
     /**
      * A static image to display while loading the image source.
+     *
+     * - `uri` - a string representing the resource identifier for the image, which
+     * should be either a local file path or the name of a static image resource
+     * (which should be wrapped in the `require('./path/to/image.png')` function).
+     * - `width`, `height` - can be specified if known at build time, in which case
+     * these will be used to set the default `<Image/>` component dimensions.
+     * - `scale` - used to indicate the scale factor of the image. Defaults to 1.0 if
+     * unspecified, meaning that one image pixel equates to one display point / DIP.
+     * - `number` - Opaque type returned by something like `require('./image.jpg')`.
+     *
      * @platform ios
      */
     defaultSource: PropTypes.oneOfType([
+      // TODO: Tooling to support documenting these directly and having them display in the docs.
       PropTypes.shape({
-        /**
-         * `uri` is a string representing the resource identifier for the image, which
-         * should be either a local file path or the name of a static image resource
-         * (which should be wrapped in the `require('./path/to/image.png')` function).
-         */
         uri: PropTypes.string,
-        /**
-         * `width` and `height` can be specified if known at build time, in which case
-         * these will be used to set the default `<Image/>` component dimensions.
-         */
         width: PropTypes.number,
         height: PropTypes.number,
-        /**
-         * `scale` is used to indicate the scale factor of the image. Defaults to 1.0 if
-         * unspecified, meaning that one image pixel equates to one display point / DIP.
-         */
         scale: PropTypes.number,
       }),
-      // Opaque type returned by require('./image.jpg')
       PropTypes.number,
     ]),
     /**
@@ -105,10 +147,11 @@ const Image = React.createClass({
     blurRadius: PropTypes.number,
     /**
      * When the image is resized, the corners of the size specified
-     * by capInsets will stay a fixed size, but the center content and borders
+     * by `capInsets` will stay a fixed size, but the center content and borders
      * of the image will be stretched.  This is useful for creating resizable
-     * rounded buttons, shadows, and other resizable assets.  More info on
-     * [Apple documentation](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIImage_Class/index.html#//apple_ref/occ/instm/UIImage/resizableImageWithCapInsets)
+     * rounded buttons, shadows, and other resizable assets.  More info in the
+     * [official Apple documentation](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIImage_Class/index.html#//apple_ref/occ/instm/UIImage/resizableImageWithCapInsets).
+     *
      * @platform ios
      */
     capInsets: EdgeInsetsPropType,
@@ -116,18 +159,18 @@ const Image = React.createClass({
      * Determines how to resize the image when the frame doesn't match the raw
      * image dimensions.
      *
-     * 'cover': Scale the image uniformly (maintain the image's aspect ratio)
+     * - `cover`: Scale the image uniformly (maintain the image's aspect ratio)
      * so that both dimensions (width and height) of the image will be equal
      * to or larger than the corresponding dimension of the view (minus padding).
      *
-     * 'contain': Scale the image uniformly (maintain the image's aspect ratio)
+     * - `contain`: Scale the image uniformly (maintain the image's aspect ratio)
      * so that both dimensions (width and height) of the image will be equal to
      * or less than the corresponding dimension of the view (minus padding).
      *
-     * 'stretch': Scale width and height independently, This may change the
+     * - `stretch`: Scale width and height independently, This may change the
      * aspect ratio of the src.
      *
-     * 'repeat': Repeat the image to cover the frame of the view. The
+     * - `repeat`: Repeat the image to cover the frame of the view. The
      * image will keep it's size and aspect ratio. (iOS only)
      */
     resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch', 'repeat']),
@@ -142,25 +185,27 @@ const Image = React.createClass({
      */
     onLayout: PropTypes.func,
     /**
-     * Invoked on load start
+     * Invoked on load start.
+     *
+     * e.g., `onLoadStart={(e) => this.setState({loading: true})}`
      */
     onLoadStart: PropTypes.func,
     /**
-     * Invoked on download progress with `{nativeEvent: {loaded, total}}`
+     * Invoked on download progress with `{nativeEvent: {loaded, total}}`.
      * @platform ios
      */
     onProgress: PropTypes.func,
     /**
-     * Invoked on load error with `{nativeEvent: {error}}`
+     * Invoked on load error with `{nativeEvent: {error}}`.
      * @platform ios
      */
     onError: PropTypes.func,
     /**
-     * Invoked when load completes successfully
+     * Invoked when load completes successfully.
      */
     onLoad: PropTypes.func,
     /**
-     * Invoked when load either succeeds or fails
+     * Invoked when load either succeeds or fails.
      */
     onLoadEnd: PropTypes.func,
   },
@@ -178,6 +223,14 @@ const Image = React.createClass({
      * does not fully load/download the image data. A proper, supported way to
      * preload images will be provided as a separate API.
      *
+     * @param uri The location of the image.
+     * @param success The function that will be called if the image was sucessfully found and width
+     * and height retrieved.
+     * @param failure The function that will be called if there was an error, such as failing to
+     * to retrieve the image.
+     *
+     * @returns void
+     *
      * @platform ios
      */
     getSize: function(
@@ -192,6 +245,10 @@ const Image = React.createClass({
     /**
      * Prefetches a remote image for later use by downloading it to the disk
      * cache
+     *
+     * @param url The remote location of the image.
+     *
+     * @return The prefetched image.
      */
     prefetch(url: string) {
       return ImageViewManager.prefetchImage(url);
