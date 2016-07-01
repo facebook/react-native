@@ -339,6 +339,13 @@ RCT_EXPORT_MODULE()
   [self showErrorMessage:combinedMessage];
 }
 
+- (void)showErrorMessage:(NSString *)message withRawStack:(NSString *)rawStack
+{
+  // TODO #11638796: convert rawStack into something useful
+  message = [NSString stringWithFormat:@"%@\n\n%@", message, rawStack];
+  [self showErrorMessage:message withStack:nil isUpdate:NO];
+}
+
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack
 {
   [self showErrorMessage:message withStack:stack isUpdate:NO];
