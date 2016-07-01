@@ -36,6 +36,7 @@ const EXAMPLES = {
   'CardStack + Header + Tabs Example': require('./NavigationCardStack-NavigationHeader-Tabs-example'),
   'CardStack Example': require('./NavigationCardStack-example'),
   'Transitioner + Animated View Example': require('./NavigationTransitioner-AnimatedView-example'),
+  'Transitioner + Animated View Pager Example': require('./NavigationTransitioner-AnimatedView-pager-example'),
 };
 
 const EXAMPLE_STORAGE_KEY = 'NavigationExperimentalExample';

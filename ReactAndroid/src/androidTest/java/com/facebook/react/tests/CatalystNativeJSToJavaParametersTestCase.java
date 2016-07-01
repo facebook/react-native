@@ -30,14 +30,13 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
+import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactIntegrationTestCase;
 import com.facebook.react.testing.ReactTestHelper;
 import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.view.ReactViewManager;
-
-import org.junit.Ignore;
 
 /**
  * Integration test to verify passing various types of parameters from JS to Java works
@@ -74,7 +73,7 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    
+
     List<ViewManager> viewManagers = Arrays.<ViewManager>asList(
         new ReactViewManager());
     final UIManagerModule mUIManager = new UIManagerModule(
@@ -94,6 +93,7 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     mCatalystInstance = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(mRecordingTestModule)
         .addNativeModule(new AndroidInfoModule())
+        .addNativeModule(new FakeWebSocketModule())
         .addNativeModule(mUIManager)
         .addJSModule(TestJSToJavaParametersModule.class)
         .build();

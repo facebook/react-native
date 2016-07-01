@@ -28,7 +28,6 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 
 import com.facebook.common.util.UriUtil;
 import com.facebook.csslayout.CSSConstants;
@@ -44,14 +43,11 @@ import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.drawee.view.GenericDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
-import com.facebook.imagepipeline.core.ImagePipeline;
-import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.request.BasePostprocessor;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.imagepipeline.request.Postprocessor;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -59,6 +55,10 @@ import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.imagehelper.ImageSource;
+import com.facebook.react.views.imagehelper.MultiSourceHelper;
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
+import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
 
 /**
  * Wrapper class around Fresco's GenericDraweeView, enabling persisting props across multiple view
@@ -142,63 +142,6 @@ public class ReactImageView extends GenericDraweeView {
     }
   }
 
-  private class ImageSource {
-    private @Nullable Uri mUri;
-    private String mSource;
-    private double mSize;
-    private boolean mIsLocalImage;
-
-    public ImageSource(String source, double width, double height) {
-      mSource = source;
-      mSize = width * height;
-    }
-
-    public ImageSource(String source) {
-      this(source, 0.0d, 0.0d);
-    }
-
-    public String getSource() {
-      return mSource;
-    }
-
-    public Uri getUri() {
-      if (mUri == null) {
-        computeUri();
-      }
-      return Assertions.assertNotNull(mUri);
-    }
-
-    public double getSize() {
-      return mSize;
-    }
-
-    public boolean isLocalImage() {
-      if (mUri == null) {
-        computeUri();
-      }
-      return mIsLocalImage;
-    }
-
-    private void computeUri() {
-      try {
-        mUri = Uri.parse(mSource);
-        // Verify scheme is set, so that relative uri (used by static resources) are not handled.
-        if (mUri.getScheme() == null) {
-          mUri = null;
-        }
-      } catch (Exception e) {
-        // ignore malformed uri, then attempt to extract resource ID.
-      }
-      if (mUri == null) {
-        mUri = mResourceDrawableIdHelper.getResourceDrawableUri(getContext(), mSource);
-        mIsLocalImage = true;
-      } else {
-        mIsLocalImage = false;
-      }
-    }
-  }
-
-  private final ResourceDrawableIdHelper mResourceDrawableIdHelper;
   private final List<ImageSource> mSources;
 
   private @Nullable ImageSource mImageSource;
@@ -229,14 +172,12 @@ public class ReactImageView extends GenericDraweeView {
   public ReactImageView(
       Context context,
       AbstractDraweeControllerBuilder draweeControllerBuilder,
-      @Nullable Object callerContext,
-      ResourceDrawableIdHelper resourceDrawableIdHelper) {
+      @Nullable Object callerContext) {
     super(context, buildHierarchy(context));
     mScaleType = ImageResizeMode.defaultValue();
     mDraweeControllerBuilder = draweeControllerBuilder;
     mRoundedCornerPostprocessor = new RoundedCornerPostprocessor();
     mCallerContext = callerContext;
-    mResourceDrawableIdHelper = resourceDrawableIdHelper;
     mSources = new LinkedList<>();
   }
 
@@ -251,8 +192,7 @@ public class ReactImageView extends GenericDraweeView {
         @Override
         public void onSubmit(String id, Object callerContext) {
           mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_START)
-          );
+              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_START));
         }
 
         @Override
@@ -262,22 +202,18 @@ public class ReactImageView extends GenericDraweeView {
             @Nullable Animatable animatable) {
           if (imageInfo != null) {
             mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD)
-            );
+              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD));
             mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_END)
-            );
+              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_END));
           }
         }
 
         @Override
         public void onFailure(String id, Throwable throwable) {
           mEventDispatcher.dispatchEvent(
-            new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_ERROR)
-          );
+            new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_ERROR));
           mEventDispatcher.dispatchEvent(
-            new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_END)
-          );
+            new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_END));
         }
       };
     }
@@ -329,11 +265,12 @@ public class ReactImageView extends GenericDraweeView {
     if (sources != null && sources.size() != 0) {
       // Optimize for the case where we have just one uri, case in which we don't need the sizes
       if (sources.size() == 1) {
-        mSources.add(new ImageSource(sources.getMap(0).getString("uri")));
+        mSources.add(new ImageSource(getContext(), sources.getMap(0).getString("uri")));
       } else {
         for (int idx = 0; idx < sources.size(); idx++) {
           ReadableMap source = sources.getMap(idx);
           mSources.add(new ImageSource(
+            getContext(),
             source.getString("uri"),
             source.getDouble("width"),
             source.getDouble("height")));
@@ -344,7 +281,7 @@ public class ReactImageView extends GenericDraweeView {
   }
 
   public void setLoadingIndicatorSource(@Nullable String name) {
-    Drawable drawable = mResourceDrawableIdHelper.getResourceDrawable(getContext(), name);
+    Drawable drawable = ResourceDrawableIdHelper.getInstance().getResourceDrawable(getContext(), name);
     mLoadingImageDrawable =
         drawable != null ? (Drawable) new AutoRotateDrawable(drawable, 1000) : null;
     mIsDirty = true;
@@ -422,7 +359,7 @@ public class ReactImageView extends GenericDraweeView {
     hierarchy.setFadeDuration(
         mFadeDurationMs >= 0
             ? mFadeDurationMs
-            : mImageSource.isLocalImage() ? 0 : REMOTE_IMAGE_FADE_DURATION_MS);
+            : mImageSource.isResource() ? 0 : REMOTE_IMAGE_FADE_DURATION_MS);
 
     Postprocessor postprocessor = usePostprocessorScaling ? mRoundedCornerPostprocessor : null;
 
@@ -504,43 +441,14 @@ public class ReactImageView extends GenericDraweeView {
       return;
     }
     if (hasMultipleSources()) {
-      setImageSourceFromMultipleSources();
+      MultiSourceResult multiSource =
+        MultiSourceHelper.getBestSourceForSize(getWidth(), getHeight(), mSources);
+      mImageSource = multiSource.getBestResult();
+      mCachedImageSource = multiSource.getBestResultInCache();
       return;
     }
 
     mImageSource = mSources.get(0);
-  }
-
-  /**
-   * Chooses the image source with the size closest to the target image size. Must be called only
-   * after the layout pass when the sizes of the target image have been computed, and when there
-   * are at least two sources to choose from.
-   */
-  private void setImageSourceFromMultipleSources() {
-    ImagePipeline imagePipeline = ImagePipelineFactory.getInstance().getImagePipeline();
-    final double targetImageSize = getWidth() * getHeight();
-    double bestPrecision = Double.MAX_VALUE;
-    double bestCachePrecision = Double.MAX_VALUE;
-    for (ImageSource source : mSources) {
-      final double precision = Math.abs(1.0 - (source.getSize()) / targetImageSize);
-      if (precision < bestPrecision) {
-        bestPrecision = precision;
-        mImageSource = source;
-      }
-
-      if (precision < bestCachePrecision &&
-          (imagePipeline.isInBitmapMemoryCache(source.getUri()) ||
-          imagePipeline.isInDiskCacheSync(source.getUri()))) {
-        bestCachePrecision = precision;
-        mCachedImageSource = source;
-      }
-    }
-
-    // don't use cached image source if it's the same as the image source
-    if (mCachedImageSource != null &&
-      mImageSource.getSource().equals(mCachedImageSource.getSource())) {
-      mCachedImageSource = null;
-    }
   }
 
   private static boolean shouldResize(ImageSource imageSource) {

@@ -32,9 +32,10 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
       process.env.NODE_ENV = args.dev ? 'development' : 'production';
     }
 
-    const transformModulePath = args.transformer ?
-      path.resolve(args.transformer) :
-      config.getTransformModulePath();
+    const transformModulePath =
+      args.transformer ? path.resolve(args.transformer) :
+      typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
+      undefined;
 
     const options = {
       projectRoots: config.getProjectRoots(),

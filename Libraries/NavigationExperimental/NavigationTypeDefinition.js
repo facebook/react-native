@@ -23,6 +23,7 @@ export type NavigationGestureDirection = 'horizontal' | 'vertical';
 
 export type NavigationRoute = {
   key: string,
+  title?: string
 };
 
 export type NavigationState = {
@@ -94,6 +95,8 @@ export type NavigationTransitionSpec = {
   duration?: number,
   // An easing function from `Easing`.
   easing?: () => any,
+  // A timing function such as `Animated.timing`.
+  timing?: (value: NavigationAnimatedValue, config: any) => any,
 };
 
 // Functions.
@@ -111,5 +114,3 @@ export type NavigationSceneRenderer = (
 export type NavigationStyleInterpolator = (
   props: NavigationSceneRendererProps,
 ) => Object;
-
-export type NavigationTransitionConfigurator = () => NavigationTransitionSpec;
