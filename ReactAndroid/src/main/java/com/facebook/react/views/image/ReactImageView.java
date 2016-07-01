@@ -43,8 +43,6 @@ import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.drawee.view.GenericDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
-import com.facebook.imagepipeline.core.ImagePipeline;
-import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.request.BasePostprocessor;
 import com.facebook.imagepipeline.request.ImageRequest;
@@ -58,7 +56,9 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.imagehelper.ImageSource;
+import com.facebook.react.views.imagehelper.MultiSourceHelper;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
+import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
 
 /**
  * Wrapper class around Fresco's GenericDraweeView, enabling persisting props across multiple view
@@ -441,43 +441,14 @@ public class ReactImageView extends GenericDraweeView {
       return;
     }
     if (hasMultipleSources()) {
-      setImageSourceFromMultipleSources();
+      MultiSourceResult multiSource =
+        MultiSourceHelper.getBestSourceForSize(getWidth(), getHeight(), mSources);
+      mImageSource = multiSource.getBestResult();
+      mCachedImageSource = multiSource.getBestResultInCache();
       return;
     }
 
     mImageSource = mSources.get(0);
-  }
-
-  /**
-   * Chooses the image source with the size closest to the target image size. Must be called only
-   * after the layout pass when the sizes of the target image have been computed, and when there
-   * are at least two sources to choose from.
-   */
-  private void setImageSourceFromMultipleSources() {
-    ImagePipeline imagePipeline = ImagePipelineFactory.getInstance().getImagePipeline();
-    final double targetImageSize = getWidth() * getHeight();
-    double bestPrecision = Double.MAX_VALUE;
-    double bestCachePrecision = Double.MAX_VALUE;
-    for (ImageSource source : mSources) {
-      final double precision = Math.abs(1.0 - (source.getSize()) / targetImageSize);
-      if (precision < bestPrecision) {
-        bestPrecision = precision;
-        mImageSource = source;
-      }
-
-      if (precision < bestCachePrecision &&
-          (imagePipeline.isInBitmapMemoryCache(source.getUri()) ||
-          imagePipeline.isInDiskCacheSync(source.getUri()))) {
-        bestCachePrecision = precision;
-        mCachedImageSource = source;
-      }
-    }
-
-    // don't use cached image source if it's the same as the image source
-    if (mCachedImageSource != null &&
-      mImageSource.getSource().equals(mCachedImageSource.getSource())) {
-      mCachedImageSource = null;
-    }
   }
 
   private static boolean shouldResize(ImageSource imageSource) {
