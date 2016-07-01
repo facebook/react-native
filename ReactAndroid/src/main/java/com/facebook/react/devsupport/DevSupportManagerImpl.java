@@ -79,6 +79,7 @@ import com.facebook.react.modules.debug.DeveloperSettings;
 public class DevSupportManagerImpl implements DevSupportManager {
 
   private static final int JAVA_ERROR_COOKIE = -1;
+  private static final int JSEXCEPTION_ERROR_COOKIE = -1;
   private static final String JS_BUNDLE_FILE_NAME = "ReactNativeDevBundle.js";
   private static enum ErrorType {
     JS,
@@ -194,7 +195,13 @@ public class DevSupportManagerImpl implements DevSupportManager {
   public void handleException(Exception e) {
     if (mIsDevSupportEnabled) {
       FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
-      showNewJavaError(e.getMessage(), e);
+      if (e instanceof JSException) {
+        // TODO #11638796: convert the stack into something useful
+        showNewError(e.getMessage() + "\n\n" + ((JSException) e).getStack(), new StackFrame[] {},
+                     JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
+      } else {
+        showNewJavaError(e.getMessage(), e);
+      }
     } else {
       mDefaultNativeModuleCallExceptionHandler.handleException(e);
     }
