@@ -11,8 +11,8 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -32,6 +32,9 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.views.image.ImageResizeMode;
 import com.facebook.react.views.image.ReactImageView;
+import com.facebook.react.views.imagehelper.ImageSource;
+import com.facebook.react.views.imagehelper.MultiSourceHelper;
+import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
 
 /**
  * DrawImageWithPipeline is DrawCommand that can draw a local or remote image.
@@ -43,7 +46,7 @@ import com.facebook.react.views.image.ReactImageView;
   private static final Paint PAINT = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
   private static final int BORDER_BITMAP_PATH_DIRTY = 1 << 1;
 
-  private @Nullable Map<String, Double> mSources;
+  private final List<ImageSource> mSources = new LinkedList<>();
   private @Nullable Context mContext;
   private final Matrix mTransform = new Matrix();
   private ScaleType mScaleType = ImageResizeMode.defaultValue();
@@ -62,25 +65,25 @@ import com.facebook.react.views.image.ReactImageView;
 
   @Override
   public boolean hasImageRequest() {
-    return mSources != null && !mSources.isEmpty();
+    return !mSources.isEmpty();
   }
 
   @Override
   public void setSource(Context context, @Nullable ReadableArray sources) {
-    if (mSources == null) {
-      mSources = new HashMap<>();
-    }
     mSources.clear();
     if (sources != null && sources.size() != 0) {
       // Optimize for the case where we have just one uri, case in which we don't need the sizes
       if (sources.size() == 1) {
-        mSources.put(sources.getMap(0).getString("uri"), 0.0d);
+        ReadableMap source = sources.getMap(0);
+        mSources.add(new ImageSource(context, source.getString("uri")));
       } else {
         for (int idx = 0; idx < sources.size(); idx++) {
           ReadableMap source = sources.getMap(idx);
-          mSources.put(
+          mSources.add(new ImageSource(
+              context,
               source.getString("uri"),
-              source.getDouble("width") * source.getDouble("height"));
+              source.getDouble("width"),
+              source.getDouble("height")));
         }
       }
     }
@@ -225,30 +228,21 @@ import com.facebook.react.views.image.ReactImageView;
   }
 
   private void computeRequestHelper() {
-    String[] imageSources = getImageSources();
-    if (imageSources == null) {
+    MultiSourceResult multiSource = MultiSourceHelper.getBestSourceForSize(
+        Math.round(getRight() - getLeft()),
+        Math.round(getBottom() - getTop()),
+        mSources);
+    ImageSource source = multiSource.getBestResult();
+    if (source == null) {
       mRequestHelper = null;
       return;
     }
-    ImageRequest imageRequest =
-        ImageRequestHelper.createImageRequest(Assertions.assertNotNull(mContext), imageSources[0]);
+    ImageRequest imageRequest = ImageRequestHelper.createImageRequest(
+        Assertions.assertNotNull(mContext),
+        source.getSource());
+
     // DrawImageWithPipeline does now support displaying low res cache images before request
     mRequestHelper = new PipelineRequestHelper(Assertions.assertNotNull(imageRequest));
-  }
-
-  private @Nullable String[] getImageSources() {
-    if (mSources == null || mSources.isEmpty()) {
-      return null;
-    }
-    if (hasMultipleSources()) {
-      final double targetImageSize = (getRight() - getLeft()) * (getBottom() - getTop());
-      return MultiSourceImageHelper.getImageSourceFromMultipleSources(targetImageSize, mSources);
-    }
-    return new String[]{mSources.keySet().iterator().next()};
-  }
-
-  private boolean hasMultipleSources() {
-    return Assertions.assertNotNull(mSources).size() > 1;
   }
 
   /* package */ void updateBounds(Bitmap bitmap) {
