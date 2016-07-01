@@ -538,11 +538,13 @@ const TextInput = React.createClass({
     var props = Object.assign({}, this.props);
     props.style = [styles.input, this.props.style];
     if (!props.multiline) {
-      for (var propKey in onlyMultiline) {
-        if (props[propKey]) {
-          throw new Error(
-            'TextInput prop `' + propKey + '` is only supported with multiline.'
-          );
+      if (__DEV__) {
+        for (var propKey in onlyMultiline) {
+          if (props[propKey]) {
+            throw new Error(
+              'TextInput prop `' + propKey + '` is only supported with multiline.'
+            );
+          }
         }
       }
       textContainer =
