@@ -51,17 +51,28 @@ public class MultiSourceHelper {
     }
   }
 
+  public static MultiSourceResult getBestSourceForSize(
+    int width,
+    int height,
+    List<ImageSource> sources) {
+    return getBestSourceForSize(width, height, sources, 1.0d);
+  }
+
   /**
    * Chooses the image source with the size closest to the target image size.
    *
    * @param width the width of the view that will be used to display this image
    * @param height the height of the view that will be used to display this image
    * @param sources the list of potential image sources to choose from
+   * @param multiplier the area of the view will be multiplied by this number before calculating the
+   *        best source; this is useful if the image will be displayed bigger than the view
+   *        (e.g. zoomed)
    */
   public static MultiSourceResult getBestSourceForSize(
     int width,
     int height,
-    List<ImageSource> sources) {
+    List<ImageSource> sources,
+    double multiplier) {
     // no sources
     if (sources.isEmpty()) {
       return new MultiSourceResult(null, null);
@@ -81,7 +92,7 @@ public class MultiSourceHelper {
     ImagePipeline imagePipeline = ImagePipelineFactory.getInstance().getImagePipeline();
     ImageSource best = null;
     ImageSource bestCached = null;
-    final double viewArea = width * height;
+    final double viewArea = width * height * multiplier;
     double bestPrecision = Double.MAX_VALUE;
     double bestCachePrecision = Double.MAX_VALUE;
     for (ImageSource source : sources) {
