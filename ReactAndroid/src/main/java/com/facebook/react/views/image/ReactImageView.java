@@ -59,6 +59,7 @@ import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 
 /**
  * Wrapper class around Fresco's GenericDraweeView, enabling persisting props across multiple view
@@ -190,7 +191,7 @@ public class ReactImageView extends GenericDraweeView {
         // ignore malformed uri, then attempt to extract resource ID.
       }
       if (mUri == null) {
-        mUri = mResourceDrawableIdHelper.getResourceDrawableUri(getContext(), mSource);
+        mUri = ResourceDrawableIdHelper.getInstance().getResourceDrawableUri(getContext(), mSource);
         mIsLocalImage = true;
       } else {
         mIsLocalImage = false;
@@ -198,7 +199,6 @@ public class ReactImageView extends GenericDraweeView {
     }
   }
 
-  private final ResourceDrawableIdHelper mResourceDrawableIdHelper;
   private final List<ImageSource> mSources;
 
   private @Nullable ImageSource mImageSource;
@@ -229,14 +229,12 @@ public class ReactImageView extends GenericDraweeView {
   public ReactImageView(
       Context context,
       AbstractDraweeControllerBuilder draweeControllerBuilder,
-      @Nullable Object callerContext,
-      ResourceDrawableIdHelper resourceDrawableIdHelper) {
+      @Nullable Object callerContext) {
     super(context, buildHierarchy(context));
     mScaleType = ImageResizeMode.defaultValue();
     mDraweeControllerBuilder = draweeControllerBuilder;
     mRoundedCornerPostprocessor = new RoundedCornerPostprocessor();
     mCallerContext = callerContext;
-    mResourceDrawableIdHelper = resourceDrawableIdHelper;
     mSources = new LinkedList<>();
   }
 
@@ -344,7 +342,7 @@ public class ReactImageView extends GenericDraweeView {
   }
 
   public void setLoadingIndicatorSource(@Nullable String name) {
-    Drawable drawable = mResourceDrawableIdHelper.getResourceDrawable(getContext(), name);
+    Drawable drawable = ResourceDrawableIdHelper.getInstance().getResourceDrawable(getContext(), name);
     mLoadingImageDrawable =
         drawable != null ? (Drawable) new AutoRotateDrawable(drawable, 1000) : null;
     mIsDirty = true;
