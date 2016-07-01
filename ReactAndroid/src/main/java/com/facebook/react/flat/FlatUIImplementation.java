@@ -182,6 +182,10 @@ public class FlatUIImplementation extends UIImplementation {
 
   @Override
   public void measure(int reactTag, Callback callback) {
+    measureHelper(reactTag, false, callback);
+  }
+
+  private void measureHelper(int reactTag, boolean relativeToWindow, Callback callback) {
     FlatShadowNode node = (FlatShadowNode) resolveShadowNode(reactTag);
     if (node.mountsToView()) {
       mStateBuilder.ensureBackingViewIsCreated(node);
@@ -216,6 +220,7 @@ public class FlatUIImplementation extends UIImplementation {
         yInParent / parentHeight,
         width / parentWidth,
         height / parentHeight,
+        relativeToWindow,
         callback);
   }
 
@@ -235,8 +240,7 @@ public class FlatUIImplementation extends UIImplementation {
 
   @Override
   public void measureInWindow(int reactTag, Callback callback) {
-    ensureMountsToViewAndBackingViewIsCreated(reactTag);
-    super.measureInWindow(reactTag, callback);
+    measureHelper(reactTag, true, callback);
   }
 
   @Override

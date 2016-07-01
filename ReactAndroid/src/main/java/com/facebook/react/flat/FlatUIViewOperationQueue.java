@@ -173,6 +173,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     private final float mScaledWidth;
     private final float mScaledHeight;
     private final Callback mCallback;
+    private final boolean mRelativeToWindow;
 
     private MeasureVirtualView(
         int reactTag,
@@ -180,6 +181,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
         float scaledY,
         float scaledWidth,
         float scaledHeight,
+        boolean relativeToWindow,
         Callback callback) {
       mReactTag = reactTag;
       mScaledX = scaledX;
@@ -187,13 +189,20 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
       mScaledWidth = scaledWidth;
       mScaledHeight = scaledHeight;
       mCallback = callback;
+      mRelativeToWindow = relativeToWindow;
     }
 
     @Override
     public void execute() {
       try {
         // Measure native View
-        mNativeViewHierarchyManager.measure(mReactTag, MEASURE_BUFFER);
+        if (mRelativeToWindow) {
+          // relative to the window
+          mNativeViewHierarchyManager.measureInWindow(mReactTag, MEASURE_BUFFER);
+        } else {
+          // relative to the root view
+          mNativeViewHierarchyManager.measure(mReactTag, MEASURE_BUFFER);
+        }
       } catch (NoSuchNativeViewException noSuchNativeViewException) {
         // Invoke with no args to signal failure and to allow JS to clean up the callback
         // handle.
@@ -212,7 +221,11 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
       float width = PixelUtil.toDIPFromPixel(mScaledWidth * nativeViewWidth);
       float height = PixelUtil.toDIPFromPixel(mScaledHeight * nativeViewHeight);
 
-      mCallback.invoke(0, 0, width, height, x, y);
+      if (mRelativeToWindow) {
+        mCallback.invoke(x, y, width, height);
+      } else {
+        mCallback.invoke(0, 0, width, height, x, y);
+      }
     }
   }
 
@@ -366,6 +379,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
       float scaledY,
       float scaledWidth,
       float scaledHeight,
+      boolean relativeToWindow,
       Callback callback) {
     enqueueUIOperation(new MeasureVirtualView(
         reactTag,
@@ -373,6 +387,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
         scaledY,
         scaledWidth,
         scaledHeight,
+        relativeToWindow,
         callback));
   }
 
