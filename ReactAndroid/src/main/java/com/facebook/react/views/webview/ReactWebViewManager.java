@@ -41,7 +41,8 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
-
+import android.content.Intent;
+import android.net.Uri;
 /**
  * Manages instances of {@link WebView}
  *
@@ -110,7 +111,18 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
               SystemClock.nanoTime(),
               createWebViewEvent(webView, url)));
     }
-
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, String url){
+        ReactContext reactContext = (ReactContext) view.getContext();
+        if(url.startsWith("tel:")){
+            // handle by yourself
+            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(url)); 
+            reactContext.startActivity(intent);
+            
+            return true;
+        }    
+       return false;
+    }
     @Override
     public void onReceivedError(
         WebView webView,
