@@ -66,7 +66,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final String KEYBOARD_TYPE_PHONE_PAD = "phone-pad";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
   private static final int UNSET = -1;
-  
+
   @Override
   public String getName() {
     return REACT_CLASS;
@@ -321,6 +321,18 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid textAlignVertical: " + textAlignVertical);
     }
+  }
+
+  @ReactProp(name = "inlineImageLeft")
+  public void setInlineImageLeft(ReactEditText view, @Nullable String resource) {
+    // TODO: t11992069 fix this after `ResourceDrawableIdHelper` gets fixed
+    int id = 0;//ResourceDrawableIdHelper.getInstance().getResourceDrawableId(view.getContext(), resource);
+    view.setCompoundDrawablesWithIntrinsicBounds(id, 0, 0, 0);
+  }
+
+  @ReactProp(name = "inlineImagePadding")
+  public void setInlineImagePadding(ReactEditText view, int padding) {
+    view.setCompoundDrawablePadding(padding);
   }
 
   @ReactProp(name = "editable", defaultBoolean = true)

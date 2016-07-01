@@ -35,8 +35,8 @@ describe('Animated', () => {
     nativeAnimatedModule.dropAnimatedNode = jest.fn();
 
     // jest environment doesn't have cancelAnimationFrame :(
-    if (!window.cancelAnimationFrame) {
-      window.cancelAnimationFrame = jest.fn();
+    if (!global.cancelAnimationFrame) {
+      global.cancelAnimationFrame = jest.fn();
     }
   });
 
