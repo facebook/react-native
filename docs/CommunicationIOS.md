@@ -144,7 +144,7 @@ For instance, to make an RN app 200 (logical) pixels high, and the hosting view'
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                    moduleName:appName
                                             initialProperties:props];
-  rootView.frame = CGMakeRect(0, 0, self.view.width, 200);
+  rootView.frame = CGRectMake(0, 0, self.view.width, 200);
   [self.view addSubview:rootView];
 }
 ```
