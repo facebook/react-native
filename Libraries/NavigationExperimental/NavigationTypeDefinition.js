@@ -23,6 +23,7 @@ export type NavigationGestureDirection = 'horizontal' | 'vertical';
 
 export type NavigationRoute = {
   key: string,
+  title?: string
 };
 
 export type NavigationState = {
