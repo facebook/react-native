@@ -61,6 +61,7 @@ import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.uimanager.AppRegistry;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.UIImplementationProvider;
@@ -69,8 +70,6 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 
-import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_JS_MODULE_CONFIG_END;
-import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_JS_MODULE_CONFIG_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_NATIVE_MODULE_REGISTRY_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_NATIVE_MODULE_REGISTRY_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_CATALYST_INSTANCE_END;
@@ -480,6 +479,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
             Assertions.assertNotNull(mCurrentReactContext).getNativeModule(DeviceEventManagerModule.class);
         deviceEventManagerModule.emitNewIntentReceived(uri);
       }
+
+      mCurrentReactContext.onNewIntent(mCurrentActivity, intent);
     }
   }
 
@@ -518,7 +519,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
   @Override
   public void onHostResume(Activity activity, DefaultHardwareBackBtnHandler defaultBackButtonImpl) {
     UiThreadUtil.assertOnUiThread();
-
 
     mDefaultBackButtonImpl = defaultBackButtonImpl;
     if (mUseDeveloperSupport) {
@@ -563,6 +563,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
       mHasStartedCreatingInitialContext = false;
     }
     mCurrentActivity = null;
+
+    ResourceDrawableIdHelper.getInstance().clear();
   }
 
   private void moveToResumedLifecycleState(boolean force) {
@@ -851,7 +853,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(BUILD_NATIVE_MODULE_REGISTRY_END);
     }
-
 
     NativeModuleCallExceptionHandler exceptionHandler = mNativeModuleCallExceptionHandler != null
         ? mNativeModuleCallExceptionHandler

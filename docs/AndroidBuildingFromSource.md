@@ -20,12 +20,24 @@ Make sure you have the following installed:
 3. Local Maven repository for Support Libraries (formerly `Android Support Repository`) >= 17 (for Android Support Library)
 4. Android NDK (download links and installation instructions below)
 
-Point Gradle to your Android SDK: either have `$ANDROID_SDK` and `$ANDROID_NDK ` defined, or create a local.properties file in the root of your react-native checkout with the following contents:
+### Point Gradle to your Android SDK:
+
+**Step 1:**  Set environment variables through your local shell.
+
+Note: Files may vary based on shell flavor. See below for examples from common shells.
+
+- bash: `.bash_profile` or `.bashrc`
+- zsh: `.zprofile` or `.zshrc`
+- ksh: `.profile` or `$ENV`
+
+Example:
 
 ```
-sdk.dir=absolute_path_to_android_sdk
-ndk.dir=absolute_path_to_android_ndk
+export ANDROID_SDK=/Users/your_unix_name/android-sdk-macosx
+export ANDROID_NDK=/Users/your_unix_name/android-ndk/android-ndk-r10e
 ```
+
+**Step 2:** Create a `local.properties` file in the `android` directory of your react-native app with the following contents:
 
 Example:
 

@@ -96,20 +96,17 @@ public:
     return JSStringIsEqualToUTF8CString(m_string, utf8);
   }
 
-  static String createExpectingAscii(const char* utf8, size_t len) {
-  #if WITH_FBJSCEXTENSIONS
-    return String(JSStringCreateWithUTF8CStringExpectAscii(utf8, len), true);
-  #else
-    return createExpectingAscii(std::string(utf8, len));
-  #endif
+  // This assumes ascii is nul-terminated.
+  static String createExpectingAscii(const char* ascii, size_t len) {
+#if WITH_FBJSCEXTENSIONS
+    return String(JSStringCreateWithUTF8CStringExpectAscii(ascii, len), true);
+#else
+    return String(JSStringCreateWithUTF8CString(ascii), true);
+#endif
   }
 
-  static String createExpectingAscii(std::string const &utf8) {
-#if WITH_FBJSCEXTENSIONS
-    return createExpectingAscii(utf8.c_str(), utf8.size());
-#else
-    return String(JSStringCreateWithUTF8CString(utf8.c_str()), true);
-#endif
+  static String createExpectingAscii(std::string const &ascii) {
+    return createExpectingAscii(ascii.c_str(), ascii.size());
   }
 
   static String ref(JSStringRef string) {

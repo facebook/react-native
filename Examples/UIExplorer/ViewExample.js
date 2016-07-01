@@ -93,7 +93,7 @@ var ZIndexExample = React.createClass({
       flipped: false
     };
   },
-  
+
   render() {
     const indices = this.state.flipped ? [-1, 0, 1, 2] : [2, 1, 0, -1];
     return (
@@ -128,7 +128,7 @@ var ZIndexExample = React.createClass({
       </TouchableWithoutFeedback>
     );
   },
-  
+
   _handlePress() {
     this.setState({flipped: !this.state.flipped});
   }

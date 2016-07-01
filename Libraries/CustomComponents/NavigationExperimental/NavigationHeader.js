@@ -85,8 +85,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
   static defaultProps = {
 
     renderTitleComponent: (props: SubViewProps) => {
-      const {navigationState} = props;
-      const title = String(navigationState.title || '');
+      const title = String(props.scene.route.title || '');
       return <NavigationHeaderTitle>{title}</NavigationHeaderTitle>;
     },
 
