@@ -29,26 +29,30 @@
 #include <fb/visibility.h>
 
 #include "Common.h"
-#include "References.h"
-#include "CoreClasses.h"
+
+// If a pending JNI Java exception is found, wraps it in a JniException object and throws it as
+// a C++ exception.
+#define FACEBOOK_JNI_THROW_PENDING_EXCEPTION() \
+  ::facebook::jni::throwPendingJniExceptionAsCppException()
+
+// If the condition is true, throws a JniException object, which wraps the pending JNI Java
+// exception if any. If no pending exception is found, throws a JniException object that wraps a
+// RuntimeException throwable. 
+#define FACEBOOK_JNI_THROW_EXCEPTION_IF(CONDITION) \
+  ::facebook::jni::throwCppExceptionIf(CONDITION)
 
 namespace facebook {
 namespace jni {
 
-class JThrowable;
+namespace internal {
+  void initExceptionHelpers();
+}
 
-class JCppException : public JavaClass<JCppException, JThrowable> {
- public:
-  static auto constexpr kJavaDescriptor = "Lcom/facebook/jni/CppException;";
-
-  static local_ref<JCppException> create(const char* str) {
-    return newInstance(make_jstring(str));
-  }
-
-  static local_ref<JCppException> create(const std::exception& ex) {
-    return newInstance(make_jstring(ex.what()));
-  }
-};
+/**
+ * Before using any of the state initialized above, call this.  It
+ * will assert if initialization has not yet occurred.
+ */
+FBEXPORT void assertIfExceptionsNotInitialized();
 
 // JniException ////////////////////////////////////////////////////////////////////////////////////
 
@@ -63,22 +67,23 @@ class JCppException : public JavaClass<JCppException, JThrowable> {
 class FBEXPORT JniException : public std::exception {
  public:
   JniException();
-  ~JniException();
 
-  explicit JniException(alias_ref<jthrowable> throwable);
+  explicit JniException(jthrowable throwable);
 
   JniException(JniException &&rhs);
 
   JniException(const JniException &other);
 
-  local_ref<JThrowable> getThrowable() const noexcept;
+  ~JniException() noexcept;
+
+  jthrowable getThrowable() const noexcept;
 
   virtual const char* what() const noexcept;
 
   void setJavaException() const noexcept;
 
  private:
-  global_ref<JThrowable> throwable_;
+  jthrowable throwableGlobalRef_;
   mutable std::string what_;
   mutable bool isMessageExtracted_;
   const static std::string kExceptionMessageFailure_;
@@ -90,7 +95,15 @@ class FBEXPORT JniException : public std::exception {
 
 // Functions that throw C++ exceptions
 
+FBEXPORT void throwPendingJniExceptionAsCppException();
+
+FBEXPORT void throwCppExceptionIf(bool condition);
+
 static const int kMaxExceptionMessageBufferSize = 512;
+
+[[noreturn]] FBEXPORT void throwNewJavaException(jthrowable);
+
+[[noreturn]] FBEXPORT void throwNewJavaException(const char* throwableName, const char* msg);
 
 // These methods are the preferred way to throw a Java exception from
 // a C++ function.  They create and throw a C++ exception which wraps
@@ -100,6 +113,7 @@ static const int kMaxExceptionMessageBufferSize = 512;
 // thrown to the java caller.
 template<typename... Args>
 [[noreturn]] void throwNewJavaException(const char* throwableName, const char* fmt, Args... args) {
+  assertIfExceptionsNotInitialized();
   int msgSize = snprintf(nullptr, 0, fmt, args...);
 
   char *msg = (char*) alloca(msgSize + 1);
@@ -109,7 +123,7 @@ template<typename... Args>
 
 // Identifies any pending C++ exception and throws it as a Java exception. If the exception can't
 // be thrown, it aborts the program. This is a noexcept function at C++ level.
-FBEXPORT void translatePendingCppExceptionToJavaException() noexcept;
+void translatePendingCppExceptionToJavaException() noexcept;
 
 // For convenience, some exception names in java.lang are available here.
 
