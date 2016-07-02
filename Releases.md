@@ -49,8 +49,8 @@ git checkout -b <version_you_are_releasing>-stable
 node ./scripts/bump-oss-version.js <exact-version_you_are_releasing>
 # e.g. node ./scripts/bump-oss-version.js 0.22.0-rc
 
-git push origin <version_you_are_releasing>-stable --tags
-# e.g. git push origin 0.22-stable --tags
+git push origin <version_you_are_releasing>-stable --follow-tags
+# e.g. git push origin 0.22-stable --follow-tags
 ```
 
 Circle CI will automatically run the tests and publish to npm with the version you have specified (e.g `0.22.0-rc`) and tag `next` meaning that this version will not be installed for users by default.
@@ -114,8 +114,8 @@ If everything worked:
 node ./scripts/bump-oss-version.js <exact_version_you_are_releasing>
 # e.g. node ./scripts/bump-oss-version.js 0.28.0-rc.1
 
-git push origin version_you_are_releasing-stable --tags
-# e.g. git push origin 0.22-stable --tags
+git push origin version_you_are_releasing-stable --follow-tags
+# e.g. git push origin 0.22-stable --follow-tags
 ````
 
 -------------------
@@ -152,8 +152,8 @@ git push origin :latest
 git tag latest
 # The latest tag marks when to regenerate the website.
 
-git push origin version_you_are_releasing-stable --tags  
-# e.g. git push origin 0.22-stable --tags
+git push origin version_you_are_releasing-stable --follow-tags
+# e.g. git push origin 0.22-stable --follow-tags
 ```
 
 #### Update the release notes
