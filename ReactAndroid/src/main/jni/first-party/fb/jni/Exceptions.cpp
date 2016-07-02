@@ -7,10 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#include <fb/fbjni/CoreClasses.h>
+#include "fb/fbjni.h"
 
 #include <fb/assert.h>
-#include <fb/log.h>
 
 #include <alloca.h>
 #include <cstdlib>
@@ -22,85 +21,204 @@
 
 #include <jni.h>
 
-
 namespace facebook {
 namespace jni {
 
-namespace {
-class JRuntimeException : public JavaClass<JRuntimeException, JThrowable> {
+// CommonJniExceptions /////////////////////////////////////////////////////////////////////////////
+
+class FBEXPORT CommonJniExceptions {
  public:
-  static auto constexpr kJavaDescriptor = "Ljava/lang/RuntimeException;";
+  static void init();
 
-  static local_ref<JRuntimeException> create(const char* str) {
-    return newInstance(make_jstring(str));
+  static jclass getThrowableClass() {
+    return throwableClass_;
   }
 
-  static local_ref<JRuntimeException> create() {
-    return newInstance();
+  static jclass getUnknownCppExceptionClass() {
+    return unknownCppExceptionClass_;
   }
+
+  static jthrowable getUnknownCppExceptionObject() {
+    return unknownCppExceptionObject_;
+  }
+
+  static jthrowable getRuntimeExceptionObject() {
+    return runtimeExceptionObject_;
+  }
+
+ private:
+  static jclass throwableClass_;
+  static jclass unknownCppExceptionClass_;
+  static jthrowable unknownCppExceptionObject_;
+  static jthrowable runtimeExceptionObject_;
 };
 
-class JIOException : public JavaClass<JIOException, JThrowable> {
- public:
-  static auto constexpr kJavaDescriptor = "Ljava/io/IOException;";
+// The variables in this class are all JNI global references and are intentionally leaked because
+// we assume this library cannot be unloaded. These global references are created manually instead
+// of using global_ref from References.h to avoid circular dependency.
+jclass CommonJniExceptions::throwableClass_ = nullptr;
+jclass CommonJniExceptions::unknownCppExceptionClass_ = nullptr;
+jthrowable CommonJniExceptions::unknownCppExceptionObject_ = nullptr;
+jthrowable CommonJniExceptions::runtimeExceptionObject_ = nullptr;
 
-  static local_ref<JIOException> create(const char* str) {
-    return newInstance(make_jstring(str));
-  }
-};
 
-class JOutOfMemoryError : public JavaClass<JOutOfMemoryError, JThrowable> {
- public:
-  static auto constexpr kJavaDescriptor = "Ljava/lang/OutOfMemoryError;";
+// Variable to guarantee that fallback exceptions have been initialized early. We don't want to
+// do pure dynamic initialization -- we want to warn programmers early that they need to run the
+// helpers at library load time instead of lazily getting them when the exception helpers are
+// first used.
+static std::atomic<bool> gIsInitialized(false);
 
-  static local_ref<JOutOfMemoryError> create(const char* str) {
-    return newInstance(make_jstring(str));
-  }
-};
+void CommonJniExceptions::init() {
+  JNIEnv* env = internal::getEnv();
+  FBASSERTMSGF(env, "Could not get JNI Environment");
 
-class JArrayIndexOutOfBoundsException : public JavaClass<JArrayIndexOutOfBoundsException, JThrowable> {
- public:
-  static auto constexpr kJavaDescriptor = "Ljava/lang/ArrayIndexOutOfBoundsException;";
+  // Throwable class
+  jclass localThrowableClass = env->FindClass("java/lang/Throwable");
+  FBASSERT(localThrowableClass);
+  throwableClass_ = static_cast<jclass>(env->NewGlobalRef(localThrowableClass));
+  FBASSERT(throwableClass_);
+  env->DeleteLocalRef(localThrowableClass);
 
-  static local_ref<JArrayIndexOutOfBoundsException> create(const char* str) {
-    return newInstance(make_jstring(str));
-  }
-};
+  // UnknownCppException class
+  jclass localUnknownCppExceptionClass = env->FindClass("com/facebook/jni/UnknownCppException");
+  FBASSERT(localUnknownCppExceptionClass);
+  jmethodID unknownCppExceptionConstructorMID = env->GetMethodID(
+      localUnknownCppExceptionClass,
+      "<init>",
+      "()V");
+  FBASSERT(unknownCppExceptionConstructorMID);
+  unknownCppExceptionClass_ = static_cast<jclass>(env->NewGlobalRef(localUnknownCppExceptionClass));
+  FBASSERT(unknownCppExceptionClass_);
+  env->DeleteLocalRef(localUnknownCppExceptionClass);
 
-class JUnknownCppException : public JavaClass<JUnknownCppException, JThrowable> {
- public:
-  static auto constexpr kJavaDescriptor = "Lcom/facebook/jni/UnknownCppException;";
+  // UnknownCppException object
+  jthrowable localUnknownCppExceptionObject = static_cast<jthrowable>(env->NewObject(
+      unknownCppExceptionClass_,
+      unknownCppExceptionConstructorMID));
+  FBASSERT(localUnknownCppExceptionObject);
+  unknownCppExceptionObject_ = static_cast<jthrowable>(env->NewGlobalRef(
+      localUnknownCppExceptionObject));
+  FBASSERT(unknownCppExceptionObject_);
+  env->DeleteLocalRef(localUnknownCppExceptionObject);
 
-  static local_ref<JUnknownCppException> create() {
-    return newInstance();
-  }
+  // RuntimeException object
+  jclass localRuntimeExceptionClass = env->FindClass("java/lang/RuntimeException");
+  FBASSERT(localRuntimeExceptionClass);
 
-  static local_ref<JUnknownCppException> create(const char* str) {
-    return newInstance(make_jstring(str));
-  }
-};
+  jmethodID runtimeExceptionConstructorMID = env->GetMethodID(
+      localRuntimeExceptionClass,
+      "<init>",
+      "()V");
+  FBASSERT(runtimeExceptionConstructorMID);
+  jthrowable localRuntimeExceptionObject = static_cast<jthrowable>(env->NewObject(
+      localRuntimeExceptionClass,
+      runtimeExceptionConstructorMID));
+  FBASSERT(localRuntimeExceptionObject);
+  runtimeExceptionObject_ = static_cast<jthrowable>(env->NewGlobalRef(localRuntimeExceptionObject));
+  FBASSERT(runtimeExceptionObject_);
 
-class JCppSystemErrorException : public JavaClass<JCppSystemErrorException, JThrowable> {
- public:
-  static auto constexpr kJavaDescriptor = "Lcom/facebook/jni/CppSystemErrorException;";
+  env->DeleteLocalRef(localRuntimeExceptionClass);
+  env->DeleteLocalRef(localRuntimeExceptionObject);
+}
 
-  static local_ref<JCppSystemErrorException> create(const std::system_error& e) {
-    return newInstance(make_jstring(e.what()), e.code().value());
-  }
-};
+
+// initExceptionHelpers() //////////////////////////////////////////////////////////////////////////
+
+void internal::initExceptionHelpers() {
+  CommonJniExceptions::init();
+  gIsInitialized.store(true, std::memory_order_seq_cst);
+}
+
+void assertIfExceptionsNotInitialized() {
+  // Use relaxed memory order because we don't need memory barriers.
+  // The real init-once enforcement is done by the compiler for the
+  // "static" in initExceptionHelpers.
+  FBASSERTMSGF(gIsInitialized.load(std::memory_order_relaxed),
+               "initExceptionHelpers was never called!");
+}
 
 // Exception throwing & translating functions //////////////////////////////////////////////////////
 
 // Functions that throw Java exceptions
 
-void setJavaExceptionAndAbortOnFailure(alias_ref<JThrowable> throwable) {
-  auto env = Environment::current();
+namespace {
+
+void setJavaExceptionAndAbortOnFailure(jthrowable throwable) noexcept {
+  assertIfExceptionsNotInitialized();
+  JNIEnv* env = internal::getEnv();
   if (throwable) {
-    env->Throw(throwable.get());
+    env->Throw(throwable);
   }
   if (env->ExceptionCheck() != JNI_TRUE) {
     std::abort();
   }
+}
+
+void setDefaultException() noexcept {
+  assertIfExceptionsNotInitialized();
+  setJavaExceptionAndAbortOnFailure(CommonJniExceptions::getRuntimeExceptionObject());
+}
+
+void setCppSystemErrorExceptionInJava(const std::system_error& ex) noexcept {
+  assertIfExceptionsNotInitialized();
+  JNIEnv* env = internal::getEnv();
+  jclass cppSystemErrorExceptionClass = env->FindClass(
+      "com/facebook/jni/CppSystemErrorException");
+  if (!cppSystemErrorExceptionClass) {
+    setDefaultException();
+    return;
+  }
+  jmethodID constructorMID = env->GetMethodID(
+      cppSystemErrorExceptionClass,
+      "<init>",
+      "(Ljava/lang/String;I)V");
+  if (!constructorMID) {
+    setDefaultException();
+    return;
+  }
+  jthrowable cppSystemErrorExceptionObject = static_cast<jthrowable>(env->NewObject(
+      cppSystemErrorExceptionClass,
+      constructorMID,
+      env->NewStringUTF(ex.what()),
+      ex.code().value()));
+  setJavaExceptionAndAbortOnFailure(cppSystemErrorExceptionObject);
+}
+
+template<typename... ARGS>
+void setNewJavaException(jclass exceptionClass, const char* fmt, ARGS... args) {
+  assertIfExceptionsNotInitialized();
+  int msgSize = snprintf(nullptr, 0, fmt, args...);
+  JNIEnv* env = internal::getEnv();
+
+  try {
+    char *msg = (char*) alloca(msgSize + 1);
+    snprintf(msg, kMaxExceptionMessageBufferSize, fmt, args...);
+    env->ThrowNew(exceptionClass, msg);
+  } catch (...) {
+    env->ThrowNew(exceptionClass, "");
+  }
+
+  if (env->ExceptionCheck() != JNI_TRUE) {
+    setDefaultException();
+  }
+}
+
+void setNewJavaException(jclass exceptionClass, const char* msg) {
+  assertIfExceptionsNotInitialized();
+  setNewJavaException(exceptionClass, "%s", msg);
+}
+
+template<typename... ARGS>
+void setNewJavaException(const char* className, const char* fmt, ARGS... args) {
+  assertIfExceptionsNotInitialized();
+  JNIEnv* env = internal::getEnv();
+  jclass exceptionClass = env->FindClass(className);
+  if (env->ExceptionCheck() != JNI_TRUE && !exceptionClass) {
+    // If FindClass() has failed but no exception has been thrown, throw a default exception.
+    setDefaultException();
+    return;
+  }
+  setNewJavaException(exceptionClass, fmt, args...);
 }
 
 }
@@ -108,27 +226,29 @@ void setJavaExceptionAndAbortOnFailure(alias_ref<JThrowable> throwable) {
 // Functions that throw C++ exceptions
 
 // TODO(T6618159) Take a stack dump here to save context if it results in a crash when propagated
-void throwPendingJniExceptionAsCppException() {
-  JNIEnv* env = Environment::current();
+FBEXPORT void throwPendingJniExceptionAsCppException() {
+  assertIfExceptionsNotInitialized();
+  JNIEnv* env = internal::getEnv();
   if (env->ExceptionCheck() == JNI_FALSE) {
     return;
   }
 
-  auto throwable = adopt_local(env->ExceptionOccurred());
+  jthrowable throwable = env->ExceptionOccurred();
   if (!throwable) {
     throw std::runtime_error("Unable to get pending JNI exception.");
   }
-  env->ExceptionClear();
 
+  env->ExceptionClear();
   throw JniException(throwable);
 }
 
 void throwCppExceptionIf(bool condition) {
+  assertIfExceptionsNotInitialized();
   if (!condition) {
     return;
   }
 
-  auto env = Environment::current();
+  JNIEnv* env = internal::getEnv();
   if (env->ExceptionCheck() == JNI_TRUE) {
     throwPendingJniExceptionAsCppException();
     return;
@@ -137,11 +257,13 @@ void throwCppExceptionIf(bool condition) {
   throw JniException();
 }
 
-void throwNewJavaException(jthrowable throwable) {
-  throw JniException(wrap_alias(throwable));
+FBEXPORT void throwNewJavaException(jthrowable throwable) {
+  throw JniException(throwable);
 }
 
-void throwNewJavaException(const char* throwableName, const char* msg) {
+FBEXPORT void throwNewJavaException(
+    const char* throwableName,
+    const char* msg) {
   // If anything of the fbjni calls fail, an exception of a suitable
   // form will be thrown, which is what we want.
   auto throwableClass = findClassLocal(throwableName);
@@ -153,80 +275,34 @@ void throwNewJavaException(const char* throwableName, const char* msg) {
 
 // Translate C++ to Java Exception
 
-namespace {
-
-// The implementation std::rethrow_if_nested uses a dynamic_cast to determine
-// if the exception is a nested_exception. If the exception is from a library
-// built with -fno-rtti, then that will crash. This avoids that.
-void rethrow_if_nested() {
+FBEXPORT void translatePendingCppExceptionToJavaException() noexcept {
+  assertIfExceptionsNotInitialized();
   try {
-    throw;
-  } catch (const std::nested_exception& e) {
-    e.rethrow_nested();
-  } catch (...) {
-  }
-}
-
-// For each exception in the chain of the currently handled exception, func
-// will be called with that exception as the currently handled exception (in
-// reverse order, i.e. innermost first).
-void denest(std::function<void()> func) {
-  try {
-    throw;
-  } catch (const std::exception& e) {
-    try {
-      rethrow_if_nested();
-    } catch (...) {
-      denest(func);
-    }
-    func();
-  } catch (...) {
-    func();
-  }
-}
-}
-
-void translatePendingCppExceptionToJavaException() noexcept {
-  local_ref<JThrowable> previous;
-  auto func = [&previous] () {
-    local_ref<JThrowable> current;
     try {
       throw;
     } catch(const JniException& ex) {
-      current = ex.getThrowable();
+      ex.setJavaException();
     } catch(const std::ios_base::failure& ex) {
-      current = JIOException::create(ex.what());
+      setNewJavaException("java/io/IOException", ex.what());
     } catch(const std::bad_alloc& ex) {
-      current = JOutOfMemoryError::create(ex.what());
+      setNewJavaException("java/lang/OutOfMemoryError", ex.what());
     } catch(const std::out_of_range& ex) {
-      current = JArrayIndexOutOfBoundsException::create(ex.what());
+      setNewJavaException("java/lang/ArrayIndexOutOfBoundsException", ex.what());
     } catch(const std::system_error& ex) {
-      current = JCppSystemErrorException::create(ex);
+      setCppSystemErrorExceptionInJava(ex);
     } catch(const std::runtime_error& ex) {
-      current = JRuntimeException::create(ex.what());
+      setNewJavaException("java/lang/RuntimeException", ex.what());
     } catch(const std::exception& ex) {
-      current = JCppException::create(ex.what());
+      setNewJavaException("com/facebook/jni/CppException", ex.what());
     } catch(const char* msg) {
-      current = JUnknownCppException::create(msg);
+      setNewJavaException(CommonJniExceptions::getUnknownCppExceptionClass(), msg);
     } catch(...) {
-      current = JUnknownCppException::create();
+      setJavaExceptionAndAbortOnFailure(CommonJniExceptions::getUnknownCppExceptionObject());
     }
-    if (previous) {
-      current->initCause(previous);
-    }
-    previous = current;
-  };
-
-  try {
-    denest(func);
-    setJavaExceptionAndAbortOnFailure(previous);
-  } catch (std::exception& e) {
-    FBLOGE("unexpected exception in translatePendingCppExceptionToJavaException: %s", e.what());
-    // rethrow the exception and let the noexcept handling abort.
-    throw;
-  } catch (...) {
-    FBLOGE("unexpected exception in translatePendingCppExceptionToJavaException");
-    throw;
+  } catch(...) {
+    // This block aborts the program, if something bad happens when handling exceptions, thus
+    // keeping this function noexcept.
+    std::abort();
   }
 }
 
@@ -234,41 +310,79 @@ void translatePendingCppExceptionToJavaException() noexcept {
 
 const std::string JniException::kExceptionMessageFailure_ = "Unable to get exception message.";
 
-JniException::JniException() : JniException(JRuntimeException::create()) { }
+JniException::JniException() : JniException(CommonJniExceptions::getRuntimeExceptionObject()) { }
 
-JniException::JniException(alias_ref<jthrowable> throwable) : isMessageExtracted_(false) {
-  throwable_ = make_global(throwable);
+JniException::JniException(jthrowable throwable) : isMessageExtracted_(false) {
+  assertIfExceptionsNotInitialized();
+  throwableGlobalRef_ = static_cast<jthrowable>(internal::getEnv()->NewGlobalRef(throwable));
+  if (!throwableGlobalRef_) {
+    throw std::bad_alloc();
+  }
 }
 
 JniException::JniException(JniException &&rhs)
-    : throwable_(std::move(rhs.throwable_)),
+    : throwableGlobalRef_(std::move(rhs.throwableGlobalRef_)),
       what_(std::move(rhs.what_)),
       isMessageExtracted_(rhs.isMessageExtracted_) {
+  rhs.throwableGlobalRef_ = nullptr;
 }
 
 JniException::JniException(const JniException &rhs)
     : what_(rhs.what_), isMessageExtracted_(rhs.isMessageExtracted_) {
-  throwable_ = make_global(rhs.throwable_);
+  JNIEnv* env = internal::getEnv();
+  if (rhs.getThrowable()) {
+    throwableGlobalRef_ = static_cast<jthrowable>(env->NewGlobalRef(rhs.getThrowable()));
+    if (!throwableGlobalRef_) {
+      throw std::bad_alloc();
+    }
+  } else {
+    throwableGlobalRef_ = nullptr;
+  }
 }
 
-JniException::~JniException() {
-  ThreadScope ts;
-  throwable_.reset();
+JniException::~JniException() noexcept {
+  if (throwableGlobalRef_) {
+    internal::getEnv()->DeleteGlobalRef(throwableGlobalRef_);
+  }
 }
 
-local_ref<JThrowable> JniException::getThrowable() const noexcept {
-  return make_local(throwable_);
+jthrowable JniException::getThrowable() const noexcept {
+  return throwableGlobalRef_;
 }
 
 // TODO 6900503: consider making this thread-safe.
 void JniException::populateWhat() const noexcept {
-  ThreadScope ts;
+  JNIEnv* env = internal::getEnv();
+
+  jmethodID toStringMID = env->GetMethodID(
+      CommonJniExceptions::getThrowableClass(),
+      "toString",
+      "()Ljava/lang/String;");
+  jstring messageJString = (jstring) env->CallObjectMethod(
+      throwableGlobalRef_,
+      toStringMID);
+
+  isMessageExtracted_ = true;
+
+  if (env->ExceptionCheck()) {
+    env->ExceptionClear();
+    what_ = kExceptionMessageFailure_;
+    return;
+  }
+
+  const char* chars = env->GetStringUTFChars(messageJString, nullptr);
+  if (!chars) {
+    what_ = kExceptionMessageFailure_;
+    return;
+  }
+
   try {
-    what_ = throwable_->toString();
-    isMessageExtracted_ = true;
+    what_ = std::string(chars);
   } catch(...) {
     what_ = kExceptionMessageFailure_;
   }
+
+  env->ReleaseStringUTFChars(messageJString, chars);
 }
 
 const char* JniException::what() const noexcept {
@@ -279,7 +393,7 @@ const char* JniException::what() const noexcept {
 }
 
 void JniException::setJavaException() const noexcept {
-  setJavaExceptionAndAbortOnFailure(throwable_);
+  setJavaExceptionAndAbortOnFailure(throwableGlobalRef_);
 }
 
 }}

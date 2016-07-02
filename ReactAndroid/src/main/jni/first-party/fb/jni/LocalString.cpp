@@ -156,7 +156,7 @@ void utf8ToModifiedUTF8(const uint8_t* utf8, size_t len, uint8_t* modified, size
   modified[j++] = '\0';
 }
 
-std::string modifiedUTF8ToUTF8(const uint8_t* modified, size_t len) noexcept {
+std::string modifiedUTF8ToUTF8(const uint8_t* modified, size_t len) {
   // Converting from modified utf8 to utf8 will always shrink, so this will always be sufficient
   std::string utf8(len, 0);
   size_t j = 0;
@@ -230,7 +230,7 @@ size_t utf16toUTF8Length(const uint16_t* utf16String, size_t utf16StringLen) {
   return utf8StringLen;
 }
 
-std::string utf16toUTF8(const uint16_t* utf16String, size_t utf16StringLen) noexcept {
+std::string utf16toUTF8(const uint16_t* utf16String, size_t utf16StringLen) {
   if (!utf16String || utf16StringLen <= 0) {
     return "";
   }
