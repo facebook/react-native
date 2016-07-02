@@ -125,10 +125,6 @@ const SwipeableRow = React.createClass({
 
   componentWillMount(): void {
     this._panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: (event, gestureState) => true,
-      // Don't capture child's start events
-      onStartShouldSetPanResponderCapture: (event, gestureState) => false,
-      onMoveShouldSetPanResponder: (event, gestureState) => false,
       onMoveShouldSetPanResponderCapture: this._handleMoveShouldSetPanResponderCapture,
       onPanResponderGrant: this._handlePanResponderGrant,
       onPanResponderMove: this._handlePanResponderMove,
