@@ -339,7 +339,7 @@ public abstract class ReactInstanceManager {
         mUIImplementationProvider = new UIImplementationProvider();
       }
 
-      if (true) {
+      if (mUseOldBridge) {
         return new ReactInstanceManagerImpl(
             Assertions.assertNotNull(
                 mApplication,
