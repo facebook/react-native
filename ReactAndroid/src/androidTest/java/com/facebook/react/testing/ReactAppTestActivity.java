@@ -153,6 +153,7 @@ public class ReactAppTestActivity extends FragmentActivity implements
     ReactInstanceManager.Builder builder =
       ReactTestHelper.getReactTestFactory().getReactInstanceManagerBuilder()
         .setApplication(getApplication())
+        .setUseOldBridge(true)
         .setBundleAssetName(bundleName)
         // By not setting a JS module name, we force the bundle to be always loaded from
         // assets, not the devserver, even if dev mode is enabled (such as when testing redboxes).
