@@ -66,6 +66,24 @@ class NavMenu extends React.Component {
         />
         <NavButton
           onPress={() => {
+            this.props.navigator.push({
+              message: 'Swipe up to dismiss',
+              sceneConfig: Navigator.SceneConfigs.VerticalDownSwipeJump,
+            });
+          }}
+          text="Jump in from top"
+        />
+        <NavButton
+          onPress={() => {
+            this.props.navigator.push({
+              message: 'Swipe down to dismiss',
+              sceneConfig: Navigator.SceneConfigs.VerticalUpSwipeJump,
+            });
+          }}
+          text="Jump in from bottom"
+        />
+        <NavButton
+          onPress={() => {
             this.props.navigator.pop();
           }}
           text="Pop"
