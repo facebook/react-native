@@ -195,7 +195,7 @@ public abstract class ReactInstanceManager {
     protected @Nullable Activity mCurrentActivity;
     protected @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
     protected @Nullable RedBoxHandler mRedBoxHandler;
-    protected boolean mUseOldBridge;
+    protected boolean mUseNewBridge;
 
     protected Builder() {
     }
@@ -310,8 +310,8 @@ public abstract class ReactInstanceManager {
       return this;
     }
 
-    public Builder setUseOldBridge(boolean enable) {
-      mUseOldBridge = enable;
+    public Builder setUseNewBridge() {
+      mUseNewBridge = true;
       return this;
     }
 
@@ -339,8 +339,8 @@ public abstract class ReactInstanceManager {
         mUIImplementationProvider = new UIImplementationProvider();
       }
 
-      if (mUseOldBridge) {
-        return new ReactInstanceManagerImpl(
+      if (mUseNewBridge) {
+        return new XReactInstanceManagerImpl(
             Assertions.assertNotNull(
                 mApplication,
                 "Application property has not been set with this builder"),
@@ -357,7 +357,7 @@ public abstract class ReactInstanceManager {
             mJSCConfig,
             mRedBoxHandler);
       } else {
-        return new XReactInstanceManagerImpl(
+        return new ReactInstanceManagerImpl(
             Assertions.assertNotNull(
                 mApplication,
                 "Application property has not been set with this builder"),
