@@ -138,7 +138,7 @@ JSCExecutor::JSCExecutor(
     int workerId,
     JSCExecutor *owner,
     std::string scriptURL,
-    std::unordered_map<std::string, std::string> globalObjAsJSON,
+    std::unordered_map<std::string, std::string> globalObjAsJSON_,
     const folly::dynamic& jscConfig) :
     m_delegate(delegate),
     m_workerId(workerId),
@@ -148,8 +148,9 @@ JSCExecutor::JSCExecutor(
     m_jscConfig(jscConfig) {
   // We post initOnJSVMThread here so that the owner doesn't have to wait for
   // initialization on its own thread
+  auto globalObjAsJSON=std::move(globalObjAsJSON_);
   m_messageQueueThread->runOnQueue([this, scriptURL,
-                                    globalObjAsJSON=std::move(globalObjAsJSON)] () {
+                                    globalObjAsJSON] () {
     initOnJSVMThread();
 
     installNativeHook<&JSCExecutor::nativePostMessage>("postMessage");
@@ -457,7 +458,9 @@ void JSCExecutor::postMessageToOwnedWebWorker(int workerId, JSValueRef message) 
 void JSCExecutor::postMessageToOwner(JSValueRef msg) {
   std::string msgString = Value(m_context, msg).toJSONString();
   std::shared_ptr<bool> ownerIsDestroyed = m_owner->m_isDestroyed;
-  m_owner->m_messageQueueThread->runOnQueue([workerId=m_workerId, owner=m_owner, ownerIsDestroyed, msgString] () {
+  auto workerId=m_workerId;
+  auto owner=m_owner;
+  m_owner->m_messageQueueThread->runOnQueue([workerId, owner, ownerIsDestroyed, msgString] () {
     if (*ownerIsDestroyed) {
       return;
     }

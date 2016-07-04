@@ -221,7 +221,7 @@ void Bridge::destroy() {
   mainExecutor->destroy();
 }
 
-void Bridge::runOnExecutorQueue(ExecutorToken executorToken, std::function<void(JSExecutor*)> task) {
+void Bridge::runOnExecutorQueue(ExecutorToken executorToken, std::function<void(JSExecutor*)> task_) {
   if (m_destroyed->load(std::memory_order_acquire)) {
     return;
   }
@@ -233,7 +233,8 @@ void Bridge::runOnExecutorQueue(ExecutorToken executorToken, std::function<void(
   }
 
   std::shared_ptr<std::atomic_bool> isDestroyed = m_destroyed;
-  executorMessageQueueThread->runOnQueue([this, isDestroyed, executorToken, task=std::move(task)] {
+  auto task=std::move(task_);
+  executorMessageQueueThread->runOnQueue([this, isDestroyed, executorToken, task] {
     if (isDestroyed->load(std::memory_order_acquire)) {
       return;
     }

@@ -198,11 +198,13 @@ MethodCallResult MethodInvoker::invoke(std::weak_ptr<Instance>& instance, JBaseJ
   auto argCount = signature_.size() - 2;
   jni::JniLocalScope scope(jni::Environment::current(), argCount);
   jvalue args[argCount];
+  auto it = params.begin();
+  auto end = params.end();
   std::transform(
     signature_.begin() + 2,
     signature_.end(),
     args,
-    [&instance, token, it = params.begin(), end = params.end()] (char type) mutable {
+    [&instance, token, it, end] (char type) mutable {
       return extract(instance, token, type, it, end);
   });
 

@@ -66,6 +66,7 @@ local_ref<JArrayClass<jobject>::javaobject> makeArgsArray(Args... args) {
 }
 
 
+/*
 bool needsSlowPath(alias_ref<jobject> obj) {
 #if defined(__ANDROID__)
   // On Android 6.0, art crashes when attempting to call a function on a Proxy.
@@ -85,6 +86,7 @@ bool needsSlowPath(alias_ref<jobject> obj) {
   return false;
 #endif
 }
+*/
 
 }
 
