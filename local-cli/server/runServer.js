@@ -69,9 +69,10 @@ function runServer(args, config, readyCallback) {
 }
 
 function getPackagerServer(args, config) {
-  const transformModulePath = args.transformer ?
-    path.resolve(args.transformer) :
-    config.getTransformModulePath();
+  const transformModulePath =
+    args.transformer ? path.resolve(args.transformer) :
+    typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
+    undefined;
 
   return ReactPackager.createServer({
     nonPersistent: args.nonPersistent,
