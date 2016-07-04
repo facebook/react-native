@@ -23,8 +23,8 @@ namespace detail {
 void utf8ToModifiedUTF8(const uint8_t* bytes, size_t len, uint8_t* modified, size_t modifiedLength);
 size_t modifiedLength(const std::string& str);
 size_t modifiedLength(const uint8_t* str, size_t* length);
-std::string modifiedUTF8ToUTF8(const uint8_t* modified, size_t len) noexcept;
-std::string utf16toUTF8(const uint16_t* utf16Bytes, size_t len) noexcept;
+std::string modifiedUTF8ToUTF8(const uint8_t* modified, size_t len);
+std::string utf16toUTF8(const uint16_t* utf16Bytes, size_t len);
 
 }
 

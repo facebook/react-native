@@ -13,6 +13,8 @@
 #include <new>
 #include <atomic>
 
+#include "Exceptions.h"
+
 namespace facebook {
 namespace jni {
 
