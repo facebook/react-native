@@ -32,18 +32,22 @@ static NSString *ipGuess;
 }
 #endif
 
+- (instancetype)init
+{
+  self = [super init];
+  if (self) {
+    [self setDefaults];
+  }
+  return self;
+}
+
 - (NSDictionary *)defaults
 {
-  static NSDictionary *defaults;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    defaults = @{
-      kRCTEnableLiveReloadKey: @NO,
-      kRCTEnableDevKey: @YES,
-      kRCTEnableMinificationKey: @NO,
-     };
-  });
-  return defaults;
+  return @{
+    kRCTEnableLiveReloadKey: @NO,
+    kRCTEnableDevKey: @YES,
+    kRCTEnableMinificationKey: @NO,
+  };
 }
 
 - (void)settingsUpdated
