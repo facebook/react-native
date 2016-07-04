@@ -135,6 +135,7 @@ const SwipeableRow = React.createClass({
       onPanResponderRelease: this._handlePanResponderEnd,
       onPanResponderTerminationRequest: this._onPanResponderTerminationRequest,
       onPanResponderTerminate: this._handlePanResponderEnd,
+      onShouldBlockNativeResponder: (event, gestureState) => false,
     });
   },
 
