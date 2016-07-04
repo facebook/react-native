@@ -79,7 +79,7 @@
   NSInteger _nativeEventCount;
 
   CGSize _previousContentSize;
-  BOOL _sendContentSizeUpdates;
+  BOOL _viewDidCompleteInitialLayout;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -265,7 +265,7 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   _scrollView.contentSize = size;
   _textView.frame = (CGRect){CGPointZero, size};
 
-  if (_sendContentSizeUpdates && _onContentSizeChange && !CGSizeEqualToSize(_previousContentSize, size)) {
+  if (_viewDidCompleteInitialLayout && _onContentSizeChange && !CGSizeEqualToSize(_previousContentSize, size)) {
     _previousContentSize = size;
     _onContentSizeChange(@{
       @"contentSize": @{
@@ -650,7 +650,7 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
 
   // Start sending content size updates only after the view has been laid out
   // otherwise we send multiple events with bad dimensions on initial render.
-  _sendContentSizeUpdates = YES;
+  _viewDidCompleteInitialLayout = YES;
 
   [self updateFrames];
 }

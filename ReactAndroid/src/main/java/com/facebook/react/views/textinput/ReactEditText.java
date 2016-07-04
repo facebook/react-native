@@ -109,7 +109,7 @@ public class ReactEditText extends EditText {
     // is to add another prop that determines whether we should scroll to end
     // of text.
     if (mContentSizeWatcher != null) {
-      return true;
+      return isMultiline();
     } else {
       return false;
     }
@@ -126,8 +126,7 @@ public class ReactEditText extends EditText {
   // since we only allow JS to change focus, which in turn causes TextView to crash.
   @Override
   public boolean onKeyUp(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_ENTER &&
-        ((getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE) == 0 )) {
+    if (keyCode == KeyEvent.KEYCODE_ENTER && !isMultiline()) {
       hideSoftKeyboard();
       return true;
     }
@@ -233,7 +232,7 @@ public class ReactEditText extends EditText {
     mStagedInputType = type;
     // Input type password defaults to monospace font, so we need to re-apply the font
     super.setTypeface(tf);
-    
+
     // We override the KeyListener so that all keys on the soft input keyboard as well as hardware
     // keyboards work. Some KeyListeners like DigitsKeyListener will display the keyboard but not
     // accept all input from it
@@ -348,6 +347,10 @@ public class ReactEditText extends EditText {
       mTextWatcherDelegator = new TextWatcherDelegator();
     }
     return mTextWatcherDelegator;
+  }
+
+  private boolean isMultiline() {
+    return (getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0;
   }
 
   /* package */ void setGravityHorizontal(int gravityHorizontal) {

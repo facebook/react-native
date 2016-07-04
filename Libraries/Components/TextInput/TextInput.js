@@ -270,7 +270,7 @@ const TextInput = React.createClass({
      * Sets the return key to the label. Use it instead of `returnKeyType`.
      * @platform android
      */
-     returnKeyLabel: PropTypes.string,
+    returnKeyLabel: PropTypes.string,
     /**
      * Limits the maximum number of characters that can be entered. Use this
      * instead of implementing the logic in JS to avoid flicker.
@@ -313,6 +313,8 @@ const TextInput = React.createClass({
     /**
      * Callback that is called when the text input's content size changes.
      * The new content size is passed as an argument to the callback.
+     *
+     * Only called for multiline text inputs.
      */
     onContentSizeChange: PropTypes.func,
     /**
