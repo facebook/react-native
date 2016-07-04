@@ -190,6 +190,7 @@ const TextInput = React.createClass({
      * - `default`
      * - `numeric`
      * - `email-address`
+     * - `phone-pad`
      */
     keyboardType: PropTypes.oneOf([
       // Cross-platform
