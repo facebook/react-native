@@ -345,8 +345,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     NSString *cachesPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
     RCTAssert(cachesPath != nil, @"cachesPath should not be nil");
     if (cachesPath) {
-      std::string path = std::string([cachesPath UTF8String]);
-      strongSelf->_jscWrapper->configureJSContextForIOS(strongSelf.context.ctx, path);
+      strongSelf->_jscWrapper->configureJSContextForIOS(strongSelf.context.ctx, [cachesPath UTF8String]);
     }
   }];
 

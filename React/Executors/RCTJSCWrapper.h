@@ -10,7 +10,6 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 
 #import "RCTDefines.h"
-#import <string>
 
 typedef JSStringRef (*JSValueToStringCopyFuncType)(JSContextRef, JSValueRef, JSValueRef *);
 typedef JSStringRef (*JSStringCreateWithCFStringFuncType)(CFStringRef);
@@ -29,7 +28,7 @@ typedef JSStringRef (*JSValueCreateJSONStringFuncType)(JSContextRef, JSValueRef,
 typedef bool (*JSValueIsUndefinedFuncType)(JSContextRef, JSValueRef);
 typedef bool (*JSValueIsNullFuncType)(JSContextRef, JSValueRef);
 typedef JSValueRef (*JSEvaluateScriptFuncType)(JSContextRef, JSStringRef, JSObjectRef, JSStringRef, int, JSValueRef *);
-typedef void (*configureJSContextForIOSFuncType)(JSContextRef ctx, const std::string &cacheDir);
+typedef void (*configureJSContextForIOSFuncType)(JSContextRef ctx, const char *cacheDir);
 
 typedef struct RCTJSCWrapper {
   JSValueToStringCopyFuncType JSValueToStringCopy;
