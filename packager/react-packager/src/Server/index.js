@@ -499,8 +499,10 @@ class Server {
         const sourceUrl = frame.file;
         // Skip `/debuggerWorker.js` which drives remote debugging because it
         // does not need to symbolication.
+        // Skip anything except http(s), because there is no support for that yet
         if (!urlIndexes.hasOwnProperty(sourceUrl) &&
-            !sourceUrl.endsWith('/debuggerWorker.js')) {
+            !sourceUrl.endsWith('/debuggerWorker.js') &&
+            sourceUrl.startsWith('http')) {
           urlIndexes[sourceUrl] = uniqueUrls.length;
           uniqueUrls.push(sourceUrl);
         }
