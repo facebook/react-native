@@ -29,6 +29,7 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.text.ReactRawTextManager;
 import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.view.ReactViewManager;
+import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactIntegrationTestCase;
 import com.facebook.react.testing.ReactTestHelper;
 
@@ -92,6 +93,7 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
     jsModule = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(uiManager)
         .addNativeModule(new AndroidInfoModule())
+        .addNativeModule(new FakeWebSocketModule())
         .addJSModule(UIManagerTestModule.class)
         .build()
         .getJSModule(UIManagerTestModule.class);

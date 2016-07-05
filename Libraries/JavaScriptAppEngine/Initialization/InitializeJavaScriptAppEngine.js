@@ -200,7 +200,7 @@ function setUpCollections(): void {
 function setUpDevTools(): void {
   if (__DEV__) {
     // not when debugging in chrome
-    if (!window.document && require('Platform').OS === 'ios') {
+    if (!window.document) {
       const setupDevtools = require('setupDevtools');
       setupDevtools();
     }
