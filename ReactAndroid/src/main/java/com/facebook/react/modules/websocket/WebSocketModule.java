@@ -230,7 +230,7 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void sendPing(int id) {
+  public void ping(int id) {
     WebSocket client = mWebSocketConnections.get(id);
     if (client == null) {
       // This is a programmer error

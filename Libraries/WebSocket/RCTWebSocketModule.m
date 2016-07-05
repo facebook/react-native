@@ -77,7 +77,7 @@ RCT_EXPORT_METHOD(sendBinary:(NSString *)base64String socketID:(nonnull NSNumber
   [_sockets[socketID] send:message];
 }
 
-RCT_EXPORT_METHOD(sendPing:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(ping:(nonnull NSNumber *)socketID)
 {
   [_sockets[socketID] sendPing:NULL];
 }

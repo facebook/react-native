@@ -140,7 +140,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
         throw new Error('INVALID_STATE_ERR');
     }
 
-    RCTWebSocketModule.sendPing(this._socketId);
+    RCTWebSocketModule.ping(this._socketId);
   }
 
   _close(code?: number, reason?: string): void {
