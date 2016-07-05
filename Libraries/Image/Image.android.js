@@ -11,12 +11,12 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 var NativeModules = require('NativeModules');
 var ImageResizeMode = require('ImageResizeMode');
 var ImageStylePropTypes = require('ImageStylePropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
-var PropTypes = require('ReactPropTypes');
+var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');

@@ -15,7 +15,7 @@ const Platform = require('Platform');
 const NativeModules = require('NativeModules');
 const { UIManager } = NativeModules;
 
-const findNodeHandle = require('findNodeHandle');
+const findNodeHandle = require('react/lib/findNodeHandle');
 
 const _takeSnapshot = UIManager.takeSnapshot;
 

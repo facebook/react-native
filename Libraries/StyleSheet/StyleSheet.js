@@ -12,7 +12,7 @@
 'use strict';
 
 var PixelRatio = require('PixelRatio');
-var ReactNativePropRegistry = require('ReactNativePropRegistry');
+var ReactNativePropRegistry = require('react/lib/ReactNativePropRegistry');
 var StyleSheetValidation = require('StyleSheetValidation');
 
 var flatten = require('flattenStyle');

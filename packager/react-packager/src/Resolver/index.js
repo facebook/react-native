@@ -93,7 +93,6 @@ class Resolver {
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
       providesModuleNodeModules: [
-        'react',
         'react-native',
         'react-native-windows',
         // Parse requires AsyncStorage. They will

@@ -13,7 +13,7 @@
 
 var BatchedBridge = require('BatchedBridge');
 var React = require('React');
-var ReactNative = require('ReactNative');
+var ReactNative = require('react/lib/ReactNative');
 var View = require('View');
 var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');

@@ -40,7 +40,7 @@ const NavigationPagerStyleInterpolator = require('NavigationPagerStyleInterpolat
 const NavigationPointerEventsContainer = require('NavigationPointerEventsContainer');
 const NavigationPropTypes = require('NavigationPropTypes');
 const React = require('React');
-const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
+const ReactComponentWithPureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 

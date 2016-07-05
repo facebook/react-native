@@ -12,9 +12,9 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 var React = require('React');
-var ReactChildren = require('ReactChildren');
+var ReactChildren = require('react/lib/ReactChildren');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var TextStylePropTypes = require('TextStylePropTypes');

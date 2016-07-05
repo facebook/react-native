@@ -14,7 +14,7 @@
 // Note (avik): add @flow when Flow supports spread properties in propTypes
 
 var Animated = require('Animated');
-var NativeMethodsMixin = require('NativeMethodsMixin');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 var React = require('React');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');

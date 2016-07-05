@@ -12,7 +12,7 @@
 'use strict';
 
 var ColorPropType = require('ColorPropType');
-var NativeMethodsMixin = require('NativeMethodsMixin');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 var Platform = require('Platform');
 var React = require('React');
 var StyleSheet = require('StyleSheet');

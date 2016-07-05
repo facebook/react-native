@@ -38,7 +38,7 @@ const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleIn
 const NavigationCardStackPanResponder = require('NavigationCardStackPanResponder');
 const NavigationPropTypes = require('NavigationPropTypes');
 const React = require('React');
-const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
+const ReactComponentWithPureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
