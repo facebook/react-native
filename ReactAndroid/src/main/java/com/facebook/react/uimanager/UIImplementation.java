@@ -21,6 +21,7 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -79,6 +80,10 @@ public class UIImplementation {
     return mViewManagers.get(className);
   }
 
+  /*package*/ UIViewOperationQueue getUIViewOperationQueue() {
+    return mOperationsQueue;
+  }
+
   /**
    * Registers a root node with a given tag, size and ThemedReactContext
    * and adds it to a node registry.
@@ -94,6 +99,7 @@ public class UIImplementation {
     rootCSSNode.setThemedContext(context);
     rootCSSNode.setStyleWidth(width);
     rootCSSNode.setStyleHeight(height);
+
     mShadowNodeRegistry.addRootNode(rootCSSNode);
 
     // register it within NativeViewHierarchyManager
@@ -177,6 +183,17 @@ public class UIImplementation {
       cssNode.updateProperties(styles);
       handleUpdateView(cssNode, className, styles);
     }
+  }
+
+  /**
+   * Used by native animated module to bypass the process of updating the values through the shadow
+   * view hierarchy. This method will directly update native views, which means that updates for
+   * layout-related propertied won't be handled properly.
+   * Make sure you know what you're doing before calling this method :)
+   */
+  public void synchronouslyUpdateViewOnUIThread(int tag, ReactStylesDiffMap props) {
+    UiThreadUtil.assertOnUiThread();
+    mOperationsQueue.getNativeViewHierarchyManager().updateProperties(tag, props);
   }
 
   protected void handleUpdateView(
@@ -304,6 +321,35 @@ public class UIImplementation {
 
     for (int i = 0; i < tagsToDelete.length; i++) {
       removeShadowNode(mShadowNodeRegistry.getNode(tagsToDelete[i]));
+    }
+  }
+
+  /**
+   * An optimized version of manageChildren that is used for initial setting of child views.
+   * The children are assumed to be in index order
+   *
+   * @param viewTag tag of the parent
+   * @param childrenTags tags of the children
+   */
+  public void setChildren(
+    int viewTag,
+    ReadableArray childrenTags) {
+
+    ReactShadowNode cssNodeToManage = mShadowNodeRegistry.getNode(viewTag);
+
+    for (int i = 0; i < childrenTags.size(); i++) {
+      ReactShadowNode cssNodeToAdd = mShadowNodeRegistry.getNode(childrenTags.getInt(i));
+      if (cssNodeToAdd == null) {
+        throw new IllegalViewOperationException("Trying to add unknown view tag: "
+          + childrenTags.getInt(i));
+      }
+      cssNodeToManage.addChildAt(cssNodeToAdd, i);
+    }
+
+    if (!cssNodeToManage.isVirtual() && !cssNodeToManage.isVirtualAnchor()) {
+      mNativeViewHierarchyOptimizer.handleSetChildren(
+        cssNodeToManage,
+        childrenTags);
     }
   }
 
@@ -715,7 +761,7 @@ public class UIImplementation {
           absoluteY,
           mOperationsQueue,
           mNativeViewHierarchyOptimizer);
-      
+
       // notify JS about layout event if requested
       if (cssNode.shouldNotifyOnLayout()) {
         eventDispatcher.dispatchEvent(
@@ -728,5 +774,9 @@ public class UIImplementation {
       }
     }
     cssNode.markUpdateSeen();
+  }
+
+  public void addUIBlock(UIBlock block) {
+    mOperationsQueue.enqueueUIBlock(block);
   }
 }

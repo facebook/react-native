@@ -25,15 +25,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
 
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 /**
@@ -42,10 +43,12 @@ import org.json.JSONObject;
 /* package */ class RedBoxDialog extends Dialog implements AdapterView.OnItemClickListener {
 
   private final DevSupportManager mDevSupportManager;
+  private final DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
 
   private ListView mStackView;
   private Button mReloadJs;
-  private int mCookie = 0;
+  private Button mDismiss;
+  private Button mCopyToClipboard;
 
   private static class StackAdapter extends BaseAdapter {
     private static final int VIEW_TYPE_COUNT = 2;
@@ -123,7 +126,7 @@ import org.json.JSONObject;
         StackFrame frame = mStack[position - 1];
         FrameViewHolder holder = (FrameViewHolder) convertView.getTag();
         holder.mMethodView.setText(frame.getMethod());
-        holder.mFileView.setText(frame.getFileName() + ":" + frame.getLine());
+        holder.mFileView.setText(StackTraceHelper.formatFrameSource(frame));
         return convertView;
       }
     }
@@ -171,6 +174,35 @@ import org.json.JSONObject;
     }
   }
 
+  private static class CopyToHostClipBoardTask extends AsyncTask<String, Void, Void> {
+    private final DevSupportManager mDevSupportManager;
+
+    private CopyToHostClipBoardTask(DevSupportManager devSupportManager) {
+      mDevSupportManager = devSupportManager;
+    }
+
+    @Override
+    protected Void doInBackground(String... clipBoardString) {
+      try {
+        String sendClipBoardUrl =
+            Uri.parse(mDevSupportManager.getSourceUrl()).buildUpon()
+                .path("/copy-to-clipboard")
+                .query(null)
+                .build()
+                .toString();
+        for (String string: clipBoardString) {
+          OkHttpClient client = new OkHttpClient();
+          RequestBody body = RequestBody.create(null, string);
+          Request request = new Request.Builder().url(sendClipBoardUrl).post(body).build();
+          client.newCall(request).execute();
+        }
+      } catch (Exception e) {
+        FLog.e(ReactConstants.TAG, "Could not copy to the host clipboard", e);
+      }
+      return null;
+    }
+  }
+
   protected RedBoxDialog(Context context, DevSupportManager devSupportManager) {
     super(context, R.style.Theme_Catalyst_RedBox);
 
@@ -179,28 +211,41 @@ import org.json.JSONObject;
     setContentView(R.layout.redbox_view);
 
     mDevSupportManager = devSupportManager;
+    mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
 
     mStackView = (ListView) findViewById(R.id.rn_redbox_stack);
     mStackView.setOnItemClickListener(this);
-    mReloadJs = (Button) findViewById(R.id.rn_redbox_reloadjs);
+    mReloadJs = (Button) findViewById(R.id.rn_redbox_reload_button);
     mReloadJs.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         mDevSupportManager.handleReloadJS();
       }
     });
+    mDismiss = (Button) findViewById(R.id.rn_redbox_dismiss_button);
+    mDismiss.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        dismiss();
+      }
+    });
+    mCopyToClipboard = (Button) findViewById(R.id.rn_redbox_copy_button);
+    mCopyToClipboard.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        String title = mDevSupportManager.getLastErrorTitle();
+        StackFrame[] stack = mDevSupportManager.getLastErrorStack();
+        Assertions.assertNotNull(title);
+        Assertions.assertNotNull(stack);
+        new CopyToHostClipBoardTask(mDevSupportManager).executeOnExecutor(
+            AsyncTask.THREAD_POOL_EXECUTOR,
+            StackTraceHelper.formatStackTrace(title, stack));
+      }
+    });
   }
 
   public void setExceptionDetails(String title, StackFrame[] stack) {
     mStackView.setAdapter(new StackAdapter(title, stack));
-  }
-
-  public void setErrorCookie(int cookie) {
-    mCookie = cookie;
-  }
-
-  public int getErrorCookie() {
-    return mCookie;
   }
 
   @Override
@@ -216,7 +261,9 @@ import org.json.JSONObject;
       mDevSupportManager.showDevOptionsDialog();
       return true;
     }
-
+    if (mDoubleTapReloadRecognizer.didDoubleTapR(keyCode, getCurrentFocus())) {
+      mDevSupportManager.handleReloadJS();
+    }
     return super.onKeyUp(keyCode, event);
   }
 }

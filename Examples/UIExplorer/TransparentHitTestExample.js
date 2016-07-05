@@ -11,12 +11,13 @@
 
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Text,
   View,
   TouchableOpacity,
-} = React;
+} = ReactNative;
 
 var TransparentHitTestExample = React.createClass({
   render: function() {
@@ -45,6 +46,6 @@ exports.description = 'Transparent view receiving touch events';
 exports.examples = [
   {
     title: 'TransparentHitTestExample',
-    render(): ReactElement { return <TransparentHitTestExample />; }
+    render(): ReactElement<any> { return <TransparentHitTestExample />; }
   }
 ];

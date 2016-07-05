@@ -1,23 +1,14 @@
 /**
- *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !! This file is a check-in from github!                       !!
- * !!                                                            !!
- * !! You should not modify this file directly. Instead:         !!
- * !! 1) Go to https://github.com/facebook/css-layout            !!
- * !! 2) Make a pull request and get it merged                   !!
- * !! 3) Copy the file from github to here                       !!
- * !!    (don't forget to keep this header)                      !!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * @generated 
- *
- * Copyright (c) 2014, Facebook, Inc.
+ * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
- *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+// NOTE: this file is auto-copied from https://github.com/facebook/css-layout
+// @generated SignedSource<<c504fae9470271c5617f345667bef8ad>>
+
 
 #ifndef __LAYOUT_H
 #define __LAYOUT_H
@@ -56,6 +47,11 @@ typedef enum {
   CSS_JUSTIFY_SPACE_AROUND
 } css_justify_t;
 
+typedef enum {
+  CSS_OVERFLOW_VISIBLE = 0,
+  CSS_OVERFLOW_HIDDEN
+} css_overflow_t;
+
 // Note: auto is only a valid value for alignSelf. It is NOT a valid value for
 // alignItems.
 typedef enum {
@@ -89,24 +85,51 @@ typedef enum {
 } css_position_t;
 
 typedef enum {
+  CSS_MEASURE_MODE_UNDEFINED = 0,
+  CSS_MEASURE_MODE_EXACTLY,
+  CSS_MEASURE_MODE_AT_MOST,
+  CSS_MEASURE_MODE_COUNT
+} css_measure_mode_t;
+
+typedef enum {
   CSS_WIDTH = 0,
   CSS_HEIGHT
 } css_dimension_t;
+
+typedef struct {
+  float available_width;
+  float available_height;
+  css_measure_mode_t width_measure_mode;
+  css_measure_mode_t height_measure_mode;
+
+  float computed_width;
+  float computed_height;
+} css_cached_measurement_t;
+
+enum {
+  // This value was chosen based on empiracle data. Even the most complicated
+  // layouts should not require more than 16 entries to fit within the cache.
+  CSS_MAX_CACHED_RESULT_COUNT = 16
+};
 
 typedef struct {
   float position[4];
   float dimensions[2];
   css_direction_t direction;
 
+  float flex_basis;
+
   // Instead of recomputing the entire layout every single time, we
   // cache some information to break early when nothing changed
   bool should_update;
-  float last_requested_dimensions[2];
-  float last_parent_max_width;
-  float last_parent_max_height;
-  float last_dimensions[2];
-  float last_position[2];
-  css_direction_t last_direction;
+  int generation_count;
+  css_direction_t last_parent_direction;
+
+  int next_cached_measurements_index;
+  css_cached_measurement_t cached_measurements[CSS_MAX_CACHED_RESULT_COUNT];
+  float measured_dimensions[2];
+
+  css_cached_measurement_t cached_layout;
 } css_layout_t;
 
 typedef struct {
@@ -122,6 +145,7 @@ typedef struct {
   css_align_t align_self;
   css_position_type_t position_type;
   css_wrap_type_t flex_wrap;
+  css_overflow_t overflow;
   float flex;
   float margin[6];
   float position[4];
@@ -149,16 +173,15 @@ struct css_node {
   int children_count;
   int line_index;
 
-  css_node_t* next_absolute_child;
-  css_node_t* next_flex_child;
+  css_node_t* next_child;
 
-  css_dim_t (*measure)(void *context, float width, float height);
+  css_dim_t (*measure)(void *context, float width, css_measure_mode_t widthMode, float height, css_measure_mode_t heightMode);
   void (*print)(void *context);
   struct css_node* (*get_child)(void *context, int i);
   bool (*is_dirty)(void *context);
+  bool (*is_text_node)(void *context);
   void *context;
 };
-
 
 // Lifecycle of nodes and children
 css_node_t *new_css_node(void);
@@ -174,7 +197,7 @@ typedef enum {
 void print_css_node(css_node_t *node, css_print_options_t options);
 
 // Function that computes the layout!
-void layoutNode(css_node_t *node, float maxWidth, float maxHeight, css_direction_t parentDirection);
+void layoutNode(css_node_t *node, float availableWidth, float availableHeight, css_direction_t parentDirection);
 bool isUndefined(float value);
 
 #endif

@@ -69,7 +69,7 @@ The CalendarManager module is instantiated on the Objective-C side using a [Cale
 - number (`NSInteger`, `float`, `double`, `CGFloat`, `NSNumber`)
 - boolean (`BOOL`, `NSNumber`)
 - array (`NSArray`) of any types from this list
-- map (`NSDictionary`) with string keys and values of any type from this list
+- object (`NSDictionary`) with string keys and values of any type from this list
 - function (`RCTResponseSenderBlock`)
 
 But it also works with any type that is supported by the `RCTConvert` class (see [`RCTConvert`](https://github.com/facebook/react-native/blob/master/React/Base/RCTConvert.h) for details). The `RCTConvert` helper functions all accept a JSON value as input and map it to a native Objective-C type or class.

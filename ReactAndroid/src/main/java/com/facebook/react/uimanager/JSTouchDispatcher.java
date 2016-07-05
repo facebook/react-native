@@ -18,6 +18,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.TouchEvent;
+import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
 import com.facebook.react.uimanager.events.TouchEventType;
 
 /**
@@ -31,6 +32,8 @@ public class JSTouchDispatcher {
   private final float[] mTargetCoordinates = new float[2];
   private boolean mChildIsHandlingNativeGesture = false;
   private final ViewGroup mRootViewGroup;
+  private final TouchEventCoalescingKeyHelper mTouchEventCoalescingKeyHelper =
+    new TouchEventCoalescingKeyHelper();
 
   public JSTouchDispatcher(ViewGroup viewGroup) {
     mRootViewGroup = viewGroup;
@@ -74,7 +77,8 @@ public class JSTouchDispatcher {
         ev.getX(),
         ev.getY(),
         mRootViewGroup,
-        mTargetCoordinates);
+        mTargetCoordinates,
+        null);
       eventDispatcher.dispatchEvent(
         TouchEvent.obtain(
           mTargetTag,
@@ -82,7 +86,8 @@ public class JSTouchDispatcher {
           TouchEventType.START,
           ev,
           mTargetCoordinates[0],
-          mTargetCoordinates[1]));
+          mTargetCoordinates[1],
+          mTouchEventCoalescingKeyHelper));
     } else if (mChildIsHandlingNativeGesture) {
       // If the touch was intercepted by a child, we've already sent a cancel event to JS for this
       // gesture, so we shouldn't send any more touches related to it.
@@ -104,7 +109,8 @@ public class JSTouchDispatcher {
           TouchEventType.END,
           ev,
           mTargetCoordinates[0],
-          mTargetCoordinates[1]));
+          mTargetCoordinates[1],
+          mTouchEventCoalescingKeyHelper));
       mTargetTag = -1;
     } else if (action == MotionEvent.ACTION_MOVE) {
       // Update pointer position for current gesture
@@ -115,7 +121,8 @@ public class JSTouchDispatcher {
           TouchEventType.MOVE,
           ev,
           mTargetCoordinates[0],
-          mTargetCoordinates[1]));
+          mTargetCoordinates[1],
+          mTouchEventCoalescingKeyHelper));
     } else if (action == MotionEvent.ACTION_POINTER_DOWN) {
       // New pointer goes down, this can only happen after ACTION_DOWN is sent for the first pointer
       eventDispatcher.dispatchEvent(
@@ -125,7 +132,8 @@ public class JSTouchDispatcher {
           TouchEventType.START,
           ev,
           mTargetCoordinates[0],
-          mTargetCoordinates[1]));
+          mTargetCoordinates[1],
+          mTouchEventCoalescingKeyHelper));
     } else if (action == MotionEvent.ACTION_POINTER_UP) {
       // Exactly onw of the pointers goes up
       eventDispatcher.dispatchEvent(
@@ -135,9 +143,17 @@ public class JSTouchDispatcher {
           TouchEventType.END,
           ev,
           mTargetCoordinates[0],
-          mTargetCoordinates[1]));
+          mTargetCoordinates[1],
+          mTouchEventCoalescingKeyHelper));
     } else if (action == MotionEvent.ACTION_CANCEL) {
-      dispatchCancelEvent(ev, eventDispatcher);
+      if (mTouchEventCoalescingKeyHelper.hasCoalescingKey(ev.getDownTime())) {
+        dispatchCancelEvent(ev, eventDispatcher);
+      } else {
+        FLog.e(
+          ReactConstants.TAG,
+          "Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN"
+        );
+      }
       mTargetTag = -1;
     } else {
       FLog.w(
@@ -168,6 +184,7 @@ public class JSTouchDispatcher {
         TouchEventType.CANCEL,
         androidEvent,
         mTargetCoordinates[0],
-        mTargetCoordinates[1]));
+        mTargetCoordinates[1],
+        mTouchEventCoalescingKeyHelper));
   }
 }

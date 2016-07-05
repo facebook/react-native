@@ -16,14 +16,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Animated,
   Image,
   PanResponder,
   StyleSheet,
   View,
-} = React;
+} = ReactNative;
 
 var NUM_BOBBLES = 5;
 var RAD_EACH = Math.PI / 2 / (NUM_BOBBLES - 2);
@@ -88,7 +89,7 @@ class AnExBobble extends React.Component {
     });
   }
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     return (
       <View style={styles.bobbleContainer}>
         {this.state.bobbles.map((_, i) => {

@@ -15,11 +15,12 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Text,
   View,
-} = React;
+} = ReactNative;
 
 var AccessibilityIOSExample = React.createClass({
   render() {
@@ -60,6 +61,6 @@ exports.description = 'Interface to show iOS\' accessibility samples';
 exports.examples = [
   {
     title: 'Accessibility elements',
-    render(): ReactElement { return <AccessibilityIOSExample />; }
+    render(): ReactElement<any> { return <AccessibilityIOSExample />; }
   },
 ];

@@ -23,42 +23,54 @@ type RelayProfiler = {
   ): void,
 };
 
-var GLOBAL = GLOBAL || this;
-var TRACE_TAG_REACT_APPS = 1 << 17;
-var TRACE_TAG_JSC_CALLS = 1 << 27;
+/* eslint no-bitwise: 0 */
+const TRACE_TAG_REACT_APPS = 1 << 17;
+const TRACE_TAG_JSC_CALLS = 1 << 27;
 
-var _enabled = false;
-var _asyncCookie = 0;
-var _ReactPerf = null;
-function ReactPerf() {
-  if (!_ReactPerf) {
-    _ReactPerf = require('ReactPerf');
-  }
-  return _ReactPerf;
-}
+let _enabled = false;
+let _asyncCookie = 0;
 
-var Systrace = {
+const ReactSystraceDevtool = __DEV__ ? {
+  onBeginReconcilerTimer(debugID, timerType) {
+    const displayName = require('react/lib/ReactComponentTreeDevtool').getDisplayName(debugID);
+    Systrace.beginEvent(`ReactReconciler.${timerType}(${displayName})`);
+  },
+  onEndReconcilerTimer(debugID, timerType) {
+    Systrace.endEvent();
+  },
+  onBeginLifeCycleTimer(debugID, timerType) {
+    const displayName = require('react/lib/ReactComponentTreeDevtool').getDisplayName(debugID);
+    Systrace.beginEvent(`${displayName}.${timerType}()`);
+  },
+  onEndLifeCycleTimer(debugID, timerType) {
+    Systrace.endEvent();
+  },
+} : null;
+
+const Systrace = {
   setEnabled(enabled: boolean) {
     if (_enabled !== enabled) {
-      if (enabled) {
-        global.nativeTraceBeginLegacy && global.nativeTraceBeginLegacy(TRACE_TAG_JSC_CALLS);
-      } else {
-        global.nativeTraceEndLegacy && global.nativeTraceEndLegacy(TRACE_TAG_JSC_CALLS);
+      if (__DEV__) {
+        if (enabled) {
+          global.nativeTraceBeginLegacy && global.nativeTraceBeginLegacy(TRACE_TAG_JSC_CALLS);
+          require('react/lib/ReactDebugTool').addDevtool(ReactSystraceDevtool);
+        } else {
+          global.nativeTraceEndLegacy && global.nativeTraceEndLegacy(TRACE_TAG_JSC_CALLS);
+          require('react/lib/ReactDebugTool').removeDevtool(ReactSystraceDevtool);
+        }
       }
+      _enabled = enabled;
     }
-    _enabled = enabled;
-
-    ReactPerf().enableMeasure = enabled;
   },
 
   /**
    * beginEvent/endEvent for starting and then ending a profile within the same call stack frame
   **/
-  beginEvent(profileName?: any) {
+  beginEvent(profileName?: any, args?: any) {
     if (_enabled) {
       profileName = typeof profileName === 'function' ?
         profileName() : profileName;
-      global.nativeTraceBeginSection(TRACE_TAG_REACT_APPS, profileName);
+      global.nativeTraceBeginSection(TRACE_TAG_REACT_APPS, profileName, args);
     }
   },
 
@@ -74,7 +86,7 @@ var Systrace = {
    * the returned cookie variable should be used as input into the endAsyncEvent call to end the profile
   **/
   beginAsyncEvent(profileName?: any): any {
-    var cookie = _asyncCookie;
+    const cookie = _asyncCookie;
     if (_enabled) {
       _asyncCookie++;
       profileName = typeof profileName === 'function' ?
@@ -104,31 +116,13 @@ var Systrace = {
     }
   },
 
-  reactPerfMeasure(objName: string, fnName: string, func: any): any {
-    return function (component) {
-      if (!_enabled) {
-        return func.apply(this, arguments);
-      }
-
-      var name = objName === 'ReactCompositeComponent' && this.getName() || '';
-      Systrace.beginEvent(`${objName}.${fnName}(${name})`);
-    var ret = func.apply(this, arguments);
-      Systrace.endEvent();
-      return ret;
-    };
-  },
-
-  swizzleReactPerf() {
-    ReactPerf().injection.injectMeasure(Systrace.reactPerfMeasure);
-  },
-
   /**
    * Relay profiles use await calls, so likely occur out of current stack frame
    * therefore async variant of profiling is used
   **/
   attachToRelayProfiler(relayProfiler: RelayProfiler) {
     relayProfiler.attachProfileHandler('*', (name) => {
-      var cookie = Systrace.beginAsyncEvent(name);
+      const cookie = Systrace.beginAsyncEvent(name);
       return () => {
         Systrace.endAsyncEvent(name, cookie);
       };
@@ -186,21 +180,19 @@ var Systrace = {
      return func;
    }
 
-   var profileName = `${objName}.${fnName}`;
+   const profileName = `${objName}.${fnName}`;
    return function() {
      if (!_enabled) {
        return func.apply(this, arguments);
      }
 
      Systrace.beginEvent(profileName);
-     var ret = func.apply(this, arguments);
+     const ret = func.apply(this, arguments);
      Systrace.endEvent();
      return ret;
    };
  },
 };
-
-Systrace.setEnabled(global.__RCTProfileIsProfiling || false);
 
 if (__DEV__) {
   // This is needed, because require callis in polyfills are not processed as

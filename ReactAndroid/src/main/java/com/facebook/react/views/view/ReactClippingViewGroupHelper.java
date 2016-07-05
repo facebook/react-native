@@ -45,12 +45,16 @@ public class ReactClippingViewGroupHelper {
       ReactClippingViewGroup clippingViewGroup = (ReactClippingViewGroup) parent;
       if (clippingViewGroup.getRemoveClippedSubviews()) {
         clippingViewGroup.getClippingRect(sHelperRect);
-        sHelperRect.offset(-view.getLeft(), -view.getTop());
-        view.getDrawingRect(outputRect);
-        if (!outputRect.intersect(sHelperRect)) {
-          // rectangles does not intersect -> we should write empty rect to output
+        // Intersect the view with the parent's rectangle
+        // This will result in the overlap with coordinates in the parent space
+        if (!sHelperRect.intersect(view.getLeft(), view.getTop(), view.getRight(), view.getBottom())) {
           outputRect.setEmpty();
+          return;
         }
+        // Now we move the coordinates to the View's coordinate space
+        sHelperRect.offset(-view.getLeft(), -view.getTop());
+        sHelperRect.offset(view.getScrollX(), view.getScrollY());
+        outputRect.set(sHelperRect);
         return;
       }
     }

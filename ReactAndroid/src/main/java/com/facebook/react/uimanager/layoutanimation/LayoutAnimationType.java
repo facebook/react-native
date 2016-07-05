@@ -7,7 +7,8 @@ package com.facebook.react.uimanager.layoutanimation;
  */
 /* package */ enum LayoutAnimationType {
   CREATE("create"),
-  UPDATE("update");
+  UPDATE("update"),
+  DELETE("delete");
 
   private final String mName;
 

@@ -25,12 +25,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 + (void)loadBundleAtURL:(NSURL *)scriptURL onComplete:(RCTSourceLoadBlock)onComplete
 {
+  NSString *unsanitizedScriptURLString = scriptURL.absoluteString;
   // Sanitize the script URL
-  scriptURL = [RCTConvert NSURL:scriptURL.absoluteString];
+  scriptURL = [RCTConvert NSURL:unsanitizedScriptURLString];
 
   if (!scriptURL) {
+    NSString *errorDescription = [NSString stringWithFormat:@"No script URL provided."
+                                  @"unsanitizedScriptURLString:(%@)", unsanitizedScriptURLString];
     NSError *error = [NSError errorWithDomain:@"JavaScriptLoader" code:1 userInfo:@{
-      NSLocalizedDescriptionKey: @"No script URL provided."
+      NSLocalizedDescriptionKey: errorDescription
     }];
     onComplete(error, nil);
     return;
@@ -61,7 +64,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
       magicNumber = NSSwapLittleIntToHost(magicNumber);
 
-      int32_t sourceLength = 0;
+      int64_t sourceLength = 0;
       if (magicNumber == RCTRAMBundleMagicNumber) {
         source = [NSData dataWithBytes:&magicNumber length:sizeof(magicNumber)];
 

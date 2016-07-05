@@ -15,13 +15,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   AdSupportIOS,
   StyleSheet,
   Text,
   View,
-} = React;
+} = ReactNative;
 
 exports.framework = 'React';
 exports.title = 'Advertising ID';
@@ -30,7 +31,7 @@ exports.description = 'Example of using the ad support API.';
 exports.examples = [
   {
     title: 'Ad Support IOS',
-    render: function(): ReactElement {
+    render: function(): ReactElement<any> {
       return <AdSupportIOSExample />;
     },
   }

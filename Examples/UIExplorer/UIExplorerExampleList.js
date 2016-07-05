@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -15,25 +22,20 @@
  */
 'use strict';
 
-const React = require('react-native');
+const ListView = require('ListView');
+const React = require('react');
+const StyleSheet = require('StyleSheet');
+const Text = require('Text');
+const TextInput = require('TextInput');
+const TouchableHighlight = require('TouchableHighlight');
+const View = require('View');
 const UIExplorerActions = require('./UIExplorerActions');
-const {
-  ListView,
-  NavigationExperimental,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableHighlight,
-  View,
-} = React;
+
 const createExamplePage = require('./createExamplePage');
-const {
-  Container: NavigationContainer,
-} = NavigationExperimental;
 
 import type {
   UIExplorerExample,
-} from './UIExplorerList.ios'
+} from './UIExplorerList.ios';
 
 const ds = new ListView.DataSource({
   rowHasChanged: (r1, r2) => r1 !== r2,
@@ -53,7 +55,14 @@ class UIExplorerExampleList extends React.Component {
   }) {
 
   }
-  render(): ?ReactElement {
+
+  static makeRenderable(example: any): ReactClass<any> {
+    return example.examples ?
+      createExamplePage(null, example) :
+      example;
+  }
+
+  render(): ?ReactElement<any> {
     const filterText = this.props.filter || '';
     const filterRegex = new RegExp(String(filterText), 'i');
     const filter = (example) => filterRegex.test(example.module.title);
@@ -71,6 +80,7 @@ class UIExplorerExampleList extends React.Component {
           dataSource={dataSource}
           renderRow={this._renderExampleRow.bind(this)}
           renderSectionHeader={this._renderSectionHeader}
+          enableEmptySections={true}
           keyboardShouldPersistTaps={true}
           automaticallyAdjustContentInsets={false}
           keyboardDismissMode="on-drag"
@@ -79,7 +89,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderTitleRow(): ?ReactElement {
+  _renderTitleRow(): ?ReactElement<any> {
     if (!this.props.displayTitleRow) {
       return null;
     }
@@ -95,7 +105,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderTextInput(): ?ReactElement {
+  _renderTextInput(): ?ReactElement<any> {
     if (this.props.disableSearch) {
       return null;
     }
@@ -117,7 +127,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderSectionHeader(data: any, section: string): ?ReactElement {
+  _renderSectionHeader(data: any, section: string): ?ReactElement<any> {
     return (
       <Text style={styles.sectionHeader}>
         {section.toUpperCase()}
@@ -125,7 +135,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderExampleRow(example: {key: string, module: Object}): ?ReactElement {
+  _renderExampleRow(example: {key: string, module: Object}): ?ReactElement<any> {
     return this._renderRow(
       example.module.title,
       example.module.description,
@@ -134,7 +144,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderRow(title: string, description: string, key: ?string, handler: ?Function): ?ReactElement {
+  _renderRow(title: string, description: string, key: ?string, handler: ?Function): ?ReactElement<any> {
     return (
       <View key={key || title}>
         <TouchableHighlight onPress={handler}>
@@ -153,20 +163,11 @@ class UIExplorerExampleList extends React.Component {
   }
 
   _handleRowPress(exampleKey: string): void {
-    this.props.onNavigate(UIExplorerActions.ExampleAction(exampleKey))
+    this.props.onNavigate(UIExplorerActions.ExampleAction(exampleKey));
   }
 }
 
-function makeRenderable(example: any): ReactClass<any> {
-  return example.examples ?
-    createExamplePage(null, example) :
-    example;
-}
-
-UIExplorerExampleList = NavigationContainer.create(UIExplorerExampleList);
-UIExplorerExampleList.makeRenderable = makeRenderable;
-
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
   },

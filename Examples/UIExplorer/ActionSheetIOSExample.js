@@ -15,14 +15,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   ActionSheetIOS,
   StyleSheet,
   Text,
   UIManager,
   View,
-} = React;
+} = ReactNative;
 
 var BUTTONS = [
   'Option 0',
@@ -197,27 +198,27 @@ exports.description = 'Interface to show iOS\' action sheets';
 exports.examples = [
   {
     title: 'Show Action Sheet',
-    render(): ReactElement { return <ActionSheetExample />; }
+    render(): ReactElement<any> { return <ActionSheetExample />; }
   },
   {
     title: 'Show Action Sheet with tinted buttons',
-    render(): ReactElement { return <ActionSheetTintExample />; }
+    render(): ReactElement<any> { return <ActionSheetTintExample />; }
   },
   {
     title: 'Show Share Action Sheet',
-    render(): ReactElement {
+    render(): ReactElement<any> {
       return <ShareActionSheetExample url="https://code.facebook.com" />;
     }
   },
   {
     title: 'Share Local Image',
-    render(): ReactElement {
+    render(): ReactElement<any> {
       return <ShareActionSheetExample url="bunny.png" />;
     }
   },
   {
     title: 'Share Screenshot',
-    render(): ReactElement {
+    render(): ReactElement<any> {
       return <ShareScreenshotExample />;
     }
   }

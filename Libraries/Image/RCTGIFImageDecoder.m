@@ -91,6 +91,7 @@ RCT_EXPORT_MODULE()
     animation.keyTimes = keyTimes;
     animation.values = images;
     animation.duration = duration;
+    animation.removedOnCompletion = NO;
     image.reactKeyframeAnimation = animation;
 
   } else {

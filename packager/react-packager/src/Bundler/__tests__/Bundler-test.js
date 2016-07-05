@@ -8,15 +8,24 @@
  */
 'use strict';
 
+jest.disableAutomock();
+
 jest
   .setMock('worker-farm', () => () => undefined)
-  .dontMock('node-haste/node_modules/throat')
-  .dontMock('lodash')
-  .dontMock('../../lib/ModuleTransport')
   .setMock('uglify-js')
-  .dontMock('../');
-
-jest.mock('fs');
+  .mock('image-size')
+  .mock('fs')
+  .mock('assert')
+  .mock('progress')
+  .mock('node-haste')
+  .mock('../../JSTransformer')
+  .mock('../../lib/declareOpts')
+  .mock('../../Resolver')
+  .mock('../Bundle')
+  .mock('../PrepackBundle')
+  .mock('../HMRBundle')
+  .mock('../../Activity')
+  .mock('../../lib/declareOpts');
 
 var Bundler = require('../');
 var Resolver = require('../../Resolver');
@@ -32,16 +41,18 @@ describe('Bundler', function() {
     isAsset,
     isAsset_DEPRECATED,
     isJSON,
+    isPolyfill,
     resolution,
   }) {
     return {
       path,
       resolution,
-      getDependencies() { return Promise.resolve(dependencies); },
-      getName() { return Promise.resolve(id); },
-      isJSON() { return isJSON; },
-      isAsset() { return isAsset; },
-      isAsset_DEPRECATED() { return isAsset_DEPRECATED; },
+      getDependencies: () => Promise.resolve(dependencies),
+      getName: () => Promise.resolve(id),
+      isJSON: () => isJSON,
+      isAsset: () => isAsset,
+      isAsset_DEPRECATED: () => isAsset_DEPRECATED,
+      isPolyfill: () => isPolyfill,
       read: () => ({
         code: 'arbitrary',
         source: 'arbitrary',
@@ -57,8 +68,8 @@ describe('Bundler', function() {
   var projectRoots;
 
   beforeEach(function() {
-    getDependencies = jest.genMockFn();
-    getModuleSystemDependencies = jest.genMockFn();
+    getDependencies = jest.fn();
+    getModuleSystemDependencies = jest.fn();
     projectRoots = ['/root'];
 
     Resolver.mockImpl(function() {
@@ -79,7 +90,7 @@ describe('Bundler', function() {
     });
 
     assetServer = {
-      getAssetData: jest.genMockFn(),
+      getAssetData: jest.fn(),
     };
 
     bundler = new Bundler({
@@ -117,6 +128,7 @@ describe('Bundler', function() {
         mainModuleId: 'foo',
         dependencies: modules,
         transformOptions,
+        getModuleId: () => 123,
       })
     );
 
@@ -196,7 +208,8 @@ describe('Bundler', function() {
   pit('gets the list of dependencies from the resolver', function() {
     const entryFile = '/root/foo.js';
     return bundler.getDependencies({entryFile, recursive: true}).then(() =>
-      expect(getDependencies).toBeCalledWith(
+      // jest calledWith does not support jasmine.any
+      expect(getDependencies.mock.calls[0].slice(0, -2)).toEqual([
         '/root/foo.js',
         { dev: true, recursive: true },
         { minify: false,
@@ -208,8 +221,7 @@ describe('Bundler', function() {
             projectRoots,
           }
         },
-        undefined,
-      )
+      ])
     );
   });
 

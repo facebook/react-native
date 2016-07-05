@@ -16,7 +16,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Image,
   LayoutAnimation,
@@ -25,7 +26,7 @@ var {
   Text,
   TouchableOpacity,
   View,
-} = React;
+} = ReactNative;
 
 var NativeModules = require('NativeModules');
 var {
@@ -130,7 +131,7 @@ var ListViewPagingExample = React.createClass({
     };
   },
 
-  renderRow: function(rowData: string, sectionID: string, rowID: string): ReactElement {
+  renderRow: function(rowData: string, sectionID: string, rowID: string): ReactElement<any> {
     return (<Thumb text={rowData}/>);
   },
 

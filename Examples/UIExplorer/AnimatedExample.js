@@ -15,14 +15,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Animated,
   Easing,
   StyleSheet,
   Text,
   View,
-} = React;
+} = ReactNative;
 var UIExplorerButton = require('./UIExplorerButton');
 
 exports.framework = 'React';

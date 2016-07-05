@@ -7,7 +7,7 @@
  */
 
 // NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<4c7c75ffd4800aee843a5f5828f3e3ab>>
+// @generated SignedSource<<d231dc5fd873a05ae8641a7199502a2a>>
 
 package com.facebook.csslayout;
 
@@ -26,6 +26,7 @@ public class CSSStyle {
   public CSSAlign alignSelf;
   public CSSPositionType positionType;
   public CSSWrap flexWrap;
+  public CSSOverflow overflow;
   public float flex;
 
   public Spacing margin = new Spacing();
@@ -54,6 +55,7 @@ public class CSSStyle {
     alignSelf = CSSAlign.AUTO;
     positionType = CSSPositionType.RELATIVE;
     flexWrap = CSSWrap.NOWRAP;
+    overflow = CSSOverflow.VISIBLE;
     flex = 0f;
 
     margin.reset();;

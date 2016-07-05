@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -15,7 +22,8 @@
  */
 'use strict';
 
-const React = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 const ViewExample = require('./ViewExample');
 const createExamplePage = require('./createExamplePage');
 const {
@@ -26,7 +34,7 @@ const {
   Text,
   TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 
 const EmptyPage = React.createClass({
   render: function() {
@@ -61,6 +69,13 @@ const NavigatorIOSExamplePage = React.createClass({
           {this._renderRow('Push View Example', () => {
             this.props.navigator.push({
               title: 'Very Long Custom View Example Title',
+              component: createExamplePage(null, ViewExample),
+            });
+          })}
+          {this._renderRow('Custom title image Example', () => {
+            this.props.navigator.push({
+              title: 'Custom title image Example',
+              titleImage: require('./relay.png'),
               component: createExamplePage(null, ViewExample),
             });
           })}

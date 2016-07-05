@@ -10,7 +10,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   AppRegistry,
   ScrollView,
@@ -18,7 +19,7 @@ var {
   Text,
   TouchableOpacity,
   View,
-} = React;
+} = ReactNative;
 
 // Keep this list in sync with UIExplorerIntegrationTests.m
 var TESTS = [

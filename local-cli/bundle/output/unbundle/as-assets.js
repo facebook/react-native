@@ -12,9 +12,12 @@ const mkdirp = require('mkdirp');
 const path = require('path');
 const Promise = require('promise');
 
+const buildSourceMapWithMetaData = require('./build-unbundle-sourcemap-with-metadata');
 const writeFile = require('../writeFile');
 const writeSourceMap = require('./write-sourcemap');
 const MAGIC_UNBUNDLE_NUMBER = require('./magic-number');
+const {joinModules} = require('./util');
+
 const MAGIC_UNBUNDLE_FILENAME = 'UNBUNDLE'; // must not start with a dot, as that won't go into the apk
 const MODULES_DIR = 'js-modules';
 
@@ -29,27 +32,33 @@ function saveAsAssets(bundle, options, log) {
   const {
     'bundle-output': bundleOutput,
     'bundle-encoding': encoding,
-    dev,
     'sourcemap-output': sourcemapOutput,
   } = options;
 
   log('start');
-  const {startupCode, modules} = bundle.getUnbundle({minify: !dev});
+  const {startupModules, lazyModules} = bundle.getUnbundle();
   log('finish');
+  const startupCode = joinModules(startupModules);
 
   log('Writing bundle output to:', bundleOutput);
   const modulesDir = path.join(path.dirname(bundleOutput), MODULES_DIR);
   const writeUnbundle =
     createDir(modulesDir).then( // create the modules directory first
-      Promise.all([
-        writeModules(modules, modulesDir, encoding),
+      () => Promise.all([
+        writeModules(lazyModules, modulesDir, encoding),
         writeFile(bundleOutput, startupCode, encoding),
         writeMagicFlagFile(modulesDir),
       ])
     );
   writeUnbundle.then(() => log('Done writing unbundle output'));
 
-  return Promise.all([writeUnbundle, writeSourceMap(sourcemapOutput, '', log)]);
+  const sourceMap =
+    buildSourceMapWithMetaData({startupModules, lazyModules});
+
+  return Promise.all([
+    writeUnbundle,
+    writeSourceMap(sourcemapOutput, JSON.stringify(sourceMap), log)
+  ]);
 }
 
 function createDir(dirName) {

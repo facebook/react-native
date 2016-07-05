@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var ReactPropTypes = require('ReactPropTypes');
+var ReactPropTypes = require('react/lib/ReactPropTypes');
 var ColorPropType = require('ColorPropType');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
@@ -41,7 +41,8 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   letterSpacing: ReactPropTypes.number,
   lineHeight: ReactPropTypes.number,
   /**
-   * Specifies text alignment. The value 'justify' is only supported on iOS.
+   * Specifies text alignment. The value 'justify' is only supported on iOS and
+   * fallbacks to `left` on Android.
    */
   textAlign: ReactPropTypes.oneOf(
     ['auto' /*default*/, 'left', 'right', 'center', 'justify']
@@ -52,9 +53,6 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   textAlignVertical: ReactPropTypes.oneOf(
     ['auto' /*default*/, 'top', 'bottom', 'center']
   ),
-  /**
-   * @platform ios
-   */
   textDecorationLine: ReactPropTypes.oneOf(
     ['none' /*default*/, 'underline', 'line-through', 'underline line-through']
   ),

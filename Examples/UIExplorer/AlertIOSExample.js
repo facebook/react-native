@@ -15,14 +15,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   StyleSheet,
   View,
   Text,
   TouchableHighlight,
   AlertIOS,
-} = React;
+} = ReactNative;
 
 var { SimpleAlertExampleBlock } = require('./AlertExample');
 
@@ -37,7 +38,7 @@ exports.examples = [{
 },
 {
   title: 'Prompt Options',
-  render(): ReactElement {
+  render(): ReactElement<any> {
     return <PromptOptions />;
   }
 },

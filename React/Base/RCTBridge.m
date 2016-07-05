@@ -25,14 +25,6 @@ NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotific
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
 NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
 
-@interface RCTBatchedBridge : RCTBridge <RCTInvalidating>
-
-@property (nonatomic, weak) RCTBridge *parentBridge;
-
-- (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
-
-@end
-
 static NSMutableArray<Class> *RCTModuleClasses;
 NSArray<Class> *RCTGetModuleClasses(void);
 NSArray<Class> *RCTGetModuleClasses(void)
@@ -58,9 +50,6 @@ void RCTRegisterModule(Class moduleClass)
 
   // Register module
   [RCTModuleClasses addObject:moduleClass];
-
-  objc_setAssociatedObject(moduleClass, &RCTBridgeModuleClassIsRegistered,
-                           @NO, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 /**
@@ -81,14 +70,6 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
     name = [name stringByReplacingCharactersInRange:(NSRange){0,@"RK".length} withString:@"RCT"];
   }
   return name;
-}
-
-/**
- * This function checks if a class has been registered
- */
-BOOL RCTBridgeModuleClassIsRegistered(Class cls)
-{
-  return [objc_getAssociatedObject(cls, &RCTBridgeModuleClassIsRegistered) ?: @YES boolValue];
 }
 
 @implementation RCTBridge
@@ -130,12 +111,13 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                    launchOptions:(NSDictionary *)launchOptions
 {
   if ((self = [super init])) {
+    RCTPerformanceLoggerStart(RCTPLBridgeStartup);
     RCTPerformanceLoggerStart(RCTPLTTI);
 
     _delegate = delegate;
     _launchOptions = [launchOptions copy];
     [self setUp];
-    RCTExecuteOnMainThread(^{ [self bindKeys]; }, NO);
+    RCTExecuteOnMainQueue(^{ [self bindKeys]; });
   }
   return self;
 }
@@ -145,13 +127,14 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                     launchOptions:(NSDictionary *)launchOptions
 {
   if ((self = [super init])) {
+    RCTPerformanceLoggerStart(RCTPLBridgeStartup);
     RCTPerformanceLoggerStart(RCTPLTTI);
 
     _bundleURL = bundleURL;
     _moduleProvider = block;
     _launchOptions = [launchOptions copy];
     [self setUp];
-    RCTExecuteOnMainThread(^{ [self bindKeys]; }, NO);
+    RCTExecuteOnMainQueue(^{ [self bindKeys]; });
   }
   return self;
 }
@@ -162,7 +145,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   /**
    * This runs only on the main thread, but crashes the subclass
-   * RCTAssertMainThread();
+   * RCTAssertMainQueue();
    */
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self invalidate];
@@ -170,7 +153,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)bindKeys
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(reload)
@@ -226,11 +209,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge moduleIsInitialized:moduleClass];
 }
 
-- (RCTEventDispatcher *)eventDispatcher
-{
-  return [self moduleForClass:[RCTEventDispatcher class]];
-}
-
 - (void)reload
 {
   /**
@@ -283,9 +261,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   self.batchedBridge = nil;
 
   if (batchedBridge) {
-    RCTExecuteOnMainThread(^{
+    RCTExecuteOnMainQueue(^{
       [batchedBridge invalidate];
-    }, NO);
+    });
   }
 }
 

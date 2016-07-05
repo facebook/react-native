@@ -10,10 +10,9 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 var React = require('React');
-var ReactPropTypes = require('ReactPropTypes');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+var ReactPropTypes = require('react/lib/ReactPropTypes');
 var View = require('View');
 var ColorPropType = require('ColorPropType');
 
@@ -107,11 +106,24 @@ var ProgressBarAndroid = React.createClass({
 
   mixins: [NativeMethodsMixin],
 
+  componentDidMount: function() {
+    if (this.props.indeterminate && this.props.styleAttr !== 'Horizontal') {
+      console.warn(
+        'Circular indeterminate `ProgressBarAndroid`' +
+        'is deprecated. Use `ActivityIndicator` instead.'
+      );
+    }
+  },
+
   render: function() {
     return <AndroidProgressBar {...this.props} />;
   },
 });
 
-var AndroidProgressBar = requireNativeComponent('AndroidProgressBar', ProgressBarAndroid);
+var AndroidProgressBar = requireNativeComponent(
+  'AndroidProgressBar',
+  ProgressBarAndroid,
+  {nativeOnly: {animating: true}},
+);
 
 module.exports = ProgressBarAndroid;

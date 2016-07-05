@@ -40,7 +40,7 @@ function setupDevtools() {
   function handleClose() {
     if (!hasClosed) {
       hasClosed = true;
-      setTimeout(setupDevtools, 200);
+      setTimeout(setupDevtools, 2000);
       closeListeners.forEach(fn => fn());
     }
   }
@@ -64,12 +64,27 @@ function setupDevtools() {
       console.error('Failed to eval: ' + e.message);
       return;
     }
+    // This is breaking encapsulation of the React package. Move plz.
+    var ReactNativeComponentTree = require('react/lib/ReactNativeComponentTree');
     window.__REACT_DEVTOOLS_GLOBAL_HOOK__.inject({
-      CurrentOwner: require('ReactCurrentOwner'),
-      InstanceHandles: require('ReactInstanceHandles'),
-      Mount: require('ReactNativeMount'),
-      Reconciler: require('ReactReconciler'),
-      TextComponent: require('ReactNativeTextComponent'),
+      ComponentTree: {
+        getClosestInstanceFromNode: function (node) {
+          return ReactNativeComponentTree.getClosestInstanceFromNode(node);
+        },
+        getNodeFromInstance: function (inst) {
+          // inst is an internal instance (but could be a composite)
+          while (inst._renderedComponent) {
+            inst = inst._renderedComponent;
+          }
+          if (inst) {
+            return ReactNativeComponentTree.getNodeFromInstance(inst);
+          } else {
+            return null;
+          }
+        }
+      },
+      Mount: require('react/lib/ReactNativeMount'),
+      Reconciler: require('react/lib/ReactReconciler')
     });
     ws.onmessage = handleMessage;
   }

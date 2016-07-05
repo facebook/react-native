@@ -16,7 +16,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Animated,
   Image,
@@ -24,7 +25,7 @@ var {
   StyleSheet,
   Text,
   View,
-} = React;
+} = ReactNative;
 
 class AnExScroll extends React.Component {
   state: any = { scrollX: new Animated.Value(0) };

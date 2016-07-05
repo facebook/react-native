@@ -10,8 +10,8 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var PropTypes = require('ReactPropTypes');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
 var View = require('View');
 
@@ -20,7 +20,9 @@ var requireNativeComponent = require('requireNativeComponent');
 var SWITCH = 'switch';
 
 /**
- * Standard Android two-state toggle component
+ * @deprecated
+ *
+ * Use <Switch> instead for cross-platform compatibility.
  */
 var SwitchAndroid = React.createClass({
   mixins: [NativeMethodsMixin],
