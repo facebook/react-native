@@ -200,9 +200,9 @@
     "eslint-plugin-flow-vars": "^0.2.1",
     "eslint-plugin-react": "^4.2.1",
     "flow-bin": "^0.27.0",
-    "jest": "^13.0.0",
-    "jest-repl": "^13.0.0",
-    "jest-runtime": "^13.0.0",
+    "jest": "^13.1.0",
+    "jest-repl": "^13.1.0",
+    "jest-runtime": "^13.1.0",
     "portfinder": "0.4.0",
     "react": "~15.2.0",
     "shelljs": "0.6.0"
