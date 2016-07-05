@@ -44,11 +44,6 @@ function runAndroid(argv, config, args) {
   });
 }
 
-// Verifies this is an Android project
-function checkAndroid(args) {
-  return fs.existsSync(path.join(args.root, 'android/gradlew'));
-}
-
 function getAdbPath() {
   return process.env.ANDROID_HOME
     ? process.env.ANDROID_HOME + '/platform-tools/adb'
