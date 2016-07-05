@@ -677,6 +677,7 @@ react-native run-ios
 > folder in [Nuclide](http://nuclide.io) and
 > [run the application](http://nuclide.io/docs/platforms/react-native/#command-line), or open
 > `ios/AwesomeProject.xcodeproj` and hit the `Run` button in Xcode.
+> If you want to open the simulator with a particular device use `react-native run-ios --simulator 'iPad 2'`.
 
 <block class="mac android" />
 
