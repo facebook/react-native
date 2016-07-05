@@ -12,8 +12,8 @@
 'use strict';
 
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
-const NativeMethodsMixin = require('NativeMethodsMixin');
-const PropTypes = require('ReactPropTypes');
+const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
@@ -390,10 +390,10 @@ const View = React.createClass({
      *     in CSS:
      * ```
      * .box-none {
-     * 		pointer-events: none;
+     *      pointer-events: none;
      * }
      * .box-none * {
-     * 		pointer-events: all;
+     *      pointer-events: all;
      * }
      * ```
      *   - `'box-only'`: The view can be the target of touch events but it's
@@ -401,10 +401,10 @@ const View = React.createClass({
      *     in CSS:
      * ```
      * .box-only {
-     * 		pointer-events: all;
+     *      pointer-events: all;
      * }
      * .box-only * {
-     * 		pointer-events: none;
+     *      pointer-events: none;
      * }
      * ```
      * > Since `pointerEvents` does not affect layout/appearance, and we are

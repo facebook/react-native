@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var ReactPropTypeLocationNames = require('ReactPropTypeLocationNames');
+var ReactPropTypeLocationNames = require('react/lib/ReactPropTypeLocationNames');
 
 var invariant = require('fbjs/lib/invariant');
 var merge = require('merge');

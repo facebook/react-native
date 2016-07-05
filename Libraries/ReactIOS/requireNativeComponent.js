@@ -15,7 +15,7 @@ var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var UIManager = require('UIManager');
 var UnimplementedView = require('UnimplementedView');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
+var createReactNativeComponentClass = require('react/lib/createReactNativeComponentClass');
 
 var insetsDiffer = require('insetsDiffer');
 var pointsDiffer = require('pointsDiffer');

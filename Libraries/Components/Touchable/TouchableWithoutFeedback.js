@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -19,7 +18,7 @@ const Touchable = require('Touchable');
 const View = require('View');
 
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-const onlyChild = require('onlyChild');
+const onlyChild = require('react/lib/onlyChild');
 const warning = require('fbjs/lib/warning');
 
 type Event = Object;
