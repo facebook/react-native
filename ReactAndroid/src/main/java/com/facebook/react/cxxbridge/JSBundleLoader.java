@@ -11,6 +11,9 @@ package com.facebook.react.cxxbridge;
 
 import android.content.Context;
 
+import com.facebook.react.devsupport.DebugServerException;
+import com.facebook.react.devsupport.DevServerHelper;
+
 /**
  * A class that stores JS bundle information and allows {@link CatalystInstance} to load a correct
  * bundle through {@link ReactBridge}.
@@ -55,7 +58,11 @@ public abstract class JSBundleLoader {
     return new JSBundleLoader() {
       @Override
       public void loadScript(CatalystInstanceImpl instance) {
-        instance.loadScriptFromFile(cachedFileLocation, sourceURL);
+        try {
+          instance.loadScriptFromFile(cachedFileLocation, sourceURL);
+        } catch (Exception e) {
+          throw DebugServerException.makeGeneric(e.getMessage(), e);
+        }
       }
 
       @Override

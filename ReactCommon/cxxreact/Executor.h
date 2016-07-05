@@ -102,8 +102,12 @@ private:
 class JSBigBufferString : public facebook::react::JSBigString {
 public:
   JSBigBufferString(size_t size)
-    : m_data(new char[size])
-    , m_size(size) {}
+    : m_data(new char[size + 1])
+    , m_size(size) {
+    // Guarantee nul-termination.  The caller is responsible for
+    // filling in the rest of m_data.
+    m_data[m_size] = '\0';
+  }
 
   ~JSBigBufferString() {
     delete[] m_data;

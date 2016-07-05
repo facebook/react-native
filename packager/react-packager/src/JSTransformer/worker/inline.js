@@ -15,6 +15,7 @@ const React = {name: 'React'};
 const ReactNative = {name: 'ReactNative'};
 const platform = {name: 'Platform'};
 const os = {name: 'OS'};
+const select = {name: 'select'};
 const requirePattern = {name: 'require'};
 
 const env = {name: 'env'};
@@ -63,10 +64,28 @@ const isProcessEnvNodeEnv = (node, scope) =>
   t.isIdentifier(node.object.object, processId) &&
   isGlobal(scope.getBinding(processId.name));
 
+const isPlatformSelect = (node, scope) =>
+  t.isMemberExpression(node.callee) &&
+  t.isIdentifier(node.callee.object, platform) &&
+  t.isIdentifier(node.callee.property, select) &&
+  isImportOrGlobal(node.callee.object, scope, [platform]);
+
+const isReactPlatformSelect = (node, scope) =>
+  t.isMemberExpression(node.callee) &&
+  t.isIdentifier(node.callee.property, select) &&
+  t.isMemberExpression(node.callee.object) &&
+  t.isIdentifier(node.callee.object.property, platform) &&
+  isImportOrGlobal(node.callee.object.object, scope, [React, ReactNative]);
+
 const isDev = (node, parent, scope) =>
   t.isIdentifier(node, dev) &&
   isGlobal(scope.getBinding(dev.name)) &&
   !(t.isMemberExpression(parent));
+
+function findProperty(objectExpression, key) {
+  const property = objectExpression.properties.find(p => p.key.name === key);
+  return property ? property.value : t.identifier('undefined');
+}
 
 const inlinePlugin = {
   visitor: {
@@ -86,6 +105,19 @@ const inlinePlugin = {
           t.stringLiteral(state.opts.dev ? 'development' : 'production'));
       }
     },
+    CallExpression(path, state) {
+      const node = path.node;
+      const scope = path.scope;
+      const arg = node.arguments[0];
+
+      if (isPlatformSelect(node, scope) || isReactPlatformSelect(node, scope)) {
+        const replacement = t.isObjectExpression(arg)
+          ? findProperty(arg, state.opts.platform)
+          : node;
+
+        path.replaceWith(replacement);
+      }
+    }
   },
 };
 

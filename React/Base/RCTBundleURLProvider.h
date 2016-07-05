@@ -19,11 +19,21 @@ extern NSString *const RCTBundleURLProviderUpdatedNotification;
 - (void)setDefaults;
 
 /**
+ * Reset every settings to default.
+ */
+- (void)resetToDefaults;
+
+/**
  * Returns the jsBundleURL for a given bundle entrypoint and
  * the fallback offline JS bundle if the packager is not running.
  */
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
                    fallbackResource:(NSString *)resourceName;
+
+/**
+ * Returns the URL of the packager server.
+ */
+- (NSURL *)packagerServerURL;
 
 /**
  * The IP address or hostname of the packager.

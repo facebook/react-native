@@ -34,7 +34,15 @@ var config = {
    */
   getBlacklistRE(platform) {
     return blacklist(platform);
-  }
+  },
+
+  /**
+   * Returns the path to a custom transformer. This can also be overridden
+   * with the --transformer commandline argument.
+   */
+  getTransformModulePath() {
+    return require.resolve('../packager/transformer');
+  },
 };
 
 function getRoots() {

@@ -35,6 +35,7 @@ const ReactNative = {
   get Image() { return require('Image'); },
   get ImageEditor() { return require('ImageEditor'); },
   get ImageStore() { return require('ImageStore'); },
+  get KeyboardAvoidingView() { return require('KeyboardAvoidingView'); },
   get ListView() { return require('ListView'); },
   get MapView() { return require('MapView'); },
   get Modal() { return require('Modal'); },
@@ -172,6 +173,20 @@ const ReactNative = {
     },
   },
 };
+
+// Better error messages when accessing React APIs on ReactNative
+if (__DEV__) {
+  const throwOnWrongReactAPI = require('throwOnWrongReactAPI');
+  const reactAPIs = [ 'createClass', 'Component' ];
+
+  for (const key of reactAPIs) {
+    Object.defineProperty(ReactNative, key, {
+      get() { throwOnWrongReactAPI(key); },
+      enumerable: false,
+      configurable: false
+    });
+  }
+}
 
 // Preserve getters with warnings on the internal ReactNative copy without
 // invoking them.

@@ -60,6 +60,8 @@ import static org.mockito.Mockito.when;
     Arguments.class,
     Call.class,
     RequestBodyUtil.class,
+    ProgressRequestBody.class,
+    ProgressRequestListener.class,
     MultipartBody.class,
     MultipartBody.Builder.class,
     NetworkingModule.class,
@@ -82,8 +84,8 @@ public class NetworkingModuleTest {
         return callMock;
       }
     });
-
-    NetworkingModule networkingModule = new NetworkingModule(null, "", httpClient);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
 
     networkingModule.sendRequest(
       mock(ExecutorToken.class),
@@ -194,8 +196,8 @@ public class NetworkingModuleTest {
             return callMock;
           }
         });
-
-    NetworkingModule networkingModule = new NetworkingModule(null, "", httpClient);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
 
     JavaOnlyMap body = new JavaOnlyMap();
     body.putString("string", "This is request body");
@@ -232,7 +234,8 @@ public class NetworkingModuleTest {
         return callMock;
       }
     });
-    NetworkingModule networkingModule = new NetworkingModule(null, "", httpClient);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
 
     List<JavaOnlyArray> headers = Arrays.asList(
         JavaOnlyArray.of("Accept", "text/plain"),
@@ -262,6 +265,7 @@ public class NetworkingModuleTest {
         .thenReturn(mock(InputStream.class));
     when(RequestBodyUtil.create(any(MediaType.class), any(InputStream.class)))
         .thenReturn(mock(RequestBody.class));
+    when(RequestBodyUtil.createProgressRequest(any(RequestBody.class), any(ProgressRequestListener.class))).thenCallRealMethod();
 
     JavaOnlyMap body = new JavaOnlyMap();
     JavaOnlyArray formData = new JavaOnlyArray();
@@ -284,8 +288,8 @@ public class NetworkingModuleTest {
             return callMock;
           }
         });
-
-    NetworkingModule networkingModule = new NetworkingModule(null, "", httpClient);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
     networkingModule.sendRequest(
       mock(ExecutorToken.class),
       "POST",
@@ -316,6 +320,7 @@ public class NetworkingModuleTest {
         .thenReturn(mock(InputStream.class));
     when(RequestBodyUtil.create(any(MediaType.class), any(InputStream.class)))
         .thenReturn(mock(RequestBody.class));
+    when(RequestBodyUtil.createProgressRequest(any(RequestBody.class), any(ProgressRequestListener.class))).thenCallRealMethod();
 
     List<JavaOnlyArray> headers = Arrays.asList(
             JavaOnlyArray.of("Accept", "text/plain"),
@@ -343,8 +348,8 @@ public class NetworkingModuleTest {
             return callMock;
           }
         });
-
-    NetworkingModule networkingModule = new NetworkingModule(null, "", httpClient);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
     networkingModule.sendRequest(
       mock(ExecutorToken.class),
       "POST",
@@ -378,6 +383,7 @@ public class NetworkingModuleTest {
     when(RequestBodyUtil.getFileInputStream(any(ReactContext.class), any(String.class)))
         .thenReturn(inputStream);
     when(RequestBodyUtil.create(any(MediaType.class), any(InputStream.class))).thenCallRealMethod();
+    when(RequestBodyUtil.createProgressRequest(any(RequestBody.class), any(ProgressRequestListener.class))).thenCallRealMethod();
     when(inputStream.available()).thenReturn("imageUri".length());
 
     final MultipartBody.Builder multipartBuilder = mock(MultipartBody.Builder.class);
@@ -440,7 +446,8 @@ public class NetworkingModuleTest {
           }
         });
 
-    NetworkingModule networkingModule = new NetworkingModule(null, "", httpClient);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
     networkingModule.sendRequest(
       mock(ExecutorToken.class),
       "POST",
@@ -496,7 +503,8 @@ public class NetworkingModuleTest {
         return calls[(Integer) request.tag() - 1];
       }
     });
-    NetworkingModule networkingModule = new NetworkingModule(null, "", httpClient);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
     networkingModule.initialize();
 
     for (int idx = 0; idx < requests; idx++) {
@@ -542,7 +550,8 @@ public class NetworkingModuleTest {
         return calls[(Integer) request.tag() - 1];
       }
     });
-    NetworkingModule networkingModule = new NetworkingModule(null, "", httpClient);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
 
     for (int idx = 0; idx < requests; idx++) {
       networkingModule.sendRequest(

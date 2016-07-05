@@ -95,11 +95,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     image = [image imageWithRenderingMode:_renderingMode];
   }
 
-  // Applying capInsets of 0 will switch the "resizingMode" of the image to "tile" which is undesired
-  if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, _capInsets)) {
+  if (_resizeMode == RCTResizeModeRepeat) {
+    image = [image resizableImageWithCapInsets:_capInsets resizingMode:UIImageResizingModeTile];
+  } else if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, _capInsets)) {
+    // Applying capInsets of 0 will switch the "resizingMode" of the image to "tile" which is undesired
     image = [image resizableImageWithCapInsets:_capInsets resizingMode:UIImageResizingModeStretch];
   }
-
   // Apply trilinear filtering to smooth out mis-sized images
   self.layer.minificationFilter = kCAFilterTrilinear;
   self.layer.magnificationFilter = kCAFilterTrilinear;
@@ -161,10 +162,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return UIEdgeInsetsEqualToEdgeInsets(_capInsets, UIEdgeInsetsZero);
 }
 
-- (void)setContentMode:(UIViewContentMode)contentMode
+- (void)setResizeMode:(RCTResizeMode)resizeMode
 {
-  if (self.contentMode != contentMode) {
-    super.contentMode = contentMode;
+  if (_resizeMode != resizeMode) {
+    _resizeMode = resizeMode;
+
+    if (_resizeMode == RCTResizeModeRepeat) {
+      // Repeat resize mode is handled by the UIImage. Use scale to fill
+      // so the repeated image fills the UIImageView.
+      self.contentMode = UIViewContentModeScaleToFill;
+    } else {
+      self.contentMode = (UIViewContentMode)resizeMode;
+    }
+
     if ([self sourceNeedsReload]) {
       [self reloadImage];
     }
@@ -229,7 +239,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                             size:imageSize
                                            scale:imageScale
                                          clipped:NO
-                                      resizeMode:(RCTResizeMode)self.contentMode
+                                      resizeMode:_resizeMode
                                    progressBlock:progressHandler
                                  completionBlock:^(NSError *error, UIImage *loadedImage) {
 
@@ -263,22 +273,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
         // Blur on a background thread to avoid blocking interaction
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
           UIImage *image = RCTBlurredImageWithRadius(loadedImage, blurRadius);
-          RCTExecuteOnMainThread(^{
+          RCTExecuteOnMainQueue(^{
             setImageBlock(image);
-          }, NO);
+          });
         });
       } else {
         // No blur, so try to set the image on the main thread synchronously to minimize image
         // flashing. (For instance, if this view gets attached to a window, then -didMoveToWindow
         // calls -reloadImage, and we want to set the image synchronously if possible so that the
         // image property is set in the same CATransaction that attaches this view to the window.)
-        if ([NSThread isMainThread]) {
+        RCTExecuteOnMainQueue(^{
           setImageBlock(loadedImage);
-        } else {
-          RCTExecuteOnMainThread(^{
-            setImageBlock(loadedImage);
-          }, NO);
-        }
+        });
       }
     }];
   } else {
@@ -319,7 +325,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   [super didMoveToWindow];
 
-  if (self.window && (!self.image || self.image == _defaultImage)) {
+  if (!self.window) {
+    // Cancel loading the image if we've moved offscreen. In addition to helping
+    // prioritise image requests that are actually on-screen, this removes
+    // requests that have gotten "stuck" from the queue, unblocking other images
+    // from loading.
+    [self cancelImageLoad];
+  } else if (!self.image || self.image == _defaultImage) {
     [self reloadImage];
   }
 }

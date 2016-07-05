@@ -57,6 +57,9 @@ import com.android.build.OutputFile
  *   // for example, you might want to remove it from here.
  *   inputExcludes: ["android/**", "ios/**"],
  *
+ *   // override which node gets called and with what additional arguments
+ *   nodeExecutableAndArgs: ["node"]
+ *
  *   // supply additional arguments to the packager
  *   extraPackagerArgs: []
  * ]

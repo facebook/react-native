@@ -9,6 +9,7 @@
 #include <JavaScriptCore/JSContextRef.h>
 
 #include <folly/json.h>
+#include <folly/Optional.h>
 
 #include "Executor.h"
 #include "ExecutorToken.h"
@@ -52,24 +53,24 @@ public:
   explicit JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
                        std::shared_ptr<MessageQueueThread> messageQueueThread,
                        const std::string& cacheDir,
-                       const folly::dynamic& jscConfig);
+                       const folly::dynamic& jscConfig) throw(JSException);
   ~JSCExecutor() override;
 
   virtual void loadApplicationScript(
     std::unique_ptr<const JSBigString> script,
-    std::string sourceURL) override;
+    std::string sourceURL) throw(JSException) override;
   virtual void setJSModulesUnbundle(
     std::unique_ptr<JSModulesUnbundle> unbundle) override;
   virtual void callFunction(
     const std::string& moduleId,
     const std::string& methodId,
-    const folly::dynamic& arguments) override;
+    const folly::dynamic& arguments) throw(JSException) override;
   virtual void invokeCallback(
     const double callbackId,
-    const folly::dynamic& arguments) override;
+    const folly::dynamic& arguments) throw(JSException) override;
   virtual void setGlobalVariable(
     std::string propName,
-    std::unique_ptr<const JSBigString> jsonValue) override;
+    std::unique_ptr<const JSBigString> jsonValue) throw(JSException) override;
   virtual void* getJavaScriptContext() override;
   virtual bool supportsProfiling() override;
   virtual void startProfiler(const std::string &titleString) override;
@@ -91,6 +92,10 @@ private:
   std::unique_ptr<JSModulesUnbundle> m_unbundle;
   folly::dynamic m_jscConfig;
 
+  folly::Optional<Object> m_invokeCallbackAndReturnFlushedQueueJS;
+  folly::Optional<Object> m_callFunctionReturnFlushedQueueJS;
+  folly::Optional<Object> m_flushedQueueJS;
+
   /**
    * WebWorker constructor. Must be invoked from thread this Executor will run on.
    */
@@ -103,9 +108,10 @@ private:
       std::unordered_map<std::string, std::string> globalObjAsJSON,
       const folly::dynamic& jscConfig);
 
-  void initOnJSVMThread();
+  void initOnJSVMThread() throw(JSException);
   void terminateOnJSVMThread();
-  void flush();
+  void bindBridge() throw(JSException);
+  void flush() throw(JSException);
   void flushQueueImmediate(std::string queueJSON);
   void loadModule(uint32_t moduleId);
 

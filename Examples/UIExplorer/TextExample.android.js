@@ -378,6 +378,11 @@ var TextExample = React.createClass({
             No maximum lines specified no matter now much I write here. If I keep writing it{"'"}ll just keep going and going
           </Text>
         </UIExplorerBlock>
+        <UIExplorerBlock title="selectable attribute">
+          <Text selectable={true}>
+            This text is selectable if you click-and-hold, and will offer the native Android selection menus.
+          </Text>
+        </UIExplorerBlock>
         <UIExplorerBlock title="Inline images">
           <Text>
             This text contains an inline image <Image source={require('./flux.png')}/>. Neat, huh?
@@ -386,6 +391,17 @@ var TextExample = React.createClass({
         <UIExplorerBlock title="Text shadow">
           <Text style={{fontSize: 20, textShadowOffset: {width: 2, height: 2}, textShadowRadius: 1, textShadowColor: '#00cccc'}}>
             Demo text shadow
+          </Text>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Line break mode">
+          <Text numberOfLines={1}>
+            This very long text should be truncated with dots in the end.
+          </Text>
+          <Text lineBreakMode="middle" numberOfLines={1}>
+            This very long text should be truncated with dots in the middle.
+          </Text>
+          <Text lineBreakMode="head" numberOfLines={1}>
+            This very long text should be truncated with dots in the beginning.
           </Text>
         </UIExplorerBlock>
       </UIExplorerPage>

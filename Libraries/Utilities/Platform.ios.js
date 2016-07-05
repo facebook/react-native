@@ -12,16 +12,9 @@
 
 'use strict';
 
-const Platform = {
+var Platform = {
   OS: 'ios',
   select: (obj: Object) => obj.ios,
-  lazySelect(obj: ?Object): ?Object {
-    if (!obj || !obj.ios) {
-      return null;
-    }
-
-    return obj.ios();
-  },
 };
 
 module.exports = Platform;

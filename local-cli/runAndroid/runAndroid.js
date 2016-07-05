@@ -44,10 +44,43 @@ function runAndroid(argv, config, args) {
   });
 }
 
+// Verifies this is an Android project
+function checkAndroid(args) {
+  return fs.existsSync(path.join(args.root, 'android/gradlew'));
+}
+
+function getAdbPath() {
+  return process.env.ANDROID_HOME
+    ? process.env.ANDROID_HOME + '/platform-tools/adb'
+    : 'adb';
+}
+
+// Runs ADB reverse tcp:8081 tcp:8081 to allow loading the jsbundle from the packager
+function tryRunAdbReverse() {
+  try {
+    const adbPath = getAdbPath();
+    const adbArgs = ['reverse', 'tcp:8081', 'tcp:8081'];
+
+    console.log(chalk.bold(
+      `Running ${adbPath} ${adbArgs.join(' ')}`
+    ));
+
+    child_process.execFileSync(adbPath, adbArgs, {
+      stdio: [process.stdin, process.stdout, process.stderr],
+    });
+  } catch(e) {
+    console.log(chalk.yellow(
+      `Could not run adb reverse: ${e.message}`
+    ));
+  }
+}
+
 // Builds the app and runs it on a connected emulator / device.
 function buildAndRun(args) {
   process.chdir(path.join(args.root, 'android'));
   try {
+    tryRunAdbReverse();
+
     const cmd = process.platform.startsWith('win')
       ? 'gradlew.bat'
       : './gradlew';
@@ -98,9 +131,7 @@ function buildAndRun(args) {
       'utf8'
     ).match(/package="(.+?)"/)[1];
 
-    const adbPath = process.env.ANDROID_HOME
-      ? process.env.ANDROID_HOME + '/platform-tools/adb'
-      : 'adb';
+    const adbPath = getAdbPath();
 
     const devices = adb.getDevices();
 

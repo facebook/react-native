@@ -17,7 +17,7 @@ import com.facebook.react.bridge.ReadableMap;
 /**
  * Helper class converting JS and Java stack traces into arrays of {@link StackFrame} objects.
  */
-/* package */ class StackTraceHelper {
+public class StackTraceHelper {
 
   /**
    * Represents a generic entry in a stack trace, be it originally from JS or Java.
@@ -124,4 +124,32 @@ import com.facebook.react.bridge.ReadableMap;
     return result;
   }
 
+  /**
+   * Format a {@link StackFrame} to a String (method name is not included).
+   */
+  public static String formatFrameSource(StackFrame frame) {
+    String lineInfo = "";
+    final int column = frame.getColumn();
+    // If the column is 0, don't show it in red box.
+    final String columnString = column <= 0 ? "" : ":" + column;
+    lineInfo += frame.getFileName() + ":" + frame.getLine() + columnString;
+    return lineInfo;
+  }
+
+  /**
+   * Format an array of {@link StackFrame}s with the error title to a String.
+   */
+  public static String formatStackTrace(String title, StackFrame[] stack) {
+    StringBuilder stackTrace = new StringBuilder();
+    stackTrace.append(title).append("\n");
+    for (StackFrame frame: stack) {
+      stackTrace.append(frame.getMethod())
+          .append("\n")
+          .append("    ")
+          .append(formatFrameSource(frame))
+          .append("\n");
+    }
+
+    return stackTrace.toString();
+  }
 }

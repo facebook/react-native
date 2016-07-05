@@ -141,9 +141,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    * CatalystApplicationFragment as an example.
    *
    * TODO(6242243): Make addMeasuredRootView thread safe
-   * NB: this method is horribly not-thread-safe, the only reason it works right now is because
-   * it's called exactly once and is called before any JS calls are made. As soon as that fact no
-   * longer holds, this method will need to be fixed.
+   * NB: this method is horribly not-thread-safe.
    */
   public int addMeasuredRootView(final SizeMonitoringFrameLayout rootView) {
     final int tag = mNextRootViewTag;
@@ -472,5 +470,25 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void sendAccessibilityEvent(int tag, int eventType) {
     mUIImplementation.sendAccessibilityEvent(tag, eventType);
+  }
+
+  /**
+   * Schedule a block to be executed on the UI thread. Useful if you need to execute
+   * view logic after all currently queued view updates have completed.
+   *
+   * @param block that contains UI logic you want to execute.
+   *
+   * Usage Example:
+
+   UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+   uiManager.addUIBlock(new UIBlock() {
+     public void execute (NativeViewHierarchyManager nvhm) {
+       View view = nvhm.resolveView(tag);
+       // ...execute your code on View (e.g. snapshot the view)
+     }
+   });
+     */
+  public void addUIBlock (UIBlock block) {
+    mUIImplementation.addUIBlock(block);
   }
 }

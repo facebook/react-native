@@ -12,6 +12,8 @@
 #include <JavaScriptCore/JSStringRef.h>
 #include <JavaScriptCore/JSValueRef.h>
 
+#include <folly/dynamic.h>
+
 #include "noncopyable.h"
 
 #if WITH_FBJSCEXTENSIONS
@@ -23,6 +25,25 @@ namespace react {
 
 class Value;
 class Context;
+
+class JSException : public std::runtime_error {
+public:
+  explicit JSException(const char* msg)
+    : std::runtime_error(msg)
+    , stack_("") {}
+
+  JSException(const char* msg, const char* stack)
+    : std::runtime_error(msg)
+    , stack_(stack) {}
+
+  const std::string& getStack() const {
+    return stack_;
+  }
+
+private:
+  std::string stack_;
+};
+
 
 class String : public noncopyable {
 public:
@@ -75,17 +96,17 @@ public:
     return JSStringIsEqualToUTF8CString(m_string, utf8);
   }
 
-  static String createExpectingAscii(const char* utf8, size_t len) {
-  #if WITH_FBJSCEXTENSIONS
-    return String(
-      JSStringCreateWithUTF8CStringExpectAscii(utf8, len), true);
-  #else
-    return String(JSStringCreateWithUTF8CString(utf8), true);
-  #endif
+  // This assumes ascii is nul-terminated.
+  static String createExpectingAscii(const char* ascii, size_t len) {
+#if WITH_FBJSCEXTENSIONS
+    return String(JSStringCreateWithUTF8CStringExpectAscii(ascii, len), true);
+#else
+    return String(JSStringCreateWithUTF8CString(ascii), true);
+#endif
   }
 
-  static String createExpectingAscii(std::string const &utf8) {
-    return String::createExpectingAscii(utf8.c_str(), utf8.size());
+  static String createExpectingAscii(std::string const &ascii) {
+    return createExpectingAscii(ascii.c_str(), ascii.size());
   }
 
   static String ref(JSStringRef string) {
@@ -129,6 +150,13 @@ public:
     }
   }
 
+  Object& operator=(Object&& other) {
+    std::swap(m_context, other.m_context);
+    std::swap(m_obj, other.m_obj);
+    std::swap(m_isProtected, other.m_isProtected);
+    return *this;
+  }
+
   operator JSObjectRef() const {
     return m_obj;
   }
@@ -139,7 +167,9 @@ public:
     return JSObjectIsFunction(m_context, m_obj);
   }
 
-  Value callAsFunction(int nArgs, JSValueRef args[]);
+  Value callAsFunction(std::initializer_list<JSValueRef> args) const;
+
+  Value callAsFunction(int nArgs, const JSValueRef args[]) const;
 
   Value getProperty(const String& propName) const;
   Value getProperty(const char *propName) const;
@@ -228,12 +258,13 @@ public:
     return JSValueIsString(context(), m_value);
   }
 
-  String toString() {
+  String toString() noexcept {
     return String::adopt(JSValueToStringCopy(context(), m_value, nullptr));
   }
 
-  std::string toJSONString(unsigned indent = 0) const;
-  static Value fromJSON(JSContextRef ctx, const String& json);
+  std::string toJSONString(unsigned indent = 0) const throw(JSException);
+  static Value fromJSON(JSContextRef ctx, const String& json) throw(JSException);
+  static Value fromDynamic(JSContextRef ctx, folly::dynamic value) throw(JSException);
 protected:
   JSContextRef context() const;
   JSContextRef m_context;

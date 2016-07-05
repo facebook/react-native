@@ -248,13 +248,12 @@ NSNumber *RCTConvertMultiEnumValue(const char *typeName, NSDictionary *mapping, 
 }
 
 RCT_ENUM_CONVERTER(NSLineBreakMode, (@{
+  @"clip": @(NSLineBreakByClipping),
+  @"head": @(NSLineBreakByTruncatingHead),
+  @"tail": @(NSLineBreakByTruncatingTail),
+  @"middle": @(NSLineBreakByTruncatingMiddle),
   @"wordWrapping": @(NSLineBreakByWordWrapping),
-  @"charWrapping": @(NSLineBreakByCharWrapping),
-  @"clipping": @(NSLineBreakByClipping),
-  @"truncatingHead": @(NSLineBreakByTruncatingHead),
-  @"truncatingTail": @(NSLineBreakByTruncatingTail),
-  @"truncatingMiddle": @(NSLineBreakByTruncatingMiddle),
-}), NSLineBreakByWordWrapping, integerValue)
+}), NSLineBreakByTruncatingTail, integerValue)
 
 RCT_ENUM_CONVERTER(NSTextAlignment, (@{
   @"auto": @(NSTextAlignmentNatural),
@@ -816,7 +815,9 @@ RCT_ENUM_CONVERTER(css_clip_t, (@{
 
 RCT_ENUM_CONVERTER(css_flex_direction_t, (@{
   @"row": @(CSS_FLEX_DIRECTION_ROW),
-  @"column": @(CSS_FLEX_DIRECTION_COLUMN)
+  @"row-reverse": @(CSS_FLEX_DIRECTION_ROW_REVERSE),
+  @"column": @(CSS_FLEX_DIRECTION_COLUMN),
+  @"column-reverse": @(CSS_FLEX_DIRECTION_COLUMN_REVERSE)
 }), CSS_FLEX_DIRECTION_COLUMN, intValue)
 
 RCT_ENUM_CONVERTER(css_justify_t, (@{
@@ -884,7 +885,7 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
   }
 
   __block UIImage *image;
-  if (![NSThread isMainThread]) {
+  if (!RCTIsMainQueue()) {
     // It seems that none of the UIImage loading methods can be guaranteed
     // thread safe, so we'll pick the lesser of two evils here and block rather
     // than run the risk of crashing
@@ -899,7 +900,7 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
   NSString *scheme = URL.scheme.lowercaseString;
   if ([scheme isEqualToString:@"file"]) {
     NSString *assetName = RCTBundlePathForURL(URL);
-    image = [UIImage imageNamed:assetName];
+    image = assetName ? [UIImage imageNamed:assetName] : nil;
     if (!image) {
       // Attempt to load from the file system
       NSString *filePath = URL.path;

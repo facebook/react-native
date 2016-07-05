@@ -131,10 +131,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   NSThread *_javaScriptThread;
   CFMutableDictionaryRef _cookieMap;
 
-  JSStringRef _bundleURL;
   RandomAccessBundleData _randomAccessBundle;
+  JSValueRef _batchedBridgeRef;
 
   RCTJSCWrapper *_jscWrapper;
+  BOOL _useCustomJSCLibrary;
 }
 
 @synthesize valid = _valid;
@@ -262,21 +263,15 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   }
 }
 
-static BOOL useCustomJSCLibrary = NO;
-
-+ (void)setUseCustomJSCLibrary:(BOOL)useCustomLibrary
-{
-  useCustomJSCLibrary = useCustomLibrary;
-}
-
-+ (BOOL)useCustomJSCLibrary
-{
-  return useCustomJSCLibrary;
-}
-
 - (instancetype)init
 {
+  return [self initWithUseCustomJSCLibrary:NO];
+}
+
+- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
+{
   if (self = [super init]) {
+    _useCustomJSCLibrary = useCustomJSCLibrary;
     _valid = YES;
 
     _javaScriptThread = [[NSThread alloc] initWithTarget:[self class]
@@ -333,7 +328,7 @@ static BOOL useCustomJSCLibrary = NO;
       return;
     }
 
-    strongSelf->_jscWrapper = RCTJSCWrapperCreate(useCustomJSCLibrary);
+    strongSelf->_jscWrapper = RCTJSCWrapperCreate(strongSelf->_useCustomJSCLibrary);
   }];
 
 
@@ -350,8 +345,7 @@ static BOOL useCustomJSCLibrary = NO;
     NSString *cachesPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
     RCTAssert(cachesPath != nil, @"cachesPath should not be nil");
     if (cachesPath) {
-      std::string path = std::string([cachesPath UTF8String]);
-      strongSelf->_jscWrapper->configureJSContextForIOS(strongSelf.context.ctx, path);
+      strongSelf->_jscWrapper->configureJSContextForIOS(strongSelf.context.ctx, [cachesPath UTF8String]);
     }
   }];
 
@@ -394,7 +388,7 @@ static BOOL useCustomJSCLibrary = NO;
     return @(CACurrentMediaTime() * 1000);
   }];
 
-#if RCT_DEV
+#if RCT_PROFILE
   if (RCTProfileIsProfiling()) {
     // Cheating, since it's not a "hook", but meh
     [self addSynchronousHookWithName:@"__RCTProfileIsProfiling" usingBlock:@YES];
@@ -420,13 +414,13 @@ static BOOL useCustomJSCLibrary = NO;
     CFDictionaryRemoveValue(strongSelf->_cookieMap, (const void *)cookie);
   }];
 
-  [self addSynchronousHookWithName:@"nativeTraceBeginSection" usingBlock:^(NSNumber *tag, NSString *profileName){
+  [self addSynchronousHookWithName:@"nativeTraceBeginSection" usingBlock:^(NSNumber *tag, NSString *profileName, NSDictionary *args) {
     static int profileCounter = 1;
     if (!profileName) {
       profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
     }
 
-    RCT_PROFILE_BEGIN_EVENT(tag.longLongValue, profileName, nil);
+    RCT_PROFILE_BEGIN_EVENT(tag.longLongValue, profileName, args);
   }];
 
   [self addSynchronousHookWithName:@"nativeTraceEndSection" usingBlock:^(NSNumber *tag) {
@@ -457,6 +451,15 @@ static BOOL useCustomJSCLibrary = NO;
     }
   }];
 
+  for (NSString *event in @[RCTProfileDidStartProfiling, RCTProfileDidEndProfiling]) {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(toggleProfilingFlag:)
+                                                 name:event
+                                               object:nil];
+  }
+#endif
+
+#if RCT_DEV
   [self executeBlockOnJavaScriptQueue:^{
     RCTJSCExecutor *strongSelf = weakSelf;
     if (!strongSelf.valid) {
@@ -466,13 +469,6 @@ static BOOL useCustomJSCLibrary = NO;
     JSContext *context = strongSelf.context.context;
     RCTInstallJSCProfiler(_bridge, context.JSGlobalContextRef);
   }];
-
-  for (NSString *event in @[RCTProfileDidStartProfiling, RCTProfileDidEndProfiling]) {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(toggleProfilingFlag:)
-                                                 name:event
-                                               object:nil];
-  }
 
   // Inject handler used by HMR
   [self addSynchronousHookWithName:@"nativeInjectHMRUpdate" usingBlock:^(NSString *sourceCode, NSString *sourceCodeURL) {
@@ -579,14 +575,18 @@ static BOOL useCustomJSCLibrary = NO;
     JSObjectRef globalObjectJSRef = jscWrapper->JSContextGetGlobalObject(strongSelf->_context.ctx);
 
     // get the BatchedBridge object
-    JSStringRef moduleNameJSStringRef = jscWrapper->JSStringCreateWithUTF8CString("__fbBatchedBridge");
-    JSValueRef moduleJSRef = jscWrapper->JSObjectGetProperty(contextJSRef, globalObjectJSRef, moduleNameJSStringRef, &errorJSRef);
-    jscWrapper->JSStringRelease(moduleNameJSStringRef);
+    JSValueRef batchedBridgeRef = strongSelf->_batchedBridgeRef;
+    if (!batchedBridgeRef) {
+      JSStringRef moduleNameJSStringRef = jscWrapper->JSStringCreateWithUTF8CString("__fbBatchedBridge");
+      batchedBridgeRef = jscWrapper->JSObjectGetProperty(contextJSRef, globalObjectJSRef, moduleNameJSStringRef, &errorJSRef);
+      jscWrapper->JSStringRelease(moduleNameJSStringRef);
+      strongSelf->_batchedBridgeRef = batchedBridgeRef;
+    }
 
-    if (moduleJSRef != NULL && errorJSRef == NULL && !jscWrapper->JSValueIsUndefined(contextJSRef, moduleJSRef)) {
+    if (batchedBridgeRef != NULL && errorJSRef == NULL && !jscWrapper->JSValueIsUndefined(contextJSRef, batchedBridgeRef)) {
       // get method
       JSStringRef methodNameJSStringRef = jscWrapper->JSStringCreateWithCFString((__bridge CFStringRef)method);
-      JSValueRef methodJSRef = jscWrapper->JSObjectGetProperty(contextJSRef, (JSObjectRef)moduleJSRef, methodNameJSStringRef, &errorJSRef);
+      JSValueRef methodJSRef = jscWrapper->JSObjectGetProperty(contextJSRef, (JSObjectRef)batchedBridgeRef, methodNameJSStringRef, &errorJSRef);
       jscWrapper->JSStringRelease(methodNameJSStringRef);
 
       if (methodJSRef != NULL && errorJSRef == NULL && !jscWrapper->JSValueIsUndefined(contextJSRef, methodJSRef)) {
@@ -594,14 +594,14 @@ static BOOL useCustomJSCLibrary = NO;
         for (NSUInteger i = 0; i < arguments.count; i++) {
           jsArgs[i] = [jscWrapper->JSValue valueWithObject:arguments[i] inContext:context].JSValueRef;
         }
-        resultJSRef = jscWrapper->JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, arguments.count, jsArgs, &errorJSRef);
+        resultJSRef = jscWrapper->JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)batchedBridgeRef, arguments.count, jsArgs, &errorJSRef);
       } else {
         if (!errorJSRef && jscWrapper->JSValueIsUndefined(contextJSRef, methodJSRef)) {
           error = RCTErrorWithMessage([NSString stringWithFormat:@"Unable to execute JS call: method %@ is undefined", method]);
         }
       }
     } else {
-      if (!errorJSRef && jscWrapper->JSValueIsUndefined(contextJSRef, moduleJSRef)) {
+      if (!errorJSRef && jscWrapper->JSValueIsUndefined(contextJSRef, batchedBridgeRef)) {
         error = RCTErrorWithMessage(@"Unable to execute JS call: __fbBatchedBridge is undefined");
       }
     }
@@ -674,6 +674,7 @@ static BOOL useCustomJSCLibrary = NO;
     JSStringRef execJSString = jscWrapper->JSStringCreateWithUTF8CString((const char *)script.bytes);
     JSStringRef bundleURL = jscWrapper->JSStringCreateWithUTF8CString(sourceURL.absoluteString.UTF8String);
     JSValueRef result = jscWrapper->JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, bundleURL, 0, &jsError);
+    jscWrapper->JSStringRelease(bundleURL);
     jscWrapper->JSStringRelease(execJSString);
     RCTPerformanceLoggerEnd(RCTPLScriptExecution);
 

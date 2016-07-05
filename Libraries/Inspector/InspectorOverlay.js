@@ -41,7 +41,7 @@ var InspectorOverlay = React.createClass({
       this.props.inspectedViewTag,
       [locationX, locationY],
       (nativeViewTag, left, top, width, height) => {
-        var instance = InspectorUtils.findInstanceByNativeTag(this.props.rootTag, nativeViewTag);
+        var instance = InspectorUtils.findInstanceByNativeTag(nativeViewTag);
         if (!instance) {
           return;
         }

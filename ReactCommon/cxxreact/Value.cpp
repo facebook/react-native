@@ -1,5 +1,7 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
+#include <folly/json.h>
+
 #include "Value.h"
 
 #include "JSCHelpers.h"
@@ -30,7 +32,7 @@ JSContextRef Value::context() const {
   return m_context;
 }
 
-std::string Value::toJSONString(unsigned indent) const {
+std::string Value::toJSONString(unsigned indent) const throw(JSException) {
   JSValueRef exn;
   auto stringToAdopt = JSValueCreateJSONString(m_context, m_value, indent, &exn);
   if (stringToAdopt == nullptr) {
@@ -41,12 +43,17 @@ std::string Value::toJSONString(unsigned indent) const {
 }
 
 /* static */
-Value Value::fromJSON(JSContextRef ctx, const String& json) {
+Value Value::fromJSON(JSContextRef ctx, const String& json) throw(JSException) {
   auto result = JSValueMakeFromJSONString(ctx, json);
   if (!result) {
     throwJSExecutionException("Failed to create String from JSON");
   }
   return Value(ctx, result);
+}
+
+Value Value::fromDynamic(JSContextRef ctx, folly::dynamic value) throw(JSException) {
+  auto json = folly::toJson(value);
+  return fromJSON(ctx, String(json.c_str()));
 }
 
 Object Value::asObject() {
@@ -65,7 +72,11 @@ Object::operator Value() const {
   return Value(m_context, m_obj);
 }
 
-Value Object::callAsFunction(int nArgs, JSValueRef args[]) {
+Value Object::callAsFunction(std::initializer_list<JSValueRef> args) const {
+  return callAsFunction(args.size(), args.begin());
+}
+
+Value Object::callAsFunction(int nArgs, const JSValueRef args[]) const {
   JSValueRef exn;
   JSValueRef result = JSObjectCallAsFunction(m_context, m_obj, NULL, nArgs, args, &exn);
   if (!result) {

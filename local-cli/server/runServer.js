@@ -13,10 +13,10 @@ const connect = require('connect');
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
 const http = require('http');
-const isAbsolutePath = require('absolute-path');
 const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
 const messageSocket = require('./util/messageSocket.js');
 const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInEditorMiddleware');
+const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
 const path = require('path');
 const ReactPackager = require('../../packager/react-packager');
 const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
@@ -33,7 +33,8 @@ function runServer(args, config, readyCallback) {
     .use(connect.compress())
     .use(getDevToolsMiddleware(args, () => wsProxy && wsProxy.isChromeConnected()))
     .use(getDevToolsMiddleware(args, () => ms && ms.isChromeConnected()))
-    .use(openStackFrameInEditorMiddleware)
+    .use(openStackFrameInEditorMiddleware(args))
+    .use(copyToClipBoardMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
     .use(cpuProfilerMiddleware)
@@ -68,10 +69,10 @@ function runServer(args, config, readyCallback) {
 }
 
 function getPackagerServer(args, config) {
-  let transformerPath = args.transformer;
-  if (!isAbsolutePath(transformerPath)) {
-    transformerPath = path.resolve(process.cwd(), transformerPath);
-  }
+  const transformModulePath =
+    args.transformer ? path.resolve(args.transformer) :
+    typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
+    undefined;
 
   return ReactPackager.createServer({
     nonPersistent: args.nonPersistent,
@@ -79,7 +80,7 @@ function getPackagerServer(args, config) {
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-    transformModulePath: transformerPath,
+    transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
     assetRoots: args.assetRoots,
     assetExts: [

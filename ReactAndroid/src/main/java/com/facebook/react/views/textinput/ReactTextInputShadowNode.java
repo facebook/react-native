@@ -13,11 +13,9 @@ import javax.annotation.Nullable;
 
 import android.text.Spannable;
 import android.util.TypedValue;
-import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
@@ -29,6 +27,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.views.view.MeasureUtil;
 import com.facebook.react.views.text.ReactTextShadowNode;
 import com.facebook.react.views.text.ReactTextUpdate;
 
@@ -91,19 +90,11 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
       editText.setLines(mNumberOfLines);
     }
 
-    editText.measure(getMeasureSpec(width, widthMode), getMeasureSpec(height, heightMode));
+    editText.measure(
+        MeasureUtil.getMeasureSpec(width, widthMode),
+        MeasureUtil.getMeasureSpec(height, heightMode));
     measureOutput.width = editText.getMeasuredWidth();
     measureOutput.height = editText.getMeasuredHeight();
-  }
-
-  private int getMeasureSpec(float size, CSSMeasureMode mode) {
-    if (mode == CSSMeasureMode.EXACTLY) {
-      return MeasureSpec.makeMeasureSpec((int) size, MeasureSpec.EXACTLY);
-    } else if (mode == CSSMeasureMode.AT_MOST) {
-      return MeasureSpec.makeMeasureSpec((int) size, MeasureSpec.AT_MOST);
-    } else {
-      return MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-    }
   }
 
   @Override
