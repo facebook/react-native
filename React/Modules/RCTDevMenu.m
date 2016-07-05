@@ -242,13 +242,14 @@ RCT_EXPORT_MODULE()
   if (!host) {
     return nil;
   }
-
   NSString *scheme = [_bridge.bundleURL scheme];
+  NSString *baseURL = [NSString stringWithFormat:@"%@://%@%", scheme, host];
+
   NSNumber *port = [_bridge.bundleURL port];
-  if (!port) {
-    port = @8081; // Packager default port
+  if (port) {
+    baseURL = [NSString stringWithFormat:@"%@:%@", baseURL, port];
   }
-  return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/message?role=shell", scheme, host, port]];
+  return [NSURL URLWithString:[NSString stringWithFormat:@"%@/message?role=shell", baseURL]];
 }
 
 // TODO: Move non-UI logic into separate RCTDevSettings module
