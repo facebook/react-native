@@ -40,7 +40,16 @@ var Vibration = {
       if (typeof pattern === 'number') {
         RCTVibration.vibrate();
       } else if (Array.isArray(pattern)) {
-        console.warn('Vibration patterns are not supported on iOS');
+        let initialVibrate = false;
+        if (pattern[0] === 0) {
+          if (pattern.length === 1) {
+            RCTVibration.vibrate();
+            return;
+          }
+          initialVibrate = true;
+          pattern = pattern.slice(1);
+        }
+        RCTVibration.vibrateByPattern(pattern, repeat, initialVibrate);
       } else {
         throw new Error('Vibration pattern should be a number or array');
       }
@@ -52,11 +61,7 @@ var Vibration = {
    * @platform android
    */
   cancel: function() {
-    if (Platform.OS === 'ios') {
-      console.warn('Vibration.cancel is not supported on iOS');
-    } else {
-      RCTVibration.cancel();
-    }
+    RCTVibration.cancel();
   }
 };
 
