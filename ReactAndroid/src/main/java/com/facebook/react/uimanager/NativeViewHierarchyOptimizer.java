@@ -294,26 +294,7 @@ public class NativeViewHierarchyOptimizer {
       ReactShadowNode nonLayoutOnlyNode,
       ReactShadowNode layoutOnlyNode,
       int index) {
-    // Add all of the layout-only node's children to its parent instead
-    int currentIndex = index;
-    for (int i = 0; i < layoutOnlyNode.getChildCount(); i++) {
-      ReactShadowNode childToAdd = layoutOnlyNode.getChildAt(i);
-      Assertions.assertCondition(childToAdd.getNativeParent() == null);
-
-      if (childToAdd.isLayoutOnly()) {
-        // Adding this layout-only child could result in adding multiple native views
-        int childCountBefore = nonLayoutOnlyNode.getNativeChildCount();
-        addLayoutOnlyNode(
-            nonLayoutOnlyNode,
-            childToAdd,
-            currentIndex);
-        int childCountAfter = nonLayoutOnlyNode.getNativeChildCount();
-        currentIndex += childCountAfter - childCountBefore;
-      } else {
-        addNonLayoutNode(nonLayoutOnlyNode, childToAdd, currentIndex);
-        currentIndex++;
-      }
-    }
+    addGrandchildren(nonLayoutOnlyNode, layoutOnlyNode, index);
   }
 
   private void addNonLayoutNode(
@@ -326,6 +307,31 @@ public class NativeViewHierarchyOptimizer {
         null,
         new ViewAtIndex[]{new ViewAtIndex(child.getReactTag(), index)},
         null);
+  }
+
+  private void addGrandchildren(
+      ReactShadowNode nativeParent,
+      ReactShadowNode child,
+      int index) {
+    Assertions.assertCondition(!nativeParent.isLayoutOnly());
+
+    // `child` can't hold native children. Add all of `child`'s children to `parent`.
+    int currentIndex = index;
+    for (int i = 0; i < child.getChildCount(); i++) {
+      ReactShadowNode grandchild = child.getChildAt(i);
+      Assertions.assertCondition(grandchild.getNativeParent() == null);
+
+      if (grandchild.isLayoutOnly()) {
+        // Adding this child could result in adding multiple native views
+        int grandchildCountBefore = nativeParent.getNativeChildCount();
+        addLayoutOnlyNode(nativeParent, grandchild, currentIndex);
+        int grandchildCountAfter = nativeParent.getNativeChildCount();
+        currentIndex += grandchildCountAfter - grandchildCountBefore;
+      } else {
+        addNonLayoutNode(nativeParent, grandchild, currentIndex);
+        currentIndex++;
+      }
+    }
   }
 
   private void applyLayoutBase(ReactShadowNode node) {
