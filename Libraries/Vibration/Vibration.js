@@ -20,10 +20,23 @@ var Platform = require('Platform');
  *
  * There will be no effect on devices that do not support Vibration, eg. the simulator.
  *
- * Note for android
+ * **Note for android**
  * add `<uses-permission android:name="android.permission.VIBRATE"/>` to `AndroidManifest.xml`
  *
- * Vibration patterns are currently unsupported.
+ * **Android Usage:**
+ *
+ * [0, 500, 200, 500]
+ * V(0.5s) --wait(0.2s)--> V(0.5s)
+ *
+ * [300, 500, 200, 500]
+ * --wait(0.3s)--> V(0.5s) --wait(0.2s)--> V(0.5s)
+ *
+ * **iOS Usage:**
+ * if first argument is 0, it will not be included in pattern array.
+ *
+ * [0, 1000, 2000, 3000]
+ * V(fixed) --wait(1s)--> V(fixed) --wait(2s)--> V(fixed) --wait(3s)--> V(fixed)
+ *
  */
 
 var Vibration = {
