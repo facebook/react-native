@@ -1,4 +1,3 @@
-const path = require('path');
 const log = require('npmlog');
 
 const getProjectDependencies = require('./getProjectDependencies');
@@ -9,7 +8,9 @@ const isInstalledIOS = require('./ios/isInstalled');
 const unlinkAssetsAndroid = require('./android/unlinkAssets');
 const unlinkAssetsIOS = require('./ios/unlinkAssets');
 const getDependencyConfig = require('./getDependencyConfig');
+const compact = require('lodash').compact;
 const difference = require('lodash').difference;
+const filter = require('lodash').filter;
 const isEmpty = require('lodash').isEmpty;
 const flatten = require('lodash').flatten;
 
@@ -34,7 +35,7 @@ const unlinkDependencyAndroid = (androidProject, dependency, packageName) => {
   log.info(`Android module ${packageName} has been successfully unlinked`);
 };
 
-const unlinkDependencyIOS = (iOSProject, dependency, packageName) => {
+const unlinkDependencyIOS = (iOSProject, dependency, packageName, iOSDependencies) => {
   if (!iOSProject || !dependency.ios) {
     return;
   }
@@ -48,7 +49,7 @@ const unlinkDependencyIOS = (iOSProject, dependency, packageName) => {
 
   log.info(`Unlinking ${packageName} ios dependency`);
 
-  unregisterDependencyIOS(dependency.ios, iOSProject);
+  unregisterDependencyIOS(dependency.ios, iOSProject, iOSDependencies);
 
   log.info(`iOS module ${packageName} has been successfully unlinked`);
 };
@@ -85,10 +86,12 @@ module.exports = function unlink(args, config) {
     return Promise.reject(err);
   }
 
-  unlinkDependencyAndroid(project.android, dependency, packageName);
-  unlinkDependencyIOS(project.ios, dependency, packageName);
-
   const allDependencies = getDependencyConfig(config, getProjectDependencies());
+  const otherDependencies = filter(allDependencies, d => d.name !== packageName);
+  const iOSDependencies = compact(otherDependencies.map(d => d.config.ios));
+
+  unlinkDependencyAndroid(project.android, dependency, packageName);
+  unlinkDependencyIOS(project.ios, dependency, packageName, iOSDependencies);
 
   const assets = difference(
     dependency.assets,

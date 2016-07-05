@@ -4,7 +4,7 @@ const xcode = require('xcode');
 const log = require('npmlog');
 const plistParser = require('plist');
 const groupFilesByType = require('../groupFilesByType');
-const createGroup = require('./createGroup');
+const createGroupWithMessage = require('./createGroupWithMessage');
 const getPlist = require('./getPlist');
 const getPlistPath = require('./getPlistPath');
 
@@ -17,21 +17,7 @@ module.exports = function linkAssetsIOS(files, projectConfig) {
   const assets = groupFilesByType(files);
   const plist = getPlist(project, projectConfig.sourceDir);
 
-  if (!plist) {
-    return log.error(
-      'ERRPLIST',
-      `Could not locate Info.plist. Check if your project has 'INFOPLIST_FILE' set properly`
-    );
-  }
-
-  if (!project.pbxGroupByName('Resources')) {
-    createGroup(project, 'Resources');
-
-    log.warn(
-      'ERRGROUP',
-      `Group 'Resources' does not exist in your XCode project. We have created it automatically for you.`
-    );
-  }
+  createGroupWithMessage(project, 'Resources');
 
   const fonts = (assets.font || [])
     .map(asset =>
