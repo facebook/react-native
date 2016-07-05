@@ -398,7 +398,7 @@ describe('processRequest', () => {
   describe('/symbolicate endpoint', () => {
     pit('should symbolicate given stack trace', () => {
       const body = JSON.stringify({stack: [{
-        file: 'foo.bundle?platform=ios',
+        file: 'http://foo.bundle?platform=ios',
         lineNumber: 2100,
         column: 44,
         customPropShouldBeLeftUnchanged: 'foo',
