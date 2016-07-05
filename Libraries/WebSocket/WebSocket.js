@@ -135,7 +135,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     throw new Error('Unsupported data type');
   }
 
-  sendPing(): void {
+  ping(): void {
     if (this.readyState === this.CONNECTING) {
         throw new Error('INVALID_STATE_ERR');
     }
