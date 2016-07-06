@@ -17,7 +17,7 @@ This example creates a simple `ListView` of hardcoded data. It first initializes
 
 > A `rowHasChanged` function is required to use `ListView`. Here we just say a row has changed if the row we are on is not the same as the previous row.
 
-```JavaScript
+```ReactNativeWebPlayer
 import React, { Component } from 'react';
 import { AppRegistry, ListView, Text, View } from 'react-native';
 
@@ -45,7 +45,7 @@ class ListViewBasics extends Component {
 }
 
 // App registration and rendering
-AppRegistry.registerComponent('AwesomeProject', () => ListViewBasics);
+AppRegistry.registerComponent('ListViewBasics', () => ListViewBasics);
 ```
 
 One of the most common uses for a `ListView` is displaying data that you fetch from a server. To do that, you will need to [learn about networking in React Native](/react-native/docs/network.html).
