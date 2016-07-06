@@ -3,7 +3,7 @@ title: Introducing Hot Reloading
 author: Martín Bigio
 ---
 
-React Native goal is to give you the best possible developer experience. A big part of it is the time it takes between you save a file and be able to see the changes. Our goal is to get this feedback loop to be under 1 second, even as your app grows.
+React Native's goal is to give you the best possible developer experience. A big part of it is the time it takes between you save a file and be able to see the changes. Our goal is to get this feedback loop to be under 1 second, even as your app grows.
 
 We got close to this ideal via three main features:
 
@@ -28,7 +28,7 @@ If you look closely, you can notice that it is possible to recover from a red bo
 
 Hot reloading is available as of 0.22, you can enable it:
 
-* Open the developper menu
+* Open the developer menu
 * Tap on "Enable Hot Reloading"
 
 
