@@ -12,4 +12,4 @@
 'use strict';
 
 type Atom = number | bool | Object | Array<?Atom>;
-export type StyleObj = Atom;
+export type StyleObj = Atom | Array<?StyleObj>;
