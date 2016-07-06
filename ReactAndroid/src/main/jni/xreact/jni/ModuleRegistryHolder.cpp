@@ -330,7 +330,8 @@ Callback makeCallback(std::weak_ptr<Instance> instance, ExecutorToken token, con
   }
 
   auto id = callbackId.getInt();
-  return [winstance = std::move(instance), token, id](folly::dynamic args) {
+  auto winstance = std::move(instance);
+  return [winstance, token, id](folly::dynamic args) {
     if (auto instance = winstance.lock()) {
       jni::ThreadScope guard;
       instance->callJSCallback(token, id, std::move(args));

@@ -443,7 +443,9 @@ void JSCExecutor::postMessageToOwnedWebWorker(int workerId, JSValueRef message, 
 void JSCExecutor::postMessageToOwner(JSValueRef msg) {
   std::string msgString = Value(m_context, msg).toJSONString();
   std::shared_ptr<bool> ownerIsDestroyed = m_owner->m_isDestroyed;
-  m_owner->m_messageQueueThread->runOnQueue([workerId=m_workerId, owner=m_owner, ownerIsDestroyed, msgString] () {
+  auto workerId=m_workerId;
+  auto owner=m_owner;
+  m_owner->m_messageQueueThread->runOnQueue([workerId, owner, ownerIsDestroyed, msgString] () {
     if (*ownerIsDestroyed) {
       return;
     }

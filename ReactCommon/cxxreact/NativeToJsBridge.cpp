@@ -53,9 +53,10 @@ public:
   }
 
   void callNativeModules(
-      JSExecutor& executor, std::string callJSON, bool isEndOfBatch) override {
+      JSExecutor& executor, std::string callJSON_, bool isEndOfBatch) override {
     ExecutorToken token = m_nativeToJs->getTokenForExecutor(executor);
-    m_nativeQueue->runOnQueue([this, token, callJSON=std::move(callJSON), isEndOfBatch] {
+    auto callJSON=std::move(callJSON_);
+    m_nativeQueue->runOnQueue([this, token, callJSON, isEndOfBatch] {
       // An exception anywhere in here stops processing of the batch.  This
       // was the behavior of the Android bridge, and since exception handling
       // terminates the whole bridge, there's not much point in continuing.
@@ -125,14 +126,15 @@ void NativeToJsBridge::loadApplicationScript(std::unique_ptr<const JSBigString> 
 }
 
 void NativeToJsBridge::loadApplicationUnbundle(
-    std::unique_ptr<JSModulesUnbundle> unbundle,
-    std::unique_ptr<const JSBigString> startupScript,
-    std::string startupScriptSourceURL) {
+    std::unique_ptr<JSModulesUnbundle> unbundle_,
+    std::unique_ptr<const JSBigString> startupScript_,
+    std::string startupScriptSourceURL_) {
+  auto unbundle=folly::makeMoveWrapper(std::move(unbundle_));
+  auto startupScript=folly::makeMoveWrapper(std::move(startupScript_));
+  auto startupScriptSourceURL=std::move(startupScriptSourceURL_);
   runOnExecutorQueue(
       m_mainExecutorToken,
-      [unbundle=folly::makeMoveWrapper(std::move(unbundle)),
-       startupScript=folly::makeMoveWrapper(std::move(startupScript)),
-       startupScriptSourceURL=std::move(startupScriptSourceURL)]
+      [unbundle, startupScript, startupScriptSourceURL]
         (JSExecutor* executor) mutable {
 
     executor->setJSModulesUnbundle(unbundle.move());
@@ -196,12 +198,13 @@ void NativeToJsBridge::invokeCallback(ExecutorToken executorToken, const double 
   });
 }
 
-void NativeToJsBridge::setGlobalVariable(std::string propName,
-                                         std::unique_ptr<const JSBigString> jsonValue) {
+void NativeToJsBridge::setGlobalVariable(std::string propName_,
+                                         std::unique_ptr<const JSBigString> jsonValue_) {
+  auto propName=std::move(propName_);
+  auto jsonValue=folly::makeMoveWrapper(std::move(jsonValue_));
   runOnExecutorQueue(
     m_mainExecutorToken,
-    [propName=std::move(propName), jsonValue=folly::makeMoveWrapper(std::move(jsonValue))]
-    (JSExecutor* executor) mutable {
+    [propName, jsonValue](JSExecutor* executor) mutable {
       executor->setGlobalVariable(propName, jsonValue.move());
     });
 }
@@ -324,7 +327,7 @@ void NativeToJsBridge::destroy() {
   });
 }
 
-void NativeToJsBridge::runOnExecutorQueue(ExecutorToken executorToken, std::function<void(JSExecutor*)> task) {
+void NativeToJsBridge::runOnExecutorQueue(ExecutorToken executorToken, std::function<void(JSExecutor*)> task_) {
   if (*m_destroyed) {
     return;
   }
@@ -336,7 +339,8 @@ void NativeToJsBridge::runOnExecutorQueue(ExecutorToken executorToken, std::func
   }
 
   std::shared_ptr<bool> isDestroyed = m_destroyed;
-  executorMessageQueueThread->runOnQueue([this, isDestroyed, executorToken, task=std::move(task)] {
+  auto task=std::move(task_);
+  executorMessageQueueThread->runOnQueue([this, isDestroyed, executorToken, task] {
     if (*isDestroyed) {
       return;
     }

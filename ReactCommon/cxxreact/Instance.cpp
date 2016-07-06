@@ -30,13 +30,13 @@ void Instance::initializeBridge(
     std::unique_ptr<InstanceCallback> callback,
     std::shared_ptr<JSExecutorFactory> jsef,
     std::shared_ptr<MessageQueueThread> jsQueue,
-    std::unique_ptr<MessageQueueThread> nativeQueue,
+    std::unique_ptr<MessageQueueThread> nativeQueue_,
     std::shared_ptr<ModuleRegistry> moduleRegistry) {
   callback_ = std::move(callback);
 
+  auto nativeQueue=folly::makeMoveWrapper(std::move(nativeQueue_));
   jsQueue->runOnQueueSync(
-    [this, &jsef, moduleRegistry, jsQueue,
-     nativeQueue=folly::makeMoveWrapper(std::move(nativeQueue))] () mutable {
+    [this, &jsef, moduleRegistry, jsQueue, nativeQueue] () mutable {
       nativeToJsBridge_ = folly::make_unique<NativeToJsBridge>(
           jsef.get(), moduleRegistry, jsQueue, nativeQueue.move(), callback_);
     });

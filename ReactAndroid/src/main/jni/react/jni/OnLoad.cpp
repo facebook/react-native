@@ -149,7 +149,8 @@ public:
       return;
     }
 
-    auto runnableWrapper = std::bind([weakCallback=weakCallback_] (std::function<void(ResolvedWeakReference&)>& runnable) {
+    auto weakCallback=weakCallback_;
+    auto runnableWrapper = std::bind([weakCallback] (std::function<void(ResolvedWeakReference&)>& runnable) {
       auto env = Environment::current();
       if (env->ExceptionCheck()) {
         FBLOGW("Dropped calls because of pending exception");
