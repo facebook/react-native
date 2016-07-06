@@ -182,7 +182,10 @@ RCT_EXPORT_MODULE()
                                          selectedTitle:@"Hide Inspector"
                                                handler:^(__unused BOOL enabled)
     {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
       [weakSelf.bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+#pragma clang diagnostic pop
     }]];
 
     _webSocketExecutorName = [_defaults objectForKey:@"websocket-executor-name"] ?: @"JS Remotely";
@@ -214,8 +217,11 @@ RCT_EXPORT_MODULE()
                             modifierFlags:UIKeyModifierCommand
                                    action:^(__unused UIKeyCommand *command) {
                                      [weakSelf.bridge.eventDispatcher
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                                       sendDeviceEventWithName:@"toggleElementInspector"
                                       body:nil];
+#pragma clang diagnostic pop
                                    }];
 
     // Reload in normal mode
@@ -233,11 +239,12 @@ RCT_EXPORT_MODULE()
 - (NSURL *)packagerURL
 {
   NSString *host = [_bridge.bundleURL host];
+  NSString *scheme = [_bridge.bundleURL scheme];
   if (!host) {
-    return nil;
+    host = @"localhost";
+    scheme = @"http";
   }
 
-  NSString *scheme = [_bridge.bundleURL scheme];
   NSNumber *port = [_bridge.bundleURL port];
   if (!port) {
     port = @8081; // Packager default port
@@ -388,7 +395,10 @@ RCT_EXPORT_MODULE()
 
     // Inspector can only be shown after JS has loaded
     if ([_settings[@"showInspector"] boolValue]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
       [self.bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+#pragma clang diagnostic pop
     }
   });
 }
@@ -457,7 +467,7 @@ RCT_EXPORT_MODULE()
   } else {
     BOOL isDebuggingJS = _executorClass && _executorClass == jsDebuggingExecutorClass;
     NSString *debuggingDescription = [_defaults objectForKey:@"websocket-executor-name"] ?: @"Remote JS";
-    NSString *debugTitleJS = isDebuggingJS ? [NSString stringWithFormat:@"Disable %@ Debugging", debuggingDescription] : [NSString stringWithFormat:@"Debug %@", _webSocketExecutorName];
+    NSString *debugTitleJS = isDebuggingJS ? [NSString stringWithFormat:@"Stop %@ Debugging", debuggingDescription] : [NSString stringWithFormat:@"Debug %@", _webSocketExecutorName];
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:debugTitleJS handler:^{
       weakSelf.executorClass = isDebuggingJS ? Nil : jsDebuggingExecutorClass;
     }]];

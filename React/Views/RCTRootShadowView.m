@@ -7,9 +7,25 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import "RCTI18nUtil.h"
 #import "RCTRootShadowView.h"
 
 @implementation RCTRootShadowView
+
+/**
+ * Init the RCTRootShadowView with RTL status.
+ * Returns a RTL CSS layout if isRTL is true (Default is LTR CSS layout).
+ */
+- (instancetype)init
+{
+  self = [super init];
+  if (self) {
+    if ([[RCTI18nUtil sharedInstance] isRTL]) {
+      self.cssNode->style.direction = CSS_DIRECTION_RTL;
+    }
+  }
+  return self;
+}
 
 - (void)applySizeConstraints
 {
@@ -34,7 +50,6 @@
   [self applySizeConstraints];
 
   [self fillCSSNode:self.cssNode];
-  resetNodeLayout(self.cssNode);
   layoutNode(self.cssNode, CSS_UNDEFINED, CSS_UNDEFINED, CSS_DIRECTION_INHERIT);
 
   NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];

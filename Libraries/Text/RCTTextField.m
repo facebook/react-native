@@ -17,7 +17,6 @@
 @implementation RCTTextField
 {
   RCTEventDispatcher *_eventDispatcher;
-  NSMutableArray<UIView *> *_reactSubviews;
   BOOL _jsRequestingFirstResponder;
   NSInteger _nativeEventCount;
   BOOL _submitted;
@@ -35,7 +34,6 @@
     [self addTarget:self action:@selector(textFieldEndEditing) forControlEvents:UIControlEventEditingDidEnd];
     [self addTarget:self action:@selector(textFieldSubmitEditing) forControlEvents:UIControlEventEditingDidEndOnExit];
     [self addObserver:self forKeyPath:@"selectedTextRange" options:0 context:nil];
-    _reactSubviews = [NSMutableArray new];
     _blurOnSubmit = YES;
   }
   return self;
@@ -110,30 +108,6 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 {
   super.placeholder = placeholder;
   RCTUpdatePlaceholder(self);
-}
-
-- (NSArray<UIView *> *)reactSubviews
-{
-  // TODO: do we support subviews of textfield in React?
-  // In any case, we should have a better approach than manually
-  // maintaining array in each view subclass like this
-  return _reactSubviews;
-}
-
-- (void)removeReactSubview:(UIView *)subview
-{
-  // TODO: this is a bit broken - if the TextField inserts any of
-  // its own views below or between React's, the indices won't match
-  [_reactSubviews removeObject:subview];
-  [subview removeFromSuperview];
-}
-
-- (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
-{
-  // TODO: this is a bit broken - if the TextField inserts any of
-  // its own views below or between React's, the indices won't match
-  [_reactSubviews insertObject:view atIndex:atIndex];
-  [super insertSubview:view atIndex:atIndex];
 }
 
 - (CGRect)caretRectForPosition:(UITextPosition *)position

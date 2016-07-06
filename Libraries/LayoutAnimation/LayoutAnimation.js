@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var PropTypes = require('ReactPropTypes');
+var PropTypes = require('react/lib/ReactPropTypes');
 var UIManager = require('UIManager');
 
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
@@ -40,7 +40,7 @@ var animChecker = createStrictShapeTypeChecker({
   initialVelocity: PropTypes.number,
   type: PropTypes.oneOf(
     Object.keys(Types)
-  ),
+  ).isRequired,
   property: PropTypes.oneOf( // Only applies to create/delete
     Object.keys(Properties)
   ),

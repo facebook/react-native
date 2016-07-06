@@ -13,6 +13,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import android.os.Looper;
+import android.os.Process;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -147,20 +148,18 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     final MessageQueueThreadImpl mqt =
         new MessageQueueThreadImpl(name, mainLooper, exceptionHandler);
 
-    // Ensure that the MQT is registered by the time this method returns
     if (UiThreadUtil.isOnUiThread()) {
+      Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
       MessageQueueThreadRegistry.register(mqt);
     } else {
-      final SimpleSettableFuture<Void> registrationFuture = new SimpleSettableFuture<>();
       UiThreadUtil.runOnUiThread(
           new Runnable() {
             @Override
             public void run() {
+              Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
               MessageQueueThreadRegistry.register(mqt);
-              registrationFuture.set(null);
             }
           });
-      registrationFuture.getOrThrow();
     }
     return mqt;
   }

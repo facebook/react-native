@@ -160,12 +160,12 @@ exports.title = 'Layout Animation';
 exports.description = 'Layout animation';
 exports.examples = [{
   title: 'Add and remove views',
-  render(): ReactElement {
+  render(): ReactElement<any> {
     return <AddRemoveExample />;
   },
 }, {
   title: 'Cross fade views',
-  render(): ReactElement {
+  render(): ReactElement<any> {
     return <CrossFadeExample />;
   },
 }];

@@ -32,7 +32,6 @@ if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
 class Inspector extends React.Component {
   props: {
     inspectedViewTag: ?number,
-    rootTag: ?number,
     onRequestRerenderApp: (callback: (tag: ?number) => void) => void
   };
 
@@ -129,8 +128,8 @@ class Inspector extends React.Component {
     // if we inspect a stateless component we can't use the getPublicInstance method
     // therefore we use the internal _instance property directly.
     var publicInstance = instance['_instance'] || {};
-    var source = instance._currentElement && instance._currentElement._source;
-    UIManager.measure(instance.getNativeNode(), (x, y, width, height, left, top) => {
+    var source = instance['_currentElement'] && instance['_currentElement']['_source'];
+    UIManager.measure(instance.getHostNode(), (x, y, width, height, left, top) => {
       this.setState({
         inspected: {
           frame: {left, top, width, height},
@@ -142,19 +141,25 @@ class Inspector extends React.Component {
     });
   }
 
-  onTouchInstance(instance: Object, frame: Object, pointerY: number) {
+  onTouchInstance(touched: Object, frame: Object, pointerY: number) {
+    // Most likely the touched instance is a native wrapper (like RCTView)
+    // which is not very interesting. Most likely user wants a composite
+    // instance that contains it (like View)
+    var hierarchy = InspectorUtils.getOwnerHierarchy(touched);
+    var instance = InspectorUtils.lastNotNativeInstance(hierarchy);
+
     if (this.state.devtoolsAgent) {
       this.state.devtoolsAgent.selectFromReactInstance(instance, true);
     }
-    var hierarchy = InspectorUtils.getOwnerHierarchy(instance);
+
     // if we inspect a stateless component we can't use the getPublicInstance method
     // therefore we use the internal _instance property directly.
-    var publicInstance = instance._instance || {};
+    var publicInstance = instance['_instance'] || {};
     var props = publicInstance.props || {};
-    var source = instance._currentElement && instance._currentElement._source;
+    var source = instance['_currentElement'] && instance['_currentElement']['_source'];
     this.setState({
       panelPos: pointerY > Dimensions.get('window').height / 2 ? 'top' : 'bottom',
-      selection: hierarchy.length - 1,
+      selection: hierarchy.indexOf(instance),
       hierarchy,
       inspected: {
         style: props.style || {},
@@ -192,7 +197,6 @@ class Inspector extends React.Component {
       <View style={styles.container} pointerEvents="box-none">
         {this.state.inspecting &&
           <InspectorOverlay
-            rootTag={this.props.rootTag}
             inspected={this.state.inspected}
             inspectedViewTag={this.state.inspectedViewTag}
             onTouchInstance={this.onTouchInstance.bind(this)}

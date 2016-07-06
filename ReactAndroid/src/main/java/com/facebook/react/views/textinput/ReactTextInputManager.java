@@ -43,6 +43,7 @@ import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.TextInlineImageSpan;
@@ -323,6 +324,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  @ReactProp(name = "inlineImageLeft")
+  public void setInlineImageLeft(ReactEditText view, @Nullable String resource) {
+    int id = ResourceDrawableIdHelper.getInstance().getResourceDrawableId(view.getContext(), resource);
+    view.setCompoundDrawablesWithIntrinsicBounds(id, 0, 0, 0);
+  }
+
+  @ReactProp(name = "inlineImagePadding")
+  public void setInlineImagePadding(ReactEditText view, int padding) {
+    view.setCompoundDrawablePadding(padding);
+  }
+
   @ReactProp(name = "editable", defaultBoolean = true)
   public void setEditable(ReactEditText view, boolean editable) {
     view.setEnabled(editable);
@@ -394,8 +406,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         multiline ? InputType.TYPE_TEXT_FLAG_MULTI_LINE : 0);
   }
 
-  @ReactProp(name = "password", defaultBoolean = false)
-  public void setPassword(ReactEditText view, boolean password) {
+  @ReactProp(name = "secureTextEntry", defaultBoolean = false)
+  public void setSecureTextEntry(ReactEditText view, boolean password) {
     updateStagedInputTypeFlag(
         view,
         password ? 0 :

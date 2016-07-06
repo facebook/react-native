@@ -46,8 +46,9 @@ public class TestIdTestCase extends ReactAppInstrumentationTestCase {
       "Toolbar",
       "TextInput",
       "View",
-      "WebView",
-      "ScrollView Item (same id used for all items)");
+      // "WebView", TODO t11449130
+      "ScrollView Item (same id used for all items)"
+      );
 
   public void testPropertyIsSetForViews() {
     for (String tag : viewTags) {
