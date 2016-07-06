@@ -17,7 +17,6 @@ import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.facebook.csslayout.Spacing;
 import com.facebook.react.uimanager.ReactCompoundView;
 
 public class ReactTextView extends TextView implements ReactCompoundView {
@@ -46,12 +45,11 @@ public class ReactTextView extends TextView implements ReactCompoundView {
       setLayoutParams(EMPTY_LAYOUT_PARAMS);
     }
     setText(update.getText());
-    Spacing padding = update.getPadding();
     setPadding(
-      (int) Math.ceil(padding.get(Spacing.LEFT)),
-      (int) Math.ceil(padding.get(Spacing.TOP)),
-      (int) Math.ceil(padding.get(Spacing.RIGHT)),
-      (int) Math.ceil(padding.get(Spacing.BOTTOM)));
+      (int) Math.ceil(update.getPaddingLeft()),
+      (int) Math.ceil(update.getPaddingTop()),
+      (int) Math.ceil(update.getPaddingRight()),
+      (int) Math.ceil(update.getPaddingBottom()));
   }
 
   @Override
