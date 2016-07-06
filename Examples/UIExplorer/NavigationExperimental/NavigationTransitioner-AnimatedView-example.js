@@ -222,7 +222,7 @@ class ExampleScene extends Component {
     const width = layout.initWidth;
     const translateX = position.interpolate({
       inputRange,
-      outputRange: ([width, 0, -10]: Array<number>),
+      outputRange: [width, 0, -10],
     });
 
     return {

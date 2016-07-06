@@ -143,7 +143,6 @@ class CameraRoll {
 
     invariant(
       type === 'photo' || type === 'video' || type === undefined,
-      // $FlowFixMe(>=0.28.0)
       `The second argument to saveToCameraRoll must be 'photo' or 'video'. You passed ${type}`
     );
 
