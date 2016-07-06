@@ -87,7 +87,7 @@ class Transformer {
 
   transformFile(fileName, code, options) {
     if (!this._transform) {
-      return Promise.reject(new Error('No transfrom module'));
+      return Promise.reject(new Error('No transform module'));
     }
     debug('transforming file', fileName);
     return this
