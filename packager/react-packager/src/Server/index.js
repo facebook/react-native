@@ -169,8 +169,6 @@ const dependencyOpts = declareOpts({
   },
 });
 
-const isRangeRequest = (req) => req.headers && req.headers.range;
-
 class Server {
   constructor(options) {
     const opts = validateOpts(options);
@@ -399,34 +397,33 @@ class Server {
     });
   }
 
+  _rangeRequestMiddleware(req, res, data, assetPath) {
+    if (req.headers && req.headers.range) {
+      let [rangeStart, rangeEnd] = req.headers.range.replace(/bytes=/, '').split('-');
+      let dataStart = parseInt(rangeStart, 10);
+      let dataEnd = rangeEnd ? parseInt(rangeEnd, 10) : data.length - 1;
+      let chunksize = (dataEnd - dataStart) + 1;
+
+      res.writeHead(206, {
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunksize,
+        'Content-Range': `bytes ${dataStart}-${dataEnd}/${data.length}`,
+        'Content-Type': mime.lookup(path.basename(assetPath[1]))
+      });
+
+      return data.slice(dataStart, dataEnd);
+    }
+
+    return data;
+  }
+
   _processAssetsRequest(req, res) {
     const urlObj = url.parse(req.url, true);
     const assetPath = urlObj.pathname.match(/^\/assets\/(.+)$/);
     const assetEvent = Activity.startEvent(`processing asset request ${assetPath[1]}`);
     this._assetServer.get(assetPath[1], urlObj.query.platform)
       .then(
-        data => {
-          if (isRangeRequest(req)) {
-            let [rangeStart, rangeEnd] = req.headers.range.replace(/bytes=/, '').split('-');
-            let dataStart = parseInt(rangeStart, 10);
-            let dataEnd = rangeEnd ? parseInt(rangeEnd, 10) : data.length - 1;
-            let chunksize = (dataEnd - dataStart) + 1;
-
-            res.writeHead(206, {
-              'Accept-Ranges': 'bytes',
-              'Content-Length': chunksize,
-              'Content-Range': `bytes ${dataStart}-${dataEnd}/${data.length}`,
-              'Content-Type': mime.lookup(path.basename(assetPath[1]))
-            });
-
-            let output = new Buffer(chunksize);
-            data.copy(output, 0, dataStart, dataEnd);
-
-            res.end(output);
-          } else {
-            res.end(data);
-          }
-        },
+        data => res.end(this._rangeRequestMiddleware(req, res, data, assetPath)),
         error => {
           console.error(error.stack);
           res.writeHead('404');
