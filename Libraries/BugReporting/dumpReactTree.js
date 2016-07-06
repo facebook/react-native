@@ -101,6 +101,7 @@ function convertObject(object: Object, depth: number) {
     if (!first) {
       output += ', ';
     }
+    // $FlowFixMe(>=0.28.0)
     output += `${key}: ${convertValue(object[key], depth + 1)}`;
     first = false;
   }
