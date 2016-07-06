@@ -1,6 +1,7 @@
 ---
 title: Toward Better Documentation
 author: Kevin Lacker
+authorURL: https://twitter.com/lacker
 ---
 
 Part of having a great developer experience is having great documentation. A lot goes into creating good docs - the ideal documentation is concise, helpful, accurate, complete, and delightful. Recently we've been working hard to make the docs better based on your feedback, and we wanted to share some of the improvements we've made.
@@ -33,7 +34,7 @@ AppRegistry.registerComponent('ScratchPad', () => ScratchPad);
 
 We think these inline examples, using the [`react-native-web-player`](https://github.com/dabbott/react-native-web-player) module with help from [Devin Abbott](https://twitter.com/devinaabbott), are a great way to learn the basics of React Native, and we have updated our [tutorial for new React Native developers](/react-native/docs/tutorial.html) to use these wherever possible. Check it out - if you have ever been curious to see what would happen if you modified just one little bit of sample code, this is a really nice way to poke around. Also, if you're building developer tools and you want to show a live React Native sample on your own site, [`react-native-web-player`](https://github.com/dabbott/react-native-web-player) can make that straightforward.
 
-The core simulation engine is provided by the [react-native-web](https://github.com/necolas/react-native-web) library, which provides a way to display React Native components like `Text` and `View` on the web. Check out [react-native-web](https://github.com/necolas/react-native-web) if you're interested in building mobile and web experiences that share a large chunk of the codebase.
+The core simulation engine is provided by [Nicolas Gallagher](https://twitter.com/necolas)'s [`react-native-web`](https://github.com/necolas/react-native-web) project, which provides a way to display React Native components like `Text` and `View` on the web. Check out [`react-native-web`](https://github.com/necolas/react-native-web) if you're interested in building mobile and web experiences that share a large chunk of the codebase.
 
 ## Better Guides
 
