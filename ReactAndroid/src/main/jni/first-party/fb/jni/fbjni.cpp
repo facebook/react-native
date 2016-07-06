@@ -26,7 +26,6 @@ jint initialize(JavaVM* vm, std::function<void()>&& init_fn) noexcept {
   std::call_once(flag, [vm] {
     try {
       Environment::initialize(vm);
-      internal::initExceptionHelpers();
     } catch (std::exception& ex) {
       error_occured = true;
       try {
@@ -58,6 +57,9 @@ jint initialize(JavaVM* vm, std::function<void()>&& init_fn) noexcept {
 
 alias_ref<JClass> findClassStatic(const char* name) {
   const auto env = internal::getEnv();
+  if (!env) {
+    throw std::runtime_error("Unable to retrieve JNIEnv*.");
+  }
   auto cls = env->FindClass(name);
   FACEBOOK_JNI_THROW_EXCEPTION_IF(!cls);
   auto leaking_ref = (jclass)env->NewGlobalRef(cls);
@@ -67,6 +69,9 @@ alias_ref<JClass> findClassStatic(const char* name) {
 
 local_ref<JClass> findClassLocal(const char* name) {
   const auto env = internal::getEnv();
+  if (!env) {
+    throw std::runtime_error("Unable to retrieve JNIEnv*.");
+  }
   auto cls = env->FindClass(name);
   FACEBOOK_JNI_THROW_EXCEPTION_IF(!cls);
   return adopt_local(cls);
