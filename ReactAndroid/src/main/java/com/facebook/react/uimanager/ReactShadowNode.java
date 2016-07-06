@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 
+import com.facebook.csslayout.CSSLayoutContext;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
@@ -49,6 +50,7 @@ public class ReactShadowNode extends CSSNode {
   private @Nullable ThemedReactContext mThemedContext;
   private boolean mShouldNotifyOnLayout;
   private boolean mNodeUpdated = true;
+  private @Nullable ReactShadowNode mLayoutParent;
 
   // layout-only nodes
   private boolean mIsLayoutOnly;
@@ -70,12 +72,21 @@ public class ReactShadowNode extends CSSNode {
 
   /**
    * Nodes that return {@code true} will be treated as a root view for the virtual nodes tree. It
-   * means that {@link NativeViewHierarchyManager} will not try to perform {@code manageChildren}
-   * operation on such views. Good example is {@code InputText} view that may have children
-   * {@code Text} nodes but this whole hierarchy will be mapped to a single android {@link EditText}
-   * view.
+   * means that all of its descendants will be "virtual" nodes. Good example is {@code InputText}
+   * view that may have children {@code Text} nodes but this whole hierarchy will be mapped to a
+   * single android {@link EditText} view.
    */
   public boolean isVirtualAnchor() {
+    return false;
+  }
+
+  /**
+   * When constructing the native tree, nodes that return {@code true} will be treated as leaves.
+   * Instead of adding this view's native children as subviews of it, they will be added as subviews
+   * of an ancestor. In other words, this view wants to support native children but it cannot host
+   * them itself (e.g. it isn't a ViewGroup).
+   */
+  public boolean hoistNativeChildren() {
     return false;
   }
 
@@ -113,6 +124,10 @@ public class ReactShadowNode extends CSSNode {
   protected void dirty() {
     if (!isVirtual()) {
       super.dirty();
+    } else if (getParent() != null) {
+      // Virtual nodes aren't involved in layout but they need to have the dirty signal
+      // propagated to their ancestors.
+      getParent().dirty();
     }
   }
 
@@ -122,7 +137,7 @@ public class ReactShadowNode extends CSSNode {
     markUpdated();
     ReactShadowNode node = (ReactShadowNode) child;
 
-    int increase = node.mIsLayoutOnly ? node.mTotalNativeChildren : 1;
+    int increase = node.getTotalNativeNodeContributionToParent();
     mTotalNativeChildren += increase;
 
     updateNativeChildrenCountInParent(increase);
@@ -133,7 +148,7 @@ public class ReactShadowNode extends CSSNode {
     ReactShadowNode removed = (ReactShadowNode) super.removeChildAt(i);
     markUpdated();
 
-    int decrease = removed.mIsLayoutOnly ? removed.mTotalNativeChildren : 1;
+    int decrease = removed.getTotalNativeNodeContributionToParent();
     mTotalNativeChildren -= decrease;
     updateNativeChildrenCountInParent(-decrease);
     return removed;
@@ -143,7 +158,7 @@ public class ReactShadowNode extends CSSNode {
     int decrease = 0;
     for (int i = getChildCount() - 1; i >= 0; i--) {
       ReactShadowNode removed = (ReactShadowNode) super.removeChildAt(i);
-      decrease += removed.mIsLayoutOnly ? removed.mTotalNativeChildren : 1;
+      decrease += removed.getTotalNativeNodeContributionToParent();
     }
     markUpdated();
 
@@ -152,11 +167,11 @@ public class ReactShadowNode extends CSSNode {
   }
 
   private void updateNativeChildrenCountInParent(int delta) {
-    if (mIsLayoutOnly) {
+    if (getNativeKind() != NativeKind.PARENT) {
       ReactShadowNode parent = getParent();
       while (parent != null) {
         parent.mTotalNativeChildren += delta;
-        if (!parent.mIsLayoutOnly) {
+        if (parent.getNativeKind() == NativeKind.PARENT) {
           break;
         }
         parent = parent.getParent();
@@ -169,7 +184,7 @@ public class ReactShadowNode extends CSSNode {
    * layout. Will be only called for nodes that are marked as updated with {@link #markUpdated()}
    * or require layouting (marked with {@link #dirty()}).
    */
-  public void onBeforeLayout() {
+  public void onBeforeLayout(NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
   }
 
   public final void updateProperties(ReactStylesDiffMap props) {
@@ -240,6 +255,15 @@ public class ReactShadowNode extends CSSNode {
     return (ReactShadowNode) super.getParent();
   }
 
+  // Returns the node that is responsible for laying out this node.
+  public final @Nullable ReactShadowNode getLayoutParent() {
+    return mLayoutParent != null ? mLayoutParent : getNativeParent();
+  }
+
+  public final void setLayoutParent(@Nullable ReactShadowNode layoutParent) {
+    mLayoutParent = layoutParent;
+  }
+
   /**
    * Get the {@link ThemedReactContext} associated with this {@link ReactShadowNode}. This will
    * never change during the lifetime of a {@link ReactShadowNode} instance, but different instances
@@ -266,8 +290,8 @@ public class ReactShadowNode extends CSSNode {
    * corresponding to this node.
    */
   public void addNativeChildAt(ReactShadowNode child, int nativeIndex) {
-    Assertions.assertCondition(!mIsLayoutOnly);
-    Assertions.assertCondition(!child.mIsLayoutOnly);
+    Assertions.assertCondition(getNativeKind() == NativeKind.PARENT);
+    Assertions.assertCondition(child.getNativeKind() != NativeKind.NONE);
 
     if (mNativeChildren == null) {
       mNativeChildren = new ArrayList<>(4);
@@ -321,8 +345,23 @@ public class ReactShadowNode extends CSSNode {
     return mIsLayoutOnly;
   }
 
+  public NativeKind getNativeKind() {
+    return
+      isVirtual() || isLayoutOnly() ? NativeKind.NONE :
+      hoistNativeChildren() ? NativeKind.LEAF :
+      NativeKind.PARENT;
+  }
+
   public int getTotalNativeChildren() {
     return mTotalNativeChildren;
+  }
+
+  private int getTotalNativeNodeContributionToParent() {
+    NativeKind kind = getNativeKind();
+    return
+      kind == NativeKind.NONE ? mTotalNativeChildren :
+      kind == NativeKind.LEAF ? 1 + mTotalNativeChildren :
+      1; // kind == NativeKind.PARENT
   }
 
   /**
@@ -363,7 +402,7 @@ public class ReactShadowNode extends CSSNode {
         found = true;
         break;
       }
-      index += (current.mIsLayoutOnly ? current.getTotalNativeChildren() : 1);
+      index += current.getTotalNativeNodeContributionToParent();
     }
     if (!found) {
       throw new RuntimeException("Child " + child.mReactTag + " was not a child of " + mReactTag);
@@ -397,5 +436,14 @@ public class ReactShadowNode extends CSSNode {
    */
   public int getScreenHeight() {
     return Math.round(mAbsoluteBottom - mAbsoluteTop);
+  }
+
+  public static final Iterable<CSSNode> NO_CSS_NODES = new ArrayList<CSSNode>(0);
+  public Iterable<CSSNode> calculateLayoutOnChildren(CSSLayoutContext layoutContext, UIViewOperationQueue viewOperationsQueue) {
+    return isVirtualAnchor() ?
+        // All of the descendants are virtual so none of them are involved in layout.
+        NO_CSS_NODES :
+        // Just return the children. Flexbox calculations have already been run on them.
+        getChildrenIterable();
   }
 }

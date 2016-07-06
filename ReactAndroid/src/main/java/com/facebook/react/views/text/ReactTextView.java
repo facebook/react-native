@@ -14,11 +14,14 @@ import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.Spanned;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.facebook.csslayout.FloatUtil;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.ReactCompoundView;
+import com.facebook.react.uimanager.UIManagerModule;
 
 public class ReactTextView extends TextView implements ReactCompoundView {
 
@@ -36,6 +39,69 @@ public class ReactTextView extends TextView implements ReactCompoundView {
     mDefaultGravityHorizontal =
       getGravity() & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
     mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
+  }
+
+  @Override
+  protected void onLayout(boolean changed,
+                          int textViewLeft,
+                          int textViewTop,
+                          int textViewRight,
+                          int textViewBottom) {
+    if (!(getText() instanceof Spanned)) {
+      /**
+       * In general, {@link #setText} is called via {@link ReactTextViewManager#updateExtraData}
+       * before we are laid out. This ordering is a requirement because we utilize the data from
+       * setText in onLayout.
+       *
+       * However, it's possible for us to get an extra layout before we've received our setText
+       * call. If this happens before the initial setText call, then getText() will have its default
+       * value which isn't a Spanned and we need to bail out. That's fine because we'll get a
+       * setText followed by a layout later.
+       *
+       * The cause for the extra early layout is that an ancestor gets transitioned from a
+       * layout-only node to a non layout-only node.
+       */
+      return;
+    }
+
+    UIManagerModule uiManager = ((ReactContext) getContext()).getNativeModule(UIManagerModule.class);
+
+    Spanned text = (Spanned) getText();
+    Layout layout = getLayout();
+    TextInlineViewPlaceholderSpan[] placeholders = text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
+    int textViewWidth = textViewRight - textViewLeft;
+    int textViewHeight = textViewBottom - textViewTop;
+
+    for (TextInlineViewPlaceholderSpan placeholder : placeholders) {
+      View child = uiManager.resolveView(placeholder.getReactTag());
+
+      int width = placeholder.getWidth();
+      int height = placeholder.getHeight();
+      int start = text.getSpanStart(placeholder);
+      int line = layout.getLineForOffset(start);
+
+      int primaryHorizontal;
+      // There's a bug on Samsung devices where calling getPrimaryHorizontal on
+      // the last offset in the layout will result in an endless loop. Work around
+      // this bug by avoiding getPrimaryHorizontal in that case.
+      if (start == text.length() - 1) {
+        primaryHorizontal = (int) layout.getLineRight(line) - width;
+      } else {
+        primaryHorizontal = (int) layout.getPrimaryHorizontal(start);
+      }
+
+      int leftRelativeToTextView = getTotalPaddingLeft() + primaryHorizontal;
+      int left = textViewLeft + leftRelativeToTextView;
+      int topRelativeToTextView = getTotalPaddingTop() + layout.getLineBaseline(line) - height;
+      int top = textViewTop + topRelativeToTextView;
+
+      boolean isLineTruncated = layout.getEllipsisCount(line) > 0;
+      boolean isFullyClipped = (isLineTruncated && start >= layout.getEllipsisStart(line)) ||
+              textViewWidth <= leftRelativeToTextView || textViewHeight <= topRelativeToTextView;
+      child.setVisibility(isFullyClipped ? View.GONE : View.VISIBLE);
+
+      child.layout(left, top, left + width, top + height);
+    }
   }
 
   public void setText(ReactTextUpdate update) {
@@ -62,6 +128,9 @@ public class ReactTextView extends TextView implements ReactCompoundView {
         setLineSpacing(mLineHeight, 0);
       }
     }
+
+    // Ensure onLayout is called so the inline views can be repositioned.
+    requestLayout();
   }
 
   @Override

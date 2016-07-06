@@ -68,6 +68,15 @@ public class NativeViewHierarchyOptimizer {
   private final ShadowNodeRegistry mShadowNodeRegistry;
   private final SparseBooleanArray mTagsWithLayoutVisited = new SparseBooleanArray();
 
+  public static void assertNodeSupportedWithoutOptimizer(ReactShadowNode node) {
+    // NativeKind.LEAF nodes require the optimizer. They are not ViewGroups so they cannot host
+    // their native children themselves. Their native children need to be hoisted by the optimizer
+    // to an ancestor which is a ViewGroup.
+    Assertions.assertCondition(
+        node.getNativeKind() != NativeKind.LEAF,
+        "Nodes with NativeKind.LEAF are not supported when the optimizer is disabled");
+  }
+
   public NativeViewHierarchyOptimizer(
       UIViewOperationQueue uiViewOperationQueue,
       ShadowNodeRegistry shadowNodeRegistry) {
@@ -83,6 +92,7 @@ public class NativeViewHierarchyOptimizer {
       ThemedReactContext themedContext,
       @Nullable ReactStylesDiffMap initialProps) {
     if (!ENABLED) {
+      assertNodeSupportedWithoutOptimizer(node);
       int tag = node.getReactTag();
       mUIViewOperationQueue.enqueueCreateView(
           themedContext,
@@ -96,7 +106,7 @@ public class NativeViewHierarchyOptimizer {
         isLayoutOnlyAndCollapsable(initialProps);
     node.setIsLayoutOnly(isLayoutOnly);
 
-    if (!isLayoutOnly) {
+    if (node.getNativeKind() != NativeKind.NONE) {
       mUIViewOperationQueue.enqueueCreateView(
           themedContext,
           node.getReactTag(),
@@ -122,6 +132,7 @@ public class NativeViewHierarchyOptimizer {
       String className,
       ReactStylesDiffMap props) {
     if (!ENABLED) {
+      assertNodeSupportedWithoutOptimizer(node);
       mUIViewOperationQueue.enqueueUpdateProperties(node.getReactTag(), className, props);
       return;
     }
@@ -151,6 +162,7 @@ public class NativeViewHierarchyOptimizer {
       ViewAtIndex[] viewsToAdd,
       int[] tagsToDelete) {
     if (!ENABLED) {
+      assertNodeSupportedWithoutOptimizer(nodeToManage);
       mUIViewOperationQueue.enqueueManageChildren(
           nodeToManage.getReactTag(),
           indicesToRemove,
@@ -191,6 +203,7 @@ public class NativeViewHierarchyOptimizer {
     ReadableArray childrenTags
   ) {
     if (!ENABLED) {
+      assertNodeSupportedWithoutOptimizer(nodeToManage);
       mUIViewOperationQueue.enqueueSetChildren(
         nodeToManage.getReactTag(),
         childrenTags);
@@ -210,8 +223,9 @@ public class NativeViewHierarchyOptimizer {
    */
   public void handleUpdateLayout(ReactShadowNode node) {
     if (!ENABLED) {
+      assertNodeSupportedWithoutOptimizer(node);
       mUIViewOperationQueue.enqueueUpdateLayout(
-          Assertions.assertNotNull(node.getParent()).getReactTag(),
+          Assertions.assertNotNull(node.getLayoutParent()).getReactTag(),
           node.getReactTag(),
           node.getScreenX(),
           node.getScreenY(),
@@ -223,6 +237,12 @@ public class NativeViewHierarchyOptimizer {
     applyLayoutBase(node);
   }
 
+  public void handleForceViewToBeNonLayoutOnly(ReactShadowNode node) {
+    if (node.isLayoutOnly()) {
+      transitionLayoutOnlyViewToNativeView(node, null);
+    }
+  }
+
   /**
    * Processes the shadow hierarchy to dispatch all necessary updateLayout calls to the native
    * hierarchy. Should be called after all updateLayout calls for a batch have been handled.
@@ -231,16 +251,18 @@ public class NativeViewHierarchyOptimizer {
     mTagsWithLayoutVisited.clear();
   }
 
-  private NodeIndexPair walkUpUntilNonLayoutOnly(
+  private NodeIndexPair walkUpUntilNativeKindIsParent(
       ReactShadowNode node,
       int indexInNativeChildren) {
-    while (node.isLayoutOnly()) {
+    while (node.getNativeKind() != NativeKind.PARENT) {
       ReactShadowNode parent = node.getParent();
       if (parent == null) {
         return null;
       }
 
-      indexInNativeChildren = indexInNativeChildren + parent.getNativeOffsetForChild(node);
+      indexInNativeChildren = indexInNativeChildren +
+          (node.getNativeKind() == NativeKind.LEAF ? 1 : 0) +
+          parent.getNativeOffsetForChild(node);
       node = parent;
     }
 
@@ -249,8 +271,8 @@ public class NativeViewHierarchyOptimizer {
 
   private void addNodeToNode(ReactShadowNode parent, ReactShadowNode child, int index) {
     int indexInNativeChildren = parent.getNativeOffsetForChild(parent.getChildAt(index));
-    if (parent.isLayoutOnly()) {
-      NodeIndexPair result = walkUpUntilNonLayoutOnly(parent, indexInNativeChildren);
+    if (parent.getNativeKind() != NativeKind.PARENT) {
+      NodeIndexPair result = walkUpUntilNativeKindIsParent(parent, indexInNativeChildren);
       if (result == null) {
         // If the parent hasn't been attached to its native parent yet, don't issue commands to the
         // native hierarchy. We'll do that when the parent node actually gets attached somewhere.
@@ -260,20 +282,26 @@ public class NativeViewHierarchyOptimizer {
       indexInNativeChildren = result.index;
     }
 
-    if (!child.isLayoutOnly()) {
-      addNonLayoutNode(parent, child, indexInNativeChildren);
+    if (child.getNativeKind() != NativeKind.NONE) {
+      addNativeChild(parent, child, indexInNativeChildren);
     } else {
-      addLayoutOnlyNode(parent, child, indexInNativeChildren);
+      addNonNativeChild(parent, child, indexInNativeChildren);
     }
   }
 
   /**
-   * For handling node removal from manageChildren. In the case of removing a layout-only node, we
-   * need to instead recursively remove all its children from their native parents.
+   * For handling node removal from manageChildren. In the case of removing a node which isn't
+   * hosting its own children (e.g. layout-only or NativeKind.LEAF), we need to recursively remove
+   * all its children from their native parents.
    */
   private void removeNodeFromParent(ReactShadowNode nodeToRemove, boolean shouldDelete) {
-    ReactShadowNode nativeNodeToRemoveFrom = nodeToRemove.getNativeParent();
+    if (nodeToRemove.getNativeKind() != NativeKind.PARENT) {
+      for (int i = nodeToRemove.getChildCount() - 1; i >= 0; i--) {
+        removeNodeFromParent(nodeToRemove.getChildAt(i), shouldDelete);
+      }
+    }
 
+    ReactShadowNode nativeNodeToRemoveFrom = nodeToRemove.getNativeParent();
     if (nativeNodeToRemoveFrom != null) {
       int index = nativeNodeToRemoveFrom.indexOfNativeChild(nodeToRemove);
       nativeNodeToRemoveFrom.removeNativeChildAt(index);
@@ -283,21 +311,17 @@ public class NativeViewHierarchyOptimizer {
           new int[]{index},
           null,
           shouldDelete ? new int[]{nodeToRemove.getReactTag()} : null);
-    } else {
-      for (int i = nodeToRemove.getChildCount() - 1; i >= 0; i--) {
-        removeNodeFromParent(nodeToRemove.getChildAt(i), shouldDelete);
-      }
     }
   }
 
-  private void addLayoutOnlyNode(
-      ReactShadowNode nonLayoutOnlyNode,
-      ReactShadowNode layoutOnlyNode,
+  private void addNonNativeChild(
+      ReactShadowNode nativeParent,
+      ReactShadowNode nonNativeChild,
       int index) {
-    addGrandchildren(nonLayoutOnlyNode, layoutOnlyNode, index);
+    addGrandchildren(nativeParent, nonNativeChild, index);
   }
 
-  private void addNonLayoutNode(
+  private void addNativeChild(
       ReactShadowNode parent,
       ReactShadowNode child,
       int index) {
@@ -307,13 +331,17 @@ public class NativeViewHierarchyOptimizer {
         null,
         new ViewAtIndex[]{new ViewAtIndex(child.getReactTag(), index)},
         null);
+
+    if (child.getNativeKind() != NativeKind.PARENT) {
+      addGrandchildren(parent, child, index + 1);
+    }
   }
 
   private void addGrandchildren(
       ReactShadowNode nativeParent,
       ReactShadowNode child,
       int index) {
-    Assertions.assertCondition(!nativeParent.isLayoutOnly());
+    Assertions.assertCondition(child.getNativeKind() != NativeKind.PARENT);
 
     // `child` can't hold native children. Add all of `child`'s children to `parent`.
     int currentIndex = index;
@@ -321,16 +349,15 @@ public class NativeViewHierarchyOptimizer {
       ReactShadowNode grandchild = child.getChildAt(i);
       Assertions.assertCondition(grandchild.getNativeParent() == null);
 
-      if (grandchild.isLayoutOnly()) {
-        // Adding this child could result in adding multiple native views
-        int grandchildCountBefore = nativeParent.getNativeChildCount();
-        addLayoutOnlyNode(nativeParent, grandchild, currentIndex);
-        int grandchildCountAfter = nativeParent.getNativeChildCount();
-        currentIndex += grandchildCountAfter - grandchildCountBefore;
+      // Adding this child could result in adding multiple native views
+      int grandchildCountBefore = nativeParent.getNativeChildCount();
+      if (grandchild.getNativeKind() == NativeKind.NONE) {
+        addNonNativeChild(nativeParent, grandchild, currentIndex);
       } else {
-        addNonLayoutNode(nativeParent, grandchild, currentIndex);
-        currentIndex++;
+        addNativeChild(nativeParent, grandchild, currentIndex);
       }
+      int grandchildCountAfter = nativeParent.getNativeChildCount();
+      currentIndex += grandchildCountAfter - grandchildCountBefore;
     }
   }
 
@@ -349,7 +376,7 @@ public class NativeViewHierarchyOptimizer {
     int x = node.getScreenX();
     int y = node.getScreenY();
 
-    while (parent != null && parent.isLayoutOnly()) {
+    while (parent != null && parent.getNativeKind() != NativeKind.PARENT) {
       // TODO(7854667): handle and test proper clipping
       x += Math.round(parent.getLayoutX());
       y += Math.round(parent.getLayoutY());
@@ -361,10 +388,10 @@ public class NativeViewHierarchyOptimizer {
   }
 
   private void applyLayoutRecursive(ReactShadowNode toUpdate, int x, int y) {
-    if (!toUpdate.isLayoutOnly() && toUpdate.getNativeParent() != null) {
+    if (toUpdate.getNativeKind() != NativeKind.NONE && toUpdate.getNativeParent() != null) {
       int tag = toUpdate.getReactTag();
       mUIViewOperationQueue.enqueueUpdateLayout(
-          toUpdate.getNativeParent().getReactTag(),
+          toUpdate.getLayoutParent().getReactTag(),
           tag,
           x,
           y,

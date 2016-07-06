@@ -32,9 +32,9 @@ Behind the scenes, React Native converts this to a flat `NSAttributedString` or 
 9-17: bold, red
 ```
 
-## Nested Views (iOS Only)
+## Nested Views
 
-On iOS, you can nest views within your Text component. Here's an example:
+You can nest views within your Text component. Here's an example:
 
 ```ReactNativeWebPlayer
 import React, { Component } from 'react';

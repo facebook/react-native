@@ -22,6 +22,7 @@ import com.facebook.csslayout.MeasureOutput;
 import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
@@ -42,6 +43,11 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   public ReactTextInputShadowNode() {
     super(false);
     setMeasureFunction(this);
+  }
+
+  @Override
+  public boolean supportsInlineViews() {
+    return false;
   }
 
   @Override
@@ -98,7 +104,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   }
 
   @Override
-  public void onBeforeLayout() {
+  public void onBeforeLayout(NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
     // We don't have to measure the text within the text input.
     return;
   }
@@ -117,7 +123,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     }
 
     if (mJsEventCount != UNSET) {
-      Spannable preparedSpannableText = fromTextCSSNode(this);
+      Spannable preparedSpannableText = fromTextCSSNode(this, null);
       ReactTextUpdate reactTextUpdate =
           new ReactTextUpdate(preparedSpannableText, mJsEventCount, mContainsImages, getPadding(), getEffectiveLineHeight());
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);

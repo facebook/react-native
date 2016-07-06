@@ -9,6 +9,8 @@
 
 package com.facebook.react.uimanager;
 
+import android.view.View;
+
 import javax.annotation.Nullable;
 
 import java.util.List;
@@ -25,6 +27,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -515,5 +518,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
      */
   public void addUIBlock (UIBlock block) {
     mUIImplementation.addUIBlock(block);
+  }
+
+  public View resolveView(int tag) {
+    UiThreadUtil.assertOnUiThread();
+    return mUIImplementation.getUIViewOperationQueue().getNativeViewHierarchyManager().resolveView(tag);
   }
 }

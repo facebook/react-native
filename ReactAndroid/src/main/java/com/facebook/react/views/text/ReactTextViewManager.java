@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.IViewManagerWithChildren;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -33,7 +34,8 @@ import com.facebook.react.common.annotations.VisibleForTesting;
  * @{link ReactTextShadowNode} hierarchy to calculate a {@link Spannable} text representing the
  * whole text subtree.
  */
-public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTextShadowNode> {
+public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTextShadowNode>
+    implements IViewManagerWithChildren {
 
   @VisibleForTesting
   public static final String REACT_CLASS = "RCTText";
@@ -126,5 +128,10 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
   @Override
   public Class<ReactTextShadowNode> getShadowNodeClass() {
     return ReactTextShadowNode.class;
+  }
+
+  @Override
+  public boolean needsCustomLayoutForChildren() {
+    return true;
   }
 }

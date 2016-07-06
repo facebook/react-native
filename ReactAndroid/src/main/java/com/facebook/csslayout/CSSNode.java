@@ -7,6 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+// NOTE: this file is auto-copied from https://github.com/facebook/css-layout
+// @generated SignedSource<<da35a9f6c5a59af0d73da3e46ee60a9a>>
+
+// NOTE: Changes in this file must be imported from this css-layout PR: https://github.com/facebook/css-layout/pull/202
+
 package com.facebook.csslayout;
 
 import javax.annotation.Nullable;
@@ -24,7 +29,7 @@ import static com.facebook.csslayout.CSSLayout.POSITION_TOP;
 
 /**
  * A CSS Node. It has a style object you can manipulate at {@link #style}. After calling
- * {@link #calculateLayout()}, {@link #layout} will be filled with the results of the layout.
+ * {@link #calculateLayout(CSSLayoutContext)}, {@link #layout} will be filled with the results of the layout.
  */
 public class CSSNode {
 
@@ -71,6 +76,11 @@ public class CSSNode {
   private @Nullable MeasureFunction mMeasureFunction = null;
   private LayoutState mLayoutState = LayoutState.DIRTY;
   private boolean mIsTextNode = false;
+
+  public static final Iterable<CSSNode> NO_CSS_NODES = new ArrayList<CSSNode>(0);
+  public Iterable<CSSNode> getChildrenIterable() {
+    return mChildren == null ? NO_CSS_NODES : mChildren;
+  }
 
   public int getChildCount() {
     return mChildren == null ? 0 : mChildren.size();
