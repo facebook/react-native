@@ -52,7 +52,7 @@ exports.projectConfig = function projectConfigAndroid(folder, userConfig) {
       // point at application instead
       mainActivityPath = mainApplicationPath;
     }
-  })
+  });
 
 
   const stringsPath = path.join(
