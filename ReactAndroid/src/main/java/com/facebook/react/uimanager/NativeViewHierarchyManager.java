@@ -195,16 +195,16 @@ public class NativeViewHierarchyManager {
       // Check if the parent of the view has to layout the view, or the child has to lay itself out.
       if (!mRootTags.get(parentTag)) {
         ViewManager parentViewManager = mTagsToViewManagers.get(parentTag);
-        ViewGroupManager parentViewGroupManager;
-        if (parentViewManager instanceof ViewGroupManager) {
-          parentViewGroupManager = (ViewGroupManager) parentViewManager;
+        IViewManagerWithChildren parentViewManagerWithChildren;
+        if (parentViewManager instanceof IViewManagerWithChildren) {
+          parentViewManagerWithChildren = (IViewManagerWithChildren) parentViewManager;
         } else {
           throw new IllegalViewOperationException(
               "Trying to use view with tag " + parentTag +
-                  " as a parent, but its Manager doesn't extends ViewGroupManager");
+                  " as a parent, but its Manager doesn't implement IViewManagerWithChildren");
         }
-        if (parentViewGroupManager != null
-            && !parentViewGroupManager.needsCustomLayoutForChildren()) {
+        if (parentViewManagerWithChildren != null
+            && !parentViewManagerWithChildren.needsCustomLayoutForChildren()) {
           updateLayout(viewToUpdate, x, y, width, height);
         }
       } else {

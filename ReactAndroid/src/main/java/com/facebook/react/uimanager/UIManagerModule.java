@@ -878,4 +878,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     @Override
     public void onLowMemory() {}
   }
+
+  public View resolveView(int tag) {
+    UiThreadUtil.assertOnUiThread();
+    return mUIImplementation.getUIViewOperationQueue().getNativeViewHierarchyManager().resolveView(tag);
+  }
 }
