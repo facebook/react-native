@@ -43,7 +43,7 @@ We have a new [guide to Navigation](/react-native/docs/navigator-comparison.html
 
 We also have a new [guide to handling touches](/react-native/docs/handling-touches.html) that explains some of the basics of making button-like interfaces, and a brief summary of the different ways to handle touch events.
 
-Another area we worked on is Flexbox. This includes tutorials on how to [handle layout with Flexbox](/react-native/docs/flexbox.html) and how to control [the size of components](/react-native/docs/height-and-width.html). It also includes an unsexy but hopefully-useful (list of all the props that control layout in React Native)[/react-native/docs/layout-props.html].
+Another area we worked on is Flexbox. This includes tutorials on how to [handle layout with Flexbox](/react-native/docs/flexbox.html) and how to control [the size of components](/react-native/docs/height-and-width.html). It also includes an unsexy but hopefully-useful [list of all the props that control layout in React Native](/react-native/docs/layout-props.html).
 
 ## Getting Started
 
