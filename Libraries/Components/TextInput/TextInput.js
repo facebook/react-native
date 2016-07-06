@@ -312,7 +312,8 @@ const TextInput = React.createClass({
     onChangeText: PropTypes.func,
     /**
      * Callback that is called when the text input's content size changes.
-     * The new content size is passed as an argument to the callback.
+     * This will be called with
+     * `{ nativeEvent: { contentSize: { width, height } } }`.
      *
      * Only called for multiline text inputs.
      */
@@ -530,11 +531,6 @@ const TextInput = React.createClass({
       };
     }
 
-    var onContentSizeChange;
-    if (this.props.onContentSizeChange) {
-      onContentSizeChange = this._onContentSizeChange;
-    }
-
     var props = Object.assign({}, this.props);
     props.style = [styles.input, this.props.style];
     if (!props.multiline) {
@@ -578,7 +574,7 @@ const TextInput = React.createClass({
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
-          onContentSizeChange={onContentSizeChange}
+          onContentSizeChange={this.props.onContentSizeChange}
           onSelectionChange={onSelectionChange}
           onTextInput={this._onTextInput}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
@@ -612,11 +608,6 @@ const TextInput = React.createClass({
       };
     }
 
-    var onContentSizeChange;
-    if (this.props.onContentSizeChange) {
-      onContentSizeChange = this._onContentSizeChange;
-    }
-
     var autoCapitalize =
       UIManager.AndroidTextInput.Constants.AutoCapitalizationType[this.props.autoCapitalize];
     var children = this.props.children;
@@ -644,7 +635,7 @@ const TextInput = React.createClass({
         onFocus={this._onFocus}
         onBlur={this._onBlur}
         onChange={this._onChange}
-        onContentSizeChange={onContentSizeChange}
+        onContentSizeChange={this.props.onContentSizeChange}
         onSelectionChange={onSelectionChange}
         onTextInput={this._onTextInput}
         onEndEditing={this.props.onEndEditing}
@@ -689,12 +680,6 @@ const TextInput = React.createClass({
   _onPress: function(event: Event) {
     if (this.props.editable || this.props.editable === undefined) {
       this.focus();
-    }
-  },
-
-  _onContentSizeChange(event: Event) {
-    if (this.props.onContentSizeChange) {
-      this.props.onContentSizeChange(event.nativeEvent.contentSize);
     }
   },
 

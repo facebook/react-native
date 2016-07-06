@@ -115,8 +115,8 @@ class AutoExpandingTextInput extends React.Component {
         onChangeText={(text) => {
           this.setState({text});
         }}
-        onContentSizeChange={(contentSize) => {
-          this.setState({height: contentSize.height});
+        onContentSizeChange={(event) => {
+          this.setState({height: event.nativeEvent.contentSize.height});
         }}
         style={[styles.default, {height: Math.max(35, this.state.height)}]}
         value={this.state.text}
