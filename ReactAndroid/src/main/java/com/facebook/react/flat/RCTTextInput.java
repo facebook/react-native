@@ -124,7 +124,8 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
     super.onCollectExtraUpdates(uiViewOperationQueue);
     if (mJsEventCount != UNSET) {
-      ReactTextUpdate reactTextUpdate = new ReactTextUpdate(getText(), mJsEventCount, false);
+      ReactTextUpdate reactTextUpdate =
+          new ReactTextUpdate(getText(), mJsEventCount, false, getPadding());
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }
