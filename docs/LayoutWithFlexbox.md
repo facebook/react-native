@@ -76,7 +76,7 @@ Adding `alignItems` to a component's style determines the **alignment** of child
 import React, { Component } from 'react';
 import { AppRegistry, View } from 'react-native';
 
-class AlignItemsBasics {
+class AlignItemsBasics extends Component {
   render() {
     return (
       // Try setting `alignItems` to 'flex-start'
