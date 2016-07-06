@@ -710,7 +710,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     if (mReactContextInitAsyncTask == null) {
       // No background task to create react context is currently running, create and execute one.
       mReactContextInitAsyncTask = new ReactContextInitAsyncTask();
-      mReactContextInitAsyncTask.execute(initParams);
+      mReactContextInitAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, initParams);
     } else {
       // Background task is currently running, queue up most recent init params to recreate context
       // once task completes.
