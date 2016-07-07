@@ -113,4 +113,13 @@ JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, const char *e
   }
 }
 
+JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, JSObjectRef jsFunctionCause) {
+  try {
+    auto functionName = Object(ctx, jsFunctionCause).getProperty("name").toString().str();
+    return translatePendingCppExceptionToJSError(ctx, functionName.c_str());
+  } catch (...) {
+    return makeJSError(ctx, "Failed to get function name while handling exception");
+  }
+}
+
 } }

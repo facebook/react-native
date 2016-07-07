@@ -66,12 +66,7 @@ inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
         auto executor = static_cast<JSCExecutor*>(JSObjectGetPrivate(globalObj));
         return (executor->*method)(argumentCount, arguments);
       } catch (...) {
-        try {
-          auto functionName = Object(ctx, function).getProperty("name").toString().str();
-          *exception = translatePendingCppExceptionToJSError(ctx, functionName.c_str());
-        } catch (...) {
-          *exception = makeJSError(ctx, "Failed to get function name while handling exception");
-        }
+        *exception = translatePendingCppExceptionToJSError(ctx, function);
         return JSValueMakeUndefined(ctx);
       }
     }
