@@ -11,9 +11,10 @@ package com.facebook.react.bridge;
 import javax.annotation.Nullable;
 
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+
+import android.os.Handler;
+import android.os.Looper;
 
 import com.facebook.common.logging.FLog;
 
@@ -33,9 +34,13 @@ import okio.Buffer;
  * A wrapper around WebSocketClient that recognizes packager's message format.
  */
 public class JSPackagerWebSocketClient implements WebSocketListener {
-
   private static final String TAG = "JSPackagerWebSocketClient";
+
+  private static final int RECONNECT_DELAY_MS = 2000;
+
   private final String mUrl;
+  private final Handler mHandler;
+  private boolean mSuppressConnectionErrors;
 
   public interface JSPackagerCallback {
     void onMessage(String target, String action);
@@ -48,6 +53,7 @@ public class JSPackagerWebSocketClient implements WebSocketListener {
     super();
     mUrl = url;
     mCallback = callback;
+    mHandler = new Handler(Looper.getMainLooper());
   }
 
   public void connect() {
@@ -63,12 +69,17 @@ public class JSPackagerWebSocketClient implements WebSocketListener {
   }
 
   private void reconnect() {
-    new Timer().schedule(new TimerTask() {
-      @Override
-      public void run() {
-        connect();
-      }
-    }, 2000);
+    if (!mSuppressConnectionErrors) {
+      FLog.w(TAG, "Couldn't connect to packager, will silently retry");
+      mSuppressConnectionErrors = true;
+    }
+    mHandler.postDelayed(
+      new Runnable() {
+        @Override
+        public void run() {
+          connect();
+        }
+      }, RECONNECT_DELAY_MS);
   }
 
   public void closeQuietly() {
@@ -137,13 +148,16 @@ public class JSPackagerWebSocketClient implements WebSocketListener {
 
   @Override
   public void onFailure(IOException e, Response response) {
-    abort("Websocket exception", e);
+    if (mWebSocket != null) {
+      abort("Websocket exception", e);
+    }
     reconnect();
   }
 
   @Override
   public void onOpen(WebSocket webSocket, Response response) {
     mWebSocket = webSocket;
+    mSuppressConnectionErrors = false;
   }
 
   @Override
