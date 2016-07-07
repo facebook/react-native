@@ -76,8 +76,6 @@ typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
  */
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block;
 
-@optional
-
 /**
  * Special case for Timers + ContextExecutor - instead of the default
  *   if jsthread then call else dispatch call on jsthread
