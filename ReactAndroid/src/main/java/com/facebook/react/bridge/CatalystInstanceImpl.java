@@ -164,8 +164,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       ExecutorToken executorToken,
       String module,
       String method,
-      NativeArray arguments,
-      String tracingName) {
+      NativeArray arguments) {
     if (mIsBeingDestroyed) {
       FLog.w(ReactConstants.TAG, "Calling JS function after bridge has been destroyed.");
       return;
@@ -178,10 +177,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
       incrementPendingJSCalls();
 
-      Assertions.assertNotNull(mBridge).callFunction(executorToken,
-        module,
-        method, arguments, tracingName);
-    }
+      Assertions.assertNotNull(mBridge).callFunction(
+          executorToken,
+          module,
+          method, arguments);
+  }
   }
 
   // This is called from java code, so it won't be stripped anyway, but proguard will rename it,

@@ -70,8 +70,7 @@ public:
     ExecutorToken executorToken,
     const std::string& moduleId,
     const std::string& methodId,
-    const folly::dynamic& args,
-    const std::string& tracingName);
+    const folly::dynamic& args);
 
   /**
    * Invokes a callback with the cbID, and optional additional arguments in JS.

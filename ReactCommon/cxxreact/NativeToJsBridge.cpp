@@ -145,18 +145,22 @@ void NativeToJsBridge::callFunction(
     ExecutorToken executorToken,
     const std::string& moduleId,
     const std::string& methodId,
-    const folly::dynamic& arguments,
-    const std::string& tracingName) {
+    const folly::dynamic& arguments) {
   int systraceCookie = -1;
   #ifdef WITH_FBSYSTRACE
   systraceCookie = m_systraceCookie++;
+  std::string tracingName = fbsystrace_is_tracing(TRACE_TAG_REACT_CXX_BRIDGE) ?
+    folly::to<std::string>("JSCall__", moduleId, '_', methodId) : std::string();
+  SystraceSection s(tracingName.c_str());
   FbSystraceAsyncFlow::begin(
       TRACE_TAG_REACT_CXX_BRIDGE,
       tracingName.c_str(),
       systraceCookie);
+  #else
+  std::string tracingName;
   #endif
 
-  runOnExecutorQueue(executorToken, [moduleId, methodId, arguments, tracingName, systraceCookie] (JSExecutor* executor) {
+  runOnExecutorQueue(executorToken, [moduleId, methodId, arguments, tracingName = std::move(tracingName), systraceCookie] (JSExecutor* executor) {
     #ifdef WITH_FBSYSTRACE
     FbSystraceAsyncFlow::end(
         TRACE_TAG_REACT_CXX_BRIDGE,
