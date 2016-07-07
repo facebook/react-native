@@ -57,7 +57,7 @@ public class ReactScrollViewHelper {
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
         ScrollEvent.obtain(
             scrollView.getId(),
-            SystemClock.nanoTime(),
+            SystemClock.elapsedRealtime(),
             scrollEventType,
             scrollView.getScrollX(),
             scrollView.getScrollY(),

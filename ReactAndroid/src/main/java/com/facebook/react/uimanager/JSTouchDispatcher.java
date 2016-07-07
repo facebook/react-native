@@ -82,7 +82,7 @@ public class JSTouchDispatcher {
       eventDispatcher.dispatchEvent(
         TouchEvent.obtain(
           mTargetTag,
-          SystemClock.nanoTime(),
+          SystemClock.elapsedRealtime(),
           TouchEventType.START,
           ev,
           mTargetCoordinates[0],
@@ -105,7 +105,7 @@ public class JSTouchDispatcher {
       eventDispatcher.dispatchEvent(
         TouchEvent.obtain(
           mTargetTag,
-          SystemClock.nanoTime(),
+          SystemClock.elapsedRealtime(),
           TouchEventType.END,
           ev,
           mTargetCoordinates[0],
@@ -117,7 +117,7 @@ public class JSTouchDispatcher {
       eventDispatcher.dispatchEvent(
         TouchEvent.obtain(
           mTargetTag,
-          SystemClock.nanoTime(),
+          SystemClock.elapsedRealtime(),
           TouchEventType.MOVE,
           ev,
           mTargetCoordinates[0],
@@ -128,7 +128,7 @@ public class JSTouchDispatcher {
       eventDispatcher.dispatchEvent(
         TouchEvent.obtain(
           mTargetTag,
-          SystemClock.nanoTime(),
+          SystemClock.elapsedRealtime(),
           TouchEventType.START,
           ev,
           mTargetCoordinates[0],
@@ -139,7 +139,7 @@ public class JSTouchDispatcher {
       eventDispatcher.dispatchEvent(
         TouchEvent.obtain(
           mTargetTag,
-          SystemClock.nanoTime(),
+          SystemClock.elapsedRealtime(),
           TouchEventType.END,
           ev,
           mTargetCoordinates[0],
@@ -180,7 +180,7 @@ public class JSTouchDispatcher {
     Assertions.assertNotNull(eventDispatcher).dispatchEvent(
       TouchEvent.obtain(
         mTargetTag,
-        SystemClock.nanoTime(),
+        SystemClock.elapsedRealtime(),
         TouchEventType.CANCEL,
         androidEvent,
         mTargetCoordinates[0],

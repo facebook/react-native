@@ -74,7 +74,7 @@ public class TimingModuleTest {
 
     PowerMockito.mockStatic(SystemClock.class);
     when(SystemClock.currentTimeMillis()).thenReturn(mCurrentTimeNs / 1000000);
-    when(SystemClock.nanoTime()).thenReturn(mCurrentTimeNs);
+    when(SystemClock.elapsedRealtime()).thenReturn(mCurrentTimeNs / 1000000);
 
     mChoreographerMock = mock(ReactChoreographer.class);
     PowerMockito.mockStatic(ReactChoreographer.class);
