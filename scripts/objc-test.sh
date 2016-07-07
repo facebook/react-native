@@ -20,12 +20,6 @@ function cleanup {
 }
 trap cleanup EXIT
 
-if [ -z "$TRAVIS" ]; then
-  # Run the packager process directly
-  node ./local-cli/cli.js start &
-  SERVER_PID=$!
-fi
-
 XCODE_PROJECT="Examples/UIExplorer/UIExplorer.xcodeproj"
 XCODE_SCHEME="UIExplorer"
 XCODE_SDK="iphonesimulator"
