@@ -9,6 +9,8 @@
 
 package com.facebook.react.devsupport;
 
+import javax.annotation.Nullable;
+
 import java.io.File;
 
 import com.facebook.react.bridge.ReadableArray;
@@ -91,9 +93,10 @@ public class StackTraceHelper {
    * Convert a JavaScript stack trace (see {@code parseErrorStack} JS module) to an array of
    * {@link StackFrame}s.
    */
-  public static StackFrame[] convertJsStackTrace(ReadableArray stack) {
-    StackFrame[] result = new StackFrame[stack.size()];
-    for (int i = 0; i < stack.size(); i++) {
+  public static StackFrame[] convertJsStackTrace(@Nullable ReadableArray stack) {
+    int size = stack != null ? stack.size() : 0;
+    StackFrame[] result = new StackFrame[size];
+    for (int i = 0; i < size; i++) {
       ReadableMap frame = stack.getMap(i);
       String methodName = frame.getString("methodName");
       String fileName = frame.getString("file");
