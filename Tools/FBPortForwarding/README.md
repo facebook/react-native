@@ -34,7 +34,7 @@ to local port and forwards all communication back via the same peertalk channel.
                                       |                                  |
     incoming     +----------------+   |                                  |                 +--------------+
     connections  |Proxy Server    |   |                                  |                 |Real Server   |
-   ------------->>                |   |         +-------------+ commands |                 |              |
+    ------------>>                |   |         +-------------+ commands |                 |              |
                  |       Port 8081|   | create  |             |  stream  |                 |     Port 8081|
                  +-+--------------+   +---------> Peertalk    <----------+                 +-^------------+
                    |                            | Channel     |                              ^
