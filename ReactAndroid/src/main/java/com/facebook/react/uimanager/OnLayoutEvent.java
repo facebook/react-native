@@ -45,7 +45,7 @@ public class OnLayoutEvent extends Event<OnLayoutEvent> {
   }
 
   protected void init(int viewTag, int x, int y, int width, int height) {
-    super.init(viewTag, SystemClock.elapsedRealtime());
+    super.init(viewTag, SystemClock.nanoTime());
     mX = x;
     mY = y;
     mWidth = width;

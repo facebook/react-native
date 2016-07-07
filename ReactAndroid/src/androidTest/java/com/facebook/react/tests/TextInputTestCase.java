@@ -116,7 +116,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     eventDispatcher.dispatchEvent(
         new ReactTextChangedEvent(
             reactEditText.getId(),
-            SystemClock.elapsedRealtime(),
+            SystemClock.nanoTime(),
             newText.toString(),
             (int) PixelUtil.toDIPFromPixel(contentWidth),
             (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -125,7 +125,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     eventDispatcher.dispatchEvent(
         new ReactTextInputEvent(
             reactEditText.getId(),
-            SystemClock.elapsedRealtime(),
+            SystemClock.nanoTime(),
             newText.toString(),
             "",
             start,
@@ -150,7 +150,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     eventDispatcher.dispatchEvent(
         new ReactTextChangedEvent(
             reactEditText.getId(),
-            SystemClock.elapsedRealtime(),
+            SystemClock.nanoTime(),
             newText.toString(),
             (int) PixelUtil.toDIPFromPixel(contentWidth),
             (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -159,7 +159,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     eventDispatcher.dispatchEvent(
         new ReactTextInputEvent(
             reactEditText.getId(),
-            SystemClock.elapsedRealtime(),
+            SystemClock.nanoTime(),
             moreText,
             "",
             start,
@@ -184,7 +184,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     eventDispatcher.dispatchEvent(
         new ReactTextChangedEvent(
             reactEditText.getId(),
-            SystemClock.elapsedRealtime(),
+            SystemClock.nanoTime(),
             newText.toString(),
             (int) PixelUtil.toDIPFromPixel(contentWidth),
             (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -193,7 +193,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     eventDispatcher.dispatchEvent(
         new ReactTextInputEvent(
             reactEditText.getId(),
-            SystemClock.elapsedRealtime(),
+            SystemClock.nanoTime(),
             moreText,
             "",
             start,
