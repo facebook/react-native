@@ -89,7 +89,7 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
           @Override
           public void onRefresh() {
             reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher()
-                .dispatchEvent(new RefreshEvent(view.getId(), SystemClock.elapsedRealtime()));
+                .dispatchEvent(new RefreshEvent(view.getId(), SystemClock.nanoTime()));
           }
         });
   }

@@ -81,7 +81,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSliderEvent(
                   seekbar.getId(),
-                  SystemClock.elapsedRealtime(),
+                  SystemClock.nanoTime(),
                   ((ReactSlider)seekbar).toRealProgress(progress),
                   fromUser));
         }
@@ -96,7 +96,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSlidingCompleteEvent(
                   seekbar.getId(),
-                  SystemClock.elapsedRealtime(),
+                  SystemClock.nanoTime(),
                   ((ReactSlider)seekbar).toRealProgress(seekbar.getProgress())));
         }
       };

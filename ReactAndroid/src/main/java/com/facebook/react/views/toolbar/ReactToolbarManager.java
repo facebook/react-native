@@ -131,7 +131,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
           @Override
           public void onClick(View v) {
             mEventDispatcher.dispatchEvent(
-                new ToolbarClickEvent(view.getId(), SystemClock.elapsedRealtime(), -1));
+                new ToolbarClickEvent(view.getId(), SystemClock.nanoTime(), -1));
           }
         });
 
@@ -142,7 +142,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
             mEventDispatcher.dispatchEvent(
                 new ToolbarClickEvent(
                     view.getId(),
-                    SystemClock.elapsedRealtime(),
+                    SystemClock.nanoTime(),
                     menuItem.getOrder()));
             return true;
           }

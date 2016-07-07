@@ -192,7 +192,7 @@ public class ReactImageView extends GenericDraweeView {
         @Override
         public void onSubmit(String id, Object callerContext) {
           mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), SystemClock.elapsedRealtime(), ImageLoadEvent.ON_LOAD_START));
+              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_START));
         }
 
         @Override
@@ -202,18 +202,18 @@ public class ReactImageView extends GenericDraweeView {
             @Nullable Animatable animatable) {
           if (imageInfo != null) {
             mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), SystemClock.elapsedRealtime(), ImageLoadEvent.ON_LOAD));
+              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD));
             mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), SystemClock.elapsedRealtime(), ImageLoadEvent.ON_LOAD_END));
+              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_END));
           }
         }
 
         @Override
         public void onFailure(String id, Throwable throwable) {
           mEventDispatcher.dispatchEvent(
-            new ImageLoadEvent(getId(), SystemClock.elapsedRealtime(), ImageLoadEvent.ON_ERROR));
+            new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_ERROR));
           mEventDispatcher.dispatchEvent(
-            new ImageLoadEvent(getId(), SystemClock.elapsedRealtime(), ImageLoadEvent.ON_LOAD_END));
+            new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_END));
         }
       };
     }
