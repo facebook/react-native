@@ -111,11 +111,6 @@ struct RandomAccessBundleStartupCode {
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
-- (JSGlobalContextRef)ctx
-{
-  return _context.JSGlobalContextRef;
-}
-
 - (BOOL)isValid
 {
   return _context != nil;
@@ -362,16 +357,16 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     strongSelf->_jscWrapper = RCTJSCWrapperCreate(strongSelf->_useCustomJSCLibrary);
     [strongSelf->_performanceLogger markStopForTag:RCTPLJSCWrapperOpenLibrary];
 
+    JSContext *context = strongSelf.context.context;
+
     if (strongSelf->_jscWrapper->configureJSContextForIOS != NULL) {
       NSString *cachesPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
       RCTAssert(cachesPath != nil, @"cachesPath should not be nil");
       if (cachesPath) {
-        strongSelf->_jscWrapper->configureJSContextForIOS(strongSelf.context.ctx, [cachesPath UTF8String]);
+        strongSelf->_jscWrapper->configureJSContextForIOS(context.JSGlobalContextRef, [cachesPath UTF8String]);
       }
     }
 
-    // Synchronous hooks:
-    JSContext *context = strongSelf.context.context;
     [[self class] installSynchronousHooksOnContext:context];
 
     context[@"nativeRequireModuleConfig"] = ^NSString *(NSString *moduleName) {
@@ -432,7 +427,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       RCTJSCWrapper *jscWrapper = strongSelf2->_jscWrapper;
       JSStringRef execJSString = jscWrapper->JSStringCreateWithUTF8CString(sourceCode.UTF8String);
       JSStringRef jsURL = jscWrapper->JSStringCreateWithUTF8CString(sourceCodeURL.UTF8String);
-      jscWrapper->JSEvaluateScript(strongSelf2->_context.ctx, execJSString, NULL, jsURL, 0, NULL);
+      jscWrapper->JSEvaluateScript(strongSelf2->_context.context.JSGlobalContextRef, execJSString, NULL, jsURL, 0, NULL);
       jscWrapper->JSStringRelease(jsURL);
       jscWrapper->JSStringRelease(execJSString);
     };
@@ -566,9 +561,10 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     JSValueRef errorJSRef = NULL;
     JSValueRef resultJSRef = NULL;
     RCTJSCWrapper *jscWrapper = strongSelf->_jscWrapper;
-    JSGlobalContextRef contextJSRef = jscWrapper->JSContextGetGlobalContext(strongSelf->_context.ctx);
+    JSGlobalContextRef ctx = strongSelf->_context.context.JSGlobalContextRef;
+    JSGlobalContextRef contextJSRef = jscWrapper->JSContextGetGlobalContext(ctx);
     JSContext *context = strongSelf->_context.context;
-    JSObjectRef globalObjectJSRef = jscWrapper->JSContextGetGlobalObject(strongSelf->_context.ctx);
+    JSObjectRef globalObjectJSRef = jscWrapper->JSContextGetGlobalObject(ctx);
 
     // get the BatchedBridge object
     JSValueRef batchedBridgeRef = strongSelf->_batchedBridgeRef;
@@ -668,7 +664,8 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     RCTJSCWrapper *jscWrapper = strongSelf->_jscWrapper;
     JSStringRef execJSString = jscWrapper->JSStringCreateWithUTF8CString((const char *)script.bytes);
     JSStringRef bundleURL = jscWrapper->JSStringCreateWithUTF8CString(sourceURL.absoluteString.UTF8String);
-    JSValueRef result = jscWrapper->JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, bundleURL, 0, &jsError);
+    JSGlobalContextRef ctx = strongSelf->_context.context.JSGlobalContextRef;
+    JSValueRef result = jscWrapper->JSEvaluateScript(ctx, execJSString, NULL, bundleURL, 0, &jsError);
     jscWrapper->JSStringRelease(bundleURL);
     jscWrapper->JSStringRelease(execJSString);
 
@@ -677,7 +674,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     if (onComplete) {
       NSError *error;
       if (!result) {
-        error = RCTNSErrorFromJSError(jscWrapper, strongSelf->_context.ctx, jsError);
+        error = RCTNSErrorFromJSError(jscWrapper, ctx, jsError);
       }
       onComplete(error);
     }
@@ -719,7 +716,8 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
     RCTJSCWrapper *jscWrapper = strongSelf->_jscWrapper;
     JSStringRef execJSString = jscWrapper->JSStringCreateWithCFString((__bridge CFStringRef)script);
-    JSValueRef valueToInject = jscWrapper->JSValueMakeFromJSONString(strongSelf->_context.ctx, execJSString);
+    JSGlobalContextRef ctx = strongSelf->_context.context.JSGlobalContextRef;
+    JSValueRef valueToInject = jscWrapper->JSValueMakeFromJSONString(ctx, execJSString);
     jscWrapper->JSStringRelease(execJSString);
 
     if (!valueToInject) {
@@ -733,9 +731,9 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return;
     }
 
-    JSObjectRef globalObject = jscWrapper->JSContextGetGlobalObject(strongSelf->_context.ctx);
+    JSObjectRef globalObject = jscWrapper->JSContextGetGlobalObject(ctx);
     JSStringRef JSName = jscWrapper->JSStringCreateWithCFString((__bridge CFStringRef)objectName);
-    jscWrapper->JSObjectSetProperty(strongSelf->_context.ctx, globalObject, JSName, valueToInject, kJSPropertyAttributeNone, NULL);
+    jscWrapper->JSObjectSetProperty(ctx, globalObject, JSName, valueToInject, kJSPropertyAttributeNone, NULL);
     jscWrapper->JSStringRelease(JSName);
     if (onComplete) {
       onComplete(nil);
@@ -764,14 +762,15 @@ static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleI
   JSStringRef code = jscWrapper->JSStringCreateWithUTF8CString(data.get());
   JSValueRef jsError = NULL;
   JSStringRef sourceURL = jscWrapper->JSStringCreateWithUTF8CString(url);
-  JSValueRef result = jscWrapper->JSEvaluateScript(executor->_context.ctx, code, NULL, sourceURL, 0, &jsError);
+  JSGlobalContextRef ctx = executor->_context.context.JSGlobalContextRef;
+  JSValueRef result = jscWrapper->JSEvaluateScript(ctx, code, NULL, sourceURL, 0, &jsError);
 
   jscWrapper->JSStringRelease(code);
   jscWrapper->JSStringRelease(sourceURL);
 
   if (!result) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      RCTFatal(RCTNSErrorFromJSError(jscWrapper, executor->_context.ctx, jsError));
+      RCTFatal(RCTNSErrorFromJSError(jscWrapper, ctx, jsError));
       [executor invalidate];
     });
   }
@@ -891,7 +890,7 @@ RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)name)
 {
   if (_jscWrapper->JSGlobalContextSetName != NULL) {
     JSStringRef JSName = _jscWrapper->JSStringCreateWithCFString((__bridge CFStringRef)name);
-    _jscWrapper->JSGlobalContextSetName(_context.ctx, JSName);
+    _jscWrapper->JSGlobalContextSetName(_context.context.JSGlobalContextRef, JSName);
     _jscWrapper->JSStringRelease(JSName);
   }
 }
