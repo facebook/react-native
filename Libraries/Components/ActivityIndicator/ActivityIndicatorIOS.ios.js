@@ -41,7 +41,9 @@ var ActivityIndicatorIOS = React.createClass({
      */
     size: PropTypes.oneOf([
       'small',
+      'medium',
       'large',
+      'extralarge',
     ]),
     /**
      * Invoked on mount and layout changes with
