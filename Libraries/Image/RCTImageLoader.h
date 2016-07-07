@@ -75,16 +75,18 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
 
 /**
  * Finds an appropriate image decoder and passes the target `size`, `scale` and
- * `resizeMode` for optimal image decoding.  The `clipped` option controls
+ * `resizeMode` for optimal image decoding. The `clipped` option controls
  * whether the image will be clipped to fit the specified size exactly, or
- * if the original aspect ratio should be retained. Can be called from any
- * thread, will call callback on an unspecified thread.
+ * if the original aspect ratio should be retained. The decoded image will
+ * be stored on cache with 'cacheKey'. Can be called from any thread, will
+ * call callback on an unspecified thread
  */
 - (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData
                                               size:(CGSize)size
                                              scale:(CGFloat)scale
                                            clipped:(BOOL)clipped
                                         resizeMode:(RCTResizeMode)resizeMode
+                                          cacheKey:(NSString *)cacheKey
                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
 
 /**
