@@ -293,7 +293,7 @@ static void loadScriptFromFile(JNIEnv* env, jobject obj, jstring fileName, jstri
 }
 
 static void callFunction(JNIEnv* env, jobject obj, JExecutorToken::jhybridobject jExecutorToken, jstring module, jstring method,
-                         NativeArray::jhybridobject args, jstring tracingName) {
+                         NativeArray::jhybridobject args) {
   auto bridge = extractRefPtr<CountableBridge>(env, obj);
   auto arguments = cthis(wrap_alias(args));
   try {
@@ -301,8 +301,7 @@ static void callFunction(JNIEnv* env, jobject obj, JExecutorToken::jhybridobject
       cthis(wrap_alias(jExecutorToken))->getExecutorToken(wrap_alias(jExecutorToken)),
       fromJString(env, module),
       fromJString(env, method),
-      std::move(arguments->array),
-      fromJString(env, tracingName)
+      std::move(arguments->array)
     );
   } catch (...) {
     translatePendingCppExceptionToJavaException();
