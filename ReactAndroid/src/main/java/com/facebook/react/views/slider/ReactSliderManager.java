@@ -151,26 +151,24 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
   }
 
   @ReactProp(name = "thumbImage")
-  public void setThumbImage(ReactSlider view,ReadableMap value) {
+  public void setThumbImage(ReactSlider view, ReadableMap value) {
     view.setThumbImage(value);
   }
 
-  @ReactProp(name = "progressColor",customType = "Color")
-  public void setProgressColor(ReactSlider view,Integer value) {
+  @ReactProp(name = "maximumTrackTintColor", customType = "Color")
+  public void setProgressColor(ReactSlider view, Integer value) {
     view.setProgressColor(value);
   }
 
-  @ReactProp(name = "progressBackgroundColor",customType = "Color")
-  public void setProgressBackgroundColor(ReactSlider view,Integer value) {
+  @ReactProp(name = "minimumTrackTintColor", customType = "Color")
+  public void setProgressBackgroundColor(ReactSlider view, Integer value) {
     view.setProgressBackgroundColor(value);
   }
 
-  @ReactProp(name = "thumbColor",customType = "Color")
-  public void setThumbColor(ReactSlider view,Integer value) {
+  @ReactProp(name = "thumbColor", customType = "Color")
+  public void setThumbColor(ReactSlider view, Integer value) {
     view.setThumbColor(value);
   }
-
-
 
   @Override
   protected void addEventEmitters(final ThemedReactContext reactContext, final ReactSlider view) {

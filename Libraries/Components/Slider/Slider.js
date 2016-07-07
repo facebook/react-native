@@ -96,14 +96,14 @@ var Slider = React.createClass({
     /**
      * Assigns a minimum track image. Only static images are supported. The
      * rightmost pixel of the image will be stretched to fill the track.
-     * @platform ios
+     * *using in android >= 21*
      */
     minimumTrackImage: Image.propTypes.source,
 
     /**
      * Assigns a maximum track image. Only static images are supported. The
      * leftmost pixel of the image will be stretched to fill the track.
-     * @platform ios
+     * *using in android >= 21*
      */
     maximumTrackImage: Image.propTypes.source,
 
@@ -127,22 +127,6 @@ var Slider = React.createClass({
      * Used to locate this view in UI automation tests.
      */
     testID: PropTypes.string,
-
-    /**
-     * The color used for the progress
-     *
-     * *using in android >= 21*
-     * @platform android
-     */
-    progressColor: PropTypes.string,
-
-    /**
-     * The color used for the progressBackgroundColor
-     *
-     * *using in android >= 21*
-     * @platform android
-     */
-    progressBackgroundColor: PropTypes.string,
 
     /**
      * The color used for the thumbColor
@@ -184,7 +168,7 @@ var Slider = React.createClass({
     props.onSlidingComplete = onSlidingComplete && ((event: Event) => {
       onSlidingComplete && onSlidingComplete(event.nativeEvent.value);
     });
-	thumbImage=resolveAssetSource(thumbImage);
+	  thumbImage=resolveAssetSource(thumbImage);
     return <RCTSlider
       {...props}
       thumbImage={thumbImage}

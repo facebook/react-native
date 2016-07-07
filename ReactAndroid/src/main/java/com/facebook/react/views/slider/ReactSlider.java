@@ -133,16 +133,16 @@ public class ReactSlider extends SeekBar {
   public void setThumbImage(ReadableMap source) {
     String uri = source != null ? source.getString(PROP_ICON_URI) : null;
     if (uri != null) {
-      if (uri.startsWith("http://") || uri.startsWith("https://")) {
-        setThumbFormUrl(uri);
+      if (uri.startsWith("http://") || uri.startsWith("https://") || uri.startsWith("file://")) {
+        setThumbFromUrl(uri);
       } else {
-        Drawable thumd = getDrawableByName(uri);
-        setThumb(thumd);
+        Drawable thumb = getDrawableByName(uri);
+        setThumb(thumb);
       }
     }
   }
 
-  private void setThumbFormUrl(final String uri) {
+  private void setThumbFromUrl(final String uri) {
     ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(Uri.parse(uri))
       .setAutoRotateEnabled(true)
       .build();

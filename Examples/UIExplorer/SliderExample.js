@@ -131,7 +131,6 @@ exports.examples = [
   },
   {
     title: 'Custom min/max track tint color',
-    platform: 'ios',
     render(): ReactElement<any> {
       return (
         <SliderExample
@@ -143,9 +142,8 @@ exports.examples = [
   },
   {
     title: 'Custom thumb image',
-    platform: 'ios',
     render(): ReactElement<any> {
-      return <SliderExample thumbImage={require('./uie_thumb_big.png')} />;
+      return <SliderExample style={{height:50}} thumbImage={require('image!launcher_icon')} />;
     }
   },
   {
@@ -168,29 +166,11 @@ exports.examples = [
     }
   },
   {
-    title: 'Custom thumb image',
-    platform: 'android',
-    render(): ReactElement<any> {
-      return <SliderExample style={{height:50}} thumbImage={require('./uie_thumb_big.png')} />;
-    }
-  },
-  {
     title: 'Custom thumb color',
     platform: 'android',
     render(): ReactElement<any> {
       return <SliderExample thumbColor={'blue'} />;
     }
   },
-  {
-    title: 'Custom progress/progressBackgroundColor track tint color',
-    platform: 'android',
-    render(): ReactElement<any> {
-      return (
-        <SliderExample
-          progressColor={'red'}
-          progressBackgroundColor={'green'}
-        />
-      );
-    }
-  },
+
 ];
