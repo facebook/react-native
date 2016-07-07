@@ -69,14 +69,14 @@ var Slider = React.createClass({
     /**
      * The color used for the track to the left of the button. Overrides the
      * default blue gradient image.
-     * @platform ios
+     * *using in android >= 21*
      */
     minimumTrackTintColor: PropTypes.string,
 
     /**
      * The color used for the track to the right of the button. Overrides the
      * default blue gradient image.
-     * @platform ios
+     * *using in android >= 21*
      */
     maximumTrackTintColor: PropTypes.string,
 
@@ -96,14 +96,14 @@ var Slider = React.createClass({
     /**
      * Assigns a minimum track image. Only static images are supported. The
      * rightmost pixel of the image will be stretched to fill the track.
-     * *using in android >= 21*
+     * @platform ios
      */
     minimumTrackImage: Image.propTypes.source,
 
     /**
      * Assigns a maximum track image. Only static images are supported. The
      * leftmost pixel of the image will be stretched to fill the track.
-     * *using in android >= 21*
+     * @platform ios
      */
     maximumTrackImage: Image.propTypes.source,
 
