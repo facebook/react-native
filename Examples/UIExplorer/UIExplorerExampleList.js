@@ -43,7 +43,7 @@ const ds = new ListView.DataSource({
 });
 
 class UIExplorerExampleList extends React.Component {
-  constuctor(props: {
+  constructor(props: {
     disableTitleRow: ?boolean,
     onNavigate: Function,
     filter: ?string,
