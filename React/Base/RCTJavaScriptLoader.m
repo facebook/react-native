@@ -56,8 +56,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       }
 
       uint32_t magicNumber;
-      if (fread(&magicNumber, sizeof(magicNumber), 1, bundle) != 1) {
-        fclose(bundle);
+      size_t readResult = fread(&magicNumber, sizeof(magicNumber), 1, bundle);
+      fclose(bundle);
+      if (readResult != 1) {
         onComplete(RCTErrorWithMessage(@"Error reading bundle"), source, 0);
         return;
       }
@@ -81,7 +82,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
         sourceLength = source.length;
       }
 
-      fclose(bundle);
       onComplete(error, source, sourceLength);
     });
     return;
