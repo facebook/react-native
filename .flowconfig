@@ -19,9 +19,10 @@
 .*/node_modules/commoner/test/source/widget/share.js
 
 # Ignore duplicate module providers
-<PROJECT_ROOT>/Libraries/react-native/React.js
-<PROJECT_ROOT>/Libraries/react-native/ReactNative.js
-<PROJECT_ROOT>/node_modules/jest-runtime/build/__tests__/.*
+# For RN Apps installed via npm, "Libraries" folder is inside node_modules/react-native but in the source repo it is in the root 
+.*/Libraries/react-native/React.js
+.*/Libraries/react-native/ReactNative.js
+.*/node_modules/jest-runtime/build/__tests__/.*
 
 [include]
 
