@@ -47,7 +47,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
       jni::alias_ref<JavaMessageQueueThread::javaobject> moduleQueue,
       ModuleRegistryHolder* mrh);
-  void loadScriptFromAssets(jobject assetManager, const std::string& assetURL);
+  void loadScriptFromAssets(jobject assetManager, const std::string& assetURL, bool useLazyBundle);
   void loadScriptFromFile(jni::alias_ref<jstring> fileName, const std::string& sourceURL);
   void callJSFunction(JExecutorToken* token, std::string module, std::string method, NativeArray* arguments,
                       const std::string& tracingName);
