@@ -343,7 +343,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
-    [self propBlockForKey:key inDictionary:_viewPropBlocks](view, json);
+    [self propBlockForKey:key inDictionary:self->_viewPropBlocks](view, json);
   }];
 
   if ([view respondsToSelector:@selector(didSetProps:)]) {
@@ -358,7 +358,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
-    [self propBlockForKey:key inDictionary:_shadowPropBlocks](shadowView, json);
+    [self propBlockForKey:key inDictionary:self->_shadowPropBlocks](shadowView, json);
   }];
 
   if ([shadowView respondsToSelector:@selector(didSetProps:)]) {

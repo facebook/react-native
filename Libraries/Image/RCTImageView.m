@@ -216,7 +216,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     RCTImageLoaderProgressBlock progressHandler = nil;
     if (_onProgress) {
       progressHandler = ^(int64_t loaded, int64_t total) {
-        _onProgress(@{
+        self->_onProgress(@{
           @"loaded": @((double)loaded),
           @"total": @((double)total),
         });

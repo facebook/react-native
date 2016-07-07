@@ -234,11 +234,11 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   dispatch_async(_URLCacheQueue, ^{
 
     // Remove completed tasks
-    for (RCTNetworkTask *task in _pendingTasks.reverseObjectEnumerator) {
+    for (RCTNetworkTask *task in self->_pendingTasks.reverseObjectEnumerator) {
       switch (task.status) {
         case RCTNetworkTaskFinished:
-          [_pendingTasks removeObject:task];
-          _activeTasks--;
+          [self->_pendingTasks removeObject:task];
+          self->_activeTasks--;
           break;
         case RCTNetworkTaskPending:
           break;
@@ -246,8 +246,8 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
           // Check task isn't "stuck"
           if (task.requestToken == nil) {
             RCTLogWarn(@"Task orphaned for request %@", task.request);
-            [_pendingTasks removeObject:task];
-            _activeTasks--;
+            [self->_pendingTasks removeObject:task];
+            self->_activeTasks--;
             [task cancel];
           }
           break;
@@ -255,12 +255,12 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     }
 
     // Start queued decode
-    NSInteger activeDecodes = _scheduledDecodes - _pendingDecodes.count;
-    while (activeDecodes == 0 || (_activeBytes <= _maxConcurrentDecodingBytes &&
-                                  activeDecodes <= _maxConcurrentDecodingTasks)) {
-      dispatch_block_t decodeBlock = _pendingDecodes.firstObject;
+    NSInteger activeDecodes = self->_scheduledDecodes - self->_pendingDecodes.count;
+    while (activeDecodes == 0 || (self->_activeBytes <= self->_maxConcurrentDecodingBytes &&
+                                  activeDecodes <= self->_maxConcurrentDecodingTasks)) {
+      dispatch_block_t decodeBlock = self->_pendingDecodes.firstObject;
       if (decodeBlock) {
-        [_pendingDecodes removeObjectAtIndex:0];
+        [self->_pendingDecodes removeObjectAtIndex:0];
         decodeBlock();
       } else {
         break;
@@ -268,13 +268,13 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     }
 
     // Start queued tasks
-    for (RCTNetworkTask *task in _pendingTasks) {
-      if (MAX(_activeTasks, _scheduledDecodes) >= _maxConcurrentLoadingTasks) {
+    for (RCTNetworkTask *task in self->_pendingTasks) {
+      if (MAX(self->_activeTasks, self->_scheduledDecodes) >= self->_maxConcurrentLoadingTasks) {
         break;
       }
       if (task.status == RCTNetworkTaskPending) {
         [task start];
-        _activeTasks++;
+        self->_activeTasks++;
       }
     }
   });
@@ -317,8 +317,8 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   }
   dispatch_async(_URLCacheQueue, ^{
 
-    if (!_URLCache) {
-      _URLCache = [[NSURLCache alloc] initWithMemoryCapacity:5 * 1024 * 1024 // 5MB
+    if (!self->_URLCache) {
+      self->_URLCache = [[NSURLCache alloc] initWithMemoryCapacity:5 * 1024 * 1024 // 5MB
                                                 diskCapacity:200 * 1024 * 1024 // 200MB
                                                     diskPath:@"React/RCTImageDownloader"];
     }
@@ -342,7 +342,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     }
 
     // Check if networking module is available
-    if (RCT_DEBUG && ![_bridge respondsToSelector:@selector(networking)]) {
+    if (RCT_DEBUG && ![self->_bridge respondsToSelector:@selector(networking)]) {
       RCTLogError(@"No suitable image URL loader found for %@. You may need to "
                   " import the RCTNetwork library in order to load images.",
                   request.URL.absoluteString);
@@ -350,7 +350,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     }
 
     // Check if networking module can load image
-    if (RCT_DEBUG && ![_bridge.networking canHandleRequest:request]) {
+    if (RCT_DEBUG && ![self->_bridge.networking canHandleRequest:request]) {
       RCTLogError(@"No suitable image URL loader found for %@", request.URL.absoluteString);
       return;
     }
@@ -392,7 +392,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
     // Check for cached response before reloading
     // TODO: move URL cache out of RCTImageLoader into its own module
-    NSCachedURLResponse *cachedResponse = [_URLCache cachedResponseForRequest:request];
+    NSCachedURLResponse *cachedResponse = [self->_URLCache cachedResponseForRequest:request];
 
     while (cachedResponse) {
       if ([cachedResponse.response isKindOfClass:[NSHTTPURLResponse class]]) {
@@ -406,7 +406,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
           NSURL *redirectURL = [NSURL URLWithString: location relativeToURL: request.URL];
           request = [NSURLRequest requestWithURL:redirectURL];
-          cachedResponse = [_URLCache cachedResponseForRequest:request];
+          cachedResponse = [self->_URLCache cachedResponseForRequest:request];
           continue;
         }
       }
@@ -416,14 +416,14 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     }
 
     // Download image
-    RCTNetworkTask *task = [_bridge.networking networkTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
+    RCTNetworkTask *task = [self->_bridge.networking networkTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
       if (error) {
         completionHandler(error, nil);
         [weakSelf dequeueTasks];
         return;
       }
 
-      dispatch_async(_URLCacheQueue, ^{
+      dispatch_async(self->_URLCacheQueue, ^{
 
         // Cache the response
         // TODO: move URL cache out of RCTImageLoader into its own module
@@ -445,11 +445,11 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     }];
     task.downloadProgressBlock = progressHandler;
 
-    if (!_pendingTasks) {
-      _pendingTasks = [NSMutableArray new];
+    if (!self->_pendingTasks) {
+      self->_pendingTasks = [NSMutableArray new];
     }
     if (task) {
-      [_pendingTasks addObject:task];
+      [self->_pendingTasks addObject:task];
       [weakSelf dequeueTasks];
     }
 
@@ -498,7 +498,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     if (image) {
       CGFloat bytes = image.size.width * image.size.height * image.scale * image.scale * 4;
       if (bytes <= RCTMaxCachableDecodedImageSizeInBytes) {
-        [_decodedImageCache setObject:image forKey:cacheKey cost:bytes];
+        [self->_decodedImageCache setObject:image forKey:cacheKey cost:bytes];
       }
     }
     completionBlock(error, image);
@@ -579,7 +579,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         NSInteger decodedImageBytes = (size.width * scale) * (size.height * scale) * 4;
 
         // Mark these bytes as in-use
-        _activeBytes += decodedImageBytes;
+        self->_activeBytes += decodedImageBytes;
 
         // Do actual decompression on a concurrent background queue
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -612,9 +612,9 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
           // We're no longer retaining the uncompressed data, so now we'll mark
           // the decoding as complete so that the loading task queue can resume.
-          dispatch_async(_URLCacheQueue, ^{
-            _scheduledDecodes--;
-            _activeBytes -= decodedImageBytes;
+          dispatch_async(self->_URLCacheQueue, ^{
+            self->_scheduledDecodes--;
+            self->_activeBytes -= decodedImageBytes;
             [self dequeueTasks];
           });
         });
@@ -623,17 +623,17 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       // The decode operation retains the compressed image data until it's
       // complete, so we'll mark it as having started, in order to block
       // further image loads from happening until we're done with the data.
-      _scheduledDecodes++;
+      self->_scheduledDecodes++;
 
-      if (!_pendingDecodes) {
-        _pendingDecodes = [NSMutableArray new];
+      if (!self->_pendingDecodes) {
+        self->_pendingDecodes = [NSMutableArray new];
       }
-      NSInteger activeDecodes = _scheduledDecodes - _pendingDecodes.count - 1;
-      if (activeDecodes == 0 || (_activeBytes <= _maxConcurrentDecodingBytes &&
-                                 activeDecodes <= _maxConcurrentDecodingTasks)) {
+      NSInteger activeDecodes = self->_scheduledDecodes - self->_pendingDecodes.count - 1;
+      if (activeDecodes == 0 || (self->_activeBytes <= self->_maxConcurrentDecodingBytes &&
+                                 activeDecodes <= self->_maxConcurrentDecodingTasks)) {
         decodeBlock();
       } else {
-        [_pendingDecodes addObject:decodeBlock];
+        [self->_pendingDecodes addObject:decodeBlock];
       }
 
     });

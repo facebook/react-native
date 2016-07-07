@@ -80,9 +80,9 @@ RCT_EXPORT_METHOD(setValues:(NSDictionary *)values)
   [values enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, BOOL *stop) {
     id plist = [RCTConvert NSPropertyList:json];
     if (plist) {
-      [_defaults setObject:plist forKey:key];
+      [self->_defaults setObject:plist forKey:key];
     } else {
-      [_defaults removeObjectForKey:key];
+      [self->_defaults removeObjectForKey:key];
     }
   }];
 

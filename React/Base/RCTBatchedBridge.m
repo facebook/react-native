@@ -26,7 +26,7 @@
 #import "RCTRedBox.h"
 
 #define RCTAssertJSThread() \
-  RCTAssert(![NSStringFromClass([_javaScriptExecutor class]) isEqualToString:@"RCTJSCExecutor"] || \
+  RCTAssert(![NSStringFromClass([self->_javaScriptExecutor class]) isEqualToString:@"RCTJSCExecutor"] || \
               [[[NSThread currentThread] name] isEqualToString:RCTJSCThreadName], \
             @"This method must be called on JS thread")
 
@@ -174,7 +174,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   } else if (self.bundleURL) {
     [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onComplete:^(NSError *error, NSData *source, int64_t sourceLength) {
       if (error && [self.delegate respondsToSelector:@selector(fallbackSourceURLForBridge:)]) {
-        NSURL *fallbackURL = [self.delegate fallbackSourceURLForBridge:_parentBridge];
+        NSURL *fallbackURL = [self.delegate fallbackSourceURLForBridge:self->_parentBridge];
         if (fallbackURL && ![fallbackURL isEqual:self.bundleURL]) {
           RCTLogError(@"Failed to load bundle(%@) with error:(%@)", self.bundleURL, error.localizedDescription);
           self.bundleURL = fallbackURL;
@@ -190,7 +190,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
       [self didFinishLoading];
       [[NSNotificationCenter defaultCenter]
        postNotificationName:RCTJavaScriptDidLoadNotification
-       object:_parentBridge userInfo:@{@"bridge": self}];
+       object:self->_parentBridge userInfo:@{@"bridge": self}];
     });
     onSourceLoad(nil, nil, 0);
   }
@@ -462,7 +462,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   sourceCodeModule.scriptURL = self.bundleURL;
 
   [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:^(NSError *loadError) {
-    if (!_valid) {
+    if (!self->_valid) {
       return;
     }
 
@@ -474,8 +474,8 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     }
 
     // Register the display link to start sending js calls after everything is setup
-    NSRunLoop *targetRunLoop = [_javaScriptExecutor isKindOfClass:[RCTJSCExecutor class]] ? [NSRunLoop currentRunLoop] : [NSRunLoop mainRunLoop];
-    [_displayLink addToRunLoop:targetRunLoop];
+    NSRunLoop *targetRunLoop = [self->_javaScriptExecutor isKindOfClass:[RCTJSCExecutor class]] ? [NSRunLoop currentRunLoop] : [NSRunLoop mainRunLoop];
+    [self->_displayLink addToRunLoop:targetRunLoop];
 
     // Perform the state update and notification on the main thread, so we can't run into
     // timing issues with RCTRootView
@@ -483,7 +483,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
       [self didFinishLoading];
       [[NSNotificationCenter defaultCenter]
        postNotificationName:RCTJavaScriptDidLoadNotification
-       object:_parentBridge userInfo:@{@"bridge": self}];
+       object:self->_parentBridge userInfo:@{@"bridge": self}];
     });
   }];
 
@@ -505,7 +505,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   [_performanceLogger markStopForTag:RCTPLBridgeStartup];
   _loading = NO;
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
-    for (dispatch_block_t call in _pendingCalls) {
+    for (dispatch_block_t call in self->_pendingCalls) {
       call();
     }
   }];
@@ -637,24 +637,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 
   dispatch_group_notify(group, dispatch_get_main_queue(), ^{
-    [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
-      [_displayLink invalidate];
-      _displayLink = nil;
+    [self->_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
+      [self->_displayLink invalidate];
+      self->_displayLink = nil;
 
-      [_javaScriptExecutor invalidate];
-      _javaScriptExecutor = nil;
+      [self->_javaScriptExecutor invalidate];
+      self->_javaScriptExecutor = nil;
 
       if (RCTProfileIsProfiling()) {
         RCTProfileUnhookModules(self);
       }
 
-      _moduleDataByName = nil;
-      _moduleDataByID = nil;
-      _moduleClassesByID = nil;
-      _pendingCalls = nil;
+      self->_moduleDataByName = nil;
+      self->_moduleDataByID = nil;
+      self->_moduleClassesByID = nil;
+      self->_pendingCalls = nil;
 
-      if (_flowIDMap != NULL) {
-        CFRelease(_flowIDMap);
+      if (self->_flowIDMap != NULL) {
+        CFRelease(self->_flowIDMap);
       }
     }];
   });
@@ -778,7 +778,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     }
 
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"FetchApplicationScriptCallbacks", nil);
-    [_javaScriptExecutor flushedQueue:^(id json, NSError *error)
+    [self->_javaScriptExecutor flushedQueue:^(id json, NSError *error)
      {
        RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call,init", @{
          @"json": RCTNullIfNil(json),
@@ -889,7 +889,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
                                                       capacity:_moduleDataByName.count];
 
   [moduleIDs enumerateObjectsUsingBlock:^(NSNumber *moduleID, NSUInteger i, __unused BOOL *stop) {
-    RCTModuleData *moduleData = _moduleDataByID[moduleID.integerValue];
+    RCTModuleData *moduleData = self->_moduleDataByID[moduleID.integerValue];
     dispatch_queue_t queue = moduleData.methodQueue;
     NSMutableOrderedSet<NSNumber *> *set = [buckets objectForKey:queue];
     if (!set) {
@@ -910,11 +910,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       @autoreleasepool {
         for (NSNumber *indexObj in calls) {
           NSUInteger index = indexObj.unsignedIntegerValue;
-          if (RCT_DEV && callID != -1 && _flowIDMap != NULL && RCTProfileIsProfiling()) {
+          if (RCT_DEV && callID != -1 && self->_flowIDMap != NULL && RCTProfileIsProfiling()) {
             [self.flowIDMapLock lock];
-            int64_t newFlowID = (int64_t)CFDictionaryGetValue(_flowIDMap, (const void *)(_flowID + index));
+            int64_t newFlowID = (int64_t)CFDictionaryGetValue(self->_flowIDMap, (const void *)(self->_flowID + index));
             _RCTProfileEndFlowEvent(@(newFlowID));
-            CFDictionaryRemoveValue(_flowIDMap, (const void *)(_flowID + index));
+            CFDictionaryRemoveValue(self->_flowIDMap, (const void *)(self->_flowID + index));
             [self.flowIDMapLock unlock];
           }
           [self _handleRequestNumber:index

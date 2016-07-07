@@ -225,7 +225,7 @@ RCT_EXPORT_MODULE()
 
   __block RCTTestCustomSetBridgeModule *module;
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    module = [_bridge moduleForClass:[RCTTestCustomSetBridgeModule class]];
+    module = [self->_bridge moduleForClass:[RCTTestCustomSetBridgeModule class]];
   });
 
   RUN_RUNLOOP_WHILE(!module);
@@ -253,7 +253,7 @@ RCT_EXPORT_MODULE()
 
   __block RCTLazyInitModule *module;
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    module = [_bridge moduleForClass:[RCTLazyInitModule class]];
+    module = [self->_bridge moduleForClass:[RCTLazyInitModule class]];
   });
 
   RUN_RUNLOOP_WHILE(!module);

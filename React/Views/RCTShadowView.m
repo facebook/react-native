@@ -185,7 +185,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
     _didUpdateSubviews = NO;
     [self didUpdateReactSubviews];
     [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-      UIView *view = viewRegistry[_reactTag];
+      UIView *view = viewRegistry[self->_reactTag];
       [view clearSortedSubviews];
       [view didUpdateReactSubviews];
     }];
@@ -195,7 +195,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
     UIColor *parentBackgroundColor = parentProperties[RCTBackgroundColorProp];
     if (parentBackgroundColor) {
       [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-        UIView *view = viewRegistry[_reactTag];
+        UIView *view = viewRegistry[self->_reactTag];
         [view reactSetInheritedBackgroundColor:parentBackgroundColor];
       }];
     }

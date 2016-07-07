@@ -55,7 +55,7 @@
 
     CFRunLoopRef cfRunLoop = [strongSelf->_runLoop getCFRunLoop];
 
-    if (!_runLoop) {
+    if (!self->_runLoop) {
       return;
     }
 

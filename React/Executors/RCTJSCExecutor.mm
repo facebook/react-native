@@ -477,7 +477,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     }
 
     JSContext *context = strongSelf.context.context;
-    RCTInstallJSCProfiler(_bridge, context.JSGlobalContextRef);
+    RCTInstallJSCProfiler(self->_bridge, context.JSGlobalContextRef);
   }];
 
   // Inject handler used by HMR
@@ -501,7 +501,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 {
   [self executeBlockOnJavaScriptQueue:^{
     BOOL enabled = [notification.name isEqualToString:RCTProfileDidStartProfiling];
-    [_bridge enqueueJSCall:@"Systrace.setEnabled" args:@[enabled ? @YES : @NO]];
+    [self->_bridge enqueueJSCall:@"Systrace.setEnabled" args:@[enabled ? @YES : @NO]];
   }];
 }
 

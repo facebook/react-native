@@ -169,7 +169,7 @@ RCT_EXPORT_MODULE()
 - (void)clearAllData
 {
   dispatch_async(RCTGetMethodQueue(), ^{
-    [_manifest removeAllObjects];
+    [self->_manifest removeAllObjects];
     [RCTGetCache() removeAllObjects];
     RCTDeleteStorageDirectory();
   });
