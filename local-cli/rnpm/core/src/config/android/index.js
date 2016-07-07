@@ -35,7 +35,7 @@ exports.projectConfig = function projectConfigAndroid(folder, userConfig) {
 
   const mainFilePath = path.join(
     sourceDir,
-    userConfig.mainApplicationPath || `src/main/java/${packageFolder}/MainApplication.java`
+    userConfig.mainFilePath || `src/main/java/${packageFolder}/MainApplication.java`
   );
 
   const stringsPath = path.join(
