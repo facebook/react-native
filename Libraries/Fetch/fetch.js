@@ -11,6 +11,8 @@
  *
  * @providesModule fetch
  * @nolint
+ *
+ * NOTE: This file has local changes for RN and is not a straight copy!
  */
 /* eslint-disable */
 'use strict';
@@ -240,7 +242,26 @@ var self = {};
     }
 
     this.json = function() {
-      return this.text().then(JSON.parse)
+      var status = this.status;
+      return this.text().then(function(text) {
+        if (!text) {
+          var errorText =
+            'Trying to parse the body of a network response as JSON, but the ' +
+            'body is null or empty.';
+          if (status !== 200) {
+            errorText +=
+              '\n\nThis can be the result of not properly checking for a 200 OK ' +
+              'status code before trying to parse the body (the status code for ' +
+              'this response was ' + status + ').';
+          } else {
+            errorText +=
+              '\n\nThe status code for this response was 200 OK, so nothing ' +
+              'went obviously wrong. Is your server configured properly?';
+          }
+          throw new Error(errorText);
+        }
+        return JSON.parse(text);
+      });
     }
 
     return this
