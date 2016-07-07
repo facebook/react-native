@@ -49,6 +49,18 @@ JSValueRef evaluateScript(
     JSStringRef script,
     JSStringRef sourceURL);
 
+#if WITH_FBJSCEXTENSIONS
+JSValueRef evaluateSourceCode(
+    JSContextRef ctx,
+    JSSourceCodeRef source,
+    JSStringRef sourceURL);
+#endif
+
+void formatAndThrowJSException(
+    JSContextRef ctx,
+    JSValueRef exn,
+    JSStringRef sourceURL);
+
 JSValueRef makeJSError(JSContextRef ctx, const char *error);
 
 JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, const char *exceptionLocation);

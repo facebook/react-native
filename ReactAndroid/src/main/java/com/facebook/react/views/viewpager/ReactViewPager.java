@@ -91,14 +91,14 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
       mEventDispatcher.dispatchEvent(
-          new PageScrollEvent(getId(), SystemClock.elapsedRealtime(), position, positionOffset));
+          new PageScrollEvent(getId(), SystemClock.nanoTime(), position, positionOffset));
     }
 
     @Override
     public void onPageSelected(int position) {
       if (!mIsCurrentItemFromJs) {
         mEventDispatcher.dispatchEvent(
-            new PageSelectedEvent(getId(), SystemClock.elapsedRealtime(), position));
+            new PageSelectedEvent(getId(), SystemClock.nanoTime(), position));
       }
     }
 
@@ -119,7 +119,7 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
           throw new IllegalStateException("Unsupported pageScrollState");
       }
       mEventDispatcher.dispatchEvent(
-        new PageScrollStateChangedEvent(getId(), SystemClock.elapsedRealtime(), pageScrollState));
+        new PageScrollStateChangedEvent(getId(), SystemClock.nanoTime(), pageScrollState));
     }
   }
 

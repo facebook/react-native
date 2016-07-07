@@ -244,7 +244,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
       return;
     }
 
-    long initialTargetTime = SystemClock.elapsedRealtime() + adjustedDuration;
+    long initialTargetTime = SystemClock.nanoTime() / 1000000 + adjustedDuration;
     Timer timer = new Timer(executorToken, callbackID, initialTargetTime, duration, repeat);
     synchronized (mTimerGuard) {
       mTimers.add(timer);

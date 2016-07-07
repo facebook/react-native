@@ -13,6 +13,8 @@
 #include <jni/Countable.h>
 #include <jni/LocalReference.h>
 
+#include <sys/stat.h>
+
 #include <cxxreact/Instance.h>
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/ModuleRegistry.h>
@@ -23,6 +25,7 @@
 #include "ModuleRegistryHolder.h"
 #include "NativeArray.h"
 #include "JNativeRunnable.h"
+#include "OnLoad.h"
 
 using namespace facebook::jni;
 
@@ -98,7 +101,7 @@ void CatalystInstanceImpl::registerNatives() {
     makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
       makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
       makeNativeMethod("loadScriptFromAssets",
-                       "(Landroid/content/res/AssetManager;Ljava/lang/String;)V",
+                       "(Landroid/content/res/AssetManager;Ljava/lang/String;Z)V",
                        CatalystInstanceImpl::loadScriptFromAssets),
       makeNativeMethod("loadScriptFromFile", CatalystInstanceImpl::loadScriptFromFile),
       makeNativeMethod("callJSFunction", CatalystInstanceImpl::callJSFunction),
@@ -149,20 +152,132 @@ void CatalystInstanceImpl::initializeBridge(
                               mrh->getModuleRegistry());
 }
 
+#ifdef WITH_FBJSCEXTENSIONS
+static std::unique_ptr<const JSBigString> loadScriptFromCache(
+    AAssetManager* manager,
+    std::string& sourceURL) {
+
+  // 20-byte sha1 as hex
+  static const size_t HASH_STR_SIZE = 40;
+
+  // load bundle hash from the metadata file in the APK
+  auto hash = react::loadScriptFromAssets(manager, sourceURL + ".meta");
+  auto cacheDir = getApplicationCacheDir() + "/rn-bundle";
+  auto encoding = static_cast<JSBigMmapString::Encoding>(hash->c_str()[20]);
+
+  if (mkdir(cacheDir.c_str(), 0755) == -1 && errno != EEXIST) {
+    throw std::runtime_error("Can't create cache directory");
+  }
+
+  if (encoding != JSBigMmapString::Encoding::Ascii) {
+    throw std::runtime_error("Can't use mmap fastpath for non-ascii bundles");
+  }
+
+  // convert hash to string
+  char hashStr[HASH_STR_SIZE + 1];
+  for (size_t i = 0; i < HASH_STR_SIZE; i += 2) {
+    snprintf(hashStr + i, 3, "%02hhx", hash->c_str()[i / 2] & 0xFF);
+  }
+
+  // the name of the cached bundle file should be the hash
+  std::string cachePath = cacheDir + "/" + hashStr;
+  FILE *cache = fopen(cachePath.c_str(), "r");
+  SCOPE_EXIT { if (cache) fclose(cache); };
+
+  size_t size = 0;
+  if (cache == NULL) {
+    // delete old bundle, if there was one.
+    std::string metaPath = cacheDir + "/meta";
+    if (auto meta = fopen(metaPath.c_str(), "r")) {
+      char oldBundleHash[HASH_STR_SIZE + 1];
+      if (fread(oldBundleHash, HASH_STR_SIZE, 1, meta) == HASH_STR_SIZE) {
+        remove((cacheDir + "/" + oldBundleHash).c_str());
+        remove(metaPath.c_str());
+      }
+      fclose(meta);
+    }
+
+    // load script from the APK and write to temporary file
+    auto script = react::loadScriptFromAssets(manager, sourceURL);
+    auto tmpPath = cachePath + "_";
+    cache = fopen(tmpPath.c_str(), "w");
+    if (!cache) {
+      throw std::runtime_error("Can't open cache, errno: " + errno);
+    }
+    if (fwrite(script->c_str(), 1, script->size(), cache) != size) {
+      remove(tmpPath.c_str());
+      throw std::runtime_error("Failed to unpack bundle");
+    }
+
+    // force data to be written to disk
+    fsync(fileno(cache));
+    fclose(cache);
+
+    // move script to final path - atomic operation
+    if (rename(tmpPath.c_str(), cachePath.c_str())) {
+      throw std::runtime_error("Failed to update cache, errno: " + errno);
+    }
+
+    // store the bundle hash in a metadata file
+    auto meta = fopen(metaPath.c_str(), "w");
+    if (!meta) {
+      throw std::runtime_error("Failed to open metadata file to store bundle hash");
+    }
+    if (fwrite(hashStr, HASH_STR_SIZE, 1, meta) != HASH_STR_SIZE) {
+      throw std::runtime_error("Failed to write bundle hash to metadata file");
+    }
+    fsync(fileno(meta));
+    fclose(meta);
+
+    // return the final written cache
+    cache = fopen(cachePath.c_str(), "r");
+    if (!cache) {
+      throw std::runtime_error("Cache has been cleared");
+    }
+  } else {
+    struct stat fileInfo = {0};
+    if (fstat(fileno(cache), &fileInfo)) {
+      throw std::runtime_error("Failed to get cache stats, errno: " + errno);
+    }
+    size = fileInfo.st_size;
+  }
+
+  return folly::make_unique<const JSBigMmapString>(
+      dup(fileno(cache)),
+      size,
+      reinterpret_cast<const uint8_t*>(hash->c_str()),
+      encoding);
+}
+#endif
+
 void CatalystInstanceImpl::loadScriptFromAssets(jobject assetManager,
-                                                const std::string& assetURL) {
+                                                const std::string& assetURL,
+                                                bool useLazyBundle) {
   const int kAssetsLength = 9;  // strlen("assets://");
   auto sourceURL = assetURL.substr(kAssetsLength);
-
   auto manager = react::extractAssetManager(assetManager);
-  auto script = react::loadScriptFromAssets(manager, sourceURL);
+
   if (JniJSModulesUnbundle::isUnbundle(manager, sourceURL)) {
+    auto script = react::loadScriptFromAssets(manager, sourceURL);
     instance_->loadUnbundle(
       folly::make_unique<JniJSModulesUnbundle>(manager, sourceURL),
       std::move(script),
       sourceURL);
+    return;
   } else {
-    instance_->loadScriptFromString(std::move(script), std::move(sourceURL));
+#ifdef WITH_FBJSCEXTENSIONS
+    if (useLazyBundle) {
+      try {
+        auto script = loadScriptFromCache(manager, sourceURL);
+        instance_->loadScriptFromString(std::move(script), sourceURL);
+        return;
+      } catch (...) {
+        LOG(WARNING) << "Failed to load bundle as Source Code";
+      }
+    }
+#endif
+    auto script = react::loadScriptFromAssets(manager, sourceURL);
+    instance_->loadScriptFromString(std::move(script), sourceURL);
   }
 }
 
