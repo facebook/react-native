@@ -71,6 +71,7 @@ public class ReactEditText extends EditText {
   private boolean mContainsImages;
   private boolean mBlurOnSubmit;
   private @Nullable SelectionWatcher mSelectionWatcher;
+  private @Nullable ContentSizeWatcher mContentSizeWatcher;
   private final InternalKeyListener mKeyListener;
 
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
@@ -102,15 +103,30 @@ public class ReactEditText extends EditText {
   // TODO: t6408636 verify if we should schedule a layout after a View does a requestLayout()
   @Override
   public boolean isLayoutRequested() {
-    return false;
+    // If we are watching and updating container height based on content size
+    // then we don't want to scroll right away. This isn't perfect -- you might
+    // want to limit the height the text input can grow to. Possible solution
+    // is to add another prop that determines whether we should scroll to end
+    // of text.
+    if (mContentSizeWatcher != null) {
+      return isMultiline();
+    } else {
+      return false;
+    }
+  }
+
+  @Override
+  protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    if (mContentSizeWatcher != null) {
+      mContentSizeWatcher.onLayout();
+    }
   }
 
   // Consume 'Enter' key events: TextView tries to give focus to the next TextInput, but it can't
   // since we only allow JS to change focus, which in turn causes TextView to crash.
   @Override
   public boolean onKeyUp(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_ENTER &&
-        ((getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE) == 0 )) {
+    if (keyCode == KeyEvent.KEYCODE_ENTER && !isMultiline()) {
       hideSoftKeyboard();
       return true;
     }
@@ -160,6 +176,10 @@ public class ReactEditText extends EditText {
         super.removeTextChangedListener(getTextWatcherDelegator());
       }
     }
+  }
+
+  public void setContentSizeWatcher(ContentSizeWatcher contentSizeWatcher) {
+    mContentSizeWatcher = contentSizeWatcher;
   }
 
   @Override
@@ -212,7 +232,7 @@ public class ReactEditText extends EditText {
     mStagedInputType = type;
     // Input type password defaults to monospace font, so we need to re-apply the font
     super.setTypeface(tf);
-    
+
     // We override the KeyListener so that all keys on the soft input keyboard as well as hardware
     // keyboards work. Some KeyListeners like DigitsKeyListener will display the keyboard but not
     // accept all input from it
@@ -327,6 +347,10 @@ public class ReactEditText extends EditText {
       mTextWatcherDelegator = new TextWatcherDelegator();
     }
     return mTextWatcherDelegator;
+  }
+
+  private boolean isMultiline() {
+    return (getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0;
   }
 
   /* package */ void setGravityHorizontal(int gravityHorizontal) {
@@ -447,7 +471,7 @@ public class ReactEditText extends EditText {
     @Override
     public void afterTextChanged(Editable s) {
       if (!mIsSettingTextFromJS && mListeners != null) {
-        for (android.text.TextWatcher listener : mListeners) {
+        for (TextWatcher listener : mListeners) {
           listener.afterTextChanged(s);
         }
       }
