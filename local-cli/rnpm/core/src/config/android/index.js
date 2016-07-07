@@ -33,27 +33,10 @@ exports.projectConfig = function projectConfigAndroid(folder, userConfig) {
   const packageFolder = userConfig.packageFolder ||
     packageName.replace(/\./g, path.sep);
 
-  // variable misnomer - Actually set to application path for 0.29+
-  let mainActivityPath = null;
-
-  mainActivityPath = path.join(
-    sourceDir,
-    userConfig.mainActivityPath || `src/main/java/${packageFolder}/MainActivity.java`
-  );
-
-  // If MainApplication.java exists, use that instead
-  const mainApplicationPath = path.join(
+  const mainFilePath = path.join(
     sourceDir,
     userConfig.mainApplicationPath || `src/main/java/${packageFolder}/MainApplication.java`
   );
-
-  fs.accessSync(mainApplicationPath, fs.F_OK, function(err) {
-    if (!err) {
-      // point at application instead
-      mainActivityPath = mainApplicationPath;
-    }
-  });
-
 
   const stringsPath = path.join(
     sourceDir,
@@ -85,7 +68,7 @@ exports.projectConfig = function projectConfigAndroid(folder, userConfig) {
     buildGradlePath,
     settingsGradlePath,
     assetsPath,
-    mainActivityPath,
+    mainFilePath,
   };
 };
 
