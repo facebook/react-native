@@ -85,10 +85,4 @@ typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
  */
 - (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block;
 
-/**
- * For executors that support it, this method can be used to add a synchronous
- * callback function for communicating with the javascript context.
- */
-- (void)addSynchronousHookWithName:(NSString *)name usingBlock:(id)block;
-
 @end
