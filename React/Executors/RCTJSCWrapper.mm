@@ -24,13 +24,13 @@ static void *RCTCustomLibraryHandler(void)
   dispatch_once(&token, ^{
     const char *path = [[[NSBundle mainBundle] pathForResource:@"JavaScriptCore"
                                                         ofType:nil
-                                                   inDirectory:@"JavaScriptCore.framework"] UTF8String];
+                                                   inDirectory:@"Frameworks/JavaScriptCore.framework"] UTF8String];
     if (path) {
       RCTPerformanceLoggerStart(RCTPLJSCWrapperOpenLibrary);
       handler = dlopen(path, RTLD_LAZY);
       RCTPerformanceLoggerEnd(RCTPLJSCWrapperOpenLibrary);
       if (!handler) {
-        RCTLogWarn(@"Can't load custome JSC library: %s", dlerror());
+        RCTLogWarn(@"Can't load custom JSC library: %s", dlerror());
       }
     }
   });

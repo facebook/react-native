@@ -13,8 +13,8 @@
  */
 'use strict';
 
-const NativeMethodsMixin = require('NativeMethodsMixin');
-const PropTypes = require('ReactPropTypes');
+const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');

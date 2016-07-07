@@ -77,7 +77,6 @@ function defineProperty(object: Object, name: string, newValue: mixed): void {
       value: object[name],
     });
   }
-
   const {enumerable, writable} = descriptor || {};
   Object.defineProperty(object, name, {
     configurable: true,
@@ -87,32 +86,22 @@ function defineProperty(object: Object, name: string, newValue: mixed): void {
   });
 }
 
-function defineLazyProperty(
+function defineLazyProperty<T>(
   object: Object,
   name: string,
-  getValue: () => mixed
+  getNewValue: () => T
 ): void {
+  const defineLazyObjectProperty = require('defineLazyObjectProperty');
+
   const descriptor = getPropertyDescriptor(object, name);
   if (descriptor) {
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
     Object.defineProperty(object, backupName, descriptor);
   }
-
-  const {enumerable, writable} = descriptor || {};
-  Object.defineProperty(object, name, {
-    configurable: true,
-    enumerable: enumerable !== false,
-    get() {
-      return (object[name] = getValue());
-    },
-    set(value) {
-      Object.defineProperty(object, name, {
-        configurable: true,
-        enumerable: enumerable !== false,
-        writable: writable !== false,
-        value,
-      });
-    }
+  defineLazyObjectProperty(object, name, {
+    get: getNewValue,
+    enumerable: descriptor ? descriptor.enumerable !== false : true,
+    writable: descriptor ? descriptor.writable !== false : true,
   });
 }
 
@@ -211,7 +200,7 @@ function setUpCollections(): void {
 function setUpDevTools(): void {
   if (__DEV__) {
     // not when debugging in chrome
-    if (!window.document && require('Platform').OS === 'ios') {
+    if (!window.document) {
       const setupDevtools = require('setupDevtools');
       setupDevtools();
     }

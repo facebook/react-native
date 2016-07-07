@@ -12,9 +12,9 @@
 'use strict';
 
 var Image = require('Image');
-var NativeMethodsMixin = require('NativeMethodsMixin');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 var Platform = require('Platform');
-var PropTypes = require('ReactPropTypes');
+var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
@@ -184,7 +184,7 @@ var Slider = React.createClass({
     props.onSlidingComplete = onSlidingComplete && ((event: Event) => {
       onSlidingComplete && onSlidingComplete(event.nativeEvent.value);
     });
-    thumbImage=resolveAssetSource(thumbImage);
+	thumbImage=resolveAssetSource(thumbImage);
     return <RCTSlider
       {...props}
       thumbImage={thumbImage}

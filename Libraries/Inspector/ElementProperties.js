@@ -12,7 +12,7 @@
 'use strict';
 
 var BoxInspector = require('BoxInspector');
-var PropTypes = require('ReactPropTypes');
+var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
 var StyleInspector = require('StyleInspector');
 var StyleSheet = require('StyleSheet');

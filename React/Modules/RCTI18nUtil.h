@@ -18,8 +18,8 @@
 @interface RCTI18nUtil : NSObject
 
 - (BOOL)isRTL;
-- (BOOL)forceRTL;
-- (void)setForceRTL:(BOOL)value;
+- (BOOL)allowRTL;
+- (void)setAllowRTL:(BOOL)value;
 + (id)sharedInstance;
 
 @end

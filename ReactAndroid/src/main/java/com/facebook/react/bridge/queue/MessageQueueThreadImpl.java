@@ -13,6 +13,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import android.os.Looper;
+import android.os.Process;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -148,12 +149,14 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
         new MessageQueueThreadImpl(name, mainLooper, exceptionHandler);
 
     if (UiThreadUtil.isOnUiThread()) {
+      Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
       MessageQueueThreadRegistry.register(mqt);
     } else {
       UiThreadUtil.runOnUiThread(
           new Runnable() {
             @Override
             public void run() {
+              Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
               MessageQueueThreadRegistry.register(mqt);
             }
           });

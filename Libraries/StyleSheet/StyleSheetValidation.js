@@ -12,7 +12,7 @@
 'use strict';
 
 var ImageStylePropTypes = require('ImageStylePropTypes');
-var ReactPropTypeLocations = require('ReactPropTypeLocations');
+var ReactPropTypeLocations = require('react/lib/ReactPropTypeLocations');
 var TextStylePropTypes = require('TextStylePropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 

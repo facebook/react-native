@@ -38,7 +38,7 @@ const NavigationHeaderTitle = require('NavigationHeaderTitle');
 const NavigationHeaderBackButton = require('NavigationHeaderBackButton');
 const NavigationPropTypes = require('NavigationPropTypes');
 const NavigationHeaderStyleInterpolator = require('NavigationHeaderStyleInterpolator');
-const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
+const ReactComponentWithPureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
 
 const {
   Animated,
@@ -85,8 +85,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
   static defaultProps = {
 
     renderTitleComponent: (props: SubViewProps) => {
-      const {navigationState} = props;
-      const title = String(navigationState.title || '');
+      const title = String(props.scene.route.title || '');
       return <NavigationHeaderTitle>{title}</NavigationHeaderTitle>;
     },
 
