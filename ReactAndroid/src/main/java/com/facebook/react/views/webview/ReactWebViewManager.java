@@ -107,7 +107,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           webView,
           new TopLoadingStartEvent(
               webView.getId(),
-              SystemClock.nanoTime(),
+              SystemClock.elapsedRealtime(),
               createWebViewEvent(webView, url)));
     }
 
@@ -130,7 +130,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
       dispatchEvent(
           webView,
-          new TopLoadingErrorEvent(webView.getId(), SystemClock.nanoTime(), eventData));
+          new TopLoadingErrorEvent(webView.getId(), SystemClock.elapsedRealtime(), eventData));
     }
 
     @Override
@@ -141,7 +141,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           webView,
           new TopLoadingStartEvent(
               webView.getId(),
-              SystemClock.nanoTime(),
+              SystemClock.elapsedRealtime(),
               createWebViewEvent(webView, url)));
     }
 
@@ -150,7 +150,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           webView,
           new TopLoadingFinishEvent(
               webView.getId(),
-              SystemClock.nanoTime(),
+              SystemClock.elapsedRealtime(),
               createWebViewEvent(webView, url)));
     }
 
