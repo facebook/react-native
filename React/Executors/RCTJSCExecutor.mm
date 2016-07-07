@@ -318,6 +318,11 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   return _context;
 }
 
+- (JSContext *)underlyingJSContext
+{
+  return self.context.context;
+}
+
 - (void)addSynchronousHookWithName:(NSString *)name usingBlock:(id)block
 {
   __weak RCTJSCExecutor *weakSelf = self;
