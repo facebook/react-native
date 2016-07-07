@@ -297,8 +297,8 @@ void CatalystInstanceImpl::callJSFunction(
   // strings otherwise.  Eventually, we'll probably want to modify the stack
   // from the JS proxy through here to use strings, too.
   instance_->callJSFunction(token->getExecutorToken(nullptr),
-                            module,
-                            method,
+                            std::move(module),
+                            std::move(method),
                             std::move(arguments->array));
 }
 
