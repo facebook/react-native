@@ -102,10 +102,11 @@ public abstract class ReactActivity extends Activity
         Toast.makeText(this, REDBOX_PERMISSION_MESSAGE, Toast.LENGTH_LONG).show();
       }
     }
-
+    
+    mReactInstanceManager = getReactNativeHost().createReactInstanceManager();
     mReactRootView = createRootView();
     mReactRootView.startReactApplication(
-      getReactNativeHost().getReactInstanceManager(),
+      mReactInstanceManager,
       getMainComponentName(),
       getLaunchOptions());
     setContentView(mReactRootView);
@@ -115,19 +116,15 @@ public abstract class ReactActivity extends Activity
   @Override
   protected void onPause() {
     super.onPause();
-
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager().onHostPause();
-    }
+    
+    mReactInstanceManager.onHostPause();
   }
 
   @Override
   protected void onResume() {
     super.onResume();
-
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager().onHostResume(this, this);
-    }
+    
+    mReactInstanceManager.onHostResume(this, this);
   }
 
   @Override
@@ -138,26 +135,22 @@ public abstract class ReactActivity extends Activity
       mReactRootView.unmountReactApplication();
       mReactRootView = null;
     }
-    getReactNativeHost().clear();
   }
 
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager()
-        .onActivityResult(requestCode, resultCode, data);
-    }
+    mReactInstanceManager.onActivityResult(requestCode, resultCode, data);
   }
 
   @Override
   public boolean onKeyUp(int keyCode, KeyEvent event) {
-    if (getReactNativeHost().hasInstance() && getUseDeveloperSupport()) {
+    if (getUseDeveloperSupport()) {
       if (keyCode == KeyEvent.KEYCODE_MENU) {
-        getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
+        mReactInstanceManager.showDevOptionsDialog();
         return true;
       }
       if (mDoubleTapReloadRecognizer.didDoubleTapR(keyCode, getCurrentFocus())) {
-        getReactNativeHost().getReactInstanceManager().getDevSupportManager().handleReloadJS();
+        mReactInstanceManager.getDevSupportManager().handleReloadJS();
       }
     }
     return super.onKeyUp(keyCode, event);
@@ -165,11 +158,7 @@ public abstract class ReactActivity extends Activity
 
   @Override
   public void onBackPressed() {
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager().onBackPressed();
-    } else {
-      super.onBackPressed();
-    }
+    mReactInstanceManager.onBackPressed();
   }
 
   @Override
@@ -179,11 +168,7 @@ public abstract class ReactActivity extends Activity
 
   @Override
   public void onNewIntent(Intent intent) {
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager().onNewIntent(intent);
-    } else {
-      super.onNewIntent(intent);
-    }
+    mReactInstanceManager.onNewIntent(intent);
   }
 
   @Override
