@@ -363,16 +363,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
     // Synchronous hooks:
     JSContext *context = strongSelf.context.context;
-    context[@"noop"] = ^{};
-
-    context[@"nativeLoggingHook"] = ^(NSString *message, NSNumber *logLevel) {
-      RCTLogLevel level = RCTLogLevelInfo;
-      if (logLevel) {
-        level = MAX(level, (RCTLogLevel)logLevel.integerValue);
-      }
-
-      _RCTLogJavaScriptInternal(level, message);
-    };
+    [[self class] installSynchronousHooksOnContext:context];
 
     context[@"nativeRequireModuleConfig"] = ^NSString *(NSString *moduleName) {
       RCTJSCExecutor *strongSelf2 = weakSelf;
@@ -398,16 +389,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call", nil);
     };
 
-    context[@"nativePerformanceNow"] = ^{
-      return @(CACurrentMediaTime() * 1000);
-    };
-
 #if RCT_PROFILE
-    if (RCTProfileIsProfiling()) {
-      // Cheating, since it's not a "hook", but meh
-      context[@"__RCTProfileIsProfiling"] = @YES;
-    }
-
     context[@"nativeTraceBeginAsyncSection"] = ^(uint64_t tag, NSString *name, NSUInteger cookie) {
       RCTJSCExecutor *strongSelf2 = weakSelf;
       if (!strongSelf2) {
@@ -425,19 +407,6 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       NSUInteger newCookie = (NSUInteger)CFDictionaryGetValue(strongSelf2->_cookieMap, (const void *)cookie);
       RCTProfileEndAsyncEvent(tag, @"js,async", newCookie, name, @"JS async", nil);
       CFDictionaryRemoveValue(strongSelf2->_cookieMap, (const void *)cookie);
-    };
-
-    context[@"nativeTraceBeginSection"] = ^(NSNumber *tag, NSString *profileName, NSDictionary *args) {
-      static int profileCounter = 1;
-      if (!profileName) {
-        profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
-      }
-
-      RCT_PROFILE_BEGIN_EVENT(tag.longLongValue, profileName, args);
-    };
-
-    context[@"nativeTraceEndSection"] = ^(NSNumber *tag) {
-      RCT_PROFILE_END_EVENT(tag.longLongValue, @"console", nil);
     };
 
     context[@"nativeTraceBeginAsyncFlow"] = ^(__unused uint64_t tag, __unused NSString *name, int64_t cookie) {
@@ -479,6 +448,39 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     };
 #endif
   }];
+}
+
++ (void)installSynchronousHooksOnContext:(JSContext *)context
+{
+  context[@"noop"] = ^{};
+  context[@"nativeLoggingHook"] = ^(NSString *message, NSNumber *logLevel) {
+    RCTLogLevel level = RCTLogLevelInfo;
+    if (logLevel) {
+      level = MAX(level, (RCTLogLevel)logLevel.integerValue);
+    }
+
+    _RCTLogJavaScriptInternal(level, message);
+  };
+  context[@"nativePerformanceNow"] = ^{
+    return @(CACurrentMediaTime() * 1000);
+  };
+#if RCT_PROFILE
+  if (RCTProfileIsProfiling()) {
+    // Cheating, since it's not a "hook", but meh
+    context[@"__RCTProfileIsProfiling"] = @YES;
+  }
+  context[@"nativeTraceBeginSection"] = ^(NSNumber *tag, NSString *profileName, NSDictionary *args) {
+    static int profileCounter = 1;
+    if (!profileName) {
+      profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
+    }
+
+    RCT_PROFILE_BEGIN_EVENT(tag.longLongValue, profileName, args);
+  };
+  context[@"nativeTraceEndSection"] = ^(NSNumber *tag) {
+    RCT_PROFILE_END_EVENT(tag.longLongValue, @"console", nil);
+  };
+#endif
 }
 
 - (void)toggleProfilingFlag:(NSNotification *)notification
