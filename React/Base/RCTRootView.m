@@ -340,7 +340,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
 {
   [super insertReactSubview:subview atIndex:atIndex];
-  RCTPerformanceLoggerEnd(RCTPLTTI);
+  [_bridge->_performanceLogger markStopForTag:RCTPLTTI];
   dispatch_async(dispatch_get_main_queue(), ^{
     if (!_contentHasAppeared) {
       _contentHasAppeared = YES;

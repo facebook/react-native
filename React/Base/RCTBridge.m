@@ -110,26 +110,36 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
 - (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
                    launchOptions:(NSDictionary *)launchOptions
 {
-  if ((self = [super init])) {
-    RCTPerformanceLoggerStart(RCTPLBridgeStartup);
-    RCTPerformanceLoggerStart(RCTPLTTI);
-
-    _delegate = delegate;
-    _launchOptions = [launchOptions copy];
-    [self setUp];
-    RCTExecuteOnMainQueue(^{ [self bindKeys]; });
-  }
-  return self;
+  return [self initWithDelegate:delegate
+                      bundleURL:nil
+                 moduleProvider:nil
+                  launchOptions:launchOptions];
 }
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                    moduleProvider:(RCTBridgeModuleProviderBlock)block
                     launchOptions:(NSDictionary *)launchOptions
 {
-  if ((self = [super init])) {
-    RCTPerformanceLoggerStart(RCTPLBridgeStartup);
-    RCTPerformanceLoggerStart(RCTPLTTI);
+  return [self initWithDelegate:nil
+                      bundleURL:bundleURL
+                 moduleProvider:block
+                  launchOptions:launchOptions];
+}
 
+/**
+ * Private designated initializer
+ */
+- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
+                       bundleURL:(NSURL *)bundleURL
+                  moduleProvider:(RCTBridgeModuleProviderBlock)block
+                   launchOptions:(NSDictionary *)launchOptions
+{
+  if ((self = [super init])) {
+    _performanceLogger = [RCTPerformanceLogger new];
+    [_performanceLogger markStartForTag:RCTPLBridgeStartup];
+    [_performanceLogger markStartForTag:RCTPLTTI];
+
+    _delegate = delegate;
     _bundleURL = bundleURL;
     _moduleProvider = block;
     _launchOptions = [launchOptions copy];
