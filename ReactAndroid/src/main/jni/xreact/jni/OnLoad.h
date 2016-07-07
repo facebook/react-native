@@ -10,6 +10,5 @@ namespace facebook {
 namespace react {
 
 jmethodID getLogMarkerMethod();
-std::string getApplicationCacheDir();
 } // namespace react
 } // namespace facebook

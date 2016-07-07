@@ -412,12 +412,9 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   }
 
   private void recreateReactContextInBackgroundFromBundleFile() {
-    boolean useLazyBundle = mJSCConfig.getConfigMap().hasKey("useLazyBundle") ?
-      mJSCConfig.getConfigMap().getBoolean("useLazyBundle") : false;
-
     recreateReactContextInBackground(
         new JSCJavaScriptExecutor.Factory(mJSCConfig.getConfigMap()),
-        JSBundleLoader.createFileLoader(mApplicationContext, mJSBundleFile, useLazyBundle));
+        JSBundleLoader.createFileLoader(mApplicationContext, mJSBundleFile));
   }
 
   /**
