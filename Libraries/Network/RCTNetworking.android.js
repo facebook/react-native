@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule RCTNetworking
+ * @flow
  */
 'use strict';
 
@@ -27,7 +28,7 @@ function convertHeadersMapToArray(headers: Object): Array<Header> {
 }
 
 let _requestId = 1;
-function generateRequestId() {
+function generateRequestId(): number {
   return _requestId++;
 }
 
@@ -41,11 +42,21 @@ class RCTNetworking extends NativeEventEmitter {
     super(RCTNetworkingNative);
   }
 
-  sendRequest(method, url, headers, data, incrementalUpdates, timeout, callback) {
+  sendRequest(
+    method: string,
+    url: string,
+    headers: Object,
+    data: string | FormData | {uri: string},
+    responseType: 'text' | 'base64',
+    incrementalUpdates: boolean,
+    timeout: number,
+    callback: (requestId: number) => any
+  ) {
+    let body = data;
     if (typeof data === 'string') {
-      data = {string: data};
+      body = {string: body};
     } else if (data instanceof FormData) {
-      data = {
+      body = {
         formData: data.getParts().map((part) => {
           part.headers = convertHeadersMapToArray(part.headers);
           return part;
@@ -58,7 +69,8 @@ class RCTNetworking extends NativeEventEmitter {
       url,
       requestId,
       convertHeadersMapToArray(headers),
-      data,
+      body,
+      responseType,
       incrementalUpdates,
       timeout
     );

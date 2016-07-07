@@ -10,18 +10,22 @@
 'use strict';
 
 jest
-	.disableAutomock()
-	.dontMock('event-target-shim')
-	.setMock('NativeModules', {
+  .disableAutomock()
+  .dontMock('event-target-shim')
+  .setMock('NativeModules', {
     Networking: {
-      addListener: function(){},
-      removeListeners: function(){},
+      addListener: function() {},
+      removeListeners: function() {},
+      sendRequest: (options, callback) => {
+        callback(1);
+      },
+      abortRequest: function() {},
     }
   });
 
 const XMLHttpRequest = require('XMLHttpRequest');
 
-describe('XMLHttpRequest', function(){
+describe('XMLHttpRequest', function() {
 	var xhr;
 	var handleTimeout;
 	var handleError;
@@ -45,8 +49,6 @@ describe('XMLHttpRequest', function(){
 		xhr.addEventListener('error', handleError);
 		xhr.addEventListener('load', handleLoad);
 		xhr.addEventListener('readystatechange', handleReadyStateChange);
-
-		xhr.__didCreateRequest(1);
 	});
 
 	afterEach(() => {
@@ -57,8 +59,7 @@ describe('XMLHttpRequest', function(){
 	});
 
 	it('should transition readyState correctly', function() {
-
-	  expect(xhr.readyState).toBe(xhr.UNSENT);
+		expect(xhr.readyState).toBe(xhr.UNSENT);
 
 		xhr.open('GET', 'blabla');
 
@@ -78,7 +79,8 @@ describe('XMLHttpRequest', function(){
 		expect(xhr.responseType).toBe('arraybuffer');
 
 		// Can't change responseType after first data has been received.
-		xhr.__didReceiveData(1, 'Some data');
+		xhr.open('GET', 'blabla');
+		xhr.send();
 		expect(() => { xhr.responseType = 'text'; }).toThrow();
 	});
 
@@ -100,11 +102,16 @@ describe('XMLHttpRequest', function(){
 		expect(xhr.responseText).toBe('');
 		expect(xhr.response).toBe('');
 
+		xhr.open('GET', 'blabla');
+		xhr.send();
 		xhr.__didReceiveData(1, 'Some data');
 		expect(xhr.responseText).toBe('Some data');
 	});
 
-	it('should call ontimeout function when the request times out', function(){
+	it('should call ontimeout function when the request times out', function() {
+		xhr.open('GET', 'blabla');
+		xhr.send();
+		xhr.__didCompleteResponse(1, 'Timeout', true);
 		xhr.__didCompleteResponse(1, 'Timeout', true);
 
 		expect(xhr.readyState).toBe(xhr.DONE);
@@ -118,39 +125,46 @@ describe('XMLHttpRequest', function(){
 		expect(handleLoad).not.toBeCalled();
 	});
 
-	it('should call onerror function when the request times out', function(){
+	it('should call onerror function when the request times out', function() {
+		xhr.open('GET', 'blabla');
+		xhr.send();
 		xhr.__didCompleteResponse(1, 'Generic error');
 
 		expect(xhr.readyState).toBe(xhr.DONE);
 
-		expect(xhr.onreadystatechange.mock.calls.length).toBe(1);
+		expect(xhr.onreadystatechange.mock.calls.length).toBe(2);
 		expect(xhr.onerror.mock.calls.length).toBe(1);
 		expect(xhr.ontimeout).not.toBeCalled();
 		expect(xhr.onload).not.toBeCalled();
 
-		expect(handleReadyStateChange.mock.calls.length).toBe(1);
+		expect(handleReadyStateChange.mock.calls.length).toBe(2);
 		expect(handleError.mock.calls.length).toBe(1);
 		expect(handleTimeout).not.toBeCalled();
 		expect(handleLoad).not.toBeCalled();
 	});
 
-	it('should call onload function when there is no error', function(){
+	it('should call onload function when there is no error', function() {
+		xhr.open('GET', 'blabla');
+		xhr.send();
 		xhr.__didCompleteResponse(1, null);
 
 		expect(xhr.readyState).toBe(xhr.DONE);
 
-		expect(xhr.onreadystatechange.mock.calls.length).toBe(1);
+		expect(xhr.onreadystatechange.mock.calls.length).toBe(2);
 		expect(xhr.onload.mock.calls.length).toBe(1);
 		expect(xhr.onerror).not.toBeCalled();
 		expect(xhr.ontimeout).not.toBeCalled();
 
-		expect(handleReadyStateChange.mock.calls.length).toBe(1);
+		expect(handleReadyStateChange.mock.calls.length).toBe(2);
 		expect(handleLoad.mock.calls.length).toBe(1);
 		expect(handleError).not.toBeCalled();
 		expect(handleTimeout).not.toBeCalled();
 	});
 
 	it('should call onload function when there is no error', function() {
+		xhr.open('GET', 'blabla');
+		xhr.send();
+
 		xhr.upload.onprogress = jest.fn();
 		var handleProgress = jest.fn();
 		xhr.upload.addEventListener('progress', handleProgress);
