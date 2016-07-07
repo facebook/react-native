@@ -747,18 +747,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (void)_immediatelyCallTimer:(NSNumber *)timer
 {
   RCTAssertJSThread();
-
-  dispatch_block_t block = ^{
+  [_javaScriptExecutor executeAsyncBlockOnJavaScriptQueue:^{
     [self _actuallyInvokeAndProcessModule:@"JSTimersExecution"
                                    method:@"callTimers"
                                 arguments:@[@[timer]]];
-  };
-
-  if ([_javaScriptExecutor respondsToSelector:@selector(executeAsyncBlockOnJavaScriptQueue:)]) {
-    [_javaScriptExecutor executeAsyncBlockOnJavaScriptQueue:block];
-  } else {
-    [_javaScriptExecutor executeBlockOnJavaScriptQueue:block];
-  }
+  }];
 }
 
 - (void)enqueueApplicationScript:(NSData *)script
