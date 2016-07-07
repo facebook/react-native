@@ -13,6 +13,7 @@
 #import <memory>
 #import <pthread.h>
 #import <string>
+#import <unordered_map>
 
 #import <UIKit/UIDevice.h>
 
@@ -62,6 +63,16 @@ struct RandomAccessBundleStartupCode {
     return !code;
   }
 };
+
+#if RCT_PROFILE
+@interface RCTCookieMap : NSObject
+{
+  @package
+  std::unordered_map<NSUInteger, NSUInteger> _cookieMap;
+}
+@end
+@implementation RCTCookieMap @end
+#endif
 
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
 
@@ -129,7 +140,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 {
   RCTJavaScriptContext *_context;
   NSThread *_javaScriptThread;
-  CFMutableDictionaryRef _cookieMap;
 
   RandomAccessBundleData _randomAccessBundle;
   JSValueRef _batchedBridgeRef;
@@ -327,7 +337,6 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 {
   __weak RCTJSCExecutor *weakSelf = self;
 
-  _cookieMap = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
   __weak RCTBridge *weakBridge = _bridge;
 #ifndef __clang_analyzer__
   _bridge.flowIDMap = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
@@ -390,25 +399,6 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     };
 
 #if RCT_PROFILE
-    context[@"nativeTraceBeginAsyncSection"] = ^(uint64_t tag, NSString *name, NSUInteger cookie) {
-      RCTJSCExecutor *strongSelf2 = weakSelf;
-      if (!strongSelf2) {
-        return;
-      }
-      NSUInteger newCookie = RCTProfileBeginAsyncEvent(tag, name, nil);
-      CFDictionarySetValue(strongSelf2->_cookieMap, (const void *)cookie, (const void *)newCookie);
-    };
-
-    context[@"nativeTraceEndAsyncSection"] = ^(uint64_t tag, NSString *name, NSUInteger cookie) {
-      RCTJSCExecutor *strongSelf2 = weakSelf;
-      if (!strongSelf2) {
-        return;
-      }
-      NSUInteger newCookie = (NSUInteger)CFDictionaryGetValue(strongSelf2->_cookieMap, (const void *)cookie);
-      RCTProfileEndAsyncEvent(tag, @"js,async", newCookie, name, @"JS async", nil);
-      CFDictionaryRemoveValue(strongSelf2->_cookieMap, (const void *)cookie);
-    };
-
     context[@"nativeTraceBeginAsyncFlow"] = ^(__unused uint64_t tag, __unused NSString *name, int64_t cookie) {
       if (RCTProfileIsProfiling()) {
         [weakBridge.flowIDMapLock lock];
@@ -480,6 +470,20 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   context[@"nativeTraceEndSection"] = ^(NSNumber *tag) {
     RCT_PROFILE_END_EVENT(tag.longLongValue, @"console", nil);
   };
+  RCTCookieMap *cookieMap = [RCTCookieMap new];
+  context[@"nativeTraceBeginAsyncSection"] = ^(uint64_t tag, NSString *name, NSUInteger cookie) {
+    NSUInteger newCookie = RCTProfileBeginAsyncEvent(tag, name, nil);
+    cookieMap->_cookieMap.insert({cookie, newCookie});
+  };
+  context[@"nativeTraceEndAsyncSection"] = ^(uint64_t tag, NSString *name, NSUInteger cookie) {
+    NSUInteger newCookie = 0;
+    const auto &it = cookieMap->_cookieMap.find(cookie);
+    if (it != cookieMap->_cookieMap.end()) {
+      newCookie = it->second;
+      cookieMap->_cookieMap.erase(it);
+    }
+    RCTProfileEndAsyncEvent(tag, @"js,async", newCookie, name, @"JS async", nil);
+  };
 #endif
 }
 
@@ -520,10 +524,6 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   if (_jscWrapper) {
     RCTJSCWrapperRelease(_jscWrapper);
     _jscWrapper = NULL;
-  }
-
-  if (_cookieMap) {
-    CFRelease(_cookieMap);
   }
 }
 
