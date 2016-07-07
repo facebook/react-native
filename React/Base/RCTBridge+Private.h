@@ -10,8 +10,13 @@
 #import "RCTBridge.h"
 
 @class RCTModuleData;
+@class RCTPerformanceLogger;
 
 @interface RCTBridge ()
+{
+@public
+  RCTPerformanceLogger *_performanceLogger;
+}
 
 // Used for the profiler flow events between JS and native
 @property (nonatomic, assign) int64_t flowID;

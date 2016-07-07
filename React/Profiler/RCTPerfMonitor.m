@@ -510,8 +510,9 @@ RCT_EXPORT_MODULE()
 {
   NSUInteger i = 0;
   NSMutableArray<NSString *> *data = [NSMutableArray new];
-  NSArray<NSNumber *> *values = RCTPerformanceLoggerOutput();
-  for (NSString *label in RCTPerformanceLoggerLabels()) {
+  RCTPerformanceLogger *performanceLogger = [_bridge performanceLogger];
+  NSArray<NSNumber *> *values = [performanceLogger valuesForTags];
+  for (NSString *label in [performanceLogger labelsForTags]) {
     long long value = values[i+1].longLongValue - values[i].longLongValue;
     NSString *unit = @"ms";
     if ([label hasSuffix:@"Size"]) {

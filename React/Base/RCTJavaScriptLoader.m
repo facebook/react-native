@@ -35,7 +35,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     NSError *error = [NSError errorWithDomain:@"JavaScriptLoader" code:1 userInfo:@{
       NSLocalizedDescriptionKey: errorDescription
     }];
-    onComplete(error, nil);
+    onComplete(error, nil, 0);
     return;
   }
 
@@ -51,14 +51,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       // modules into JSC as they're required.
       FILE *bundle = fopen(scriptURL.path.UTF8String, "r");
       if (!bundle) {
-        onComplete(RCTErrorWithMessage([NSString stringWithFormat:@"Error opening bundle %@", scriptURL.path]), source);
+        onComplete(RCTErrorWithMessage([NSString stringWithFormat:@"Error opening bundle %@", scriptURL.path]), source, 0);
         return;
       }
 
       uint32_t magicNumber;
       if (fread(&magicNumber, sizeof(magicNumber), 1, bundle) != 1) {
         fclose(bundle);
-        onComplete(RCTErrorWithMessage(@"Error reading bundle"), source);
+        onComplete(RCTErrorWithMessage(@"Error reading bundle"), source, 0);
         return;
       }
 
@@ -81,9 +81,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
         sourceLength = source.length;
       }
 
-      RCTPerformanceLoggerSet(RCTPLBundleSize, sourceLength);
       fclose(bundle);
-      onComplete(error, source);
+      onComplete(error, source, sourceLength);
     });
     return;
   }
@@ -105,7 +104,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                     code:error.code
                                 userInfo:userInfo];
       }
-      onComplete(error, nil);
+      onComplete(error, nil, 0);
       return;
     }
 
@@ -143,11 +142,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                   code:((NSHTTPURLResponse *)response).statusCode
                               userInfo:userInfo];
 
-      onComplete(error, nil);
+      onComplete(error, nil, 0);
       return;
     }
-    RCTPerformanceLoggerSet(RCTPLBundleSize, data.length);
-    onComplete(nil, data);
+    onComplete(nil, data, data.length);
   }];
 
   [task resume];

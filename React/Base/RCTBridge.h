@@ -18,6 +18,7 @@
 
 @class RCTBridge;
 @class RCTEventDispatcher;
+@class RCTPerformanceLogger;
 
 /**
  * This notification triggers a reload of all bridges currently running.
@@ -159,6 +160,11 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * Use this to check if the bridge has been invalidated.
  */
 @property (nonatomic, readonly, getter=isValid) BOOL valid;
+
+/**
+ * Link to the Performance Logger that logs React Native perf events.
+ */
+@property (nonatomic, readonly, strong) RCTPerformanceLogger *performanceLogger;
 
 /**
  * Reload the bundle and reset executor & modules. Safe to call from any thread.

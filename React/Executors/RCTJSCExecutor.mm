@@ -136,6 +136,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
   RCTJSCWrapper *_jscWrapper;
   BOOL _useCustomJSCLibrary;
+
+  RCTPerformanceLogger *_performanceLogger;
 }
 
 @synthesize valid = _valid;
@@ -263,6 +265,12 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   }
 }
 
+- (void)setBridge:(RCTBridge *)bridge
+{
+  _bridge = bridge;
+  _performanceLogger = [bridge performanceLogger];
+}
+
 - (instancetype)init
 {
   return [self initWithUseCustomJSCLibrary:NO];
@@ -328,7 +336,9 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return;
     }
 
+    [strongSelf->_performanceLogger markStartForTag:RCTPLJSCWrapperOpenLibrary];
     strongSelf->_jscWrapper = RCTJSCWrapperCreate(strongSelf->_useCustomJSCLibrary);
+    [strongSelf->_performanceLogger markStopForTag:RCTPLJSCWrapperOpenLibrary];
   }];
 
 
@@ -660,14 +670,13 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   }
 
   __weak RCTJSCExecutor *weakSelf = self;
-
   [self executeBlockOnJavaScriptQueue:RCTProfileBlock((^{
     RCTJSCExecutor *strongSelf = weakSelf;
     if (!strongSelf || !strongSelf.isValid) {
       return;
     }
 
-    RCTPerformanceLoggerStart(RCTPLScriptExecution);
+    [strongSelf->_performanceLogger markStartForTag:RCTPLScriptExecution];
 
     JSValueRef jsError = NULL;
     RCTJSCWrapper *jscWrapper = strongSelf->_jscWrapper;
@@ -676,7 +685,8 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     JSValueRef result = jscWrapper->JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, bundleURL, 0, &jsError);
     jscWrapper->JSStringRelease(bundleURL);
     jscWrapper->JSStringRelease(execJSString);
-    RCTPerformanceLoggerEnd(RCTPLScriptExecution);
+
+    [strongSelf->_performanceLogger markStopForTag:RCTPLScriptExecution];
 
     if (onComplete) {
       NSError *error;
@@ -783,9 +793,9 @@ static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleI
 
 - (void)registerNativeRequire
 {
-  RCTPerformanceLoggerSet(RCTPLRAMNativeRequires, 0);
-  RCTPerformanceLoggerSet(RCTPLRAMNativeRequiresCount, 0);
-  RCTPerformanceLoggerSet(RCTPLRAMNativeRequiresSize, 0);
+  [_performanceLogger setValue:0 forTag:RCTPLRAMNativeRequires];
+  [_performanceLogger setValue:0 forTag:RCTPLRAMNativeRequiresCount];
+  [_performanceLogger setValue:0 forTag:RCTPLRAMNativeRequiresSize];
 
   __weak RCTJSCExecutor *weakSelf = self;
   [self addSynchronousHookWithName:@"nativeRequire" usingBlock:^(NSNumber *moduleID) {
@@ -794,8 +804,8 @@ static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleI
       return;
     }
 
-    RCTPerformanceLoggerAdd(RCTPLRAMNativeRequiresCount, 1);
-    RCTPerformanceLoggerAppendStart(RCTPLRAMNativeRequires);
+    [strongSelf->_performanceLogger addValue:1 forTag:RCTPLRAMNativeRequiresCount];
+    [strongSelf->_performanceLogger appendStartForTag:RCTPLRAMNativeRequires];
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
                             [@"nativeRequire_" stringByAppendingFormat:@"%@", moduleID], nil);
 
@@ -810,12 +820,12 @@ static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleI
         return;
       }
 
-      RCTPerformanceLoggerAdd(RCTPLRAMNativeRequiresSize, size);
+      [strongSelf->_performanceLogger addValue:size forTag:RCTPLRAMNativeRequiresSize];
       executeRandomAccessModule(strongSelf, ID, NSSwapLittleIntToHost(moduleData->offset), size);
     }
 
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call", nil);
-    RCTPerformanceLoggerAppendEnd(RCTPLRAMNativeRequires);
+    [strongSelf->_performanceLogger appendStopForTag:RCTPLRAMNativeRequires];
   }];
 }
 
@@ -858,7 +868,7 @@ static RandomAccessBundleStartupCode readRAMBundle(file_ptr bundle, RandomAccess
 
 - (NSData *)loadRAMBundle:(NSURL *)sourceURL error:(NSError **)error
 {
-  RCTPerformanceLoggerStart(RCTPLRAMBundleLoad);
+  [_performanceLogger markStartForTag:RCTPLRAMBundleLoad];
   file_ptr bundle(fopen(sourceURL.path.UTF8String, "r"), fclose);
   if (!bundle) {
     if (error) {
@@ -878,8 +888,8 @@ static RandomAccessBundleStartupCode readRAMBundle(file_ptr bundle, RandomAccess
     return nil;
   }
 
-  RCTPerformanceLoggerEnd(RCTPLRAMBundleLoad);
-  RCTPerformanceLoggerSet(RCTPLRAMStartupCodeSize, startupCode.size);
+  [_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
+  [_performanceLogger setValue:startupCode.size forTag:RCTPLRAMStartupCodeSize];
   return [NSData dataWithBytesNoCopy:startupCode.code.release() length:startupCode.size freeWhenDone:YES];
 }
 
