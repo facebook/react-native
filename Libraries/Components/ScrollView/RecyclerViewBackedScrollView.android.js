@@ -113,6 +113,18 @@ var RecyclerViewBackedScrollView = React.createClass({
       );
     });
 
+    const refreshControl = this.props.refreshControl;
+    if (refreshControl) {
+      // Wrap the NativeAndroidRecyclerView with a AndroidSwipeRefreshLayout.
+      return React.cloneElement(
+        refreshControl,
+        {style: props.style},
+        <NativeAndroidRecyclerView {...props}>
+          {wrappedChildren}
+        </NativeAndroidRecyclerView>
+      );
+    }
+
     return (
       <NativeAndroidRecyclerView {...props}>
         {wrappedChildren}
