@@ -7,7 +7,7 @@
  */
 
 // NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<0c8bd7e17fc12884003809cf282b0988>>
+// @generated SignedSource<<484d0d17453521463896ce24d946412b>>
 
 
 #include <assert.h>
@@ -1786,17 +1786,28 @@ void layoutNode(css_node_t* node, float availableWidth, float availableHeight, c
   // parameters don't change.
   gCurrentGenerationCount++;
 
-  // If the caller didn't specify a height/width, use the dimensions
-  // specified in the style.
-  if (isUndefined(availableWidth) && isStyleDimDefined(node, CSS_FLEX_DIRECTION_ROW)) {
-    availableWidth = node->style.dimensions[CSS_WIDTH] + getMarginAxis(node, CSS_FLEX_DIRECTION_ROW);
-  }
-  if (isUndefined(availableHeight) && isStyleDimDefined(node, CSS_FLEX_DIRECTION_COLUMN)) {
-    availableHeight = node->style.dimensions[CSS_HEIGHT] + getMarginAxis(node, CSS_FLEX_DIRECTION_COLUMN);
+  css_measure_mode_t widthMeasureMode = CSS_MEASURE_MODE_UNDEFINED;
+  css_measure_mode_t heightMeasureMode = CSS_MEASURE_MODE_UNDEFINED;
+
+  if (!isUndefined(availableWidth)) {
+    widthMeasureMode = CSS_MEASURE_MODE_EXACTLY;
+  } else if (isStyleDimDefined(node, CSS_FLEX_DIRECTION_ROW)) {
+    availableWidth = node->style.dimensions[dim[CSS_FLEX_DIRECTION_ROW]] + getMarginAxis(node, CSS_FLEX_DIRECTION_ROW);
+    widthMeasureMode = CSS_MEASURE_MODE_EXACTLY;
+  } else if (node->style.maxDimensions[CSS_WIDTH] >= 0.0) {
+    availableWidth = node->style.maxDimensions[CSS_WIDTH];
+    widthMeasureMode = CSS_MEASURE_MODE_AT_MOST;
   }
 
-  css_measure_mode_t widthMeasureMode = isUndefined(availableWidth) ? CSS_MEASURE_MODE_UNDEFINED : CSS_MEASURE_MODE_EXACTLY;
-  css_measure_mode_t heightMeasureMode = isUndefined(availableHeight) ? CSS_MEASURE_MODE_UNDEFINED : CSS_MEASURE_MODE_EXACTLY;
+  if (!isUndefined(availableHeight)) {
+    heightMeasureMode = CSS_MEASURE_MODE_EXACTLY;
+  } else if (isStyleDimDefined(node, CSS_FLEX_DIRECTION_COLUMN)) {
+    availableHeight = node->style.dimensions[dim[CSS_FLEX_DIRECTION_COLUMN]] + getMarginAxis(node, CSS_FLEX_DIRECTION_COLUMN);
+    heightMeasureMode = CSS_MEASURE_MODE_EXACTLY;
+  } else if (node->style.maxDimensions[CSS_HEIGHT] >= 0.0) {
+    availableHeight = node->style.maxDimensions[CSS_HEIGHT];
+    heightMeasureMode = CSS_MEASURE_MODE_AT_MOST;
+  }
 
   if (layoutNodeInternal(node, availableWidth, availableHeight, parentDirection, widthMeasureMode, heightMeasureMode, true, "initial")) {
 
