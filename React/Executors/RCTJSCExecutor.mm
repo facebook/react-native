@@ -77,7 +77,6 @@ struct RandomAccessBundleStartupCode {
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
 
 @property (nonatomic, strong, readonly) JSContext *context;
-@property (nonatomic, assign, readonly) JSGlobalContextRef ctx;
 
 - (instancetype)initWithJSContext:(JSContext *)context
                          onThread:(NSThread *)javaScriptThread NS_DESIGNATED_INITIALIZER;
