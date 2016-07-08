@@ -489,11 +489,12 @@ var Navigator = React.createClass({
       sceneConfigStack: nextRouteStack.map(
         route => this.props.configureScene(route, nextRouteStack)
       ),
-      presentedIndex: destIndex,
+      presentedIndex: destIndex - 1,
       activeGesture: null,
       transitionFromIndex: null,
       transitionQueue: [],
     }, () => {
+      this.state.presentedIndex = destIndex;
       this._handleSpringUpdate();
       this._navBar && this._navBar.immediatelyRefresh();
       this._emitDidFocus(this.state.routeStack[this.state.presentedIndex]);
@@ -1279,8 +1280,7 @@ var Navigator = React.createClass({
     var newRenderedSceneMap = new Map();
     var scenes = this.state.routeStack.map((route, index) => {
       var renderedScene;
-      if (this._renderedSceneMap.has(route) &&
-          index !== this.state.presentedIndex) {
+      if (this._renderedSceneMap.has(route)) {
         renderedScene = this._renderedSceneMap.get(route);
       } else {
         renderedScene = this._renderScene(route, index);
