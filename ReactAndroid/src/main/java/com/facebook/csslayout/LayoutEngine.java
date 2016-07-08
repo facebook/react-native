@@ -7,7 +7,7 @@
  */
 
 // NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<c5a4eadcd6d93bc6d989cba73caa12a7>>
+// @generated SignedSource<<deeb1f1cd05dfd70ce35f67c6eebf277>>
 
 package com.facebook.csslayout;
 
@@ -234,19 +234,30 @@ public class LayoutEngine {
     // parameters don't change.
     layoutContext.currentGenerationCount++;
 
-    // If the caller didn't specify a height/width, use the dimensions
-    // specified in the style.
-    if (Float.isNaN(availableWidth) && node.style.dimensions[DIMENSION_WIDTH] >= 0.0) {
+    CSSMeasureMode widthMeasureMode = CSSMeasureMode.UNDEFINED;
+    CSSMeasureMode heightMeasureMode = CSSMeasureMode.UNDEFINED;
+
+    if (!Float.isNaN(availableWidth)) {
+      widthMeasureMode = CSSMeasureMode.EXACTLY;
+    } else if (node.style.dimensions[DIMENSION_WIDTH] >= 0.0) {
       float marginAxisRow = (node.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW]) + node.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW]));
       availableWidth = node.style.dimensions[DIMENSION_WIDTH] + marginAxisRow;
-    }
-    if (Float.isNaN(availableHeight) && node.style.dimensions[DIMENSION_HEIGHT] >= 0.0) {
-      float marginAxisColumn = (node.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN]) + node.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]));
-      availableHeight = node.style.dimensions[DIMENSION_HEIGHT] + marginAxisColumn;
+      widthMeasureMode = CSSMeasureMode.EXACTLY;
+    } else if (node.style.maxWidth >= 0.0) {
+      availableWidth = node.style.maxWidth;
+      widthMeasureMode = CSSMeasureMode.AT_MOST;
     }
 
-    CSSMeasureMode widthMeasureMode = Float.isNaN(availableWidth) ? CSSMeasureMode.UNDEFINED : CSSMeasureMode.EXACTLY;
-    CSSMeasureMode heightMeasureMode = Float.isNaN(availableHeight) ? CSSMeasureMode.UNDEFINED : CSSMeasureMode.EXACTLY;
+    if (!Float.isNaN(availableHeight)) {
+      heightMeasureMode = CSSMeasureMode.EXACTLY;
+    } else if (node.style.dimensions[DIMENSION_HEIGHT] >= 0.0) {
+      float marginAxisColumn = (node.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN]) + node.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]));
+      availableHeight = node.style.dimensions[DIMENSION_HEIGHT] + marginAxisColumn;
+      heightMeasureMode = CSSMeasureMode.EXACTLY;
+    } else if (node.style.maxHeight >= 0.0) {
+      availableHeight = node.style.maxHeight;
+      heightMeasureMode = CSSMeasureMode.AT_MOST;
+    }
 
     if (layoutNodeInternal(layoutContext, node, availableWidth, availableHeight, parentDirection, widthMeasureMode, heightMeasureMode, true, "initial")) {
       setPosition(node, node.layout.direction);
