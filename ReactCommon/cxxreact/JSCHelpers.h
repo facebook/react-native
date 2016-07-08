@@ -52,5 +52,33 @@ JSValueRef evaluateScript(
 JSValueRef makeJSError(JSContextRef ctx, const char *error);
 
 JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, const char *exceptionLocation);
+JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, JSObjectRef jsFunctionCause);
+
+template<JSValueRef (method)(JSContextRef ctx,
+        JSObjectRef function,
+        JSObjectRef thisObject,
+        size_t argumentCount,
+        const JSValueRef arguments[],
+        JSValueRef *exception)>
+inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
+  struct funcWrapper {
+    static JSValueRef call(
+        JSContextRef ctx,
+        JSObjectRef function,
+        JSObjectRef thisObject,
+        size_t argumentCount,
+        const JSValueRef arguments[],
+        JSValueRef *exception) {
+      try {
+        return (*method)(ctx, function, thisObject, argumentCount, arguments, exception);
+      } catch (...) {
+        *exception = translatePendingCppExceptionToJSError(ctx, function);
+        return JSValueMakeUndefined(ctx);
+      }
+    }
+  };
+
+  return &funcWrapper::call;
+}
 
 } }

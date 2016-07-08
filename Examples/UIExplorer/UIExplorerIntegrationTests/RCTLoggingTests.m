@@ -54,10 +54,10 @@
   _logSem = dispatch_semaphore_create(0);
   RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
     if (source == RCTLogSourceJavaScript) {
-      _lastLogLevel = level;
-      _lastLogSource = source;
-      _lastLogMessage = message;
-      dispatch_semaphore_signal(_logSem);
+      self->_lastLogLevel = level;
+      self->_lastLogSource = source;
+      self->_lastLogMessage = message;
+      dispatch_semaphore_signal(self->_logSem);
     }
   });
 }

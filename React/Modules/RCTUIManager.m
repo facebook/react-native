@@ -271,15 +271,15 @@ RCT_EXPORT_MODULE()
 
   dispatch_async(dispatch_get_main_queue(), ^{
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"UIManager invalidate", nil);
-    for (NSNumber *rootViewTag in _rootViewTags) {
-      [(id<RCTInvalidating>)_viewRegistry[rootViewTag] invalidate];
+    for (NSNumber *rootViewTag in self->_rootViewTags) {
+      [(id<RCTInvalidating>)self->_viewRegistry[rootViewTag] invalidate];
     }
 
-    _rootViewTags = nil;
-    _shadowViewRegistry = nil;
-    _viewRegistry = nil;
-    _bridgeTransactionListeners = nil;
-    _bridge = nil;
+    self->_rootViewTags = nil;
+    self->_shadowViewRegistry = nil;
+    self->_viewRegistry = nil;
+    self->_bridgeTransactionListeners = nil;
+    self->_bridge = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
@@ -386,7 +386,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
   __weak RCTUIManager *weakSelf = self;
   dispatch_async(RCTGetUIManagerQueue(), ^{
     RCTUIManager *strongSelf = weakSelf;
-    if (!_viewRegistry) {
+    if (!self->_viewRegistry) {
       return;
     }
     RCTRootShadowView *shadowView = [RCTRootShadowView new];
@@ -426,7 +426,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
   NSNumber *reactTag = view.reactTag;
   dispatch_async(RCTGetUIManagerQueue(), ^{
-    RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
+    RCTShadowView *shadowView = self->_shadowViewRegistry[reactTag];
     RCTAssert(shadowView != nil, @"Could not locate shadow view with tag #%@", reactTag);
 
     BOOL dirtyLayout = NO;
@@ -459,7 +459,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
   NSNumber *reactTag = view.reactTag;
   dispatch_async(RCTGetUIManagerQueue(), ^{
-    RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
+    RCTShadowView *shadowView = self->_shadowViewRegistry[reactTag];
     RCTAssert(shadowView != nil, @"Could not locate root view with tag #%@", reactTag);
 
     shadowView.intrinsicContentSize = size;
@@ -477,7 +477,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
   __weak RCTUIManager *weakSelf = self;
   dispatch_async(RCTGetUIManagerQueue(), ^{
     RCTUIManager *strongSelf = weakSelf;
-    if (!_viewRegistry) {
+    if (!self->_viewRegistry) {
       return;
     }
     RCTShadowView *shadowView = strongSelf->_shadowViewRegistry[reactTag];
@@ -502,8 +502,8 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
       }
       [registry removeObjectForKey:subview.reactTag];
 
-      if (registry == (NSMutableDictionary<NSNumber *, id<RCTComponent>> *)_viewRegistry) {
-        [_bridgeTransactionListeners removeObject:subview];
+      if (registry == (NSMutableDictionary<NSNumber *, id<RCTComponent>> *)self->_viewRegistry) {
+        [self->_bridgeTransactionListeners removeObject:subview];
       }
     });
   }
@@ -609,7 +609,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
       CGSize contentSize = shadowView.frame.size;
 
       dispatch_async(dispatch_get_main_queue(), ^{
-        UIView *view = _viewRegistry[reactTag];
+        UIView *view = self->_viewRegistry[reactTag];
         RCTAssert(view != nil, @"view (for ID %@) not found", reactTag);
 
         RCTRootView *rootView = (RCTRootView *)[view superview];
@@ -802,7 +802,7 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
     void (^completion)(BOOL) = ^(BOOL finished) {
       completionsCalled++;
 
-      [_viewsToBeDeleted removeObject:removedChild];
+      [self->_viewsToBeDeleted removeObject:removedChild];
       [container removeReactSubview:removedChild];
 
       if (animation.callback && completionsCalled == children.count) {

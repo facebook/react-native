@@ -35,55 +35,53 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     NSError *error = [NSError errorWithDomain:@"JavaScriptLoader" code:1 userInfo:@{
       NSLocalizedDescriptionKey: errorDescription
     }];
-    onComplete(error, nil);
+    onComplete(error, nil, 0);
     return;
   }
 
   // Load local script file
   if (scriptURL.fileURL) {
+    // Load the first 4 bytes to check if the bundle is regular or RAM ("Random Access Modules" bundle).
+    // The RAM bundle has a magic number in the 4 first bytes `(0xFB0BD1E5)`.
+    // The benefit of RAM bundle over a regular bundle is that we can lazily inject
+    // modules into JSC as they're required.
+    FILE *bundle = fopen(scriptURL.path.UTF8String, "r");
+    if (!bundle) {
+      onComplete(RCTErrorWithMessage([NSString stringWithFormat:@"Error opening bundle %@", scriptURL.path]), nil, 0);
+      return;
+    }
+
+    uint32_t magicNumber;
+    size_t readResult = fread(&magicNumber, sizeof(magicNumber), 1, bundle);
+    fclose(bundle);
+    if (readResult != 1) {
+      onComplete(RCTErrorWithMessage(@"Error reading bundle"), nil, 0);
+      return;
+    }
+
+    magicNumber = NSSwapLittleIntToHost(magicNumber);
+
+    if (magicNumber == RCTRAMBundleMagicNumber) {
+      NSData *source = [NSData dataWithBytes:&magicNumber length:sizeof(magicNumber)];
+      NSError *error = nil;
+      int64_t sourceLength = 0;
+
+      struct stat statInfo;
+      if (stat(scriptURL.path.UTF8String, &statInfo) != 0) {
+        error = RCTErrorWithMessage(@"Error reading bundle");
+      } else {
+        sourceLength = statInfo.st_size;
+      }
+      onComplete(error, source, sourceLength);
+    }
+
+    // Reading in a large bundle can be slow. Dispatch to the background queue to do it.
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       NSError *error = nil;
-      NSData *source = nil;
-
-      // Load the first 4 bytes to check if the bundle is regular or RAM ("Random Access Modules" bundle).
-      // The RAM bundle has a magic number in the 4 first bytes `(0xFB0BD1E5)`.
-      // The benefit of RAM bundle over a regular bundle is that we can lazily inject
-      // modules into JSC as they're required.
-      FILE *bundle = fopen(scriptURL.path.UTF8String, "r");
-      if (!bundle) {
-        onComplete(RCTErrorWithMessage([NSString stringWithFormat:@"Error opening bundle %@", scriptURL.path]), source);
-        return;
-      }
-
-      uint32_t magicNumber;
-      if (fread(&magicNumber, sizeof(magicNumber), 1, bundle) != 1) {
-        fclose(bundle);
-        onComplete(RCTErrorWithMessage(@"Error reading bundle"), source);
-        return;
-      }
-
-      magicNumber = NSSwapLittleIntToHost(magicNumber);
-
-      int64_t sourceLength = 0;
-      if (magicNumber == RCTRAMBundleMagicNumber) {
-        source = [NSData dataWithBytes:&magicNumber length:sizeof(magicNumber)];
-
-        struct stat statInfo;
-        if (stat(scriptURL.path.UTF8String, &statInfo) != 0) {
-          error = RCTErrorWithMessage(@"Error reading bundle");
-        } else {
-          sourceLength = statInfo.st_size;
-        }
-      } else {
-        source = [NSData dataWithContentsOfFile:scriptURL.path
-                                                options:NSDataReadingMappedIfSafe
-                                                  error:&error];
-        sourceLength = source.length;
-      }
-
-      RCTPerformanceLoggerSet(RCTPLBundleSize, sourceLength);
-      fclose(bundle);
-      onComplete(error, source);
+      NSData *source = [NSData dataWithContentsOfFile:scriptURL.path
+                                              options:NSDataReadingMappedIfSafe
+                                                error:&error];
+      onComplete(error, source, source.length);
     });
     return;
   }
@@ -105,7 +103,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                     code:error.code
                                 userInfo:userInfo];
       }
-      onComplete(error, nil);
+      onComplete(error, nil, 0);
       return;
     }
 
@@ -143,11 +141,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                   code:((NSHTTPURLResponse *)response).statusCode
                               userInfo:userInfo];
 
-      onComplete(error, nil);
+      onComplete(error, nil, 0);
       return;
     }
-    RCTPerformanceLoggerSet(RCTPLBundleSize, data.length);
-    onComplete(nil, data);
+    onComplete(nil, data, data.length);
   }];
 
   [task resume];

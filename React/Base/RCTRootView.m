@@ -158,12 +158,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                      dispatch_get_main_queue(), ^{
 
                        [UIView transitionWithView:self
-                                         duration:_loadingViewFadeDuration
+                                         duration:self->_loadingViewFadeDuration
                                           options:UIViewAnimationOptionTransitionCrossDissolve
                                        animations:^{
-                                         _loadingView.hidden = YES;
+                                         self->_loadingView.hidden = YES;
                                        } completion:^(__unused BOOL finished) {
-                                         [_loadingView removeFromSuperview];
+                                         [self->_loadingView removeFromSuperview];
                                        }];
                      });
     } else {
@@ -340,10 +340,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
 {
   [super insertReactSubview:subview atIndex:atIndex];
-  RCTPerformanceLoggerEnd(RCTPLTTI);
+  [_bridge->_performanceLogger markStopForTag:RCTPLTTI];
   dispatch_async(dispatch_get_main_queue(), ^{
-    if (!_contentHasAppeared) {
-      _contentHasAppeared = YES;
+    if (!self->_contentHasAppeared) {
+      self->_contentHasAppeared = YES;
       [[NSNotificationCenter defaultCenter] postNotificationName:RCTContentDidAppearNotification
                                                           object:self.superview];
     }

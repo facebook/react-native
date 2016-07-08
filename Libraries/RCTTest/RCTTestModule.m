@@ -35,16 +35,16 @@ RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
 
   [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
 
-    NSString *testName = NSStringFromSelector(_testSelector);
-    if (!_snapshotCounter) {
-      _snapshotCounter = [NSMutableDictionary new];
+    NSString *testName = NSStringFromSelector(self->_testSelector);
+    if (!self->_snapshotCounter) {
+      self->_snapshotCounter = [NSMutableDictionary new];
     }
-    _snapshotCounter[testName] = (@([_snapshotCounter[testName] integerValue] + 1)).stringValue;
+    self->_snapshotCounter[testName] = (@([self->_snapshotCounter[testName] integerValue] + 1)).stringValue;
 
     NSError *error = nil;
-    BOOL success = [_controller compareSnapshotOfView:_view
-                                             selector:_testSelector
-                                           identifier:_snapshotCounter[testName]
+    BOOL success = [self->_controller compareSnapshotOfView:self->_view
+                                             selector:self->_testSelector
+                                           identifier:self->_snapshotCounter[testName]
                                                 error:&error];
     callback(@[@(success)]);
   }];
@@ -76,7 +76,7 @@ RCT_EXPORT_METHOD(markTestCompleted)
 RCT_EXPORT_METHOD(markTestPassed:(BOOL)success)
 {
   [_bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    _status = success ? RCTTestStatusPassed : RCTTestStatusFailed;
+    self->_status = success ? RCTTestStatusPassed : RCTTestStatusFailed;
   }];
 }
 
