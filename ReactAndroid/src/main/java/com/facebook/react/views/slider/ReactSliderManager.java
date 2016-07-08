@@ -11,6 +11,8 @@ package com.facebook.react.views.slider;
 
 import java.util.Map;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
@@ -168,6 +170,26 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
   @ReactProp(name = "thumbColor", customType = "Color")
   public void setThumbColor(ReactSlider view, Integer value) {
     view.setThumbColor(value);
+  }
+
+  @ReactProp(name = "trackImage")
+  public void setTrackImage(ReactSlider view, ReadableMap value) {
+    view.setTrackImage(value);
+  }
+
+  @ReactProp(name = "splitTrack")
+  @TargetApi(21)
+  public void setSplitTrack(ReactSlider view, boolean value) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      view.setSplitTrack(value);
+    }
+  }
+
+  @ReactProp(name = "thumbOffset")
+  public void setThumbOffset(ReactSlider view, int value) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      view.setThumbOffset(value);
+    }
   }
 
   @Override

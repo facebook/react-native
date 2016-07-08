@@ -13,8 +13,13 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.NinePatchDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -23,6 +28,7 @@ import android.widget.SeekBar;
 
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
+import com.facebook.datasource.DataSubscriber;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 import com.facebook.imagepipeline.image.CloseableImage;
@@ -131,10 +137,22 @@ public class ReactSlider extends SeekBar {
   }
 
   public void setThumbImage(ReadableMap source) {
-    String uri = source != null ? source.getString(PROP_ICON_URI) : null;
+    final String uri = source != null ? source.getString(PROP_ICON_URI) : null;
     if (uri != null) {
       if (uri.startsWith("http://") || uri.startsWith("https://") || uri.startsWith("file://")) {
-        setThumbFromUrl(uri);
+        setThumbFromUrl(uri, new BaseBitmapDataSubscriber() {
+          @Override
+          public void onNewResultImpl(@Nullable Bitmap bitmap) {
+            if (bitmap != null) {
+              setThumb(new BitmapDrawable(getResources(), bitmap));
+            }
+          }
+
+          @Override
+          public void onFailureImpl(DataSource dataSource) {
+            Log.e("ReactSlider", String.format("onFailureImpl:uri-> %s is error", uri));
+          }
+        });
       } else {
         Drawable thumb = getDrawableByName(uri);
         setThumb(thumb);
@@ -142,30 +160,17 @@ public class ReactSlider extends SeekBar {
     }
   }
 
-  private void setThumbFromUrl(final String uri) {
+  private void setThumbFromUrl(final String uri, DataSubscriber<CloseableReference<CloseableImage>> subscribe) {
     ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(Uri.parse(uri))
       .setAutoRotateEnabled(true)
       .build();
     DataSource<CloseableReference<CloseableImage>> dataSource = Fresco.getImagePipeline().fetchDecodedImage(imageRequest, null);
     Executor executor = Executors.newSingleThreadExecutor();
-    dataSource.subscribe(new BaseBitmapDataSubscriber() {
-      @Override
-      public void onNewResultImpl(@Nullable Bitmap bitmap) {
-        if (bitmap != null) {
-          setThumb(new BitmapDrawable(getResources(), bitmap));
-        }
-      }
-
-      @Override
-      public void onFailureImpl(DataSource dataSource) {
-        Log.e("ReactSlider", String.format("onFailureImpl:uri-> %s is error", uri));
-      }
-    }, executor);
-
-
+    dataSource.subscribe(subscribe, executor);
   }
 
   private int getDrawableResourceByName(String name) {
+    name = name.replace(".9", "");
     return getResources().getIdentifier(
       name,
       "drawable",
@@ -200,5 +205,50 @@ public class ReactSlider extends SeekBar {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       setThumbTintList(ColorStateList.valueOf(value));
     }
+  }
+
+  public void setTrackImage(ReadableMap source) {
+    final String uri = source != null ? source.getString(PROP_ICON_URI) : null;
+    if (uri != null) {
+      if (uri.startsWith("http://") || uri.startsWith("https://") || uri.startsWith("file://")) {
+        setThumbFromUrl(uri, new BaseBitmapDataSubscriber() {
+          @Override
+          public void onNewResultImpl(@Nullable Bitmap bitmap) {
+            if (bitmap != null) {
+              setProgressDrawable(createNineDrawable(bitmap));
+            }
+          }
+
+          @Override
+          public void onFailureImpl(DataSource dataSource) {
+            Log.e("ReactSlider", String.format("onFailureImpl:uri-> %s is error", uri));
+          }
+        });
+      } else {
+        Drawable drawable = getDrawableByName(uri);
+        if(drawable instanceof NinePatchDrawable){
+          setProgressDrawable(drawable);
+        }else {
+          setProgressDrawable(createNineDrawable(((BitmapDrawable) drawable).getBitmap()));
+        }
+      }
+    }
+  }
+
+  private NinePatchDrawable createNineDrawable(Bitmap src) {
+    if (src.getNinePatchChunk() != null) {
+      return NinePatchDrawableFactory.convertBitmap(getResources(), src, null);
+    }
+    Bitmap desc = Bitmap.createBitmap(src.getWidth() + 4, src.getHeight() + 4, Bitmap.Config.ARGB_4444);
+    PointF center = new PointF(desc.getWidth() / 2, desc.getHeight() / 2);
+    Canvas canvas = new Canvas(desc);
+    canvas.drawBitmap(src, 2, 2, null);
+    Paint p = new Paint();
+    p.setColor(Color.BLACK);
+    canvas.drawLine(center.x, 0, center.x + 1, 0, p);
+    canvas.drawLine(0, center.y, 0, center.y + 1, p);
+    NinePatchDrawable drawable = NinePatchDrawableFactory.convertBitmap(getResources(), desc, null);
+    desc.recycle();
+    return drawable;
   }
 }

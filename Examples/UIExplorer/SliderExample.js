@@ -143,14 +143,13 @@ exports.examples = [
   {
     title: 'Custom thumb image',
     render(): ReactElement<any> {
-      return <SliderExample style={{height:50}} thumbImage={require('image!launcher_icon')} />;
+      return <SliderExample style={{height:50}} thumbImage={require('./uie_thumb_big.png')} />;
     }
   },
   {
     title: 'Custom track image',
-    platform: 'ios',
     render(): ReactElement<any> {
-      return <SliderExample trackImage={require('./slider.png')} />;
+      return <SliderExample trackImage={require('./slider.png')} splitTrack={false} thumbOffset={0}/>;
     }
   },
   {

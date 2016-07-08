@@ -89,7 +89,6 @@ var Slider = React.createClass({
     /**
      * Assigns a single image for the track. Only static images are supported.
      * The center pixel of the image will be stretched to fill the track.
-     * @platform ios
      */
     trackImage: Image.propTypes.source,
 
@@ -136,6 +135,20 @@ var Slider = React.createClass({
      */
     thumbColor: PropTypes.string,
 
+    /**
+     * Whether the track should be split by the thumb
+     *
+     * *using in android >= 21*
+     * @platform android
+     */
+    splitTrack: PropTypes.bool,
+
+    /**
+     * thumbOffset The offset amount in pixels
+     *
+     * @platform android
+     */
+    thumbOffset: PropTypes.number,
 
   },
 
@@ -150,7 +163,7 @@ var Slider = React.createClass({
   },
 
   render: function() {
-    let {style, onValueChange, onSlidingComplete, thumbImage, ...props} = this.props;
+    let {style, onValueChange, onSlidingComplete, thumbImage,trackImage, ...props} = this.props;
     props.style = [styles.slider, style];
 
     props.onValueChange = onValueChange && ((event: Event) => {
@@ -169,9 +182,11 @@ var Slider = React.createClass({
       onSlidingComplete && onSlidingComplete(event.nativeEvent.value);
     });
 	  thumbImage=resolveAssetSource(thumbImage);
+	  trackImage=resolveAssetSource(trackImage);
     return <RCTSlider
       {...props}
       thumbImage={thumbImage}
+      trackImage={trackImage}
       enabled={!this.props.disabled}
       onStartShouldSetResponder={() => true}
       onResponderTerminationRequest={() => false}
