@@ -91,7 +91,7 @@ function forHorizontal(props: NavigationSceneRendererProps): Object {
   const width = layout.initWidth;
   const translateX = position.interpolate({
     inputRange,
-    outputRange: [width, 0, -width],
+    outputRange: ([width, 0, -width]: Array<number>),
   });
 
   return {

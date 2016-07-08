@@ -68,15 +68,14 @@ public:
    */
   void callFunction(
     ExecutorToken executorToken,
-    const std::string& moduleId,
-    const std::string& methodId,
-    const folly::dynamic& args,
-    const std::string& tracingName);
+    std::string&& module,
+    std::string&& method,
+    folly::dynamic&& args);
 
   /**
    * Invokes a callback with the cbID, and optional additional arguments in JS.
    */
-  void invokeCallback(ExecutorToken executorToken, const double callbackId, const folly::dynamic& args);
+  void invokeCallback(ExecutorToken executorToken, double callbackId, folly::dynamic&& args);
 
   /**
    * Starts the JS application from an "bundle", i.e. a JavaScript file that

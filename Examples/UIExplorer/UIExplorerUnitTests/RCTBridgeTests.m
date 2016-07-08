@@ -152,7 +152,7 @@ RCT_EXPORT_MODULE(TestModule)
 
   _unregisteredTestModule = [UnregisteredTestModule new];
   _bridge = [[RCTBridge alloc] initWithBundleURL:nil
-                                  moduleProvider:^{ return @[self, _unregisteredTestModule]; }
+                                  moduleProvider:^{ return @[self, self->_unregisteredTestModule]; }
                                    launchOptions:nil];
 
   _bridge.executorClass = [TestExecutor class];
@@ -232,7 +232,7 @@ RCT_EXPORT_MODULE(TestModule)
 
   dispatch_sync(_methodQueue, ^{
     // clear the queue
-    XCTAssertTrue(_testMethodCalled);
+    XCTAssertTrue(self->_testMethodCalled);
   });
 }
 
@@ -263,7 +263,7 @@ RCT_EXPORT_MODULE(TestModule)
   [_bridge.batchedBridge handleBuffer:buffer];
 
   dispatch_sync(_unregisteredTestModule.methodQueue, ^{
-    XCTAssertTrue(_unregisteredTestModule.testMethodCalled);
+    XCTAssertTrue(self->_unregisteredTestModule.testMethodCalled);
   });
 }
 

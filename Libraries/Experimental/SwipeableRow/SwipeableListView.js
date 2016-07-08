@@ -52,7 +52,7 @@ const SwipeableListView = React.createClass({
   statics: {
     getNewDataSource(): Object {
       return new SwipeableListViewDataSource({
-        getRowData: (data, sectionID, rowID) => data[rowID],
+        getRowData: (data, sectionID, rowID) => data[sectionID][rowID],
         getSectionHeaderData: (data, sectionID) => data[sectionID],
         sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
         rowHasChanged: (row1, row2) => row1 !== row2,

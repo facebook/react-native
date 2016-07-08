@@ -191,6 +191,11 @@ public:
     }
   }
 
+  template<typename ReturnType>
+  ReturnType* getPrivate() const {
+    return static_cast<ReturnType*>(JSObjectGetPrivate(m_obj));
+  }
+
   JSContextRef context() const {
     return m_context;
   }
@@ -221,6 +226,10 @@ public:
 
   operator JSValueRef() const {
     return m_value;
+  }
+
+  JSType getType() const {
+    return JSValueGetType(m_context, m_value);
   }
 
   bool isBoolean() const {

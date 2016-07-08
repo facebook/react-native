@@ -271,7 +271,7 @@ const TextInput = React.createClass({
      * Sets the return key to the label. Use it instead of `returnKeyType`.
      * @platform android
      */
-     returnKeyLabel: PropTypes.string,
+    returnKeyLabel: PropTypes.string,
     /**
      * Limits the maximum number of characters that can be entered. Use this
      * instead of implementing the logic in JS to avoid flicker.
@@ -311,6 +311,14 @@ const TextInput = React.createClass({
      * Changed text is passed as an argument to the callback handler.
      */
     onChangeText: PropTypes.func,
+    /**
+     * Callback that is called when the text input's content size changes.
+     * This will be called with
+     * `{ nativeEvent: { contentSize: { width, height } } }`.
+     *
+     * Only called for multiline text inputs.
+     */
+    onContentSizeChange: PropTypes.func,
     /**
      * Callback that is called when text input ends.
      */
@@ -581,6 +589,7 @@ const TextInput = React.createClass({
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
+          onContentSizeChange={this.props.onContentSizeChange}
           onSelectionChange={onSelectionChange}
           onTextInput={this._onTextInput}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
@@ -641,6 +650,7 @@ const TextInput = React.createClass({
         onFocus={this._onFocus}
         onBlur={this._onBlur}
         onChange={this._onChange}
+        onContentSizeChange={this.props.onContentSizeChange}
         onSelectionChange={onSelectionChange}
         onTextInput={this._onTextInput}
         onEndEditing={this.props.onEndEditing}
