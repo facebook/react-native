@@ -307,19 +307,10 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 - (RCTJavaScriptContext *)context
 {
   RCTAssertThread(_javaScriptThread, @"Must be called on JS thread.");
-
   if (!self.isValid) {
     return nil;
   }
-
-  if (!_context) {
-    JSContext *context = [_jscWrapper->JSContext new];
-    _context = [[RCTJavaScriptContext alloc] initWithJSContext:context onThread:_javaScriptThread];
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptContextCreatedNotification
-                                                        object:context];
-  }
-
+  RCTAssert(_context != nil, @"Fetching context while valid, but before it is created");
   return _context;
 }
 
@@ -353,7 +344,11 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     self->_jscWrapper = RCTJSCWrapperCreate(self->_useCustomJSCLibrary);
     [self->_performanceLogger markStopForTag:RCTPLJSCWrapperOpenLibrary];
 
-    JSContext *context = self.context.context;
+    RCTAssert(self->_context == nil, @"Didn't expect to set up twice");
+    JSContext *context = [self->_jscWrapper->JSContext new];
+    self->_context = [[RCTJavaScriptContext alloc] initWithJSContext:context onThread:self->_javaScriptThread];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptContextCreatedNotification
+                                                        object:context];
 
     if (self->_jscWrapper->configureJSContextForIOS != NULL) {
       NSString *cachesPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
