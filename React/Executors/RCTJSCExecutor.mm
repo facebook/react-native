@@ -330,15 +330,12 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
 - (void)setUp
 {
-  __weak RCTJSCExecutor *weakSelf = self;
-
-  __weak RCTBridge *weakBridge = _bridge;
+#if RCT_PROFILE
 #ifndef __clang_analyzer__
   _bridge.flowIDMap = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
 #endif
   _bridge.flowIDMapLock = [NSLock new];
 
-#if RCT_PROFILE
   for (NSString *event in @[RCTProfileDidStartProfiling, RCTProfileDidEndProfiling]) {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(toggleProfilingFlag:)
@@ -348,52 +345,54 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 #endif
 
   [self executeBlockOnJavaScriptQueue:^{
-    RCTJSCExecutor *strongSelf = weakSelf;
-    if (!strongSelf.valid) {
+    if (!self.valid) {
       return;
     }
 
-    [strongSelf->_performanceLogger markStartForTag:RCTPLJSCWrapperOpenLibrary];
-    strongSelf->_jscWrapper = RCTJSCWrapperCreate(strongSelf->_useCustomJSCLibrary);
-    [strongSelf->_performanceLogger markStopForTag:RCTPLJSCWrapperOpenLibrary];
+    [self->_performanceLogger markStartForTag:RCTPLJSCWrapperOpenLibrary];
+    self->_jscWrapper = RCTJSCWrapperCreate(self->_useCustomJSCLibrary);
+    [self->_performanceLogger markStopForTag:RCTPLJSCWrapperOpenLibrary];
 
-    JSContext *context = strongSelf.context.context;
+    JSContext *context = self.context.context;
 
-    if (strongSelf->_jscWrapper->configureJSContextForIOS != NULL) {
+    if (self->_jscWrapper->configureJSContextForIOS != NULL) {
       NSString *cachesPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
       RCTAssert(cachesPath != nil, @"cachesPath should not be nil");
       if (cachesPath) {
-        strongSelf->_jscWrapper->configureJSContextForIOS(context.JSGlobalContextRef, [cachesPath UTF8String]);
+        self->_jscWrapper->configureJSContextForIOS(context.JSGlobalContextRef, [cachesPath UTF8String]);
       }
     }
 
     [[self class] installSynchronousHooksOnContext:context];
 
+    __weak RCTJSCExecutor *weakSelf = self;
+
     context[@"nativeRequireModuleConfig"] = ^NSString *(NSString *moduleName) {
-      RCTJSCExecutor *strongSelf2 = weakSelf;
-      if (!strongSelf2.valid) {
+      RCTJSCExecutor *strongSelf = weakSelf;
+      if (!strongSelf.valid) {
         return nil;
       }
 
       RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"nativeRequireModuleConfig", nil);
-      NSArray *config = [strongSelf2->_bridge configForModuleName:moduleName];
+      NSArray *config = [strongSelf->_bridge configForModuleName:moduleName];
       NSString *result = config ? RCTJSONStringify(config, NULL) : nil;
       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call,config", @{ @"moduleName": moduleName });
       return result;
     };
 
     context[@"nativeFlushQueueImmediate"] = ^(NSArray<NSArray *> *calls){
-      RCTJSCExecutor *strongSelf2 = weakSelf;
-      if (!strongSelf2.valid || !calls) {
+      RCTJSCExecutor *strongSelf = weakSelf;
+      if (!strongSelf.valid || !calls) {
         return;
       }
 
       RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"nativeFlushQueueImmediate", nil);
-      [strongSelf2->_bridge handleBuffer:calls batchEnded:NO];
+      [strongSelf->_bridge handleBuffer:calls batchEnded:NO];
       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call", nil);
     };
 
 #if RCT_PROFILE
+    __weak RCTBridge *weakBridge = self->_bridge;
     context[@"nativeTraceBeginAsyncFlow"] = ^(__unused uint64_t tag, __unused NSString *name, int64_t cookie) {
       if (RCTProfileIsProfiling()) {
         [weakBridge.flowIDMapLock lock];
@@ -415,19 +414,19 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 #endif
 
 #if RCT_DEV
-    RCTInstallJSCProfiler(strongSelf->_bridge, context.JSGlobalContextRef);
+    RCTInstallJSCProfiler(self->_bridge, context.JSGlobalContextRef);
 
     // Inject handler used by HMR
     context[@"nativeInjectHMRUpdate"] = ^(NSString *sourceCode, NSString *sourceCodeURL) {
-      RCTJSCExecutor *strongSelf2 = weakSelf;
-      if (!strongSelf2.valid) {
+      RCTJSCExecutor *strongSelf = weakSelf;
+      if (!strongSelf.valid) {
         return;
       }
 
-      RCTJSCWrapper *jscWrapper = strongSelf2->_jscWrapper;
+      RCTJSCWrapper *jscWrapper = strongSelf->_jscWrapper;
       JSStringRef execJSString = jscWrapper->JSStringCreateWithUTF8CString(sourceCode.UTF8String);
       JSStringRef jsURL = jscWrapper->JSStringCreateWithUTF8CString(sourceCodeURL.UTF8String);
-      jscWrapper->JSEvaluateScript(strongSelf2->_context.context.JSGlobalContextRef, execJSString, NULL, jsURL, 0, NULL);
+      jscWrapper->JSEvaluateScript(strongSelf->_context.context.JSGlobalContextRef, execJSString, NULL, jsURL, 0, NULL);
       jscWrapper->JSStringRelease(jsURL);
       jscWrapper->JSStringRelease(execJSString);
     };
@@ -782,29 +781,27 @@ static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleI
   [_performanceLogger setValue:0 forTag:RCTPLRAMNativeRequiresCount];
   [_performanceLogger setValue:0 forTag:RCTPLRAMNativeRequiresSize];
 
-  __weak RCTJSCExecutor *weakSelf = self;
   [self executeBlockOnJavaScriptQueue:^{
-    RCTJSCExecutor *strongSelf = weakSelf;
-    if (!strongSelf.valid) {
+    if (!self.valid) {
       return;
     }
 
-    JSContext *context = strongSelf.context.context;
-    context[@"nativeRequire"] = ^(NSNumber *moduleID) {
-      RCTJSCExecutor *strongSelf2 = weakSelf;
-      if (!strongSelf2 || !moduleID) {
+    __weak RCTJSCExecutor *weakSelf = self;
+    self.context.context[@"nativeRequire"] = ^(NSNumber *moduleID) {
+      RCTJSCExecutor *strongSelf = weakSelf;
+      if (!strongSelf || !moduleID) {
         return;
       }
 
-      [strongSelf2->_performanceLogger addValue:1 forTag:RCTPLRAMNativeRequiresCount];
-      [strongSelf2->_performanceLogger appendStartForTag:RCTPLRAMNativeRequires];
+      [strongSelf->_performanceLogger addValue:1 forTag:RCTPLRAMNativeRequiresCount];
+      [strongSelf->_performanceLogger appendStartForTag:RCTPLRAMNativeRequires];
       RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
                               [@"nativeRequire_" stringByAppendingFormat:@"%@", moduleID], nil);
 
       const uint32_t ID = [moduleID unsignedIntValue];
 
-      if (ID < strongSelf2->_randomAccessBundle.numTableEntries) {
-        ModuleData *moduleData = &strongSelf2->_randomAccessBundle.table[ID];
+      if (ID < strongSelf->_randomAccessBundle.numTableEntries) {
+        ModuleData *moduleData = &strongSelf->_randomAccessBundle.table[ID];
         const uint32_t size = NSSwapLittleIntToHost(moduleData->size);
 
         // sparse entry in the table -- module does not exist or is contained in the startup section
@@ -812,12 +809,12 @@ static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleI
           return;
         }
 
-        [strongSelf2->_performanceLogger addValue:size forTag:RCTPLRAMNativeRequiresSize];
-        executeRandomAccessModule(strongSelf2, ID, NSSwapLittleIntToHost(moduleData->offset), size);
+        [strongSelf->_performanceLogger addValue:size forTag:RCTPLRAMNativeRequiresSize];
+        executeRandomAccessModule(strongSelf, ID, NSSwapLittleIntToHost(moduleData->offset), size);
       }
 
       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call", nil);
-      [strongSelf2->_performanceLogger appendStopForTag:RCTPLRAMNativeRequires];
+      [strongSelf->_performanceLogger appendStopForTag:RCTPLRAMNativeRequires];
     };
 }];
 }
