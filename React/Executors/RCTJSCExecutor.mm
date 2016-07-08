@@ -74,6 +74,18 @@ struct RandomAccessBundleStartupCode {
 @implementation RCTCookieMap @end
 #endif
 
+struct RCTJSContextData {
+  BOOL useCustomJSCLibrary;
+  NSThread *javaScriptThread;
+  JSContext *context;
+  RCTJSCWrapper *jscWrapper;
+};
+
+@interface RCTJSContextProvider ()
+/** May only be called once, or deadlock will result. */
+- (RCTJSContextData)data;
+@end
+
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
 
 @property (nonatomic, strong, readonly) JSContext *context;
@@ -271,6 +283,21 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   }
 }
 
+static NSThread *newJavaScriptThread(void)
+{
+  NSThread *javaScriptThread = [[NSThread alloc] initWithTarget:[RCTJSCExecutor class]
+                                                       selector:@selector(runRunLoopThread)
+                                                         object:nil];
+  javaScriptThread.name = RCTJSCThreadName;
+  if ([javaScriptThread respondsToSelector:@selector(setQualityOfService:)]) {
+    [javaScriptThread setQualityOfService:NSOperationQualityOfServiceUserInteractive];
+  } else {
+    javaScriptThread.threadPriority = [NSThread mainThread].threadPriority;
+  }
+  [javaScriptThread start];
+  return javaScriptThread;
+}
+
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
@@ -287,21 +314,22 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   if (self = [super init]) {
     _useCustomJSCLibrary = useCustomJSCLibrary;
     _valid = YES;
-
-    _javaScriptThread = [[NSThread alloc] initWithTarget:[self class]
-                                                selector:@selector(runRunLoopThread)
-                                                  object:nil];
-    _javaScriptThread.name = RCTJSCThreadName;
-
-    if ([_javaScriptThread respondsToSelector:@selector(setQualityOfService:)]) {
-      [_javaScriptThread setQualityOfService:NSOperationQualityOfServiceUserInteractive];
-    } else {
-      _javaScriptThread.threadPriority = [NSThread mainThread].threadPriority;
-    }
-
-    [_javaScriptThread start];
+    _javaScriptThread = newJavaScriptThread();
   }
 
+  return self;
+}
+
+- (instancetype)initWithJSContextProvider:(RCTJSContextProvider *)JSContextProvider
+{
+  if (self = [super init]) {
+    const RCTJSContextData data = JSContextProvider.data;
+    _useCustomJSCLibrary = data.useCustomJSCLibrary;
+    _valid = YES;
+    _javaScriptThread = data.javaScriptThread;
+    _jscWrapper = data.jscWrapper;
+    _context = [[RCTJavaScriptContext alloc] initWithJSContext:data.context onThread:_javaScriptThread];
+  }
   return self;
 }
 
@@ -341,25 +369,24 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return;
     }
 
-    [self->_performanceLogger markStartForTag:RCTPLJSCWrapperOpenLibrary];
-    self->_jscWrapper = RCTJSCWrapperCreate(self->_useCustomJSCLibrary);
-    [self->_performanceLogger markStopForTag:RCTPLJSCWrapperOpenLibrary];
+    JSContext *context = nil;
+    if (self->_jscWrapper) {
+      RCTAssert(self->_context != nil, @"If wrapper was pre-initialized, context should be too");
+      context = self->_context.context;
+    } else {
+      [self->_performanceLogger markStartForTag:RCTPLJSCWrapperOpenLibrary];
+      self->_jscWrapper = RCTJSCWrapperCreate(self->_useCustomJSCLibrary);
+      [self->_performanceLogger markStopForTag:RCTPLJSCWrapperOpenLibrary];
 
-    RCTAssert(self->_context == nil, @"Didn't expect to set up twice");
-    JSContext *context = [self->_jscWrapper->JSContext new];
-    self->_context = [[RCTJavaScriptContext alloc] initWithJSContext:context onThread:self->_javaScriptThread];
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptContextCreatedNotification
-                                                        object:context];
+      RCTAssert(self->_context == nil, @"Didn't expect to set up twice");
+      context = [self->_jscWrapper->JSContext new];
+      self->_context = [[RCTJavaScriptContext alloc] initWithJSContext:context onThread:self->_javaScriptThread];
+      [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptContextCreatedNotification
+                                                          object:context];
 
-    if (self->_jscWrapper->configureJSContextForIOS != NULL) {
-      NSString *cachesPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
-      RCTAssert(cachesPath != nil, @"cachesPath should not be nil");
-      if (cachesPath) {
-        self->_jscWrapper->configureJSContextForIOS(context.JSGlobalContextRef, [cachesPath UTF8String]);
-      }
+      configureCacheOnContext(context, self->_jscWrapper);
+      installBasicSynchronousHooksOnContext(context);
     }
-
-    [[self class] installSynchronousHooksOnContext:context];
 
     __weak RCTJSCExecutor *weakSelf = self;
 
@@ -430,7 +457,20 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   }];
 }
 
-+ (void)installSynchronousHooksOnContext:(JSContext *)context
+/** If configureJSContextForIOS is available on jscWrapper, calls it with the correct parameters. */
+static void configureCacheOnContext(JSContext *context, RCTJSCWrapper *jscWrapper)
+{
+  if (jscWrapper->configureJSContextForIOS != NULL) {
+    NSString *cachesPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
+    RCTAssert(cachesPath != nil, @"cachesPath should not be nil");
+    if (cachesPath) {
+      jscWrapper->configureJSContextForIOS(context.JSGlobalContextRef, [cachesPath UTF8String]);
+    }
+  }
+}
+
+/** Installs synchronous hooks that don't require a weak reference back to the RCTJSCExecutor. */
+static void installBasicSynchronousHooksOnContext(JSContext *context)
 {
   context[@"noop"] = ^{};
   context[@"nativeLoggingHook"] = ^(NSString *message, NSNumber *logLevel) {
@@ -886,6 +926,49 @@ RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)name)
     _jscWrapper->JSGlobalContextSetName(_context.context.JSGlobalContextRef, JSName);
     _jscWrapper->JSStringRelease(JSName);
   }
+}
+
+@end
+
+@implementation RCTJSContextProvider
+{
+  dispatch_semaphore_t _semaphore;
+  BOOL _useCustomJSCLibrary;
+  NSThread *_javaScriptThread;
+  JSContext *_context;
+  RCTJSCWrapper *_jscWrapper;
+}
+
+- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
+{
+  if (self = [super init]) {
+    _semaphore = dispatch_semaphore_create(0);
+    _useCustomJSCLibrary = useCustomJSCLibrary;
+    _javaScriptThread = newJavaScriptThread();
+    [self performSelector:@selector(_createContext) onThread:_javaScriptThread withObject:nil waitUntilDone:NO];
+  }
+  return self;
+}
+
+- (void)_createContext
+{
+  _jscWrapper = RCTJSCWrapperCreate(_useCustomJSCLibrary);
+  _context = [_jscWrapper->JSContext new];
+  configureCacheOnContext(_context, _jscWrapper);
+  installBasicSynchronousHooksOnContext(_context);
+  dispatch_semaphore_signal(_semaphore);
+}
+
+- (RCTJSContextData)data
+{
+  // Be sure this method is only called once, otherwise it will hang here forever:
+  dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
+  return {
+    .useCustomJSCLibrary = _useCustomJSCLibrary,
+    .javaScriptThread = _javaScriptThread,
+    .context = _context,
+    .jscWrapper = _jscWrapper,
+  };
 }
 
 @end
