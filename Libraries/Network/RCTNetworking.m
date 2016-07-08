@@ -95,7 +95,7 @@ static NSString *RCTGenerateFormBoundary()
     headers[@"content-type"] = partContentType;
   }
   [headers enumerateKeysAndObjectsUsingBlock:^(NSString *parameterKey, NSString *parameterValue, BOOL *stop) {
-    [_multipartBody appendData:[[NSString stringWithFormat:@"%@: %@\r\n", parameterKey, parameterValue]
+    [self->_multipartBody appendData:[[NSString stringWithFormat:@"%@: %@\r\n", parameterKey, parameterValue]
                                 dataUsingEncoding:NSUTF8StringEncoding]];
   }];
 
@@ -239,7 +239,7 @@ RCT_EXPORT_MODULE()
       [request setValue:(@(request.HTTPBody.length)).description forHTTPHeaderField:@"Content-Length"];
     }
 
-    dispatch_async(_methodQueue, ^{
+    dispatch_async(self->_methodQueue, ^{
       block(request);
     });
 
@@ -287,7 +287,7 @@ RCT_EXPORT_MODULE()
 
     __block RCTURLRequestCancellationBlock cancellationBlock = nil;
     RCTNetworkTask *task = [self networkTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
-      dispatch_async(_methodQueue, ^{
+      dispatch_async(self->_methodQueue, ^{
         cancellationBlock = callback(error, data ? @{@"body": data, @"contentType": RCTNullIfNil(response.MIMEType)} : nil);
       });
     }];
@@ -365,14 +365,14 @@ RCT_EXPORT_MODULE()
   __block RCTNetworkTask *task;
 
   RCTURLRequestProgressBlock uploadProgressBlock = ^(int64_t progress, int64_t total) {
-    dispatch_async(_methodQueue, ^{
+    dispatch_async(self->_methodQueue, ^{
       NSArray *responseJSON = @[task.requestID, @((double)progress), @((double)total)];
       [self sendEventWithName:@"didSendNetworkData" body:responseJSON];
     });
   };
 
   void (^responseBlock)(NSURLResponse *) = ^(NSURLResponse *response) {
-    dispatch_async(_methodQueue, ^{
+    dispatch_async(self->_methodQueue, ^{
       NSDictionary<NSString *, NSString *> *headers;
       NSInteger status;
       if ([response isKindOfClass:[NSHTTPURLResponse class]]) { // Might be a local file request
@@ -390,14 +390,14 @@ RCT_EXPORT_MODULE()
   };
 
   void (^incrementalDataBlock)(NSData *) = incrementalUpdates ? ^(NSData *data) {
-    dispatch_async(_methodQueue, ^{
+    dispatch_async(self->_methodQueue, ^{
       [self sendData:data forTask:task];
     });
   } : nil;
 
   RCTURLRequestCompletionBlock completionBlock =
   ^(NSURLResponse *response, NSData *data, NSError *error) {
-    dispatch_async(_methodQueue, ^{
+    dispatch_async(self->_methodQueue, ^{
       if (!incrementalUpdates) {
         [self sendData:data forTask:task];
       }
@@ -407,7 +407,7 @@ RCT_EXPORT_MODULE()
                                 ];
 
       [self sendEventWithName:@"didCompleteNetworkResponse" body:responseJSON];
-      [_tasksByRequestID removeObjectForKey:task.requestID];
+      [self->_tasksByRequestID removeObjectForKey:task.requestID];
     });
   };
 

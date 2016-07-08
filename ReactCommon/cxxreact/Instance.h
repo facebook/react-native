@@ -44,8 +44,8 @@ class Instance {
   void startProfiler(const std::string& title);
   void stopProfiler(const std::string& title, const std::string& filename);
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
-  void callJSFunction(ExecutorToken token, const std::string& module, const std::string& method,
-                      folly::dynamic&& params, const std::string& tracingName);
+  void callJSFunction(ExecutorToken token, std::string&& module, std::string&& method,
+                      folly::dynamic&& params);
   void callJSCallback(ExecutorToken token, uint64_t callbackId, folly::dynamic&& params);
   MethodCallResult callSerializableNativeHook(ExecutorToken token, unsigned int moduleId,
                                               unsigned int methodId, folly::dynamic&& args);

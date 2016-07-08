@@ -173,8 +173,7 @@ void CatalystInstanceImpl::loadScriptFromFile(jni::alias_ref<jstring> fileName,
 }
 
 void CatalystInstanceImpl::callJSFunction(
-    JExecutorToken* token, std::string module, std::string method, NativeArray* arguments,
-    const std::string& tracingName) {
+    JExecutorToken* token, std::string module, std::string method, NativeArray* arguments) {
   // We want to share the C++ code, and on iOS, modules pass module/method
   // names as strings all the way through to JS, and there's no way to do
   // string -> id mapping on the objc side.  So on Android, we convert the
@@ -183,10 +182,9 @@ void CatalystInstanceImpl::callJSFunction(
   // strings otherwise.  Eventually, we'll probably want to modify the stack
   // from the JS proxy through here to use strings, too.
   instance_->callJSFunction(token->getExecutorToken(nullptr),
-                            module,
-                            method,
-                            std::move(arguments->array),
-                            tracingName);
+                            std::move(module),
+                            std::move(method),
+                            std::move(arguments->array));
 }
 
 void CatalystInstanceImpl::callJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments) {

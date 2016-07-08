@@ -101,11 +101,10 @@ void Instance::setGlobalVariable(std::string propName,
   nativeToJsBridge_->setGlobalVariable(std::move(propName), std::move(jsonValue));
 }
 
-void Instance::callJSFunction(ExecutorToken token, const std::string& module, const std::string& method,
-                              folly::dynamic&& params, const std::string& tracingName) {
-  SystraceSection s(tracingName.c_str());
+void Instance::callJSFunction(ExecutorToken token, std::string&& module, std::string&& method,
+                              folly::dynamic&& params) {
   callback_->incrementPendingJSCalls();
-  nativeToJsBridge_->callFunction(token, module, method, std::move(params), tracingName);
+  nativeToJsBridge_->callFunction(token, std::move(module), std::move(method), std::move(params));
 }
 
 void Instance::callJSCallback(ExecutorToken token, uint64_t callbackId, folly::dynamic&& params) {
