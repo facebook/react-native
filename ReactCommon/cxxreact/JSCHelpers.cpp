@@ -44,62 +44,46 @@ JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef 
   JSValueRef exn, result;
   result = JSEvaluateScript(context, script, NULL, source, 0, &exn);
   if (result == nullptr) {
-    formatAndThrowJSException(context, exn, source);
-  }
-  return result;
-}
+    Value exception = Value(context, exn);
 
-#if WITH_FBJSCEXTENSIONS
-JSValueRef evaluateSourceCode(JSContextRef context, JSSourceCodeRef source, JSStringRef sourceURL) {
-  JSValueRef exn, result;
-  result = JSEvaluateSourceCode(context, source, NULL, &exn);
-  if (result == nullptr) {
-    formatAndThrowJSException(context, exn, sourceURL);
-  }
-  return result;
-}
-#endif
+    std::string exceptionText = exception.toString().str();
 
-void formatAndThrowJSException(JSContextRef context, JSValueRef exn, JSStringRef source) {
-  Value exception = Value(context, exn);
+    // The null/empty-ness of source tells us if the JS came from a
+    // file/resource, or was a constructed statement.  The location
+    // info will include that source, if any.
+    std::string locationInfo = source != nullptr ? String::ref(source).str() : "";
+    Object exObject = exception.asObject();
+    auto line = exObject.getProperty("line");
+    if (line != nullptr && line.isNumber()) {
+      if (locationInfo.empty() && line.asInteger() != 1) {
+        // If there is a non-trivial line number, but there was no
+        // location info, we include a placeholder, and the line
+        // number.
+        locationInfo = folly::to<std::string>("<unknown file>:", line.asInteger());
+      } else if (!locationInfo.empty()) {
+        // If there is location info, we always include the line
+        // number, regardless of its value.
+        locationInfo += folly::to<std::string>(":", line.asInteger());
+      }
+    }
 
-  std::string exceptionText = exception.toString().str();
+    if (!locationInfo.empty()) {
+      exceptionText += " (" + locationInfo + ")";
+    }
 
-  // The null/empty-ness of source tells us if the JS came from a
-  // file/resource, or was a constructed statement.  The location
-  // info will include that source, if any.
-  std::string locationInfo = source != nullptr ? String::ref(source).str() : "";
-  Object exObject = exception.asObject();
-  auto line = exObject.getProperty("line");
-  if (line != nullptr && line.isNumber()) {
-    if (locationInfo.empty() && line.asInteger() != 1) {
-      // If there is a non-trivial line number, but there was no
-      // location info, we include a placeholder, and the line
-      // number.
-      locationInfo = folly::to<std::string>("<unknown file>:", line.asInteger());
-    } else if (!locationInfo.empty()) {
-      // If there is location info, we always include the line
-      // number, regardless of its value.
-      locationInfo += folly::to<std::string>(":", line.asInteger());
+    LOG(ERROR) << "Got JS Exception: " << exceptionText;
+
+    Value jsStack = exObject.getProperty("stack");
+    if (jsStack.isNull() || !jsStack.isString()) {
+      throwJSExecutionException("%s", exceptionText.c_str());
+    } else {
+      LOG(ERROR) << "Got JS Stack: " << jsStack.toString().str();
+      throwJSExecutionExceptionWithStack(
+        exceptionText.c_str(), jsStack.toString().str().c_str());
     }
   }
-
-  if (!locationInfo.empty()) {
-    exceptionText += " (" + locationInfo + ")";
-  }
-
-  LOG(ERROR) << "Got JS Exception: " << exceptionText;
-
-  Value jsStack = exObject.getProperty("stack");
-  if (jsStack.isNull() || !jsStack.isString()) {
-    throwJSExecutionException("%s", exceptionText.c_str());
-  } else {
-    LOG(ERROR) << "Got JS Stack: " << jsStack.toString().str();
-    throwJSExecutionExceptionWithStack(
-        exceptionText.c_str(), jsStack.toString().str().c_str());
-  }
+  return result;
 }
-
 
 JSValueRef makeJSError(JSContextRef ctx, const char *error) {
   JSValueRef nestedException = nullptr;
