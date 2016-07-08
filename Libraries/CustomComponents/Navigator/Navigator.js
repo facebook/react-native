@@ -489,12 +489,11 @@ var Navigator = React.createClass({
       sceneConfigStack: nextRouteStack.map(
         route => this.props.configureScene(route, nextRouteStack)
       ),
-      presentedIndex: destIndex - 1,
+      presentedIndex: destIndex,
       activeGesture: null,
       transitionFromIndex: null,
       transitionQueue: [],
     }, () => {
-      this.state.presentedIndex = destIndex;
       this._handleSpringUpdate();
       this._navBar && this._navBar.immediatelyRefresh();
       this._emitDidFocus(this.state.routeStack[this.state.presentedIndex]);
