@@ -132,16 +132,18 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 @implementation RCTJSCExecutor
 {
-  RCTJavaScriptContext *_context;
+  // Set at init time:
+  BOOL _useCustomJSCLibrary;
   NSThread *_javaScriptThread;
 
+  // Set at setUp time:
+  RCTPerformanceLogger *_performanceLogger;
+  RCTJSCWrapper *_jscWrapper;
+  RCTJavaScriptContext *_context;
+
+  // Set as needed:
   RandomAccessBundleData _randomAccessBundle;
   JSValueRef _batchedBridgeRef;
-
-  RCTJSCWrapper *_jscWrapper;
-  BOOL _useCustomJSCLibrary;
-
-  RCTPerformanceLogger *_performanceLogger;
 }
 
 @synthesize valid = _valid;
