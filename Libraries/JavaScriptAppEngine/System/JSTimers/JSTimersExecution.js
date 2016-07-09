@@ -128,8 +128,7 @@ const JSTimersExecution = {
   },
 
   callIdleCallbacks: function(frameTime) {
-    // Arbitrary threshold: 10ms remaining in frame.
-    if (17 - (performanceNow() - frameTime) < 10) {
+    if (17 - (performanceNow() - frameTime) <= 0) {
       return;
     }
 
