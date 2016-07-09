@@ -164,8 +164,6 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
   @Override
   public void dispatchDraw(Canvas canvas) {
-    super.dispatchDraw(canvas);
-
     if (mRemoveClippedSubviews) {
       for (DrawCommand drawCommand : mDrawCommands) {
         if (drawCommand instanceof DrawView) {
