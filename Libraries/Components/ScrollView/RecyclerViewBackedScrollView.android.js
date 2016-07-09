@@ -119,7 +119,7 @@ var RecyclerViewBackedScrollView = React.createClass({
       return React.cloneElement(
         refreshControl,
         {style: props.style},
-        <NativeAndroidRecyclerView {...props}>
+        <NativeAndroidRecyclerView {...props} style={{flex: 1}}>
           {wrappedChildren}
         </NativeAndroidRecyclerView>
       );
