@@ -1,14 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
+ * @providesModule ReactNative
  */
-// AUTOMATICALLY GENERATED CODE. Regenerate with genstructs.sh.
-package com.facebook.soloader;
-public final class Elf32_Dyn {
-  public static final int d_tag = 0x0;
-  public static final int d_un = 0x4;
-}
+ 'use strict';
+ module.exports = require('react/lib/ReactNative');

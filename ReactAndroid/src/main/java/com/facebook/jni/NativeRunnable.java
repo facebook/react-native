@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -9,19 +9,20 @@
 
 package com.facebook.jni;
 
+import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 
+/**
+ * A Runnable that has a native run implementation.
+ */
 @DoNotStrip
-public class CppSystemErrorException extends CppException {
-  int errorCode;
+public class NativeRunnable implements Runnable {
 
-  @DoNotStrip
-  public CppSystemErrorException(String message, int errorCode) {
-    super(message);
-    this.errorCode = errorCode;
+  private final HybridData mHybridData;
+
+  private NativeRunnable(HybridData hybridData) {
+    mHybridData = hybridData;
   }
 
-  public int getErrorCode() {
-    return errorCode;
-  }
+  public native void run();
 }

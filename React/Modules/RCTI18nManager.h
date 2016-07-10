@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -7,14 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.jni;
+#import "RCTBridgeModule.h"
 
-import com.facebook.proguard.annotations.DoNotStrip;
+/**
+ * @experimental
+ * This is a experimental module for RTL support
+ * This module bridges the i18n utility from RCTI18nUtil
+ */
+@interface RCTI18nManager : NSObject <RCTBridgeModule>
 
-@DoNotStrip
-public class CppException extends RuntimeException {
-  @DoNotStrip
-  public CppException(String message) {
-    super(message);
-  }
-}
+@end

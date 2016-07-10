@@ -26,6 +26,17 @@ RCT_EXTERN NSString *const RCTJSCThreadName;
 RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
 
 /**
+ * @experimental
+ * May be used to pre-create the JSContext to make RCTJSCExecutor creation less costly.
+ * Avoid using this; it's experimental and is not likely to be supported long-term.
+ */
+@interface RCTJSContextProvider : NSObject
+
+- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
+
+@end
+
+/**
  * Uses a JavaScriptCore context as the execution engine.
  */
 @interface RCTJSCExecutor : NSObject <RCTJavaScriptExecutor>
@@ -44,11 +55,21 @@ RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
 
 /**
+ * Pass a RCTJSContextProvider object to use an NSThread/JSContext pair that have already been created.
+ */
+- (instancetype)initWithJSContextProvider:(RCTJSContextProvider *)JSContextProvider;
+
+/**
  * Create a NSError from a JSError object.
  *
  * If available, the error's userInfo property will contain the JS stacktrace under
  * the RCTJSStackTraceKey key.
  */
 - (NSError *)convertJSErrorToNSError:(JSValueRef)jsError context:(JSContextRef)context;
+
+/**
+ * Returns the underlying JSContext.
+ */
+- (JSContext *)underlyingJSContext;
 
 @end

@@ -15,7 +15,7 @@ jest.mock('NativeModules')
   .mock('View');
 
 const React = require('React');
-const ReactTestRenderer = require('ReactTestRenderer');
+const ReactTestRenderer = require('react/lib/ReactTestRenderer');
 const Text = require('Text');
 const TouchableHighlight = require('TouchableHighlight');
 
