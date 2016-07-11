@@ -59,6 +59,7 @@ var ViewBorderStyleExample = React.createClass({
         <View>
           <View style={{
             borderWidth: 1,
+            borderRadius: 5,
             borderStyle: this.state.showBorder ? 'dashed' : null,
             padding: 5
           }}>
