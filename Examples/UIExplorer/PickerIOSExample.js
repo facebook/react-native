@@ -82,7 +82,7 @@ var PickerExample = React.createClass({
         <Text>Please choose a make for your car:</Text>
         <PickerIOS
           selectedValue={this.state.carMake}
-          onValueChange={(carMake) => this.setState({carMake, modelIndex: 0})}>
+          onValueChange={(carMake) => this.setState({pickerValue: carMake, modelIndex: 0})}>
           {Object.keys(CAR_MAKES_AND_MODELS).map((carMake) => (
             <PickerItemIOS
               key={carMake}
