@@ -30,9 +30,9 @@ var TabBarExample = React.createClass({
   statics: {
     title: '<TabBarIOS>',
     description: 'Tab-based navigation.',
-  },
+  };
 
-  displayName: 'TabBarExample',
+  displayName: 'TabBarExample';
 
   getInitialState: function() {
     return {
