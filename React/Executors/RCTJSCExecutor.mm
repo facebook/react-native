@@ -666,8 +666,12 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
   uint32_t magicNumber = NSSwapLittleIntToHost(*((uint32_t *)script.bytes));
   BOOL isRAMBundle = magicNumber == RCTRAMBundleMagicNumber;
   if (isRAMBundle) {
+    [_performanceLogger markStartForTag:RCTPLRAMBundleLoad];
     NSError *error;
-    script = [self loadRAMBundle:sourceURL error:&error];
+    script = loadRAMBundle(sourceURL, &error, _randomAccessBundle);
+    [self registerNativeRequire];
+    [_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
+    [_performanceLogger setValue:script.length forTag:RCTPLRAMStartupCodeSize];
 
     if (error) {
       if (onComplete) {
@@ -892,9 +896,8 @@ static RandomAccessBundleStartupCode readRAMBundle(file_ptr bundle, RandomAccess
   return {std::move(code), startupCodeSize};
 }
 
-- (NSData *)loadRAMBundle:(NSURL *)sourceURL error:(NSError **)error
+static NSData *loadRAMBundle(NSURL *sourceURL, NSError **error, RandomAccessBundleData &randomAccessBundle)
 {
-  [_performanceLogger markStartForTag:RCTPLRAMBundleLoad];
   file_ptr bundle(fopen(sourceURL.path.UTF8String, "r"), fclose);
   if (!bundle) {
     if (error) {
@@ -903,10 +906,7 @@ static RandomAccessBundleStartupCode readRAMBundle(file_ptr bundle, RandomAccess
     return nil;
   }
 
-  [self registerNativeRequire];
-
-
-  auto startupCode = readRAMBundle(std::move(bundle), _randomAccessBundle);
+  auto startupCode = readRAMBundle(std::move(bundle), randomAccessBundle);
   if (startupCode.isEmpty()) {
     if (error) {
       *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
@@ -914,8 +914,6 @@ static RandomAccessBundleStartupCode readRAMBundle(file_ptr bundle, RandomAccess
     return nil;
   }
 
-  [_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
-  [_performanceLogger setValue:startupCode.size forTag:RCTPLRAMStartupCodeSize];
   return [NSData dataWithBytesNoCopy:startupCode.code.release() length:startupCode.size freeWhenDone:YES];
 }
 
