@@ -23,12 +23,16 @@ import android.text.style.MetricAffectingSpan;
       -1 /* mFontSize */,
       -1 /* mFontStyle */,
       -1 /* mFontWeight */,
+      false /* mHasUnderline */,
+      false /* mHasStrikeThrough */,
       null /* mFontFamily */,
       true /* mFrozen */);
 
   // text property
   private double mTextColor;
   private int mBackgroundColor;
+  private boolean mHasUnderline;
+  private boolean mHasStrikeThrough;
 
   // font properties
   private int mFontSize;
@@ -48,6 +52,8 @@ import android.text.style.MetricAffectingSpan;
       int fontSize,
       int fontStyle,
       int fontWeight,
+      boolean hasUnderline,
+      boolean hasStrikeThrough,
       @Nullable String fontFamily,
       boolean frozen) {
     mTextColor = textColor;
@@ -55,6 +61,8 @@ import android.text.style.MetricAffectingSpan;
     mFontSize = fontSize;
     mFontStyle = fontStyle;
     mFontWeight = fontWeight;
+    mHasUnderline = hasUnderline;
+    mHasStrikeThrough = hasStrikeThrough;
     mFontFamily = fontFamily;
     mFrozen = frozen;
   }
@@ -66,6 +74,8 @@ import android.text.style.MetricAffectingSpan;
         mFontSize,
         mFontStyle,
         mFontWeight,
+        mHasUnderline,
+        mHasStrikeThrough,
         mFontFamily,
         false);
   }
@@ -126,6 +136,22 @@ import android.text.style.MetricAffectingSpan;
     mFontFamily = fontFamily;
   }
 
+  /* package */ boolean hasUnderline() {
+    return mHasUnderline;
+  }
+
+  /* package */ void setHasUnderline(boolean hasUnderline) {
+    mHasUnderline = hasUnderline;
+  }
+
+  /* package */ boolean hasStrikeThrough() {
+    return mHasStrikeThrough;
+  }
+
+  /* package */ void setHasStrikeThrough(boolean hasStrikeThrough) {
+    mHasStrikeThrough = hasStrikeThrough;
+  }
+
   @Override
   public void updateDrawState(TextPaint ds) {
     if (!Double.isNaN(mTextColor)) {
@@ -133,6 +159,8 @@ import android.text.style.MetricAffectingSpan;
     }
 
     ds.bgColor = mBackgroundColor;
+    ds.setUnderlineText(mHasUnderline);
+    ds.setStrikeThruText(mHasStrikeThrough);
     updateMeasureState(ds);
   }
 

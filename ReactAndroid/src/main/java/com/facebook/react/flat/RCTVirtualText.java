@@ -172,6 +172,29 @@ import com.facebook.react.uimanager.annotations.ReactProp;
     }
   }
 
+  @ReactProp(name = ViewProps.TEXT_DECORATION_LINE)
+  public void setTextDecorationLine(@Nullable String textDecorationLineString) {
+    boolean isUnderlineTextDecorationSet = false;
+    boolean isLineThroughTextDecorationSet = false;
+    if (textDecorationLineString != null) {
+      for (String textDecorationLineSubString : textDecorationLineString.split(" ")) {
+        if ("underline".equals(textDecorationLineSubString)) {
+          isUnderlineTextDecorationSet = true;
+        } else if ("line-through".equals(textDecorationLineSubString)) {
+          isLineThroughTextDecorationSet = true;
+        }
+      }
+    }
+
+    if (isUnderlineTextDecorationSet != mFontStylingSpan.hasUnderline() ||
+        isLineThroughTextDecorationSet != mFontStylingSpan.hasStrikeThrough()) {
+      FontStylingSpan span = getSpan();
+      span.setHasUnderline(isUnderlineTextDecorationSet);
+      span.setHasStrikeThrough(isLineThroughTextDecorationSet);
+      notifyChanged(true);
+    }
+  }
+
   @ReactProp(name = ViewProps.FONT_STYLE)
   public void setFontStyle(@Nullable String fontStyleString) {
     final int fontStyle;
