@@ -16,6 +16,7 @@ import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaOnlyArray;
+import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.uimanager.ReactChoreographer;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.modules.core.JSTimersExecution;
@@ -92,7 +93,7 @@ public class TimingModuleTest {
             eq(ReactChoreographer.CallbackType.TIMERS_EVENTS),
             any(Choreographer.FrameCallback.class));
 
-    mTiming = new Timing(reactContext);
+    mTiming = new Timing(reactContext, mock(DevSupportManager.class));
     mJSTimersMock = mock(JSTimersExecution.class);
     mExecutorTokenMock = mock(ExecutorToken.class);
     when(reactContext.getJSModule(mExecutorTokenMock, JSTimersExecution.class)).thenReturn(mJSTimersMock);

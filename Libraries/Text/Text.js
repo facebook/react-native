@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const NativeMethodsMixin = require('NativeMethodsMixin');
+const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
@@ -20,7 +20,7 @@ const TextStylePropTypes = require('TextStylePropTypes');
 const Touchable = require('Touchable');
 
 const createReactNativeComponentClass =
-  require('createReactNativeComponentClass');
+  require('react/lib/createReactNativeComponentClass');
 const merge = require('merge');
 
 const stylePropType = StyleSheetPropType(TextStylePropTypes);
@@ -29,33 +29,50 @@ const viewConfig = {
   validAttributes: merge(ReactNativeViewAttributes.UIView, {
     isHighlighted: true,
     numberOfLines: true,
+    lineBreakMode: true,
     allowFontScaling: true,
+    selectable: true,
   }),
   uiViewClassName: 'RCTText',
 };
 
 /**
- * A React component for displaying text which supports nesting,
- * styling, and touch handling.  In the following example, the nested title and
- * body text will inherit the `fontFamily` from `styles.baseText`, but the title
- * provides its own additional styles.  The title and body will stack on top of
- * each other on account of the literal newlines:
+ * A React component for displaying text.
  *
- * ```
- * renderText: function() {
- *   return (
- *     <Text style={styles.baseText}>
- *       <Text style={styles.titleText} onPress={this.onPressTitle}>
- *         {this.state.titleText + '\n\n'}
+ * `Text` supports nesting, styling, and touch handling.
+ *
+ * In the following example, the nested title and body text will inherit the `fontFamily` from
+ *`styles.baseText`, but the title provides its own additional styles.  The title and body will
+ * stack on top of each other on account of the literal newlines:
+ *
+ * ```ReactNativeWebPlayer
+ * import React, { Component } from 'react';
+ * import { AppRegistry, Text, StyleSheet } from 'react-native';
+ *
+ * class TextInANest extends Component {
+ *   constructor(props) {
+ *     super(props);
+ *     this.state = {
+ *       titleText: "Bird's Nest",
+ *       bodyText: 'This is not really a bird nest.'
+ *     };
+ *   }
+ *
+ *   render() {
+ *     return (
+ *       <Text style={styles.baseText}>
+ *         <Text style={styles.titleText} onPress={this.onPressTitle}>
+ *           {this.state.titleText}<br /><br />
+ *         </Text>
+ *         <Text numberOfLines={5}>
+ *           {this.state.bodyText}
+ *         </Text>
  *       </Text>
- *       <Text numberOfLines={5}>
- *         {this.state.bodyText}
- *       </Text>
- *     </Text>
- *   );
- * },
- * ...
- * var styles = StyleSheet.create({
+ *     );
+ *   }
+ * }
+ *
+ * const styles = StyleSheet.create({
  *   baseText: {
  *     fontFamily: 'Cochin',
  *   },
@@ -63,16 +80,39 @@ const viewConfig = {
  *     fontSize: 20,
  *     fontWeight: 'bold',
  *   },
- * };
+ * });
+ *
+ * // App registration and rendering
+ * AppRegistry.registerComponent('TextInANest', () => TextInANest);
  * ```
  */
 
 const Text = React.createClass({
   propTypes: {
     /**
+     * Line Break mode. This can be one of the following values:
+     *
+     * - `head` - The line is displayed so that the end fits in the container and the missing text
+     * at the beginning of the line is indicated by an ellipsis glyph. e.g., "...wxyz"
+     * - `middle` - The line is displayed so that the beginning and end fit in the container and the
+     * missing text in the middle is indicated by an ellipsis glyph. "ab...yz"
+     * - `tail` - The line is displayed so that the beginning fits in the container and the
+     * missing text at the end of the line is indicated by an ellipsis glyph. e.g., "abcd..."
+     * - `clip` - Lines are not drawn past the edge of the text container.
+     *
+     * The default is `tail`.
+     *
+     * `numberOfLines` must be set in conjunction with this prop.
+     *
+     * > `clip` is working only for iOS
+     */
+    lineBreakMode: React.PropTypes.oneOf(['head', 'middle', 'tail', 'clip']),
+    /**
      * Used to truncate the text with an ellipsis after computing the text
      * layout, including line wrapping, such that the total number of lines
      * does not exceed this number.
+     *
+     * This prop is commonly used with `lineBreakMode`.
      */
     numberOfLines: React.PropTypes.number,
     /**
@@ -83,15 +123,26 @@ const Text = React.createClass({
     onLayout: React.PropTypes.func,
     /**
      * This function is called on press.
+     *
+     * e.g., `onPress={() => console.log('1st')}``
      */
     onPress: React.PropTypes.func,
     /**
      * This function is called on long press.
+     *
+     * e.g., `onLongPress={this.increaseSize}>``
      */
     onLongPress: React.PropTypes.func,
     /**
-     * When true, no visual change is made when text is pressed down. By
+     * Lets the user select text, to use the native copy and paste functionality.
+     *
+     * @platform android
+     */
+    selectable: React.PropTypes.bool,
+    /**
+     * When `true`, no visual change is made when text is pressed down. By
      * default, a gray oval highlights the text on press down.
+     *
      * @platform ios
      */
     suppressHighlighting: React.PropTypes.bool,
@@ -101,15 +152,27 @@ const Text = React.createClass({
      */
     testID: React.PropTypes.string,
     /**
-     * Specifies should fonts scale to respect Text Size accessibility setting on iOS.
+     * Specifies whether fonts should scale to respect Text Size accessibility setting on iOS. The
+     * default is `true`.
+     *
      * @platform ios
      */
     allowFontScaling: React.PropTypes.bool,
+    /**
+     * When set to `true`, indicates that the view is an accessibility element. The default value
+     * for a `Text` element is `true`.
+     *
+     * See the
+     * [Accessibility guide](/react-native/docs/accessibility.html#accessible-ios-android)
+     * for more information.
+     */
+     accessible: React.PropTypes.bool,
   },
   getDefaultProps(): Object {
     return {
       accessible: true,
       allowFontScaling: true,
+      lineBreakMode: 'tail',
     };
   },
   getInitialState: function(): Object {
@@ -144,7 +207,7 @@ const Text = React.createClass({
   touchableHandlePress: (null: ?Function),
   touchableHandleLongPress: (null: ?Function),
   touchableGetPressRectOffset: (null: ?Function),
-  render(): ReactElement {
+  render(): ReactElement<any> {
     let newProps = this.props;
     if (this.props.onStartShouldSetResponder || this._hasPressHandler()) {
       if (!this._handlers) {

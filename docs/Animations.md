@@ -24,13 +24,13 @@ component with a simple spring bounce on mount looks like this:
 
 ```javascript
 class Playground extends React.Component {
-  constructor(props: any) {
+  constructor(props) {
     super(props);
     this.state = {
       bounceValue: new Animated.Value(0),
     };
   }
-  render(): ReactElement {
+  render() {
     return (
       <Animated.Image                         // Base: Image, Text, View
         source={{uri: 'http://i.imgur.com/XMKOH81.jpg'}}
@@ -286,7 +286,7 @@ class App extends React.Component {
   componentWillMount() {
     // Animate creation
     LayoutAnimation.spring();
-  },
+  }
 
   _onPress() {
     // Animate the update
@@ -306,7 +306,7 @@ class App extends React.Component {
       </View>
     );
   }
-};
+}
 ```
 [Run this example](https://rnplay.org/apps/uaQrGQ)
 
@@ -323,7 +323,7 @@ animations that underlies all of the JavaScript-based animation APIs.  In
 general, you shouldn't need to call this yourself - the animation APIs will
 manage frame updates for you.
 
-### react-tween-state (Not recommended - use [Animated](#animated) instead)
+### react-tween-state (Not recommended - use [Animated](docs/animations.html#animated) instead)
 
 [react-tween-state](https://github.com/chenglou/react-tween-state) is a
 minimal library that does exactly what its name suggests: it *tweens* a
@@ -393,7 +393,7 @@ Here we animated the opacity, but as you might guess, we can animate any
 numeric value. Read more about react-tween-state in its
 [README](https://github.com/chenglou/react-tween-state).
 
-### Rebound (Not recommended - use [Animated](docs/animation.html) instead)
+### Rebound (Not recommended - use [Animated](docs/animations.html#animated) instead)
 
 [Rebound.js](https://github.com/facebook/rebound-js) is a JavaScript port of
 [Rebound for Android](https://github.com/facebook/rebound). It is

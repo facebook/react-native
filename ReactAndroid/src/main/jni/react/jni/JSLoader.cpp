@@ -3,7 +3,7 @@
 #include "JSLoader.h"
 
 #include <android/asset_manager_jni.h>
-#include <jni/Environment.h>
+#include <fb/Environment.h>
 #include <fstream>
 #include <sstream>
 #include <streambuf>

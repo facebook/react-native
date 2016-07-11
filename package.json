@@ -18,16 +18,14 @@
       "^[./a-zA-Z0-9$_-]+\\.png$": "RelativeImageStub"
     },
     "testPathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "/local-cli/rnpm/"
     ],
     "haste": {
       "defaultPlatform": "ios",
       "providesModuleNodeModules": [
-        "fbjs",
-        "react",
         "react-native",
-        "parse",
-        "react-transform-hmr"
+        "parse"
       ],
       "platforms": [
         "ios",
@@ -82,11 +80,9 @@
       "downstream/core/toArray.js",
       "node_modules/jest-cli",
       "node_modules/react/dist",
-      "/node_modules/fbjs/.*/__mocks__/",
+      "node_modules/fbjs/.*/__mocks__/",
+      "node_modules/fbjs/node_modules/",
       "<rootDir>/website/"
-    ],
-    "testFileExtensions": [
-      "js"
     ],
     "unmockedModulePathPatterns": [
       "promise",
@@ -100,9 +96,11 @@
     "React",
     "React.podspec",
     "ReactAndroid",
+    "ReactCommon",
     "react.gradle",
     "android",
     "Libraries",
+    "lib",
     "packager",
     "cli.js",
     "local-cli",
@@ -124,18 +122,23 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "15.0.3-alpha.1"
+    "react": "~15.2.0"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
     "art": "^0.10.0",
-    "babel-core": "^6.6.4",
-    "babel-plugin-external-helpers": "^6.5.0",
-    "babel-polyfill": "^6.6.1",
-    "babel-preset-react-native": "^1.7.0",
+    "babel-core": "^6.10.4",
+    "babel-plugin-external-helpers": "^6.8.0",
+    "babel-plugin-syntax-trailing-function-commas": "^6.5.0",
+    "babel-plugin-transform-flow-strip-types": "^6.6.5",
+    "babel-plugin-transform-object-rest-spread": "^6.6.5",
+    "babel-polyfill": "^6.9.1",
+    "babel-preset-es2015-node": "^6.1.0",
+    "babel-preset-fbjs": "^2.0.0",
+    "babel-preset-react-native": "^1.9.0",
     "babel-register": "^6.6.0",
     "babel-types": "^6.6.4",
-    "babylon": "^6.6.4",
+    "babylon": "^6.8.2",
     "base64-js": "^0.0.8",
     "bser": "^1.0.2",
     "chalk": "^1.1.1",
@@ -143,22 +146,28 @@
     "core-js": "^2.2.2",
     "debug": "^2.2.0",
     "event-target-shim": "^1.0.5",
-    "fbjs": "^0.8.0",
-    "fbjs-scripts": "^0.4.0",
+    "fbjs": "^0.8.3",
+    "fbjs-scripts": "^0.7.0",
+    "fs-extra": "^0.26.2",
+    "glob": "^5.0.15",
     "graceful-fs": "^4.1.3",
     "image-size": "^0.3.5",
     "immutable": "~3.7.6",
+    "inquirer": "^0.12.0",
     "joi": "^6.6.1",
     "json-stable-stringify": "^1.0.1",
     "json5": "^0.4.0",
     "jstransform": "^11.0.3",
     "lodash": "^3.10.1",
+    "mime": "^1.3.4",
     "mkdirp": "^0.5.1",
     "module-deps": "^3.9.1",
     "node-fetch": "^1.3.3",
-    "node-haste": "~2.11.0",
+    "node-haste": "~2.12.0",
+    "npmlog": "^2.0.4",
     "opn": "^3.0.2",
     "optimist": "^0.6.1",
+    "plist": "^1.2.0",
     "progress": "^1.1.8",
     "promise": "^7.1.1",
     "react-clone-referenced-element": "^1.0.1",
@@ -174,20 +183,25 @@
     "uglify-js": "^2.6.2",
     "wordwrap": "^1.0.0",
     "worker-farm": "^1.3.1",
-    "ws": "^0.8.0",
+    "ws": "^1.1.0",
+    "xcode": "^0.8.2",
+    "xmldoc": "^0.4.0",
     "yargs": "^3.24.0",
-    "yeoman-environment": "^1.2.7",
+    "yeoman-environment": "~1.2.7",
     "yeoman-generator": "^0.20.3"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.0",
-    "eslint": "^2.5.3",
+    "eslint": "^2.13.1",
+    "eslint-plugin-babel": "^3.2.0",
     "eslint-plugin-flow-vars": "^0.2.1",
     "eslint-plugin-react": "^4.2.1",
-    "flow-bin": "0.24.0",
-    "jest-cli": "11.0.2",
+    "flow-bin": "^0.28.0",
+    "jest": "^13.1.0",
+    "jest-repl": "^13.1.0",
+    "jest-runtime": "^13.1.0",
     "portfinder": "0.4.0",
-    "react": "15.0.3-alpha.1",
+    "react": "~15.2.0",
     "shelljs": "0.6.0"
   }
 }

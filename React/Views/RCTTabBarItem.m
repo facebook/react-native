@@ -92,6 +92,17 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
   }
 }
 
+- (void)setSelectedIcon:(UIImage *)selectedIcon
+{
+  _selectedIcon = selectedIcon;
+  
+  if (_renderAsOriginal) {
+    self.barItem.selectedImage = [_selectedIcon imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+  } else {
+    self.barItem.selectedImage = _selectedIcon;
+  }
+}
+
 - (UIViewController *)reactViewController
 {
   return self.superview.reactViewController;

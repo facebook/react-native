@@ -4,7 +4,7 @@
 
 #include <mutex>
 
-#include <jni/fbjni.h>
+#include <fb/fbjni.h>
 
 #include <react/ExecutorToken.h>
 

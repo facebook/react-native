@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -15,31 +22,89 @@
  */
 'use strict';
 
-const React = require('react');
 const ReactNative = require('react-native');
 // $FlowFixMe : This is a platform-forked component, and flow seems to only run on iOS?
 const UIExplorerList = require('./UIExplorerList');
+
 const {
   NavigationExperimental,
 } = ReactNative;
+
+
 const {
-  Reducer: NavigationReducer,
+  StateUtils: NavigationStateUtils,
 } = NavigationExperimental;
-const StackReducer = NavigationReducer.StackReducer;
 
 import type {NavigationState} from 'NavigationTypeDefinition';
-
-import type {UIExplorerAction} from './UIExplorerActions';
 
 export type UIExplorerNavigationState = {
   externalExample: ?string;
   stack: NavigationState;
 };
 
+const defaultGetReducerForState = (initialState) => (state) => state || initialState;
+
+function getNavigationState(state: any): ?NavigationState {
+  if (
+    (state instanceof Object) &&
+    (state.routes instanceof Array) &&
+    (state.routes[0] !== undefined) &&
+    (typeof state.index === 'number') &&
+    (state.routes[state.index] !== undefined)
+  ) {
+    return state;
+  }
+  return null;
+}
+
+function StackReducer({initialState, getReducerForState, getPushedReducerForAction}: any): Function {
+  const getReducerForStateWithDefault = getReducerForState || defaultGetReducerForState;
+  return function (lastState: ?NavigationState, action: any): NavigationState {
+    if (!lastState) {
+      return initialState;
+    }
+    const lastParentState = getNavigationState(lastState);
+    if (!lastParentState) {
+      return lastState;
+    }
+
+    const activeSubState = lastParentState.routes[lastParentState.index];
+    const activeSubReducer = getReducerForStateWithDefault(activeSubState);
+    const nextActiveState = activeSubReducer(activeSubState, action);
+    if (nextActiveState !== activeSubState) {
+      const nextChildren = [...lastParentState.routes];
+      nextChildren[lastParentState.index] = nextActiveState;
+      return {
+        ...lastParentState,
+        routes: nextChildren,
+      };
+    }
+
+    const subReducerToPush = getPushedReducerForAction(action, lastParentState);
+    if (subReducerToPush) {
+      return NavigationStateUtils.push(
+        lastParentState,
+        subReducerToPush(null, action)
+      );
+    }
+
+    switch (action.type) {
+      case 'back':
+      case 'BackAction':
+        if (lastParentState.index === 0 || lastParentState.routes.length === 1) {
+          return lastParentState;
+        }
+        return NavigationStateUtils.pop(lastParentState);
+    }
+
+    return lastParentState;
+  };
+}
+
 const UIExplorerStackReducer = StackReducer({
   getPushedReducerForAction: (action, lastState) => {
     if (action.type === 'UIExplorerExampleAction' && UIExplorerList.Modules[action.openExample]) {
-      if (lastState.children.find(child => child.key === action.openExample)) {
+      if (lastState.routes.find(route => route.key === action.openExample)) {
         // The example is already open, we should avoid pushing examples twice
         return null;
       }
@@ -51,7 +116,7 @@ const UIExplorerStackReducer = StackReducer({
   initialState: {
     key: 'UIExplorerMainStack',
     index: 0,
-    children: [
+    routes: [
       {key: 'AppList'},
     ],
   },
@@ -70,7 +135,7 @@ function UIExplorerNavigationReducer(lastState: ?UIExplorerNavigationState, acti
       stack: {
         key: 'UIExplorerMainStack',
         index: 0,
-        children: [
+        routes: [
           {
             key: 'AppList',
             filter: action.filter,
@@ -99,7 +164,7 @@ function UIExplorerNavigationReducer(lastState: ?UIExplorerNavigationState, acti
     return {
       externalExample: null,
       stack: newStack,
-    }
+    };
   }
   return lastState;
 }

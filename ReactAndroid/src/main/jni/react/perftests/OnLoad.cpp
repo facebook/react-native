@@ -1,7 +1,7 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
 #include <fb/log.h>
-#include <jni/Environment.h>
+#include <fb/Environment.h>
 #include <jni/LocalString.h>
 #include <jni/Registration.h>
 

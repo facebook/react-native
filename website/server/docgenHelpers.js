@@ -1,8 +1,8 @@
-"use strict";
-var docgen = require('react-docgen');
+'use strict';
+const docgen = require('react-docgen');
 
 function stylePropTypeHandler(documentation, path) {
-  var propTypesPath = docgen.utils.getMemberValuePath(path, 'propTypes');
+  let propTypesPath = docgen.utils.getMemberValuePath(path, 'propTypes');
   if (!propTypesPath) {
     return;
   }
@@ -18,25 +18,25 @@ function stylePropTypeHandler(documentation, path) {
         docgen.utils.getPropertyName(propertyPath) !== 'style') {
       return;
     }
-    var valuePath = docgen.utils.resolveToValue(propertyPath.get('value'));
+    let valuePath = docgen.utils.resolveToValue(propertyPath.get('value'));
     // If it's a call to StyleSheetPropType, do stuff
     if (valuePath.node.type !== 'CallExpression' ||
         valuePath.node.callee.name !== 'StyleSheetPropType') {
       return;
     }
     // Get type of style sheet
-    var styleSheetModule = docgen.utils.resolveToModule(
+    let styleSheetModule = docgen.utils.resolveToModule(
       valuePath.get('arguments', 0)
     );
     if (styleSheetModule) {
-      var propDescriptor = documentation.getPropDescriptor('style');
+      let propDescriptor = documentation.getPropDescriptor('style');
       propDescriptor.type = {name: 'stylesheet', value: styleSheetModule};
     }
   });
 }
 
 function deprecatedPropTypeHandler(documentation, path) {
-  var propTypesPath = docgen.utils.getMemberValuePath(path, 'propTypes');
+  let propTypesPath = docgen.utils.getMemberValuePath(path, 'propTypes');
   if (!propTypesPath) {
     return;
   }
@@ -48,13 +48,13 @@ function deprecatedPropTypeHandler(documentation, path) {
 
   // Checks for deprecatedPropType function and add deprecation info.
   propTypesPath.get('properties').each(function(propertyPath) {
-    var valuePath = docgen.utils.resolveToValue(propertyPath.get('value'));
+    let valuePath = docgen.utils.resolveToValue(propertyPath.get('value'));
     // If it's a call to deprecatedPropType, do stuff
     if (valuePath.node.type !== 'CallExpression' ||
         valuePath.node.callee.name !== 'deprecatedPropType') {
       return;
     }
-    var propDescriptor = documentation.getPropDescriptor(
+    let propDescriptor = documentation.getPropDescriptor(
       docgen.utils.getPropertyName(propertyPath)
     );
     // The 2nd argument of deprecatedPropType is the deprecation message.
@@ -72,13 +72,104 @@ function deprecatedPropTypeHandler(documentation, path) {
   });
 }
 
+function typedefHandler(documentation, path) {
+  const declarationPath = path.get('declaration');
+  const typePath = declarationPath.get('right');
+
+  // Name, type, description of the typedef
+  const name = declarationPath.value.id.name;
+  const type = { names: [typePath.node.id.name] };
+  const description = docgen.utils.docblock.getDocblock(path);
+
+  // Get the properties for the typedef
+  let paramsDescriptions = [];
+  let paramsTypes;
+  if (typePath.node.typeParameters) {
+    const paramsPath = typePath.get('typeParameters').get('params', 0);
+    if (paramsPath) {
+      const properties = paramsPath.get('properties');
+      // Get the descriptions inside each property (are inline leading comments)
+      paramsDescriptions =
+        properties.map(property => docgen.utils.docblock.getDocblock(property));
+      // Get the property type info
+      paramsTypes = docgen.utils.getFlowType(paramsPath);
+    }
+  }
+  // Get the property type, description and value info
+  let values = [];
+  if (paramsTypes && paramsTypes.signature && paramsTypes.signature.properties &&
+    paramsTypes.signature.properties.length !== 0) {
+    values = paramsTypes.signature.properties.map((property, index) => {
+      return {
+        type: { names: [property.value.name] },
+        description: paramsDescriptions[index],
+        name: property.key,
+      };
+    });
+  }
+
+  let typedef = {
+    name: name,
+    description: description,
+    type: type,
+    values: values,
+  };
+  documentation.set('typedef', typedef);
+}
+
+function getTypeName(type) {
+  let typeName;
+  switch (type.name) {
+    case 'signature':
+      typeName = type.type;
+      break;
+    case 'union':
+      typeName = type.elements.map(getTypeName);
+      break;
+    default:
+      typeName = type.alias ? type.alias : type.name;
+      break;
+  }
+  return typeName;
+}
+
+function jsDocFormatType(entities) {
+  let modEntities = entities;
+  if (entities) {
+    if (typeof entities === 'object' && entities.length) {
+      entities.map((entity, entityIndex) => {
+        if (entity.type) {
+          const typeNames = [].concat(getTypeName(entity.type));
+          modEntities[entityIndex].type = { names: typeNames };
+        }
+      });
+    } else {
+      modEntities.type = [].concat(getTypeName(entities));
+    }
+  }
+  return modEntities;
+}
+
+function jsDocFormatHandler(documentation, path) {
+  const methods = documentation.get('methods');
+  if (!methods || methods.length === 0) {
+    return;
+  }
+  let modMethods = methods;
+  methods.map((method, methodIndex) => {
+    modMethods[methodIndex].params = jsDocFormatType(method.params);
+    modMethods[methodIndex].returns = jsDocFormatType(method.returns);
+  });
+  documentation.set('methods', modMethods);
+}
+
 function findExportedOrFirst(node, recast) {
   return docgen.resolver.findExportedComponentDefinition(node, recast) ||
     docgen.resolver.findAllComponentDefinitions(node, recast)[0];
 }
 
 function findExportedObject(ast, recast) {
-  var objPath;
+  let objPath;
   recast.visit(ast, {
     visitAssignmentExpression: function(path) {
       if (!objPath && docgen.utils.isExportsOrModuleAssignment(path)) {
@@ -93,9 +184,9 @@ function findExportedObject(ast, recast) {
     // handler.
     // This converts any expression, e.g. `foo` to an object expression of
     // the form `{propTypes: foo}`
-    var b = recast.types.builders;
-    var nt = recast.types.namedTypes;
-    var obj = objPath.node;
+    let b = recast.types.builders;
+    let nt = recast.types.namedTypes;
+    let obj = objPath.node;
 
     // Hack: This is converting calls like
     //
@@ -107,7 +198,7 @@ function findExportedObject(ast, recast) {
     if (nt.CallExpression.check(obj) &&
         recast.print(obj.callee).code === 'Object.assign') {
       obj = objPath.node.arguments[1];
-      var firstArg = objPath.node.arguments[0];
+      let firstArg = objPath.node.arguments[0];
       if (recast.print(firstArg.callee).code === 'Object.create') {
         firstArg = firstArg.arguments[0];
       }
@@ -123,7 +214,29 @@ function findExportedObject(ast, recast) {
   return objPath;
 }
 
+function findExportedType(ast, recast) {
+  let types = recast.types.namedTypes;
+  let definitions;
+  recast.visit(ast, {
+    visitExportNamedDeclaration: function(path) {
+      if (path.node.declaration) {
+        if (types.TypeAlias.check(path.node.declaration)) {
+          if (!definitions) {
+            definitions = [];
+          }
+          definitions.push(path);
+        }
+      }
+      return false;
+    }
+  });
+  return definitions;
+}
+
 exports.stylePropTypeHandler = stylePropTypeHandler;
 exports.deprecatedPropTypeHandler = deprecatedPropTypeHandler;
+exports.typedefHandler = typedefHandler;
+exports.jsDocFormatHandler = jsDocFormatHandler;
 exports.findExportedOrFirst = findExportedOrFirst;
 exports.findExportedObject = findExportedObject;
+exports.findExportedType = findExportedType;

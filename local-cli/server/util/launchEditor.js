@@ -12,6 +12,7 @@ var chalk = require('chalk');
 var fs = require('fs');
 var path = require('path');
 var child_process = require('child_process');
+const isAbsolutePath = require('absolute-path');
 
 function isTerminalEditor(editor) {
   switch (editor) {
@@ -32,14 +33,23 @@ var COMMON_EDITORS = {
     '/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl',
   '/Applications/Sublime Text 2.app/Contents/MacOS/Sublime Text 2':
     '/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl',
+  '/Applications/Visual Studio Code.app/Contents/MacOS/Electron': 'code',
 };
 
-function getArgumentsForLineNumber(editor, fileName, lineNumber) {
+function addWorkspaceToArgumentsIfExists(args, workspace) {
+  if (workspace) {
+    args.unshift(workspace);
+  }
+  return args;
+}
+
+function getArgumentsForLineNumber(editor, fileName, lineNumber, workspace) {
   switch (path.basename(editor)) {
     case 'vim':
     case 'mvim':
       return [fileName, '+' + lineNumber];
     case 'atom':
+      return addWorkspaceToArgumentsIfExists([fileName + ':' + lineNumber], workspace);
     case 'subl':
     case 'sublime':
       return [fileName + ':' + lineNumber];
@@ -51,6 +61,8 @@ function getArgumentsForLineNumber(editor, fileName, lineNumber) {
     case 'mate':
     case 'mine':
       return ['--line', lineNumber, fileName];
+    case 'code':
+      return addWorkspaceToArgumentsIfExists(['-g', fileName + ':' + lineNumber], workspace);
   }
 
   // For all others, drop the lineNumber until we have
@@ -100,8 +112,23 @@ function printInstructions(title) {
   ].join('\n'));
 }
 
+function transformToAbsolutePathIfNeeded(pathName) {
+  if (!isAbsolutePath(pathName)) {
+    pathName = path.resolve(process.cwd(), pathName);
+  }
+  return pathName;
+}
+
+function findRootForFile(projectRoots, fileName) {
+  fileName = transformToAbsolutePathIfNeeded(fileName);
+  return projectRoots.find((root) => {
+    root = transformToAbsolutePathIfNeeded(root);
+    return fileName.startsWith(root + path.sep);
+  });
+}
+
 var _childProcess = null;
-function launchEditor(fileName, lineNumber) {
+function launchEditor(fileName, lineNumber, projectRoots) {
   if (!fs.existsSync(fileName)) {
     return;
   }
@@ -118,9 +145,10 @@ function launchEditor(fileName, lineNumber) {
     return;
   }
 
+  var workspace = findRootForFile(projectRoots, fileName);
   var args = [fileName];
   if (lineNumber) {
-    args = getArgumentsForLineNumber(editor, fileName, lineNumber);
+    args = getArgumentsForLineNumber(editor, fileName, lineNumber, workspace);
   }
   console.log('Opening ' + chalk.underline(fileName) + ' with ' + chalk.bold(editor));
 

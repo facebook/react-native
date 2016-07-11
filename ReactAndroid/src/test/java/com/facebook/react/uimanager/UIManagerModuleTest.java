@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import android.graphics.Color;
-import android.util.DisplayMetrics;
 import android.view.Choreographer;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,10 +106,6 @@ public class UIManagerModuleTest {
     mCatalystInstanceMock = ReactTestHelper.createMockCatalystInstance();
     mReactContext = new ReactApplicationContext(RuntimeEnvironment.application);
     mReactContext.initializeWithInstance(mCatalystInstanceMock);
-
-    DisplayMetrics displayMetrics = mReactContext.getResources().getDisplayMetrics();
-    DisplayMetricsHolder.setWindowDisplayMetrics(displayMetrics);
-    DisplayMetricsHolder.setScreenDisplayMetrics(displayMetrics);
 
     UIManagerModule uiManagerModuleMock = mock(UIManagerModule.class);
     when(mCatalystInstanceMock.getNativeModule(UIManagerModule.class))

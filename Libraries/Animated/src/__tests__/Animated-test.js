@@ -100,8 +100,8 @@ describe('Animated', () => {
 
   it('stops animation when detached', () => {
     // jest environment doesn't have cancelAnimationFrame :(
-    if (!window.cancelAnimationFrame) {
-      window.cancelAnimationFrame = jest.fn();
+    if (!global.cancelAnimationFrame) {
+      global.cancelAnimationFrame = jest.fn();
     }
 
     var anim = new Animated.Value(0);
@@ -142,6 +142,9 @@ describe('Animated', () => {
     expect(anim.__getValue()).toBe(15);
   });
 
+  it('convert to JSON', () => {
+    expect(JSON.stringify(new Animated.Value(10))).toBe('10');
+  });
 });
 
 

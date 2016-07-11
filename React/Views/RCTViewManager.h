@@ -11,10 +11,10 @@
 
 #import "RCTBridgeModule.h"
 #import "RCTConvert.h"
-#import "RCTComponent.h"
 #import "RCTDefines.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "UIView+React.h"
 
 @class RCTBridge;
 @class RCTShadowView;
@@ -85,7 +85,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
 /**
  * Called after view hierarchy manipulation has finished, and all shadow props
  * have been set, but before layout has been performed. Useful for performing
- * custo  layout logic or tasks that involve walking the view hierarchy.
+ * custom layout logic or tasks that involve walking the view hierarchy.
  * To be deprecated, hopefully.
  */
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *, RCTShadowView *> *)shadowViewRegistry;

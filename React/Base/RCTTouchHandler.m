@@ -295,6 +295,7 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
 {
   [super touchesCancelled:touches withEvent:event];
 
+  _coalescingKey++;
   if (_dispatchedInitialTouches) {
     [self _updateAndDispatchTouches:touches eventName:@"touchCancel" originatingTime:event.timestamp];
 

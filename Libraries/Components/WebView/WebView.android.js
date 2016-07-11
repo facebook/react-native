@@ -11,9 +11,9 @@
 'use strict';
 
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
-var ProgressBarAndroid = require('ProgressBarAndroid');
+var ActivityIndicator = require('ActivityIndicator');
 var React = require('React');
-var ReactNative = require('ReactNative');
+var ReactNative = require('react/lib/ReactNative');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');
@@ -37,9 +37,8 @@ var WebViewState = keyMirror({
 
 var defaultRenderLoading = () => (
   <View style={styles.loadingView}>
-    <ProgressBarAndroid
+    <ActivityIndicator
       style={styles.loadingProgressBar}
-      styleAttr="Inverse"
     />
   </View>
 );

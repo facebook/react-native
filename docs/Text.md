@@ -4,13 +4,24 @@
 
 Both iOS and Android allow you to display formatted text by annotating ranges of a string with specific formatting like bold or colored text (`NSAttributedString` on iOS, `SpannableString` on Android). In practice, this is very tedious. For React Native, we decided to use web paradigm for this where you can nest text to achieve the same effect.
 
-```javascript
-<Text style={{fontWeight: 'bold'}}>
-  I am bold
-  <Text style={{color: 'red'}}>
-    and red
-  </Text>
-</Text>
+```ReactNativeWebPlayer
+import React, { Component } from 'react';
+import { AppRegistry, Text } from 'react-native';
+
+class BoldAndBeautiful extends Component {
+  render() {
+    return (
+      <Text style={{fontWeight: 'bold'}}>
+        I am bold
+        <Text style={{color: 'red'}}>
+          and red
+        </Text>
+      </Text>
+    );
+  }
+}
+
+AppRegistry.registerComponent('BoldAndBeautiful', () => BoldAndBeautiful);
 ```
 
 Behind the scenes, React Native converts this to a flat `NSAttributedString` or `SpannableString` that contains the following information:
@@ -20,6 +31,31 @@ Behind the scenes, React Native converts this to a flat `NSAttributedString` or 
 0-9: bold
 9-17: bold, red
 ```
+
+## Nested Views (iOS Only)
+
+On iOS, you can nest views within your Text component. Here's an example:
+
+```ReactNativeWebPlayer
+import React, { Component } from 'react';
+import { AppRegistry, Text, View } from 'react-native';
+
+class BlueIsCool extends Component {
+  render() {
+    return (
+      <Text>
+        There is a blue square
+        <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
+        in between my text.
+      </Text>
+    );
+  }
+}
+
+AppRegistry.registerComponent('BlueIsCool', () => BlueIsCool);
+```
+
+> In order to use this feature, you must give the view a `width` and a `height`.
 
 ## Containers
 

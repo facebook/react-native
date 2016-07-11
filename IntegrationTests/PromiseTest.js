@@ -47,7 +47,7 @@ var PromiseTest = React.createClass({
       .catch(() => this.shouldReject = true);
   },
 
-  async testShouldSucceedAsync() : Promise {
+  async testShouldSucceedAsync() : Promise<any> {
     try {
       await TestModule.shouldResolve();
       this.shouldSucceedAsync = true;
@@ -56,7 +56,7 @@ var PromiseTest = React.createClass({
     }
   },
 
-  async testShouldThrowAsync() : Promise {
+  async testShouldThrowAsync() : Promise<any> {
     try {
       await TestModule.shouldReject();
       this.shouldThrowAsync = false;
@@ -65,7 +65,7 @@ var PromiseTest = React.createClass({
     }
   },
 
-  render() : ReactElement {
+  render() : ReactElement<any> {
     return <View />;
   }
 

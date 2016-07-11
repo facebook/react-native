@@ -52,6 +52,14 @@ var PickerAndroidTestApp = React.createClass({
           <Item label="item1" />
           <Item label="item2" />
         </Picker>
+        <Picker
+          mode="dropdown"
+          selectedValue={this.state.selected}
+          onValueChange={this.onValueChange}>
+          <Item label="item in sync 1" value={0} />
+          <Item label="item in sync 2" value={1} />
+          <Item label="item in sync 3" value={2} />
+        </Picker>
       </View>
     );
   },

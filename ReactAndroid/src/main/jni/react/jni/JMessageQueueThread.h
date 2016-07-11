@@ -6,7 +6,7 @@
 
 #include <react/MessageQueueThread.h>
 
-#include <jni/fbjni.h>
+#include <fb/fbjni.h>
 
 using namespace facebook::jni;
 

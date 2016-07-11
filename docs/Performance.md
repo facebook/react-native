@@ -81,6 +81,10 @@ but their receipt is not necessary for the scroll to occur).
 
 ### Common sources of performance problems
 
+#### Console.log statements 
+
+When running a bundled app, these statements can cause a big bottleneck in the JavaScript thread. This includes calls from debugging libraries such as [redux-logger](https://github.com/evgenyrodionov/redux-logger), so make sure to remove them before bundling.
+
 #### Development mode (dev=true)
 
 JavaScript thread performance suffers greatly when running in dev mode.
@@ -197,7 +201,7 @@ your use case.
 If we had a list with 2000 items and rendered them all immediately that
 would be a poor use of both memory and computational resources. It would
 also probably cause some pretty awful jank. So the scrollRenderAhead
-distance allows us to specify for far beyond the current viewport we
+distance allows us to specify how far beyond the current viewport we
 should continue to render rows.
 
 ##### removeClippedSubviews

@@ -102,18 +102,21 @@ class AutoExpandingTextInput extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {text: '', height: 0};
+    this.state = {
+      text: 'React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and React. The focus of React Native is on developer efficiency across all the platforms you care about — learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native.',
+      height: 0,
+    };
   }
   render() {
     return (
       <TextInput
         {...this.props}
         multiline={true}
-        onChange={(event) => {
-          this.setState({
-            text: event.nativeEvent.text,
-            height: event.nativeEvent.contentSize.height,
-          });
+        onChangeText={(text) => {
+          this.setState({text});
+        }}
+        onContentSizeChange={(event) => {
+          this.setState({height: event.nativeEvent.contentSize.height});
         }}
         style={[styles.default, {height: Math.max(35, this.state.height)}]}
         value={this.state.text}
@@ -524,7 +527,7 @@ exports.examples = [
       return (
         <View>
           <WithLabel label="true">
-            <TextInput password={true} style={styles.default} defaultValue="abc" />
+            <TextInput secureTextEntry={true} style={styles.default} defaultValue="abc" />
           </WithLabel>
         </View>
       );
@@ -532,7 +535,7 @@ exports.examples = [
   },
   {
     title: 'Event handling',
-    render: function(): ReactElement { return <TextEventsExample />; },
+    render: function(): ReactElement<any> { return <TextEventsExample />; },
   },
   {
     title: 'Colored input text',
@@ -630,7 +633,7 @@ exports.examples = [
   },
   {
     title: 'Blur on submit',
-    render: function(): ReactElement { return <BlurOnSubmitExample />; },
+    render: function(): ReactElement<any> { return <BlurOnSubmitExample />; },
   },
   {
     title: 'Multiline blur on submit',

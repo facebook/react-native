@@ -11,17 +11,21 @@
  */
 'use strict';
 
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTPushNotificationManager = require('NativeModules').PushNotificationManager;
-var invariant = require('fbjs/lib/invariant');
+const NativeEventEmitter = require('NativeEventEmitter');
+const RCTPushNotificationManager = require('NativeModules').PushNotificationManager;
+const invariant = require('fbjs/lib/invariant');
 
-var _notifHandlers = new Map();
-var _initialNotification = RCTPushNotificationManager &&
+const PushNotificationEmitter = new NativeEventEmitter(RCTPushNotificationManager);
+
+const _notifHandlers = new Map();
+
+//TODO: remove this once all call sites for popInitialNotification() have been removed
+let _initialNotification = RCTPushNotificationManager &&
   RCTPushNotificationManager.initialNotification;
 
-var DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
-var NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
-var DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
+const DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
+const NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
+const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
 
 /**
  * Handle push notifications for your app, including permission handling and
@@ -32,9 +36,10 @@ var DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
  *
  * [Manually link](docs/linking-libraries-ios.html#manual-linking) the PushNotificationIOS library
  *
- * - Be sure to add the following to your `Header Search Paths`:
- * `$(SRCROOT)/../node_modules/react-native/Libraries/PushNotificationIOS`
- * - Set the search to `recursive`
+ * - Add the following to your Project: `node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj`
+ * - Add the following to `Link Binary With Libraries`: `libRCTPushNotification.a`
+ * - Add the following to your `Header Search Paths`:
+ * `$(SRCROOT)/../node_modules/react-native/Libraries/PushNotificationIOS` and set the search to `recursive`
  *
  * Finally, to enable support for `notification` and `register` events you need to augment your AppDelegate.
  *
@@ -64,6 +69,10 @@ var DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
  *    - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
  *    {
  *     [RCTPushNotificationManager didReceiveLocalNotification:notification];
+ *    }
+ *    - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+ *    {
+ *      NSLog(@"%@", error);
  *    }
  *   ```
  */
@@ -139,6 +148,13 @@ class PushNotificationIOS {
   }
 
   /**
+   * Gets the local notifications that are currently scheduled.
+   */
+  static getScheduledLocalNotifications(callback: Function) {
+    RCTPushNotificationManager.getScheduledLocalNotifications(callback);
+  }
+
+  /**
    * Attaches a listener to remote or local notification events while the app is running
    * in the foreground or the background.
    *
@@ -158,21 +174,23 @@ class PushNotificationIOS {
     );
     var listener;
     if (type === 'notification') {
-      listener =  RCTDeviceEventEmitter.addListener(
+      listener =  PushNotificationEmitter.addListener(
         DEVICE_NOTIF_EVENT,
         (notifData) => {
+          notifData.remote = true;
           handler(new PushNotificationIOS(notifData));
         }
       );
     } else if (type === 'localNotification') {
-      listener = RCTDeviceEventEmitter.addListener(
+      listener = PushNotificationEmitter.addListener(
         DEVICE_LOCAL_NOTIF_EVENT,
         (notifData) => {
+          notifData.remote = false;
           handler(new PushNotificationIOS(notifData));
         }
       );
     } else if (type === 'register') {
-      listener = RCTDeviceEventEmitter.addListener(
+      listener = PushNotificationEmitter.addListener(
         NOTIF_REGISTER_EVENT,
         (registrationInfo) => {
           handler(registrationInfo.deviceToken);
@@ -180,6 +198,23 @@ class PushNotificationIOS {
       );
     }
     _notifHandlers.set(handler, listener);
+  }
+
+  /**
+   * Removes the event listener. Do this in `componentWillUnmount` to prevent
+   * memory leaks
+   */
+  static removeEventListener(type: string, handler: Function) {
+    invariant(
+      type === 'notification' || type === 'register' || type === 'localNotification',
+      'PushNotificationIOS only supports `notification`, `register` and `localNotification` events'
+    );
+    var listener = _notifHandlers.get(handler);
+    if (!listener) {
+      return;
+    }
+    listener.remove();
+    _notifHandlers.delete(handler);
   }
 
   /**
@@ -195,12 +230,20 @@ class PushNotificationIOS {
    *
    * If a map is provided to the method, only the permissions with truthy values
    * will be requested.
+
+   * This method returns a promise that will resolve when the user accepts,
+   * rejects, or if the permissions were previously rejected. The promise
+   * resolves to the current state of the permission.
    */
   static requestPermissions(permissions?: {
     alert?: boolean,
     badge?: boolean,
     sound?: boolean
-  }) {
+  }): Promise<{
+    alert: boolean,
+    badge: boolean,
+    sound: boolean
+  }> {
     var requestedPermissions = {};
     if (permissions) {
       requestedPermissions = {
@@ -215,7 +258,7 @@ class PushNotificationIOS {
         sound: true
       };
     }
-    RCTPushNotificationManager.requestPermissions(requestedPermissions);
+    return RCTPushNotificationManager.requestPermissions(requestedPermissions);
   }
 
   /**
@@ -247,35 +290,28 @@ class PushNotificationIOS {
   }
 
   /**
-   * Removes the event listener. Do this in `componentWillUnmount` to prevent
-   * memory leaks
-   */
-  static removeEventListener(type: string, handler: Function) {
-    invariant(
-      type === 'notification' || type === 'register' || type === 'localNotification',
-      'PushNotificationIOS only supports `notification`, `register` and `localNotification` events'
-    );
-    var listener = _notifHandlers.get(handler);
-    if (!listener) {
-      return;
-    }
-    listener.remove();
-    _notifHandlers.delete(handler);
-  }
-
-
-  /**
-   * An initial notification will be available if the app was cold-launched
-   * from a notification.
+   * DEPRECATED: An initial notification will be available if the app was
+   * cold-launched from a notification.
    *
    * The first caller of `popInitialNotification` will get the initial
    * notification object, or `null`. Subsequent invocations will return null.
    */
   static popInitialNotification() {
+    console.warn('PushNotificationIOS.popInitialNotification() is deprecated. Use getInitialNotification() instead.');
     var initialNotification = _initialNotification &&
       new PushNotificationIOS(_initialNotification);
     _initialNotification = null;
     return initialNotification;
+  }
+
+  /**
+   * If the app launch was triggered by a push notification,
+   * it will give the notification object, otherwise it will give `null`
+   */
+  static getInitialNotification(): Promise<?PushNotificationIOS> {
+    return RCTPushNotificationManager.getInitialNotification().then(notification => {
+      return notification && new PushNotificationIOS(notification);
+    });
   }
 
   /**
@@ -286,20 +322,26 @@ class PushNotificationIOS {
   constructor(nativeNotif: Object) {
     this._data = {};
 
-    // Extract data from Apple's `aps` dict as defined:
-
-    // https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
-
-    Object.keys(nativeNotif).forEach((notifKey) => {
-      var notifVal = nativeNotif[notifKey];
-      if (notifKey === 'aps') {
-        this._alert = notifVal.alert;
-        this._sound = notifVal.sound;
-        this._badgeCount = notifVal.badge;
-      } else {
-        this._data[notifKey] = notifVal;
-      }
-    });
+    if (nativeNotif.remote) {
+      // Extract data from Apple's `aps` dict as defined:
+      // https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
+      Object.keys(nativeNotif).forEach((notifKey) => {
+        var notifVal = nativeNotif[notifKey];
+        if (notifKey === 'aps') {
+          this._alert = notifVal.alert;
+          this._sound = notifVal.sound;
+          this._badgeCount = notifVal.badge;
+        } else {
+          this._data[notifKey] = notifVal;
+        }
+      });
+    } else {
+      // Local notifications aren't being sent down with `aps` dict.
+      this._badgeCount = nativeNotif.applicationIconBadgeNumber;
+      this._sound = nativeNotif.soundName;
+      this._alert = nativeNotif.alertBody;
+      this._data = nativeNotif.userInfo;
+    }
   }
 
   /**

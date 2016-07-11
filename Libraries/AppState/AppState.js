@@ -11,18 +11,12 @@
  */
 'use strict';
 
-var Map = require('Map');
-var NativeModules = require('NativeModules');
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTAppState = NativeModules.AppState;
+const NativeEventEmitter = require('NativeEventEmitter');
+const NativeModules = require('NativeModules');
+const RCTAppState = NativeModules.AppState;
 
-var logError = require('logError');
-var invariant = require('fbjs/lib/invariant');
-
-var _eventHandlers = {
-  change: new Map(),
-  memoryWarning: new Map(),
-};
+const logError = require('logError');
+const invariant = require('fbjs/lib/invariant');
 
 /**
  * `AppState` can tell you if the app is in the foreground or background,
@@ -36,8 +30,9 @@ var _eventHandlers = {
  *  - `active` - The app is running in the foreground
  *  - `background` - The app is running in the background. The user is either
  *     in another app or on the home screen
- *  - `inactive` - This is a transition state that currently never happens for
- *     typical React Native apps.
+ *  - `inactive` - This is a state that occurs when transitioning between
+ *  	 foreground & background, and during periods of inactivity such as
+ *  	 entering the Multitasking view or in the event of an incoming call
  *
  * For more information, see
  * [Apple's documentation](https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/TheAppLifeCycle/TheAppLifeCycle.html)
@@ -75,13 +70,58 @@ var _eventHandlers = {
  * state will happen only momentarily.
  */
 
-var AppState = {
+class AppState extends NativeEventEmitter {
 
-  /**
+  _eventHandlers: Object;
+  currentState: ?string;
+
+  constructor() {
+    super(RCTAppState);
+
+    this._eventHandlers = {
+      change: new Map(),
+      memoryWarning: new Map(),
+    };
+
+    // TODO: getCurrentAppState callback seems to be called at a really late stage
+    // after app launch. Trying to get currentState when mounting App component
+    // will likely to have the initial value here.
+    // Initialize to 'active' instead of null.
+    this.currentState = 'active';
+    
+    // TODO: this is a terrible solution - in order to ensure `currentState` prop
+    // is up to date, we have to register an observer that updates it whenever
+    // the state changes, even if nobody cares. We should just deprecate the
+    // `currentState` property and get rid of this.
+    this.addListener(
+      'appStateDidChange',
+      (appStateData) => {
+        this.currentState = appStateData.app_state;
+      }
+    );
+    
+    // TODO: see above - this request just populates the value of `currentState`
+    // when the module is first initialized. Would be better to get rid of the prop
+    // and expose `getCurrentAppState` method directly.
+    RCTAppState.getCurrentAppState(
+      (appStateData) => {
+        this.currentState = appStateData.app_state;
+      },
+      logError
+    );
+  }
+
+  /**   
    * Add a handler to AppState changes by listening to the `change` event type
    * and providing the handler
+   *
+   * TODO: now that AppState is a subclass of NativeEventEmitter, we could deprecate
+   * `addEventListener` and `removeEventListener` and just use `addListener` and
+   * `listener.remove()` directly. That will be a breaking change though, as both
+   * the method and event names are different (addListener events are currently
+   * required to be globally unique).
    */
-  addEventListener: function(
+  addEventListener(
     type: string,
     handler: Function
   ) {
@@ -90,24 +130,24 @@ var AppState = {
       'Trying to subscribe to unknown event: "%s"', type
     );
     if (type === 'change') {
-      _eventHandlers[type].set(handler, RCTDeviceEventEmitter.addListener(
+      this._eventHandlers[type].set(handler, this.addListener(
         'appStateDidChange',
         (appStateData) => {
           handler(appStateData.app_state);
         }
       ));
     } else if (type === 'memoryWarning') {
-      _eventHandlers[type].set(handler, RCTDeviceEventEmitter.addListener(
+      this._eventHandlers[type].set(handler, this.addListener(
         'memoryWarning',
         handler
       ));
     }
-  },
+  }
 
   /**
    * Remove a handler by passing the `change` event type and the handler
    */
-  removeEventListener: function(
+  removeEventListener(
     type: string,
     handler: Function
   ) {
@@ -115,28 +155,14 @@ var AppState = {
       ['change', 'memoryWarning'].indexOf(type) !== -1,
       'Trying to remove listener for unknown event: "%s"', type
     );
-    if (!_eventHandlers[type].has(handler)) {
+    if (!this._eventHandlers[type].has(handler)) {
       return;
     }
-    _eventHandlers[type].get(handler).remove();
-    _eventHandlers[type].delete(handler);
-  },
-
-  currentState: ('active' : ?string),
+    this._eventHandlers[type].get(handler).remove();
+    this._eventHandlers[type].delete(handler);
+  }
 };
 
-RCTDeviceEventEmitter.addListener(
-  'appStateDidChange',
-  (appStateData) => {
-    AppState.currentState = appStateData.app_state;
-  }
-);
-
-RCTAppState.getCurrentAppState(
-  (appStateData) => {
-    AppState.currentState = appStateData.app_state;
-  },
-  logError
-);
+AppState = new AppState();
 
 module.exports = AppState;

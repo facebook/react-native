@@ -38,7 +38,7 @@ h1 small, h2 small, h3 small, h4 small, h5 small, h6 small {
   color: #7b7b7b;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
   line-height: 40px;
 }
 
@@ -123,6 +123,33 @@ a:focus {
 html * {
   color-profile: sRGB;
   rendering-intent: auto;
+}
+
+.example-container {
+  position: relative;
+}
+
+.embedded-simulator, .embedded-simulator * {
+  box-sizing: border-box;
+}
+
+.embedded-simulator p {
+  text-align: center;
+  color: #999;
+}
+
+.embedded-simulator {
+  width: 210px;
+  position: absolute;
+  right: -200px;
+  top: 0;
+}
+
+@media screen and (max-width: 680px) {
+  .embedded-simulator {
+    position: relative;
+    right: 0;
+  }
 }
 
 .prism {
@@ -377,7 +404,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 }
 
 .hero {
-  background: #05A5D1;
+  background: #2D2D2D;
   padding: 50px 0;
   color: #FDF3E7;
   font-weight: 300;
@@ -479,6 +506,123 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 .nav-docs .nav-docs-section:last-child {
   padding-bottom: 0;
   border-bottom: 0;
+}
+
+@media only screen and (max-device-width: 1024px) {
+  @-webkit-keyframes slide-in {
+    0% { top: -30px; opacity: 0; }
+    100% { top: 0; opacity: 1; }
+  }
+  @-moz-keyframes slide-in {
+    0% { top: -30px; opacity: 0; }
+    100% { top: 0; opacity: 1; }
+  }
+  @-o-keyframes slide-in {
+    0% { top: -30px; opacity: 0; }
+    100% { top: 0; opacity: 1; }
+  }
+  @keyframes slide-in {
+    0% { top: -30px; opacity: 0; }
+    100% { top: 0; opacity: 1; }
+  }
+
+  .nav-docs {
+    position: fixed;
+    z-index: 90;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 53px 0 0 0;
+    background: #3B3738;
+  }
+
+  .nav-docs-viewport {
+    border-top: 1px solid rgb(5, 165, 209);
+    padding: 25px;
+    overflow: scroll;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Active state */
+  .nav-docs.in {
+    top: 0;
+    -webkit-animation: slide-in 0.3s forwards;
+    -moz-animation: slide-in 0.3s forwards;
+    -o-animation: slide-in 0.3s forwards;
+    animation: slide-in 0.3s forwards;
+  }
+
+  .nav-docs * {
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .nav-docs-section + .nav-docs-section {
+    margin-top: 50px;
+  }
+
+  .nav-docs-section li {
+    margin: 5px 0;
+  }
+
+  .nav-docs-section h3,
+  .nav-docs-section a {
+    color: white;
+  }
+
+  .nav-docs-section h3 {
+    border-bottom: 1px solid white;
+    margin-bottom: 10px;
+    opacity: 0.3;
+  }
+
+  .nav-docs-section a {
+    margin-right: 25px;
+    font-size: 120%;
+    padding: 5px 0;
+  }
+
+  .nav-docs-section a.active {
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    color: rgb(5, 165, 209);
+  }
+}
+
+/**
+ * Multicolumn layout for phone (landscape only) & tablet (regardless its screen orientation)/
+ */
+@media only screen and (min-device-width : 375px) and (max-device-width : 1024px) {
+  .nav-docs-section ul {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .nav-docs-section li {
+    width: 100%;
+  }
+}
+
+/* 2 columns layout */
+@media
+  /*Phone, landscape screen orientation*/
+  only screen and (min-device-width : 375px) and (max-device-width : 1024px) and (orientation : landscape),
+  /*Tablet, portrait screen orientation*/
+  only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : portrait) {
+  .nav-docs-section li {
+    width: 50%;
+  }
+}
+
+/* 3 columns layout on tablet (landscape screen orientation) */
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
+  .nav-docs-section li {
+    width: 33%;
+  }
 }
 
 .nav-blog li {
@@ -670,7 +814,7 @@ h2 {
 .documentationContent blockquote {
   padding: 15px 30px 15px 15px;
   margin: 20px 0;
-  background-color: rgba(204, 122, 111, 0.1);
+  background-color: rgba(248, 245, 236, 0.1);
   border-left: 5px solid rgba(191, 87, 73, 0.2);
 }
 
@@ -683,8 +827,7 @@ h2 {
 }
 
 .documentationContent blockquote p:first-child {
-  font-weight: bold;
-  font-size: 17.5px;
+  font-size: 14px;
   line-height: 20px;
   margin-top: 0;
   text-rendering: optimizelegibility;
@@ -911,21 +1054,6 @@ small code, li code, p code {
   text-decoration: none !important;
 }
 
-.column-left, .column-left * {
-  box-sizing: border-box;
-}
-
-.column-left p {
-  text-align: center;
-  color: #999;
-}
-
-.column-left {
-  float: left;
-  padding: 20px;
-  width: 210px;
-}
-
 /* Modal */
 .modal-backdrop {
   background: rgba(0,0,0,.4);
@@ -1000,13 +1128,13 @@ small code, li code, p code {
   outline: none;
 }
 
-@media screen and (max-width: 960px) {
-  .nav-main {
-    position: static;
+@media screen and (max-width: 680px) {
+  .container {
+    padding-top: 100px;
   }
 
-  .container {
-    padding-top: 0;
+  .nav-docs {
+    padding-top: 103px;
   }
 }
 
@@ -1109,6 +1237,23 @@ div[data-twttr-id] iframe {
   margin-left: 20px;
 }
 
+.methodTitle {
+  font-weight: bold;
+  font-size: 24px;
+  color: #2F9C0A;
+}
+
+.compactProps .methodTitle {
+  font-size: 14px;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.compactProps .methodTitle div {
+  font-weight: normal;
+  margin-left: 20px;
+}
+
 .prop {
   padding: 5px 10px;
 }
@@ -1123,6 +1268,16 @@ div[data-twttr-id] iframe {
 }
 
 .compactProps .propType {
+  font-weight: normal;
+  font-size: 13px;
+}
+
+.methodType {
+  font-weight: normal;
+  font-size: 24px;
+}
+
+.compactProps .methodType {
   font-weight: normal;
   font-size: 13px;
 }
@@ -1210,13 +1365,8 @@ div[data-twttr-id] iframe {
 @media only screen
   and (min-device-width: 1024px) {
   .showcase {
-    width: 20%;
+    width: 25%;
   }
-}
-
-.showcase:hover {
-  text-decoration: none;
-  opacity: 0.8;
 }
 
 .showcase h3 {
@@ -1257,10 +1407,43 @@ div[data-twttr-id] iframe {
   background-color: hsl(198, 100%, 94%);
 }
 
+.survey {
+  padding: 10px;
+  padding-top: 0;
+  background-color: rgba(5, 165, 209, 0.05);
+  border: 2px solid #05A5D1;
+  position: relative;
+}
+
+.survey-image {
+  float: left;
+  height: 128px;
+  width: 128px;
+  background-image: url('../img/survey.png');
+}
+
+.survey p {
+  margin-left: 130px;
+}
+
+.survey .button {
+  font-size: 24px;
+  background: #05A5D1;
+  color: #fafafa;
+}
+
 @media only screen
   and (max-device-width: 1024px) {
   #content {
     display: inline;
+  }
+
+  .survey-image {
+    position: static;
+    margin: 10px auto;
+  }
+  .survey p {
+    margin-left: 0px;
   }
 
   .container {
@@ -1309,15 +1492,6 @@ div[data-twttr-id] iframe {
   .nav-docs .nav-docs-section {
     border: none;
     padding: 0;
-  }
-  .nav-docs h3 {
-    margin: 0;
-  }
-  .nav-docs {
-    float: none;
-    width: auto;
-    margin-top: -8px;
-    margin-bottom: 20px;
   }
   h1 {
     font-size: 30px;
@@ -1404,4 +1578,69 @@ input#algolia-doc-search:focus {
   border-right-color: hsl(198, 100%, 94%);
   background-color: hsl(198, 100%, 96%);
   color: #3B3738;
+}
+
+.params, .props
+{
+    border-spacing: 0;
+    border: 0;
+    border-collapse: collapse;
+}
+
+.params .name, .props .name, .name code {
+    color: #4D4E53;
+}
+
+.params td, .params th, .props td, .props th
+{
+    border: 1px solid #ddd;
+    margin: 0px;
+    text-align: left;
+    vertical-align: top;
+    padding: 4px 6px;
+    display: table-cell;
+}
+
+.params thead tr, .props thead tr
+{
+    background-color: hsl(198, 75%, 88%);
+    font-weight: bold;
+}
+
+.params .params thead tr, .props .props thead tr
+{
+    background-color: #fff;
+    font-weight: bold;
+}
+
+.params th, .props th { border-right: 1px solid #aaa; }
+.params thead .last, .props thead .last { border-right: 1px solid #ddd; }
+
+.params td.description > div > p:first-child,
+.props td.description > div > p:first-child
+{
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.params td.description > p:last-child,
+.props td.description > p:last-child
+{
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+
+/** Web player **/
+
+.web-player > iframe, .web-player > .prism {
+  display: none;
+}
+
+.web-player.desktop > iframe {
+  display: block;
+}
+
+.web-player.mobile > .prism {
+  display: block;
 }

@@ -7,31 +7,19 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule parseErrorStack
+ * @flow
  */
 'use strict';
 
+export type StackFrame = {
+  file: string;
+  lineNumber: number;
+  column: number;
+};
+
 var stacktraceParser = require('stacktrace-parser');
 
-function resolveSourceMaps(sourceMapInstance, stackFrame) {
-  try {
-    var orig = sourceMapInstance.originalPositionFor({
-      line: stackFrame.lineNumber,
-      column: stackFrame.column,
-    });
-    if (orig) {
-      // remove query string if any
-      const queryStringStartIndex = orig.source.indexOf('?');
-      stackFrame.file = queryStringStartIndex === -1
-        ? orig.source
-        : orig.source.substring(0, queryStringStartIndex);
-      stackFrame.lineNumber = orig.line;
-      stackFrame.column = orig.column;
-    }
-  } catch (innerEx) {
-  }
-}
-
-function parseErrorStack(e, sourceMaps) {
+function parseErrorStack(e: Error): Array<StackFrame> {
   if (!e || !e.stack) {
     return [];
   }
@@ -41,19 +29,6 @@ function parseErrorStack(e, sourceMaps) {
   var framesToPop = e.framesToPop || 0;
   while (framesToPop--) {
     stack.shift();
-  }
-
-  if (sourceMaps) {
-    sourceMaps.forEach((sourceMap, index) => {
-      stack.forEach(frame => {
-        if (frame.file.indexOf(sourceMap.file) !== -1 ||
-            frame.file.replace('.map', '.bundle').indexOf(
-              sourceMap.file
-            ) !== -1) {
-          resolveSourceMaps(sourceMap, frame);
-        }
-      });
-    });
   }
 
   return stack;

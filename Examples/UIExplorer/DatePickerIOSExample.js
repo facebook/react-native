@@ -132,7 +132,7 @@ exports.description = 'Select dates and times using the native UIDatePicker.';
 exports.examples = [
 {
   title: '<DatePickerIOS>',
-  render: function(): ReactElement {
+  render: function(): ReactElement<any> {
     return <DatePickerExample />;
   },
 }];

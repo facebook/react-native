@@ -12,6 +12,16 @@
 #import "RCTBridge.h"
 #import "RCTTabBar.h"
 
+@implementation RCTConvert (UITabBar)
+
+RCT_ENUM_CONVERTER(UITabBarItemPositioning, (@{
+  @"fill" : @(UITabBarItemPositioningFill),
+  @"auto" : @(UITabBarItemPositioningAutomatic),
+  @"center" : @(UITabBarItemPositioningCentered)
+}), UITabBarItemPositioningAutomatic, integerValue)
+
+@end
+
 @implementation RCTTabBarManager
 
 RCT_EXPORT_MODULE()
@@ -25,5 +35,6 @@ RCT_EXPORT_VIEW_PROPERTY(unselectedTintColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(barTintColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(translucent, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(itemPositioning, UITabBarItemPositioning)
 
 @end

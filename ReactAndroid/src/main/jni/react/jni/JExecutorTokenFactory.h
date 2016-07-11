@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <jni/fbjni.h>
+#include <fb/fbjni.h>
 #include <react/ExecutorTokenFactory.h>
 
 #include "JExecutorToken.h"

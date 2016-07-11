@@ -45,12 +45,13 @@ static const NSTimeInterval kTestTeardownTimeoutSeconds = 30;
     _testController.referenceImagesDirectory = referenceDirectory;
     _moduleProvider = [block copy];
 
-#if RUNNING_ON_CI
-    _scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
-    RCTAssert(_scriptURL != nil, @"Could not locate main.jsBundle");
-#else
-    _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true", app]];
-#endif
+    if (getenv("CI_USE_PACKAGER")) {
+      _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true", app]];
+      RCTAssert(_scriptURL != nil, @"No scriptURL set");
+    } else {
+      _scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
+      RCTAssert(_scriptURL != nil, @"Could not locate main.jsBundle");
+    }
   }
   return self;
 }

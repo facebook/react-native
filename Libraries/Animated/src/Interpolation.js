@@ -233,7 +233,7 @@ function createInterpolationFromStringOutputRange(
     // 'rgba(${interpolations[0](input)}, ${interpolations[1](input)}, ...'
     return outputRange[0].replace(stringShapeRegex, () => {
       const val = +interpolations[i++](input);
-      const rounded = shouldRound && i < 4 ? Math.round(val) : val;
+      const rounded = shouldRound && i < 4 ? Math.round(val) : Math.round(val * 1000) / 1000;
       return String(rounded);
     });
   };

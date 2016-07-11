@@ -17,8 +17,30 @@
 
 @interface UIView (React) <RCTComponent>
 
-- (NSArray<UIView *> *)reactSubviews;
-- (UIView *)reactSuperview;
+/**
+ * RCTComponent interface.
+ */
+- (NSArray<UIView *> *)reactSubviews NS_REQUIRES_SUPER;
+- (UIView *)reactSuperview NS_REQUIRES_SUPER;
+- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex NS_REQUIRES_SUPER;
+- (void)removeReactSubview:(UIView *)subview NS_REQUIRES_SUPER;
+
+/**
+ * z-index, used to override sibling order in didUpdateReactSubviews.
+ */
+@property (nonatomic, assign) NSInteger reactZIndex;
+
+/**
+ * The reactSubviews array, sorted by zIndex. This value is cached and
+ * automatically recalculated if views are added or removed.
+ */
+@property (nonatomic, copy, readonly) NSArray<UIView *> *sortedReactSubviews;
+
+/**
+ * Updates the subviews array based on the reactSubviews. Default behavior is
+ * to insert the sortedReactSubviews into the UIView.
+ */
+- (void)didUpdateReactSubviews;
 
 /**
  * Used by the UIIManager to set the view frame.

@@ -14,7 +14,7 @@
 
 'use strict';
 
-module.exports = function(promise: Promise, callbacks: Array<Function>, type: string, warning: string): Promise {
+module.exports = function(promise: Promise<any>, callbacks: Array<Function>, type: string, warning: string): Promise<any> {
   if (callbacks.length === 0) {
     return promise;
   }

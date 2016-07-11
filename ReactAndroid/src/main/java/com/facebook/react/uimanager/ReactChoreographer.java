@@ -38,7 +38,7 @@ public class ReactChoreographer {
     DISPATCH_UI(1),
 
     /**
-     * For use by {@link com.facebook.react.uimanager.animation.NativeAnimatedModule}
+     * For use by {@link com.facebook.react.animated.NativeAnimatedModule}
      */
     NATIVE_ANIMATED_MODULE(2),
 

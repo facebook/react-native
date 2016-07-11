@@ -81,11 +81,22 @@
     [reloadButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [reloadButton addTarget:self action:@selector(reload) forControlEvents:UIControlEventTouchUpInside];
 
-    CGFloat buttonWidth = self.bounds.size.width / 2;
+    UIButton *copyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    copyButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
+    copyButton.accessibilityIdentifier = @"redbox-copy";
+    copyButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [copyButton setTitle:@"Copy (\u2325\u2318C)" forState:UIControlStateNormal];
+    [copyButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
+    [copyButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+    [copyButton addTarget:self action:@selector(copyStack) forControlEvents:UIControlEventTouchUpInside];
+
+    CGFloat buttonWidth = self.bounds.size.width / 3;
     dismissButton.frame = CGRectMake(0, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
     reloadButton.frame = CGRectMake(buttonWidth, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
+    copyButton.frame = CGRectMake(buttonWidth * 2, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
     [rootView addSubview:dismissButton];
     [rootView addSubview:reloadButton];
+    [rootView addSubview:copyButton];
   }
   return self;
 }
@@ -131,6 +142,42 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)reload
 {
   [_actionDelegate reloadFromRedBoxWindow:self];
+}
+
+- (void)copyStack
+{
+  NSMutableString *fullStackTrace;
+
+  if (_lastErrorMessage != nil) {
+    fullStackTrace = [_lastErrorMessage mutableCopy];
+    [fullStackTrace appendString:@"\n\n"];
+  }
+  else {
+    fullStackTrace = [NSMutableString string];
+  }
+
+  for (NSDictionary *stackFrame in _lastStackTrace) {
+    [fullStackTrace appendString:[NSString stringWithFormat:@"%@\n", stackFrame[@"methodName"]]];
+    if (stackFrame[@"file"]) {
+      [fullStackTrace appendFormat:@"    %@\n", [self formatFrameSource:stackFrame]];
+    }
+  }
+
+  UIPasteboard *pb = [UIPasteboard generalPasteboard];
+  [pb setString:fullStackTrace];
+}
+
+- (NSString *)formatFrameSource:(NSDictionary *)stackFrame
+{
+  NSString *lineInfo = [NSString stringWithFormat:@"%@:%zd",
+                        [stackFrame[@"file"] lastPathComponent],
+                        [stackFrame[@"lineNumber"] integerValue]];
+
+  NSInteger column = [stackFrame[@"column"] integerValue];
+  if (column != 0) {
+    lineInfo = [lineInfo stringByAppendingFormat:@":%zd", column];
+  }
+  return lineInfo;
 }
 
 #pragma mark - TableView
@@ -193,10 +240,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   cell.textLabel.text = stackFrame[@"methodName"];
   if (stackFrame[@"file"]) {
-    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ @ %zd:%zd",
-                                 [stackFrame[@"file"] lastPathComponent],
-                                 [stackFrame[@"lineNumber"] integerValue],
-                                 [stackFrame[@"column"] integerValue]];
+    cell.detailTextLabel.text = [self formatFrameSource:stackFrame];
   } else {
     cell.detailTextLabel.text = @"";
   }
@@ -240,14 +284,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
     // Dismiss red box
     [UIKeyCommand keyCommandWithInput:UIKeyInputEscape
-                        modifierFlags:0
-                               action:@selector(dismiss)],
+                       modifierFlags:0
+                              action:@selector(dismiss)],
 
     // Reload
     [UIKeyCommand keyCommandWithInput:@"r"
-                        modifierFlags:UIKeyModifierCommand
-                               action:@selector(reload)]
-  ];
+                       modifierFlags:UIKeyModifierCommand
+                              action:@selector(reload)],
+
+    // Copy = Cmd-Option C since Cmd-C in the simulator copies the pasteboard from
+    // the simulator to the desktop pasteboard.
+    [UIKeyCommand keyCommandWithInput:@"c"
+                       modifierFlags:UIKeyModifierCommand | UIKeyModifierAlternate
+                              action:@selector(copyStack)]
+
+    ];
 }
 
 - (BOOL)canBecomeFirstResponder
@@ -288,6 +339,13 @@ RCT_EXPORT_MODULE()
   [self showErrorMessage:combinedMessage];
 }
 
+- (void)showErrorMessage:(NSString *)message withRawStack:(NSString *)rawStack
+{
+  // TODO #11638796: convert rawStack into something useful
+  message = [NSString stringWithFormat:@"%@\n\n%@", message, rawStack];
+  [self showErrorMessage:message withStack:nil isUpdate:NO];
+}
+
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack
 {
   [self showErrorMessage:message withStack:stack isUpdate:NO];
@@ -301,18 +359,18 @@ RCT_EXPORT_MODULE()
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack isUpdate:(BOOL)isUpdate
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    if (!_window) {
-      _window = [[RCTRedBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-      _window.actionDelegate = self;
+    if (!self->_window) {
+      self->_window = [[RCTRedBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+      self->_window.actionDelegate = self;
     }
-    [_window showErrorMessage:message withStack:stack isUpdate:isUpdate];
+    [self->_window showErrorMessage:message withStack:stack isUpdate:isUpdate];
   });
 }
 
 RCT_EXPORT_METHOD(dismiss)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    [_window dismiss];
+    [self->_window dismiss];
   });
 }
 
@@ -321,7 +379,7 @@ RCT_EXPORT_METHOD(dismiss)
   [self dismiss];
 }
 
-- (void)redBoxWindow:(RCTRedBoxWindow *)redBoxWindow openStackFrameInEditor:(NSDictionary *)stackFrame;
+- (void)redBoxWindow:(RCTRedBoxWindow *)redBoxWindow openStackFrameInEditor:(NSDictionary *)stackFrame
 {
   if (![_bridge.bundleURL.scheme hasPrefix:@"http"]) {
     RCTLogWarn(@"Cannot open stack frame in editor because you're not connected to the packager.");
@@ -363,6 +421,7 @@ RCT_EXPORT_METHOD(dismiss)
 - (void)showError:(NSError *)message {}
 - (void)showErrorMessage:(NSString *)message {}
 - (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details {}
+- (void)showErrorMessage:(NSString *)message withRawStack:(NSString *)rawStack {}
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack {}
 - (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack {}
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack showIfHidden:(BOOL)shouldShow {}

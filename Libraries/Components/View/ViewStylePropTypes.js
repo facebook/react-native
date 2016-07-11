@@ -12,7 +12,7 @@
 'use strict';
 
 var LayoutPropTypes = require('LayoutPropTypes');
-var ReactPropTypes = require('ReactPropTypes');
+var ReactPropTypes = require('react/lib/ReactPropTypes');
 var ColorPropType = require('ColorPropType');
 var ShadowPropTypesIOS = require('ShadowPropTypesIOS');
 var TransformPropTypes = require('TransformPropTypes');

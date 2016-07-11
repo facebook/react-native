@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -18,13 +25,13 @@
 // $FlowFixMe : This is a platform-forked component, and flow seems to only run on iOS?
 const UIExplorerList = require('./UIExplorerList');
 
-import type {NavigationState} from 'NavigationTypeDefinition';
+import type {NavigationRoute} from 'NavigationTypeDefinition';
 
-function StateTitleMap(state: NavigationState): string {
-  if (UIExplorerList.Modules[state.key]) {
-    return UIExplorerList.Modules[state.key].title
+function StateTitleMap(route: NavigationRoute): string {
+  if (UIExplorerList.Modules[route.key]) {
+    return UIExplorerList.Modules[route.key].title;
   }
-  if (state.key === 'AppList') {
+  if (route.key === 'AppList') {
     return 'UIExplorer';
   }
   return 'Unknown';

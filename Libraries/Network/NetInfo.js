@@ -12,11 +12,13 @@
 'use strict';
 
 const Map = require('Map');
+const NativeEventEmitter = require('NativeEventEmitter');
 const NativeModules = require('NativeModules');
 const Platform = require('Platform');
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 const RCTNetInfo = NativeModules.NetInfo;
 const deprecatedCallback = require('deprecatedCallback');
+
+const NetInfoEventEmitter = new NativeEventEmitter(RCTNetInfo);
 
 const DEVICE_CONNECTIVITY_EVENT = 'networkStatusDidChange';
 
@@ -168,11 +170,15 @@ const _isConnectedSubscriptions = new Map();
  * ```
  */
 const NetInfo = {
+  /**
+   * Invokes the listener whenever network status changes.
+   * The listener receives one of the connectivity types listed above.
+   */
   addEventListener(
     eventName: ChangeEventName,
     handler: Function
   ): {remove: () => void} {
-    const listener = RCTDeviceEventEmitter.addListener(
+    const listener = NetInfoEventEmitter.addListener(
       DEVICE_CONNECTIVITY_EVENT,
       (appStateData) => {
         handler(appStateData.network_info);
@@ -184,6 +190,9 @@ const NetInfo = {
     };
   },
 
+  /**
+   * Removes the listener for network status changes.
+   */
   removeEventListener(
     eventName: ChangeEventName,
     handler: Function
@@ -196,10 +205,20 @@ const NetInfo = {
     _subscriptions.delete(handler);
   },
 
-  fetch(): Promise {
+  /**
+   * Returns a promise that resolves with one of the connectivity types listed
+   * above.
+   */
+  fetch(): Promise<any> {
     return RCTNetInfo.getCurrentConnectivity().then(resp => resp.network_info);
   },
 
+  /**
+   * An object with the same methods as above but the listener receives a
+   * boolean which represents the internet connectivity.
+   * Use this if you are only interested with whether the device has internet
+   * connectivity.
+   */
   isConnected: {
     addEventListener(
       eventName: ChangeEventName,
@@ -231,14 +250,14 @@ const NetInfo = {
       _isConnectedSubscriptions.delete(handler);
     },
 
-    fetch(): Promise {
+    fetch(): Promise<any> {
       return NetInfo.fetch().then(
         (connection) => _isConnected(connection)
       );
     },
   },
 
-  isConnectionExpensive(): Promise {
+  isConnectionExpensive(): Promise<any> {
     return deprecatedCallback(
       Platform.OS === 'android' ? RCTNetInfo.isConnectionMetered() : Promise.reject(new Error('Currently not supported on iOS')),
       Array.prototype.slice.call(arguments),

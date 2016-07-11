@@ -3,7 +3,7 @@
 #pragma once
 
 #include <react/Executor.h>
-#include <jni/fbjni.h>
+#include <fb/fbjni.h>
 #include <jni.h>
 #include <jni/GlobalReference.h>
 #include "OnLoad.h"

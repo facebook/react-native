@@ -35,31 +35,25 @@ Bridge::~Bridge() {
 }
 
 void Bridge::loadApplicationScript(const std::string& script, const std::string& sourceURL) {
-  runOnExecutorQueue(*m_mainExecutorToken, [=] (JSExecutor* executor) {
-    executor->loadApplicationScript(script, sourceURL);
-  });
+  m_mainExecutor->loadApplicationScript(script, sourceURL);
 }
 
 void Bridge::loadApplicationUnbundle(
     std::unique_ptr<JSModulesUnbundle> unbundle,
     const std::string& startupCode,
     const std::string& sourceURL) {
-  runOnExecutorQueue(
-      *m_mainExecutorToken,
-      [holder=std::make_shared<std::unique_ptr<JSModulesUnbundle>>(std::move(unbundle)), startupCode, sourceURL]
-        (JSExecutor* executor) mutable {
-    executor->loadApplicationUnbundle(std::move(*holder), startupCode, sourceURL);
-  });
+  m_mainExecutor->loadApplicationUnbundle(std::move(unbundle), startupCode, sourceURL);
 }
 
 void Bridge::callFunction(
     ExecutorToken executorToken,
     const std::string& moduleId,
     const std::string& methodId,
-    const folly::dynamic& arguments,
-    const std::string& tracingName) {
+    const folly::dynamic& arguments) {
   #ifdef WITH_FBSYSTRACE
   int systraceCookie = m_systraceCookie++;
+  std::string tracingName = fbsystrace_is_tracing(TRACE_TAG_REACT_CXX_BRIDGE) ?
+    folly::to<std::string>("JSCall__", moduleId, '_', methodId) : std::string();
   FbSystraceAsyncFlow::begin(
       TRACE_TAG_REACT_CXX_BRIDGE,
       tracingName.c_str(),
@@ -67,14 +61,14 @@ void Bridge::callFunction(
   #endif
 
   #ifdef WITH_FBSYSTRACE
-  runOnExecutorQueue(executorToken, [moduleId, methodId, arguments, tracingName, systraceCookie] (JSExecutor* executor) {
+  runOnExecutorQueue(executorToken, [moduleId, methodId, arguments, tracingName = std::move(tracingName), systraceCookie] (JSExecutor* executor) {
     FbSystraceAsyncFlow::end(
         TRACE_TAG_REACT_CXX_BRIDGE,
         tracingName.c_str(),
         systraceCookie);
     FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, tracingName.c_str());
   #else
-  runOnExecutorQueue(executorToken, [moduleId, methodId, arguments, tracingName] (JSExecutor* executor) {
+  runOnExecutorQueue(executorToken, [moduleId, methodId, arguments] (JSExecutor* executor) {
   #endif
     // This is safe because we are running on the executor's thread: it won't
     // destruct until after it's been unregistered (which we check above) and
@@ -131,6 +125,12 @@ void Bridge::startProfiler(const std::string& title) {
 void Bridge::stopProfiler(const std::string& title, const std::string& filename) {
   runOnExecutorQueue(*m_mainExecutorToken, [=] (JSExecutor* executor) {
     executor->stopProfiler(title, filename);
+  });
+}
+
+void Bridge::handleMemoryPressureUiHidden() {
+  runOnExecutorQueue(*m_mainExecutorToken, [=] (JSExecutor* executor) {
+    executor->handleMemoryPressureUiHidden();
   });
 }
 

@@ -8,13 +8,12 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "RCTImageComponent.h"
 #import "RCTResizeMode.h"
 
 @class RCTBridge;
 @class RCTImageSource;
 
-@interface RCTImageView : UIImageView <RCTImageComponent>
+@interface RCTImageView : UIImageView
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
@@ -23,5 +22,6 @@
 @property (nonatomic, assign) UIImageRenderingMode renderingMode;
 @property (nonatomic, strong) RCTImageSource *source;
 @property (nonatomic, assign) CGFloat blurRadius;
+@property (nonatomic, assign) RCTResizeMode resizeMode;
 
 @end

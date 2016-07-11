@@ -11,11 +11,11 @@
 'use strict';
 
 var ColorPropType = require('ColorPropType');
-var NativeMethodsMixin = require('NativeMethodsMixin');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 var Platform = require('Platform');
 var React = require('React');
-var ReactNative = require('ReactNative');
-var ReactPropTypes = require('ReactPropTypes');
+var ReactNative = require('react/lib/ReactNative');
+var ReactPropTypes = require('react/lib/ReactPropTypes');
 var StatusBar = require('StatusBar');
 var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');
@@ -127,7 +127,7 @@ var DrawerLayoutAndroid = React.createClass({
      * - idle, meaning there is no interaction with the navigation view happening at the time
      * - dragging, meaning there is currently an interaction with the navigation view
      * - settling, meaning that there was an interaction with the navigation view, and the
-     * navigation view is now finishing it's closing or opening animation
+     * navigation view is now finishing its closing or opening animation
      */
     onDrawerStateChanged: ReactPropTypes.func,
     /**

@@ -4,7 +4,7 @@ title: Accessibility
 layout: docs
 category: Guides
 permalink: docs/accessibility.html
-next: direct-manipulation
+next: timers
 ---
 
 ## Native App Accessibility (iOS and Android)

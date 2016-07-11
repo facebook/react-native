@@ -35,16 +35,15 @@ const action =  PropTypes.shape({
 /* NavigationAnimatedValue  */
 const animatedValue = PropTypes.instanceOf(Animated.Value);
 
-/* NavigationState  */
-const navigationState = PropTypes.shape({
+/* NavigationRoute  */
+const navigationRoute = PropTypes.shape({
   key: PropTypes.string.isRequired,
 });
 
-/* NavigationParentState  */
-const navigationParentState = PropTypes.shape({
+/* navigationRoute  */
+const navigationState = PropTypes.shape({
   index: PropTypes.number.isRequired,
-  key: PropTypes.string.isRequired,
-  children: PropTypes.arrayOf(navigationState),
+  routes: PropTypes.arrayOf(navigationRoute),
 });
 
 /* NavigationLayout */
@@ -59,21 +58,23 @@ const layout = PropTypes.shape({
 /* NavigationScene */
 const scene = PropTypes.shape({
   index: PropTypes.number.isRequired,
+  isActive: PropTypes.bool.isRequired,
   isStale: PropTypes.bool.isRequired,
   key: PropTypes.string.isRequired,
-  navigationState,
+  route: navigationRoute.isRequired,
 });
 
 /* NavigationSceneRendererProps */
-const SceneRenderer = {
-  key: PropTypes.string.isRequired,
+const SceneRendererProps = {
   layout: layout.isRequired,
-  navigationState: navigationParentState.isRequired,
-  onNavigate: PropTypes.func.isRequired,
+  navigationState: navigationState.isRequired,
   position: animatedValue.isRequired,
+  progress: animatedValue.isRequired,
   scene: scene.isRequired,
   scenes: PropTypes.arrayOf(scene).isRequired,
 };
+
+const SceneRenderer = PropTypes.shape(SceneRendererProps);
 
 /* NavigationPanPanHandlers */
 const panHandlers = PropTypes.shape({
@@ -98,11 +99,10 @@ function extractSceneRendererProps(
   props: NavigationSceneRendererProps,
 ): NavigationSceneRendererProps {
   return {
-    key: props.scene.navigationState.key,
     layout: props.layout,
     navigationState: props.navigationState,
-    onNavigate: props.onNavigate,
     position: props.position,
+    progress: props.progress,
     scene: props.scene,
     scenes: props.scenes,
   };
@@ -113,11 +113,12 @@ module.exports = {
   extractSceneRendererProps,
 
   // Bundled propTypes.
-  SceneRenderer,
+  SceneRendererProps,
 
   // propTypes
+  SceneRenderer,
   action,
-  navigationParentState,
   navigationState,
+  navigationRoute,
   panHandlers,
 };

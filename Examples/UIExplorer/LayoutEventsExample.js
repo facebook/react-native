@@ -158,7 +158,7 @@ exports.description = 'Examples that show how Layout events can be used to ' +
 exports.examples = [
 {
   title: 'LayoutEventExample',
-  render: function(): ReactElement {
+  render: function(): ReactElement<any> {
     return <LayoutEventExample />;
   },
 }];

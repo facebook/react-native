@@ -83,7 +83,7 @@ exports.description = 'Examples that show useful methods when embedding React Na
 exports.examples = [
 {
   title: 'Updating app properties in runtime',
-  render(): ReactElement {
+  render(): ReactElement<any> {
     return (
       <AppPropertiesUpdateExample/>
     );
@@ -91,7 +91,7 @@ exports.examples = [
 },
 {
   title: 'RCTRootView\'s size flexibility',
-  render(): ReactElement {
+  render(): ReactElement<any> {
     return (
       <RootViewSizeFlexibilityExample/>
     );

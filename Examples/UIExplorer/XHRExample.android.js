@@ -24,6 +24,8 @@ var {
   TextInput,
   TouchableHighlight,
   View,
+  Image,
+  CameraRoll
 } = ReactNative;
 
 var XHRExampleHeaders = require('./XHRExampleHeaders');
@@ -127,6 +129,8 @@ class Downloader extends React.Component {
   }
 }
 
+var PAGE_SIZE = 20;
+
 class FormUploader extends React.Component {
 
   _isMounted: boolean;
@@ -143,12 +147,33 @@ class FormUploader extends React.Component {
     this._isMounted = true;
     this._addTextParam = this._addTextParam.bind(this);
     this._upload = this._upload.bind(this);
+    this._fetchRandomPhoto = this._fetchRandomPhoto.bind(this);
+    this._fetchRandomPhoto();
   }
 
   _addTextParam() {
     var textParams = this.state.textParams;
     textParams.push({name: '', value: ''});
     this.setState({textParams});
+  }
+
+  _fetchRandomPhoto() {
+    CameraRoll.getPhotos(
+      {first: PAGE_SIZE}
+    ).then(
+      (data) => {
+        if (!this._isMounted) {
+          return;
+        }
+        var edges = data.edges;
+        var edge = edges[Math.floor(Math.random() * edges.length)];
+        var randomPhoto = edge && edge.node && edge.node.image;
+        if (randomPhoto) {
+          this.setState({randomPhoto});
+        }
+      },
+      (error) => undefined
+    );
   }
 
   componentWillUnmount() {
@@ -201,19 +226,29 @@ class FormUploader extends React.Component {
     this.state.textParams.forEach(
       (param) => formdata.append(param.name, param.value)
     );
-    if (xhr.upload) {
-      xhr.upload.onprogress = (event) => {
-        console.log('upload onprogress', event);
-        if (event.lengthComputable) {
-          this.setState({uploadProgress: event.loaded / event.total});
-        }
-      };
+    if (this.state.randomPhoto) {
+      formdata.append('image', {...this.state.randomPhoto, type:'image/jpg', name: 'image.jpg'});
     }
+    xhr.upload.onprogress = (event) => {
+      console.log('upload onprogress', event);
+      if (event.lengthComputable) {
+        this.setState({uploadProgress: event.loaded / event.total});
+      }
+    };
     xhr.send(formdata);
     this.setState({isUploading: true});
   }
 
   render() {
+    var image = null;
+    if (this.state.randomPhoto) {
+      image = (
+        <Image
+          source={this.state.randomPhoto}
+          style={styles.randomPhoto}
+        />
+      );
+    }
     var textItems = this.state.textParams.map((item, index) => (
       <View style={styles.paramRow}>
         <TextInput
@@ -252,6 +287,15 @@ class FormUploader extends React.Component {
     }
     return (
       <View>
+        <View style={[styles.paramRow, styles.photoRow]}>
+          <Text style={styles.photoLabel}>
+            Random photo from your library
+            (<Text style={styles.textButton} onPress={this._fetchRandomPhoto}>
+              update
+            </Text>)
+          </Text>
+          {image}
+        </View>
         {textItems}
         <View>
           <Text
@@ -319,6 +363,10 @@ var styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'grey',
+  },
+  randomPhoto: {
+    width: 50,
+    height: 50,
   },
   textButton: {
     color: 'blue',

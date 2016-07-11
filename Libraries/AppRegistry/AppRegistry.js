@@ -13,10 +13,11 @@
 
 var BatchedBridge = require('BatchedBridge');
 var BugReporting = require('BugReporting');
-var ReactNative = require('ReactNative');
+var ReactNative = require('react/lib/ReactNative');
 
 var invariant = require('fbjs/lib/invariant');
 var renderApplication = require('renderApplication');
+const infoLog = require('infoLog');
 
 if (__DEV__) {
   // In order to use Cmd+P to record/dump perf data, we need to make sure
@@ -87,8 +88,7 @@ var AppRegistry = {
       '__DEV__ === ' + String(__DEV__) +
       ', development-level warning are ' + (__DEV__ ? 'ON' : 'OFF') +
       ', performance optimizations are ' + (__DEV__ ? 'OFF' : 'ON');
-    console.log(msg);
-    BugReporting.init();
+    infoLog(msg);
     BugReporting.addSource('AppRegistry.runApplication' + runCount++, () => msg);
     invariant(
       runnables[appKey] && runnables[appKey].run,

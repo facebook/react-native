@@ -21,6 +21,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.accessibility.AccessibilityEvent;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
@@ -109,7 +110,19 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     // Those will be handled by the mHostView which lives in the dialog
   }
 
-  public void dismiss() {
+  @Override
+  public boolean dispatchPopulateAccessibilityEvent(AccessibilityEvent event) {
+    // Explicitly override this to prevent accessibility events being passed down to children
+    // Those will be handled by the mHostView which lives in the dialog
+    return false;
+  }
+
+  public void onDropInstance() {
+    ((ReactContext) getContext()).removeLifecycleEventListener(this);
+    dismiss();
+  }
+
+  private void dismiss() {
     if (mDialog != null) {
       mDialog.dismiss();
       mDialog = null;
@@ -140,18 +153,20 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
   @Override
   public void onHostResume() {
-    // do nothing
+    // We show the dialog again when the host resumes
+    showOrUpdate();
   }
 
   @Override
   public void onHostPause() {
-    // do nothing
+    // We dismiss the dialog and reconstitute it onHostResume
+    dismiss();
   }
 
   @Override
   public void onHostDestroy() {
-    // Dismiss the dialog if it is present
-    dismiss();
+    // Drop the instance if the host is destroyed which will dismiss the dialog
+    onDropInstance();
   }
 
   @VisibleForTesting
@@ -222,6 +237,8 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
    */
   private void updateProperties() {
     Assertions.assertNotNull(mDialog, "mDialog must exist when we call updateProperties");
+
+    mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
     if (mTransparent) {
       mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
