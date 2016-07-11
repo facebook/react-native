@@ -496,10 +496,14 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   RCTAssertJSThread();
   [_performanceLogger markStopForTag:RCTPLBridgeStartup];
 
+  RCT_PROFILE_BEGIN_EVENT(0, @"Processing pendingCalls", @{ @"count": @(_pendingCalls.count) });
   _loading = NO;
-  for (dispatch_block_t call in self->_pendingCalls) {
+  NSArray *pendingCalls = _pendingCalls;
+  _pendingCalls = nil;
+  for (dispatch_block_t call in pendingCalls) {
     call();
   }
+  RCT_PROFILE_END_EVENT(0, @"", nil);
 }
 
 - (void)stopLoadingWithError:(NSError *)error
