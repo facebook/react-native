@@ -694,28 +694,24 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
     if (!self.isValid) {
       return;
     }
-
     [self->_performanceLogger markStartForTag:RCTPLScriptExecution];
-
-    JSValueRef jsError = NULL;
-    RCTJSCWrapper *jscWrapper = self->_jscWrapper;
-    JSStringRef execJSString = jscWrapper->JSStringCreateWithUTF8CString((const char *)script.bytes);
-    JSStringRef bundleURL = jscWrapper->JSStringCreateWithUTF8CString(sourceURL.absoluteString.UTF8String);
-    JSGlobalContextRef ctx = self->_context.context.JSGlobalContextRef;
-    JSValueRef result = jscWrapper->JSEvaluateScript(ctx, execJSString, NULL, bundleURL, 0, &jsError);
-    jscWrapper->JSStringRelease(bundleURL);
-    jscWrapper->JSStringRelease(execJSString);
-
+    NSError *error = executeApplicationScript(self->_jscWrapper, script, sourceURL, self->_context.context.JSGlobalContextRef);
     [self->_performanceLogger markStopForTag:RCTPLScriptExecution];
-
     if (onComplete) {
-      NSError *error;
-      if (!result) {
-        error = RCTNSErrorFromJSError(jscWrapper, ctx, jsError);
-      }
       onComplete(error);
     }
   }), 0, @"js_call", (@{ @"url": sourceURL.absoluteString }))];
+}
+
+static NSError *executeApplicationScript(RCTJSCWrapper *jscWrapper, NSData *script, NSURL *sourceURL, JSGlobalContextRef ctx)
+{
+  JSValueRef jsError = NULL;
+  JSStringRef execJSString = jscWrapper->JSStringCreateWithUTF8CString((const char *)script.bytes);
+  JSStringRef bundleURL = jscWrapper->JSStringCreateWithUTF8CString(sourceURL.absoluteString.UTF8String);
+  JSValueRef result = jscWrapper->JSEvaluateScript(ctx, execJSString, NULL, bundleURL, 0, &jsError);
+  jscWrapper->JSStringRelease(bundleURL);
+  jscWrapper->JSStringRelease(execJSString);
+  return result ? nil : RCTNSErrorFromJSError(jscWrapper, ctx, jsError);
 }
 
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
