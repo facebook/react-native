@@ -164,8 +164,11 @@ const StatusBar = React.createClass({
      *    changing the status bar hidden property.
      */
     setHidden(hidden: boolean, animation?: StatusBarAnimation) {
-      animation = animation || 'none';
-      StatusBar._defaultProps.hidden.value = hidden;
+      StatusBar._defaultProps.hidden = hidden;
+      if (!animation) {
+        const mergedProps = mergePropsStack(StatusBar._propsStack, StatusBar._defaultProps);
+        animation = mergedProps.animated ? mergedProps.showHideTransition : 'none';
+      }
       if (Platform.OS === 'ios') {
         StatusBarManager.setHidden(hidden, animation);
       } else if (Platform.OS === 'android') {
@@ -183,8 +186,10 @@ const StatusBar = React.createClass({
         console.warn('`setBarStyle` is only available on iOS');
         return;
       }
-      animated = animated || false;
-      StatusBar._defaultProps.barStyle.value = style;
+      StatusBar._defaultProps.barStyle = style;
+      if (animated === undefined) {
+        animated = mergePropsStack(StatusBar._propsStack, StatusBar._defaultProps).animated;
+      }
       StatusBarManager.setStyle(style, animated);
     },
 
@@ -211,8 +216,10 @@ const StatusBar = React.createClass({
         console.warn('`setBackgroundColor` is only available on Android');
         return;
       }
-      animated = animated || false;
-      StatusBar._defaultProps.backgroundColor.value = color;
+      StatusBar._defaultProps.backgroundColor = color;
+      if (animated === undefined) {
+        animated = mergePropsStack(StatusBar._propsStack, StatusBar._defaultProps).animated;
+      }
       StatusBarManager.setColor(processColor(color), animated);
     },
 
