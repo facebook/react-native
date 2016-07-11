@@ -16,6 +16,8 @@ var performanceNow = require('fbjs/lib/performanceNow');
 var warning = require('fbjs/lib/warning');
 var Systrace = require('Systrace');
 
+let hasEmittedTimeDriftWarning = false;
+
 /**
  * JS implementation of timer functions. Must be completely driven by an
  * external clock signal, all that's stored here is timerID, timer type, and
@@ -145,6 +147,17 @@ var JSTimersExecution = {
         require('JSTimers').setTimeout(() => { throw error; }, 0)
       );
     }
+  },
+
+  /**
+   * Called from native (in development) when environment times are out-of-sync.
+   */
+  emitTimeDriftWarning: function(warningMessage) {
+    if (hasEmittedTimeDriftWarning) {
+      return;
+    }
+    hasEmittedTimeDriftWarning = true;
+    console.warn(warningMessage);
   },
 
   _clearIndex: function(i) {
