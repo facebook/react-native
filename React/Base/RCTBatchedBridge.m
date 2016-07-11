@@ -187,11 +187,13 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   } else {
     // Allow testing without a script
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self didFinishLoading];
       [[NSNotificationCenter defaultCenter]
        postNotificationName:RCTJavaScriptDidLoadNotification
        object:self->_parentBridge userInfo:@{@"bridge": self}];
     });
+
+    [self flushPendingCalls];
+
     onSourceLoad(nil, nil, 0);
   }
 }
@@ -477,14 +479,15 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     NSRunLoop *targetRunLoop = [self->_javaScriptExecutor isKindOfClass:[RCTJSCExecutor class]] ? [NSRunLoop currentRunLoop] : [NSRunLoop mainRunLoop];
     [self->_displayLink addToRunLoop:targetRunLoop];
 
-    // Perform the state update and notification on the main thread, so we can't run into
+    // Perform the notification on the main thread, so we can't run into
     // timing issues with RCTRootView
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self didFinishLoading];
       [[NSNotificationCenter defaultCenter]
        postNotificationName:RCTJavaScriptDidLoadNotification
        object:self->_parentBridge userInfo:@{@"bridge": self}];
     });
+
+    [self flushPendingCalls];
   }];
 
 #if RCT_DEV
@@ -495,17 +498,18 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     NSNumber *port = self.bundleURL.port;
     [self enqueueJSCall:@"HMRClient.enable" args:@[@"ios", path, host, RCTNullIfNil(port)]];
   }
-
 #endif
-
 }
 
-- (void)didFinishLoading
+- (void)flushPendingCalls
 {
   [_performanceLogger markStopForTag:RCTPLBridgeStartup];
-  _loading = NO;
+
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
     for (dispatch_block_t call in self->_pendingCalls) {
+    _loading = NO;
+
+    for (dispatch_block_t call in _pendingCalls) {
       call();
     }
   }];
