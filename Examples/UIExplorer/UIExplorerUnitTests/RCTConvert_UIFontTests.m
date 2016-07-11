@@ -192,4 +192,28 @@
   }
 }
 
+- (void)testFontMerging
+{
+  {
+    UIFont *expected = [UIFont systemFontOfSize:14 weight:UIFontWeightBold];
+    UIFont *result = [RCTConvert UIFont:[RCTConvert UIFont:@{@"fontSize": @"14"}] withWeight:@"bold"];
+    RCTAssertEqualFonts(expected, result);
+  }
+  {
+    UIFont *expected = [UIFont systemFontOfSize:14 weight:UIFontWeightBold];
+    UIFont *baseFont = [RCTConvert UIFont:@{@"fontFamily": @"System"}];
+    UIFont *resultOne = [RCTConvert UIFont:baseFont withSize:@"14"];
+    UIFont *final = [RCTConvert UIFont:resultOne withWeight:@"bold"];
+    RCTAssertEqualFonts(expected, final);
+  }
+  {
+    UIFont *expected = [RCTConvert UIFont:@{@"fontFamily": @"Times New Roman", @"fontStyle": @"italic", @"fontWeight": @"bold"}];
+    UIFont *resultOne = [UIFont systemFontOfSize:14 weight:UIFontWeightRegular];
+    UIFont *resultTwo = [RCTConvert UIFont:resultOne withFamily:@"Times New Roman"];
+    UIFont *resultThree = [RCTConvert UIFont:resultTwo withStyle:@"italic"];
+    UIFont *final = [RCTConvert UIFont:resultThree withWeight:@"bold"];
+    RCTAssertEqualFonts(expected, final);
+  }
+}
+
 @end

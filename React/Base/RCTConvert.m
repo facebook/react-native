@@ -589,6 +589,7 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   return [self UIFont:font withFamily:json size:nil weight:nil style:nil scaleMultiplier:1.0];
 }
 
+
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
               size:(id)size weight:(id)weight style:(id)style
    scaleMultiplier:(CGFloat)scaleMultiplier
@@ -598,6 +599,7 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   NSString *const RCTIOS8SystemFontFamily = @"Helvetica Neue";
   const RCTFontWeight RCTDefaultFontWeight = UIFontWeightRegular;
   const CGFloat RCTDefaultFontSize = 14;
+  const BOOL hasSystemFontWeightSelector = [UIFont respondsToSelector:@selector(systemFontOfSize:weight:)];
 
   // Initialize properties to defaults
   CGFloat fontSize = RCTDefaultFontSize;
@@ -614,6 +616,7 @@ static BOOL RCTFontIsCondensed(UIFont *font)
     isCondensed = RCTFontIsCondensed(font);
   }
 
+
   // Get font attributes
   fontSize = [self CGFloat:size] ?: fontSize;
   if (scaleMultiplier > 0.0 && scaleMultiplier != 1.0) {
@@ -623,10 +626,18 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   isItalic = style ? [self RCTFontStyle:style] : isItalic;
   fontWeight = weight ? [self RCTFontWeight:weight] : fontWeight;
 
+  // Font is a systemFont if its familyName is either equal to `System` or
+  // real system font family determined by systemFontOfSize selector
+  BOOL isSystemFont = [familyName isEqual:RCTDefaultFontFamily];
+  if (hasSystemFontWeightSelector && !isSystemFont) {
+    UIFont *systemFont = [UIFont systemFontOfSize:fontSize weight:fontWeight];
+    isSystemFont = [familyName isEqualToString:systemFont.familyName];
+  }
+
   // Handle system font as special case. This ensures that we preserve
   // the specific metrics of the standard system font as closely as possible.
-  if ([familyName isEqual:RCTDefaultFontFamily]) {
-    if ([UIFont respondsToSelector:@selector(systemFontOfSize:weight:)]) {
+  if (isSystemFont) {
+    if (hasSystemFontWeightSelector) {
       font = [UIFont systemFontOfSize:fontSize weight:fontWeight];
       if (isItalic || isCondensed) {
         UIFontDescriptor *fontDescriptor = [font fontDescriptor];
@@ -660,15 +671,9 @@ static BOOL RCTFontIsCondensed(UIFont *font)
       isItalic = style ? isItalic : RCTFontIsItalic(font);
       isCondensed = RCTFontIsCondensed(font);
     } else {
-      // Not a valid font or family
+      // Not a valid font or family, fallback with system one
       RCTLogError(@"Unrecognized font family '%@'", familyName);
-      if ([UIFont respondsToSelector:@selector(systemFontOfSize:weight:)]) {
-        font = [UIFont systemFontOfSize:fontSize weight:fontWeight];
-      } else if (fontWeight > UIFontWeightRegular) {
-        font = [UIFont boldSystemFontOfSize:fontSize];
-      } else {
-        font = [UIFont systemFontOfSize:fontSize];
-      }
+      return [self UIFont:nil withFamily:nil size:size weight:weight style:style scaleMultiplier:scaleMultiplier];
     }
   }
 

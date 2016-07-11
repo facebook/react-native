@@ -555,6 +555,19 @@ exports.examples = [
     }
   },
   {
+    title: 'fontWeight and fontStyle',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            style={[styles.default, {fontWeight: 'bold', fontStyle: 'italic'}]}
+            defaultValue="Bolded and italicized"
+          />
+        </View>
+      );
+    }
+  },
+  {
     title: 'Colored highlight/cursor for text input',
     render: function() {
       return (
