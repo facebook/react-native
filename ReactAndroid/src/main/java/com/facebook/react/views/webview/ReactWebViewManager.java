@@ -113,13 +113,10 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     }
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        ReactContext reactContext = (ReactContext) view.getContext();
-        if(url.startsWith("tel:")) {
-            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(url)); 
-            reactContext.startActivity(intent);            
-            return true;
-        }    
-       return false;
+        ReactContext reactContext = (ReactContext) view.getContext();        
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url)); 
+        reactContext.startActivity(intent);            
+        return true;              
     }
     @Override
     public void onReceivedError(
