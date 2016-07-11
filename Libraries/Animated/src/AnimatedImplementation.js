@@ -1086,6 +1086,33 @@ class AnimatedModulo extends AnimatedWithChildren {
   }
 }
 
+class AnimatedModulo extends AnimatedWithChildren {
+  _a: Animated;
+  _modulus: number;
+
+  constructor(a: Animated, modulus: number) {
+    super();
+    this._a = a;
+    this._modulus = modulus;
+  }
+
+  __getValue(): number {
+    return (this._a.__getValue() % this._modulus + this._modulus) % this._modulus;
+  }
+
+  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+    return new AnimatedInterpolation(this, Interpolation.create(config));
+  }
+
+  __attach(): void {
+    this._a.__addChild(this);
+  }
+
+  __detach(): void {
+    this._a.__removeChild(this);
+  }
+}
+
 class AnimatedTransform extends AnimatedWithChildren {
   _transforms: Array<Object>;
 
