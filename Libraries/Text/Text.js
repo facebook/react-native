@@ -63,7 +63,7 @@ const viewConfig = {
  *     fontSize: 20,
  *     fontWeight: 'bold',
  *   },
- * };
+ * });
  * ```
  */
 
