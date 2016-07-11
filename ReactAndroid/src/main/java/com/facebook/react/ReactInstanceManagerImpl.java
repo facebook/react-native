@@ -616,6 +616,13 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
   }
 
   @Override
+  public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    if (mCurrentReactContext != null) {
+      mCurrentReactContext.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+  }
+
+  @Override
   public void showDevOptionsDialog() {
     UiThreadUtil.assertOnUiThread();
     mDevSupportManager.showDevOptionsDialog();

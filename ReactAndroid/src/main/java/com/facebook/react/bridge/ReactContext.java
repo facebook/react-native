@@ -39,6 +39,8 @@ public class ReactContext extends ContextWrapper {
       new CopyOnWriteArraySet<>();
   private final CopyOnWriteArraySet<ActivityEventListener> mActivityEventListeners =
       new CopyOnWriteArraySet<>();
+  private final CopyOnWriteArraySet<PermissionRequestListener> mPermissionRequestListeners =
+          new CopyOnWriteArraySet<>();
 
   private @Nullable CatalystInstance mCatalystInstance;
   private @Nullable LayoutInflater mInflater;
@@ -151,6 +153,14 @@ public class ReactContext extends ContextWrapper {
     mActivityEventListeners.remove(listener);
   }
 
+  public void addPermissionRequestListener(PermissionRequestListener listener) {
+    mPermissionRequestListeners.add(listener);
+  }
+
+  public void removePermissionRequestListener(PermissionRequestListener listener) {
+    mPermissionRequestListeners.remove(listener);
+  }
+
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onResume}
    */
@@ -208,6 +218,15 @@ public class ReactContext extends ContextWrapper {
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     for (ActivityEventListener listener : mActivityEventListeners) {
       listener.onActivityResult(requestCode, resultCode, data);
+    }
+  }
+
+  /**
+   * Should be called by the hosting Fragment in {@link Fragment#onRequestPermissionsResult}
+   */
+  public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    for (PermissionRequestListener listener : mPermissionRequestListeners) {
+      listener.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
   }
 

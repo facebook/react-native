@@ -119,6 +119,7 @@ public abstract class ReactInstanceManager {
    */
   public abstract void onHostDestroy();
   public abstract void onActivityResult(int requestCode, int resultCode, Intent data);
+  public abstract void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults);
   public abstract void showDevOptionsDialog();
 
   /**

@@ -150,6 +150,13 @@ public abstract class ReactActivity extends Activity
   }
 
   @Override
+  public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    if (mReactInstanceManager != null) {
+      mReactInstanceManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+  }
+
+  @Override
   public boolean onKeyUp(int keyCode, KeyEvent event) {
     if (getReactNativeHost().hasInstance() && getUseDeveloperSupport()) {
       if (keyCode == KeyEvent.KEYCODE_MENU) {
