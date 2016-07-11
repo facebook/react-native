@@ -171,7 +171,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
   if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:withBlock:)]) {
     [self.delegate loadSourceForBridge:_parentBridge withBlock:onSourceLoad];
-  } else if (self.bundleURL) {
+  } else {
+    RCTAssert(self.bundleURL, @"bundleURL must be non-nil when not implementing loadSourceForBridge");
+
     [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onComplete:^(NSError *error, NSData *source, int64_t sourceLength) {
       if (error && [self.delegate respondsToSelector:@selector(fallbackSourceURLForBridge:)]) {
         NSURL *fallbackURL = [self.delegate fallbackSourceURLForBridge:self->_parentBridge];
@@ -184,17 +186,6 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
       }
       onSourceLoad(error, source, sourceLength);
     }];
-  } else {
-    // Allow testing without a script
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [[NSNotificationCenter defaultCenter]
-       postNotificationName:RCTJavaScriptDidLoadNotification
-       object:self->_parentBridge userInfo:@{@"bridge": self}];
-    });
-
-    [self flushPendingCalls];
-
-    onSourceLoad(nil, nil, 0);
   }
 }
 
@@ -487,11 +478,10 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
        object:self->_parentBridge userInfo:@{@"bridge": self}];
     });
 
-    [self flushPendingCalls];
+    [self _flushPendingCalls];
   }];
 
 #if RCT_DEV
-
   if ([RCTGetURLQueryParam(self.bundleURL, @"hot") boolValue]) {
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
     NSString *host = self.bundleURL.host;
@@ -501,18 +491,15 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 #endif
 }
 
-- (void)flushPendingCalls
+- (void)_flushPendingCalls
 {
+  RCTAssertJSThread();
   [_performanceLogger markStopForTag:RCTPLBridgeStartup];
 
-  [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
-    for (dispatch_block_t call in self->_pendingCalls) {
-    _loading = NO;
-
-    for (dispatch_block_t call in _pendingCalls) {
-      call();
-    }
-  }];
+  _loading = NO;
+  for (dispatch_block_t call in self->_pendingCalls) {
+    call();
+  }
 }
 
 - (void)stopLoadingWithError:(NSError *)error
