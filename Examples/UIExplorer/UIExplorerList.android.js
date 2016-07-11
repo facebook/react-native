@@ -118,6 +118,10 @@ const APIExamples = [
     module: require('./AppStateExample'),
   },
   {
+    key: 'BackAndroidExample',
+    module: require('./BackAndroidExample'),
+  },
+  {
     key: 'BorderExample',
     module: require('./BorderExample'),
   },
