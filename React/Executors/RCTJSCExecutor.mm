@@ -690,25 +690,23 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
     script = nullTerminatedScript;
   }
 
-  __weak RCTJSCExecutor *weakSelf = self;
   [self executeBlockOnJavaScriptQueue:RCTProfileBlock((^{
-    RCTJSCExecutor *strongSelf = weakSelf;
-    if (!strongSelf || !strongSelf.isValid) {
+    if (!self.isValid) {
       return;
     }
 
-    [strongSelf->_performanceLogger markStartForTag:RCTPLScriptExecution];
+    [self->_performanceLogger markStartForTag:RCTPLScriptExecution];
 
     JSValueRef jsError = NULL;
-    RCTJSCWrapper *jscWrapper = strongSelf->_jscWrapper;
+    RCTJSCWrapper *jscWrapper = self->_jscWrapper;
     JSStringRef execJSString = jscWrapper->JSStringCreateWithUTF8CString((const char *)script.bytes);
     JSStringRef bundleURL = jscWrapper->JSStringCreateWithUTF8CString(sourceURL.absoluteString.UTF8String);
-    JSGlobalContextRef ctx = strongSelf->_context.context.JSGlobalContextRef;
+    JSGlobalContextRef ctx = self->_context.context.JSGlobalContextRef;
     JSValueRef result = jscWrapper->JSEvaluateScript(ctx, execJSString, NULL, bundleURL, 0, &jsError);
     jscWrapper->JSStringRelease(bundleURL);
     jscWrapper->JSStringRelease(execJSString);
 
-    [strongSelf->_performanceLogger markStopForTag:RCTPLScriptExecution];
+    [self->_performanceLogger markStopForTag:RCTPLScriptExecution];
 
     if (onComplete) {
       NSError *error;
