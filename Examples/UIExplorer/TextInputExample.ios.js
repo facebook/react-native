@@ -550,6 +550,11 @@ exports.examples = [
             style={[styles.default, {color: 'green'}]}
             defaultValue="Green"
           />
+          <TextInput
+            style={[styles.default, {color: 'red'}]}
+            defaultValue="Password"
+            password={true}
+          />
         </View>
       );
     }

@@ -395,6 +395,11 @@ exports.examples = [
             selectionColor={'red'}
             style={styles.singleLine}>
           </TextInput>
+          <TextInput
+            style={[styles.default, {color: 'sienna'}]}
+            defaultValue="Password"
+            password={true}
+          />
         </View>
       );
     }
