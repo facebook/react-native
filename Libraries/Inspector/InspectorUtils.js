@@ -19,7 +19,7 @@ function traverseOwnerTreeUp(hierarchy, instance) {
   }
 }
 
-function findInstanceByNativeTag(rootTag, nativeTag) {
+function findInstanceByNativeTag(nativeTag) {
   return ReactNativeComponentTree.getInstanceFromNode(nativeTag);
 }
 

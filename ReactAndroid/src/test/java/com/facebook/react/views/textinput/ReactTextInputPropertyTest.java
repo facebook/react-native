@@ -242,13 +242,13 @@ public class ReactTextInputPropertyTest {
     mManager.updateProperties(view, buildStyles());
     assertThat(view.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD).isZero();
 
-    mManager.updateProperties(view, buildStyles("password", false));
+    mManager.updateProperties(view, buildStyles("secureTextEntry", false));
     assertThat(view.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD).isZero();
 
-    mManager.updateProperties(view, buildStyles("password", true));
+    mManager.updateProperties(view, buildStyles("secureTextEntry", true));
     assertThat(view.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD).isNotZero();
 
-    mManager.updateProperties(view, buildStyles("password", null));
+    mManager.updateProperties(view, buildStyles("secureTextEntry", null));
     assertThat(view.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD).isZero();
   }
 

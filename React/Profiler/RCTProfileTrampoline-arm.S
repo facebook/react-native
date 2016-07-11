@@ -10,7 +10,7 @@
 #include "RCTDefines.h"
 #include "RCTMacros.h"
 
-#if RCT_DEV && defined(__arm__)
+#if RCT_PROFILE && defined(__arm__)
 
   .thumb
   .thumb_func

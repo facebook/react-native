@@ -82,28 +82,42 @@ RCT_EXPORT_MODULE()
 NSString *const RCTErrorUnableToLoad = @"E_UNABLE_TO_LOAD";
 NSString *const RCTErrorUnableToSave = @"E_UNABLE_TO_SAVE";
 
-RCT_EXPORT_METHOD(saveImageWithTag:(NSURLRequest *)imageRequest
+RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
+                  type:(NSString *)type
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  [_bridge.imageLoader loadImageWithURLRequest:imageRequest
-                                      callback:^(NSError *loadError, UIImage *loadedImage) {
-    if (loadError) {
-      reject(RCTErrorUnableToLoad, nil, loadError);
-      return;
-    }
-    // It's unclear if writeImageToSavedPhotosAlbum is thread-safe
+  if ([type isEqualToString:@"video"]) {
+    // It's unclear if writeVideoAtPathToSavedPhotosAlbum is thread-safe
     dispatch_async(dispatch_get_main_queue(), ^{
-      [_bridge.assetsLibrary writeImageToSavedPhotosAlbum:loadedImage.CGImage metadata:nil completionBlock:^(NSURL *assetURL, NSError *saveError) {
+      [_bridge.assetsLibrary writeVideoAtPathToSavedPhotosAlbum:request.URL completionBlock:^(NSURL *assetURL, NSError *saveError) {
         if (saveError) {
-          RCTLogWarn(@"Error saving cropped image: %@", saveError);
           reject(RCTErrorUnableToSave, nil, saveError);
         } else {
           resolve(assetURL.absoluteString);
         }
       }];
     });
-  }];
+  } else {
+    [_bridge.imageLoader loadImageWithURLRequest:request
+                                        callback:^(NSError *loadError, UIImage *loadedImage) {
+      if (loadError) {
+        reject(RCTErrorUnableToLoad, nil, loadError);
+        return;
+      }
+      // It's unclear if writeImageToSavedPhotosAlbum is thread-safe
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [_bridge.assetsLibrary writeImageToSavedPhotosAlbum:loadedImage.CGImage metadata:nil completionBlock:^(NSURL *assetURL, NSError *saveError) {
+          if (saveError) {
+            RCTLogWarn(@"Error saving cropped image: %@", saveError);
+            reject(RCTErrorUnableToSave, nil, saveError);
+          } else {
+            resolve(assetURL.absoluteString);
+          }
+        }];
+      });
+    }];
+  }
 }
 
 static void RCTResolvePromise(RCTPromiseResolveBlock resolve,

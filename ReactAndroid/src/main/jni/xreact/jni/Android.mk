@@ -9,14 +9,21 @@ LOCAL_SRC_FILES := \
   CxxModuleWrapper.cpp \
   JExecutorToken.cpp \
   JMessageQueueThread.cpp \
-  JniJSModulesUnbundle.cpp \
   JSCPerfLogging.cpp \
   JSLoader.cpp \
   JSLogging.cpp \
+  JniJSModulesUnbundle.cpp \
   MethodInvoker.cpp \
   ModuleRegistryHolder.cpp \
+  NativeArray.cpp \
+  NativeCommon.cpp \
+  NativeMap.cpp \
   OnLoad.cpp \
   ProxyExecutor.cpp \
+  ReadableNativeArray.cpp \
+  ReadableNativeMap.cpp \
+  WritableNativeArray.cpp \
+  WritableNativeMap.cpp \
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../..
@@ -27,7 +34,7 @@ LOCAL_CFLAGS += $(CXX11_FLAGS)
 LOCAL_EXPORT_CPPFLAGS := $(CXX11_FLAGS)
 
 LOCAL_LDLIBS += -landroid
-LOCAL_SHARED_LIBRARIES := libfolly_json libfbjni libjsc libglog_init libreactnativejni
+LOCAL_SHARED_LIBRARIES := libfolly_json libfbjni libjsc libglog_init
 LOCAL_STATIC_LIBRARIES := libreactnativefb
 
 include $(BUILD_SHARED_LIBRARY)
@@ -37,4 +44,3 @@ $(call import-module,jsc)
 $(call import-module,folly)
 $(call import-module,fbgloginit)
 $(call import-module,jsc)
-$(call import-module,react/jni)

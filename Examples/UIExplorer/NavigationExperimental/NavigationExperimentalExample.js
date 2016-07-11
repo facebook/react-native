@@ -34,6 +34,7 @@ const View = require('View');
  */
 const EXAMPLES = {
   'NavigationCardStack Example': require('./NavigationCardStack-example'),
+  'Header + Scenes + Tabs Example': require('./NavigationHeaderScenesTabs-example'),
 };
 
 const EXAMPLE_STORAGE_KEY = 'NavigationExperimentalExample';

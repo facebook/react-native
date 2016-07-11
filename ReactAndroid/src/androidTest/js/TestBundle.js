@@ -18,13 +18,15 @@ require('ViewRenderingTestModule');
 require('TestJavaToJSArgumentsModule');
 require('TestJSToJavaParametersModule');
 
-require('PickerAndroidTestModule');
 require('CatalystRootViewTestModule');
 require('DatePickerDialogTestModule');
+require('MeasureLayoutTestModule');
+require('PickerAndroidTestModule');
 require('ScrollViewTestModule');
 require('SwipeRefreshLayoutTestModule');
 require('TextInputTestModule');
 require('TimePickerDialogTestModule');
+
 
 // Define catalyst test apps used in integration tests
 var AppRegistry = require('AppRegistry');
@@ -43,6 +45,10 @@ var apps = [
   component: () => require('ScrollViewTestModule').HorizontalScrollViewTestApp,
 },
 {
+  appKey: 'MeasureLayoutTestApp',
+  component: () => require('MeasureLayoutTestModule').MeasureLayoutTestApp
+},
+{
   appKey: 'MultitouchHandlingTestAppModule',
   component: () => require('MultitouchHandlingTestAppModule')
 },
@@ -53,6 +59,10 @@ var apps = [
 {
   appKey: 'ScrollViewTestApp',
   component: () => require('ScrollViewTestModule').ScrollViewTestApp,
+},
+{
+  appKey: 'SubviewsClippingTestApp',
+  component: () => require('SubviewsClippingTestModule').App,
 },
 {
   appKey: 'SwipeRefreshLayoutTestApp',
@@ -69,6 +79,10 @@ var apps = [
 {
   appKey: 'TimePickerDialogTestApp',
   component: () => require('TimePickerDialogTestModule').TimePickerDialogTestApp
+},
+{
+  appKey: 'TouchBubblingTestAppModule',
+  component: () => require('TouchBubblingTestAppModule')
 },
 
 ];

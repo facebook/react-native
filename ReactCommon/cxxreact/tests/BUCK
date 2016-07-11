@@ -1,0 +1,19 @@
+include_defs('//ReactAndroid/DEFS')
+include_defs('//ReactAndroid/TEST_DEFS')
+
+jni_instrumentation_test_lib(
+  name = 'tests',
+  class_under_test = 'com/facebook/react/XplatBridgeTest',
+  soname = 'libxplat-bridge.so',
+  srcs = [
+    'CxxMessageQueueTest.cpp',
+  ],
+  compiler_flags = [
+    '-fexceptions',
+  ],
+  deps = [
+    '//xplat/third-party/gmock:gtest',
+    react_native_xplat_target('cxxreact:bridge'),
+  ],
+  visibility = ['//instrumentation_tests/...'],
+)

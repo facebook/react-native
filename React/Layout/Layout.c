@@ -871,6 +871,25 @@
            }
          }
 
+         // If child has no defined size in the cross axis and is set to stretch, set the cross
+         // axis to be measured exactly with the available inner width
+         if (!isMainAxisRow &&
+             !isUndefined(availableInnerWidth) &&
+             !isStyleDimDefined(child, CSS_FLEX_DIRECTION_ROW) &&
+             widthMeasureMode == CSS_MEASURE_MODE_EXACTLY &&
+             getAlignItem(node, child) == CSS_ALIGN_STRETCH) {
+           childWidth = availableInnerWidth;
+           childWidthMeasureMode = CSS_MEASURE_MODE_EXACTLY;
+         }
+         if (isMainAxisRow &&
+             !isUndefined(availableInnerHeight) &&
+             !isStyleDimDefined(child, CSS_FLEX_DIRECTION_COLUMN) &&
+             heightMeasureMode == CSS_MEASURE_MODE_EXACTLY &&
+             getAlignItem(node, child) == CSS_ALIGN_STRETCH) {
+           childHeight = availableInnerHeight;
+           childHeightMeasureMode = CSS_MEASURE_MODE_EXACTLY;
+         }
+
          // Measure the child
          layoutNodeInternal(child, childWidth, childHeight, direction, childWidthMeasureMode, childHeightMeasureMode, false, "measure");
 
@@ -1080,7 +1099,13 @@
            childWidth = updatedMainSize + getMarginAxis(currentRelativeChild, CSS_FLEX_DIRECTION_ROW);
            childWidthMeasureMode = CSS_MEASURE_MODE_EXACTLY;
 
-           if (!isStyleDimDefined(currentRelativeChild, CSS_FLEX_DIRECTION_COLUMN)) {
+           if (!isUndefined(availableInnerCrossDim) &&
+               !isStyleDimDefined(currentRelativeChild, CSS_FLEX_DIRECTION_COLUMN) &&
+               heightMeasureMode == CSS_MEASURE_MODE_EXACTLY &&
+               getAlignItem(node, currentRelativeChild) == CSS_ALIGN_STRETCH) {
+             childHeight = availableInnerCrossDim;
+             childHeightMeasureMode = CSS_MEASURE_MODE_EXACTLY;
+           } else if (!isStyleDimDefined(currentRelativeChild, CSS_FLEX_DIRECTION_COLUMN)) {
              childHeight = availableInnerCrossDim;
              childHeightMeasureMode = isUndefined(childHeight) ? CSS_MEASURE_MODE_UNDEFINED : CSS_MEASURE_MODE_AT_MOST;
            } else {
@@ -1091,7 +1116,13 @@
            childHeight = updatedMainSize + getMarginAxis(currentRelativeChild, CSS_FLEX_DIRECTION_COLUMN);
            childHeightMeasureMode = CSS_MEASURE_MODE_EXACTLY;
 
-           if (!isStyleDimDefined(currentRelativeChild, CSS_FLEX_DIRECTION_ROW)) {
+           if (!isUndefined(availableInnerCrossDim) &&
+               !isStyleDimDefined(currentRelativeChild, CSS_FLEX_DIRECTION_ROW) &&
+               widthMeasureMode == CSS_MEASURE_MODE_EXACTLY &&
+               getAlignItem(node, currentRelativeChild) == CSS_ALIGN_STRETCH) {
+             childWidth = availableInnerCrossDim;
+             childWidthMeasureMode = CSS_MEASURE_MODE_EXACTLY;
+           } else if (!isStyleDimDefined(currentRelativeChild, CSS_FLEX_DIRECTION_ROW)) {
              childWidth = availableInnerCrossDim;
              childWidthMeasureMode = isUndefined(childWidth) ? CSS_MEASURE_MODE_UNDEFINED : CSS_MEASURE_MODE_AT_MOST;
            } else {
@@ -1528,33 +1559,78 @@
    return performLayout? kLayoutModeNames[mode] : kMeasureModeNames[mode];
  }
 
- static bool canUseCachedMeasurement(float availableWidth, float availableHeight,
-   float marginRow, float marginColumn,
-   css_measure_mode_t widthMeasureMode, css_measure_mode_t heightMeasureMode,
-   css_cached_measurement_t cachedLayout) {
+ static bool canUseCachedMeasurement(
+     bool is_text_node,
+     float available_width,
+     float available_height,
+     float margin_row,
+     float margin_column,
+     css_measure_mode_t width_measure_mode,
+     css_measure_mode_t height_measure_mode,
+     css_cached_measurement_t cached_layout) {
 
-   // Is it an exact match?
-   if (eq(cachedLayout.available_width, availableWidth) &&
-       eq(cachedLayout.available_height, availableHeight) &&
-       cachedLayout.width_measure_mode == widthMeasureMode &&
-       cachedLayout.height_measure_mode == heightMeasureMode) {
+   bool is_height_same =
+     (cached_layout.height_measure_mode == CSS_MEASURE_MODE_UNDEFINED && height_measure_mode == CSS_MEASURE_MODE_UNDEFINED) ||
+       (cached_layout.height_measure_mode == height_measure_mode && eq(cached_layout.available_height, available_height));
+
+   bool is_width_same =
+     (cached_layout.width_measure_mode == CSS_MEASURE_MODE_UNDEFINED && width_measure_mode == CSS_MEASURE_MODE_UNDEFINED) ||
+       (cached_layout.width_measure_mode == width_measure_mode && eq(cached_layout.available_width, available_width));
+
+   if (is_height_same && is_width_same) {
      return true;
    }
 
-   // If the width is an exact match, try a fuzzy match on the height.
-   if (cachedLayout.width_measure_mode == widthMeasureMode &&
-       eq(cachedLayout.available_width, availableWidth) &&
-       heightMeasureMode == CSS_MEASURE_MODE_EXACTLY &&
-       eq(availableHeight - marginColumn, cachedLayout.computed_height)) {
+   bool is_height_valid =
+     (cached_layout.height_measure_mode == CSS_MEASURE_MODE_UNDEFINED && height_measure_mode == CSS_MEASURE_MODE_AT_MOST && cached_layout.computed_height <= (available_height - margin_column)) ||
+       (height_measure_mode == CSS_MEASURE_MODE_EXACTLY && eq(cached_layout.computed_height, available_height - margin_column));
+
+   if (is_width_same && is_height_valid) {
      return true;
    }
 
-   // If the height is an exact match, try a fuzzy match on the width.
-   if (cachedLayout.height_measure_mode == heightMeasureMode &&
-       eq(cachedLayout.available_height, availableHeight) &&
-       widthMeasureMode == CSS_MEASURE_MODE_EXACTLY &&
-       eq(availableWidth - marginRow, cachedLayout.computed_width)) {
+   bool is_width_valid =
+     (cached_layout.width_measure_mode == CSS_MEASURE_MODE_UNDEFINED && width_measure_mode == CSS_MEASURE_MODE_AT_MOST && cached_layout.computed_width <= (available_width - margin_row)) ||
+       (width_measure_mode == CSS_MEASURE_MODE_EXACTLY && eq(cached_layout.computed_width, available_width - margin_row));
+
+   if (is_height_same && is_width_valid) {
      return true;
+   }
+
+   if (is_height_valid && is_width_valid) {
+     return true;
+   }
+
+   // We know this to be text so we can apply some more specialized heuristics.
+   if (is_text_node) {
+     if (is_width_same) {
+       if (height_measure_mode == CSS_MEASURE_MODE_UNDEFINED) {
+         // Width is the same and height is not restricted. Re-use cahced value.
+         return true;
+       }
+
+       if (height_measure_mode == CSS_MEASURE_MODE_AT_MOST &&
+           cached_layout.computed_height < (available_height - margin_column)) {
+         // Width is the same and height restriction is greater than the cached height. Re-use cached value.
+         return true;
+       }
+
+       // Width is the same but height restriction imposes smaller height than previously measured.
+       // Update the cached value to respect the new height restriction.
+       cached_layout.computed_height = available_height - margin_column;
+       return true;
+     }
+
+     if (cached_layout.width_measure_mode == CSS_MEASURE_MODE_UNDEFINED) {
+       if (width_measure_mode == CSS_MEASURE_MODE_UNDEFINED ||
+            (width_measure_mode == CSS_MEASURE_MODE_AT_MOST &&
+             cached_layout.computed_width <= (available_width - margin_row))) {
+         // Previsouly this text was measured with no width restriction, if width is now restricted
+         // but to a larger value than the previsouly measured width we can re-use the measurement
+         // as we know it will fit.
+         return true;
+       }
+     }
    }
 
    return false;
@@ -1598,13 +1674,13 @@
      float marginAxisColumn = getMarginAxis(node, CSS_FLEX_DIRECTION_COLUMN);
 
      // First, try to use the layout cache.
-     if (canUseCachedMeasurement(availableWidth, availableHeight, marginAxisRow, marginAxisColumn,
+     if (canUseCachedMeasurement(node->is_text_node && node->is_text_node(node->context), availableWidth, availableHeight, marginAxisRow, marginAxisColumn,
          widthMeasureMode, heightMeasureMode, layout->cached_layout)) {
        cachedResults = &layout->cached_layout;
      } else {
        // Try to use the measurement cache.
        for (int i = 0; i < layout->next_cached_measurements_index; i++) {
-         if (canUseCachedMeasurement(availableWidth, availableHeight, marginAxisRow, marginAxisColumn,
+         if (canUseCachedMeasurement(node->is_text_node && node->is_text_node(node->context), availableWidth, availableHeight, marginAxisRow, marginAxisColumn,
              widthMeasureMode, heightMeasureMode, layout->cached_measurements[i])) {
            cachedResults = &layout->cached_measurements[i];
            break;

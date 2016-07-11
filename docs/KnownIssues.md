@@ -34,7 +34,6 @@ There are properties that work on one platform only, either because they can inh
 There are known cases where the APIs could be made more consistent across iOS and Android:
 
 - `<ViewPagerAndroid>` and `<ScrollView pagingEnabled={true}>` on iOS do a similar thing. We might want to unify them to `<ViewPager>`.
-- `ActivityIndicator` could render a native spinning indicator on both platforms (currently this is done using `ActivityIndicatorIOS` on iOS and `ProgressBarAndroid` on Android).
 - `ProgressBar` could render a horizontal progress bar on both platforms (on iOS this is `ProgressViewIOS`, on Android it's `ProgressBarAndroid`).
 
 ### The `overflow` style property defaults to `hidden` and cannot be changed on Android

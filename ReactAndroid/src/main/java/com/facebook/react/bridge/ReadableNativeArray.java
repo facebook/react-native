@@ -21,9 +21,8 @@ import java.util.ArrayList;
  */
 @DoNotStrip
 public class ReadableNativeArray extends NativeArray implements ReadableArray {
-
   static {
-    SoLoader.loadLibrary(ReactBridge.REACT_NATIVE_LIB);
+    ReactBridge.staticInit();
   }
 
   protected ReadableNativeArray(HybridData hybridData) {

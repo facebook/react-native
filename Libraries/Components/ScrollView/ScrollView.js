@@ -15,7 +15,6 @@ const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Platform = require('Platform');
 const PointPropType = require('PointPropType');
-const RCTScrollViewManager = require('NativeModules').ScrollViewManager;
 const React = require('React');
 const ReactNative = require('ReactNative');
 const ScrollResponder = require('ScrollResponder');
@@ -469,7 +468,6 @@ const ScrollView = React.createClass({
         !this.props.horizontal;
 
     const baseStyle = this.props.horizontal ? styles.baseHorizontal : styles.baseVertical;
-
     const props = {
       ...this.props,
       alwaysBounceHorizontal,
@@ -548,6 +546,7 @@ const ScrollView = React.createClass({
 const styles = StyleSheet.create({
   baseVertical: {
     flex: 1,
+    flexDirection: 'column',
   },
   baseHorizontal: {
     flex: 1,

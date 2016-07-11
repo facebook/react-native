@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 package com.facebook.react;
 
 import android.app.Activity;
@@ -12,6 +21,7 @@ import android.widget.Toast;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 
 import java.util.List;
@@ -29,7 +39,7 @@ public abstract class ReactActivity extends Activity implements DefaultHardwareB
   private @Nullable ReactInstanceManager mReactInstanceManager;
   private @Nullable ReactRootView mReactRootView;
   private LifecycleState mLifecycleState = LifecycleState.BEFORE_RESUME;
-  private boolean mDoRefresh = false;
+  private DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
 
   /**
    * Returns the name of the bundle in assets. If this is null, and no file path is specified for
@@ -142,6 +152,7 @@ public abstract class ReactActivity extends Activity implements DefaultHardwareB
     mReactRootView = createRootView();
     mReactRootView.startReactApplication(mReactInstanceManager, getMainComponentName(), getLaunchOptions());
     setContentView(mReactRootView);
+    mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
   }
 
   @Override
@@ -193,22 +204,8 @@ public abstract class ReactActivity extends Activity implements DefaultHardwareB
         mReactInstanceManager.showDevOptionsDialog();
         return true;
       }
-      if (keyCode == KeyEvent.KEYCODE_R && !(getCurrentFocus() instanceof EditText)) {
-        // Enable double-tap-R-to-reload
-        if (mDoRefresh) {
-          mReactInstanceManager.getDevSupportManager().handleReloadJS();
-          mDoRefresh = false;
-        } else {
-          mDoRefresh = true;
-          new Handler().postDelayed(
-              new Runnable() {
-                @Override
-                public void run() {
-                  mDoRefresh = false;
-                }
-              },
-              200);
-        }
+      if (mDoubleTapReloadRecognizer.didDoubleTapR(keyCode, getCurrentFocus())) {
+        mReactInstanceManager.getDevSupportManager().handleReloadJS();
       }
     }
     return super.onKeyUp(keyCode, event);

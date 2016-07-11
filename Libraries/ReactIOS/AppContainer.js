@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule renderApplication
+ * @providesModule AppContainer
  * @noflow
  */
 
@@ -15,11 +15,9 @@
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
 var ReactNative = require('ReactNative');
-var StyleSheet = require('StyleSheet');
 var Subscribable = require('Subscribable');
+var StyleSheet = require('StyleSheet');
 var View = require('View');
-
-var invariant = require('fbjs/lib/invariant');
 
 var Inspector = __DEV__ ? require('Inspector') : null;
 var YellowBox = __DEV__ ? require('YellowBox') : null;
@@ -35,7 +33,6 @@ var AppContainer = React.createClass({
     var inspector = !__DEV__ || this.state.inspector
       ? null
       : <Inspector
-          rootTag={this.props.rootTag}
           inspectedViewTag={ReactNative.findNodeHandle(this.refs.main)}
           onRequestRerenderApp={(updateInspectedViewTag) => {
             this.setState(
@@ -63,7 +60,7 @@ var AppContainer = React.createClass({
     return (
       <View style={styles.appContainer}>
         <View
-          collapsible={false}
+          collapsable={!this.state.inspector}
           key={this.state.mainKey}
           style={styles.appContainer} ref="main">
           {this.props.children}
@@ -75,32 +72,10 @@ var AppContainer = React.createClass({
   }
 });
 
-function renderApplication<D, P, S>(
-  RootComponent: ReactClass<P>,
-  initialProps: P,
-  rootTag: any
-) {
-  invariant(
-    rootTag,
-    'Expect to have a valid rootTag, instead got ', rootTag
-  );
-  /* eslint-disable jsx-no-undef-with-namespace */
-  ReactNative.render(
-    <AppContainer rootTag={rootTag}>
-      <RootComponent
-        {...initialProps}
-        rootTag={rootTag}
-      />
-    </AppContainer>,
-    rootTag
-  );
-  /* eslint-enable jsx-no-undef-with-namespace */
-}
-
 var styles = StyleSheet.create({
   appContainer: {
     flex: 1,
   },
 });
 
-module.exports = renderApplication;
+module.exports = AppContainer;

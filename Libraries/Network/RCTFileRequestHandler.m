@@ -49,7 +49,7 @@ RCT_EXPORT_MODULE()
     NSError *error = nil;
     NSFileManager *fileManager = [NSFileManager new];
     NSDictionary<NSString *, id> *fileAttributes = [fileManager attributesOfItemAtPath:request.URL.path error:&error];
-    if (error) {
+    if (!fileAttributes) {
       [delegate URLRequest:weakOp didCompleteWithError:error];
       return;
     }

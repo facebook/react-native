@@ -501,6 +501,7 @@ var TextInput = React.createClass({
 
     return (
       <TouchableWithoutFeedback
+        onLayout={props.onLayout}
         onPress={this._onPress}
         rejectResponderTermination={true}
         accessible={props.accessible}
@@ -557,9 +558,9 @@ var TextInput = React.createClass({
         onSubmitEditing={this.props.onSubmitEditing}
         blurOnSubmit={this.props.blurOnSubmit}
         onLayout={this.props.onLayout}
-        password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}
         placeholderTextColor={this.props.placeholderTextColor}
+        secureTextEntry={this.props.secureTextEntry}
         selectionColor={this.props.selectionColor}
         text={this._getText()}
         underlineColorAndroid={this.props.underlineColorAndroid}

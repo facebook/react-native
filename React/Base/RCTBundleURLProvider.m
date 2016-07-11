@@ -19,8 +19,18 @@ static NSString *const kRCTEnableDevKey = @"RCT_enableDev";
 static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
 
 static NSString *const kDefaultPort = @"8081";
+static NSString *ipGuess;
 
 @implementation RCTBundleURLProvider
+
+#if RCT_DEV
++ (void)initialize
+{
+  NSString *ipPath = [[NSBundle mainBundle] pathForResource:@"ip" ofType:@"txt"];
+  NSString *ip = [NSString stringWithContentsOfFile:ipPath encoding:NSUTF8StringEncoding error:nil];
+  ipGuess = [ip stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+}
+#endif
 
 - (NSDictionary *)defaults
 {
@@ -47,6 +57,14 @@ static NSString *const kDefaultPort = @"8081";
   [self settingsUpdated];
 }
 
+- (void)resetToDefaults
+{
+  for (NSString *key in [[self defaults] allKeys]) {
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+  }
+  [self setDefaults];
+}
+
 - (BOOL)isPackagerRunning:(NSString *)host
 {
   if (RCT_DEV) {
@@ -67,14 +85,12 @@ static NSString *serverRootWithHost(NSString *host)
 
 - (NSString *)guessPackagerHost
 {
-  NSString *host = @"localhost";
-  //TODO: Implement automatic IP address detection
+  NSString *host = ipGuess ?: @"localhost";
   if ([self isPackagerRunning:host]) {
     return host;
   }
   return nil;
 }
-
 
 - (NSString *)packagerServerRoot
 {
@@ -89,6 +105,12 @@ static NSString *serverRootWithHost(NSString *host)
       return serverRootWithHost(host);
     }
   }
+}
+
+- (NSURL *)packagerServerURL
+{
+  NSString *root = [self packagerServerRoot];
+  return root ? [NSURL URLWithString:root] : nil;
 }
 
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName

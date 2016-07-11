@@ -22,7 +22,6 @@ const View = require('View');
 const invariant = require('fbjs/lib/invariant');
 
 import type {
-  NavigationActionCaller,
   NavigationAnimatedValue,
   NavigationLayout,
   NavigationState,
@@ -34,7 +33,6 @@ import type {
 type Props = {
   configureTransition: NavigationTransitionConfigurator,
   navigationState: NavigationState,
-  onNavigate: NavigationActionCaller,
   onTransitionEnd: () => void,
   onTransitionStart: () => void,
   renderOverlay: ?NavigationSceneRenderer,
@@ -71,7 +69,6 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
   static propTypes = {
     configureTransition: PropTypes.func,
     navigationState: NavigationPropTypes.navigationState.isRequired,
-    onNavigate: PropTypes.func.isRequired,
     onTransitionEnd: PropTypes.func,
     onTransitionStart: PropTypes.func,
     renderOverlay: PropTypes.func,
@@ -186,7 +183,6 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
   _renderScene(scene: NavigationScene): ?ReactElement<any> {
     const {
       navigationState,
-      onNavigate,
       renderScene,
     } = this.props;
 
@@ -199,7 +195,6 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
     return renderScene({
       layout: this.state.layout,
       navigationState,
-      onNavigate,
       position,
       progress,
       scene,
@@ -211,7 +206,6 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
     if (this.props.renderOverlay) {
       const {
         navigationState,
-        onNavigate,
         renderOverlay,
       } = this.props;
 
@@ -234,7 +228,6 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
       return renderOverlay({
         layout: this.state.layout,
         navigationState,
-        onNavigate,
         position,
         progress,
         scene: activeScene,

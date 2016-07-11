@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Process;
 import android.view.View;
 
 import com.facebook.common.logging.FLog;
@@ -190,6 +191,12 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
     @Override
     protected Result<ReactApplicationContext> doInBackground(ReactContextInitParams... params) {
+      // TODO(t11687218): Look over all threading
+      // Default priority is Process.THREAD_PRIORITY_BACKGROUND which means we'll be put in a cgroup
+      // that only has access to a small fraction of CPU time. The priority will be reset after
+      // this task finishes: https://android.googlesource.com/platform/frameworks/base/+/d630f105e8bc0021541aacb4dc6498a49048ecea/core/java/android/os/AsyncTask.java#256
+      Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+
       Assertions.assertCondition(params != null && params.length > 0 && params[0] != null);
       try {
         JavaScriptExecutor jsExecutor = params[0].getJsExecutorFactory().create();

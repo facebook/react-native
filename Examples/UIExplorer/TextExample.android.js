@@ -388,6 +388,17 @@ var TextExample = React.createClass({
             Demo text shadow
           </Text>
         </UIExplorerBlock>
+        <UIExplorerBlock title="Line break mode">
+          <Text numberOfLines={1}>
+            This very long text should be truncated with dots in the end.
+          </Text>
+          <Text lineBreakMode="middle" numberOfLines={1}>
+            This very long text should be truncated with dots in the middle.
+          </Text>
+          <Text lineBreakMode="head" numberOfLines={1}>
+            This very long text should be truncated with dots in the beginning.
+          </Text>
+        </UIExplorerBlock>
       </UIExplorerPage>
     );
   }

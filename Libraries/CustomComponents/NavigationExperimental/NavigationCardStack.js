@@ -47,7 +47,6 @@ const {PropTypes} = React;
 const {Directions} = NavigationCardStackPanResponder;
 
 import type {
-  NavigationActionCaller,
   NavigationState,
   NavigationSceneRenderer,
   NavigationSceneRendererProps,
@@ -60,9 +59,10 @@ import type {
 type Props = {
   direction: NavigationGestureDirection,
   navigationState: NavigationState,
-  onNavigate: NavigationActionCaller,
+  onNavigateBack: ?Function,
   renderOverlay: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
+  style: any,
 };
 
 type DefaultProps = {
@@ -90,7 +90,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   static propTypes = {
     direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
     navigationState: NavigationPropTypes.navigationState.isRequired,
-    onNavigate: NavigationPropTypes.SceneRendererProps.onNavigate,
+    onNavigateBack: PropTypes.func,
     renderOverlay: PropTypes.func,
     renderScene: PropTypes.func.isRequired,
   };
@@ -122,8 +122,6 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
         navigationState={this.props.navigationState}
         renderOverlay={this.props.renderOverlay}
         renderScene={this._renderScene}
-        onNavigate={this.props.onNavigate}
-        // $FlowFixMe - style should be declared
         style={[styles.animatedView, this.props.style]}
       />
     );
@@ -136,9 +134,13 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
       NavigationCardStackStyleInterpolator.forVertical(props) :
       NavigationCardStackStyleInterpolator.forHorizontal(props);
 
+    const panHandlersProps = {
+      ...props,
+      onNavigateBack: this.props.onNavigateBack,
+    };
     const panHandlers = isVertical ?
-      NavigationCardStackPanResponder.forVertical(props) :
-      NavigationCardStackPanResponder.forHorizontal(props);
+      NavigationCardStackPanResponder.forVertical(panHandlersProps) :
+      NavigationCardStackPanResponder.forHorizontal(panHandlersProps);
 
     return (
       <NavigationCard

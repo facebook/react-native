@@ -24,8 +24,6 @@ const NavigationExampleRow = require('./NavigationExampleRow');
 const React = require('react');
 const ReactNative = require('react-native');
 
-const emptyFunction = require('fbjs/lib/emptyFunction');
-
 /**
  * Basic example that shows how to use <NavigationCardStack /> to build
  * an app with controlled navigation system.
@@ -80,7 +78,7 @@ class YourApplication extends React.Component {
     switch (type) {
       case 'push':
         // push a new route.
-        const route = {key: Date.now()};
+        const route = {key: 'route-' + Date.now()};
         navigationState = NavigationStateUtils.push(navigationState, route);
         break;
 
@@ -137,11 +135,8 @@ class YourNavigator extends React.Component {
 
   // Now use the `NavigationCardStack` to render the scenes.
   render(): ReactElement {
-    // TODO(hedger): prop `onNavigate` will be deprecated soon. For now,
-    // use `emptyFunction` as a placeholder.
     return (
       <NavigationCardStack
-        onNavigate={emptyFunction}
         onNavigateBack={this._onPopRoute}
         navigationState={this.props.navigationState}
         renderScene={this._renderScene}

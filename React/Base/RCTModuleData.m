@@ -44,7 +44,7 @@
 
   // If a module overrides `init` then we must assume that it expects to be
   // initialized on the main thread, because it may need to access UIKit.
-  _requiresMainThreadSetup = !_instance &&
+  _requiresMainQueueSetup = !_instance &&
   [_moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
 
   // If a module overrides `constantsToExport` then we must assume that it
@@ -85,8 +85,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   [_instanceLock lock];
   if (!_setupComplete && _bridge.valid) {
     if (!_instance) {
-      if (RCT_DEBUG && _requiresMainThreadSetup) {
-        RCTAssertMainThread();
+      if (RCT_DEBUG && _requiresMainQueueSetup) {
+        RCTAssertMainQueue();
       }
       RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] [_moduleClass new]", nil);
       _instance = [_moduleClass new];
@@ -128,13 +128,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     // If we're here, then the module is completely initialized,
     // except for what finishSetupForInstance does.  When the instance
     // method is called after moduleSetupComplete,
-    // finishSetupForInstance will run.  If _requiresMainThreadSetup
+    // finishSetupForInstance will run.  If _requiresMainQueueSetup
     // is true, getting the instance will block waiting for the main
     // thread, which could take a while if the main thread is busy
     // (I've seen 50ms in testing).  So we clear that flag, since
     // nothing in finishSetupForInstance needs to be run on the main
     // thread.
-    _requiresMainThreadSetup = NO;
+    _requiresMainQueueSetup = NO;
   }
 }
 
@@ -208,7 +208,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 {
   if (!_setupComplete) {
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, [NSString stringWithFormat:@"[RCTModuleData instanceForClass:%@]", _moduleClass], nil);
-    if (_requiresMainThreadSetup) {
+    if (_requiresMainQueueSetup) {
       // The chances of deadlock here are low, because module init very rarely
       // calls out to other threads, however we can't control when a module might
       // get accessed by client code during bridge setup, and a very low risk of

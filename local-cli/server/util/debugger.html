@@ -72,6 +72,7 @@ function connectToDebuggerProxy() {
     // Special message that asks for a new JS runtime
     if (object.method === 'prepareJSRuntime') {
       shutdownJSRuntime();
+      console.clear();
       createJSRuntime();
       ws.send(JSON.stringify({replyID: object.id}));
       setStatus('Debugger session #' + object.id + ' active.');

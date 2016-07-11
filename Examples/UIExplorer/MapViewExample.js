@@ -252,6 +252,56 @@ var AnnotationExample = React.createClass({
 
 });
 
+var DraggableAnnotationExample = React.createClass({
+
+  createAnnotation(longitude, latitude) {
+    return {
+      longitude,
+      latitude,
+      draggable: true,
+      onDragStateChange: (event) => {
+        if (event.state === 'idle') {
+          this.setState({
+            annotations: [this.createAnnotation(event.longitude, event.latitude)],
+          });
+        }
+        console.log('Drag state: ' + event.state);
+      },
+    };
+  },
+
+  getInitialState() {
+    return {
+      isFirstLoad: true,
+      annotations: [],
+      mapRegion: undefined,
+    };
+  },
+
+  render() {
+    if (this.state.isFirstLoad) {
+      var onRegionChangeComplete = (region) => {
+        //When the MapView loads for the first time, we can create the annotation at the
+        //region that was loaded.
+        this.setState({
+          isFirstLoad: false,
+          annotations: [this.createAnnotation(region.longitude, region.latitude)],
+        });
+      };
+    }
+
+    return (
+      <MapView
+        style={styles.map}
+        onRegionChangeComplete={onRegionChangeComplete}
+        region={this.state.mapRegion}
+        annotations={this.state.annotations}
+      />
+    );
+  },
+
+});
+
 var styles = StyleSheet.create({
   map: {
     height: 150,
@@ -338,12 +388,7 @@ exports.examples = [
   {
     title: 'Draggable pin',
     render() {
-      return <AnnotationExample style={styles.map} annotation={{
-        draggable: true,
-        onDragStateChange: (event) => {
-          console.log('Drag state: ' + event.state);
-        },
-      }}/>;
+      return <DraggableAnnotationExample/>;
     }
   },
   {

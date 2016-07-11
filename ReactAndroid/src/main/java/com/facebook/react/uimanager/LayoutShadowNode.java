@@ -60,7 +60,7 @@ public class LayoutShadowNode extends ReactShadowNode {
   public void setFlexDirection(@Nullable String flexDirection) {
     setFlexDirection(
         flexDirection == null ? CSSFlexDirection.COLUMN : CSSFlexDirection.valueOf(
-            flexDirection.toUpperCase(Locale.US)));
+            flexDirection.toUpperCase(Locale.US).replace("-", "_")));
   }
 
   @ReactProp(name = ViewProps.FLEX_WRAP)
