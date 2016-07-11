@@ -502,6 +502,7 @@ const apis = [
   '../Libraries/CameraRoll/CameraRoll.js',
   '../Libraries/Components/Clipboard/Clipboard.js',
   '../Libraries/Components/DatePickerAndroid/DatePickerAndroid.android.js',
+  '../Libraries/DeviceInfo/DeviceInfo.js',
   '../Libraries/Utilities/Dimensions.js',
   '../Libraries/Geolocation/Geolocation.js',
   '../Libraries/Components/Intent/IntentAndroid.android.js',

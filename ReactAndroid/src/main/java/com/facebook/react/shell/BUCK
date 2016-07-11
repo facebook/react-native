@@ -17,6 +17,7 @@ android_library(
     react_native_target('java/com/facebook/react/modules/core:core'),
     react_native_target('java/com/facebook/react/modules/datepicker:datepicker'),
     react_native_target('java/com/facebook/react/modules/debug:debug'),
+    react_native_target('java/com/facebook/react/modules/deviceinfo:deviceinfo'),
     react_native_target('java/com/facebook/react/modules/dialog:dialog'),
     react_native_target('java/com/facebook/react/modules/fresco:fresco'),
     react_native_target('java/com/facebook/react/modules/image:image'),

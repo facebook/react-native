@@ -97,6 +97,7 @@ var ReactNative = {
   CameraRoll: require('CameraRoll'),
   Clipboard: require('Clipboard'),
   DatePickerAndroid: require('DatePickerAndroid'),
+  DeviceInfo: require('DeviceInfo'),
   Dimensions: require('Dimensions'),
   Easing: require('Easing'),
   ImagePickerIOS: require('ImagePickerIOS'),

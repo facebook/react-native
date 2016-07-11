@@ -23,6 +23,7 @@ import com.facebook.react.modules.camera.ImageEditingManager;
 import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
 import com.facebook.react.modules.datepicker.DatePickerDialogModule;
+import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.image.ImageLoaderModule;
@@ -75,6 +76,7 @@ public class MainReactPackage implements ReactPackage {
       new CameraRollManager(reactContext),
       new ClipboardModule(reactContext),
       new DatePickerDialogModule(reactContext),
+      new DeviceInfoModule(reactContext),
       new DialogModule(reactContext),
       new FrescoModule(reactContext),
       new ImageEditingManager(reactContext),

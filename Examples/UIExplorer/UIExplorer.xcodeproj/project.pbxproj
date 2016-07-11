@@ -70,6 +70,7 @@
 		8385CEF51B873B5C00C6273E /* RCTImageLoaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */; };
 		8385CF041B87479200C6273E /* RCTImageLoaderHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */; };
 		D85B829E1AB6D5D7003F4FE2 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D85B829C1AB6D5CE003F4FE2 /* libRCTVibration.a */; };
+		DDD7B02B1CA578E000FF99CC /* libRCTDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DDD7B01F1CA578C300FF99CC /* libRCTDeviceInfo.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -185,6 +186,13 @@
 			remoteGlobalIDString = 832C81801AAF6DEF007FA2F7;
 			remoteInfo = RCTVibration;
 		};
+		DDD7B01E1CA578C300FF99CC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DDD7B0171CA578C300FF99CC /* RCTDeviceInfo.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RCTDeviceInfo;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -264,6 +272,7 @@
 		8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderHelpers.m; sourceTree = "<group>"; };
 		8385CF051B8747A000C6273E /* RCTImageLoaderHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTImageLoaderHelpers.h; sourceTree = "<group>"; };
 		D85B82911AB6D5CE003F4FE2 /* RCTVibration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTVibration.xcodeproj; path = ../../Libraries/Vibration/RCTVibration.xcodeproj; sourceTree = "<group>"; };
+		DDD7B0171CA578C300FF99CC /* RCTDeviceInfo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTDeviceInfo.xcodeproj; path = ../../Libraries/DeviceInfo/RCTDeviceInfo.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -291,6 +300,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DDD7B02B1CA578E000FF99CC /* libRCTDeviceInfo.a in Frameworks */,
 				14AADF051AC3DBB1002390C9 /* libReact.a in Frameworks */,
 				147CED4C1AB3532B00DA3E4C /* libRCTActionSheet.a in Frameworks */,
 				134454601AAFCABD003F0779 /* libRCTAdSupport.a in Frameworks */,
@@ -327,6 +337,7 @@
 				134454551AAFCAAE003F0779 /* RCTAdSupport.xcodeproj */,
 				13E5019C1D07A502005F35D8 /* RCTAnimation.xcodeproj */,
 				138DEE021B9EDDDB007F4EA5 /* RCTCameraRoll.xcodeproj */,
+				DDD7B0171CA578C300FF99CC /* RCTDeviceInfo.xcodeproj */,
 				134A8A201AACED6A00945AAE /* RCTGeolocation.xcodeproj */,
 				13417FE31AA91428003F314A /* RCTImage.xcodeproj */,
 				357858F81B28D2C400341EDB /* RCTLinking.xcodeproj */,
@@ -619,6 +630,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		DDD7B0181CA578C300FF99CC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DDD7B01F1CA578C300FF99CC /* libRCTDeviceInfo.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -719,6 +738,10 @@
 				{
 					ProductGroup = 138DEE031B9EDDDB007F4EA5 /* Products */;
 					ProjectRef = 138DEE021B9EDDDB007F4EA5 /* RCTCameraRoll.xcodeproj */;
+				},
+				{
+					ProductGroup = DDD7B0181CA578C300FF99CC /* Products */;
+					ProjectRef = DDD7B0171CA578C300FF99CC /* RCTDeviceInfo.xcodeproj */;
 				},
 				{
 					ProductGroup = 134A8A211AACED6A00945AAE /* Products */;
@@ -878,6 +901,13 @@
 			fileType = archive.ar;
 			path = libRCTVibration.a;
 			remoteRef = D85B829B1AB6D5CE003F4FE2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		DDD7B01F1CA578C300FF99CC /* libRCTDeviceInfo.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTDeviceInfo.a;
+			remoteRef = DDD7B01E1CA578C300FF99CC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

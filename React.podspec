@@ -121,6 +121,12 @@ Pod::Spec.new do |s|
     ss.preserve_paths = "Libraries/LinkingIOS/*.js"
   end
 
+  s.subspec 'RCTDeviceInfo' do |ss|
+    ss.dependency         'React/Core'
+    ss.source_files     = "Libraries/DeviceInfo/*.{h,m}"
+    ss.preserve_paths   = "Libraries/DeviceInfo/*.js"
+  end
+
   s.subspec 'RCTTest' do |ss|
     ss.dependency       'React/Core'
     ss.source_files   = "Libraries/RCTTest/**/*.{h,m}"
