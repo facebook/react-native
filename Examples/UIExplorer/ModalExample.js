@@ -26,7 +26,6 @@ var {
   View,
 } = ReactNative;
 
-exports.displayName = (undefined: ?string);
 exports.framework = 'React';
 exports.title = '<Modal>';
 exports.description = 'Component for presenting modal views.';
