@@ -96,6 +96,29 @@ var JSTimers = {
     return newID;
   },
 
+  /**
+   * @param {function} func Callback to be invoked every frame and provided
+   * with time remaining in frame.
+   */
+  requestIdleCallback: function(func) {
+    if (!RCTTiming.createIdleCallback) {
+      console.warn('requestIdleCallback is not currently supported on this platform');
+      return requestAnimationFrame(func);
+    }
+
+    var newID = JSTimersExecution.GUID++;
+    var freeIndex = JSTimers._getFreeIndex();
+    JSTimersExecution.timerIDs[freeIndex] = newID;
+    JSTimersExecution.callbacks[freeIndex] = func;
+    JSTimersExecution.types[freeIndex] = JSTimersExecution.Type.requestIdleCallback;
+    RCTTiming.createIdleCallback(newID);
+    return newID;
+  },
+
+  cancelIdleCallback: function(timerID) {
+    JSTimers._clearTimerID(timerID);
+  },
+
   clearTimeout: function(timerID) {
     JSTimers._clearTimerID(timerID);
   },

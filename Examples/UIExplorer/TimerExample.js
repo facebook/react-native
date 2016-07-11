@@ -21,10 +21,68 @@ var {
   AlertIOS,
   Platform,
   ToastAndroid,
+  Text,
   View,
 } = ReactNative;
 var TimerMixin = require('react-timer-mixin');
 var UIExplorerButton = require('./UIExplorerButton');
+var performanceNow = require('fbjs/lib/performanceNow');
+
+function burnCPU(milliseconds) {
+  const start = performanceNow();
+  while (performanceNow() < (start + milliseconds)) {}
+}
+
+var RequestIdleCallbackTester = React.createClass({
+
+  getInitialState() {
+    return {
+      timeRemaining: '-',
+    };
+  },
+
+  render: function() {
+    return (
+      <View>
+        {Platform.OS === 'ios' ? this._renderIOS() : this._renderAndroid()}
+      </View>
+    );
+  },
+
+  _renderIOS: function() {
+    return (
+      <Text>Not implemented on iOS, falls back to requestAnimationFrame</Text>
+    );
+  },
+
+  _renderAndroid: function() {
+    return (
+      <View>
+        <UIExplorerButton onPress={this._run.bind(this, false)}>
+          Run requestIdleCallback
+        </UIExplorerButton>
+
+        <UIExplorerButton onPress={this._run.bind(this, true)}>
+          Burn CPU inside of requestIdleCallback
+        </UIExplorerButton>
+        <Text>{this.state.timeRemaining}</Text>
+      </View>
+    );
+  },
+
+  _run: function(shouldBurnCPU) {
+    requestIdleCallback((deadline) => {
+      let message = '';
+
+      if (shouldBurnCPU) {
+        burnCPU(10);
+        message = 'Burned CPU for 10ms,';
+      }
+      this.setState({timeRemaining: `${message} ${deadline.timeRemaining()}ms remaining in frame`});
+    });
+  },
+
+});
 
 var TimerTester = React.createClass({
   mixins: [TimerMixin],
@@ -130,6 +188,17 @@ exports.examples = [
       return (
         <View>
           <TimerTester type="requestAnimationFrame" />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'this.requestIdleCallback(fn)',
+    description: 'Execute function fn on the next JS frame that has idle time',
+    render: function() {
+      return (
+        <View>
+          <RequestIdleCallbackTester />
         </View>
       );
     },

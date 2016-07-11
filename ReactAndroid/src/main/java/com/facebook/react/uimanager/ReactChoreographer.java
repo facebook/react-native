@@ -69,6 +69,10 @@ public class ReactChoreographer {
     return sInstance;
   }
 
+  public static Choreographer getChoreographerInstance() {
+    return Choreographer.getInstance();
+  }
+
   private final Choreographer mChoreographer;
   private final ReactChoreographerDispatcher mReactChoreographerDispatcher;
   private final ArrayDeque<Choreographer.FrameCallback>[] mCallbackQueues;
