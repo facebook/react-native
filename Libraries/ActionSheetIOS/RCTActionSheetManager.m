@@ -51,7 +51,8 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
-                  callback:(RCTResponseSenderBlock)callback)
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
   if (RCTRunningInAppExtension()) {
     RCTLogError(@"Unable to show action sheet from app extension");
@@ -98,7 +99,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
     actionSheet.cancelButtonIndex = cancelButtonIndex;
     actionSheet.delegate = self;
 
-    [_callbacks setObject:callback forKey:actionSheet];
+    [_callbacks setObject:resolve forKey:actionSheet];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
       [actionSheet showFromRect:sourceRect inView:sourceView animated:YES];
@@ -129,7 +130,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
       [alertController addAction:[UIAlertAction actionWithTitle:option
                                                           style:style
                                                         handler:^(__unused UIAlertAction *action){
-        callback(@[@(localIndex)]);
+        resolve(@(localIndex));
       }]];
 
       index++;
@@ -148,8 +149,8 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
 }
 
 RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
-                  failureCallback:(RCTResponseErrorBlock)failureCallback
-                  successCallback:(RCTResponseSenderBlock)successCallback)
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
 {
   if (RCTRunningInAppExtension()) {
     RCTLogError(@"Unable to show action sheet from app extension");
@@ -169,7 +170,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
                                            options:(NSDataReadingOptions)0
                                              error:&error];
       if (!data) {
-        failureCallback(error);
+        reject([error domain], [error localizedDescription], error);
         return;
       }
       [items addObject:data];
@@ -201,7 +202,10 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   if (![UIActivityViewController instancesRespondToSelector:@selector(setCompletionWithItemsHandler:)]) {
     // Legacy iOS 7 implementation
     shareController.completionHandler = ^(NSString *activityType, BOOL completed) {
-      successCallback(@[@(completed), RCTNullIfNil(activityType)]);
+      resolve(@{
+        @"completed": @(completed),
+        @"activityType": RCTNullIfNil(activityType)
+      });
     };
   } else
 
@@ -211,9 +215,12 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
     // iOS 8 version
     shareController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
       if (activityError) {
-        failureCallback(activityError);
+        reject([activityError domain], [activityError localizedDescription], activityError);
       } else {
-        successCallback(@[@(completed), RCTNullIfNil(activityType)]);
+        resolve(@{
+          @"completed": @(completed),
+          @"activityType": RCTNullIfNil(activityType)
+        });
       }
     };
 
@@ -237,7 +244,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
 {
   RCTResponseSenderBlock callback = [_callbacks objectForKey:actionSheet];
   if (callback) {
-    callback(@[@(buttonIndex)]);
+    callback(@(buttonIndex));
     [_callbacks removeObjectForKey:actionSheet];
   } else {
     RCTLogWarn(@"No callback registered for action sheet: %@", actionSheet.title);

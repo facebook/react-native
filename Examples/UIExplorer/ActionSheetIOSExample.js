@@ -60,8 +60,7 @@ var ActionSheetExample = React.createClass({
       options: BUTTONS,
       cancelButtonIndex: CANCEL_INDEX,
       destructiveButtonIndex: DESTRUCTIVE_INDEX,
-    },
-    (buttonIndex) => {
+    }).then(buttonIndex => {
       this.setState({ clicked: BUTTONS[buttonIndex] });
     });
   }
@@ -93,8 +92,7 @@ var ActionSheetTintExample = React.createClass({
       cancelButtonIndex: CANCEL_INDEX,
       destructiveButtonIndex: DESTRUCTIVE_INDEX,
       tintColor: 'green',
-    },
-    (buttonIndex) => {
+    }).then(buttonIndex => {
       this.setState({ clicked: BUTTONS[buttonIndex] });
     });
   }
@@ -121,24 +119,25 @@ var ShareActionSheetExample = React.createClass({
   },
 
   showShareActionSheet() {
-    ActionSheetIOS.showShareActionSheetWithOptions({
-      url: this.props.url,
-      message: 'message to go with the shared url',
-      subject: 'a subject to go in the email heading',
-      excludedActivityTypes: [
-        'com.apple.UIKit.activity.PostToTwitter'
-      ]
-    },
-    (error) => alert(error),
-    (success, method) => {
-      var text;
-      if (success) {
-        text = `Shared via ${method}`;
-      } else {
-        text = 'You didn\'t share';
-      }
-      this.setState({text});
-    });
+    ActionSheetIOS
+      .showShareActionSheetWithOptions({
+        url: this.props.url,
+        message: 'message to go with the shared url',
+        subject: 'a subject to go in the email heading',
+        excludedActivityTypes: [
+          'com.apple.UIKit.activity.PostToTwitter'
+        ]
+      })
+      .then(res => {
+        var text;
+        if (res.completed) {
+          text = `Shared via ${res.method}`;
+        } else {
+          text = 'You didn\'t share';
+        }
+        this.setState({text});
+      })
+      .catch(error => alert(error));
   }
 });
 
@@ -166,23 +165,24 @@ var ShareScreenshotExample = React.createClass({
     // Take the snapshot (returns a temp file uri)
     UIManager.takeSnapshot('window').then((uri) => {
       // Share image data
-      ActionSheetIOS.showShareActionSheetWithOptions({
-        url: uri,
-        excludedActivityTypes: [
-          'com.apple.UIKit.activity.PostToTwitter'
-        ]
-      },
-      (error) => alert(error),
-      (success, method) => {
-        var text;
-        if (success) {
-          text = `Shared via ${method}`;
-        } else {
-          text = 'You didn\'t share';
-        }
-        this.setState({text});
+      ActionSheetIOS
+        .showShareActionSheetWithOptions({
+          url: uri,
+          excludedActivityTypes: [
+            'com.apple.UIKit.activity.PostToTwitter'
+          ]
+        })
+        .then(res => {
+          var text;
+          if (res.completed) {
+            text = `Shared via ${res.method}`;
+          } else {
+            text = 'You didn\'t share';
+          }
+          this.setState({text});
+        })
+        .catch(error => alert(error));
       });
-    }).catch((error) => alert(error));
   }
 });
 
