@@ -60,7 +60,6 @@ static NSURL *ipBundleURL()
   RCTSwapInstanceMethods([NSBundle class],
                          @selector(URLForResource:withExtension:),
                           @selector(RCT_URLForResource:withExtension:));
-  [[RCTBundleURLProvider sharedSettings] setDefaults];
 }
 
 - (void)tearDown
