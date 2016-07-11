@@ -612,21 +612,17 @@ NSString *__nullable  RCTBundlePathForURL(NSURL *__nullable URL)
   return path;
 }
 
-BOOL RCTIsXCAssetURL(NSURL *__nullable imageURL)
+BOOL RCTIsLocalAssetURL(NSURL *__nullable imageURL)
 {
   NSString *name = RCTBundlePathForURL(imageURL);
-  if (name.pathComponents.count != 1) {
-    // URL is invalid, or is a file path, not an XCAsset identifier
+  if (name == nil) {
     return NO;
   }
   NSString *extension = [name pathExtension];
-  if (extension.length && ![extension isEqualToString:@"png"]) {
-    // Not a png
-    return NO;
-  }
-  extension = extension.length ? nil : @"png";
-  if ([[NSBundle mainBundle] pathForResource:name ofType:extension]) {
-    // File actually exists in bundle, so is not an XCAsset
+  if (extension.length &&
+      ![extension isEqualToString:@"png"] &&
+      ![extension isEqualToString:@"jpg"]) {
+    // Not a supported image.
     return NO;
   }
   return YES;

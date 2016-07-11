@@ -290,26 +290,43 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                                            scale:(CGFloat)scale
                                                       resizeMode:(RCTResizeMode)resizeMode
                                                    progressBlock:(RCTImageLoaderProgressBlock)progressHandler
-                                                 completionBlock:(void (^)(NSError *error, id imageOrData))completionBlock
+                                                 completionBlock:(void (^)(NSError *error, id imageOrData, BOOL cacheResult))completionBlock
 {
   __block volatile uint32_t cancelled = 0;
   __block void(^cancelLoad)(void) = nil;
   __weak RCTImageLoader *weakSelf = self;
+  // Find suitable image URL loader
+  id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:imageURLRequest.URL];
+  BOOL cacheResult = [loadHandler respondsToSelector:@selector(shouldCacheLoadedImages)] ?
+      [loadHandler shouldCacheLoadedImages] : YES;
+  BOOL requiresScheduling = [loadHandler respondsToSelector:@selector(requiresScheduling)] ?
+      [loadHandler requiresScheduling] : YES;
 
   void (^completionHandler)(NSError *error, id imageOrData) = ^(NSError *error, id imageOrData) {
-    if (RCTIsMainQueue()) {
+    if (RCTIsMainQueue() && requiresScheduling) {
 
       // Most loaders do not return on the main thread, so caller is probably not
       // expecting it, and may do expensive post-processing in the callback
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (!cancelled) {
-          completionBlock(error, imageOrData);
+          completionBlock(error, imageOrData, cacheResult);
         }
       });
     } else if (!cancelled) {
-      completionBlock(error, imageOrData);
+      completionBlock(error, imageOrData, cacheResult);
     }
   };
+
+  // If the loader doesn't require scheduling we call it directly on
+  // the main queue.
+  if (loadHandler && !requiresScheduling) {
+    return [loadHandler loadImageForURL:imageURLRequest.URL
+                                   size:size
+                                  scale:scale
+                             resizeMode:resizeMode
+                        progressHandler:progressHandler
+                      completionHandler:completionHandler] ?: ^{};
+  }
 
   // All access to URL cache must be serialized
   if (!_URLCacheQueue) {
@@ -328,16 +345,15 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       return;
     }
 
-    // Find suitable image URL loader
     NSURLRequest *request = imageURLRequest; // Use a local variable so we can reassign it in this block
-    id<RCTImageURLLoader> loadHandler = [strongSelf imageURLLoaderForURL:request.URL];
-    if (loadHandler) {
-      cancelLoad = [loadHandler loadImageForURL:request.URL
-                                           size:size
-                                          scale:scale
-                                     resizeMode:resizeMode
-                                progressHandler:progressHandler
-                              completionHandler:completionHandler] ?: ^{};
+
+    if (loadHandler && requiresScheduling) {
+      cancelLoad = [loadHandler loadImageForURL:imageURLRequest.URL
+                                     size:size
+                                    scale:scale
+                               resizeMode:resizeMode
+                          progressHandler:progressHandler
+                        completionHandler:completionHandler] ?: ^{};
       return;
     }
 
@@ -504,17 +520,18 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     completionBlock(error, image);
   };
 
-  void (^completionHandler)(NSError *, id) = ^(NSError *error, id imageOrData) {
+  void (^completionHandler)(NSError *, id, BOOL) = ^(NSError *error, id imageOrData, BOOL cacheResult) {
     if (!cancelled) {
+      RCTImageLoaderCompletionBlock resultHandler = cacheResult ? cacheResultHandler : completionBlock;
       if (!imageOrData || [imageOrData isKindOfClass:[UIImage class]]) {
-        cacheResultHandler(error, imageOrData);
+        resultHandler(error, imageOrData);
       } else {
         cancelLoad = [weakSelf decodeImageData:imageOrData
                                           size:size
                                          scale:scale
                                        clipped:clipped
                                     resizeMode:resizeMode
-                               completionBlock:cacheResultHandler];
+                               completionBlock:resultHandler];
       }
     }
   };
@@ -652,7 +669,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                 scale:1
                            resizeMode:RCTResizeModeStretch
                         progressBlock:nil
-                      completionBlock:^(NSError *error, id imageOrData) {
+                      completionBlock:^(NSError *error, id imageOrData, __unused BOOL cacheResult) {
                         CGSize size;
                         if ([imageOrData isKindOfClass:[NSData class]]) {
                           NSDictionary *meta = RCTGetImageMetadata(imageOrData);
