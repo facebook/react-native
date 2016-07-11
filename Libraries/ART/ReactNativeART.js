@@ -15,6 +15,7 @@ var Path = require('ARTSerializablePath');
 var Transform = require('art/core/transform');
 
 var React = require('React');
+var NativeMethodsMixin = require('NativeMethodsMixin');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 
 var createReactNativeComponentClass = require('react/lib/createReactNativeComponentClass');
@@ -99,25 +100,33 @@ var TextAttributes = merge(RenderableAttributes, {
 
 // Native Components
 
-var NativeSurfaceView = createReactNativeComponentClass({
+var SurfaceViewConfig = {
   validAttributes: SurfaceViewAttributes,
   uiViewClassName: 'ARTSurfaceView',
-});
+};
 
-var NativeGroup = createReactNativeComponentClass({
+var NativeSurfaceView = createReactNativeComponentClass(SurfaceViewConfig);
+
+var GroupViewConfig = {
   validAttributes: GroupAttributes,
   uiViewClassName: 'ARTGroup',
-});
+};
 
-var NativeShape = createReactNativeComponentClass({
+var NativeGroup = createReactNativeComponentClass(GroupViewConfig);
+
+var ShapeViewConfig = {
   validAttributes: ShapeAttributes,
   uiViewClassName: 'ARTShape',
-});
+};
 
-var NativeText = createReactNativeComponentClass({
+var NativeShape = createReactNativeComponentClass(ShapeViewConfig);
+
+var TextViewConfig = {
   validAttributes: TextAttributes,
   uiViewClassName: 'ARTText',
-});
+};
+
+var NativeText = createReactNativeComponentClass(TextViewConfig);
 
 // Utilities
 
@@ -137,6 +146,10 @@ function childrenAsString(children) {
 // Surface - Root node of all ART
 
 var Surface = React.createClass({
+
+  mixins: [NativeMethodsMixin],
+
+  viewConfig: SurfaceViewConfig,
 
   render: function() {
     var props = this.props;
@@ -205,6 +218,10 @@ function extractOpacity(props) {
 // ReactART.
 
 var Group = React.createClass({
+
+  mixins: [NativeMethodsMixin],
+
+  viewConfig: GroupViewConfig,
 
   render: function() {
     var props = this.props;
@@ -378,6 +395,10 @@ function extractStrokeJoin(strokeJoin) {
 
 var Shape = React.createClass({
 
+  mixins: [NativeMethodsMixin],
+
+  viewConfig: ShapeViewConfig,
+
   render: function() {
     var props = this.props;
     var path = props.d || childrenAsString(props.children);
@@ -473,6 +494,10 @@ function extractAlignment(alignment) {
 }
 
 var Text = React.createClass({
+
+  mixins: [NativeMethodsMixin],
+
+  viewConfig: TextViewConfig,
 
   render: function() {
     var props = this.props;
