@@ -52,6 +52,8 @@ fi
 
 [ -z "$NODE_BINARY" ] && export NODE_BINARY="node"
 
+[ -z "$REACT_NATIVE_ENTRY_FILE" ] && export REACT_NATIVE_ENTRY_FILE="index.ios.js"
+
 nodejs_not_found()
 {
   echo "error: Can't find '$NODE_BINARY' binary to build React Native bundle" >&2
@@ -78,7 +80,7 @@ if [[ "$CONFIGURATION" = "Debug" && "$PLATFORM_NAME" != "iphonesimulator" ]]; th
 fi
 
 $NODE_BINARY "$REACT_NATIVE_DIR/local-cli/cli.js" bundle \
-  --entry-file index.ios.js \
+  --entry-file "$REACT_NATIVE_ENTRY_FILE" \
   --platform ios \
   --dev $DEV \
   --reset-cache true \
