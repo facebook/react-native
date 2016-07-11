@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationInsights xmlns = "http://schemas.microsoft.com/ApplicationInsights/2013/Settings">
+</ApplicationInsights>
