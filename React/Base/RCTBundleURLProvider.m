@@ -58,7 +58,6 @@ static NSString *ipGuess;
 - (void)setDefaults
 {
   [[NSUserDefaults standardUserDefaults] registerDefaults:[self defaults]];
-  [self settingsUpdated];
 }
 
 - (void)resetToDefaults
@@ -67,6 +66,7 @@ static NSString *ipGuess;
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
   }
   [self setDefaults];
+  [self settingsUpdated];
 }
 
 - (BOOL)isPackagerRunning:(NSString *)host
