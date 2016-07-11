@@ -4,7 +4,7 @@ title: Networking
 layout: docs
 category: The Basics
 permalink: docs/network.html
-next: navigators
+next: using-navigators
 ---
 
 Many mobile apps need to load resources from a remote URL. You may want to make a POST request to a REST API, or you may simply need to fetch a chunk of static content from another server.
