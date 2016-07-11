@@ -664,7 +664,9 @@ RCT_EXPORT_METHOD(reload)
       if (strongSelf && strongSelf->_liveReloadEnabled) {
         NSHTTPURLResponse *HTTPResponse = (NSHTTPURLResponse *)response;
         if (!error && HTTPResponse.statusCode == 205) {
-          [strongSelf reload];
+          if (!strongSelf->_hotLoadingEnabled) {
+            [strongSelf reload];
+          }
         } else {
           strongSelf->_updateTask = nil;
           [strongSelf checkForUpdates];

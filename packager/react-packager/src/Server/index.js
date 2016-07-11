@@ -314,7 +314,8 @@ class Server {
       // Clear cached bundles in case user reloads
       this._clearBundles();
       this._hmrFileChangeListener(absPath, this._bundler.stat(absPath));
-      return;
+      // when HMR clients connected, also allow live reloading clients
+      // return;
     }
 
     Promise.all(
