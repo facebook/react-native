@@ -669,9 +669,13 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
     [_performanceLogger markStartForTag:RCTPLRAMBundleLoad];
     NSError *error;
     script = loadRAMBundle(sourceURL, &error, _randomAccessBundle);
-    [self registerNativeRequire];
     [_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
     [_performanceLogger setValue:script.length forTag:RCTPLRAMStartupCodeSize];
+
+    // Reset the counters that the native require implementation uses
+    [_performanceLogger setValue:0 forTag:RCTPLRAMNativeRequires];
+    [_performanceLogger setValue:0 forTag:RCTPLRAMNativeRequiresCount];
+    [_performanceLogger setValue:0 forTag:RCTPLRAMNativeRequiresSize];
 
     if (error) {
       if (onComplete) {
@@ -693,6 +697,10 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
   [self executeBlockOnJavaScriptQueue:RCTProfileBlock((^{
     if (!self.isValid) {
       return;
+    }
+    if (isRAMBundle) {
+      __weak RCTJSCExecutor *weakSelf = self;
+      self.context.context[@"nativeRequire"] = ^(NSNumber *moduleID) { [weakSelf _nativeRequire:moduleID]; };
     }
     [self->_performanceLogger markStartForTag:RCTPLScriptExecution];
     NSError *error = executeApplicationScript(self->_jscWrapper, script, sourceURL, self->_context.context.JSGlobalContextRef);
@@ -809,48 +817,34 @@ static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleI
   }
 }
 
-- (void)registerNativeRequire
+- (void)_nativeRequire:(NSNumber *)moduleID
 {
-  [_performanceLogger setValue:0 forTag:RCTPLRAMNativeRequires];
-  [_performanceLogger setValue:0 forTag:RCTPLRAMNativeRequiresCount];
-  [_performanceLogger setValue:0 forTag:RCTPLRAMNativeRequiresSize];
+  if (!moduleID) {
+    return;
+  }
 
-  [self executeBlockOnJavaScriptQueue:^{
-    if (!self.valid) {
+  [_performanceLogger addValue:1 forTag:RCTPLRAMNativeRequiresCount];
+  [_performanceLogger appendStartForTag:RCTPLRAMNativeRequires];
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
+                          [@"nativeRequire_" stringByAppendingFormat:@"%@", moduleID], nil);
+
+  const uint32_t ID = [moduleID unsignedIntValue];
+
+  if (ID < _randomAccessBundle.numTableEntries) {
+    ModuleData *moduleData = &_randomAccessBundle.table[ID];
+    const uint32_t size = NSSwapLittleIntToHost(moduleData->size);
+
+    // sparse entry in the table -- module does not exist or is contained in the startup section
+    if (size == 0) {
       return;
     }
 
-    __weak RCTJSCExecutor *weakSelf = self;
-    self.context.context[@"nativeRequire"] = ^(NSNumber *moduleID) {
-      RCTJSCExecutor *strongSelf = weakSelf;
-      if (!strongSelf || !moduleID) {
-        return;
-      }
+    [_performanceLogger addValue:size forTag:RCTPLRAMNativeRequiresSize];
+    executeRandomAccessModule(self, ID, NSSwapLittleIntToHost(moduleData->offset), size);
+  }
 
-      [strongSelf->_performanceLogger addValue:1 forTag:RCTPLRAMNativeRequiresCount];
-      [strongSelf->_performanceLogger appendStartForTag:RCTPLRAMNativeRequires];
-      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
-                              [@"nativeRequire_" stringByAppendingFormat:@"%@", moduleID], nil);
-
-      const uint32_t ID = [moduleID unsignedIntValue];
-
-      if (ID < strongSelf->_randomAccessBundle.numTableEntries) {
-        ModuleData *moduleData = &strongSelf->_randomAccessBundle.table[ID];
-        const uint32_t size = NSSwapLittleIntToHost(moduleData->size);
-
-        // sparse entry in the table -- module does not exist or is contained in the startup section
-        if (size == 0) {
-          return;
-        }
-
-        [strongSelf->_performanceLogger addValue:size forTag:RCTPLRAMNativeRequiresSize];
-        executeRandomAccessModule(strongSelf, ID, NSSwapLittleIntToHost(moduleData->offset), size);
-      }
-
-      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call", nil);
-      [strongSelf->_performanceLogger appendStopForTag:RCTPLRAMNativeRequires];
-    };
-}];
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call", nil);
+  [_performanceLogger appendStopForTag:RCTPLRAMNativeRequires];
 }
 
 static RandomAccessBundleStartupCode readRAMBundle(file_ptr bundle, RandomAccessBundleData &randomAccessBundle)
