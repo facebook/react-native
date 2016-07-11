@@ -253,9 +253,32 @@ void JSCExecutor::terminateOnJSVMThread() {
   m_context = nullptr;
 }
 
+#ifdef WITH_FBJSCEXTENSIONS
+static void loadApplicationSource(
+    const JSGlobalContextRef context,
+    const JSBigMmapString* script,
+    const std::string& sourceURL) {
+  String jsSourceURL(sourceURL.c_str());
+  bool is8bit = script->encoding() == JSBigMmapString::Encoding::Ascii || script->encoding() == JSBigMmapString::Encoding::Utf8;
+  JSSourceCodeRef sourceCode = JSCreateSourceCode(script->fd(), script->size(), jsSourceURL, script->hash(), is8bit);
+  evaluateSourceCode(context, sourceCode, jsSourceURL);
+  JSReleaseSourceCode(sourceCode);
+}
+#endif
+
 void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) throw(JSException) {
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
+
+  #ifdef WITH_FBJSCEXTENSIONS
+  if (auto source = dynamic_cast<const JSBigMmapString *>(script.get())) {
+    loadApplicationSource(m_context, source, sourceURL);
+    bindBridge();
+    flush();
+    ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
+    return;
+  }
+  #endif
 
   #ifdef WITH_FBSYSTRACE
   fbsystrace_begin_section(
