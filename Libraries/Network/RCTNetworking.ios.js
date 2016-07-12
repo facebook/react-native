@@ -20,12 +20,22 @@ class RCTNetworking extends NativeEventEmitter {
     super(RCTNetworkingNative);
   }
 
-  sendRequest(method, url, headers, data, incrementalUpdates, timeout, callback) {
+  sendRequest(
+    method: ?string,
+    trackingName: string,
+    url: ?string,
+    headers: Object,
+    data: string | FormData | Object,
+    incrementalUpdates: boolean,
+    timeout: number,
+    callback: (requestId: number) => void,
+  ) {
     if (typeof data === 'string') {
       data = {string: data};
     } else if (data instanceof FormData) {
       data = {formData: data.getParts()};
     }
+    data = {...data, trackingName};
     RCTNetworkingNative.sendRequest({
       method,
       url,
@@ -36,11 +46,11 @@ class RCTNetworking extends NativeEventEmitter {
     }, callback);
   }
 
-  abortRequest(requestId) {
+  abortRequest(requestId: number) {
     RCTNetworkingNative.abortRequest(requestId);
   }
 
-  clearCookies(callback) {
+  clearCookies(callback: number) {
     console.warn('RCTNetworking.clearCookies is not supported on iOS');
   }
 }

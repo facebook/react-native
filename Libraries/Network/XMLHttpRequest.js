@@ -106,6 +106,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   _sent: boolean;
   _url: ?string = null;
   _timedOut: boolean = false;
+  _trackingName: string = 'unknown';
   _incrementalEvents: boolean = false;
 
   constructor() {
@@ -322,6 +323,14 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     this._headers[header.toLowerCase()] = value;
   }
 
+  /**
+   * Custom extension for tracking origins of request.
+   */
+  setTrackingName(trackingName: string): XMLHttpRequest {
+    this._trackingName = trackingName;
+    return this;
+  }
+
   open(method: string, url: string, async: ?boolean): void {
     /* Other optional arguments are not supported yet */
     if (this.readyState !== this.UNSENT) {
@@ -367,6 +376,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     ));
     RCTNetworking.sendRequest(
       method,
+      this._trackingName,
       url,
       headers,
       data,
