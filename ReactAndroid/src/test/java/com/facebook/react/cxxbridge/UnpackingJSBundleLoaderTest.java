@@ -102,9 +102,10 @@ public class UnpackingJSBundleLoaderTest {
   @Test
   public void testCallsAppropriateInstanceMethod() throws IOException {
     mBuilder.build().loadScript(mCatalystInstanceImpl);
-    verify(mCatalystInstanceImpl).loadScriptFromFile(
-      eq(new File(mDestinationPath, "bundle.js").getPath()),
-      eq(URL));
+    verify(mCatalystInstanceImpl).loadScriptFromOptimizedBundle(
+      eq(mDestinationPath.getPath()),
+      eq(URL),
+      eq(UnpackingJSBundleLoader.UNPACKED_JS_SOURCE));
     verifyNoMoreInteractions(mCatalystInstanceImpl);
   }
 
