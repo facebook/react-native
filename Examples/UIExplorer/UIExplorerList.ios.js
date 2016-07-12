@@ -61,8 +61,12 @@ const ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ListViewPagingExample'),
   },
   {
-     key: 'MapViewExample',
-     module: require('./MapViewExample'),
+    key: 'ListViewSectionStyleExample',
+    module: require('./ListViewSectionStyleExample'),
+  },
+  {
+    key: 'MapViewExample',
+    module: require('./MapViewExample'),
   },
   {
     key: 'ModalExample',
