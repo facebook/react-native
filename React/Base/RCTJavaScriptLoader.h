@@ -9,8 +9,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridgeDelegate.h"
-
 extern uint32_t const RCTRAMBundleMagicNumber;
 
 extern NSString *const RCTJavaScriptLoaderErrorDomain;
@@ -25,13 +23,8 @@ NS_ENUM(NSInteger) {
   RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously = 1000,
 };
 
-@class RCTBridge;
+typedef void (^RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourceLength);
 
-/**
- * Class that allows easy embedding, loading, life-cycle management of a
- * JavaScript application inside of a native application.
- * TODO: Incremental module loading. (low pri).
- */
 @interface RCTJavaScriptLoader : NSObject
 
 + (void)loadBundleAtURL:(NSURL *)scriptURL onComplete:(RCTSourceLoadBlock)onComplete;
