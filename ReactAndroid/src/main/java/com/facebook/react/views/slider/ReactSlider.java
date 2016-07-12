@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
- *
+ * 
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
@@ -19,16 +19,17 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.NinePatchDrawable;
 import android.net.Uri;
 import android.os.Build;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.SeekBar;
 
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
-import com.facebook.datasource.DataSubscriber;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 import com.facebook.imagepipeline.image.CloseableImage;
@@ -137,36 +138,17 @@ public class ReactSlider extends SeekBar {
   }
 
   public void setThumbImage(ReadableMap source) {
-    final String uri = source != null ? source.getString(PROP_ICON_URI) : null;
-    if (uri != null) {
-      if (uri.startsWith("http://") || uri.startsWith("https://") || uri.startsWith("file://")) {
-        setThumbFromUrl(uri, new BaseBitmapDataSubscriber() {
-          @Override
-          public void onNewResultImpl(@Nullable Bitmap bitmap) {
-            if (bitmap != null) {
-              setThumb(new BitmapDrawable(getResources(), bitmap));
-            }
-          }
-
-          @Override
-          public void onFailureImpl(DataSource dataSource) {
-            Log.e("ReactSlider", String.format("onFailureImpl:uri-> %s is error", uri));
-          }
-        });
-      } else {
-        Drawable thumb = getDrawableByName(uri);
-        setThumb(thumb);
+    getImage(source, new PictureSubscriber() {
+      @Override
+      public void doBitmap(Bitmap bitmap) {
+        setThumb(new BitmapDrawable(getResources(), bitmap));
       }
-    }
-  }
 
-  private void setThumbFromUrl(final String uri, DataSubscriber<CloseableReference<CloseableImage>> subscribe) {
-    ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(Uri.parse(uri))
-      .setAutoRotateEnabled(true)
-      .build();
-    DataSource<CloseableReference<CloseableImage>> dataSource = Fresco.getImagePipeline().fetchDecodedImage(imageRequest, null);
-    Executor executor = Executors.newSingleThreadExecutor();
-    dataSource.subscribe(subscribe, executor);
+      @Override
+      public void doDrawable(Drawable drawable) {
+        setThumb(drawable);
+      }
+    });
   }
 
   private int getDrawableResourceByName(String name) {
@@ -190,6 +172,11 @@ public class ReactSlider extends SeekBar {
   public void setProgressColor(Integer value) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       setProgressTintList(ColorStateList.valueOf(value));
+    } else {
+      if (getProgressDrawable() instanceof LayerDrawable) {
+        LayerDrawable layer = (LayerDrawable) getProgressDrawable();
+        DrawableCompat.setTintList(layer.findDrawableByLayerId(android.R.id.progress).mutate(), ColorStateList.valueOf(value));
+      }
     }
   }
 
@@ -197,6 +184,11 @@ public class ReactSlider extends SeekBar {
   public void setProgressBackgroundColor(Integer value) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       setProgressBackgroundTintList(ColorStateList.valueOf(value));
+    } else {
+      if (getProgressDrawable() instanceof LayerDrawable) {
+        LayerDrawable layer = (LayerDrawable) getProgressDrawable();
+        DrawableCompat.setTintList(layer.findDrawableByLayerId(android.R.id.background).mutate(), ColorStateList.valueOf(value));
+      }
     }
   }
 
@@ -204,35 +196,27 @@ public class ReactSlider extends SeekBar {
   public void setThumbColor(Integer value) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       setThumbTintList(ColorStateList.valueOf(value));
+    } else {
+      DrawableCompat.setTintList(getThumb().mutate(), ColorStateList.valueOf(value));
     }
   }
 
   public void setTrackImage(ReadableMap source) {
-    final String uri = source != null ? source.getString(PROP_ICON_URI) : null;
-    if (uri != null) {
-      if (uri.startsWith("http://") || uri.startsWith("https://") || uri.startsWith("file://")) {
-        setThumbFromUrl(uri, new BaseBitmapDataSubscriber() {
-          @Override
-          public void onNewResultImpl(@Nullable Bitmap bitmap) {
-            if (bitmap != null) {
-              setProgressDrawable(createNineDrawable(bitmap));
-            }
-          }
+    getImage(source, new PictureSubscriber() {
+      @Override
+      public void doBitmap(Bitmap bitmap) {
+        setProgressDrawable(createNineDrawable(bitmap));
+      }
 
-          @Override
-          public void onFailureImpl(DataSource dataSource) {
-            Log.e("ReactSlider", String.format("onFailureImpl:uri-> %s is error", uri));
-          }
-        });
-      } else {
-        Drawable drawable = getDrawableByName(uri);
-        if(drawable instanceof NinePatchDrawable){
+      @Override
+      public void doDrawable(Drawable drawable) {
+        if (drawable instanceof NinePatchDrawable) {
           setProgressDrawable(drawable);
-        }else {
+        } else {
           setProgressDrawable(createNineDrawable(((BitmapDrawable) drawable).getBitmap()));
         }
       }
-    }
+    });
   }
 
   private NinePatchDrawable createNineDrawable(Bitmap src) {
@@ -250,5 +234,48 @@ public class ReactSlider extends SeekBar {
     NinePatchDrawable drawable = NinePatchDrawableFactory.convertBitmap(getResources(), desc, null);
     desc.recycle();
     return drawable;
+  }
+
+  private void getImageFromUri(final String uri, final PictureSubscriber subscriber) {
+    ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(Uri.parse(uri))
+      .setAutoRotateEnabled(true)
+      .build();
+    DataSource<CloseableReference<CloseableImage>> dataSource = Fresco.getImagePipeline().fetchDecodedImage(imageRequest, null);
+    Executor executor = Executors.newSingleThreadExecutor();
+    dataSource.subscribe(new BaseBitmapDataSubscriber() {
+      @Override
+      public void onNewResultImpl(@Nullable Bitmap bitmap) {
+        if (bitmap != null) {
+          subscriber.doBitmap(bitmap);
+        }
+      }
+
+      @Override
+      public void onFailureImpl(DataSource dataSource) {
+        Log.e("ReactSlider", String.format("onFailureImpl:uri-> %s is error", uri));
+      }
+    }, executor);
+  }
+
+  private void getImageFromNative(final String uri, final PictureSubscriber subscriber) {
+    Drawable drawable = getDrawableByName(uri);
+    subscriber.doDrawable(drawable);
+  }
+
+  private void getImage(ReadableMap source, PictureSubscriber subscriber) {
+    final String uri = source != null ? source.getString(PROP_ICON_URI) : null;
+    if (uri != null) {
+      if (uri.startsWith("http://") || uri.startsWith("https://") || uri.startsWith("file://")) {
+        getImageFromUri(uri, subscriber);
+      } else {
+        getImageFromNative(uri, subscriber);
+      }
+    }
+  }
+
+  public interface PictureSubscriber {
+    void doBitmap(Bitmap bitmap);
+
+    void doDrawable(Drawable drawable);
   }
 }

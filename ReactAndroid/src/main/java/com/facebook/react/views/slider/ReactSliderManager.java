@@ -9,8 +9,6 @@
 
 package com.facebook.react.views.slider;
 
-import java.util.Map;
-
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.view.View;
@@ -30,6 +28,8 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+
+import java.util.Map;
 
 
 /**
@@ -187,9 +187,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
 
   @ReactProp(name = "thumbOffset")
   public void setThumbOffset(ReactSlider view, int value) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       view.setThumbOffset(value);
-    }
   }
 
   @Override
