@@ -19,28 +19,25 @@
 
 /* eslint-env node */
 
-const WebSocket = require('ws');
-
 console.log(`\
 Test server for WebSocketExample
 
-This will send each incoming message right back to the other side.
-Restart with the '--binary' command line flag to have it respond with an
-ArrayBuffer instead of a string.
+This will set a cookie named "wstest" on the response of any incoming request.
 `);
 
-const respondWithBinary = process.argv.indexOf('--binary') !== -1;
-const server = new WebSocket.Server({port: 5555});
-server.on('connection', (ws) => {
-  ws.on('message', (message) => {
-    console.log('Received message:', message);
-    console.log('Cookie:', ws.upgradeReq.headers.cookie);
-    if (respondWithBinary) {
-      message = new Buffer(message);
-    }
-    ws.send(message);
-  });
+const connect = require('connect');
+const http = require('http');
 
-  console.log('Incoming connection!');
-  ws.send('Why hello there!');
+const app = connect();
+
+app.use(function(req, res) {
+  console.log('received request');
+  const cookieOptions = {
+    //httpOnly: true, // the cookie is not accessible by the user (javascript,...)
+    secure: false, // allow HTTP
+  };
+  res.cookie('wstest', 'OK', cookieOptions);
+  res.end('Cookie has been set!\n');
 });
+
+http.createServer(app).listen(5556);
