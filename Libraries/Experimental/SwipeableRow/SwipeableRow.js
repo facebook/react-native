@@ -25,6 +25,7 @@
 
 const Animated = require('Animated');
 const PanResponder = require('PanResponder');
+const I18nManager = require('I18nManager');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const TimerMixin = require('react-timer-mixin');
@@ -34,7 +35,6 @@ const {PropTypes} = React;
 
 const emptyFunction = require('fbjs/lib/emptyFunction');
 
-const I18nManager = require('NativeModules').I18nManager || {};
 const IS_RTL = I18nManager.isRTL;
 
 // NOTE: Eventually convert these consts to an input object of configurations
@@ -308,7 +308,9 @@ const SwipeableRow = React.createClass({
      * When swiping right, we want to bounce back past closed position on release
      * so users know they should swipe right to get content.
      */
-    const swipeBounceBackDistance = IS_RTL ? -RIGHT_SWIPE_BOUNCE_BACK_DISTANCE : RIGHT_SWIPE_BOUNCE_BACK_DISTANCE;
+    const swipeBounceBackDistance = IS_RTL ?
+      -RIGHT_SWIPE_BOUNCE_BACK_DISTANCE :
+      RIGHT_SWIPE_BOUNCE_BACK_DISTANCE;
     this._animateTo(
       -swipeBounceBackDistance,
       duration,
