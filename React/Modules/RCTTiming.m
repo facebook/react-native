@@ -168,7 +168,6 @@ RCT_EXPORT_MODULE()
   NSDate *nextScheduledTarget = [NSDate distantFuture];
   NSMutableArray<NSNumber *> *timersToCall = [NSMutableArray new];
   for (_RCTTimer *timer in _timers.allValues) {
-    NSDate *target = timer.target;
     if ([timer updateFoundNeedsJSUpdate]) {
       [timersToCall addObject:timer.callbackID];
     }
