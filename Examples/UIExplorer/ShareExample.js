@@ -46,6 +46,7 @@ class ShareMessageExample extends React.Component {
 
     this._shareMessage = this._shareMessage.bind(this);
     this._shareText = this._shareText.bind(this);
+    this._showResult = this._showResult.bind(this);
 
     this.state = {
       result: ''
@@ -76,13 +77,7 @@ class ShareMessageExample extends React.Component {
     Share.share({
       message: 'React Native | A framework for building native apps using React'
     })
-    .then((result) => {
-      if(result && result.activityType) {
-        this.setState({result: 'success: shared with ' + result.activityType})
-      } else {
-        this.setState({result: 'success'})
-      }
-    })
+    .then(this._showResult)
     .catch((error) => this.setState({result: 'error: ' + error.message}))
   }
 
@@ -98,14 +93,22 @@ class ShareMessageExample extends React.Component {
       ],
       tintColor: 'green'
     })
-    .then((result) => {
-      if(result && result.activityType) {
-        this.setState({result: 'success: shared with ' + result.activityType})
-      } else {
-        this.setState({result: 'success'})
-      }
-    })
+    .then(this._showResult)
     .catch((error) => this.setState({result: 'error: ' + error.message}))
+  }
+
+  _showResult(result) {
+    if(result.action === Share.sharedAction) {
+      if(result.packageName) {
+        this.setState({result: 'shared with a packageName: ' + result.packageName})
+      } else if(result.activityType) {
+        this.setState({result: 'shared with an activityType: ' + result.activityType})
+      } else {
+        this.setState({result: 'shared'})
+      }
+    } else if(result.action === Share.dismissedAction) {
+      this.setState({result: 'dismissed'})
+    }
   }
 
 }

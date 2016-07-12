@@ -23,7 +23,7 @@ type Content = { title?: string, message: string } | { title?: string, url: stri
 type Options = { dialogTitle?: string, excludeActivityTypes?: Array<string>, tintColor?: string };
 
 class Share {
-  
+
   /**
    * Open a dialog to share text content.
    * 
@@ -74,10 +74,13 @@ class Share {
           (success, activityType) => {
             if (success) {
               resolve({
+                'action': 'sharedAction',
                 'activityType': activityType
               })
             } else {
-              reject(new Error('User canceled'))
+              resolve({
+                'action': 'dismissedAction'
+              })
             }
           }
         );
@@ -87,6 +90,16 @@ class Share {
       return Promise.reject(new Error('Unsupported platform'));
     }
   }
+
+  /**
+   * The content was successfully shared.
+   */
+  static get sharedAction() { return 'sharedAction'; }
+
+  /**
+   * The dialog has been dismissed.
+   */
+  static get dismissedAction() { return 'dismissedAction'; }
 
 }
 
