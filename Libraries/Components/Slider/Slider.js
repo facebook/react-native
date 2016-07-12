@@ -20,6 +20,7 @@ var StyleSheet = require('StyleSheet');
 var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
+var resolveAssetSource = require('resolveAssetSource');
 
 type Event = Object;
 
@@ -68,14 +69,14 @@ var Slider = React.createClass({
     /**
      * The color used for the track to the left of the button. Overrides the
      * default blue gradient image.
-     * @platform ios
+     * *using in android >= 21*
      */
     minimumTrackTintColor: PropTypes.string,
 
     /**
      * The color used for the track to the right of the button. Overrides the
      * default blue gradient image.
-     * @platform ios
+     * *using in android >= 21*
      */
     maximumTrackTintColor: PropTypes.string,
 
@@ -88,7 +89,6 @@ var Slider = React.createClass({
     /**
      * Assigns a single image for the track. Only static images are supported.
      * The center pixel of the image will be stretched to fill the track.
-     * @platform ios
      */
     trackImage: Image.propTypes.source,
 
@@ -108,7 +108,6 @@ var Slider = React.createClass({
 
     /**
      * Sets an image for the thumb. Only static images are supported.
-     * @platform ios
      */
     thumbImage: Image.propTypes.source,
 
@@ -127,6 +126,30 @@ var Slider = React.createClass({
      * Used to locate this view in UI automation tests.
      */
     testID: PropTypes.string,
+
+    /**
+     * The color used for the thumbColor
+     *
+     * *using in android >= 21*
+     * @platform android
+     */
+    thumbColor: PropTypes.string,
+
+    /**
+     * Whether the track should be split by the thumb
+     *
+     * *using in android >= 21*
+     * @platform android
+     */
+    splitTrack: PropTypes.bool,
+
+    /**
+     * thumbOffset The offset amount in pixels
+     *
+     * @platform android
+     */
+    thumbOffset: PropTypes.number,
+
   },
 
   getDefaultProps: function() : any {
@@ -140,7 +163,7 @@ var Slider = React.createClass({
   },
 
   render: function() {
-    let {style, onValueChange, onSlidingComplete, ...props} = this.props;
+    let {style, onValueChange, onSlidingComplete, thumbImage,trackImage, ...props} = this.props;
     props.style = [styles.slider, style];
 
     props.onValueChange = onValueChange && ((event: Event) => {
@@ -158,9 +181,12 @@ var Slider = React.createClass({
     props.onSlidingComplete = onSlidingComplete && ((event: Event) => {
       onSlidingComplete && onSlidingComplete(event.nativeEvent.value);
     });
-
+	  thumbImage=resolveAssetSource(thumbImage);
+	  trackImage=resolveAssetSource(trackImage);
     return <RCTSlider
       {...props}
+      thumbImage={thumbImage}
+      trackImage={trackImage}
       enabled={!this.props.disabled}
       onStartShouldSetResponder={() => true}
       onResponderTerminationRequest={() => false}

@@ -9,8 +9,8 @@
 
 package com.facebook.react.views.slider;
 
-import java.util.Map;
-
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
@@ -19,6 +19,7 @@ import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -27,6 +28,9 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+
+import java.util.Map;
+
 
 /**
  * Manages instances of {@code ReactSlider}.
@@ -146,6 +150,44 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
   @ReactProp(name = "step", defaultDouble = 0d)
   public void setStep(ReactSlider view, double value) {
     view.setStep(value);
+  }
+
+  @ReactProp(name = "thumbImage")
+  public void setThumbImage(ReactSlider view, ReadableMap value) {
+    view.setThumbImage(value);
+  }
+
+  @ReactProp(name = "maximumTrackTintColor", customType = "Color")
+  public void setProgressColor(ReactSlider view, Integer value) {
+    view.setProgressColor(value);
+  }
+
+  @ReactProp(name = "minimumTrackTintColor", customType = "Color")
+  public void setProgressBackgroundColor(ReactSlider view, Integer value) {
+    view.setProgressBackgroundColor(value);
+  }
+
+  @ReactProp(name = "thumbColor", customType = "Color")
+  public void setThumbColor(ReactSlider view, Integer value) {
+    view.setThumbColor(value);
+  }
+
+  @ReactProp(name = "trackImage")
+  public void setTrackImage(ReactSlider view, ReadableMap value) {
+    view.setTrackImage(value);
+  }
+
+  @ReactProp(name = "splitTrack")
+  @TargetApi(21)
+  public void setSplitTrack(ReactSlider view, boolean value) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      view.setSplitTrack(value);
+    }
+  }
+
+  @ReactProp(name = "thumbOffset")
+  public void setThumbOffset(ReactSlider view, int value) {
+      view.setThumbOffset(value);
   }
 
   @Override
