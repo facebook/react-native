@@ -43,6 +43,7 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import android.content.Intent;
 import android.net.Uri;
+
 /**
  * Manages instances of {@link WebView}
  *
@@ -111,9 +112,10 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
               SystemClock.nanoTime(),
               createWebViewEvent(webView, url)));
     }
+
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        if(url.startsWith("http")|| url.startsWith("https")) {
+        if (url.startsWith("http") || url.startsWith("https")) {
           return false;
         } else {
           Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url)); 
@@ -122,6 +124,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           return true;   
         }              
     }
+
     @Override
     public void onReceivedError(
         WebView webView,
