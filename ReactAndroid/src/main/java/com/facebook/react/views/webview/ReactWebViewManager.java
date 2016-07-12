@@ -9,29 +9,13 @@
 
 package com.facebook.react.views.webview;
 
-import javax.annotation.Nullable;
-
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
-
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.text.TextUtils;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.webkit.WebChromeClient;
-
-import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
-import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
-import com.facebook.react.views.webview.events.TopLoadingStartEvent;
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.LifecycleEventListener;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.*;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.common.build.ReactBuildConfig;
@@ -41,6 +25,15 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
+import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
+import com.facebook.react.views.webview.events.TopLoadingStartEvent;
+
+import javax.annotation.Nullable;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Manages instances of {@link WebView}
@@ -332,7 +325,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           ReadableMapKeySetIterator iter = headers.keySetIterator();
           while (iter.hasNextKey()) {
             String key = iter.nextKey();
-            headerMap.put(key, headers.getString(key));
+            if ("user-agent".equals(key.toLowerCase(Locale.ENGLISH))) {
+              view.getSettings().setUserAgentString(headers.getString(key));
+            } else {
+              headerMap.put(key, headers.getString(key));
+            }
           }
         }
         view.loadUrl(url, headerMap);
