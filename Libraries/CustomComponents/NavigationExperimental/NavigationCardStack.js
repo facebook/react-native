@@ -161,7 +161,9 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   }
 
   _renderScene(props: NavigationSceneRendererProps): ReactElement<any> {
-    const isVertical = this.props.direction === 'vertical';
+    const isVertical = (this.props.direction === 'vertical' &&
+      props.scene.route.direction !== 'horizontal') ||
+      props.scene.route.direction === 'vertical';
 
     const style = isVertical ?
       NavigationCardStackStyleInterpolator.forVertical(props) :

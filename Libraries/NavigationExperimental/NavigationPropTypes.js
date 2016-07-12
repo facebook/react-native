@@ -38,6 +38,7 @@ const animatedValue = PropTypes.instanceOf(Animated.Value);
 /* NavigationRoute  */
 const navigationRoute = PropTypes.shape({
   key: PropTypes.string.isRequired,
+  direction: PropTypes.string,
 });
 
 /* navigationRoute  */
