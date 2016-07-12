@@ -37,11 +37,21 @@ type Props = NavigationSceneRendererProps & {
  */
 const {
   ANIMATION_DURATION,
-  DISTANCE_THRESHOLD,
   POSITION_THRESHOLD,
   RESPOND_THRESHOLD,
   Directions,
 } = NavigationCardStackPanResponder;
+
+/**
+ * The threshold (in pixels) to finish the gesture action.
+ */
+const DISTANCE_THRESHOLD = 50;
+
+/**
+ * The threshold to trigger the gesture action. This determines the rate of the
+ * flick when the action will be triggered
+ */
+const VELOCITY_THRESHOLD = 1.5;
 
 /**
  * Pan responder that handles gesture for a card in the cards list.
@@ -159,6 +169,7 @@ class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
 
     const isVertical = this._isVertical;
     const axis = isVertical ? 'dy' : 'dx';
+    const velocityAxis = isVertical ? 'vy' : 'vx';
     const index = navigationState.index;
     const distance = gesture[axis];
 
@@ -166,7 +177,8 @@ class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
       this._reset();
       if (
         distance > DISTANCE_THRESHOLD  ||
-        value <= index - POSITION_THRESHOLD
+        value <= index - POSITION_THRESHOLD ||
+        gesture[velocityAxis] > VELOCITY_THRESHOLD
       ) {
         onNavigateBack && onNavigateBack();
         return;
@@ -174,7 +186,8 @@ class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
 
       if (
         distance < -DISTANCE_THRESHOLD ||
-        value >= index  + POSITION_THRESHOLD
+        value >= index  + POSITION_THRESHOLD ||
+        gesture[velocityAxis] < -VELOCITY_THRESHOLD
       ) {
         onNavigateForward && onNavigateForward();
       }

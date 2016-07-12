@@ -293,12 +293,11 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                                  completionBlock:(void (^)(NSError *error, id imageOrData))completionBlock
 {
   __block volatile uint32_t cancelled = 0;
-  __block void(^cancelLoad)(void) = nil;
+  __block dispatch_block_t cancelLoad = nil;
   __weak RCTImageLoader *weakSelf = self;
 
   void (^completionHandler)(NSError *error, id imageOrData) = ^(NSError *error, id imageOrData) {
     if (RCTIsMainQueue()) {
-
       // Most loaders do not return on the main thread, so caller is probably not
       // expecting it, and may do expensive post-processing in the callback
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -315,73 +314,15 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   if (!_URLCacheQueue) {
     [self setUp];
   }
+
   dispatch_async(_URLCacheQueue, ^{
-
-    if (!self->_URLCache) {
-      self->_URLCache = [[NSURLCache alloc] initWithMemoryCapacity:5 * 1024 * 1024 // 5MB
-                                                diskCapacity:200 * 1024 * 1024 // 200MB
-                                                    diskPath:@"React/RCTImageDownloader"];
-    }
-
-    RCTImageLoader *strongSelf = weakSelf;
+    __typeof(self) strongSelf = weakSelf;
     if (cancelled || !strongSelf) {
       return;
     }
 
-    // Find suitable image URL loader
-    NSURLRequest *request = imageURLRequest; // Use a local variable so we can reassign it in this block
-    id<RCTImageURLLoader> loadHandler = [strongSelf imageURLLoaderForURL:request.URL];
-    if (loadHandler) {
-      cancelLoad = [loadHandler loadImageForURL:request.URL
-                                           size:size
-                                          scale:scale
-                                     resizeMode:resizeMode
-                                progressHandler:progressHandler
-                              completionHandler:completionHandler] ?: ^{};
-      return;
-    }
-
-    // Check if networking module is available
-    if (RCT_DEBUG && ![self->_bridge respondsToSelector:@selector(networking)]) {
-      RCTLogError(@"No suitable image URL loader found for %@. You may need to "
-                  " import the RCTNetwork library in order to load images.",
-                  request.URL.absoluteString);
-      return;
-    }
-
-    // Check if networking module can load image
-    if (RCT_DEBUG && ![self->_bridge.networking canHandleRequest:request]) {
-      RCTLogError(@"No suitable image URL loader found for %@", request.URL.absoluteString);
-      return;
-    }
-
-    // Use networking module to load image
-    RCTURLRequestCompletionBlock processResponse =
-    ^(NSURLResponse *response, NSData *data, NSError *error) {
-
-      // Check for system errors
-      if (error) {
-        completionHandler(error, nil);
-        return;
-      } else if (!data) {
-        completionHandler(RCTErrorWithMessage(@"Unknown image download error"), nil);
-        return;
-      }
-
-      // Check for http errors
-      if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
-        NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
-        if (statusCode != 200) {
-          completionHandler([[NSError alloc] initWithDomain:NSURLErrorDomain
-                                                       code:statusCode
-                                                   userInfo:nil], nil);
-          return;
-        }
-      }
-
-      // Call handler
-      completionHandler(nil, data);
-    };
+    // Use a local variable so we can reassign it in this block
+    NSURLRequest *request = imageURLRequest;
 
     // Add missing png extension
     if (request.URL.fileURL && request.URL.pathExtension.length == 0) {
@@ -390,74 +331,21 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       request = mutableRequest;
     }
 
-    // Check for cached response before reloading
-    // TODO: move URL cache out of RCTImageLoader into its own module
-    NSCachedURLResponse *cachedResponse = [self->_URLCache cachedResponseForRequest:request];
-
-    while (cachedResponse) {
-      if ([cachedResponse.response isKindOfClass:[NSHTTPURLResponse class]]) {
-        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)cachedResponse.response;
-        if (httpResponse.statusCode == 301 || httpResponse.statusCode == 302) {
-          NSString *location = httpResponse.allHeaderFields[@"Location"];
-          if (location == nil) {
-            completionHandler(RCTErrorWithMessage(@"Image redirect without location"), nil);
-            return;
-          }
-
-          NSURL *redirectURL = [NSURL URLWithString: location relativeToURL: request.URL];
-          request = [NSURLRequest requestWithURL:redirectURL];
-          cachedResponse = [self->_URLCache cachedResponseForRequest:request];
-          continue;
-        }
-      }
-
-      processResponse(cachedResponse.response, cachedResponse.data, nil);
-      return;
+    // Find suitable image URL loader
+    id<RCTImageURLLoader> loadHandler = [strongSelf imageURLLoaderForURL:request.URL];
+    if (loadHandler) {
+      cancelLoad = [loadHandler loadImageForURL:request.URL
+                                           size:size
+                                          scale:scale
+                                     resizeMode:resizeMode
+                                progressHandler:progressHandler
+                              completionHandler:completionHandler] ?: ^{};
+    } else {
+      // Use networking module to load image
+      cancelLoad = [strongSelf _loadURLRequest:request
+                                 progressBlock:progressHandler
+                               completionBlock:completionHandler];
     }
-
-    // Download image
-    RCTNetworkTask *task = [self->_bridge.networking networkTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
-      if (error) {
-        completionHandler(error, nil);
-        [weakSelf dequeueTasks];
-        return;
-      }
-
-      dispatch_async(self->_URLCacheQueue, ^{
-
-        // Cache the response
-        // TODO: move URL cache out of RCTImageLoader into its own module
-        BOOL isHTTPRequest = [request.URL.scheme hasPrefix:@"http"];
-        [strongSelf->_URLCache storeCachedResponse:
-         [[NSCachedURLResponse alloc] initWithResponse:response
-                                                  data:data
-                                              userInfo:nil
-                                         storagePolicy:isHTTPRequest ? NSURLCacheStorageAllowed: NSURLCacheStorageAllowedInMemoryOnly]
-                                        forRequest:request];
-        // Process image data
-        processResponse(response, data, nil);
-
-        // Prepare for next task
-        [weakSelf dequeueTasks];
-
-      });
-
-    }];
-    task.downloadProgressBlock = progressHandler;
-
-    if (!self->_pendingTasks) {
-      self->_pendingTasks = [NSMutableArray new];
-    }
-    if (task) {
-      [self->_pendingTasks addObject:task];
-      [weakSelf dequeueTasks];
-    }
-
-    cancelLoad = ^{
-      [task cancel];
-      [weakSelf dequeueTasks];
-    };
-
   });
 
   return ^{
@@ -465,6 +353,131 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       cancelLoad();
     }
     OSAtomicOr32Barrier(1, &cancelled);
+  };
+}
+
+- (RCTImageLoaderCancellationBlock)_loadURLRequest:(NSURLRequest *)request
+                                     progressBlock:(RCTImageLoaderProgressBlock)progressHandler
+                                   completionBlock:(void (^)(NSError *error, id imageOrData))completionHandler
+{
+  // Check if networking module is available
+  if (RCT_DEBUG && ![_bridge respondsToSelector:@selector(networking)]) {
+    RCTLogError(@"No suitable image URL loader found for %@. You may need to "
+                " import the RCTNetwork library in order to load images.",
+                request.URL.absoluteString);
+    return NULL;
+  }
+
+  RCTNetworking *networking = [_bridge networking];
+
+  // Check if networking module can load image
+  if (RCT_DEBUG && ![networking canHandleRequest:request]) {
+    RCTLogError(@"No suitable image URL loader found for %@", request.URL.absoluteString);
+    return NULL;
+  }
+
+  // Use networking module to load image
+  RCTURLRequestCompletionBlock processResponse = ^(NSURLResponse *response, NSData *data, NSError *error) {
+    // Check for system errors
+    if (error) {
+      completionHandler(error, nil);
+      return;
+    } else if (!data) {
+      completionHandler(RCTErrorWithMessage(@"Unknown image download error"), nil);
+      return;
+    }
+
+    // Check for http errors
+    if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+      NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
+      if (statusCode != 200) {
+        completionHandler([[NSError alloc] initWithDomain:NSURLErrorDomain
+                                                     code:statusCode
+                                                 userInfo:nil], nil);
+        return;
+      }
+    }
+
+    // Call handler
+    completionHandler(nil, data);
+  };
+
+  // Check for cached response before reloading
+  // TODO: move URL cache out of RCTImageLoader into its own module
+  if (!_URLCache) {
+    _URLCache = [[NSURLCache alloc] initWithMemoryCapacity:5 * 1024 * 1024 // 5MB
+                                              diskCapacity:200 * 1024 * 1024 // 200MB
+                                                  diskPath:@"React/RCTImageDownloader"];
+  }
+
+  NSCachedURLResponse *cachedResponse = [_URLCache cachedResponseForRequest:request];
+  while (cachedResponse) {
+    if ([cachedResponse.response isKindOfClass:[NSHTTPURLResponse class]]) {
+      NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)cachedResponse.response;
+      if (httpResponse.statusCode == 301 || httpResponse.statusCode == 302) {
+        NSString *location = httpResponse.allHeaderFields[@"Location"];
+        if (location == nil) {
+          completionHandler(RCTErrorWithMessage(@"Image redirect without location"), nil);
+          return NULL;
+        }
+
+        NSURL *redirectURL = [NSURL URLWithString: location relativeToURL: request.URL];
+        request = [NSURLRequest requestWithURL:redirectURL];
+        cachedResponse = [_URLCache cachedResponseForRequest:request];
+        continue;
+      }
+    }
+
+    processResponse(cachedResponse.response, cachedResponse.data, nil);
+    return NULL;
+  }
+
+  // Download image
+  __weak __typeof(self) weakSelf = self;
+  RCTNetworkTask *task = [networking networkTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
+    if (error) {
+      completionHandler(error, nil);
+      [weakSelf dequeueTasks];
+      return;
+    }
+
+    dispatch_async(self->_URLCacheQueue, ^{
+      __typeof(self) strongSelf = self;
+      if (!strongSelf) {
+        return;
+      }
+
+      // Cache the response
+      // TODO: move URL cache out of RCTImageLoader into its own module
+      BOOL isHTTPRequest = [request.URL.scheme hasPrefix:@"http"];
+      [strongSelf->_URLCache storeCachedResponse:
+       [[NSCachedURLResponse alloc] initWithResponse:response
+                                                data:data
+                                            userInfo:nil
+                                       storagePolicy:isHTTPRequest ? NSURLCacheStorageAllowed: NSURLCacheStorageAllowedInMemoryOnly]
+                                      forRequest:request];
+      // Process image data
+      processResponse(response, data, nil);
+
+      // Prepare for next task
+      [strongSelf dequeueTasks];
+    });
+
+  }];
+
+  task.downloadProgressBlock = progressHandler;
+
+  if (task) {
+    if (!_pendingTasks) {
+      _pendingTasks = [NSMutableArray new];
+    }
+    [_pendingTasks addObject:task];
+    [self dequeueTasks];
+  }
+
+  return ^{
+    [task cancel];
+    [weakSelf dequeueTasks];
   };
 }
 
@@ -520,11 +533,11 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   };
 
   cancelLoad = [self loadImageOrDataWithURLRequest:imageURLRequest
-                                       size:size
-                                      scale:scale
-                                 resizeMode:resizeMode
-                              progressBlock:progressHandler
-                            completionBlock:completionHandler];
+                                              size:size
+                                             scale:scale
+                                        resizeMode:resizeMode
+                                     progressBlock:progressHandler
+                                   completionBlock:completionHandler];
   return ^{
     if (cancelLoad) {
       cancelLoad();

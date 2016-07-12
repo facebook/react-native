@@ -58,7 +58,6 @@ static NSString *ipGuess;
 - (void)setDefaults
 {
   [[NSUserDefaults standardUserDefaults] registerDefaults:[self defaults]];
-  [self settingsUpdated];
 }
 
 - (void)resetToDefaults
@@ -67,6 +66,7 @@ static NSString *ipGuess;
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
   }
   [self setDefaults];
+  [self settingsUpdated];
 }
 
 - (BOOL)isPackagerRunning:(NSString *)host
@@ -134,7 +134,7 @@ static NSString *serverRootWithHost(NSString *host)
   }
 }
 
-- (void)updateDefaults:(id)object forKey:(NSString *)key
+- (void)updateValue:(id)object forKey:(NSString *)key
 {
   [[NSUserDefaults standardUserDefaults] setObject:object forKey:key];
   [[NSUserDefaults standardUserDefaults] synchronize];
@@ -163,22 +163,22 @@ static NSString *serverRootWithHost(NSString *host)
 
 - (void)setEnableDev:(BOOL)enableDev
 {
-  [self updateDefaults:@(enableDev) forKey:kRCTEnableDevKey];
+  [self updateValue:@(enableDev) forKey:kRCTEnableDevKey];
 }
 
 - (void)setEnableLiveReload:(BOOL)enableLiveReload
 {
-  [self updateDefaults:@(enableLiveReload) forKey:kRCTEnableLiveReloadKey];
+  [self updateValue:@(enableLiveReload) forKey:kRCTEnableLiveReloadKey];
 }
 
 - (void)setJsLocation:(NSString *)jsLocation
 {
-  [self updateDefaults:jsLocation forKey:kRCTJsLocationKey];
+  [self updateValue:jsLocation forKey:kRCTJsLocationKey];
 }
 
 - (void)setEnableMinification:(BOOL)enableMinification
 {
-  [self updateDefaults:@(enableMinification) forKey:kRCTEnableMinificationKey];
+  [self updateValue:@(enableMinification) forKey:kRCTEnableMinificationKey];
 }
 
 + (instancetype)sharedSettings

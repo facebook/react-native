@@ -60,7 +60,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     }
 
     magicNumber = NSSwapLittleIntToHost(magicNumber);
-
     if (magicNumber == RCTRAMBundleMagicNumber) {
       NSData *source = [NSData dataWithBytes:&magicNumber length:sizeof(magicNumber)];
       NSError *error = nil;
@@ -73,16 +72,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
         sourceLength = statInfo.st_size;
       }
       onComplete(error, source, sourceLength);
+    } else {
+      // Reading in a large bundle can be slow. Dispatch to the background queue to do it.
+      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSError *error = nil;
+        NSData *source = [NSData dataWithContentsOfFile:scriptURL.path
+                                                options:NSDataReadingMappedIfSafe
+                                                  error:&error];
+        onComplete(error, source, source.length);
+      });
     }
-
-    // Reading in a large bundle can be slow. Dispatch to the background queue to do it.
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      NSError *error = nil;
-      NSData *source = [NSData dataWithContentsOfFile:scriptURL.path
-                                              options:NSDataReadingMappedIfSafe
-                                                error:&error];
-      onComplete(error, source, source.length);
-    });
     return;
   }
 
