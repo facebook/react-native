@@ -730,8 +730,9 @@ static NSData *loadPossiblyBundledApplicationScript(NSData *script, NSURL *sourc
                                                     NSError **error)
 {
   // The RAM bundle has a magic number in the 4 first bytes `(0xFB0BD1E5)`.
-  uint32_t magicNumber = NSSwapLittleIntToHost(*((uint32_t *)script.bytes));
-  isRAMBundle = magicNumber == RCTRAMBundleMagicNumber;
+  uint32_t magicNumber = 0;
+  [script getBytes:&magicNumber length:sizeof(magicNumber)];
+  isRAMBundle = NSSwapLittleIntToHost(magicNumber) == RCTRAMBundleMagicNumber;
   if (isRAMBundle) {
     [performanceLogger markStartForTag:RCTPLRAMBundleLoad];
     script = loadRAMBundle(sourceURL, error, randomAccessBundle);
