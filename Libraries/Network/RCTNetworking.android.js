@@ -27,7 +27,7 @@ function convertHeadersMapToArray(headers: Object): Array<Header> {
 }
 
 let _requestId = 1;
-function generateRequestId() {
+function generateRequestId(): number {
   return _requestId++;
 }
 
@@ -41,7 +41,16 @@ class RCTNetworking extends NativeEventEmitter {
     super(RCTNetworkingNative);
   }
 
-  sendRequest(method, url, headers, data, incrementalUpdates, timeout, callback) {
+  sendRequest(
+    method: ?string,
+    trackingName: string,
+    url: ?string,
+    headers: Object,
+    data: string | FormData | Object,
+    incrementalUpdates: boolean,
+    timeout: number,
+    callback: (requestId: number) => void,
+  ) {
     if (typeof data === 'string') {
       data = {string: data};
     } else if (data instanceof FormData) {
@@ -52,6 +61,7 @@ class RCTNetworking extends NativeEventEmitter {
         }),
       };
     }
+    data = {...data, trackingName};
     const requestId = generateRequestId();
     RCTNetworkingNative.sendRequest(
       method,
@@ -65,11 +75,11 @@ class RCTNetworking extends NativeEventEmitter {
     callback(requestId);
   }
 
-  abortRequest(requestId) {
+  abortRequest(requestId: number) {
     RCTNetworkingNative.abortRequest(requestId);
   }
 
-  clearCookies(callback) {
+  clearCookies(callback: number) {
     RCTNetworkingNative.clearCookies(callback);
   }
 }
