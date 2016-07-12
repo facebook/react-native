@@ -558,11 +558,11 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
   } RCTFrameData;
 
   // Construct arrays then hand off to main thread
-  NSInteger count = viewsWithNewFrames.count;
+  NSUInteger count = viewsWithNewFrames.count;
   NSMutableArray *reactTags = [[NSMutableArray alloc] initWithCapacity:count];
   NSMutableData *framesData = [[NSMutableData alloc] initWithLength:sizeof(RCTFrameData) * count];
   {
-    NSInteger index = 0;
+    NSUInteger index = 0;
     RCTFrameData *frameDataArray = (RCTFrameData *)framesData.mutableBytes;
     for (RCTShadowView *shadowView in viewsWithNewFrames) {
       reactTags[index] = shadowView.reactTag;
@@ -849,7 +849,7 @@ RCT_EXPORT_METHOD(removeRootView:(nonnull NSNumber *)rootReactTag)
     UIView *rootView = viewRegistry[rootReactTag];
     [uiManager _purgeChildren:(NSArray<id<RCTComponent>> *)rootView.reactSubviews
                  fromRegistry:(NSMutableDictionary<NSNumber *, id<RCTComponent>> *)viewRegistry];
-    [(NSMutableDictionary<NSNumber *, UIView *> *)viewRegistry removeObjectForKey:rootReactTag];
+    [(NSMutableDictionary *)viewRegistry removeObjectForKey:rootReactTag];
 
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerDidRemoveRootViewNotification
                                                         object:uiManager
