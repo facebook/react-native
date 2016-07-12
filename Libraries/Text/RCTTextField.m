@@ -29,7 +29,7 @@
     RCTAssert(eventDispatcher, @"eventDispatcher is a required parameter");
     _eventDispatcher = eventDispatcher;
     _previousSelectionRange = self.selectedTextRange;
-    [self addTarget:self action:@selector(textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
+    [self addTarget:self action:@selector(textFieldEditChanged) forControlEvents:UIControlEventEditingChanged];
     [self addTarget:self action:@selector(textFieldBeginEditing) forControlEvents:UIControlEventEditingDidBegin];
     [self addTarget:self action:@selector(textFieldEndEditing) forControlEvents:UIControlEventEditingDidEnd];
     [self addTarget:self action:@selector(textFieldSubmitEditing) forControlEvents:UIControlEventEditingDidEndOnExit];
@@ -137,6 +137,19 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 - (BOOL)autoCorrect
 {
   return self.autocorrectionType == UITextAutocorrectionTypeYes;
+}
+
+- (void)textFieldEditChanged
+{
+  // In some cases shouldChangeCharactersInRange will not be called,
+  // so we need to check text length before sending event.
+  UITextRange *markedRange = [self markedTextRange];
+  UITextPosition *position = [self positionFromPosition:markedRange.start offset:0];
+  if (!position) {
+    if (self.maxLength && self.text.length > self.maxLength.integerValue)
+      super.text = [self.text substringToIndex:self.maxLength.integerValue];
+  }
+  [self textFieldDidChange];
 }
 
 - (void)textFieldDidChange
