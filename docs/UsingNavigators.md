@@ -1,5 +1,5 @@
 ---
-id: navigators
+id: using-navigators
 title: Using Navigators
 layout: docs
 category: The Basics
