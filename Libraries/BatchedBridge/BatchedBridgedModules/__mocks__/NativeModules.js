@@ -1,5 +1,11 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  */
 'use strict';
 
@@ -27,7 +33,14 @@ var NativeModules = {
   UIManager: {
     customBubblingEventTypes: {},
     customDirectEventTypes: {},
-    Dimensions: {},
+    Dimensions: {
+      window: {
+        width: 750,
+        height: 1334,
+        scale: 2,
+        fontScale: 2,
+      }
+    },
     RCTModalFullscreenView: {
       Constants: {},
     },

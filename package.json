@@ -24,11 +24,8 @@
     "haste": {
       "defaultPlatform": "ios",
       "providesModuleNodeModules": [
-        "fbjs",
-        "react",
         "react-native",
-        "parse",
-        "react-transform-hmr"
+        "parse"
       ],
       "platforms": [
         "ios",
@@ -125,7 +122,7 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "~15.2.0-rc.1"
+    "react": "~15.2.0"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -190,21 +187,21 @@
     "xcode": "^0.8.2",
     "xmldoc": "^0.4.0",
     "yargs": "^3.24.0",
-    "yeoman-environment": "^1.2.7",
+    "yeoman-environment": "~1.2.7",
     "yeoman-generator": "^0.20.3"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.0",
-    "eslint": "^2.5.3",
+    "eslint": "^2.13.1",
     "eslint-plugin-babel": "^3.2.0",
     "eslint-plugin-flow-vars": "^0.2.1",
     "eslint-plugin-react": "^4.2.1",
-    "flow-bin": "^0.27.0",
-    "jest": "^13.0.0",
-    "jest-repl": "^13.0.0",
-    "jest-runtime": "^13.0.0",
+    "flow-bin": "^0.28.0",
+    "jest": "^13.1.0",
+    "jest-repl": "^13.1.0",
+    "jest-runtime": "^13.1.0",
     "portfinder": "0.4.0",
-    "react": "~15.2.0-rc.1",
+    "react": "~15.2.0",
     "shelljs": "0.6.0"
   }
 }

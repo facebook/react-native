@@ -54,9 +54,10 @@ function _dependencies(argv, config, resolve, reject, packagerInstance) {
     reject(`File ${rootModuleAbsolutePath} does not exist`);
   }
 
-  const transformModulePath = args.transformer ?
-    path.resolve(args.transformer) :
-    config.getTransformModulePath();
+  const transformModulePath =
+      args.transformer ? path.resolve(args.transformer) :
+      typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
+      undefined;
 
   const packageOpts = {
     projectRoots: config.getProjectRoots(),

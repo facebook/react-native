@@ -34,7 +34,7 @@
 
 var ListViewDataSource = require('ListViewDataSource');
 var React = require('React');
-var ReactNative = require('ReactNative');
+var ReactNative = require('react/lib/ReactNative');
 var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
 var ScrollView = require('ScrollView');
 var ScrollResponder = require('ScrollResponder');

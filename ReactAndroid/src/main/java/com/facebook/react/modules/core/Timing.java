@@ -226,13 +226,10 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     if (mDevSupportManager.getDevSupportEnabled()) {
       long driftTime = Math.abs(remoteTime - deviceTime);
       if (driftTime > 60000) {
-        throw new RuntimeException(
-          "Debugger and device times have drifted by " + driftTime + "ms. " +
-          "Please correct this by running adb shell " +
-          "\"date `date +%m%d%H%M%Y.%S`\" on your debugger machine.\n" +
-          "Debugger Time = " + remoteTime + "\n" +
-          "Device Time = " + deviceTime
-        );
+        getReactApplicationContext().getJSModule(executorToken, JSTimersExecution.class)
+          .emitTimeDriftWarning(
+            "Debugger and device times have drifted by more than 60s. Please correct this by " +
+            "running adb shell \"date `date +%m%d%H%M%Y.%S`\" on your debugger machine.");
       }
     }
 

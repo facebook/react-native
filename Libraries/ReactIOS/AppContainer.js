@@ -14,7 +14,7 @@
 
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
-var ReactNative = require('ReactNative');
+var ReactNative = require('react/lib/ReactNative');
 var Subscribable = require('Subscribable');
 var StyleSheet = require('StyleSheet');
 var View = require('View');

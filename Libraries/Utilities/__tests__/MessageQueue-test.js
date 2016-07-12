@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const MessageQueueTestConfig = require('./MessageQueueTestConfig');
+const MessageQueueTestConfig = require('MessageQueueTestConfig');
 jest.unmock('MessageQueue');
 
 let MessageQueue;
@@ -46,8 +46,8 @@ describe('MessageQueue', function() {
   beforeEach(function() {
     jest.resetModuleRegistry();
     MessageQueue = require('MessageQueue');
-    MessageQueueTestModule1 = require('./MessageQueueTestModule1');
-    MessageQueueTestModule2 = require('./MessageQueueTestModule2');
+    MessageQueueTestModule1 = require('MessageQueueTestModule1');
+    MessageQueueTestModule2 = require('MessageQueueTestModule2');
     queue = new MessageQueue(
       () => MessageQueueTestConfig
     );

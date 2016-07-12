@@ -63,6 +63,7 @@ import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.debug.DeveloperSettings;
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.uimanager.AppRegistry;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.UIImplementationProvider;
@@ -411,9 +412,12 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   }
 
   private void recreateReactContextInBackgroundFromBundleFile() {
+    boolean useLazyBundle = mJSCConfig.getConfigMap().hasKey("useLazyBundle") ?
+      mJSCConfig.getConfigMap().getBoolean("useLazyBundle") : false;
+
     recreateReactContextInBackground(
         new JSCJavaScriptExecutor.Factory(mJSCConfig.getConfigMap()),
-        JSBundleLoader.createFileLoader(mApplicationContext, mJSBundleFile));
+        JSBundleLoader.createFileLoader(mApplicationContext, mJSBundleFile, useLazyBundle));
   }
 
   /**
@@ -547,6 +551,8 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
       mHasStartedCreatingInitialContext = false;
     }
     mCurrentActivity = null;
+
+    ResourceDrawableIdHelper.getInstance().clear();
   }
 
   private void moveToResumedLifecycleState(boolean force) {
@@ -707,7 +713,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     if (mReactContextInitAsyncTask == null) {
       // No background task to create react context is currently running, create and execute one.
       mReactContextInitAsyncTask = new ReactContextInitAsyncTask();
-      mReactContextInitAsyncTask.execute(initParams);
+      mReactContextInitAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, initParams);
     } else {
       // Background task is currently running, queue up most recent init params to recreate context
       // once task completes.

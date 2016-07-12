@@ -13,7 +13,6 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 
 #import "RCTLog.h"
-#import "RCTPerformanceLogger.h"
 
 #include <dlfcn.h>
 
@@ -24,13 +23,11 @@ static void *RCTCustomLibraryHandler(void)
   dispatch_once(&token, ^{
     const char *path = [[[NSBundle mainBundle] pathForResource:@"JavaScriptCore"
                                                         ofType:nil
-                                                   inDirectory:@"JavaScriptCore.framework"] UTF8String];
+                                                   inDirectory:@"Frameworks/JavaScriptCore.framework"] UTF8String];
     if (path) {
-      RCTPerformanceLoggerStart(RCTPLJSCWrapperOpenLibrary);
       handler = dlopen(path, RTLD_LAZY);
-      RCTPerformanceLoggerEnd(RCTPLJSCWrapperOpenLibrary);
       if (!handler) {
-        RCTLogWarn(@"Can't load custome JSC library: %s", dlerror());
+        RCTLogWarn(@"Can't load custom JSC library: %s", dlerror());
       }
     }
   });
@@ -69,7 +66,6 @@ static void RCTSetUpCustomLibraryPointers(RCTJSCWrapper *wrapper)
     return;
   }
 
-  RCTPerformanceLoggerStart(RCTPLJSCWrapperLoadFunctions);
   wrapper->JSValueToStringCopy = (JSValueToStringCopyFuncType)dlsym(libraryHandle, "JSValueToStringCopy");
   wrapper->JSStringCreateWithCFString = (JSStringCreateWithCFStringFuncType)dlsym(libraryHandle, "JSStringCreateWithCFString");
   wrapper->JSStringCopyCFString = (JSStringCopyCFStringFuncType)dlsym(libraryHandle, "JSStringCopyCFString");
@@ -90,7 +86,6 @@ static void RCTSetUpCustomLibraryPointers(RCTJSCWrapper *wrapper)
   wrapper->JSContext = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSContext");
   wrapper->JSValue = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSValue");
   wrapper->configureJSContextForIOS = (configureJSContextForIOSFuncType)dlsym(libraryHandle, "configureJSContextForIOS");
-  RCTPerformanceLoggerEnd(RCTPLJSCWrapperLoadFunctions);
 }
 
 RCTJSCWrapper *RCTJSCWrapperCreate(BOOL useCustomJSC)
