@@ -56,6 +56,13 @@ var featured = [
     infoTitle: 'Building the F8 App',
   },
   {
+    name: 'FanVision Bolt',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple18/v4/94/b4/6e/94b46ee5-80e3-ff6e-513d-16da926b03a3/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/fanvision-bolt/id1081891275',
+    infoLink: 'https://www.youtube.com/watch?v=oWOcAXyDf0w',
+    infoTitle: 'FanVision Bolt accessory + app provide live audio/video and stats at NASCAR events',
+  },
+  {
     name: 'Gyroscope',
     icon: 'https://media.gyrosco.pe/images/magneto/180x180.png',
     linkAppStore: 'https://itunes.apple.com/app/apple-store/id1104085053?pt=117927205&ct=website&mt=8',
