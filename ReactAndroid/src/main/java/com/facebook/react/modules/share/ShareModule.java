@@ -119,6 +119,7 @@ public class ShareModule extends ReactContextBaseJavaModule {
     try {
       Intent intent = new Intent(Intent.ACTION_SEND);
       intent.setTypeAndNormalize("text/plain");
+      intent.addCategory(Intent.CATEGORY_DEFAULT);
       
       if (content.hasKey("title")) {
         intent.putExtra(Intent.EXTRA_SUBJECT, content.getString("title"));

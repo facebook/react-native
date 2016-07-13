@@ -13,6 +13,8 @@ import java.util.List;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v4.app.DialogFragment;
 
 import com.facebook.react.bridge.BaseJavaModule;
@@ -70,6 +72,7 @@ public class ShareTestCase extends ReactAppInstrumentationTestCase {
     public int getErrors() {
       return mErrors;
     }
+
   }
 
   final ShareRecordingModule mRecordingModule = new ShareRecordingModule();
@@ -116,6 +119,12 @@ public class ShareTestCase extends ReactAppInstrumentationTestCase {
     final WritableMap options = new WritableNativeMap();
 
     final DialogFragment fragment = showDialog(content, options);
+
+    /* Block launching activity for next test cases */
+    IntentFilter intentFilter = new IntentFilter(Intent.ACTION_SEND);
+    intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+    intentFilter.addDataType("text/plain");
+    getInstrumentation().addMonitor(intentFilter, null, true);
 
     runTestOnUiThread(
         new Runnable() {
