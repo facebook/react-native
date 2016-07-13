@@ -462,6 +462,39 @@ var WebView = React.createClass({
   },
 
   /**
+   * Evaluate JavaScript on the current page.
+   */
+  evaluateJavaScript: function(
+    script: string,
+    callback?: ?(error: ?Error, result: ?string) => void,
+  ): Promise {
+    return new Promise((resolve, reject) => {
+      var escaped = script.replace(/\\/g, '\\\\')
+                          .replace(/"/g, '\\"');
+      var wrapped = 'JSON.stringify(eval("' + escaped + '"))';
+
+      RCTWebViewManager.evaluateJavaScript(this.getWebViewHandle(), wrapped, function(error, result) {
+        if (!error) {
+          if (result === '') {
+            error = new Error("Error evaluating script.")
+            result = null;
+          } else {
+            result = JSON.parse(result);
+          }
+        }
+
+        callback && callback(error, result);
+
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  },
+
+  /**
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
    */
