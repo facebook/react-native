@@ -298,6 +298,13 @@ var featured = [
     infoLink: 'https://www.crunchbase.com/organization/bds-diet#/entity',
     infoTitle: 'Bdsdiet provides real estate brokerage services through web and live agents in Korea.',
   },
+  {
+    name: '扇贝口语',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple60/v4/94/94/2d/94942d0a-83e9-7c13-f154-f8d2ed63f262/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/shan-bei-kou-yu-ting-dong/id1089026929?mt=8',
+    infoLink: 'https://www.shanbay.com/m/intro/?app=speak',
+    infoTitle: 'Shanbay Speak is an education app can help you improving your english oral skills',
+  },
 ];
 
 featured.sort(function(a, b) {
