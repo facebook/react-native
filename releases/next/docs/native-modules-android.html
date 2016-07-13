@@ -252,17 +252,17 @@ public void <span class="token function">onActivityResult<span class="token punc
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span></div><h3><a class="anchor" name="listening-to-lifecycle-events"></a>Listening to LifeCycle events <a class="hash-link" href="docs/native-modules-android.html#listening-to-lifecycle-events">#</a></h3><p>Listening to the activity&#x27;s LifeCycle events such as <code>onResume</code>, <code>onPause</code> etc. is very similar to how we implemented <code>ActivityEventListener</code>. The module must implement <code>LifecycleEventListener</code>. Then, you need to register a listener in the module&#x27;s constructor,</p><div class="prism language-javascript">reactContext<span class="token punctuation">.</span><span class="token function">addLifecycleEventListener<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span></div><p>Now you can listen to the activity&#x27;s LifeCycle events by implementing the following methods:</p><div class="prism language-javascript">@Override
 public void <span class="token function">onHostResume<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-   <span class="token comment" spellcheck="true"> // Actvity `onResume`
+   <span class="token comment" spellcheck="true"> // Activity `onResume`
 </span><span class="token punctuation">}</span>
 
 @Override
 public void <span class="token function">onHostPause<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-   <span class="token comment" spellcheck="true"> // Actvity `onPause`
+   <span class="token comment" spellcheck="true"> // Activity `onPause`
 </span><span class="token punctuation">}</span>
 
 @Override
 public void <span class="token function">onHostDestroy<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-   <span class="token comment" spellcheck="true"> // Actvity `onDestroy`
+   <span class="token comment" spellcheck="true"> // Activity `onDestroy`
 </span><span class="token punctuation">}</span></div></div><div class="docs-prevnext"><a class="docs-next" href="docs/native-components-android.html#content">Next →</a></div><div class="survey"><div class="survey-image"></div><p>Recently, we have been working hard to make the documentation better based on your feedback. Your responses to this yes/no style survey will help us gauge whether we moved in the right direction with the improvements. Thank you!</p><center><a class="button" href="https://www.facebook.com/survey?oid=516954245168428">Take Survey</a></center></div></div></section><footer class="wrap"><div class="center">© 2016 Facebook Inc.</div></footer></div><div id="fb-root"></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
