@@ -17,7 +17,7 @@ In Xcode, select your phone as build target and press "Build and run"
 
 > Hint
 >
-> Shake the device to open the [developer menu](/docs/debugging.html#accessing-the-in-app-developer-menu).
+> Shake the device to open the [developer menu](/react-native/docs/debugging.html#accessing-the-in-app-developer-menu).
 
 ## Building your app for production
 
