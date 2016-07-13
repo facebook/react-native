@@ -26,15 +26,15 @@ class Share {
 
   /**
    * Open a dialog to share text content.
-   * 
+   *
    * ### Content
-   * 
+   *
    *  - `message` - a message to share
    *  - `url` - an URL to share. In Android, this will overwrite message
    *  - `title` - title of the message
-   * 
+   *
    * At least one of URL and message is required.
-   * 
+   *
    * ### Options
    *
    * #### iOS
@@ -43,7 +43,7 @@ class Share {
    * - `tintColor`
    *
    * #### Android
-   * 
+   *
    * - `dialogTitle`
    */
   static share(content: Content, options: Options = {}): Promise<Object> {
@@ -76,11 +76,11 @@ class Share {
               resolve({
                 'action': 'sharedAction',
                 'activityType': activityType
-              })
+              });
             } else {
               resolve({
                 'action': 'dismissedAction'
-              })
+              });
             }
           }
         );

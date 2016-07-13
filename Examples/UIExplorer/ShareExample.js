@@ -21,7 +21,6 @@ var {
   StyleSheet,
   View,
   Text,
-  TextInput,
   TouchableHighlight,
   Share,
 } = ReactNative;
@@ -39,6 +38,7 @@ exports.examples = [{
 class ShareMessageExample extends React.Component {
   _shareMessage: Function;
   _shareText: Function;
+  _showResult: Function;
   state: any;
 
   constructor(props) {
@@ -78,12 +78,12 @@ class ShareMessageExample extends React.Component {
       message: 'React Native | A framework for building native apps using React'
     })
     .then(this._showResult)
-    .catch((error) => this.setState({result: 'error: ' + error.message}))
+    .catch((error) => this.setState({result: 'error: ' + error.message}));
   }
 
   _shareText() {
     Share.share({
-      message: 'A framework for building native apps using React', 
+      message: 'A framework for building native apps using React',
       url: 'http://facebook.github.io/react-native/',
       title: 'React Native'
     }, {
@@ -94,20 +94,20 @@ class ShareMessageExample extends React.Component {
       tintColor: 'green'
     })
     .then(this._showResult)
-    .catch((error) => this.setState({result: 'error: ' + error.message}))
+    .catch((error) => this.setState({result: 'error: ' + error.message}));
   }
 
   _showResult(result) {
-    if(result.action === Share.sharedAction) {
-      if(result.packageName) {
-        this.setState({result: 'shared with a packageName: ' + result.packageName})
-      } else if(result.activityType) {
-        this.setState({result: 'shared with an activityType: ' + result.activityType})
+    if (result.action === Share.sharedAction) {
+      if (result.packageName) {
+        this.setState({result: 'shared with a packageName: ' + result.packageName});
+      } else if (result.activityType) {
+        this.setState({result: 'shared with an activityType: ' + result.activityType});
       } else {
-        this.setState({result: 'shared'})
+        this.setState({result: 'shared'});
       }
-    } else if(result.action === Share.dismissedAction) {
-      this.setState({result: 'dismissed'})
+    } else if (result.action === Share.dismissedAction) {
+      this.setState({result: 'dismissed'});
     }
   }
 
