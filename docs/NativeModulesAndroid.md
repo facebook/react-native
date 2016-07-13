@@ -5,6 +5,7 @@ layout: docs
 category: Guides (Android)
 permalink: docs/native-modules-android.html
 next: native-components-android
+previous: communication-ios
 ---
 
 Sometimes an app needs access to a platform API that React Native doesn't have a corresponding module for yet. Maybe you want to reuse some existing Java code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.
