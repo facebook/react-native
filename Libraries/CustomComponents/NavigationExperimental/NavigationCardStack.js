@@ -64,6 +64,7 @@ type Props = {
   renderScene: NavigationSceneRenderer,
   cardStyle?: any,
   style: any,
+  cardStyle: any,
 };
 
 type DefaultProps = {
