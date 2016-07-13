@@ -6,10 +6,9 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
- 
+
 package com.facebook.react.modules.network;
 
-
-public interface ProgressRequestListener {
-    void onRequestProgress(long bytesWritten, long contentLength, boolean done);
+public interface ProgressListener {
+    void onProgress(long bytesWritten, long contentLength, boolean done);
 }

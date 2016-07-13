@@ -76,7 +76,7 @@ class XHRExampleCookies extends React.Component {
 
   clearCookies() {
     RCTNetworking.clearCookies((cleared) => {
-      this.setStatus('Cookies cleared, had cookies=' + cleared);
+      this.setStatus('Cookies cleared, had cookies=' + cleared.toString());
       this.refreshWebview();
     });
   }
