@@ -46,11 +46,11 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   OnExecutorUnregisteredListener {
 
   // The minimum time in milliseconds left in the frame to call idle callbacks.
-  private static final float IDLE_CALLBACK_FRAME_DEADLINE = 1.f;
+  private static final float IDLE_CALLBACK_FRAME_DEADLINE_MS = 1.f;
   // The total duration of a frame in milliseconds, this assumes that devices run at 60 fps.
   // TODO: Lower frame duration on devices that are too slow to run consistently
   // at 60 fps.
-  private static final float FRAME_DURATION = 17.f;
+  private static final float FRAME_DURATION_MS = 1000.f / 60.f;
 
   private final DevSupportManager mDevSupportManager;
 
@@ -162,7 +162,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
       long time = SystemClock.currentTimeMillis();
       long absoluteFrameStartTime = time - frameTimeElapsed;
 
-      if (FRAME_DURATION - (float)frameTimeElapsed < IDLE_CALLBACK_FRAME_DEADLINE) {
+      if (FRAME_DURATION_MS - (float)frameTimeElapsed < IDLE_CALLBACK_FRAME_DEADLINE_MS) {
         return;
       }
 
@@ -312,8 +312,8 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   @Override
   public Map<String, Object> getConstants() {
     return MapBuilder.<String, Object>of(
-        "frameDuration", FRAME_DURATION,
-        "idleCallbackFrameDeadline", IDLE_CALLBACK_FRAME_DEADLINE);
+        "frameDuration", FRAME_DURATION_MS,
+        "idleCallbackFrameDeadline", IDLE_CALLBACK_FRAME_DEADLINE_MS);
   }
 
   @Override
