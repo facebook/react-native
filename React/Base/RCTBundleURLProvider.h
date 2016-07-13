@@ -9,9 +9,9 @@
 
 #import <Foundation/Foundation.h>
 
-@interface RCTBundleURLProvider : NSObject
-
 extern NSString *const RCTBundleURLProviderUpdatedNotification;
+
+@interface RCTBundleURLProvider : NSObject
 
 /**
  * Set default settings on NSUserDefaults.
