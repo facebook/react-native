@@ -143,7 +143,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   }
 
   private class IdleCallbackRunnable implements Runnable {
-    private volatile boolean mCanceled = false;
+    private volatile boolean mCancelled = false;
     private final long mFrameStartTime;
 
     public IdleCallbackRunnable(long frameStartTime) {
@@ -152,7 +152,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
 
     @Override
     public void run() {
-      if (mCanceled) {
+      if (mCancelled) {
         return;
       }
 
@@ -180,7 +180,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     public void cancel() {
-      mCanceled = true;
+      mCancelled = true;
     }
   }
 
