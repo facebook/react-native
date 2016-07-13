@@ -476,19 +476,28 @@ RCT_EXPORT_MODULE()
   if (_liveReloadURL) {
     NSString *liveReloadTitle = _liveReloadEnabled ? @"Disable Live Reload" : @"Enable Live Reload";
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:liveReloadTitle handler:^{
-      weakSelf.liveReloadEnabled = !self->_liveReloadEnabled;
+      __typeof(self) strongSelf = weakSelf;
+      if (strongSelf) {
+        strongSelf.liveReloadEnabled = !strongSelf->_liveReloadEnabled;
+      }
     }]];
 
     NSString *profilingTitle  = RCTProfileIsProfiling() ? @"Stop Systrace" : @"Start Systrace";
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:profilingTitle handler:^{
-      weakSelf.profilingEnabled = !self->_profilingEnabled;
+      __typeof(self) strongSelf = weakSelf;
+      if (strongSelf) {
+        strongSelf.profilingEnabled = !strongSelf->_profilingEnabled;
+      }
     }]];
   }
 
   if ([self hotLoadingAvailable]) {
     NSString *hotLoadingTitle = _hotLoadingEnabled ? @"Disable Hot Reloading" : @"Enable Hot Reloading";
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:hotLoadingTitle handler:^{
-      weakSelf.hotLoadingEnabled = !self->_hotLoadingEnabled;
+      __typeof(self) strongSelf = weakSelf;
+      if (strongSelf) {
+        strongSelf.hotLoadingEnabled = !strongSelf->_hotLoadingEnabled;
+      }
     }]];
   }
 
