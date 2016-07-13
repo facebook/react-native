@@ -1,13 +1,11 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
+ *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-
-// NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<da35a9f6c5a59af0d73da3e46ee60a9a>>
 
 package com.facebook.csslayout;
 
