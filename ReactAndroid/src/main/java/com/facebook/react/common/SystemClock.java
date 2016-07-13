@@ -22,4 +22,8 @@ public class SystemClock {
   public static long nanoTime() {
     return System.nanoTime();
   }
+
+  public static long elapsedRealtime() {
+    return android.os.SystemClock.elapsedRealtime();
+  }
 }

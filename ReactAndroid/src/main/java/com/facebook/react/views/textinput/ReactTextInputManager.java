@@ -578,7 +578,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
               mEditText.getId(),
-              SystemClock.nanoTime(),
+              SystemClock.elapsedRealtime(),
               s.toString(),
               (int) PixelUtil.toDIPFromPixel(contentWidth),
               (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -587,7 +587,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       mEventDispatcher.dispatchEvent(
           new ReactTextInputEvent(
               mEditText.getId(),
-              SystemClock.nanoTime(),
+              SystemClock.elapsedRealtime(),
               newText,
               oldText,
               start,
@@ -613,17 +613,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               eventDispatcher.dispatchEvent(
                   new ReactTextInputFocusEvent(
                       editText.getId(),
-                      SystemClock.nanoTime()));
+                      SystemClock.elapsedRealtime()));
             } else {
               eventDispatcher.dispatchEvent(
                   new ReactTextInputBlurEvent(
                       editText.getId(),
-                      SystemClock.nanoTime()));
+                      SystemClock.elapsedRealtime()));
 
               eventDispatcher.dispatchEvent(
                   new ReactTextInputEndEditingEvent(
                       editText.getId(),
-                      SystemClock.nanoTime(),
+                      SystemClock.elapsedRealtime(),
                       editText.getText().toString()));
             }
           }
@@ -641,7 +641,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
                       editText.getId(),
-                      SystemClock.nanoTime(),
+                      SystemClock.elapsedRealtime(),
                       editText.getText().toString()));
             }
             if (actionId == EditorInfo.IME_ACTION_NEXT ||
@@ -717,7 +717,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         mEventDispatcher.dispatchEvent(
             new ReactTextInputSelectionEvent(
                 mReactEditText.getId(),
-                SystemClock.nanoTime(),
+                SystemClock.elapsedRealtime(),
                 start,
                 end
             )

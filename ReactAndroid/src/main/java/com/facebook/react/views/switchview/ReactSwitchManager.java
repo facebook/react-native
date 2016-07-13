@@ -78,7 +78,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSwitchEvent(
                   buttonView.getId(),
-                  SystemClock.nanoTime(),
+                  SystemClock.elapsedRealtime(),
                   isChecked));
         }
       };
