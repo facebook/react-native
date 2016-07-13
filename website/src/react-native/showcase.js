@@ -291,6 +291,13 @@ var featured = [
     infoLink: 'https://www.crunchbase.com/organization/bds-diet#/entity',
     infoTitle: 'Bdsdiet provides real estate brokerage services through web and live agents in Korea.',
   },
+  {
+    name: '信分期',
+    icon: 'http://www.xinfenqi.com/icon.html',
+    linkPlayStore: 'http://shouji.baidu.com/software/9658307.html',
+    infoLink: 'http://www.xinfenqi.com/#xfq-introduce',
+    infoTitle: 'Xin Fenqi APP is a service platform that provides instalment payment plan to retail consumers when they purchase products in store or online.',
+  },
 ];
 
 featured.sort(function(a, b) {
