@@ -7,13 +7,15 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.csslayout;
+#ifndef __CSS_MACROS_H
+#define __CSS_MACROS_H
 
-public class CSSConstants {
+#ifdef __cplusplus
+# define CSS_EXTERN_C_BEGIN extern "C" {
+# define CSS_EXTERN_C_END   }
+#else
+# define CSS_EXTERN_C_BEGIN
+# define CSS_EXTERN_C_END
+#endif
 
-  public static final float UNDEFINED = Float.NaN;
-
-  public static boolean isUndefined(float value) {
-    return Float.compare(value, UNDEFINED) == 0;
-  }
-}
+#endif
