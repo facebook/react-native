@@ -19,6 +19,8 @@ const StyleSheet = require('StyleSheet');
 const infoLog = require('infoLog');
 const parseErrorStack = require('parseErrorStack');
 const symbolicateStackTrace = require('symbolicateStackTrace');
+const TouchableOpacity = require('TouchableOpacity');
+const openFileInEditor = require('openFileInEditor');
 
 import type EmitterSubscription from 'EmitterSubscription';
 import type {StackFrame} from 'parseErrorStack';
@@ -172,12 +174,18 @@ const WarningRow = ({count, warning, onPress}) => {
 type StackRowProps = { frame: StackFrame };
 const StackRow = ({frame}: StackRowProps) => {
   const Text = require('Text');
-  const fileParts = frame.file.split('/');
+  const {file, lineNumber} = frame;
+  const fileParts = file.split('/');
   const fileName = fileParts[fileParts.length - 1];
+
   return (
-    <Text style={styles.inspectorCountText}>
-      {`${fileName}:${frame.lineNumber}`}
-    </Text>
+    <TouchableOpacity
+      style={styles.openInEditorButton}
+      onPress={openFileInEditor.bind(null, file, lineNumber)}>
+      <Text style={styles.inspectorCountText}>
+        {`${fileName}:${lineNumber}`}
+      </Text>
+    </TouchableOpacity>
   );
 };
 
@@ -220,7 +228,7 @@ const WarningInspector = ({
           <TouchableHighlight
             activeOpacity={0.5}
             onPress={toggleStacktrace}
-            style={styles.stacktraceButton}
+            style={styles.toggleStacktraceButton}
             underlayColor="transparent">
             <Text style={styles.inspectorButtonText}>
               {stacktraceVisible ? 'Hide' : 'Show'} Stacktrace
@@ -394,7 +402,7 @@ var styles = StyleSheet.create({
     padding: 22,
     backgroundColor: backgroundColor(1),
   },
-  stacktraceButton: {
+  toggleStacktraceButton: {
     flex: 1,
     padding: 5,
   },
@@ -410,6 +418,10 @@ var styles = StyleSheet.create({
   inspectorContent: {
     flex: 1,
     paddingTop: 5,
+  },
+  openInEditorButton: {
+    paddingTop: 5,
+    paddingBottom: 5,
   },
   inspectorCount: {
     padding: 15,
