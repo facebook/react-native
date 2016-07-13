@@ -58,7 +58,126 @@ as well.</p><p>Be careful with onStartShould* callbacks. They only reflect updat
 Once the node is the responder, you can rely on every start/end event
 being processed by the gesture and <code>gestureState</code> being updated
 accordingly. (numberActiveTouches) may not be totally accurate unless you
-are the responder.</p></li></ul></div></div></div></span></div><div class="docs-prevnext"><a class="docs-next" href="docs/pixelratio.html#content">Next →</a></div></div></section><footer class="wrap"><div class="center">© 2016 Facebook Inc.</div></footer></div><div id="fb-root"></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
+are the responder.</p></li></ul></div></div></div></span></div><div><div><table width="100%"><tbody><tr><td><h3><a class="anchor" name="examples"></a>Examples <a class="hash-link" href="docs/panresponder.html#examples">#</a></h3></td><td style="text-align:right;"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/js/PanResponderExample.js">Edit on GitHub</a></td></tr></tbody></table><div class="example-container"><div class="prism language-javascript"><span class="token string">&#x27;use strict&#x27;</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> ReactNative <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> <span class="token punctuation">{</span>
+  PanResponder<span class="token punctuation">,</span>
+  StyleSheet<span class="token punctuation">,</span>
+  View<span class="token punctuation">,</span>
+  processColor<span class="token punctuation">,</span>
+<span class="token punctuation">}</span> <span class="token operator">=</span> ReactNative<span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> CIRCLE_SIZE <span class="token operator">=</span> <span class="token number">80</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> PanResponderExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+
+  statics<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;PanResponder Sample&#x27;</span><span class="token punctuation">,</span>
+    description<span class="token punctuation">:</span> <span class="token string">&#x27;Shows the use of PanResponder to provide basic gesture handling.&#x27;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  _panResponder<span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  _previousLeft<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+  _previousTop<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+  _circleStyles<span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  circle<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token keyword">null</span> <span class="token punctuation">:</span> <span class="token operator">?</span><span class="token punctuation">{</span> <span class="token function">setNativeProps<span class="token punctuation">(</span></span>props<span class="token punctuation">:</span> Object<span class="token punctuation">)</span><span class="token punctuation">:</span> void <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+  componentWillMount<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_panResponder <span class="token operator">=</span> PanResponder<span class="token punctuation">.</span><span class="token function">create<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+      onStartShouldSetPanResponder<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_handleStartShouldSetPanResponder<span class="token punctuation">,</span>
+      onMoveShouldSetPanResponder<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_handleMoveShouldSetPanResponder<span class="token punctuation">,</span>
+      onPanResponderGrant<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_handlePanResponderGrant<span class="token punctuation">,</span>
+      onPanResponderMove<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_handlePanResponderMove<span class="token punctuation">,</span>
+      onPanResponderRelease<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_handlePanResponderEnd<span class="token punctuation">,</span>
+      onPanResponderTerminate<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_handlePanResponderEnd<span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_previousLeft <span class="token operator">=</span> <span class="token number">20</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_previousTop <span class="token operator">=</span> <span class="token number">84</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_circleStyles <span class="token operator">=</span> <span class="token punctuation">{</span>
+      style<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        left<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_previousLeft<span class="token punctuation">,</span>
+        top<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_previousTop<span class="token punctuation">,</span>
+        backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;green&#x27;</span><span class="token punctuation">,</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  componentDidMount<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_updateNativeStyles<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      &lt;View
+        style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>container<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+        &lt;View
+          ref<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span>circle<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+            <span class="token keyword">this</span><span class="token punctuation">.</span>circle <span class="token operator">=</span> circle<span class="token punctuation">;</span>
+          <span class="token punctuation">}</span><span class="token punctuation">}</span>
+          style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>circle<span class="token punctuation">}</span>
+          <span class="token punctuation">{</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token keyword">this</span><span class="token punctuation">.</span>_panResponder<span class="token punctuation">.</span>panHandlers<span class="token punctuation">}</span>
+        <span class="token operator">/</span><span class="token operator">&gt;</span>
+      &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  _highlight<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_circleStyles<span class="token punctuation">.</span>style<span class="token punctuation">.</span>backgroundColor <span class="token operator">=</span> <span class="token string">&#x27;blue&#x27;</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_updateNativeStyles<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  _unHighlight<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_circleStyles<span class="token punctuation">.</span>style<span class="token punctuation">.</span>backgroundColor <span class="token operator">=</span> <span class="token string">&#x27;green&#x27;</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_updateNativeStyles<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  _updateNativeStyles<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>circle &amp;&amp; <span class="token keyword">this</span><span class="token punctuation">.</span>circle<span class="token punctuation">.</span><span class="token function">setNativeProps<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">.</span>_circleStyles<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  _handleStartShouldSetPanResponder<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>e<span class="token punctuation">:</span> Object<span class="token punctuation">,</span> gestureState<span class="token punctuation">:</span> Object<span class="token punctuation">)</span><span class="token punctuation">:</span> boolean <span class="token punctuation">{</span>
+   <span class="token comment" spellcheck="true"> // Should we become active when the user presses down on the circle?
+</span>    <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  _handleMoveShouldSetPanResponder<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>e<span class="token punctuation">:</span> Object<span class="token punctuation">,</span> gestureState<span class="token punctuation">:</span> Object<span class="token punctuation">)</span><span class="token punctuation">:</span> boolean <span class="token punctuation">{</span>
+   <span class="token comment" spellcheck="true"> // Should we become active when the user moves a touch over the circle?
+</span>    <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  _handlePanResponderGrant<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>e<span class="token punctuation">:</span> Object<span class="token punctuation">,</span> gestureState<span class="token punctuation">:</span> Object<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_highlight<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  _handlePanResponderMove<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>e<span class="token punctuation">:</span> Object<span class="token punctuation">,</span> gestureState<span class="token punctuation">:</span> Object<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_circleStyles<span class="token punctuation">.</span>style<span class="token punctuation">.</span>left <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_previousLeft <span class="token operator">+</span> gestureState<span class="token punctuation">.</span>dx<span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_circleStyles<span class="token punctuation">.</span>style<span class="token punctuation">.</span>top <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_previousTop <span class="token operator">+</span> gestureState<span class="token punctuation">.</span>dy<span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_updateNativeStyles<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  _handlePanResponderEnd<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>e<span class="token punctuation">:</span> Object<span class="token punctuation">,</span> gestureState<span class="token punctuation">:</span> Object<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_unHighlight<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_previousLeft <span class="token operator">+</span><span class="token operator">=</span> gestureState<span class="token punctuation">.</span>dx<span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_previousTop <span class="token operator">+</span><span class="token operator">=</span> gestureState<span class="token punctuation">.</span>dy<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+  circle<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    width<span class="token punctuation">:</span> CIRCLE_SIZE<span class="token punctuation">,</span>
+    height<span class="token punctuation">:</span> CIRCLE_SIZE<span class="token punctuation">,</span>
+    borderRadius<span class="token punctuation">:</span> CIRCLE_SIZE <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">,</span>
+    position<span class="token punctuation">:</span> <span class="token string">&#x27;absolute&#x27;</span><span class="token punctuation">,</span>
+    left<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+    top<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  container<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    paddingTop<span class="token punctuation">:</span> <span class="token number">64</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> PanResponderExample<span class="token punctuation">;</span></div><div class="embedded-simulator"><p><a class="modal-button-open"><strong>Run this example</strong></a></p><div class="modal-button-open modal-button-open-img"><img alt="Run example in simulator" width="170" height="356" src="img/uiexplorer_main_ios.png"></div><div><div class="modal"><div class="modal-content"><button class="modal-button-close">×</button><div class="center"><iframe class="simulator" src="https://appetize.io/embed/7vdfm9h3e6vuf4gfdm7r5rgc48?device=iphone6s&amp;scale=60&amp;autoplay=false&amp;orientation=portrait&amp;deviceColor=white&amp;params=%7B%22route%22%3A%22PanResponder%22%7D" width="256" height="550" scrolling="no"></iframe><p>Powered by <a target="_blank" href="https://appetize.io">appetize.io</a></p></div></div></div><div class="modal-backdrop"></div></div></div></div></div></div><div class="docs-prevnext"><a class="docs-next" href="docs/pixelratio.html#content">Next →</a></div></div></section><footer class="wrap"><div class="center">© 2016 Facebook Inc.</div></footer></div><div id="fb-root"></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
