@@ -229,14 +229,10 @@ RCT_EXPORT_MODULE()
 
 - (void)didReceiveNewContentSizeMultiplier
 {
-  __weak RCTUIManager *weakSelf = self;
   dispatch_async(RCTGetUIManagerQueue(), ^{
-    RCTUIManager *strongSelf = weakSelf;
-    if (strongSelf) {
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
-                                                          object:strongSelf];
-      [strongSelf batchDidComplete];
-    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
+                                                        object:self];
+    [self batchDidComplete];
   });
 }
 
@@ -383,20 +379,19 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
   CGRect frame = rootView.frame;
 
   // Register shadow view
-  __weak RCTUIManager *weakSelf = self;
   dispatch_async(RCTGetUIManagerQueue(), ^{
-    RCTUIManager *strongSelf = weakSelf;
     if (!self->_viewRegistry) {
       return;
     }
+
     RCTRootShadowView *shadowView = [RCTRootShadowView new];
     shadowView.reactTag = reactTag;
     shadowView.frame = frame;
     shadowView.backgroundColor = rootView.backgroundColor;
     shadowView.viewName = NSStringFromClass([rootView class]);
     shadowView.sizeFlexibility = sizeFlexibility;
-    strongSelf->_shadowViewRegistry[shadowView.reactTag] = shadowView;
-    [strongSelf->_rootViewTags addObject:reactTag];
+    self->_shadowViewRegistry[shadowView.reactTag] = shadowView;
+    [self->_rootViewTags addObject:reactTag];
   });
 
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerDidRegisterRootViewNotification
@@ -473,14 +468,12 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
   RCTAssertMainQueue();
 
   NSNumber *reactTag = view.reactTag;
-
-  __weak RCTUIManager *weakSelf = self;
   dispatch_async(RCTGetUIManagerQueue(), ^{
-    RCTUIManager *strongSelf = weakSelf;
     if (!self->_viewRegistry) {
       return;
     }
-    RCTShadowView *shadowView = strongSelf->_shadowViewRegistry[reactTag];
+
+    RCTShadowView *shadowView = self->_shadowViewRegistry[reactTag];
     RCTAssert(shadowView != nil, @"Could not locate root view with tag #%@", reactTag);
     shadowView.backgroundColor = color;
     [self _amendPendingUIBlocksWithStylePropagationUpdateForShadowView:shadowView];
@@ -515,19 +508,15 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
                   @"-[RCTUIManager addUIBlock:] should only be called from the "
                   "UIManager's queue (get this using `RCTGetUIManagerQueue()`)");
 
-  if (!block) {
+  if (!block || !_viewRegistry) {
     return;
   }
 
-  if (!_viewRegistry) {
-    return;
-  }
-
-  __weak RCTUIManager *weakViewManager = self;
+  __weak RCTUIManager *weakSelf = self;
   dispatch_block_t outerBlock = ^{
-    RCTUIManager *strongViewManager = weakViewManager;
-    if (strongViewManager && strongViewManager->_viewRegistry) {
-      block(strongViewManager, strongViewManager->_viewRegistry);
+    RCTUIManager *strongSelf = weakSelf;
+    if (strongSelf && strongSelf->_viewRegistry) {
+      block(strongSelf, strongSelf->_viewRegistry);
     }
   };
 
