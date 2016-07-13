@@ -21,6 +21,7 @@ var React = require('React');
 var Site = require('Site');
 var slugify = require('slugify');
 var Metadata = require('Metadata');
+var randomKey = require('randomKey');
 
 var styleReferencePattern = /^[^.]+\.propTypes\.style$/;
 
@@ -59,7 +60,7 @@ function renderType(type) {
   }
 
   if (type.name === 'arrayOf') {
-    return <span>[{renderType(type.value)}]</span>;
+    return <span key={randomKey()}>[{renderType(type.value)}]</span>;
   }
 
   if (type.name === 'instanceOf') {
@@ -69,10 +70,10 @@ function renderType(type) {
   if (type.name === 'custom') {
     if (styleReferencePattern.test(type.raw)) {
       var name = type.raw.substring(0, type.raw.indexOf('.'));
-      return <a href={'docs/' + slugify(name) + '.html#style'}>{name}#style</a>;
+      return <a key={randomKey()} href={'docs/' + slugify(name) + '.html#style'}>{name}#style</a>;
     }
     if (type.raw === 'ColorPropType') {
-      return <a href={'docs/colors.html'}>color</a>;
+      return <a key={randomKey()} href={'docs/colors.html'}>color</a>;
     }
     if (type.raw === 'EdgeInsetsPropType') {
       return '{top: number, left: number, bottom: number, right: number}';
@@ -108,7 +109,7 @@ function renderTypeNameLink(typeName, docPath, namedTypes) {
   if (ignoreTypes.indexOf(typeNameLower) !== -1 || !namedTypes[typeNameLower]) {
     return typeName;
   }
-  return <a href={docPath + '#' + typeNameLower}>{typeName}</a>;
+  return <a key={randomKey()} href={docPath + '#' + typeNameLower}>{typeName}</a>;
 }
 
 function renderTypeWithLinks(type, docTitle, namedTypes) {
@@ -118,7 +119,7 @@ function renderTypeWithLinks(type, docTitle, namedTypes) {
 
   const docPath = docTitle ? 'docs/' + docTitle.toLowerCase() + '.html' : 'docs/';
   return (
-    <div>
+    <div key={randomKey()}>
       {
         type.names.map((typeName, index, array) => {
           let separator = index < array.length - 1 && ' | ';
@@ -190,28 +191,28 @@ var ComponentDoc = React.createClass({
   renderProp: function(name, prop) {
     return (
       <div className="prop" key={name}>
-        <Header level={4} className="propTitle" toSlug={name}>
+        <Header key={randomKey()} level={4} className="propTitle" toSlug={name}>
           {prop.platforms && prop.platforms.map(platform =>
-            <span className="platform">{platform}</span>
+            <span key={randomKey()} className="platform">{platform}</span>
           )}
           {name}
           {' '}
-          {prop.type && <span className="propType">
+          {prop.type && <span key={randomKey()} className="propType">
             {renderType(prop.type)}
           </span>}
         </Header>
-        {prop.deprecationMessage && <div className="deprecated">
-          <div className="deprecatedTitle">
-            <img className="deprecatedIcon" src="img/Warning.png" />
-            <span>Deprecated</span>
+        {prop.deprecationMessage && <div key={randomKey()} className="deprecated">
+          <div key={randomKey()} className="deprecatedTitle">
+            <img key={randomKey()} className="deprecatedIcon" src="img/Warning.png" />
+            <span key={randomKey()}>Deprecated</span>
           </div>
-          <div className="deprecatedMessage">
-            <Marked>{prop.deprecationMessage}</Marked>
+          <div key={randomKey()} className="deprecatedMessage">
+            <Marked key={randomKey()}>{prop.deprecationMessage}</Marked>
           </div>
         </div>}
         {prop.type && prop.type.name === 'stylesheet' &&
           this.renderStylesheetProps(prop.type.value)}
-        {prop.description && <Marked>{prop.description}</Marked>}
+        {prop.description && <Marked key={randomKey()}>{prop.description}</Marked>}
       </div>
     );
   },
@@ -219,8 +220,8 @@ var ComponentDoc = React.createClass({
   renderCompose: function(name) {
     return (
       <div className="prop" key={name}>
-        <Header level={4} className="propTitle" toSlug={name}>
-          <a href={'docs/' + slugify(name) + '.html#props'}>{name} props...</a>
+        <Header key={randomKey()} level={4} className="propTitle" toSlug={name}>
+          <a key={randomKey()} href={'docs/' + slugify(name) + '.html#props'}>{name} props...</a>
         </Header>
       </div>
     );
@@ -229,17 +230,17 @@ var ComponentDoc = React.createClass({
   renderStylesheetProp: function(name, prop) {
     return (
       <div className="prop" key={name}>
-        <h6 className="propTitle">
+        <h6 key={randomKey()} className="propTitle">
           {prop.platforms && prop.platforms.map(platform =>
-            <span className="platform">{platform}</span>
+            <span key={randomKey()} className="platform">{platform}</span>
           )}
           {name}
           {' '}
-          {prop.type && <span className="propType">
+          {prop.type && <span key={randomKey()} className="propType">
             {renderType(prop.type)}
           </span>}
           {' '}
-          {prop.description && <Marked>{prop.description}</Marked>}
+          {prop.description && <Marked key={randomKey()}>{prop.description}</Marked>}
         </h6>
       </div>
     );
@@ -249,25 +250,25 @@ var ComponentDoc = React.createClass({
     var style = this.props.content.styles[stylesheetName];
     this.extractPlatformFromProps(style.props);
     return (
-      <div className="compactProps">
+      <div key={randomKey()} className="compactProps">
         {(style.composes || []).map((name) => {
           var link;
           if (name === 'LayoutPropTypes') {
             name = 'Flexbox';
             link =
-              <a href={'docs/' + slugify(name) + '.html#proptypes'}>{name}...</a>;
+              <a key={randomKey()} href={'docs/' + slugify(name) + '.html#proptypes'}>{name}...</a>;
           } else if (name === 'TransformPropTypes') {
             name = 'Transforms';
             link =
-              <a href={'docs/' + slugify(name) + '.html#proptypes'}>{name}...</a>;
+              <a key={randomKey()} href={'docs/' + slugify(name) + '.html#proptypes'}>{name}...</a>;
           } else {
             name = name.replace('StylePropTypes', '');
             link =
-              <a href={'docs/' + slugify(name) + '.html#style'}>{name}#style...</a>;
+              <a key={randomKey()} href={'docs/' + slugify(name) + '.html#style'}>{name}#style...</a>;
           }
           return (
-            <div className="prop" key={name}>
-              <h6 className="propTitle">{link}</h6>
+            <div key={randomKey()} className="prop" key={name}>
+              <h6 key={randomKey()} className="propTitle">{link}</h6>
             </div>
           );
         })}
@@ -281,7 +282,7 @@ var ComponentDoc = React.createClass({
 
   renderProps: function(props, composes) {
     return (
-      <div className="props">
+      <div key={randomKey()} className="props">
         {(composes || []).map((name) =>
           this.renderCompose(name)
         )}
@@ -326,9 +327,9 @@ var ComponentDoc = React.createClass({
       return null;
     }
     return (
-      <span>
-        <H level={3}>Methods</H>
-        <div className="props">
+      <span key={randomKey()}>
+        <H key={randomKey()}level={3}>Methods</H>
+        <div key={randomKey()} className="props">
           {methods.filter((method) => {
             return method.name[0] !== '_';
           }).map(method => this.renderMethod(method, namedTypes))}
@@ -357,9 +358,9 @@ var ComponentDoc = React.createClass({
       return null;
     }
     return (
-      <span>
-        <H level={3}>Type Definitions</H>
-        <div className="props">
+      <span key={randomKey()}>
+        <H key={randomKey()} level={3}>Type Definitions</H>
+        <div key={randomKey()} className="props">
           {typedefs.map((typedef) => {
             return this.renderTypeDef(typedef, namedTypes);
           })}
@@ -373,11 +374,11 @@ var ComponentDoc = React.createClass({
     this.extractPlatformFromProps(content.props);
     const namedTypes = getNamedTypes(content.typedef);
     return (
-      <div>
-        <Marked>
+      <div key={randomKey()}>
+        <Marked key={randomKey()}>
           {content.description}
         </Marked>
-        <H level={3}>Props</H>
+        <H key={randomKey()} level={3}>Props</H>
         {this.renderProps(content.props, content.composes)}
         {this.renderMethods(content.methods, namedTypes)}
         {this.renderTypeDefs(content.typedef, namedTypes)}
@@ -408,9 +409,9 @@ var APIDoc = React.createClass({
       return null;
     }
     return (
-      <span>
-        <H level={3}>Methods</H>
-        <div className="props">
+      <span key={randomKey()}>
+        <H key={randomKey()} level={3}>Methods</H>
+        <div key={randomKey()} className="props">
           {methods.filter((method) => {
             return method.name[0] !== '_';
           }).map(method => this.renderMethod(method, namedTypes))}
@@ -421,16 +422,16 @@ var APIDoc = React.createClass({
 
   renderProperty: function(property) {
     return (
-      <div className="prop" key={property.name}>
-        <Header level={4} className="propTitle" toSlug={property.name}>
+      <div key={randomKey()} className="prop" key={property.name}>
+        <Header key={randomKey()} level={4} className="propTitle" toSlug={property.name}>
           {property.name}
           {property.type &&
-            <span className="propType">
+            <span key={randomKey()} className="propType">
               {': ' + renderType(property.type)}
             </span>
           }
         </Header>
-        {property.docblock && <Marked>
+        {property.docblock && <Marked key={randomKey()}>
           {removeCommentsFromDocblock(property.docblock)}
         </Marked>}
       </div>
@@ -442,9 +443,9 @@ var APIDoc = React.createClass({
       return null;
     }
     return (
-      <span>
-        <H level={3}>Properties</H>
-        <div className="props">
+      <span key={randomKey()}>
+        <H key={randomKey()} level={3}>Properties</H>
+        <div key={randomKey()} className="props">
           {properties.filter((property) => {
             return property.name[0] !== '_';
           }).map(this.renderProperty)}
@@ -458,18 +459,18 @@ var APIDoc = React.createClass({
       return null;
     }
     return (
-      <span>
-        <div>
+      <span key={randomKey()}>
+        <div key={randomKey()}>
           {classes.filter((cls) => {
             return cls.name[0] !== '_' && cls.ownerProperty[0] !== '_';
           }).map((cls) => {
             return (
               <span key={cls.name}>
-                <Header level={2} toSlug={cls.name}>
+                <Header key={randomKey()} level={2} toSlug={cls.name}>
                   class {cls.name}
                 </Header>
-                <ul>
-                  {cls.docblock && <Marked>
+                <ul key={randomKey()}>
+                  {cls.docblock && <Marked key={randomKey()}>
                     {removeCommentsFromDocblock(cls.docblock)}
                   </Marked>}
                   {this.renderMethods(cls.methods, namedTypes)}
@@ -503,9 +504,9 @@ var APIDoc = React.createClass({
       return null;
     }
     return (
-      <span>
-        <H level={3}>Type Definitions</H>
-        <div className="props">
+      <span key={randomKey()}>
+        <H key={randomKey()} level={3}>Type Definitions</H>
+        <div key={randomKey()} className="props">
           {typedefs.map((typedef) => {
             return this.renderTypeDef(typedef, namedTypes);
           })}
@@ -517,14 +518,14 @@ var APIDoc = React.createClass({
   renderMainDescription: function(content) {
     if (content.docblock) {
       return (
-        <Marked>
+        <Marked key={randomKey()}>
           {removeCommentsFromDocblock(content.docblock)}
         </Marked>
       );
     }
     if (content.class && content.class.length && content.class[0].description) {
       return (
-        <Marked>
+        <Marked key={randomKey()}>
           {content.class[0].description}
         </Marked>
       );
@@ -541,7 +542,7 @@ var APIDoc = React.createClass({
     }
     const namedTypes = getNamedTypes(content.typedef);
     return (
-      <div>
+      <div key={randomKey()}>
         {this.renderMainDescription(content)}
         {this.renderMethods(content.methods, namedTypes)}
         {this.renderProperties(content.properties)}
@@ -590,10 +591,10 @@ var Method = React.createClass({
       const code = example.replace(/<caption>.*?<\/caption>/ig, '')
         .replace(/^\n\n/, '');
       return (
-        <div>
-          <br/>
+        <div key={randomKey()}>
+          <br key={randomKey()} />
           {caption}
-          <Prism>
+          <Prism key={randomKey()}>
             {code}
           </Prism>
         </div>
@@ -613,25 +614,27 @@ var Method = React.createClass({
       return null;
     }
     return (
-      <div>
-        <strong>Parameters:</strong>
-          <table className="params">
-            <thead>
-              <tr>
-                <th>Name and Type</th>
-                <th>Description</th>
+      <div key={randomKey()}>
+        <strong key={randomKey()}>Parameters:</strong>
+          <table key={randomKey()} className="params">
+            <thead key={randomKey()}>
+              <tr key={randomKey()}>
+                <th key={randomKey()}>Name and Type</th>
+                <th key={randomKey()}>Description</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody key={randomKey()}>
               {params.map((param) => {
                 return (
-                  <tr>
-                    <td>
+                  <tr key={randomKey()}>
+                    <td key={randomKey()}>
                       {param.optional ? '[' + param.name + ']' : param.name}
-                      <br/><br/>
+                      <br key={randomKey()} /><br key={randomKey()} />
                       {renderTypeWithLinks(param.type, this.props.apiName, this.props.namedTypes)}
                     </td>
-                    <td className="description"><Marked>{param.description}</Marked></td>
+                    <td key={randomKey()} className="description">
+                      <Marked key={randomKey()}>{param.description}</Marked>
+                    </td>
                   </tr>
                 );
               })}
@@ -643,13 +646,14 @@ var Method = React.createClass({
 
   render: function() {
     return (
-      <div className="prop">
-        <Header level={4} className="methodTitle" toSlug={this.props.name}>
-          {this.props.modifiers && this.props.modifiers.length && <span className="methodType">
+      <div key={randomKey()} className="prop">
+        <Header key={randomKey()} level={4} className="methodTitle" toSlug={this.props.name}>
+          {this.props.modifiers && this.props.modifiers.length &&
+          <span key={randomKey()} className="methodType">
             {this.props.modifiers.join(' ') + ' '}
           </span> || ''}
           {this.props.name}
-          <span className="methodType">
+          <span key={randomKey()} className="methodType">
             ({this.props.params && this.props.params.length && this.props.params
               .map((param) => {
                 var res = param.name;
@@ -660,7 +664,7 @@ var Method = React.createClass({
               {this.props.returns && ': ' + this.renderTypehint(this.props.returns.type)}
           </span>
         </Header>
-        {this.props.description && <Marked>
+        {this.props.description && <Marked key={randomKey()}>
           {this.props.description}
         </Marked>}
         {this.renderMethodParameters(this.props.params)}
@@ -679,26 +683,28 @@ var TypeDef = React.createClass({
       return null;
     }
     return (
-      <div>
-        <br/>
-        <strong>Properties:</strong>
-          <table className="params">
-            <thead>
-              <tr>
-                <th>Name and Type</th>
-                <th>Description</th>
+      <div key={randomKey()}>
+        <br key={randomKey()} />
+        <strong key={randomKey()}>Properties:</strong>
+          <table key={randomKey()} className="params">
+            <thead key={randomKey()}>
+              <tr key={randomKey()}>
+                <th key={randomKey()}>Name and Type</th>
+                <th key={randomKey()}>Description</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody key={randomKey()}>
               {properties.map((property) => {
                 return (
-                  <tr>
-                    <td>
+                  <tr key={randomKey()}>
+                    <td key={randomKey()}>
                       {property.optional ? '[' + property.name + ']' : property.name}
-                      <br/><br/>
+                      <br key={randomKey()} /><br key={randomKey()} />
                       {renderTypeWithLinks(property.type, this.props.apiName, this.props.namedTypes)}
                     </td>
-                    <td className="description"><Marked>{property.description}</Marked></td>
+                    <td key={randomKey()} className="description">
+                      <Marked key={randomKey()}>{property.description}</Marked>
+                    </td>
                   </tr>
                 );
               })}
@@ -716,24 +722,26 @@ var TypeDef = React.createClass({
       return null;
     }
     return (
-      <div>
-        <br/>
-        <strong>Constants:</strong>
-        <table className="params">
-          <thead>
-            <tr>
-              <th>Value</th>
-              <th>Description</th>
+      <div key={randomKey()}>
+        <br key={randomKey()} />
+        <strong key={randomKey()}>Constants:</strong>
+        <table key={randomKey()} className="params">
+          <thead key={randomKey()}>
+            <tr key={randomKey()}>
+              <th key={randomKey()}>Value</th>
+              <th key={randomKey()}>Description</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody key={randomKey()}>
             {values.map((value) => {
               return (
-                <tr>
-                  <td>
+                <tr key={randomKey()}>
+                  <td key={randomKey()}>
                     {value.name}
                   </td>
-                  <td className="description"><Marked>{value.description}</Marked></td>
+                  <td key={randomKey()} className="description">
+                    <Marked key={randomKey()}>{value.description}</Marked>
+                  </td>
                 </tr>
               );
             })}
@@ -745,15 +753,15 @@ var TypeDef = React.createClass({
 
   render: function() {
     return (
-      <div className="prop">
-        <Header level={4} className="propTitle" toSlug={this.props.name}>
+      <div key={randomKey()} className="prop">
+        <Header key={randomKey()} level={4} className="propTitle" toSlug={this.props.name}>
           {this.props.name}
         </Header>
-        {this.props.description && <Marked>
+        {this.props.description && <Marked key={randomKey()}>
           {this.props.description}
         </Marked>}
-        <strong>Type:</strong>
-        <br/>
+        <strong key={randomKey()}>Type:</strong>
+        <br key={randomKey()} />
         {this.props.type.names.join(' | ')}
         {this.renderProperties(this.props.properties)}
         {this.renderValues(this.props.values)}
@@ -771,16 +779,21 @@ var EmbeddedSimulator = React.createClass({
     var metadata = this.props.metadata;
 
     var imagePreview = metadata.platform === 'android'
-      ? <img alt="Run example in simulator" width="170" height="338" src="img/uiexplorer_main_android.png" />
-      : <img alt="Run example in simulator" width="170" height="356" src="img/uiexplorer_main_ios.png" />;
+      ? <img key={randomKey()} alt="Run example in simulator" width="170" height="338" src="img/uiexplorer_main_android.png" />
+      : <img key={randomKey()} alt="Run example in simulator" width="170"
+             height="356" src="img/uiexplorer_main_ios.png" />;
 
     return (
-      <div className="embedded-simulator">
-        <p><a className="modal-button-open"><strong>Run this example</strong></a></p>
-        <div className="modal-button-open modal-button-open-img">
+      <div key={randomKey()} className="embedded-simulator">
+        <p key={randomKey()}>
+          <a key={randomKey()}className="modal-button-open">
+            <strong key={randomKey()}>Run this example</strong>
+          </a>
+        </p>
+        <div key={randomKey()} className="modal-button-open modal-button-open-img">
           {imagePreview}
         </div>
-        <Modal metadata={metadata} />
+        <Modal key={randomKey()} metadata={metadata} />
       </div>
     );
   }
@@ -796,17 +809,19 @@ var Modal = React.createClass({
       : `https://appetize.io/embed/7vdfm9h3e6vuf4gfdm7r5rgc48?device=iphone6s&scale=60&autoplay=false&orientation=portrait&deviceColor=white&params=${encodedParams}`;
 
     return (
-      <div>
-        <div className="modal">
-          <div className="modal-content">
-            <button className="modal-button-close">&times;</button>
-            <div className="center">
-              <iframe className="simulator" src={url} width="256" height="550" frameborder="0" scrolling="no"></iframe>
-              <p>Powered by <a target="_blank" href="https://appetize.io">appetize.io</a></p>
+      <div key={randomKey()}>
+        <div key={randomKey()} className="modal">
+          <div key={randomKey()} className="modal-content">
+            <button key={randomKey()} className="modal-button-close">&times;</button>
+            <div key={randomKey()} className="center">
+              <iframe key={randomKey()} className="simulator" src={url} width="256" height="550" frameBorder="0" scrolling="no"></iframe>
+              <p key={randomKey()}>Powered by
+                <a key={randomKey()} target="_blank" href="https://appetize.io">appetize.io</a>
+              </p>
             </div>
           </div>
         </div>
-        <div className="modal-backdrop" />
+        <div key={randomKey()} className="modal-backdrop" />
       </div>
     );
   }
@@ -830,12 +845,13 @@ var Autodocs = React.createClass({
       return;
     }
     return (
-      <div>
+      <div key={randomKey()}>
         <HeaderWithGithub
+          key={randomKey()}
           title="Description"
           path={'docs/' + docs.componentName + '.md'}
         />
-        <Marked>
+        <Marked key={randomKey()}>
           {docs.fullDescription}
         </Marked>
       </div>
@@ -848,18 +864,23 @@ var Autodocs = React.createClass({
     }
 
     return (
-      <div>
+      <div key={randomKey()}>
         <HeaderWithGithub
+          key={randomKey()}
           title={example.title || 'Examples'}
           level={example.title ? 4 : 3}
           path={example.path}
           metadata={metadata}
         />
-        <div className="example-container">
-          <Prism>
+        <div key={randomKey()} className="example-container">
+          <Prism key={randomKey()}>
            {example.content.replace(/^[\s\S]*?\*\//, '').trim()}
           </Prism>
-          <EmbeddedSimulator shouldRender={metadata.runnable} metadata={metadata} />
+          <EmbeddedSimulator
+            key={randomKey()}
+            shouldRender={metadata.runnable}
+            metadata={metadata}
+          />
         </div>
       </div>
     );
@@ -871,8 +892,8 @@ var Autodocs = React.createClass({
     }
 
     return (
-      <div>
-        {(docs.examples.length > 1) ? <H level={3}>Examples</H> : null}
+      <div key={randomKey()}>
+        {(docs.examples.length > 1) ? <H key={randomKey()} level={3}>Examples</H> : null}
         {docs.examples.map(example => this.renderExample(example, metadata))}
       </div>
     );
@@ -882,16 +903,17 @@ var Autodocs = React.createClass({
     var metadata = this.props.metadata;
     var docs = JSON.parse(this.props.children);
     var content  = docs.type === 'component' || docs.type === 'style' ?
-      <ComponentDoc content={docs} /> :
-      <APIDoc content={docs} apiName={metadata.title} />;
+      <ComponentDoc key={randomKey()} content={docs} /> :
+      <APIDoc key={randomKey()} content={docs} apiName={metadata.title} />;
 
     return (
-      <Site section="docs" title={metadata.title}>
-        <section className="content wrap documentationContent">
-          <DocsSidebar metadata={metadata} />
-          <div className="inner-content">
-            <a id="content" />
+      <Site key={randomKey()} section="docs" title={metadata.title}>
+        <section key={randomKey()} className="content wrap documentationContent">
+          <DocsSidebar key={randomKey()} metadata={metadata} />
+          <div key={randomKey()} className="inner-content">
+            <a key={randomKey()} id="content" />
             <HeaderWithGithub
+              key={randomKey()}
               title={metadata.title}
               level={1}
               path={metadata.path}
@@ -899,9 +921,19 @@ var Autodocs = React.createClass({
             {content}
             {this.renderFullDescription(docs)}
             {this.renderExamples(docs, metadata)}
-            <div className="docs-prevnext">
-              {metadata.previous && <a className="docs-prev" href={'docs/' + metadata.previous + '.html#content'}>&larr; Prev</a>}
-              {metadata.next && <a className="docs-next" href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>}
+            <div key={randomKey()} className="docs-prevnext">
+              {metadata.previous &&
+               <a
+                 key={randomKey()}
+                 className="docs-prev"
+                 href={'docs/' + metadata.previous + '.html#content'}>&larr; Prev</a>
+              }
+              {metadata.next &&
+               <a
+                 key={randomKey()}
+                 className="docs-next"
+                 href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>
+              }
             </div>
           </div>
         </section>

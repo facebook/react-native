@@ -10,6 +10,7 @@ var React = require('React');
 var Prism = require('Prism');
 var WebPlayer = require('WebPlayer');
 var Header = require('Header');
+var randomKey = require('randomKey');
 
 /**
  * Block-Level Grammar
@@ -580,7 +581,7 @@ InlineLexer.prototype.output = function(src) {
         text = cap[1];
         href = text;
       }
-      out.push(React.DOM.a({href: this.sanitizeUrl(href)}, text));
+      out.push(React.DOM.a({key: randomKey(), href: this.sanitizeUrl(href)}, text));
       continue;
     }
 
@@ -589,7 +590,7 @@ InlineLexer.prototype.output = function(src) {
       src = src.substring(cap[0].length);
       text = cap[1];
       href = text;
-      out.push(React.DOM.a({href: this.sanitizeUrl(href)}, text));
+      out.push(React.DOM.a({key: randomKey(), href: this.sanitizeUrl(href)}, text));
       continue;
     }
 
@@ -599,7 +600,9 @@ InlineLexer.prototype.output = function(src) {
 
       var color = cap[0].match('<color ([^ ]+) />');
       if (color) {
-        out.push(React.DOM.span({className: 'color', style: {backgroundColor: color[1]}}));
+        out.push(React.DOM.span(
+          {key: randomKey(), className: 'color', style: {backgroundColor: color[1]}}
+        ));
         continue;
       }
 
@@ -636,35 +639,35 @@ InlineLexer.prototype.output = function(src) {
     // strong
     if (cap = this.rules.strong.exec(src)) {
       src = src.substring(cap[0].length);
-      out.push(React.DOM.strong(null, this.output(cap[2] || cap[1])));
+      out.push(React.DOM.strong({key: randomKey()}, this.output(cap[2] || cap[1])));
       continue;
     }
 
     // em
     if (cap = this.rules.em.exec(src)) {
       src = src.substring(cap[0].length);
-      out.push(React.DOM.em(null, this.output(cap[2] || cap[1])));
+      out.push(React.DOM.em({key: randomKey()}, this.output(cap[2] || cap[1])));
       continue;
     }
 
     // code
     if (cap = this.rules.code.exec(src)) {
       src = src.substring(cap[0].length);
-      out.push(React.DOM.code(null, cap[2]));
+      out.push(React.DOM.code({key: randomKey()}, cap[2]));
       continue;
     }
 
     // br
     if (cap = this.rules.br.exec(src)) {
       src = src.substring(cap[0].length);
-      out.push(React.DOM.br(null, null));
+      out.push(React.DOM.br({key: randomKey()}, null));
       continue;
     }
 
     // del (gfm)
     if (cap = this.rules.del.exec(src)) {
       src = src.substring(cap[0].length);
-      out.push(React.DOM.del(null, this.output(cap[1])));
+      out.push(React.DOM.del({key: randomKey()}, this.output(cap[1])));
       continue;
     }
 
@@ -715,12 +718,14 @@ InlineLexer.prototype.outputLink = function(cap, link) {
       && link.href.charAt(0) !== '#';
 
     return React.DOM.a({
+      key: randomKey(),
       href: this.sanitizeUrl(link.href),
       title: link.title,
       target: shouldOpenInNewWindow ? '_blank' : ''
     }, this.output(cap[1]));
   } else {
     return React.DOM.img({
+      key: randomKey(),
       src: this.sanitizeUrl(link.href),
       alt: cap[1],
       title: link.title
@@ -816,11 +821,12 @@ Parser.prototype.tok = function() {
       return [];
     }
     case 'hr': {
-      return React.DOM.hr(null, null);
+      return React.DOM.hr({key: randomKey()}, null);
     }
     case 'heading': {
       return (
         <Header
+          key={randomKey()}
           level={this.token.depth}
           toSlug={this.token.text}>
           {this.inline.output(this.token.text)}
@@ -833,11 +839,11 @@ Parser.prototype.tok = function() {
 
       if (lang && lang.indexOf('ReactNativeWebPlayer') === 0) {
         return (
-          <WebPlayer params={lang.split('?')[1]}>{text}</WebPlayer>
+          <WebPlayer key={randomKey()} params={lang.split('?')[1]}>{text}</WebPlayer>
         );
       }
 
-      return <Prism>{text}</Prism>;
+      return <Prism key={randomKey()}>{text}</Prism>;
     }
     case 'table': {
       var table = []
@@ -853,12 +859,12 @@ Parser.prototype.tok = function() {
         heading = this.inline.output(this.token.header[i]);
         row.push(React.DOM.th(
           this.token.align[i]
-            ? {style: {textAlign: this.token.align[i]}}
+            ? {key: randomKey(), style: {textAlign: this.token.align[i]}}
             : null,
           heading
         ));
       }
-      table.push(React.DOM.thead(null, React.DOM.tr(null, row)));
+      table.push(React.DOM.thead({key: randomKey()}, React.DOM.tr(null, row)));
 
       // body
       for (i = 0; i < this.token.cells.length; i++) {
@@ -867,16 +873,16 @@ Parser.prototype.tok = function() {
         for (j = 0; j < cells.length; j++) {
           row.push(React.DOM.td(
             this.token.align[j]
-              ? {style: {textAlign: this.token.align[j]}}
+              ? {key: randomKey(), style: {textAlign: this.token.align[j]}}
               : null,
             this.inline.output(cells[j])
           ));
         }
-        body.push(React.DOM.tr(null, row));
+        body.push(React.DOM.tr({key: randomKey()}, row));
       }
-      table.push(React.DOM.thead(null, body));
+      table.push(React.DOM.thead({key: randomKey()}, body));
 
-      return React.DOM.table(null, table);
+      return React.DOM.table({key: randomKey()}, table);
     }
     case 'blockquote_start': {
       var body = [];
@@ -885,7 +891,7 @@ Parser.prototype.tok = function() {
         body.push(this.tok());
       }
 
-      return React.DOM.blockquote(null, body);
+      return React.DOM.blockquote({key: randomKey()}, body);
     }
     case 'list_start': {
       var type = this.token.ordered ? 'ol' : 'ul'
@@ -895,7 +901,7 @@ Parser.prototype.tok = function() {
         body.push(this.tok());
       }
 
-      return React.DOM[type](null, body);
+      return React.DOM[type]({key: randomKey()}, body);
     }
     case 'list_item_start': {
       var body = [];
@@ -906,7 +912,7 @@ Parser.prototype.tok = function() {
           : this.tok());
       }
 
-      return React.DOM.li(null, body);
+      return React.DOM.li({key: randomKey()}, body);
     }
     case 'loose_item_start': {
       var body = [];
@@ -915,22 +921,22 @@ Parser.prototype.tok = function() {
         body.push(this.tok());
       }
 
-      return React.DOM.li(null, body);
+      return React.DOM.li({key: randomKey()}, body);
     }
     case 'html': {
       return !this.token.pre && !this.options.pedantic
-        ? React.DOM.span({dangerouslySetInnerHTML: {__html: this.token.text}})
+        ? React.DOM.span({key: randomKey(), dangerouslySetInnerHTML: {__html: this.token.text}})
         : this.token.text;
     }
     case 'paragraph': {
       return this.options.paragraphFn
         ? this.options.paragraphFn.call(null, this.inline.output(this.token.text))
-        : React.DOM.p(null, this.inline.output(this.token.text));
+        : React.DOM.p({key: randomKey()}, this.inline.output(this.token.text));
     }
     case 'text': {
       return this.options.paragraphFn
         ? this.options.paragraphFn.call(null, this.parseText())
-        : React.DOM.p(null, this.parseText());
+        : React.DOM.p({key: randomKey()}, this.parseText());
     }
   }
 };
@@ -1056,8 +1062,8 @@ function marked(src, opt, callback) {
   } catch (e) {
     e.message += '\nPlease report this to https://github.com/chjj/marked.';
     if ((opt || marked.defaults).silent) {
-      return [React.DOM.p(null, "An error occurred:"),
-        React.DOM.pre(null, e.message)];
+      return [React.DOM.p({key: randomKey()}, "An error occurred:"),
+        React.DOM.pre({key: randomKey()}, e.message)];
     }
     throw e;
   }
@@ -1105,7 +1111,7 @@ marked.parse = marked;
 var Marked = React.createClass({
   render: function() {
     return this.props.children ?
-      React.DOM.div(null, marked(this.props.children, this.props)) :
+      React.DOM.div({key: randomKey()}, marked(this.props.children, this.props)) :
       null;
   }
 });
