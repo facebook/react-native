@@ -25,20 +25,28 @@
 var React = require('react');
 var ReactNative = require('react-native');
 var {
+  CameraRoll,
+  Image,
   ProgressBarAndroid,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableHighlight,
   View,
-  Image,
-  CameraRoll
 } = ReactNative;
 
 var XHRExampleHeaders = require('./XHRExampleHeaders');
 var XHRExampleCookies = require('./XHRExampleCookies');
 var XHRExampleFetch = require('./XHRExampleFetch');
 var XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
+
+/**
+ * Convert number of bytes to MB and round to the nearest 0.1 MB.
+ */
+function roundKilo(value: number): number {
+  return Math.round(value / 1000);
+}
 
 // TODO t7093728 This is a simplified XHRExample.ios.js.
 // Once we have Camera roll, Toast, Intent (for opening URLs)
@@ -54,8 +62,18 @@ class Downloader extends React.Component {
     this.cancelled = false;
     this.state = {
       status: '',
-      contentSize: 1,
-      downloaded: 0,
+      downloading: false,
+
+      // set by onreadystatechange
+      contentLength: 1,
+      responseLength: 0,
+      // set by onprogress
+      progressTotal: 1,
+      progressLoaded: 0,
+
+      readystateHandler: false,
+      progressHandler: true,
+      arraybuffer: false,
     };
   }
 
@@ -63,44 +81,66 @@ class Downloader extends React.Component {
     this.xhr && this.xhr.abort();
 
     var xhr = this.xhr || new XMLHttpRequest();
-    xhr.onreadystatechange = () => {
+    const onreadystatechange = () => {
       if (xhr.readyState === xhr.HEADERS_RECEIVED) {
-        var contentSize = parseInt(xhr.getResponseHeader('Content-Length'), 10);
+        const contentLength = parseInt(xhr.getResponseHeader('Content-Length'), 10);
         this.setState({
-          contentSize: contentSize,
-          downloaded: 0,
+          contentLength,
+          responseLength: 0,
         });
-      } else if (xhr.readyState === xhr.LOADING) {
+      } else if (xhr.readyState === xhr.LOADING && xhr.response) {
         this.setState({
-          downloaded: xhr.responseText.length,
+          responseLength: xhr.response.length,
         });
-      } else if (xhr.readyState === xhr.DONE) {
-        if (this.cancelled) {
-          this.cancelled = false;
-          return;
-        }
-        if (xhr.status === 200) {
-          this.setState({
-            status: 'Download complete!',
-          });
-        } else if (xhr.status !== 0) {
-          this.setState({
-            status: 'Error: Server returned HTTP status of ' + xhr.status + ' ' + xhr.responseText,
-          });
-        } else {
-          this.setState({
-            status: 'Error: ' + xhr.responseText,
-          });
-        }
       }
     };
-    xhr.open('GET', 'http://www.gutenberg.org/cache/epub/100/pg100.txt');
+    const onprogress = (event) => {
+      this.setState({
+        progressTotal: event.total,
+        progressLoaded: event.loaded,
+      });
+    };
+
+    if (this.state.readystateHandler) {
+      xhr.onreadystatechange = onreadystatechange;
+    }
+    if (this.state.progressHandler) {
+      xhr.onprogress = onprogress;
+    }
+    if (this.state.arraybuffer) {
+      xhr.responseType = 'arraybuffer';
+    }
+    xhr.onload = () => {
+      this.setState({downloading: false});
+      if (this.cancelled) {
+        this.cancelled = false;
+        return;
+      }
+      if (xhr.status === 200) {
+        let responseType = `Response is a string, ${xhr.response.length} characters long.`;
+        if (typeof ArrayBuffer !== 'undefined' &&
+            xhr.response instanceof ArrayBuffer) {
+          responseType = `Response is an ArrayBuffer, ${xhr.response.byteLength} bytes long.`;
+        }
+        this.setState({status: `Download complete! ${responseType}`});
+      } else if (xhr.status !== 0) {
+        this.setState({
+          status: 'Error: Server returned HTTP status of ' + xhr.status + ' ' + xhr.responseText
+        });
+      } else {
+        this.setState({status: 'Error: ' + xhr.responseText});
+      }
+    };
+    xhr.open('GET', 'http://aleph.gutenberg.org/cache/epub/100/pg100.txt.utf8');
     // Avoid gzip so we can actually show progress
     xhr.setRequestHeader('Accept-Encoding', '');
     xhr.send();
     this.xhr = xhr;
 
-    this.setState({status: 'Downloading...'});
+    this.setState({
+      downloading: true,
+      status: 'Downloading...',
+    });
   }
 
   componentWillUnmount() {
@@ -109,7 +149,7 @@ class Downloader extends React.Component {
   }
 
   render() {
-    var button = this.state.status === 'Downloading...' ? (
+    var button = this.state.downloading ? (
       <View style={styles.wrapper}>
         <View style={styles.button}>
           <Text>...</Text>
@@ -125,11 +165,67 @@ class Downloader extends React.Component {
       </TouchableHighlight>
     );
 
+    let readystate = null;
+    let progress = null;
+    if (this.state.readystateHandler && !this.state.arraybuffer) {
+      const { responseLength, contentLength } = this.state;
+      readystate = (
+        <View>
+          <Text style={styles.progressBarLabel}>
+            responseText:{' '}
+            {roundKilo(responseLength)}/{roundKilo(contentLength)}k chars
+          </Text>
+          <ProgressBarAndroid
+            progress={(responseLength / contentLength)}
+            styleAttr="Horizontal"
+            indeterminate={false}
+          />
+        </View>
+      );
+    }
+    if (this.state.progressHandler) {
+      const { progressLoaded, progressTotal } = this.state;
+      progress = (
+        <View>
+          <Text style={styles.progressBarLabel}>
+            onprogress:{' '}
+            {roundKilo(progressLoaded)}/{roundKilo(progressTotal)} KB
+          </Text>
+          <ProgressBarAndroid
+            progress={(progressLoaded / progressTotal)}
+            styleAttr="Horizontal"
+            indeterminate={false}
+          />
+        </View>
+      );
+    }
+
     return (
       <View>
+        <View style={styles.configRow}>
+          <Text>onreadystatechange handler</Text>
+          <Switch
+            value={this.state.readystateHandler}
+            onValueChange={(readystateHandler => this.setState({readystateHandler}))}
+          />
+        </View>
+        <View style={styles.configRow}>
+          <Text>onprogress handler</Text>
+          <Switch
+            value={this.state.progressHandler}
+            onValueChange={(progressHandler => this.setState({progressHandler}))}
+          />
+        </View>
+        <View style={styles.configRow}>
+          <Text>download as arraybuffer</Text>
+          <Switch
+            value={this.state.arraybuffer}
+            onValueChange={(arraybuffer => this.setState({arraybuffer}))}
+          />
+        </View>
         {button}
-        <ProgressBarAndroid progress={(this.state.downloaded / this.state.contentSize)}
-          styleAttr="Horizontal" indeterminate={false} />
+        {readystate}
+        {progress}
         <Text>{this.state.status}</Text>
       </View>
     );
@@ -363,6 +459,16 @@ var styles = StyleSheet.create({
   button: {
     backgroundColor: '#eeeeee',
     padding: 8,
+  },
+  progressBarLabel: {
+    marginTop: 12,
+    marginBottom: 8,
+  },
+  configRow: {
+    flexDirection: 'row',
+    paddingVertical: 8,
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   paramRow: {
     flexDirection: 'row',
