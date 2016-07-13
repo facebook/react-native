@@ -5,6 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/navigation.html
 next: performance
+previous: javascript-environment
 ---
 
 This guide covers the various navigation components available in React Native. If you are just getting started with navigation, you will probably want to use  `Navigator`. If you are only targeting iOS and would like to stick to the native look and feel, check out `NavigatorIOS`. If you are looking for greater control over your navigation stack, you can't go wrong with `NavigationExperimental`.
