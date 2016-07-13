@@ -26,7 +26,7 @@ own*
 ![npm-init](http://brentvatne.ca/images/packaging/3-npm-init.png)
 
  * `npm install react-native --save-dev`, then open up `package.json`
-   and also add  peerDependencies: { "react-native": "*" }.
+   and also add  `peerDependencies: { "react-native": "*" }`.
 
  * Now we need to tell XCode where it can find the React Native source. Open up the project, add React to your Header Search Paths.
 
