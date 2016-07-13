@@ -5,6 +5,7 @@ layout: docs
 category: Guides (iOS)
 permalink: docs/running-on-simulator-ios.html
 next: communication-ios
+previous: running-on-device-ios
 ---
 
 ## Starting the simulator

@@ -5,6 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/direct-manipulation.html
 next: debugging
+previous: timers
 ---
 
 It is sometimes necessary to make changes directly to a component
