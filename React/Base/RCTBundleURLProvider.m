@@ -21,11 +21,20 @@ static NSString *const kRCTEnableDevKey = @"RCT_enableDev";
 static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
 
 @implementation RCTBundleURLProvider
+{
+  BOOL (*_packagerRunningPredicate)(NSString *host, NSUInteger port);
+}
 
 - (instancetype)init
 {
+  return [self initWithPackagerRunningPredicate:NULL];
+}
+
+- (instancetype)initWithPackagerRunningPredicate:(BOOL (*)(NSString *host, NSUInteger port))packagerRunningPredicate
+{
   self = [super init];
   if (self) {
+    _packagerRunningPredicate = packagerRunningPredicate;
     [self setDefaults];
   }
   return self;
@@ -67,6 +76,9 @@ static NSString *serverRootWithHost(NSString *host)
 #if RCT_DEV
 - (BOOL)isPackagerRunning:(NSString *)host
 {
+  if (_packagerRunningPredicate) {
+    return _packagerRunningPredicate(host, kDefaultPort);
+  }
   NSURL *url = [[NSURL URLWithString:serverRootWithHost(host)] URLByAppendingPathComponent:@"status"];
   NSURLRequest *request = [NSURLRequest requestWithURL:url];
   NSURLResponse *response;

@@ -45,4 +45,15 @@ extern NSString *const RCTBundleURLProviderUpdatedNotification;
 @property (nonatomic, assign) BOOL enableDev;
 
 + (instancetype)sharedSettings;
+
+/**
+ * @experimental
+ * The default behavior of RCTBundleURLProvider (including the singleton shared instance) is to call
+ * [NSURLConnection +sendSynchronousRequest:returningResponse:error:] to determine if the packager is running at
+ * startup time. (Note this behavior is only enabled if RCT_DEV is on.) This experimental API allows you to specify
+ * a custom predicate function that must return YES if the packager is running at the given host and port, and NO
+ * otherwise.
+ */
+- (instancetype)initWithPackagerRunningPredicate:(BOOL (*)(NSString *host, NSUInteger port))packagerRunningPredicate;
+
 @end
