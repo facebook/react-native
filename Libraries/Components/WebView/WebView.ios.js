@@ -295,6 +295,12 @@ var WebView = React.createClass({
      * to tap them before they start playing. The default value is `false`.
      */
     mediaPlaybackRequiresUserAction: PropTypes.bool,
+
+    /**
+    * Configures the ability for cache policy to be used.
+    * @platform ios
+    */
+     cacheEnabled: PropTypes.bool 
   },
 
   getInitialState: function() {
@@ -374,6 +380,7 @@ var WebView = React.createClass({
         scalesPageToFit={this.props.scalesPageToFit}
         allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
+        cacheEnabled={this.props.cacheEnabled}
       />;
 
     return (

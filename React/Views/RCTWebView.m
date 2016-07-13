@@ -98,7 +98,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       return;
     }
 
-    NSURLRequest *request = [RCTConvert NSURLRequest:source];
+    NSURLRequest *request;
+    
+    request = [RCTConvert NSURLRequest:source];
+    
+    if (_cacheEnabled == YES) {
+      // Cannot gaurantee that the request pointer set above via RCTConvert is configured
+      // to return an instance NSMutableURLRequest or  NSUrlRequest, so we work to accomodate
+      // both cases.
+      NSMutableURLRequest *newRequest = [NSMutableURLRequest requestWithURL:request.URL
+                                                                cachePolicy:NSURLRequestReturnCacheDataElseLoad
+                                                            timeoutInterval:15.0];
+      newRequest.HTTPBody = request.HTTPBody;
+      newRequest.HTTPMethod = request.HTTPMethod;
+      newRequest.allHTTPHeaderFields = request.allHTTPHeaderFields;
+      request = (NSURLRequest*)[newRequest copy];
+    }
     // Because of the way React works, as pages redirect, we actually end up
     // passing the redirect urls back here, so we ignore them if trying to load
     // the same url. We'll expose a call to 'reload' to allow a user to load
@@ -111,6 +126,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       [_webView loadHTMLString:@"" baseURL:nil];
       return;
     }
+    
+
+    
     [_webView loadRequest:request];
   }
 }
