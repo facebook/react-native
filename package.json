@@ -188,7 +188,8 @@
     "xmldoc": "^0.4.0",
     "yargs": "^3.24.0",
     "yeoman-environment": "~1.2.7",
-    "yeoman-generator": "^0.20.3"
+    "yeoman-generator": "^0.20.3",
+    "mime-types": "2.1.11"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.0",
