@@ -342,4 +342,4 @@ const styles = StyleSheet.create({
 
 ### Homework
 
-You are now an expert navigator. Take a look at [NavigationExperimental in UIExplorer](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer/NavigationExperimental) to learn how to implement other types of navigation hierarchies, such as a tabbed application with multiple navigation stacks.
+You are now an expert navigator. Take a look at [NavigationExperimental in UIExplorer](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer/js/NavigationExperimental) to learn how to implement other types of navigation hierarchies, such as a tabbed application with multiple navigation stacks.
