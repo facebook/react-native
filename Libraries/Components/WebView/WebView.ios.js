@@ -59,6 +59,15 @@ type ErrorEvent = {
 
 type Event = Object;
 
+const DataDetectorTypes = [
+  'phoneNumber',
+  'link',
+  'address',
+  'calendarEvent',
+  'none',
+  'all',
+];
+
 var defaultRenderLoading = () => (
   <View style={styles.loadingView}>
     <ActivityIndicator />
@@ -239,6 +248,28 @@ var WebView = React.createClass({
     style: View.propTypes.style,
 
     /**
+     * Determines the types of data converted to clickable URLs in the web view’s content.
+     * By default only phone numbers are detected.
+     *
+     * You can provide one type or an array of many types.
+     *
+     * Possible values for `dataDetectorTypes` are:
+     *
+     * - `'phoneNumber'`
+     * - `'link'`
+     * - `'address'`
+     * - `'calendarEvent'`
+     * - `'none'`
+     * - `'all'`
+     *
+     * @platform ios
+     */
+    dataDetectorTypes: PropTypes.oneOfType([
+      PropTypes.oneOf(DataDetectorTypes),
+      PropTypes.arrayOf(PropTypes.oneOf(DataDetectorTypes)),
+    ]),
+
+    /**
      * Boolean value to enable JavaScript in the `WebView`. Used on Android only
      * as JavaScript is enabled by default on iOS. The default value is `true`.
      * @platform android
@@ -374,6 +405,7 @@ var WebView = React.createClass({
         scalesPageToFit={this.props.scalesPageToFit}
         allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
+        dataDetectorTypes={this.props.dataDetectorTypes}
       />;
 
     return (

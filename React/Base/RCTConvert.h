@@ -66,6 +66,7 @@ typedef NSURL RCTFileURL;
 + (UIKeyboardType)UIKeyboardType:(id)json;
 + (UIKeyboardAppearance)UIKeyboardAppearance:(id)json;
 + (UIReturnKeyType)UIReturnKeyType:(id)json;
++ (UIDataDetectorTypes)UIDataDetectorTypes:(id)json;
 
 + (UIViewContentMode)UIViewContentMode:(id)json;
 + (UIBarStyle)UIBarStyle:(id)json;
