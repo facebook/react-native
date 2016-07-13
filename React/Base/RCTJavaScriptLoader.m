@@ -75,7 +75,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
                                    code:RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously
                                userInfo:@{NSLocalizedDescriptionKey:
-                                            @"Cannot load non-file URLs synchronously"}];
+                                            [NSString stringWithFormat:@"Cannot load %@ URLs synchronously",
+                                             scriptURL.scheme]}];
     }
     return nil;
   }
