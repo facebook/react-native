@@ -10,4 +10,4 @@
 
 // Add missing flow definitions, can be removed when included in flow.
 declare function requestIdleCallback(callback: any): number;
-declare function cancelIdleCallback(idleCallbackId?: any): void;
+declare function cancelIdleCallback(idleCallbackId: ?number): void;

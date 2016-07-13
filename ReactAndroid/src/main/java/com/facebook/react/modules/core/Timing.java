@@ -22,6 +22,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.uimanager.ReactChoreographer;
@@ -43,6 +44,13 @@ import javax.annotation.Nullable;
  */
 public final class Timing extends ReactContextBaseJavaModule implements LifecycleEventListener,
   OnExecutorUnregisteredListener {
+
+  // The minimum time in milliseconds left in the frame to call idle callbacks.
+  private static final float IDLE_CALLBACK_FRAME_DEADLINE = 1.f;
+  // The total duration of a frame in milliseconds, this assumes that devices run at 60 fps.
+  // TODO: Lower frame duration on devices that are too slow to run consistently
+  // at 60 fps.
+  private static final float FRAME_DURATION = 17.f;
 
   private final DevSupportManager mDevSupportManager;
 
@@ -125,13 +133,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
         mCurrentIdleCallbackRunnable.cancel();
       }
 
-      long frameTimeMillis = frameTimeNanos / 1000000;
-      long timeSinceBoot = SystemClock.uptimeMillis();
-      long frameTimeElapsed = timeSinceBoot - frameTimeMillis;
-      long time = SystemClock.currentTimeMillis();
-      long absoluteFrameStartTime = time - frameTimeElapsed;
-
-      mCurrentIdleCallbackRunnable = new IdleCallbackRunnable(absoluteFrameStartTime);
+      mCurrentIdleCallbackRunnable = new IdleCallbackRunnable(frameTimeNanos);
       getReactApplicationContext().runOnJSQueueThread(mCurrentIdleCallbackRunnable);
 
       Assertions.assertNotNull(mReactChoreographer).postFrameCallback(
@@ -154,14 +156,24 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
         return;
       }
 
-      List<ExecutorToken> contextsToCall;
-      synchronized (mIdleCallbackGuard) {
-        contextsToCall = new ArrayList<>(mSendIdleEventsExecutorTokens);
+      long frameTimeMillis = mFrameStartTime / 1000000;
+      long timeSinceBoot = SystemClock.uptimeMillis();
+      long frameTimeElapsed = timeSinceBoot - frameTimeMillis;
+      long time = SystemClock.currentTimeMillis();
+      long absoluteFrameStartTime = time - frameTimeElapsed;
+
+      if (FRAME_DURATION - (float)frameTimeElapsed < IDLE_CALLBACK_FRAME_DEADLINE) {
+        return;
       }
 
-      for (ExecutorToken context : contextsToCall) {
+      mIdleCallbackContextsToCall.clear();
+      synchronized (mIdleCallbackGuard) {
+        mIdleCallbackContextsToCall.addAll(mSendIdleEventsExecutorTokens);
+      }
+
+      for (ExecutorToken context : mIdleCallbackContextsToCall) {
         getReactApplicationContext().getJSModule(context, JSTimersExecution.class)
-            .callIdleCallbacks(mFrameStartTime);
+            .callIdleCallbacks(absoluteFrameStartTime);
       }
 
       mCurrentIdleCallbackRunnable = null;
@@ -184,6 +196,8 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   private boolean mFrameCallbackPosted = false;
   private boolean mFrameIdleCallbackPosted = false;
   private final Set<ExecutorToken> mSendIdleEventsExecutorTokens;
+  // Temporary array used to dipatch idle callbacks on the JS thread.
+  private final List<ExecutorToken> mIdleCallbackContextsToCall;
 
   public Timing(ReactApplicationContext reactContext, DevSupportManager devSupportManager) {
     super(reactContext);
@@ -206,6 +220,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
         });
     mTimerIdsToTimers = new HashMap<>();
     mSendIdleEventsExecutorTokens = new HashSet<>();
+    mIdleCallbackContextsToCall = new ArrayList<>();
   }
 
   @Override
@@ -278,7 +293,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   private void clearChoreographerIdleCallback() {
     if (mFrameIdleCallbackPosted) {
       Assertions.assertNotNull(mReactChoreographer).removeFrameCallback(
-        ReactChoreographer.CallbackType.IDLE_EVENT,
+          ReactChoreographer.CallbackType.IDLE_EVENT,
           mIdleFrameCallback);
       mFrameIdleCallbackPosted = false;
     }
@@ -292,6 +307,13 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   @Override
   public boolean supportsWebWorkers() {
     return true;
+  }
+
+  @Override
+  public Map<String, Object> getConstants() {
+    return MapBuilder.<String, Object>of(
+        "frameDuration", FRAME_DURATION,
+        "idleCallbackFrameDeadline", IDLE_CALLBACK_FRAME_DEADLINE);
   }
 
   @Override
@@ -376,9 +398,9 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   }
 
   @ReactMethod
-  public void sendIdleEvents(ExecutorToken executorToken, boolean shouldSend) {
+  public void setSendIdleEvents(ExecutorToken executorToken, boolean sendIdleEvents) {
     synchronized (mIdleCallbackGuard) {
-      if (shouldSend) {
+      if (sendIdleEvents) {
         mSendIdleEventsExecutorTokens.add(executorToken);
       } else {
         mSendIdleEventsExecutorTokens.remove(executorToken);

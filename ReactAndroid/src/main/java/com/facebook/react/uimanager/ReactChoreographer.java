@@ -48,7 +48,8 @@ public class ReactChoreographer {
     TIMERS_EVENTS(3),
 
     /**
-     * Event used to dispatch the idle callback. Called after all other work is done for the frame.
+     * Event used to trigger the idle callback. Called after all UI work has been
+     * dispatched to JS.
      */
     IDLE_EVENT(4),
     ;

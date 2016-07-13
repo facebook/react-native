@@ -81,9 +81,13 @@ const JSTimersExecution = {
         const currentTime = performanceNow();
         callback(currentTime);
       } else if (type === JSTimersExecution.Type.requestIdleCallback) {
+        const { Timing } = require('NativeModules');
         callback({
           timeRemaining: function() {
-            return Math.max(0, 17 - (performanceNow() - frameTime));
+            // TODO: Optimisation: allow running for longer than one frame if
+            // there are no pending JS calls on the bridge from native. This
+            // would require a way to check the bridge queue synchronously.
+            return Math.max(0, Timing.frameDuration - (performanceNow() - frameTime));
           },
         });
       } else {
@@ -128,23 +132,25 @@ const JSTimersExecution = {
   },
 
   callIdleCallbacks: function(frameTime) {
-    if (17 - (performanceNow() - frameTime) <= 0) {
+    const { Timing } = require('NativeModules');
+
+    if (Timing.frameDuration - (performanceNow() - frameTime) < Timing.idleCallbackFrameDeadline) {
       return;
     }
 
     JSTimersExecution.errors = null;
 
     if (JSTimersExecution.requestIdleCallbacks.length > 0) {
-      var passIdleCallbacks = JSTimersExecution.requestIdleCallbacks.slice();
+      const passIdleCallbacks = JSTimersExecution.requestIdleCallbacks.slice();
       JSTimersExecution.requestIdleCallbacks = [];
 
-      for (var i = 0; i < passIdleCallbacks.length; ++i) {
+      for (let i = 0; i < passIdleCallbacks.length; ++i) {
         JSTimersExecution.callTimer(passIdleCallbacks[i], frameTime);
       }
     }
 
     if (JSTimersExecution.requestIdleCallbacks.length === 0) {
-      require('NativeModules').Timing.sendIdleEvents(false);
+      Timing.setSendIdleEvents(false);
     }
 
     if (JSTimersExecution.errors) {
