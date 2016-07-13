@@ -238,9 +238,9 @@ static NSError *RCTNSErrorFromJSError(RCTJSCWrapper *jscWrapper, JSContextRef co
   return [NSError errorWithDomain:RCTErrorDomain code:1 userInfo:errorInfo];
 }
 
-- (NSError *)convertJSErrorToNSError:(JSValueRef)jsError context:(JSContextRef)context
+- (NSError *)errorForJSError:(JSValue *)jsError
 {
-  return RCTNSErrorFromJSError(_jscWrapper, context, jsError);
+  return RCTNSErrorFromJSError(_jscWrapper, jsError.context.JSGlobalContextRef, jsError.JSValueRef);
 }
 
 #if RCT_DEV

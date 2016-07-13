@@ -60,7 +60,7 @@ RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
  * If available, the error's userInfo property will contain the JS stacktrace under
  * the RCTJSStackTraceKey key.
  */
-- (NSError *)convertJSErrorToNSError:(JSValueRef)jsError context:(JSContextRef)context;
+- (NSError *)errorForJSError:(JSValue *)jsError;
 
 /**
  * @experimental
