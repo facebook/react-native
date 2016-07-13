@@ -59,7 +59,7 @@ import com.android.build.OutputFile
 
 project.ext.react = [
     bundleAssetName: "UIExplorerApp.android.bundle",
-    entryFile: file("../../UIExplorerApp.android.js"),
+    entryFile: file("../../js/UIExplorerApp.android.js"),
     root: "../../../../",
     inputExcludes: ["android/**", "./**"]
 ]

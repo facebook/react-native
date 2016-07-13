@@ -59,6 +59,12 @@ public:
   virtual void loadApplicationScript(
     std::unique_ptr<const JSBigString> script,
     std::string sourceURL) throw(JSException) override;
+#ifdef WITH_FBJSCEXTENSIONS
+  virtual void loadApplicationScript(
+    std::string bundlePath,
+    std::string sourceURL,
+    int flags) override;
+#endif
   virtual void setJSModulesUnbundle(
     std::unique_ptr<JSModulesUnbundle> unbundle) override;
   virtual void callFunction(

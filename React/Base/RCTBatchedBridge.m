@@ -62,10 +62,10 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 {
   RCTAssertParam(bridge);
 
-  if ((self = [super initWithBundleURL:bridge.bundleURL
-                        moduleProvider:bridge.moduleProvider
-                         launchOptions:bridge.launchOptions])) {
-
+  if (self = [super initWithDelegate:bridge.delegate
+                           bundleURL:bridge.bundleURL
+                      moduleProvider:bridge.moduleProvider
+                       launchOptions:bridge.launchOptions]) {
     _parentBridge = bridge;
 
     /**
@@ -87,6 +87,11 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   return self;
 }
 
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
+                                           bundleURL:(NSURL *)bundleURL
+                                      moduleProvider:(RCTBridgeModuleProviderBlock)block
+                                       launchOptions:(NSDictionary *)launchOptions)
+
 - (void)start
 {
   dispatch_queue_t bridgeQueue = dispatch_queue_create("com.facebook.react.RCTBridgeQueue", DISPATCH_QUEUE_CONCURRENT);
@@ -97,7 +102,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   dispatch_group_enter(initModulesAndLoadSource);
   __weak RCTBatchedBridge *weakSelf = self;
   __block NSData *sourceCode;
-  [self loadSource:^(NSError *error, NSData *source, int64_t sourceLength) {
+  [self loadSource:^(NSError *error, NSData *source, __unused int64_t sourceLength) {
     if (error) {
       dispatch_async(dispatch_get_main_queue(), ^{
         [weakSelf stopLoadingWithError:error];

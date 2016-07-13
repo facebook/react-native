@@ -63,7 +63,7 @@ function getPlatformFromPath(filepath) {
 }
 
 function getExamplePaths(componentName, componentPlatform) {
-  const componentExample = '../Examples/UIExplorer/' + componentName + 'Example.';
+  const componentExample = '../Examples/UIExplorer/js/' + componentName + 'Example.';
   let pathsToCheck = [
     componentExample + 'js',
     componentExample + componentPlatform + '.js',

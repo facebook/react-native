@@ -254,31 +254,43 @@ void JSCExecutor::terminateOnJSVMThread() {
 }
 
 #ifdef WITH_FBJSCEXTENSIONS
-static void loadApplicationSource(
-    const JSGlobalContextRef context,
-    const JSBigMmapString* script,
-    const std::string& sourceURL) {
+void JSCExecutor::loadApplicationScript(
+    std::string bundlePath,
+    std::string sourceURL,
+    int flags) {
+  SystraceSection s("JSCExecutor::loadApplicationScript",
+                    "sourceURL", sourceURL);
+
+  if ((flags & UNPACKED_JS_SOURCE) == 0) {
+    throw std::runtime_error("Optimized bundle with no unpacked js source");
+  }
+
+  auto jsScriptBigString = JSBigMmapString::fromOptimizedBundle(bundlePath);
+  if (jsScriptBigString->encoding() != JSBigMmapString::Encoding::Ascii) {
+    throw std::runtime_error("Optimized bundle needs to be ascii encoded");
+  }
+
   String jsSourceURL(sourceURL.c_str());
-  bool is8bit = script->encoding() == JSBigMmapString::Encoding::Ascii || script->encoding() == JSBigMmapString::Encoding::Utf8;
-  JSSourceCodeRef sourceCode = JSCreateSourceCode(script->fd(), script->size(), jsSourceURL, script->hash(), is8bit);
-  evaluateSourceCode(context, sourceCode, jsSourceURL);
-  JSReleaseSourceCode(sourceCode);
+  JSSourceCodeRef sourceCode = JSCreateSourceCode(
+      jsScriptBigString->fd(),
+      jsScriptBigString->size(),
+      jsSourceURL,
+      jsScriptBigString->hash(),
+      true);
+  SCOPE_EXIT { JSReleaseSourceCode(sourceCode); };
+
+  evaluateSourceCode(m_context, sourceCode, jsSourceURL);
+
+  bindBridge();
+
+  flush();
+  ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
 }
 #endif
 
 void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) throw(JSException) {
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
-
-  #ifdef WITH_FBJSCEXTENSIONS
-  if (auto source = dynamic_cast<const JSBigMmapString *>(script.get())) {
-    loadApplicationSource(m_context, source, sourceURL);
-    bindBridge();
-    flush();
-    ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
-    return;
-  }
-  #endif
 
   #ifdef WITH_FBSYSTRACE
   fbsystrace_begin_section(

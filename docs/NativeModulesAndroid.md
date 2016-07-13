@@ -420,16 +420,16 @@ Now you can listen to the activity's LifeCycle events by implementing the follow
 ```java
 @Override
 public void onHostResume() {
-    // Actvity `onResume`
+    // Activity `onResume`
 }
 
 @Override
 public void onHostPause() {
-    // Actvity `onPause`
+    // Activity `onPause`
 }
 
 @Override
 public void onHostDestroy() {
-    // Actvity `onDestroy`
+    // Activity `onDestroy`
 }
 ```

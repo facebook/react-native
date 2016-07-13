@@ -23,6 +23,7 @@ import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.cxxbridge.JSBundleLoader;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.devsupport.RedBoxHandler;
@@ -184,6 +185,7 @@ public abstract class ReactInstanceManager {
     protected final List<ReactPackage> mPackages = new ArrayList<>();
 
     protected @Nullable String mJSBundleFile;
+    protected @Nullable JSBundleLoader mJSBundleLoader;
     protected @Nullable String mJSMainModuleName;
     protected @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
     protected @Nullable Application mApplication;
@@ -225,6 +227,19 @@ public abstract class ReactInstanceManager {
      */
     public Builder setJSBundleFile(String jsBundleFile) {
       mJSBundleFile = jsBundleFile;
+      mJSBundleLoader = null;
+      return this;
+    }
+
+    /**
+     * Bundle loader to use when setting up JS environment. This supersedes
+     * prior invcations of {@link setJSBundleFile} and {@link setBundleAssetName}.
+     *
+     * Example: {@code JSBundleLoader.createFileLoader(application, bundleFile)}
+     */
+    public Builder setJSBundleLoader(JSBundleLoader jsBundleLoader) {
+      mJSBundleLoader = jsBundleLoader;
+      mJSBundleFile = null;
       return this;
     }
 
@@ -326,12 +341,20 @@ public abstract class ReactInstanceManager {
      * </ul>
      */
     public ReactInstanceManager build() {
+      Assertions.assertNotNull(
+          mApplication,
+          "Application property has not been set with this builder");
+
       Assertions.assertCondition(
-          mUseDeveloperSupport || mJSBundleFile != null,
+          mJSBundleLoader == null || !mUseOldBridge,
+          "JSBundleLoader can't be used with the old bridge");
+
+      Assertions.assertCondition(
+          mUseDeveloperSupport || mJSBundleFile != null || mJSBundleLoader != null,
           "JS Bundle File has to be provided when dev support is disabled");
 
       Assertions.assertCondition(
-          mJSMainModuleName != null || mJSBundleFile != null,
+          mJSMainModuleName != null || mJSBundleFile != null || mJSBundleLoader != null,
           "Either MainModuleName or JS Bundle File needs to be provided");
 
       if (mUIImplementationProvider == null) {
@@ -341,9 +364,7 @@ public abstract class ReactInstanceManager {
 
       if (mUseOldBridge) {
         return new ReactInstanceManagerImpl(
-            Assertions.assertNotNull(
-                mApplication,
-                "Application property has not been set with this builder"),
+            mApplication,
             mCurrentActivity,
             mDefaultHardwareBackBtnHandler,
             mJSBundleFile,
@@ -358,12 +379,11 @@ public abstract class ReactInstanceManager {
             mRedBoxHandler);
       } else {
         return new XReactInstanceManagerImpl(
-            Assertions.assertNotNull(
-                mApplication,
-                "Application property has not been set with this builder"),
+            mApplication,
             mCurrentActivity,
             mDefaultHardwareBackBtnHandler,
-            mJSBundleFile,
+            (mJSBundleLoader == null && mJSBundleFile != null) ?
+              JSBundleLoader.createFileLoader(mApplication, mJSBundleFile) : mJSBundleLoader,
             mJSMainModuleName,
             mPackages,
             mUseDeveloperSupport,
