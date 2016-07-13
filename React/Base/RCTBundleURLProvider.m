@@ -13,12 +13,12 @@
 
 NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProviderUpdatedNotification";
 
+static const NSUInteger kDefaultPort = 8081;
+
 static NSString *const kRCTJsLocationKey = @"RCT_jsLocation";
 static NSString *const kRCTEnableLiveReloadKey = @"RCT_enableLiveReload";
 static NSString *const kRCTEnableDevKey = @"RCT_enableDev";
 static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
-
-static NSString *const kDefaultPort = @"8081";
 
 @implementation RCTBundleURLProvider
 
@@ -61,7 +61,7 @@ static NSString *const kDefaultPort = @"8081";
 
 static NSString *serverRootWithHost(NSString *host)
 {
-  return [NSString stringWithFormat:@"http://%@:%@/", host, kDefaultPort];
+  return [NSString stringWithFormat:@"http://%@:%lu/", host, (unsigned long)kDefaultPort];
 }
 
 #if RCT_DEV
