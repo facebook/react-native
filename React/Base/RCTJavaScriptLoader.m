@@ -31,7 +31,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSError *error;
   NSData *data = [self attemptSynchronousLoadOfBundleAtURL:scriptURL
                                               sourceLength:&sourceLength
-                                 allowLoadingNonRAMBundles:NO // we'll do it async
                                                      error:&error];
   if (data) {
     onComplete(nil, data, sourceLength);
@@ -51,7 +50,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 + (NSData *)attemptSynchronousLoadOfBundleAtURL:(NSURL *)scriptURL
                                    sourceLength:(int64_t *)sourceLength
-                      allowLoadingNonRAMBundles:(BOOL)allowLoadingNonRAMBundles
                                           error:(NSError **)error
 {
   NSString *unsanitizedScriptURLString = scriptURL.absoluteString;
@@ -111,16 +109,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   magicNumber = NSSwapLittleIntToHost(magicNumber);
   if (magicNumber != RCTRAMBundleMagicNumber) {
-    if (allowLoadingNonRAMBundles) {
-      NSData *source = [NSData dataWithContentsOfFile:scriptURL.path
-                                              options:NSDataReadingMappedIfSafe
-                                                error:error];
-      if (sourceLength && source != nil) {
-        *sourceLength = source.length;
-      }
-      return source;
-    }
-
     if (error) {
       *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
                                    code:RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously
