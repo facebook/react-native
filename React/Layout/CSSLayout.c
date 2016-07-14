@@ -13,10 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// in concatenated header, don't include Layout.h it's already at the top
-#ifndef CSS_LAYOUT_IMPLEMENTATION
-#include "Layout.h"
-#endif
+#include "CSSLayout.h"
 
 #ifdef _MSC_VER
 #include <float.h>
