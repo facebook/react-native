@@ -57,20 +57,6 @@ var RequestIdleCallbackTester = React.createClass({
   render() {
     return (
       <View>
-        {Platform.OS === 'ios' ? this._renderIOS() : this._renderAndroid()}
-      </View>
-    );
-  },
-
-  _renderIOS() {
-    return (
-      <Text>Not implemented on iOS, falls back to requestAnimationFrame</Text>
-    );
-  },
-
-  _renderAndroid() {
-    return (
-      <View>
         <UIExplorerButton onPress={this._run.bind(this, false)}>
           Run requestIdleCallback
         </UIExplorerButton>
