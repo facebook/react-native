@@ -26,6 +26,12 @@ class Share {
 
   /**
    * Open a dialog to share text content.
+   * 
+   * In iOS, Returns a Promise which will be invoked an object containing `action`, `activityType`.
+   * If the user dismissed the dialog, the Promise will still be resolved with action being `Share.dismissedAction` 
+   * and all the other keys being undefined. 
+   * 
+   * In Android, Returns a Promise which always be resolved with action being `Share.sharedAction`. 
    *
    * ### Content
    *
@@ -45,6 +51,7 @@ class Share {
    * #### Android
    *
    * - `dialogTitle`
+   *
    */
   static share(content: Content, options: Options = {}): Promise<Object> {
     invariant(
@@ -98,6 +105,7 @@ class Share {
 
   /**
    * The dialog has been dismissed.
+   * @platform ios
    */
   static get dismissedAction() { return 'dismissedAction'; }
 
