@@ -134,12 +134,10 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     this._timedOut = false;
   }
 
-  // $FlowIssue #10784535
   get responseType(): ResponseType {
     return this._responseType;
   }
 
-  // $FlowIssue #10784535
   set responseType(responseType: ResponseType): void {
     if (this._sent) {
       throw new Error(
@@ -163,11 +161,10 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     this._responseType = responseType;
   }
 
-  // $FlowIssue #10784535
   get responseText(): string {
     if (this._responseType !== '' && this._responseType !== 'text') {
       throw new Error(
-        `The 'responseText' property is only available if 'responseType' ` +
+        "The 'responseText' property is only available if 'responseType' " +
         `is set to '' or 'text', but it is '${this._responseType}'.`
       );
     }
@@ -177,7 +174,6 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     return this._response;
   }
 
-  // $FlowIssue #10784535
   get response(): Response {
     const {responseType} = this;
     if (responseType === '' || responseType === 'text') {

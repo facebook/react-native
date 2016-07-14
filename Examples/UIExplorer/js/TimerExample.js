@@ -28,10 +28,87 @@ var {
   AlertIOS,
   Platform,
   ToastAndroid,
+  Text,
   View,
 } = ReactNative;
 var TimerMixin = require('react-timer-mixin');
 var UIExplorerButton = require('./UIExplorerButton');
+var performanceNow = require('fbjs/lib/performanceNow');
+
+function burnCPU(milliseconds) {
+  const start = performanceNow();
+  while (performanceNow() < (start + milliseconds)) {}
+}
+
+var RequestIdleCallbackTester = React.createClass({
+  _idleTimer: (null: any),
+  _iters: 0,
+
+  getInitialState() {
+    return {
+      message: '-',
+    };
+  },
+
+  componentWillUnmount() {
+    cancelIdleCallback(this._idleTimer);
+  },
+
+  render() {
+    return (
+      <View>
+        <UIExplorerButton onPress={this._run.bind(this, false)}>
+          Run requestIdleCallback
+        </UIExplorerButton>
+
+        <UIExplorerButton onPress={this._run.bind(this, true)}>
+          Burn CPU inside of requestIdleCallback
+        </UIExplorerButton>
+
+        <UIExplorerButton onPress={this._runBackground}>
+          Run background task
+        </UIExplorerButton>
+
+        <UIExplorerButton onPress={this._stopBackground}>
+          Stop background task
+        </UIExplorerButton>
+
+        <Text>{this.state.message}</Text>
+      </View>
+    );
+  },
+
+  _run(shouldBurnCPU) {
+    cancelIdleCallback(this._idleTimer);
+    this._idleTimer = requestIdleCallback((deadline) => {
+      let message = '';
+
+      if (shouldBurnCPU) {
+        burnCPU(10);
+        message = 'Burned CPU for 10ms,';
+      }
+      this.setState({message: `${message} ${deadline.timeRemaining()}ms remaining in frame`});
+    });
+  },
+
+  _runBackground() {
+    cancelIdleCallback(this._idleTimer);
+    const handler = (deadline) => {
+      while (deadline.timeRemaining() > 5) {
+        burnCPU(5);
+        this.setState({message: `Burned CPU for 5ms ${this._iters++} times, ${deadline.timeRemaining()}ms remaining in frame`});
+      }
+
+      this._idleTimer = requestIdleCallback(handler);
+    };
+    this._idleTimer = requestIdleCallback(handler);
+  },
+
+  _stopBackground() {
+    this._iters = 0;
+    cancelIdleCallback(this._idleTimer);
+  }
+});
 
 var TimerTester = React.createClass({
   mixins: [TimerMixin],
@@ -137,6 +214,17 @@ exports.examples = [
       return (
         <View>
           <TimerTester type="requestAnimationFrame" />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'this.requestIdleCallback(fn)',
+    description: 'Execute function fn on the next JS frame that has idle time',
+    render: function() {
+      return (
+        <View>
+          <RequestIdleCallbackTester />
         </View>
       );
     },

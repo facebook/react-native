@@ -5,6 +5,7 @@ layout: docs
 category: The Basics
 permalink: docs/height-and-width.html
 next: flexbox
+previous: style
 ---
 
 A component's height and width determine its size on the screen.

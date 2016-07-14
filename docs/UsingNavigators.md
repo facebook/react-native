@@ -5,6 +5,7 @@ layout: docs
 category: The Basics
 permalink: docs/using-navigators.html
 next: more-resources
+previous: networking
 ---
 
 Mobile apps rarely consist of just one screen. As soon as you add a second screen to your app, you will have to take into consideration how the user will navigate from one screen to the other.

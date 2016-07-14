@@ -189,7 +189,8 @@
     "yargs": "^3.24.0",
     "yeoman-environment": "~1.2.7",
     "yeoman-generator": "^0.20.3",
-    "mime-types": "2.1.11"
+    "mime-types": "2.1.11",
+    "whatwg-fetch": "^1.0.0"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.0",

@@ -5,6 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/animations.html
 next: accessibility
+previous: handling-touches
 ---
 
 Fluid, meaningful animations are essential to the mobile user experience. Like
@@ -282,7 +283,7 @@ class App extends React.Component {
     this.state = { w: 100, h: 100 };
     this._onPress = this._onPress.bind(this);
   }
-  
+
   componentWillMount() {
     // Animate creation
     LayoutAnimation.spring();

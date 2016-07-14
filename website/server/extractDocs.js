@@ -165,6 +165,19 @@ function getNextComponent(idx) {
   return null;
 }
 
+function getPreviousComponent(idx) {
+  if (all[idx - 1]) {
+    const previousComponentName = getNameFromPath(all[idx - 1]);
+
+    if (shouldDisplayInSidebar(previousComponentName)) {
+      return slugify(previousComponentName);
+    } else {
+      return getPreviousComponent(idx - 1);
+    }
+  }
+  return null;
+}
+
 function componentsToMarkdown(type, json, filepath, idx, styles) {
   const componentName = getNameFromPath(filepath);
   const componentPlatform = getPlatformFromPath(filepath);
@@ -189,6 +202,7 @@ function componentsToMarkdown(type, json, filepath, idx, styles) {
   // Put styles (e.g. Flexbox) into the API category
   const category = (type === 'style' ? 'apis' : type + 's');
   const next = getNextComponent(idx);
+  const previous = getPreviousComponent(idx);
 
   const res = [
     '---',
@@ -199,6 +213,7 @@ function componentsToMarkdown(type, json, filepath, idx, styles) {
     'permalink: docs/' + slugify(componentName) + '.html',
     'platform: ' + componentPlatform,
     'next: ' + next,
+    'previous: ' + previous,
     'sidebar: ' + shouldDisplayInSidebar(componentName),
     'runnable:' + isRunnable(componentName, componentPlatform),
     'path:' + json.filepath,
