@@ -146,6 +146,17 @@ class PromptOptions extends React.Component {
 
         <TouchableHighlight
           style={styles.wrapper}
+          onPress={() => AlertIOS.prompt('Type a phone number', null, null, 'plain-text', undefined, 'phone-pad')}>
+
+          <View style={styles.button}>
+            <Text>
+              prompt with title & custom keyboard
+            </Text>
+          </View>
+        </TouchableHighlight>
+
+        <TouchableHighlight
+          style={styles.wrapper}
           onPress={() => AlertIOS.prompt('Type a value', null, this.saveResponse, undefined, 'Default value')}>
 
           <View style={styles.button}>
