@@ -30,18 +30,11 @@ public abstract class JSBundleLoader {
   public static JSBundleLoader createFileLoader(
       final Context context,
       final String fileName) {
-    return createFileLoader(context, fileName, false);
-  }
-
-  public static JSBundleLoader createFileLoader(
-      final Context context,
-      final String fileName,
-      final boolean useLazyBundle) {
     return new JSBundleLoader() {
       @Override
       public void loadScript(CatalystInstanceImpl instance) {
         if (fileName.startsWith("assets://")) {
-          instance.loadScriptFromAssets(context.getAssets(), fileName, useLazyBundle);
+          instance.loadScriptFromAssets(context.getAssets(), fileName);
         } else {
           instance.loadScriptFromFile(fileName, fileName);
         }
