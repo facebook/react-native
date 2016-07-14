@@ -256,10 +256,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       WebView.setWebContentsDebuggingEnabled(true);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
-    }
-
     return webView;
   }
 
@@ -295,6 +291,13 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @ReactProp(name = "injectedJavaScript")
   public void setInjectedJavaScript(WebView view, @Nullable String injectedJavaScript) {
     ((ReactWebView) view).setInjectedJavaScript(injectedJavaScript);
+  }
+
+  @ReactProp(name = "enableMixedContentMode")
+  public void setMixedContentMode(WebView view, boolean enabled) {
+    if (enabled == true && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      view.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+    }
   }
 
   @ReactProp(name = "source")
