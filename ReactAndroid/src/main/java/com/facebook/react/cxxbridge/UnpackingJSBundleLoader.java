@@ -39,12 +39,6 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 public class UnpackingJSBundleLoader extends JSBundleLoader {
 
   /**
-   * Flag passed to loadScriptFromOptimizedBundle to let the bridge know that
-   * the unpacked unpacked js source file.
-   */
-  static final int UNPACKED_JS_SOURCE = (1 << 0);
-
-  /**
    * Name of the lock files. Multiple processes can be spawned off the same app
    * and we need to guarantee that at most one unpacks files at any time. To
    * make that work any process is required to hold file system lock on
@@ -147,10 +141,10 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
   @Override
   public void loadScript(CatalystInstanceImpl instance) {
     prepare();
-    instance.loadScriptFromOptimizedBundle(
-      mDirectoryPath.getPath(),
-      mSourceURL,
-      UNPACKED_JS_SOURCE);
+    // TODO(12128379): add instance method that would take bundle directory
+    instance.loadScriptFromFile(
+      new File(mDirectoryPath, "bundle.js").getPath(),
+      mSourceURL);
   }
 
   @Override

@@ -109,7 +109,6 @@ react_library(
   force_static = True,
   srcs = [
     'CxxMessageQueue.cpp',
-    'Executor.cpp',
     'Instance.cpp',
     'JSCExecutor.cpp',
     'JSCHelpers.cpp',
