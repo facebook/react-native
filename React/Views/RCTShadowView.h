@@ -74,6 +74,12 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 
 @property (nonatomic, assign) CGFloat width;
 @property (nonatomic, assign) CGFloat height;
+
+@property (nonatomic, assign) CGFloat minWidth;
+@property (nonatomic, assign) CGFloat maxWidth;
+@property (nonatomic, assign) CGFloat minHeight;
+@property (nonatomic, assign) CGFloat maxHeight;
+
 @property (nonatomic, assign) CGRect frame;
 
 - (void)setTopLeft:(CGPoint)topLeft;

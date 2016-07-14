@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule RCTNetworking
+ * @flow
  */
 'use strict';
 
@@ -27,7 +28,7 @@ function convertHeadersMapToArray(headers: Object): Array<Header> {
 }
 
 let _requestId = 1;
-function generateRequestId() {
+function generateRequestId(): number {
   return _requestId++;
 }
 
@@ -41,37 +42,49 @@ class RCTNetworking extends NativeEventEmitter {
     super(RCTNetworkingNative);
   }
 
-  sendRequest(method, url, headers, data, incrementalUpdates, timeout, callback) {
-    if (typeof data === 'string') {
-      data = {string: data};
-    } else if (data instanceof FormData) {
-      data = {
-        formData: data.getParts().map((part) => {
-          part.headers = convertHeadersMapToArray(part.headers);
-          return part;
-        }),
-      };
-    }
+  sendRequest(
+    method: string,
+    trackingName: string,
+    url: string,
+    headers: Object,
+    data: string | FormData | {uri: string},
+    responseType: 'text' | 'base64',
+    incrementalUpdates: boolean,
+    timeout: number,
+    callback: (requestId: number) => any
+  ) {
+    const body =
+      typeof data === 'string' ? {string: data} :
+      data instanceof FormData ? {formData: getParts(data)} :
+      data;
     const requestId = generateRequestId();
     RCTNetworkingNative.sendRequest(
       method,
       url,
       requestId,
       convertHeadersMapToArray(headers),
-      data,
+      {...body, trackingName},
+      responseType,
       incrementalUpdates,
       timeout
     );
     callback(requestId);
   }
 
-  abortRequest(requestId) {
+  abortRequest(requestId: number) {
     RCTNetworkingNative.abortRequest(requestId);
   }
 
-  clearCookies(callback) {
+  clearCookies(callback: (result: boolean) => any) {
     RCTNetworkingNative.clearCookies(callback);
   }
+}
+
+function getParts(data) {
+  return data.getParts().map((part) => {
+    part.headers = convertHeadersMapToArray(part.headers);
+    return part;
+  });
 }
 
 module.exports = new RCTNetworking();

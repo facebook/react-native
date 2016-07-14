@@ -349,6 +349,19 @@ describe('processRequest', () => {
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
       expect(res.end).toBeCalledWith('i am image');
     });
+
+    it('should serve range request', () => {
+      const req = {url: '/assets/imgs/a.png?platform=ios', headers: {range: 'bytes=0-3'}};
+      const res = {end: jest.fn(), writeHead: jest.fn()};
+      const mockData = 'i am image';
+
+      AssetServer.prototype.get.mockImpl(() => Promise.resolve(mockData));
+
+      server.processRequest(req, res);
+      jest.runAllTimers();
+      expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
+      expect(res.end).toBeCalledWith(mockData.slice(0, 3));
+    });
   });
 
   describe('buildbundle(options)', () => {
@@ -398,7 +411,7 @@ describe('processRequest', () => {
   describe('/symbolicate endpoint', () => {
     pit('should symbolicate given stack trace', () => {
       const body = JSON.stringify({stack: [{
-        file: 'foo.bundle?platform=ios',
+        file: 'http://foo.bundle?platform=ios',
         lineNumber: 2100,
         column: 44,
         customPropShouldBeLeftUnchanged: 'foo',

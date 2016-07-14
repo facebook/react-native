@@ -16,7 +16,9 @@ console.disableYellowBox = true;
 require('ProgressBarTestModule');
 require('ViewRenderingTestModule');
 require('TestJavaToJSArgumentsModule');
+require('TestJSLocaleModule');
 require('TestJSToJavaParametersModule');
+require('UIManagerTestModule');
 
 require('CatalystRootViewTestModule');
 require('DatePickerDialogTestModule');
@@ -41,8 +43,20 @@ var apps = [
   component: () => require('DatePickerDialogTestModule').DatePickerDialogTestApp
 },
 {
+  appKey: 'JSResponderTestApp',
+  component: () => require('JSResponderTestApp'),
+},
+{
   appKey: 'HorizontalScrollViewTestApp',
   component: () => require('ScrollViewTestModule').HorizontalScrollViewTestApp,
+},
+{
+  appKey: 'InitialPropsTestApp',
+  component: () => require('InitialPropsTestApp'),
+},
+{
+  appKey: 'LayoutEventsTestApp',
+  component: () => require('LayoutEventsTestApp'),
 },
 {
   appKey: 'MeasureLayoutTestApp',

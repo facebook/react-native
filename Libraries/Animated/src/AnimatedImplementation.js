@@ -19,7 +19,7 @@ var SpringConfig = require('SpringConfig');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 var NativeAnimatedHelper = require('NativeAnimatedHelper');
 
-var findNodeHandle = require('findNodeHandle');
+var findNodeHandle = require('react/lib/findNodeHandle');
 var flattenStyle = require('flattenStyle');
 var invariant = require('fbjs/lib/invariant');
 var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
@@ -255,9 +255,10 @@ class TimingAnimation extends Animation {
   _getNativeAnimationConfig(): any {
     var frameDuration = 1000.0 / 60.0;
     var frames = [];
-    for (var dt = 0.0; dt <= this._duration; dt += frameDuration) {
+    for (var dt = 0.0; dt < this._duration; dt += frameDuration) {
       frames.push(this._easing(dt / this._duration));
     }
+    frames.push(this._easing(1));
     return {
       type: 'frames',
       frames,
@@ -326,7 +327,7 @@ class TimingAnimation extends Animation {
     super.stop();
     this.__active = false;
     clearTimeout(this._timeout);
-    window.cancelAnimationFrame(this._animationFrame);
+    global.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
   }
 }
@@ -396,7 +397,7 @@ class DecayAnimation extends Animation {
   stop(): void {
     super.stop();
     this.__active = false;
-    window.cancelAnimationFrame(this._animationFrame);
+    global.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
   }
 }
@@ -611,7 +612,7 @@ class SpringAnimation extends Animation {
   stop(): void {
     super.stop();
     this.__active = false;
-    window.cancelAnimationFrame(this._animationFrame);
+    global.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
   }
 }

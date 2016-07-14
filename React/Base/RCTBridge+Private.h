@@ -10,8 +10,19 @@
 #import "RCTBridge.h"
 
 @class RCTModuleData;
+@class RCTPerformanceLogger;
 
 @interface RCTBridge ()
+{
+@public
+  RCTPerformanceLogger *_performanceLogger;
+}
+
+// Private designated initializer
+- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
+                       bundleURL:(NSURL *)bundleURL
+                  moduleProvider:(RCTBridgeModuleProviderBlock)block
+                   launchOptions:(NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
 
 // Used for the profiler flow events between JS and native
 @property (nonatomic, assign) int64_t flowID;

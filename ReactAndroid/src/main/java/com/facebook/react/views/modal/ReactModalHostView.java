@@ -21,6 +21,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.accessibility.AccessibilityEvent;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
@@ -107,6 +108,13 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   public void addChildrenForAccessibility(ArrayList<View> outChildren) {
     // Explicitly override this to prevent accessibility events being passed down to children
     // Those will be handled by the mHostView which lives in the dialog
+  }
+
+  @Override
+  public boolean dispatchPopulateAccessibilityEvent(AccessibilityEvent event) {
+    // Explicitly override this to prevent accessibility events being passed down to children
+    // Those will be handled by the mHostView which lives in the dialog
+    return false;
   }
 
   public void onDropInstance() {

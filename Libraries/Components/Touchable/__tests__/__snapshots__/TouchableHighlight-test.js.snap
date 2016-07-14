@@ -1,0 +1,26 @@
+exports[`TouchableHighlight renders correctly 0`] = `
+<View
+  accessibilityComponentType={undefined}
+  accessibilityLabel={undefined}
+  accessibilityTraits={undefined}
+  accessible={true}
+  hitSlop={undefined}
+  onLayout={undefined}
+  onResponderGrant={[Function bound touchableHandleResponderGrant]}
+  onResponderMove={[Function bound touchableHandleResponderMove]}
+  onResponderRelease={[Function bound touchableHandleResponderRelease]}
+  onResponderTerminate={[Function bound touchableHandleResponderTerminate]}
+  onResponderTerminationRequest={[Function bound touchableHandleResponderTerminationRequest]}
+  onStartShouldSetResponder={[Function bound touchableHandleStartShouldSetResponder]}
+  style={
+    Array [
+      4,
+      Object {}
+    ]
+  }
+  testID={undefined}>
+  <Text>
+    Touchable
+  </Text>
+</View>
+`;

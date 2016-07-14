@@ -9,6 +9,8 @@
 
 package com.facebook.react.modules.network;
 
+import android.util.Base64;
+
 import javax.annotation.Nullable;
 
 import java.io.IOException;
@@ -34,6 +36,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEm
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
+import okhttp3.Interceptor;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -157,6 +160,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       final int requestId,
       ReadableArray headers,
       ReadableMap data,
+      final String responseType,
       final boolean useIncrementalUpdates,
       int timeout) {
     Request.Builder requestBuilder = new Request.Builder().url(url);
@@ -165,18 +169,54 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       requestBuilder.tag(requestId);
     }
 
-    OkHttpClient client = mClient;
+    final RCTDeviceEventEmitter eventEmitter = getEventEmitter(executorToken);
+    OkHttpClient.Builder clientBuilder = mClient.newBuilder();
+
+    // If JS is listening for progress updates, install a ProgressResponseBody that intercepts the
+    // response and counts bytes received.
+    if (useIncrementalUpdates) {
+      clientBuilder.addNetworkInterceptor(new Interceptor() {
+        @Override
+        public Response intercept(Interceptor.Chain chain) throws IOException {
+          Response originalResponse = chain.proceed(chain.request());
+          ProgressResponseBody responseBody = new ProgressResponseBody(
+            originalResponse.body(),
+            new ProgressListener() {
+              long last = System.nanoTime();
+
+              @Override
+              public void onProgress(long bytesWritten, long contentLength, boolean done) {
+                long now = System.nanoTime();
+                if (!done && !shouldDispatch(now, last)) {
+                  return;
+                }
+                if (responseType.equals("text")) {
+                  // For 'text' responses we continuously send response data with progress info to
+                  // JS below, so no need to do anything here.
+                  return;
+                }
+                ResponseUtil.onDataReceivedProgress(
+                  eventEmitter,
+                  requestId,
+                  bytesWritten,
+                  contentLength);
+                last = now;
+              }
+            });
+          return originalResponse.newBuilder().body(responseBody).build();
+        }
+      });
+    }
+
     // If the current timeout does not equal the passed in timeout, we need to clone the existing
     // client and set the timeout explicitly on the clone.  This is cheap as everything else is
     // shared under the hood.
     // See https://github.com/square/okhttp/wiki/Recipes#per-call-configuration for more information
     if (timeout != mClient.connectTimeoutMillis()) {
-      client = mClient.newBuilder()
-        .readTimeout(timeout, TimeUnit.MILLISECONDS)
-        .build();
+      clientBuilder.readTimeout(timeout, TimeUnit.MILLISECONDS);
     }
+    OkHttpClient client = clientBuilder.build();
 
-    final RCTDeviceEventEmitter eventEmitter = getEventEmitter(executorToken);
     Headers requestHeaders = extractHeaders(headers, data);
     if (requestHeaders == null) {
       ResponseUtil.onRequestError(eventEmitter, requestId, "Unrecognized headers format", null);
@@ -247,11 +287,11 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
         method,
         RequestBodyUtil.createProgressRequest(
           multipartBuilder.build(),
-          new ProgressRequestListener() {
+          new ProgressListener() {
         long last = System.nanoTime();
 
         @Override
-        public void onRequestProgress(long bytesWritten, long contentLength, boolean done) {
+        public void onProgress(long bytesWritten, long contentLength, boolean done) {
           long now = System.nanoTime();
           if (done || shouldDispatch(now, last)) {
             ResponseUtil.onDataSend(eventEmitter, requestId, bytesWritten, contentLength);
@@ -292,13 +332,23 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
             ResponseBody responseBody = response.body();
             try {
-              if (useIncrementalUpdates) {
+              // If JS wants progress updates during the download, and it requested a text response,
+              // periodically send response data updates to JS.
+              if (useIncrementalUpdates && responseType.equals("text")) {
                 readWithProgress(eventEmitter, requestId, responseBody);
                 ResponseUtil.onRequestSuccess(eventEmitter, requestId);
-              } else {
-                ResponseUtil.onDataReceived(eventEmitter, requestId, responseBody.string());
-                ResponseUtil.onRequestSuccess(eventEmitter, requestId);
+                return;
               }
+
+              // Otherwise send the data in one big chunk, in the format that JS requested.
+              String responseString = "";
+              if (responseType.equals("text")) {
+                responseString = responseBody.string();
+              } else if (responseType.equals("base64")) {
+                responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
+              }
+              ResponseUtil.onDataReceived(eventEmitter, requestId, responseString);
+              ResponseUtil.onRequestSuccess(eventEmitter, requestId);
             } catch (IOException e) {
               ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
             }
@@ -310,12 +360,27 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       RCTDeviceEventEmitter eventEmitter,
       int requestId,
       ResponseBody responseBody) throws IOException {
+    long totalBytesRead = -1;
+    long contentLength = -1;
+    try {
+      ProgressResponseBody progressResponseBody = (ProgressResponseBody) responseBody;
+      totalBytesRead = progressResponseBody.totalBytesRead();
+      contentLength = progressResponseBody.contentLength();
+    } catch (ClassCastException e) {
+      // Ignore
+    }
+
     Reader reader = responseBody.charStream();
     try {
       char[] buffer = new char[MAX_CHUNK_SIZE_BETWEEN_FLUSHES];
       int read;
       while ((read = reader.read(buffer)) != -1) {
-        ResponseUtil.onDataReceived(eventEmitter, requestId, new String(buffer, 0, read));
+        ResponseUtil.onIncrementalDataReceived(
+          eventEmitter,
+          requestId,
+          new String(buffer, 0, read),
+          totalBytesRead,
+          contentLength);
       }
     } finally {
       reader.close();

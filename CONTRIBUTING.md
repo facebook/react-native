@@ -14,6 +14,8 @@ We will do our best to keep `master` in good shape, with tests passing at all ti
 
 The core team will be monitoring for pull requests. When we get one, we'll run some Facebook-specific integration tests on it first. From here, we'll need to get another person to sign off on the changes and then merge the pull request. For API changes we may need to fix internal uses, which could cause some delay. We'll do our best to provide updates and feedback throughout the process.
 
+Please submit your pull request on the *master* branch. If the fix is critical and should be included in a stable branch please mention it and it will be cherry picked into it.
+
 *Before* submitting a pull request, please make sure the following is done…
 
 1. Fork the repo and create your branch from `master`.

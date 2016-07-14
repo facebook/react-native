@@ -33,9 +33,9 @@ exports.projectConfig = function projectConfigAndroid(folder, userConfig) {
   const packageFolder = userConfig.packageFolder ||
     packageName.replace(/\./g, path.sep);
 
-  const mainActivityPath = path.join(
+  const mainFilePath = path.join(
     sourceDir,
-    userConfig.mainActivityPath || `src/main/java/${packageFolder}/MainActivity.java`
+    userConfig.mainFilePath || `src/main/java/${packageFolder}/MainApplication.java`
   );
 
   const stringsPath = path.join(
@@ -68,7 +68,7 @@ exports.projectConfig = function projectConfigAndroid(folder, userConfig) {
     buildGradlePath,
     settingsGradlePath,
     assetsPath,
-    mainActivityPath,
+    mainFilePath,
   };
 };
 

@@ -23,6 +23,7 @@ export type NavigationGestureDirection = 'horizontal' | 'vertical';
 
 export type NavigationRoute = {
   key: string,
+  title?: string
 };
 
 export type NavigationState = {
@@ -40,6 +41,7 @@ export type NavigationLayout = {
 
 export type NavigationScene = {
   index: number,
+  isActive: boolean,
   isStale: boolean,
   key: string,
   route: NavigationRoute,
@@ -64,18 +66,15 @@ export type NavigationTransitionProps = {
 
   // All the scenes of the transitioner.
   scenes: Array<NavigationScene>,
-};
 
-export type NavigationSceneRendererProps = {
-  layout: NavigationLayout,
-  navigationState: NavigationState,
-  position: NavigationAnimatedValue,
-  progress: NavigationAnimatedValue,
-  scenes: Array<NavigationScene>,
-
-  // The scene to render.
+  // The active scene, corresponding to the route at
+  // `navigationState.routes[navigationState.index]`.
   scene: NavigationScene,
 };
+
+// Similar to `NavigationTransitionProps`, except that the prop `scene`
+// represents the scene for the renderer to render.
+export type NavigationSceneRendererProps = NavigationTransitionProps;
 
 export type NavigationPanPanHandlers = {
   onMoveShouldSetResponder: Function,
@@ -96,6 +95,8 @@ export type NavigationTransitionSpec = {
   duration?: number,
   // An easing function from `Easing`.
   easing?: () => any,
+  // A timing function such as `Animated.timing`.
+  timing?: (value: NavigationAnimatedValue, config: any) => any,
 };
 
 // Functions.
@@ -113,5 +114,3 @@ export type NavigationSceneRenderer = (
 export type NavigationStyleInterpolator = (
   props: NavigationSceneRendererProps,
 ) => Object;
-
-export type NavigationTransitionConfigurator = () => NavigationTransitionSpec;

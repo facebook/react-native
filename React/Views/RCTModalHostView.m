@@ -101,8 +101,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
       _modalViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     }
     [self.reactViewController presentViewController:_modalViewController animated:[self hasAnimationType] completion:^{
-      if (_onShow) {
-        _onShow(nil);
+      if (self->_onShow) {
+        self->_onShow(nil);
       }
     }];
     _isPresented = YES;

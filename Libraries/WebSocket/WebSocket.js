@@ -135,6 +135,14 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     throw new Error('Unsupported data type');
   }
 
+  ping(): void {
+    if (this.readyState === this.CONNECTING) {
+        throw new Error('INVALID_STATE_ERR');
+    }
+
+    RCTWebSocketModule.ping(this._socketId);
+  }
+
   _close(code?: number, reason?: string): void {
     if (Platform.OS === 'android') {
       // See https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent

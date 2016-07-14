@@ -494,6 +494,18 @@ public class UIViewOperationQueue {
     }
   }
 
+  private class UIBlockOperation implements UIOperation {
+    private final UIBlock mBlock;
+    public UIBlockOperation (UIBlock block) {
+      mBlock = block;
+    }
+
+    @Override
+    public void execute() {
+      mBlock.execute(mNativeViewHierarchyManager);
+    }
+  }
+
   private final class SendAccessibilityEvent extends ViewOperation {
 
     private final int mEventType;
@@ -719,6 +731,10 @@ public class UIViewOperationQueue {
 
   public void enqueueSendAccessibilityEvent(int tag, int eventType) {
     mOperations.add(new SendAccessibilityEvent(tag, eventType));
+  }
+
+  public void enqueueUIBlock(UIBlock block) {
+    mOperations.add(new UIBlockOperation(block));
   }
 
   /* package */ void dispatchViewUpdates(final int batchId) {

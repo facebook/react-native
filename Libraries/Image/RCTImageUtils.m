@@ -64,6 +64,7 @@ CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize,
 
   switch (resizeMode) {
     case RCTResizeModeStretch:
+    case RCTResizeModeRepeat:
 
       return (CGRect){CGPointZero, RCTCeilSize(destSize, destScale)};
 
@@ -204,6 +205,10 @@ BOOL RCTUpscalingRequired(CGSize sourceSize, CGFloat sourceScale,
 
         return destSize.width > sourceSize.width;
       }
+
+    case RCTResizeModeRepeat:
+
+      return NO;
   }
 }
 

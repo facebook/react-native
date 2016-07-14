@@ -5,6 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/direct-manipulation.html
 next: debugging
+previous: timers
 ---
 
 It is sometimes necessary to make changes directly to a component
@@ -32,7 +33,7 @@ uses `setNativeProps` internally to update the opacity of its child
 component:
 
 ```javascript
-setOpacityTo: function(value) {
+setOpacityTo(value) {
   // Redacted: animation related code
   this.refs[CHILD_REF].setNativeProps({
     opacity: value
@@ -57,9 +58,10 @@ might implement it with that constraint is to store the opacity value
 in the state, then update that value whenever `onPress` is fired:
 
 ```javascript
-getInitialState() {
-  return { myButtonOpacity: 1, }
-},
+constructor(props) {
+  super(props);
+  this.state = { myButtonOpacity: 1, };
+}
 
 render() {
   return (
@@ -93,25 +95,25 @@ Composite components are not backed by a native view, so you cannot call
 `setNativeProps` on them. Consider this example:
 
 ```javascript
-var MyButton = React.createClass({
+class MyButton extends React.Component {
   render() {
     return (
       <View>
         <Text>{this.props.label}</Text>
       </View>
     )
-  },
-});
+  }
+}
 
-var App = React.createClass({
+class App extends React.Component {
   render() {
     return (
       <TouchableOpacity>
         <MyButton label="Press me!" />
       </TouchableOpacity>
     )
-  },
-});
+  }
+}
 ```
 [Run this example](https://rnplay.org/apps/JXkgmQ)
 
@@ -132,10 +134,10 @@ that calls `setNativeProps` on the appropriate child with the given
 arguments.
 
 ```javascript
-var MyButton = React.createClass({
+class MyButton extends React.Component {
   setNativeProps(nativeProps) {
     this._root.setNativeProps(nativeProps);
-  },
+  }
 
   render() {
     return (
@@ -143,8 +145,8 @@ var MyButton = React.createClass({
         <Text>{this.props.label}</Text>
       </View>
     )
-  },
-});
+  }
+}
 ```
 [Run this example](https://rnplay.org/apps/YJxnEQ)
 
@@ -172,10 +174,15 @@ necessary. For example, the following code demonstrates clearing the
 input when you tap a button:
 
 ```javascript
-var App = React.createClass({
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.clearText = this.clearText.bind(this);
+  }
+
   clearText() {
     this._textInput.setNativeProps({text: ''});
-  },
+  }
 
   render() {
     return (
@@ -188,7 +195,7 @@ var App = React.createClass({
       </View>
     );
   }
-});
+}
 ```
 [Run this example](https://rnplay.org/plays/pOI9bA)
 

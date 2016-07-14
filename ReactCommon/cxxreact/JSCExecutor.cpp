@@ -66,12 +66,7 @@ inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
         auto executor = static_cast<JSCExecutor*>(JSObjectGetPrivate(globalObj));
         return (executor->*method)(argumentCount, arguments);
       } catch (...) {
-        try {
-          auto functionName = Object(ctx, function).getProperty("name").toString().str();
-          *exception = translatePendingCppExceptionToJSError(ctx, functionName.c_str());
-        } catch (...) {
-          *exception = makeJSError(ctx, "Failed to get function name while handling exception");
-        }
+        *exception = translatePendingCppExceptionToJSError(ctx, function);
         return JSValueMakeUndefined(ctx);
       }
     }
@@ -90,22 +85,6 @@ static JSValueRef nativeInjectHMRUpdate(
     const JSValueRef arguments[],
     JSValueRef *exception);
 
-static std::string executeJSCallWithJSC(
-    JSGlobalContextRef ctx,
-    const std::string& methodName,
-    const std::vector<folly::dynamic>& arguments) {
-  SystraceSection s("JSCExecutor.executeJSCall",
-                    "method", methodName);
-
-  // Evaluate script with JSC
-  folly::dynamic jsonArgs(arguments.begin(), arguments.end());
-  auto js = folly::to<folly::fbstring>(
-      "__fbBatchedBridge.", methodName, ".apply(null, ",
-      folly::toJson(jsonArgs), ")");
-  auto result = evaluateScript(ctx, String(js.c_str()), nullptr);
-  return Value(ctx, result).toJSONString();
-}
-
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
     std::shared_ptr<ExecutorDelegate> delegate, std::shared_ptr<MessageQueueThread> jsQueue) {
   return std::unique_ptr<JSExecutor>(
@@ -115,7 +94,7 @@ std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
 JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
                          std::shared_ptr<MessageQueueThread> messageQueueThread,
                          const std::string& cacheDir,
-                         const folly::dynamic& jscConfig) :
+                         const folly::dynamic& jscConfig) throw(JSException) :
     m_delegate(delegate),
     m_deviceCacheDir(cacheDir),
     m_messageQueueThread(messageQueueThread),
@@ -135,12 +114,17 @@ JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
   }
 
   folly::dynamic config =
-    folly::dynamic::object("remoteModuleConfig", std::move(nativeModuleConfig));
+    folly::dynamic::object
+      ("remoteModuleConfig", std::move(nativeModuleConfig));
+
 
   SystraceSection t("setGlobalVariable");
   setGlobalVariable(
     "__fbBatchedBridgeConfig",
     folly::make_unique<JSBigStdString>(detail::toStdString(folly::toJson(config))));
+  setGlobalVariable(
+    "__fbBatchedBridgeSerializeNativeParams",
+    folly::make_unique<JSBigStdString>(""));
 }
 
 JSCExecutor::JSCExecutor(
@@ -199,7 +183,7 @@ void JSCExecutor::destroy() {
   });
 }
 
-void JSCExecutor::initOnJSVMThread() {
+void JSCExecutor::initOnJSVMThread() throw(JSException) {
   SystraceSection s("JSCExecutor.initOnJSVMThread");
 
   #if defined(WITH_FB_JSC_TUNING)
@@ -269,7 +253,42 @@ void JSCExecutor::terminateOnJSVMThread() {
   m_context = nullptr;
 }
 
-void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) {
+#ifdef WITH_FBJSCEXTENSIONS
+void JSCExecutor::loadApplicationScript(
+    std::string bundlePath,
+    std::string sourceURL,
+    int flags) {
+  SystraceSection s("JSCExecutor::loadApplicationScript",
+                    "sourceURL", sourceURL);
+
+  if ((flags & UNPACKED_JS_SOURCE) == 0) {
+    throw std::runtime_error("Optimized bundle with no unpacked js source");
+  }
+
+  auto jsScriptBigString = JSBigMmapString::fromOptimizedBundle(bundlePath);
+  if (jsScriptBigString->encoding() != JSBigMmapString::Encoding::Ascii) {
+    throw std::runtime_error("Optimized bundle needs to be ascii encoded");
+  }
+
+  String jsSourceURL(sourceURL.c_str());
+  JSSourceCodeRef sourceCode = JSCreateSourceCode(
+      jsScriptBigString->fd(),
+      jsScriptBigString->size(),
+      jsSourceURL,
+      jsScriptBigString->hash(),
+      true);
+  SCOPE_EXIT { JSReleaseSourceCode(sourceCode); };
+
+  evaluateSourceCode(m_context, sourceCode, jsSourceURL);
+
+  bindBridge();
+
+  flush();
+  ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
+}
+#endif
+
+void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) throw(JSException) {
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
 
@@ -289,6 +308,9 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
 
   String jsSourceURL(sourceURL.c_str());
   evaluateScript(m_context, jsScript, jsSourceURL);
+
+  bindBridge();
+
   flush();
   ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
 }
@@ -300,34 +322,45 @@ void JSCExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> unbund
   m_unbundle = std::move(unbundle);
 }
 
-void JSCExecutor::flush() {
-  // TODO: Make this a first class function instead of evaling. #9317773
-  std::string calls = executeJSCallWithJSC(m_context, "flushedQueue", std::vector<folly::dynamic>());
+void JSCExecutor::bindBridge() throw(JSException) {
+  auto global = Object::getGlobalObject(m_context);
+  auto batchedBridgeValue = global.getProperty("__fbBatchedBridge");
+  if (batchedBridgeValue.isUndefined()) {
+    throwJSExecutionException("Could not get BatchedBridge, make sure your bundle is packaged correctly");
+  }
+
+  auto batchedBridge = batchedBridgeValue.asObject();
+  m_callFunctionReturnFlushedQueueJS = batchedBridge.getProperty("callFunctionReturnFlushedQueue").asObject();
+  m_invokeCallbackAndReturnFlushedQueueJS = batchedBridge.getProperty("invokeCallbackAndReturnFlushedQueue").asObject();
+  m_flushedQueueJS = batchedBridge.getProperty("flushedQueue").asObject();
+}
+
+void JSCExecutor::flush() throw(JSException) {
+  auto result = m_flushedQueueJS->callAsFunction({});
+  auto calls = Value(m_context, result).toJSONString();
   m_delegate->callNativeModules(*this, std::move(calls), true);
 }
 
-void JSCExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
-  // TODO:  Make this a first class function instead of evaling. #9317773
-  std::vector<folly::dynamic> call{
-    moduleId,
-    methodId,
-    std::move(arguments),
-  };
-  std::string calls = executeJSCallWithJSC(m_context, "callFunctionReturnFlushedQueue", std::move(call));
+void JSCExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) throw(JSException) {
+  auto result = m_callFunctionReturnFlushedQueueJS->callAsFunction({
+    Value(m_context, String::createExpectingAscii(moduleId)),
+    Value(m_context, String::createExpectingAscii(methodId)),
+    Value::fromDynamic(m_context, std::move(arguments))
+  });
+  auto calls = Value(m_context, result).toJSONString();
   m_delegate->callNativeModules(*this, std::move(calls), true);
 }
 
-void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
-  // TODO: Make this a first class function instead of evaling. #9317773
-  std::vector<folly::dynamic> call{
-    (double) callbackId,
-    std::move(arguments)
-  };
-  std::string calls = executeJSCallWithJSC(m_context, "invokeCallbackAndReturnFlushedQueue", std::move(call));
+void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) throw(JSException) {
+  auto result = m_invokeCallbackAndReturnFlushedQueueJS->callAsFunction({
+    JSValueMakeNumber(m_context, callbackId),
+    Value::fromDynamic(m_context, std::move(arguments))
+  });
+  auto calls = Value(m_context, result).toJSONString();
   m_delegate->callNativeModules(*this, std::move(calls), true);
 }
 
-void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) {
+void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) throw(JSException) {
   SystraceSection s("JSCExecutor.setGlobalVariable",
                     "propName", propName);
 
