@@ -14,4 +14,4 @@
 
 import 'whatwg-fetch';
 
-module.exports = fetch;
+module.exports = {fetch, Headers, Request, Response};
