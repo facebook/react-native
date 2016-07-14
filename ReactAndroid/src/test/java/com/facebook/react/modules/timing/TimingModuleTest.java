@@ -198,7 +198,7 @@ public class TimingModuleTest {
   @Test
   public void testIdleCallback() {
     mTiming.onHostResume();
-    mTiming.sendIdleEvents(mExecutorTokenMock, true);
+    mTiming.setSendIdleEvents(mExecutorTokenMock, true);
 
     stepChoreographerFrame();
     verify(mJSTimersMock).callIdleCallbacks(SystemClock.currentTimeMillis());
