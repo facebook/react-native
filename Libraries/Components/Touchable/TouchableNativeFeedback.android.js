@@ -10,15 +10,15 @@
  */
 'use strict';
 
-var PropTypes = require('ReactPropTypes');
+var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
-var ReactNative = require('ReactNative');
+var ReactNative = require('react/lib/ReactNative');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var UIManager = require('UIManager');
 
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-var onlyChild = require('onlyChild');
+var onlyChild = require('react/lib/onlyChild');
 var processColor = require('processColor');
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -185,7 +185,7 @@ var TouchableNativeFeedback = React.createClass({
 
   _handleResponderMove: function(e) {
     this.touchableHandleResponderMove(e);
-    this._dispatchHotspotUpdate(e.nativeEvent.pageX, e.nativeEvent.pageY);
+    this._dispatchHotspotUpdate(e.nativeEvent.locationX, e.nativeEvent.locationY);
   },
 
   _dispatchHotspotUpdate: function(destX, destY) {

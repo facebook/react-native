@@ -1,5 +1,10 @@
 /**
- * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
@@ -28,8 +33,11 @@
 
 var Dimensions = require('Dimensions');
 var PixelRatio = require('PixelRatio');
+var I18nManager = require('I18nManager');
 
 var buildStyleInterpolator = require('buildStyleInterpolator');
+
+var IS_RTL = I18nManager.isRTL;
 
 var SCREEN_WIDTH = Dimensions.get('window').width;
 var SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -47,6 +55,14 @@ var ToTheLeftIOS = {
   opacity: {
     value: 1.0,
     type: 'constant',
+  },
+};
+
+var ToTheRightIOS = {
+  ...ToTheLeftIOS,
+  transformTranslate: {
+    from: {x: 0, y: 0, z: 0},
+    to: {x: SCREEN_WIDTH * 0.3, y: 0, z: 0},
   },
 };
 
@@ -126,7 +142,7 @@ var FadeToTheRight = {
   translateX: {
     from: 0,
     to: Math.round(SCREEN_WIDTH * 0.3),
-  }
+  },
 };
 
 var FadeIn = {
@@ -171,6 +187,32 @@ var ToTheLeft = {
   translateX: {
     from: 0,
     to: -Dimensions.get('window').width,
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
+};
+
+var ToTheRight = {
+  transformTranslate: {
+    from: {x: 0, y: 0, z: 0},
+    to: {x: Dimensions.get('window').width, y: 0, z: 0},
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
+  opacity: {
+    value: 1.0,
+    type: 'constant',
+  },
+
+  translateX: {
+    from: 0,
+    to: Dimensions.get('window').width,
     min: 0,
     max: 1,
     type: 'linear',
@@ -500,10 +542,40 @@ var BaseUpDownGesture = {
   direction: 'up-to-down',
 };
 
+// For RTL experiment, we need to swap all the Left and Right gesture and animation.
+// So we create a direction mapping for both LTR and RTL, and change left/right to start/end.
+let directionMapping = {
+  ToTheStartIOS: ToTheLeftIOS,
+  ToTheEndIOS: ToTheRightIOS,
+  FadeToTheStart: FadeToTheLeft,
+  FadeToTheEnd: FadeToTheRight,
+  ToTheStart: ToTheLeft,
+  ToTheEnd: ToTheRight,
+  FromTheStart: FromTheLeft,
+  FromTheEnd: FromTheRight,
+  BaseStartToEndGesture: BaseLeftToRightGesture,
+  BaseEndToStartGesture: BaseRightToLeftGesture,
+};
+
+if (IS_RTL) {
+  directionMapping = {
+    ToTheStartIOS: ToTheRightIOS,
+    ToTheEndIOS: ToTheLeftIOS,
+    FadeToTheStart: FadeToTheRight,
+    FadeToTheEnd: FadeToTheLeft,
+    ToTheStart: ToTheRight,
+    ToTheEnd: ToTheLeft,
+    FromTheStart: FromTheRight,
+    FromTheEnd: FromTheLeft,
+    BaseStartToEndGesture: BaseRightToLeftGesture,
+    BaseEndToStartGesture: BaseLeftToRightGesture,
+  };
+}
+
 var BaseConfig = {
   // A list of all gestures that are enabled on this scene
   gestures: {
-    pop: BaseLeftToRightGesture,
+    pop: directionMapping.BaseStartToEndGesture,
   },
 
   // Rebound spring parameters when transitioning FROM this scene
@@ -515,8 +587,8 @@ var BaseConfig = {
 
   // Animation interpolators for horizontal transitioning:
   animationInterpolators: {
-    into: buildStyleInterpolator(FromTheRight),
-    out: buildStyleInterpolator(FadeToTheLeft),
+    into: buildStyleInterpolator(directionMapping.FromTheEnd),
+    out: buildStyleInterpolator(directionMapping.FadeToTheStart),
   },
 };
 
@@ -524,8 +596,8 @@ var NavigatorSceneConfigs = {
   PushFromRight: {
     ...BaseConfig,
     animationInterpolators: {
-      into: buildStyleInterpolator(FromTheRight),
-      out: buildStyleInterpolator(ToTheLeftIOS),
+      into: buildStyleInterpolator(directionMapping.FromTheEnd),
+      out: buildStyleInterpolator(directionMapping.ToTheStartIOS),
     },
   },
   FloatFromRight: {
@@ -535,18 +607,18 @@ var NavigatorSceneConfigs = {
   FloatFromLeft: {
     ...BaseConfig,
     gestures: {
-      pop: BaseRightToLeftGesture,
+      pop: directionMapping.BaseEndToStartGesture,
     },
     animationInterpolators: {
-      into: buildStyleInterpolator(FromTheLeft),
-      out: buildStyleInterpolator(FadeToTheRight),
+      into: buildStyleInterpolator(directionMapping.FromTheStart),
+      out: buildStyleInterpolator(directionMapping.FadeToTheEnd),
     },
   },
   FloatFromBottom: {
     ...BaseConfig,
     gestures: {
       pop: {
-        ...BaseLeftToRightGesture,
+        ...directionMapping.BaseStartToEndGesture,
         edgeHitWidth: 150,
         direction: 'top-to-bottom',
         fullDistance: SCREEN_HEIGHT,
@@ -579,43 +651,43 @@ var NavigatorSceneConfigs = {
     ...BaseConfig,
     gestures: {
       jumpBack: {
-        ...BaseLeftToRightGesture,
+        ...directionMapping.BaseStartToEndGesture,
         overswipe: BaseOverswipeConfig,
         edgeHitWidth: null,
         isDetachable: true,
       },
       jumpForward: {
-        ...BaseRightToLeftGesture,
+        ...directionMapping.BaseEndToStartGesture,
         overswipe: BaseOverswipeConfig,
         edgeHitWidth: null,
         isDetachable: true,
       },
     },
     animationInterpolators: {
-      into: buildStyleInterpolator(FromTheRight),
-      out: buildStyleInterpolator(ToTheLeft),
+      into: buildStyleInterpolator(directionMapping.FromTheEnd),
+      out: buildStyleInterpolator(directionMapping.ToTheStart),
     },
   },
   HorizontalSwipeJumpFromRight: {
     ...BaseConfig,
     gestures: {
       jumpBack: {
-        ...BaseRightToLeftGesture,
+        ...directionMapping.BaseEndToStartGesture,
         overswipe: BaseOverswipeConfig,
         edgeHitWidth: null,
         isDetachable: true,
       },
       jumpForward: {
-        ...BaseLeftToRightGesture,
+        ...directionMapping.BaseStartToEndGesture,
         overswipe: BaseOverswipeConfig,
         edgeHitWidth: null,
         isDetachable: true,
       },
-      pop: BaseRightToLeftGesture,
+      pop: directionMapping.BaseEndToStartGesture,
     },
     animationInterpolators: {
-      into: buildStyleInterpolator(FromTheLeft),
-      out: buildStyleInterpolator(FadeToTheRight),
+      into: buildStyleInterpolator(directionMapping.FromTheStart),
+      out: buildStyleInterpolator(directionMapping.FadeToTheEnd),
     },
   },
   VerticalUpSwipeJump: {

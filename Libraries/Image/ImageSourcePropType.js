@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const PropTypes = require('ReactPropTypes');
+const PropTypes = require('react/lib/ReactPropTypes');
 
 const ImageSourcePropType = PropTypes.oneOfType([
   PropTypes.shape({
@@ -24,12 +24,12 @@ const ImageSourcePropType = PropTypes.oneOfType([
     uri: PropTypes.string,
     /**
      * `method` is the HTTP Method to use. Defaults to GET if not specified.
-     */ 
+     */
     method: PropTypes.string,
     /**
      * `headers` is an object representing the HTTP headers to send along with the
      * request for a remote image.
-     */ 
+     */
     headers: PropTypes.objectOf(PropTypes.string),
     /**
      * `body` is the HTTP body to send with the request. This must be a valid

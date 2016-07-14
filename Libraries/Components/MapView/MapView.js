@@ -14,7 +14,7 @@
 const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Image = require('Image');
-const NativeMethodsMixin = require('NativeMethodsMixin');
+const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
@@ -128,21 +128,21 @@ const MapView = React.createClass({
 
     /**
      * When this property is set to `true` and a valid camera is associated with
-     * the map, the camera’s heading angle is used to rotate the plane of the
+     * the map, the camera's heading angle is used to rotate the plane of the
      * map around its center point.
      *
      * When this property is set to `false`, the
-     * camera’s heading angle is ignored and the map is always oriented so
+     * camera's heading angle is ignored and the map is always oriented so
      * that true north is situated at the top of the map view
      */
     rotateEnabled: React.PropTypes.bool,
 
     /**
      * When this property is set to `true` and a valid camera is associated
-     * with the map, the camera’s pitch angle is used to tilt the plane
+     * with the map, the camera's pitch angle is used to tilt the plane
      * of the map.
      *
-     * When this property is set to `false`, the camera’s pitch
+     * When this property is set to `false`, the camera's pitch
      * angle is ignored and the map is always displayed as if the user
      * is looking straight down onto it.
      */

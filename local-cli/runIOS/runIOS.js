@@ -33,7 +33,7 @@ function runIOS(argv, config, args) {
     throw new Error(`Cound't find ${args.simulator} simulator`);
   }
 
-  const simulatorFullName = `${selectedSimulator.name} (${selectedSimulator.version})`;
+  const simulatorFullName = formattedSimulatorName(selectedSimulator);
   console.log(`Launching ${simulatorFullName}...`);
   try {
     child_process.spawnSync('xcrun', ['instruments', '-w', simulatorFullName]);
@@ -67,10 +67,14 @@ function runIOS(argv, config, args) {
 
 function matchingSimulator(simulators, simulatorName) {
   for (let i = simulators.length - 1; i >= 0; i--) {
-    if (simulators[i].name === simulatorName) {
+    if (simulators[i].name === simulatorName || formattedSimulatorName(simulators[i]) === simulatorName) {
       return simulators[i];
     }
   }
+}
+
+function formattedSimulatorName(simulator) {
+  return `${simulator.name} (${simulator.version})`;
 }
 
 module.exports = {

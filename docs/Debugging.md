@@ -5,6 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/debugging.html
 next: testing
+previous: direct-manipulation
 ---
 
 ## Accessing the In-App Developer Menu

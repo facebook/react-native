@@ -32,6 +32,8 @@
  */
 'use strict';
 
+const I18nManager = require('I18nManager');
+
 import type  {
   NavigationSceneRendererProps,
 } from 'NavigationTypeDefinition';
@@ -87,11 +89,14 @@ function forHorizontal(props: NavigationSceneRendererProps): Object {
 
   const index = scene.index;
   const inputRange = [index - 1, index, index + 1];
-
   const width = layout.initWidth;
+  const outputRange = I18nManager.isRTL ?
+    ([-width, 0, width]: Array<number>) :
+    ([width, 0, -width]: Array<number>);
+
   const translateX = position.interpolate({
     inputRange,
-    outputRange: [width, 0, -width],
+    outputRange,
   });
 
   return {

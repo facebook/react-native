@@ -12,9 +12,9 @@
 'use strict';
 
 var Image = require('Image');
-var NativeMethodsMixin = require('NativeMethodsMixin');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 var Platform = require('Platform');
-var PropTypes = require('ReactPropTypes');
+var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
@@ -159,7 +159,7 @@ var Slider = React.createClass({
       onSlidingComplete && onSlidingComplete(event.nativeEvent.value);
     });
 
-    return <RCTSlider 
+    return <RCTSlider
       {...props}
       enabled={!this.props.disabled}
       onStartShouldSetResponder={() => true}

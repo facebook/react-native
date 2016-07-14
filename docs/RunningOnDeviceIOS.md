@@ -5,6 +5,7 @@ layout: docs
 category: Guides (iOS)
 permalink: docs/running-on-device-ios.html
 next: running-on-simulator-ios
+previous: linking-libraries-ios
 ---
 
 Running an iOS app on a device requires an [Apple Developer account](https://developer.apple.com/) and provisioning your iPhone. This guide covers only React Native specific topics.
@@ -13,13 +14,11 @@ Running an iOS app on a device requires an [Apple Developer account](https://dev
 
 You can iterate quickly on device using the development server. First, ensure that you are on the same Wi-Fi network as your computer.
 
-1. Open `ios/YourApp/AppDelegate.m`
-2. Change the host in the URL from `localhost` to your laptop's IP address. On Mac, you can find the IP address in System Preferences / Network.
-3. In Xcode, select your phone as build target and press "Build and run"
+In Xcode, select your phone as build target and press "Build and run"
 
 > Hint
 >
-> Shake the device to open the [developer menu](/docs/debugging.html#accessing-the-in-app-developer-menu).
+> Shake the device to open the [developer menu](/react-native/docs/debugging.html#accessing-the-in-app-developer-menu).
 
 ## Building your app for production
 
