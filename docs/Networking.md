@@ -59,7 +59,7 @@ Networking is an inherently asynchronous operation. Fetch methods will return a 
   }
   ```
 
-You can also use ES7's `async`/`await` syntax in React Native app:
+You can also use ES8's `async`/`await` syntax in React Native app:
 
   ```js
   async getMoviesFromApi() {
