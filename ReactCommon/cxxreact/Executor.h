@@ -16,13 +16,6 @@
 namespace facebook {
 namespace react {
 
-#define UNPACKED_JS_SOURCE_PATH_SUFFIX "/bundle.js"
-#define UNPACKED_META_PATH_SUFFIX "/bundle.meta"
-
-enum {
-  UNPACKED_JS_SOURCE = (1 << 0),
-};
-
 class JSExecutor;
 class MessageQueueThread;
 
@@ -197,8 +190,6 @@ public:
     return m_encoding;
   }
 
-  static std::unique_ptr<const JSBigMmapString> fromOptimizedBundle(const std::string& bundlePath);
-
 private:
   int m_fd;
   size_t m_size;
@@ -214,11 +205,6 @@ public:
    */
   virtual void loadApplicationScript(std::unique_ptr<const JSBigString> script,
                                      std::string sourceURL) = 0;
-
-  /**
-   * Execute an application script optimized bundle in the JS context.
-   */
-  virtual void loadApplicationScript(std::string bundlePath, std::string source, int flags);
 
   /**
    * Add an application "unbundle" file
@@ -258,7 +244,5 @@ public:
   virtual void destroy() {}
   virtual ~JSExecutor() {}
 };
-
-std::unique_ptr<const JSBigMmapString> readJSBundle(const std::string& path);
 
 } }
