@@ -11,10 +11,13 @@ package com.facebook.react.tests;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Instrumentation.ActivityMonitor;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentFilter.MalformedMimeTypeException;
 import android.support.v4.app.DialogFragment;
 
 import com.facebook.react.bridge.BaseJavaModule;
@@ -37,8 +40,7 @@ public class ShareTestCase extends ReactAppInstrumentationTestCase {
 
   private static class ShareRecordingModule extends BaseJavaModule {
 
-    private int mShared = 0;
-    private int mDismissed = 0;
+    private int mOpened = 0;
     private int mErrors = 0;
 
     @Override
@@ -47,13 +49,8 @@ public class ShareTestCase extends ReactAppInstrumentationTestCase {
     }
 
     @ReactMethod
-    public void recordShared() {
-      mShared++;
-    }
-
-    @ReactMethod
-    public void recordDismissed() {
-      mDismissed++;
+    public void recordOpened() {
+      mOpened++;
     }
 
     @ReactMethod
@@ -61,12 +58,8 @@ public class ShareTestCase extends ReactAppInstrumentationTestCase {
       mErrors++;
     }
 
-    public int getShared() {
-      return mShared;
-    }
-
-    public int getDismissed() {
-      return mDismissed;
+    public int getOpened() {
+      return mOpened;
     }
 
     public int getErrors() {
@@ -93,79 +86,24 @@ public class ShareTestCase extends ReactAppInstrumentationTestCase {
     return getReactContext().getCatalystInstance().getJSModule(ShareTestModule.class);
   }
 
-  private DialogFragment showDialog(WritableMap content, WritableMap options) {
-    getTestModule().showShareDialog(content, options);
-
-    waitForBridgeAndUIIdle();
-    getInstrumentation().waitForIdleSync();
-
-    return (DialogFragment) getActivity().getSupportFragmentManager()
-        .findFragmentByTag(ShareModule.FRAGMENT_TAG);
-  }
-
   public void testShowBasicShareDialog() {
     final WritableMap content = new WritableNativeMap();
     content.putString("message", "Hello, ReactNative!");
     final WritableMap options = new WritableNativeMap();
 
-    final DialogFragment fragment = showDialog(content, options);
-
-    assertNotNull(fragment);
-  }
-
-  public void testShareCallback() throws Throwable {
-    final WritableMap content = new WritableNativeMap();
-    content.putString("message", "Hello, ReactNative!");
-    final WritableMap options = new WritableNativeMap();
-
-    final DialogFragment fragment = showDialog(content, options);
-
-    /* Block launching activity for next test cases */
-    IntentFilter intentFilter = new IntentFilter(Intent.ACTION_SEND);
+    IntentFilter intentFilter = new IntentFilter(Intent.ACTION_CHOOSER);
     intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
-    intentFilter.addDataType("text/plain");
-    getInstrumentation().addMonitor(intentFilter, null, true);
+    ActivityMonitor monitor = getInstrumentation().addMonitor(intentFilter, null, true);
 
-    runTestOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            ((AlertDialog) fragment.getDialog())
-                .getListView().performItemClick(null, 0, 0);
-          }
-        });
+    getTestModule().showShareDialog(content, options);
 
-    getInstrumentation().waitForIdleSync();
     waitForBridgeAndUIIdle();
-
-    assertEquals(0, mRecordingModule.getErrors());
-    assertEquals(1, mRecordingModule.getShared());
-    assertEquals(0, mRecordingModule.getDismissed());
-  }
-
-  public void testDismissCallback() throws Throwable {
-    final WritableMap content = new WritableNativeMap();
-    content.putString("message", "Hello, ReactNative!");
-    final WritableMap options = new WritableNativeMap();
-
-    final DialogFragment fragment = showDialog(content, options);
-
-    assertEquals(0, mRecordingModule.getDismissed());
-
-    runTestOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            fragment.getDialog().dismiss();
-          }
-        });
-
     getInstrumentation().waitForIdleSync();
-    waitForBridgeAndUIIdle();
 
+    assertEquals(1, monitor.getHits());
+    assertEquals(1, mRecordingModule.getOpened());
     assertEquals(0, mRecordingModule.getErrors());
-    assertEquals(0, mRecordingModule.getShared());
-    assertEquals(1, mRecordingModule.getDismissed());
+
   }
 
 }

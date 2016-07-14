@@ -99,9 +99,7 @@ class ShareMessageExample extends React.Component {
 
   _showResult(result) {
     if (result.action === Share.sharedAction) {
-      if (result.packageName) {
-        this.setState({result: 'shared with a packageName: ' + result.packageName});
-      } else if (result.activityType) {
+      if (result.activityType) {
         this.setState({result: 'shared with an activityType: ' + result.activityType});
       } else {
         this.setState({result: 'shared'});

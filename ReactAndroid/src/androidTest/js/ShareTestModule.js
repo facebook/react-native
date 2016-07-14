@@ -27,13 +27,7 @@ var ShareTestModule = {
   ShareTestApp: ShareTestApp,
   showShareDialog: function(content, options) {
     Share.share(content, options).then(
-      ({action, className}) => {
-        if (action === Share.sharedAction) {
-          RecordingModule.recordShared();
-        } else if (action === Share.dismissedAction) {
-          RecordingModule.recordDismissed();
-        }
-      },
+      () => RecordingModule.recordOpened(),
       ({code, message}) => RecordingModule.recordError()
     );
   },
