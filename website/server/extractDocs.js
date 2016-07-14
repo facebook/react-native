@@ -257,19 +257,24 @@ function getTypedef(filepath, fileContent, json) {
 }
 
 function renderComponent(filepath) {
-  const fileContent = fs.readFileSync(filepath);
-  const json = docgen.parse(
-    fileContent,
-    docgenHelpers.findExportedOrFirst,
-    docgen.defaultHandlers.concat([
-      docgenHelpers.stylePropTypeHandler,
-      docgenHelpers.deprecatedPropTypeHandler,
-      docgenHelpers.jsDocFormatHandler,
-    ])
-  );
-  json.typedef = getTypedef(filepath, fileContent);
+  try {
+    const fileContent = fs.readFileSync(filepath);
+    const json = docgen.parse(
+      fileContent,
+      docgenHelpers.findExportedOrFirst,
+      docgen.defaultHandlers.concat([
+        docgenHelpers.stylePropTypeHandler,
+        docgenHelpers.deprecatedPropTypeHandler,
+        docgenHelpers.jsDocFormatHandler,
+      ])
+    );
+    json.typedef = getTypedef(filepath, fileContent);
 
-  return componentsToMarkdown('component', json, filepath, componentCount++, styleDocs);
+    return componentsToMarkdown('component', json, filepath, componentCount++, styleDocs);
+  } catch (e) {
+    console.log('error in renderComponent for', filepath);
+    throw e;
+  }
 }
 
 function isJsDocFormat(fileContent) {
@@ -330,6 +335,9 @@ function parseAPIInferred(filepath, fileContent) {
   let json;
   try {
     json = jsDocs(fileContent);
+    if (!json) {
+      throw new Error('jsDocs returned falsy');
+    }
   } catch (e) {
     console.error('Cannot parse file', filepath, e);
     json = {};
@@ -427,27 +435,32 @@ function getJsDocFormatType(entities) {
 }
 
 function renderAPI(filepath, type) {
-  const fileContent = fs.readFileSync(filepath).toString();
-  let json = parseAPIInferred(filepath, fileContent);
-  if (isJsDocFormat(fileContent)) {
-    let jsonJsDoc = parseAPIJsDocFormat(filepath, fileContent);
-    // Combine method info with jsdoc fomatted content
-    const methods = json.methods;
-    if (methods && methods.length) {
-      let modMethods = methods;
-      methods.map((method, methodIndex) => {
-        modMethods[methodIndex].params = getJsDocFormatType(method.params);
-        modMethods[methodIndex].returns =
+  try {
+    const fileContent = fs.readFileSync(filepath).toString();
+    let json = parseAPIInferred(filepath, fileContent);
+    if (isJsDocFormat(fileContent)) {
+      let jsonJsDoc = parseAPIJsDocFormat(filepath, fileContent);
+      // Combine method info with jsdoc formatted content
+      const methods = json.methods;
+      if (methods && methods.length) {
+        let modMethods = methods;
+        methods.map((method, methodIndex) => {
+          modMethods[methodIndex].params = getJsDocFormatType(method.params);
+          modMethods[methodIndex].returns =
           getJsDocFormatType(method.returntypehint);
-        delete modMethods[methodIndex].returntypehint;
-      });
-      json.methods = modMethods;
-      // Use deep Object.assign so duplicate properties are overwritten.
-      deepAssign(jsonJsDoc.methods, json.methods);
+          delete modMethods[methodIndex].returntypehint;
+        });
+        json.methods = modMethods;
+        // Use deep Object.assign so duplicate properties are overwritten.
+        deepAssign(jsonJsDoc.methods, json.methods);
+      }
+      json = jsonJsDoc;
     }
-    json = jsonJsDoc;
+    return componentsToMarkdown(type, json, filepath, componentCount++);
+  } catch (e) {
+    console.log('error in renderAPI for', filepath);
+    throw e;
   }
-  return componentsToMarkdown(type, json, filepath, componentCount++);
 }
 
 function renderStyle(filepath) {
@@ -476,18 +489,15 @@ const components = [
   '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
   '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
   '../Libraries/Image/Image.ios.js',
-  '../Libraries/Image/ImageEditor.js',
-  '../Libraries/Image/ImageStore.js',
   '../Libraries/CustomComponents/ListView/ListView.js',
   '../Libraries/Components/MapView/MapView.js',
   '../Libraries/Modal/Modal.js',
   '../Libraries/CustomComponents/Navigator/Navigator.js',
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
-  '../Libraries/Components/Picker/PickerIOS.ios.js',
   '../Libraries/Components/Picker/Picker.js',
+  '../Libraries/Components/Picker/PickerIOS.ios.js',
   '../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.android.js',
   '../Libraries/Components/ProgressViewIOS/ProgressViewIOS.ios.js',
-  '../Libraries/Components/ScrollView/RecyclerViewBackedScrollView.ios.js',
   '../Libraries/Components/RefreshControl/RefreshControl.js',
   '../Libraries/Components/ScrollView/ScrollView.js',
   '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
@@ -503,7 +513,6 @@ const components = [
   '../Libraries/Text/Text.js',
   '../Libraries/Components/TextInput/TextInput.js',
   '../Libraries/Components/ToolbarAndroid/ToolbarAndroid.android.js',
-  '../Libraries/Components/Touchable/Touchable.js',
   '../Libraries/Components/Touchable/TouchableHighlight.js',
   '../Libraries/Components/Touchable/TouchableNativeFeedback.android.js',
   '../Libraries/Components/Touchable/TouchableOpacity.js',
@@ -521,7 +530,6 @@ const apis = [
   '../Libraries/Animated/src/AnimatedImplementation.js',
   '../Libraries/AppRegistry/AppRegistry.js',
   '../Libraries/AppState/AppState.js',
-  '../Libraries/AppState/AppStateIOS.js',
   '../Libraries/Storage/AsyncStorage.js',
   '../Libraries/Utilities/BackAndroid.android.js',
   '../Libraries/CameraRoll/CameraRoll.js',
@@ -530,20 +538,19 @@ const apis = [
   '../Libraries/Utilities/Dimensions.js',
   '../Libraries/Animated/src/Easing.js',
   '../Libraries/Geolocation/Geolocation.js',
+  '../Libraries/Image/ImageEditor.js',
   '../Libraries/CameraRoll/ImagePickerIOS.js',
+  '../Libraries/Image/ImageStore.js',
   '../Libraries/Components/Intent/IntentAndroid.android.js',
   '../Libraries/Interaction/InteractionManager.js',
-  '../Libraries/Components/Keyboard/Keyboard.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/Linking/Linking.js',
-  '../Libraries/LinkingIOS/LinkingIOS.js',
   '../Libraries/CustomComponents/ListView/ListViewDataSource.js',
   '../node_modules/react/lib/NativeMethodsMixin.js',
   '../Libraries/BatchedBridge/BatchedBridgedModules/NativeModules.js',
   '../Libraries/Network/NetInfo.js',
   '../Libraries/Interaction/PanResponder.js',
   '../Libraries/Utilities/PixelRatio.js',
-  '../Libraries/Utilities/Platform.android.js',
   '../Libraries/PushNotificationIOS/PushNotificationIOS.js',
   '../Libraries/Settings/Settings.ios.js',
   '../Libraries/Components/StatusBar/StatusBarIOS.ios.js',
@@ -551,9 +558,8 @@ const apis = [
   '../Libraries/Utilities/Systrace.js',
   '../Libraries/Components/TimePickerAndroid/TimePickerAndroid.android.js',
   '../Libraries/Components/ToastAndroid/ToastAndroid.android.js',
-  '../Libraries/Utilities/UIManager.js',
-  '../Libraries/Vibration/VibrationIOS.ios.js',
   '../Libraries/Vibration/Vibration.js',
+  '../Libraries/Vibration/VibrationIOS.ios.js',
 ];
 
 const stylesWithPermalink = [
