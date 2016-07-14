@@ -77,8 +77,10 @@ if [[ "$CONFIGURATION" = "Debug" && "$PLATFORM_NAME" != "iphonesimulator" ]]; th
   echo "$IP.xip.io" > "$DEST/ip.txt"
 fi
 
+[ -z "$REACT_ENTRY" ] && export REACT_ENTRY="index.ios.js"
+
 $NODE_BINARY "$REACT_NATIVE_DIR/local-cli/cli.js" bundle \
-  --entry-file index.ios.js \
+  --entry-file $REACT_ENTRY \
   --platform ios \
   --dev $DEV \
   --reset-cache true \
