@@ -51,6 +51,10 @@ static std::string getApplicationDir(const char* methodName) {
   return getAbsolutePathMethod(dirObj)->toStdString();
 }
 
+static std::string getApplicationCacheDir() {
+  return getApplicationDir("getCacheDir");
+}
+
 static std::string getApplicationPersistentDir() {
   return getApplicationDir("getFilesDir");
 }
@@ -156,10 +160,6 @@ class JReactMarker : public JavaClass<JReactMarker> {
   }
 };
 
-}
-
-std::string getApplicationCacheDir() {
-  return getApplicationDir("getCacheDir");
 }
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
