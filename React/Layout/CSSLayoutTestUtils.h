@@ -14,7 +14,7 @@
 #include <string.h>
 
 #include "CSSMacros.h"
-#include "Layout.h"
+#include "CSSLayout.h"
 
 #define SMALL_WIDTH 35
 #define SMALL_HEIGHT 18
