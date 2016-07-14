@@ -680,6 +680,12 @@ exports.examples = [
             style={[styles.multiline, styles.multilineWithFontStyles]}
           />
           <TextInput
+            placeholder="multiline text input with max length"
+            maxLength={5}
+            multiline={true}
+            style={styles.multiline}
+          />
+          <TextInput
             placeholder="uneditable multiline text input"
             editable={false}
             multiline={true}
