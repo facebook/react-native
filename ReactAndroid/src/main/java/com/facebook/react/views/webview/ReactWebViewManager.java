@@ -295,7 +295,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   @ReactProp(name = "enableMixedContentMode")
   public void setMixedContentMode(WebView view, boolean enabled) {
-    if (enabled == true && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       view.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
     }
   }
