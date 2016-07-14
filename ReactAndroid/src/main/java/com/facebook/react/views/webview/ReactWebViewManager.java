@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.text.TextUtils;
@@ -22,6 +23,8 @@ import android.webkit.GeolocationPermissions;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 
 import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
@@ -70,7 +73,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   private static final String REACT_CLASS = "RCTWebView";
 
   private static final String HTML_ENCODING = "UTF-8";
-  private static final String HTML_MIME_TYPE = "text/html; charset=utf-8";
+  public static final String HTML_MIME_TYPE = "text/html; charset=utf-8";
 
   private static final String HTTP_METHOD_POST = "POST";
 
@@ -125,25 +128,23 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     }
 
     @Override
-    public void onReceivedError(
-        WebView webView,
-        int errorCode,
-        String description,
-        String failingUrl) {
-      super.onReceivedError(webView, errorCode, description, failingUrl);
+    public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+      super.onReceivedError(view, request, error);
       mLastLoadFailed = true;
 
       // In case of an error JS side expect to get a finish event first, and then get an error event
       // Android WebView does it in the opposite way, so we need to simulate that behavior
-      emitFinishEvent(webView, failingUrl);
+      emitFinishEvent(view, view.getUrl());
 
-      WritableMap eventData = createWebViewEvent(webView, failingUrl);
-      eventData.putDouble("code", errorCode);
-      eventData.putString("description", description);
+      WritableMap eventData = createWebViewEvent(view, view.getUrl());
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        eventData.putDouble("code", error.getErrorCode());
+        eventData.putString("description", error.getDescription().toString());
+      }
 
       dispatchEvent(
-          webView,
-          new TopLoadingErrorEvent(webView.getId(), eventData));
+        view,
+        new TopLoadingErrorEvent(view.getId(), eventData));
     }
 
     @Override
@@ -186,57 +187,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     }
   }
 
-  /**
-   * Subclass of {@link WebView} that implements {@link LifecycleEventListener} interface in order
-   * to call {@link WebView#destroy} on activty destroy event and also to clear the client
-   */
-  private static class ReactWebView extends WebView implements LifecycleEventListener {
-    private @Nullable String injectedJS;
-
-    /**
-     * WebView must be created with an context of the current activity
-     *
-     * Activity Context is required for creation of dialogs internally by WebView
-     * Reactive Native needed for access to ReactNative internal system functionality
-     *
-     */
-    public ReactWebView(ThemedReactContext reactContext) {
-      super(reactContext);
-    }
-
-    @Override
-    public void onHostResume() {
-      // do nothing
-    }
-
-    @Override
-    public void onHostPause() {
-      // do nothing
-    }
-
-    @Override
-    public void onHostDestroy() {
-      cleanupCallbacksAndDestroy();
-    }
-
-    public void setInjectedJavaScript(@Nullable String js) {
-      injectedJS = js;
-    }
-
-    public void callInjectedJavaScript() {
-      if (getSettings().getJavaScriptEnabled() &&
-          injectedJS != null &&
-          !TextUtils.isEmpty(injectedJS)) {
-        loadUrl("javascript:(function() {\n" + injectedJS + ";\n})();");
-      }
-    }
-
-    private void cleanupCallbacksAndDestroy() {
-      setWebViewClient(null);
-      destroy();
-    }
-  }
-
   public ReactWebViewManager() {
     mWebViewConfig = new WebViewConfig() {
       public void configWebView(WebView webView) {
@@ -274,6 +224,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     return webView;
   }
 
+  @SuppressLint("SetJavaScriptEnabled")
   @ReactProp(name = "javaScriptEnabled")
   public void setJavaScriptEnabled(WebView view, boolean enabled) {
     view.getSettings().setJavaScriptEnabled(enabled);
@@ -300,7 +251,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   @ReactProp(name = "mediaPlaybackRequiresUserAction")
   public void setMediaPlaybackRequiresUserAction(WebView view, boolean requires) {
-    view.getSettings().setMediaPlaybackRequiresUserGesture(requires);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      view.getSettings().setMediaPlaybackRequiresUserGesture(requires);
+    }
   }
 
   @ReactProp(name = "injectedJavaScript")
@@ -313,11 +266,15 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     if (source != null) {
       if (source.hasKey("html")) {
         String html = source.getString("html");
+        String mimeType = HTML_MIME_TYPE;
+        if (source.hasKey("mimeType")) {
+          mimeType = source.getString("mimeType");
+        }
         if (source.hasKey("baseUrl")) {
           view.loadDataWithBaseURL(
-              source.getString("baseUrl"), html, HTML_MIME_TYPE, HTML_ENCODING, null);
+              source.getString("baseUrl"), html, mimeType, HTML_ENCODING, null);
         } else {
-          view.loadData(html, HTML_MIME_TYPE, HTML_ENCODING);
+          view.loadData(html, mimeType, HTML_ENCODING);
         }
         return;
       }
