@@ -267,7 +267,8 @@ void JSCExecutor::loadApplicationScript(
 
   auto jsScriptBigString = JSBigMmapString::fromOptimizedBundle(bundlePath);
   if (jsScriptBigString->encoding() != JSBigMmapString::Encoding::Ascii) {
-    throw std::runtime_error("Optimized bundle needs to be ascii encoded");
+    LOG(WARNING) << "Bundle is not ASCII encoded - falling back to the slow path";
+    return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
   }
 
   String jsSourceURL(sourceURL.c_str());

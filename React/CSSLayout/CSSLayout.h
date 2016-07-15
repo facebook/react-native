@@ -1,14 +1,11 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
+ *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-
-// NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<c504fae9470271c5617f345667bef8ad>>
-
 
 #ifndef __LAYOUT_H
 #define __LAYOUT_H
@@ -25,6 +22,10 @@ static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
 #endif
 
 #define CSS_UNDEFINED NAN
+
+#include "CSSMacros.h"
+
+CSS_EXTERN_C_BEGIN
 
 typedef enum {
   CSS_DIRECTION_INHERIT = 0,
@@ -199,5 +200,7 @@ void print_css_node(css_node_t *node, css_print_options_t options);
 // Function that computes the layout!
 void layoutNode(css_node_t *node, float availableWidth, float availableHeight, css_direction_t parentDirection);
 bool isUndefined(float value);
+
+CSS_EXTERN_C_END
 
 #endif

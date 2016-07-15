@@ -32,14 +32,13 @@ typedef void (^RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourc
 /**
  * @experimental
  * Attempts to synchronously load the script at the given URL. The following two conditions must be met:
- * 1. It must be a file URL.
- * 2. It must point to a RAM bundle, or allowLoadingNonRAMBundles must be YES.
+ *   1. It must be a file URL.
+ *   2. It must point to a RAM bundle.
  * If the URL does not meet those conditions, this method will return nil and supply an error with the domain
  * RCTJavaScriptLoaderErrorDomain and the code RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously.
  */
 + (NSData *)attemptSynchronousLoadOfBundleAtURL:(NSURL *)scriptURL
                                    sourceLength:(int64_t *)sourceLength
-                      allowLoadingNonRAMBundles:(BOOL)allowLoadingNonRAMBundles
                                           error:(NSError **)error;
 
 @end

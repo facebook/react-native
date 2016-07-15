@@ -1,14 +1,11 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
+ *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-
-// NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<484d0d17453521463896ce24d946412b>>
-
 
 #include <assert.h>
 #include <math.h>
@@ -16,10 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// in concatenated header, don't include Layout.h it's already at the top
-#ifndef CSS_LAYOUT_IMPLEMENTATION
-#include "Layout.h"
-#endif
+#include "CSSLayout.h"
 
 #ifdef _MSC_VER
 #include <float.h>
@@ -657,7 +651,6 @@ static void setPosition(css_node_t* node, css_direction_t direction) {
 //
 static void layoutNodeImpl(css_node_t* node, float availableWidth, float availableHeight,
     css_direction_t parentDirection, css_measure_mode_t widthMeasureMode, css_measure_mode_t heightMeasureMode, bool performLayout) {
-  /** START_GENERATED **/
 
   assert(isUndefined(availableWidth) ? widthMeasureMode == CSS_MEASURE_MODE_UNDEFINED : true); // availableWidth is indefinite so widthMeasureMode must be CSS_MEASURE_MODE_UNDEFINED
   assert(isUndefined(availableHeight) ? heightMeasureMode == CSS_MEASURE_MODE_UNDEFINED : true); // availableHeight is indefinite so heightMeasureMode must be CSS_MEASURE_MODE_UNDEFINED
@@ -691,7 +684,7 @@ static void layoutNodeImpl(css_node_t* node, float availableWidth, float availab
       // Measure the text under the current constraints.
       css_dim_t measureDim = node->measure(
         node->context,
-        
+
         innerWidth,
         widthMeasureMode,
         innerHeight,
@@ -1513,7 +1506,6 @@ static void layoutNodeImpl(css_node_t* node, float availableWidth, float availab
 
     currentAbsoluteChild = currentAbsoluteChild->next_child;
   }
-  /** END_GENERATED **/
 }
 
 int gDepth = 0;

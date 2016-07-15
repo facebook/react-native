@@ -296,7 +296,7 @@ class PushNotificationIOS {
   /**
    * You will never need to instantiate `PushNotificationIOS` yourself.
    * Listening to the `notification` event and invoking
-   * `popInitialNotification` is sufficient
+   * `getInitialNotification` is sufficient
    */
   constructor(nativeNotif: Object) {
     this._data = {};
