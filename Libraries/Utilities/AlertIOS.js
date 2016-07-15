@@ -163,7 +163,7 @@ class AlertIOS {
    *    example). `style` should be one of 'default', 'cancel' or 'destructive'.
    * @param type This configures the text input. One of 'plain-text',
    *    'secure-text' or 'login-password'.
-   * @param defaultValue The dialog's title.
+   * @param defaultValue The default text in text input.
    * @param keyboardType The keyboard type of first text field(if exists).
    *    One of 'default', 'email-address', 'numeric', 'phone-pad',
    *    'ascii-capable', 'numbers-and-punctuation', 'url', 'number-pad',
