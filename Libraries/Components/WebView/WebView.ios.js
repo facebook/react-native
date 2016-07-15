@@ -464,24 +464,11 @@ var WebView = React.createClass({
   /**
    * Evaluate JavaScript on the current page.
    */
-  evaluateJavaScript: async function(
-    script: string,
-    callback?: ?(error: ?Error, result: ?string) => void,
-  ): Promise {
+  evaluateJavaScript: async function(script: string): Promise {
     var escaped = JSON.stringify(script).replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
     var wrapped = 'JSON.stringify(eval(' + escaped + '))';
-    var result = null;
-
-    try {
-      var resultString = await RCTWebViewManager.evaluateJavaScript(this.getWebViewHandle(), wrapped);
-      result = JSON.parse(resultString);
-    } catch (e) {
-      callback && callback(e, null);
-      throw e;
-    }
-
-    callback && callback(null, result);
-    return result;
+    var resultString = await RCTWebViewManager.evaluateJavaScript(this.getWebViewHandle(), wrapped);
+    return JSON.parse(resultString);
   },
 
   /**
