@@ -45,10 +45,10 @@ changes, even though other properties of the view and its children
 haven&#x27;t changed. Usually this overhead isn&#x27;t a concern but when
 performing continuous animations and responding to gestures, judiciously
 optimizing your components can improve your animations&#x27; fidelity.</p><p>If you look at the implementation of <code>setNativeProps</code> in
-<a href="https://github.com/facebook/react-native/blob/master/Libraries/ReactIOS/NativeMethodsMixin.js" target="_blank">NativeMethodsMixin.js</a>
+<a href="https://github.com/facebook/react/blob/master/src/renderers/native/NativeMethodsMixin.js" target="_blank">NativeMethodsMixin.js</a>
 you will notice that it is a wrapper around <code>RCTUIManager.updateView</code> -
 this is the exact same function call that results from re-rendering -
-see <a href="https://github.com/facebook/react-native/blob/master/Libraries/ReactNative/ReactNativeBaseComponent.js" target="_blank">receiveComponent in
+see <a href="https://github.com/facebook/react/blob/master/src/renderers/native/ReactNativeBaseComponent.js" target="_blank">receiveComponent in
 ReactNativeBaseComponent.js</a>.</p><h2><a class="anchor" name="composite-components-and-setnativeprops"></a>Composite components and setNativeProps <a class="hash-link" href="docs/direct-manipulation.html#composite-components-and-setnativeprops">#</a></h2><p>Composite components are not backed by a native view, so you cannot call
 <code>setNativeProps</code> on them. Consider this example:</p><div class="prism language-javascript">class <span class="token class-name">MyButton</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
   <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
