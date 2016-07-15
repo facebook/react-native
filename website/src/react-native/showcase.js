@@ -301,7 +301,7 @@ var featured = [
     icon: 'http://img.wdjimg.com/mms/icon/v1/e/6e/687b129606504cd52632a8cc4ca816ee_256_256.png',
     linkPlayStore: 'http://www.wandoujia.com/apps/me.ele.crowdsource',
     linkAppStore: 'https://itunes.apple.com/cn/app/feng-niao-zhong-bao-jian-zhi/id1061034377?mt=8',
-    infoLink: 'http://baike.baidu.com/link?url=RtyVYN4_fdejEFU__ihdfQlCnfQZMOLmTkXBeWz1eH5meazg2Cie6QD-7-yYBywvfdTh5SH5qdzGkiEoFyW1XrNCpGDx5tkh5Z9xYy4Uqdc1HdKcNgjss973rhQmozYz',
+    infoLink: 'https://elelogistics.github.io/about/Hummingbird-Crowdsource.html',
     infoTitle: '"Fengniao Crowdsource app" is a mobile app, developed by Eleme, Inc, for Fengniao Crowdsource, the largest crowdsourced logistics platform in China.',
   },
 ];
