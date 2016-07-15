@@ -16,6 +16,8 @@
 #import "RCTUtils.h"
 
 static const NSTimeInterval kMinimumSleepInterval = 1;
+
+// These timing contants should be kept in sync with the ones in `JSTimersExecution.js`.
 // The duration of a frame. This assumes that we want to run at 60 fps.
 static const NSTimeInterval kFrameDuration = 1.0 / 60.0;
 // The minimum time left in a frame to trigger the idle callback.
@@ -136,14 +138,6 @@ RCT_EXPORT_MODULE()
 - (dispatch_queue_t)methodQueue
 {
   return RCTJSThread;
-}
-
-- (NSDictionary *)constantsToExport
-{
-  return @{
-    @"frameDuration": @(kFrameDuration * 1000),
-    @"idleCallbackFrameDeadline": @(kIdleCallbackFrameDeadline * 1000),
-  };
 }
 
 - (void)invalidate
