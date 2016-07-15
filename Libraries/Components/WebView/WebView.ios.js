@@ -469,9 +469,8 @@ var WebView = React.createClass({
     callback?: ?(error: ?Error, result: ?string) => void,
   ): Promise {
     return new Promise((resolve, reject) => {
-      var escaped = script.replace(/\\/g, '\\\\')
-                          .replace(/"/g, '\\"');
-      var wrapped = 'JSON.stringify(eval("' + escaped + '"))';
+      var escaped = JSON.stringify(script).replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+      var wrapped = 'JSON.stringify(eval(' + escaped + '))';
 
       RCTWebViewManager.evaluateJavaScript(this.getWebViewHandle(), wrapped, function(error, result) {
         if (!error) {
