@@ -41,6 +41,10 @@ const ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ImageExample'),
   },
   {
+    key: 'KeyboardAvoidingViewExample',
+    module: require('./KeyboardAvoidingViewExample'),
+  },
+  {
     key: 'LayoutEventsExample',
     module: require('./LayoutEventsExample'),
   },
@@ -63,6 +67,10 @@ const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'ModalExample',
     module: require('./ModalExample'),
+  },
+  {
+    key: 'NativeAnimationsExample',
+    module: require('./NativeAnimationsExample'),
   },
   {
     key: 'NavigatorExample',
@@ -242,10 +250,6 @@ const APIExamples: Array<UIExplorerExample> = [
   {
     key: 'SnapshotExample',
     module: require('./SnapshotExample'),
-  },
-  {
-    key: 'StatusBarIOSExample',
-    module: require('./StatusBarIOSExample'),
   },
   {
     key: 'TimerExample',

@@ -74,19 +74,33 @@ var API = {
 var PROPS_WHITELIST = {
   style: {
     opacity: true,
-
+    transform: true,
     /* legacy android transform properties */
     scaleX: true,
     scaleY: true,
-    rotation: true,
     translateX: true,
     translateY: true,
   },
 };
 
+var TRANSFORM_WHITELIST = {
+  translateX: true,
+  translateY: true,
+  scale: true,
+  rotate: true,
+};
+
 function validateProps(params: Object): void {
   for (var key in params) {
     if (!PROPS_WHITELIST.hasOwnProperty(key)) {
+      throw new Error(`Property '${key}' is not supported by native animated module`);
+    }
+  }
+}
+
+function validateTransform(config: Object): void {
+  for (var key in config) {
+    if (!TRANSFORM_WHITELIST.hasOwnProperty(key)) {
       throw new Error(`Property '${key}' is not supported by native animated module`);
     }
   }
@@ -129,6 +143,7 @@ module.exports = {
   API,
   validateProps,
   validateStyles,
+  validateTransform,
   validateInterpolation,
   generateNewNodeTag,
   generateNewAnimationId,

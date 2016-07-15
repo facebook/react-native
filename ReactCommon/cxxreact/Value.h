@@ -24,6 +24,25 @@ namespace react {
 class Value;
 class Context;
 
+class JSException : public std::runtime_error {
+public:
+  explicit JSException(const char* msg)
+    : std::runtime_error(msg)
+    , stack_("") {}
+
+  JSException(const char* msg, const char* stack)
+    : std::runtime_error(msg)
+    , stack_(stack) {}
+
+  const std::string& getStack() const {
+    return stack_;
+  }
+
+private:
+  std::string stack_;
+};
+
+
 class String : public noncopyable {
 public:
   explicit String(const char* utf8) :
@@ -228,12 +247,12 @@ public:
     return JSValueIsString(context(), m_value);
   }
 
-  String toString() {
+  String toString() noexcept {
     return String::adopt(JSValueToStringCopy(context(), m_value, nullptr));
   }
 
-  std::string toJSONString(unsigned indent = 0) const;
-  static Value fromJSON(JSContextRef ctx, const String& json);
+  std::string toJSONString(unsigned indent = 0) const throw(JSException);
+  static Value fromJSON(JSContextRef ctx, const String& json) throw(JSException);
 protected:
   JSContextRef context() const;
   JSContextRef m_context;

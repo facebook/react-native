@@ -137,7 +137,7 @@ describe('processRequest', () => {
       requestHandler,
       'index.ios.includeRequire.bundle'
     ).then(response => {
-      expect(response.body).toEqual('this is the source')
+      expect(response.body).toEqual('this is the source');
       expect(Bundler.prototype.bundle).toBeCalledWith({
         entryFile: 'index.ios.js',
         inlineSourceMap: false,
@@ -425,6 +425,28 @@ describe('processRequest', () => {
             lineNumber: 21,
             column: 4,
             customPropShouldBeLeftUnchanged: 'foo',
+          }]
+        });
+      });
+    });
+
+    pit('ignores `/debuggerWorker.js` stack frames', () => {
+      const body = JSON.stringify({stack: [{
+        file: 'http://localhost:8081/debuggerWorker.js',
+        lineNumber: 123,
+        column: 456,
+      }]});
+
+      return makeRequest(
+        requestHandler,
+        '/symbolicate',
+        { rawBody: body }
+      ).then(response => {
+        expect(JSON.parse(response.body)).toEqual({
+          stack: [{
+            file: 'http://localhost:8081/debuggerWorker.js',
+            lineNumber: 123,
+            column: 456,
           }]
         });
       });

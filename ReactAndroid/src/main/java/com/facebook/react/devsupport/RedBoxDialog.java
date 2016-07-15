@@ -42,6 +42,7 @@ import org.json.JSONObject;
 /* package */ class RedBoxDialog extends Dialog implements AdapterView.OnItemClickListener {
 
   private final DevSupportManager mDevSupportManager;
+  private final DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
 
   private ListView mStackView;
   private Button mReloadJs;
@@ -182,6 +183,7 @@ import org.json.JSONObject;
     setContentView(R.layout.redbox_view);
 
     mDevSupportManager = devSupportManager;
+    mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
 
     mStackView = (ListView) findViewById(R.id.rn_redbox_stack);
     mStackView.setOnItemClickListener(this);
@@ -219,7 +221,9 @@ import org.json.JSONObject;
       mDevSupportManager.showDevOptionsDialog();
       return true;
     }
-
+    if (mDoubleTapReloadRecognizer.didDoubleTapR(keyCode, getCurrentFocus())) {
+      mDevSupportManager.handleReloadJS();
+    }
     return super.onKeyUp(keyCode, event);
   }
 }

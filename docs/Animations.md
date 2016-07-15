@@ -24,13 +24,13 @@ component with a simple spring bounce on mount looks like this:
 
 ```javascript
 class Playground extends React.Component {
-  constructor(props: any) {
+  constructor(props) {
     super(props);
     this.state = {
       bounceValue: new Animated.Value(0),
     };
   }
-  render(): ReactElement {
+  render() {
     return (
       <Animated.Image                         // Base: Image, Text, View
         source={{uri: 'http://i.imgur.com/XMKOH81.jpg'}}
@@ -286,7 +286,7 @@ class App extends React.Component {
   componentWillMount() {
     // Animate creation
     LayoutAnimation.spring();
-  },
+  }
 
   _onPress() {
     // Animate the update
@@ -306,7 +306,7 @@ class App extends React.Component {
       </View>
     );
   }
-};
+}
 ```
 [Run this example](https://rnplay.org/apps/uaQrGQ)
 

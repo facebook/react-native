@@ -20,7 +20,7 @@ const ReactNative = require('react-native');
 const {
   CameraRoll,
   Image,
-  SliderIOS,
+  Slider,
   StyleSheet,
   Switch,
   Text,
@@ -51,7 +51,7 @@ const CameraRollExample = React.createClass({
           onValueChange={this._onSwitchChange}
           value={this.state.bigImages} />
         <Text>{(this.state.bigImages ? 'Big' : 'Small') + ' Images'}</Text>
-        <SliderIOS
+        <Slider
           value={this.state.sliderValue}
           onValueChange={this._onSliderChange}
         />

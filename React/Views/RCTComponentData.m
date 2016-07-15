@@ -87,7 +87,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (UIView *)createViewWithTag:(NSNumber *)tag
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   UIView *view = [self.manager view];
   view.reactTag = tag;

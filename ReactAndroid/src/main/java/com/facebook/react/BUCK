@@ -1,11 +1,7 @@
 include_defs('//ReactAndroid/DEFS')
 
-XREACT_SRCS = [
-  'XReactInstanceManager.java',
-  'XReactInstanceManagerImpl.java',
-]
-
 DEPS = [
+  react_native_target('java/com/facebook/react/cxxbridge:bridge'),
   react_native_target('java/com/facebook/react/bridge:bridge'),
   react_native_target('java/com/facebook/react/common:common'),
   react_native_target('java/com/facebook/react/devsupport:devsupport'),
@@ -23,20 +19,8 @@ DEPS = [
 
 android_library(
   name = 'react',
-  srcs = glob(['*.java'], excludes=XREACT_SRCS),
+  srcs = glob(['*.java']),
   deps = DEPS,
-  visibility = [
-    'PUBLIC',
-  ],
-)
-
-android_library(
-  name = 'xreact',
-  srcs = XREACT_SRCS,
-  deps = DEPS + [
-    ':react',
-    react_native_target('java/com/facebook/react/cxxbridge:bridge'),
-  ],
   visibility = [
     'PUBLIC',
   ],

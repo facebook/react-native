@@ -27,7 +27,10 @@ import type {
   NavigationGestureDirection,
 } from 'NavigationCardStackPanResponder';
 
-
+type Props = NavigationSceneRendererProps & {
+  onNavigateBack: ?Function,
+  onNavigateForward: ?Function,
+};
 
 /**
  * Primitive gesture directions.
@@ -39,14 +42,6 @@ const {
   RESPOND_THRESHOLD,
   Directions,
 } = NavigationCardStackPanResponder;
-
-/**
- * Primitive gesture actions.
- */
-const Actions = {
-  JUMP_BACK: {type: 'jump_back'},
-  JUMP_FORWARD: {type: 'jump_forward'},
-};
 
 /**
  * Pan responder that handles gesture for a card in the cards list.
@@ -66,12 +61,12 @@ class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
 
   _isResponding: boolean;
   _isVertical: boolean;
-  _props: NavigationSceneRendererProps;
+  _props: Props;
   _startValue: number;
 
   constructor(
     direction: NavigationGestureDirection,
-    props: NavigationSceneRendererProps,
+    props: Props,
   ) {
     super();
     this._isResponding = false;
@@ -157,7 +152,8 @@ class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
 
     const {
       navigationState,
-      onNavigate,
+      onNavigateBack,
+      onNavigateForward,
       position,
     } = this._props;
 
@@ -172,7 +168,7 @@ class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
         distance > DISTANCE_THRESHOLD  ||
         value <= index - POSITION_THRESHOLD
       ) {
-        onNavigate(Actions.JUMP_BACK);
+        onNavigateBack && onNavigateBack();
         return;
       }
 
@@ -180,7 +176,7 @@ class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
         distance < -DISTANCE_THRESHOLD ||
         value >= index  + POSITION_THRESHOLD
       ) {
-        onNavigate(Actions.JUMP_FORWARD);
+        onNavigateForward && onNavigateForward();
       }
     });
   }
@@ -204,19 +200,18 @@ class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
 
 function createPanHandlers(
   direction: NavigationGestureDirection,
-  props: NavigationSceneRendererProps,
+  props: Props,
 ): NavigationPanPanHandlers {
   const responder = new NavigationPagerPanResponder(direction, props);
   return responder.panHandlers;
 }
 
 function forHorizontal(
-  props: NavigationSceneRendererProps,
+  props: Props,
 ): NavigationPanPanHandlers {
   return createPanHandlers(Directions.HORIZONTAL, props);
 }
 
 module.exports = {
-  Actions,
   forHorizontal,
 };

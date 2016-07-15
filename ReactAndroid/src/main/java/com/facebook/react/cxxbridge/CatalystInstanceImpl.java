@@ -191,6 +191,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
       FLog.w(ReactConstants.TAG, "Calling JS function after bridge has been destroyed.");
       return;
     }
+    if (!mInitialized) {
+      throw new RuntimeException("Attempt to call JS function before instance initialization.");
+    }
 
     callJSFunction(executorToken, module, method, arguments, tracingName);
   }

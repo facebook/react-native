@@ -24,6 +24,6 @@ struct MethodCall {
     , callId(cid) {}
 };
 
-std::vector<MethodCall> parseMethodCalls(const std::string& json);
+std::vector<MethodCall> parseMethodCalls(const std::string& json) throw(std::invalid_argument);
 
 } }

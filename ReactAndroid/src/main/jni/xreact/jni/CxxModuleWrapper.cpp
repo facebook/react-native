@@ -2,15 +2,10 @@
 
 #include "CxxModuleWrapper.h"
 
-#include <react/jni/ReadableNativeArray.h>
-
 #include <fb/fbjni.h>
 #include <fb/Environment.h>
 #include <jni/LocalString.h>
 #include <jni/Registration.h>
-
-#include <cxxreact/JsArgumentHelpers.h>
-#include <cxxreact/FollySupport.h>
 
 #include <android/log.h>
 
@@ -19,6 +14,12 @@
 
 #include <unordered_set>
 #include <dlfcn.h>
+
+#include <cxxreact/JsArgumentHelpers.h>
+#include <cxxreact/FollySupport.h>
+
+#include "ReadableNativeArray.h"
+
 
 using namespace facebook::jni;
 using namespace facebook::xplat::module;

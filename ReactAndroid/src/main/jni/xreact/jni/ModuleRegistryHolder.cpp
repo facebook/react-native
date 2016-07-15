@@ -10,11 +10,10 @@
 #include <cxxreact/Instance.h>
 #include <cxxreact/JsArgumentHelpers.h>
 #include <cxxreact/NativeModule.h>
-#include <react/jni/ReadableNativeArray.h>
-
-#include "MethodInvoker.h"
 
 #include "CatalystInstanceImpl.h"
+#include "MethodInvoker.h"
+#include "ReadableNativeArray.h"
 
 using facebook::xplat::module::CxxModule;
 

@@ -17,7 +17,5 @@
   <string name="catalyst_remotedbg_message" project="catalyst" translatable="false">Connecting to remote debugger</string>
   <string name="catalyst_remotedbg_error" project="catalyst" translatable="false">Unable to connect with remote debugger</string>
   <string name="catalyst_element_inspector" project="catalyst" translatable="false">Toggle Inspector</string>
-  <string name="catalyst_start_profile" project="catalyst" translatable="false">Start Profile</string>
-  <string name="catalyst_stop_profile" project="catalyst" translatable="false">Stop Profile</string>
   <string name="catalyst_heap_capture" project="catalyst" translatable="false">Capture Heap</string>
 </resources>
