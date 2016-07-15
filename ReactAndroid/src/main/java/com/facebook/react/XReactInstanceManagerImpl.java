@@ -109,7 +109,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   private @Nullable ReactContextInitAsyncTask mReactContextInitAsyncTask;
 
   /* accessed from any thread */
-  private @Nullable String mJSBundleFile; /* path to JS bundle on file system */
+  private final @Nullable JSBundleLoader mBundleLoader; /* path to JS bundle on file system */
   private final @Nullable String mJSMainModuleName; /* path to JS bundle root on packager server */
   private final List<ReactPackage> mPackages;
   private final DevSupportManager mDevSupportManager;
@@ -275,7 +275,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     Context applicationContext,
     @Nullable Activity currentActivity,
     @Nullable DefaultHardwareBackBtnHandler defaultHardwareBackBtnHandler,
-    @Nullable String jsBundleFile,
+    @Nullable JSBundleLoader bundleLoader,
     @Nullable String jsMainModuleName,
     List<ReactPackage> packages,
     boolean useDeveloperSupport,
@@ -295,7 +295,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     mApplicationContext = applicationContext;
     mCurrentActivity = currentActivity;
     mDefaultBackButtonImpl = defaultHardwareBackBtnHandler;
-    mJSBundleFile = jsBundleFile;
+    mBundleLoader = bundleLoader;
     mJSMainModuleName = jsMainModuleName;
     mPackages = packages;
     mUseDeveloperSupport = useDeveloperSupport;
@@ -382,7 +382,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
         // If there is a up-to-date bundle downloaded from server,
         // with remote JS debugging disabled, always use that.
         onJSBundleLoadedFromServer();
-      } else if (mJSBundleFile == null) {
+      } else if (mBundleLoader == null) {
         mDevSupportManager.handleReloadJS();
       } else {
         mDevSupportManager.isPackagerRunning(
@@ -398,7 +398,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
                         } else {
                           // If dev server is down, disable the remote JS debugging.
                           devSettings.setRemoteJSDebugEnabled(false);
-                          recreateReactContextInBackgroundFromBundleFile();
+                          recreateReactContextInBackgroundFromBundleLoader();
                         }
                       }
                     });
@@ -408,13 +408,13 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
       return;
     }
 
-    recreateReactContextInBackgroundFromBundleFile();
+    recreateReactContextInBackgroundFromBundleLoader();
   }
 
-  private void recreateReactContextInBackgroundFromBundleFile() {
+  private void recreateReactContextInBackgroundFromBundleLoader() {
     recreateReactContextInBackground(
         new JSCJavaScriptExecutor.Factory(mJSCConfig.getConfigMap()),
-        JSBundleLoader.createFileLoader(mApplicationContext, mJSBundleFile));
+        mBundleLoader);
   }
 
   /**

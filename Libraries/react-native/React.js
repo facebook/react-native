@@ -8,5 +8,7 @@
  *
  * @providesModule React
  */
- 'use strict';
- module.exports = require('react/lib/React');
+
+'use strict';
+
+module.exports = require('react/lib/React');

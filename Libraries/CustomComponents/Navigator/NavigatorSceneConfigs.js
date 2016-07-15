@@ -33,10 +33,10 @@
 
 var Dimensions = require('Dimensions');
 var PixelRatio = require('PixelRatio');
+var I18nManager = require('I18nManager');
 
 var buildStyleInterpolator = require('buildStyleInterpolator');
 
-var I18nManager = require('NativeModules').I18nManager || {};
 var IS_RTL = I18nManager.isRTL;
 
 var SCREEN_WIDTH = Dimensions.get('window').width;

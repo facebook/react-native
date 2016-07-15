@@ -79,7 +79,7 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * or configuration.
  */
 - (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
-                   launchOptions:(NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
+                   launchOptions:(NSDictionary *)launchOptions;
 
 /**
  * DEPRECATED: Use initWithDelegate:launchOptions: instead
@@ -93,7 +93,7 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  */
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                    moduleProvider:(RCTBridgeModuleProviderBlock)block
-                    launchOptions:(NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
+                    launchOptions:(NSDictionary *)launchOptions;
 
 /**
  * This method is used to call functions in the JavaScript application context.

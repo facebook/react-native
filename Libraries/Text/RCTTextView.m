@@ -377,16 +377,20 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   if (_maxLength) {
     NSUInteger allowedLength = _maxLength.integerValue - textView.text.length + range.length;
     if (text.length > allowedLength) {
+      // If we typed/pasted more than one character, limit the text inputted
       if (text.length > 1) {
         // Truncate the input string so the result is exactly maxLength
         NSString *limitedString = [text substringToIndex:allowedLength];
         NSMutableString *newString = textView.text.mutableCopy;
         [newString replaceCharactersInRange:range withString:limitedString];
         textView.text = newString;
+        _predictedText = newString;
+
         // Collapse selection at end of insert to match normal paste behavior
         UITextPosition *insertEnd = [textView positionFromPosition:textView.beginningOfDocument
                                                             offset:(range.location + allowedLength)];
         textView.selectedTextRange = [textView textRangeFromPosition:insertEnd toPosition:insertEnd];
+
         [self textViewDidChange:textView];
       }
       return NO;

@@ -63,7 +63,7 @@ function getPlatformFromPath(filepath) {
 }
 
 function getExamplePaths(componentName, componentPlatform) {
-  const componentExample = '../Examples/UIExplorer/' + componentName + 'Example.';
+  const componentExample = '../Examples/UIExplorer/js/' + componentName + 'Example.';
   let pathsToCheck = [
     componentExample + 'js',
     componentExample + componentPlatform + '.js',
@@ -165,6 +165,19 @@ function getNextComponent(idx) {
   return null;
 }
 
+function getPreviousComponent(idx) {
+  if (all[idx - 1]) {
+    const previousComponentName = getNameFromPath(all[idx - 1]);
+
+    if (shouldDisplayInSidebar(previousComponentName)) {
+      return slugify(previousComponentName);
+    } else {
+      return getPreviousComponent(idx - 1);
+    }
+  }
+  return null;
+}
+
 function componentsToMarkdown(type, json, filepath, idx, styles) {
   const componentName = getNameFromPath(filepath);
   const componentPlatform = getPlatformFromPath(filepath);
@@ -189,6 +202,7 @@ function componentsToMarkdown(type, json, filepath, idx, styles) {
   // Put styles (e.g. Flexbox) into the API category
   const category = (type === 'style' ? 'apis' : type + 's');
   const next = getNextComponent(idx);
+  const previous = getPreviousComponent(idx);
 
   const res = [
     '---',
@@ -199,6 +213,7 @@ function componentsToMarkdown(type, json, filepath, idx, styles) {
     'permalink: docs/' + slugify(componentName) + '.html',
     'platform: ' + componentPlatform,
     'next: ' + next,
+    'previous: ' + previous,
     'sidebar: ' + shouldDisplayInSidebar(componentName),
     'runnable:' + isRunnable(componentName, componentPlatform),
     'path:' + json.filepath,
@@ -242,19 +257,24 @@ function getTypedef(filepath, fileContent, json) {
 }
 
 function renderComponent(filepath) {
-  const fileContent = fs.readFileSync(filepath);
-  const json = docgen.parse(
-    fileContent,
-    docgenHelpers.findExportedOrFirst,
-    docgen.defaultHandlers.concat([
-      docgenHelpers.stylePropTypeHandler,
-      docgenHelpers.deprecatedPropTypeHandler,
-      docgenHelpers.jsDocFormatHandler,
-    ])
-  );
-  json.typedef = getTypedef(filepath, fileContent);
+  try {
+    const fileContent = fs.readFileSync(filepath);
+    const json = docgen.parse(
+      fileContent,
+      docgenHelpers.findExportedOrFirst,
+      docgen.defaultHandlers.concat([
+        docgenHelpers.stylePropTypeHandler,
+        docgenHelpers.deprecatedPropTypeHandler,
+        docgenHelpers.jsDocFormatHandler,
+      ])
+    );
+    json.typedef = getTypedef(filepath, fileContent);
 
-  return componentsToMarkdown('component', json, filepath, componentCount++, styleDocs);
+    return componentsToMarkdown('component', json, filepath, componentCount++, styleDocs);
+  } catch (e) {
+    console.log('error in renderComponent for', filepath);
+    throw e;
+  }
 }
 
 function isJsDocFormat(fileContent) {
@@ -315,6 +335,9 @@ function parseAPIInferred(filepath, fileContent) {
   let json;
   try {
     json = jsDocs(fileContent);
+    if (!json) {
+      throw new Error('jsDocs returned falsy');
+    }
   } catch (e) {
     console.error('Cannot parse file', filepath, e);
     json = {};
@@ -412,27 +435,32 @@ function getJsDocFormatType(entities) {
 }
 
 function renderAPI(filepath, type) {
-  const fileContent = fs.readFileSync(filepath).toString();
-  let json = parseAPIInferred(filepath, fileContent);
-  if (isJsDocFormat(fileContent)) {
-    let jsonJsDoc = parseAPIJsDocFormat(filepath, fileContent);
-    // Combine method info with jsdoc fomatted content
-    const methods = json.methods;
-    if (methods && methods.length) {
-      let modMethods = methods;
-      methods.map((method, methodIndex) => {
-        modMethods[methodIndex].params = getJsDocFormatType(method.params);
-        modMethods[methodIndex].returns =
+  try {
+    const fileContent = fs.readFileSync(filepath).toString();
+    let json = parseAPIInferred(filepath, fileContent);
+    if (isJsDocFormat(fileContent)) {
+      let jsonJsDoc = parseAPIJsDocFormat(filepath, fileContent);
+      // Combine method info with jsdoc formatted content
+      const methods = json.methods;
+      if (methods && methods.length) {
+        let modMethods = methods;
+        methods.map((method, methodIndex) => {
+          modMethods[methodIndex].params = getJsDocFormatType(method.params);
+          modMethods[methodIndex].returns =
           getJsDocFormatType(method.returntypehint);
-        delete modMethods[methodIndex].returntypehint;
-      });
-      json.methods = modMethods;
-      // Use deep Object.assign so duplicate properties are overwritten.
-      deepAssign(jsonJsDoc.methods, json.methods);
+          delete modMethods[methodIndex].returntypehint;
+        });
+        json.methods = modMethods;
+        // Use deep Object.assign so duplicate properties are overwritten.
+        deepAssign(jsonJsDoc.methods, json.methods);
+      }
+      json = jsonJsDoc;
     }
-    json = jsonJsDoc;
+    return componentsToMarkdown(type, json, filepath, componentCount++);
+  } catch (e) {
+    console.log('error in renderAPI for', filepath);
+    throw e;
   }
-  return componentsToMarkdown(type, json, filepath, componentCount++);
 }
 
 function renderStyle(filepath) {
@@ -457,6 +485,7 @@ function renderStyle(filepath) {
 
 const components = [
   '../Libraries/Components/ActivityIndicator/ActivityIndicator.js',
+  '../Libraries/Components/ActivityIndicator/ActivityIndicatorIOS.ios.js',
   '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
   '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
   '../Libraries/Image/Image.ios.js',
@@ -465,8 +494,8 @@ const components = [
   '../Libraries/Modal/Modal.js',
   '../Libraries/CustomComponents/Navigator/Navigator.js',
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
-  '../Libraries/Components/Picker/PickerIOS.ios.js',
   '../Libraries/Components/Picker/Picker.js',
+  '../Libraries/Components/Picker/PickerIOS.ios.js',
   '../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.android.js',
   '../Libraries/Components/ProgressViewIOS/ProgressViewIOS.ios.js',
   '../Libraries/Components/RefreshControl/RefreshControl.js',
@@ -475,7 +504,10 @@ const components = [
   '../Libraries/Components/Slider/Slider.js',
   '../Libraries/Components/SliderIOS/SliderIOS.ios.js',
   '../Libraries/Components/StatusBar/StatusBar.js',
+  '../Libraries/RCTTest/SnapshotViewIOS.ios.js',
   '../Libraries/Components/Switch/Switch.js',
+  '../Libraries/Components/SwitchAndroid/SwitchAndroid.android.js',
+  '../Libraries/Components/SwitchIOS/SwitchIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarItemIOS.ios.js',
   '../Libraries/Text/Text.js',
@@ -492,6 +524,7 @@ const components = [
 
 const apis = [
   '../Libraries/ActionSheetIOS/ActionSheetIOS.js',
+  '../Libraries/AdSupport/AdSupportIOS.js',
   '../Libraries/Utilities/Alert.js',
   '../Libraries/Utilities/AlertIOS.js',
   '../Libraries/Animated/src/AnimatedImplementation.js',
@@ -503,23 +536,30 @@ const apis = [
   '../Libraries/Components/Clipboard/Clipboard.js',
   '../Libraries/Components/DatePickerAndroid/DatePickerAndroid.android.js',
   '../Libraries/Utilities/Dimensions.js',
+  '../Libraries/Animated/src/Easing.js',
   '../Libraries/Geolocation/Geolocation.js',
+  '../Libraries/Image/ImageEditor.js',
+  '../Libraries/CameraRoll/ImagePickerIOS.js',
+  '../Libraries/Image/ImageStore.js',
   '../Libraries/Components/Intent/IntentAndroid.android.js',
   '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/Linking/Linking.js',
   '../Libraries/CustomComponents/ListView/ListViewDataSource.js',
   '../node_modules/react/lib/NativeMethodsMixin.js',
+  '../Libraries/BatchedBridge/BatchedBridgedModules/NativeModules.js',
   '../Libraries/Network/NetInfo.js',
   '../Libraries/Interaction/PanResponder.js',
   '../Libraries/Utilities/PixelRatio.js',
   '../Libraries/PushNotificationIOS/PushNotificationIOS.js',
+  '../Libraries/Settings/Settings.ios.js',
   '../Libraries/Components/StatusBar/StatusBarIOS.ios.js',
   '../Libraries/StyleSheet/StyleSheet.js',
+  '../Libraries/Utilities/Systrace.js',
   '../Libraries/Components/TimePickerAndroid/TimePickerAndroid.android.js',
   '../Libraries/Components/ToastAndroid/ToastAndroid.android.js',
-  '../Libraries/Vibration/VibrationIOS.ios.js',
   '../Libraries/Vibration/Vibration.js',
+  '../Libraries/Vibration/VibrationIOS.ios.js',
 ];
 
 const stylesWithPermalink = [

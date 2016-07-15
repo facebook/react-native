@@ -5,6 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/images.html
 next:  handling-touches
+previous: colors
 ---
 
 ## Static Image Resources
