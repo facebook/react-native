@@ -464,33 +464,24 @@ var WebView = React.createClass({
   /**
    * Evaluate JavaScript on the current page.
    */
-  evaluateJavaScript: function(
+  evaluateJavaScript: async function(
     script: string,
     callback?: ?(error: ?Error, result: ?string) => void,
   ): Promise {
-    return new Promise((resolve, reject) => {
-      var escaped = JSON.stringify(script).replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
-      var wrapped = 'JSON.stringify(eval(' + escaped + '))';
+    var escaped = JSON.stringify(script).replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+    var wrapped = 'JSON.stringify(eval(' + escaped + '))';
+    var result = null;
 
-      RCTWebViewManager.evaluateJavaScript(this.getWebViewHandle(), wrapped, function(error, result) {
-        if (!error) {
-          if (result === '') {
-            error = new Error("Error evaluating script.")
-            result = null;
-          } else {
-            result = JSON.parse(result);
-          }
-        }
+    try {
+      var resultString = await RCTWebViewManager.evaluateJavaScript(this.getWebViewHandle(), wrapped);
+      result = JSON.parse(resultString);
+    } catch (e) {
+      callback && callback(e, null);
+      throw e;
+    }
 
-        callback && callback(error, result);
-
-        if (error) {
-          reject(error);
-        } else {
-          resolve(result);
-        }
-      });
-    });
+    callback && callback(null, result);
+    return result;
   },
 
   /**
