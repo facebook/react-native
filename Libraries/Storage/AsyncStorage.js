@@ -26,6 +26,7 @@ var RCTAsyncStorage = RCTAsyncRocksDBStorage || RCTAsyncSQLiteStorage || RCTAsyn
  * @description
  * `AsyncStorage` is a simple, asynchronous, persistent, key-value storage
  * system that is global to the app.  It should be used instead of LocalStorage.
+ * On iOS, storage is unencrypted. 
  *
  * It is recommended that you use an abstraction on top of `AsyncStorage`
  * instead of `AsyncStorage` directly for anything more than light usage since
