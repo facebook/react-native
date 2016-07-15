@@ -13,7 +13,7 @@
 
 NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProviderUpdatedNotification";
 
-static const NSUInteger kDefaultPort = 8081;
+const NSUInteger kRCTBundleURLProviderDefaultPort = 8081;
 
 static NSString *const kRCTJsLocationKey = @"RCT_jsLocation";
 static NSString *const kRCTEnableLiveReloadKey = @"RCT_enableLiveReload";
@@ -21,20 +21,11 @@ static NSString *const kRCTEnableDevKey = @"RCT_enableDev";
 static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
 
 @implementation RCTBundleURLProvider
-{
-  BOOL (*_packagerRunningPredicate)(NSString *host, NSUInteger port);
-}
 
 - (instancetype)init
 {
-  return [self initWithPackagerRunningPredicate:NULL];
-}
-
-- (instancetype)initWithPackagerRunningPredicate:(BOOL (*)(NSString *host, NSUInteger port))packagerRunningPredicate
-{
   self = [super init];
   if (self) {
-    _packagerRunningPredicate = packagerRunningPredicate;
     [self setDefaults];
   }
   return self;
@@ -68,18 +59,17 @@ static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
   [self settingsUpdated];
 }
 
-static NSString *serverRootWithHost(NSString *host)
+static NSURL *serverRootWithHost(NSString *host)
 {
-  return [NSString stringWithFormat:@"http://%@:%lu/", host, (unsigned long)kDefaultPort];
+  return [NSURL URLWithString:
+          [NSString stringWithFormat:@"http://%@:%lu/",
+           host, (unsigned long)kRCTBundleURLProviderDefaultPort]];
 }
 
 #if RCT_DEV
 - (BOOL)isPackagerRunning:(NSString *)host
 {
-  if (_packagerRunningPredicate) {
-    return _packagerRunningPredicate(host, kDefaultPort);
-  }
-  NSURL *url = [[NSURL URLWithString:serverRootWithHost(host)] URLByAppendingPathComponent:@"status"];
+  NSURL *url = [serverRootWithHost(host) URLByAppendingPathComponent:@"status"];
   NSURLRequest *request = [NSURLRequest requestWithURL:url];
   NSURLResponse *response;
   NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:NULL];
@@ -105,16 +95,16 @@ static NSString *serverRootWithHost(NSString *host)
 }
 #endif
 
-- (NSString *)packagerServerRoot
+- (NSString *)packagerServerHost
 {
   NSString *location = [self jsLocation];
   if (location != nil) {
-    return serverRootWithHost(location);
+    return location;
   }
 #if RCT_DEV
   NSString *host = [self guessPackagerHost];
   if (host) {
-    return serverRootWithHost(host);
+    return host;
   }
 #endif
   return nil;
@@ -122,25 +112,37 @@ static NSString *serverRootWithHost(NSString *host)
 
 - (NSURL *)packagerServerURL
 {
-  NSString *root = [self packagerServerRoot];
-  return root ? [NSURL URLWithString:root] : nil;
+  NSString *const host = [self packagerServerHost];
+  return host ? serverRootWithHost(host) : nil;
 }
 
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName
 {
   resourceName = resourceName ?: @"main";
-  NSString *serverRoot = [self packagerServerRoot];
-  if (!serverRoot) {
+  NSString *packagerServerHost = [self packagerServerHost];
+  if (!packagerServerHost) {
     return [[NSBundle mainBundle] URLForResource:resourceName withExtension:@"jsbundle"];
   } else {
-    NSString *fullBundlePath = [serverRoot stringByAppendingFormat:@"%@.bundle", bundleRoot];
-    if ([fullBundlePath hasPrefix:@"http"]) {
-      NSString *dev = [self enableDev] ? @"true" : @"false";
-      NSString *min = [self enableMinification] ? @"true": @"false";
-      fullBundlePath = [fullBundlePath stringByAppendingFormat:@"?platform=ios&dev=%@&minify=%@", dev, min];
-    }
-    return [NSURL URLWithString:fullBundlePath];
+
+    return [[self class] jsBundleURLForBundleRoot:bundleRoot
+                                     packagerHost:packagerServerHost
+                                        enableDev:[self enableDev]
+                               enableMinification:[self enableMinification]];
   }
+}
+
++ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                       packagerHost:(NSString *)packagerHost
+                          enableDev:(BOOL)enableDev
+                 enableMinification:(BOOL)enableMinification
+{
+  NSURLComponents *components = [NSURLComponents componentsWithURL:serverRootWithHost(packagerHost) resolvingAgainstBaseURL:NO];
+  components.path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
+  // When we support only iOS 8 and above, use queryItems for a better API.
+  components.query = [NSString stringWithFormat:@"platform=ios&dev=%@&minify=%@",
+                      enableDev ? @"true" : @"false",
+                      enableMinification ? @"true": @"false"];
+  return components.URL;
 }
 
 - (void)updateValue:(id)object forKey:(NSString *)key
