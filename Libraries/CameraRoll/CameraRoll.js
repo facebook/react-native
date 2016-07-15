@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var ReactPropTypes = require('ReactPropTypes');
+var ReactPropTypes = require('react/lib/ReactPropTypes');
 var RCTCameraRollManager = require('NativeModules').CameraRollManager;
 
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
@@ -143,6 +143,7 @@ class CameraRoll {
 
     invariant(
       type === 'photo' || type === 'video' || type === undefined,
+      // $FlowFixMe(>=0.28.0)
       `The second argument to saveToCameraRoll must be 'photo' or 'video'. You passed ${type}`
     );
 

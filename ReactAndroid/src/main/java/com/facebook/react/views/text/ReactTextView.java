@@ -45,6 +45,11 @@ public class ReactTextView extends TextView implements ReactCompoundView {
       setLayoutParams(EMPTY_LAYOUT_PARAMS);
     }
     setText(update.getText());
+    setPadding(
+      (int) Math.ceil(update.getPaddingLeft()),
+      (int) Math.ceil(update.getPaddingTop()),
+      (int) Math.ceil(update.getPaddingRight()),
+      (int) Math.ceil(update.getPaddingBottom()));
   }
 
   @Override

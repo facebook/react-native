@@ -28,9 +28,9 @@ function timeoutableDenodeify(fsFunc, timeout) {
   };
 }
 
-const stat = timeoutableDenodeify(fs.stat, 5000);
-const readDir = timeoutableDenodeify(fs.readdir, 5000);
-const readFile = timeoutableDenodeify(fs.readFile, 5000);
+const stat = timeoutableDenodeify(fs.stat, 15000);
+const readDir = timeoutableDenodeify(fs.readdir, 15000);
+const readFile = timeoutableDenodeify(fs.readFile, 15000);
 
 const validateOpts = declareOpts({
   projectRoots: {

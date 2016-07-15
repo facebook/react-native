@@ -12,6 +12,8 @@
 var React = require('React');
 var Prism = require('Prism');
 
+var WEB_PLAYER_VERSION = '1.1.0';
+
 /**
  * Use the WebPlayer by including a ```ReactNativeWebPlayer``` block in markdown.
  *
@@ -57,7 +59,7 @@ var WebPlayer = React.createClass({
           style={{marginTop: 4}}
           width='880'
           height={this.parseParams(this.props.params).platform === 'android' ? '425' : '420'}
-          data-src={`//npmcdn.com/react-native-web-player@1.0.0/index.html${hash}`}
+          data-src={`//npmcdn.com/react-native-web-player@${WEB_PLAYER_VERSION}/index.html${hash}`}
           frameBorder='0'
         />
       </div>

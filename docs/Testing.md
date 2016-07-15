@@ -5,6 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/testing.html
 next: javascript-environment
+previous: debugging
 ---
 
 ## Running Tests and Contributing

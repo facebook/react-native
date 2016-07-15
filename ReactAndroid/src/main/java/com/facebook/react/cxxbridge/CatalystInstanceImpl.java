@@ -163,6 +163,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   /* package */ native void loadScriptFromAssets(AssetManager assetManager, String assetURL);
   /* package */ native void loadScriptFromFile(String fileName, String sourceURL);
+  /* package */ native void loadScriptFromOptimizedBundle(String path, String sourceURL, int flags);
 
   @Override
   public void runJSBundle() {
@@ -182,16 +183,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
     ExecutorToken token,
     String module,
     String method,
-    NativeArray arguments,
-    String tracingName);
+    NativeArray arguments);
 
   @Override
   public void callFunction(
       ExecutorToken executorToken,
       final String module,
       final String method,
-      final NativeArray arguments,
-      final String tracingName) {
+      final NativeArray arguments) {
     if (mDestroyed) {
       FLog.w(ReactConstants.TAG, "Calling JS function after bridge has been destroyed.");
       return;
@@ -200,7 +199,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       throw new RuntimeException("Attempt to call JS function before JS bundle is loaded.");
     }
 
-    callJSFunction(executorToken, module, method, arguments, tracingName);
+    callJSFunction(executorToken, module, method, arguments);
   }
 
   private native void callJSCallback(ExecutorToken executorToken, int callbackID, NativeArray arguments);

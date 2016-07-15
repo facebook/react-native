@@ -26,6 +26,17 @@ RCT_EXTERN NSString *const RCTJSCThreadName;
 RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
 
 /**
+ * @experimental
+ * May be used to pre-create the JSContext to make RCTJSCExecutor creation less costly.
+ * Avoid using this; it's experimental and is not likely to be supported long-term.
+ */
+@interface RCTJSContextProvider : NSObject
+
+- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
+
+@end
+
+/**
  * Uses a JavaScriptCore context as the execution engine.
  */
 @interface RCTJSCExecutor : NSObject <RCTJavaScriptExecutor>
@@ -49,6 +60,19 @@ RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
  * If available, the error's userInfo property will contain the JS stacktrace under
  * the RCTJSStackTraceKey key.
  */
-- (NSError *)convertJSErrorToNSError:(JSValueRef)jsError context:(JSContextRef)context;
+- (NSError *)errorForJSError:(JSValue *)jsError;
+
+/**
+ * @experimental
+ * Pass a RCTJSContextProvider object to use an NSThread/JSContext pair that have already been created.
+ * The returned executor has already executed the supplied application script synchronously.
+ * The underlying JSContext will be returned in the JSContext pointer if it is non-NULL and there was no error.
+ * If an error occurs, this method will return nil and specify the error in the error pointer if it is non-NULL.
+ */
++ (instancetype)initializedExecutorWithContextProvider:(RCTJSContextProvider *)JSContextProvider
+                                     applicationScript:(NSData *)applicationScript
+                                             sourceURL:(NSURL *)sourceURL
+                                             JSContext:(JSContext **)JSContext
+                                                 error:(NSError **)error;
 
 @end

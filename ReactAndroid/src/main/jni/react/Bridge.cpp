@@ -49,10 +49,11 @@ void Bridge::callFunction(
     ExecutorToken executorToken,
     const std::string& moduleId,
     const std::string& methodId,
-    const folly::dynamic& arguments,
-    const std::string& tracingName) {
+    const folly::dynamic& arguments) {
   #ifdef WITH_FBSYSTRACE
   int systraceCookie = m_systraceCookie++;
+  std::string tracingName = fbsystrace_is_tracing(TRACE_TAG_REACT_CXX_BRIDGE) ?
+    folly::to<std::string>("JSCall__", moduleId, '_', methodId) : std::string();
   FbSystraceAsyncFlow::begin(
       TRACE_TAG_REACT_CXX_BRIDGE,
       tracingName.c_str(),
@@ -60,14 +61,14 @@ void Bridge::callFunction(
   #endif
 
   #ifdef WITH_FBSYSTRACE
-  runOnExecutorQueue(executorToken, [moduleId, methodId, arguments, tracingName, systraceCookie] (JSExecutor* executor) {
+  runOnExecutorQueue(executorToken, [moduleId, methodId, arguments, tracingName = std::move(tracingName), systraceCookie] (JSExecutor* executor) {
     FbSystraceAsyncFlow::end(
         TRACE_TAG_REACT_CXX_BRIDGE,
         tracingName.c_str(),
         systraceCookie);
     FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, tracingName.c_str());
   #else
-  runOnExecutorQueue(executorToken, [moduleId, methodId, arguments, tracingName] (JSExecutor* executor) {
+  runOnExecutorQueue(executorToken, [moduleId, methodId, arguments] (JSExecutor* executor) {
   #endif
     // This is safe because we are running on the executor's thread: it won't
     // destruct until after it's been unregistered (which we check above) and

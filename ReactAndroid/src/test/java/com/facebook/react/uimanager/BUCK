@@ -6,6 +6,7 @@ robolectric3_test(
   contacts = ['oncall+fbandroid_sheriff@xmail.facebook.com'],
   srcs = glob(['**/*.java']),
   deps = [
+    CSSLAYOUT_TARGET,
     react_native_dep('libraries/fbcore/src/test/java/com/facebook/powermock:powermock'),
     react_native_dep('third-party/java/fest:fest'),
     react_native_dep('third-party/java/jsr-305:jsr-305'),
@@ -14,7 +15,6 @@ robolectric3_test(
     react_native_dep('third-party/java/okhttp:okhttp3'),
     react_native_dep('third-party/java/okio:okio'),
     react_native_dep('third-party/java/robolectric3/robolectric:robolectric'),
-    react_native_target('java/com/facebook/csslayout:csslayout'),
     react_native_target('java/com/facebook/react/animation:animation'),
     react_native_target('java/com/facebook/react/bridge:bridge'),
     react_native_target('java/com/facebook/react/common:common'),

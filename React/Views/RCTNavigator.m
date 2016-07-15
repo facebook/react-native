@@ -370,7 +370,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return _navigationController;
 }
 
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+- (BOOL)gestureRecognizerShouldBegin:(__unused UIGestureRecognizer *)gestureRecognizer
 {
   return _navigationController.viewControllers.count > 1;
 }
@@ -395,24 +395,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       (RCTWrapperViewController *)[context viewControllerForKey:UITransitionContextToViewControllerKey];
 
     // This may be triggered by a navigation controller unrelated to me: if so, ignore.
-    if (fromController.navigationController != _navigationController ||
-        toController.navigationController != _navigationController) {
+    if (fromController.navigationController != self->_navigationController ||
+        toController.navigationController != self->_navigationController) {
       return;
     }
 
     NSUInteger indexOfFrom = [self.reactSubviews indexOfObject:fromController.navItem];
     NSUInteger indexOfTo = [self.reactSubviews indexOfObject:toController.navItem];
     CGFloat destination = indexOfFrom < indexOfTo ? 1.0 : -1.0;
-    _dummyView.frame = (CGRect){{destination, 0}, CGSizeZero};
-    _currentlyTransitioningFrom = indexOfFrom;
-    _currentlyTransitioningTo = indexOfTo;
+    self->_dummyView.frame = (CGRect){{destination, 0}, CGSizeZero};
+    self->_currentlyTransitioningFrom = indexOfFrom;
+    self->_currentlyTransitioningTo = indexOfTo;
     self.paused = NO;
   }
   completion:^(__unused id<UIViewControllerTransitionCoordinatorContext> context) {
     [weakSelf freeLock];
-    _currentlyTransitioningFrom = 0;
-    _currentlyTransitioningTo = 0;
-    _dummyView.frame = CGRectZero;
+    self->_currentlyTransitioningFrom = 0;
+    self->_currentlyTransitioningTo = 0;
+    self->_dummyView.frame = CGRectZero;
     self.paused = YES;
     // Reset the parallel position tracker
   }];

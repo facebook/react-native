@@ -15,10 +15,6 @@
  */
 @protocol RCTScrollableProtocol
 
-/*
- * The nativeScrollDelegate property is now deprecated please use the scrollListener API instead
- */
-@property (nonatomic, weak) NSObject<UIScrollViewDelegate> *nativeScrollDelegate DEPRECATED_ATTRIBUTE;
 @property (nonatomic, readonly) CGSize contentSize;
 
 - (void)scrollToOffset:(CGPoint)offset;

@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
  *
@@ -58,7 +57,7 @@ describe('NavigationEvent', () => {
   it('recycles', () => {
     var event1 = NavigationEvent.pool('foo', {}, 123);
     event1.dispose();
-    expect(event1.type).toBe(null);
+    expect(event1.type).toBeFalsy();
     expect(event1.data).toBe(null);
     expect(event1.target).toBe(null);
 
@@ -67,5 +66,3 @@ describe('NavigationEvent', () => {
     expect(event2).toBe(event1);
   });
 });
-
-
