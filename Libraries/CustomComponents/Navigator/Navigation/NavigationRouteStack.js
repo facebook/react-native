@@ -61,12 +61,10 @@ class RouteStack {
     this._index = index;
   }
 
-  /* $FlowFixMe - get/set properties not yet supported */
   get size(): number {
     return this._routeNodes.size;
   }
 
-  /* $FlowFixMe - get/set properties not yet supported */
   get index(): number {
     return this._index;
   }

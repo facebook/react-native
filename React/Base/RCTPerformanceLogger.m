@@ -118,7 +118,7 @@
   return _data[tag][1] - _data[tag][0];
 }
 
-- (int64_t)valueForTag:(RCTPLTag)tag;
+- (int64_t)valueForTag:(RCTPLTag)tag
 {
   return _data[tag][1];
 }

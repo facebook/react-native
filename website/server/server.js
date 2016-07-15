@@ -52,7 +52,7 @@ var app = connect()
   })
   .use(reactMiddleware.provide(buildOptions))
   .use(connect['static'](FILE_SERVE_ROOT))
-  .use(connect.favicon(path.join(FILE_SERVE_ROOT, 'elements', 'favicon', 'favicon.ico')))
+  .use(connect.favicon(path.join(FILE_SERVE_ROOT, 'react-native', 'img', 'favicon.png')))
   .use(connect.logger())
   .use(connect.compress())
   .use(connect.errorHandler());

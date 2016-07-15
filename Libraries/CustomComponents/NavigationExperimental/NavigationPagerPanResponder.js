@@ -15,6 +15,7 @@
 const Animated = require('Animated');
 const NavigationAbstractPanResponder = require('NavigationAbstractPanResponder');
 const NavigationCardStackPanResponder = require('NavigationCardStackPanResponder');
+const I18nManager = require('I18nManager');
 
 const clamp = require('clamp');
 
@@ -133,6 +134,9 @@ class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
     const distance = isVertical ?
       layout.height.__getValue() :
       layout.width.__getValue();
+    const currentValue = I18nManager.isRTL && axis === 'dx' ?
+      this._startValue + (gesture[axis] / distance) :
+      this._startValue - (gesture[axis] / distance);
 
     const prevIndex = Math.max(
       0,
@@ -146,7 +150,7 @@ class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
 
     const value = clamp(
       prevIndex,
-      this._startValue - (gesture[axis] / distance),
+      currentValue,
       nextIndex,
     );
 
@@ -171,14 +175,19 @@ class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
     const axis = isVertical ? 'dy' : 'dx';
     const velocityAxis = isVertical ? 'vy' : 'vx';
     const index = navigationState.index;
-    const distance = gesture[axis];
+    const distance = I18nManager.isRTL && axis === 'dx' ?
+      -gesture[axis] :
+      gesture[axis];
+    const moveSpeed = I18nManager.isRTL && velocityAxis === 'vx' ?
+      -gesture[velocityAxis] :
+      gesture[velocityAxis];
 
     position.stopAnimation((value: number) => {
       this._reset();
       if (
         distance > DISTANCE_THRESHOLD  ||
         value <= index - POSITION_THRESHOLD ||
-        gesture[velocityAxis] > VELOCITY_THRESHOLD
+        moveSpeed > VELOCITY_THRESHOLD
       ) {
         onNavigateBack && onNavigateBack();
         return;
@@ -187,7 +196,7 @@ class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
       if (
         distance < -DISTANCE_THRESHOLD ||
         value >= index  + POSITION_THRESHOLD ||
-        gesture[velocityAxis] < -VELOCITY_THRESHOLD
+        moveSpeed < -VELOCITY_THRESHOLD
       ) {
         onNavigateForward && onNavigateForward();
       }
