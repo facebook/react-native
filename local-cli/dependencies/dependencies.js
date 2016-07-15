@@ -41,7 +41,7 @@ function _dependencies(argv, config, resolve, reject, packagerInstance) {
       command: 'transformer',
       type: 'string',
       default: require.resolve('../../packager/transformer'),
-      description: 'Specify a custom transformer to be used (absolute path)'
+      description: 'Specify a custom transformer to be used'
     }, {
       command: 'verbose',
       description: 'Enables logging',
@@ -59,7 +59,7 @@ function _dependencies(argv, config, resolve, reject, packagerInstance) {
     assetRoots: config.getAssetRoots(),
     blacklistRE: config.getBlacklistRE(args.platform),
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-    transformModulePath: args.transformer,
+    transformModulePath: path.resolve(args.transformer),
     extraNodeModules: config.extraNodeModules,
     verbose: config.verbose,
   };

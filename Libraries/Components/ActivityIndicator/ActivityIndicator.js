@@ -58,7 +58,7 @@ const ActivityIndicator = React.createClass({
   getDefaultProps() {
     return {
       animating: true,
-      color: GRAY,
+      color: Platform.OS === 'ios' ? GRAY : undefined,
       hidesWhenStopped: true,
       size: 'small',
     };

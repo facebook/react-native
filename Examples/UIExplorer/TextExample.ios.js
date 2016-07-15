@@ -444,6 +444,26 @@ exports.examples = [
       </View>
     );
   },
+}, {
+  title: 'Line break mode',
+  render: function() {
+    return (
+      <View>
+        <Text numberOfLines={1}>
+          This very long text should be truncated with dots in the end.
+        </Text>
+        <Text lineBreakMode="middle" numberOfLines={1}>
+          This very long text should be truncated with dots in the middle.
+        </Text>
+        <Text lineBreakMode="head" numberOfLines={1}>
+          This very long text should be truncated with dots in the beginning.
+        </Text>
+        <Text lineBreakMode="clip" numberOfLines={1}>
+          This very looooooooooooooooooooooooooooong text should be clipped.
+        </Text>
+      </View>
+    );
+  },
 }];
 
 var styles = StyleSheet.create({

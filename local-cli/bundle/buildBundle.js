@@ -9,6 +9,7 @@
 
 const log = require('../util/log').out('bundle');
 const outputBundle = require('./output/bundle');
+const path = require('path');
 const Promise = require('promise');
 const saveAssets = require('./saveAssets');
 const Server = require('../../packager/react-packager/src/Server');
@@ -24,14 +25,19 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
 
     // This is used by a bazillion of npm modules we don't control so we don't
     // have other choice than defining it as an env variable here.
-    process.env.NODE_ENV = args.dev ? 'development' : 'production';
+    if (!process.env.NODE_ENV) {
+      // If you're inlining environment variables, you can use babel to remove
+      // this line:
+      // https://www.npmjs.com/package/babel-remove-process-env-assignment
+      process.env.NODE_ENV = args.dev ? 'development' : 'production';
+    }
 
     const options = {
       projectRoots: config.getProjectRoots(),
       assetRoots: config.getAssetRoots(),
       blacklistRE: config.getBlacklistRE(args.platform),
       getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-      transformModulePath: args.transformer,
+      transformModulePath: path.resolve(args.transformer),
       extraNodeModules: config.extraNodeModules,
       nonPersistent: true,
       resetCache: args['reset-cache'],

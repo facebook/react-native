@@ -62,12 +62,29 @@ type Event = Object;
  * such as `onSubmitEditing` and `onFocus` that can be subscribed to. A simple
  * example:
  *
- * ```
- *   <TextInput
- *     style={{height: 40, borderColor: 'gray', borderWidth: 1}}
- *     onChangeText={(text) => this.setState({text})}
- *     value={this.state.text}
- *   />
+ * ```ReactNativeWebPlayer
+ * import React, { Component } from 'react';
+ * import { AppRegistry, TextInput } from 'react-native';
+ *
+ * class UselessTextInput extends Component {
+ *   constructor(props) {
+ *     super(props);
+ *     this.state = { text: 'Useless Placeholder' };
+ *   }
+ *
+ *   render() {
+ *     return (
+ *       <TextInput
+ *         style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+ *         onChangeText={(text) => this.setState({text})}
+ *         value={this.state.text}
+ *       />
+ *     );
+ *   }
+ * }
+ *
+ * // App registration and rendering
+ * AppRegistry.registerComponent('AwesomeProject', () => UselessTextInput);
  * ```
  *
  * Note that some props are only available with `multiline={true/false}`.
@@ -76,11 +93,64 @@ type Event = Object;
  * `multiline=false`. To achieve the same effect, you can wrap your `TextInput`
  * in a `View`:
  *
+ * ```ReactNativeWebPlayer
+ * import React, { Component } from 'react';
+ * import { AppRegistry, View, TextInput } from 'react-native';
+ *
+ * class UselessTextInput extends Component {
+ *   render() {
+ *     return (
+ *       <TextInput
+ *         {...this.props} // Inherit any props passed to it; e.g., multiline, numberOfLines below
+ *         editable = {true}
+ *         maxLength = {40}
+ *       />
+ *     );
+ *   }
+ * }
+ *
+ * class UselessTextInputMultiline extends Component {
+ *   constructor(props) {
+ *     super(props);
+ *     this.state = {
+ *       text: 'Useless Multiline Placeholder',
+ *     };
+ *   }
+ *
+ *   // If you type something in the text box that is a color, the background will change to that
+ *   // color.
+ *   render() {
+ *     return (
+ *      <View style={{
+ *        backgroundColor: this.state.text,
+ *        borderBottomColor: '#000000',
+ *        borderBottomWidth: 1 }}
+ *      >
+ *        <UselessTextInput
+ *          multiline = {true}
+ *          numberOfLines = {4}
+ *          onChangeText={(text) => this.setState({text})}
+ *          value={this.state.text}
+ *        />
+ *      </View>
+ *     );
+ *   }
+ * }
+ *
+ * // App registration and rendering
+ * AppRegistry.registerComponent(
+ *  'AwesomeProject',
+ *  () => UselessTextInputMultiline
+ * );
  * ```
- *  <View style={{ borderBottomColor: '#000000', borderBottomWidth: 1, }}>
- *    <TextInput {...props} />
- *  </View>
- * ```
+ *
+ * `TextInput` has by default a border at the bottom of its view. This border
+ * has its padding set by the background image provided by the system, and it
+ * cannot be changed. Solutions to avoid this is to either not set height
+ * explicitly, case in which the system will take care of displaying the border
+ * in the correct position, or to not display the border by setting
+ * `underlineColorAndroid` to transparent.
+ *
  */
 var TextInput = React.createClass({
   statics: {
@@ -91,12 +161,12 @@ var TextInput = React.createClass({
   propTypes: {
     ...View.propTypes,
     /**
-     * Can tell TextInput to automatically capitalize certain characters.
+     * Can tell `TextInput` to automatically capitalize certain characters.
      *
-     * - characters: all characters,
-     * - words: first letter of each word
-     * - sentences: first letter of each sentence (default)
-     * - none: don't auto capitalize anything
+     * - `characters`: all characters.
+     * - `words`: first letter of each word.
+     * - `sentences`: first letter of each sentence (*default*).
+     * - `none`: don't auto capitalize anything.
      */
     autoCapitalize: PropTypes.oneOf([
       'none',
@@ -105,16 +175,16 @@ var TextInput = React.createClass({
       'characters',
     ]),
     /**
-     * If false, disables auto-correct. The default value is true.
+     * If `false`, disables auto-correct. The default value is `true`.
      */
     autoCorrect: PropTypes.bool,
     /**
-     * If true, focuses the input on componentDidMount.
-     * The default value is false.
+     * If `true`, focuses the input on `componentDidMount`.
+     * The default value is `false`.
      */
     autoFocus: PropTypes.bool,
     /**
-     * If false, text is not editable. The default value is true.
+     * If `false`, text is not editable. The default value is `true`.
      */
     editable: PropTypes.bool,
     /**
@@ -122,9 +192,9 @@ var TextInput = React.createClass({
      *
      * The following values work across platforms:
      *
-     * - default
-     * - numeric
-     * - email-address
+     * - `default`
+     * - `numeric`
+     * - `email-address`
      */
     keyboardType: PropTypes.oneOf([
       // Cross-platform
@@ -155,27 +225,33 @@ var TextInput = React.createClass({
      * Determines how the return key should look. On Android you can also use
      * `returnKeyLabel`.
      *
+     * *Cross platform*
+     *
      * The following values work across platforms:
      *
-     * - done
-     * - go
-     * - next
-     * - search
-     * - send
+     * - `done`
+     * - `go`
+     * - `next`
+     * - `search`
+     * - `send`
+     *
+     * *Android Only*
      *
      * The following values work on Android only:
      *
-     * - none
-     * - previous
+     * - `none`
+     * - `previous`
+     *
+     * *iOS Only*
      *
      * The following values work on iOS only:
      *
-     * - default
-     * - emergency-call
-     * - google
-     * - join
-     * - route
-     * - yahoo
+     * - `default`
+     * - `emergency-call`
+     * - `google`
+     * - `join`
+     * - `route`
+     * - `yahoo`
      */
     returnKeyType: PropTypes.oneOf([
       // Cross-platform
@@ -206,28 +282,28 @@ var TextInput = React.createClass({
      */
     maxLength: PropTypes.number,
     /**
-     * Sets the number of lines for a TextInput. Use it with multiline set to
-     * true to be able to fill the lines.
+     * Sets the number of lines for a `TextInput`. Use it with multiline set to
+     * `true` to be able to fill the lines.
      * @platform android
      */
     numberOfLines: PropTypes.number,
     /**
-     * If true, the keyboard disables the return key when there is no text and
-     * automatically enables it when there is text. The default value is false.
+     * If `true`, the keyboard disables the return key when there is no text and
+     * automatically enables it when there is text. The default value is `false`.
      * @platform ios
      */
     enablesReturnKeyAutomatically: PropTypes.bool,
     /**
-     * If true, the text input can be multiple lines.
-     * The default value is false.
+     * If `true`, the text input can be multiple lines.
+     * The default value is `false`.
      */
     multiline: PropTypes.bool,
     /**
-     * Callback that is called when the text input is blurred
+     * Callback that is called when the text input is blurred.
      */
     onBlur: PropTypes.func,
     /**
-     * Callback that is called when the text input is focused
+     * Callback that is called when the text input is focused.
      */
     onFocus: PropTypes.func,
     /**
@@ -244,18 +320,18 @@ var TextInput = React.createClass({
      */
     onEndEditing: PropTypes.func,
     /**
-     * Callback that is called when the text input selection is changed
+     * Callback that is called when the text input selection is changed.
      */
     onSelectionChange: PropTypes.func,
     /**
      * Callback that is called when the text input's submit button is pressed.
-     * Invalid if multiline={true} is specified.
+     * Invalid if `multiline={true}` is specified.
      */
     onSubmitEditing: PropTypes.func,
     /**
      * Callback that is called when a key is pressed.
      * Pressed key value is passed as an argument to the callback handler.
-     * Fires before onChange callbacks.
+     * Fires before `onChange` callbacks.
      * @platform ios
      */
     onKeyPress: PropTypes.func,
@@ -264,32 +340,42 @@ var TextInput = React.createClass({
      */
     onLayout: PropTypes.func,
     /**
-     * The string that will be rendered before text input has been entered
+     * The string that will be rendered before text input has been entered.
      */
     placeholder: PropTypes.string,
     /**
-     * The text color of the placeholder string
+     * The text color of the placeholder string.
      */
     placeholderTextColor: PropTypes.string,
     /**
-     * If true, the text input obscures the text entered so that sensitive text
-     * like passwords stay secure. The default value is false.
+     * If `true`, the text input obscures the text entered so that sensitive text
+     * like passwords stay secure. The default value is `false`.
      */
     secureTextEntry: PropTypes.bool,
     /**
-    * The highlight (and cursor on ios) color of the text input
+    * The highlight (and cursor on iOS) color of the text input.
     */
     selectionColor: PropTypes.string,
     /**
-     * See DocumentSelectionState.js, some state that is responsible for
-     * maintaining selection information for a document
+     * An instance of `DocumentSelectionState`, this is some state that is responsible for
+     * maintaining selection information for a document.
+     *
+     * Some functionality that can be performed with this instance is:
+     *
+     * - `blur()`
+     * - `focus()`
+     * - `update()`
+     *
+     * > You can reference `DocumentSelectionState` in
+     * > [`vendor/document/selection/DocumentSelectionState.js`](https://github.com/facebook/react-native/blob/master/Libraries/vendor/document/selection/DocumentSelectionState.js)
+     *
      * @platform ios
      */
     selectionState: PropTypes.instanceOf(DocumentSelectionState),
     /**
-     * The value to show for the text input. TextInput is a controlled
+     * The value to show for the text input. `TextInput` is a controlled
      * component, which means the native value will be forced to match this
-     * value prop if provided. For most uses this works great, but in some
+     * value prop if provided. For most uses, this works great, but in some
      * cases this may cause flickering - one common cause is preventing edits
      * by keeping value the same. In addition to simply setting the same value,
      * either set `editable={false}`, or set/update `maxLength` to prevent
@@ -298,12 +384,12 @@ var TextInput = React.createClass({
     value: PropTypes.string,
     /**
      * Provides an initial value that will change when the user starts typing.
-     * Useful for simple use-cases where you don't want to deal with listening
+     * Useful for simple use-cases where you do not want to deal with listening
      * to events and updating the value prop to keep the controlled state in sync.
      */
     defaultValue: PropTypes.string,
     /**
-     * When the clear button should appear on the right side of the text view
+     * When the clear button should appear on the right side of the text view.
      * @platform ios
      */
     clearButtonMode: PropTypes.oneOf([
@@ -313,28 +399,28 @@ var TextInput = React.createClass({
       'always',
     ]),
     /**
-     * If true, clears the text field automatically when editing begins
+     * If `true`, clears the text field automatically when editing begins.
      * @platform ios
      */
     clearTextOnFocus: PropTypes.bool,
     /**
-     * If true, all text will automatically be selected on focus
+     * If `true`, all text will automatically be selected on focus.
      */
     selectTextOnFocus: PropTypes.bool,
     /**
-     * If true, the text field will blur when submitted.
+     * If `true`, the text field will blur when submitted.
      * The default value is true for single-line fields and false for
-     * multiline fields. Note that for multiline fields, setting blurOnSubmit
-     * to true means that pressing return will blur the field and trigger the
-     * onSubmitEditing event instead of inserting a newline into the field.
+     * multiline fields. Note that for multiline fields, setting `blurOnSubmit`
+     * to `true` means that pressing return will blur the field and trigger the
+     * `onSubmitEditing` event instead of inserting a newline into the field.
      */
     blurOnSubmit: PropTypes.bool,
     /**
-     * Styles
+     * [Styles](/react-native/docs/style.html)
      */
     style: Text.propTypes.style,
     /**
-     * The color of the textInput underline.
+     * The color of the `TextInput` underline.
      * @platform android
      */
     underlineColorAndroid: PropTypes.string,
@@ -358,7 +444,7 @@ var TextInput = React.createClass({
         {})) : Object),
 
   /**
-   * Returns if the input is currently focused.
+   * Returns `true` if the input is currently focused; `false` otherwise.
    */
   isFocused: function(): boolean {
     return TextInputState.currentlyFocusedField() ===
@@ -412,7 +498,7 @@ var TextInput = React.createClass({
   },
 
   /**
-   * Removes all text from the input.
+   * Removes all text from the `TextInput`.
    */
   clear: function() {
     this.setNativeProps({text: ''});
@@ -506,6 +592,7 @@ var TextInput = React.createClass({
 
     return (
       <TouchableWithoutFeedback
+        onLayout={props.onLayout}
         onPress={this._onPress}
         rejectResponderTermination={true}
         accessible={props.accessible}
@@ -562,9 +649,9 @@ var TextInput = React.createClass({
         onSubmitEditing={this.props.onSubmitEditing}
         blurOnSubmit={this.props.blurOnSubmit}
         onLayout={this.props.onLayout}
-        password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}
         placeholderTextColor={this.props.placeholderTextColor}
+        secureTextEntry={this.props.secureTextEntry}
         selectionColor={this.props.selectionColor}
         text={this._getText()}
         underlineColorAndroid={this.props.underlineColorAndroid}

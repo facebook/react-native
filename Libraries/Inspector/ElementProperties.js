@@ -122,6 +122,7 @@ var styles = StyleSheet.create({
   breadcrumb: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    alignItems: 'flex-start',
     marginBottom: 5,
   },
   selected: {

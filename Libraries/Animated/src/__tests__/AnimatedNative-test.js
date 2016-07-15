@@ -62,7 +62,7 @@ describe('Animated', () => {
     expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
       jasmine.any(Number),
       jasmine.any(Number),
-      {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number)},
+      {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number), delay: jasmine.any(Number)},
       jasmine.any(Function)
     );
 
@@ -201,7 +201,7 @@ describe('Animated', () => {
     expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
       jasmine.any(Number),
       jasmine.any(Number),
-      {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number)},
+      {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number), delay: jasmine.any(Number)},
       jasmine.any(Function)
     );
   });
@@ -341,7 +341,7 @@ describe('Animated', () => {
       .toBeCalledWith(jasmine.any(Number), { type: 'props', props: { style: jasmine.any(Number) }});
   });
 
-  it('send stopAnimation command to native', () => {
+  it('sends stopAnimation command to native', () => {
     var value = new Animated.Value(0);
     var animation = Animated.timing(value, {toValue: 10, duration: 50, useNativeDriver: true});
     var nativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
@@ -350,7 +350,7 @@ describe('Animated', () => {
     expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
       jasmine.any(Number),
       jasmine.any(Number),
-      {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number)},
+      {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number), delay: jasmine.any(Number)},
       jasmine.any(Function)
     );
     var animationId = nativeAnimatedModule.startAnimatingNode.mock.calls[0][0];

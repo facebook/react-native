@@ -11,6 +11,11 @@
 
 #import "RCTDefines.h"
 
+/*
+ * Defined in RCTUtils.m
+ */
+RCT_EXTERN BOOL RCTIsMainQueue(void);
+
 /**
  * This is the main assert macro that you should use. Asserts should be compiled out
  * in production builds. You can customize the assert behaviour by setting a custom
@@ -58,13 +63,11 @@ RCT_EXTERN NSString *const RCTFatalExceptionName;
 /**
  * A block signature to be used for custom assertion handling.
  */
-typedef void (^RCTAssertFunction)(
-                                  NSString *condition,
+typedef void (^RCTAssertFunction)(NSString *condition,
                                   NSString *fileName,
                                   NSNumber *lineNumber,
                                   NSString *function,
-                                  NSString *message
-                                  );
+                                  NSString *message);
 
 typedef void (^RCTFatalHandler)(NSError *error);
 
@@ -74,16 +77,22 @@ typedef void (^RCTFatalHandler)(NSError *error);
 #define RCTAssertParam(name) RCTAssert(name, @"'%s' is a required parameter", #name)
 
 /**
- * Convenience macro for asserting that we're running on main thread.
+ * Convenience macro for asserting that we're running on main queue.
  */
-#define RCTAssertMainThread() RCTAssert([NSThread isMainThread], \
+#define RCTAssertMainQueue() RCTAssert(RCTIsMainQueue(), \
   @"This function must be called on the main thread")
 
 /**
- * Convenience macro for asserting that we're running off the main thread.
+ * Convenience macro for asserting that we're running off the main queue.
  */
-#define RCTAssertNotMainThread() RCTAssert(![NSThread isMainThread], \
+#define RCTAssertNotMainQueue() RCTAssert(!RCTIsMainQueue(), \
 @"This function must not be called on the main thread")
+
+/**
+ * Deprecated, do not use
+ */
+#define RCTAssertMainThread() RCTAssertMainQueue()
+#define RCTAssertNotMainThread() RCTAssertNotMainQueue()
 
 /**
  * These methods get and set the current assert function called by the RCTAssert

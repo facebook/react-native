@@ -346,7 +346,7 @@ public class NativeViewHierarchyManager {
                       tagsToDelete));
         }
 
-        View viewToRemove = viewToManage.getChildAt(indexToRemove);
+        View viewToRemove = viewManager.getChildAt(viewToManage, indexToRemove);
 
         if (mLayoutAnimationEnabled &&
             mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
@@ -412,7 +412,10 @@ public class NativeViewHierarchyManager {
     }
   }
 
-  private boolean arrayContains(int[] array, int ele) {
+  private boolean arrayContains(@Nullable int[] array, int ele) {
+    if (array == null) {
+      return false;
+    }
     for (int curEle : array) {
       if (curEle == ele) {
         return true;

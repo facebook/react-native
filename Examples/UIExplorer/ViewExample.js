@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -30,7 +37,13 @@ var styles = StyleSheet.create({
     backgroundColor: '#527FE4',
     borderColor: '#000033',
     borderWidth: 1,
-  }
+  },
+  zIndex: {
+    justifyContent: 'space-around',
+    width: 100,
+    height: 50,
+    marginTop: -10,
+  },
 });
 
 var ViewBorderStyleExample = React.createClass({
@@ -71,6 +84,53 @@ var ViewBorderStyleExample = React.createClass({
 
   _handlePress() {
     this.setState({showBorder: !this.state.showBorder});
+  }
+});
+
+var ZIndexExample = React.createClass({
+  getInitialState() {
+    return {
+      flipped: false
+    };
+  },
+  
+  render() {
+    const indices = this.state.flipped ? [-1, 0, 1, 2] : [2, 1, 0, -1];
+    return (
+      <TouchableWithoutFeedback onPress={this._handlePress}>
+        <View>
+          <Text style={{paddingBottom: 10}}>Tap to flip sorting order</Text>
+          <View style={[
+            styles.zIndex,
+            {marginTop: 0, backgroundColor: '#E57373', zIndex: indices[0]}
+          ]}>
+            <Text>ZIndex {indices[0]}</Text>
+          </View>
+          <View style={[
+            styles.zIndex,
+            {marginLeft: 50, backgroundColor: '#FFF176', zIndex: indices[1]}
+          ]}>
+            <Text>ZIndex {indices[1]}</Text>
+          </View>
+          <View style={[
+            styles.zIndex,
+            {marginLeft: 100, backgroundColor: '#81C784', zIndex: indices[2]}
+          ]}>
+            <Text>ZIndex {indices[2]}</Text>
+          </View>
+          <View style={[
+            styles.zIndex,
+            {marginLeft: 150, backgroundColor: '#64B5F6', zIndex: indices[3]}
+          ]}>
+            <Text>ZIndex {indices[3]}</Text>
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  },
+  
+  _handlePress() {
+    this.setState({flipped: !this.state.flipped});
   }
 });
 
@@ -187,6 +247,11 @@ exports.examples = [
           <View style={{opacity: 1}}><Text>Opacity 1</Text></View>
         </View>
       );
+    },
+  }, {
+    title: 'ZIndex',
+    render: function() {
+      return <ZIndexExample />;
     },
   },
 ];

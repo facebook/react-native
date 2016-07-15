@@ -122,7 +122,7 @@ function NavigationScenesReducer(
     };
     invariant(
       !nextKeys.has(key),
-      `navigationState.routes[${index}].key "${key}" conflicts with` +
+      `navigationState.routes[${index}].key "${key}" conflicts with ` +
         'another route!'
     );
     nextKeys.add(key);

@@ -191,7 +191,7 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 
 - (NSString *)storeImage:(UIImage *)image
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
   RCTLogWarn(@"RCTImageStoreManager.storeImage() is deprecated and has poor performance. Use an alternative method instead.");
   __block NSString *imageTag;
   dispatch_sync(_methodQueue, ^{
@@ -202,7 +202,7 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 
 - (UIImage *)imageForTag:(NSString *)imageTag
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
   RCTLogWarn(@"RCTImageStoreManager.imageForTag() is deprecated and has poor performance. Use an alternative method instead.");
   __block NSData *imageData;
   dispatch_sync(_methodQueue, ^{

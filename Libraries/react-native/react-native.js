@@ -35,6 +35,7 @@ const ReactNative = {
   get Image() { return require('Image'); },
   get ImageEditor() { return require('ImageEditor'); },
   get ImageStore() { return require('ImageStore'); },
+  get KeyboardAvoidingView() { return require('KeyboardAvoidingView'); },
   get ListView() { return require('ListView'); },
   get MapView() { return require('MapView'); },
   get Modal() { return require('Modal'); },

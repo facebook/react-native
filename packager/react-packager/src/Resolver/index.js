@@ -265,10 +265,6 @@ class Resolver {
   minifyModule({path, code, map}) {
     return this._minifyCode(path, code, map);
   }
-
-  getDebugInfo() {
-    return this._depGraph.getDebugInfo();
-  }
 }
 
 function defineModuleCode(moduleName, code, verboseName = '', dev = true) {

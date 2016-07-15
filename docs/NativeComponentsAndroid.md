@@ -148,7 +148,8 @@ The event name `topChange` maps to the `onChange` callback prop in JavaScript (m
 // MyCustomView.js
 
 class MyCustomView extends React.Component {
-  constructor() {
+  constructor(props) {
+    super(props);
     this._onChange = this._onChange.bind(this);
   }
   _onChange(event: Event) {

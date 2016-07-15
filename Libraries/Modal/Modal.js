@@ -23,29 +23,93 @@ const requireNativeComponent = require('requireNativeComponent');
 const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
 
 /**
- * A Modal component covers the native view (e.g. UIViewController, Activity)
- * that contains the React Native root.
+ * The Modal component is a simple way to present content above an enclosing view.
  *
- * Use Modal in hybrid apps that embed React Native; Modal allows the portion of
- * your app written in React Native to present content above the enclosing
- * native view hierarchy.
+ * _Note: If you need more control over how to present modals over the rest of your app,
+ * then consider using a top-level Navigator. Go [here](/react-native/docs/navigator-comparison.html) to compare navigation options._
  *
- * In apps written with React Native from the root view down, you should use
- * Navigator instead of Modal. With a top-level Navigator, you have more control
- * over how to present the modal scene over the rest of your app by using the
- * configureScene property.
+ * ```javascript
+ * import React, { Component } from 'react';
+ * import { Modal, Text, TouchableHighlight, View } from 'react-native';
+ * 
+ * class ModalExample extends Component {
+ *  
+ *   constructor(props) {
+ *     super(props);
+ *     this.state = {modalVisible: false};
+ *   }
+ * 
+ *   setModalVisible(visible) {
+ *     this.setState({modalVisible: visible});
+ *   }
+ * 
+ *   render() {
+ *     return (
+ *       <View style={{marginTop: 22}}>
+ *         <Modal
+ *           animationType={"slide"}
+ *           transparent={false}
+ *           visible={this.state.modalVisible}
+ *           onRequestClose={() => {alert("Modal has been closed.")}}
+ *           >
+ *          <View style={{marginTop: 22}}>
+ *           <View>
+ *             <Text>Hello World!</Text>
+ * 
+ *             <TouchableHighlight onPress={() => {
+ *               this.setModalVisible(!this.state.modalVisible)
+ *             }}>
+ *               <Text>Hide Modal</Text>
+ *             </TouchableHighlight>
+ * 
+ *           </View>
+ *          </View>
+ *         </Modal>
+ * 
+ *         <TouchableHighlight onPress={() => {
+ *           this.setModalVisible(true)
+ *         }}>
+ *           <Text>Show Modal</Text>
+ *         </TouchableHighlight>
+ * 
+ *       </View>
+ *     );
+ *   }
+ * }
+ * ```
  */
 class Modal extends React.Component {
   static propTypes = {
+    /**
+     * The `animationType` prop controls how the modal animates.
+     *
+     * - `slide` slides in from the bottom
+     * - `fade` fades into view
+     * - `none` appears without an animation
+     */
+    animationType: PropTypes.oneOf(['none', 'slide', 'fade']),
+    /**
+     * The `transparent` prop determines whether your modal will fill the entire view. Setting this to `true` will render the modal over a transparent background.
+     */
+    transparent: PropTypes.bool,
+    /**
+     * The `visible` prop determines whether your modal is visible.
+     */
+    visible: PropTypes.bool,
+    /**
+     * The `onRequestClose` prop allows passing a function that will be called once the modal has been dismissed.
+     * 
+     * _On the Android platform, this is a required function._
+     */
+    onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
+    /**
+     * The `onShow` prop allows passing a function that will be called once the modal has been shown.
+     */
+    onShow: PropTypes.func,
     animated: deprecatedPropType(
       PropTypes.bool,
       'Use the `animationType` prop instead.'
     ),
-    animationType: PropTypes.oneOf(['none', 'slide', 'fade']),
-    transparent: PropTypes.bool,
-    visible: PropTypes.bool,
-    onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
-    onShow: PropTypes.func,
   };
 
   static defaultProps = {

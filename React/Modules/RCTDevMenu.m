@@ -239,10 +239,12 @@ RCT_EXPORT_MODULE()
 - (NSURL *)packagerURL
 {
   NSString *host = [_bridge.bundleURL host];
-  if (!host) {
-    return nil;
-  }
   NSString *scheme = [_bridge.bundleURL scheme];
+  if (!host) {
+    host = @"localhost";
+    scheme = @"http";
+  }
+
   NSString *baseURL = [NSString stringWithFormat:@"%@://%@%", scheme, host];
 
   NSNumber *port = [_bridge.bundleURL port];
