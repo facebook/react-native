@@ -121,6 +121,7 @@ const ReactNative = {
   get PointPropType() { return require('PointPropType'); },
 
   // <Even>
+  get TouchableBounce() { return require('TouchableBounce'); },
   get TextInputState() { return require('TextInputState'); },
   get DocumentSelectionState() { return require('DocumentSelectionState'); },
   get InvertibleScrollView() { return require('InvertibleScrollView'); },
