@@ -43,7 +43,10 @@ const ds = new ListView.DataSource({
 });
 
 class UIExplorerExampleList extends React.Component {
-  constuctor(props: {
+
+  state = {filter: ''};
+
+  constructor(props: {
     disableTitleRow: ?boolean,
     onNavigate: Function,
     filter: ?string,
@@ -53,7 +56,7 @@ class UIExplorerExampleList extends React.Component {
     },
     style: ?any,
   }) {
-
+    super(props);
   }
 
   static makeRenderable(example: any): ReactClass<any> {
@@ -63,7 +66,7 @@ class UIExplorerExampleList extends React.Component {
   }
 
   render(): ?ReactElement<any> {
-    const filterText = this.props.filter || '';
+    const filterText = this.state.filter || '';
     const filterRegex = new RegExp(String(filterText), 'i');
     const filter = (example) => filterRegex.test(example.module.title);
 
@@ -116,12 +119,12 @@ class UIExplorerExampleList extends React.Component {
           autoCorrect={false}
           clearButtonMode="always"
           onChangeText={text => {
-            this.props.onNavigate(UIExplorerActions.ExampleListWithFilter(text));
+            this.setState({filter: text});
           }}
           placeholder="Search..."
           style={[styles.searchTextInput, this.props.searchTextInputStyle]}
           testID="explorer_search"
-          value={this.props.filter}
+          value={this.state.filter}
         />
       </View>
     );

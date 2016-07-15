@@ -16,6 +16,10 @@
 #import "RCTUtils.h"
 
 static const NSTimeInterval kMinimumSleepInterval = 1;
+// The duration of a frame. This assumes that we want to run at 60 fps.
+static const NSTimeInterval kFrameDuration = 1.0 / 60.0;
+// The minimum time left in a frame to trigger the idle callback.
+static const NSTimeInterval kIdleCallbackFrameDeadline = 0.001;
 
 @interface _RCTTimer : NSObject
 
@@ -87,6 +91,7 @@ static const NSTimeInterval kMinimumSleepInterval = 1;
 {
   NSMutableDictionary<NSNumber *, _RCTTimer *> *_timers;
   NSTimer *_sleepTimer;
+  BOOL _sendIdleEvents;
 }
 
 @synthesize bridge = _bridge;
@@ -133,6 +138,14 @@ RCT_EXPORT_MODULE()
   return RCTJSThread;
 }
 
+- (NSDictionary *)constantsToExport
+{
+  return @{
+    @"frameDuration": @(kFrameDuration * 1000),
+    @"idleCallbackFrameDeadline": @(kIdleCallbackFrameDeadline * 1000),
+  };
+}
+
 - (void)invalidate
 {
   [self stopTimers];
@@ -151,7 +164,7 @@ RCT_EXPORT_MODULE()
 
 - (void)startTimers
 {
-  if (!_bridge || _timers.count == 0) {
+  if (!_bridge || ![self hasPendingTimers]) {
     return;
   }
 
@@ -161,6 +174,11 @@ RCT_EXPORT_MODULE()
       _pauseCallback();
     }
   }
+}
+
+- (BOOL)hasPendingTimers
+{
+  return _sendIdleEvents || _timers.count > 0;
 }
 
 - (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
@@ -181,22 +199,31 @@ RCT_EXPORT_MODULE()
   // Call timers that need to be called
   if (timersToCall.count > 0) {
     [_bridge enqueueJSCall:@"JSTimersExecution.callTimers" args:@[timersToCall]];
-
-    // If we call at least one timer this frame, don't switch to a paused state yet, so if
-    // in response to this timer another timer is scheduled, we don't pause and unpause
-    // the displaylink frivolously.
-    return;
   }
 
-  // No need to call the pauseCallback as RCTDisplayLink will ask us about our paused
-  // status immediately after completing this call
-  if (_timers.count == 0) {
-    _paused = YES;
+  if (_sendIdleEvents) {
+    NSTimeInterval frameElapsed = (CACurrentMediaTime() - update.timestamp);
+    if (kFrameDuration - frameElapsed >= kIdleCallbackFrameDeadline) {
+      NSTimeInterval currentTimestamp = [[NSDate date] timeIntervalSince1970];
+      NSNumber *absoluteFrameStartMS = @((currentTimestamp - frameElapsed) * 1000);
+      [_bridge enqueueJSCall:@"JSTimersExecution.callIdleCallbacks" args:@[absoluteFrameStartMS]];
+    }
   }
-  // If the next timer is more than 1 second out, pause and schedule an NSTimer;
-  else if ([nextScheduledTarget timeIntervalSinceNow] > kMinimumSleepInterval) {
-    [self scheduleSleepTimer:nextScheduledTarget];
-    _paused = YES;
+
+  // Switch to a paused state only if we didn't call any timer this frame, so if
+  // in response to this timer another timer is scheduled, we don't pause and unpause
+  // the displaylink frivolously.
+  if (!_sendIdleEvents && timersToCall.count == 0) {
+    // No need to call the pauseCallback as RCTDisplayLink will ask us about our paused
+    // status immediately after completing this call
+    if (_timers.count == 0) {
+      _paused = YES;
+    }
+    // If the next timer is more than 1 second out, pause and schedule an NSTimer;
+    else if ([nextScheduledTarget timeIntervalSinceNow] > kMinimumSleepInterval) {
+      [self scheduleSleepTimer:nextScheduledTarget];
+      _paused = YES;
+    }
   }
 }
 
@@ -268,7 +295,17 @@ RCT_EXPORT_METHOD(createTimer:(nonnull NSNumber *)callbackID
 RCT_EXPORT_METHOD(deleteTimer:(nonnull NSNumber *)timerID)
 {
   [_timers removeObjectForKey:timerID];
-  if (_timers.count == 0) {
+  if (![self hasPendingTimers]) {
+    [self stopTimers];
+  }
+}
+
+RCT_EXPORT_METHOD(setSendIdleEvents:(BOOL)sendIdleEvents)
+{
+  _sendIdleEvents = sendIdleEvents;
+  if (sendIdleEvents) {
+    [self startTimers];
+  } else if (![self hasPendingTimers]) {
     [self stopTimers];
   }
 }

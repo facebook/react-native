@@ -5,6 +5,7 @@ layout: docs
 category: The Basics
 permalink: docs/handling-text-input.html
 next: using-a-scrollview
+previous: flexbox
 ---
 
 [`TextInput`](/react-native/docs/textinput.html#content) is a basic component that allows the user to enter text. It has an `onChangeText` prop that takes
