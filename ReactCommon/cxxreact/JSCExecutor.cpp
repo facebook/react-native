@@ -66,12 +66,7 @@ inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
         auto executor = static_cast<JSCExecutor*>(JSObjectGetPrivate(globalObj));
         return (executor->*method)(argumentCount, arguments);
       } catch (...) {
-        try {
-          auto functionName = Object(ctx, function).getProperty("name").toString().str();
-          *exception = translatePendingCppExceptionToJSError(ctx, functionName.c_str());
-        } catch (...) {
-          *exception = makeJSError(ctx, "Failed to get function name while handling exception");
-        }
+        *exception = translatePendingCppExceptionToJSError(ctx, function);
         return JSValueMakeUndefined(ctx);
       }
     }
@@ -119,12 +114,17 @@ JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
   }
 
   folly::dynamic config =
-    folly::dynamic::object("remoteModuleConfig", std::move(nativeModuleConfig));
+    folly::dynamic::object
+      ("remoteModuleConfig", std::move(nativeModuleConfig));
+
 
   SystraceSection t("setGlobalVariable");
   setGlobalVariable(
     "__fbBatchedBridgeConfig",
     folly::make_unique<JSBigStdString>(detail::toStdString(folly::toJson(config))));
+  setGlobalVariable(
+    "__fbBatchedBridgeSerializeNativeParams",
+    folly::make_unique<JSBigStdString>(""));
 }
 
 JSCExecutor::JSCExecutor(
@@ -252,6 +252,42 @@ void JSCExecutor::terminateOnJSVMThread() {
   JSGlobalContextRelease(m_context);
   m_context = nullptr;
 }
+
+#ifdef WITH_FBJSCEXTENSIONS
+void JSCExecutor::loadApplicationScript(
+    std::string bundlePath,
+    std::string sourceURL,
+    int flags) {
+  SystraceSection s("JSCExecutor::loadApplicationScript",
+                    "sourceURL", sourceURL);
+
+  if ((flags & UNPACKED_JS_SOURCE) == 0) {
+    throw std::runtime_error("Optimized bundle with no unpacked js source");
+  }
+
+  auto jsScriptBigString = JSBigMmapString::fromOptimizedBundle(bundlePath);
+  if (jsScriptBigString->encoding() != JSBigMmapString::Encoding::Ascii) {
+    LOG(WARNING) << "Bundle is not ASCII encoded - falling back to the slow path";
+    return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
+  }
+
+  String jsSourceURL(sourceURL.c_str());
+  JSSourceCodeRef sourceCode = JSCreateSourceCode(
+      jsScriptBigString->fd(),
+      jsScriptBigString->size(),
+      jsSourceURL,
+      jsScriptBigString->hash(),
+      true);
+  SCOPE_EXIT { JSReleaseSourceCode(sourceCode); };
+
+  evaluateSourceCode(m_context, sourceCode, jsSourceURL);
+
+  bindBridge();
+
+  flush();
+  ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
+}
+#endif
 
 void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) throw(JSException) {
   SystraceSection s("JSCExecutor::loadApplicationScript",

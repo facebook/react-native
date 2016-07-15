@@ -644,13 +644,13 @@ var Method = React.createClass({
   render: function() {
     return (
       <div className="prop">
-        <Header level={4} className="propTitle" toSlug={this.props.name}>
-          {this.props.modifiers && this.props.modifiers.length && <span className="propType">
+        <Header level={4} className="methodTitle" toSlug={this.props.name}>
+          {this.props.modifiers && this.props.modifiers.length && <span className="methodType">
             {this.props.modifiers.join(' ') + ' '}
           </span> || ''}
           {this.props.name}
-          <span className="propType">
-            ({this.props.params
+          <span className="methodType">
+            ({this.props.params && this.props.params.length && this.props.params
               .map((param) => {
                 var res = param.name;
                 res += param.optional ? '?' : '';
@@ -775,7 +775,7 @@ var EmbeddedSimulator = React.createClass({
       : <img alt="Run example in simulator" width="170" height="356" src="img/uiexplorer_main_ios.png" />;
 
     return (
-      <div className="column-left">
+      <div className="embedded-simulator">
         <p><a className="modal-button-open"><strong>Run this example</strong></a></p>
         <div className="modal-button-open modal-button-open-img">
           {imagePreview}
@@ -855,9 +855,12 @@ var Autodocs = React.createClass({
           path={example.path}
           metadata={metadata}
         />
-        <Prism>
-          {example.content.replace(/^[\s\S]*?\*\//, '').trim()}
-        </Prism>
+        <div className="example-container">
+          <Prism>
+           {example.content.replace(/^[\s\S]*?\*\//, '').trim()}
+          </Prism>
+          <EmbeddedSimulator shouldRender={metadata.runnable} metadata={metadata} />
+        </div>
       </div>
     );
   },
@@ -901,9 +904,6 @@ var Autodocs = React.createClass({
               {metadata.next && <a className="docs-next" href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>}
             </div>
           </div>
-
-          <EmbeddedSimulator shouldRender={metadata.runnable} metadata={metadata} />
-
         </section>
       </Site>
     );

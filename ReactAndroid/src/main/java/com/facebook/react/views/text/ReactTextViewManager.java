@@ -112,6 +112,11 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
     }
   }
 
+  @ReactProp(name = "selectable")
+  public void setSelectable(ReactTextView view, boolean isSelectable) {
+    view.setTextIsSelectable(isSelectable);
+  }
+
   @Override
   public void updateExtraData(ReactTextView view, Object extraData) {
     ReactTextUpdate update = (ReactTextUpdate) extraData;

@@ -184,10 +184,6 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     if (client == null) {
       // WebSocket is already closed
       // Don't do anything, mirror the behaviour on web
-      FLog.w(
-        ReactConstants.TAG,
-        "Cannot close WebSocket. Unknown WebSocket id " + id);
-
       return;
     }
     try {
@@ -224,6 +220,21 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     }
     try {
       client.sendMessage(RequestBody.create(WebSocket.BINARY, ByteString.decodeBase64(base64String)));
+    } catch (IOException | IllegalStateException e) {
+      notifyWebSocketFailed(id, e.getMessage());
+    }
+  }
+
+  @ReactMethod
+  public void ping(int id) {
+    WebSocket client = mWebSocketConnections.get(id);
+    if (client == null) {
+      // This is a programmer error
+      throw new RuntimeException("Cannot send a message. Unknown WebSocket id " + id);
+    }
+    try {
+      Buffer buffer = new Buffer();
+      client.sendPing(buffer);
     } catch (IOException | IllegalStateException e) {
       notifyWebSocketFailed(id, e.getMessage());
     }

@@ -31,8 +31,14 @@ function reportException(e: Error, isFatal: bool) {
     }
     if (__DEV__) {
       symbolicateStackTrace(stack).then(
-        (prettyStack) =>
-          RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack, currentExceptionID),
+        (prettyStack) => {
+          if (prettyStack) {
+            RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack, currentExceptionID);
+          } else {
+            throw new Error('The stack is null');
+          }
+        }
+      ).catch(
         (error) =>
           console.warn('Unable to symbolicate stack trace: ' + error.message)
       );

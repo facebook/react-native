@@ -31,8 +31,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
-import android.os.Debug;
-import android.os.Environment;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -81,6 +79,7 @@ import com.facebook.react.modules.debug.DeveloperSettings;
 public class DevSupportManagerImpl implements DevSupportManager {
 
   private static final int JAVA_ERROR_COOKIE = -1;
+  private static final int JSEXCEPTION_ERROR_COOKIE = -1;
   private static final String JS_BUNDLE_FILE_NAME = "ReactNativeDevBundle.js";
   private static enum ErrorType {
     JS,
@@ -110,6 +109,10 @@ public class DevSupportManagerImpl implements DevSupportManager {
   private boolean mIsShakeDetectorStarted = false;
   private boolean mIsDevSupportEnabled = false;
   private @Nullable RedBoxHandler mRedBoxHandler;
+  private @Nullable String mLastErrorTitle;
+  private @Nullable StackFrame[] mLastErrorStack;
+  private int mLastErrorCookie = 0;
+  private @Nullable ErrorType mLastErrorType;
 
   public DevSupportManagerImpl(
     Context applicationContext,
@@ -135,7 +138,19 @@ public class DevSupportManagerImpl implements DevSupportManager {
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this);
-    mDevServerHelper = new DevServerHelper(mDevSettings);
+    mDevServerHelper = new DevServerHelper(
+        mDevSettings,
+        new DevServerHelper.PackagerCommandListener() {
+          @Override
+          public void onReload() {
+            UiThreadUtil.runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                handleReloadJS();
+              }
+            });
+          }
+        });
 
     // Prepare shake gesture detector (will be started/stopped from #reload)
     mShakeDetector = new ShakeDetector(new ShakeDetector.ShakeListener() {
@@ -180,7 +195,13 @@ public class DevSupportManagerImpl implements DevSupportManager {
   public void handleException(Exception e) {
     if (mIsDevSupportEnabled) {
       FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
-      showNewJavaError(e.getMessage(), e);
+      if (e instanceof JSException) {
+        // TODO #11638796: convert the stack into something useful
+        showNewError(e.getMessage() + "\n\n" + ((JSException) e).getStack(), new StackFrame[] {},
+                     JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
+      } else {
+        showNewJavaError(e.getMessage(), e);
+      }
     } else {
       mDefaultNativeModuleCallExceptionHandler.handleException(e);
     }
@@ -222,12 +243,12 @@ public class DevSupportManagerImpl implements DevSupportManager {
             // belongs to the most recent showNewJSError
             if (mRedBoxDialog == null ||
                 !mRedBoxDialog.isShowing() ||
-                errorCookie != mRedBoxDialog.getErrorCookie()) {
+                errorCookie != mLastErrorCookie) {
               return;
             }
             StackFrame[] stack = StackTraceHelper.convertJsStackTrace(details);
             mRedBoxDialog.setExceptionDetails(message, stack);
-            mRedBoxDialog.setErrorCookie(errorCookie);
+            updateLastErrorInfo(message, stack, errorCookie, ErrorType.JS);
             // JS errors are reported here after source mapping.
             if (mRedBoxHandler != null) {
               mRedBoxHandler.handleRedbox(message, stack, RedBoxHandler.ErrorType.JS);
@@ -264,7 +285,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
               return;
             }
             mRedBoxDialog.setExceptionDetails(message, stack);
-            mRedBoxDialog.setErrorCookie(errorCookie);
+            updateLastErrorInfo(message, stack, errorCookie, errorType);
             // Only report native errors here. JS errors are reported
             // inside {@link #updateJSError} after source mapping.
             if (mRedBoxHandler != null && errorType == ErrorType.NATIVE) {
@@ -462,7 +483,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
   }
 
   /**
-   * @return {@code true} if {@link ReactInstanceManager} should use downloaded JS bundle file
+   * @return {@code true} if {@link com.facebook.react.ReactInstanceManager} should use downloaded JS bundle file
    * instead of using JS file from assets. This may happen when app has not been updated since
    * the last time we fetched the bundle.
    */
@@ -575,6 +596,27 @@ public class DevSupportManagerImpl implements DevSupportManager {
   @Override
   public void isPackagerRunning(DevServerHelper.PackagerStatusCallback callback) {
     mDevServerHelper.isPackagerRunning(callback);
+  }
+
+  @Override
+  public @Nullable String getLastErrorTitle() {
+    return mLastErrorTitle;
+  }
+
+  @Override
+  public @Nullable StackFrame[] getLastErrorStack() {
+    return mLastErrorStack;
+  }
+
+  private void updateLastErrorInfo(
+      final String message,
+      final StackFrame[] stack,
+      final int errorCookie,
+      final ErrorType errorType) {
+    mLastErrorTitle = message;
+    mLastErrorStack = stack;
+    mLastErrorCookie = errorCookie;
+    mLastErrorType = errorType;
   }
 
   private void reloadJSInProxyMode(final AlertDialog progressDialog) {

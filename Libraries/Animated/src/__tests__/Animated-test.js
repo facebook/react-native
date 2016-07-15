@@ -100,8 +100,8 @@ describe('Animated', () => {
 
   it('stops animation when detached', () => {
     // jest environment doesn't have cancelAnimationFrame :(
-    if (!window.cancelAnimationFrame) {
-      window.cancelAnimationFrame = jest.fn();
+    if (!global.cancelAnimationFrame) {
+      global.cancelAnimationFrame = jest.fn();
     }
 
     var anim = new Animated.Value(0);

@@ -22,23 +22,42 @@
    return sharedRCTI18nUtilInstance;
 }
 
+// If current using language is RTL language and meanwhile set allowRTL on the JS side,
+// the RN app will automatically have a RTL layout.
 - (BOOL)isRTL
 {
-  if ([self forceRTL]) return YES;
+  if ([self allowRTL] && [self isApplicationPreferredLanguageRTL]) {
+    return YES;
+  }
   return NO;
 }
 
-- (BOOL)forceRTL
+- (BOOL)allowRTL
 {
   BOOL rtlStatus = [[NSUserDefaults standardUserDefaults]
-                            boolForKey:@"RCTI18nUtil_forceRTL"];
+                            boolForKey:@"RCTI18nUtil_allowRTL"];
   return rtlStatus;
 }
 
-- (void)setForceRTL:(BOOL)rtlStatus
+- (void)setAllowRTL:(BOOL)rtlStatus
 {
-  [[NSUserDefaults standardUserDefaults] setBool:rtlStatus forKey:@"RCTI18nUtil_forceRTL"];
+  [[NSUserDefaults standardUserDefaults] setBool:rtlStatus forKey:@"RCTI18nUtil_allowRTL"];
   [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+// Check if the current device language is RTL
+- (BOOL)isDevicePreferredLanguageRTL
+{
+  NSLocaleLanguageDirection direction = [NSLocale characterDirectionForLanguage:[[NSLocale preferredLanguages] objectAtIndex:0]];
+  return direction == NSLocaleLanguageDirectionRightToLeft;
+}
+
+// Check if the current application language is RTL
+- (BOOL)isApplicationPreferredLanguageRTL
+{
+  NSString *preferredAppLanguage = [[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0];
+  NSLocaleLanguageDirection direction = [NSLocale characterDirectionForLanguage:preferredAppLanguage];
+  return direction == NSLocaleLanguageDirectionRightToLeft;
 }
 
 @end

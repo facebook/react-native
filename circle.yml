@@ -77,7 +77,7 @@ test:
     - ./gradlew :ReactAndroid:assembleDebugAndroidTest -Pjobs=1 -Pcom.android.build.threadPoolSize=1
 
     # Android e2e test
-    - node ./scripts/run-ci-e2e-tests.js --android --js --retries 3
+    - source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android --js --retries 2
 
     # testing docs generation is not broken
     - cd website && node ./server/generate.js

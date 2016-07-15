@@ -13,11 +13,9 @@
 #import "RCTURLRequestHandler.h"
 #import "RCTResizeMode.h"
 
-@class ALAssetsLibrary;
-
 typedef void (^RCTImageLoaderProgressBlock)(int64_t progress, int64_t total);
 typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, UIImage *image);
-typedef void (^RCTImageLoaderCancellationBlock)(void);
+typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 
 @interface UIImage (React)
 

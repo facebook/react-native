@@ -319,6 +319,15 @@ RCT_ENUM_CONVERTER(UIKeyboardType, (@{
   @"numeric": @(UIKeyboardTypeDecimalPad),
 }), UIKeyboardTypeDefault, integerValue)
 
+RCT_MULTI_ENUM_CONVERTER(UIDataDetectorTypes, (@{
+  @"phoneNumber": @(UIDataDetectorTypePhoneNumber),
+  @"link": @(UIDataDetectorTypeLink),
+  @"address": @(UIDataDetectorTypeAddress),
+  @"calendarEvent": @(UIDataDetectorTypeCalendarEvent),
+  @"none": @(UIDataDetectorTypeNone),
+  @"all": @(UIDataDetectorTypeAll),
+}), UIDataDetectorTypePhoneNumber, unsignedLongLongValue)
+
 RCT_ENUM_CONVERTER(UIKeyboardAppearance, (@{
   @"default": @(UIKeyboardAppearanceDefault),
   @"light": @(UIKeyboardAppearanceLight),
@@ -900,7 +909,7 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
   NSString *scheme = URL.scheme.lowercaseString;
   if ([scheme isEqualToString:@"file"]) {
     NSString *assetName = RCTBundlePathForURL(URL);
-    image = [UIImage imageNamed:assetName];
+    image = assetName ? [UIImage imageNamed:assetName] : nil;
     if (!image) {
       // Attempt to load from the file system
       NSString *filePath = URL.path;

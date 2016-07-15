@@ -4,23 +4,22 @@ title: Platform Specific Code
 layout: docs
 category: Guides
 permalink: docs/platform-specific-code.html
-next: native-modules-ios
+next: gesture-responder-system
+previous: upgrading
 ---
 
 When building a cross-platform app, you'll want to re-use as much code as possible. Scenarios may arise where it makes sense for the code to be different, for example you may want to implement separate visual components for iOS and Android.
 
 React Native provides two ways to easily organize your code and separate it by platform:
 
-* Using the `Platform` module.
-* Using platform-specific file extensions.
+* Using the [`Platform` module](#platform-module).
+* Using [platform-specific file extensions](#platform-specific-extensions).
 
-```javascript
-import BigButton from './components/BigButton';
-```
+Certain components may have properties that work on one platform only. All of these props are annotated with `@platform` and have a small badge next to them on the website.
 
-React Native will import the correct component for the running platform.
 
 ## Platform module
+
 React Native provides a module that detects the platform in which the app is running. You can use the detection logic to implement platform-specific code. Use this option when only small parts of a component are platform-specific.
 
 ```javascript
@@ -79,6 +78,7 @@ if(Platform.Version === 21){
 ```
 
 ## Platform-specific extensions
+
 When your platform-specific code is more complex, you should consider splitting the code out into separate files. React Native will detect when a file has a `.ios.` or `.android.` extension and load the relevant platform file when required from other components.
 
 For example, say you have the following files in your project:

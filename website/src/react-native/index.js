@@ -50,8 +50,8 @@ class WhyReactNativeIsSoGreat extends Component {
           If you like React on the web, you'll like React Native.
         </Text>
         <Text>
-          You just use native components like '<View>' and '<Text>',
-          instead of web components like '<div>' and '<a>'.
+          You just use native components like 'View' and 'Text',
+          instead of web components like 'div' and 'span'.
         </Text>
       </View>
     );
@@ -72,12 +72,12 @@ class AwkwardScrollingImageWithText extends Component {
   render() {
     return (
       <ScrollView>
-        <Image source={{uri: 'http://facebook.github.io/react/thats-amazing.png'}} />
+        <Image source={{uri: 'https://i.chzbgr.com/full/7345954048/h7E2C65F9/'}} />
         <Text>
-          On iOS, a React Native '<ScrollView>' uses a native UIScrollView.
+          On iOS, a React Native ScrollView uses a native UIScrollView.
           On Android, it uses a native ScrollView.
 
-          On iOS, a React Native '<Image>' uses a native UIImageView.
+          On iOS, a React Native Image uses a native UIImageView.
           On Android, it uses a native ImageView.
 
           React Native wraps the fundamental native components, giving you

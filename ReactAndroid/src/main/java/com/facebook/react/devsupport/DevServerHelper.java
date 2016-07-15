@@ -15,6 +15,7 @@ import android.text.TextUtils;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JSPackagerWebSocketClient;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
@@ -59,6 +60,7 @@ public class DevServerHelper {
   private static final String ONCHANGE_ENDPOINT_URL_FORMAT =
       "http://%s/onchange";
   private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
+  private static final String PACKAGER_CONNECTION_URL_FORMAT = "ws://%s/message?role=shell";
   private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
 
   private static final String PACKAGER_OK_STATUS = "packager-status:running";
@@ -76,12 +78,17 @@ public class DevServerHelper {
     void onServerContentChanged();
   }
 
+  public interface PackagerCommandListener {
+    void onReload();
+  }
+
   public interface PackagerStatusCallback {
     void onPackagerStatusFetched(boolean packagerIsRunning);
   }
 
   private final DevInternalSettings mSettings;
   private final OkHttpClient mClient;
+  private final JSPackagerWebSocketClient mPackagerConnection;
   private final Handler mRestartOnChangePollingHandler;
 
   private boolean mOnChangePollingEnabled;
@@ -89,7 +96,7 @@ public class DevServerHelper {
   private @Nullable OnServerContentChangeListener mOnServerContentChangeListener;
   private @Nullable Call mDownloadBundleFromURLCall;
 
-  public DevServerHelper(DevInternalSettings settings) {
+  public DevServerHelper(DevInternalSettings settings, final PackagerCommandListener commandListener) {
     mSettings = settings;
     mClient = new OkHttpClient.Builder()
       .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
@@ -98,6 +105,16 @@ public class DevServerHelper {
       .build();
 
     mRestartOnChangePollingHandler = new Handler();
+    mPackagerConnection = new JSPackagerWebSocketClient(getPackagerConnectionURL(),
+        new JSPackagerWebSocketClient.JSPackagerCallback() {
+          @Override
+          public void onMessage(String target, String action) {
+            if (commandListener != null && "bridge".equals(target) && "reload".equals(action)) {
+              commandListener.onReload();
+            }
+          }
+        });
+    mPackagerConnection.connect();
   }
 
   /** Intent action for reloading the JS */
@@ -107,6 +124,10 @@ public class DevServerHelper {
 
   public String getWebsocketProxyURL() {
     return String.format(Locale.US, WEBSOCKET_PROXY_URL_FORMAT, getDebugServerHost());
+  }
+
+  private String getPackagerConnectionURL() {
+    return String.format(Locale.US, PACKAGER_CONNECTION_URL_FORMAT, getDebugServerHost());
   }
 
   /**

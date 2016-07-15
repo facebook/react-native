@@ -25,6 +25,7 @@
 
 const Animated = require('Animated');
 const PanResponder = require('PanResponder');
+const I18nManager = require('I18nManager');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const TimerMixin = require('react-timer-mixin');
@@ -33,6 +34,8 @@ const View = require('View');
 const {PropTypes} = React;
 
 const emptyFunction = require('fbjs/lib/emptyFunction');
+
+const IS_RTL = I18nManager.isRTL;
 
 // NOTE: Eventually convert these consts to an input object of configurations
 
@@ -125,10 +128,6 @@ const SwipeableRow = React.createClass({
 
   componentWillMount(): void {
     this._panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: (event, gestureState) => true,
-      // Don't capture child's start events
-      onStartShouldSetPanResponderCapture: (event, gestureState) => false,
-      onMoveShouldSetPanResponder: (event, gestureState) => false,
       onMoveShouldSetPanResponderCapture: this._handleMoveShouldSetPanResponderCapture,
       onPanResponderGrant: this._handlePanResponderGrant,
       onPanResponderMove: this._handlePanResponderMove,
@@ -240,7 +239,8 @@ const SwipeableRow = React.createClass({
   },
 
   _isSwipingRightFromClosed(gestureState: Object): boolean {
-    return this._previousLeft === CLOSED_LEFT_POSITION && gestureState.dx > 0;
+    const gestureStateDx = IS_RTL ? -gestureState.dx : gestureState.dx;
+    return this._previousLeft === CLOSED_LEFT_POSITION && gestureStateDx > 0;
   },
 
   _swipeFullSpeed(gestureState: Object): void {
@@ -259,9 +259,10 @@ const SwipeableRow = React.createClass({
      * swiping is available, but swiping right does not do anything
      * functionally.
      */
+    const gestureStateDx = IS_RTL ? -gestureState.dx : gestureState.dx;
     return (
       this._isSwipingRightFromClosed(gestureState) &&
-      gestureState.dx > RIGHT_SWIPE_THRESHOLD
+      gestureStateDx > RIGHT_SWIPE_THRESHOLD
     );
   },
 
@@ -290,7 +291,8 @@ const SwipeableRow = React.createClass({
   },
 
   _animateToOpenPosition(): void {
-    this._animateTo(-this.props.maxSwipeDistance);
+    const maxSwipeDistance = IS_RTL ? -this.props.maxSwipeDistance : this.props.maxSwipeDistance;
+    this._animateTo(-maxSwipeDistance);
   },
 
   _animateToClosedPosition(duration: number = SWIPE_DURATION): void {
@@ -306,8 +308,11 @@ const SwipeableRow = React.createClass({
      * When swiping right, we want to bounce back past closed position on release
      * so users know they should swipe right to get content.
      */
+    const swipeBounceBackDistance = IS_RTL ?
+      -RIGHT_SWIPE_BOUNCE_BACK_DISTANCE :
+      RIGHT_SWIPE_BOUNCE_BACK_DISTANCE;
     this._animateTo(
-      -RIGHT_SWIPE_BOUNCE_BACK_DISTANCE,
+      -swipeBounceBackDistance,
       duration,
       this._animateToClosedPositionDuringBounce,
     );
@@ -330,8 +335,7 @@ const SwipeableRow = React.createClass({
   },
 
   _handlePanResponderEnd(event: Object, gestureState: Object): void {
-    const horizontalDistance = gestureState.dx;
-
+    const horizontalDistance = IS_RTL ? -gestureState.dx : gestureState.dx;
     if (this._isSwipingRightFromClosed(gestureState)) {
       this.props.onOpen();
       this._animateBounceBack(RIGHT_SWIPE_BOUNCE_BACK_DURATION);

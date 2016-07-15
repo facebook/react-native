@@ -83,12 +83,10 @@ class AppState extends NativeEventEmitter {
       memoryWarning: new Map(),
     };
 
-    // TODO: getCurrentAppState callback seems to be called at a really late stage
-    // after app launch. Trying to get currentState when mounting App component
-    // will likely to have the initial value here.
-    // Initialize to 'active' instead of null.
-    this.currentState = 'active';
-    
+    // TODO: Remove the 'active' fallback after `initialAppState` is exported by
+    // the Android implementation.
+    this.currentState = RCTAppState.initialAppState || 'active';
+
     // TODO: this is a terrible solution - in order to ensure `currentState` prop
     // is up to date, we have to register an observer that updates it whenever
     // the state changes, even if nobody cares. We should just deprecate the
@@ -99,7 +97,7 @@ class AppState extends NativeEventEmitter {
         this.currentState = appStateData.app_state;
       }
     );
-    
+
     // TODO: see above - this request just populates the value of `currentState`
     // when the module is first initialized. Would be better to get rid of the prop
     // and expose `getCurrentAppState` method directly.
@@ -111,7 +109,7 @@ class AppState extends NativeEventEmitter {
     );
   }
 
-  /**   
+  /**
    * Add a handler to AppState changes by listening to the `change` event type
    * and providing the handler
    *
