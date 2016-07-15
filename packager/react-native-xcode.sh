@@ -13,19 +13,32 @@
 PLISTBUDDY='/usr/libexec/PlistBuddy'
 PLIST=$TARGET_BUILD_DIR/$INFOPLIST_PATH
 
+# 3 options for adding 'localhost' exception for ATS when using the iphonesimulator platform: add it, give a warning, or give an error and fail to build.
+ATS_LOCALHOST_EXCEPTION_MISSING="warn" # valid options: "add", "warn", "error"
+
 case "$CONFIGURATION" in
   Debug)
     # Speed up build times by skipping the creation of the offline package for debug
     # builds on the simulator since the packager is supposed to be running anyways.
     if [[ "$PLATFORM_NAME" = "iphonesimulator" ]]; then
+      localhost_exception=$($PLISTBUDDY -c "Print NSAppTransportSecurity:NSExceptionDomains:localhost:NSTemporaryExceptionAllowsInsecureHTTPLoads" "$PLIST")
+      if [[ "$localhost_exception" = "true" ]]; then
+        echo "Confirmed 'localhost' exception for App Transport Security in $PLIST"
+      else
+        SOURCE_PLIST="$SOURCE_ROOT/$PROJECT_NAME/Info.plist"
+        ATS_EXCEPTION_MSG="The development server will not be accessible without adding a 'localhost' exception for App Transport Security to the Info.plist file. To do this, perform the command '$PLISTBUDDY -c \"Add NSAppTransportSecurity:NSExceptionDomains:localhost:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true\" \"$SOURCE_PLIST\"'"
 
-        localhost_exception=$($PLISTBUDDY -c "Print NSAppTransportSecurity:NSExceptionDomains:localhost:NSTemporaryExceptionAllowsInsecureHTTPLoads" $PLIST)
-        if [ "$localhost_exception" != "true" ]; then
-            echo "Adding 'localhost' exception for App Transport Security to $PLIST"
-            $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:localhost:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" $PLIST
-        else
-            echo "Confirmed 'localhost' exception for App Transport Security in $PLIST"
+        if [[ "$ATS_LOCALHOST_EXCEPTION_MISSING" = "add" ]]; then
+          echo "Adding 'localhost' exception for App Transport Security to $PLIST"
+          $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:localhost:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" "$PLIST"
+        elif [[ "$ATS_LOCALHOST_EXCEPTION_MISSING" = "warn" ]]; then
+          echo "warning: $ATS_EXCEPTION_MSG">&2
+        elif [[ "$ATS_LOCALHOST_EXCEPTION_MISSING" = "error" ]]; then
+          echo "error: $ATS_EXCEPTION_MSG">&2
+          exit 1
         fi
+      fi
+
       echo "Skipping bundling for Simulator platform"
       exit 0;
     fi
@@ -80,43 +93,43 @@ set -x
 DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 
 if [[ "$CONFIGURATION" = "Debug" && "$PLATFORM_NAME" != "iphonesimulator" ]]; then
-  IP=$(ipconfig getifaddr en1)                            # wi-fi prioritized, since the device will use wi-fi
-  if [ -z "$IP" ]; then IP=$(ipconfig getifaddr en0) ; fi # if wi-fi doesn't have an IP address, try ethernet
+    # This would seem unnecessary for cases other than the simulator.
+    # localhost_exception=$($PLISTBUDDY -c "Print NSAppTransportSecurity:NSExceptionDomains:localhost:NSTemporaryExceptionAllowsInsecureHTTPLoads" "$PLIST")
+    # if [[ "$localhost_exception" = "true" ]]; then
+    #   echo "Confirmed 'localhost' exception for App Transport Security in $PLIST"
+    # else
+    #   echo "Adding 'localhost' exception for App Transport Security to $PLIST"
+    #   $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:localhost:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" "$PLIST"
+    # fi
 
-  if [ -z "$IP" ]; then
-    echo "error: Failed to find host IP address for development server." >&2
-    echo "Please ensure that you have a valid IP address." >&2
-    exit 2
-  fi
+  IP=$(ipconfig getifaddr en1)                              # wi-fi prioritized, since the device will use wi-fi
+  if [[ -z "$IP" ]]; then IP=$(ipconfig getifaddr en0) ; fi # if wi-fi doesn't have an IP address, try ethernet
 
-  # Check that the $IP.xip.io domain resolves.
-  IP_XIP="${IP}.xip.io"
-  lookup=`dig +short $IP_XIP`
-  if [ -z "$lookup" ]; then
-    # A simple numeric IP address is blocked by Apple's App Transport Security.
-    echo "warning: The domain ${IP_XIP} cannot be resolved.  If your device cannot resolve this domain, it may" >&2
-    echo "be unable to connect to the development server through wi-fi." >&2
-  fi
-
-  IP="${IP_XIP}"
-
-  localhost_exception=$($PLISTBUDDY -c "Print NSAppTransportSecurity:NSExceptionDomains:localhost:NSTemporaryExceptionAllowsInsecureHTTPLoads" $PLIST)
-  if [ "$localhost_exception" != "true" ]; then
-      echo "Adding 'localhost' exception for App Transport Security to $PLIST"
-      $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:localhost:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" $PLIST
+  if [[ -z "$IP" ]]; then
+    echo "warning: Failed to find host IP address for development server. It will not be available for testing or reloading. To use the development server, please rebuild after ensuring that you have a valid IP address." >&2
   else
-      echo "Confirmed 'localhost' exception for App Transport Security in $PLIST"
-  fi
+    IP_XIP="${IP}.xip.io"
 
-  ip_exception=$($PLISTBUDDY -c "Print NSAppTransportSecurity:NSExceptionDomains:$IP:NSTemporaryExceptionAllowsInsecureHTTPLoads" $PLIST)
-  if [ "$ip_exception" != "true" ]; then
-      echo "Adding '$IP' exception for App Transport Security to $PLIST"
-      $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:$IP:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" $PLIST
-  else
+    # Check that the $IP.xip.io domain resolves.
+    lookup=`dig +short $IP_XIP`
+    if [[ -z "$lookup" ]]; then
+      # A simple numeric IP address is blocked by Apple's App Transport Security.
+      echo "warning: The domain ${IP_XIP} cannot be resolved.  If your device cannot resolve this domain, it may be unable to connect to the development server through wi-fi." >&2
+    fi
+
+    IP="${IP_XIP}"
+    echo "$IP" > "$DEST/ip.txt"
+  
+    ip_exception=$($PLISTBUDDY -c "Print NSAppTransportSecurity:NSExceptionDomains:$IP:NSTemporaryExceptionAllowsInsecureHTTPLoads" "$PLIST")
+    if [[ "$ip_exception" = "true" ]]; then
       echo "Confirmed '$IP' exception for App Transport Security in $PLIST"
+    else
+      echo "Adding '$IP' exception for App Transport Security to $PLIST"
+      $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:$IP:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" "$PLIST"
+    fi
+    
   fi
 
-  echo "$IP" > "$DEST/ip.txt"
 fi
 
 $NODE_BINARY "$REACT_NATIVE_DIR/local-cli/cli.js" bundle \
