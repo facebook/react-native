@@ -101,11 +101,6 @@ var JSTimers = {
    * with time remaining in frame.
    */
   requestIdleCallback: function(func) {
-    if (!RCTTiming.setSendIdleEvents) {
-      console.warn('requestIdleCallback is not currently supported on this platform');
-      return requestAnimationFrame(func);
-    }
-
     if (JSTimersExecution.requestIdleCallbacks.length === 0) {
       RCTTiming.setSendIdleEvents(true);
     }

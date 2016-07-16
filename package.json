@@ -121,7 +121,7 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "~15.2.0"
+    "react": "~15.2.1"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -198,12 +198,12 @@
     "eslint-plugin-babel": "^3.2.0",
     "eslint-plugin-flow-vars": "^0.2.1",
     "eslint-plugin-react": "^4.2.1",
-    "flow-bin": "^0.28.0",
+    "flow-bin": "^0.29.0",
     "jest": "^13.1.0",
     "jest-repl": "^13.1.0",
     "jest-runtime": "^13.1.0",
     "portfinder": "0.4.0",
-    "react": "~15.2.0",
+    "react": "~15.2.1",
     "shelljs": "0.6.0"
   }
 }
