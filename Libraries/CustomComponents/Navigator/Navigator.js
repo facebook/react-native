@@ -1079,7 +1079,7 @@ var Navigator = React.createClass({
    */
   popN: function(n) {
     invariant(typeof n === 'number', 'Must supply a number to popN');
-    n = parseInt(n);
+    n = parseInt(n, 10);
     if (n <= 0 || this.state.presentedIndex - n < 0) {
       return;
     }
