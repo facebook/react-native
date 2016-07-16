@@ -48,4 +48,8 @@ function _logAndroid(resolve, reject) {
   }
 }
 
-module.exports = logAndroid;
+module.exports = {
+  name: 'log-android',
+  description: 'starts adb logcat',
+  func: logAndroid,
+};

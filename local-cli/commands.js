@@ -38,6 +38,8 @@ const documentedCommands = [
   require('./rnpm/install/install'),
   require('./rnpm/install/uninstall'),
   require('./upgrade/upgrade'),
+  require('./logAndroid/logAndroid'),
+  require('./logIOS/logIOS'),
 ];
 
 // The user should never get here because projects are inited by
