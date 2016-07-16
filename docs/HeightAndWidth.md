@@ -29,7 +29,7 @@ class FixedDimensionsBasics extends Component {
   }
 };
 
-AppRegistry.registerComponent('AwesomeProject', () => FixedDimensionsBasics);
+AppRegistry.registerComponent('FixedDimensionsBasics', () => FixedDimensionsBasics);
 ```
 
 Setting dimensions this way is common for components that should always render at exactly the same size, regardless of screen dimensions.
