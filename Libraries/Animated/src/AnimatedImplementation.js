@@ -1231,8 +1231,15 @@ class AnimatedTransform extends AnimatedWithChildren {
         var value = transform[key];
         if (value instanceof Animated) {
           transConfigs.push({
+            type: 'animated',
             property: key,
             nodeTag: value.__getNativeTag(),
+          });
+        } else {
+          transConfigs.push({
+            type: 'static',
+            property: key,
+            value,
           });
         }
       }
