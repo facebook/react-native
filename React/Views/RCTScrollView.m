@@ -723,6 +723,11 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndDragging:scrollView willDecelerate:decelerate);
+  
+  if (decelerate) {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(scrollViewDidEndDecelerating:) object:scrollView];
+    [self performSelector:@selector(scrollViewDidEndDecelerating:) withObject:scrollView afterDelay:0.3];
+  }
 }
 
 - (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view
@@ -740,6 +745,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
   // Fire a final scroll event
+  [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(scrollViewDidEndDecelerating:) object:scrollView];
   _allowNextScrollNoMatterWhat = YES;
   [self scrollViewDidScroll:scrollView];
 
