@@ -47,7 +47,7 @@ React Native is great when you are starting a new mobile app from scratch. Howev
 
 <block class="objc swift" />
 
-The keys to integrating React Native components into your iOS application are to:
+The keys to integrating React Native components into your Android application are to:
 
 1. Understand what React Native components you want to integrate.
 2. Create a `Podfile` with `subspec`s for all the React Native components you will need for your integration.
