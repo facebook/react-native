@@ -15,7 +15,7 @@ function logIOS() {
   });
 }
 
-function _logIOS(resolve, reject) {
+function _logIOS() {
   let rawDevices;
 
   try {
@@ -26,8 +26,7 @@ function _logIOS(resolve, reject) {
     console.log(chalk.red(
       'xcrun invocation failed. Please check that Xcode is installed.'
     ));
-    reject(e);
-    return;
+    return Promise.reject(e);
   }
 
   const { devices } = JSON.parse(rawDevices);
@@ -37,10 +36,10 @@ function _logIOS(resolve, reject) {
     console.log(chalk.red(
       'No active iOS device found'
     ));
-    reject();
+    return Promise.reject();
   }
 
-  tailDeviceLogs(device.udid, reject);
+  return tailDeviceLogs(device.udid);
 }
 
 function _findAvailableDevice(devices) {
@@ -53,7 +52,7 @@ function _findAvailableDevice(devices) {
   }
 }
 
-function tailDeviceLogs(udid, reject) {
+function tailDeviceLogs(udid) {
   const logDir = path.join(
     os.homedir(),
     'Library',
@@ -70,7 +69,7 @@ function tailDeviceLogs(udid, reject) {
     console.log(chalk.red(
       'syslog invocation failed.'
     ));
-    reject(log.error);
+    return Promise.reject(log.error);
   }
 }
 
