@@ -11,6 +11,8 @@
 
 extern NSString *const RCTBundleURLProviderUpdatedNotification;
 
+extern const NSUInteger kRCTBundleURLProviderDefaultPort;
+
 @interface RCTBundleURLProvider : NSObject
 
 /**
@@ -47,13 +49,13 @@ extern NSString *const RCTBundleURLProviderUpdatedNotification;
 + (instancetype)sharedSettings;
 
 /**
- * @experimental
- * The default behavior of RCTBundleURLProvider (including the singleton shared instance) is to call
- * [NSURLConnection +sendSynchronousRequest:returningResponse:error:] to determine if the packager is running at
- * startup time. (Note this behavior is only enabled if RCT_DEV is on.) This experimental API allows you to specify
- * a custom predicate function that must return YES if the packager is running at the given host and port, and NO
- * otherwise.
+ Given a hostname for the packager and a bundle root, returns the URL to the js bundle. Generally you should use the
+ instance method -jsBundleURLForBundleRoot:fallbackResource: which includes logic to guess if the packager is running
+ and fall back to a pre-packaged bundle if it is not.
  */
-- (instancetype)initWithPackagerRunningPredicate:(BOOL (*)(NSString *host, NSUInteger port))packagerRunningPredicate;
++ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                       packagerHost:(NSString *)packagerHost
+                          enableDev:(BOOL)enableDev
+                 enableMinification:(BOOL)enableMinification;
 
 @end

@@ -52,11 +52,11 @@ In some cases, you may want to detect when a user presses and holds a view for a
 
 ## Scrolling lists and swiping views
 
-A common pattern to many mobile apps is the scrollable list of items. Users interact with these using panning or swiping gestures. The [ScrollView](/react-native/docs/basics-component-scrollview.html) component displays a list of items that can be scrolled using these gestures.
+A common pattern to many mobile apps is the scrollable list of items. Users interact with these using panning or swiping gestures. The [ScrollView](/react-native/docs/using-a-scrollview.html) component displays a list of items that can be scrolled using these gestures.
 
 ScrollViews can scroll vertically or horizontally, and can be configured to allow paging through views using swiping gestures by using the `pagingEnabled` props. Swiping horizontally between views can also be implemented on Android using the [ViewPagerAndroid](/react-native/docs/viewpagerandroid.html) component.
 
-A [ListView](/react-native/docs/basics-component-listview.html) is a special kind of ScrollView that is best suited for displaying long vertical lists of items. It can also display section headers and footers, similar to `UITableView`s on iOS.
+A [ListView](/react-native/docs/using-a-listview.html) is a special kind of ScrollView that is best suited for displaying long vertical lists of items. It can also display section headers and footers, similar to `UITableView`s on iOS.
 
 ### Pinch-to-zoom
 

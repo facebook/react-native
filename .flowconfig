@@ -19,7 +19,7 @@
 .*/node_modules/commoner/test/source/widget/share.js
 
 # Ignore duplicate module providers
-# For RN Apps installed via npm, "Libraries" folder is inside node_modules/react-native but in the source repo it is in the root 
+# For RN Apps installed via npm, "Libraries" folder is inside node_modules/react-native but in the source repo it is in the root
 .*/Libraries/react-native/React.js
 .*/Libraries/react-native/ReactNative.js
 .*/node_modules/jest-runtime/build/__tests__/.*
@@ -54,4 +54,4 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 unsafe.enable_getters_and_setters=true
 
 [version]
-^0.28.0
+^0.29.0

@@ -14,12 +14,14 @@ jest.mock('../extract-dependencies');
 jest.mock('../inline');
 jest.mock('../minify');
 
-const {transformCode} = require('..');
 const {any, objectContaining} = jasmine;
 
 describe('code transformation worker:', () => {
+  let transformCode;
+
   let extractDependencies, transform;
   beforeEach(() => {
+    ({transformCode} = require('..'));
     extractDependencies =
       require('../extract-dependencies').mockReturnValue({});
     transform = jest.fn();
@@ -68,7 +70,7 @@ describe('code transformation worker:', () => {
       done();
     });
   });
-  
+
   it('removes shebang when present', done => {
     const shebang = '#!/usr/bin/env node';
     const result = {
@@ -81,7 +83,7 @@ describe('code transformation worker:', () => {
       done();
     });
   });
-  
+
   it('calls back with any error yielded by the transform', done => {
     const error = Error('arbitrary error');
     transform.mockImplementation((_, callback) => callback(error));
