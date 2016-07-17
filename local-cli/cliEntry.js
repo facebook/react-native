@@ -126,6 +126,18 @@ function run() {
 
   cli.parse(process.argv);
 
+  const isValidCommand = commands.find(cmd => cmd.command === process.argv[2]);
+
+  if (!isValidCommand) {
+    console.log(chalk.red([
+      '',
+      `  Unrecognized command '${process.argv[2]}'`,
+      '  Run react-native --help to see list of all available commands',
+      '',
+    ].join('\n')));
+    return;
+  }
+
   if (!cli.args.length) {
     cli.help();
   }
