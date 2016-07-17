@@ -66,7 +66,7 @@ function printHelpInformation() {
 
   if (usage !== '[options]') {
     const formattedUsage = usage.map(
-      example => `  - ${example.desc}: \n  ${chalk.cyan(example.cmd)}`,
+      example => `    ${example.desc}: \n    ${chalk.cyan(example.cmd)}`,
     ).join('\n\n');
 
     output = output.concat([
