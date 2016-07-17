@@ -82,6 +82,15 @@ function printHelpInformation() {
   ]).join('\n');
 }
 
+function printUnknownCommand() {
+  console.log([
+    '',
+    chalk.red(`  Unrecognized command '${process.argv[2]}'`),
+    `  Run ${chalk.cyan('react-native --help')} to see list of all available commands`,
+    '',
+  ].join('\n'));
+}
+
 const addCommand = (command: Command, config: Config) => {
   const options = command.options || [];
 
@@ -129,12 +138,7 @@ function run() {
   const isValidCommand = commands.find(cmd => cmd.command === process.argv[2]);
 
   if (!isValidCommand) {
-    console.log(chalk.red([
-      '',
-      `  Unrecognized command '${process.argv[2]}'`,
-      '  Run react-native --help to see list of all available commands',
-      '',
-    ].join('\n')));
+    printUnknownCommand();
     return;
   }
 
