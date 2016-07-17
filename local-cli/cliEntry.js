@@ -46,7 +46,9 @@ const addCommand = (command: Command, config: Config) => {
   const options = command.options || [];
 
   const cmd = cli
-    .command(command.name)
+    .command(command.name, undefined, {
+      noHelp: !command.description,
+    })
     .usage(command.usage)
     .description(command.description)
     .action(function runAction() {
