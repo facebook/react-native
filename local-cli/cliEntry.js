@@ -15,6 +15,7 @@ const cli = require('commander');
 const Config = require('./util/Config');
 const childProcess = require('child_process');
 const Promise = require('promise');
+const chalk = require('chalk');
 const path = require('path');
 const fs = require('fs');
 const gracefulFs = require('graceful-fs');
@@ -42,6 +43,45 @@ const handleError = (err) => {
   process.exit(1);
 };
 
+// Custom printHelpInformation command inspired by internal Commander.js
+// one modified to suit our needs
+function printHelpInformation() {
+  let cmdName = this._name;
+  if (this._alias) {
+    cmdName = cmdName + '|' + this._alias;
+  }
+
+  let output = [
+    '',
+    chalk.bold(chalk.cyan((`  react-native ${cmdName} [options]`))),
+    `  ${this._description}`,
+    '',
+    `  ${chalk.bold('Options:')}`,
+    '',
+    this.optionHelp().replace(/^/gm, '    '),
+    '',
+  ];
+
+  const usage = this.usage();
+
+  if (usage !== '[options]') {
+    const formattedUsage = usage.map(
+      example => `  - ${example.desc}: \n  ${chalk.cyan(example.cmd)}`,
+    ).join('\n\n');
+
+    output = output.concat([
+      chalk.bold('  Example usage:'),
+      '',
+      formattedUsage,
+    ]);
+  }
+
+  return output.concat([
+    '',
+    '',
+  ]).join('\n');
+}
+
 const addCommand = (command: Command, config: Config) => {
   const options = command.options || [];
 
@@ -49,7 +89,7 @@ const addCommand = (command: Command, config: Config) => {
     .command(command.name, undefined, {
       noHelp: !command.description,
     })
-    .usage(command.usage)
+    .usage(command.examples)
     .description(command.description)
     .action(function runAction() {
       const passedOptions = this.opts();
@@ -62,6 +102,8 @@ const addCommand = (command: Command, config: Config) => {
         })
         .catch(handleError);
     });
+
+    cmd.helpInformation = printHelpInformation.bind(cmd);
 
   options
     .forEach(opt => cmd.option(

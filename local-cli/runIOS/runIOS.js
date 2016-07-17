@@ -81,6 +81,16 @@ module.exports = {
   name: 'run-ios',
   description: 'builds your app and starts it on iOS simulator',
   func: runIOS,
+  examples: [
+    {
+      desc: 'Run on a different simulator, e.g. iPhone 5',
+      cmd: 'react-native run-ios --simulator "iPhone 5"',
+    },
+    {
+      desc: 'Pass a non-standard location of iOS directory',
+      cmd: 'react-native run-ios --project-path "./app/ios"',
+    },
+  ],
   options: [{
     command: '--simulator [string]',
     description: 'Explicitly set simulator to use',
