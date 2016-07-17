@@ -74,6 +74,9 @@ function renderType(type) {
     if (type.raw === 'ColorPropType') {
       return <a href={'docs/colors.html'}>color</a>;
     }
+    if (type.raw === 'IndicatorSizePropType') {
+      return <a href={'docs/indicator-size.html'}>indicator size</a>;
+    }
     if (type.raw === 'EdgeInsetsPropType') {
       return '{top: number, left: number, bottom: number, right: number}';
     }
