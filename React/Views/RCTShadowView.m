@@ -185,7 +185,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
     _didUpdateSubviews = NO;
     [self didUpdateReactSubviews];
     [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-      UIView *view = viewRegistry[_reactTag];
+      UIView *view = viewRegistry[self->_reactTag];
       [view clearSortedSubviews];
       [view didUpdateReactSubviews];
     }];
@@ -195,7 +195,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
     UIColor *parentBackgroundColor = parentProperties[RCTBackgroundColorProp];
     if (parentBackgroundColor) {
       [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-        UIView *view = viewRegistry[_reactTag];
+        UIView *view = viewRegistry[self->_reactTag];
         [view reactSetInheritedBackgroundColor:parentBackgroundColor];
       }];
     }
@@ -505,33 +505,31 @@ RCT_BORDER_PROPERTY(Right, RIGHT)
 
 // Dimensions
 
-#define RCT_DIMENSIONS_PROPERTY(setProp, getProp, cssProp, dimensions) \
-- (void)set##setProp:(CGFloat)value                                    \
-{                                                                      \
-  _cssNode->style.dimensions[CSS_##cssProp] = value;                   \
-  [self dirtyLayout];                                                  \
-  [self dirtyText];                                                    \
-}                                                                      \
-- (CGFloat)getProp                                                     \
-{                                                                      \
-  return _cssNode->style.dimensions[CSS_##cssProp];                    \
+
+#define RCT_DIMENSION_PROPERTY(setProp, getProp, cssProp, category) \
+- (void)set##setProp:(CGFloat)value                                 \
+{                                                                   \
+  _cssNode->style.category[CSS_##cssProp] = value;                  \
+  [self dirtyLayout];                                               \
+  [self dirtyText];                                                 \
+}                                                                   \
+- (CGFloat)getProp                                                  \
+{                                                                   \
+  return _cssNode->style.category[CSS_##cssProp];                   \
 }
 
-RCT_DIMENSIONS_PROPERTY(Width, width, WIDTH, dimensions)
-RCT_DIMENSIONS_PROPERTY(Height, height, HEIGHT, dimensions)
+RCT_DIMENSION_PROPERTY(Width, width, WIDTH, dimensions)
+RCT_DIMENSION_PROPERTY(Height, height, HEIGHT, dimensions)
+
+RCT_DIMENSION_PROPERTY(MinWidth, minWidth, WIDTH, minDimensions)
+RCT_DIMENSION_PROPERTY(MaxWidth, maxWidth, WIDTH, maxDimensions)
+RCT_DIMENSION_PROPERTY(MinHeight, minHeight, HEIGHT, minDimensions)
+RCT_DIMENSION_PROPERTY(MaxHeight, maxHeight, HEIGHT, maxDimensions)
 
 // Position
 
 #define RCT_POSITION_PROPERTY(setProp, getProp, cssProp) \
-- (void)set##setProp:(CGFloat)value                      \
-{                                                        \
-  _cssNode->style.position[CSS_##cssProp] = value;       \
-  [self dirtyLayout];                                    \
-}                                                        \
-- (CGFloat)getProp                                       \
-{                                                        \
-  return _cssNode->style.position[CSS_##cssProp];        \
-}
+RCT_DIMENSION_PROPERTY(setProp, getProp, cssProp, position)
 
 RCT_POSITION_PROPERTY(Top, top, TOP)
 RCT_POSITION_PROPERTY(Right, right, RIGHT)

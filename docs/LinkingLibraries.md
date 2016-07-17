@@ -5,6 +5,7 @@ layout: docs
 category: Guides (iOS)
 permalink: docs/linking-libraries-ios.html
 next: running-on-device-ios
+previous: native-components-ios
 ---
 
 Not every app uses all the native capabilities, and including the code to support

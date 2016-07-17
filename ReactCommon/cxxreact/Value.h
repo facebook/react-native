@@ -12,6 +12,8 @@
 #include <JavaScriptCore/JSStringRef.h>
 #include <JavaScriptCore/JSValueRef.h>
 
+#include <folly/dynamic.h>
+
 #include "noncopyable.h"
 
 #if WITH_FBJSCEXTENSIONS
@@ -24,6 +26,25 @@ namespace react {
 class Value;
 class Context;
 
+class JSException : public std::runtime_error {
+public:
+  explicit JSException(const char* msg)
+    : std::runtime_error(msg)
+    , stack_("") {}
+
+  JSException(const char* msg, const char* stack)
+    : std::runtime_error(msg)
+    , stack_(stack) {}
+
+  const std::string& getStack() const {
+    return stack_;
+  }
+
+private:
+  std::string stack_;
+};
+
+
 class String : public noncopyable {
 public:
   explicit String(const char* utf8) :
@@ -32,7 +53,9 @@ public:
 
   String(String&& other) :
     m_string(other.m_string)
-  {}
+  {
+    other.m_string = nullptr;
+  }
 
   String(const String& other) :
     m_string(other.m_string)
@@ -75,17 +98,17 @@ public:
     return JSStringIsEqualToUTF8CString(m_string, utf8);
   }
 
-  static String createExpectingAscii(const char* utf8, size_t len) {
-  #if WITH_FBJSCEXTENSIONS
-    return String(
-      JSStringCreateWithUTF8CStringExpectAscii(utf8, len), true);
-  #else
-    return String(JSStringCreateWithUTF8CString(utf8), true);
-  #endif
+  // This assumes ascii is nul-terminated.
+  static String createExpectingAscii(const char* ascii, size_t len) {
+#if WITH_FBJSCEXTENSIONS
+    return String(JSStringCreateWithUTF8CStringExpectAscii(ascii, len), true);
+#else
+    return String(JSStringCreateWithUTF8CString(ascii), true);
+#endif
   }
 
-  static String createExpectingAscii(std::string const &utf8) {
-    return String::createExpectingAscii(utf8.c_str(), utf8.size());
+  static String createExpectingAscii(std::string const &ascii) {
+    return createExpectingAscii(ascii.c_str(), ascii.size());
   }
 
   static String ref(JSStringRef string) {
@@ -129,6 +152,13 @@ public:
     }
   }
 
+  Object& operator=(Object&& other) {
+    std::swap(m_context, other.m_context);
+    std::swap(m_obj, other.m_obj);
+    std::swap(m_isProtected, other.m_isProtected);
+    return *this;
+  }
+
   operator JSObjectRef() const {
     return m_obj;
   }
@@ -139,14 +169,19 @@ public:
     return JSObjectIsFunction(m_context, m_obj);
   }
 
-  Value callAsFunction(int nArgs, JSValueRef args[]);
+  Value callAsFunction(std::initializer_list<JSValueRef> args) const;
+  Value callAsFunction(const Object& thisObj, std::initializer_list<JSValueRef> args) const;
+  Value callAsFunction(int nArgs, const JSValueRef args[]) const;
+  Value callAsFunction(const Object& thisObj, int nArgs, const JSValueRef args[]) const;
+
+  Object callAsConstructor(std::initializer_list<JSValueRef> args) const;
 
   Value getProperty(const String& propName) const;
   Value getProperty(const char *propName) const;
   Value getPropertyAtIndex(unsigned index) const;
   void setProperty(const String& propName, const Value& value) const;
   void setProperty(const char *propName, const Value& value) const;
-  std::vector<std::string> getPropertyNames() const;
+  std::vector<String> getPropertyNames() const;
   std::unordered_map<std::string, std::string> toJSONMap() const;
 
   void makeProtected() {
@@ -154,6 +189,15 @@ public:
       JSValueProtect(m_context, m_obj);
       m_isProtected = true;
     }
+  }
+
+  template<typename ReturnType>
+  ReturnType* getPrivate() const {
+    return static_cast<ReturnType*>(JSObjectGetPrivate(m_obj));
+  }
+
+  JSContextRef context() const {
+    return m_context;
   }
 
   static Object getGlobalObject(JSContextRef ctx) {
@@ -170,6 +214,8 @@ private:
   JSContextRef m_context;
   JSObjectRef m_obj;
   bool m_isProtected = false;
+
+  Value callAsFunction(JSObjectRef thisObj, int nArgs, const JSValueRef args[]) const;
 };
 
 class Value : public noncopyable {
@@ -180,6 +226,10 @@ public:
 
   operator JSValueRef() const {
     return m_value;
+  }
+
+  JSType getType() const {
+    return JSValueGetType(m_context, m_value);
   }
 
   bool isBoolean() const {
@@ -228,14 +278,15 @@ public:
     return JSValueIsString(context(), m_value);
   }
 
-  String toString() {
+  String toString() noexcept {
     return String::adopt(JSValueToStringCopy(context(), m_value, nullptr));
   }
 
-  std::string toJSONString(unsigned indent = 0) const;
-  static Value fromJSON(JSContextRef ctx, const String& json);
-protected:
+  std::string toJSONString(unsigned indent = 0) const throw(JSException);
+  static Value fromJSON(JSContextRef ctx, const String& json) throw(JSException);
+  static Value fromDynamic(JSContextRef ctx, folly::dynamic value) throw(JSException);
   JSContextRef context() const;
+protected:
   JSContextRef m_context;
   JSValueRef m_value;
 };

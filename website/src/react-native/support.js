@@ -29,38 +29,30 @@ var support = React.createClass({
             <h1>Need help?</h1>
             <div className="subHeader"></div>
             <p>
-              <strong>React Native</strong> is worked on full-time by Facebook&#39;s
-              product infrastructure user interface
-              engineering teams. They&#39;re often around and available for
-              questions.
+              At Facebook, there are dozens of engineers who work on React Native full-time. But there are far more people in the community who make key contributions and fix things. So if you need help with your React Native app, the right place to go depends on the type of help that you need.
             </p>
 
-            <H2>Community translation</H2>
-            <p>The following is a list of translated docs offered by community volunteers. Send a pull request to fill the list!</p>
-            <ul>
-              <li><a href="http://reactnative.cn">Chinese</a> (<a href="https://github.com/reactnativecn/react-native-docs-cn">source</a>)</li>
-            </ul>
+            <H2>Technical Questions</H2>
+            <p>If you're wondering how to solve a specific technical problem in React Native, the best place to ask is on Stack Overflow. You can check <a href="http://stackoverflow.com/questions/tagged/react-native">existing questions</a> tagged with react-native, <a href="http://stackoverflow.com/questions/ask">ask your own</a>, or just Google it and click on the Stack Overflow answer that will inevitably come up.</p>
 
-            <H2>Stack Overflow</H2>
-            <p>Many members of the community use Stack Overflow to ask questions. Read through the <a href="http://stackoverflow.com/questions/tagged/react-native">existing questions</a> tagged with <strong>react-native</strong> or <a href="http://stackoverflow.com/questions/ask">ask your own</a>!</p>
+            <H2>Random Questions</H2>
+            <p>If you have an open-ended question or you just want to get a general sense of what React Native folks talk about, check out the <a href="https://www.facebook.com/groups/react.native.community">React Native Community</a> Facebook group. It has thousands of developers and almost all posts get a response.</p>
 
-            <H2>Chat</H2>
-            <p>Join us in <strong><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">#react-native on Reactiflux</a></strong>.</p>
+            <H2>Urgent Questions</H2>
+            <p>If you need an answer right away, check out #react-native on the <a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux chat</a>. There are usually a number of React Native experts there who can help out or point you to somewhere you might want to look.</p>
 
-            <H2>Product Pains</H2>
-            <p>React Native uses <a href="https://productpains.com/product/react-native/">Product Pains</a> for feature requests. It has a voting system to surface which issues are most important to the community. GitHub issues should only be used for bugs.</p>
+            <H2>Feature Requests</H2>
+            <p>React Native uses <a href="https://productpains.com/product/react-native/">Product Pains</a> for feature requests. It has a voting system to surface which issues are most important to the community. So if you have a feature request, add it or upvote a similar one.</p>
 
             <iframe
               width="100%"
               height="600px"
               scrolling="yes"
               src="https://productpains.com/widget.html?token=3b929306-e0f7-5c94-7d7c-ecc05d059748"
-            />
+              />
 
-            <H2>Twitter</H2>
-            <p><a href="https://twitter.com/search?q=%23reactnative"><strong>#reactnative</strong> hash tag on Twitter</a> is used to keep up with the latest React Native news.</p>
-
-            <p><center><a className="twitter-timeline" data-dnt="true" data-chrome="nofooter noheader transparent" href="https://twitter.com/search?q=%23reactnative" data-widget-id="565960513457098753"></a></center></p>
+            <H2>Bug Reports</H2>
+            <p>If you have discovered a bug in React Native, keep in mind that it's an open source project. Take a look at the <a href="https://github.com/facebook/react-native/">code on GitHub</a>, and see if it's something you could fix yourself. If you don't think you can fix it yourself, you can file it as a GitHub issue. Be sure to providing a crisp description and reproduction of the bug, to improve the chance that someone will be able to help you out.</p>
           </div>
         </section>
 

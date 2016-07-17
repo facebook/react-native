@@ -530,7 +530,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     super.onCollectExtraUpdates(uiViewOperationQueue);
     if (mPreparedSpannableText != null) {
       ReactTextUpdate reactTextUpdate =
-          new ReactTextUpdate(mPreparedSpannableText, UNSET, mContainsImages);
+          new ReactTextUpdate(mPreparedSpannableText, UNSET, mContainsImages, getPadding());
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }

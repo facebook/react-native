@@ -1,5 +1,7 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
+#include <folly/json.h>
+
 #include "Value.h"
 
 #include "JSCHelpers.h"
@@ -30,7 +32,7 @@ JSContextRef Value::context() const {
   return m_context;
 }
 
-std::string Value::toJSONString(unsigned indent) const {
+std::string Value::toJSONString(unsigned indent) const throw(JSException) {
   JSValueRef exn;
   auto stringToAdopt = JSValueCreateJSONString(m_context, m_value, indent, &exn);
   if (stringToAdopt == nullptr) {
@@ -41,12 +43,17 @@ std::string Value::toJSONString(unsigned indent) const {
 }
 
 /* static */
-Value Value::fromJSON(JSContextRef ctx, const String& json) {
+Value Value::fromJSON(JSContextRef ctx, const String& json) throw(JSException) {
   auto result = JSValueMakeFromJSONString(ctx, json);
   if (!result) {
     throwJSExecutionException("Failed to create String from JSON");
   }
   return Value(ctx, result);
+}
+
+Value Value::fromDynamic(JSContextRef ctx, folly::dynamic value) throw(JSException) {
+  auto json = folly::toJson(value);
+  return fromJSON(ctx, String(json.c_str()));
 }
 
 Object Value::asObject() {
@@ -65,14 +72,40 @@ Object::operator Value() const {
   return Value(m_context, m_obj);
 }
 
-Value Object::callAsFunction(int nArgs, JSValueRef args[]) {
+Value Object::callAsFunction(std::initializer_list<JSValueRef> args) const {
+  return callAsFunction(nullptr, args.size(), args.begin());
+}
+
+Value Object::callAsFunction(const Object& thisObj, std::initializer_list<JSValueRef> args) const {
+  return callAsFunction((JSObjectRef) thisObj, args.size(), args.begin());
+}
+
+Value Object::callAsFunction(int nArgs, const JSValueRef args[]) const {
+  return callAsFunction(nullptr, nArgs, args);
+}
+
+Value Object::callAsFunction(const Object& thisObj, int nArgs, const JSValueRef args[]) const {
+  return callAsFunction((JSObjectRef) thisObj, nArgs, args);
+}
+
+Value Object::callAsFunction(JSObjectRef thisObj, int nArgs, const JSValueRef args[]) const {
   JSValueRef exn;
-  JSValueRef result = JSObjectCallAsFunction(m_context, m_obj, NULL, nArgs, args, &exn);
+  JSValueRef result = JSObjectCallAsFunction(m_context, m_obj, thisObj, nArgs, args, &exn);
   if (!result) {
     std::string exceptionText = Value(m_context, exn).toString().str();
-    throwJSExecutionException("Exception calling JS function: %s", exceptionText.c_str());
+    throwJSExecutionException("Exception calling object as function: %s", exceptionText.c_str());
   }
   return Value(m_context, result);
+}
+
+Object Object::callAsConstructor(std::initializer_list<JSValueRef> args) const {
+  JSValueRef exn;
+  JSObjectRef result = JSObjectCallAsConstructor(m_context, m_obj, args.size(), args.begin(), &exn);
+  if (!result) {
+    std::string exceptionText = Value(m_context, exn).toString().str();
+    throwJSExecutionException("Exception calling object as constructor: %s", exceptionText.c_str());
+  }
+  return Object(m_context, result);
 }
 
 Value Object::getProperty(const String& propName) const {
@@ -112,13 +145,13 @@ void Object::setProperty(const char *propName, const Value& value) const {
   setProperty(String(propName), value);
 }
 
-std::vector<std::string> Object::getPropertyNames() const {
-  std::vector<std::string> names;
+std::vector<String> Object::getPropertyNames() const {
   auto namesRef = JSObjectCopyPropertyNames(m_context, m_obj);
   size_t count = JSPropertyNameArrayGetCount(namesRef);
+  std::vector<String> names;
+  names.reserve(count);
   for (size_t i = 0; i < count; i++) {
-    auto string = String::ref(JSPropertyNameArrayGetNameAtIndex(namesRef, i));
-    names.emplace_back(string.str());
+    names.emplace_back(String::ref(JSPropertyNameArrayGetNameAtIndex(namesRef, i)));
   }
   JSPropertyNameArrayRelease(namesRef);
   return names;

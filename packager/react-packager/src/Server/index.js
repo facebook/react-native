@@ -16,10 +16,18 @@ const Bundler = require('../Bundler');
 const Promise = require('promise');
 const SourceMapConsumer = require('source-map').SourceMapConsumer;
 
-const _ = require('lodash');
 const declareOpts = require('../lib/declareOpts');
 const path = require('path');
 const url = require('url');
+const mime = require('mime-types');
+
+function debounce(fn, delay) {
+  var timeout;
+  return () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(fn, delay);
+  };
+}
 
 const validateOpts = declareOpts({
   projectRoots: {
@@ -209,7 +217,7 @@ class Server {
 
     this._fileWatcher.on('all', this._onFileChange.bind(this));
 
-    this._debouncedFileChangeHandler = _.debounce(filePath => {
+    this._debouncedFileChangeHandler = debounce(filePath => {
       this._clearBundles();
       this._informChangeWatchers();
     }, 50);
@@ -348,7 +356,6 @@ class Server {
     const parts = pathname.split('/').filter(Boolean);
     if (parts.length === 1) {
       ret += '<div><a href="/debug/bundles">Cached Bundles</a></div>';
-      ret += '<div><a href="/debug/graph">Dependency Graph</a></div>';
       res.end(ret);
     } else if (parts[1] === 'bundles') {
       ret += '<h1> Cached Bundles </h1>';
@@ -362,13 +369,9 @@ class Server {
         e => {
           res.writeHead(500);
           res.end('Internal Error');
-          console.log(e.stack);
+          console.log(e.stack); // eslint-disable-line no-console-disallow
         }
       );
-    } else if (parts[1] === 'graph'){
-      ret += '<h1> Dependency Graph </h2>';
-      ret += this._bundler.getGraphDebugInfo();
-      res.end(ret);
     } else {
       res.writeHead('404');
       res.end('Invalid debug request');
@@ -394,13 +397,33 @@ class Server {
     });
   }
 
+  _rangeRequestMiddleware(req, res, data, assetPath) {
+    if (req.headers && req.headers.range) {
+      const [rangeStart, rangeEnd] = req.headers.range.replace(/bytes=/, '').split('-');
+      const dataStart = parseInt(rangeStart, 10);
+      const dataEnd = rangeEnd ? parseInt(rangeEnd, 10) : data.length - 1;
+      const chunksize = (dataEnd - dataStart) + 1;
+
+      res.writeHead(206, {
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunksize,
+        'Content-Range': `bytes ${dataStart}-${dataEnd}/${data.length}`,
+        'Content-Type': mime.lookup(path.basename(assetPath[1]))
+      });
+
+      return data.slice(dataStart, dataEnd);
+    }
+
+    return data;
+  }
+
   _processAssetsRequest(req, res) {
     const urlObj = url.parse(req.url, true);
     const assetPath = urlObj.pathname.match(/^\/assets\/(.+)$/);
     const assetEvent = Activity.startEvent(`processing asset request ${assetPath[1]}`);
     this._assetServer.get(assetPath[1], urlObj.query.platform)
       .then(
-        data => res.end(data),
+        data => res.end(this._rangeRequestMiddleware(req, res, data, assetPath)),
         error => {
           console.error(error.stack);
           res.writeHead('404');
@@ -491,24 +514,39 @@ class Server {
 
       // In case of multiple bundles / HMR, some stack frames can have
       // different URLs from others
-      const urls = stack.map(frame => frame.file);
-      const uniqueUrls = urls.filter((elem, idx) => urls.indexOf(elem) === idx);
+      const urlIndexes = {};
+      const uniqueUrls = [];
+      stack.forEach(frame => {
+        const sourceUrl = frame.file;
+        // Skip `/debuggerWorker.js` which drives remote debugging because it
+        // does not need to symbolication.
+        // Skip anything except http(s), because there is no support for that yet
+        if (!urlIndexes.hasOwnProperty(sourceUrl) &&
+            !sourceUrl.endsWith('/debuggerWorker.js') &&
+            sourceUrl.startsWith('http')) {
+          urlIndexes[sourceUrl] = uniqueUrls.length;
+          uniqueUrls.push(sourceUrl);
+        }
+      });
 
-      const sourceMaps = uniqueUrls.map(sourceUrl => this._sourceMapForURL(sourceUrl));
+      const sourceMaps = uniqueUrls.map(
+        sourceUrl => this._sourceMapForURL(sourceUrl)
+      );
       return Promise.all(sourceMaps).then(consumers => {
         return stack.map(frame => {
-          const idx = uniqueUrls.indexOf(frame.file);
+          const sourceUrl = frame.file;
+          if (!urlIndexes.hasOwnProperty(sourceUrl)) {
+            return frame;
+          }
+          const idx = urlIndexes[sourceUrl];
           const consumer = consumers[idx];
-
           const original = consumer.originalPositionFor({
             line: frame.lineNumber,
             column: frame.column,
           });
-
           if (!original) {
             return frame;
           }
-
           return Object.assign({}, frame, {
             file: original.source,
             lineNumber: original.line,

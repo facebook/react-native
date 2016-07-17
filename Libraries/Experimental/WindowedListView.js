@@ -498,7 +498,7 @@ class WindowedListView extends React.Component {
               this.setState({boundaryIndicatorHeight: layout.height});
             }
           }}>
-          {this.props.renderWindowBoundaryIndicator()}
+          {this.props.renderWindowBoundaryIndicator(showIndicator)}
         </View>
       );
     }
@@ -530,7 +530,7 @@ class WindowedListView extends React.Component {
         <View
           key="ind-footer"
           style={showFooter ? styles.include : styles.remove}>
-          {this.props.renderFooter()}
+          {this.props.renderFooter(showFooter)}
         </View>
       );
     }
@@ -545,7 +545,7 @@ class WindowedListView extends React.Component {
               this.setState({boundaryIndicatorHeight: layout.height});
             }
           }}>
-          {this.props.renderWindowBoundaryIndicator()}
+          {this.props.renderWindowBoundaryIndicator(!showFooter)}
         </View>
       );
     }
@@ -626,6 +626,7 @@ class CellRenderer extends React.Component {
     if (this.props.asyncRowPerfEventName) {
       this._perfUpdateID = g_perf_update_id++;
       this._asyncCookie = Systrace.beginAsyncEvent(this.props.asyncRowPerfEventName + this._perfUpdateID);
+      // $FlowFixMe(>=0.28.0)
       infoLog(`perf_asynctest_${this.props.asyncRowPerfEventName}_start ${this._perfUpdateID} ${Date.now()}`);
     }
     if (this.props.includeInLayout) {
@@ -662,6 +663,7 @@ class CellRenderer extends React.Component {
       // Note this doesn't include the native render time but is more accurate than also including the JS render
       // time of anything that has been queued up.
       Systrace.endAsyncEvent(this.props.asyncRowPerfEventName + this._perfUpdateID, this._asyncCookie);
+      // $FlowFixMe(>=0.28.0)
       infoLog(`perf_asynctest_${this.props.asyncRowPerfEventName}_end ${this._perfUpdateID} ${Date.now()}`);
     }
   }

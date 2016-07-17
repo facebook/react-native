@@ -19,10 +19,6 @@ const PushNotificationEmitter = new NativeEventEmitter(RCTPushNotificationManage
 
 const _notifHandlers = new Map();
 
-//TODO: remove this once all call sites for popInitialNotification() have been removed
-let _initialNotification = RCTPushNotificationManager &&
-  RCTPushNotificationManager.initialNotification;
-
 const DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
 const NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
 const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
@@ -70,6 +66,10 @@ const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
  *    {
  *     [RCTPushNotificationManager didReceiveLocalNotification:notification];
  *    }
+ *    - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+ *    {
+ *      NSLog(@"%@", error);
+ *    }
  *   ```
  */
 class PushNotificationIOS {
@@ -88,7 +88,7 @@ class PushNotificationIOS {
    * - `soundName` : The sound played when the notification is fired (optional).
    * - `category`  : The category of this notification, required for actionable notifications (optional).
    * - `userInfo`  : An optional object containing additional notification data.
-   * - `applicationIconBadgeNumber` (optional) : The number to display as the app’s icon badge. The default value of this property is 0, which means that no badge is displayed.
+   * - `applicationIconBadgeNumber` (optional) : The number to display as the app's icon badge. The default value of this property is 0, which means that no badge is displayed.
    */
   static presentLocalNotification(details: Object) {
     RCTPushNotificationManager.presentLocalNotification(details);
@@ -105,7 +105,7 @@ class PushNotificationIOS {
    * - `soundName` : The sound played when the notification is fired (optional).
    * - `category`  : The category of this notification, required for actionable notifications (optional).
    * - `userInfo` : An optional object containing additional notification data.
-   * - `applicationIconBadgeNumber` (optional) : The number to display as the app’s icon badge. Setting the number to 0 removes the icon badge.
+   * - `applicationIconBadgeNumber` (optional) : The number to display as the app's icon badge. Setting the number to 0 removes the icon badge.
    */
   static scheduleLocalNotification(details: Object) {
     RCTPushNotificationManager.scheduleLocalNotification(details);
@@ -284,21 +284,6 @@ class PushNotificationIOS {
   }
 
   /**
-   * DEPRECATED: An initial notification will be available if the app was
-   * cold-launched from a notification.
-   *
-   * The first caller of `popInitialNotification` will get the initial
-   * notification object, or `null`. Subsequent invocations will return null.
-   */
-  static popInitialNotification() {
-    console.warn('PushNotificationIOS.popInitialNotification() is deprecated. Use getInitialNotification() instead.');
-    var initialNotification = _initialNotification &&
-      new PushNotificationIOS(_initialNotification);
-    _initialNotification = null;
-    return initialNotification;
-  }
-  
-  /**
    * If the app launch was triggered by a push notification,
    * it will give the notification object, otherwise it will give `null`
    */
@@ -311,24 +296,31 @@ class PushNotificationIOS {
   /**
    * You will never need to instantiate `PushNotificationIOS` yourself.
    * Listening to the `notification` event and invoking
-   * `popInitialNotification` is sufficient
+   * `getInitialNotification` is sufficient
    */
   constructor(nativeNotif: Object) {
     this._data = {};
 
-    // Extract data from Apple's `aps` dict as specified here:
-    // https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
-
-    Object.keys(nativeNotif).forEach((notifKey) => {
-      var notifVal = nativeNotif[notifKey];
-      if (notifKey === 'aps') {
-        this._alert = notifVal.alert;
-        this._sound = notifVal.sound;
-        this._badgeCount = notifVal.badge;
-      } else {
-        this._data[notifKey] = notifVal;
-      }
-    });
+    if (nativeNotif.remote) {
+      // Extract data from Apple's `aps` dict as defined:
+      // https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
+      Object.keys(nativeNotif).forEach((notifKey) => {
+        var notifVal = nativeNotif[notifKey];
+        if (notifKey === 'aps') {
+          this._alert = notifVal.alert;
+          this._sound = notifVal.sound;
+          this._badgeCount = notifVal.badge;
+        } else {
+          this._data[notifKey] = notifVal;
+        }
+      });
+    } else {
+      // Local notifications aren't being sent down with `aps` dict.
+      this._badgeCount = nativeNotif.applicationIconBadgeNumber;
+      this._sound = nativeNotif.soundName;
+      this._alert = nativeNotif.alertBody;
+      this._data = nativeNotif.userInfo;
+    }
   }
 
   /**

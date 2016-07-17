@@ -15,6 +15,7 @@ import android.text.TextUtils;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JSPackagerWebSocketClient;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
@@ -47,7 +48,6 @@ import okio.Sink;
  *  - Genymotion emulator with default settings: 10.0.3.2
  */
 public class DevServerHelper {
-
   public static final String RELOAD_APP_EXTRA_JS_PROXY = "jsproxy";
   private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
 
@@ -60,6 +60,7 @@ public class DevServerHelper {
   private static final String ONCHANGE_ENDPOINT_URL_FORMAT =
       "http://%s/onchange";
   private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
+  private static final String PACKAGER_CONNECTION_URL_FORMAT = "ws://%s/message?role=shell";
   private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
 
   private static final String PACKAGER_OK_STATUS = "packager-status:running";
@@ -77,12 +78,17 @@ public class DevServerHelper {
     void onServerContentChanged();
   }
 
+  public interface PackagerCommandListener {
+    void onReload();
+  }
+
   public interface PackagerStatusCallback {
     void onPackagerStatusFetched(boolean packagerIsRunning);
   }
 
   private final DevInternalSettings mSettings;
   private final OkHttpClient mClient;
+  private final JSPackagerWebSocketClient mPackagerConnection;
   private final Handler mRestartOnChangePollingHandler;
 
   private boolean mOnChangePollingEnabled;
@@ -90,7 +96,7 @@ public class DevServerHelper {
   private @Nullable OnServerContentChangeListener mOnServerContentChangeListener;
   private @Nullable Call mDownloadBundleFromURLCall;
 
-  public DevServerHelper(DevInternalSettings settings) {
+  public DevServerHelper(DevInternalSettings settings, final PackagerCommandListener commandListener) {
     mSettings = settings;
     mClient = new OkHttpClient.Builder()
       .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
@@ -99,6 +105,16 @@ public class DevServerHelper {
       .build();
 
     mRestartOnChangePollingHandler = new Handler();
+    mPackagerConnection = new JSPackagerWebSocketClient(getPackagerConnectionURL(),
+        new JSPackagerWebSocketClient.JSPackagerCallback() {
+          @Override
+          public void onMessage(String target, String action) {
+            if (commandListener != null && "bridge".equals(target) && "reload".equals(action)) {
+              commandListener.onReload();
+            }
+          }
+        });
+    mPackagerConnection.connect();
   }
 
   /** Intent action for reloading the JS */
@@ -108,6 +124,10 @@ public class DevServerHelper {
 
   public String getWebsocketProxyURL() {
     return String.format(Locale.US, WEBSOCKET_PROXY_URL_FORMAT, getDebugServerHost());
+  }
+
+  private String getPackagerConnectionURL() {
+    return String.format(Locale.US, PACKAGER_CONNECTION_URL_FORMAT, getDebugServerHost());
   }
 
   /**
@@ -185,15 +205,10 @@ public class DevServerHelper {
         }
         mDownloadBundleFromURLCall = null;
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("Could not connect to development server.\n\n")
-          .append("Try the following to fix the issue:\n")
-          .append("\u2022 Ensure that the packager server is running\n")
-          .append("\u2022 Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run 'adb devices' to see a list of connected devices\n")
-          .append("\u2022 If you're on a physical device connected to the same machine, run 'adb reverse tcp:8081 tcp:8081' to forward requests from your device\n")
-          .append("\u2022 If your device is on the same Wi-Fi network, set 'Debug server host & port for device' in 'Dev settings' to your machine's IP address and the port of the local dev server - e.g. 10.0.1.1:8081\n\n")
-          .append("URL: ").append(call.request().url().toString());
-        callback.onFailure(new DebugServerException(sb.toString()));
+        callback.onFailure(DebugServerException.makeGeneric(
+            "Could not connect to development server.",
+            "URL: " + call.request().url().toString(),
+            e));
       }
 
       @Override

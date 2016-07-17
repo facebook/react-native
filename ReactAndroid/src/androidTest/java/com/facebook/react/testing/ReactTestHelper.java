@@ -137,7 +137,12 @@ public class ReactTestHelper {
                   return null;
                 }
               }).get();
-
+            InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+              @Override
+              public void run() {
+                instance.initialize();
+              }
+            });
           } catch (Exception e) {
             throw new RuntimeException(e);
           }

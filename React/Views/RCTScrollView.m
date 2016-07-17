@@ -140,7 +140,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @property (nonatomic, copy) NSIndexSet *stickyHeaderIndices;
 @property (nonatomic, assign) BOOL centerContent;
-@property (nonatomic, strong) RCTRefreshControl *refreshControl;
+@property (nonatomic, strong) RCTRefreshControl *rctRefreshControl;
 
 @end
 
@@ -275,8 +275,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   CGFloat scrollTop = self.bounds.origin.y + self.contentInset.top;
   // If the RefreshControl is refreshing, remove it's height so sticky headers are
   // positioned properly when scrolling down while refreshing.
-  if (self.refreshControl != nil && self.refreshControl.refreshing) {
-    scrollTop -= self.refreshControl.frame.size.height;
+  if (_rctRefreshControl != nil && _rctRefreshControl.refreshing) {
+    scrollTop -= _rctRefreshControl.frame.size.height;
   }
 
   // Find the section headers that need to be docked
@@ -358,13 +358,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [super hitTest:point withEvent:event];
 }
 
-- (void)setRefreshControl:(RCTRefreshControl *)refreshControl
+- (void)setRctRefreshControl:(RCTRefreshControl *)refreshControl
 {
-  if (_refreshControl) {
-    [_refreshControl removeFromSuperview];
+  if (_rctRefreshControl) {
+    [_rctRefreshControl removeFromSuperview];
   }
-  _refreshControl = refreshControl;
-  [self addSubview:_refreshControl];
+  _rctRefreshControl = refreshControl;
+  [self addSubview:_rctRefreshControl];
 }
 
 @end
@@ -382,8 +382,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSString *_lastEmittedEventName;
   NSHashTable *_scrollListeners;
 }
-
-@synthesize nativeScrollDelegate = _nativeScrollDelegate;
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
@@ -422,7 +420,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   [super insertReactSubview:view atIndex:atIndex];
   if ([view isKindOfClass:[RCTRefreshControl class]]) {
-    _scrollView.refreshControl = (RCTRefreshControl*)view;
+    [_scrollView setRctRefreshControl:(RCTRefreshControl *)view];
   } else {
     RCTAssert(_contentView == nil, @"RCTScrollView may only contain a single subview");
     _contentView = view;
@@ -434,7 +432,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   [super removeReactSubview:subview];
   if ([subview isKindOfClass:[RCTRefreshControl class]]) {
-    _scrollView.refreshControl = nil;
+    [_scrollView setRctRefreshControl:nil];
   } else {
     RCTAssert(_contentView == subview, @"Attempted to remove non-existent subview");
     _contentView = nil;
@@ -490,7 +488,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _scrollView.contentOffset = originalOffset;
 
   // Adjust the refresh control frame if the scrollview layout changes.
-  RCTRefreshControl *refreshControl = _scrollView.refreshControl;
+  RCTRefreshControl *refreshControl = _scrollView.rctRefreshControl;
   if (refreshControl && refreshControl.refreshing) {
     refreshControl.frame = (CGRect){_scrollView.contentOffset, {_scrollView.frame.size.width, refreshControl.frame.size.height}};
   }
@@ -515,6 +513,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   const BOOL shouldClipAgain =
     CGRectIsNull(_lastClippedToRect) ||
+    !CGRectEqualToRect(_lastClippedToRect, bounds) ||
     (scrollsHorizontally && (bounds.size.width < leeway || fabs(_lastClippedToRect.origin.x - bounds.origin.x) >= leeway)) ||
     (scrollsVertically && (bounds.size.height < leeway || fabs(_lastClippedToRect.origin.y - bounds.origin.y) >= leeway));
 
@@ -587,19 +586,6 @@ for (NSObject<UIScrollViewDelegate> *scrollViewListener in _scrollListeners) { \
 RCT_SCROLL_EVENT_HANDLER(scrollViewWillBeginDecelerating, onMomentumScrollBegin)
 RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 
-- (void)setNativeScrollDelegate:(NSObject<UIScrollViewDelegate> *)nativeScrollDelegate
-{
-  if (nativeScrollDelegate != _nativeScrollDelegate) {
-    if (_nativeScrollDelegate) {
-      [_scrollListeners removeObject:_nativeScrollDelegate];
-    }
-    if (nativeScrollDelegate) {
-      [_scrollListeners addObject:nativeScrollDelegate];
-    }
-    _nativeScrollDelegate = nativeScrollDelegate;
-  }
-}
-
 - (void)addScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
 {
   [_scrollListeners addObject:scrollListener];
@@ -607,11 +593,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 
 - (void)removeScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
 {
-  if (scrollListener == _nativeScrollDelegate) {
-    [self setNativeScrollDelegate:nil];
-  } else {
-    [_scrollListeners removeObject:scrollListener];
-  }
+  [_scrollListeners removeObject:scrollListener];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
@@ -652,12 +634,12 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
       // Check if new or changed
       CGRect newFrame = subview.frame;
       BOOL frameChanged = NO;
-      if (_cachedChildFrames.count <= idx) {
+      if (self->_cachedChildFrames.count <= idx) {
         frameChanged = YES;
-        [_cachedChildFrames addObject:[NSValue valueWithCGRect:newFrame]];
-      } else if (!CGRectEqualToRect(newFrame, [_cachedChildFrames[idx] CGRectValue])) {
+        [self->_cachedChildFrames addObject:[NSValue valueWithCGRect:newFrame]];
+      } else if (!CGRectEqualToRect(newFrame, [self->_cachedChildFrames[idx] CGRectValue])) {
         frameChanged = YES;
-        _cachedChildFrames[idx] = [NSValue valueWithCGRect:newFrame];
+        self->_cachedChildFrames[idx] = [NSValue valueWithCGRect:newFrame];
       }
 
       // Create JS frame object

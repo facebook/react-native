@@ -12,8 +12,8 @@
 'use strict';
 
 var Image = require('Image');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var PropTypes = require('ReactPropTypes');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
@@ -130,7 +130,7 @@ var SliderIOS = React.createClass({
       'SliderIOS is deprecated and will be removed in ' +
       'future versions of React Native. Use the cross-platform Slider ' +
       'as a drop-in replacement.');
-    
+
     let {style, onValueChange, onSlidingComplete, ...props} = this.props;
     props.style = [styles.slider, style];
 

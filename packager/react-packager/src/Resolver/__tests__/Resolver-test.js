@@ -11,18 +11,18 @@
 jest.unmock('../');
 jest.mock('path');
 
-const Promise = require('promise');
-const Resolver = require('../');
 
-const path = require('path');
-
-let DependencyGraph = jest.fn();
+const DependencyGraph = jest.fn();
 jest.setMock('node-haste', DependencyGraph);
 let Module;
 let Polyfill;
 
 describe('Resolver', function() {
+  let Resolver, path;
+
   beforeEach(function() {
+    Resolver = require('../');
+    path = require('path');
     DependencyGraph.mockClear();
     Module = jest.fn(function() {
       this.getName = jest.fn();
@@ -131,7 +131,14 @@ describe('Resolver', function() {
         ).then(function(result) {
           expect(result.mainModuleId).toEqual('index');
           expect(result.dependencies[result.dependencies.length - 1]).toBe(module);
-          expect(DependencyGraph.prototype.createPolyfill.mock.calls.map((call) => call[0])).toEqual([
+          expect(
+            DependencyGraph
+              .prototype
+              .createPolyfill
+              .mock
+              .calls
+              .map((call) => call[0]))
+          .toEqual([
             { id: 'polyfills/polyfills.js',
               file: 'polyfills/polyfills.js',
               dependencies: []

@@ -155,7 +155,6 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
   return reactTag;
 }
 
-
 - (void)didMoveToWindow
 {
   [super didMoveToWindow];

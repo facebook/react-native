@@ -5,6 +5,7 @@ layout: docs
 category: Guides (iOS)
 permalink: docs/communication-ios.html
 next: native-modules-android
+previous: running-on-simulator-ios
 ---
 
 In [Integrating with Existing Apps guide](docs/embedded-app-ios.html) and [Native UI Components guide](docs/native-components-ios.html) we learn how to embed React Native in a native component and vice versa. When we mix native and React Native components, we'll eventually find a need to communicate between these two worlds. Some ways to achieve that have been already mentioned in other guides. This article summarizes available techniques.
@@ -144,7 +145,7 @@ For instance, to make an RN app 200 (logical) pixels high, and the hosting view'
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                    moduleName:appName
                                             initialProperties:props];
-  rootView.frame = CGMakeRect(0, 0, self.view.width, 200);
+  rootView.frame = CGRectMake(0, 0, self.view.width, 200);
   [self.view addSubview:rootView];
 }
 ```

@@ -27,7 +27,7 @@
  */
 'use strict';
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
 class NavigationEventPool {
   _list: Array<any>;
@@ -37,7 +37,7 @@ class NavigationEventPool {
   }
 
   get(type: string, currentTarget: Object, data: any): NavigationEvent {
-    var event;
+    let event;
     if (this._list.length > 0) {
       event = this._list.pop();
       event.constructor.call(event, type, currentTarget, data);
@@ -52,7 +52,7 @@ class NavigationEventPool {
   }
 }
 
-var _navigationEventPool = new NavigationEventPool();
+const _navigationEventPool = new NavigationEventPool();
 
 /**
  * The NavigationEvent interface represents any event of the navigation.
@@ -87,7 +87,7 @@ class NavigationEvent {
   _defaultPrevented: boolean;
   _disposed: boolean;
   _propagationStopped: boolean;
-  _type: ?string;
+  _type: string;
 
   target: ?Object;
 
@@ -111,22 +111,18 @@ class NavigationEvent {
     this._propagationStopped = false;
   }
 
-  /* $FlowFixMe - get/set properties not yet supported */
   get type(): string {
     return this._type;
   }
 
-  /* $FlowFixMe - get/set properties not yet supported */
-  get currentTarget(): Object {
+  get currentTarget(): ?Object {
     return this._currentTarget;
   }
 
-  /* $FlowFixMe - get/set properties not yet supported */
   get data(): any {
     return this._data;
   }
 
-  /* $FlowFixMe - get/set properties not yet supported */
   get defaultPrevented(): boolean {
     return this._defaultPrevented;
   }
@@ -160,7 +156,7 @@ class NavigationEvent {
     // Clean up.
     this.target = null;
     this.eventPhase = NavigationEvent.NONE;
-    this._type = null;
+    this._type = '';
     this._currentTarget = null;
     this._data = null;
     this._defaultPrevented = false;

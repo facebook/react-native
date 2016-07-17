@@ -27,9 +27,11 @@ function verifyPropTypes(
   if (!viewConfig) {
     return; // This happens for UnimplementedView.
   }
-  var componentName = componentInterface.name ||
+  var componentName =
     componentInterface.displayName ||
+    componentInterface.name ||
     'unknown';
+
   if (!componentInterface.propTypes) {
     throw new Error(
       '`' + componentName + '` has no propTypes defined`'

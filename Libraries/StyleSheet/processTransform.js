@@ -81,13 +81,6 @@ function processTransform(transform: Object): Object {
     }
   });
 
-  // Android does not support the direct application of a transform matrix to
-  // a view, so we need to decompose the result matrix into transforms that can
-  // get applied in the specific order of (1) translate (2) scale (3) rotate.
-  // Once we can directly apply a matrix, we can remove this decomposition.
-  if (Platform.OS === 'android') {
-    return MatrixMath.decomposeMatrix(result);
-  }
   return result;
 }
 

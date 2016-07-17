@@ -51,10 +51,10 @@ var DocsLayout = React.createClass({
             <div className="survey">
               <div className="survey-image" />
               <p>
-                We are planning improvements to the React Native documentation. Your responses to this short survey will go a long way in helping us provide valuable content. Thank you!
+                Recently, we have been working hard to make the documentation better based on your feedback. Your responses to this yes/no style survey will help us gauge whether we moved in the right direction with the improvements. Thank you!
               </p>
               <center>
-                <a className="button" href="https://www.facebook.com/survey?oid=681969738611332">Take Survey</a>
+                <a className="button" href="https://www.facebook.com/survey?oid=516954245168428">Take Survey</a>
               </center>
             </div>
           </div>

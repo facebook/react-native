@@ -11,11 +11,12 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 var NativeModules = require('NativeModules');
 var ImageResizeMode = require('ImageResizeMode');
 var ImageStylePropTypes = require('ImageStylePropTypes');
-var PropTypes = require('ReactPropTypes');
+var ViewStylePropTypes = require('ViewStylePropTypes');
+var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
@@ -26,6 +27,8 @@ var flattenStyle = require('flattenStyle');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
+var Set = require('Set');
+var filterObject = require('fbjs/lib/filterObject');
 
 var {
   ImageLoader,
@@ -63,6 +66,9 @@ var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   shouldNotifyLoadEvents: true,
 });
 
+var ViewStyleKeys = new Set(Object.keys(ViewStylePropTypes));
+var ImageSpecificStyleKeys = new Set(Object.keys(ImageStylePropTypes).filter(x => !ViewStyleKeys.has(x)));
+
 var Image = React.createClass({
   propTypes: {
     ...View.propTypes,
@@ -71,6 +77,9 @@ var Image = React.createClass({
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or a static image
      * resource (which should be wrapped in the `require('./path/to/image.png')` function).
+     * This prop can also contain several remote `uri`, specified together with
+     * their width and height. The native side will then choose the best `uri` to display
+     * based on the measured size of the image container.
      */
     source: PropTypes.oneOfType([
       PropTypes.shape({
@@ -78,6 +87,13 @@ var Image = React.createClass({
       }),
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
+      // Multiple sources
+      PropTypes.arrayOf(
+        PropTypes.shape({
+          uri: PropTypes.string,
+          width: PropTypes.number,
+          height: PropTypes.number,
+        }))
     ]),
     /**
      * similarly to `source`, this property represents the resource used to render
@@ -176,11 +192,11 @@ var Image = React.createClass({
   },
 
   render: function() {
-    var source = resolveAssetSource(this.props.source);
-    var loadingIndicatorSource = resolveAssetSource(this.props.loadingIndicatorSource);
+    const source = resolveAssetSource(this.props.source);
+    const loadingIndicatorSource = resolveAssetSource(this.props.loadingIndicatorSource);
 
-    // As opposed to the ios version, here it render `null`
-    // when no source or source.uri... so let's not break that.
+    // As opposed to the ios version, here we render `null` when there is no source, source.uri
+    // or source array.
 
     if (source && source.uri === '') {
       console.warn('source.uri should not be an empty string');
@@ -190,26 +206,37 @@ var Image = React.createClass({
       console.warn('The <Image> component requires a `source` property rather than `src`.');
     }
 
-    if (source && source.uri) {
-      var {width, height} = source;
-      var style = flattenStyle([{width, height}, styles.base, this.props.style]);
-      var {onLoadStart, onLoad, onLoadEnd} = this.props;
+    if (source && (source.uri || Array.isArray(source))) {
+      let style;
+      let sources;
+      if (source.uri) {
+        const {width, height} = source;
+        style = flattenStyle([{width, height}, styles.base, this.props.style]);
+        sources = [{uri: source.uri}];
+      } else {
+        style = flattenStyle([styles.base, this.props.style]);
+        sources = source;
+      }
 
-      var nativeProps = merge(this.props, {
+      const {onLoadStart, onLoad, onLoadEnd} = this.props;
+      const nativeProps = merge(this.props, {
         style,
         shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd),
-        src: source.uri,
+        src: sources,
         loadingIndicatorSrc: loadingIndicatorSource ? loadingIndicatorSource.uri : null,
       });
 
       if (nativeProps.children) {
         // TODO(6033040): Consider implementing this as a separate native component
-        var imageProps = merge(nativeProps, {
-          style: styles.absoluteImage,
+        const containerStyle = filterObject(style, (val, key) => !ImageSpecificStyleKeys.has(key));
+        const imageStyle = filterObject(style, (val, key) => ImageSpecificStyleKeys.has(key));
+        const imageProps = merge(nativeProps, {
+          style: [imageStyle, styles.absoluteImage],
           children: undefined,
         });
+
         return (
-          <View style={nativeProps.style}>
+          <View style={containerStyle}>
             <RKImage {...imageProps}/>
             {this.props.children}
           </View>

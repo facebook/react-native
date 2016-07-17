@@ -1,13 +1,11 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
+ *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-
-// NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<67fbba6df7c2472877c7b04327fb1863>>
 
 package com.facebook.csslayout;
 
@@ -67,11 +65,12 @@ public class CSSNode {
   public int lineIndex = 0;
 
   /*package*/ CSSNode nextChild;
-  
+
   private @Nullable ArrayList<CSSNode> mChildren;
   private @Nullable CSSNode mParent;
   private @Nullable MeasureFunction mMeasureFunction = null;
   private LayoutState mLayoutState = LayoutState.DIRTY;
+  private boolean mIsTextNode = false;
 
   public int getChildCount() {
     return mChildren == null ? 0 : mChildren.size();
@@ -125,6 +124,14 @@ public class CSSNode {
 
   public boolean isMeasureDefined() {
     return mMeasureFunction != null;
+  }
+
+  public void setIsTextNode(boolean isTextNode) {
+    mIsTextNode = isTextNode;
+  }
+
+  public boolean isTextNode() {
+    return mIsTextNode;
   }
 
   /*package*/ MeasureOutput measure(MeasureOutput measureOutput, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode) {
@@ -450,6 +457,62 @@ public class CSSNode {
     }
   }
 
+  /**
+   * Get this node's max width, as defined in the style
+   */
+  public float getStyleMaxWidth() {
+    return style.maxWidth;
+  }
+
+  public void setStyleMaxWidth(float maxWidth) {
+    if (!valuesEqual(style.maxWidth, maxWidth)) {
+      style.maxWidth = maxWidth;
+      dirty();
+    }
+  }
+
+  /**
+   * Get this node's min width, as defined in the style
+   */
+  public float getStyleMinWidth() {
+    return style.minWidth;
+  }
+
+  public void setStyleMinWidth(float minWidth) {
+    if (!valuesEqual(style.minWidth, minWidth)) {
+      style.minWidth = minWidth;
+      dirty();
+    }
+  }
+
+  /**
+   * Get this node's max height, as defined in the style
+   */
+  public float getStyleMaxHeight() {
+    return style.maxHeight;
+  }
+
+  public void setStyleMaxHeight(float maxHeight) {
+    if (!valuesEqual(style.maxHeight, maxHeight)) {
+      style.maxHeight = maxHeight;
+      dirty();
+    }
+  }
+
+  /**
+   * Get this node's min height, as defined in the style
+   */
+  public float getStyleMinHeight() {
+    return style.minHeight;
+  }
+
+  public void setStyleMinHeight(float minHeight) {
+    if (!valuesEqual(style.minHeight, minHeight)) {
+      style.minHeight = minHeight;
+      dirty();
+    }
+  }
+
   public float getLayoutX() {
     return layout.position[POSITION_LEFT];
   }
@@ -475,6 +538,20 @@ public class CSSNode {
    */
   public void setDefaultPadding(int spacingType, float padding) {
     if (style.padding.setDefault(spacingType, padding)) {
+      dirty();
+    }
+  }
+
+  /**
+   * Get this node's overflow property, as defined in the style
+   */
+  public CSSOverflow getOverflow() {
+    return style.overflow;
+  }
+
+  public void setOverflow(CSSOverflow overflow) {
+    if (style.overflow != overflow) {
+      style.overflow = overflow;
       dirty();
     }
   }

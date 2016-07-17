@@ -24,6 +24,7 @@ android_library(
     react_native_target('java/com/facebook/react/modules/location:location'),
     react_native_target('java/com/facebook/react/modules/netinfo:netinfo'),
     react_native_target('java/com/facebook/react/modules/network:network'),
+    react_native_target('java/com/facebook/react/modules/permissions:permissions'),
     react_native_target('java/com/facebook/react/modules/statusbar:statusbar'),
     react_native_target('java/com/facebook/react/modules/storage:storage'),
     react_native_target('java/com/facebook/react/modules/timepicker:timepicker'),
