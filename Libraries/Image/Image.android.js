@@ -34,6 +34,11 @@ var {
   ImageLoader,
 } = NativeModules;
 
+let _requestId = 1;
+function generateRequestId() {
+  return _requestId++;
+}
+
 /**
  * <Image> - A react component for displaying different types of images,
  * including network images, static resources, temporary local images, and
@@ -148,8 +153,17 @@ var Image = React.createClass({
      * Prefetches a remote image for later use by downloading it to the disk
      * cache
      */
-    prefetch(url: string) {
-      return ImageLoader.prefetchImage(url);
+    prefetch(url: string, callback: ?Function) {
+      const requestId = generateRequestId();
+      callback && callback(requestId);
+      return ImageLoader.prefetchImage(url, requestId);
+    },
+
+    /**
+     * Abort prefetch request
+     */
+    abortPrefetch(requestId: number) {
+      ImageLoader.abortRequest(requestId);
     },
   },
 
