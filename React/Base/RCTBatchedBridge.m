@@ -690,25 +690,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 /**
  * Public. Can be invoked from any thread.
  */
-- (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
+- (void)enqueueJSCall:(NSString *)module method:(NSString *)method args:(NSArray *)args completion:(dispatch_block_t)completion
 {
   /**
    * AnyThread
    */
-
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTBatchedBridge enqueueJSCall:]", nil);
   if (!_valid) {
     return;
   }
 
-  NSArray<NSString *> *ids = [moduleDotMethod componentsSeparatedByString:@"."];
-
-  NSString *module = ids[0];
-  NSString *method = ids[1];
-
   __weak __typeof(self) weakSelf = self;
   [self dispatchBlock:^{
     [weakSelf _actuallyInvokeAndProcessModule:module method:method arguments:args ?: @[]];
+    if (completion) {
+      completion();
+    }
   } queue:RCTJSThread];
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
