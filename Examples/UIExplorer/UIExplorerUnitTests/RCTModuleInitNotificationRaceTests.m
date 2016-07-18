@@ -21,6 +21,7 @@
 #import "RCTUtils.h"
 #import "RCTUIManager.h"
 #import "RCTViewManager.h"
+#import "RCTJavaScriptExecutor.h"
 
 #define RUN_RUNLOOP_WHILE(CONDITION) \
 { \

@@ -14,7 +14,6 @@
 #import "RCTDefines.h"
 #import "RCTFrameUpdate.h"
 #import "RCTInvalidating.h"
-#import "RCTJavaScriptExecutor.h"
 
 @class RCTBridge;
 @class RCTEventDispatcher;
