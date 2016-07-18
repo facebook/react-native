@@ -14,7 +14,6 @@
 #import "RCTDefines.h"
 #import "RCTFrameUpdate.h"
 #import "RCTInvalidating.h"
-#import "RCTJavaScriptExecutor.h"
 
 @class RCTBridge;
 @class RCTEventDispatcher;
@@ -101,6 +100,8 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * with the JavaScript code. Safe to call from any thread.
  */
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args;
+- (void)enqueueJSCall:(NSString *)module method:(NSString *)method args:(NSArray *)args completion:(dispatch_block_t)completion;
+
 
 /**
  * Retrieve a bridge module instance by name or class. Note that modules are

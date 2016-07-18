@@ -595,16 +595,29 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
 - (void)flushedQueue:(RCTJavaScriptCallback)onComplete
 {
   // TODO: Make this function handle first class instead of dynamically dispatching it. #9317773
-  [self _executeJSCall:@"flushedQueue" arguments:@[] callback:onComplete];
+  [self _executeJSCall:@"flushedQueue" arguments:@[] unwrapResult:YES callback:onComplete];
 }
 
-- (void)callFunctionOnModule:(NSString *)module
-                      method:(NSString *)method
-                   arguments:(NSArray *)args
-                    callback:(RCTJavaScriptCallback)onComplete
+- (void)_callFunctionOnModule:(NSString *)module
+                       method:(NSString *)method
+                    arguments:(NSArray *)args
+                   flushQueue:(BOOL)flushQueue
+                 unwrapResult:(BOOL)unwrapResult
+                     callback:(RCTJavaScriptCallback)onComplete
 {
   // TODO: Make this function handle first class instead of dynamically dispatching it. #9317773
-  [self _executeJSCall:@"callFunctionReturnFlushedQueue" arguments:@[module, method, args] callback:onComplete];
+  NSString *bridgeMethod = flushQueue ? @"callFunctionReturnFlushedQueue" : @"callFunction";
+  [self _executeJSCall:bridgeMethod arguments:@[module, method, args] unwrapResult:unwrapResult callback:onComplete];
+}
+
+- (void)callFunctionOnModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args callback:(RCTJavaScriptCallback)onComplete
+{
+  [self _callFunctionOnModule:module method:method arguments:args flushQueue:YES unwrapResult:YES callback:onComplete];
+}
+
+- (void)callFunctionOnModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args jsValueCallback:(RCTJavaScriptValueCallback)onComplete
+{
+  [self _callFunctionOnModule:module method:method arguments:args flushQueue:NO unwrapResult:NO callback:onComplete];
 }
 
 - (void)invokeCallbackID:(NSNumber *)cbID
@@ -612,11 +625,12 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
                 callback:(RCTJavaScriptCallback)onComplete
 {
   // TODO: Make this function handle first class instead of dynamically dispatching it. #9317773
-  [self _executeJSCall:@"invokeCallbackAndReturnFlushedQueue" arguments:@[cbID, args] callback:onComplete];
+  [self _executeJSCall:@"invokeCallbackAndReturnFlushedQueue" arguments:@[cbID, args] unwrapResult:YES callback:onComplete];
 }
 
 - (void)_executeJSCall:(NSString *)method
              arguments:(NSArray *)arguments
+          unwrapResult:(BOOL)unwrapResult
               callback:(RCTJavaScriptCallback)onComplete
 {
   RCTAssert(onComplete != nil, @"onComplete block should not be nil");
@@ -673,20 +687,16 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
         error = RCTNSErrorFromJSError(jscWrapper, contextJSRef, errorJSRef);
       }
       onComplete(nil, error);
-      return;
+    } else {
+      id objcValue = nil;
+      // We often return `null` from JS when there is nothing for native side. [JSValue toValue]
+      // returns [NSNull null] in this case, which we don't want.
+      if (!jscWrapper->JSValueIsNull(contextJSRef, resultJSRef)) {
+        JSValue *result = [jscWrapper->JSValue valueWithJSValueRef:resultJSRef inContext:context];
+        objcValue = unwrapResult ? [result toObject] : result;
+      }
+      onComplete(objcValue, nil);
     }
-
-    // Looks like making lots of JSC API calls is slower than communicating by using a JSON
-    // string. Also it ensures that data stuctures don't have cycles and non-serializable fields.
-    // see [RCTJSCExecutorTests testDeserializationPerf]
-    id objcValue;
-    // We often return `null` from JS when there is nothing for native side. JSONKit takes an extra hundred microseconds
-    // to handle this simple case, so we are adding a shortcut to make executeJSCall method even faster
-    if (!jscWrapper->JSValueIsNull(contextJSRef, resultJSRef)) {
-      objcValue = [[jscWrapper->JSValue valueWithJSValueRef:resultJSRef inContext:context] toObject];
-    }
-
-    onComplete(objcValue, nil);
   }), 0, @"js_call", (@{@"method": method, @"args": arguments}))];
 }
 
