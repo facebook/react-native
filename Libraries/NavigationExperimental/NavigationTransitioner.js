@@ -125,9 +125,6 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
       progress,
     } = nextState;
 
-    // update scenes.
-    this.setState(nextState);
-
     // get the transition spec.
     const transitionUserSpec = nextProps.configureTransition ?
       nextProps.configureTransition(
@@ -168,12 +165,14 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
       );
     }
 
-    // play the transition.
-    nextProps.onTransitionStart && nextProps.onTransitionStart(
-      this._transitionProps,
-      this._prevTransitionProps,
-    );
-    Animated.parallel(animations).start(this._onTransitionEnd);
+    // update scenes and play the transition
+    this.setState(nextState, () => {
+      nextProps.onTransitionStart && nextProps.onTransitionStart(
+        this._transitionProps,
+        this._prevTransitionProps,
+      );
+      Animated.parallel(animations).start(this._onTransitionEnd);
+    });
   }
 
   render(): ReactElement<any> {

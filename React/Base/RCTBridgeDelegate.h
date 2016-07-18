@@ -7,9 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-typedef void (^RCTSourceLoadBlock)(NSError *error, NSData *source);
-
 @class RCTBridge;
+
+#import "RCTJavaScriptLoader.h"
 
 @protocol RCTBridgeDelegate <NSObject>
 

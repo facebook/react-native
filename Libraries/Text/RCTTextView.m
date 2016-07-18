@@ -77,6 +77,9 @@
   BOOL _blockTextShouldChange;
   BOOL _nativeUpdatesInFlight;
   NSInteger _nativeEventCount;
+
+  CGSize _previousContentSize;
+  BOOL _viewDidCompleteInitialLayout;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -261,6 +264,17 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   size.height = [_textView sizeThatFits:size].height;
   _scrollView.contentSize = size;
   _textView.frame = (CGRect){CGPointZero, size};
+
+  if (_viewDidCompleteInitialLayout && _onContentSizeChange && !CGSizeEqualToSize(_previousContentSize, size)) {
+    _previousContentSize = size;
+    _onContentSizeChange(@{
+      @"contentSize": @{
+        @"height": @(size.height),
+        @"width": @(size.width),
+      },
+      @"target": self.reactTag,
+    });
+  }
 }
 
 - (void)updatePlaceholder
@@ -363,16 +377,20 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   if (_maxLength) {
     NSUInteger allowedLength = _maxLength.integerValue - textView.text.length + range.length;
     if (text.length > allowedLength) {
+      // If we typed/pasted more than one character, limit the text inputted
       if (text.length > 1) {
         // Truncate the input string so the result is exactly maxLength
         NSString *limitedString = [text substringToIndex:allowedLength];
         NSMutableString *newString = textView.text.mutableCopy;
         [newString replaceCharactersInRange:range withString:limitedString];
         textView.text = newString;
+        _predictedText = newString;
+
         // Collapse selection at end of insert to match normal paste behavior
         UITextPosition *insertEnd = [textView positionFromPosition:textView.beginningOfDocument
                                                             offset:(range.location + allowedLength)];
         textView.selectedTextRange = [textView textRangeFromPosition:insertEnd toPosition:insertEnd];
+
         [self textViewDidChange:textView];
       }
       return NO;
@@ -633,6 +651,11 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+
+  // Start sending content size updates only after the view has been laid out
+  // otherwise we send multiple events with bad dimensions on initial render.
+  _viewDidCompleteInitialLayout = YES;
+
   [self updateFrames];
 }
 

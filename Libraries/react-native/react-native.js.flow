@@ -22,7 +22,7 @@
 // Our ReactNative.js has had its types stripped, so here we
 // need to enumerate and type the properties we need access to.
 //
-var ReactNativeInternal = (require('ReactNative'): {
+var ReactNativeInternal = (require('react/lib/ReactNative'): {
   // render
   render: (
     element: ReactElement<any>,
@@ -63,6 +63,7 @@ var ReactNative = {
   Slider: require('Slider'),
   SnapshotViewIOS: require('SnapshotViewIOS'),
   StatusBar: require('StatusBar'),
+  SwipeableListView: require('SwipeableListView'),
   Switch: require('Switch'),
   RecyclerViewBackedScrollView: require('RecyclerViewBackedScrollView'),
   RefreshControl: require('RefreshControl'),

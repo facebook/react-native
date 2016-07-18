@@ -5,6 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/integration-with-existing-apps.html
 next: colors
+previous: more-resources
 ---
 
 <div class="integration-toggler">
@@ -61,7 +62,7 @@ The keys to integrating React Native components into your iOS application are to
 
 <block class="android" />
 
-The keys to integrating React Native components into your iOS application are to:
+The keys to integrating React Native components into your Android application are to:
 
 1. Understand what React Native components you want to integrate.
 2. Install `react-native` in your Android application root directory to create `node_modules/` directory.

@@ -18,7 +18,11 @@
 namespace facebook {
 namespace jni {
 
-struct JNativeRunnable : public HybridClass<JNativeRunnable> {
+struct JRunnable : public JavaClass<JRunnable> {
+  static auto constexpr kJavaDescriptor = "Ljava/lang/Runnable;";
+};
+
+struct JNativeRunnable : public HybridClass<JNativeRunnable, JRunnable> {
  public:
   static auto constexpr kJavaDescriptor = "Lcom/facebook/jni/NativeRunnable;";
 

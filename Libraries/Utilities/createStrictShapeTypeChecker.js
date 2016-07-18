@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var ReactPropTypeLocationNames = require('ReactPropTypeLocationNames');
+var ReactPropTypeLocationNames = require('react/lib/ReactPropTypeLocationNames');
 
 var invariant = require('fbjs/lib/invariant');
 var merge = require('merge');
@@ -46,15 +46,14 @@ function createStrictShapeTypeChecker(
     var allKeys = merge(props[propName], shapeTypes);
     for (var key in allKeys) {
       var checker = shapeTypes[key];
-      invariant(
-        checker,
-        'Invalid props.%s key `%s` supplied to `%s`.\nBad object: %s\nValid keys: %s',
-        propName,
-        key,
-        componentName,
-        JSON.stringify(props[propName], null, '  '),
-        JSON.stringify(Object.keys(shapeTypes).sort(), null, '  '),
-      );
+      if (!checker) {
+        invariant(
+          false,
+          `Invalid props.${propName} key \`${key}\` supplied to \`${componentName}\`.` +
+            `\nBad object: ` + JSON.stringify(props[propName], null, '  ') +
+            `\nValid keys: ` + JSON.stringify(Object.keys(shapeTypes), null, '  ')
+        );
+      }
       var error = checker(propValue, key, componentName, location);
       if (error) {
         invariant(

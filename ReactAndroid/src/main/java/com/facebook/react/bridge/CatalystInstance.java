@@ -32,8 +32,7 @@ public interface CatalystInstance extends MemoryPressureListener {
       ExecutorToken executorToken,
       String module,
       String method,
-      NativeArray arguments,
-      String tracingName);
+      NativeArray arguments);
   /**
    * Destroys this catalyst instance, waiting for any other threads in ReactQueueConfiguration
    * (besides the UI thread) to finish running. Must be called from the UI thread so that we can

@@ -36,6 +36,7 @@ class Instance {
     std::shared_ptr<ModuleRegistry> moduleRegistry);
   void loadScriptFromString(std::unique_ptr<const JSBigString> string, std::string sourceURL);
   void loadScriptFromFile(const std::string& filename, const std::string& sourceURL);
+  void loadScriptFromOptimizedBundle(std::string bundlePath, std::string sourceURL, int flags);
   void loadUnbundle(
     std::unique_ptr<JSModulesUnbundle> unbundle,
     std::unique_ptr<const JSBigString> startupScript,
@@ -44,8 +45,8 @@ class Instance {
   void startProfiler(const std::string& title);
   void stopProfiler(const std::string& title, const std::string& filename);
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
-  void callJSFunction(ExecutorToken token, const std::string& module, const std::string& method,
-                      folly::dynamic&& params, const std::string& tracingName);
+  void callJSFunction(ExecutorToken token, std::string&& module, std::string&& method,
+                      folly::dynamic&& params);
   void callJSCallback(ExecutorToken token, uint64_t callbackId, folly::dynamic&& params);
   MethodCallResult callSerializableNativeHook(ExecutorToken token, unsigned int moduleId,
                                               unsigned int methodId, folly::dynamic&& args);
