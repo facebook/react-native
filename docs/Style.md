@@ -45,7 +45,7 @@ AppRegistry.registerComponent('LotsOfStyles', () => LotsOfStyles);
 ```
 
 One common pattern is to make your component accept a `style` prop which in
-turn is used to style subcomponents. You can use this to make styles "cascade" they way they do in CSS.
+turn is used to style subcomponents. You can use this to make styles "cascade" the way they do in CSS.
 
 There are a lot more ways to customize text style. Check out the [Text component reference](/react-native/docs/text.html) for a complete list.
 
