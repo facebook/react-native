@@ -10,7 +10,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
-#import "CSSLayout.h"
+#import <CSSLayout/CSSLayout.h>
 #import "RCTAnimationType.h"
 #import "RCTBorderStyle.h"
 #import "RCTTextDecorationLineType.h"

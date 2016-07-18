@@ -372,6 +372,24 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
   }
 
   NSTextAlignment newTextAlign = _textAlign ?: NSTextAlignmentNatural;
+
+  // The part below is to address textAlign for RTL language before setting paragraph style
+  // Since we can't get layout directly because this logic is currently run just before layout is calculatede
+  // We will climb up to the first node which style has been setted as non-inherit
+  if (newTextAlign == NSTextAlignmentRight || newTextAlign == NSTextAlignmentLeft) {
+    RCTShadowView *view = self;
+    while (view != nil && view.cssNode->style.direction == CSS_DIRECTION_INHERIT) {
+      view = [view reactSuperview];
+    }
+    if (view != nil && view.cssNode->style.direction == CSS_DIRECTION_RTL) {
+      if (newTextAlign == NSTextAlignmentRight) {
+        newTextAlign = NSTextAlignmentLeft;
+      } else if (newTextAlign == NSTextAlignmentLeft) {
+        newTextAlign = NSTextAlignmentRight;
+      }
+    }
+  }
+
   if (self.textAlign != newTextAlign) {
     self.textAlign = newTextAlign;
   }
