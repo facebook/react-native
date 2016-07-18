@@ -58,6 +58,7 @@ const layout = PropTypes.shape({
 /* NavigationScene */
 const scene = PropTypes.shape({
   index: PropTypes.number.isRequired,
+  isActive: PropTypes.bool.isRequired,
   isStale: PropTypes.bool.isRequired,
   key: PropTypes.string.isRequired,
   route: navigationRoute.isRequired,
@@ -67,7 +68,6 @@ const scene = PropTypes.shape({
 const SceneRendererProps = {
   layout: layout.isRequired,
   navigationState: navigationState.isRequired,
-  onNavigate: PropTypes.func.isRequired,
   position: animatedValue.isRequired,
   progress: animatedValue.isRequired,
   scene: scene.isRequired,
@@ -101,7 +101,6 @@ function extractSceneRendererProps(
   return {
     layout: props.layout,
     navigationState: props.navigationState,
-    onNavigate: props.onNavigate,
     position: props.position,
     progress: props.progress,
     scene: props.scene,

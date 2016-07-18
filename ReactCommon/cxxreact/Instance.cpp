@@ -75,6 +75,16 @@ void Instance::loadScriptFromFile(const std::string& filename,
   loadScriptFromString(std::move(buf), sourceURL);
 }
 
+void Instance::loadScriptFromOptimizedBundle(std::string bundlePath,
+                                             std::string sourceURL,
+                                             int flags) {
+  SystraceSection s("reactbridge_xplat_loadScriptFromOptimizedBundle",
+                    "bundlePath", bundlePath);
+  nativeToJsBridge_->loadOptimizedApplicationScript(std::move(bundlePath),
+                                                    std::move(sourceURL),
+                                                    flags);
+}
+
 void Instance::loadUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle,
                             std::unique_ptr<const JSBigString> startupScript,
                             std::string startupScriptSourceURL) {
@@ -101,11 +111,10 @@ void Instance::setGlobalVariable(std::string propName,
   nativeToJsBridge_->setGlobalVariable(std::move(propName), std::move(jsonValue));
 }
 
-void Instance::callJSFunction(ExecutorToken token, const std::string& module, const std::string& method,
-                              folly::dynamic&& params, const std::string& tracingName) {
-  SystraceSection s(tracingName.c_str());
+void Instance::callJSFunction(ExecutorToken token, std::string&& module, std::string&& method,
+                              folly::dynamic&& params) {
   callback_->incrementPendingJSCalls();
-  nativeToJsBridge_->callFunction(token, module, method, std::move(params), tracingName);
+  nativeToJsBridge_->callFunction(token, std::move(module), std::move(method), std::move(params));
 }
 
 void Instance::callJSCallback(ExecutorToken token, uint64_t callbackId, folly::dynamic&& params) {

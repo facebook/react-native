@@ -4,8 +4,9 @@
 
 #include <android/log.h>
 #include <algorithm>
-#include <react/Value.h>
 #include <fb/log.h>
+
+#include <cxxreact/Value.h>
 
 namespace facebook {
 namespace react {

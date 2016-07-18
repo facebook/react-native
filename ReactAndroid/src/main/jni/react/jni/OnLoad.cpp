@@ -22,8 +22,6 @@
 #include "JExecutorTokenFactory.h"
 #include "JNativeRunnable.h"
 #include "JSLoader.h"
-#include "NativeCommon.h"
-#include "ReadableNativeArray.h"
 #include "ProxyExecutor.h"
 #include "OnLoad.h"
 #include "JMessageQueueThread.h"
@@ -31,7 +29,9 @@
 #include "JSLogging.h"
 #include "JSCPerfLogging.h"
 #include "WebWorkers.h"
-#include "WritableNativeMap.h"
+
+#include <xreact/jni/ReadableNativeArray.h>
+#include <xreact/jni/WritableNativeMap.h>
 #include <algorithm>
 
 #ifdef WITH_FBSYSTRACE
@@ -293,7 +293,7 @@ static void loadScriptFromFile(JNIEnv* env, jobject obj, jstring fileName, jstri
 }
 
 static void callFunction(JNIEnv* env, jobject obj, JExecutorToken::jhybridobject jExecutorToken, jstring module, jstring method,
-                         NativeArray::jhybridobject args, jstring tracingName) {
+                         NativeArray::jhybridobject args) {
   auto bridge = extractRefPtr<CountableBridge>(env, obj);
   auto arguments = cthis(wrap_alias(args));
   try {
@@ -301,8 +301,7 @@ static void callFunction(JNIEnv* env, jobject obj, JExecutorToken::jhybridobject
       cthis(wrap_alias(jExecutorToken))->getExecutorToken(wrap_alias(jExecutorToken)),
       fromJString(env, module),
       fromJString(env, method),
-      std::move(arguments->array),
-      fromJString(env, tracingName)
+      std::move(arguments->array)
     );
   } catch (...) {
     translatePendingCppExceptionToJavaException();
@@ -456,16 +455,8 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     PerfLogging::installNativeHooks = addNativePerfLoggingHooks;
     JSLogging::nativeHook = nativeLoggingHook;
 
-    NativeArray::registerNatives();
-    ReadableNativeArray::registerNatives();
-    WritableNativeArray::registerNatives();
     JNativeRunnable::registerNatives();
     registerJSLoaderNatives();
-
-    NativeMap::registerNatives();
-    ReadableNativeMap::registerNatives();
-    WritableNativeMap::registerNatives();
-    ReadableNativeMapKeySetIterator::registerNatives();
 
     registerNatives("com/facebook/react/bridge/JSCJavaScriptExecutor", {
       makeNativeMethod("initialize", executors::createJSCExecutor),

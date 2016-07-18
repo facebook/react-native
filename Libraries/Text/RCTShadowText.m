@@ -17,6 +17,8 @@
 #import "RCTShadowRawText.h"
 #import "RCTText.h"
 #import "RCTUtils.h"
+#import "RCTConvert.h"
+#import "RCTTextView.h"
 
 NSString *const RCTShadowViewAttributeName = @"RCTShadowViewAttributeName";
 NSString *const RCTIsHighlightedAttributeName = @"IsHighlightedAttributeName";
@@ -97,10 +99,24 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
   UIEdgeInsets padding = self.paddingAsInsets;
   CGFloat width = self.frame.size.width - (padding.left + padding.right);
 
+  NSNumber *parentTag = [[self reactSuperview] reactTag];
   NSTextStorage *textStorage = [self buildTextStorageForWidth:width widthMode:CSS_MEASURE_MODE_EXACTLY];
-  [applierBlocks addObject:^(NSDictionary<NSNumber *, RCTText *> *viewRegistry) {
-    RCTText *view = viewRegistry[self.reactTag];
+  [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    RCTText *view = (RCTText *)viewRegistry[self.reactTag];
     view.textStorage = textStorage;
+
+    /**
+     * NOTE: this logic is included to support rich text editing inside multiline
+     * `<TextInput>` controls. It is required in order to ensure that the
+     * textStorage (aka attributed string) is copied over from the RCTShadowText
+     * to the RCTText view in time to be used to update the editable text content.
+     * TODO: we should establish a delegate relationship betweeen RCTTextView
+     * and its contaned RCTText element when they get inserted and get rid of this
+     */
+    UIView *parentView = viewRegistry[parentTag];
+    if ([parentView respondsToSelector:@selector(performTextUpdate)]) {
+      [(RCTTextView *)parentView performTextUpdate];
+    }
   }];
 
   return parentProperties;
@@ -166,7 +182,13 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
 
   NSTextContainer *textContainer = [NSTextContainer new];
   textContainer.lineFragmentPadding = 0.0;
-  textContainer.lineBreakMode = _numberOfLines > 0 ? NSLineBreakByTruncatingTail : NSLineBreakByClipping;
+
+  if (_numberOfLines > 0) {
+    textContainer.lineBreakMode = _lineBreakMode;
+  } else {
+    textContainer.lineBreakMode = NSLineBreakByClipping;
+  }
+
   textContainer.maximumNumberOfLines = _numberOfLines;
   textContainer.size = (CGSize){widthMode == CSS_MEASURE_MODE_UNDEFINED ? CGFLOAT_MAX : width, CGFLOAT_MAX};
 
@@ -350,6 +372,24 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
   }
 
   NSTextAlignment newTextAlign = _textAlign ?: NSTextAlignmentNatural;
+
+  // The part below is to address textAlign for RTL language before setting paragraph style
+  // Since we can't get layout directly because this logic is currently run just before layout is calculatede
+  // We will climb up to the first node which style has been setted as non-inherit
+  if (newTextAlign == NSTextAlignmentRight || newTextAlign == NSTextAlignmentLeft) {
+    RCTShadowView *view = self;
+    while (view != nil && view.cssNode->style.direction == CSS_DIRECTION_INHERIT) {
+      view = [view reactSuperview];
+    }
+    if (view != nil && view.cssNode->style.direction == CSS_DIRECTION_RTL) {
+      if (newTextAlign == NSTextAlignmentRight) {
+        newTextAlign = NSTextAlignmentLeft;
+      } else if (newTextAlign == NSTextAlignmentLeft) {
+        newTextAlign = NSTextAlignmentRight;
+      }
+    }
+  }
+
   if (self.textAlign != newTextAlign) {
     self.textAlign = newTextAlign;
   }
@@ -443,6 +483,7 @@ RCT_TEXT_PROPERTY(IsHighlighted, _isHighlighted, BOOL)
 RCT_TEXT_PROPERTY(LetterSpacing, _letterSpacing, CGFloat)
 RCT_TEXT_PROPERTY(LineHeight, _lineHeight, CGFloat)
 RCT_TEXT_PROPERTY(NumberOfLines, _numberOfLines, NSUInteger)
+RCT_TEXT_PROPERTY(LineBreakMode, _lineBreakMode, NSLineBreakMode)
 RCT_TEXT_PROPERTY(TextAlign, _textAlign, NSTextAlignment)
 RCT_TEXT_PROPERTY(TextDecorationColor, _textDecorationColor, UIColor *);
 RCT_TEXT_PROPERTY(TextDecorationLine, _textDecorationLine, RCTTextDecorationLineType);

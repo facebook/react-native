@@ -33,4 +33,9 @@ module.exports = {
       return [path.resolve(__dirname, '..')];
     }
   },
+
+  getTransformModulePath() {
+    return require.resolve('./transformer');
+  },
+
 };

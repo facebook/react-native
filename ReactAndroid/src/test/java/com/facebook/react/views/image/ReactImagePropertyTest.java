@@ -14,6 +14,7 @@ import android.util.DisplayMetrics;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -82,7 +83,9 @@ public class ReactImagePropertyTest {
   public void testBorderColor() {
     ReactImageManager viewManager = new ReactImageManager();
     ReactImageView view = viewManager.createViewInstance(mThemeContext);
-    viewManager.updateProperties(view, buildStyles("src", "http://mysite.com/mypic.jpg"));
+    viewManager.updateProperties(
+      view,
+      buildStyles("src", JavaOnlyArray.of(JavaOnlyMap.of("uri", "http://mysite.com/mypic.jpg"))));
 
     viewManager.updateProperties(view, buildStyles("borderColor", Color.argb(0, 0, 255, 255)));
     int borderColor = view.getHierarchy().getRoundingParams().getBorderColor();
@@ -110,7 +113,9 @@ public class ReactImagePropertyTest {
   public void testRoundedCorners() {
     ReactImageManager viewManager = new ReactImageManager();
     ReactImageView view = viewManager.createViewInstance(mThemeContext);
-    viewManager.updateProperties(view, buildStyles("src", "http://mysite.com/mypic.jpg"));
+    viewManager.updateProperties(
+      view,
+      buildStyles("src", JavaOnlyArray.of(JavaOnlyMap.of("uri", "http://mysite.com/mypic.jpg"))));
 
     // We can't easily verify if rounded corner was honored or not, this tests simply verifies
     // we're not crashing..

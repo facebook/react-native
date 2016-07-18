@@ -43,6 +43,7 @@ import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.TextInlineImageSpan;
@@ -66,7 +67,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final String KEYBOARD_TYPE_PHONE_PAD = "phone-pad";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
   private static final int UNSET = -1;
-  
+
   @Override
   public String getName() {
     return REACT_CLASS;
@@ -244,6 +245,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setBlurOnSubmit(blurOnSubmit);
   }
 
+  @ReactProp(name = "onContentSizeChange", defaultBoolean = false)
+  public void setOnContentSizeChange(final ReactEditText view, boolean onContentSizeChange) {
+    if (onContentSizeChange) {
+      view.setContentSizeWatcher(new ReactContentSizeWatcher(view));
+    } else {
+      view.setContentSizeWatcher(null);
+    }
+  }
+
   @ReactProp(name = "placeholder")
   public void setPlaceholder(ReactEditText view, @Nullable String placeholder) {
     view.setHint(placeholder);
@@ -321,6 +331,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid textAlignVertical: " + textAlignVertical);
     }
+  }
+
+  @ReactProp(name = "inlineImageLeft")
+  public void setInlineImageLeft(ReactEditText view, @Nullable String resource) {
+    int id = ResourceDrawableIdHelper.getInstance().getResourceDrawableId(view.getContext(), resource);
+    view.setCompoundDrawablesWithIntrinsicBounds(id, 0, 0, 0);
+  }
+
+  @ReactProp(name = "inlineImagePadding")
+  public void setInlineImagePadding(ReactEditText view, int padding) {
+    view.setCompoundDrawablePadding(padding);
   }
 
   @ReactProp(name = "editable", defaultBoolean = true)
@@ -539,15 +560,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       if (count == before && newText.equals(oldText)) {
         return;
       }
+
+      // TODO: remove contentSize from onTextChanged entirely now that onChangeContentSize exists?
       int contentWidth = mEditText.getWidth();
       int contentHeight = mEditText.getHeight();
 
       // Use instead size of text content within EditText when available
       if (mEditText.getLayout() != null) {
         contentWidth = mEditText.getCompoundPaddingLeft() + mEditText.getLayout().getWidth() +
-            mEditText.getCompoundPaddingRight();
+          mEditText.getCompoundPaddingRight();
         contentHeight = mEditText.getCompoundPaddingTop() + mEditText.getLayout().getHeight() +
-            mEditText.getCompoundPaddingTop();
+          mEditText.getCompoundPaddingTop();
       }
 
       // The event that contains the event counter and updates it must be sent first.
@@ -631,6 +654,45 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             return !editText.getBlurOnSubmit();
           }
         });
+  }
+
+  private class ReactContentSizeWatcher implements ContentSizeWatcher {
+    private ReactEditText mEditText;
+    private EventDispatcher mEventDispatcher;
+    private int mPreviousContentWidth = 0;
+    private int mPreviousContentHeight = 0;
+
+    public ReactContentSizeWatcher(ReactEditText editText) {
+      mEditText = editText;
+      ReactContext reactContext = (ReactContext) editText.getContext();
+      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    }
+
+    @Override
+    public void onLayout() {
+      int contentWidth = mEditText.getWidth();
+      int contentHeight = mEditText.getHeight();
+
+      // Use instead size of text content within EditText when available
+      if (mEditText.getLayout() != null) {
+        contentWidth = mEditText.getCompoundPaddingLeft() + mEditText.getLayout().getWidth() +
+          mEditText.getCompoundPaddingRight();
+        contentHeight = mEditText.getCompoundPaddingTop() + mEditText.getLayout().getHeight() +
+          mEditText.getCompoundPaddingTop();
+      }
+
+      if (contentWidth != mPreviousContentWidth || contentHeight != mPreviousContentHeight) {
+        mPreviousContentHeight = contentHeight;
+        mPreviousContentWidth = contentWidth;
+
+        mEventDispatcher.dispatchEvent(
+          new ReactContentSizeChangedEvent(
+            mEditText.getId(),
+            SystemClock.nanoTime(),
+            (int) PixelUtil.toDIPFromPixel(contentWidth),
+            (int) PixelUtil.toDIPFromPixel(contentHeight)));
+      }
+    }
   }
 
   private class ReactSelectionWatcher implements SelectionWatcher {

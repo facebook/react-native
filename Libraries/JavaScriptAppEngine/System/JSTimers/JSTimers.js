@@ -96,6 +96,36 @@ var JSTimers = {
     return newID;
   },
 
+  /**
+   * @param {function} func Callback to be invoked every frame and provided
+   * with time remaining in frame.
+   */
+  requestIdleCallback: function(func) {
+    if (JSTimersExecution.requestIdleCallbacks.length === 0) {
+      RCTTiming.setSendIdleEvents(true);
+    }
+
+    var newID = JSTimersExecution.GUID++;
+    var freeIndex = JSTimers._getFreeIndex();
+    JSTimersExecution.timerIDs[freeIndex] = newID;
+    JSTimersExecution.callbacks[freeIndex] = func;
+    JSTimersExecution.types[freeIndex] = JSTimersExecution.Type.requestIdleCallback;
+    JSTimersExecution.requestIdleCallbacks.push(newID);
+    return newID;
+  },
+
+  cancelIdleCallback: function(timerID) {
+    JSTimers._clearTimerID(timerID);
+    var index = JSTimersExecution.requestIdleCallbacks.indexOf(timerID);
+    if (index !== -1) {
+      JSTimersExecution.requestIdleCallbacks.splice(index, 1);
+    }
+
+    if (JSTimersExecution.requestIdleCallbacks.length === 0) {
+      RCTTiming.setSendIdleEvents(false);
+    }
+  },
+
   clearTimeout: function(timerID) {
     JSTimers._clearTimerID(timerID);
   },
@@ -127,7 +157,9 @@ var JSTimers = {
     // See corresponding comment in `callTimers` for reasoning behind this
     if (index !== -1) {
       JSTimersExecution._clearIndex(index);
-      if (JSTimersExecution.types[index] !== JSTimersExecution.Type.setImmediate) {
+      var type = JSTimersExecution.types[index];
+      if (type !== JSTimersExecution.Type.setImmediate &&
+          type !== JSTimersExecution.Type.requestIdleCallback) {
         RCTTiming.deleteTimer(timerID);
       }
     }

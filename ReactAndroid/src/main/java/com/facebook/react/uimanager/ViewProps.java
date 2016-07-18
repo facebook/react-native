@@ -56,6 +56,11 @@ public class ViewProps {
   public static final String TOP = "top";
   public static final String WIDTH = "width";
 
+  public static final String MIN_WIDTH = "minWidth";
+  public static final String MAX_WIDTH = "maxWidth";
+  public static final String MIN_HEIGHT = "minHeight";
+  public static final String MAX_HEIGHT = "maxHeight";
+
   // Props that affect more than just layout
   public static final String ENABLED = "enabled";
   public static final String BACKGROUND_COLOR = "backgroundColor";
@@ -67,6 +72,7 @@ public class ViewProps {
   public static final String LINE_HEIGHT = "lineHeight";
   public static final String NEEDS_OFFSCREEN_ALPHA_COMPOSITING = "needsOffscreenAlphaCompositing";
   public static final String NUMBER_OF_LINES = "numberOfLines";
+  public static final String LINE_BREAK_MODE = "lineBreakMode";
   public static final String ON = "on";
   public static final String RESIZE_MODE = "resizeMode";
   public static final String TEXT_ALIGN = "textAlign";
@@ -95,18 +101,26 @@ public class ViewProps {
       Arrays.asList(
             ALIGN_SELF,
             ALIGN_ITEMS,
-            BOTTOM,
             COLLAPSABLE,
             FLEX,
             FLEX_DIRECTION,
             FLEX_WRAP,
-            HEIGHT,
             JUSTIFY_CONTENT,
-            LEFT,
+
+            /* position */
             POSITION,
             RIGHT,
             TOP,
+            BOTTOM,
+            LEFT,
+
+            /* dimensions */
             WIDTH,
+            HEIGHT,
+            MIN_WIDTH,
+            MAX_WIDTH,
+            MIN_HEIGHT,
+            MAX_HEIGHT,
 
             /* margins */
             MARGIN,

@@ -16,8 +16,10 @@ const EventEmitter = require('EventEmitter');
 const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
-const symbolicateStackTrace = require('symbolicateStackTrace');
+const infoLog = require('infoLog');
 const parseErrorStack = require('parseErrorStack');
+const symbolicateStackTrace = require('symbolicateStackTrace');
+const openFileInEditor = require('openFileInEditor');
 
 import type EmitterSubscription from 'EmitterSubscription';
 import type {StackFrame} from 'parseErrorStack';
@@ -25,6 +27,7 @@ import type {StackFrame} from 'parseErrorStack';
 type WarningInfo = {
   count: number;
   stacktrace: Array<StackFrame>;
+  symbolicated: boolean;
 };
 
 const _warningEmitter = new EventEmitter();
@@ -77,7 +80,7 @@ if (__DEV__) {
  * @return {string} the replaced string
  */
 function sprintf(format, ...args) {
-  var index = 0;
+  let index = 0;
   return format.replace(/%s/g, match => args[index++]);
 }
 
@@ -91,28 +94,46 @@ function updateWarningMap(format, ...args): void {
     ...args.slice(argCount).map(stringifySafe),
   ].join(' ');
 
-  var warningInfo = _warningMap.get(warning);
+  const warningInfo = _warningMap.get(warning);
   if (warningInfo) {
     warningInfo.count += 1;
   } else {
-    warningInfo = {count: 1, stacktrace: []};
+    const error: any = new Error();
+    error.framesToPop = 2;
+
+    _warningMap.set(warning, {
+      count: 1,
+      stacktrace: parseErrorStack(error),
+      symbolicated: false,
+    });
   }
 
-  _warningMap.set(warning, warningInfo);
   _warningEmitter.emit('warning', _warningMap);
+}
 
-  var error : any = new Error();
-  error.framesToPop = 2;
+function ensureSymbolicatedWarning(warning: string): void {
+  const prevWarningInfo = _warningMap.get(warning);
+  if (!prevWarningInfo || prevWarningInfo.symbolicated) {
+    return;
+  }
+  prevWarningInfo.symbolicated = true;
 
-  symbolicateStackTrace(parseErrorStack(error)).then(stack => {
-    warningInfo = _warningMap.get(warning);
-    if (warningInfo) {
-      warningInfo.stacktrace = stack;
-
-      _warningMap.set(warning, warningInfo);
-      _warningEmitter.emit('warning', _warningMap);
+  symbolicateStackTrace(prevWarningInfo.stacktrace).then(
+    stack => {
+      const nextWarningInfo = _warningMap.get(warning);
+      if (nextWarningInfo) {
+        nextWarningInfo.stacktrace = stack;
+        _warningEmitter.emit('warning', _warningMap);
+      }
+    },
+    error => {
+      const nextWarningInfo = _warningMap.get(warning);
+      if (nextWarningInfo) {
+        infoLog('Failed to symbolicate warning, "%s":', warning, error);
+        _warningEmitter.emit('warning', _warningMap);
+      }
     }
-  }, () => { /* Do nothing when can't load source map */ });
+  );
 }
 
 function isWarningIgnored(warning: string): boolean {
@@ -152,12 +173,21 @@ const WarningRow = ({count, warning, onPress}) => {
 type StackRowProps = { frame: StackFrame };
 const StackRow = ({frame}: StackRowProps) => {
   const Text = require('Text');
-  const fileParts = frame.file.split('/');
+  const TouchableHighlight = require('TouchableHighlight');
+  const {file, lineNumber} = frame;
+  const fileParts = file.split('/');
   const fileName = fileParts[fileParts.length - 1];
+
   return (
-    <Text style={styles.inspectorCountText}>
-      {`${fileName}:${frame.lineNumber}`}
-    </Text>
+    <TouchableHighlight
+      activeOpacity={0.5}
+      style={styles.openInEditorButton}
+      underlayColor="transparent"
+      onPress={openFileInEditor.bind(null, file, lineNumber)}>
+      <Text style={styles.inspectorCountText}>
+        {fileName}:{lineNumber}
+      </Text>
+    </TouchableHighlight>
   );
 };
 
@@ -182,7 +212,7 @@ const WarningInspector = ({
   let stacktraceList;
   if (stacktraceVisible && stacktrace) {
     stacktraceList = (
-      <View>
+      <View style={styles.stacktraceList}>
         {stacktrace.map((frame, ii) => <StackRow frame={frame} key={ii} />)}
       </View>
     );
@@ -200,10 +230,10 @@ const WarningInspector = ({
           <TouchableHighlight
             activeOpacity={0.5}
             onPress={toggleStacktrace}
-            style={styles.stacktraceButton}
+            style={styles.toggleStacktraceButton}
             underlayColor="transparent">
             <Text style={styles.inspectorButtonText}>
-              {stacktraceVisible ? 'Hide' : 'Show'} stacktrace
+              {stacktraceVisible ? 'Hide' : 'Show'} Stacktrace
             </Text>
           </TouchableHighlight>
         </View>
@@ -278,6 +308,13 @@ class YellowBox extends React.Component {
         });
       });
     });
+  }
+
+  componentDidUpdate() {
+    const {inspecting} = this.state;
+    if (inspecting != null) {
+      ensureSymbolicatedWarning(inspecting);
+    }
   }
 
   componentWillUnmount() {
@@ -355,9 +392,6 @@ var styles = StyleSheet.create({
     backgroundColor: backgroundColor(0.95),
     flex: 1,
   },
-  inspectorContainer: {
-    flex: 1,
-  },
   inspectorButtons: {
     flexDirection: 'row',
     position: 'absolute',
@@ -370,9 +404,12 @@ var styles = StyleSheet.create({
     padding: 22,
     backgroundColor: backgroundColor(1),
   },
-  stacktraceButton: {
+  toggleStacktraceButton: {
     flex: 1,
     padding: 5,
+  },
+  stacktraceList: {
+    paddingBottom: 5,
   },
   inspectorButtonText: {
     color: textColor,
@@ -383,6 +420,10 @@ var styles = StyleSheet.create({
   inspectorContent: {
     flex: 1,
     paddingTop: 5,
+  },
+  openInEditorButton: {
+    paddingTop: 5,
+    paddingBottom: 5,
   },
   inspectorCount: {
     padding: 15,

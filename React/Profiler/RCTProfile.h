@@ -26,7 +26,7 @@ RCT_EXTERN NSString *const RCTProfileDidEndProfiling;
 
 RCT_EXTERN const uint64_t RCTProfileTagAlways;
 
-#if RCT_DEV
+#if RCT_PROFILE
 
 @class RCTBridge;
 

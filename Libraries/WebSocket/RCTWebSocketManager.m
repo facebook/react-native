@@ -20,7 +20,9 @@
 
 #pragma mark - RCTWebSocketObserver
 
-@interface RCTWebSocketObserver : NSObject <RCTSRWebSocketDelegate>
+@interface RCTWebSocketObserver : NSObject <RCTSRWebSocketDelegate> {
+  NSURL *_url;
+}
 
 @property (nonatomic, strong) RCTSRWebSocket *socket;
 @property (nonatomic, weak) id<RCTWebSocketProxyDelegate> delegate;
@@ -35,9 +37,7 @@
 - (instancetype)initWithURL:(NSURL *)url delegate:(id<RCTWebSocketProxyDelegate>)delegate
 {
   if ((self = [self init])) {
-    _socket = [[RCTSRWebSocket alloc] initWithURL:url];
-    _socket.delegate = self;
-
+    _url = url;
     _delegate = delegate;
 }
   return self;
@@ -45,9 +45,11 @@
 
 - (void)start
 {
-  _socketOpenSemaphore = dispatch_semaphore_create(0);
+  [self stop];
+  _socket = [[RCTSRWebSocket alloc] initWithURL:_url];
+  _socket.delegate = self;
+
   [_socket open];
-  dispatch_semaphore_wait(_socketOpenSemaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2));
 }
 
 - (void)stop
@@ -71,18 +73,25 @@
   }
 }
 
-- (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
+- (void)reconnect
 {
-  dispatch_semaphore_signal(_socketOpenSemaphore);
+  __weak RCTSRWebSocket *socket = _socket;
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    // Only reconnect if the observer wasn't stoppped while we were waiting
+    if (socket) {
+      [self start];
+    }
+  });
 }
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
-  dispatch_semaphore_signal(_socketOpenSemaphore);
-  dispatch_async(dispatch_get_main_queue(), ^{
-    // Give the setUp method an opportunity to report an error first
-    RCTLogError(@"WebSocket connection failed with error %@", error);
-  });
+  [self reconnect];
+}
+
+- (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
+{
+  [self reconnect];
 }
 
 @end

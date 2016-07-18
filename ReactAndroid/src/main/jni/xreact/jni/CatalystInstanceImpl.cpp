@@ -13,8 +13,6 @@
 #include <jni/Countable.h>
 #include <jni/LocalReference.h>
 
-#include <react/jni/NativeArray.h>
-
 #include <cxxreact/Instance.h>
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/ModuleRegistry.h>
@@ -23,6 +21,7 @@
 #include "JavaScriptExecutorHolder.h"
 #include "JniJSModulesUnbundle.h"
 #include "ModuleRegistryHolder.h"
+#include "NativeArray.h"
 #include "JNativeRunnable.h"
 
 using namespace facebook::jni;
@@ -102,6 +101,8 @@ void CatalystInstanceImpl::registerNatives() {
                        "(Landroid/content/res/AssetManager;Ljava/lang/String;)V",
                        CatalystInstanceImpl::loadScriptFromAssets),
       makeNativeMethod("loadScriptFromFile", CatalystInstanceImpl::loadScriptFromFile),
+      makeNativeMethod("loadScriptFromOptimizedBundle",
+                       CatalystInstanceImpl::loadScriptFromOptimizedBundle),
       makeNativeMethod("callJSFunction", CatalystInstanceImpl::callJSFunction),
       makeNativeMethod("callJSCallback", CatalystInstanceImpl::callJSCallback),
       makeNativeMethod("getMainExecutorToken", CatalystInstanceImpl::getMainExecutorToken),
@@ -162,8 +163,9 @@ void CatalystInstanceImpl::loadScriptFromAssets(jobject assetManager,
       folly::make_unique<JniJSModulesUnbundle>(manager, sourceURL),
       std::move(script),
       sourceURL);
+    return;
   } else {
-    instance_->loadScriptFromString(std::move(script), std::move(sourceURL));
+    instance_->loadScriptFromString(std::move(script), sourceURL);
   }
 }
 
@@ -173,9 +175,16 @@ void CatalystInstanceImpl::loadScriptFromFile(jni::alias_ref<jstring> fileName,
                                        sourceURL);
 }
 
+void CatalystInstanceImpl::loadScriptFromOptimizedBundle(const std::string& bundlePath,
+                                                         const std::string& sourceURL,
+                                                         jint flags) {
+  return instance_->loadScriptFromOptimizedBundle(std::move(bundlePath),
+                                                  std::move(sourceURL),
+                                                  flags);
+}
+
 void CatalystInstanceImpl::callJSFunction(
-    JExecutorToken* token, std::string module, std::string method, NativeArray* arguments,
-    const std::string& tracingName) {
+    JExecutorToken* token, std::string module, std::string method, NativeArray* arguments) {
   // We want to share the C++ code, and on iOS, modules pass module/method
   // names as strings all the way through to JS, and there's no way to do
   // string -> id mapping on the objc side.  So on Android, we convert the
@@ -184,10 +193,9 @@ void CatalystInstanceImpl::callJSFunction(
   // strings otherwise.  Eventually, we'll probably want to modify the stack
   // from the JS proxy through here to use strings, too.
   instance_->callJSFunction(token->getExecutorToken(nullptr),
-                            module,
-                            method,
-                            std::move(arguments->array),
-                            tracingName);
+                            std::move(module),
+                            std::move(method),
+                            std::move(arguments->array));
 }
 
 void CatalystInstanceImpl::callJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments) {

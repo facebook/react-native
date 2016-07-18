@@ -12,9 +12,9 @@
 'use strict';
 
 const ColorPropType = require('ColorPropType');
-const NativeMethodsMixin = require('NativeMethodsMixin');
+const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 const Platform = require('Platform');
-const PropTypes = require('ReactPropTypes');
+const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
@@ -58,7 +58,7 @@ const ActivityIndicator = React.createClass({
   getDefaultProps() {
     return {
       animating: true,
-      color: GRAY,
+      color: Platform.OS === 'ios' ? GRAY : undefined,
       hidesWhenStopped: true,
       size: 'small',
     };

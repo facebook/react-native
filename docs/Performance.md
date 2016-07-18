@@ -5,6 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/performance.html
 next: upgrading
+previous: navigation
 ---
 
 A compelling reason for using React Native instead of WebView-based
@@ -80,6 +81,10 @@ main thread (the scroll events are dispatched to the JS thread though,
 but their receipt is not necessary for the scroll to occur).
 
 ### Common sources of performance problems
+
+#### Console.log statements
+
+When running a bundled app, these statements can cause a big bottleneck in the JavaScript thread. This includes calls from debugging libraries such as [redux-logger](https://github.com/evgenyrodionov/redux-logger), so make sure to remove them before bundling.
 
 #### Development mode (dev=true)
 
