@@ -388,7 +388,12 @@ const PanResponder = {
           config.onPanResponderTerminationRequest(e, gestureState);
       }
     };
-    return { panHandlers: panHandlers };
+    return {
+      panHandlers,
+      getInteractionHandle(): ?number {
+        return interactionState.handle;
+      },
+    };
   }
 };
 

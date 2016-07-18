@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "CSSLayout.h"
+#import <CSSLayout/CSSLayout.h>
 #import "RCTComponent.h"
 #import "RCTRootView.h"
 

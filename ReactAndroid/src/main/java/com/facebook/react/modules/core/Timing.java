@@ -45,6 +45,7 @@ import javax.annotation.Nullable;
 public final class Timing extends ReactContextBaseJavaModule implements LifecycleEventListener,
   OnExecutorUnregisteredListener {
 
+  // These timing contants should be kept in sync with the ones in `JSTimersExecution.js`.
   // The minimum time in milliseconds left in the frame to call idle callbacks.
   private static final float IDLE_CALLBACK_FRAME_DEADLINE_MS = 1.f;
   // The total duration of a frame in milliseconds, this assumes that devices run at 60 fps.
@@ -307,13 +308,6 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   @Override
   public boolean supportsWebWorkers() {
     return true;
-  }
-
-  @Override
-  public Map<String, Object> getConstants() {
-    return MapBuilder.<String, Object>of(
-        "frameDuration", FRAME_DURATION_MS,
-        "idleCallbackFrameDeadline", IDLE_CALLBACK_FRAME_DEADLINE_MS);
   }
 
   @Override
