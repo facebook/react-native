@@ -348,7 +348,7 @@ AppRegistry.registerComponent('RNHighScores', () => RNHighScores);
 
 ## The Magic: `RCTRootView`
 
-Now that your React Native component is created via `index.ios.js`, you need to add that component to a new or existing `ViewController`. The easiest path is to take is to optionally create an event path to your component and then add that component to an existing `ViewController`.
+Now that your React Native component is created via `index.ios.js`, you need to add that component to a new or existing `ViewController`. The easiest path to take is to optionally create an event path to your component and then add that component to an existing `ViewController`.
 
 We will tie our React Native component with a new native view in the `ViewController` that will actually host it called `RCTRootView` .
 
