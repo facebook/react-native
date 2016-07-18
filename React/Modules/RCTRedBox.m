@@ -12,6 +12,7 @@
 #import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTDefines.h"
+#import "RCTErrorInfo.h"
 #import "RCTUtils.h"
 #import "RCTJSStackFrame.h"
 
@@ -314,11 +315,41 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 @implementation RCTRedBox
 {
   RCTRedBoxWindow *_window;
+  NSMutableArray<id<RCTErrorCustomizer>> *_errorCustomizers;
 }
 
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
+
+- (void)registerErrorCustomizer:(id<RCTErrorCustomizer>)errorCustomizer
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (!self->_errorCustomizers) {
+      self->_errorCustomizers = [NSMutableArray array];
+    }
+    if (![self->_errorCustomizers containsObject:errorCustomizer]) {
+      [self->_errorCustomizers addObject:errorCustomizer];
+    }
+  });
+}
+
+// WARNING: Should only be called from the main thread/dispatch queue.
+- (RCTErrorInfo *)_customizeError:(RCTErrorInfo *)error
+{
+  RCTAssertMainQueue();
+
+  if (!self->_errorCustomizers) {
+    return error;
+  }
+  for (id<RCTErrorCustomizer> customizer in self->_errorCustomizers) {
+    RCTErrorInfo *newInfo = [customizer customizeErrorInfo:error];
+    if (newInfo) {
+      error = newInfo;
+    }
+  }
+  return error;
+}
 
 - (void)showError:(NSError *)error
 {
@@ -367,7 +398,12 @@ RCT_EXPORT_MODULE()
       self->_window = [[RCTRedBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
       self->_window.actionDelegate = self;
     }
-    [self->_window showErrorMessage:message withStack:stack isUpdate:isUpdate];
+    RCTErrorInfo *errorInfo = [[RCTErrorInfo alloc] initWithErrorMessage:message
+                                                                   stack:stack];
+    errorInfo = [self _customizeError:errorInfo];
+    [self->_window showErrorMessage:errorInfo.errorMessage
+                          withStack:errorInfo.stack
+                           isUpdate:isUpdate];
   });
 }
 
@@ -422,6 +458,7 @@ RCT_EXPORT_METHOD(dismiss)
 @implementation RCTRedBox
 
 + (NSString *)moduleName { return nil; }
+- (void)registerErrorCustomizer:(id<RCTErrorCustomizer>)errorCustomizer {}
 - (void)showError:(NSError *)message {}
 - (void)showErrorMessage:(NSString *)message {}
 - (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details {}
