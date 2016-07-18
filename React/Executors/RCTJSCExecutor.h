@@ -11,6 +11,8 @@
 
 #import "RCTJavaScriptExecutor.h"
 
+typedef void (^RCTJavaScriptValueCallback)(JSValue *result, NSError *error);
+
 /**
  * Default name for the JS thread
  */
@@ -74,5 +76,16 @@ RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
                                              sourceURL:(NSURL *)sourceURL
                                              JSContext:(JSContext **)JSContext
                                                  error:(NSError **)error;
+
+/**
+ * Invokes the given module/method directly. The completion block will be called with the
+ * JSValue returned by the JS context.
+ *
+ * Currently this does not flush the JS-to-native message queue.
+ */
+- (void)callFunctionOnModule:(NSString *)module
+                      method:(NSString *)method
+                   arguments:(NSArray *)args
+             jsValueCallback:(RCTJavaScriptValueCallback)onComplete;
 
 @end

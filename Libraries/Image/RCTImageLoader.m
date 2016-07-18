@@ -9,9 +9,11 @@
 
 #import "RCTImageLoader.h"
 
-#import <libkern/OSAtomic.h>
-#import <UIKit/UIKit.h>
 #import <ImageIO/ImageIO.h>
+
+#import <libkern/OSAtomic.h>
+
+#import <objc/runtime.h>
 
 #import "RCTConvert.h"
 #import "RCTDefines.h"
