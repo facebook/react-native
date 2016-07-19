@@ -526,6 +526,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setContentInset:(UIEdgeInsets)contentInset
 {
+  if (UIEdgeInsetsEqualToEdgeInsets(contentInset, _contentInset)) {
+    return;
+  }
+
   CGPoint contentOffset = _scrollView.contentOffset;
 
   _contentInset = contentInset;
