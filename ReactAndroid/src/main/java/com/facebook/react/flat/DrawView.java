@@ -32,4 +32,9 @@ import android.graphics.Canvas;
       parent.drawNextChild(canvas);
     }
   }
+
+  @Override
+  public void debugDraw(FlatViewGroup parent, Canvas canvas) {
+    parent.debugDrawNextChild(canvas);
+  }
 }

@@ -10,6 +10,7 @@
 package com.facebook.react.flat;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 
 /**
  * Base class for all DrawCommands. Becomes immutable once it has its bounds set. Until then, a
@@ -38,6 +39,26 @@ import android.graphics.Canvas;
     } else {
       onDraw(canvas);
     }
+  }
+
+  protected static int getDebugBorderColor() {
+    return Color.CYAN;
+  }
+
+  protected String getDebugName() {
+    return getClass().getSimpleName().substring(4);
+  }
+
+  @Override
+  public void debugDraw(FlatViewGroup parent, Canvas canvas) {
+    parent.debugDrawNamedRect(
+        canvas,
+        getDebugBorderColor(),
+        getDebugName(),
+        mLeft,
+        mTop,
+        mRight,
+        mBottom);
   }
 
   protected void onPreDraw(FlatViewGroup parent, Canvas canvas) {

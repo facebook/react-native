@@ -23,7 +23,16 @@ public interface DrawCommand {
   /**
    * Performs drawing into the given canvas.
    *
+   * @param parent The parent to get child information from, if needed
    * @param canvas The canvas to draw into
    */
   public void draw(FlatViewGroup parent, Canvas canvas);
+
+  /**
+   * Performs debug bounds drawing into the given canvas.
+   *
+   * @param parent The parent to get child information from, if needed
+   * @param canvas The canvas to draw into
+   */
+  public void debugDraw(FlatViewGroup parent, Canvas canvas);
 }

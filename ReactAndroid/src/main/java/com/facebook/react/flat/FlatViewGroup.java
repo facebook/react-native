@@ -20,6 +20,8 @@ import java.util.Map;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
@@ -80,6 +82,15 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
           new ImageLoadEvent(reactTag, SystemClock.nanoTime(), imageLoadEvent));
     }
   }
+
+  private static final boolean DEBUG_DRAW = false;
+  private static final boolean DEBUG_DRAW_TEXT = false;
+  private boolean mAndroidDebugDraw;
+  private static Paint sDebugTextPaint;
+  private static Paint sDebugTextBackgroundPaint;
+  private static Paint sDebugRectPaint;
+  private static Paint sDebugCornerPaint;
+  private static Rect sDebugRect;
 
   private static final ArrayList<FlatViewGroup> LAYOUT_REQUESTS = new ArrayList<>();
   private static final Rect VIEW_BOUNDS = new Rect();
@@ -162,8 +173,15 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     return nodeRegion != null && nodeRegion.mIsVirtual;
   }
 
+  // This is hidden in the Android ViewGroup, but still gets called in super.dispatchDraw.
+  protected void onDebugDraw(Canvas canvas) {
+    // Android is drawing layout bounds, so we should as well.
+    mAndroidDebugDraw = true;
+  }
+
   @Override
   public void dispatchDraw(Canvas canvas) {
+    mAndroidDebugDraw = false;
     super.dispatchDraw(canvas);
 
     if (mRemoveClippedSubviews) {
@@ -189,9 +207,28 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     }
     mDrawChildIndex = 0;
 
+    if (DEBUG_DRAW || mAndroidDebugDraw) {
+      initDebugDrawResources();
+      debugDraw(canvas);
+    }
+
     if (mHotspot != null) {
       mHotspot.draw(canvas);
     }
+  }
+
+  private void debugDraw(Canvas canvas) {
+    for (DrawCommand drawCommand : mDrawCommands) {
+      if (drawCommand instanceof DrawView) {
+        if (!((DrawView) drawCommand).isViewGroupClipped) {
+          drawCommand.debugDraw(this, canvas);
+        }
+        // else, don't draw, and don't increment index
+      } else {
+        drawCommand.debugDraw(this, canvas);
+      }
+    }
+    mDrawChildIndex = 0;
   }
 
   @Override
@@ -199,6 +236,153 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     // suppress
     // no drawing -> no invalidate -> return false
     return false;
+  }
+
+  /* package */ void debugDrawNextChild(Canvas canvas) {
+    View child = getChildAt(mDrawChildIndex);
+    // Draw FlatViewGroups a different color than regular child views.
+    int color = child instanceof FlatViewGroup ? Color.DKGRAY : Color.RED;
+    debugDrawRect(
+        canvas,
+        color,
+        child.getLeft(),
+        child.getTop(),
+        child.getRight(),
+        child.getBottom());
+    ++mDrawChildIndex;
+  }
+
+  // Used in debug drawing.
+  private int dipsToPixels(int dips) {
+    float scale = getResources().getDisplayMetrics().density;
+    return (int) (dips * scale + 0.5f);
+  }
+
+  // Used in debug drawing.
+  private static void fillRect(Canvas canvas, Paint paint, float x1, float y1, float x2, float y2) {
+    if (x1 != x2 && y1 != y2) {
+      if (x1 > x2) {
+        float tmp = x1; x1 = x2; x2 = tmp;
+      }
+      if (y1 > y2) {
+        float tmp = y1; y1 = y2; y2 = tmp;
+      }
+      canvas.drawRect(x1, y1, x2, y2, paint);
+    }
+  }
+
+  // Used in debug drawing.
+  private static int sign(float x) {
+    return (x >= 0) ? 1 : -1;
+  }
+
+  // Used in debug drawing.
+  private static void drawCorner(
+      Canvas c,
+      Paint paint,
+      float x1,
+      float y1,
+      float dx,
+      float dy,
+      float lw) {
+    fillRect(c, paint, x1, y1, x1 + dx, y1 + lw * sign(dy));
+    fillRect(c, paint, x1, y1, x1 + lw * sign(dx), y1 + dy);
+  }
+
+  // Used in debug drawing.
+  private static void drawRectCorners(
+      Canvas canvas,
+      float x1,
+      float y1,
+      float x2,
+      float y2,
+      Paint paint,
+      int lineLength,
+      int lineWidth) {
+    drawCorner(canvas, paint, x1, y1, lineLength, lineLength, lineWidth);
+    drawCorner(canvas, paint, x1, y2, lineLength, -lineLength, lineWidth);
+    drawCorner(canvas, paint, x2, y1, -lineLength, lineLength, lineWidth);
+    drawCorner(canvas, paint, x2, y2, -lineLength, -lineLength, lineWidth);
+  }
+
+  private void initDebugDrawResources() {
+    if (sDebugTextPaint == null) {
+      sDebugTextPaint = new Paint();
+      sDebugTextPaint.setTextAlign(Paint.Align.RIGHT);
+      sDebugTextPaint.setTextSize(dipsToPixels(9));
+      sDebugTextPaint.setColor(Color.RED);
+    }
+    if (sDebugTextBackgroundPaint == null) {
+      sDebugTextBackgroundPaint = new Paint();
+      sDebugTextBackgroundPaint.setColor(Color.WHITE);
+      sDebugTextBackgroundPaint.setAlpha(200);
+      sDebugTextBackgroundPaint.setStyle(Paint.Style.FILL);
+    }
+    if (sDebugRectPaint == null) {
+      sDebugRectPaint = new Paint();
+      sDebugRectPaint.setAlpha(100);
+      sDebugRectPaint.setStyle(Paint.Style.STROKE);
+    }
+    if (sDebugCornerPaint == null) {
+      sDebugCornerPaint = new Paint();
+      sDebugCornerPaint.setAlpha(200);
+      sDebugCornerPaint.setColor(Color.rgb(63, 127, 255));
+      sDebugCornerPaint.setStyle(Paint.Style.FILL);
+    }
+    if (sDebugRect == null) {
+      sDebugRect = new Rect();
+    }
+  }
+
+  private void debugDrawRect(
+      Canvas canvas,
+      int color,
+      float left,
+      float top,
+      float right,
+      float bottom) {
+    debugDrawNamedRect(canvas, color, "", left, top, right, bottom);
+  }
+
+  /* package */ void debugDrawNamedRect(
+      Canvas canvas,
+      int color,
+      String name,
+      float left,
+      float top,
+      float right,
+      float bottom) {
+    if (DEBUG_DRAW_TEXT && !name.isEmpty()) {
+      sDebugTextPaint.getTextBounds(name, 0, name.length(), sDebugRect);
+      int inset = dipsToPixels(2);
+      float textRight = right - inset - 1;
+      float textBottom = bottom - inset - 1;
+      canvas.drawRect(
+          textRight - sDebugRect.right - inset,
+          textBottom + sDebugRect.top - inset,
+          textRight + inset,
+          textBottom + inset,
+          sDebugTextBackgroundPaint);
+      canvas.drawText(name, textRight, textBottom, sDebugTextPaint);
+    }
+    // Retain the alpha component.
+    sDebugRectPaint.setColor((sDebugRectPaint.getColor() & 0xFF000000) | (color & 0x00FFFFFF));
+    sDebugRectPaint.setAlpha(100);
+    canvas.drawRect(
+        left,
+        top,
+        right - 1,
+        bottom - 1,
+        sDebugRectPaint);
+    drawRectCorners(
+        canvas,
+        left,
+        top,
+        right,
+        bottom,
+        sDebugCornerPaint,
+        dipsToPixels(8),
+        dipsToPixels(1));
   }
 
   @Override
