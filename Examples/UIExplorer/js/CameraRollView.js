@@ -198,7 +198,7 @@ var CameraRollView = React.createClass({
 
   _renderFooterSpinner: function() {
     if (!this.state.noMore) {
-      return <ActivityIndicator style={styles.spinner} />;
+      return <ActivityIndicator />;
     }
     return null;
   },
