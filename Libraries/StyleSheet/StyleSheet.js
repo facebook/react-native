@@ -160,7 +160,7 @@ module.exports = {
   /**
    * Creates a StyleSheet style reference from the given object.
    */
-  create<T: Object, U>(obj: T): {[key:$Keys<T>]: number} {
+  create<T: Object>(obj: T): {[key:$Keys<T>]: number} {
     var result: T = (({}: any): T);
     for (var key in obj) {
       StyleSheetValidation.validateStyle(key, obj);
