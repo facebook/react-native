@@ -178,8 +178,8 @@ var Button = React.createClass({
   render: function() {
     return (
       <TouchableWithoutFeedback onPress={this._handlePress}>
-        <View style={[styles.button, this.props.enabled ? {} : styles.buttonDisabled]}>
-          <Text style={styles.buttonText}>{this.props.text}</Text>
+        <View style={styles.button}>
+          <Text>{this.props.text}</Text>
         </View>
       </TouchableWithoutFeedback>
     );

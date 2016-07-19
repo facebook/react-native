@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.facebook.react.ReactPackage;
+import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -82,6 +83,7 @@ public class MainReactPackage implements ReactPackage {
       new ImageStoreManager(reactContext),
       new IntentModule(reactContext),
       new LocationModule(reactContext),
+      new NativeAnimatedModule(reactContext),
       new NetworkingModule(reactContext),
       new NetInfoModule(reactContext),
       new PermissionsModule(reactContext),
