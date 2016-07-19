@@ -142,14 +142,25 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
 
   @Override
   public void onDraw(Canvas canvas) {
-    Assertions.assumeNotNull(mRequestHelper).getDrawable().draw(canvas);
+    if (mRequestHelper != null) {
+      mRequestHelper.getDrawable().draw(canvas);
+    }
   }
 
   @Override
   public void onAttached(FlatViewGroup.InvalidateCallback callback) {
     mCallback = callback;
 
-    GenericDraweeHierarchy hierarchy = Assertions.assumeNotNull(mRequestHelper).getHierarchy();
+    if (mRequestHelper == null) {
+      // this is here to help us debug t12048319, in which we have a null request helper on attach
+      throw new RuntimeException(
+          "No DraweeRequestHelper - width: " +
+              (getRight() - getLeft()) +
+              " - height: " + (getBottom() - getTop() +
+              " - number of sources: " + mSources.size()));
+    }
+
+    GenericDraweeHierarchy hierarchy = mRequestHelper.getHierarchy();
 
     RoundingParams roundingParams = hierarchy.getRoundingParams();
     if (shouldDisplayBorder()) {
@@ -182,7 +193,9 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
 
   @Override
   public void onDetached() {
-    Assertions.assumeNotNull(mRequestHelper).detach();
+    if (mRequestHelper != null) {
+      mRequestHelper.detach();
+    }
   }
 
   @Override
