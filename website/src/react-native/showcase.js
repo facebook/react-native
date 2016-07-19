@@ -295,13 +295,6 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.bdsdiet_app',
     infoLink: 'https://www.crunchbase.com/organization/bds-diet#/entity',
     infoTitle: 'Bdsdiet provides real estate brokerage services through web and live agents in Korea.',
-  },
-  {
-    name: 'Bnbtrip',
-    icon: 'http://a2.mzstatic.com/us/r30/Purple30/v4/ee/c5/1e/eec51e53-d7e8-8981-9d76-967dbe9f4046/icon175x175.jpeg',
-    linkAppStore: 'https://itunes.apple.com/cn/app/id1047180157',
-    infoLink: 'http://www.bnbtrip.com',
-    infoTitle: 'Bnbtrip - a global platform for booking unique air B&B locations',
   }
 ];
 
