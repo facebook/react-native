@@ -877,18 +877,18 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
             // Now off the screen.  Don't invalidate in this case, as the canvas should not be
             // redrawn unless new elements are coming onscreen.
             mClippedSubviews.put(view.getId(), view);
-            detachViewFromParent(view);
+            removeViewsInLayout(--index, 1);
             drawView.isViewGroupClipped = true;
-            index--;
           }
         } else {
           // Clipped, invisible.
           if (withinBounds(view, clippingRect)) {
             // Now on the screen.  Invalidate as we have a new element to draw.
-            attachViewToParent(
+            addViewInLayout(
                 view,
                 index++,
-                ensureLayoutParams(view.getLayoutParams()));
+                ensureLayoutParams(view.getLayoutParams()),
+                true);
             mClippedSubviews.remove(view.getId());
             drawView.isViewGroupClipped = false;
             needsInvalidate = true;
