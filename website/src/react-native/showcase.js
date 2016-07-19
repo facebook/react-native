@@ -295,7 +295,7 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.bdsdiet_app',
     infoLink: 'https://www.crunchbase.com/organization/bds-diet#/entity',
     infoTitle: 'Bdsdiet provides real estate brokerage services through web and live agents in Korea.',
-  }
+  },
 ];
 
 featured.sort(function(a, b) {
