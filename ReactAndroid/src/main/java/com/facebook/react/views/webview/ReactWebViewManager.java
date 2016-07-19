@@ -118,11 +118,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         if (url.startsWith("http://") || url.startsWith("https://")) {
           return false;
         } else {
-          Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+          Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url)); 
           intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-          view.getContext().startActivity(intent);
-          return true;
-        }
+          view.getContext().startActivity(intent);   
+          return true;   
+        }              
     }
 
     @Override
