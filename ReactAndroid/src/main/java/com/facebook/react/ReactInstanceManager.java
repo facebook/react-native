@@ -150,6 +150,11 @@ public abstract class ReactInstanceManager {
   public abstract void detachRootView(ReactRootView rootView);
 
   /**
+   * Update given {@param rootView} from current catalyst instance.
+   */
+  public abstract void updateRootView(ReactRootView rootView);
+
+  /**
    * Destroy this React instance and the attached JS context.
    */
   public abstract void destroy();
