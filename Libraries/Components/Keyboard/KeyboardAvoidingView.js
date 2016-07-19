@@ -169,7 +169,7 @@ const KeyboardAvoidingView = React.createClass({
         );
 
       case 'padding':
-        const paddingStyle = {paddingBottom: this.state.bottom};
+        const paddingStyle = {paddingBottom: Platform.OS === 'android' ? 0 : this.state.bottom};
         return (
           <View ref={viewRef} style={[style, paddingStyle]} onLayout={this.onLayout} {...props}>
             {children}
