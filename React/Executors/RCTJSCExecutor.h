@@ -11,6 +11,8 @@
 
 #import "RCTJavaScriptExecutor.h"
 
+typedef void (^RCTJavaScriptValueCallback)(JSValue *result, NSError *error);
+
 /**
  * Default name for the JS thread
  */
@@ -24,6 +26,17 @@ RCT_EXTERN NSString *const RCTJSCThreadName;
  * context. Note that this notification won't fire when debugging in Chrome.
  */
 RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
+
+/**
+ * @experimental
+ * May be used to pre-create the JSContext to make RCTJSCExecutor creation less costly.
+ * Avoid using this; it's experimental and is not likely to be supported long-term.
+ */
+@interface RCTJSContextProvider : NSObject
+
+- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
+
+@end
 
 /**
  * Uses a JavaScriptCore context as the execution engine.
@@ -49,6 +62,30 @@ RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
  * If available, the error's userInfo property will contain the JS stacktrace under
  * the RCTJSStackTraceKey key.
  */
-- (NSError *)convertJSErrorToNSError:(JSValueRef)jsError context:(JSContextRef)context;
+- (NSError *)errorForJSError:(JSValue *)jsError;
+
+/**
+ * @experimental
+ * Pass a RCTJSContextProvider object to use an NSThread/JSContext pair that have already been created.
+ * The returned executor has already executed the supplied application script synchronously.
+ * The underlying JSContext will be returned in the JSContext pointer if it is non-NULL and there was no error.
+ * If an error occurs, this method will return nil and specify the error in the error pointer if it is non-NULL.
+ */
++ (instancetype)initializedExecutorWithContextProvider:(RCTJSContextProvider *)JSContextProvider
+                                     applicationScript:(NSData *)applicationScript
+                                             sourceURL:(NSURL *)sourceURL
+                                             JSContext:(JSContext **)JSContext
+                                                 error:(NSError **)error;
+
+/**
+ * Invokes the given module/method directly. The completion block will be called with the
+ * JSValue returned by the JS context.
+ *
+ * Currently this does not flush the JS-to-native message queue.
+ */
+- (void)callFunctionOnModule:(NSString *)module
+                      method:(NSString *)method
+                   arguments:(NSArray *)args
+             jsValueCallback:(RCTJavaScriptValueCallback)onComplete;
 
 @end

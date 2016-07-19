@@ -18,6 +18,7 @@ require('ViewRenderingTestModule');
 require('TestJavaToJSArgumentsModule');
 require('TestJSLocaleModule');
 require('TestJSToJavaParametersModule');
+require('UIManagerTestModule');
 
 require('CatalystRootViewTestModule');
 require('DatePickerDialogTestModule');

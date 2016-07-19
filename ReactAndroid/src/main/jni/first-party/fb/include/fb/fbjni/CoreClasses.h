@@ -212,7 +212,7 @@ protected:
   /// the Java class actually has (i.e. with static create() functions).
   template<typename... Args>
   static local_ref<T> newInstance(Args... args) {
-    return detail::newInstance<JavaClass>(args...);
+    return detail::newInstance<T>(args...);
   }
 
   javaobject self() const noexcept;
@@ -344,6 +344,8 @@ FBEXPORT local_ref<JString> make_jstring(const std::string& modifiedUtf8);
 class FBEXPORT JThrowable : public JavaClass<JThrowable, JObject, jthrowable> {
  public:
   static constexpr const char* kJavaDescriptor = "Ljava/lang/Throwable;";
+
+  local_ref<JThrowable> initCause(alias_ref<JThrowable> cause);
 };
 
 namespace detail {

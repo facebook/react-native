@@ -18,6 +18,10 @@
 #import "RCTModuleData.h"
 #import "RCTProfile.h"
 
+#define RCTAssertRunLoop() \
+  RCTAssert(_runLoop == [NSRunLoop currentRunLoop], \
+  @"This method must be called on the CADisplayLink run loop")
+
 @implementation RCTDisplayLink
 {
   CADisplayLink *_jsDisplayLink;
@@ -38,12 +42,13 @@
 - (void)registerModuleForFrameUpdates:(id<RCTBridgeModule>)module
                        withModuleData:(RCTModuleData *)moduleData
 {
-  if ([_frameUpdateObservers containsObject:moduleData] ||
-      ![moduleData.moduleClass conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
+  if (![moduleData.moduleClass conformsToProtocol:@protocol(RCTFrameUpdateObserver)] ||
+      [_frameUpdateObservers containsObject:moduleData]) {
     return;
   }
 
   [_frameUpdateObservers addObject:moduleData];
+
   // Don't access the module instance via moduleData, as this will cause deadlock
   id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)module;
   __weak typeof(self) weakSelf = self;
@@ -54,16 +59,28 @@
     }
 
     CFRunLoopRef cfRunLoop = [strongSelf->_runLoop getCFRunLoop];
-
-    if (!_runLoop) {
+    if (!cfRunLoop) {
       return;
     }
 
-    CFRunLoopPerformBlock(cfRunLoop, kCFRunLoopDefaultMode, ^{
-                            [weakSelf updateJSDisplayLinkState];
-                          });
-    CFRunLoopWakeUp(cfRunLoop);
+    if ([NSRunLoop currentRunLoop] == strongSelf->_runLoop) {
+      [weakSelf updateJSDisplayLinkState];
+    } else {
+      CFRunLoopPerformBlock(cfRunLoop, kCFRunLoopDefaultMode, ^{
+        [weakSelf updateJSDisplayLinkState];
+      });
+      CFRunLoopWakeUp(cfRunLoop);
+    }
   };
+
+  // Assuming we're paused right now, we only need to update the display link's state
+  // when the new observer is not paused. If it not paused, the observer will immediately
+  // start receiving updates anyway.
+  if (![observer isPaused] && _runLoop) {
+    CFRunLoopPerformBlock([_runLoop getCFRunLoop], kCFRunLoopDefaultMode, ^{
+      [self updateJSDisplayLinkState];
+    });
+  }
 }
 
 - (void)addToRunLoop:(NSRunLoop *)runLoop
@@ -75,12 +92,6 @@
 - (void)invalidate
 {
   [_jsDisplayLink invalidate];
-}
-
-- (void)assertOnRunLoop
-{
-  RCTAssert(_runLoop == [NSRunLoop currentRunLoop],
-            @"This method must be called on the CADisplayLink run loop");
 }
 
 - (void)dispatchBlock:(dispatch_block_t)block
@@ -95,7 +106,7 @@
 
 - (void)_jsThreadUpdate:(CADisplayLink *)displayLink
 {
-  [self assertOnRunLoop];
+  RCTAssertRunLoop();
 
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTDisplayLink _jsThreadUpdate:]", nil);
 
@@ -121,7 +132,7 @@
 
 - (void)updateJSDisplayLinkState
 {
-  [self assertOnRunLoop];
+  RCTAssertRunLoop();
 
   BOOL pauseDisplayLink = YES;
   for (RCTModuleData *moduleData in _frameUpdateObservers) {
@@ -131,6 +142,7 @@
       break;
     }
   }
+
   _jsDisplayLink.paused = pauseDisplayLink;
 }
 

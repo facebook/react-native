@@ -5,6 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/timers.html
 next: direct-manipulation
+previous: accessibility
 ---
 
 Timers are an important part of an application and React Native implements the [browser timers](https://developer.mozilla.org/en-US/Add-ons/Code_snippets/Timers).

@@ -95,7 +95,7 @@ static NSString *RCTGenerateFormBoundary()
     headers[@"content-type"] = partContentType;
   }
   [headers enumerateKeysAndObjectsUsingBlock:^(NSString *parameterKey, NSString *parameterValue, BOOL *stop) {
-    [_multipartBody appendData:[[NSString stringWithFormat:@"%@: %@\r\n", parameterKey, parameterValue]
+    [self->_multipartBody appendData:[[NSString stringWithFormat:@"%@: %@\r\n", parameterKey, parameterValue]
                                 dataUsingEncoding:NSUTF8StringEncoding]];
   }];
 
@@ -138,6 +138,8 @@ RCT_EXPORT_MODULE()
   return @[@"didCompleteNetworkResponse",
            @"didReceiveNetworkResponse",
            @"didSendNetworkData",
+           @"didReceiveNetworkIncrementalData",
+           @"didReceiveNetworkDataProgress",
            @"didReceiveNetworkData"];
 }
 
@@ -239,7 +241,7 @@ RCT_EXPORT_MODULE()
       [request setValue:(@(request.HTTPBody.length)).description forHTTPHeaderField:@"Content-Length"];
     }
 
-    dispatch_async(_methodQueue, ^{
+    dispatch_async(self->_methodQueue, ^{
       block(request);
     });
 
@@ -287,7 +289,7 @@ RCT_EXPORT_MODULE()
 
     __block RCTURLRequestCancellationBlock cancellationBlock = nil;
     RCTNetworkTask *task = [self networkTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
-      dispatch_async(_methodQueue, ^{
+      dispatch_async(self->_methodQueue, ^{
         cancellationBlock = callback(error, data ? @{@"body": data, @"contentType": RCTNullIfNil(response.MIMEType)} : nil);
       });
     }];
@@ -313,26 +315,16 @@ RCT_EXPORT_MODULE()
   return callback(nil, nil);
 }
 
-- (void)sendData:(NSData *)data forTask:(RCTNetworkTask *)task
++ (NSString *)decodeTextData:(NSData *)data fromResponse:(NSURLResponse *)response
 {
-  RCTAssertThread(_methodQueue, @"sendData: must be called on method queue");
-
-  if (data.length == 0) {
-    return;
-  }
-
-  // Get text encoding
-  NSURLResponse *response = task.response;
   NSStringEncoding encoding = NSUTF8StringEncoding;
   if (response.textEncodingName) {
     CFStringEncoding cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef)response.textEncodingName);
     encoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding);
   }
-
   // Attempt to decode text
-  NSString *responseText = [[NSString alloc] initWithData:data encoding:encoding];
-  if (!responseText && data.length) {
-
+  NSString *encodedResponse = [[NSString alloc] initWithData:data encoding:encoding];
+  if (!encodedResponse && data.length) {
     // We don't have an encoding, or the encoding is incorrect, so now we
     // try to guess (unfortunately, this feature is available in iOS 8+ only)
     if ([NSString respondsToSelector:@selector(stringEncodingForData:
@@ -341,22 +333,43 @@ RCT_EXPORT_MODULE()
                                                usedLossyConversion:)]) {
       [NSString stringEncodingForData:data
                       encodingOptions:nil
-                      convertedString:&responseText
+                      convertedString:&encodedResponse
                   usedLossyConversion:NULL];
     }
+  }
+  return encodedResponse;
+}
 
-    // If we still can't decode it, bail out
-    if (!responseText) {
+- (void)sendData:(NSData *)data
+    responseType:(NSString *)responseType
+         forTask:(RCTNetworkTask *)task
+{
+  RCTAssertThread(_methodQueue, @"sendData: must be called on method queue");
+
+  if (data.length == 0) {
+    return;
+  }
+
+  NSString *responseString;
+  if ([responseType isEqualToString:@"text"]) {
+    responseString = [RCTNetworking decodeTextData:data fromResponse:task.response];
+    if (!responseString) {
       RCTLogWarn(@"Received data was not a string, or was not a recognised encoding.");
       return;
     }
+  } else if ([responseType isEqualToString:@"base64"]) {
+    responseString = [data base64EncodedStringWithOptions:0];
+  } else {
+    RCTLogWarn(@"Invalid responseType: %@", responseType);
+    return;
   }
 
-  NSArray<id> *responseJSON = @[task.requestID, responseText ?: @""];
+  NSArray<id> *responseJSON = @[task.requestID, responseString];
   [self sendEventWithName:@"didReceiveNetworkData" body:responseJSON];
 }
 
 - (void)sendRequest:(NSURLRequest *)request
+       responseType:(NSString *)responseType
  incrementalUpdates:(BOOL)incrementalUpdates
      responseSender:(RCTResponseSenderBlock)responseSender
 {
@@ -365,14 +378,14 @@ RCT_EXPORT_MODULE()
   __block RCTNetworkTask *task;
 
   RCTURLRequestProgressBlock uploadProgressBlock = ^(int64_t progress, int64_t total) {
-    dispatch_async(_methodQueue, ^{
+    dispatch_async(self->_methodQueue, ^{
       NSArray *responseJSON = @[task.requestID, @((double)progress), @((double)total)];
       [self sendEventWithName:@"didSendNetworkData" body:responseJSON];
     });
   };
 
-  void (^responseBlock)(NSURLResponse *) = ^(NSURLResponse *response) {
-    dispatch_async(_methodQueue, ^{
+  RCTURLRequestResponseBlock responseBlock = ^(NSURLResponse *response) {
+    dispatch_async(self->_methodQueue, ^{
       NSDictionary<NSString *, NSString *> *headers;
       NSInteger status;
       if ([response isKindOfClass:[NSHTTPURLResponse class]]) { // Might be a local file request
@@ -389,17 +402,44 @@ RCT_EXPORT_MODULE()
     });
   };
 
-  void (^incrementalDataBlock)(NSData *) = incrementalUpdates ? ^(NSData *data) {
-    dispatch_async(_methodQueue, ^{
-      [self sendData:data forTask:task];
-    });
-  } : nil;
+  // XHR does not allow you to peek at xhr.response before the response is
+  // finished. Only when xhr.responseType is set to ''/'text', consumers may
+  // peek at xhr.responseText. So unless the requested responseType is 'text',
+  // we only send progress updates and not incremental data updates to JS here.
+  RCTURLRequestIncrementalDataBlock incrementalDataBlock = nil;
+  RCTURLRequestProgressBlock downloadProgressBlock = nil;
+  if (incrementalUpdates) {
+    if ([responseType isEqualToString:@"text"]) {
+      incrementalDataBlock = ^(NSData *data, int64_t progress, int64_t total) {
+        dispatch_async(self->_methodQueue, ^{
+          NSString *responseString = [RCTNetworking decodeTextData:data fromResponse:task.response];
+          if (!responseString) {
+            RCTLogWarn(@"Received data was not a string, or was not a recognised encoding.");
+            return;
+          }
+          NSArray<id> *responseJSON = @[task.requestID, responseString, @(progress), @(total)];
+          [self sendEventWithName:@"didReceiveNetworkIncrementalData" body:responseJSON];
+        });
+      };
+    } else {
+      downloadProgressBlock = ^(int64_t progress, int64_t total) {
+        dispatch_async(self->_methodQueue, ^{
+          NSArray<id> *responseJSON = @[task.requestID, @(progress), @(total)];
+          [self sendEventWithName:@"didReceiveNetworkDataProgress" body:responseJSON];
+        });
+      };
+    }
+  }
 
   RCTURLRequestCompletionBlock completionBlock =
   ^(NSURLResponse *response, NSData *data, NSError *error) {
-    dispatch_async(_methodQueue, ^{
-      if (!incrementalUpdates) {
-        [self sendData:data forTask:task];
+    dispatch_async(self->_methodQueue, ^{
+      // Unless we were sending incremental (text) chunks to JS, all along, now
+      // is the time to send the request body to JS.
+      if (!(incrementalUpdates && [responseType isEqualToString:@"text"])) {
+        [self sendData:data
+          responseType:responseType
+               forTask:task];
       }
       NSArray *responseJSON = @[task.requestID,
                                 RCTNullIfNil(error.localizedDescription),
@@ -407,11 +447,12 @@ RCT_EXPORT_MODULE()
                                 ];
 
       [self sendEventWithName:@"didCompleteNetworkResponse" body:responseJSON];
-      [_tasksByRequestID removeObjectForKey:task.requestID];
+      [self->_tasksByRequestID removeObjectForKey:task.requestID];
     });
   };
 
   task = [self networkTaskWithRequest:request completionBlock:completionBlock];
+  task.downloadProgressBlock = downloadProgressBlock;
   task.incrementalDataBlock = incrementalDataBlock;
   task.responseBlock = responseBlock;
   task.uploadProgressBlock = uploadProgressBlock;
@@ -453,8 +494,10 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)query
   // loading a large file to build the request body
   [self buildRequest:query completionBlock:^(NSURLRequest *request) {
 
+    NSString *responseType = [RCTConvert NSString:query[@"responseType"]];
     BOOL incrementalUpdates = [RCTConvert BOOL:query[@"incrementalUpdates"]];
     [self sendRequest:request
+         responseType:responseType
    incrementalUpdates:incrementalUpdates
        responseSender:responseSender];
   }];

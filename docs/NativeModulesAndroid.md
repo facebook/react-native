@@ -5,6 +5,7 @@ layout: docs
 category: Guides (Android)
 permalink: docs/native-modules-android.html
 next: native-components-android
+previous: communication-ios
 ---
 
 Sometimes an app needs access to a platform API that React Native doesn't have a corresponding module for yet. Maybe you want to reuse some existing Java code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.
@@ -116,7 +117,7 @@ class AnExampleReactPackage implements ReactPackage {
   }
 ```
 
-The package needs to be provided in the `getPackages` method of the `MainActivity.java` file. This file exists under the android folder in your react-native application directory. The path to this file is: `android/app/src/main/java/com/your-app-name/MainActivity.java`.
+The package needs to be provided in the `getPackages` method of the `MainApplication.java` file. This file exists under the android folder in your react-native application directory. The path to this file is: `android/app/src/main/java/com/your-app-name/MainApplication.java`.
 
 ```java
 protected List<ReactPackage> getPackages() {
@@ -420,16 +421,16 @@ Now you can listen to the activity's LifeCycle events by implementing the follow
 ```java
 @Override
 public void onHostResume() {
-    // Actvity `onResume`
+    // Activity `onResume`
 }
 
 @Override
 public void onHostPause() {
-    // Actvity `onPause`
+    // Activity `onPause`
 }
 
 @Override
 public void onHostDestroy() {
-    // Actvity `onDestroy`
+    // Activity `onDestroy`
 }
 ```

@@ -92,6 +92,11 @@ RCT_EXPORT_MODULE()
   block();
 }
 
+- (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block
+{
+  block();
+}
+
 - (void)injectJSONText:(NSString *)script
    asGlobalObjectNamed:(NSString *)objectName
               callback:(RCTJavaScriptCompleteBlock)onComplete
@@ -151,8 +156,9 @@ RCT_EXPORT_MODULE(TestModule)
   [super setUp];
 
   _unregisteredTestModule = [UnregisteredTestModule new];
-  _bridge = [[RCTBridge alloc] initWithBundleURL:nil
-                                  moduleProvider:^{ return @[self, _unregisteredTestModule]; }
+  NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+  _bridge = [[RCTBridge alloc] initWithBundleURL:[bundle URLForResource:@"TestBundle" withExtension:@"js"]
+                                  moduleProvider:^{ return @[self, self->_unregisteredTestModule]; }
                                    launchOptions:nil];
 
   _bridge.executorClass = [TestExecutor class];
@@ -232,7 +238,7 @@ RCT_EXPORT_MODULE(TestModule)
 
   dispatch_sync(_methodQueue, ^{
     // clear the queue
-    XCTAssertTrue(_testMethodCalled);
+    XCTAssertTrue(self->_testMethodCalled);
   });
 }
 
@@ -263,7 +269,7 @@ RCT_EXPORT_MODULE(TestModule)
   [_bridge.batchedBridge handleBuffer:buffer];
 
   dispatch_sync(_unregisteredTestModule.methodQueue, ^{
-    XCTAssertTrue(_unregisteredTestModule.testMethodCalled);
+    XCTAssertTrue(self->_unregisteredTestModule.testMethodCalled);
   });
 }
 

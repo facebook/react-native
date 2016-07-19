@@ -9,6 +9,8 @@
 
 #import "RCTModuleData.h"
 
+#import <objc/runtime.h>
+
 #import "RCTBridge.h"
 #import "RCTBridge+Private.h"
 #import "RCTModuleMethod.h"
@@ -277,7 +279,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, [NSString stringWithFormat:@"[RCTModuleData gatherConstants] %@", _moduleClass], nil);
     (void)[self instance];
     RCTExecuteOnMainThread(^{
-      _constantsToExport = [_instance constantsToExport] ?: @{};
+      self->_constantsToExport = [self->_instance constantsToExport] ?: @{};
     }, YES);
   }
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);

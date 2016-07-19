@@ -5,6 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/direct-manipulation.html
 next: debugging
+previous: timers
 ---
 
 It is sometimes necessary to make changes directly to a component
@@ -82,11 +83,11 @@ performing continuous animations and responding to gestures, judiciously
 optimizing your components can improve your animations' fidelity.
 
 If you look at the implementation of `setNativeProps` in
-[NativeMethodsMixin.js](https://github.com/facebook/react-native/blob/master/Libraries/ReactIOS/NativeMethodsMixin.js)
+[NativeMethodsMixin.js](https://github.com/facebook/react/blob/master/src/renderers/native/NativeMethodsMixin.js)
 you will notice that it is a wrapper around `RCTUIManager.updateView` -
 this is the exact same function call that results from re-rendering -
 see [receiveComponent in
-ReactNativeBaseComponent.js](https://github.com/facebook/react-native/blob/master/Libraries/ReactNative/ReactNativeBaseComponent.js).
+ReactNativeBaseComponent.js](https://github.com/facebook/react/blob/master/src/renderers/native/ReactNativeBaseComponent.js).
 
 ## Composite components and setNativeProps
 

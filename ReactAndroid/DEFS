@@ -32,6 +32,7 @@ JSC_DEPS = [
   '//native/third-party/jsc:jsc_legacy_profiler',
 ]
 
+CSSLAYOUT_TARGET = '//ReactAndroid/src/main/java/com/facebook/csslayout:csslayout'
 FBGLOGINIT_TARGET = '//ReactAndroid/src/main/jni/first-party/fbgloginit:fbgloginit'
 
 # React property preprocessor

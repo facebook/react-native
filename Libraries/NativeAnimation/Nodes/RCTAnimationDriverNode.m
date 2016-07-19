@@ -68,7 +68,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self stopAnimation];
   _valueNode = nil;
   if (_callback) {
-    _callback(@[(id)kCFNull]);
+    _callback(@[@{
+      @"finished": @(_animationHasFinished)
+    }]);
   }
 }
 

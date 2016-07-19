@@ -17,7 +17,7 @@ var Transform = require('art/core/transform');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
+var createReactNativeComponentClass = require('react/lib/createReactNativeComponentClass');
 var merge = require('merge');
 
 // Diff Helpers

@@ -5,6 +5,7 @@ layout: docs
 category: Guides (Android)
 permalink: docs/running-on-device-android.html
 next: signed-apk-android
+props: native-components-android
 ---
 
 ## Prerequisite: USB Debugging
@@ -20,7 +21,7 @@ Check that your device has been **successfully connected** by running `adb devic
 
 Seeing **device** in the right column means the device is connected. Android - go figure :) You must have **only one device connected**.
 
-Now you can use `react-native run-android` to install and launch your app on the device.
+Now you can use `react-native run-android` to install and launch your app on the device. If you get a "bridge configuration isn't available" error, see the `Using adb reverse` section below.
 
 ## Setting up an Android Device
 

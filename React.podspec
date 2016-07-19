@@ -54,6 +54,11 @@ Pod::Spec.new do |s|
     ss.preserve_paths = "Libraries/AdSupport/*.js"
   end
 
+  s.subspec 'RCTAnimation' do |ss|
+    ss.dependency       'React/Core'
+    ss.source_files   = "Libraries/NativeAnimation/{Nodes/*,*}.{h,m}"
+  end
+
   s.subspec 'RCTCameraRoll' do |ss|
     ss.dependency       'React/Core'
     ss.dependency       'React/RCTImage'
