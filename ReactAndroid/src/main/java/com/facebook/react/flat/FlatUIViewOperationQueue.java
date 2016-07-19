@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.NoSuchNativeViewException;
 import com.facebook.react.uimanager.PixelUtil;
@@ -314,6 +315,31 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     }
   }
 
+  /**
+   * Used to delay view manager command dispatch until after the view hierarchy is updated.
+   * Mirrors command operation dispatch, but is only used in Nodes for view manager commands.
+   */
+  public final class ViewManagerCommand implements UIOperation {
+
+    private final int mReactTag;
+    private final int mCommand;
+    private final @Nullable ReadableArray mArgs;
+
+    public ViewManagerCommand(
+        int reactTag,
+        int command,
+        @Nullable ReadableArray args) {
+      mReactTag = reactTag;
+      mCommand = command;
+      mArgs = args;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.dispatchCommand(mReactTag, mCommand, mArgs);
+    }
+  }
+
   public FlatUIViewOperationQueue(
       ReactApplicationContext reactContext,
       FlatNativeViewHierarchyManager nativeViewHierarchyManager) {
@@ -357,6 +383,17 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
    */
   public void enqueueUpdateViewBounds(UpdateViewBounds updateViewBounds) {
     enqueueUIOperation(updateViewBounds);
+  }
+
+  public ViewManagerCommand createViewManagerCommand(
+      int reactTag,
+      int command,
+      @Nullable ReadableArray args) {
+    return new ViewManagerCommand(reactTag, command, args);
+  }
+
+  public void enqueueViewManagerCommand(ViewManagerCommand viewManagerCommand) {
+    enqueueUIOperation(viewManagerCommand);
   }
 
   public void enqueueSetPadding(

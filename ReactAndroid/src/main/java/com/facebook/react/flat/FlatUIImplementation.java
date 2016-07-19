@@ -71,7 +71,7 @@ public class FlatUIImplementation extends UIImplementation {
   /**
    * Helper class that sorts moveTo/moveFrom arrays passed to #manageChildren().
    * Not used outside of the said method.
-   */ 
+   */
   private final MoveProxy mMoveProxy = new MoveProxy();
   private final StateBuilder mStateBuilder;
   private @Nullable ReactImageManager mReactImageManager;
@@ -224,14 +224,13 @@ public class FlatUIImplementation extends UIImplementation {
         callback);
   }
 
-  private boolean ensureMountsToViewAndBackingViewIsCreated(int reactTag) {
+  private void ensureMountsToViewAndBackingViewIsCreated(int reactTag) {
     FlatShadowNode node = (FlatShadowNode) resolveShadowNode(reactTag);
     if (node.isBackingViewCreated()) {
-      return false;
+      return;
     }
     node.forceMountToView();
     mStateBuilder.ensureBackingViewIsCreated(node);
-    return true;
   }
 
   @Override
@@ -253,16 +252,10 @@ public class FlatUIImplementation extends UIImplementation {
 
   @Override
   public void dispatchViewManagerCommand(int reactTag, int commandId, ReadableArray commandArgs) {
-    if (ensureMountsToViewAndBackingViewIsCreated(reactTag)) {
-      // need to make sure any ui operations (UpdateViewGroup, for example, etc) have already
-      // happened before we actually dispatch the view manager command (since otherwise, the command
-      // may go to an empty shell parent without its children, which is against the specs). note
-      // that we only want to applyUpdates if the view has not yet been created so that it does
-      // get created (otherwise, we may end up changing the View's position when we're not supposed
-      // to, for example).
-      mStateBuilder.applyUpdates((FlatShadowNode) resolveShadowNode(reactTag));
-    }
-    super.dispatchViewManagerCommand(reactTag, commandId, commandArgs);
+    // Make sure that our target view is actually a view, then delay command dispatch until after
+    // we have updated the view hierarchy.
+    ensureMountsToViewAndBackingViewIsCreated(reactTag);
+    mStateBuilder.enqueueViewManagerCommand(reactTag, commandId, commandArgs);
   }
 
   @Override
@@ -414,7 +407,7 @@ public class FlatUIImplementation extends UIImplementation {
 
         ++addToIndex;
         if (addToIndex == numNodesToAdd) {
-          addToChildIndex = Integer.MAX_VALUE;  
+          addToChildIndex = Integer.MAX_VALUE;
         } else {
           addToChildIndex = addAtIndices.getInt(addToIndex);
         }

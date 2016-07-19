@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 import com.facebook.csslayout.Spacing;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.OnLayoutEvent;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -47,6 +48,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
   private final ArrayList<FlatShadowNode> mViewsToDrop = new ArrayList<>();
   private final ArrayList<OnLayoutEvent> mOnLayoutEvents = new ArrayList<>();
   private final ArrayList<FlatUIViewOperationQueue.UpdateViewBounds> mUpdateViewBoundsOperations =
+      new ArrayList<>();
+  private final ArrayList<FlatUIViewOperationQueue.ViewManagerCommand> mViewManagerCommands =
       new ArrayList<>();
 
   private @Nullable FlatUIViewOperationQueue.DetachAllChildrenFromViews mDetachAllChildrenFromViews;
@@ -99,6 +102,14 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     }
     mUpdateViewBoundsOperations.clear();
 
+    // Process view manager commands after bounds operations, so that any ui operations have already
+    // happened before we actually dispatch the view manager command.  This prevents things like
+    // commands going to empty parents and views not yet being created.
+    for (int i = 0, size = mViewManagerCommands.size(); i != size; i++) {
+      mOperationsQueue.enqueueViewManagerCommand(mViewManagerCommands.get(i));
+    }
+    mViewManagerCommands.clear();
+
     // This could be more efficient if EventDispatcher had a batch mode
     // to avoid multiple synchronized calls.
     for (int i = 0, size = mOnLayoutEvents.size(); i != size; ++i) {
@@ -132,6 +143,14 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
   /* package */ void addAttachDetachListener(AttachDetachListener listener) {
     mAttachDetachListeners.add(listener);
+  }
+
+  /* package */ void enqueueViewManagerCommand(
+      int reactTag,
+      int commandId,
+      ReadableArray commandArgs) {
+    mViewManagerCommands.add(
+        mOperationsQueue.createViewManagerCommand(reactTag, commandId, commandArgs));
   }
 
   /* package */ void enqueueCreateOrUpdateView(
