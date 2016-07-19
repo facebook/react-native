@@ -9,6 +9,8 @@
 
 #import "RCTModuleData.h"
 
+#import <objc/runtime.h>
+
 #import "RCTBridge.h"
 #import "RCTBridge+Private.h"
 #import "RCTModuleMethod.h"
