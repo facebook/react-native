@@ -902,7 +902,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n$SRCROOT/../../packager/react-native-xcode.sh Examples/UIExplorer/UIExplorerApp.ios.js";
+			shellScript = "export NODE_BINARY=node\n$SRCROOT/../../packager/react-native-xcode.sh Examples/UIExplorer/js/UIExplorerApp.ios.js";
 		};
 /* End PBXShellScriptBuildPhase section */
 
