@@ -85,6 +85,12 @@ public:
   void loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL);
 
   /**
+   * Similar to loading a "bundle", but instead of passing js source this method accepts
+   * path to a directory containing files prepared for particular JSExecutor.
+   */
+  void loadOptimizedApplicationScript(std::string bundlePath, std::string sourceURL, int flags);
+
+  /**
    * An "unbundle" is a backend that stores and injects JavaScript modules as
    * individual scripts, rather than bundling all of them into a single scrupt.
    *

@@ -14,6 +14,8 @@ import android.content.Context;
 import com.facebook.react.devsupport.DebugServerException;
 import com.facebook.react.devsupport.DevServerHelper;
 
+import java.io.File;
+
 /**
  * A class that stores JS bundle information and allows {@link CatalystInstance} to load a correct
  * bundle through {@link ReactBridge}.
@@ -28,18 +30,11 @@ public abstract class JSBundleLoader {
   public static JSBundleLoader createFileLoader(
       final Context context,
       final String fileName) {
-    return createFileLoader(context, fileName, false);
-  }
-
-  public static JSBundleLoader createFileLoader(
-      final Context context,
-      final String fileName,
-      final boolean useLazyBundle) {
     return new JSBundleLoader() {
       @Override
       public void loadScript(CatalystInstanceImpl instance) {
         if (fileName.startsWith("assets://")) {
-          instance.loadScriptFromAssets(context.getAssets(), fileName, useLazyBundle);
+          instance.loadScriptFromAssets(context.getAssets(), fileName);
         } else {
           instance.loadScriptFromFile(fileName, fileName);
         }
@@ -97,6 +92,19 @@ public abstract class JSBundleLoader {
         return realSourceURL;
       }
     };
+  }
+
+  public static JSBundleLoader createUnpackingBundleLoader(
+      final Context context,
+      final String sourceURL,
+      final String bundleName) {
+    return UnpackingJSBundleLoader.newBuilder()
+      .setContext(context)
+      .setSourceURL(sourceURL)
+      .setDestinationPath(new File(context.getFilesDir(), "optimized-bundle"))
+      .checkAndUnpackFile(bundleName + ".meta", "bundle.meta")
+      .unpackFile(bundleName, "bundle.js")
+      .build();
   }
 
   public abstract void loadScript(CatalystInstanceImpl instance);

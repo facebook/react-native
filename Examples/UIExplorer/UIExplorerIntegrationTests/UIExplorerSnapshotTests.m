@@ -32,7 +32,7 @@
 
 - (void)setUp
 {
-  _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerApp.ios", nil);
+  _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/js/UIExplorerApp.ios", nil);
   _runner.recordMode = NO;
 }
 

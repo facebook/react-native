@@ -9,7 +9,7 @@
 
 #import "RCTTextManager.h"
 
-#import "Layout.h"
+#import <CSSLayout/CSSLayout.h>
 #import "RCTAccessibilityManager.h"
 #import "RCTAssert.h"
 #import "RCTConvert.h"

@@ -5,6 +5,7 @@ layout: docs
 category: Guides (Android)
 permalink: docs/android-ui-performance.html
 next: android-building-from-source
+previous: signed-apk-android
 ---
 
 We try our best to deliver buttery-smooth UI performance by default, but sometimes that just isn't possible. Remember, Android supports 10k+ different phones and is generalized to support software rendering: the framework architecture and need to generalize across many hardware targets unfortunately means you get less for free relative to iOS. But sometimes, there are things you can improve (and many times it's not native code's fault at all!).

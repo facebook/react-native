@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule RCTNetworking
+ * @flow
  */
 'use strict';
 
@@ -21,26 +22,26 @@ class RCTNetworking extends NativeEventEmitter {
   }
 
   sendRequest(
-    method: ?string,
+    method: string,
     trackingName: string,
-    url: ?string,
+    url: string,
     headers: Object,
-    data: string | FormData | Object,
+    data: string | FormData | {uri: string},
+    responseType: 'text' | 'base64',
     incrementalUpdates: boolean,
     timeout: number,
-    callback: (requestId: number) => void,
+    callback: (requestId: number) => any
   ) {
-    if (typeof data === 'string') {
-      data = {string: data};
-    } else if (data instanceof FormData) {
-      data = {formData: data.getParts()};
-    }
-    data = {...data, trackingName};
+    const body =
+      typeof data === 'string' ? {string: data} :
+      data instanceof FormData ? {formData: data.getParts()} :
+      data;
     RCTNetworkingNative.sendRequest({
       method,
       url,
-      data,
+      data: {...body, trackingName},
       headers,
+      responseType,
       incrementalUpdates,
       timeout
     }, callback);
@@ -50,7 +51,7 @@ class RCTNetworking extends NativeEventEmitter {
     RCTNetworkingNative.abortRequest(requestId);
   }
 
-  clearCookies(callback: number) {
+  clearCookies(callback: (result: boolean) => any) {
     console.warn('RCTNetworking.clearCookies is not supported on iOS');
   }
 }

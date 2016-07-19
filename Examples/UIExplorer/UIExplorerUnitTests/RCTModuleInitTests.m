@@ -19,6 +19,7 @@
 #import "RCTBridge+Private.h"
 #import "RCTBridgeModule.h"
 #import "RCTUtils.h"
+#import "RCTJavaScriptExecutor.h"
 
 #define RUN_RUNLOOP_WHILE(CONDITION) \
 { \

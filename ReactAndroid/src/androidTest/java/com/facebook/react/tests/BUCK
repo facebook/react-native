@@ -3,7 +3,6 @@ include_defs('//ReactAndroid/DEFS')
 # Tests that are too flaky to run on SandCastle
 # TODO t11057216 stabilise them
 SANDCASTLE_FLAKY = [
-  'ReactHorizontalScrollViewTestCase.java',
   'ReactScrollViewTestCase.java',
 ]
 
@@ -36,10 +35,10 @@ deps = [
 android_library(
   name = 'tests',
   srcs = glob(['**/*.java']),
+  deps = deps,
   visibility = [
     'PUBLIC',
   ],
-  deps = deps,
 )
 
 android_library(

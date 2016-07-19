@@ -10,14 +10,12 @@
 /*
 Thousands of applications use React Native, so we can't list all of them
 in our showcase. To be useful to someone looking through the showcase,
-either the app must be something that a significant number of readers would recognize, or the makers of the application must have posted something valuable technically about the making of the app. So, one of the following should hold:
+either the app must be something that most readers would recognize, or the makers of the application must have posted useful technical content about the making of the app. It also must be useful considering that the majority of readers only speak English. So, each app in the showcase should link to either:
 
-1/ The app is branded with a public company brand
-2/ The app received some publicity in top-tier news
-3/ The app is made by a funded startup
-4/ A popular piece of developer content discusses this app
+1/ An English-language news article discussing the app, built either by a funded startup or for a public company
+2/ An English-language technical blog post by the app creators specifically discussing React Native
 
-For each app in the showcase, use infoLink and infoTitle to reference content that would be relevant to a React Native developer learning about this app.
+For each app in the showcase, use infoLink and infoTitle to reference this content.
 */
 
 var React = require('React');
@@ -54,6 +52,13 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.facebook.f8',
     infoLink: 'http://makeitopen.com/tutorials/building-the-f8-app/planning/',
     infoTitle: 'Building the F8 App',
+  },
+  {
+    name: 'FanVision Bolt',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple18/v4/94/b4/6e/94b46ee5-80e3-ff6e-513d-16da926b03a3/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/fanvision-bolt/id1081891275',
+    infoLink: 'https://www.youtube.com/watch?v=oWOcAXyDf0w',
+    infoTitle: 'FanVision Bolt accessory + app provide live audio/video and stats at NASCAR events',
   },
   {
     name: 'Gyroscope',

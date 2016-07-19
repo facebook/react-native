@@ -7,7 +7,7 @@ const makePackagePatch = require('../../../../src/android/patches/0.18/makePacka
 const applyPatch = require('../../../../src/android/patches/applyPatch');
 
 const projectConfig = {
-  mainActivityPath: 'MainActivity.java',
+  mainFilePath: 'MainActivity.java',
 };
 
 const packageInstance = 'new SomeLibrary(${foo}, ${bar}, \'something\')';

@@ -76,7 +76,7 @@ var RecyclerViewBackedScrollView = React.createClass({
   },
 
   render: function() {
-    var props = {
+    var recyclerProps = {
       ...this.props,
       onTouchStart: this.scrollResponderHandleTouchStart,
       onTouchMove: this.scrollResponderHandleTouchMove,
@@ -92,12 +92,11 @@ var RecyclerViewBackedScrollView = React.createClass({
       onResponderRelease: this.scrollResponderHandleResponderRelease,
       onResponderReject: this.scrollResponderHandleResponderReject,
       onScroll: this.scrollResponderHandleScroll,
-      style: ([{flex: 1}, this.props.style]: ?Array<any>),
       ref: INNERVIEW,
     };
 
     if (this.props.onContentSizeChange) {
-      props.onContentSizeChange = this._handleContentSizeChange;
+      recyclerProps.onContentSizeChange = this._handleContentSizeChange;
     }
 
     var wrappedChildren = React.Children.map(this.props.children, (child) => {
@@ -113,8 +112,20 @@ var RecyclerViewBackedScrollView = React.createClass({
       );
     });
 
+    const refreshControl = this.props.refreshControl;
+    if (refreshControl) {
+      // Wrap the NativeAndroidRecyclerView with a AndroidSwipeRefreshLayout.
+      return React.cloneElement(
+        refreshControl,
+        {style: [styles.base, this.props.style]},
+        <NativeAndroidRecyclerView {...recyclerProps} style={styles.base}>
+          {wrappedChildren}
+        </NativeAndroidRecyclerView>
+      );
+    }
+
     return (
-      <NativeAndroidRecyclerView {...props}>
+      <NativeAndroidRecyclerView {...recyclerProps} style={[styles.base, this.props.style]}>
         {wrappedChildren}
       </NativeAndroidRecyclerView>
     );
@@ -127,6 +138,9 @@ var styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
+  },
+  base: {
+    flex: 1,
   },
 });
 

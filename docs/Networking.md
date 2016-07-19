@@ -5,6 +5,7 @@ layout: docs
 category: The Basics
 permalink: docs/network.html
 next: using-navigators
+previous: using-a-listview
 ---
 
 Many mobile apps need to load resources from a remote URL. You may want to make a POST request to a REST API, or you may simply need to fetch a chunk of static content from another server.
@@ -58,7 +59,7 @@ Networking is an inherently asynchronous operation. Fetch methods will return a 
   }
   ```
 
-You can also use ES7's `async`/`await` syntax in React Native app:
+You can also use the proposed ES2017 `async`/`await` syntax in a React Native app:
 
   ```js
   async getMoviesFromApi() {

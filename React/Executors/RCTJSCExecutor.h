@@ -11,6 +11,8 @@
 
 #import "RCTJavaScriptExecutor.h"
 
+typedef void (^RCTJavaScriptValueCallback)(JSValue *result, NSError *error);
+
 /**
  * Default name for the JS thread
  */
@@ -55,21 +57,35 @@ RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
 
 /**
- * Pass a RCTJSContextProvider object to use an NSThread/JSContext pair that have already been created.
- */
-- (instancetype)initWithJSContextProvider:(RCTJSContextProvider *)JSContextProvider;
-
-/**
  * Create a NSError from a JSError object.
  *
  * If available, the error's userInfo property will contain the JS stacktrace under
  * the RCTJSStackTraceKey key.
  */
-- (NSError *)convertJSErrorToNSError:(JSValueRef)jsError context:(JSContextRef)context;
+- (NSError *)errorForJSError:(JSValue *)jsError;
 
 /**
- * Returns the underlying JSContext.
+ * @experimental
+ * Pass a RCTJSContextProvider object to use an NSThread/JSContext pair that have already been created.
+ * The returned executor has already executed the supplied application script synchronously.
+ * The underlying JSContext will be returned in the JSContext pointer if it is non-NULL and there was no error.
+ * If an error occurs, this method will return nil and specify the error in the error pointer if it is non-NULL.
  */
-- (JSContext *)underlyingJSContext;
++ (instancetype)initializedExecutorWithContextProvider:(RCTJSContextProvider *)JSContextProvider
+                                     applicationScript:(NSData *)applicationScript
+                                             sourceURL:(NSURL *)sourceURL
+                                             JSContext:(JSContext **)JSContext
+                                                 error:(NSError **)error;
+
+/**
+ * Invokes the given module/method directly. The completion block will be called with the
+ * JSValue returned by the JS context.
+ *
+ * Currently this does not flush the JS-to-native message queue.
+ */
+- (void)callFunctionOnModule:(NSString *)module
+                      method:(NSString *)method
+                   arguments:(NSArray *)args
+             jsValueCallback:(RCTJavaScriptValueCallback)onComplete;
 
 @end

@@ -319,6 +319,15 @@ RCT_ENUM_CONVERTER(UIKeyboardType, (@{
   @"numeric": @(UIKeyboardTypeDecimalPad),
 }), UIKeyboardTypeDefault, integerValue)
 
+RCT_MULTI_ENUM_CONVERTER(UIDataDetectorTypes, (@{
+  @"phoneNumber": @(UIDataDetectorTypePhoneNumber),
+  @"link": @(UIDataDetectorTypeLink),
+  @"address": @(UIDataDetectorTypeAddress),
+  @"calendarEvent": @(UIDataDetectorTypeCalendarEvent),
+  @"none": @(UIDataDetectorTypeNone),
+  @"all": @(UIDataDetectorTypeAll),
+}), UIDataDetectorTypePhoneNumber, unsignedLongLongValue)
+
 RCT_ENUM_CONVERTER(UIKeyboardAppearance, (@{
   @"default": @(UIKeyboardAppearanceDefault),
   @"light": @(UIKeyboardAppearanceLight),
