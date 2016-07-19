@@ -48,7 +48,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
  */
 /* package */ final class FlatViewGroup extends ViewGroup
     implements ReactInterceptingViewGroup, ReactClippingViewGroup,
-    ReactCompoundViewGroup, ReactPointerEventsView {
+    ReactCompoundViewGroup, ReactPointerEventsView, FlatMeasuredViewGroup {
   /**
    * Helper class that allows AttachDetachListener to invalidate the hosting View.
    */
@@ -541,6 +541,37 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
       flatViewGroup.processLayoutRequest();
     }
     LAYOUT_REQUESTS.clear();
+  }
+
+  // Helper method for measure functionality provided by MeasuredViewGroup.
+  @Override
+  public Rect measureWithCommands() {
+    int childCount = getChildCount();
+    if (childCount == 0 && mDrawCommands.length == 0) {
+      return new Rect(0, 0, 0, 0);
+    }
+    int left = Integer.MAX_VALUE;
+    int top = Integer.MAX_VALUE;
+    int right = Integer.MIN_VALUE;
+    int bottom = Integer.MIN_VALUE;
+    for (int i = 0; i < childCount; i++) {
+      View child = getChildAt(i);
+      left = Math.min(left, child.getLeft());
+      top = Math.min(top, child.getTop());
+      right = Math.max(right, child.getRight());
+      bottom = Math.max(bottom, child.getBottom());
+    }
+    for (int i = 0; i < mDrawCommands.length; i++) {
+      if (!(mDrawCommands[i] instanceof AbstractDrawCommand)) {
+        continue;
+      }
+      AbstractDrawCommand drawCommand = (AbstractDrawCommand) mDrawCommands[i];
+      left = Math.min(left, Math.round(drawCommand.getLeft()));
+      top = Math.min(top, Math.round(drawCommand.getTop()));
+      right = Math.max(right, Math.round(drawCommand.getRight()));
+      bottom = Math.max(bottom, Math.round(drawCommand.getBottom()));
+    }
+    return new Rect(left, top, right, bottom);
   }
 
   private @Nullable NodeRegion virtualNodeRegionWithinBounds(float touchX, float touchY) {
