@@ -459,6 +459,12 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       if (!strongSelf) {
         return;
       }
+      if(response == nil)
+      {
+        completionHandler([NSError errorWithDomain:RCTErrorDomain code:0
+        userInfo:@{NSLocalizedDescriptionKey: @"the response is nil."}], nil);
+        return;
+      }
 
       // Cache the response
       // TODO: move URL cache out of RCTImageLoader into its own module
