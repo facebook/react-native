@@ -326,6 +326,14 @@ var WebView = React.createClass({
      * to tap them before they start playing. The default value is `false`.
      */
     mediaPlaybackRequiresUserAction: PropTypes.bool,
+
+    /**
+     * Boolean that sets whether JavaScript running in the context of a file
+     * scheme URL should be allowed to access content from any origin.
+     * Including accessing content from other file scheme URLs
+     * @platform android
+     */
+    allowUniversalAccessFromFileURLs: PropTypes.bool,
   },
 
   getInitialState: function() {

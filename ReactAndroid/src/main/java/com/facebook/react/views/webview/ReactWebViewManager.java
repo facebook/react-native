@@ -118,11 +118,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         if (url.startsWith("http://") || url.startsWith("https://")) {
           return false;
         } else {
-          Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url)); 
+          Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
           intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-          view.getContext().startActivity(intent);   
-          return true;   
-        }              
+          view.getContext().startActivity(intent);
+          return true;
+        }
     }
 
     @Override
@@ -299,6 +299,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @ReactProp(name = "mediaPlaybackRequiresUserAction")
   public void setMediaPlaybackRequiresUserAction(WebView view, boolean requires) {
     view.getSettings().setMediaPlaybackRequiresUserGesture(requires);
+  }
+
+  @ReactProp(name = "allowUniversalAccessFromFileURLs")
+  public void setAllowUniversalAccessFromFileURLs(WebView view, boolean allow) {
+    view.getSettings().setAllowUniversalAccessFromFileURLs(allow);
   }
 
   @ReactProp(name = "injectedJavaScript")
