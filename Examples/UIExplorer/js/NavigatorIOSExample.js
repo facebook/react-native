@@ -217,7 +217,6 @@ const NavigatorIOSExample = React.createClass({
           component: NavigatorIOSExamplePage,
           passProps: {onExampleExit},
         }}
-        itemWrapperStyle={styles.itemWrapper}
         tintColor="#008888"
       />
     );
