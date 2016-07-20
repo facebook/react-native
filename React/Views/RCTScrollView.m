@@ -268,10 +268,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
   super.contentOffset = contentOffset;
 }
-// Workaround for https://github.com/facebook/react-native/issues/5432
+
 - (void)setContentInset:(UIEdgeInsets)contentInset 
 {
-  if (self.tracking) {
+  // Workaround for https://github.com/facebook/react-native/issues/5432
+  if (self.tracking && self.rctRefreshControl != nil && self.rctRefreshControl.refreshing) {
     CGFloat diff = contentInset.top - self.contentInset.top;
     CGPoint translation = [self.panGestureRecognizer translationInView:self];
     translation.y -= diff * 3.0 / 2.0;
