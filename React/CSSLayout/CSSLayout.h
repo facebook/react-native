@@ -112,7 +112,6 @@ typedef struct CSSNode * CSSNodeRef;
 typedef CSSSize (*CSSMeasureFunc)(void *context, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode);
 typedef CSSNodeRef (*CSSChildFunc)(void *context, int i);
 typedef bool (*CSSIsDirtyFunc)(void *context);
-typedef bool (*CSSIsTextFunc)(void *context);
 typedef void (*CSSPrintFunc)(void *context);
 
 // CSSNode
@@ -146,8 +145,8 @@ CSS_NODE_PROPERTY(int, ChildCount, childCount);
 CSS_NODE_PROPERTY(CSSMeasureFunc, MeasureFunc, measureFunc);
 CSS_NODE_PROPERTY(CSSChildFunc, ChildFunc, childFunc);
 CSS_NODE_PROPERTY(CSSIsDirtyFunc, IsDirtyFunc, isDirtyFunc);
-CSS_NODE_PROPERTY(CSSIsTextFunc, IsTextFunc, isTextFunc);
 CSS_NODE_PROPERTY(CSSPrintFunc, PrintFunc, printFunc);
+CSS_NODE_PROPERTY(bool, IsTextnode, isTextNode);
 CSS_NODE_PROPERTY(bool, ShouldUpdate, shouldUpdate);
 
 CSS_NODE_STYLE_PROPERTY(CSSDirection, Direction, direction);

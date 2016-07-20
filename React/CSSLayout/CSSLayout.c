@@ -112,8 +112,8 @@ CSS_NODE_PROPERTY_IMPL(int, ChildCount, childCount, childCount);
 CSS_NODE_PROPERTY_IMPL(CSSMeasureFunc, MeasureFunc, measureFunc, measure);
 CSS_NODE_PROPERTY_IMPL(CSSChildFunc, ChildFunc, childFunc, getChild);
 CSS_NODE_PROPERTY_IMPL(CSSIsDirtyFunc, IsDirtyFunc, isDirtyFunc, isDirty);
-CSS_NODE_PROPERTY_IMPL(CSSIsTextFunc, IsTextFunc, isTextFunc, isTextNode);
 CSS_NODE_PROPERTY_IMPL(CSSPrintFunc, PrintFunc, printFunc, print);
+CSS_NODE_PROPERTY_IMPL(bool, IsTextnode, isTextNode, isTextNode);
 CSS_NODE_PROPERTY_IMPL(bool, ShouldUpdate, shouldUpdate, shouldUpdate);
 
 CSS_NODE_STYLE_PROPERTY_IMPL(CSSDirection, Direction, direction, direction);
@@ -1740,13 +1740,13 @@ bool layoutNodeInternal(CSSNode* node, float availableWidth, float availableHeig
     float marginAxisColumn = getMarginAxis(node, CSSFlexDirectionColumn);
 
     // First, try to use the layout cache.
-    if (canUseCachedMeasurement(node->isTextNode && node->isTextNode(node->context), availableWidth, availableHeight, marginAxisRow, marginAxisColumn,
+    if (canUseCachedMeasurement(node->isTextNode, availableWidth, availableHeight, marginAxisRow, marginAxisColumn,
         widthMeasureMode, heightMeasureMode, layout->cached_layout)) {
       cachedResults = &layout->cached_layout;
     } else {
       // Try to use the measurement cache.
       for (int i = 0; i < layout->nextCachedMeasurementsIndex; i++) {
-        if (canUseCachedMeasurement(node->isTextNode && node->isTextNode(node->context), availableWidth, availableHeight, marginAxisRow, marginAxisColumn,
+        if (canUseCachedMeasurement(node->isTextNode, availableWidth, availableHeight, marginAxisRow, marginAxisColumn,
             widthMeasureMode, heightMeasureMode, layout->cachedMeasurements[i])) {
           cachedResults = &layout->cachedMeasurements[i];
           break;
