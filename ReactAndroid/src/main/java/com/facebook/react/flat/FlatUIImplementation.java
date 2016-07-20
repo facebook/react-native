@@ -65,7 +65,12 @@ public class FlatUIImplementation extends UIImplementation {
     FlatUIViewOperationQueue operationsQueue = new FlatUIViewOperationQueue(
         reactContext,
         nativeViewHierarchyManager);
-    return new FlatUIImplementation(reactImageManager, viewManagerRegistry, operationsQueue);
+    return new FlatUIImplementation(
+      reactContext,
+      reactImageManager,
+      viewManagerRegistry,
+      operationsQueue
+    );
   }
 
   /**
@@ -77,10 +82,11 @@ public class FlatUIImplementation extends UIImplementation {
   private @Nullable ReactImageManager mReactImageManager;
 
   private FlatUIImplementation(
+      ReactApplicationContext reactContext,
       @Nullable ReactImageManager reactImageManager,
       ViewManagerRegistry viewManagers,
       FlatUIViewOperationQueue operationsQueue) {
-    super(viewManagers, operationsQueue);
+    super(reactContext, viewManagers, operationsQueue);
     mStateBuilder = new StateBuilder(operationsQueue);
     mReactImageManager = reactImageManager;
   }
