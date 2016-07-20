@@ -14,6 +14,7 @@
 #include <stdlib.h>
 
 #include "CSSLayout.h"
+#include "CSSNodeList.h"
 
 CSS_EXTERN_C_BEGIN
 
@@ -85,15 +86,14 @@ typedef struct CSSStyle {
 typedef struct CSSNode {
   CSSStyle style;
   CSSLayout layout;
-  int childCount;
   int lineIndex;
   bool shouldUpdate;
   bool isTextNode;
+  CSSNodeListRef children;
 
   struct CSSNode* nextChild;
 
   CSSSize (*measure)(void *context, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode);
-  struct CSSNode* (*getChild)(void *context, int i);
   bool (*isDirty)(void *context);
   void (*print)(void *context);
   void *context;

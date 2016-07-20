@@ -110,7 +110,6 @@ typedef struct CSSSize {
 
 typedef struct CSSNode * CSSNodeRef;
 typedef CSSSize (*CSSMeasureFunc)(void *context, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode);
-typedef CSSNodeRef (*CSSChildFunc)(void *context, int i);
 typedef bool (*CSSIsDirtyFunc)(void *context);
 typedef void (*CSSPrintFunc)(void *context);
 
@@ -118,6 +117,11 @@ typedef void (*CSSPrintFunc)(void *context);
 CSSNodeRef CSSNodeNew();
 void CSSNodeInit(CSSNodeRef node);
 void CSSNodeFree(CSSNodeRef node);
+
+void CSSNodeInsertChild(CSSNodeRef node, CSSNodeRef child, unsigned int index);
+void CSSNodeRemoveChild(CSSNodeRef node, CSSNodeRef child);
+CSSNodeRef CSSNodeGetChild(CSSNodeRef node, unsigned int index);
+unsigned int CSSNodeChildCount(CSSNodeRef node);
 
 void CSSNodeCalculateLayout(
   CSSNodeRef node,
@@ -141,9 +145,7 @@ type CSSNodeStyleGet##name(CSSNodeRef node);
 type CSSNodeLayoutGet##name(CSSNodeRef node);
 
 CSS_NODE_PROPERTY(void*, Context, context);
-CSS_NODE_PROPERTY(int, ChildCount, childCount);
 CSS_NODE_PROPERTY(CSSMeasureFunc, MeasureFunc, measureFunc);
-CSS_NODE_PROPERTY(CSSChildFunc, ChildFunc, childFunc);
 CSS_NODE_PROPERTY(CSSIsDirtyFunc, IsDirtyFunc, isDirtyFunc);
 CSS_NODE_PROPERTY(CSSPrintFunc, PrintFunc, printFunc);
 CSS_NODE_PROPERTY(bool, IsTextnode, isTextNode);

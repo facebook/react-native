@@ -30,12 +30,16 @@ __forceinline const float fmaxf(const float a, const float b) {
 #define POSITIVE_FLEX_IS_AUTO 0
 
 CSSNodeRef CSSNodeNew() {
-  CSSNode* node = (CSSNode*)calloc(1, sizeof(*node));
+  CSSNodeRef node = calloc(1, sizeof(CSSNode));
+  assert(node != NULL);
+
+  node->children = CSSNodeListNew(4);
   CSSNodeInit(node);
   return node;
 }
 
 void CSSNodeFree(CSSNodeRef node) {
+  CSSNodeListFree(node->children);
   free(node);
 }
 
@@ -84,6 +88,22 @@ void CSSNodeInit(CSSNodeRef node) {
   node->layout.cached_layout.heightMeasureMode = (CSSMeasureMode)-1;
 }
 
+void CSSNodeInsertChild(CSSNodeRef node, CSSNodeRef child, unsigned int index) {
+  CSSNodeListInsert(node->children, child, index);
+}
+
+void CSSNodeRemoveChild(CSSNodeRef node, CSSNodeRef child) {
+  CSSNodeListDelete(node->children, child);
+}
+
+CSSNodeRef CSSNodeGetChild(CSSNodeRef node, unsigned int index) {
+  return CSSNodeListGet(node->children, index);
+}
+
+unsigned int CSSNodeChildCount(CSSNodeRef node) {
+  return CSSNodeListCount(node->children);
+}
+
 #define CSS_NODE_PROPERTY_IMPL(type, name, paramName, instanceName) \
 void CSSNodeSet##name(CSSNodeRef node, type paramName) { \
   node->instanceName = paramName;\
@@ -108,9 +128,7 @@ type CSSNodeLayoutGet##name(CSSNodeRef node) { \
 } \
 
 CSS_NODE_PROPERTY_IMPL(void*, Context, context, context);
-CSS_NODE_PROPERTY_IMPL(int, ChildCount, childCount, childCount);
 CSS_NODE_PROPERTY_IMPL(CSSMeasureFunc, MeasureFunc, measureFunc, measure);
-CSS_NODE_PROPERTY_IMPL(CSSChildFunc, ChildFunc, childFunc, getChild);
 CSS_NODE_PROPERTY_IMPL(CSSIsDirtyFunc, IsDirtyFunc, isDirtyFunc, isDirty);
 CSS_NODE_PROPERTY_IMPL(CSSPrintFunc, PrintFunc, printFunc, print);
 CSS_NODE_PROPERTY_IMPL(bool, IsTextnode, isTextNode, isTextNode);
@@ -335,10 +353,11 @@ static void print_css_node_rec(
     print_number_nan("bottom", node->style.position[CSSPositionBottom]);
   }
 
-  if (options & CSSPrintOptionsChildren && node->childCount > 0) {
+  unsigned int childCount = CSSNodeListCount(node->children);
+  if (options & CSSPrintOptionsChildren && childCount > 0) {
     printf("children: [\n");
-    for (int i = 0; i < node->childCount; ++i) {
-      print_css_node_rec(node->getChild(node->context, i), options, level + 1);
+    for (unsigned int i = 0; i < childCount; ++i) {
+      print_css_node_rec(CSSNodeGetChild(node, i), options, level + 1);
     }
     indent(level);
     printf("]},\n");
@@ -789,7 +808,7 @@ static void layoutNodeImpl(CSSNode* node, float availableWidth, float availableH
 
   // For nodes with no children, use the available values if they were provided, or
   // the minimum size as indicated by the padding and border sizes.
-  int childCount = node->childCount;
+  unsigned int childCount = CSSNodeListCount(node->children);
   if (childCount == 0) {
     node->layout.measuredDimensions[CSSDimensionWidth] = boundAxis(node, CSSFlexDirectionRow,
       (widthMeasureMode == CSSMeasureModeUndefined || widthMeasureMode == CSSMeasureModeAtMost) ?
@@ -861,13 +880,13 @@ static void layoutNodeImpl(CSSNode* node, float availableWidth, float availableH
 
   // STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
   CSSNode* child;
-  int i;
+  unsigned int i;
   float childWidth;
   float childHeight;
   CSSMeasureMode childWidthMeasureMode;
   CSSMeasureMode childHeightMeasureMode;
   for (i = 0; i < childCount; i++) {
-    child = node->getChild(node->context, i);
+    child = CSSNodeListGet(node->children, i);
 
     if (performLayout) {
       // Set the initial position (relative to the parent).
@@ -1003,7 +1022,7 @@ static void layoutNodeImpl(CSSNode* node, float availableWidth, float availableH
 
     // Add items to the current line until it's full or we run out of items.
     while (i < childCount) {
-      child = node->getChild(node->context, i);
+      child = CSSNodeListGet(node->children, i);
       child->lineIndex = lineCount;
 
       if (child->style.positionType != CSSPositionTypeAbsolute) {
@@ -1248,7 +1267,7 @@ static void layoutNodeImpl(CSSNode* node, float availableWidth, float availableH
     float crossDim = 0;
 
     for (i = startOfLineIndex; i < endOfLineIndex; ++i) {
-      child = node->getChild(node->context, i);
+      child = CSSNodeListGet(node->children, i);
 
       if (child->style.positionType == CSSPositionTypeAbsolute &&
           isPosDefined(child, leading[mainAxis])) {
@@ -1313,7 +1332,7 @@ static void layoutNodeImpl(CSSNode* node, float availableWidth, float availableH
     // We can skip child alignment if we're just measuring the container.
     if (performLayout) {
       for (i = startOfLineIndex; i < endOfLineIndex; ++i) {
-        child = node->getChild(node->context, i);
+        child = CSSNodeListGet(node->children, i);
 
         if (child->style.positionType == CSSPositionTypeAbsolute) {
           // If the child is absolutely positioned and has a top/left/bottom/right
@@ -1405,7 +1424,7 @@ static void layoutNodeImpl(CSSNode* node, float availableWidth, float availableH
       // compute the line's height and find the endIndex
       float lineHeight = 0;
       for (j = startIndex; j < childCount; ++j) {
-        child = node->getChild(node->context, j);
+        child = CSSNodeListGet(node->children, j);
         if (child->style.positionType != CSSPositionTypeRelative) {
           continue;
         }
@@ -1422,7 +1441,7 @@ static void layoutNodeImpl(CSSNode* node, float availableWidth, float availableH
 
       if (performLayout) {
         for (j = startIndex; j < endIndex; ++j) {
-          child = node->getChild(node->context, j);
+          child = CSSNodeListGet(node->children, j);
           if (child->style.positionType != CSSPositionTypeRelative) {
             continue;
           }
@@ -1493,7 +1512,7 @@ static void layoutNodeImpl(CSSNode* node, float availableWidth, float availableH
     // Set trailing position if necessary.
     if (needsMainTrailingPos || needsCrossTrailingPos) {
       for (i = 0; i < childCount; ++i) {
-        child = node->getChild(node->context, i);
+        child = CSSNodeListGet(node->children, i);
 
         if (needsMainTrailingPos) {
           setTrailingPosition(node, child, mainAxis);
