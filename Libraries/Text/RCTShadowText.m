@@ -81,6 +81,11 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
   return [[superDescription substringToIndex:superDescription.length - 1] stringByAppendingFormat:@"; text: %@>", [self attributedString].string];
 }
 
+- (BOOL)isCSSLeafNode
+{
+  return YES;
+}
+
 - (void)contentSizeMultiplierDidChange:(NSNotification *)note
 {
   [self dirtyLayout];
@@ -441,18 +446,6 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
     shadow.shadowColor = _textShadowColor;
     [self _addAttribute:NSShadowAttributeName withValue:shadow toAttributedString:attributedString];
   }
-}
-
-- (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex
-{
-  [super insertReactSubview:subview atIndex:atIndex];
-  self.cssNode->children_count = 0;
-}
-
-- (void)removeReactSubview:(RCTShadowView *)subview
-{
-  [super removeReactSubview:subview];
-  self.cssNode->children_count = 0;
 }
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor
