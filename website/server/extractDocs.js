@@ -40,6 +40,8 @@ function getNameFromPath(filepath) {
   filepath = removeExtName(filepath);
   if (filepath === 'LayoutPropTypes') {
     return 'Layout Props';
+  } else if (filepath == 'ShadowPropTypesIOS') {
+    return 'Shadow Props';
   } else if (filepath === 'TransformPropTypes') {
     return 'Transforms';
   } else if (filepath === 'TabBarItemIOS') {
@@ -143,7 +145,6 @@ function isRunnable(componentName, componentPlatform) {
 // this function
 const HIDDEN_COMPONENTS = [
   'Transforms',
-  'ShadowPropTypesIOS',
   'ListViewDataSource',
 ];
 
