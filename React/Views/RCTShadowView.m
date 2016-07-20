@@ -89,11 +89,6 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   : 0;
 }
 
-- (void)fillCSSNode:(css_node_t *)node
-{
-  node->children_count = (int)_reactSubviews.count;
-}
-
 // The absolute stuff is so that we can take into account our absolute position when rounding in order to
 // snap to the pixel grid. For example, say you have the following structure:
 //
@@ -253,7 +248,6 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
     _layoutLifecycle = RCTUpdateLifecycleDirtied;
   }
 
-  [self fillCSSNode:_cssNode];
   layoutNode(_cssNode, frame.size.width, frame.size.height, CSS_DIRECTION_INHERIT);
   [self applyLayoutNode:_cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
 }
@@ -299,7 +293,6 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
     _cssNode->print = RCTPrint;
     _cssNode->get_child = RCTGetChild;
     _cssNode->is_dirty = RCTIsDirty;
-    [self fillCSSNode:_cssNode];
   }
   return self;
 }
@@ -325,6 +318,11 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 - (BOOL)isLayoutDirty
 {
   return _layoutLifecycle != RCTUpdateLifecycleComputed;
+}
+
+- (BOOL)isCSSLeafNode
+{
+  return NO;
 }
 
 - (void)dirtyPropagation
@@ -361,7 +359,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 - (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex
 {
   [_reactSubviews insertObject:subview atIndex:atIndex];
-  _cssNode->children_count = (int)_reactSubviews.count;
+  _cssNode->children_count = [self isCSSLeafNode] ? 0 : (int)_reactSubviews.count;
   subview->_superview = self;
   _didUpdateSubviews = YES;
   [self dirtyText];
@@ -377,7 +375,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   _didUpdateSubviews = YES;
   subview->_superview = nil;
   [_reactSubviews removeObject:subview];
-  _cssNode->children_count = (int)_reactSubviews.count;
+  _cssNode->children_count = [self isCSSLeafNode] ? 0 : (int)_reactSubviews.count;
 }
 
 - (NSArray<RCTShadowView *> *)reactSubviews
@@ -637,7 +635,6 @@ RCT_STYLE_PROPERTY(FlexWrap, flexWrap, flex_wrap, css_wrap_type_t)
   if (_recomputePadding || _recomputeMargin || _recomputeBorder) {
     [self dirtyLayout];
   }
-  [self fillCSSNode:_cssNode];
   _recomputeMargin = NO;
   _recomputePadding = NO;
   _recomputeBorder = NO;
