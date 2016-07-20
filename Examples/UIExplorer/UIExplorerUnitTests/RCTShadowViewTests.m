@@ -28,8 +28,8 @@
 {
   [super setUp];
 
-  self.parentView = [self _shadowViewWithStyle:^(css_style_t *style) {
-    style->flex_direction = CSS_FLEX_DIRECTION_COLUMN;
+  self.parentView = [self _shadowViewWithStyle:^(CSSStyle *style) {
+    style->flexDirection = CSSFlexDirectionColumn;
     style->dimensions[0] = 440;
     style->dimensions[1] = 440;
   }];
@@ -50,22 +50,22 @@
 //
 - (void)testApplyingLayoutRecursivelyToShadowView
 {
-  RCTShadowView *leftView = [self _shadowViewWithStyle:^(css_style_t *style) {
+  RCTShadowView *leftView = [self _shadowViewWithStyle:^(CSSStyle *style) {
     style->flex = 1;
   }];
 
-  RCTShadowView *centerView = [self _shadowViewWithStyle:^(css_style_t *style) {
+  RCTShadowView *centerView = [self _shadowViewWithStyle:^(CSSStyle *style) {
     style->flex = 2;
     style->margin[0] = 10;
     style->margin[2] = 10;
   }];
 
-  RCTShadowView *rightView = [self _shadowViewWithStyle:^(css_style_t *style) {
+  RCTShadowView *rightView = [self _shadowViewWithStyle:^(CSSStyle *style) {
     style->flex = 1;
   }];
 
-  RCTShadowView *mainView = [self _shadowViewWithStyle:^(css_style_t *style) {
-    style->flex_direction = CSS_FLEX_DIRECTION_ROW;
+  RCTShadowView *mainView = [self _shadowViewWithStyle:^(CSSStyle *style) {
+    style->flexDirection = CSSFlexDirectionRow;
     style->flex = 2;
     style->margin[1] = 10;
     style->margin[3] = 10;
@@ -75,11 +75,11 @@
   [mainView insertReactSubview:centerView atIndex:1];
   [mainView insertReactSubview:rightView atIndex:2];
 
-  RCTShadowView *headerView = [self _shadowViewWithStyle:^(css_style_t *style) {
+  RCTShadowView *headerView = [self _shadowViewWithStyle:^(CSSStyle *style) {
     style->flex = 1;
   }];
 
-  RCTShadowView *footerView = [self _shadowViewWithStyle:^(css_style_t *style) {
+  RCTShadowView *footerView = [self _shadowViewWithStyle:^(CSSStyle *style) {
     style->flex = 1;
   }];
 
@@ -108,10 +108,10 @@
 
 - (void)testAssignsSuggestedWidthDimension
 {
-  [self _withShadowViewWithStyle:^(css_style_t *style) {
-                                   style->position[CSS_LEFT] = 0;
-                                   style->position[CSS_TOP] = 0;
-                                   style->dimensions[CSS_HEIGHT] = 10;
+  [self _withShadowViewWithStyle:^(CSSStyle *style) {
+                                   style->position[CSSPositionLeft] = 0;
+                                   style->position[CSSPositionTop] = 0;
+                                   style->dimensions[CSSDimensionHeight] = 10;
                                  }
             assertRelativeLayout:CGRectMake(0, 0, 3, 10)
         withIntrinsicContentSize:CGSizeMake(3, UIViewNoIntrinsicMetric)];
@@ -119,10 +119,10 @@
 
 - (void)testAssignsSuggestedHeightDimension
 {
-  [self _withShadowViewWithStyle:^(css_style_t *style) {
-                                   style->position[CSS_LEFT] = 0;
-                                   style->position[CSS_TOP] = 0;
-                                   style->dimensions[CSS_WIDTH] = 10;
+  [self _withShadowViewWithStyle:^(CSSStyle *style) {
+                                   style->position[CSSPositionLeft] = 0;
+                                   style->position[CSSPositionTop] = 0;
+                                   style->dimensions[CSSDimensionWidth] = 10;
                                  }
             assertRelativeLayout:CGRectMake(0, 0, 10, 4)
         withIntrinsicContentSize:CGSizeMake(UIViewNoIntrinsicMetric, 4)];
@@ -130,11 +130,11 @@
 
 - (void)testDoesNotOverrideDimensionStyleWithSuggestedDimensions
 {
-  [self _withShadowViewWithStyle:^(css_style_t *style) {
-                                   style->position[CSS_LEFT] = 0;
-                                   style->position[CSS_TOP] = 0;
-                                   style->dimensions[CSS_WIDTH] = 10;
-                                   style->dimensions[CSS_HEIGHT] = 10;
+  [self _withShadowViewWithStyle:^(CSSStyle *style) {
+                                   style->position[CSSPositionLeft] = 0;
+                                   style->position[CSSPositionTop] = 0;
+                                   style->dimensions[CSSDimensionWidth] = 10;
+                                   style->dimensions[CSSDimensionHeight] = 10;
                                  }
           assertRelativeLayout:CGRectMake(0, 0, 10, 10)
       withIntrinsicContentSize:CGSizeMake(3, 4)];
@@ -142,16 +142,16 @@
 
 - (void)testDoesNotAssignSuggestedDimensionsWhenStyledWithFlexAttribute
 {
-  float parentWidth = self.parentView.cssNode->style.dimensions[CSS_WIDTH];
-  float parentHeight = self.parentView.cssNode->style.dimensions[CSS_HEIGHT];
-  [self _withShadowViewWithStyle:^(css_style_t *style) {
+  float parentWidth = self.parentView.cssNode->style.dimensions[CSSDimensionWidth];
+  float parentHeight = self.parentView.cssNode->style.dimensions[CSSDimensionHeight];
+  [self _withShadowViewWithStyle:^(CSSStyle *style) {
                                    style->flex = 1;
                                  }
             assertRelativeLayout:CGRectMake(0, 0, parentWidth, parentHeight)
         withIntrinsicContentSize:CGSizeMake(3, 4)];
 }
 
-- (void)_withShadowViewWithStyle:(void(^)(css_style_t *style))styleBlock
+- (void)_withShadowViewWithStyle:(void(^)(CSSStyle *style))styleBlock
             assertRelativeLayout:(CGRect)expectedRect
         withIntrinsicContentSize:(CGSize)contentSize
 {
@@ -166,11 +166,11 @@
                 NSStringFromCGRect(actualRect));
 }
 
-- (RCTRootShadowView *)_shadowViewWithStyle:(void(^)(css_style_t *style))styleBlock
+- (RCTRootShadowView *)_shadowViewWithStyle:(void(^)(CSSStyle *style))styleBlock
 {
   RCTRootShadowView *shadowView = [RCTRootShadowView new];
 
-  css_style_t style = shadowView.cssNode->style;
+  CSSStyle style = shadowView.cssNode->style;
   styleBlock(&style);
   shadowView.cssNode->style = style;
 
