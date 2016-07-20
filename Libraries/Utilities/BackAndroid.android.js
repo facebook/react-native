@@ -25,11 +25,14 @@ var _backPressSubscriptions = new Set();
 RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
   var backPressSubscriptions = new Set(_backPressSubscriptions);
   var invokeDefault = true;
-  backPressSubscriptions.forEach((subscription) => {
-    if (subscription()) {
+  var subscriptions = [...backPressSubscriptions].reverse();
+  for (var i = 0; i < subscriptions.length; ++i) {
+    if (subscriptions[i]()) {
       invokeDefault = false;
-    }
-  });
+      break;
+    };
+  }
+
   if (invokeDefault) {
     BackAndroid.exitApp();
   }
