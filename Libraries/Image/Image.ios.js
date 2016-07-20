@@ -173,7 +173,7 @@ const Image = React.createClass({
      * - `repeat`: Repeat the image to cover the frame of the view. The
      * image will keep it's size and aspect ratio. (iOS only)
      */
-    resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch', 'repeat']),
+    resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch', 'repeat', 'center']),
     /**
      * A unique identifier for this element to be used in UI Automation
      * testing scripts.
