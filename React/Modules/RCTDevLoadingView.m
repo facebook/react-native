@@ -55,12 +55,14 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(hide)
                                                name:RCTJavaScriptDidLoadNotification
                                              object:nil];
-
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(hide)
                                                name:RCTJavaScriptDidFailToLoadNotification
                                              object:nil];
-  [self showWithURL:bridge.bundleURL];
+
+  if (bridge.loading) {
+    [self showWithURL:bridge.bundleURL];
+  }
 }
 
 RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor)

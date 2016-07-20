@@ -117,6 +117,7 @@ react_library(
     'JSCLegacyTracing.cpp',
     'JSCMemory.cpp',
     'JSCPerfStats.cpp',
+    'JSCSamplingProfiler.cpp',
     'JSCTracing.cpp',
     'JSCWebWorker.cpp',
     'MethodCall.cpp',
@@ -130,6 +131,7 @@ react_library(
     'JSCLegacyTracing.h',
     'JSCMemory.h',
     'JSCPerfStats.h',
+    'JSCSamplingProfiler.h',
     'JSCTracing.h',
   ],
   exported_headers = [

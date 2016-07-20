@@ -27,12 +27,12 @@ module.exports = function registerNativeAndroidModule(
   applyPatch(projectConfig.stringsPath, makeStringsPatch(params, name));
 
   applyPatch(
-    projectConfig.mainActivityPath,
+    projectConfig.mainFilePath,
     makePackagePatch(androidConfig.packageInstance, params, name)
   );
 
   applyPatch(
-    projectConfig.mainActivityPath,
+    projectConfig.mainFilePath,
     makeImportPatch(androidConfig.packageImportPath)
   );
 };

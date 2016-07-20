@@ -9,9 +9,11 @@
 
 #import "RCTImageLoader.h"
 
-#import <libkern/OSAtomic.h>
-#import <UIKit/UIKit.h>
 #import <ImageIO/ImageIO.h>
+
+#import <libkern/OSAtomic.h>
+
+#import <objc/runtime.h>
 
 #import "RCTConvert.h"
 #import "RCTDefines.h"
@@ -382,6 +384,9 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     if (error) {
       completionHandler(error, nil);
       return;
+    } else if (!response) {
+      completionHandler(RCTErrorWithMessage(@"Response metadata error"), nil);
+      return;
     } else if (!data) {
       completionHandler(RCTErrorWithMessage(@"Unknown image download error"), nil);
       return;
@@ -435,8 +440,16 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   // Download image
   __weak __typeof(self) weakSelf = self;
   RCTNetworkTask *task = [networking networkTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
-    if (error) {
-      completionHandler(error, nil);
+    if (error || !response || !data) {
+      NSError *someError = nil;
+      if (error) {
+        someError = error;
+      } else if (!response) {
+        someError = RCTErrorWithMessage(@"Response metadata error");
+      } else {
+        someError = RCTErrorWithMessage(@"Unknown image download error");
+      }
+      completionHandler(someError, nil);
       [weakSelf dequeueTasks];
       return;
     }
