@@ -629,6 +629,11 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     return Assertions.assertNotNull(mSourceUrl);
   }
 
+  @Override
+  public @Nullable String getJSBundleFile() {
+    return mJSBundleFile;
+  }
+
   /**
    * Attach given {@param rootView} to a catalyst instance manager and start JS application using
    * JS module provided by {@link ReactRootView#getJSModuleName}. If the react context is currently

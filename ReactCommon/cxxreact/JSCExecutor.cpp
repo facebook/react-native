@@ -20,6 +20,8 @@
 #include "SystraceSection.h"
 #include "Value.h"
 
+#include "JSCSamplingProfiler.h"
+
 #if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
 #include "JSCTracing.h"
 #endif
@@ -223,6 +225,8 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   addNativeProfilingHooks(m_context);
   addNativeTracingLegacyHooks(m_context);
   PerfLogging::installNativeHooks(m_context);
+
+  initSamplingProfilerOnMainJSCThread(m_context);
   #endif
 
   #ifdef WITH_FB_MEMORY_PROFILING

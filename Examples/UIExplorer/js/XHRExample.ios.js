@@ -379,7 +379,7 @@ class FormUploader extends React.Component {
     }
     return (
       <View>
-        <View style={[styles.paramRow, styles.photoRow]}>
+        <View style={styles.paramRow}>
           <Text style={styles.photoLabel}>
             Random photo from your library
             (<Text style={styles.textButton} onPress={this._fetchRandomPhoto}>
