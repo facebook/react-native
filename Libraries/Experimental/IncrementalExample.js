@@ -124,7 +124,7 @@ class IncrementalExample extends React.Component {
       console.log('onDone:', stats);
     }, 0);
   }
-  render(): ReactElement {
+  render(): ReactElement<any> {
     return (
       <IncrementalGroup
         disabled={false}

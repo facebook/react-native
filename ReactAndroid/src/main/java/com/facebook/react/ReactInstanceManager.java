@@ -23,14 +23,16 @@ import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.cxxbridge.JSBundleLoader;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.devsupport.DevSupportManager;
+import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.ViewManager;
 
 /**
- * This class is managing instances of {@link CatalystInstance}. It expose a way to configure
+ * This class is managing instances of {@link CatalystInstance}. It exposes a way to configure
  * catalyst instance using {@link ReactPackage} and keeps track of the lifecycle of that
  * instance. It also sets up connection between the instance and developers support functionality
  * of the framework.
@@ -88,6 +90,11 @@ public abstract class ReactInstanceManager {
   public abstract void onBackPressed();
 
   /**
+   * This method will give JS the opportunity to receive intents via Linking.
+   */
+  public abstract void onNewIntent(Intent intent);
+
+  /**
    * Call this from {@link Activity#onPause()}. This notifies any listening modules so they can do
    * any necessary cleanup.
    */
@@ -119,6 +126,11 @@ public abstract class ReactInstanceManager {
    * Get the URL where the last bundle was loaded from.
    */
   public abstract String getSourceUrl();
+
+  /**
+   * The JS Bundle file that this Instance Manager was constructed with.
+   */
+  public abstract @Nullable String getJSBundleFile();
 
   /**
    * Attach given {@param rootView} to a catalyst instance manager and start JS application using
@@ -178,6 +190,7 @@ public abstract class ReactInstanceManager {
     protected final List<ReactPackage> mPackages = new ArrayList<>();
 
     protected @Nullable String mJSBundleFile;
+    protected @Nullable JSBundleLoader mJSBundleLoader;
     protected @Nullable String mJSMainModuleName;
     protected @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
     protected @Nullable Application mApplication;
@@ -185,9 +198,11 @@ public abstract class ReactInstanceManager {
     protected @Nullable LifecycleState mInitialLifecycleState;
     protected @Nullable UIImplementationProvider mUIImplementationProvider;
     protected @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
-    protected @Nullable JSCConfig mJSCConfig;
+    protected JSCConfig mJSCConfig = JSCConfig.EMPTY;
     protected @Nullable Activity mCurrentActivity;
     protected @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
+    protected @Nullable RedBoxHandler mRedBoxHandler;
+    protected boolean mUseOldBridge;
 
     protected Builder() {
     }
@@ -217,6 +232,19 @@ public abstract class ReactInstanceManager {
      */
     public Builder setJSBundleFile(String jsBundleFile) {
       mJSBundleFile = jsBundleFile;
+      mJSBundleLoader = null;
+      return this;
+    }
+
+    /**
+     * Bundle loader to use when setting up JS environment. This supersedes
+     * prior invcations of {@link setJSBundleFile} and {@link setBundleAssetName}.
+     *
+     * Example: {@code JSBundleLoader.createFileLoader(application, bundleFile)}
+     */
+    public Builder setJSBundleLoader(JSBundleLoader jsBundleLoader) {
+      mJSBundleLoader = jsBundleLoader;
+      mJSBundleFile = null;
       return this;
     }
 
@@ -297,6 +325,16 @@ public abstract class ReactInstanceManager {
       return this;
     }
 
+    public Builder setRedBoxHandler(@Nullable RedBoxHandler redBoxHandler) {
+      mRedBoxHandler = redBoxHandler;
+      return this;
+    }
+
+    public Builder setUseOldBridge(boolean enable) {
+      mUseOldBridge = enable;
+      return this;
+    }
+
     /**
      * Instantiates a new {@link ReactInstanceManagerImpl}.
      * Before calling {@code build}, the following must be called:
@@ -308,12 +346,20 @@ public abstract class ReactInstanceManager {
      * </ul>
      */
     public ReactInstanceManager build() {
+      Assertions.assertNotNull(
+          mApplication,
+          "Application property has not been set with this builder");
+
       Assertions.assertCondition(
-          mUseDeveloperSupport || mJSBundleFile != null,
+          mJSBundleLoader == null || !mUseOldBridge,
+          "JSBundleLoader can't be used with the old bridge");
+
+      Assertions.assertCondition(
+          mUseDeveloperSupport || mJSBundleFile != null || mJSBundleLoader != null,
           "JS Bundle File has to be provided when dev support is disabled");
 
       Assertions.assertCondition(
-          mJSMainModuleName != null || mJSBundleFile != null,
+          mJSMainModuleName != null || mJSBundleFile != null || mJSBundleLoader != null,
           "Either MainModuleName or JS Bundle File needs to be provided");
 
       if (mUIImplementationProvider == null) {
@@ -321,21 +367,38 @@ public abstract class ReactInstanceManager {
         mUIImplementationProvider = new UIImplementationProvider();
       }
 
-      return new ReactInstanceManagerImpl(
-          Assertions.assertNotNull(
-              mApplication,
-              "Application property has not been set with this builder"),
-          mCurrentActivity,
-          mDefaultHardwareBackBtnHandler,
-          mJSBundleFile,
-          mJSMainModuleName,
-          mPackages,
-          mUseDeveloperSupport,
-          mBridgeIdleDebugListener,
-          Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
-          mUIImplementationProvider,
-          mNativeModuleCallExceptionHandler,
-          mJSCConfig);
+      if (mUseOldBridge) {
+        return new ReactInstanceManagerImpl(
+            mApplication,
+            mCurrentActivity,
+            mDefaultHardwareBackBtnHandler,
+            mJSBundleFile,
+            mJSMainModuleName,
+            mPackages,
+            mUseDeveloperSupport,
+            mBridgeIdleDebugListener,
+            Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
+            mUIImplementationProvider,
+            mNativeModuleCallExceptionHandler,
+            mJSCConfig,
+            mRedBoxHandler);
+      } else {
+        return new XReactInstanceManagerImpl(
+            mApplication,
+            mCurrentActivity,
+            mDefaultHardwareBackBtnHandler,
+            (mJSBundleLoader == null && mJSBundleFile != null) ?
+              JSBundleLoader.createFileLoader(mApplication, mJSBundleFile) : mJSBundleLoader,
+            mJSMainModuleName,
+            mPackages,
+            mUseDeveloperSupport,
+            mBridgeIdleDebugListener,
+            Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
+            mUIImplementationProvider,
+            mNativeModuleCallExceptionHandler,
+            mJSCConfig,
+            mRedBoxHandler);
+      }
     }
   }
 }

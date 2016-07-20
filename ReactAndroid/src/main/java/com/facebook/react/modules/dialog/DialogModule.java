@@ -20,6 +20,7 @@ import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -198,11 +199,11 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
     mIsInForeground = true;
     // Check if a dialog has been created while the host was paused, so that we can show it now.
     FragmentManagerHelper fragmentManagerHelper = getFragmentManagerHelper();
-    Assertions.assertNotNull(
-        fragmentManagerHelper,
-        "Attached DialogModule to host with pending alert but no FragmentManager " +
-        "(not attached to an Activity).");
-    fragmentManagerHelper.showPendingAlert();
+    if (fragmentManagerHelper != null) {
+      fragmentManagerHelper.showPendingAlert();
+    } else {
+      FLog.w(DialogModule.class, "onHostResume called but no FragmentManager found");
+    }
   }
 
   @ReactMethod

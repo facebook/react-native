@@ -15,7 +15,7 @@ var BatchedBridge = require('BatchedBridge');
 var React = require('React');
 var RecordingModule = require('NativeModules').SwipeRefreshLayoutRecordingModule;
 var ScrollView = require('ScrollView');
-var PullToRefreshViewAndroid = require('PullToRefreshViewAndroid');
+var RefreshControl = require('RefreshControl');
 var Text = require('Text');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
@@ -62,13 +62,17 @@ var SwipeRefreshLayoutTestApp = React.createClass({
       rows.push(<Row key={i} />);
     }
     return (
-      <PullToRefreshViewAndroid
+      <ScrollView
         style={{flex: 1}}
-        onRefresh={() => RecordingModule.onRefresh()}>
-        <ScrollView style={{flex: 1}}>
-          {rows}
-        </ScrollView>
-      </PullToRefreshViewAndroid>
+        refreshControl={
+          <RefreshControl
+            style={{flex: 1}}
+            refreshing={false}
+            onRefresh={() => RecordingModule.onRefresh()}
+          />
+        }>
+        {rows}
+      </ScrollView>
     );
   },
 });

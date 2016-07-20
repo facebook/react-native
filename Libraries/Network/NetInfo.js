@@ -12,11 +12,13 @@
 'use strict';
 
 const Map = require('Map');
+const NativeEventEmitter = require('NativeEventEmitter');
 const NativeModules = require('NativeModules');
 const Platform = require('Platform');
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 const RCTNetInfo = NativeModules.NetInfo;
 const deprecatedCallback = require('deprecatedCallback');
+
+const NetInfoEventEmitter = new NativeEventEmitter(RCTNetInfo);
 
 const DEVICE_CONNECTIVITY_EVENT = 'networkStatusDidChange';
 
@@ -176,7 +178,7 @@ const NetInfo = {
     eventName: ChangeEventName,
     handler: Function
   ): {remove: () => void} {
-    const listener = RCTDeviceEventEmitter.addListener(
+    const listener = NetInfoEventEmitter.addListener(
       DEVICE_CONNECTIVITY_EVENT,
       (appStateData) => {
         handler(appStateData.network_info);
@@ -207,7 +209,7 @@ const NetInfo = {
    * Returns a promise that resolves with one of the connectivity types listed
    * above.
    */
-  fetch(): Promise {
+  fetch(): Promise<any> {
     return RCTNetInfo.getCurrentConnectivity().then(resp => resp.network_info);
   },
 
@@ -248,14 +250,14 @@ const NetInfo = {
       _isConnectedSubscriptions.delete(handler);
     },
 
-    fetch(): Promise {
+    fetch(): Promise<any> {
       return NetInfo.fetch().then(
         (connection) => _isConnected(connection)
       );
     },
   },
 
-  isConnectionExpensive(): Promise {
+  isConnectionExpensive(): Promise<any> {
     return deprecatedCallback(
       Platform.OS === 'android' ? RCTNetInfo.isConnectionMetered() : Promise.reject(new Error('Currently not supported on iOS')),
       Array.prototype.slice.call(arguments),

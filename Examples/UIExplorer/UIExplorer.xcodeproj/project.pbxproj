@@ -13,7 +13,6 @@
 		1323F18A1C04AB9F0091BED0 /* flux@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1323F1861C04AB9F0091BED0 /* flux@3x.png */; };
 		1323F18B1C04AB9F0091BED0 /* hawk.png in Resources */ = {isa = PBXBuildFile; fileRef = 1323F1871C04AB9F0091BED0 /* hawk.png */; };
 		1323F18C1C04AB9F0091BED0 /* uie_thumb_big.png in Resources */ = {isa = PBXBuildFile; fileRef = 1323F1881C04AB9F0091BED0 /* uie_thumb_big.png */; };
-		1323F18F1C04ABEB0091BED0 /* Thumbnails in Resources */ = {isa = PBXBuildFile; fileRef = 1323F18E1C04ABEB0091BED0 /* Thumbnails */; };
 		13417FE91AA91432003F314A /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13417FE81AA91428003F314A /* libRCTImage.a */; };
 		134180011AA9153C003F314A /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13417FEF1AA914B8003F314A /* libRCTText.a */; };
 		1341802C1AA9178B003F314A /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1341802B1AA91779003F314A /* libRCTNetwork.a */; };
@@ -32,6 +31,7 @@
 		13BCE84F1C9C209600DD7AAD /* RCTComponentPropsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BCE84E1C9C209600DD7AAD /* RCTComponentPropsTests.m */; };
 		13DB03481B5D2ED500C27245 /* RCTJSONTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13DB03471B5D2ED500C27245 /* RCTJSONTests.m */; };
 		13DF61B61B67A45000EDB188 /* RCTMethodArgumentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13DF61B51B67A45000EDB188 /* RCTMethodArgumentTests.m */; };
+		13E501F11D07A84A005F35D8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13E501A31D07A502005F35D8 /* libRCTAnimation.a */; };
 		143BC5A11B21E45C00462512 /* UIExplorerSnapshotTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 143BC5A01B21E45C00462512 /* UIExplorerSnapshotTests.m */; };
 		144D21241B2204C5006DB32B /* RCTImageUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 144D21231B2204C5006DB32B /* RCTImageUtilTests.m */; };
 		147CED4C1AB3532B00DA3E4C /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 147CED4B1AB34F8C00DA3E4C /* libRCTActionSheet.a */; };
@@ -62,7 +62,10 @@
 		27B885561BED29AF00008352 /* RCTRootViewIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B885551BED29AF00008352 /* RCTRootViewIntegrationTests.m */; };
 		27F441EC1BEBE5030039B79C /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */; };
 		3578590A1B28D2CF00341EDB /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 357859011B28D2C500341EDB /* libRCTLinking.a */; };
+		3D299BAF1D33EBFA00FA1057 /* RCTLoggingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D299BAE1D33EBFA00FA1057 /* RCTLoggingTests.m */; };
 		3DB99D0C1BA0340600302749 /* UIExplorerIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB99D0B1BA0340600302749 /* UIExplorerIntegrationTests.m */; };
+		3DD981D61D33C6FB007DC7BE /* TestBundle.js in Resources */ = {isa = PBXBuildFile; fileRef = 3DD981D51D33C6FB007DC7BE /* TestBundle.js */; };
+		68FF44381CF6111500720EFD /* RCTBundleURLProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FF44371CF6111500720EFD /* RCTBundleURLProviderTests.m */; };
 		834C36EC1AF8DED70019C93C /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 834C36D21AF8DA610019C93C /* libRCTSettings.a */; };
 		83636F8F1B53F22C009F943E /* RCTUIManagerScenarioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */; };
 		8385CEF51B873B5C00C6273E /* RCTImageLoaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */; };
@@ -119,6 +122,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = 3C86DF461ADF2C930047B81A;
 			remoteInfo = RCTWebSocket;
+		};
+		13E501A21D07A502005F35D8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 13E5019C1D07A502005F35D8 /* RCTAnimation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RCTAnimation;
 		};
 		143BC59B1B21E3E100462512 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -182,11 +192,10 @@
 		004D289E1AAF61C70097A701 /* UIExplorerUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UIExplorerUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1300627E1B59179B0043FE5A /* RCTGzipTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTGzipTests.m; sourceTree = "<group>"; };
 		13129DD31C85F87C007D611C /* RCTModuleInitNotificationRaceTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModuleInitNotificationRaceTests.m; sourceTree = "<group>"; };
-		1323F1851C04AB9F0091BED0 /* bunny.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bunny.png; sourceTree = "<group>"; };
-		1323F1861C04AB9F0091BED0 /* flux@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flux@3x.png"; sourceTree = "<group>"; };
-		1323F1871C04AB9F0091BED0 /* hawk.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hawk.png; sourceTree = "<group>"; };
-		1323F1881C04AB9F0091BED0 /* uie_thumb_big.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = uie_thumb_big.png; sourceTree = "<group>"; };
-		1323F18E1C04ABEB0091BED0 /* Thumbnails */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Thumbnails; sourceTree = "<group>"; };
+		1323F1851C04AB9F0091BED0 /* bunny.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bunny.png; path = js/bunny.png; sourceTree = "<group>"; };
+		1323F1861C04AB9F0091BED0 /* flux@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "flux@3x.png"; path = "js/flux@3x.png"; sourceTree = "<group>"; };
+		1323F1871C04AB9F0091BED0 /* hawk.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = hawk.png; path = js/hawk.png; sourceTree = "<group>"; };
+		1323F1881C04AB9F0091BED0 /* uie_thumb_big.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = uie_thumb_big.png; path = js/uie_thumb_big.png; sourceTree = "<group>"; };
 		13417FE31AA91428003F314A /* RCTImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTImage.xcodeproj; path = ../../Libraries/Image/RCTImage.xcodeproj; sourceTree = "<group>"; };
 		13417FEA1AA914B8003F314A /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = ../../Libraries/Text/RCTText.xcodeproj; sourceTree = "<group>"; };
 		134180261AA91779003F314A /* RCTNetwork.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTNetwork.xcodeproj; path = ../../Libraries/Network/RCTNetwork.xcodeproj; sourceTree = "<group>"; };
@@ -209,13 +218,8 @@
 		13CC9D481AEED2B90020D1C2 /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = ../../Libraries/Settings/RCTSettings.xcodeproj; sourceTree = "<group>"; };
 		13DB03471B5D2ED500C27245 /* RCTJSONTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTJSONTests.m; sourceTree = "<group>"; };
 		13DF61B51B67A45000EDB188 /* RCTMethodArgumentTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTMethodArgumentTests.m; sourceTree = "<group>"; };
+		13E5019C1D07A502005F35D8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = ../../Libraries/NativeAnimation/RCTAnimation.xcodeproj; sourceTree = "<group>"; };
 		143BC57E1B21E18100462512 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		143BC5811B21E18100462512 /* testLayoutExampleSnapshot_1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "testLayoutExampleSnapshot_1@2x.png"; sourceTree = "<group>"; };
-		143BC5821B21E18100462512 /* testSliderExampleSnapshot_1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "testSliderExampleSnapshot_1@2x.png"; sourceTree = "<group>"; };
-		143BC5831B21E18100462512 /* testSwitchExampleSnapshot_1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "testSwitchExampleSnapshot_1@2x.png"; sourceTree = "<group>"; };
-		143BC5841B21E18100462512 /* testTabBarExampleSnapshot_1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "testTabBarExampleSnapshot_1@2x.png"; sourceTree = "<group>"; };
-		143BC5851B21E18100462512 /* testTextExampleSnapshot_1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "testTextExampleSnapshot_1@2x.png"; sourceTree = "<group>"; };
-		143BC5861B21E18100462512 /* testViewExampleSnapshot_1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "testViewExampleSnapshot_1@2x.png"; sourceTree = "<group>"; };
 		143BC5951B21E3E100462512 /* UIExplorerIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UIExplorerIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		143BC5981B21E3E100462512 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		143BC5A01B21E45C00462512 /* UIExplorerSnapshotTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIExplorerSnapshotTests.m; sourceTree = "<group>"; };
@@ -246,8 +250,11 @@
 		27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FlexibleSizeExampleView.m; path = UIExplorer/NativeExampleViews/FlexibleSizeExampleView.m; sourceTree = "<group>"; };
 		27F441EA1BEBE5030039B79C /* FlexibleSizeExampleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FlexibleSizeExampleView.h; path = UIExplorer/NativeExampleViews/FlexibleSizeExampleView.h; sourceTree = "<group>"; };
 		357858F81B28D2C400341EDB /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = ../../Libraries/LinkingIOS/RCTLinking.xcodeproj; sourceTree = "<group>"; };
+		3D299BAE1D33EBFA00FA1057 /* RCTLoggingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTLoggingTests.m; sourceTree = "<group>"; };
 		3DB99D0B1BA0340600302749 /* UIExplorerIntegrationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIExplorerIntegrationTests.m; sourceTree = "<group>"; };
+		3DD981D51D33C6FB007DC7BE /* TestBundle.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = TestBundle.js; sourceTree = "<group>"; };
 		58005BE41ABA80530062E044 /* RCTTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTest.xcodeproj; path = ../../Libraries/RCTTest/RCTTest.xcodeproj; sourceTree = "<group>"; };
+		68FF44371CF6111500720EFD /* RCTBundleURLProviderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBundleURLProviderTests.m; sourceTree = "<group>"; };
 		83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIManagerScenarioTests.m; sourceTree = "<group>"; };
 		8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderTests.m; sourceTree = "<group>"; };
 		8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderHelpers.m; sourceTree = "<group>"; };
@@ -283,6 +290,7 @@
 				14AADF051AC3DBB1002390C9 /* libReact.a in Frameworks */,
 				147CED4C1AB3532B00DA3E4C /* libRCTActionSheet.a in Frameworks */,
 				134454601AAFCABD003F0779 /* libRCTAdSupport.a in Frameworks */,
+				13E501F11D07A84A005F35D8 /* libRCTAnimation.a in Frameworks */,
 				138DEE241B9EDFB6007F4EA5 /* libRCTCameraRoll.a in Frameworks */,
 				134A8A2A1AACED7A00945AAE /* libRCTGeolocation.a in Frameworks */,
 				13417FE91AA91432003F314A /* libRCTImage.a in Frameworks */,
@@ -313,6 +321,7 @@
 				14AADEFF1AC3DB95002390C9 /* React.xcodeproj */,
 				14E0EEC81AB118F7000DECC3 /* RCTActionSheet.xcodeproj */,
 				134454551AAFCAAE003F0779 /* RCTAdSupport.xcodeproj */,
+				13E5019C1D07A502005F35D8 /* RCTAnimation.xcodeproj */,
 				138DEE021B9EDDDB007F4EA5 /* RCTCameraRoll.xcodeproj */,
 				134A8A201AACED6A00945AAE /* RCTGeolocation.xcodeproj */,
 				13417FE31AA91428003F314A /* RCTImage.xcodeproj */,
@@ -405,16 +414,24 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
-				1323F18E1C04ABEB0091BED0 /* Thumbnails */,
 				1323F18D1C04ABAC0091BED0 /* Supporting Files */,
 			);
 			name = UIExplorer;
+			sourceTree = "<group>";
+		};
+		13E5019D1D07A502005F35D8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				13E501A31D07A502005F35D8 /* libRCTAnimation.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		143BC57C1B21E18100462512 /* UIExplorerUnitTests */ = {
 			isa = PBXGroup;
 			children = (
 				13B6C1A21C34225900D3FAF5 /* RCTURLUtilsTests.m */,
+				68FF44371CF6111500720EFD /* RCTBundleURLProviderTests.m */,
 				1497CFA41B21F5E400C1F8F2 /* RCTAllocationTests.m */,
 				1497CFA51B21F5E400C1F8F2 /* RCTBridgeTests.m */,
 				1497CFA61B21F5E400C1F8F2 /* RCTJSCExecutorTests.m */,
@@ -435,37 +452,17 @@
 				1497CFAB1B21F5E400C1F8F2 /* RCTUIManagerTests.m */,
 				13BCE84E1C9C209600DD7AAD /* RCTComponentPropsTests.m */,
 				143BC57E1B21E18100462512 /* Info.plist */,
+				3DD981D51D33C6FB007DC7BE /* TestBundle.js */,
 				14D6D7101B220EB3001FB087 /* libOCMock.a */,
 				14D6D7011B220AE3001FB087 /* OCMock */,
-				143BC57F1B21E18100462512 /* ReferenceImages */,
 			);
 			path = UIExplorerUnitTests;
-			sourceTree = "<group>";
-		};
-		143BC57F1B21E18100462512 /* ReferenceImages */ = {
-			isa = PBXGroup;
-			children = (
-				143BC5801B21E18100462512 /* Examples-UIExplorer-UIExplorerApp */,
-			);
-			path = ReferenceImages;
-			sourceTree = "<group>";
-		};
-		143BC5801B21E18100462512 /* Examples-UIExplorer-UIExplorerApp */ = {
-			isa = PBXGroup;
-			children = (
-				143BC5811B21E18100462512 /* testLayoutExampleSnapshot_1@2x.png */,
-				143BC5821B21E18100462512 /* testSliderExampleSnapshot_1@2x.png */,
-				143BC5831B21E18100462512 /* testSwitchExampleSnapshot_1@2x.png */,
-				143BC5841B21E18100462512 /* testTabBarExampleSnapshot_1@2x.png */,
-				143BC5851B21E18100462512 /* testTextExampleSnapshot_1@2x.png */,
-				143BC5861B21E18100462512 /* testViewExampleSnapshot_1@2x.png */,
-			);
-			path = "Examples-UIExplorer-UIExplorerApp";
 			sourceTree = "<group>";
 		};
 		143BC5961B21E3E100462512 /* UIExplorerIntegrationTests */ = {
 			isa = PBXGroup;
 			children = (
+				3D299BAE1D33EBFA00FA1057 /* RCTLoggingTests.m */,
 				27B885551BED29AF00008352 /* RCTRootViewIntegrationTests.m */,
 				3DB99D0B1BA0340600302749 /* UIExplorerIntegrationTests.m */,
 				143BC5A01B21E45C00462512 /* UIExplorerSnapshotTests.m */,
@@ -624,6 +621,7 @@
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
+				68CD48B71D2BCB2C007E06A9 /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -689,6 +687,10 @@
 				{
 					ProductGroup = 134454561AAFCAAE003F0779 /* Products */;
 					ProjectRef = 134454551AAFCAAE003F0779 /* RCTAdSupport.xcodeproj */;
+				},
+				{
+					ProductGroup = 13E5019D1D07A502005F35D8 /* Products */;
+					ProjectRef = 13E5019C1D07A502005F35D8 /* RCTAnimation.xcodeproj */;
 				},
 				{
 					ProductGroup = 138DEE031B9EDDDB007F4EA5 /* Products */;
@@ -798,6 +800,13 @@
 			remoteRef = 139FDED81B0651EA00C62182 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		13E501A31D07A502005F35D8 /* libRCTAnimation.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTAnimation.a;
+			remoteRef = 13E501A21D07A502005F35D8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		147CED4B1AB34F8C00DA3E4C /* libRCTActionSheet.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -854,6 +863,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DD981D61D33C6FB007DC7BE /* TestBundle.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -862,7 +872,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1323F18A1C04AB9F0091BED0 /* flux@3x.png in Resources */,
-				1323F18F1C04ABEB0091BED0 /* Thumbnails in Resources */,
 				1323F18B1C04AB9F0091BED0 /* hawk.png in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
@@ -879,6 +888,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		68CD48B71D2BCB2C007E06A9 /* Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export NODE_BINARY=node\n$SRCROOT/../../packager/react-native-xcode.sh Examples/UIExplorer/js/UIExplorerApp.ios.js";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		004D289A1AAF61C70097A701 /* Sources */ = {
@@ -903,6 +929,7 @@
 				138D6A181B53CD440074A87E /* RCTShadowViewTests.m in Sources */,
 				13B6C1A31C34225900D3FAF5 /* RCTURLUtilsTests.m in Sources */,
 				8385CF041B87479200C6273E /* RCTImageLoaderHelpers.m in Sources */,
+				68FF44381CF6111500720EFD /* RCTBundleURLProviderTests.m in Sources */,
 				8385CEF51B873B5C00C6273E /* RCTImageLoaderTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -924,6 +951,7 @@
 			files = (
 				3DB99D0C1BA0340600302749 /* UIExplorerIntegrationTests.m in Sources */,
 				83636F8F1B53F22C009F943E /* RCTUIManagerScenarioTests.m in Sources */,
+				3D299BAF1D33EBFA00FA1057 /* RCTLoggingTests.m in Sources */,
 				143BC5A11B21E45C00462512 /* UIExplorerSnapshotTests.m in Sources */,
 				27B885561BED29AF00008352 /* RCTRootViewIntegrationTests.m in Sources */,
 			);
@@ -1010,12 +1038,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = UIExplorer;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				WARNING_CFLAGS = (
-					"-Wextra",
-					"-Wall",
-					"-Wincompatible-pointer-types",
-					"-Wincompatible-pointer-types-discards-qualifiers",
-				);
 			};
 			name = Debug;
 		};
@@ -1035,12 +1057,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = UIExplorer;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				WARNING_CFLAGS = (
-					"-Wextra",
-					"-Wall",
-					"-Wincompatible-pointer-types",
-					"-Wincompatible-pointer-types-discards-qualifiers",
-				);
 			};
 			name = Release;
 		};
@@ -1145,6 +1161,8 @@
 					"-Wextra",
 					"-Wall",
 					"-Wincompatible-pointer-types",
+					"-Wincompatible-pointer-types-discards-qualifiers",
+					"-Wshadow",
 				);
 			};
 			name = Debug;
@@ -1208,6 +1226,8 @@
 					"-Wextra",
 					"-Wall",
 					"-Wincompatible-pointer-types",
+					"-Wincompatible-pointer-types-discards-qualifiers",
+					"-Wshadow",
 				);
 			};
 			name = Release;

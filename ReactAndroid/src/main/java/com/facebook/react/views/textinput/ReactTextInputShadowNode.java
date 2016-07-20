@@ -16,7 +16,6 @@ import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
@@ -28,6 +27,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.views.view.MeasureUtil;
 import com.facebook.react.views.text.ReactTextShadowNode;
 import com.facebook.react.views.text.ReactTextUpdate;
 
@@ -75,7 +75,6 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     // measure() should never be called before setThemedContext()
     EditText editText = Assertions.assertNotNull(mEditText);
 
-    measureOutput.width = widthMode == CSSMeasureMode.UNDEFINED ? CSSConstants.UNDEFINED : width;
     editText.setTextSize(
         TypedValue.COMPLEX_UNIT_PX,
         mFontSize == UNSET ?
@@ -91,7 +90,10 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
       editText.setLines(mNumberOfLines);
     }
 
-    editText.measure(0 /* unspecified */, 0 /* unspecified */);
+    editText.measure(
+        MeasureUtil.getMeasureSpec(width, widthMode),
+        MeasureUtil.getMeasureSpec(height, heightMode));
+    measureOutput.width = editText.getMeasuredWidth();
     measureOutput.height = editText.getMeasuredHeight();
   }
 
@@ -117,7 +119,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     if (mJsEventCount != UNSET) {
       Spannable preparedSpannableText = fromTextCSSNode(this);
       ReactTextUpdate reactTextUpdate =
-          new ReactTextUpdate(preparedSpannableText, mJsEventCount, mContainsImages);
+          new ReactTextUpdate(preparedSpannableText, mJsEventCount, mContainsImages, getPadding());
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }

@@ -182,19 +182,22 @@ RCT_EXPORT_MODULE()
                                          selectedTitle:@"Hide Inspector"
                                                handler:^(__unused BOOL enabled)
     {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
       [weakSelf.bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+#pragma clang diagnostic pop
     }]];
 
     _webSocketExecutorName = [_defaults objectForKey:@"websocket-executor-name"] ?: @"JS Remotely";
 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-      _executorOverride = [_defaults objectForKey:@"executor-override"];
+      self->_executorOverride = [self->_defaults objectForKey:@"executor-override"];
     });
 
     // Delay setup until after Bridge init
     dispatch_async(dispatch_get_main_queue(), ^{
-      [weakSelf updateSettings:_settings];
+      [weakSelf updateSettings:self->_settings];
       [weakSelf connectPackager];
     });
 
@@ -214,8 +217,11 @@ RCT_EXPORT_MODULE()
                             modifierFlags:UIKeyModifierCommand
                                    action:^(__unused UIKeyCommand *command) {
                                      [weakSelf.bridge.eventDispatcher
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                                       sendDeviceEventWithName:@"toggleElementInspector"
                                       body:nil];
+#pragma clang diagnostic pop
                                    }];
 
     // Reload in normal mode
@@ -233,11 +239,12 @@ RCT_EXPORT_MODULE()
 - (NSURL *)packagerURL
 {
   NSString *host = [_bridge.bundleURL host];
+  NSString *scheme = [_bridge.bundleURL scheme];
   if (!host) {
-    return nil;
+    host = @"localhost";
+    scheme = @"http";
   }
 
-  NSString *scheme = [_bridge.bundleURL scheme];
   NSNumber *port = [_bridge.bundleURL port];
   if (!port) {
     port = @8081; // Packager default port
@@ -382,13 +389,16 @@ RCT_EXPORT_MODULE()
 
   dispatch_async(dispatch_get_main_queue(), ^{
     // Hit these setters again after bridge has finished loading
-    self.profilingEnabled = _profilingEnabled;
-    self.liveReloadEnabled = _liveReloadEnabled;
-    self.executorClass = _executorClass;
+    self.profilingEnabled = self->_profilingEnabled;
+    self.liveReloadEnabled = self->_liveReloadEnabled;
+    self.executorClass = self->_executorClass;
 
     // Inspector can only be shown after JS has loaded
-    if ([_settings[@"showInspector"] boolValue]) {
+    if ([self->_settings[@"showInspector"] boolValue]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
       [self.bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+#pragma clang diagnostic pop
     }
   });
 }
@@ -447,8 +457,8 @@ RCT_EXPORT_MODULE()
   if (!jsDebuggingExecutorClass) {
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:[NSString stringWithFormat:@"%@ Debugger Unavailable", _webSocketExecutorName] handler:^{
       UIAlertView *alert = RCTAlertView(
-        [NSString stringWithFormat:@"%@ Debugger Unavailable", _webSocketExecutorName],
-        [NSString stringWithFormat:@"You need to include the RCTWebSocket library to enable %@ debugging", _webSocketExecutorName],
+        [NSString stringWithFormat:@"%@ Debugger Unavailable", self->_webSocketExecutorName],
+        [NSString stringWithFormat:@"You need to include the RCTWebSocket library to enable %@ debugging", self->_webSocketExecutorName],
         nil,
         @"OK",
         nil);
@@ -457,7 +467,7 @@ RCT_EXPORT_MODULE()
   } else {
     BOOL isDebuggingJS = _executorClass && _executorClass == jsDebuggingExecutorClass;
     NSString *debuggingDescription = [_defaults objectForKey:@"websocket-executor-name"] ?: @"Remote JS";
-    NSString *debugTitleJS = isDebuggingJS ? [NSString stringWithFormat:@"Disable %@ Debugging", debuggingDescription] : [NSString stringWithFormat:@"Debug %@", _webSocketExecutorName];
+    NSString *debugTitleJS = isDebuggingJS ? [NSString stringWithFormat:@"Stop %@ Debugging", debuggingDescription] : [NSString stringWithFormat:@"Debug %@", _webSocketExecutorName];
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:debugTitleJS handler:^{
       weakSelf.executorClass = isDebuggingJS ? Nil : jsDebuggingExecutorClass;
     }]];
@@ -466,19 +476,28 @@ RCT_EXPORT_MODULE()
   if (_liveReloadURL) {
     NSString *liveReloadTitle = _liveReloadEnabled ? @"Disable Live Reload" : @"Enable Live Reload";
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:liveReloadTitle handler:^{
-      weakSelf.liveReloadEnabled = !_liveReloadEnabled;
+      __typeof(self) strongSelf = weakSelf;
+      if (strongSelf) {
+        strongSelf.liveReloadEnabled = !strongSelf->_liveReloadEnabled;
+      }
     }]];
 
     NSString *profilingTitle  = RCTProfileIsProfiling() ? @"Stop Systrace" : @"Start Systrace";
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:profilingTitle handler:^{
-      weakSelf.profilingEnabled = !_profilingEnabled;
+      __typeof(self) strongSelf = weakSelf;
+      if (strongSelf) {
+        strongSelf.profilingEnabled = !strongSelf->_profilingEnabled;
+      }
     }]];
   }
 
   if ([self hotLoadingAvailable]) {
     NSString *hotLoadingTitle = _hotLoadingEnabled ? @"Disable Hot Reloading" : @"Enable Hot Reloading";
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:hotLoadingTitle handler:^{
-      weakSelf.hotLoadingEnabled = !_hotLoadingEnabled;
+      __typeof(self) strongSelf = weakSelf;
+      if (strongSelf) {
+        strongSelf.hotLoadingEnabled = !strongSelf->_hotLoadingEnabled;
+      }
     }]];
   }
 
@@ -566,7 +585,7 @@ RCT_EXPORT_METHOD(reload)
       [_bridge startProfiling];
     } else {
       [_bridge stopProfiling:^(NSData *logData) {
-        RCTProfileSendResult(_bridge, @"systrace", logData);
+        RCTProfileSendResult(self->_bridge, @"systrace", logData);
       }];
     }
   }

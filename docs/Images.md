@@ -4,7 +4,8 @@ title: Images
 layout: docs
 category: Guides
 permalink: docs/images.html
-next: gesture-responder-system
+next:  handling-touches
+previous: colors
 ---
 
 ## Static Image Resources
@@ -113,7 +114,7 @@ For example, the result of `require('./my-icon.png')` might be:
 
 ## Source as an object
 
-In React Native, one interesting decision is that the `src` attribute is named `source` and doesn't take a string but an object with an `uri` attribute.
+In React Native, one interesting decision is that the `src` attribute is named `source` and doesn't take a string but an object with a `uri` attribute.
 
 ```javascript
 <Image source={{uri: 'something.jpg'}} />

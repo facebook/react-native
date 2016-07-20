@@ -12,7 +12,7 @@
 'use strict';
 
 var PixelRatio = require('PixelRatio');
-var ReactNativePropRegistry = require('ReactNativePropRegistry');
+var ReactNativePropRegistry = require('react/lib/ReactNativePropRegistry');
 var StyleSheetValidation = require('StyleSheetValidation');
 
 var flatten = require('flattenStyle');
@@ -21,6 +21,15 @@ var hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }
+
+const absoluteFillObject = {
+  position: 'absolute',
+  left: 0,
+  right: 0,
+  top: 0,
+  bottom: 0,
+};
+const absoluteFill = ReactNativePropRegistry.register(absoluteFillObject); // This also freezes it
 
 /**
  * A StyleSheet is an abstraction similar to CSS StyleSheets
@@ -87,6 +96,27 @@ module.exports = {
   hairlineWidth,
 
   /**
+   * A very common pattern is to create overlays with position absolute and zero positioning,
+   * so `absoluteFill` can be used for convenience and to reduce duplication of these repeated
+   * styles.
+   */
+  absoluteFill,
+
+  /**
+   * Sometimes you may want `absoluteFill` but with a couple tweaks - `absoluteFillObject` can be
+   * used to create a customized entry in a `StyleSheet`, e.g.:
+   *
+   *   const styles = StyleSheet.create({
+   *     wrapper: {
+   *       ...StyleSheet.absoluteFillObject,
+   *       top: 10,
+   *       backgroundColor: 'transparent',
+   *     },
+   *   });
+   */
+  absoluteFillObject,
+
+  /**
    * Flattens an array of style objects, into one aggregated style object.
    * Alternatively, this method can be used to lookup IDs, returned by
    * StyleSheet.register.
@@ -130,8 +160,8 @@ module.exports = {
   /**
    * Creates a StyleSheet style reference from the given object.
    */
-  create(obj: {[key: string]: any}): {[key: string]: number} {
-    var result = {};
+  create<T: Object, U>(obj: T): {[key:$Keys<T>]: number} {
+    var result: T = (({}: any): T);
     for (var key in obj) {
       StyleSheetValidation.validateStyle(key, obj);
       result[key] = ReactNativePropRegistry.register(obj[key]);

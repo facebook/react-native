@@ -90,6 +90,7 @@ public class TextInputTest {
     UIManagerModule uiManager = getUIManagerModule();
 
     ReactRootView rootView = new ReactRootView(RuntimeEnvironment.application);
+    rootView.setLayoutParams(new ReactRootView.LayoutParams(100, 100));
     int rootTag = uiManager.addMeasuredRootView(rootView);
     int textInputTag = rootTag + 1;
     final String hintStr = "placeholder text";
@@ -123,6 +124,7 @@ public class TextInputTest {
     UIManagerModule uiManager = getUIManagerModule();
 
     ReactRootView rootView = new ReactRootView(RuntimeEnvironment.application);
+    rootView.setLayoutParams(new ReactRootView.LayoutParams(100, 100));
     int rootTag = uiManager.addMeasuredRootView(rootView);
     int textInputTag = rootTag + 1;
     final String hintStr = "placeholder text";

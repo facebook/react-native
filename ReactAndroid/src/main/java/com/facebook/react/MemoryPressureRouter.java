@@ -20,6 +20,7 @@ import static android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND;
 import static android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE;
 import static android.content.ComponentCallbacks2.TRIM_MEMORY_MODERATE;
 import static android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL;
+import static android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN;
 
 /**
  * Translates and routes memory pressure events to the current catalyst instance.
@@ -27,6 +28,8 @@ import static android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL;
 public class MemoryPressureRouter {
   // Trigger this by sending an intent to your activity with adb shell:
   // am broadcast -a com.facebook.catalyst.ACTION_TRIM_MEMORY_MODERATE
+  private static final String ACTION_TRIM_MEMORY_UI_HIDDEN =
+    "com.facebook.rnfeed.ACTION_TRIM_MEMORY_UI_HIDDEN";
   private static final String ACTION_TRIM_MEMORY_MODERATE =
     "com.facebook.rnfeed.ACTION_TRIM_MEMORY_MODERATE";
   private static final String ACTION_TRIM_MEMORY_CRITICAL =
@@ -52,6 +55,9 @@ public class MemoryPressureRouter {
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
   public static boolean handleDebugIntent(Application application, String action) {
     switch (action) {
+      case ACTION_TRIM_MEMORY_UI_HIDDEN:
+        simulateTrimMemory(application, ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN);
+        break;
       case ACTION_TRIM_MEMORY_MODERATE:
         simulateTrimMemory(application, TRIM_MEMORY_MODERATE);
         break;
@@ -87,10 +93,12 @@ public class MemoryPressureRouter {
   }
 
   private void trimMemory(int level) {
-    if (level >= ComponentCallbacks2.TRIM_MEMORY_COMPLETE) {
+    if (level >= TRIM_MEMORY_COMPLETE) {
       dispatchMemoryPressure(MemoryPressure.CRITICAL);
     } else if (level >= TRIM_MEMORY_BACKGROUND || level == TRIM_MEMORY_RUNNING_CRITICAL) {
       dispatchMemoryPressure(MemoryPressure.MODERATE);
+    } else if (level == TRIM_MEMORY_UI_HIDDEN) {
+      dispatchMemoryPressure(MemoryPressure.UI_HIDDEN);
     }
   }
 

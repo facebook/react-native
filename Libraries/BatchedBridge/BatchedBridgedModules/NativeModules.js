@@ -46,8 +46,11 @@ Object.keys(RemoteModules).forEach((moduleName) => {
     get: () => {
       let module = RemoteModules[moduleName];
       if (module && typeof module.moduleID === 'number' && global.nativeRequireModuleConfig) {
-        const json = global.nativeRequireModuleConfig(moduleName);
-        const config = json && JSON.parse(json);
+        // The old bridge (still used by iOS) will send the config as
+        //  a JSON string that needs parsing, so we set config according
+        //  to the type of response we got.
+        const rawConfig = global.nativeRequireModuleConfig(moduleName);
+        const config = typeof rawConfig === 'string' ? JSON.parse(rawConfig) : rawConfig;
         module = config && BatchedBridge.processModuleConfig(config, module.moduleID);
         RemoteModules[moduleName] = module;
       }

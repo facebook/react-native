@@ -40,7 +40,7 @@ const NavigationPagerStyleInterpolator = require('NavigationPagerStyleInterpolat
 const NavigationPointerEventsContainer = require('NavigationPointerEventsContainer');
 const NavigationPropTypes = require('NavigationPropTypes');
 const React = require('React');
-const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
+const ReactComponentWithPureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
@@ -57,6 +57,7 @@ type SceneViewProps =  {
 
 type Props = NavigationSceneRendererProps & {
   onComponentRef: (ref: any) => void,
+  onNavigateBack: ?Function,
   panHandlers: ?NavigationPanPanHandlers,
   pointerEvents: string,
   renderScene: NavigationSceneRenderer,
@@ -69,18 +70,17 @@ class SceneView extends React.Component<any, SceneViewProps, any> {
 
   static propTypes = {
     sceneRenderer: PropTypes.func.isRequired,
-    sceneRendererProps:
-      PropTypes.shape(NavigationPropTypes.SceneRenderer).isRequired,
+    sceneRendererProps: NavigationPropTypes.SceneRenderer,
   };
 
   shouldComponentUpdate(nextProps: SceneViewProps, nextState: any): boolean {
     return (
-      nextProps.sceneRendererProps.scene.navigationState !==
-        this.props.sceneRendererProps.scene.navigationState
+      nextProps.sceneRendererProps.scene.route !==
+        this.props.sceneRendererProps.scene.route
     );
   }
 
-  render(): ?ReactElement {
+  render(): ?ReactElement<any> {
     return this.props.sceneRenderer(this.props.sceneRendererProps);
   }
 }
@@ -92,8 +92,9 @@ class NavigationCard extends React.Component<any, Props, any> {
   props: Props;
 
   static propTypes = {
-    ...NavigationPropTypes.SceneRenderer,
+    ...NavigationPropTypes.SceneRendererProps,
     onComponentRef: PropTypes.func.isRequired,
+    onNavigateBack: PropTypes.func,
     panHandlers: NavigationPropTypes.panHandlers,
     pointerEvents: PropTypes.string.isRequired,
     renderScene: PropTypes.func.isRequired,
@@ -108,7 +109,7 @@ class NavigationCard extends React.Component<any, Props, any> {
     );
   }
 
-  render(): ReactElement {
+  render(): ReactElement<any> {
     const {
       panHandlers,
       pointerEvents,
@@ -122,7 +123,10 @@ class NavigationCard extends React.Component<any, Props, any> {
       style;
 
     const viewPanHandlers = panHandlers === undefined ?
-      NavigationCardStackPanResponder.forHorizontal(props) :
+      NavigationCardStackPanResponder.forHorizontal({
+        ...props,
+        onNavigateBack: this.props.onNavigateBack,
+      }) :
       panHandlers;
 
     return (
@@ -138,11 +142,6 @@ class NavigationCard extends React.Component<any, Props, any> {
       </Animated.View>
     );
   }
-
-  static CardStackPanResponder = NavigationCardStackPanResponder;
-  static CardStackStyleInterpolator = NavigationCardStackStyleInterpolator;
-  static PagerPanResponder = NavigationPagerPanResponder;
-  static PagerStyleInterpolator = NavigationPagerStyleInterpolator;
 }
 
 const styles = StyleSheet.create({
@@ -161,5 +160,10 @@ const styles = StyleSheet.create({
 });
 
 NavigationCard = NavigationPointerEventsContainer.create(NavigationCard);
+
+NavigationCard.CardStackPanResponder = NavigationCardStackPanResponder;
+NavigationCard.CardStackStyleInterpolator = NavigationCardStackStyleInterpolator;
+NavigationCard.PagerPanResponder = NavigationPagerPanResponder;
+NavigationCard.PagerStyleInterpolator = NavigationPagerStyleInterpolator;
 
 module.exports = NavigationCard;

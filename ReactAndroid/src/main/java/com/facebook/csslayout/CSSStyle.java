@@ -1,13 +1,11 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
+ *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-
-// NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<4c7c75ffd4800aee843a5f5828f3e3ab>>
 
 package com.facebook.csslayout;
 
@@ -26,6 +24,7 @@ public class CSSStyle {
   public CSSAlign alignSelf;
   public CSSPositionType positionType;
   public CSSWrap flexWrap;
+  public CSSOverflow overflow;
   public float flex;
 
   public Spacing margin = new Spacing();
@@ -54,6 +53,7 @@ public class CSSStyle {
     alignSelf = CSSAlign.AUTO;
     positionType = CSSPositionType.RELATIVE;
     flexWrap = CSSWrap.NOWRAP;
+    overflow = CSSOverflow.VISIBLE;
     flex = 0f;
 
     margin.reset();;

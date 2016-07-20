@@ -115,8 +115,8 @@ RCT_REMAP_VIEW_PROPERTY(accessible, isAccessibilityElement, BOOL)
 RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)
 RCT_REMAP_VIEW_PROPERTY(backfaceVisibility, layer.doubleSided, css_backface_visibility_t)
 RCT_REMAP_VIEW_PROPERTY(opacity, alpha, CGFloat)
-RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor);
-RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize);
+RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor)
+RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize)
 RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
 RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(overflow, clipsToBounds, css_clip_t)
@@ -246,6 +246,8 @@ RCT_VIEW_BORDER_RADIUS_PROPERTY(TopRight)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomLeft)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomRight)
 
+RCT_REMAP_VIEW_PROPERTY(zIndex, reactZIndex, NSInteger)
+
 #pragma mark - ShadowView properties
 
 RCT_EXPORT_SHADOW_PROPERTY(backgroundColor, UIColor)
@@ -257,6 +259,11 @@ RCT_EXPORT_SHADOW_PROPERTY(left, CGFloat);
 
 RCT_EXPORT_SHADOW_PROPERTY(width, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(height, CGFloat)
+
+RCT_EXPORT_SHADOW_PROPERTY(minWidth, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(maxWidth, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(minHeight, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(maxHeight, CGFloat)
 
 RCT_EXPORT_SHADOW_PROPERTY(borderTopWidth, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(borderRightWidth, CGFloat)
@@ -289,5 +296,7 @@ RCT_EXPORT_SHADOW_PROPERTY(alignSelf, css_align_t)
 RCT_EXPORT_SHADOW_PROPERTY(position, css_position_type_t)
 
 RCT_EXPORT_SHADOW_PROPERTY(onLayout, RCTDirectEventBlock)
+
+RCT_EXPORT_SHADOW_PROPERTY(zIndex, NSInteger)
 
 @end

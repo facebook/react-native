@@ -11,15 +11,16 @@
  */
 'use strict';
 
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTLocationObserver = require('NativeModules').LocationObserver;
+const NativeEventEmitter = require('NativeEventEmitter');
+const RCTLocationObserver = require('NativeModules').LocationObserver;
 
-var invariant = require('fbjs/lib/invariant');
-var logError = require('logError');
-var warning = require('fbjs/lib/warning');
+const invariant = require('fbjs/lib/invariant');
+const logError = require('logError');
+const warning = require('fbjs/lib/warning');
+
+const LocationEventEmitter = new NativeEventEmitter(RCTLocationObserver);
 
 var subscriptions = [];
-
 var updatesEnabled = false;
 
 type GeoOptions = {
@@ -80,11 +81,11 @@ var Geolocation = {
     }
     var watchID = subscriptions.length;
     subscriptions.push([
-      RCTDeviceEventEmitter.addListener(
+      LocationEventEmitter.addListener(
         'geolocationDidChange',
         success
       ),
-      error ? RCTDeviceEventEmitter.addListener(
+      error ? LocationEventEmitter.addListener(
         'geolocationError',
         error
       ) : null,

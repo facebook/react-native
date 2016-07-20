@@ -13,9 +13,17 @@
     "mkdirp": "^0.5.1",
     "optimist": "0.6.0",
     "react": "~0.13.0",
-    "react-docgen": "^2.8.0",
+    "react-docgen": "^2.9.0",
     "react-page-middleware": "git://github.com/facebook/react-page-middleware.git",
     "request": "^2.69.0",
-    "semver-compare": "^1.0.0"
+    "semver-compare": "^1.0.0",
+    "babel-core": "^6.6.4",
+    "babel-plugin-external-helpers": "^6.5.0",
+    "babel-polyfill": "^6.6.1",
+    "babel-preset-react-native": "~1.6.0",
+    "babel-register": "^6.6.0",
+    "babel-types": "^6.6.4",
+    "jsdoc-api": "^1.1.0",
+    "deep-assign": "^2.0.0"
   }
 }

@@ -80,10 +80,8 @@ import com.facebook.systrace.Systrace;
         new AndroidInfoModule(),
         new DeviceEventManagerModule(catalystApplicationContext, mHardwareBackBtnHandler),
         new ExceptionsManagerModule(mReactInstanceManager.getDevSupportManager()),
-        new Timing(catalystApplicationContext),
-        new SourceCodeModule(
-            mReactInstanceManager.getSourceUrl(),
-            mReactInstanceManager.getDevSupportManager().getSourceMapUrl()),
+        new Timing(catalystApplicationContext, mReactInstanceManager.getDevSupportManager()),
+        new SourceCodeModule(mReactInstanceManager.getSourceUrl()),
         uiManagerModule,
         new JSCHeapCapture(catalystApplicationContext),
         new DebugComponentOwnershipModule(catalystApplicationContext));

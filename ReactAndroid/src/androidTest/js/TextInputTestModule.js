@@ -90,7 +90,7 @@ var TextInputTestApp = React.createClass({
           autoFocus={true}
           keyboardType='numeric'
           multiline={true}
-          password={true}
+          secureTextEntry={true}
           defaultValue="This is text"
           testID="textInput1"
         />
@@ -101,7 +101,7 @@ var TextInputTestApp = React.createClass({
           autoFocus={false}
           keyboardType='default'
           multiline={false}
-          password={false}
+          secureTextEntry={false}
           placeholder='1234'
           testID="textInput2"
         />

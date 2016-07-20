@@ -71,6 +71,7 @@ public:
   virtual bool supportsProfiling() override;
   virtual void startProfiler(const std::string &titleString) override;
   virtual void stopProfiler(const std::string &titleString, const std::string &filename) override;
+  virtual void handleMemoryPressureUiHidden() override;
   virtual void handleMemoryPressureModerate() override;
   virtual void handleMemoryPressureCritical() override;
   virtual void destroy() override;
@@ -90,6 +91,8 @@ private:
   folly::dynamic m_jscConfig;
   std::unique_ptr<Object> m_batchedBridge;
   std::unique_ptr<Object> m_flushedQueueObj;
+  std::unique_ptr<Object> m_callFunctionObj;
+  std::unique_ptr<Object> m_invokeCallbackObj;
 
   /**
    * WebWorker constructor. Must be invoked from thread this Executor will run on.

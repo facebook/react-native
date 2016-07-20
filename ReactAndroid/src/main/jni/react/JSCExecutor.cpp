@@ -68,25 +68,6 @@ static JSValueRef nativeInjectHMRUpdate(
     const JSValueRef arguments[],
     JSValueRef *exception);
 
-static std::string executeJSCallWithJSC(
-    JSGlobalContextRef ctx,
-    const std::string& methodName,
-    const std::vector<folly::dynamic>& arguments) {
-  #ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(
-      TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor.executeJSCall",
-      "method", methodName);
-  #endif
-
-  // Evaluate script with JSC
-  folly::dynamic jsonArgs(arguments.begin(), arguments.end());
-  auto js = folly::to<std::string>(
-      "__fbBatchedBridge.", methodName, ".apply(null, ",
-      folly::toJson(jsonArgs), ")");
-  auto result = evaluateScript(ctx, String(js.c_str()), nullptr);
-  return Value(ctx, result).toJSONString();
-}
-
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(Bridge *bridge) {
   return std::unique_ptr<JSExecutor>(new JSCExecutor(bridge, cacheDir_, m_jscConfig));
 }
@@ -202,6 +183,8 @@ void JSCExecutor::terminateOnJSVMThread() {
 
   m_batchedBridge.reset();
   m_flushedQueueObj.reset();
+  m_callFunctionObj.reset();
+  m_invokeCallbackObj.reset();
 
   s_globalContextRefToJSCExecutor.erase(m_context);
   JSGlobalContextRelease(m_context);
@@ -266,6 +249,8 @@ bool JSCExecutor::ensureBatchedBridgeObject() {
   }
   m_batchedBridge = folly::make_unique<Object>(batchedBridgeValue.asObject());
   m_flushedQueueObj = folly::make_unique<Object>(m_batchedBridge->getProperty("flushedQueue").asObject());
+  m_callFunctionObj = folly::make_unique<Object>(m_batchedBridge->getProperty("callFunctionReturnFlushedQueue").asObject());
+  m_invokeCallbackObj = folly::make_unique<Object>(m_batchedBridge->getProperty("invokeCallbackAndReturnFlushedQueue").asObject());
   return true;
 }
 
@@ -277,9 +262,12 @@ void JSCExecutor::flush() {
 
   if (!ensureBatchedBridgeObject()) {
     throwJSExecutionException(
-        "Couldn't get the native call queue: bridge configuration isn't available. This "
-        "probably indicates there was an issue loading the JS bundle, e.g. it wasn't packaged "
-        "into the app or was malformed. Check your logs (`adb logcat`) for more information.");
+      "Could not connect to development server.\n"
+      "Try the following to fix the issue:\n"
+      "Ensure that the packager server is running\n"
+      "Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run 'adb devices' to see a list of connected devices\n"
+      "If you're on a physical device connected to the same machine, run 'adb reverse tcp:8081 tcp:8081' to forward requests from your device\n"
+      "If your device is on the same Wi-Fi network, set 'Debug server host & port for device' in 'Dev settings' to your machine's IP address and the port of the local dev server - e.g. 10.0.1.1:8081");
   }
 
   std::string calls = m_flushedQueueObj->callAsFunction().toJSONString();
@@ -287,6 +275,10 @@ void JSCExecutor::flush() {
 }
 
 void JSCExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
+#ifdef WITH_FBSYSTRACE
+  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor.callFunction");
+#endif
+
   if (!ensureBatchedBridgeObject()) {
     throwJSExecutionException(
         "Couldn't call JS module %s, method %s: bridge configuration isn't available. This "
@@ -295,27 +287,35 @@ void JSCExecutor::callFunction(const std::string& moduleId, const std::string& m
         methodId.c_str());
   }
 
-  std::vector<folly::dynamic> call {
-      moduleId,
-      methodId,
-      std::move(arguments),
+  String argsString = String(folly::toJson(std::move(arguments)).c_str());
+  String moduleIdStr(moduleId.c_str());
+  String methodIdStr(methodId.c_str());
+  JSValueRef args[] = {
+      JSValueMakeString(m_context, moduleIdStr),
+      JSValueMakeString(m_context, methodIdStr),
+      Value::fromJSON(m_context, argsString)
   };
-  std::string calls = executeJSCallWithJSC(m_context, "callFunctionReturnFlushedQueue", std::move(call));
-  m_bridge->callNativeModules(*this, calls, true);
+  auto result = m_callFunctionObj->callAsFunction(3, args);
+  m_bridge->callNativeModules(*this, result.toJSONString(), true);
 }
 
 void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
+#ifdef WITH_FBSYSTRACE
+  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor.invokeCallback");
+#endif
+
   if (!ensureBatchedBridgeObject()) {
     throwJSExecutionException(
         "Couldn't invoke JS callback %d: bridge configuration isn't available. This shouldn't be possible. Congratulations.", (int) callbackId);
   }
 
-  std::vector<folly::dynamic> call {
-      (double) callbackId,
-      std::move(arguments)
+  String argsString = String(folly::toJson(std::move(arguments)).c_str());
+  JSValueRef args[] = {
+      JSValueMakeNumber(m_context, callbackId),
+      Value::fromJSON(m_context, argsString)
   };
-  std::string calls = executeJSCallWithJSC(m_context, "invokeCallbackAndReturnFlushedQueue", std::move(call));
-  m_bridge->callNativeModules(*this, calls, true);
+  auto result = m_invokeCallbackObj->callAsFunction(2, args);
+  m_bridge->callNativeModules(*this, result.toJSONString(), true);
 }
 
 void JSCExecutor::setGlobalVariable(const std::string& propName, const std::string& jsonValue) {
@@ -357,6 +357,12 @@ void JSCExecutor::stopProfiler(const std::string &titleString, const std::string
   JSStringRef title = JSStringCreateWithUTF8CString(titleString.c_str());
   facebook::react::stopAndOutputProfilingFile(m_context, title, filename.c_str());
   JSStringRelease(title);
+  #endif
+}
+
+void JSCExecutor::handleMemoryPressureUiHidden() {
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::UI_HIDDEN);
   #endif
 }
 

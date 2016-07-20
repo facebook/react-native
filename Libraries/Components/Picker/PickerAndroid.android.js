@@ -14,8 +14,8 @@
 
 var ColorPropType = require('ColorPropType');
 var React = require('React');
-var ReactChildren = require('ReactChildren');
-var ReactPropTypes = require('ReactPropTypes');
+var ReactChildren = require('react/lib/ReactChildren');
+var ReactPropTypes = require('react/lib/ReactPropTypes');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');

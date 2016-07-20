@@ -1,0 +1,5 @@
+rootProject.name = 'TestRN'
+
+include ':app'
+include ':test'
+project(':test').projectDir = new File(rootProject.projectDir, '../node_modules/test/android')

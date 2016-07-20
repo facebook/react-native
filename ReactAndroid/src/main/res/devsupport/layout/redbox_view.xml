@@ -11,11 +11,46 @@
     android:layout_height="0dp"
     android:layout_weight="1"
     />
-  <Button
-    android:id="@+id/rn_redbox_reloadjs"
+  <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:text="@string/catalyst_reloadjs"
+    android:orientation="horizontal"
+    >
+    <Button
+      android:id="@+id/rn_redbox_dismiss_button"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:layout_margin="4dp"
+      android:text="@string/catalyst_dismiss_button"
+      android:textColor="@android:color/white"
+      android:textSize="14sp"
+      android:alpha="0.5"
+      style="?android:attr/borderlessButtonStyle"
     />
+    <Button
+      android:id="@+id/rn_redbox_reload_button"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:layout_margin="4dp"
+      android:text="@string/catalyst_reload_button"
+      android:textColor="@android:color/white"
+      android:textSize="14sp"
+      android:alpha="0.5"
+      style="?android:attr/borderlessButtonStyle"
+    />
+    <Button
+      android:id="@+id/rn_redbox_copy_button"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:layout_margin="4dp"
+      android:text="@string/catalyst_copy_button"
+      android:textColor="@android:color/white"
+      android:textSize="14sp"
+      android:alpha="0.5"
+      style="?android:attr/borderlessButtonStyle"
+    />
+  </LinearLayout>
 </LinearLayout>

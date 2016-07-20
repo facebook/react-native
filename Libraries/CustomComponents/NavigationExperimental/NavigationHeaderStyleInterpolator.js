@@ -54,7 +54,7 @@ function forLeft(props: NavigationSceneRendererProps): Object {
   return {
     opacity: position.interpolate({
       inputRange: [ index - 1, index, index + 1 ],
-      outputRange: [ 0, 1, 0 ],
+      outputRange: ([ 0, 1, 0 ]: Array<number>),
     }),
   };
 }
@@ -65,13 +65,13 @@ function forCenter(props: NavigationSceneRendererProps): Object {
   return {
     opacity:position.interpolate({
       inputRange: [ index - 1, index, index + 1 ],
-      outputRange: [ 0, 1, 0 ],
+      outputRange: ([ 0, 1, 0 ]: Array<number>),
     }),
     transform: [
       {
         translateX: position.interpolate({
           inputRange: [ index - 1, index + 1 ],
-          outputRange: [ 200, -200 ],
+          outputRange: ([ 200, -200 ]: Array<number>),
         }),
       }
     ],
@@ -84,7 +84,7 @@ function forRight(props: NavigationSceneRendererProps): Object {
   return {
     opacity: position.interpolate({
       inputRange: [ index - 1, index, index + 1 ],
-      outputRange: [ 0, 1, 0 ],
+      outputRange: ([ 0, 1, 0 ]: Array<number>),
     }),
   };
 }

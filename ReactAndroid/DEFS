@@ -10,6 +10,10 @@ import os
 def react_native_target(path):
   return '//ReactAndroid/src/main/' + path
 
+# Example: react_native_target('bridge:bridge')
+def react_native_xplat_target(path):
+  return '//ReactCommon/' + path
+
 # Example: react_native_tests_target('java/com/facebook/react/modules:modules')
 def react_native_tests_target(path):
   return '//ReactAndroid/src/test/' + path
@@ -28,14 +32,8 @@ JSC_DEPS = [
   '//native/third-party/jsc:jsc_legacy_profiler',
 ]
 
-JSC_INTERNAL_DEPS = [
-  '//native/third-party/jsc-internal:jsc',
-  '//native/third-party/jsc-internal:jsc_legacy_profiler',
-]
-
+CSSLAYOUT_TARGET = '//ReactAndroid/src/main/java/com/facebook/csslayout:csslayout'
 FBGLOGINIT_TARGET = '//ReactAndroid/src/main/jni/first-party/fbgloginit:fbgloginit'
-
-INTERNAL_APP = 'PUBLIC'
 
 # React property preprocessor
 original_android_library=android_library

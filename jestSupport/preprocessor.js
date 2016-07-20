@@ -8,9 +8,17 @@
  */
 'use strict';
 
+const babel = require('babel-core');
+const babelRegisterOnly = require('../packager/babelRegisterOnly');
 const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
 const path = require('path');
 const transformer = require('../packager/transformer.js');
+
+const nodeFiles = RegExp([
+  '/local-cli/',
+  '/packager/(?!react-packager/src/Resolver/polyfills/)',
+].join('|'));
+const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 
 module.exports = {
   process(src, file) {
@@ -18,6 +26,9 @@ module.exports = {
     // untransformed copy of React
     if (file.match(/node_modules\/(?!react-tools\/)/)) {
       return src;
+    } else if (nodeFiles.test(file)) { // node specific transforms only
+      return babel.transform(
+        src, Object.assign({filename: file}, nodeOptions)).code;
     }
 
     return transformer.transform(src, file, {inlineRequires: true}).code;

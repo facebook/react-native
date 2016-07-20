@@ -11,21 +11,19 @@
  */
 'use strict';
 
-const NavigationAnimatedView = require('NavigationAnimatedView');
 const NavigationCard = require('NavigationCard');
 const NavigationCardStack = require('NavigationCardStack');
 const NavigationHeader = require('NavigationHeader');
-const NavigationReducer = require('NavigationReducer');
-const NavigationStateUtils = require('NavigationStateUtils');
 const NavigationPropTypes = require('NavigationPropTypes');
+const NavigationStateUtils = require('NavigationStateUtils');
+const NavigationTransitioner = require('NavigationTransitioner');
 
 const NavigationExperimental = {
   // Core
   StateUtils: NavigationStateUtils,
-  Reducer: NavigationReducer,
 
   // Views
-  AnimatedView: NavigationAnimatedView,
+  Transitioner: NavigationTransitioner,
 
   // CustomComponents:
   Card: NavigationCard,

@@ -15,7 +15,7 @@ const Platform = require('Platform');
 const NativeModules = require('NativeModules');
 const { UIManager } = NativeModules;
 
-const findNodeHandle = require('findNodeHandle');
+const findNodeHandle = require('react/lib/findNodeHandle');
 
 const _takeSnapshot = UIManager.takeSnapshot;
 
@@ -37,7 +37,7 @@ const _takeSnapshot = UIManager.takeSnapshot;
  * @platform ios
  */
 UIManager.takeSnapshot = async function(
-  view ?: 'window' | ReactElement | number,
+  view ?: 'window' | ReactElement<any> | number,
   options ?: {
     width ?: number;
     height ?: number;

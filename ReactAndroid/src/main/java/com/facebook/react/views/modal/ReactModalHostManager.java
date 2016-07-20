@@ -62,7 +62,7 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
   @Override
   public void onDropViewInstance(ReactModalHostView view) {
     super.onDropViewInstance(view);
-    view.dismiss();
+    view.onDropInstance();
   }
 
   @ReactProp(name = "animationType")

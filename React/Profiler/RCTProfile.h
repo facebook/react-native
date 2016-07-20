@@ -26,7 +26,7 @@ RCT_EXTERN NSString *const RCTProfileDidEndProfiling;
 
 RCT_EXTERN const uint64_t RCTProfileTagAlways;
 
-#if RCT_DEV
+#if RCT_PROFILE
 
 @class RCTBridge;
 
@@ -132,6 +132,8 @@ RCT_EXTERN void RCTProfileImmediateEvent(uint64_t tag,
  * self and _cmd to name this event for simplicity sake.
  *
  * NOTE: The block can't expect any argument
+ *
+ * DEPRECATED: this approach breaks debugging and stepping through instrumented block functions
  */
 #define RCTProfileBlock(block, tag, category, arguments) \
 ^{ \

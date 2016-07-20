@@ -61,12 +61,10 @@ class RouteStack {
     this._index = index;
   }
 
-  /* $FlowFixMe - get/set properties not yet supported */
   get size(): number {
     return this._routeNodes.size;
   }
 
-  /* $FlowFixMe - get/set properties not yet supported */
   get index(): number {
     return this._index;
   }
@@ -149,7 +147,7 @@ class RouteStack {
    * excluding the last index in this stack.
    */
   pop(): RouteStack {
-    invariant(this._routeNodes.size > 1, 'shoud not pop routeNodes stack to empty');
+    invariant(this._routeNodes.size > 1, 'should not pop routeNodes stack to empty');
 
     // When popping, removes the rest of the routes past the current index.
     var routeNodes = this._routeNodes.slice(0, this._index);

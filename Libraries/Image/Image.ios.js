@@ -11,75 +11,122 @@
  */
 'use strict';
 
-var EdgeInsetsPropType = require('EdgeInsetsPropType');
-var ImageResizeMode = require('ImageResizeMode');
-var ImageStylePropTypes = require('ImageStylePropTypes');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModules = require('NativeModules');
-var PropTypes = require('ReactPropTypes');
-var React = require('React');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var StyleSheet = require('StyleSheet');
-var StyleSheetPropType = require('StyleSheetPropType');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const ImageResizeMode = require('ImageResizeMode');
+const ImageSourcePropType = require('ImageSourcePropType');
+const ImageStylePropTypes = require('ImageStylePropTypes');
+const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+const NativeModules = require('NativeModules');
+const PropTypes = require('react/lib/ReactPropTypes');
+const React = require('React');
+const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+const StyleSheet = require('StyleSheet');
+const StyleSheetPropType = require('StyleSheetPropType');
 
-var flattenStyle = require('flattenStyle');
-var requireNativeComponent = require('requireNativeComponent');
-var resolveAssetSource = require('resolveAssetSource');
+const flattenStyle = require('flattenStyle');
+const requireNativeComponent = require('requireNativeComponent');
+const resolveAssetSource = require('resolveAssetSource');
 
-var {
-  ImageLoader,
-  ImageViewManager,
-  NetworkImageViewManager,
-} = NativeModules;
+const ImageViewManager = NativeModules.ImageViewManager;
 
 /**
  * A React component for displaying different types of images,
  * including network images, static resources, temporary local images, and
  * images from local disk, such as the camera roll.
  *
- * Example usage:
+ * This exmaples shows both fetching and displaying an image from local storage as well as on from
+ * network.
  *
+ * ```ReactNativeWebPlayer
+ * import React, { Component } from 'react';
+ * import { AppRegistry, View, Image } from 'react-native';
+ *
+ * class DisplayAnImage extends Component {
+ *   render() {
+ *     return (
+ *       <View>
+ *         <Image
+ *           source={require('./img/favicon.png')}
+ *         />
+ *         <Image
+ *           source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
+ *         />
+ *       </View>
+ *     );
+ *   }
+ * }
+ *
+ * // App registration and rendering
+ * AppRegistry.registerComponent('DisplayAnImage', () => DisplayAnImage);
  * ```
- * renderImages: function() {
- *   return (
- *     <View>
- *       <Image
- *         style={styles.icon}
- *         source={require('./myIcon.png')}
- *       />
- *       <Image
- *         style={styles.logo}
- *         source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
- *       />
- *     </View>
- *   );
- * },
+ *
+ * You can also add `style` to an image:
+ *
+ * ```ReactNativeWebPlayer
+ * import React, { Component } from 'react';
+ * import { AppRegistry, View, Image, StyleSheet} from 'react-native';
+ *
+ * const styles = StyleSheet.create({
+ *   stretch: {
+ *     width: 50,
+ *     height: 200
+ *   }
+ * });
+ *
+  *class DisplayAnImageWithStyle extends Component {
+ *   render() {
+ *     return (
+ *       <View>
+ *         <Image
+ *           style={styles.stretch}
+ *           source={require('./img/favicon.png')}
+ *         />
+ *       </View>
+ *     );
+ *   }
+ * }
+ *
+ * // App registration and rendering
+ * AppRegistry.registerComponent(
+ *   'DisplayAnImageWithStyle',
+ *   () => DisplayAnImageWithStyle
+ * );
  * ```
  */
-var Image = React.createClass({
+const Image = React.createClass({
   propTypes: {
+    /**
+     * > `ImageResizeMode` is an `Enum` for different image resizing modes, set via the
+     * > `resizeMode` style property on `Image` components. The values are `contain`, `cover`,
+     * > `stretch`, `center`, `repeat`.
+     */
     style: StyleSheetPropType(ImageStylePropTypes),
     /**
-     * `uri` is a string representing the resource identifier for the image, which
-     * could be an http address, a local file path, or the name of a static image
-     * resource (which should be wrapped in the `require('./path/to/image.png')` function).
+     * The image source (either a remote URL or a local file resource).
      */
-    source: PropTypes.oneOfType([
-      PropTypes.shape({
-        uri: PropTypes.string,
-      }),
-      // Opaque type returned by require('./image.jpg')
-      PropTypes.number,
-    ]),
+    source: ImageSourcePropType,
     /**
      * A static image to display while loading the image source.
+     *
+     * - `uri` - a string representing the resource identifier for the image, which
+     * should be either a local file path or the name of a static image resource
+     * (which should be wrapped in the `require('./path/to/image.png')` function).
+     * - `width`, `height` - can be specified if known at build time, in which case
+     * these will be used to set the default `<Image/>` component dimensions.
+     * - `scale` - used to indicate the scale factor of the image. Defaults to 1.0 if
+     * unspecified, meaning that one image pixel equates to one display point / DIP.
+     * - `number` - Opaque type returned by something like `require('./image.jpg')`.
+     *
      * @platform ios
      */
     defaultSource: PropTypes.oneOfType([
+      // TODO: Tooling to support documenting these directly and having them display in the docs.
       PropTypes.shape({
         uri: PropTypes.string,
+        width: PropTypes.number,
+        height: PropTypes.number,
+        scale: PropTypes.number,
       }),
-      // Opaque type returned by require('./image.jpg')
       PropTypes.number,
     ]),
     /**
@@ -100,10 +147,11 @@ var Image = React.createClass({
     blurRadius: PropTypes.number,
     /**
      * When the image is resized, the corners of the size specified
-     * by capInsets will stay a fixed size, but the center content and borders
+     * by `capInsets` will stay a fixed size, but the center content and borders
      * of the image will be stretched.  This is useful for creating resizable
-     * rounded buttons, shadows, and other resizable assets.  More info on
-     * [Apple documentation](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIImage_Class/index.html#//apple_ref/occ/instm/UIImage/resizableImageWithCapInsets)
+     * rounded buttons, shadows, and other resizable assets.  More info in the
+     * [official Apple documentation](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIImage_Class/index.html#//apple_ref/occ/instm/UIImage/resizableImageWithCapInsets).
+     *
      * @platform ios
      */
     capInsets: EdgeInsetsPropType,
@@ -111,18 +159,21 @@ var Image = React.createClass({
      * Determines how to resize the image when the frame doesn't match the raw
      * image dimensions.
      *
-     * 'cover': Scale the image uniformly (maintain the image's aspect ratio)
+     * - `cover`: Scale the image uniformly (maintain the image's aspect ratio)
      * so that both dimensions (width and height) of the image will be equal
      * to or larger than the corresponding dimension of the view (minus padding).
      *
-     * 'contain': Scale the image uniformly (maintain the image's aspect ratio)
+     * - `contain`: Scale the image uniformly (maintain the image's aspect ratio)
      * so that both dimensions (width and height) of the image will be equal to
      * or less than the corresponding dimension of the view (minus padding).
      *
-     * 'stretch': Scale width and height independently, This may change the
+     * - `stretch`: Scale width and height independently, This may change the
      * aspect ratio of the src.
+     *
+     * - `repeat`: Repeat the image to cover the frame of the view. The
+     * image will keep it's size and aspect ratio. (iOS only)
      */
-    resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch']),
+    resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch', 'repeat', 'center']),
     /**
      * A unique identifier for this element to be used in UI Automation
      * testing scripts.
@@ -134,25 +185,27 @@ var Image = React.createClass({
      */
     onLayout: PropTypes.func,
     /**
-     * Invoked on load start
+     * Invoked on load start.
+     *
+     * e.g., `onLoadStart={(e) => this.setState({loading: true})}`
      */
     onLoadStart: PropTypes.func,
     /**
-     * Invoked on download progress with `{nativeEvent: {loaded, total}}`
+     * Invoked on download progress with `{nativeEvent: {loaded, total}}`.
      * @platform ios
      */
     onProgress: PropTypes.func,
     /**
-     * Invoked on load error with `{nativeEvent: {error}}`
+     * Invoked on load error with `{nativeEvent: {error}}`.
      * @platform ios
      */
     onError: PropTypes.func,
     /**
-     * Invoked when load completes successfully
+     * Invoked when load completes successfully.
      */
     onLoad: PropTypes.func,
     /**
-     * Invoked when load either succeeds or fails
+     * Invoked when load either succeeds or fails.
      */
     onLoadEnd: PropTypes.func,
   },
@@ -170,6 +223,14 @@ var Image = React.createClass({
      * does not fully load/download the image data. A proper, supported way to
      * preload images will be provided as a separate API.
      *
+     * @param uri The location of the image.
+     * @param success The function that will be called if the image was sucessfully found and width
+     * and height retrieved.
+     * @param failure The function that will be called if there was an error, such as failing to
+     * to retrieve the image.
+     *
+     * @returns void
+     *
      * @platform ios
      */
     getSize: function(
@@ -184,9 +245,13 @@ var Image = React.createClass({
     /**
      * Prefetches a remote image for later use by downloading it to the disk
      * cache
+     *
+     * @param url The remote location of the image.
+     *
+     * @return The prefetched image.
      */
     prefetch(url: string) {
-      return ImageLoader.prefetchImage(url);
+      return ImageViewManager.prefetchImage(url);
     },
   },
 
@@ -201,39 +266,23 @@ var Image = React.createClass({
     validAttributes: ReactNativeViewAttributes.UIView
   },
 
-  contextTypes: {
-    isInAParentText: React.PropTypes.bool
-  },
-
   render: function() {
-    var source = resolveAssetSource(this.props.source) || {};
-    var {width, height, uri} = source;
-    var style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
+    const source = resolveAssetSource(this.props.source) || { uri: undefined, width: undefined, height: undefined };
+    const {width, height, uri} = source;
+    const style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
+    const resizeMode = this.props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
+    const tintColor = (style || {}).tintColor; // Workaround for flow bug t7737108
 
-    var isNetwork = uri && uri.match(/^https?:/);
-    var RawImage = isNetwork ? RCTNetworkImageView : RCTImageView;
-    var resizeMode = this.props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
-    var tintColor = (style || {}).tintColor; // Workaround for flow bug t7737108
-
-    // This is a workaround for #8243665. RCTNetworkImageView does not support tintColor
-    // TODO: Remove this hack once we have one image implementation #8389274
-    if (isNetwork && (tintColor || this.props.blurRadius)) {
-      RawImage = RCTImageView;
+    if (uri === '') {
+      console.warn('source.uri should not be an empty string');
     }
 
     if (this.props.src) {
       console.warn('The <Image> component requires a `source` property rather than `src`.');
     }
 
-    if (this.context.isInAParentText) {
-      RawImage = RCTVirtualImage;
-      if (!width || !height) {
-        console.warn('You must specify a width and height for the image %s', uri);
-      }
-    }
-
     return (
-      <RawImage
+      <RCTImageView
         {...this.props}
         style={style}
         resizeMode={resizeMode}
@@ -244,15 +293,12 @@ var Image = React.createClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   base: {
     overflow: 'hidden',
   },
 });
 
-var RCTImageView = requireNativeComponent('RCTImageView', Image);
-var RCTNetworkImageView = NetworkImageViewManager ? requireNativeComponent('RCTNetworkImageView', Image) : RCTImageView;
-var RCTVirtualImage = requireNativeComponent('RCTVirtualImage', Image);
-
+const RCTImageView = requireNativeComponent('RCTImageView', Image);
 
 module.exports = Image;

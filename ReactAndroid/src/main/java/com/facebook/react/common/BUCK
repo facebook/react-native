@@ -7,6 +7,7 @@ android_library(
     ':build_config',
     react_native_dep('third-party/java/infer-annotations:infer-annotations'),
     react_native_dep('third-party/java/jsr-305:jsr-305'),
+    react_native_dep('third-party/java/okhttp:okhttp3'),
   ],
   exported_deps = [
     react_native_dep('java/com/facebook/proguard/annotations:annotations'),

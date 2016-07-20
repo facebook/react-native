@@ -40,8 +40,8 @@ function _dependencies(argv, config, resolve, reject, packagerInstance) {
     }, {
       command: 'transformer',
       type: 'string',
-      default: require.resolve('../../packager/transformer'),
-      description: 'Specify a custom transformer to be used (absolute path)'
+      default: null,
+      description: 'Specify a custom transformer to be used'
     }, {
       command: 'verbose',
       description: 'Enables logging',
@@ -54,12 +54,17 @@ function _dependencies(argv, config, resolve, reject, packagerInstance) {
     reject(`File ${rootModuleAbsolutePath} does not exist`);
   }
 
+  const transformModulePath =
+      args.transformer ? path.resolve(args.transformer) :
+      typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
+      undefined;
+
   const packageOpts = {
     projectRoots: config.getProjectRoots(),
     assetRoots: config.getAssetRoots(),
     blacklistRE: config.getBlacklistRE(args.platform),
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-    transformModulePath: args.transformer,
+    transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
     verbose: config.verbose,
   };

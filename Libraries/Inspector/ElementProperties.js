@@ -12,7 +12,7 @@
 'use strict';
 
 var BoxInspector = require('BoxInspector');
-var PropTypes = require('ReactPropTypes');
+var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
 var StyleInspector = require('StyleInspector');
 var StyleSheet = require('StyleSheet');
@@ -20,9 +20,11 @@ var Text = require('Text');
 var TouchableHighlight = require('TouchableHighlight');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
+var {fetch} = require('fetch');
 
 var flattenStyle = require('flattenStyle');
 var mapWithSeparator = require('mapWithSeparator');
+var openFileInEditor = require('openFileInEditor');
 
 var ElementProperties = React.createClass({
   propTypes: {
@@ -32,11 +34,31 @@ var ElementProperties = React.createClass({
       PropTypes.array,
       PropTypes.number,
     ]),
+    source: PropTypes.shape({
+      fileName: PropTypes.string,
+      lineNumber: PropTypes.number,
+    }),
   },
 
   render: function() {
     var style = flattenStyle(this.props.style);
     var selection = this.props.selection;
+    var openFileButton;
+    var source = this.props.source;
+    var {fileName, lineNumber} = source || {};
+    if (fileName && lineNumber) {
+      var parts = fileName.split('/');
+      var fileNameShort = parts[parts.length - 1];
+      openFileButton = (
+        <TouchableHighlight
+          style={styles.openButton}
+          onPress={openFileInEditor.bind(null, fileName, lineNumber)}>
+          <Text style={styles.openButtonTitle} numberOfLines={1}>
+            {fileNameShort}:{lineNumber}
+          </Text>
+        </TouchableHighlight>
+      );
+    }
     // Without the `TouchableWithoutFeedback`, taps on this inspector pane
     // would change the inspected element to whatever is under the inspector
     return (
@@ -51,7 +73,7 @@ var ElementProperties = React.createClass({
                   style={[styles.breadItem, i === selection && styles.selected]}
                   onPress={() => this.props.setSelection(i)}>
                   <Text style={styles.breadItemText}>
-                    {item.getName ? item.getName() : 'Unknown'}
+                    {getInstanceName(item)}
                   </Text>
                 </TouchableHighlight>
               ),
@@ -63,14 +85,27 @@ var ElementProperties = React.createClass({
             )}
           </View>
           <View style={styles.row}>
-            <StyleInspector style={style} />
+            <View style={styles.col}>
+              <StyleInspector style={style} />
+              {openFileButton}
+            </View>
             <BoxInspector style={style} frame={this.props.frame} />
           </View>
         </View>
       </TouchableWithoutFeedback>
     );
-  }
+  },
 });
+
+function getInstanceName(instance) {
+  if (instance.getName) {
+    return instance.getName();
+  }
+  if (instance.constructor && instance.constructor.displayName) {
+    return instance.constructor.displayName;
+  }
+  return 'Unknown';
+}
 
 var styles = StyleSheet.create({
   breadSep: {
@@ -80,6 +115,7 @@ var styles = StyleSheet.create({
   breadcrumb: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    alignItems: 'flex-start',
     marginBottom: 5,
   },
   selected: {
@@ -101,6 +137,9 @@ var styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  col: {
+    flex: 1,
+  },
   info: {
     padding: 10,
   },
@@ -108,6 +147,17 @@ var styles = StyleSheet.create({
     color: 'white',
     fontSize: 9,
   },
+  openButton: {
+    padding: 10,
+    backgroundColor: '#000',
+    marginVertical: 5,
+    marginRight: 5,
+    borderRadius: 2,
+  },
+  openButtonTitle: {
+    color: 'white',
+    fontSize: 8,
+  }
 });
 
 module.exports = ElementProperties;
