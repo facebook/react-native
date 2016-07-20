@@ -113,7 +113,7 @@ class AlertAndroid {
     }
     DialogModuleAndroid.showAlert(
       config,
-      (errorMessage) => console.warn(message),
+      (errorMessage) => console.warn(errorMessage),
       (action, buttonKey) => {
         if (action !== DialogModuleAndroid.buttonClicked) {
           return;

@@ -14,8 +14,8 @@
 const RCTNetworking = require('RCTNetworking');
 
 const EventTarget = require('event-target-shim');
+const base64 = require('base64-js');
 const invariant = require('fbjs/lib/invariant');
-const utf8 = require('utf8');
 const warning = require('fbjs/lib/warning');
 
 type ResponseType = '' | 'arraybuffer' | 'blob' | 'document' | 'json' | 'text';
@@ -102,10 +102,11 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   _method: ?string = null;
   _response: string | ?Object;
   _responseType: ResponseType;
-  _responseText: string = '';
+  _response: string = '';
   _sent: boolean;
   _url: ?string = null;
   _timedOut: boolean = false;
+  _trackingName: string = 'unknown';
   _incrementalEvents: boolean = false;
 
   constructor() {
@@ -124,7 +125,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     this._cachedResponse = undefined;
     this._hasError = false;
     this._headers = {};
-    this._responseText = '';
+    this._response = '';
     this._responseType = '';
     this._sent = false;
     this._lowerCaseResponseHeaders = {};
@@ -133,17 +134,15 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     this._timedOut = false;
   }
 
-  // $FlowIssue #10784535
   get responseType(): ResponseType {
     return this._responseType;
   }
 
-  // $FlowIssue #10784535
   set responseType(responseType: ResponseType): void {
-    if (this.readyState > HEADERS_RECEIVED) {
+    if (this._sent) {
       throw new Error(
-        "Failed to set the 'responseType' property on 'XMLHttpRequest': The " +
-        "response type cannot be set if the object's state is LOADING or DONE"
+        'Failed to set the \'responseType\' property on \'XMLHttpRequest\': The ' +
+        'response type cannot be set after the request has been sent.'
       );
     }
     if (!SUPPORTED_RESPONSE_TYPES.hasOwnProperty(responseType)) {
@@ -162,27 +161,25 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     this._responseType = responseType;
   }
 
-  // $FlowIssue #10784535
   get responseText(): string {
     if (this._responseType !== '' && this._responseType !== 'text') {
       throw new Error(
-        `The 'responseText' property is only available if 'responseType' ` +
+        "The 'responseText' property is only available if 'responseType' " +
         `is set to '' or 'text', but it is '${this._responseType}'.`
       );
     }
     if (this.readyState < LOADING) {
       return '';
     }
-    return this._responseText;
+    return this._response;
   }
 
-  // $FlowIssue #10784535
   get response(): Response {
     const {responseType} = this;
     if (responseType === '' || responseType === 'text') {
       return this.readyState < LOADING || this._hasError
         ? ''
-        : this._responseText;
+        : this._response;
     }
 
     if (this.readyState !== DONE) {
@@ -193,26 +190,25 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
       return this._cachedResponse;
     }
 
-    switch (this._responseType) {
+    switch (responseType) {
       case 'document':
         this._cachedResponse = null;
         break;
 
       case 'arraybuffer':
-        this._cachedResponse = toArrayBuffer(
-          this._responseText, this.getResponseHeader('content-type') || '');
+        this._cachedResponse = base64.toByteArray(this._response).buffer;
         break;
 
       case 'blob':
         this._cachedResponse = new global.Blob(
-          [this._responseText],
+          [base64.toByteArray(this._response).buffer],
           {type: this.getResponseHeader('content-type') || ''}
         );
         break;
 
       case 'json':
         try {
-          this._cachedResponse = JSON.parse(this._responseText);
+          this._cachedResponse = JSON.parse(this._response);
         } catch (_) {
           this._cachedResponse = null;
         }
@@ -231,7 +227,11 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   }
 
   // exposed for testing
-  __didUploadProgress(requestId: number, progress: number, total: number): void {
+  __didUploadProgress(
+    requestId: number,
+    progress: number,
+    total: number
+  ): void {
     if (requestId === this._requestId) {
       this.upload.dispatchEvent({
         type: 'progress',
@@ -260,16 +260,47 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     }
   }
 
-  __didReceiveData(requestId: number, responseText: string): void {
-    if (requestId === this._requestId) {
-      if (!this._responseText) {
-        this._responseText = responseText;
-      } else {
-        this._responseText += responseText;
-      }
-      this._cachedResponse = undefined; // force lazy recomputation
-      this.setReadyState(this.LOADING);
+  __didReceiveData(requestId: number, response: string): void {
+    if (requestId !== this._requestId) {
+      return;
     }
+    this._response = response;
+    this._cachedResponse = undefined; // force lazy recomputation
+    this.setReadyState(this.LOADING);
+  }
+
+  __didReceiveIncrementalData(
+    requestId: number,
+    responseText: string,
+    progress: number,
+    total: number
+  ) {
+    if (requestId !== this._requestId) {
+      return;
+    }
+    if (!this._response) {
+      this._response = responseText;
+    } else {
+      this._response += responseText;
+    }
+    this.setReadyState(this.LOADING);
+    this.__didReceiveDataProgress(requestId, progress, total);
+  }
+
+  __didReceiveDataProgress(
+    requestId: number,
+    loaded: number,
+    total: number
+  ): void {
+    if (requestId !== this._requestId) {
+      return;
+    }
+    this.dispatchEvent({
+      type: 'progress',
+      lengthComputable: total >= 0,
+      loaded,
+      total,
+    });
   }
 
   // exposed for testing
@@ -280,7 +311,9 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   ): void {
     if (requestId === this._requestId) {
       if (error) {
-        this._responseText = error;
+        if (this._responseType === '' || this._responseType === 'text') {
+          this._response = error;
+        }
         this._hasError = true;
         if (timeOutError) {
           this._timedOut = true;
@@ -322,6 +355,14 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     this._headers[header.toLowerCase()] = value;
   }
 
+  /**
+   * Custom extension for tracking origins of request.
+   */
+  setTrackingName(trackingName: string): XMLHttpRequest {
+    this._trackingName = trackingName;
+    return this;
+  }
+
   open(method: string, url: string, async: ?boolean): void {
     /* Other optional arguments are not supported yet */
     if (this.readyState !== this.UNSENT) {
@@ -334,46 +375,10 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     if (!url) {
       throw new Error('Cannot load an empty url');
     }
-    this._reset();
     this._method = method.toUpperCase();
     this._url = url;
     this._aborted = false;
     this.setReadyState(this.OPENED);
-  }
-
-  sendImpl(
-    method: ?string,
-    url: ?string,
-    headers: Object,
-    data: any,
-    useIncrementalUpdates: boolean,
-    timeout: number,
-  ): void {
-    this._subscriptions.push(RCTNetworking.addListener(
-      'didSendNetworkData',
-      (args) => this.__didUploadProgress(...args)
-    ));
-    this._subscriptions.push(RCTNetworking.addListener(
-      'didReceiveNetworkResponse',
-      (args) => this.__didReceiveResponse(...args)
-    ));
-    this._subscriptions.push(RCTNetworking.addListener(
-      'didReceiveNetworkData',
-      (args) =>  this.__didReceiveData(...args)
-    ));
-    this._subscriptions.push(RCTNetworking.addListener(
-      'didCompleteNetworkResponse',
-      (args) => this.__didCompleteResponse(...args)
-    ));
-    RCTNetworking.sendRequest(
-      method,
-      url,
-      headers,
-      data,
-      useIncrementalUpdates,
-      timeout,
-      this.__didCreateRequest.bind(this),
-    );
   }
 
   send(data: any): void {
@@ -384,14 +389,52 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
       throw new Error('Request has already been sent');
     }
     this._sent = true;
-    const incrementalEvents = this._incrementalEvents || !!this.onreadystatechange;
-    this.sendImpl(
+    const incrementalEvents = this._incrementalEvents ||
+      !!this.onreadystatechange ||
+      !!this.onprogress;
+
+    this._subscriptions.push(RCTNetworking.addListener(
+      'didSendNetworkData',
+      (args) => this.__didUploadProgress(...args)
+    ));
+    this._subscriptions.push(RCTNetworking.addListener(
+      'didReceiveNetworkResponse',
+      (args) => this.__didReceiveResponse(...args)
+    ));
+    this._subscriptions.push(RCTNetworking.addListener(
+      'didReceiveNetworkData',
+      (args) => this.__didReceiveData(...args)
+    ));
+    this._subscriptions.push(RCTNetworking.addListener(
+      'didReceiveNetworkIncrementalData',
+      (args) => this.__didReceiveIncrementalData(...args)
+    ));
+    this._subscriptions.push(RCTNetworking.addListener(
+      'didReceiveNetworkDataProgress',
+      (args) => this.__didReceiveDataProgress(...args)
+    ));
+    this._subscriptions.push(RCTNetworking.addListener(
+      'didCompleteNetworkResponse',
+      (args) => this.__didCompleteResponse(...args)
+    ));
+
+    let nativeResponseType = 'text';
+    if (this._responseType === 'arraybuffer' || this._responseType === 'blob') {
+      nativeResponseType = 'base64';
+    }
+
+    invariant(this._method, 'Request method needs to be defined.');
+    invariant(this._url, 'Request URL needs to be defined.');
+    RCTNetworking.sendRequest(
       this._method,
+      this._trackingName,
       this._url,
       this._headers,
       data,
+      nativeResponseType,
       incrementalEvents,
-      this.timeout
+      this.timeout,
+      this.__didCreateRequest.bind(this),
     );
   }
 
@@ -444,31 +487,10 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     // have to send repeated LOADING events with incremental updates
     // to responseText, which will avoid a bunch of native -> JS
     // bridge traffic.
-    if (type === 'readystatechange') {
+    if (type === 'readystatechange' || type === 'progress') {
       this._incrementalEvents = true;
     }
     super.addEventListener(type, listener);
-  }
-}
-
-
-function toArrayBuffer(text: string, contentType: string): ArrayBuffer {
-  const {length} = text;
-  if (length === 0) {
-    return new ArrayBuffer(0);
-  }
-
-  const charsetMatch = contentType.match(/;\s*charset=([^;]*)/i);
-  const charset = charsetMatch ? charsetMatch[1].trim() : 'utf-8';
-
-  if (/^utf-?8$/i.test(charset)) {
-    return utf8.encode(text);
-  } else { //TODO: utf16 / ucs2 / utf32
-    const array = new Uint8Array(length);
-    for (let i = 0; i < length; i++) {
-      array[i] = text.charCodeAt(i); // Uint8Array automatically masks with 0xff
-    }
-    return array.buffer;
   }
 }
 

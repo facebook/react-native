@@ -116,7 +116,7 @@ const currentCentroidY = TouchHistoryMath.currentCentroidY;
  * ### Working Example
  *
  * To see it in action, try the
- * [PanResponder example in UIExplorer](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/PanResponderExample.js)
+ * [PanResponder example in UIExplorer](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/js/PanResponderExample.js)
  */
 
 const PanResponder = {
@@ -388,7 +388,12 @@ const PanResponder = {
           config.onPanResponderTerminationRequest(e, gestureState);
       }
     };
-    return { panHandlers: panHandlers };
+    return {
+      panHandlers,
+      getInteractionHandle(): ?number {
+        return interactionState.handle;
+      },
+    };
   }
 };
 

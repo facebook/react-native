@@ -163,6 +163,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   /* package */ native void loadScriptFromAssets(AssetManager assetManager, String assetURL);
   /* package */ native void loadScriptFromFile(String fileName, String sourceURL);
+  /* package */ native void loadScriptFromOptimizedBundle(String path, String sourceURL, int flags);
 
   @Override
   public void runJSBundle() {

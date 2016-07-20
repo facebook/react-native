@@ -5,6 +5,7 @@ layout: docs
 category: The Basics
 permalink: docs/style.html
 next: height-and-width
+previous: state
 ---
 
 With React Native, you don't use a special language or syntax for  defining styles. You just style your application using JavaScript. All of the core components accept a prop named `style`. The style names and values usually match how CSS works on the web, except names are written like `backgroundColor` instead of like `background-color`.
@@ -45,7 +46,7 @@ AppRegistry.registerComponent('LotsOfStyles', () => LotsOfStyles);
 ```
 
 One common pattern is to make your component accept a `style` prop which in
-turn is used to style subcomponents. You can use this to make styles "cascade" they way they do in CSS.
+turn is used to style subcomponents. You can use this to make styles "cascade" the way they do in CSS.
 
 There are a lot more ways to customize text style. Check out the [Text component reference](/react-native/docs/text.html) for a complete list.
 

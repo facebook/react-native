@@ -20,6 +20,8 @@
 #include "SystraceSection.h"
 #include "Value.h"
 
+#include "JSCSamplingProfiler.h"
+
 #if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
 #include "JSCTracing.h"
 #endif
@@ -223,6 +225,8 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   addNativeProfilingHooks(m_context);
   addNativeTracingLegacyHooks(m_context);
   PerfLogging::installNativeHooks(m_context);
+
+  initSamplingProfilerOnMainJSCThread(m_context);
   #endif
 
   #ifdef WITH_FB_MEMORY_PROFILING
@@ -252,6 +256,42 @@ void JSCExecutor::terminateOnJSVMThread() {
   JSGlobalContextRelease(m_context);
   m_context = nullptr;
 }
+
+#ifdef WITH_FBJSCEXTENSIONS
+void JSCExecutor::loadApplicationScript(
+    std::string bundlePath,
+    std::string sourceURL,
+    int flags) {
+  SystraceSection s("JSCExecutor::loadApplicationScript",
+                    "sourceURL", sourceURL);
+
+  if ((flags & UNPACKED_JS_SOURCE) == 0) {
+    throw std::runtime_error("Optimized bundle with no unpacked js source");
+  }
+
+  auto jsScriptBigString = JSBigMmapString::fromOptimizedBundle(bundlePath);
+  if (jsScriptBigString->encoding() != JSBigMmapString::Encoding::Ascii) {
+    LOG(WARNING) << "Bundle is not ASCII encoded - falling back to the slow path";
+    return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
+  }
+
+  String jsSourceURL(sourceURL.c_str());
+  JSSourceCodeRef sourceCode = JSCreateSourceCode(
+      jsScriptBigString->fd(),
+      jsScriptBigString->size(),
+      jsSourceURL,
+      jsScriptBigString->hash(),
+      true);
+  SCOPE_EXIT { JSReleaseSourceCode(sourceCode); };
+
+  evaluateSourceCode(m_context, sourceCode, jsSourceURL);
+
+  bindBridge();
+
+  flush();
+  ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
+}
+#endif
 
 void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) throw(JSException) {
   SystraceSection s("JSCExecutor::loadApplicationScript",

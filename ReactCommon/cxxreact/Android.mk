@@ -5,6 +5,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := libreactnativefb
 
 LOCAL_SRC_FILES := \
+  Executor.cpp \
   Instance.cpp \
   JSCExecutor.cpp \
   JSCHelpers.cpp \

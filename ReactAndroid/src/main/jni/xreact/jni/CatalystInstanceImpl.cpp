@@ -101,6 +101,8 @@ void CatalystInstanceImpl::registerNatives() {
                        "(Landroid/content/res/AssetManager;Ljava/lang/String;)V",
                        CatalystInstanceImpl::loadScriptFromAssets),
       makeNativeMethod("loadScriptFromFile", CatalystInstanceImpl::loadScriptFromFile),
+      makeNativeMethod("loadScriptFromOptimizedBundle",
+                       CatalystInstanceImpl::loadScriptFromOptimizedBundle),
       makeNativeMethod("callJSFunction", CatalystInstanceImpl::callJSFunction),
       makeNativeMethod("callJSCallback", CatalystInstanceImpl::callJSCallback),
       makeNativeMethod("getMainExecutorToken", CatalystInstanceImpl::getMainExecutorToken),
@@ -161,8 +163,9 @@ void CatalystInstanceImpl::loadScriptFromAssets(jobject assetManager,
       folly::make_unique<JniJSModulesUnbundle>(manager, sourceURL),
       std::move(script),
       sourceURL);
+    return;
   } else {
-    instance_->loadScriptFromString(std::move(script), std::move(sourceURL));
+    instance_->loadScriptFromString(std::move(script), sourceURL);
   }
 }
 
@@ -170,6 +173,14 @@ void CatalystInstanceImpl::loadScriptFromFile(jni::alias_ref<jstring> fileName,
                                               const std::string& sourceURL) {
   return instance_->loadScriptFromFile(fileName ? fileName->toStdString() : "",
                                        sourceURL);
+}
+
+void CatalystInstanceImpl::loadScriptFromOptimizedBundle(const std::string& bundlePath,
+                                                         const std::string& sourceURL,
+                                                         jint flags) {
+  return instance_->loadScriptFromOptimizedBundle(std::move(bundlePath),
+                                                  std::move(sourceURL),
+                                                  flags);
 }
 
 void CatalystInstanceImpl::callJSFunction(
