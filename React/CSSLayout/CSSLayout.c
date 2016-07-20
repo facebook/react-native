@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "CSSLayout.h"
+#include "CSSLayout-internal.h"
 
 #ifdef _MSC_VER
 #include <float.h>
@@ -29,23 +29,17 @@ __forceinline const float fmaxf(const float a, const float b) {
 
 #define POSITIVE_FLEX_IS_AUTO 0
 
-int gCurrentGenerationCount = 0;
-
-bool layoutNodeInternal(CSSNode* node, float availableWidth, float availableHeight, CSSDirection parentDirection,
-  CSSMeasureMode widthMeasureMode, CSSMeasureMode heightMeasureMode, bool performLayout, char* reason);
-
-bool isUndefined(float value) {
-  return isnan(value);
+CSSNodeRef CSSNodeNew() {
+  CSSNode* node = (CSSNode*)calloc(1, sizeof(*node));
+  CSSNodeInit(node);
+  return node;
 }
 
-static bool eq(float a, float b) {
-  if (isUndefined(a)) {
-    return isUndefined(b);
-  }
-  return fabs(a - b) < 0.0001;
+void CSSNodeFree(CSSNodeRef node) {
+  free(node);
 }
 
-void CSSNodeInit(CSSNode* node) {
+void CSSNodeInit(CSSNodeRef node) {
   node->style.alignItems = CSSAlignStretch;
   node->style.alignContent = CSSAlignFlexStart;
 
@@ -81,7 +75,7 @@ void CSSNodeInit(CSSNode* node) {
 
   // Such that the comparison is always going to be false
   node->layout.lastParentDirection = (CSSDirection)-1;
-  node->layout.shouldUpdate = true;
+  node->shouldUpdate = true;
   node->layout.nextCachedMeasurementsIndex = 0;
 
   node->layout.measuredDimensions[CSSDimensionWidth] = CSSUndefined;
@@ -90,14 +84,103 @@ void CSSNodeInit(CSSNode* node) {
   node->layout.cached_layout.heightMeasureMode = (CSSMeasureMode)-1;
 }
 
-CSSNode* CSSNodeNew() {
-  CSSNode* node = (CSSNode*)calloc(1, sizeof(*node));
-  CSSNodeInit(node);
-  return node;
+#define CSS_NODE_PROPERTY_IMPL(type, name, paramName, instanceName) \
+void CSSNodeSet##name(CSSNodeRef node, type paramName) { \
+  node->instanceName = paramName;\
+} \
+\
+type CSSNodeGet##name(CSSNodeRef node) { \
+  return node->instanceName;\
+} \
+
+#define CSS_NODE_STYLE_PROPERTY_IMPL(type, name, paramName, instanceName) \
+void CSSNodeStyleSet##name(CSSNodeRef node, type paramName) { \
+  node->style.instanceName = paramName;\
+} \
+\
+type CSSNodeStyleGet##name(CSSNodeRef node) { \
+  return node->style.instanceName;\
+} \
+
+#define CSS_NODE_LAYOUT_PROPERTY_IMPL(type, name, instanceName) \
+type CSSNodeLayoutGet##name(CSSNodeRef node) { \
+  return node->layout.instanceName;\
+} \
+
+CSS_NODE_PROPERTY_IMPL(void*, Context, context, context);
+CSS_NODE_PROPERTY_IMPL(int, ChildCount, childCount, childCount);
+CSS_NODE_PROPERTY_IMPL(CSSMeasureFunc, MeasureFunc, measureFunc, measure);
+CSS_NODE_PROPERTY_IMPL(CSSChildFunc, ChildFunc, childFunc, getChild);
+CSS_NODE_PROPERTY_IMPL(CSSIsDirtyFunc, IsDirtyFunc, isDirtyFunc, isDirty);
+CSS_NODE_PROPERTY_IMPL(CSSIsTextFunc, IsTextFunc, isTextFunc, isTextNode);
+CSS_NODE_PROPERTY_IMPL(CSSPrintFunc, PrintFunc, printFunc, print);
+CSS_NODE_PROPERTY_IMPL(bool, ShouldUpdate, shouldUpdate, shouldUpdate);
+
+CSS_NODE_STYLE_PROPERTY_IMPL(CSSDirection, Direction, direction, direction);
+CSS_NODE_STYLE_PROPERTY_IMPL(CSSFlexDirection, FlexDirection, flexDirection, flexDirection);
+CSS_NODE_STYLE_PROPERTY_IMPL(CSSJustify, JustifyContent, justifyContent, justifyContent);
+CSS_NODE_STYLE_PROPERTY_IMPL(CSSAlign, AlignContent, alignContent, alignContent);
+CSS_NODE_STYLE_PROPERTY_IMPL(CSSAlign, AlignItems, alignItems, alignItems);
+CSS_NODE_STYLE_PROPERTY_IMPL(CSSAlign, AlignSelf, alignSelf, alignSelf);
+CSS_NODE_STYLE_PROPERTY_IMPL(CSSPositionType, PositionType, positionType, positionType);
+CSS_NODE_STYLE_PROPERTY_IMPL(CSSWrapType, FlexWrap, flexWrap, flexWrap);
+CSS_NODE_STYLE_PROPERTY_IMPL(CSSOverflow, Overflow, overflow, overflow);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, Flex, flex, flex);
+
+CSS_NODE_STYLE_PROPERTY_IMPL(float, PositionLeft, positionLeft, position[CSSPositionLeft]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, PositionTop, positionTop, position[CSSPositionTop]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, PositionRight, positionRight, position[CSSPositionRight]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, PositionBottom, positionBottom, position[CSSPositionBottom]);
+
+CSS_NODE_STYLE_PROPERTY_IMPL(float, MarginLeft, marginLeft, margin[CSSPositionLeft]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, MarginTop, marginTop, margin[CSSPositionTop]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, MarginRight, marginRight, margin[CSSPositionRight]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, MarginBottom, marginBottom, margin[CSSPositionBottom]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, MarginStart, marginStart, margin[CSSPositionStart]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, MarginEnd, marginEnd, margin[CSSPositionEnd]);
+
+CSS_NODE_STYLE_PROPERTY_IMPL(float, PaddingLeft, paddingLeft, padding[CSSPositionLeft]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, PaddingTop, paddingTop, padding[CSSPositionTop]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, PaddingRight, paddingRight, padding[CSSPositionRight]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, PaddingBottom, paddingBottom, padding[CSSPositionBottom]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, PaddingStart, paddingStart, padding[CSSPositionStart]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, PaddingEnd, paddingEnd, padding[CSSPositionEnd]);
+
+CSS_NODE_STYLE_PROPERTY_IMPL(float, BorderLeft, borderLeft, border[CSSPositionLeft]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, BorderTop, borderTop, border[CSSPositionTop]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, BorderRight, borderRight, border[CSSPositionRight]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, BorderBottom, borderBottom, border[CSSPositionBottom]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, BorderStart, borderStart, border[CSSPositionStart]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, BorderEnd, BorderEnd, border[CSSPositionEnd]);
+
+CSS_NODE_STYLE_PROPERTY_IMPL(float, Width, width, dimensions[CSSDimensionWidth]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, Height, height, dimensions[CSSDimensionHeight]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, MinWidth, minWidth, minDimensions[CSSDimensionWidth]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, MinHeight, minHeight, minDimensions[CSSDimensionHeight]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, MaxWidth, maxWidth, maxDimensions[CSSDimensionWidth]);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, MaxHeight, maxHeight, maxDimensions[CSSDimensionHeight]);
+
+CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Left, position[CSSPositionLeft]);
+CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Top, position[CSSPositionTop]);
+CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Right, position[CSSPositionRight]);
+CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Bottom, position[CSSPositionBottom]);
+CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Width, dimensions[CSSDimensionWidth]);
+CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Height, dimensions[CSSDimensionHeight]);
+
+int gCurrentGenerationCount = 0;
+
+bool layoutNodeInternal(CSSNode* node, float availableWidth, float availableHeight, CSSDirection parentDirection,
+  CSSMeasureMode widthMeasureMode, CSSMeasureMode heightMeasureMode, bool performLayout, char* reason);
+
+bool isUndefined(float value) {
+  return isnan(value);
 }
 
-void CSSNodeFree(CSSNode* node) {
-  free(node);
+static bool eq(float a, float b) {
+  if (isUndefined(a)) {
+    return isUndefined(b);
+  }
+  return fabs(a - b) < 0.0001;
 }
 
 static void indent(int n) {
@@ -682,7 +765,7 @@ static void layoutNodeImpl(CSSNode* node, float availableWidth, float availableH
     } else {
 
       // Measure the text under the current constraints.
-      CSSMeasureResult measureDim = node->measure(
+      CSSSize measuredSize = node->measure(
         node->context,
 
         innerWidth,
@@ -693,11 +776,11 @@ static void layoutNodeImpl(CSSNode* node, float availableWidth, float availableH
 
       node->layout.measuredDimensions[CSSDimensionWidth] = boundAxis(node, CSSFlexDirectionRow,
         (widthMeasureMode == CSSMeasureModeUndefined || widthMeasureMode == CSSMeasureModeAtMost) ?
-          measureDim.dimensions[CSSDimensionWidth] + paddingAndBorderAxisRow :
+          measuredSize.width + paddingAndBorderAxisRow :
           availableWidth - marginAxisRow);
       node->layout.measuredDimensions[CSSDimensionHeight] = boundAxis(node, CSSFlexDirectionColumn,
         (heightMeasureMode == CSSMeasureModeUndefined || heightMeasureMode == CSSMeasureModeAtMost) ?
-          measureDim.dimensions[CSSDimensionHeight] + paddingAndBorderAxisColumn :
+          measuredSize.height + paddingAndBorderAxisColumn :
           availableHeight - marginAxisColumn);
     }
 
@@ -1764,7 +1847,7 @@ bool layoutNodeInternal(CSSNode* node, float availableWidth, float availableHeig
   if (performLayout) {
     node->layout.dimensions[CSSDimensionWidth] = node->layout.measuredDimensions[CSSDimensionWidth];
     node->layout.dimensions[CSSDimensionHeight] = node->layout.measuredDimensions[CSSDimensionHeight];
-    layout->shouldUpdate = true;
+    node->shouldUpdate = true;
   }
 
   gDepth--;
@@ -1772,7 +1855,7 @@ bool layoutNodeInternal(CSSNode* node, float availableWidth, float availableHeig
   return (needToVisitNode || cachedResults == NULL);
 }
 
-void layoutNode(CSSNode* node, float availableWidth, float availableHeight, CSSDirection parentDirection) {
+void CSSNodeCalculateLayout(CSSNode* node, float availableWidth, float availableHeight, CSSDirection parentDirection) {
   // Increment the generation count. This will force the recursive routine to visit
   // all dirty nodes at least once. Subsequent visits will be skipped if the input
   // parameters don't change.
