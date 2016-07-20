@@ -600,6 +600,13 @@ var NavigatorSceneConfigs = {
       out: buildStyleInterpolator(directionMapping.ToTheStartIOS),
     },
   },
+  PushFromLeft: {
+    ...BaseConfig,
+    animationInterpolators: {
+      into: buildStyleInterpolator(directionMapping.FromTheStart),
+      out: buildStyleInterpolator(directionMapping.ToTheEndIOS),
+    },
+  },
   FloatFromRight: {
     ...BaseConfig,
     // We will want to customize this soon
