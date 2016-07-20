@@ -33,7 +33,7 @@ NSString *const RCTReactTagAttributeName = @"ReactTagAttributeName";
   CGFloat _effectiveLetterSpacing;
 }
 
-static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t widthMode, float height, css_measure_mode_t heightMode)
+static CSSMeasureResult RCTMeasure(void *context, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode)
 {
   RCTShadowText *shadowText = (__bridge RCTShadowText *)context;
   NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width widthMode:widthMode];
@@ -41,12 +41,12 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
   CGSize computedSize = [layoutManager usedRectForTextContainer:textContainer].size;
 
-  css_dim_t result;
-  result.dimensions[CSS_WIDTH] = RCTCeilPixelValue(computedSize.width);
+  CSSMeasureResult result;
+  result.dimensions[CSSDimensionWidth] = RCTCeilPixelValue(computedSize.width);
   if (shadowText->_effectiveLetterSpacing < 0) {
-    result.dimensions[CSS_WIDTH] -= shadowText->_effectiveLetterSpacing;
+    result.dimensions[CSSDimensionWidth] -= shadowText->_effectiveLetterSpacing;
   }
-  result.dimensions[CSS_HEIGHT] = RCTCeilPixelValue(computedSize.height);
+  result.dimensions[CSSDimensionHeight] = RCTCeilPixelValue(computedSize.height);
   return result;
 }
 
@@ -106,7 +106,7 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
   CGFloat width = self.frame.size.width - (padding.left + padding.right);
 
   NSNumber *parentTag = [[self reactSuperview] reactTag];
-  NSTextStorage *textStorage = [self buildTextStorageForWidth:width widthMode:CSS_MEASURE_MODE_EXACTLY];
+  NSTextStorage *textStorage = [self buildTextStorageForWidth:width widthMode:CSSMeasureModeExactly];
   [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     RCTText *view = (RCTText *)viewRegistry[self.reactTag];
     view.textStorage = textStorage;
@@ -128,7 +128,7 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
   return parentProperties;
 }
 
-- (void)applyLayoutNode:(css_node_t *)node
+- (void)applyLayoutNode:(CSSNode *)node
       viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
        absolutePosition:(CGPoint)absolutePosition
 {
@@ -136,21 +136,21 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
   [self dirtyPropagation];
 }
 
-- (void)applyLayoutToChildren:(css_node_t *)node
+- (void)applyLayoutToChildren:(CSSNode *)node
             viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
              absolutePosition:(CGPoint)absolutePosition
 {
   // Run layout on subviews.
-  NSTextStorage *textStorage = [self buildTextStorageForWidth:self.frame.size.width widthMode:CSS_MEASURE_MODE_EXACTLY];
+  NSTextStorage *textStorage = [self buildTextStorageForWidth:self.frame.size.width widthMode:CSSMeasureModeExactly];
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
   NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
   [layoutManager.textStorage enumerateAttribute:RCTShadowViewAttributeName inRange:characterRange options:0 usingBlock:^(RCTShadowView *child, NSRange range, BOOL *_) {
     if (child) {
-      css_node_t *childNode = child.cssNode;
-      float width = childNode->style.dimensions[CSS_WIDTH];
-      float height = childNode->style.dimensions[CSS_HEIGHT];
+      CSSNode *childNode = child.cssNode;
+      float width = childNode->style.dimensions[CSSDimensionWidth];
+      float height = childNode->style.dimensions[CSSDimensionHeight];
       if (isUndefined(width) || isUndefined(height)) {
         RCTLogError(@"Views nested within a <Text> must have a width and height");
       }
@@ -175,7 +175,7 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
   }];
 }
 
-- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width widthMode:(css_measure_mode_t)widthMode
+- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width widthMode:(CSSMeasureMode)widthMode
 {
   if (_cachedTextStorage && width == _cachedTextStorageWidth && widthMode == _cachedTextStorageWidthMode) {
     return _cachedTextStorage;
@@ -196,7 +196,7 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
   }
 
   textContainer.maximumNumberOfLines = _numberOfLines;
-  textContainer.size = (CGSize){widthMode == CSS_MEASURE_MODE_UNDEFINED ? CGFLOAT_MAX : width, CGFLOAT_MAX};
+  textContainer.size = (CGSize){widthMode == CSSMeasureModeUndefined ? CGFLOAT_MAX : width, CGFLOAT_MAX};
 
   [layoutManager addTextContainer:textContainer];
   [layoutManager ensureLayoutForTextContainer:textContainer];
@@ -291,8 +291,8 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
       [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:shadowRawText.text ?: @""]];
       [child setTextComputed];
     } else {
-      float width = child.cssNode->style.dimensions[CSS_WIDTH];
-      float height = child.cssNode->style.dimensions[CSS_HEIGHT];
+      float width = child.cssNode->style.dimensions[CSSDimensionWidth];
+      float height = child.cssNode->style.dimensions[CSSDimensionHeight];
       if (isUndefined(width) || isUndefined(height)) {
         RCTLogError(@"Views nested within a <Text> must have a width and height");
       }
@@ -384,10 +384,10 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
   // We will climb up to the first node which style has been setted as non-inherit
   if (newTextAlign == NSTextAlignmentRight || newTextAlign == NSTextAlignmentLeft) {
     RCTShadowView *view = self;
-    while (view != nil && view.cssNode->style.direction == CSS_DIRECTION_INHERIT) {
+    while (view != nil && view.cssNode->style.direction == CSSDirectionInherit) {
       view = [view reactSuperview];
     }
-    if (view != nil && view.cssNode->style.direction == CSS_DIRECTION_RTL) {
+    if (view != nil && view.cssNode->style.direction == CSSDirectionRTL) {
       if (newTextAlign == NSTextAlignmentRight) {
         newTextAlign = NSTextAlignmentLeft;
       } else if (newTextAlign == NSTextAlignmentLeft) {
