@@ -116,11 +116,11 @@ typedef id NSPropertyList;
 typedef BOOL css_clip_t, css_backface_visibility_t;
 + (css_clip_t)css_clip_t:(id)json;
 + (css_backface_visibility_t)css_backface_visibility_t:(id)json;
-+ (css_flex_direction_t)css_flex_direction_t:(id)json;
-+ (css_justify_t)css_justify_t:(id)json;
-+ (css_align_t)css_align_t:(id)json;
-+ (css_position_type_t)css_position_type_t:(id)json;
-+ (css_wrap_type_t)css_wrap_type_t:(id)json;
++ (CSSFlexDirection)CSSFlexDirection:(id)json;
++ (CSSJustify)CSSJustify:(id)json;
++ (CSSAlign)CSSAlign:(id)json;
++ (CSSPositionType)CSSPositionType:(id)json;
++ (CSSWrapType)CSSWrapType:(id)json;
 
 + (RCTPointerEvents)RCTPointerEvents:(id)json;
 + (RCTAnimationType)RCTAnimationType:(id)json;

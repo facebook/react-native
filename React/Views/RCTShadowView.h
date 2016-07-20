@@ -44,7 +44,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 - (void)removeReactSubview:(RCTShadowView *)subview NS_REQUIRES_SUPER;
 
 @property (nonatomic, weak, readonly) RCTShadowView *superview;
-@property (nonatomic, assign, readonly) css_node_t *cssNode;
+@property (nonatomic, assign, readonly) CSSNode *cssNode;
 @property (nonatomic, copy) NSString *viewName;
 @property (nonatomic, strong) UIColor *backgroundColor; // Used to propagate to children
 @property (nonatomic, assign) RCTUpdateLifecycle layoutLifecycle;
@@ -127,12 +127,12 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 /**
  * Flexbox properties. All zero/disabled by default
  */
-@property (nonatomic, assign) css_flex_direction_t flexDirection;
-@property (nonatomic, assign) css_justify_t justifyContent;
-@property (nonatomic, assign) css_align_t alignSelf;
-@property (nonatomic, assign) css_align_t alignItems;
-@property (nonatomic, assign) css_position_type_t position;
-@property (nonatomic, assign) css_wrap_type_t flexWrap;
+@property (nonatomic, assign) CSSFlexDirection flexDirection;
+@property (nonatomic, assign) CSSJustify justifyContent;
+@property (nonatomic, assign) CSSAlign alignSelf;
+@property (nonatomic, assign) CSSAlign alignItems;
+@property (nonatomic, assign) CSSPositionType position;
+@property (nonatomic, assign) CSSWrapType flexWrap;
 @property (nonatomic, assign) CGFloat flex;
 
 /**
@@ -172,23 +172,29 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * is split into two methods so subclasses can override `applyLayoutToChildren:`
  * while using default implementation of `applyLayoutNode:`.
  */
-- (void)applyLayoutNode:(css_node_t *)node
+- (void)applyLayoutNode:(CSSNode *)node
       viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
        absolutePosition:(CGPoint)absolutePosition NS_REQUIRES_SUPER;
 
 /**
  * Enumerate the child nodes and tell them to apply layout.
  */
-- (void)applyLayoutToChildren:(css_node_t *)node
+- (void)applyLayoutToChildren:(CSSNode *)node
             viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
              absolutePosition:(CGPoint)absolutePosition;
 
 /**
  * The following are implementation details exposed to subclasses. Do not call them directly
  */
-- (void)fillCSSNode:(css_node_t *)node NS_REQUIRES_SUPER;
 - (void)dirtyLayout NS_REQUIRES_SUPER;
 - (BOOL)isLayoutDirty;
+
+/**
+ * Return whether or not this node acts as a leaf node in the eyes of CSSLayout. For example
+ * RCTShadowText has children which it does not want CSSLayout to lay out so in the eyes of
+ * CSSLayout it is a leaf node.
+ */
+- (BOOL)isCSSLeafNode;
 
 - (void)dirtyPropagation NS_REQUIRES_SUPER;
 - (BOOL)isPropagationDirty;

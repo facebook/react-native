@@ -190,12 +190,17 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     }
 
     textCSSNode.mContainsImages = false;
+    textCSSNode.mHeightOfTallestInlineImage = Float.NaN;
 
     // While setting the Spans on the final text, we also check whether any of them are images
     for (int i = ops.size() - 1; i >= 0; i--) {
       SetSpanOperation op = ops.get(i);
       if (op.what instanceof TextInlineImageSpan) {
+        int height = ((TextInlineImageSpan)op.what).getHeight();
         textCSSNode.mContainsImages = true;
+        if (Float.isNaN(textCSSNode.mHeightOfTallestInlineImage) || height > textCSSNode.mHeightOfTallestInlineImage) {
+          textCSSNode.mHeightOfTallestInlineImage = height;
+        }
       }
       op.execute(sb);
     }
@@ -226,6 +231,14 @@ public class ReactTextShadowNode extends LayoutShadowNode {
           // technically, width should never be negative, but there is currently a bug in
           boolean unconstrainedWidth = widthMode == CSSMeasureMode.UNDEFINED || width < 0;
 
+          float effectiveLineHeight = reactCSSNode.getEffectiveLineHeight();
+          float lineSpacingExtra = 0;
+          float lineSpacingMultiplier = 1;
+          if (!Float.isNaN(effectiveLineHeight)) {
+            lineSpacingExtra = effectiveLineHeight;
+            lineSpacingMultiplier = 0;
+          }
+
           if (boring == null &&
               (unconstrainedWidth ||
                   (!CSSConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
@@ -236,8 +249,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 textPaint,
                 (int) Math.ceil(desiredWidth),
                 Layout.Alignment.ALIGN_NORMAL,
-                1,
-                0,
+                lineSpacingMultiplier,
+                lineSpacingExtra,
                 true);
           } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
             // Is used for single-line, boring text when the width is either unknown or bigger
@@ -247,8 +260,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 textPaint,
                 boring.width,
                 Layout.Alignment.ALIGN_NORMAL,
-                1,
-                0,
+                lineSpacingMultiplier,
+                lineSpacingExtra,
                 boring,
                 true);
           } else {
@@ -258,8 +271,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 textPaint,
                 (int) width,
                 Layout.Alignment.ALIGN_NORMAL,
-                1,
-                0,
+                lineSpacingMultiplier,
+                lineSpacingExtra,
                 true);
           }
 
@@ -268,13 +281,6 @@ public class ReactTextShadowNode extends LayoutShadowNode {
           if (reactCSSNode.mNumberOfLines != UNSET &&
               reactCSSNode.mNumberOfLines < layout.getLineCount()) {
             measureOutput.height = layout.getLineBottom(reactCSSNode.mNumberOfLines - 1);
-          }
-          if (reactCSSNode.mLineHeight != UNSET) {
-            int lines = reactCSSNode.mNumberOfLines != UNSET
-                ? Math.min(reactCSSNode.mNumberOfLines, layout.getLineCount())
-                : layout.getLineCount();
-            float lineHeight = PixelUtil.toPixelFromSP(reactCSSNode.mLineHeight);
-            measureOutput.height = lineHeight * lines;
           }
         }
       };
@@ -293,7 +299,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
         100 * (fontWeightString.charAt(0) - '0') : -1;
   }
 
-  private int mLineHeight = UNSET;
+  private float mLineHeight = Float.NaN;
   private boolean mIsColorSet = false;
   private int mColor;
   private boolean mIsBackgroundColorSet = false;
@@ -340,12 +346,22 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   private final boolean mIsVirtual;
 
   protected boolean mContainsImages = false;
+  private float mHeightOfTallestInlineImage = Float.NaN;
 
   public ReactTextShadowNode(boolean isVirtual) {
     mIsVirtual = isVirtual;
     if (!isVirtual) {
       setMeasureFunction(TEXT_MEASURE_FUNCTION);
     }
+  }
+
+  // Returns a line height which takes into account the requested line height
+  // and the height of the inline images.
+  public float getEffectiveLineHeight() {
+    boolean useInlineViewHeight = !Float.isNaN(mLineHeight) &&
+        !Float.isNaN(mHeightOfTallestInlineImage) &&
+        mHeightOfTallestInlineImage > mLineHeight;
+    return useInlineViewHeight ? mHeightOfTallestInlineImage : mLineHeight;
   }
 
   @Override
@@ -380,7 +396,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = ViewProps.LINE_HEIGHT, defaultInt = UNSET)
   public void setLineHeight(int lineHeight) {
-    mLineHeight = lineHeight;
+    mLineHeight = lineHeight == UNSET ? Float.NaN : PixelUtil.toPixelFromSP(lineHeight);
     markUpdated();
   }
 
@@ -530,7 +546,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     super.onCollectExtraUpdates(uiViewOperationQueue);
     if (mPreparedSpannableText != null) {
       ReactTextUpdate reactTextUpdate =
-          new ReactTextUpdate(mPreparedSpannableText, UNSET, mContainsImages, getPadding());
+          new ReactTextUpdate(mPreparedSpannableText, UNSET, mContainsImages, getPadding(), getEffectiveLineHeight());
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }
