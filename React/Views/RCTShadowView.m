@@ -320,6 +320,11 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   return _layoutLifecycle != RCTUpdateLifecycleComputed;
 }
 
+- (BOOL)isCSSLeafNode
+{
+  return NO;
+}
+
 - (void)dirtyPropagation
 {
   if (_propagationLifecycle != RCTUpdateLifecycleDirtied) {
@@ -354,7 +359,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 - (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex
 {
   [_reactSubviews insertObject:subview atIndex:atIndex];
-  _cssNode->children_count = (int)_reactSubviews.count;
+  _cssNode->children_count = [self isCSSLeafNode] ? 0 : (int)_reactSubviews.count;
   subview->_superview = self;
   _didUpdateSubviews = YES;
   [self dirtyText];
@@ -370,7 +375,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   _didUpdateSubviews = YES;
   subview->_superview = nil;
   [_reactSubviews removeObject:subview];
-  _cssNode->children_count = (int)_reactSubviews.count;
+  _cssNode->children_count = [self isCSSLeafNode] ? 0 : (int)_reactSubviews.count;
 }
 
 - (NSArray<RCTShadowView *> *)reactSubviews

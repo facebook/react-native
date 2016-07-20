@@ -189,6 +189,13 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 - (void)dirtyLayout NS_REQUIRES_SUPER;
 - (BOOL)isLayoutDirty;
 
+/**
+ * Return whether or not this node acts as a leaf node in the eyes of CSSLayout. For example
+ * RCTShadowText has children which it does not want CSSLayout to lay out so in the eyes of
+ * CSSLayout it is a leaf node.
+ */
+- (BOOL)isCSSLeafNode;
+
 - (void)dirtyPropagation NS_REQUIRES_SUPER;
 - (BOOL)isPropagationDirty;
 
