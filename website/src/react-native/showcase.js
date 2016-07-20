@@ -296,6 +296,13 @@ var featured = [
     infoLink: 'https://www.crunchbase.com/organization/bds-diet#/entity',
     infoTitle: 'Bdsdiet provides real estate brokerage services through web and live agents in Korea.',
   },
+  {
+    name: 'Cinemy',
+    icon: 'https://s3-eu-west-1.amazonaws.com/cinemy-assets/icon512.png',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.cinemy',
+    infoLink: 'https://play.google.com/store/apps/details?id=com.cinemy',
+    infoTitle: 'Cinemy provides a real-time time-table view of cinema showtimes in the United Kingdom.',
+  },
 ];
 
 featured.sort(function(a, b) {
