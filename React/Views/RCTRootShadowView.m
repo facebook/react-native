@@ -49,7 +49,6 @@
 {
   [self applySizeConstraints];
 
-  [self fillCSSNode:self.cssNode];
   layoutNode(self.cssNode, CSS_UNDEFINED, CSS_UNDEFINED, CSS_DIRECTION_INHERIT);
 
   NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];

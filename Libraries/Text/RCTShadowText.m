@@ -61,6 +61,7 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
     _cachedTextStorageWidth = -1;
     _cachedTextStorageWidthMode = -1;
     _fontSizeMultiplier = 1.0;
+    self.cssNode->measure = RCTMeasure;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(contentSizeMultiplierDidChange:)
                                                  name:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
@@ -440,13 +441,6 @@ static css_dim_t RCTMeasure(void *context, float width, css_measure_mode_t width
     shadow.shadowColor = _textShadowColor;
     [self _addAttribute:NSShadowAttributeName withValue:shadow toAttributedString:attributedString];
   }
-}
-
-- (void)fillCSSNode:(css_node_t *)node
-{
-  [super fillCSSNode:node];
-  node->measure = RCTMeasure;
-  node->children_count = 0;
 }
 
 - (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex
