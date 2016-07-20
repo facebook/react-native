@@ -11,6 +11,7 @@
 		008341F61D1DB34400876D9A /* RCTJSStackFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 008341F41D1DB34400876D9A /* RCTJSStackFrame.m */; };
 		131B6AF41AF1093D00FFC3E0 /* RCTSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 131B6AF11AF1093D00FFC3E0 /* RCTSegmentedControl.m */; };
 		131B6AF51AF1093D00FFC3E0 /* RCTSegmentedControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 131B6AF31AF1093D00FFC3E0 /* RCTSegmentedControlManager.m */; };
+		1321C8D01D3EB50800D58318 /* CSSNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 1321C8CE1D3EB50800D58318 /* CSSNodeList.c */; };
 		133683521D37ACA10077D0C3 /* CSSLayout.c in Sources */ = {isa = PBXBuildFile; fileRef = 133683441D37ACA10077D0C3 /* CSSLayout.c */; };
 		133CAE8E1B8E5CFD00F6AD92 /* RCTDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 133CAE8D1B8E5CFD00F6AD92 /* RCTDatePicker.m */; };
 		13456E931ADAD2DE009F94A7 /* RCTConvert+CoreLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 13456E921ADAD2DE009F94A7 /* RCTConvert+CoreLocation.m */; };
@@ -126,6 +127,8 @@
 		131B6AF11AF1093D00FFC3E0 /* RCTSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSegmentedControl.m; sourceTree = "<group>"; };
 		131B6AF21AF1093D00FFC3E0 /* RCTSegmentedControlManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSegmentedControlManager.h; sourceTree = "<group>"; };
 		131B6AF31AF1093D00FFC3E0 /* RCTSegmentedControlManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSegmentedControlManager.m; sourceTree = "<group>"; };
+		1321C8CE1D3EB50800D58318 /* CSSNodeList.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = CSSNodeList.c; sourceTree = "<group>"; };
+		1321C8CF1D3EB50800D58318 /* CSSNodeList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSSNodeList.h; sourceTree = "<group>"; };
 		133683441D37ACA10077D0C3 /* CSSLayout.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = CSSLayout.c; sourceTree = "<group>"; };
 		133683451D37ACA10077D0C3 /* CSSLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSSLayout.h; sourceTree = "<group>"; };
 		133683481D37ACA10077D0C3 /* CSSMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSSMacros.h; sourceTree = "<group>"; };
@@ -344,6 +347,8 @@
 			isa = PBXGroup;
 			children = (
 				131541CF1D3E4893006A0E08 /* CSSLayout-internal.h */,
+				1321C8CE1D3EB50800D58318 /* CSSNodeList.c */,
+				1321C8CF1D3EB50800D58318 /* CSSNodeList.h */,
 				133683441D37ACA10077D0C3 /* CSSLayout.c */,
 				133683451D37ACA10077D0C3 /* CSSLayout.h */,
 				133683481D37ACA10077D0C3 /* CSSMacros.h */,
@@ -728,6 +733,7 @@
 				13A0C28A1B74F71200B29F6F /* RCTDevMenu.m in Sources */,
 				13BCE8091C99CB9D00DD7AAD /* RCTRootShadowView.m in Sources */,
 				14C2CA711B3AC63800E6CBB2 /* RCTModuleMethod.m in Sources */,
+				1321C8D01D3EB50800D58318 /* CSSNodeList.c in Sources */,
 				13CC8A821B17642100940AE7 /* RCTBorderDrawing.m in Sources */,
 				83CBBA511A601E3B00E9B192 /* RCTAssert.m in Sources */,
 				13AF20451AE707F9005F5298 /* RCTSlider.m in Sources */,

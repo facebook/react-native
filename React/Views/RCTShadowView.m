@@ -56,13 +56,6 @@ static void RCTPrint(void *context)
   printf("%s(%zd), ", shadowView.viewName.UTF8String, shadowView.reactTag.integerValue);
 }
 
-static CSSNodeRef RCTGetChild(void *context, int i)
-{
-  RCTShadowView *shadowView = (__bridge RCTShadowView *)context;
-  RCTShadowView *child = [shadowView reactSubviews][i];
-  return child->_cssNode;
-}
-
 static bool RCTIsDirty(void *context)
 {
   RCTShadowView *shadowView = (__bridge RCTShadowView *)context;
@@ -189,9 +182,9 @@ DEFINE_PROCESS_META_PROPS(Border);
             viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
              absolutePosition:(CGPoint)absolutePosition
 {
-  for (int i = 0; i < CSSNodeGetChildCount(node); ++i) {
+  for (unsigned int i = 0; i < CSSNodeChildCount(node); ++i) {
     RCTShadowView *child = (RCTShadowView *)_reactSubviews[i];
-    [child applyLayoutNode:RCTGetChild(CSSNodeGetContext(node), i)
+    [child applyLayoutNode:CSSNodeGetChild(node, i)
          viewsWithNewFrame:viewsWithNewFrame
           absolutePosition:absolutePosition];
   }
@@ -319,7 +312,6 @@ DEFINE_PROCESS_META_PROPS(Border);
 
     _cssNode = CSSNodeNew();
     CSSNodeSetContext(_cssNode, (__bridge void *)self);
-    CSSNodeSetChildFunc(_cssNode, RCTGetChild);
     CSSNodeSetPrintFunc(_cssNode, RCTPrint);
     CSSNodeSetIsDirtyFunc(_cssNode, RCTIsDirty);
   }
@@ -388,7 +380,9 @@ DEFINE_PROCESS_META_PROPS(Border);
 - (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex
 {
   [_reactSubviews insertObject:subview atIndex:atIndex];
-  CSSNodeSetChildCount(_cssNode, [self isCSSLeafNode] ? 0 : (int)_reactSubviews.count);
+  if (![self isCSSLeafNode]) {
+    CSSNodeInsertChild(_cssNode, subview.cssNode, atIndex);
+  }
   subview->_superview = self;
   _didUpdateSubviews = YES;
   [self dirtyText];
@@ -404,7 +398,9 @@ DEFINE_PROCESS_META_PROPS(Border);
   _didUpdateSubviews = YES;
   subview->_superview = nil;
   [_reactSubviews removeObject:subview];
-  CSSNodeSetChildCount(_cssNode, [self isCSSLeafNode] ? 0 : (int)_reactSubviews.count);
+  if (![self isCSSLeafNode]) {
+    CSSNodeRemoveChild(_cssNode, subview.cssNode);
+  }
 }
 
 - (NSArray<RCTShadowView *> *)reactSubviews
