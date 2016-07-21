@@ -662,6 +662,20 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
     platform<span class="token punctuation">:</span> <span class="token string">&#x27;android&#x27;</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Legacy local image&#x27;</span><span class="token punctuation">,</span>
+    description<span class="token punctuation">:</span>
+      <span class="token string">&#x27;Images shipped with the native bundle, but not managed &#x27;</span> <span class="token operator">+</span>
+      <span class="token string">&#x27;by the JS packager&#x27;</span><span class="token punctuation">,</span>
+    render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token punctuation">(</span>
+        &lt;Image
+          source<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;image!hawk&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+          style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>base<span class="token punctuation">}</span>
+        <span class="token operator">/</span><span class="token operator">&gt;</span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
 <span class="token punctuation">]</span><span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> fullImage <span class="token operator">=</span> <span class="token punctuation">{</span>uri<span class="token punctuation">:</span> <span class="token string">&#x27;http://facebook.github.io/react/img/logo_og.png&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
