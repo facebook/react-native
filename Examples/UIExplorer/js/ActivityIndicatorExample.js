@@ -113,8 +113,8 @@ exports.examples = [
       return (
         <ActivityIndicator
           style={[styles.centering, styles.gray]}
-          color="white"
           size="large"
+          color="white"
         />
       );
     }
@@ -151,12 +151,34 @@ exports.examples = [
     }
   },
   {
-    title: 'Custom size',
+    title: 'Custom size (size: 49)',
+    render() {
+      return (
+        <ActivityIndicator
+          style={styles.centering}
+          size={49}
+        />
+      );
+    }
+  },
+  {
+    title: 'Custom size (size: 57)',
+    render() {
+      return (
+        <ActivityIndicator
+          style={styles.centering}
+          size={57}
+        />
+      );
+    }
+  },
+  {
+    title: 'Custom size (size: 31, scale transform: 1.5)',
     render() {
       return (
         <ActivityIndicator
           style={[styles.centering, {transform: [{scale: 1.5}]}]}
-          size="large"
+          size={31}
         />
       );
     }

@@ -133,6 +133,7 @@ var ReactNative = {
   ColorPropType: require('ColorPropType'),
   EdgeInsetsPropType: require('EdgeInsetsPropType'),
   PointPropType: require('PointPropType'),
+  IndicatorSizePropType: require('IndicatorSizePropType'),
 };
 
 module.exports = ReactNative;

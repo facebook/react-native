@@ -12,6 +12,7 @@
 'use strict';
 
 const ColorPropType = require('ColorPropType');
+const IndicatorSizePropType = require('IndicatorSizePropType');
 const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 const Platform = require('Platform');
 const PropTypes = require('react/lib/ReactPropTypes');
@@ -40,13 +41,9 @@ const ActivityIndicator = React.createClass({
      */
     color: ColorPropType,
     /**
-     * Size of the indicator. Small has a height of 20, large has a height of 36.
-     * Other sizes can be obtained using a scale transform.
+     * Size of the indicator (default is 20).
      */
-    size: PropTypes.oneOf([
-      'small',
-      'large',
-    ]),
+    size: IndicatorSizePropType,
     /**
      * Whether the indicator should hide when not animating (true by default).
      *
@@ -60,21 +57,27 @@ const ActivityIndicator = React.createClass({
       animating: true,
       color: Platform.OS === 'ios' ? GRAY : undefined,
       hidesWhenStopped: true,
-      size: 'small',
     };
   },
 
   render() {
     const {onLayout, style, ...props} = this.props;
     let sizeStyle;
-    switch (props.size) {
-      case 'small':
-        sizeStyle = styles.sizeSmall;
-        break;
-      case 'large':
-        sizeStyle = styles.sizeLarge;
-        break;
+    if (isNaN(props.size)) {
+      switch (props.size) {
+        case null:
+        case undefined:
+        case 'small':
+          sizeStyle = styles.sizeSmall;
+          break;
+        case 'large':
+          sizeStyle = styles.sizeLarge;
+          break;
+      }
+    } else {
+      sizeStyle = {height: props.size, width: props.size};
     }
+
     return (
       <View
         onLayout={onLayout}
@@ -84,7 +87,7 @@ const ActivityIndicator = React.createClass({
           style={sizeStyle}
           styleAttr="Normal"
           indeterminate
-        />
+         />
       </View>
     );
   }
