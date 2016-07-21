@@ -9,6 +9,8 @@
 
 package com.facebook.react.uimanager.events;
 
+import com.facebook.react.common.SystemClock;
+
 /**
  * A UI event that can be dispatched to JS.
  *
@@ -28,16 +30,16 @@ public abstract class Event<T extends Event> {
   protected Event() {
   }
 
-  protected Event(int viewTag, long timestampMs) {
-    init(viewTag, timestampMs);
+  protected Event(int viewTag) {
+    init(viewTag);
   }
 
   /**
    * This method needs to be called before event is sent to event dispatcher.
    */
-  protected void init(int viewTag, long timestampMs) {
+  protected void init(int viewTag) {
     mViewTag = viewTag;
-    mTimestampMs = timestampMs;
+    mTimestampMs = SystemClock.nanoTime();
     mInitialized = true;
   }
 

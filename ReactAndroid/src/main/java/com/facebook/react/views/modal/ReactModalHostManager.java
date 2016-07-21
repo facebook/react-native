@@ -17,7 +17,6 @@ import android.content.DialogInterface;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -85,14 +84,14 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
       new ReactModalHostView.OnRequestCloseListener() {
         @Override
         public void onRequestClose(DialogInterface dialog) {
-          dispatcher.dispatchEvent(new RequestCloseEvent(view.getId(), SystemClock.nanoTime()));
+          dispatcher.dispatchEvent(new RequestCloseEvent(view.getId()));
         }
       });
     view.setOnShowListener(
       new DialogInterface.OnShowListener() {
         @Override
         public void onShow(DialogInterface dialog) {
-          dispatcher.dispatchEvent(new ShowEvent(view.getId(), SystemClock.nanoTime()));
+          dispatcher.dispatchEvent(new ShowEvent(view.getId()));
         }
       });
   }
