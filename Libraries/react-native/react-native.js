@@ -121,6 +121,7 @@ const ReactNative = {
   get ColorPropType() { return require('ColorPropType'); },
   get EdgeInsetsPropType() { return require('EdgeInsetsPropType'); },
   get PointPropType() { return require('PointPropType'); },
+  get IndicatorSizePropType() { return require('IndicatorSizePropType'); },
 
   // See http://facebook.github.io/react/docs/addons.html
   addons: {
