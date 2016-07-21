@@ -94,48 +94,6 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 
 @end
 
-@interface RCTImageLoader (Deprecated)
-
-- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
-                                           callback:(RCTImageLoaderCompletionBlock)callback
-__deprecated_msg("Use loadImageWithURLRequest:callback: instead");
-
-- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
-                                               size:(CGSize)size
-                                              scale:(CGFloat)scale
-                                         resizeMode:(RCTResizeMode)resizeMode
-                                      progressBlock:(RCTImageLoaderProgressBlock)progressBlock
-                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
-__deprecated_msg("Use loadImageWithURLRequest:size:scale:clipped:resizeMode:progressBlock:completionBlock: instead");
-
-- (RCTImageLoaderCancellationBlock)loadImageWithoutClipping:(NSString *)imageTag
-                                                       size:(CGSize)size
-                                                      scale:(CGFloat)scale
-                                                 resizeMode:(RCTResizeMode)resizeMode
-                                              progressBlock:(RCTImageLoaderProgressBlock)progressBlock
-                                            completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
-__deprecated_msg("Use loadImageWithURLRequest:size:scale:clipped:resizeMode:progressBlock:completionBlock: instead");
-
-- (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData
-                                              size:(CGSize)size
-                                             scale:(CGFloat)scale
-                                        resizeMode:(RCTResizeMode)resizeMode
-                                   completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
-__deprecated_msg("Use decodeImageData:size:scale:clipped:resizeMode:completionBlock: instead");
-
-- (RCTImageLoaderCancellationBlock)decodeImageDataWithoutClipping:(NSData *)data
-                                                             size:(CGSize)size
-                                                            scale:(CGFloat)scale
-                                                       resizeMode:(RCTResizeMode)resizeMode
-                                                  completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
-__deprecated_msg("Use decodeImageData:size:scale:clipped:resizeMode:completionBlock: instead");
-
-- (RCTImageLoaderCancellationBlock)getImageSize:(NSString *)imageTag
-                                          block:(void(^)(NSError *error, CGSize size))completionBlock
-__deprecated_msg("Use getImageSizeWithURLRequest:block: instead");
-
-@end
-
 @interface RCTBridge (RCTImageLoader)
 
 /**
