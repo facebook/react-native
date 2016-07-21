@@ -146,13 +146,21 @@ public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
 
     canvas.save();
 
-    int transY = bottom - mDrawable.getBounds().bottom;
-
     // Align to baseline by default
-    transY -= paint.getFontMetricsInt().descent;
+    int transY = y - mDrawable.getBounds().bottom;
 
     canvas.translate(x, transY);
     mDrawable.draw(canvas);
     canvas.restore();
+  }
+
+  @Override
+  public int getWidth() {
+    return mWidth;
+  }
+
+  @Override
+  public int getHeight() {
+    return mHeight;
   }
 }
