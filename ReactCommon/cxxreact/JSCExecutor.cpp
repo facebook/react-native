@@ -596,7 +596,7 @@ JSValueRef JSCExecutor::nativeRequireModuleConfig(
 
   std::string moduleName = Value(m_context, arguments[0]).toString().str();
   folly::dynamic config = m_delegate->getModuleConfig(moduleName);
-  return JSValueMakeString(m_context, String(folly::toJson(config).c_str()));
+  return Value::fromDynamic(m_context, config);
 }
 
 JSValueRef JSCExecutor::nativeFlushQueueImmediate(
@@ -681,7 +681,7 @@ JSValueRef JSCExecutor::nativeCallSyncHook(
   if (result.isUndefined) {
     return JSValueMakeUndefined(m_context);
   }
-  return Value::fromJSON(m_context, String(folly::toJson(result.result).c_str()));
+  return Value::fromDynamic(m_context, result.result);
 }
 
 static JSValueRef nativeInjectHMRUpdate(

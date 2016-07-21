@@ -26,6 +26,7 @@ import com.facebook.react.modules.clipboard.ClipboardModule;
 import com.facebook.react.modules.datepicker.DatePickerDialogModule;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
+import com.facebook.react.modules.i18nmanager.I18nManagerModule;
 import com.facebook.react.modules.image.ImageLoaderModule;
 import com.facebook.react.modules.intent.IntentModule;
 import com.facebook.react.modules.location.LocationModule;
@@ -78,6 +79,7 @@ public class MainReactPackage implements ReactPackage {
       new DatePickerDialogModule(reactContext),
       new DialogModule(reactContext),
       new FrescoModule(reactContext),
+      new I18nManagerModule(reactContext),
       new ImageEditingManager(reactContext),
       new ImageLoaderModule(reactContext),
       new ImageStoreManager(reactContext),
