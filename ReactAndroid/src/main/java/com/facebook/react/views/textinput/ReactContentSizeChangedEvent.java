@@ -26,10 +26,9 @@ public class ReactContentSizeChangedEvent extends Event<ReactTextChangedEvent> {
 
   public ReactContentSizeChangedEvent(
     int viewId,
-    long timestampMs,
     int contentSizeWidth,
     int contentSizeHeight) {
-    super(viewId, timestampMs);
+    super(viewId);
     mContentWidth = contentSizeWidth;
     mContentHeight = contentSizeHeight;
   }

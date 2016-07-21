@@ -37,16 +37,15 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   private final int mEventType;
   private final @Nullable String mImageUri;
 
-  public ImageLoadEvent(int viewId, long timestampMs, @ImageEventType int eventType) {
-    this(viewId, timestampMs, eventType, null);
+  public ImageLoadEvent(int viewId, @ImageEventType int eventType) {
+    this(viewId, eventType, null);
   }
 
   public ImageLoadEvent(
     int viewId,
-    long timestampMs,
     @ImageEventType int eventType,
     @Nullable String imageUri) {
-    super(viewId, timestampMs);
+    super(viewId);
     mEventType = eventType;
     mImageUri = imageUri;
   }
