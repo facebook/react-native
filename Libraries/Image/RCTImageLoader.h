@@ -176,6 +176,9 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
  * Decode an image from the data object. The method should call the
  * completionHandler when the decoding operation  has finished. The method
  * should also return a cancellation block, if applicable.
+ *
+ * If you provide a custom image decoder, you most implement scheduling yourself,
+ * to avoid decoding large amounts of images at the same time.
  */
 - (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData
                                               size:(CGSize)size
