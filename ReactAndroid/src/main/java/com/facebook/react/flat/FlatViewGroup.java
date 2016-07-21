@@ -33,7 +33,6 @@ import android.view.animation.Animation;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.SoftAssertions;
-import com.facebook.react.common.SystemClock;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.PointerEvents;
@@ -79,7 +78,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
       ReactContext reactContext = ((ReactContext) view.getContext());
       UIManagerModule uiManagerModule = reactContext.getNativeModule(UIManagerModule.class);
       uiManagerModule.getEventDispatcher().dispatchEvent(
-          new ImageLoadEvent(reactTag, SystemClock.nanoTime(), imageLoadEvent));
+          new ImageLoadEvent(reactTag, imageLoadEvent));
     }
   }
 
