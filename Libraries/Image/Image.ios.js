@@ -34,7 +34,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * including network images, static resources, temporary local images, and
  * images from local disk, such as the camera roll.
  *
- * This exmaples shows both fetching and displaying an image from local storage as well as on from
+ * This example shows both fetching and displaying an image from local storage as well as on from
  * network.
  *
  * ```ReactNativeWebPlayer
@@ -73,7 +73,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *   }
  * });
  *
-  *class DisplayAnImageWithStyle extends Component {
+ * class DisplayAnImageWithStyle extends Component {
  *   render() {
  *     return (
  *       <View>
@@ -92,6 +92,37 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *   () => DisplayAnImageWithStyle
  * );
  * ```
+ *
+ * ### GIF and WebP support on Android
+ *
+ * By default, GIF and WebP are not supported on Android.
+ *
+ * You will need to add some optional modules in `android/app/build.gradle`, depending on the needs of your app.
+ *
+ * ```
+ * dependencies {
+ *   // If your app supports Android versions before Ice Cream Sandwich (API level 14)
+ *   compile 'com.facebook.fresco:animated-base-support:0.11.0'
+ *
+ *   // For animated GIF support
+ *   compile 'com.facebook.fresco:animated-gif:0.11.0'
+ *
+ *   // For WebP support, including animated WebP
+ *   compile 'com.facebook.fresco:animated-webp:0.11.0'
+ *   compile 'com.facebook.fresco:webpsupport:0.11.0'
+ *
+ *   // For WebP support, without animations
+ *   compile 'com.facebook.fresco:webpsupport:0.11.0'
+ * }
+ * ```
+ *
+ * Also, if you use GIF with ProGuard, you will need to add this rule in `proguard-rules.pro` :
+ * ```
+ * -keep class com.facebook.imagepipeline.animated.factory.AnimatedFactoryImpl {
+ *   public AnimatedFactoryImpl(com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory, com.facebook.imagepipeline.core.ExecutorSupplier);
+ * }
+ * ```
+ *
  */
 const Image = React.createClass({
   propTypes: {
