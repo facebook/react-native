@@ -195,7 +195,11 @@ public class FlatUIImplementation extends UIImplementation {
     FlatShadowNode node = (FlatShadowNode) resolveShadowNode(reactTag);
     if (node.mountsToView()) {
       mStateBuilder.ensureBackingViewIsCreated(node);
-      super.measure(reactTag, callback);
+      if (relativeToWindow) {
+        super.measureInWindow(reactTag, callback);
+      } else {
+        super.measure(reactTag, callback);
+      }
       return;
     }
 
