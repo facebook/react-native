@@ -57,6 +57,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 @synthesize flowIDMapLock = _flowIDMapLock;
 @synthesize loading = _loading;
 @synthesize valid = _valid;
+@synthesize performanceLogger = _performanceLogger;
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge
 {
@@ -67,6 +68,10 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
                       moduleProvider:bridge.moduleProvider
                        launchOptions:bridge.launchOptions]) {
     _parentBridge = bridge;
+
+    _performanceLogger = [RCTPerformanceLogger new];
+    [_performanceLogger markStartForTag:RCTPLBridgeStartup];
+    [_performanceLogger markStartForTag:RCTPLTTI];
 
     /**
      * Set Initial State
