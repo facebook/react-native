@@ -296,10 +296,16 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   __block dispatch_block_t cancelLoad = nil;
   __weak RCTImageLoader *weakSelf = self;
 
-  // Add missing png extension
-  if (request.URL.fileURL && request.URL.pathExtension.length == 0) {
+  {
     NSMutableURLRequest *mutableRequest = [request mutableCopy];
-    mutableRequest.URL = [NSURL fileURLWithPath:[request.URL.path stringByAppendingPathExtension:@"png"]];
+    [NSURLProtocol setProperty:@"RCTImageLoader"
+                        forKey:@"trackingName"
+                     inRequest:mutableRequest];
+
+    // Add missing png extension
+    if (request.URL.fileURL && request.URL.pathExtension.length == 0) {
+      mutableRequest.URL = [NSURL fileURLWithPath:[request.URL.path stringByAppendingPathExtension:@"png"]];
+    }
     request = mutableRequest;
   }
 
