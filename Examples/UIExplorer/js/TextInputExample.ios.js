@@ -294,7 +294,19 @@ class BlurOnSubmitExample extends React.Component {
   }
 }
 
+type SelectionExampleState = {
+  selection: {
+    start: number;
+    end: number;
+  };
+  value: string;
+};
+
 class SelectionExample extends React.Component {
+  state: SelectionExampleState;
+
+  _textInput: any;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -313,7 +325,7 @@ class SelectionExample extends React.Component {
   }
 
   select(start, end) {
-    this.textInput.focus();
+    this._textInput.focus();
     this.setState({selection: {start, end}});
   }
 
@@ -339,7 +351,7 @@ class SelectionExample extends React.Component {
           multiline={this.props.multiline}
           onChangeText={(value) => this.setState({value})}
           onSelectionChange={this.onSelectionChange.bind(this)}
-          ref={textInput => this.textInput = textInput}
+          ref={textInput => (this._textInput = textInput)}
           selection={this.state.selection}
           style={this.props.style}
           value={this.state.value}

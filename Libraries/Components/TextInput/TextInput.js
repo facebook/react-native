@@ -578,7 +578,7 @@ const TextInput = React.createClass({
       this.props.defaultValue;
   },
 
-  _setNativeRef: function(ref) {
+  _setNativeRef: function(ref: any) {
     this._inputRef = ref;
   },
 
@@ -769,7 +769,7 @@ const TextInput = React.createClass({
       });
     }
 
-    if (this.props.selectionState) {
+    if (this.props.selectionState && selection) {
       this.props.selectionState.update(selection.start, selection.end);
     }
   },
