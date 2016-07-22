@@ -744,7 +744,10 @@ const TextInput = React.createClass({
     }
 
     this._lastNativeSelection = event.nativeEvent.selection;
-    this.forceUpdate();
+
+    if (this.props.selection || this.props.selectionState) {
+      this.forceUpdate();
+    }
   },
 
   componentDidUpdate: function () {
