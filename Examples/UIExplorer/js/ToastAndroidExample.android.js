@@ -60,7 +60,43 @@ var ToastExample = React.createClass({
           <TouchableWithoutFeedback
             onPress={() =>
               ToastAndroid.show('This is a toast with long duration', ToastAndroid.LONG)}>
-            <Text style={styles.text}>Click me too.</Text>
+            <Text style={styles.text}>Click me.</Text>
+          </TouchableWithoutFeedback>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Toast with top gravity">
+          <TouchableWithoutFeedback
+            onPress={() =>
+              ToastAndroid.showWithGravity(
+                'This is a toast with top gravity',
+                ToastAndroid.SHORT,
+                ToastAndroid.TOP,
+              )
+            }>
+            <Text style={styles.text}>Click me.</Text>
+          </TouchableWithoutFeedback>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Toast with center gravity">
+          <TouchableWithoutFeedback
+            onPress={() =>
+              ToastAndroid.showWithGravity(
+                'This is a toast with center gravity',
+                ToastAndroid.SHORT,
+                ToastAndroid.CENTER,
+              )
+            }>
+            <Text style={styles.text}>Click me.</Text>
+          </TouchableWithoutFeedback>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Toast with bottom gravity">
+          <TouchableWithoutFeedback
+            onPress={() =>
+              ToastAndroid.showWithGravity(
+                'This is a toast with bottom gravity',
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+              )
+            }>
+            <Text style={styles.text}>Click me.</Text>
           </TouchableWithoutFeedback>
         </UIExplorerBlock>
       </UIExplorerPage>

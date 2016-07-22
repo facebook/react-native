@@ -589,7 +589,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
                 queue:(dispatch_queue_t)queue
 {
   if (queue == RCTJSThread) {
-    [_javaScriptExecutor executeBlockOnJavaScriptQueue:block];
+    __weak __typeof(self) weakSelf = self;
+    RCTProfileBeginFlowEvent();
+    RCTAssert(_javaScriptExecutor != nil, @"Need JS executor to schedule JS work");
+
+    [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
+      RCTProfileEndFlowEvent();
+
+      RCTBatchedBridge *strongSelf = weakSelf;
+      if (!strongSelf) {
+        return;
+      }
+
+      if (strongSelf.loading) {
+        [strongSelf->_pendingCalls addObject:block];
+      } else {
+        block();
+      }
+    }];
   } else if (queue) {
     dispatch_async(queue, block);
   }
@@ -673,39 +690,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 /**
  * Public. Can be invoked from any thread.
  */
-- (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
+- (void)enqueueJSCall:(NSString *)module method:(NSString *)method args:(NSArray *)args completion:(dispatch_block_t)completion
 {
   /**
    * AnyThread
    */
-
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTBatchedBridge enqueueJSCall:]", nil);
+  if (!_valid) {
+    return;
+  }
 
-  NSArray<NSString *> *ids = [moduleDotMethod componentsSeparatedByString:@"."];
-
-  NSString *module = ids[0];
-  NSString *method = ids[1];
-
-  RCTProfileBeginFlowEvent();
-
-  __weak RCTBatchedBridge *weakSelf = self;
-  [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
-    RCTProfileEndFlowEvent();
-
-    RCTBatchedBridge *strongSelf = weakSelf;
-    if (!strongSelf || !strongSelf.valid) {
-      return;
+  __weak __typeof(self) weakSelf = self;
+  [self dispatchBlock:^{
+    [weakSelf _actuallyInvokeAndProcessModule:module method:method arguments:args ?: @[]];
+    if (completion) {
+      completion();
     }
-
-    if (strongSelf.loading) {
-      dispatch_block_t pendingCall = ^{
-        [weakSelf _actuallyInvokeAndProcessModule:module method:method arguments:args ?: @[]];
-      };
-      [strongSelf->_pendingCalls addObject:pendingCall];
-    } else {
-      [strongSelf _actuallyInvokeAndProcessModule:module method:method arguments:args ?: @[]];
-    }
-  }];
+  } queue:RCTJSThread];
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
 }
@@ -718,27 +719,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   /**
    * AnyThread
    */
+  if (!_valid) {
+    return;
+  }
 
-  RCTProfileBeginFlowEvent();
-
-  __weak RCTBatchedBridge *weakSelf = self;
-  [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
-    RCTProfileEndFlowEvent();
-
-    RCTBatchedBridge *strongSelf = weakSelf;
-    if (!strongSelf || !strongSelf.valid) {
-      return;
-    }
-
-    if (strongSelf.loading) {
-      dispatch_block_t pendingCall = ^{
-        [weakSelf _actuallyInvokeCallback:cbID arguments:args ?: @[]];
-      };
-      [strongSelf->_pendingCalls addObject:pendingCall];
-    } else {
-      [strongSelf _actuallyInvokeCallback:cbID arguments:args];
-    }
-  }];
+  __weak __typeof(self) weakSelf = self;
+  [self dispatchBlock:^{
+    [weakSelf _actuallyInvokeCallback:cbID arguments:args];
+  } queue:RCTJSThread];
 }
 
 /**
@@ -922,11 +910,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       });
     };
 
-    if (queue == RCTJSThread) {
-      [_javaScriptExecutor executeBlockOnJavaScriptQueue:block];
-    } else if (queue) {
-      dispatch_async(queue, block);
-    }
+    [self dispatchBlock:block queue:queue];
   }
 
   _flowID = callID;

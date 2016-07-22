@@ -33,7 +33,6 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
@@ -578,7 +577,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
               mEditText.getId(),
-              SystemClock.nanoTime(),
               s.toString(),
               (int) PixelUtil.toDIPFromPixel(contentWidth),
               (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -587,7 +585,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       mEventDispatcher.dispatchEvent(
           new ReactTextInputEvent(
               mEditText.getId(),
-              SystemClock.nanoTime(),
               newText,
               oldText,
               start,
@@ -612,18 +609,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             if (hasFocus) {
               eventDispatcher.dispatchEvent(
                   new ReactTextInputFocusEvent(
-                      editText.getId(),
-                      SystemClock.nanoTime()));
+                      editText.getId()));
             } else {
               eventDispatcher.dispatchEvent(
                   new ReactTextInputBlurEvent(
-                      editText.getId(),
-                      SystemClock.nanoTime()));
+                      editText.getId()));
 
               eventDispatcher.dispatchEvent(
                   new ReactTextInputEndEditingEvent(
                       editText.getId(),
-                      SystemClock.nanoTime(),
                       editText.getText().toString()));
             }
           }
@@ -641,7 +635,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
                       editText.getId(),
-                      SystemClock.nanoTime(),
                       editText.getText().toString()));
             }
             if (actionId == EditorInfo.IME_ACTION_NEXT ||
@@ -688,7 +681,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         mEventDispatcher.dispatchEvent(
           new ReactContentSizeChangedEvent(
             mEditText.getId(),
-            SystemClock.nanoTime(),
             (int) PixelUtil.toDIPFromPixel(contentWidth),
             (int) PixelUtil.toDIPFromPixel(contentHeight)));
       }
@@ -717,7 +709,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         mEventDispatcher.dispatchEvent(
             new ReactTextInputSelectionEvent(
                 mReactEditText.getId(),
-                SystemClock.nanoTime(),
                 start,
                 end
             )

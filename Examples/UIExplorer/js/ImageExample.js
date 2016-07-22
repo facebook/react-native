@@ -165,7 +165,7 @@ var MultipleSourcesExample = React.createClass({
   },
   render: function() {
     return (
-      <View style={styles.container}>
+      <View>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Text
             style={styles.touchableText}
@@ -180,7 +180,7 @@ var MultipleSourcesExample = React.createClass({
         </View>
         <Text>Container image size: {this.state.width}x{this.state.height} </Text>
         <View
-          style={[styles.imageContainer, {height: this.state.height, width: this.state.width}]} >
+          style={{height: this.state.height, width: this.state.width}} >
           <Image
             style={{flex: 1}}
             source={[
@@ -588,6 +588,20 @@ exports.examples = [
       return <MultipleSourcesExample />;
     },
     platform: 'android',
+  },
+  {
+    title: 'Legacy local image',
+    description:
+      'Images shipped with the native bundle, but not managed ' +
+      'by the JS packager',
+    render: function() {
+      return (
+        <Image
+          source={require('image!hawk')}
+          style={styles.base}
+        />
+      );
+    },
   },
 ];
 

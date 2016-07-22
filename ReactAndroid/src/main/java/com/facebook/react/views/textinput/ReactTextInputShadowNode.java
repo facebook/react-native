@@ -119,7 +119,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     if (mJsEventCount != UNSET) {
       Spannable preparedSpannableText = fromTextCSSNode(this);
       ReactTextUpdate reactTextUpdate =
-          new ReactTextUpdate(preparedSpannableText, mJsEventCount, mContainsImages, getPadding());
+          new ReactTextUpdate(preparedSpannableText, mJsEventCount, mContainsImages, getPadding(), getEffectiveLineHeight());
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }
