@@ -340,7 +340,6 @@ class SelectionExample extends React.Component {
           onChangeText={(value) => this.setState({value})}
           onSelectionChange={this.onSelectionChange.bind(this)}
           ref={textInput => this.textInput = textInput}
-          autoFocus
           selection={this.state.selection}
           style={this.props.style}
           value={this.state.value}

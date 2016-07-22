@@ -12,6 +12,7 @@
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTUtils.h"
+#import "RCTTextSelection.h"
 #import "UIView+React.h"
 
 @implementation RCTTextField
@@ -28,7 +29,6 @@
   if ((self = [super initWithFrame:CGRectZero])) {
     RCTAssert(eventDispatcher, @"eventDispatcher is a required parameter");
     _eventDispatcher = eventDispatcher;
-    _previousSelectionRange = self.selectedTextRange;
     [self addTarget:self action:@selector(textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
     [self addTarget:self action:@selector(textFieldBeginEditing) forControlEvents:UIControlEventEditingDidBegin];
     [self addTarget:self action:@selector(textFieldEndEditing) forControlEvents:UIControlEventEditingDidEnd];
@@ -64,23 +64,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [super paste:sender];
 }
 
-- (void)setSelection:(NSDictionary *)selection
+- (void)setSelection:(RCTTextSelection *)selection
 {
-  NSInteger selectionStart = [RCTConvert NSInteger:selection[@"start"]];
-  NSInteger selectionEnd = [RCTConvert NSInteger:selection[@"end"]];
+  if (!selection) {
+    return;
+  }
+
   UITextRange *currentSelection = self.selectedTextRange;
-  NSInteger currentSelectionStart = [self offsetFromPosition:self.beginningOfDocument toPosition:currentSelection.start];
-  NSInteger currentSelectionEnd = [self offsetFromPosition:self.beginningOfDocument toPosition:currentSelection.end];
-  bool isSameSelection = (selectionStart == currentSelectionStart) && (selectionEnd == currentSelectionEnd);
+  UITextPosition *start = [self positionFromPosition:self.beginningOfDocument offset:selection.start];
+  UITextPosition *end = [self positionFromPosition:self.beginningOfDocument offset:selection.end];
+  UITextRange *selectedTextRange = [self textRangeFromPosition:start toPosition:end];
   NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
-  if (eventLag == 0) {
-    if (!isSameSelection) {
-      UITextPosition *start = [self positionFromPosition:[self beginningOfDocument] offset:selectionStart];
-      UITextPosition *end = [self positionFromPosition:[self beginningOfDocument] offset:selectionEnd];
-      UITextRange *selectedTextRange = [self textRangeFromPosition:start toPosition:end];
-      _previousSelectionRange = selectedTextRange;
-      self.selectedTextRange = selectedTextRange;
-    }
+  if (eventLag == 0 && ![currentSelection isEqual:selectedTextRange]) {
+    _previousSelectionRange = selectedTextRange;
+    self.selectedTextRange = selectedTextRange;
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
     RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
   }
@@ -195,16 +192,19 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 
 - (void)textFieldBeginEditing
 {
-  if (_selectTextOnFocus) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self selectAll:nil];
-    });
-  }
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
                                  reactTag:self.reactTag
                                      text:self.text
                                       key:nil
                                eventCount:_nativeEventCount];
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (_selectTextOnFocus) {
+      [self selectAll:nil];
+    }
+
+    [self sendSelectionEvent];
+  });
 }
 
 - (BOOL)textFieldShouldEndEditing:(RCTTextField *)textField
