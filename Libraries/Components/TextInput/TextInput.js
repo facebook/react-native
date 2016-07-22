@@ -506,7 +506,7 @@ const TextInput = React.createClass({
    */
   isFocused: function(): boolean {
     return TextInputState.currentlyFocusedField() ===
-      ReactNative.findNodeHandle(this.refs.input);
+      ReactNative.findNodeHandle(this._inputRef);
   },
 
   contextTypes: {
@@ -514,6 +514,7 @@ const TextInput = React.createClass({
     focusEmitter: React.PropTypes.instanceOf(EventEmitter),
   },
 
+  _inputRef: (undefined: any),
   _focusSubscription: (undefined: ?Function),
   _lastNativeText: (undefined: ?string),
   _lastNativeSelection: (undefined: ?Selection),
@@ -577,6 +578,10 @@ const TextInput = React.createClass({
       this.props.defaultValue;
   },
 
+  _setNativeRef: function(ref) {
+    this._inputRef = ref;
+  },
+
   _renderIOS: function() {
     var textContainer;
 
@@ -595,7 +600,7 @@ const TextInput = React.createClass({
       }
       textContainer =
         <RCTTextField
-          ref="input"
+          ref={this._setNativeRef}
           {...props}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
@@ -620,7 +625,7 @@ const TextInput = React.createClass({
       }
       textContainer =
         <RCTTextView
-          ref="input"
+          ref={this._setNativeRef}
           {...props}
           children={children}
           onFocus={this._onFocus}
@@ -667,7 +672,7 @@ const TextInput = React.createClass({
 
     const textContainer =
       <AndroidTextInput
-        ref="input"
+        ref={this._setNativeRef}
         {...props}
         mostRecentEventCount={0}
         onFocus={this._onFocus}
@@ -711,7 +716,7 @@ const TextInput = React.createClass({
   _onChange: function(event: Event) {
     // Make sure to fire the mostRecentEventCount first so it is already set on
     // native when the text value is set.
-    this.refs.input.setNativeProps({
+    this._inputRef.setNativeProps({
       mostRecentEventCount: event.nativeEvent.eventCount,
     });
 
@@ -719,7 +724,7 @@ const TextInput = React.createClass({
     this.props.onChange && this.props.onChange(event);
     this.props.onChangeText && this.props.onChangeText(text);
 
-    if (!this.refs.input) {
+    if (!this._inputRef) {
       // calling `this.props.onChange` or `this.props.onChangeText`
       // may clean up the input itself. Exits here.
       return;
@@ -732,7 +737,7 @@ const TextInput = React.createClass({
   _onSelectionChange: function(event: Event) {
     this.props.onSelectionChange && this.props.onSelectionChange(event);
 
-    if (!this.refs.input) {
+    if (!this._inputRef) {
       // calling `this.props.onSelectionChange`
       // may clean up the input itself. Exits here.
       return;
@@ -747,7 +752,7 @@ const TextInput = React.createClass({
     // that the update should be ignored and we should stick with the value
     // that we have in JS.
     if (this._lastNativeText !== this.props.value && typeof this.props.value === 'string') {
-      this.refs.input.setNativeProps({
+      this._inputRef.setNativeProps({
         text: this.props.value,
       });
     }
@@ -759,7 +764,7 @@ const TextInput = React.createClass({
     if (this._lastNativeSelection && selection &&
         (this._lastNativeSelection.start !== selection.start ||
         this._lastNativeSelection.end !== selection.end)) {
-      this.refs.input.setNativeProps({
+      this._inputRef.setNativeProps({
         selection: this.props.selection,
       });
     }
