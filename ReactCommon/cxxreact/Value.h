@@ -282,13 +282,14 @@ public:
     return String::adopt(JSValueToStringCopy(context(), m_value, nullptr));
   }
 
-  std::string toJSONString(unsigned indent = 0) const throw(JSException);
-  static Value fromJSON(JSContextRef ctx, const String& json) throw(JSException);
-  static Value fromDynamic(JSContextRef ctx, folly::dynamic value) throw(JSException);
+  std::string toJSONString(unsigned indent = 0) const;
+  static Value fromJSON(JSContextRef ctx, const String& json);
+  static JSValueRef fromDynamic(JSContextRef ctx, const folly::dynamic& value);
   JSContextRef context() const;
 protected:
   JSContextRef m_context;
   JSValueRef m_value;
+  static JSValueRef fromDynamicInner(JSContextRef ctx, const folly::dynamic& obj);
 };
 
 } }
