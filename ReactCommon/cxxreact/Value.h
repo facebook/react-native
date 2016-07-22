@@ -282,8 +282,8 @@ public:
     return String::adopt(JSValueToStringCopy(context(), m_value, nullptr));
   }
 
-  std::string toJSONString(unsigned indent = 0) const throw(JSException);
-  static Value fromJSON(JSContextRef ctx, const String& json) throw(JSException);
+  std::string toJSONString(unsigned indent = 0) const;
+  static Value fromJSON(JSContextRef ctx, const String& json);
   static JSValueRef fromDynamic(JSContextRef ctx, const folly::dynamic& value);
   JSContextRef context() const;
 protected:
