@@ -9,14 +9,15 @@
 
 package com.facebook.react.uimanager;
 
-import android.view.View;
-import android.view.ViewGroup;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.WeakHashMap;
+
+import android.view.View;
+import android.view.ViewGroup;
 
 /**
  * Class providing children management API for view managers of classes extending ViewGroup.
@@ -43,6 +44,19 @@ public abstract class ViewGroupManager <T extends ViewGroup>
   public void addView(T parent, View child, int index) {
     parent.addView(child, index);
     reorderChildrenByZIndex(parent);
+  }
+
+  /**
+   * Convenience method for batching a set of addView calls
+   * Note that this adds the views to the beginning of the ViewGroup
+   *
+   * @param parent the parent ViewGroup
+   * @param views the set of views to add
+   */
+  public void addViews(T parent, List<View> views) {
+    for (int i = 0, size = views.size(); i < size; i++) {
+      addView(parent, views.get(i), i);
+    }
   }
 
   public static void setViewZIndex(View view, int zIndex) {
