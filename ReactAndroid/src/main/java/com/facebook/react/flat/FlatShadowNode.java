@@ -43,6 +43,9 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   private static final String PROP_REMOVE_CLIPPED_SUBVIEWS =
       ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS;
   private static final Rect LOGICAL_OFFSET_EMPTY = new Rect();
+  // When we first initialize a backing view, we create a view we are going to throw away anyway,
+  // so instead initialize with a shared view.
+  private static final DrawView EMPTY_DRAW_VIEW = new DrawView(0);
 
   private DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
   private AttachDetachListener[] mAttachDetachListeners = AttachDetachListener.EMPTY_ARRAY;
@@ -455,7 +458,9 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     }
 
     if (mDrawView == null) {
-      mDrawView = new DrawView(getReactTag(), 0, 0, 0, 0);
+      // Create a new DrawView, but we might not know our react tag yet, so set it to 0 in the
+      // meantime.
+      mDrawView = EMPTY_DRAW_VIEW;
       invalidate();
 
       // reset NodeRegion to allow it getting garbage-collected
@@ -464,10 +469,16 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   }
 
   /* package */ final DrawView collectDrawView(float left, float top, float right, float bottom) {
-    if (!Assertions.assumeNotNull(mDrawView).clipBoundsMatch(left, top, right, bottom)) {
-      mDrawView = new DrawView(getReactTag(), left, top, right, bottom);
+    Assertions.assumeNotNull(mDrawView);
+    if (mDrawView.reactTag == 0) {
+      // This is the first time we have collected this DrawView, but we have to create a new
+      // DrawView anyway, as reactTag is final.
+      mDrawView = new DrawView(getReactTag()).collectDrawView(left, top, right, bottom);
+    } else {
+      // We have collected the DrawView before, so the react tag is correct, but we may need a new
+      // copy with updated bounds.  If the bounds match, the same view is returned.
+      mDrawView = mDrawView.collectDrawView(left, top, right, bottom);
     }
-
     return mDrawView;
   }
 

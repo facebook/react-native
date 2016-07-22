@@ -14,15 +14,38 @@ import android.graphics.Canvas;
 /* package */ final class DrawView extends AbstractClippingDrawCommand {
 
   /* package */ final int reactTag;
-  /* package */ boolean isViewGroupClipped;
+  // Indicates if the DrawView is frozen.  If it is frozen then any setting of the clip bounds
+  // should create a new DrawView.
+  private boolean mFrozen;
+  // Indicates whether this DrawView has been previously drawn.  If it has been drawn, then we know
+  // that the bounds haven't changed, as a bounds change would trigger a new DrawView, which will
+  // set this to false for the new DrawView.  Leaving this as package for direct access, but this
+  // should only be set from draw in DrawView, to avoid race conditions.
+  /* package */ boolean mPreviouslyDrawn;
 
-  public DrawView(int reactTag, float clipLeft, float clipTop, float clipRight, float clipBottom) {
+  public DrawView(int reactTag) {
     this.reactTag = reactTag;
-    setClipBounds(clipLeft, clipTop, clipRight, clipBottom);
+  }
+
+  public DrawView collectDrawView(
+      float clipLeft,
+      float clipTop,
+      float clipRight,
+      float clipBottom) {
+    if (mFrozen) {
+      return clipBoundsMatch(clipLeft, clipTop, clipRight, clipBottom) ?
+          this :
+          new DrawView(reactTag).collectDrawView(clipLeft, clipTop, clipRight, clipBottom);
+    } else {
+      mFrozen = true;
+      setClipBounds(clipLeft, clipTop, clipRight, clipBottom);
+      return this;
+    }
   }
 
   @Override
   public void draw(FlatViewGroup parent, Canvas canvas) {
+    mPreviouslyDrawn = true;
     if (mNeedsClipping) {
       canvas.save(Canvas.CLIP_SAVE_FLAG);
       applyClipping(canvas);
