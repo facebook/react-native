@@ -393,7 +393,6 @@ const TextInput = React.createClass({
     /**
      * The start and end of the text input's selection. Set start and end to
      * the same value to position the cursor.
-     * @platform ios
      */
     selection: PropTypes.shape({
       start: PropTypes.number.isRequired,
@@ -675,6 +674,11 @@ const TextInput = React.createClass({
       children = <Text>{children}</Text>;
     }
 
+    let selection = this.props.selection;
+    if (selection && selection.end == null) {
+      selection = {start: selection.start, end: selection.end};
+    }
+
     const textContainer =
       <AndroidTextInput
         ref={this._setNativeRef}
@@ -686,6 +690,7 @@ const TextInput = React.createClass({
         onSelectionChange={this._onSelectionChange}
         onTextInput={this._onTextInput}
         text={this._getText()}
+        selection={selection}
         children={children}
       />;
 
