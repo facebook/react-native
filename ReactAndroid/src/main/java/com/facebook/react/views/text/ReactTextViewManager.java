@@ -103,15 +103,6 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
     }
   }
 
-  @ReactProp(name = ViewProps.LINE_HEIGHT, defaultFloat = Float.NaN)
-  public void setLineHeight(ReactTextView view, float lineHeight) {
-    if (Float.isNaN(lineHeight)) { // NaN will be used if property gets reset
-      view.setLineSpacing(0, 1);
-    } else {
-      view.setLineSpacing(PixelUtil.toPixelFromSP(lineHeight), 0);
-    }
-  }
-
   @ReactProp(name = "selectable")
   public void setSelectable(ReactTextView view, boolean isSelectable) {
     view.setTextIsSelectable(isSelectable);

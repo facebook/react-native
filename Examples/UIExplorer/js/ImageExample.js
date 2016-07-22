@@ -589,6 +589,20 @@ exports.examples = [
     },
     platform: 'android',
   },
+  {
+    title: 'Legacy local image',
+    description:
+      'Images shipped with the native bundle, but not managed ' +
+      'by the JS packager',
+    render: function() {
+      return (
+        <Image
+          source={require('image!hawk')}
+          style={styles.base}
+        />
+      );
+    },
+  },
 ];
 
 var fullImage = {uri: 'http://facebook.github.io/react/img/logo_og.png'};

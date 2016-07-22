@@ -67,4 +67,14 @@
     * Set the textview that will contain this span.
     */
    public abstract void setTextView(TextView textView);
+
+   /**
+    * Get the width of the span.
+    */
+   public abstract int getWidth();
+
+   /**
+    * Get the height of the span.
+    */
+   public abstract int getHeight();
  }

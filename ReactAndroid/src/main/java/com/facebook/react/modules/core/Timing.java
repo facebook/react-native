@@ -22,7 +22,6 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.uimanager.ReactChoreographer;
@@ -105,7 +104,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
             timer.mTargetTime = frameTimeMillis + timer.mInterval;
             mTimers.add(timer);
           } else {
-            mTimerIdsToTimers.remove(timer.mCallbackID);
+            mTimerIdsToTimers.remove(timer.mExecutorToken);
           }
         }
       }
@@ -386,7 +385,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
         return;
       }
       // We may have already called/removed it
-      mTimerIdsToTimers.remove(timerId);
+      mTimerIdsToTimers.remove(executorToken);
       mTimers.remove(timer);
     }
   }
