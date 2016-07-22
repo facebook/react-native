@@ -133,13 +133,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
       renderOverlay
     } = this.props;
 
-    let overlay = null;
-    if (renderOverlay) {
-      overlay = renderOverlay({
-       ...props,
-       scene: props.scene,
-      });
-    }
+    const overlay = renderOverlay && renderOverlay(props);
 
     const scenes = props.scenes.map(
      scene => this._renderScene({
