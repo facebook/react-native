@@ -21,7 +21,7 @@ var React = require('React');
 var Site = require('Site');
 var slugify = require('slugify');
 var Metadata = require('Metadata');
-var randomKey = require('randomKey');
+var sequentialKey = require('sequentialKey');
 
 var styleReferencePattern = /^[^.]+\.propTypes\.style$/;
 
@@ -60,7 +60,7 @@ function renderType(type) {
   }
 
   if (type.name === 'arrayOf') {
-    return <span key={randomKey()}>[{renderType(type.value)}]</span>;
+    return <span key={sequentialKey()}>[{renderType(type.value)}]</span>;
   }
 
   if (type.name === 'instanceOf') {
@@ -70,10 +70,10 @@ function renderType(type) {
   if (type.name === 'custom') {
     if (styleReferencePattern.test(type.raw)) {
       var name = type.raw.substring(0, type.raw.indexOf('.'));
-      return <a key={randomKey()} href={'docs/' + slugify(name) + '.html#style'}>{name}#style</a>;
+      return <a key={sequentialKey()} href={'docs/' + slugify(name) + '.html#style'}>{name}#style</a>;
     }
     if (type.raw === 'ColorPropType') {
-      return <a key={randomKey()} href={'docs/colors.html'}>color</a>;
+      return <a key={sequentialKey()} href={'docs/colors.html'}>color</a>;
     }
     if (type.raw === 'EdgeInsetsPropType') {
       return '{top: number, left: number, bottom: number, right: number}';
@@ -109,7 +109,7 @@ function renderTypeNameLink(typeName, docPath, namedTypes) {
   if (ignoreTypes.indexOf(typeNameLower) !== -1 || !namedTypes[typeNameLower]) {
     return typeName;
   }
-  return <a key={randomKey()} href={docPath + '#' + typeNameLower}>{typeName}</a>;
+  return <a key={sequentialKey()} href={docPath + '#' + typeNameLower}>{typeName}</a>;
 }
 
 function renderTypeWithLinks(type, docTitle, namedTypes) {
@@ -119,7 +119,7 @@ function renderTypeWithLinks(type, docTitle, namedTypes) {
 
   const docPath = docTitle ? 'docs/' + docTitle.toLowerCase() + '.html' : 'docs/';
   return (
-    <div key={randomKey()}>
+    <div key={sequentialKey()}>
       {
         type.names.map((typeName, index, array) => {
           let separator = index < array.length - 1 && ' | ';
@@ -191,28 +191,28 @@ var ComponentDoc = React.createClass({
   renderProp: function(name, prop) {
     return (
       <div className="prop" key={name}>
-        <Header key={randomKey()} level={4} className="propTitle" toSlug={name}>
+        <Header key={sequentialKey()} level={4} className="propTitle" toSlug={name}>
           {prop.platforms && prop.platforms.map(platform =>
-            <span key={randomKey()} className="platform">{platform}</span>
+            <span key={sequentialKey()} className="platform">{platform}</span>
           )}
           {name}
           {' '}
-          {prop.type && <span key={randomKey()} className="propType">
+          {prop.type && <span key={sequentialKey()} className="propType">
             {renderType(prop.type)}
           </span>}
         </Header>
-        {prop.deprecationMessage && <div key={randomKey()} className="deprecated">
-          <div key={randomKey()} className="deprecatedTitle">
-            <img key={randomKey()} className="deprecatedIcon" src="img/Warning.png" />
-            <span key={randomKey()}>Deprecated</span>
+        {prop.deprecationMessage && <div key={sequentialKey()} className="deprecated">
+          <div key={sequentialKey()} className="deprecatedTitle">
+            <img key={sequentialKey()} className="deprecatedIcon" src="img/Warning.png" />
+            <span key={sequentialKey()}>Deprecated</span>
           </div>
-          <div key={randomKey()} className="deprecatedMessage">
-            <Marked key={randomKey()}>{prop.deprecationMessage}</Marked>
+          <div key={sequentialKey()} className="deprecatedMessage">
+            <Marked key={sequentialKey()}>{prop.deprecationMessage}</Marked>
           </div>
         </div>}
         {prop.type && prop.type.name === 'stylesheet' &&
           this.renderStylesheetProps(prop.type.value)}
-        {prop.description && <Marked key={randomKey()}>{prop.description}</Marked>}
+        {prop.description && <Marked key={sequentialKey()}>{prop.description}</Marked>}
       </div>
     );
   },
@@ -220,8 +220,8 @@ var ComponentDoc = React.createClass({
   renderCompose: function(name) {
     return (
       <div className="prop" key={name}>
-        <Header key={randomKey()} level={4} className="propTitle" toSlug={name}>
-          <a key={randomKey()} href={'docs/' + slugify(name) + '.html#props'}>{name} props...</a>
+        <Header key={sequentialKey()} level={4} className="propTitle" toSlug={name}>
+          <a key={sequentialKey()} href={'docs/' + slugify(name) + '.html#props'}>{name} props...</a>
         </Header>
       </div>
     );
@@ -230,17 +230,17 @@ var ComponentDoc = React.createClass({
   renderStylesheetProp: function(name, prop) {
     return (
       <div className="prop" key={name}>
-        <h6 key={randomKey()} className="propTitle">
+        <h6 key={sequentialKey()} className="propTitle">
           {prop.platforms && prop.platforms.map(platform =>
-            <span key={randomKey()} className="platform">{platform}</span>
+            <span key={sequentialKey()} className="platform">{platform}</span>
           )}
           {name}
           {' '}
-          {prop.type && <span key={randomKey()} className="propType">
+          {prop.type && <span key={sequentialKey()} className="propType">
             {renderType(prop.type)}
           </span>}
           {' '}
-          {prop.description && <Marked key={randomKey()}>{prop.description}</Marked>}
+          {prop.description && <Marked key={sequentialKey()}>{prop.description}</Marked>}
         </h6>
       </div>
     );
@@ -250,25 +250,25 @@ var ComponentDoc = React.createClass({
     var style = this.props.content.styles[stylesheetName];
     this.extractPlatformFromProps(style.props);
     return (
-      <div key={randomKey()} className="compactProps">
+      <div key={sequentialKey()} className="compactProps">
         {(style.composes || []).map((name) => {
           var link;
           if (name === 'LayoutPropTypes') {
             name = 'Flexbox';
             link =
-              <a key={randomKey()} href={'docs/' + slugify(name) + '.html#proptypes'}>{name}...</a>;
+              <a key={sequentialKey()} href={'docs/' + slugify(name) + '.html#proptypes'}>{name}...</a>;
           } else if (name === 'TransformPropTypes') {
             name = 'Transforms';
             link =
-              <a key={randomKey()} href={'docs/' + slugify(name) + '.html#proptypes'}>{name}...</a>;
+              <a key={sequentialKey()} href={'docs/' + slugify(name) + '.html#proptypes'}>{name}...</a>;
           } else {
             name = name.replace('StylePropTypes', '');
             link =
-              <a key={randomKey()} href={'docs/' + slugify(name) + '.html#style'}>{name}#style...</a>;
+              <a key={sequentialKey()} href={'docs/' + slugify(name) + '.html#style'}>{name}#style...</a>;
           }
           return (
-            <div key={randomKey()} className="prop" key={name}>
-              <h6 key={randomKey()} className="propTitle">{link}</h6>
+            <div key={sequentialKey()} className="prop" key={name}>
+              <h6 key={sequentialKey()} className="propTitle">{link}</h6>
             </div>
           );
         })}
@@ -282,7 +282,7 @@ var ComponentDoc = React.createClass({
 
   renderProps: function(props, composes) {
     return (
-      <div key={randomKey()} className="props">
+      <div key={sequentialKey()} className="props">
         {(composes || []).map((name) =>
           this.renderCompose(name)
         )}
@@ -327,9 +327,9 @@ var ComponentDoc = React.createClass({
       return null;
     }
     return (
-      <span key={randomKey()}>
-        <H key={randomKey()}level={3}>Methods</H>
-        <div key={randomKey()} className="props">
+      <span key={sequentialKey()}>
+        <H key={sequentialKey()}level={3}>Methods</H>
+        <div key={sequentialKey()} className="props">
           {methods.filter((method) => {
             return method.name[0] !== '_';
           }).map(method => this.renderMethod(method, namedTypes))}
@@ -358,9 +358,9 @@ var ComponentDoc = React.createClass({
       return null;
     }
     return (
-      <span key={randomKey()}>
-        <H key={randomKey()} level={3}>Type Definitions</H>
-        <div key={randomKey()} className="props">
+      <span key={sequentialKey()}>
+        <H key={sequentialKey()} level={3}>Type Definitions</H>
+        <div key={sequentialKey()} className="props">
           {typedefs.map((typedef) => {
             return this.renderTypeDef(typedef, namedTypes);
           })}
@@ -374,11 +374,11 @@ var ComponentDoc = React.createClass({
     this.extractPlatformFromProps(content.props);
     const namedTypes = getNamedTypes(content.typedef);
     return (
-      <div key={randomKey()}>
-        <Marked key={randomKey()}>
+      <div key={sequentialKey()}>
+        <Marked key={sequentialKey()}>
           {content.description}
         </Marked>
-        <H key={randomKey()} level={3}>Props</H>
+        <H key={sequentialKey()} level={3}>Props</H>
         {this.renderProps(content.props, content.composes)}
         {this.renderMethods(content.methods, namedTypes)}
         {this.renderTypeDefs(content.typedef, namedTypes)}
@@ -409,9 +409,9 @@ var APIDoc = React.createClass({
       return null;
     }
     return (
-      <span key={randomKey()}>
-        <H key={randomKey()} level={3}>Methods</H>
-        <div key={randomKey()} className="props">
+      <span key={sequentialKey()}>
+        <H key={sequentialKey()} level={3}>Methods</H>
+        <div key={sequentialKey()} className="props">
           {methods.filter((method) => {
             return method.name[0] !== '_';
           }).map(method => this.renderMethod(method, namedTypes))}
@@ -422,16 +422,16 @@ var APIDoc = React.createClass({
 
   renderProperty: function(property) {
     return (
-      <div key={randomKey()} className="prop" key={property.name}>
-        <Header key={randomKey()} level={4} className="propTitle" toSlug={property.name}>
+      <div key={sequentialKey()} className="prop" key={property.name}>
+        <Header key={sequentialKey()} level={4} className="propTitle" toSlug={property.name}>
           {property.name}
           {property.type &&
-            <span key={randomKey()} className="propType">
+            <span key={sequentialKey()} className="propType">
               {': ' + renderType(property.type)}
             </span>
           }
         </Header>
-        {property.docblock && <Marked key={randomKey()}>
+        {property.docblock && <Marked key={sequentialKey()}>
           {removeCommentsFromDocblock(property.docblock)}
         </Marked>}
       </div>
@@ -443,9 +443,9 @@ var APIDoc = React.createClass({
       return null;
     }
     return (
-      <span key={randomKey()}>
-        <H key={randomKey()} level={3}>Properties</H>
-        <div key={randomKey()} className="props">
+      <span key={sequentialKey()}>
+        <H key={sequentialKey()} level={3}>Properties</H>
+        <div key={sequentialKey()} className="props">
           {properties.filter((property) => {
             return property.name[0] !== '_';
           }).map(this.renderProperty)}
@@ -459,18 +459,18 @@ var APIDoc = React.createClass({
       return null;
     }
     return (
-      <span key={randomKey()}>
-        <div key={randomKey()}>
+      <span key={sequentialKey()}>
+        <div key={sequentialKey()}>
           {classes.filter((cls) => {
             return cls.name[0] !== '_' && cls.ownerProperty[0] !== '_';
           }).map((cls) => {
             return (
               <span key={cls.name}>
-                <Header key={randomKey()} level={2} toSlug={cls.name}>
+                <Header key={sequentialKey()} level={2} toSlug={cls.name}>
                   class {cls.name}
                 </Header>
-                <ul key={randomKey()}>
-                  {cls.docblock && <Marked key={randomKey()}>
+                <ul key={sequentialKey()}>
+                  {cls.docblock && <Marked key={sequentialKey()}>
                     {removeCommentsFromDocblock(cls.docblock)}
                   </Marked>}
                   {this.renderMethods(cls.methods, namedTypes)}
@@ -504,9 +504,9 @@ var APIDoc = React.createClass({
       return null;
     }
     return (
-      <span key={randomKey()}>
-        <H key={randomKey()} level={3}>Type Definitions</H>
-        <div key={randomKey()} className="props">
+      <span key={sequentialKey()}>
+        <H key={sequentialKey()} level={3}>Type Definitions</H>
+        <div key={sequentialKey()} className="props">
           {typedefs.map((typedef) => {
             return this.renderTypeDef(typedef, namedTypes);
           })}
@@ -518,14 +518,14 @@ var APIDoc = React.createClass({
   renderMainDescription: function(content) {
     if (content.docblock) {
       return (
-        <Marked key={randomKey()}>
+        <Marked key={sequentialKey()}>
           {removeCommentsFromDocblock(content.docblock)}
         </Marked>
       );
     }
     if (content.class && content.class.length && content.class[0].description) {
       return (
-        <Marked key={randomKey()}>
+        <Marked key={sequentialKey()}>
           {content.class[0].description}
         </Marked>
       );
@@ -542,7 +542,7 @@ var APIDoc = React.createClass({
     }
     const namedTypes = getNamedTypes(content.typedef);
     return (
-      <div key={randomKey()}>
+      <div key={sequentialKey()}>
         {this.renderMainDescription(content)}
         {this.renderMethods(content.methods, namedTypes)}
         {this.renderProperties(content.properties)}
@@ -591,10 +591,10 @@ var Method = React.createClass({
       const code = example.replace(/<caption>.*?<\/caption>/ig, '')
         .replace(/^\n\n/, '');
       return (
-        <div key={randomKey()}>
-          <br key={randomKey()} />
+        <div key={sequentialKey()}>
+          <br key={sequentialKey()} />
           {caption}
-          <Prism key={randomKey()}>
+          <Prism key={sequentialKey()}>
             {code}
           </Prism>
         </div>
@@ -614,26 +614,26 @@ var Method = React.createClass({
       return null;
     }
     return (
-      <div key={randomKey()}>
-        <strong key={randomKey()}>Parameters:</strong>
-          <table key={randomKey()} className="params">
-            <thead key={randomKey()}>
-              <tr key={randomKey()}>
-                <th key={randomKey()}>Name and Type</th>
-                <th key={randomKey()}>Description</th>
+      <div key={sequentialKey()}>
+        <strong key={sequentialKey()}>Parameters:</strong>
+          <table key={sequentialKey()} className="params">
+            <thead key={sequentialKey()}>
+              <tr key={sequentialKey()}>
+                <th key={sequentialKey()}>Name and Type</th>
+                <th key={sequentialKey()}>Description</th>
               </tr>
             </thead>
-            <tbody key={randomKey()}>
+            <tbody key={sequentialKey()}>
               {params.map((param) => {
                 return (
-                  <tr key={randomKey()}>
-                    <td key={randomKey()}>
+                  <tr key={sequentialKey()}>
+                    <td key={sequentialKey()}>
                       {param.optional ? '[' + param.name + ']' : param.name}
-                      <br key={randomKey()} /><br key={randomKey()} />
+                      <br key={sequentialKey()} /><br key={sequentialKey()} />
                       {renderTypeWithLinks(param.type, this.props.apiName, this.props.namedTypes)}
                     </td>
-                    <td key={randomKey()} className="description">
-                      <Marked key={randomKey()}>{param.description}</Marked>
+                    <td key={sequentialKey()} className="description">
+                      <Marked key={sequentialKey()}>{param.description}</Marked>
                     </td>
                   </tr>
                 );
@@ -646,14 +646,14 @@ var Method = React.createClass({
 
   render: function() {
     return (
-      <div key={randomKey()} className="prop">
-        <Header key={randomKey()} level={4} className="methodTitle" toSlug={this.props.name}>
+      <div key={sequentialKey()} className="prop">
+        <Header key={sequentialKey()} level={4} className="methodTitle" toSlug={this.props.name}>
           {this.props.modifiers && this.props.modifiers.length &&
-          <span key={randomKey()} className="methodType">
+          <span key={sequentialKey()} className="methodType">
             {this.props.modifiers.join(' ') + ' '}
           </span> || ''}
           {this.props.name}
-          <span key={randomKey()} className="methodType">
+          <span key={sequentialKey()} className="methodType">
             ({this.props.params && this.props.params.length && this.props.params
               .map((param) => {
                 var res = param.name;
@@ -664,7 +664,7 @@ var Method = React.createClass({
               {this.props.returns && ': ' + this.renderTypehint(this.props.returns.type)}
           </span>
         </Header>
-        {this.props.description && <Marked key={randomKey()}>
+        {this.props.description && <Marked key={sequentialKey()}>
           {this.props.description}
         </Marked>}
         {this.renderMethodParameters(this.props.params)}
@@ -683,27 +683,27 @@ var TypeDef = React.createClass({
       return null;
     }
     return (
-      <div key={randomKey()}>
-        <br key={randomKey()} />
-        <strong key={randomKey()}>Properties:</strong>
-          <table key={randomKey()} className="params">
-            <thead key={randomKey()}>
-              <tr key={randomKey()}>
-                <th key={randomKey()}>Name and Type</th>
-                <th key={randomKey()}>Description</th>
+      <div key={sequentialKey()}>
+        <br key={sequentialKey()} />
+        <strong key={sequentialKey()}>Properties:</strong>
+          <table key={sequentialKey()} className="params">
+            <thead key={sequentialKey()}>
+              <tr key={sequentialKey()}>
+                <th key={sequentialKey()}>Name and Type</th>
+                <th key={sequentialKey()}>Description</th>
               </tr>
             </thead>
-            <tbody key={randomKey()}>
+            <tbody key={sequentialKey()}>
               {properties.map((property) => {
                 return (
-                  <tr key={randomKey()}>
-                    <td key={randomKey()}>
+                  <tr key={sequentialKey()}>
+                    <td key={sequentialKey()}>
                       {property.optional ? '[' + property.name + ']' : property.name}
-                      <br key={randomKey()} /><br key={randomKey()} />
+                      <br key={sequentialKey()} /><br key={sequentialKey()} />
                       {renderTypeWithLinks(property.type, this.props.apiName, this.props.namedTypes)}
                     </td>
-                    <td key={randomKey()} className="description">
-                      <Marked key={randomKey()}>{property.description}</Marked>
+                    <td key={sequentialKey()} className="description">
+                      <Marked key={sequentialKey()}>{property.description}</Marked>
                     </td>
                   </tr>
                 );
@@ -722,25 +722,25 @@ var TypeDef = React.createClass({
       return null;
     }
     return (
-      <div key={randomKey()}>
-        <br key={randomKey()} />
-        <strong key={randomKey()}>Constants:</strong>
-        <table key={randomKey()} className="params">
-          <thead key={randomKey()}>
-            <tr key={randomKey()}>
-              <th key={randomKey()}>Value</th>
-              <th key={randomKey()}>Description</th>
+      <div key={sequentialKey()}>
+        <br key={sequentialKey()} />
+        <strong key={sequentialKey()}>Constants:</strong>
+        <table key={sequentialKey()} className="params">
+          <thead key={sequentialKey()}>
+            <tr key={sequentialKey()}>
+              <th key={sequentialKey()}>Value</th>
+              <th key={sequentialKey()}>Description</th>
             </tr>
           </thead>
-          <tbody key={randomKey()}>
+          <tbody key={sequentialKey()}>
             {values.map((value) => {
               return (
-                <tr key={randomKey()}>
-                  <td key={randomKey()}>
+                <tr key={sequentialKey()}>
+                  <td key={sequentialKey()}>
                     {value.name}
                   </td>
-                  <td key={randomKey()} className="description">
-                    <Marked key={randomKey()}>{value.description}</Marked>
+                  <td key={sequentialKey()} className="description">
+                    <Marked key={sequentialKey()}>{value.description}</Marked>
                   </td>
                 </tr>
               );
@@ -753,15 +753,15 @@ var TypeDef = React.createClass({
 
   render: function() {
     return (
-      <div key={randomKey()} className="prop">
-        <Header key={randomKey()} level={4} className="propTitle" toSlug={this.props.name}>
+      <div key={sequentialKey()} className="prop">
+        <Header key={sequentialKey()} level={4} className="propTitle" toSlug={this.props.name}>
           {this.props.name}
         </Header>
-        {this.props.description && <Marked key={randomKey()}>
+        {this.props.description && <Marked key={sequentialKey()}>
           {this.props.description}
         </Marked>}
-        <strong key={randomKey()}>Type:</strong>
-        <br key={randomKey()} />
+        <strong key={sequentialKey()}>Type:</strong>
+        <br key={sequentialKey()} />
         {this.props.type.names.join(' | ')}
         {this.renderProperties(this.props.properties)}
         {this.renderValues(this.props.values)}
@@ -779,21 +779,21 @@ var EmbeddedSimulator = React.createClass({
     var metadata = this.props.metadata;
 
     var imagePreview = metadata.platform === 'android'
-      ? <img key={randomKey()} alt="Run example in simulator" width="170" height="338" src="img/uiexplorer_main_android.png" />
-      : <img key={randomKey()} alt="Run example in simulator" width="170"
+      ? <img key={sequentialKey()} alt="Run example in simulator" width="170" height="338" src="img/uiexplorer_main_android.png" />
+      : <img key={sequentialKey()} alt="Run example in simulator" width="170"
              height="356" src="img/uiexplorer_main_ios.png" />;
 
     return (
-      <div key={randomKey()} className="embedded-simulator">
-        <p key={randomKey()}>
-          <a key={randomKey()}className="modal-button-open">
-            <strong key={randomKey()}>Run this example</strong>
+      <div key={sequentialKey()} className="embedded-simulator">
+        <p key={sequentialKey()}>
+          <a key={sequentialKey()}className="modal-button-open">
+            <strong key={sequentialKey()}>Run this example</strong>
           </a>
         </p>
-        <div key={randomKey()} className="modal-button-open modal-button-open-img">
+        <div key={sequentialKey()} className="modal-button-open modal-button-open-img">
           {imagePreview}
         </div>
-        <Modal key={randomKey()} metadata={metadata} />
+        <Modal key={sequentialKey()} metadata={metadata} />
       </div>
     );
   }
@@ -809,19 +809,19 @@ var Modal = React.createClass({
       : `https://appetize.io/embed/7vdfm9h3e6vuf4gfdm7r5rgc48?device=iphone6s&scale=60&autoplay=false&orientation=portrait&deviceColor=white&params=${encodedParams}`;
 
     return (
-      <div key={randomKey()}>
-        <div key={randomKey()} className="modal">
-          <div key={randomKey()} className="modal-content">
-            <button key={randomKey()} className="modal-button-close">&times;</button>
-            <div key={randomKey()} className="center">
-              <iframe key={randomKey()} className="simulator" src={url} width="256" height="550" frameBorder="0" scrolling="no"></iframe>
-              <p key={randomKey()}>Powered by
-                <a key={randomKey()} target="_blank" href="https://appetize.io">appetize.io</a>
+      <div key={sequentialKey()}>
+        <div key={sequentialKey()} className="modal">
+          <div key={sequentialKey()} className="modal-content">
+            <button key={sequentialKey()} className="modal-button-close">&times;</button>
+            <div key={sequentialKey()} className="center">
+              <iframe key={sequentialKey()} className="simulator" src={url} width="256" height="550" frameBorder="0" scrolling="no"></iframe>
+              <p key={sequentialKey()}>Powered by
+                <a key={sequentialKey()} target="_blank" href="https://appetize.io">appetize.io</a>
               </p>
             </div>
           </div>
         </div>
-        <div key={randomKey()} className="modal-backdrop" />
+        <div key={sequentialKey()} className="modal-backdrop" />
       </div>
     );
   }
@@ -845,13 +845,13 @@ var Autodocs = React.createClass({
       return;
     }
     return (
-      <div key={randomKey()}>
+      <div key={sequentialKey()}>
         <HeaderWithGithub
-          key={randomKey()}
+          key={sequentialKey()}
           title="Description"
           path={'docs/' + docs.componentName + '.md'}
         />
-        <Marked key={randomKey()}>
+        <Marked key={sequentialKey()}>
           {docs.fullDescription}
         </Marked>
       </div>
@@ -864,20 +864,20 @@ var Autodocs = React.createClass({
     }
 
     return (
-      <div key={randomKey()}>
+      <div key={sequentialKey()}>
         <HeaderWithGithub
-          key={randomKey()}
+          key={sequentialKey()}
           title={example.title || 'Examples'}
           level={example.title ? 4 : 3}
           path={example.path}
           metadata={metadata}
         />
-        <div key={randomKey()} className="example-container">
-          <Prism key={randomKey()}>
+        <div key={sequentialKey()} className="example-container">
+          <Prism key={sequentialKey()}>
            {example.content.replace(/^[\s\S]*?\*\//, '').trim()}
           </Prism>
           <EmbeddedSimulator
-            key={randomKey()}
+            key={sequentialKey()}
             shouldRender={metadata.runnable}
             metadata={metadata}
           />
@@ -892,8 +892,8 @@ var Autodocs = React.createClass({
     }
 
     return (
-      <div key={randomKey()}>
-        {(docs.examples.length > 1) ? <H key={randomKey()} level={3}>Examples</H> : null}
+      <div key={sequentialKey()}>
+        {(docs.examples.length > 1) ? <H key={sequentialKey()} level={3}>Examples</H> : null}
         {docs.examples.map(example => this.renderExample(example, metadata))}
       </div>
     );
@@ -903,17 +903,17 @@ var Autodocs = React.createClass({
     var metadata = this.props.metadata;
     var docs = JSON.parse(this.props.children);
     var content  = docs.type === 'component' || docs.type === 'style' ?
-      <ComponentDoc key={randomKey()} content={docs} /> :
-      <APIDoc key={randomKey()} content={docs} apiName={metadata.title} />;
+      <ComponentDoc key={sequentialKey()} content={docs} /> :
+      <APIDoc key={sequentialKey()} content={docs} apiName={metadata.title} />;
 
     return (
-      <Site key={randomKey()} section="docs" title={metadata.title}>
-        <section key={randomKey()} className="content wrap documentationContent">
-          <DocsSidebar key={randomKey()} metadata={metadata} />
-          <div key={randomKey()} className="inner-content">
-            <a key={randomKey()} id="content" />
+      <Site key={sequentialKey()} section="docs" title={metadata.title}>
+        <section key={sequentialKey()} className="content wrap documentationContent">
+          <DocsSidebar key={sequentialKey()} metadata={metadata} />
+          <div key={sequentialKey()} className="inner-content">
+            <a key={sequentialKey()} id="content" />
             <HeaderWithGithub
-              key={randomKey()}
+              key={sequentialKey()}
               title={metadata.title}
               level={1}
               path={metadata.path}
@@ -921,16 +921,16 @@ var Autodocs = React.createClass({
             {content}
             {this.renderFullDescription(docs)}
             {this.renderExamples(docs, metadata)}
-            <div key={randomKey()} className="docs-prevnext">
+            <div key={sequentialKey()} className="docs-prevnext">
               {metadata.previous &&
                <a
-                 key={randomKey()}
+                 key={sequentialKey()}
                  className="docs-prev"
                  href={'docs/' + metadata.previous + '.html#content'}>&larr; Prev</a>
               }
               {metadata.next &&
                <a
-                 key={randomKey()}
+                 key={sequentialKey()}
                  className="docs-next"
                  href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>
               }

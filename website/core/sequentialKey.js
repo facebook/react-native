@@ -6,15 +6,18 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule randomKey
+ * @providesModule sequentialKey
  */
 
-// Create a random key for rendered DOM elements to avoid:
+// Create a sequential key for rendered DOM elements to avoid:
 //   "Each child in an array or iterator should have a unique "key" prop.""
-// warnings.
-function randomKey() {
-  // http://stackoverflow.com/questions/10726909/random-alpha-numeric-string-in-javascript
-  return Math.random().toString(36).slice(2);
+// warnings. Given that the DOM for the docs will not have any state changes so
+// the counter will always be the same and determinisic for any component.
+
+var keyCounter = 0;
+
+function sequentialKey() {
+  return keyCounter++;
 }
 
-module.exports = randomKey;
+module.exports = sequentialKey;

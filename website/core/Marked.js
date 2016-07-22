@@ -10,7 +10,7 @@ var React = require('React');
 var Prism = require('Prism');
 var WebPlayer = require('WebPlayer');
 var Header = require('Header');
-var randomKey = require('randomKey');
+var sequentialKey = require('sequentialKey');
 
 /**
  * Block-Level Grammar
@@ -581,7 +581,7 @@ InlineLexer.prototype.output = function(src) {
         text = cap[1];
         href = text;
       }
-      out.push(React.DOM.a({key: randomKey(), href: this.sanitizeUrl(href)}, text));
+      out.push(React.DOM.a({key: sequentialKey(), href: this.sanitizeUrl(href)}, text));
       continue;
     }
 
@@ -590,7 +590,7 @@ InlineLexer.prototype.output = function(src) {
       src = src.substring(cap[0].length);
       text = cap[1];
       href = text;
-      out.push(React.DOM.a({key: randomKey(), href: this.sanitizeUrl(href)}, text));
+      out.push(React.DOM.a({key: sequentialKey(), href: this.sanitizeUrl(href)}, text));
       continue;
     }
 
@@ -601,7 +601,7 @@ InlineLexer.prototype.output = function(src) {
       var color = cap[0].match('<color ([^ ]+) />');
       if (color) {
         out.push(React.DOM.span(
-          {key: randomKey(), className: 'color', style: {backgroundColor: color[1]}}
+          {key: sequentialKey(), className: 'color', style: {backgroundColor: color[1]}}
         ));
         continue;
       }
@@ -639,35 +639,35 @@ InlineLexer.prototype.output = function(src) {
     // strong
     if (cap = this.rules.strong.exec(src)) {
       src = src.substring(cap[0].length);
-      out.push(React.DOM.strong({key: randomKey()}, this.output(cap[2] || cap[1])));
+      out.push(React.DOM.strong({key: sequentialKey()}, this.output(cap[2] || cap[1])));
       continue;
     }
 
     // em
     if (cap = this.rules.em.exec(src)) {
       src = src.substring(cap[0].length);
-      out.push(React.DOM.em({key: randomKey()}, this.output(cap[2] || cap[1])));
+      out.push(React.DOM.em({key: sequentialKey()}, this.output(cap[2] || cap[1])));
       continue;
     }
 
     // code
     if (cap = this.rules.code.exec(src)) {
       src = src.substring(cap[0].length);
-      out.push(React.DOM.code({key: randomKey()}, cap[2]));
+      out.push(React.DOM.code({key: sequentialKey()}, cap[2]));
       continue;
     }
 
     // br
     if (cap = this.rules.br.exec(src)) {
       src = src.substring(cap[0].length);
-      out.push(React.DOM.br({key: randomKey()}, null));
+      out.push(React.DOM.br({key: sequentialKey()}, null));
       continue;
     }
 
     // del (gfm)
     if (cap = this.rules.del.exec(src)) {
       src = src.substring(cap[0].length);
-      out.push(React.DOM.del({key: randomKey()}, this.output(cap[1])));
+      out.push(React.DOM.del({key: sequentialKey()}, this.output(cap[1])));
       continue;
     }
 
@@ -718,14 +718,14 @@ InlineLexer.prototype.outputLink = function(cap, link) {
       && link.href.charAt(0) !== '#';
 
     return React.DOM.a({
-      key: randomKey(),
+      key: sequentialKey(),
       href: this.sanitizeUrl(link.href),
       title: link.title,
       target: shouldOpenInNewWindow ? '_blank' : ''
     }, this.output(cap[1]));
   } else {
     return React.DOM.img({
-      key: randomKey(),
+      key: sequentialKey(),
       src: this.sanitizeUrl(link.href),
       alt: cap[1],
       title: link.title
@@ -821,12 +821,12 @@ Parser.prototype.tok = function() {
       return [];
     }
     case 'hr': {
-      return React.DOM.hr({key: randomKey()}, null);
+      return React.DOM.hr({key: sequentialKey()}, null);
     }
     case 'heading': {
       return (
         <Header
-          key={randomKey()}
+          key={sequentialKey()}
           level={this.token.depth}
           toSlug={this.token.text}>
           {this.inline.output(this.token.text)}
@@ -839,11 +839,11 @@ Parser.prototype.tok = function() {
 
       if (lang && lang.indexOf('ReactNativeWebPlayer') === 0) {
         return (
-          <WebPlayer key={randomKey()} params={lang.split('?')[1]}>{text}</WebPlayer>
+          <WebPlayer key={sequentialKey()} params={lang.split('?')[1]}>{text}</WebPlayer>
         );
       }
 
-      return <Prism key={randomKey()}>{text}</Prism>;
+      return <Prism key={sequentialKey()}>{text}</Prism>;
     }
     case 'table': {
       var table = []
@@ -859,12 +859,12 @@ Parser.prototype.tok = function() {
         heading = this.inline.output(this.token.header[i]);
         row.push(React.DOM.th(
           this.token.align[i]
-            ? {key: randomKey(), style: {textAlign: this.token.align[i]}}
+            ? {key: sequentialKey(), style: {textAlign: this.token.align[i]}}
             : null,
           heading
         ));
       }
-      table.push(React.DOM.thead({key: randomKey()}, React.DOM.tr(null, row)));
+      table.push(React.DOM.thead({key: sequentialKey()}, React.DOM.tr(null, row)));
 
       // body
       for (i = 0; i < this.token.cells.length; i++) {
@@ -873,16 +873,16 @@ Parser.prototype.tok = function() {
         for (j = 0; j < cells.length; j++) {
           row.push(React.DOM.td(
             this.token.align[j]
-              ? {key: randomKey(), style: {textAlign: this.token.align[j]}}
+              ? {key: sequentialKey(), style: {textAlign: this.token.align[j]}}
               : null,
             this.inline.output(cells[j])
           ));
         }
-        body.push(React.DOM.tr({key: randomKey()}, row));
+        body.push(React.DOM.tr({key: sequentialKey()}, row));
       }
-      table.push(React.DOM.thead({key: randomKey()}, body));
+      table.push(React.DOM.thead({key: sequentialKey()}, body));
 
-      return React.DOM.table({key: randomKey()}, table);
+      return React.DOM.table({key: sequentialKey()}, table);
     }
     case 'blockquote_start': {
       var body = [];
@@ -891,7 +891,7 @@ Parser.prototype.tok = function() {
         body.push(this.tok());
       }
 
-      return React.DOM.blockquote({key: randomKey()}, body);
+      return React.DOM.blockquote({key: sequentialKey()}, body);
     }
     case 'list_start': {
       var type = this.token.ordered ? 'ol' : 'ul'
@@ -901,7 +901,7 @@ Parser.prototype.tok = function() {
         body.push(this.tok());
       }
 
-      return React.DOM[type]({key: randomKey()}, body);
+      return React.DOM[type]({key: sequentialKey()}, body);
     }
     case 'list_item_start': {
       var body = [];
@@ -912,7 +912,7 @@ Parser.prototype.tok = function() {
           : this.tok());
       }
 
-      return React.DOM.li({key: randomKey()}, body);
+      return React.DOM.li({key: sequentialKey()}, body);
     }
     case 'loose_item_start': {
       var body = [];
@@ -921,22 +921,22 @@ Parser.prototype.tok = function() {
         body.push(this.tok());
       }
 
-      return React.DOM.li({key: randomKey()}, body);
+      return React.DOM.li({key: sequentialKey()}, body);
     }
     case 'html': {
       return !this.token.pre && !this.options.pedantic
-        ? React.DOM.span({key: randomKey(), dangerouslySetInnerHTML: {__html: this.token.text}})
+        ? React.DOM.span({key: sequentialKey(), dangerouslySetInnerHTML: {__html: this.token.text}})
         : this.token.text;
     }
     case 'paragraph': {
       return this.options.paragraphFn
         ? this.options.paragraphFn.call(null, this.inline.output(this.token.text))
-        : React.DOM.p({key: randomKey()}, this.inline.output(this.token.text));
+        : React.DOM.p({key: sequentialKey()}, this.inline.output(this.token.text));
     }
     case 'text': {
       return this.options.paragraphFn
         ? this.options.paragraphFn.call(null, this.parseText())
-        : React.DOM.p({key: randomKey()}, this.parseText());
+        : React.DOM.p({key: sequentialKey()}, this.parseText());
     }
   }
 };
@@ -1062,8 +1062,8 @@ function marked(src, opt, callback) {
   } catch (e) {
     e.message += '\nPlease report this to https://github.com/chjj/marked.';
     if ((opt || marked.defaults).silent) {
-      return [React.DOM.p({key: randomKey()}, "An error occurred:"),
-        React.DOM.pre({key: randomKey()}, e.message)];
+      return [React.DOM.p({key: sequentialKey()}, "An error occurred:"),
+        React.DOM.pre({key: sequentialKey()}, e.message)];
     }
     throw e;
   }
@@ -1111,7 +1111,7 @@ marked.parse = marked;
 var Marked = React.createClass({
   render: function() {
     return this.props.children ?
-      React.DOM.div({key: randomKey()}, marked(this.props.children, this.props)) :
+      React.DOM.div({key: sequentialKey()}, marked(this.props.children, this.props)) :
       null;
   }
 });
