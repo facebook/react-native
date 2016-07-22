@@ -57,6 +57,7 @@ public class FlatUIImplementation extends UIImplementation {
     viewManagers.add(new RCTTextInlineImageManager());
     viewManagers.add(new RCTImageViewManager());
     viewManagers.add(new RCTTextInputManager());
+    viewManagers.add(new RCTViewPagerManager());
     viewManagers.add(new RCTModalHostManager(reactContext));
 
     ViewManagerRegistry viewManagerRegistry = new ViewManagerRegistry(viewManagers);

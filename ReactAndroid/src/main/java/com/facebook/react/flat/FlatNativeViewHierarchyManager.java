@@ -11,7 +11,9 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import android.graphics.Rect;
 import android.view.View;
@@ -90,10 +92,15 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 
     ViewGroup viewGroup = (ViewGroup) view;
     ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(reactTag);
-    for (int i = 0; i < viewsToAdd.length; ++i) {
-      int tag = Math.abs(viewsToAdd[i]);
-      viewManager.addView(viewGroup, resolveView(tag), i);
+    List<View> listOfViews = new ArrayList<>(viewsToAdd.length);
+
+    // batch the set of additions - some view managers can take advantage of the batching to
+    // decrease operations, etc.
+    for (int viewIdToAdd : viewsToAdd) {
+      int tag = Math.abs(viewIdToAdd);
+      listOfViews.add(resolveView(tag));
     }
+    viewManager.addViews(viewGroup, listOfViews);
   }
 
   /**
@@ -171,9 +178,7 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 
       ViewGroup viewGroup = (ViewGroup) view;
       ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(viewTag);
-      for (int i = viewManager.getChildCount(viewGroup) - 1; i >= 0; --i) {
-        viewManager.removeViewAt(viewGroup, i);
-      }
+      viewManager.removeAllViews(viewGroup);
     }
   }
 }
