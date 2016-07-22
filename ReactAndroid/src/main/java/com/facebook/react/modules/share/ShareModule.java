@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -21,7 +22,6 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
 
 /**
@@ -82,7 +82,7 @@ public class ShareModule extends ReactContextBaseJavaModule {
       } else {
         getReactApplicationContext().startActivity(chooser);
       }
-      WritableMap result = new WritableNativeMap();
+      WritableMap result = Arguments.createMap();
       result.putString("action", ACTION_SHARED);
       promise.resolve(result);
       
