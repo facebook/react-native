@@ -189,6 +189,14 @@ var featured = [
     infoTitle: 'Building li.st for Android with React Native',
   },
   {
+    name: '爱海购',
+    icon: 'http://res.aihaitao360.com/app/logo.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/ai-hai-gou-mai-dao-quan-shi/id1063207227?mt=8',
+    linkPlayStore: 'http://shouji.baidu.com/software/9674192.html',
+    infoLink: 'http://www.aihaitao360.cn',
+    infoTitle: '爱海购 买便全球的好东西',
+  },
+  {
     name: 'Lugg – Your On-Demand Mover',
     icon: 'https://lh3.googleusercontent.com/EV9z7kRRME2KPMBRNHnje7bBNEl_Why2CFq-MfKzBC88uSFJTYr1HO3-nPt-JuVJwKFb=w300',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.lugg',
