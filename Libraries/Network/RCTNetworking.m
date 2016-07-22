@@ -223,6 +223,12 @@ RCT_EXPORT_MODULE()
   request.allHTTPHeaderFields = [self stripNullsInRequestHeaders:[RCTConvert NSDictionary:query[@"headers"]]];
   request.timeoutInterval = [RCTConvert NSTimeInterval:query[@"timeout"]];
   NSDictionary<NSString *, id> *data = [RCTConvert NSDictionary:RCTNilIfNull(query[@"data"])];
+  NSString *trackingName = data[@"trackingName"];
+  if (trackingName) {
+    [NSURLProtocol setProperty:trackingName
+                        forKey:@"trackingName"
+                     inRequest:request];
+  }
   return [self processDataForHTTPQuery:data callback:^(NSError *error, NSDictionary<NSString *, id> *result) {
     if (error) {
       RCTLogError(@"Error processing request body: %@", error);
