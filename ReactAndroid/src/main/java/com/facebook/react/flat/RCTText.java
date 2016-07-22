@@ -25,6 +25,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.textcachewarmer.DefaultTextLayoutCacheWarmer;
 
 /**
  * RCTText is a top-level node for text. It extends {@link RCTVirtualText} because it can contain
@@ -35,8 +36,13 @@ import com.facebook.react.uimanager.annotations.ReactProp;
  */
 /* package */ final class RCTText extends RCTVirtualText implements CSSNode.MeasureFunction {
 
+  // We set every value we use every time we use the layout builder, so we can get away with only
+  // using a single instance.
   private static final TextLayoutBuilder sTextLayoutBuilder =
-      new TextLayoutBuilder().setShouldCacheLayout(false);
+      new TextLayoutBuilder()
+          .setShouldCacheLayout(false)
+          .setShouldWarmText(true)
+          .setCacheWarmer(new DefaultTextLayoutCacheWarmer());
 
   private @Nullable CharSequence mText;
   private @Nullable DrawTextLayout mDrawCommand;
@@ -275,8 +281,6 @@ import com.facebook.react.uimanager.annotations.ReactProp;
       Layout.Alignment textAlignment) {
     Layout newLayout;
 
-    TextLayoutBuilder layoutBuilder = sTextLayoutBuilder;
-
     final @TextLayoutBuilder.MeasureMode int textMeasureMode;
     switch (widthMode) {
       case UNDEFINED:
@@ -292,7 +296,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
         throw new IllegalStateException("Unexpected size mode: " + widthMode);
     }
 
-    layoutBuilder
+    sTextLayoutBuilder
         .setEllipsize(ellipsize)
         .setMaxLines(maxLines)
         .setSingleLine(isSingleLine)
@@ -300,17 +304,17 @@ import com.facebook.react.uimanager.annotations.ReactProp;
         .setTextSize(textSize)
         .setWidth(width, textMeasureMode);
 
-    layoutBuilder.setTextStyle(textStyle);
+    sTextLayoutBuilder.setTextStyle(textStyle);
 
-    layoutBuilder.textDirection(TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR);
-    layoutBuilder.setIncludeFontPadding(shouldIncludeFontPadding);
-    layoutBuilder.setTextSpacingExtra(extraSpacing);
-    layoutBuilder.setTextSpacingMultiplier(spacingMultiplier);
-    layoutBuilder.setAlignment(textAlignment);
+    sTextLayoutBuilder.textDirection(TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR);
+    sTextLayoutBuilder.setIncludeFontPadding(shouldIncludeFontPadding);
+    sTextLayoutBuilder.setTextSpacingExtra(extraSpacing);
+    sTextLayoutBuilder.setTextSpacingMultiplier(spacingMultiplier);
+    sTextLayoutBuilder.setAlignment(textAlignment);
 
-    newLayout = layoutBuilder.build();
+    newLayout = sTextLayoutBuilder.build();
 
-    layoutBuilder.setText(null);
+    sTextLayoutBuilder.setText(null);
 
     return newLayout;
   }
