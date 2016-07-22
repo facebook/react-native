@@ -264,9 +264,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public void setChildren(
     int viewTag,
     ReadableArray childrenTags) {
-    FLog.d(
-        ReactConstants.TAG,
-        "(UIManager.setChildren) tag: " + viewTag + ", children: " + childrenTags);
+    if (DEBUG) {
+      FLog.d(
+          ReactConstants.TAG,
+          "(UIManager.setChildren) tag: " + viewTag + ", children: " + childrenTags);
+    }
     mUIImplementation.setChildren(viewTag, childrenTags);
   }
 
