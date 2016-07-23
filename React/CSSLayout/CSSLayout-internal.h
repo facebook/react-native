@@ -89,13 +89,12 @@ typedef struct CSSNode {
   int lineIndex;
   bool shouldUpdate;
   bool isTextNode;
-  CSSNodeRef parent;
   CSSNodeListRef children;
-  bool isDirty;
 
   struct CSSNode* nextChild;
 
   CSSSize (*measure)(void *context, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode);
+  bool (*isDirty)(void *context);
   void (*print)(void *context);
   void *context;
 } CSSNode;

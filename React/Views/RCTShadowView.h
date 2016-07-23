@@ -47,6 +47,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign, readonly) CSSNodeRef cssNode;
 @property (nonatomic, copy) NSString *viewName;
 @property (nonatomic, strong) UIColor *backgroundColor; // Used to propagate to children
+@property (nonatomic, assign) RCTUpdateLifecycle layoutLifecycle;
 @property (nonatomic, copy) RCTDirectEventBlock onLayout;
 
 /**
@@ -181,6 +182,12 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 - (void)applyLayoutToChildren:(CSSNodeRef)node
             viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
              absolutePosition:(CGPoint)absolutePosition;
+
+/**
+ * The following are implementation details exposed to subclasses. Do not call them directly
+ */
+- (void)dirtyLayout NS_REQUIRES_SUPER;
+- (BOOL)isLayoutDirty;
 
 /**
  * Return whether or not this node acts as a leaf node in the eyes of CSSLayout. For example

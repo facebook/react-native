@@ -110,6 +110,7 @@ typedef struct CSSSize {
 
 typedef struct CSSNode * CSSNodeRef;
 typedef CSSSize (*CSSMeasureFunc)(void *context, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode);
+typedef bool (*CSSIsDirtyFunc)(void *context);
 typedef void (*CSSPrintFunc)(void *context);
 
 // CSSNode
@@ -128,11 +129,6 @@ void CSSNodeCalculateLayout(
   float availableHeight,
   CSSDirection parentDirection);
 
-// Mark a node as dirty. Only valid for nodes with a custom measure function set.
-// CSSLayout knows when to mark all other nodes as dirty but because nodes with measure functions
-// depends on information not known to CSSLayout they must perform this dirty marking manually.
-void CSSNodeMarkDirty(CSSNodeRef node);
-
 void CSSNodePrint(CSSNodeRef node, CSSPrintOptions options);
 
 bool isUndefined(float value);
@@ -150,6 +146,7 @@ type CSSNodeLayoutGet##name(CSSNodeRef node);
 
 CSS_NODE_PROPERTY(void*, Context, context);
 CSS_NODE_PROPERTY(CSSMeasureFunc, MeasureFunc, measureFunc);
+CSS_NODE_PROPERTY(CSSIsDirtyFunc, IsDirtyFunc, isDirtyFunc);
 CSS_NODE_PROPERTY(CSSPrintFunc, PrintFunc, printFunc);
 CSS_NODE_PROPERTY(bool, IsTextnode, isTextNode);
 CSS_NODE_PROPERTY(bool, ShouldUpdate, shouldUpdate);

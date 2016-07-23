@@ -31,7 +31,7 @@
 
 - (void)contentSizeMultiplierDidChange:(NSNotification *)note
 {
-  CSSNodeMarkDirty(self.cssNode);
+  [self dirtyLayout];
   [self dirtyText];
 }
 
@@ -39,6 +39,7 @@
 {
   if (_text != text && ![_text isEqualToString:text]) {
     _text = [text copy];
+    [self dirtyLayout];
     [self dirtyText];
   }
 }
