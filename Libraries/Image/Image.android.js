@@ -23,7 +23,7 @@ var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
 
-var emptyFunction = require('emptyFunction');
+var emptyFunction = require('fbjs/lib/emptyFunction');
 var flattenStyle = require('flattenStyle');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
