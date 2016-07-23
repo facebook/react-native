@@ -93,6 +93,14 @@ npm install -g react-native-cli
 
 If you get a permission error, try with sudo: `sudo npm install -g react-native-cli`.
 
+If you want to use [Flow](https://flowtype.org/):
+
+```
+npm install --global flow-bin
+```
+
+If you get a permission error, try with sudo: `sudo npm install -g react-native-cli`.
+
 <block class="mac ios" />
 
 The easiest way to install Xcode is via the [Mac App Store](https://itunes.apple.com/us/app/xcode/id497799835?mt=12).
