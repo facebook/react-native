@@ -424,8 +424,11 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
     RCTShadowView *shadowView = self->_shadowViewRegistry[reactTag];
     RCTAssert(shadowView != nil, @"Could not locate shadow view with tag #%@", reactTag);
 
+    BOOL dirtyLayout = NO;
+
     if (!CGRectEqualToRect(frame, shadowView.frame)) {
       shadowView.frame = frame;
+      dirtyLayout = YES;
     }
 
     // Trigger re-layout when size flexibility changes, as the root view might grow or
@@ -434,8 +437,13 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
       RCTRootShadowView *rootShadowView = (RCTRootShadowView *)shadowView;
       if (rootShadowView.sizeFlexibility != sizeFlexibility) {
         rootShadowView.sizeFlexibility = sizeFlexibility;
-        [self batchDidComplete];
+        dirtyLayout = YES;
       }
+    }
+
+    if (dirtyLayout) {
+      [shadowView dirtyLayout];
+      [self batchDidComplete];
     }
   });
 }

@@ -56,6 +56,12 @@ static void RCTPrint(void *context)
   printf("%s(%zd), ", shadowView.viewName.UTF8String, shadowView.reactTag.integerValue);
 }
 
+static bool RCTIsDirty(void *context)
+{
+  RCTShadowView *shadowView = (__bridge RCTShadowView *)context;
+  return [shadowView isLayoutDirty];
+}
+
 // Enforces precedence rules, e.g. marginLeft > marginHorizontal > margin.
 #define DEFINE_PROCESS_META_PROPS(type)                                                            \
 static void RCTProcessMetaProps##type(const float metaProps[META_PROP_COUNT], CSSNodeRef node) {   \
@@ -141,6 +147,7 @@ DEFINE_PROCESS_META_PROPS(Border);
     return;
   }
   CSSNodeSetShouldUpdate(node, false);
+  _layoutLifecycle = RCTUpdateLifecycleComputed;
 
   CGPoint absoluteTopLeft = {
     absolutePosition.x + CSSNodeLayoutGetLeft(node),
@@ -256,6 +263,11 @@ DEFINE_PROCESS_META_PROPS(Border);
     CSSNodeStyleSetHeight(_cssNode, frame.size.height);
     CSSNodeStyleSetPositionLeft(_cssNode, frame.origin.x);
     CSSNodeStyleSetPositionTop(_cssNode, frame.origin.y);
+
+    // Our parent has asked us to change our cssNode->styles. Dirty the layout
+    // so that we can rerun layout on this node. The request came from our parent
+    // so there's no need to dirty our ancestors by calling dirtyLayout.
+    _layoutLifecycle = RCTUpdateLifecycleDirtied;
   }
 
   CSSNodeCalculateLayout(_cssNode, frame.size.width, frame.size.height, CSSDirectionInherit);
@@ -292,6 +304,7 @@ DEFINE_PROCESS_META_PROPS(Border);
     }
 
     _newView = YES;
+    _layoutLifecycle = RCTUpdateLifecycleUninitialized;
     _propagationLifecycle = RCTUpdateLifecycleUninitialized;
     _textLifecycle = RCTUpdateLifecycleUninitialized;
 
@@ -300,6 +313,7 @@ DEFINE_PROCESS_META_PROPS(Border);
     _cssNode = CSSNodeNew();
     CSSNodeSetContext(_cssNode, (__bridge void *)self);
     CSSNodeSetPrintFunc(_cssNode, RCTPrint);
+    CSSNodeSetIsDirtyFunc(_cssNode, RCTIsDirty);
   }
   return self;
 }
@@ -312,6 +326,19 @@ DEFINE_PROCESS_META_PROPS(Border);
 - (void)dealloc
 {
   CSSNodeFree(_cssNode);
+}
+
+- (void)dirtyLayout
+{
+  if (_layoutLifecycle != RCTUpdateLifecycleDirtied) {
+    _layoutLifecycle = RCTUpdateLifecycleDirtied;
+    [_superview dirtyLayout];
+  }
+}
+
+- (BOOL)isLayoutDirty
+{
+  return _layoutLifecycle != RCTUpdateLifecycleComputed;
 }
 
 - (BOOL)isCSSLeafNode
@@ -359,12 +386,14 @@ DEFINE_PROCESS_META_PROPS(Border);
   subview->_superview = self;
   _didUpdateSubviews = YES;
   [self dirtyText];
+  [self dirtyLayout];
   [self dirtyPropagation];
 }
 
 - (void)removeReactSubview:(RCTShadowView *)subview
 {
   [subview dirtyText];
+  [subview dirtyLayout];
   [subview dirtyPropagation];
   _didUpdateSubviews = YES;
   subview->_superview = nil;
@@ -504,6 +533,7 @@ RCT_BORDER_PROPERTY(Right, RIGHT)
 - (void)set##setProp:(CGFloat)value                                 \
 {                                                                   \
   CSSNodeStyleSet##cssProp(_cssNode, value);                        \
+  [self dirtyLayout];                                               \
   [self dirtyText];                                                 \
 }                                                                   \
 - (CGFloat)getProp                                                  \
@@ -531,31 +561,40 @@ RCT_DIMENSION_PROPERTY(Left, left, PositionLeft)
   CSSNodeStyleSetPositionTop(_cssNode, CGRectGetMinY(frame));
   CSSNodeStyleSetWidth(_cssNode, CGRectGetWidth(frame));
   CSSNodeStyleSetHeight(_cssNode, CGRectGetHeight(frame));
+  [self dirtyLayout];
 }
 
-static inline void RCTAssignSuggestedDimension(CSSNodeRef cssNode, CSSDimension dimension, CGFloat amount)
+static inline BOOL RCTAssignSuggestedDimension(CSSNodeRef cssNode, CSSDimension dimension, CGFloat amount)
 {
   if (amount != UIViewNoIntrinsicMetric) {
     switch (dimension) {
       case CSSDimensionWidth:
         if (isnan(CSSNodeStyleGetWidth(cssNode))) {
           CSSNodeStyleSetWidth(cssNode, amount);
+          return YES;
         }
         break;
       case CSSDimensionHeight:
         if (isnan(CSSNodeStyleGetHeight(cssNode))) {
           CSSNodeStyleSetHeight(cssNode, amount);
+          return YES;
         }
         break;
     }
   }
+
+  return NO;
 }
 
 - (void)setIntrinsicContentSize:(CGSize)size
 {
   if (CSSNodeStyleGetFlex(_cssNode) == 0) {
-    RCTAssignSuggestedDimension(_cssNode, CSSDimensionHeight, size.height);
-    RCTAssignSuggestedDimension(_cssNode, CSSDimensionWidth, size.width);
+    BOOL dirty = NO;
+    dirty |= RCTAssignSuggestedDimension(_cssNode, CSSDimensionHeight, size.height);
+    dirty |= RCTAssignSuggestedDimension(_cssNode, CSSDimensionWidth, size.width);
+    if (dirty) {
+      [self dirtyLayout];
+    }
   }
 }
 
@@ -563,12 +602,14 @@ static inline void RCTAssignSuggestedDimension(CSSNodeRef cssNode, CSSDimension 
 {
   CSSNodeStyleSetPositionLeft(_cssNode, topLeft.x);
   CSSNodeStyleSetPositionTop(_cssNode, topLeft.y);
+  [self dirtyLayout];
 }
 
 - (void)setSize:(CGSize)size
 {
   CSSNodeStyleSetWidth(_cssNode, size.width);
   CSSNodeStyleSetHeight(_cssNode, size.height);
+  [self dirtyLayout];
 }
 
 // Flex
@@ -577,6 +618,7 @@ static inline void RCTAssignSuggestedDimension(CSSNodeRef cssNode, CSSDimension 
 - (void)set##setProp:(type)value                            \
 {                                                           \
   CSSNodeStyleSet##cssProp(_cssNode, value);                \
+  [self dirtyLayout];                                       \
 }                                                           \
 - (type)getProp                                             \
 {                                                           \
@@ -622,6 +664,9 @@ RCT_STYLE_PROPERTY(FlexWrap, flexWrap, FlexWrap, CSSWrapType)
   }
   if (_recomputeBorder) {
     RCTProcessMetaPropsBorder(_borderMetaProps, _cssNode);
+  }
+  if (_recomputePadding || _recomputeMargin || _recomputeBorder) {
+    [self dirtyLayout];
   }
   _recomputeMargin = NO;
   _recomputePadding = NO;

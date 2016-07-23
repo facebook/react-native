@@ -88,7 +88,7 @@ static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, 
 
 - (void)contentSizeMultiplierDidChange:(NSNotification *)note
 {
-  CSSNodeMarkDirty(self.cssNode);
+  [self dirtyLayout];
   [self dirtyText];
 }
 
@@ -330,7 +330,7 @@ static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, 
 
   // create a non-mutable attributedString for use by the Text system which avoids copies down the line
   _cachedAttributedString = [[NSAttributedString alloc] initWithAttributedString:attributedString];
-  CSSNodeMarkDirty(self.cssNode);
+  [self dirtyLayout];
 
   return _cachedAttributedString;
 }
