@@ -65,6 +65,10 @@ const SwipeableListView = React.createClass({
 
   propTypes: {
     /**
+     * Auto close any open rows when listview is scrolled
+     */
+    closeOnScroll: PropTypes.bool.isRequired,
+    /**
      * To alert the user that swiping is possible, the first row can bounce
      * on component mount.
      */
@@ -84,6 +88,7 @@ const SwipeableListView = React.createClass({
 
   getDefaultProps(): Object {
     return {
+      closeOnScroll: false,
       bounceFirstRowOnMount: false,
       renderQuickActions: () => null,
     };
@@ -119,6 +124,7 @@ const SwipeableListView = React.createClass({
         dataSource={this.state.dataSource.getDataSource()}
         renderRow={this._renderRow}
         scrollEnabled={this.state.scrollEnabled}
+        onScroll={this._onScroll}
       />
     );
   },
@@ -182,6 +188,15 @@ const SwipeableListView = React.createClass({
       dataSource: this.state.dataSource.setOpenRowID(rowID),
     });
   },
+
+  _onScroll(): void {
+    if (this.props.closeOnScroll) {
+      this.setState({
+        dataSource: this.state.dataSource.setOpenRowID(),
+      });
+    }
+  },
+
 });
 
 module.exports = SwipeableListView;
