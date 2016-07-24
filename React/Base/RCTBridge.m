@@ -132,15 +132,13 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                    launchOptions:(NSDictionary *)launchOptions
 {
   if (self = [super init]) {
-    _performanceLogger = [RCTPerformanceLogger new];
-    [_performanceLogger markStartForTag:RCTPLBridgeStartup];
-    [_performanceLogger markStartForTag:RCTPLTTI];
-
     _delegate = delegate;
     _bundleURL = bundleURL;
     _moduleProvider = block;
     _launchOptions = [launchOptions copy];
+
     [self setUp];
+
     RCTExecuteOnMainQueue(^{ [self bindKeys]; });
   }
   return self;
@@ -180,6 +178,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }];
 
 #endif
+}
+
+- (RCTPerformanceLogger *)performanceLogger
+{
+  return self.batchedBridge.performanceLogger;
 }
 
 - (NSArray<Class> *)moduleClasses
