@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.TouchEvent;
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
@@ -82,7 +81,6 @@ public class JSTouchDispatcher {
       eventDispatcher.dispatchEvent(
         TouchEvent.obtain(
           mTargetTag,
-          SystemClock.nanoTime(),
           TouchEventType.START,
           ev,
           mTargetCoordinates[0],
@@ -105,7 +103,6 @@ public class JSTouchDispatcher {
       eventDispatcher.dispatchEvent(
         TouchEvent.obtain(
           mTargetTag,
-          SystemClock.nanoTime(),
           TouchEventType.END,
           ev,
           mTargetCoordinates[0],
@@ -117,7 +114,6 @@ public class JSTouchDispatcher {
       eventDispatcher.dispatchEvent(
         TouchEvent.obtain(
           mTargetTag,
-          SystemClock.nanoTime(),
           TouchEventType.MOVE,
           ev,
           mTargetCoordinates[0],
@@ -128,7 +124,6 @@ public class JSTouchDispatcher {
       eventDispatcher.dispatchEvent(
         TouchEvent.obtain(
           mTargetTag,
-          SystemClock.nanoTime(),
           TouchEventType.START,
           ev,
           mTargetCoordinates[0],
@@ -139,7 +134,6 @@ public class JSTouchDispatcher {
       eventDispatcher.dispatchEvent(
         TouchEvent.obtain(
           mTargetTag,
-          SystemClock.nanoTime(),
           TouchEventType.END,
           ev,
           mTargetCoordinates[0],
@@ -180,7 +174,6 @@ public class JSTouchDispatcher {
     Assertions.assertNotNull(eventDispatcher).dispatchEvent(
       TouchEvent.obtain(
         mTargetTag,
-        SystemClock.nanoTime(),
         TouchEventType.CANCEL,
         androidEvent,
         mTargetCoordinates[0],

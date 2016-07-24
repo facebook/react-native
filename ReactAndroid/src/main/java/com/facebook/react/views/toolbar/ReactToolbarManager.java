@@ -25,7 +25,6 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -131,7 +130,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
           @Override
           public void onClick(View v) {
             mEventDispatcher.dispatchEvent(
-                new ToolbarClickEvent(view.getId(), SystemClock.nanoTime(), -1));
+                new ToolbarClickEvent(view.getId(), -1));
           }
         });
 
@@ -142,7 +141,6 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
             mEventDispatcher.dispatchEvent(
                 new ToolbarClickEvent(
                     view.getId(),
-                    SystemClock.nanoTime(),
                     menuItem.getOrder()));
             return true;
           }
