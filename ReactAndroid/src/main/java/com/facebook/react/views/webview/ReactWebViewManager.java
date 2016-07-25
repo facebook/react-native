@@ -22,6 +22,7 @@ import android.webkit.GeolocationPermissions;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 
 import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
@@ -306,6 +307,13 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @ReactProp(name = "injectedJavaScript")
   public void setInjectedJavaScript(WebView view, @Nullable String injectedJavaScript) {
     ((ReactWebView) view).setInjectedJavaScript(injectedJavaScript);
+  }
+
+  @ReactProp(name = "mixedContentModeEnabled")
+  public void setMixedContentModeEnabled(WebView view, boolean enabled) {
+    if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      view.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+    }
   }
 
   @ReactProp(name = "source")

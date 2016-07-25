@@ -153,6 +153,12 @@ var WebView = React.createClass({
      * start playing. The default value is `false`.
      */
     mediaPlaybackRequiresUserAction: PropTypes.bool,
+    
+    /**
+     * Used on Android(5.0+), controls whether Mixed content mode is enabled or not
+     * @platform android
+     */
+    mixedContentModeEnabled: PropTypes.bool,
   },
 
   getInitialState: function() {
@@ -167,6 +173,7 @@ var WebView = React.createClass({
     return {
       javaScriptEnabled : true,
       scalesPageToFit: true,
+      mixedContentModeEnabled: false,
     };
   },
 
@@ -229,6 +236,7 @@ var WebView = React.createClass({
         onLoadingError={this.onLoadingError}
         testID={this.props.testID}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
+        mixedContentModeEnabled={this.props.mixedContentModeEnabled}
       />;
 
     return (
