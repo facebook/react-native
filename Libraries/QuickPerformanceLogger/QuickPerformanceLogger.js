@@ -21,12 +21,6 @@ var fixOpts = function(opts) {
 };
 
 var QuickPerformanceLogger = {
-
-  // These two empty containers will cause all calls to ActionId.SOMETHING or MarkerId.OTHER
-  // to equal 'undefined', unless they are given a concrete value elsewhere.
-  ActionId: {},
-  MarkerId: {},
-
   markerStart(markerId, opts) {
     if (typeof markerId !== 'number') {
       return;
