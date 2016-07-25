@@ -254,6 +254,7 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   _scrollView.frame = frame;
   [self updateContentSize];
 
+  _textView.textContainer.maximumNumberOfLines = _numberOfLines.integerValue;
   _textView.textContainerInset = adjustedTextContainerInset;
   _placeholderView.textContainerInset = adjustedTextContainerInset;
 }
@@ -336,6 +337,22 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 
 - (BOOL)textView:(RCTUITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
+  if (textView.textContainer.maximumNumberOfLines > 0) {
+    NSString *newText = [textView.text stringByReplacingCharactersInRange:range withString:text];
+    CGSize boundingSize = CGSizeMake(self.frame.size.width, DBL_MAX);
+    CGSize textSize = [newText boundingRectWithSize:boundingSize
+                                            options:NSStringDrawingUsesLineFragmentOrigin
+                                         attributes:@{
+      NSFontAttributeName : (_textView.font ? _textView.font : [self defaultPlaceholderFont])
+    }
+                                            context:nil].size;
+    NSUInteger numberOfLines = textSize.height / textView.font.lineHeight;
+
+    if (numberOfLines > textView.textContainer.maximumNumberOfLines) {
+      return NO;
+    }
+  }
+
   if (textView.textWasPasted) {
     textView.textWasPasted = NO;
   } else {
