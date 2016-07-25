@@ -9,14 +9,14 @@
 
 package com.facebook.react.views.scroll;
 
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.PixelUtil;
+import javax.annotation.Nullable;
 
 import java.util.Map;
 
-import javax.annotation.Nonnull;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.MapBuilder;
 
 /**
  * Helper for view managers to handle commands like 'scrollTo'.
@@ -52,7 +52,7 @@ public class ReactScrollViewCommandHelper {
       ScrollCommandHandler<T> viewManager,
       T scrollView,
       int commandType,
-      @Nonnull ReadableArray args) {
+      @Nullable ReadableArray args) {
     Assertions.assertNotNull(viewManager);
     Assertions.assertNotNull(scrollView);
     Assertions.assertNotNull(args);
