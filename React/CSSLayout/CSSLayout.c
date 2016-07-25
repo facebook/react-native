@@ -33,7 +33,6 @@ CSSNodeRef CSSNodeNew() {
   CSSNodeRef node = calloc(1, sizeof(CSSNode));
   assert(node != NULL);
 
-  node->children = CSSNodeListNew(4);
   CSSNodeInit(node);
   return node;
 }
@@ -44,6 +43,11 @@ void CSSNodeFree(CSSNodeRef node) {
 }
 
 void CSSNodeInit(CSSNodeRef node) {
+  node->parent = NULL;
+  node->children = CSSNodeListNew(4);
+  node->shouldUpdate = true;
+  node->isDirty = false;
+
   node->style.alignItems = CSSAlignStretch;
   node->style.alignContent = CSSAlignFlexStart;
 
@@ -79,7 +83,6 @@ void CSSNodeInit(CSSNodeRef node) {
 
   // Such that the comparison is always going to be false
   node->layout.lastParentDirection = (CSSDirection)-1;
-  node->shouldUpdate = true;
   node->layout.nextCachedMeasurementsIndex = 0;
 
   node->layout.measuredDimensions[CSSDimensionWidth] = CSSUndefined;
@@ -88,12 +91,25 @@ void CSSNodeInit(CSSNodeRef node) {
   node->layout.cached_layout.heightMeasureMode = (CSSMeasureMode)-1;
 }
 
+void _CSSNodeMarkDirty(CSSNodeRef node) {
+  if (!node->isDirty) {
+    node->isDirty = true;
+    if (node->parent) {
+      _CSSNodeMarkDirty(node->parent);
+    }
+  }
+}
+
 void CSSNodeInsertChild(CSSNodeRef node, CSSNodeRef child, unsigned int index) {
   CSSNodeListInsert(node->children, child, index);
+  child->parent = node;
+  _CSSNodeMarkDirty(node);
 }
 
 void CSSNodeRemoveChild(CSSNodeRef node, CSSNodeRef child) {
   CSSNodeListDelete(node->children, child);
+  child->parent = NULL;
+  _CSSNodeMarkDirty(node);
 }
 
 CSSNodeRef CSSNodeGetChild(CSSNodeRef node, unsigned int index) {
@@ -104,32 +120,40 @@ unsigned int CSSNodeChildCount(CSSNodeRef node) {
   return CSSNodeListCount(node->children);
 }
 
+void CSSNodeMarkDirty(CSSNodeRef node) {
+  // Nodes without custom measure functions should not manually mark themselves as dirty
+  assert(node->measure != NULL);
+  _CSSNodeMarkDirty(node);
+}
+
 #define CSS_NODE_PROPERTY_IMPL(type, name, paramName, instanceName) \
 void CSSNodeSet##name(CSSNodeRef node, type paramName) { \
-  node->instanceName = paramName;\
+  node->instanceName = paramName; \
 } \
 \
 type CSSNodeGet##name(CSSNodeRef node) { \
-  return node->instanceName;\
+  return node->instanceName; \
 } \
 
 #define CSS_NODE_STYLE_PROPERTY_IMPL(type, name, paramName, instanceName) \
 void CSSNodeStyleSet##name(CSSNodeRef node, type paramName) { \
-  node->style.instanceName = paramName;\
+  if (node->style.instanceName != paramName) { \
+    node->style.instanceName = paramName; \
+    _CSSNodeMarkDirty(node); \
+  } \
 } \
 \
 type CSSNodeStyleGet##name(CSSNodeRef node) { \
-  return node->style.instanceName;\
+  return node->style.instanceName; \
 } \
 
 #define CSS_NODE_LAYOUT_PROPERTY_IMPL(type, name, instanceName) \
 type CSSNodeLayoutGet##name(CSSNodeRef node) { \
-  return node->layout.instanceName;\
+  return node->layout.instanceName; \
 } \
 
 CSS_NODE_PROPERTY_IMPL(void*, Context, context, context);
 CSS_NODE_PROPERTY_IMPL(CSSMeasureFunc, MeasureFunc, measureFunc, measure);
-CSS_NODE_PROPERTY_IMPL(CSSIsDirtyFunc, IsDirtyFunc, isDirtyFunc, isDirty);
 CSS_NODE_PROPERTY_IMPL(CSSPrintFunc, PrintFunc, printFunc, print);
 CSS_NODE_PROPERTY_IMPL(bool, IsTextnode, isTextNode, isTextNode);
 CSS_NODE_PROPERTY_IMPL(bool, ShouldUpdate, shouldUpdate, shouldUpdate);
@@ -1735,7 +1759,7 @@ bool layoutNodeInternal(CSSNode* node, float availableWidth, float availableHeig
 
   gDepth++;
 
-  bool needToVisitNode = (node->isDirty(node->context) && layout->generationCount != gCurrentGenerationCount) ||
+  bool needToVisitNode = (node->isDirty && layout->generationCount != gCurrentGenerationCount) ||
     layout->lastParentDirection != parentDirection;
 
   if (needToVisitNode) {
@@ -1867,6 +1891,7 @@ bool layoutNodeInternal(CSSNode* node, float availableWidth, float availableHeig
     node->layout.dimensions[CSSDimensionWidth] = node->layout.measuredDimensions[CSSDimensionWidth];
     node->layout.dimensions[CSSDimensionHeight] = node->layout.measuredDimensions[CSSDimensionHeight];
     node->shouldUpdate = true;
+    node->isDirty = false;
   }
 
   gDepth--;
