@@ -26,12 +26,12 @@ class Share {
 
   /**
    * Open a dialog to share text content.
-   * 
+   *
    * In iOS, Returns a Promise which will be invoked an object containing `action`, `activityType`.
-   * If the user dismissed the dialog, the Promise will still be resolved with action being `Share.dismissedAction` 
-   * and all the other keys being undefined. 
-   * 
-   * In Android, Returns a Promise which always be resolved with action being `Share.sharedAction`. 
+   * If the user dismissed the dialog, the Promise will still be resolved with action being `Share.dismissedAction`
+   * and all the other keys being undefined.
+   *
+   * In Android, Returns a Promise which always be resolved with action being `Share.sharedAction`.
    *
    * ### Content
    *
@@ -93,7 +93,6 @@ class Share {
         );
       });
     } else {
-      console.warn('Share.share is not supported on this platform');
       return Promise.reject(new Error('Unsupported platform'));
     }
   }

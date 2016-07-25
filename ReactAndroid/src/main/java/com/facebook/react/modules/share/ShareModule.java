@@ -13,7 +13,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
-import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.Promise;
@@ -46,7 +45,7 @@ public class ShareModule extends ReactContextBaseJavaModule {
    * Open a chooser dialog to send text content to other apps.
    *
    * Refer http://developer.android.com/intl/ko/training/sharing/send.html
-   * 
+   *
    * @param content the data to send
    * @param dialogTitle the title of the chooser dialog
    */
@@ -60,14 +59,14 @@ public class ShareModule extends ReactContextBaseJavaModule {
     try {
       Intent intent = new Intent(Intent.ACTION_SEND);
       intent.setTypeAndNormalize("text/plain");
-      
+
       if (content.hasKey("title")) {
         intent.putExtra(Intent.EXTRA_SUBJECT, content.getString("title"));
       }
 
       if (content.hasKey("message")) {
         intent.putExtra(Intent.EXTRA_TEXT, content.getString("message"));
-      } 
+      }
 
       if (content.hasKey("url")) {
         intent.putExtra(Intent.EXTRA_TEXT, content.getString("url")); // this will overwrite message
@@ -85,9 +84,8 @@ public class ShareModule extends ReactContextBaseJavaModule {
       WritableMap result = Arguments.createMap();
       result.putString("action", ACTION_SHARED);
       promise.resolve(result);
-      
+
     } catch (Exception e) {
-      FLog.e(ReactConstants.TAG, "Failed to open share dialog", e);
       promise.reject(ERROR_UNABLE_TO_OPEN_DIALOG, "Failed to open share dialog");
     }
 
