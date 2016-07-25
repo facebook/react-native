@@ -7,8 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef __LAYOUT_H
-#define __LAYOUT_H
+#ifndef __CSS_LAYOUT_H
+#define __CSS_LAYOUT_H
 
 #include <math.h>
 #ifndef __cplusplus
@@ -21,185 +21,186 @@ static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
 #define NAN (*(const float *)__nan)
 #endif
 
-#define CSS_UNDEFINED NAN
+#define CSSUndefined NAN
 
-#include "CSSMacros.h"
+#include <CSSLayout/CSSMacros.h>
 
 CSS_EXTERN_C_BEGIN
 
-typedef enum {
-  CSS_DIRECTION_INHERIT = 0,
-  CSS_DIRECTION_LTR,
-  CSS_DIRECTION_RTL
-} css_direction_t;
+typedef enum CSSDirection {
+  CSSDirectionInherit,
+  CSSDirectionLTR,
+  CSSDirectionRTL,
+} CSSDirection;
 
-typedef enum {
-  CSS_FLEX_DIRECTION_COLUMN = 0,
-  CSS_FLEX_DIRECTION_COLUMN_REVERSE,
-  CSS_FLEX_DIRECTION_ROW,
-  CSS_FLEX_DIRECTION_ROW_REVERSE
-} css_flex_direction_t;
+typedef enum CSSFlexDirection {
+  CSSFlexDirectionColumn,
+  CSSFlexDirectionColumnReverse,
+  CSSFlexDirectionRow,
+  CSSFlexDirectionRowReverse,
+} CSSFlexDirection;
 
-typedef enum {
-  CSS_JUSTIFY_FLEX_START = 0,
-  CSS_JUSTIFY_CENTER,
-  CSS_JUSTIFY_FLEX_END,
-  CSS_JUSTIFY_SPACE_BETWEEN,
-  CSS_JUSTIFY_SPACE_AROUND
-} css_justify_t;
+typedef enum CSSJustify {
+  CSSJustifyFlexStart,
+  CSSJustifyCenter,
+  CSSJustifyFlexEnd,
+  CSSJustifySpaceBetween,
+  CSSJustifySpaceAround,
+} CSSJustify;
 
-typedef enum {
-  CSS_OVERFLOW_VISIBLE = 0,
-  CSS_OVERFLOW_HIDDEN
-} css_overflow_t;
+typedef enum CSSOverflow {
+  CSSOverflowVisible,
+  CSSOverflowHidden,
+} CSSOverflow;
 
 // Note: auto is only a valid value for alignSelf. It is NOT a valid value for
 // alignItems.
-typedef enum {
-  CSS_ALIGN_AUTO = 0,
-  CSS_ALIGN_FLEX_START,
-  CSS_ALIGN_CENTER,
-  CSS_ALIGN_FLEX_END,
-  CSS_ALIGN_STRETCH
-} css_align_t;
+typedef enum CSSAlign {
+  CSSAlignAuto,
+  CSSAlignFlexStart,
+  CSSAlignCenter,
+  CSSAlignFlexEnd,
+  CSSAlignStretch,
+} CSSAlign;
 
-typedef enum {
-  CSS_POSITION_RELATIVE = 0,
-  CSS_POSITION_ABSOLUTE
-} css_position_type_t;
+typedef enum CSSPositionType {
+  CSSPositionTypeRelative,
+  CSSPositionTypeAbsolute,
+} CSSPositionType;
 
-typedef enum {
-  CSS_NOWRAP = 0,
-  CSS_WRAP
-} css_wrap_type_t;
+typedef enum CSSWrapType {
+  CSSWrapTypeNoWrap,
+  CSSWrapTypeWrap,
+} CSSWrapType;
 
 // Note: left and top are shared between position[2] and position[4], so
 // they have to be before right and bottom.
-typedef enum {
-  CSS_LEFT = 0,
-  CSS_TOP,
-  CSS_RIGHT,
-  CSS_BOTTOM,
-  CSS_START,
-  CSS_END,
-  CSS_POSITION_COUNT
-} css_position_t;
+typedef enum CSSPosition {
+  CSSPositionLeft,
+  CSSPositionTop,
+  CSSPositionRight,
+  CSSPositionBottom,
+  CSSPositionStart,
+  CSSPositionEnd,
+  CSSPositionCount,
+} CSSPosition;
 
-typedef enum {
-  CSS_MEASURE_MODE_UNDEFINED = 0,
-  CSS_MEASURE_MODE_EXACTLY,
-  CSS_MEASURE_MODE_AT_MOST,
-  CSS_MEASURE_MODE_COUNT
-} css_measure_mode_t;
+typedef enum CSSMeasureMode {
+  CSSMeasureModeUndefined,
+  CSSMeasureModeExactly,
+  CSSMeasureModeAtMost,
+  CSSMeasureModeCount,
+} CSSMeasureMode;
 
-typedef enum {
-  CSS_WIDTH = 0,
-  CSS_HEIGHT
-} css_dimension_t;
+typedef enum CSSDimension {
+  CSSDimensionWidth,
+  CSSDimensionHeight,
+} CSSDimension;
 
-typedef struct {
-  float available_width;
-  float available_height;
-  css_measure_mode_t width_measure_mode;
-  css_measure_mode_t height_measure_mode;
+typedef enum CSSPrintOptions {
+  CSSPrintOptionsLayout = 1,
+  CSSPrintOptionsStyle = 2,
+  CSSPrintOptionsChildren = 4,
+} CSSPrintOptions;
 
-  float computed_width;
-  float computed_height;
-} css_cached_measurement_t;
+typedef struct CSSSize {
+  float width;
+  float height;
+} CSSSize;
 
-enum {
-  // This value was chosen based on empiracle data. Even the most complicated
-  // layouts should not require more than 16 entries to fit within the cache.
-  CSS_MAX_CACHED_RESULT_COUNT = 16
-};
+typedef struct CSSNode * CSSNodeRef;
+typedef CSSSize (*CSSMeasureFunc)(void *context, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode);
+typedef bool (*CSSIsDirtyFunc)(void *context);
+typedef void (*CSSPrintFunc)(void *context);
 
-typedef struct {
-  float position[4];
-  float dimensions[2];
-  css_direction_t direction;
+// CSSNode
+CSSNodeRef CSSNodeNew();
+void CSSNodeInit(CSSNodeRef node);
+void CSSNodeFree(CSSNodeRef node);
 
-  float flex_basis;
+void CSSNodeInsertChild(CSSNodeRef node, CSSNodeRef child, unsigned int index);
+void CSSNodeRemoveChild(CSSNodeRef node, CSSNodeRef child);
+CSSNodeRef CSSNodeGetChild(CSSNodeRef node, unsigned int index);
+unsigned int CSSNodeChildCount(CSSNodeRef node);
 
-  // Instead of recomputing the entire layout every single time, we
-  // cache some information to break early when nothing changed
-  bool should_update;
-  int generation_count;
-  css_direction_t last_parent_direction;
+void CSSNodeCalculateLayout(
+  CSSNodeRef node,
+  float availableWidth,
+  float availableHeight,
+  CSSDirection parentDirection);
 
-  int next_cached_measurements_index;
-  css_cached_measurement_t cached_measurements[CSS_MAX_CACHED_RESULT_COUNT];
-  float measured_dimensions[2];
+void CSSNodePrint(CSSNodeRef node, CSSPrintOptions options);
 
-  css_cached_measurement_t cached_layout;
-} css_layout_t;
-
-typedef struct {
-  float dimensions[2];
-} css_dim_t;
-
-typedef struct {
-  css_direction_t direction;
-  css_flex_direction_t flex_direction;
-  css_justify_t justify_content;
-  css_align_t align_content;
-  css_align_t align_items;
-  css_align_t align_self;
-  css_position_type_t position_type;
-  css_wrap_type_t flex_wrap;
-  css_overflow_t overflow;
-  float flex;
-  float margin[6];
-  float position[4];
-  /**
-   * You should skip all the rules that contain negative values for the
-   * following attributes. For example:
-   *   {padding: 10, paddingLeft: -5}
-   * should output:
-   *   {left: 10 ...}
-   * the following two are incorrect:
-   *   {left: -5 ...}
-   *   {left: 0 ...}
-   */
-  float padding[6];
-  float border[6];
-  float dimensions[2];
-  float minDimensions[2];
-  float maxDimensions[2];
-} css_style_t;
-
-typedef struct css_node css_node_t;
-struct css_node {
-  css_style_t style;
-  css_layout_t layout;
-  int children_count;
-  int line_index;
-
-  css_node_t* next_child;
-
-  css_dim_t (*measure)(void *context, float width, css_measure_mode_t widthMode, float height, css_measure_mode_t heightMode);
-  void (*print)(void *context);
-  struct css_node* (*get_child)(void *context, int i);
-  bool (*is_dirty)(void *context);
-  bool (*is_text_node)(void *context);
-  void *context;
-};
-
-// Lifecycle of nodes and children
-css_node_t *new_css_node(void);
-void init_css_node(css_node_t *node);
-void free_css_node(css_node_t *node);
-
-// Print utilities
-typedef enum {
-  CSS_PRINT_LAYOUT = 1,
-  CSS_PRINT_STYLE = 2,
-  CSS_PRINT_CHILDREN = 4,
-} css_print_options_t;
-void print_css_node(css_node_t *node, css_print_options_t options);
-
-// Function that computes the layout!
-void layoutNode(css_node_t *node, float availableWidth, float availableHeight, css_direction_t parentDirection);
 bool isUndefined(float value);
+
+#define CSS_NODE_PROPERTY(type, name, paramName) \
+void CSSNodeSet##name(CSSNodeRef node, type paramName); \
+type CSSNodeGet##name(CSSNodeRef node);
+
+#define CSS_NODE_STYLE_PROPERTY(type, name, paramName) \
+void CSSNodeStyleSet##name(CSSNodeRef node, type paramName); \
+type CSSNodeStyleGet##name(CSSNodeRef node);
+
+#define CSS_NODE_LAYOUT_PROPERTY(type, name) \
+type CSSNodeLayoutGet##name(CSSNodeRef node);
+
+CSS_NODE_PROPERTY(void*, Context, context);
+CSS_NODE_PROPERTY(CSSMeasureFunc, MeasureFunc, measureFunc);
+CSS_NODE_PROPERTY(CSSIsDirtyFunc, IsDirtyFunc, isDirtyFunc);
+CSS_NODE_PROPERTY(CSSPrintFunc, PrintFunc, printFunc);
+CSS_NODE_PROPERTY(bool, IsTextnode, isTextNode);
+CSS_NODE_PROPERTY(bool, ShouldUpdate, shouldUpdate);
+
+CSS_NODE_STYLE_PROPERTY(CSSDirection, Direction, direction);
+CSS_NODE_STYLE_PROPERTY(CSSFlexDirection, FlexDirection, flexDirection);
+CSS_NODE_STYLE_PROPERTY(CSSJustify, JustifyContent, justifyContent);
+CSS_NODE_STYLE_PROPERTY(CSSAlign, AlignContent, alignContent);
+CSS_NODE_STYLE_PROPERTY(CSSAlign, AlignItems, alignItems);
+CSS_NODE_STYLE_PROPERTY(CSSAlign, AlignSelf, alignSelf);
+CSS_NODE_STYLE_PROPERTY(CSSPositionType, PositionType, positionType);
+CSS_NODE_STYLE_PROPERTY(CSSWrapType, FlexWrap, flexWrap);
+CSS_NODE_STYLE_PROPERTY(CSSOverflow, Overflow, overflow);
+CSS_NODE_STYLE_PROPERTY(float, Flex, flex);
+
+CSS_NODE_STYLE_PROPERTY(float, PositionLeft, positionLeft);
+CSS_NODE_STYLE_PROPERTY(float, PositionTop, positionTop);
+CSS_NODE_STYLE_PROPERTY(float, PositionRight, positionRight);
+CSS_NODE_STYLE_PROPERTY(float, PositionBottom, positionBottom);
+
+CSS_NODE_STYLE_PROPERTY(float, MarginLeft, marginLeft);
+CSS_NODE_STYLE_PROPERTY(float, MarginTop, marginTop);
+CSS_NODE_STYLE_PROPERTY(float, MarginRight, marginRight);
+CSS_NODE_STYLE_PROPERTY(float, MarginBottom, marginBottom);
+CSS_NODE_STYLE_PROPERTY(float, MarginStart, marginStart);
+CSS_NODE_STYLE_PROPERTY(float, MarginEnd, marginEnd);
+
+CSS_NODE_STYLE_PROPERTY(float, PaddingLeft, paddingLeft);
+CSS_NODE_STYLE_PROPERTY(float, PaddingTop, paddingTop);
+CSS_NODE_STYLE_PROPERTY(float, PaddingRight, paddingRight);
+CSS_NODE_STYLE_PROPERTY(float, PaddingBottom, paddingBottom);
+CSS_NODE_STYLE_PROPERTY(float, PaddingStart, paddingStart);
+CSS_NODE_STYLE_PROPERTY(float, PaddingEnd, paddingEnd);
+
+CSS_NODE_STYLE_PROPERTY(float, BorderLeft, borderLeft);
+CSS_NODE_STYLE_PROPERTY(float, BorderTop, borderTop);
+CSS_NODE_STYLE_PROPERTY(float, BorderRight, borderRight);
+CSS_NODE_STYLE_PROPERTY(float, BorderBottom, borderBottom);
+CSS_NODE_STYLE_PROPERTY(float, BorderStart, borderStart);
+CSS_NODE_STYLE_PROPERTY(float, BorderEnd, borderEnd);
+
+CSS_NODE_STYLE_PROPERTY(float, Width, width);
+CSS_NODE_STYLE_PROPERTY(float, Height, height);
+CSS_NODE_STYLE_PROPERTY(float, MinWidth, minWidth);
+CSS_NODE_STYLE_PROPERTY(float, MinHeight, minHeight);
+CSS_NODE_STYLE_PROPERTY(float, MaxWidth, maxWidth);
+CSS_NODE_STYLE_PROPERTY(float, MaxHeight, maxHeight);
+
+CSS_NODE_LAYOUT_PROPERTY(float, Left);
+CSS_NODE_LAYOUT_PROPERTY(float, Top);
+CSS_NODE_LAYOUT_PROPERTY(float, Right);
+CSS_NODE_LAYOUT_PROPERTY(float, Bottom);
+CSS_NODE_LAYOUT_PROPERTY(float, Width);
+CSS_NODE_LAYOUT_PROPERTY(float, Height);
 
 CSS_EXTERN_C_END
 
