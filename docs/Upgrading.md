@@ -47,7 +47,29 @@ This will check your files against the latest template and perform the following
 
 # Manual Upgrades
 
-Xcode project format is pretty complex and sometimes it's tricky to upgrade and merge new changes.
+### From 0.28 to 0.29
+
+The major change in this version happened in Android([see changelog](https://github.com/facebook/react-native/releases/tag/v0.29.0)).  Android in 0.29 moved to using an Application file with the existing Activity file.  
+
+**Follow these manual steps:**
+
+1. Create a new file MainApplication.java in the same folder as MainActivity.java
+1. Update it to match - https://github.com/facebook/react-native/blob/0.29-stable/local-cli/generator-android/templates/package/MainApplication.java and move your customisations from MainActivity.java to this file
+1. Update MainActivity.java to match - https://github.com/facebook/react-native/blob/0.29-stable/local-cli/generator-android/templates/package/MainActivity.java
+1. Add android:name=".MainApplication" in the <application /> section of AndroidManifest.xml. It should now look like,
+
+```xml
+<application
++   android:name=".MainApplication"
+    android:allowBackup="true"
+    android:label="@string/app_name"
+    android:icon="@mipmap/ic_launcher"
+    android:theme="@style/AppTheme">
+```
+
+  i. Clean gradle cache - ./gradlew clean
+  
+The experience might vary according to the level of customization you've made. Check this commit to see how UIExplorer and MoviesApp were migrated - [dcc2abc](https://github.com/facebook/react-native/commit/dcc2abc1f63f91e53bf01f4bc56c5b7c76300617)
 
 ### From 0.13 to 0.14
 
