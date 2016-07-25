@@ -9,6 +9,7 @@
 'use strict';
 
 require.requireActual('../packager/react-packager/src/Resolver/polyfills/babelHelpers.js');
+jest.mock('npmlog');
 
 global.__DEV__ = true;
 global.__fbBatchedBridgeConfig = {
