@@ -103,7 +103,7 @@ A more complete example that demonstrates the pushing and popping of routes coul
 
 ```javascript
 import React, { Component, PropTypes } from 'react';
-import { Navigator, Text, TouchableHighlight, View } from 'react-native';
+import {AppRegistry, Navigator, Text, TouchableHighlight, View } from 'react-native';
 
 export default class SimpleNavigationApp extends Component {
   render() {
