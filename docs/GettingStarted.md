@@ -93,6 +93,8 @@ npm install -g react-native-cli
 
 If you get a permission error, try with sudo: `sudo npm install -g react-native-cli`.
 
+If you get error `Cannot find module 'npmlog'`, try this before: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
+
 <block class="mac ios" />
 
 The easiest way to install Xcode is via the [Mac App Store](https://itunes.apple.com/us/app/xcode/id497799835?mt=12).
