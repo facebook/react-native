@@ -64,7 +64,7 @@ type Props = {
   renderScene: NavigationSceneRenderer,
   cardStyle?: any,
   style: any,
-  gestureResponseDistance: ?number,
+  gestureResponseDistance?: ?number,
 };
 
 type DefaultProps = {
