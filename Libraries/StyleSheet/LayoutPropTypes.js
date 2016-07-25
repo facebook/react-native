@@ -31,7 +31,7 @@ var LayoutPropTypes = {
    *
    *  It works similarly to `width` in CSS, but in React Native you
    *  must use logical pixel units, rather than percents, ems, or any of that.
-   *  See http://www.w3schools.com/cssref/pr_dim_width.asp for more details.
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/width for more details.
    */
   width: ReactPropTypes.number,
 
@@ -39,7 +39,7 @@ var LayoutPropTypes = {
    *
    *  It works similarly to `height` in CSS, but in React Native you
    *  must use logical pixel units, rather than percents, ems, or any of that.
-   *  See http://www.w3schools.com/cssref/pr_dim_width.asp for more details.
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/height for more details.
    */
   height: ReactPropTypes.number,
 
@@ -92,7 +92,7 @@ var LayoutPropTypes = {
    *  It works similarly to `min-width` in CSS, but in React Native you
    *  must use logical pixel units, rather than percents, ems, or any of that.
    *
-   *  See http://www.w3schools.com/cssref/pr_dim_min-width.asp
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/min-width
    *  for more details.
    */
   minWidth: ReactPropTypes.number,
@@ -102,7 +102,7 @@ var LayoutPropTypes = {
    *  It works similarly to `max-width` in CSS, but in React Native you
    *  must use logical pixel units, rather than percents, ems, or any of that.
    *
-   *  See http://www.w3schools.com/cssref/pr_dim_max-width.asp
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/max-width
    *  for more details.
    */
   maxWidth: ReactPropTypes.number,
@@ -112,7 +112,7 @@ var LayoutPropTypes = {
    *  It works similarly to `min-height` in CSS, but in React Native you
    *  must use logical pixel units, rather than percents, ems, or any of that.
    *
-   *  See http://www.w3schools.com/cssref/pr_dim_min-height.asp
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/min-height
    *  for more details.
    */
   minHeight: ReactPropTypes.number,
@@ -122,13 +122,15 @@ var LayoutPropTypes = {
    *  It works similarly to `max-height` in CSS, but in React Native you
    *  must use logical pixel units, rather than percents, ems, or any of that.
    *
-   *  See http://www.w3schools.com/cssref/pr_dim_max-height.asp
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/max-height
    *  for more details.
    */
   maxHeight: ReactPropTypes.number,
 
   /** Setting `margin` has the same effect as setting each of
    *  `marginTop`, `marginLeft`, `marginBottom`, and `marginRight`.
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin
+   *  for more details.
    */
   margin: ReactPropTypes.number,
 
@@ -143,33 +145,32 @@ var LayoutPropTypes = {
   marginHorizontal: ReactPropTypes.number,
 
   /** `marginTop` works like `margin-top` in CSS.
-   *  See http://www.w3schools.com/cssref/pr_margin-top.asp
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-top
    *  for more details.
    */
   marginTop: ReactPropTypes.number,
 
   /** `marginBottom` works like `margin-bottom` in CSS.
-   *  See http://www.w3schools.com/cssref/pr_margin-bottom.asp
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-bottom
    *  for more details.
    */
   marginBottom: ReactPropTypes.number,
 
   /** `marginLeft` works like `margin-left` in CSS.
-   *  See http://www.w3schools.com/cssref/pr_margin-left.asp
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-left
    *  for more details.
    */
   marginLeft: ReactPropTypes.number,
 
   /** `marginRight` works like `margin-right` in CSS.
-   *  See http://www.w3schools.com/cssref/pr_margin-right.asp
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-right
    *  for more details.
    */
   marginRight: ReactPropTypes.number,
 
-  /** `padding` works like `padding` in CSS.
-   *  It's like setting each of `paddingTop`, `paddingBottom`,
-   *  `paddingLeft`, and `paddingRight` to the same thing.
-   *  See http://www.w3schools.com/css/css_padding.asp
+  /** Setting `padding` has the same effect as setting each of
+   *  `paddingTop`, `paddingBottom`, `paddingLeft`, and `paddingRight`.
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/padding
    *  for more details.
    */
   padding: ReactPropTypes.number,
@@ -185,55 +186,55 @@ var LayoutPropTypes = {
   paddingHorizontal: ReactPropTypes.number,
 
   /** `paddingTop` works like `padding-top` in CSS.
-   * See http://www.w3schools.com/cssref/pr_padding-top.asp
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-top
    * for more details.
    */
   paddingTop: ReactPropTypes.number,
 
   /** `paddingBottom` works like `padding-bottom` in CSS.
-   * See http://www.w3schools.com/cssref/pr_padding-bottom.asp
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-bottom
    * for more details.
    */
   paddingBottom: ReactPropTypes.number,
 
   /** `paddingLeft` works like `padding-left` in CSS.
-   * See http://www.w3schools.com/cssref/pr_padding-left.asp
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-left
    * for more details.
    */
   paddingLeft: ReactPropTypes.number,
 
   /** `paddingRight` works like `padding-right` in CSS.
-   * See http://www.w3schools.com/cssref/pr_padding-right.asp
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-right
    * for more details.
    */
   paddingRight: ReactPropTypes.number,
 
   /** `borderWidth` works like `border-width` in CSS.
-   * See http://www.w3schools.com/cssref/pr_border-width.asp
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/border-width
    * for more details.
    */
   borderWidth: ReactPropTypes.number,
 
   /** `borderTopWidth` works like `border-top-width` in CSS.
-   * See http://www.w3schools.com/cssref/pr_border-top_width.asp
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/border-top-width
    * for more details.
    */
   borderTopWidth: ReactPropTypes.number,
 
   /** `borderRightWidth` works like `border-right-width` in CSS.
-   * See http://www.w3schools.com/cssref/pr_border-right_width.asp
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/border-right-width
    * for more details.
    */
   borderRightWidth: ReactPropTypes.number,
 
   /** `borderBottomWidth` works like `border-bottom-width` in CSS.
-   * See http://www.w3schools.com/cssref/pr_border-bottom_width.asp
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/border-bottom-width
    * for more details.
    */
   borderBottomWidth: ReactPropTypes.number,
 
   /** `borderLeftWidth` works like `border-left-width` in CSS.
-   * See http://www.w3schools.com/cssref/pr_border-bottom_width.asp
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/border-left-width
    * for more details.
    */
   borderLeftWidth: ReactPropTypes.number,
@@ -262,9 +263,9 @@ var LayoutPropTypes = {
   /** `flexDirection` controls which directions children of a container go.
    *  `row` goes left to right, `column` goes top to bottom, and you may
    *  be able to guess what the other two do. It works like `flex-direction`
-   *  in CSS, except the default is `column`. See
-   *  https://css-tricks.com/almanac/properties/f/flex-direction/
-   *  for more detail.
+   *  in CSS, except the default is `column`.
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
+   *  for more details.
    */
   flexDirection: ReactPropTypes.oneOf([
     'row',
@@ -275,9 +276,9 @@ var LayoutPropTypes = {
 
   /** `flexWrap` controls whether children can wrap around after they
    *  hit the end of a flex container.
-   *  It works like `flex-wrap` in CSS. See
-   *  https://css-tricks.com/almanac/properties/f/flex-wrap/
-   *  for more detail.
+   *  It works like `flex-wrap` in CSS.
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
+   *  for more details.
    */
   flexWrap: ReactPropTypes.oneOf([
     'wrap',
@@ -287,9 +288,9 @@ var LayoutPropTypes = {
   /** `justifyContent` aligns children in the main direction.
    *  For example, if children are flowing vertically, `justifyContent`
    *  controls how they align vertically.
-   *  It works like `justify-content` in CSS. See
-   *  https://css-tricks.com/almanac/properties/j/justify-content/
-   *  for more detail.
+   *  It works like `justify-content` in CSS.
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+   *  for more details.
    */
   justifyContent: ReactPropTypes.oneOf([
     'flex-start',
@@ -303,9 +304,9 @@ var LayoutPropTypes = {
    *  For example, if children are flowing vertically, `alignItems`
    *  controls how they align horizontally.
    *  It works like `align-items` in CSS, except the default value
-   *  is `stretch` instead of `flex-start`. See
-   *  https://css-tricks.com/almanac/properties/a/align-items/
-   *  for more detail.
+   *  is `stretch` instead of `flex-start`.
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+   *  for more details.
    */
   alignItems: ReactPropTypes.oneOf([
     'flex-start',
@@ -316,9 +317,9 @@ var LayoutPropTypes = {
 
   /** `alignSelf` controls how a child aligns in the cross direction,
    *  overriding the `alignItems` of the parent. It works like `align-self`
-   *  in CSS. See
-   *  https://css-tricks.com/almanac/properties/a/align-self/
-   *  for more detail.
+   *  in CSS.
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/align-self
+   *  for more details.
    */
   alignSelf: ReactPropTypes.oneOf([
     'auto',
@@ -331,7 +332,7 @@ var LayoutPropTypes = {
   /** In React Native `flex` does not work the same way that it does in CSS.
    *  `flex` is a number rather than a string, and it works
    *  according to the `css-layout` library
-   *  at https://github.com/facebook/css-layout .
+   *  at https://github.com/facebook/css-layout.
    *
    *  When `flex` is a positive number, it makes the component flexible
    *  and it will be sized proportional to its flex value. So a
@@ -355,9 +356,9 @@ var LayoutPropTypes = {
    *
    *  It works like the CSS `z-index` property - components with a larger
    *  `zIndex` will render on top. Think of the z-direction like it's
-   *  pointing from the phone into your eyeball. See
-   *  https://developer.mozilla.org/en-US/docs/Web/CSS/z-index for
-   *  more detail.
+   *  pointing from the phone into your eyeball.
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/z-index for
+   *  more details.
    */
   zIndex: ReactPropTypes.number,
 };
