@@ -190,7 +190,7 @@ static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, 
   textContainer.lineFragmentPadding = 0.0;
 
   if (_numberOfLines > 0) {
-    textContainer.lineBreakMode = _lineBreakMode;
+    textContainer.lineBreakMode = _ellipsizeMode;
   } else {
     textContainer.lineBreakMode = NSLineBreakByClipping;
   }
@@ -470,7 +470,7 @@ RCT_TEXT_PROPERTY(IsHighlighted, _isHighlighted, BOOL)
 RCT_TEXT_PROPERTY(LetterSpacing, _letterSpacing, CGFloat)
 RCT_TEXT_PROPERTY(LineHeight, _lineHeight, CGFloat)
 RCT_TEXT_PROPERTY(NumberOfLines, _numberOfLines, NSUInteger)
-RCT_TEXT_PROPERTY(LineBreakMode, _lineBreakMode, NSLineBreakMode)
+RCT_TEXT_PROPERTY(EllipsizeMode, _ellipsizeMode, NSLineBreakMode)
 RCT_TEXT_PROPERTY(TextAlign, _textAlign, NSTextAlignment)
 RCT_TEXT_PROPERTY(TextDecorationColor, _textDecorationColor, UIColor *);
 RCT_TEXT_PROPERTY(TextDecorationLine, _textDecorationLine, RCTTextDecorationLineType);
