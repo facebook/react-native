@@ -9,22 +9,22 @@
 
 package com.facebook.react.bridge;
 
-import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import javax.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Nullable;
+import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -116,8 +116,8 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
       jg.writeStringField("method", "executeApplicationScript");
       jg.writeStringField("url", sourceURL);
       jg.writeObjectFieldStart("inject");
-      for (HashMap.Entry<String, String> value : injectedObjects.entrySet()) {
-        jg.writeObjectField(value.getKey(), value.getValue());
+      for (String key : injectedObjects.keySet()) {
+        jg.writeObjectField(key, injectedObjects.get(key));
       }
       jg.writeEndObject();
       sendMessage(requestID, endMessageObject(jg));
