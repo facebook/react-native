@@ -1,12 +1,9 @@
-const execSync = require('child_process').execSync;
 const path = require('path');
+const fs = require('fs');
 
 module.exports = function findSymlinksPaths(lookupFolder) {
-  let symlinks = execSync('readlink $(find ' + lookupFolder + ' -type l -d 1)')
-    .toString()
-    .split('\n');
-
-  symlinks.pop();
-
-  return symlinks.map(s => path.resolve(process.cwd(), s));
+  return fs.readdirSync(lookupFolder)
+    .map(f => path.resolve(lookupFolder, f))
+    .filter(d => fs.lstatSync(d).isSymbolicLink())
+    .map(s => path.resolve(process.cwd(), fs.readlinkSync(s)));
 };
