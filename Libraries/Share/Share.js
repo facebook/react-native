@@ -36,8 +36,11 @@ class Share {
    * ### Content
    *
    *  - `message` - a message to share
-   *  - `url` - an URL to share. In Android, this will overwrite message
    *  - `title` - title of the message
+   *
+   * #### iOS
+   *
+   *  - `url` - an URL to share
    *
    * At least one of URL and message is required.
    *

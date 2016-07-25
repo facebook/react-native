@@ -68,10 +68,6 @@ public class ShareModule extends ReactContextBaseJavaModule {
         intent.putExtra(Intent.EXTRA_TEXT, content.getString("message"));
       }
 
-      if (content.hasKey("url")) {
-        intent.putExtra(Intent.EXTRA_TEXT, content.getString("url")); // this will overwrite message
-      }
-
       Intent chooser = Intent.createChooser(intent, dialogTitle);
       chooser.addCategory(Intent.CATEGORY_DEFAULT);
 
