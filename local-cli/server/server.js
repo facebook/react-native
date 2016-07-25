@@ -14,6 +14,7 @@ const parseCommandLine = require('../util/parseCommandLine');
 const path = require('path');
 const Promise = require('promise');
 const runServer = require('./runServer');
+const findSymlinksPaths = require('./findSymlinksPaths');
 
 /**
  * Starts the React Native Packager Server.
@@ -73,6 +74,9 @@ function _server(argv, config, resolve, reject) {
   args.projectRoots = args.projectRoots
     ? argToArray(args.projectRoots)
     : config.getProjectRoots();
+
+  args.projectRoots = args.projectRoots
+    .concat(findSymlinksPaths(path.resolve(process.cwd(), 'node_modules')));
 
   if (args.root) {
     const additionalRoots = argToArray(args.root);
