@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const I18nManager = require('I18nManager');
 const Platform = require('Platform');
 const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
@@ -157,13 +158,14 @@ class Modal extends React.Component {
   }
 }
 
+const side = I18nManager.isRTL ? 'right' : 'left';
 const styles = StyleSheet.create({
   modal: {
     position: 'absolute',
   },
   container: {
     position: 'absolute',
-    left: 0,
+    [side] : 0,
     top: 0,
   }
 });

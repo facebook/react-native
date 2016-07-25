@@ -84,7 +84,6 @@ Alternatively, select "Dev Settings" from the Developer Menu, then update the "D
 
 > If you run into any issues, it may be possible that one of your Chrome extensions is interacting in unexpected ways with the debugger. Try disabling all of your extensions and re-enabling them one-by-one until you find the problematic extension.
 
-
 ### Debugging using a custom JavaScript debugger
 
 To use a custom JavaScript debugger in place of Chrome Developer Tools, set the `REACT_DEBUGGER` environment variable to a command that will start your custom debugger. You can then select "Debug JS Remotely" from the Developer Menu to start debugging.
@@ -92,6 +91,46 @@ To use a custom JavaScript debugger in place of Chrome Developer Tools, set the 
 The debugger will receive a list of all project roots, separated by a space. For example, if you set `REACT_DEBUGGER="node /path/to/launchDebugger.js --port 2345 --type ReactNative"`, then the command `node /path/to/launchDebugger.js --port 2345 --type ReactNative /path/to/reactNative/app` will be used to start your debugger.
 
 > Custom debugger commands executed this way should be short-lived processes, and they shouldn't produce more than 200 kilobytes of output.
+
+### Debugging with [Stetho](http://facebook.github.io/stetho/) on Android 
+
+1. In ```android/app/build.gradle``` , add
+
+   ```gradle
+   compile 'com.facebook.stetho:stetho:1.3.1'
+   compile 'com.facebook.stetho:stetho-okhttp3:1.3.1'
+   ```
+
+2. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java```, add the following imports : 
+
+   ```java
+   import com.facebook.react.modules.network.ReactCookieJarContainer;
+   import com.facebook.stetho.Stetho;
+   import okhttp3.OkHttpClient;
+   import com.facebook.react.modules.network.OkHttpClientProvider;
+   import com.facebook.stetho.okhttp3.StethoInterceptor;
+   import java.util.concurrent.TimeUnit;
+   ```
+
+3. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java``` add the function:
+   ```java
+   public void onCreate() {
+         super.onCreate();
+         Stetho.initializeWithDefaults(this);
+         OkHttpClient client = new OkHttpClient.Builder()
+         .connectTimeout(0, TimeUnit.MILLISECONDS)
+         .readTimeout(0, TimeUnit.MILLISECONDS)
+         .writeTimeout(0, TimeUnit.MILLISECONDS)
+         .cookieJar(new ReactCookieJarContainer())
+         .addNetworkInterceptor(new StethoInterceptor())
+         .build();
+         OkHttpClientProvider.replaceOkHttpClient(client);
+   }
+   ```
+
+4. Run  ```react-native run-android ```
+
+5. In a new chrome tab, open : ```chrome://inspect```, click on 'Inspect device' (the one followed by "Powered by Stetho")
 
 ## Performance Monitor
 
