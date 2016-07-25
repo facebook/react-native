@@ -40,12 +40,14 @@ const ActivityIndicator = React.createClass({
      */
     color: ColorPropType,
     /**
-     * Size of the indicator. Small has a height of 20, large has a height of 36.
+     * Size of the indicator. Small has a height of 20, medium has a height of 28, large has a height of 36, extralarge has a height of 50.
      * Other sizes can be obtained using a scale transform.
      */
     size: PropTypes.oneOf([
       'small',
+      'medium',
       'large',
+      'extralarge'
     ]),
     /**
      * Whether the indicator should hide when not animating (true by default).
@@ -71,8 +73,14 @@ const ActivityIndicator = React.createClass({
       case 'small':
         sizeStyle = styles.sizeSmall;
         break;
+      case 'medium':
+        sizeStyle = styles.sizeMedium;
+        break;
       case 'large':
         sizeStyle = styles.sizeLarge;
+        break;
+      case 'extralarge':
+        sizeStyle = styles.sizeExtraLarge;
         break;
     }
     return (
@@ -99,9 +107,17 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
+  sizeMedium: {
+    width: 28,
+    height: 28,
+  },
   sizeLarge: {
     width: 36,
     height: 36,
+  },
+  sizeExtraLarge: {
+    width: 50,
+    height: 50,
   },
 });
 
