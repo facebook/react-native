@@ -182,6 +182,10 @@ const APIExamples = [
     module: require('./PointerEventsExample'),
   },
   {
+    key: 'ShareExample',
+    module: require('./ShareExample'),
+  },
+  {
     key: 'TimePickerAndroidExample',
     module: require('./TimePickerAndroidExample'),
   },
