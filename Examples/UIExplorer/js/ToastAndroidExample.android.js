@@ -35,18 +35,12 @@ var {
 var UIExplorerBlock = require('UIExplorerBlock');
 var UIExplorerPage = require('UIExplorerPage');
 
-var ToastExample = React.createClass({
+class ToastExample extends React.Component {
+  static title = 'Toast Example';
+  static description = 'Example that demonstrates the use of an Android Toast to provide feedback.';
+  state = {};
 
-  statics: {
-    title: 'Toast Example',
-    description: 'Example that demonstrates the use of an Android Toast to provide feedback.',
-  },
-
-  getInitialState: function() {
-    return {};
-  },
-
-  render: function() {
+  render() {
     return (
       <UIExplorerPage title="ToastAndroid">
         <UIExplorerBlock title="Simple toast">
@@ -101,8 +95,8 @@ var ToastExample = React.createClass({
         </UIExplorerBlock>
       </UIExplorerPage>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   text: {

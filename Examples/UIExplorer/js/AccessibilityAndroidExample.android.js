@@ -36,40 +36,35 @@ var UIExplorerPage = require('./UIExplorerPage');
 
 var importantForAccessibilityValues = ['auto', 'yes', 'no', 'no-hide-descendants'];
 
-var AccessibilityAndroidExample = React.createClass({
+class AccessibilityAndroidExample extends React.Component {
+  static title = 'Accessibility';
+  static description = 'Examples of using Accessibility API.';
 
-  statics: {
-    title: 'Accessibility',
-    description: 'Examples of using Accessibility API.',
-  },
+  state = {
+    count: 0,
+    backgroundImportantForAcc: 0,
+    forgroundImportantForAcc: 0,
+  };
 
-  getInitialState: function() {
-    return {
-      count: 0,
-      backgroundImportantForAcc: 0,
-      forgroundImportantForAcc: 0,
-    };
-  },
-
-  _addOne: function() {
+  _addOne = () => {
     this.setState({
       count: ++this.state.count,
     });
-  },
+  };
 
-  _changeBackgroundImportantForAcc: function() {
+  _changeBackgroundImportantForAcc = () => {
     this.setState({
       backgroundImportantForAcc: (this.state.backgroundImportantForAcc + 1) % 4,
     });
-  },
+  };
 
-  _changeForgroundImportantForAcc: function() {
+  _changeForgroundImportantForAcc = () => {
     this.setState({
       forgroundImportantForAcc: (this.state.forgroundImportantForAcc + 1) % 4,
     });
-  },
+  };
 
-  render: function() {
+  render() {
     return (
       <UIExplorerPage title={'Accessibility'}>
 
@@ -202,8 +197,8 @@ var AccessibilityAndroidExample = React.createClass({
 
       </UIExplorerPage>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
    embedded: {
