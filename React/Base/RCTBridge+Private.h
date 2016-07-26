@@ -10,13 +10,9 @@
 #import "RCTBridge.h"
 
 @class RCTModuleData;
-@class RCTPerformanceLogger;
+@protocol RCTJavaScriptExecutor;
 
 @interface RCTBridge ()
-{
-@public
-  RCTPerformanceLogger *_performanceLogger;
-}
 
 // Private designated initializer
 - (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
@@ -67,7 +63,9 @@
 @interface RCTBridge (RCTBatchedBridge)
 
 /**
- * Used for unit testing, to detect when executor has been invalidated.
+ * Access the underlying JavaScript executor. You can use this in unit tests to detect
+ * when the executor has been invalidated, or when you want to schedule calls on the
+ * JS VM outside of React Native. Use with care!
  */
 @property (nonatomic, weak, readonly) id<RCTJavaScriptExecutor> javaScriptExecutor;
 
@@ -131,9 +129,9 @@
 
 @interface RCTBatchedBridge : RCTBridge <RCTInvalidating>
 
-@property (nonatomic, weak) RCTBridge *parentBridge;
-@property (nonatomic, weak) id<RCTJavaScriptExecutor> javaScriptExecutor;
-@property (nonatomic, assign) BOOL moduleSetupComplete;
+@property (nonatomic, weak, readonly) RCTBridge *parentBridge;
+@property (nonatomic, weak, readonly) id<RCTJavaScriptExecutor> javaScriptExecutor;
+@property (nonatomic, assign, readonly) BOOL moduleSetupComplete;
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 

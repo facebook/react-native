@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.facebook.react.bridge.JavaScriptModule;
-import com.facebook.react.common.SystemClock;
 import com.facebook.react.testing.ReactAppInstrumentationTestCase;
 import com.facebook.react.testing.ReactInstanceSpecForTest;
 import com.facebook.react.uimanager.PixelUtil;
@@ -116,7 +115,6 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     eventDispatcher.dispatchEvent(
         new ReactTextChangedEvent(
             reactEditText.getId(),
-            SystemClock.nanoTime(),
             newText.toString(),
             (int) PixelUtil.toDIPFromPixel(contentWidth),
             (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -125,7 +123,6 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     eventDispatcher.dispatchEvent(
         new ReactTextInputEvent(
             reactEditText.getId(),
-            SystemClock.nanoTime(),
             newText.toString(),
             "",
             start,
@@ -150,7 +147,6 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     eventDispatcher.dispatchEvent(
         new ReactTextChangedEvent(
             reactEditText.getId(),
-            SystemClock.nanoTime(),
             newText.toString(),
             (int) PixelUtil.toDIPFromPixel(contentWidth),
             (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -159,7 +155,6 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     eventDispatcher.dispatchEvent(
         new ReactTextInputEvent(
             reactEditText.getId(),
-            SystemClock.nanoTime(),
             moreText,
             "",
             start,
@@ -184,7 +179,6 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     eventDispatcher.dispatchEvent(
         new ReactTextChangedEvent(
             reactEditText.getId(),
-            SystemClock.nanoTime(),
             newText.toString(),
             (int) PixelUtil.toDIPFromPixel(contentWidth),
             (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -193,7 +187,6 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     eventDispatcher.dispatchEvent(
         new ReactTextInputEvent(
             reactEditText.getId(),
-            SystemClock.nanoTime(),
             moreText,
             "",
             start,

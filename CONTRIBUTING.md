@@ -101,7 +101,7 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 
 #### JSX
 
-* Prefer `'` over `"` for string literal props
+* Prefer `"` over `'` for string literal props
 * When wrapping opening tags over multiple lines, place one prop per line
 * `{}` of props should hug their values (no spaces)
 * Place the closing `>` of opening tags on the same line as the last prop

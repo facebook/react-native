@@ -17,6 +17,11 @@ const keyMirror = require('fbjs/lib/keyMirror');
 const performanceNow = require('fbjs/lib/performanceNow');
 const warning = require('fbjs/lib/warning');
 
+// These timing contants should be kept in sync with the ones in native ios and
+// android `RCTTiming` module.
+const FRAME_DURATION = 1000 / 60;
+const IDLE_CALLBACK_FRAME_DEADLINE = 1;
+
 let hasEmittedTimeDriftWarning = false;
 
 /**
@@ -81,13 +86,12 @@ const JSTimersExecution = {
         const currentTime = performanceNow();
         callback(currentTime);
       } else if (type === JSTimersExecution.Type.requestIdleCallback) {
-        const { Timing } = require('NativeModules');
         callback({
           timeRemaining: function() {
             // TODO: Optimisation: allow running for longer than one frame if
             // there are no pending JS calls on the bridge from native. This
             // would require a way to check the bridge queue synchronously.
-            return Math.max(0, Timing.frameDuration - (performanceNow() - frameTime));
+            return Math.max(0, FRAME_DURATION - (performanceNow() - frameTime));
           },
         });
       } else {
@@ -134,7 +138,7 @@ const JSTimersExecution = {
   callIdleCallbacks: function(frameTime) {
     const { Timing } = require('NativeModules');
 
-    if (Timing.frameDuration - (performanceNow() - frameTime) < Timing.idleCallbackFrameDeadline) {
+    if (FRAME_DURATION - (performanceNow() - frameTime) < IDLE_CALLBACK_FRAME_DEADLINE) {
       return;
     }
 

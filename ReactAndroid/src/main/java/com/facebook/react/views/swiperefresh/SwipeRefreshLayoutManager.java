@@ -19,7 +19,6 @@ import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
@@ -89,7 +88,7 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
           @Override
           public void onRefresh() {
             reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher()
-                .dispatchEvent(new RefreshEvent(view.getId(), SystemClock.nanoTime()));
+                .dispatchEvent(new RefreshEvent(view.getId()));
           }
         });
   }

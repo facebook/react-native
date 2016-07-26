@@ -132,15 +132,13 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                    launchOptions:(NSDictionary *)launchOptions
 {
   if (self = [super init]) {
-    _performanceLogger = [RCTPerformanceLogger new];
-    [_performanceLogger markStartForTag:RCTPLBridgeStartup];
-    [_performanceLogger markStartForTag:RCTPLTTI];
-
     _delegate = delegate;
     _bundleURL = bundleURL;
     _moduleProvider = block;
     _launchOptions = [launchOptions copy];
+
     [self setUp];
+
     RCTExecuteOnMainQueue(^{ [self bindKeys]; });
   }
   return self;
@@ -180,6 +178,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }];
 
 #endif
+}
+
+- (RCTPerformanceLogger *)performanceLogger
+{
+  return self.batchedBridge.performanceLogger;
 }
 
 - (NSArray<Class> *)moduleClasses
@@ -276,7 +279,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
 {
-  [self.batchedBridge enqueueJSCall:moduleDotMethod args:args];
+  NSArray<NSString *> *ids = [moduleDotMethod componentsSeparatedByString:@"."];
+  NSString *module = ids[0];
+  NSString *method = ids[1];
+  [self enqueueJSCall:module method:method args:args completion:NULL];
+}
+
+- (void)enqueueJSCall:(NSString *)module method:(NSString *)method args:(NSArray *)args completion:(dispatch_block_t)completion
+{
+  [self.batchedBridge enqueueJSCall:module method:method args:args completion:completion];
 }
 
 - (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args

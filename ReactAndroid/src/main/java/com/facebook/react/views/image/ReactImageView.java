@@ -51,7 +51,6 @@ import com.facebook.imagepipeline.request.Postprocessor;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -192,7 +191,7 @@ public class ReactImageView extends GenericDraweeView {
         @Override
         public void onSubmit(String id, Object callerContext) {
           mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_START));
+              new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_START));
         }
 
         @Override
@@ -202,18 +201,18 @@ public class ReactImageView extends GenericDraweeView {
             @Nullable Animatable animatable) {
           if (imageInfo != null) {
             mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD));
+              new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD));
             mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_END));
+              new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_END));
           }
         }
 
         @Override
         public void onFailure(String id, Throwable throwable) {
           mEventDispatcher.dispatchEvent(
-            new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_ERROR));
+            new ImageLoadEvent(getId(), ImageLoadEvent.ON_ERROR));
           mEventDispatcher.dispatchEvent(
-            new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_END));
+            new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_END));
         }
       };
     }
