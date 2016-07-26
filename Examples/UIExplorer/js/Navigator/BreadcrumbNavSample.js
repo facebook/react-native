@@ -50,9 +50,8 @@ class NavButton extends React.Component {
   }
 }
 
-var BreadcrumbNavSample = React.createClass({
-
-  componentWillMount: function() {
+class BreadcrumbNavSample extends React.Component {
+  componentWillMount() {
     this._navBarRouteMapper = {
       rightContentForRoute: function(route, navigator) {
         return null;
@@ -82,9 +81,9 @@ var BreadcrumbNavSample = React.createClass({
         );
       }
     };
-  },
+  }
 
-  _renderScene: function(route, navigator) {
+  _renderScene = (route, navigator) => {
     return (
       <ScrollView style={styles.scene}>
         <NavButton
@@ -109,9 +108,9 @@ var BreadcrumbNavSample = React.createClass({
         />
       </ScrollView>
     );
-  },
+  };
 
-  render: function() {
+  render() {
     return (
       <Navigator
         style={styles.container}
@@ -124,11 +123,8 @@ var BreadcrumbNavSample = React.createClass({
         }
       />
     );
-  },
-
-
-
-});
+  }
+}
 
 var styles = StyleSheet.create({
   scene: {

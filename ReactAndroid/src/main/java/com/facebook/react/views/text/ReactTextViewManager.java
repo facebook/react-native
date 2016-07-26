@@ -74,16 +74,16 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
   }
 
   @ReactProp(name = ViewProps.LINE_BREAK_MODE)
-  public void setLineBreakMode(ReactTextView view, @Nullable String lineBreakMode) {
-    if(lineBreakMode == null) {
+  public void setLineBreakMode(ReactTextView view, @Nullable String ellipsizeMode) {
+    if(ellipsizeMode == null) {
       return;
     }
 
-    if (lineBreakMode.equals("head")) {
+    if (ellipsizeMode.equals("head")) {
       view.setEllipsize(TextUtils.TruncateAt.START);
-    } else if (lineBreakMode.equals("middle")) {
+    } else if (ellipsizeMode.equals("middle")) {
       view.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-    } else if (lineBreakMode.equals("tail")) {
+    } else if (ellipsizeMode.equals("tail")) {
       view.setEllipsize(TextUtils.TruncateAt.END);
     }
   }

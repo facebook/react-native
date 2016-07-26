@@ -17,31 +17,35 @@ var StyleSheet = require('StyleSheet');
 var TouchEventUtils = require('fbjs/lib/TouchEventUtils');
 var View = require('View');
 
-var TouchTestApp = React.createClass({
-  handleStartShouldSetResponder: function(e) {
+class TouchTestApp extends React.Component {
+  handleStartShouldSetResponder = (e) => {
     return true;
-  },
-  handleOnResponderMove: function(e) {
+  };
+
+  handleOnResponderMove = (e) => {
     e = TouchEventUtils.extractSingleTouch(e.nativeEvent);
     Recording.record('move;' + e.touches.length);
-  },
-  handleResponderStart: function(e) {
+  };
+
+  handleResponderStart = (e) => {
     e = TouchEventUtils.extractSingleTouch(e.nativeEvent);
     if (e.touches) {
       Recording.record('start;' + e.touches.length);
     } else {
       Recording.record('start;ExtraPointer');
     }
-  },
-  handleResponderEnd: function(e) {
+  };
+
+  handleResponderEnd = (e) => {
     e = TouchEventUtils.extractSingleTouch(e.nativeEvent);
     if (e.touches) {
       Recording.record('end;' + e.touches.length);
     } else {
       Recording.record('end;ExtraPointer');
     }
-  },
-  render: function() {
+  };
+
+  render() {
     return (
       <View
         style={styles.container}
@@ -52,8 +56,8 @@ var TouchTestApp = React.createClass({
         collapsable={false}
       />
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   container: {

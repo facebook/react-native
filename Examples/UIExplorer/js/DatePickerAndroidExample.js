@@ -32,26 +32,21 @@ var {
 var UIExplorerBlock = require('./UIExplorerBlock');
 var UIExplorerPage = require('./UIExplorerPage');
 
-var DatePickerAndroidExample = React.createClass({
+class DatePickerAndroidExample extends React.Component {
+  static title = 'DatePickerAndroid';
+  static description = 'Standard Android date picker dialog';
 
-  statics: {
-    title: 'DatePickerAndroid',
-    description: 'Standard Android date picker dialog',
-  },
+  state = {
+    presetDate: new Date(2020, 4, 5),
+    allDate: new Date(2020, 4, 5),
+    simpleText: 'pick a date',
+    minText: 'pick a date, no earlier than today',
+    maxText: 'pick a date, no later than today',
+    presetText: 'pick a date, preset to 2020/5/5',
+    allText: 'pick a date between 2020/5/1 and 2020/5/10',
+  };
 
-  getInitialState() {
-    return {
-      presetDate: new Date(2020, 4, 5),
-      allDate: new Date(2020, 4, 5),
-      simpleText: 'pick a date',
-      minText: 'pick a date, no earlier than today',
-      maxText: 'pick a date, no later than today',
-      presetText: 'pick a date, preset to 2020/5/5',
-      allText: 'pick a date between 2020/5/1 and 2020/5/10',
-    };
-  },
-
-  async showPicker(stateKey, options) {
+  showPicker = async (stateKey, options) => {
     try {
       var newState = {};
       const {action, year, month, day} = await DatePickerAndroid.open(options);
@@ -66,7 +61,7 @@ var DatePickerAndroidExample = React.createClass({
     } catch ({code, message}) {
       console.warn(`Error in example '${stateKey}': `, message);
     }
-  },
+  };
 
   render() {
     return (
@@ -113,8 +108,8 @@ var DatePickerAndroidExample = React.createClass({
           </UIExplorerBlock>
       </UIExplorerPage>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   text: {

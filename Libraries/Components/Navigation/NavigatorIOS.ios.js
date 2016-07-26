@@ -34,21 +34,21 @@ function getuid() {
   return __uid++;
 }
 
-var NavigatorTransitionerIOS = React.createClass({
-  requestSchedulingNavigation: function(cb) {
+class NavigatorTransitionerIOS extends React.Component {
+  requestSchedulingNavigation = (cb) => {
     RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
       ReactNative.findNodeHandle(this),
       logError,
       cb
     );
-  },
+  };
 
-  render: function() {
+  render() {
     return (
       <RCTNavigator {...this.props}/>
     );
-  },
-});
+  }
+}
 
 type Route = {
   component: Function,
