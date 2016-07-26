@@ -51,6 +51,10 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ModalExample'),
   },
   {
+    key: 'NativeAnimationsExample',
+    module: require('./NativeAnimationsExample'),
+  },
+  {
     key: 'PickerExample',
     module: require('./PickerExample'),
   },
@@ -176,6 +180,10 @@ const APIExamples = [
   {
     key: 'PointerEventsExample',
     module: require('./PointerEventsExample'),
+  },
+  {
+    key: 'ShareExample',
+    module: require('./ShareExample'),
   },
   {
     key: 'TimePickerAndroidExample',

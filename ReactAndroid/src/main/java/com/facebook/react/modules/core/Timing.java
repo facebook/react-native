@@ -22,7 +22,6 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.uimanager.ReactChoreographer;
@@ -45,6 +44,7 @@ import javax.annotation.Nullable;
 public final class Timing extends ReactContextBaseJavaModule implements LifecycleEventListener,
   OnExecutorUnregisteredListener {
 
+  // These timing contants should be kept in sync with the ones in `JSTimersExecution.js`.
   // The minimum time in milliseconds left in the frame to call idle callbacks.
   private static final float IDLE_CALLBACK_FRAME_DEADLINE_MS = 1.f;
   // The total duration of a frame in milliseconds, this assumes that devices run at 60 fps.
@@ -104,7 +104,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
             timer.mTargetTime = frameTimeMillis + timer.mInterval;
             mTimers.add(timer);
           } else {
-            mTimerIdsToTimers.remove(timer.mCallbackID);
+            mTimerIdsToTimers.remove(timer.mExecutorToken);
           }
         }
       }
@@ -310,13 +310,6 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   }
 
   @Override
-  public Map<String, Object> getConstants() {
-    return MapBuilder.<String, Object>of(
-        "frameDuration", FRAME_DURATION_MS,
-        "idleCallbackFrameDeadline", IDLE_CALLBACK_FRAME_DEADLINE_MS);
-  }
-
-  @Override
   public void onExecutorDestroyed(ExecutorToken executorToken) {
     synchronized (mTimerGuard) {
       SparseArray<Timer> timersForContext = mTimerIdsToTimers.remove(executorToken);
@@ -392,7 +385,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
         return;
       }
       // We may have already called/removed it
-      mTimerIdsToTimers.remove(timerId);
+      mTimerIdsToTimers.remove(executorToken);
       mTimers.remove(timer);
     }
   }

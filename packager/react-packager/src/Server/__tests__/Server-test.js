@@ -14,23 +14,25 @@ jest.setMock('worker-farm', function() { return () => {}; })
     .setMock('timers', { setImmediate: (fn) => setTimeout(fn, 0) })
     .setMock('uglify-js')
     .setMock('crypto')
-    .setMock('source-map', { SourceMapConsumer: (fn) => {}})
+    .setMock('source-map', { SourceMapConsumer: function(fn) {}})
     .mock('../../Bundler')
     .mock('../../AssetServer')
     .mock('../../lib/declareOpts')
     .mock('node-haste')
     .mock('../../Activity');
 
-const Promise = require('promise');
-const SourceMapConsumer = require('source-map').SourceMapConsumer;
-
-const Bundler = require('../../Bundler');
-const Server = require('../');
-const AssetServer = require('../../AssetServer');
-
 let FileWatcher;
 
 describe('processRequest', () => {
+  let SourceMapConsumer, Bundler, Server, AssetServer, Promise;
+  beforeEach(() => {
+    SourceMapConsumer = require('source-map').SourceMapConsumer;
+    Bundler = require('../../Bundler');
+    Server = require('../');
+    AssetServer = require('../../AssetServer');
+    Promise = require('promise');
+  });
+
   let server;
 
   const options = {

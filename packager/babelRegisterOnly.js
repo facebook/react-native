@@ -14,10 +14,13 @@ Object.values || require('core-js/fn/object/values');
 
 var _only = [];
 
-module.exports = function(onlyList) {
-  _only = _only.concat(onlyList);
+function registerOnly(onlyList) {
+  require('babel-register')(config(onlyList));
+}
 
-  require('babel-register')({
+function config(onlyList) {
+  _only = _only.concat(onlyList);
+  return {
     presets: ['es2015-node'],
     plugins: [
       'transform-flow-strip-types',
@@ -25,6 +28,11 @@ module.exports = function(onlyList) {
       'transform-object-rest-spread',
     ],
     only: _only,
+    retainLines: true,
     sourceMaps: 'inline',
-  });
-};
+    babelrc: false,
+  };
+}
+
+module.exports = exports = registerOnly;
+exports.config = config;

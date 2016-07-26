@@ -822,38 +822,38 @@ RCT_ENUM_CONVERTER(css_clip_t, (@{
   @"visible": @NO
 }), NO, boolValue)
 
-RCT_ENUM_CONVERTER(css_flex_direction_t, (@{
-  @"row": @(CSS_FLEX_DIRECTION_ROW),
-  @"row-reverse": @(CSS_FLEX_DIRECTION_ROW_REVERSE),
-  @"column": @(CSS_FLEX_DIRECTION_COLUMN),
-  @"column-reverse": @(CSS_FLEX_DIRECTION_COLUMN_REVERSE)
-}), CSS_FLEX_DIRECTION_COLUMN, intValue)
+RCT_ENUM_CONVERTER(CSSFlexDirection, (@{
+  @"row": @(CSSFlexDirectionRow),
+  @"row-reverse": @(CSSFlexDirectionRowReverse),
+  @"column": @(CSSFlexDirectionColumn),
+  @"column-reverse": @(CSSFlexDirectionColumnReverse)
+}), CSSFlexDirectionColumn, intValue)
 
-RCT_ENUM_CONVERTER(css_justify_t, (@{
-  @"flex-start": @(CSS_JUSTIFY_FLEX_START),
-  @"flex-end": @(CSS_JUSTIFY_FLEX_END),
-  @"center": @(CSS_JUSTIFY_CENTER),
-  @"space-between": @(CSS_JUSTIFY_SPACE_BETWEEN),
-  @"space-around": @(CSS_JUSTIFY_SPACE_AROUND)
-}), CSS_JUSTIFY_FLEX_START, intValue)
+RCT_ENUM_CONVERTER(CSSJustify, (@{
+  @"flex-start": @(CSSJustifyFlexStart),
+  @"flex-end": @(CSSJustifyFlexEnd),
+  @"center": @(CSSJustifyCenter),
+  @"space-between": @(CSSJustifySpaceBetween),
+  @"space-around": @(CSSJustifySpaceAround)
+}), CSSJustifyFlexStart, intValue)
 
-RCT_ENUM_CONVERTER(css_align_t, (@{
-  @"flex-start": @(CSS_ALIGN_FLEX_START),
-  @"flex-end": @(CSS_ALIGN_FLEX_END),
-  @"center": @(CSS_ALIGN_CENTER),
-  @"auto": @(CSS_ALIGN_AUTO),
-  @"stretch": @(CSS_ALIGN_STRETCH)
-}), CSS_ALIGN_FLEX_START, intValue)
+RCT_ENUM_CONVERTER(CSSAlign, (@{
+  @"flex-start": @(CSSAlignFlexStart),
+  @"flex-end": @(CSSAlignFlexEnd),
+  @"center": @(CSSAlignCenter),
+  @"auto": @(CSSAlignAuto),
+  @"stretch": @(CSSAlignStretch)
+}), CSSAlignFlexStart, intValue)
 
-RCT_ENUM_CONVERTER(css_position_type_t, (@{
-  @"absolute": @(CSS_POSITION_ABSOLUTE),
-  @"relative": @(CSS_POSITION_RELATIVE)
-}), CSS_POSITION_RELATIVE, intValue)
+RCT_ENUM_CONVERTER(CSSPositionType, (@{
+  @"absolute": @(CSSPositionTypeAbsolute),
+  @"relative": @(CSSPositionTypeRelative)
+}), CSSPositionTypeRelative, intValue)
 
-RCT_ENUM_CONVERTER(css_wrap_type_t, (@{
-  @"wrap": @(CSS_WRAP),
-  @"nowrap": @(CSS_NOWRAP)
-}), CSS_NOWRAP, intValue)
+RCT_ENUM_CONVERTER(CSSWrapType, (@{
+  @"wrap": @(CSSWrapTypeWrap),
+  @"nowrap": @(CSSWrapTypeNoWrap)
+}), CSSWrapTypeNoWrap, intValue)
 
 RCT_ENUM_CONVERTER(RCTPointerEvents, (@{
   @"none": @(RCTPointerEventsNone),

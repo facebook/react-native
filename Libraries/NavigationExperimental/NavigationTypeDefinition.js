@@ -70,6 +70,9 @@ export type NavigationTransitionProps = {
   // The active scene, corresponding to the route at
   // `navigationState.routes[navigationState.index]`.
   scene: NavigationScene,
+
+  // The gesture distance for `horizontal` and `vertical` transitions
+  gestureResponseDistance?: ?number,
 };
 
 // Similar to `NavigationTransitionProps`, except that the prop `scene`
