@@ -400,14 +400,14 @@ var TextExample = React.createClass({
             Demo text shadow
           </Text>
         </UIExplorerBlock>
-        <UIExplorerBlock title="Line break mode">
+        <UIExplorerBlock title="Ellipsize mode">
           <Text numberOfLines={1}>
             This very long text should be truncated with dots in the end.
           </Text>
-          <Text lineBreakMode="middle" numberOfLines={1}>
+          <Text ellipsizeMode="middle" numberOfLines={1}>
             This very long text should be truncated with dots in the middle.
           </Text>
-          <Text lineBreakMode="head" numberOfLines={1}>
+          <Text ellipsizeMode="head" numberOfLines={1}>
             This very long text should be truncated with dots in the beginning.
           </Text>
         </UIExplorerBlock>
