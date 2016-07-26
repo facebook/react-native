@@ -166,8 +166,8 @@ const <span class="token punctuation">{</span>
   View<span class="token punctuation">,</span>
 <span class="token punctuation">}</span> <span class="token operator">=</span> ReactNative<span class="token punctuation">;</span>
 
-const EmptyPage <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-  render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+class <span class="token class-name">EmptyPage</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>emptyPage<span class="token punctuation">}</span><span class="token operator">&gt;</span>
         &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>emptyPageText<span class="token punctuation">}</span><span class="token operator">&gt;</span>
@@ -175,11 +175,11 @@ const EmptyPage <span class="token operator">=</span> React<span class="token pu
         &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 
-const NavigatorIOSExamplePage <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-  render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+class <span class="token class-name">NavigatorIOSExamplePage</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">var</span> recurseTitle <span class="token operator">=</span> <span class="token string">&#x27;Recurse Navigation&#x27;</span><span class="token punctuation">;</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>depth <span class="token operator">||</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>depth <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
       recurseTitle <span class="token operator">+</span><span class="token operator">=</span> <span class="token string">&#x27; - more examples here&#x27;</span><span class="token punctuation">;</span>
@@ -258,9 +258,9 @@ const NavigatorIOSExamplePage <span class="token operator">=</span> React<span c
         &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>line<span class="token punctuation">}</span><span class="token operator">/</span><span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>ScrollView<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
 
-  _renderReplace<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  _renderReplace <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>depth<span class="token punctuation">)</span> <span class="token punctuation">{</span>
      <span class="token comment" spellcheck="true"> // this is to avoid replacing the top of the stack
 </span>      <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
@@ -278,9 +278,9 @@ const NavigatorIOSExamplePage <span class="token operator">=</span> React<span c
         <span class="token punctuation">}</span>
       <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  _renderReplacePrevious<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  _renderReplacePrevious <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>depth <span class="token operator">||</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>depth &lt; <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
      <span class="token comment" spellcheck="true"> // this is to avoid replacing the top of the stack
 </span>      <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
@@ -295,9 +295,9 @@ const NavigatorIOSExamplePage <span class="token operator">=</span> React<span c
         wrapperStyle<span class="token punctuation">:</span> styles<span class="token punctuation">.</span>customWrapperStyle<span class="token punctuation">,</span>
       <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  _renderReplacePreviousAndPop<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  _renderReplacePreviousAndPop <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>depth <span class="token operator">||</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>depth &lt; <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
      <span class="token comment" spellcheck="true"> // this is to avoid replacing the top of the stack
 </span>      <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
@@ -312,9 +312,9 @@ const NavigatorIOSExamplePage <span class="token operator">=</span> React<span c
         wrapperStyle<span class="token punctuation">:</span> styles<span class="token punctuation">.</span>customWrapperStyle<span class="token punctuation">,</span>
       <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  _renderRow<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>title<span class="token punctuation">:</span> string<span class="token punctuation">,</span> onPress<span class="token punctuation">:</span> Function<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  _renderRow <span class="token operator">=</span> <span class="token punctuation">(</span>title<span class="token punctuation">:</span> string<span class="token punctuation">,</span> onPress<span class="token punctuation">:</span> Function<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       &lt;View<span class="token operator">&gt;</span>
         &lt;TouchableHighlight onPress<span class="token operator">=</span><span class="token punctuation">{</span>onPress<span class="token punctuation">}</span><span class="token operator">&gt;</span>
@@ -327,17 +327,15 @@ const NavigatorIOSExamplePage <span class="token operator">=</span> React<span c
         &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>separator<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
-const NavigatorIOSExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-  statics<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    title<span class="token punctuation">:</span> <span class="token string">&#x27;&lt;NavigatorIOS&gt;&#x27;</span><span class="token punctuation">,</span>
-    description<span class="token punctuation">:</span> <span class="token string">&#x27;iOS navigation capabilities&#x27;</span><span class="token punctuation">,</span>
-    external<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+class <span class="token class-name">NavigatorIOSExample</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  static title <span class="token operator">=</span> <span class="token string">&#x27;&lt;NavigatorIOS&gt;&#x27;</span><span class="token punctuation">;</span>
+  static description <span class="token operator">=</span> <span class="token string">&#x27;iOS navigation capabilities&#x27;</span><span class="token punctuation">;</span>
+  static external <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
 
-  render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     const <span class="token punctuation">{</span>onExampleExit<span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">;</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       &lt;NavigatorIOS
@@ -350,8 +348,8 @@ const NavigatorIOSExample <span class="token operator">=</span> React<span class
         tintColor<span class="token operator">=</span><span class="token string">&quot;#008888&quot;</span>
       <span class="token operator">/</span><span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 
 const styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
   container<span class="token punctuation">:</span> <span class="token punctuation">{</span>

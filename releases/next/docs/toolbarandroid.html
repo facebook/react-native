@@ -51,22 +51,20 @@ In addition to this property you need to add</p><p>  android:supportsRtl=&quot;t
 <span class="token keyword">var</span> SwitchAndroid <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;SwitchAndroid&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> ToolbarAndroid <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;ToolbarAndroid&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-<span class="token keyword">var</span> ToolbarAndroidExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-  statics<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    title<span class="token punctuation">:</span> <span class="token string">&#x27;&lt;ToolbarAndroid&gt;&#x27;</span><span class="token punctuation">,</span>
-    description<span class="token punctuation">:</span> <span class="token string">&#x27;Examples of using the Android toolbar.&#x27;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  getInitialState<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token punctuation">{</span>
-      actionText<span class="token punctuation">:</span> <span class="token string">&#x27;Example app with toolbar component&#x27;</span><span class="token punctuation">,</span>
-      toolbarSwitch<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
-      colorProps<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-        titleColor<span class="token punctuation">:</span> <span class="token string">&#x27;#3b5998&#x27;</span><span class="token punctuation">,</span>
-        subtitleColor<span class="token punctuation">:</span> <span class="token string">&#x27;#6a7180&#x27;</span><span class="token punctuation">,</span>
-      <span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token punctuation">}</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+class <span class="token class-name">ToolbarAndroidExample</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  static title <span class="token operator">=</span> <span class="token string">&#x27;&lt;ToolbarAndroid&gt;&#x27;</span><span class="token punctuation">;</span>
+  static description <span class="token operator">=</span> <span class="token string">&#x27;Examples of using the Android toolbar.&#x27;</span><span class="token punctuation">;</span>
+
+  state <span class="token operator">=</span> <span class="token punctuation">{</span>
+    actionText<span class="token punctuation">:</span> <span class="token string">&#x27;Example app with toolbar component&#x27;</span><span class="token punctuation">,</span>
+    toolbarSwitch<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    colorProps<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      titleColor<span class="token punctuation">:</span> <span class="token string">&#x27;#3b5998&#x27;</span><span class="token punctuation">,</span>
+      subtitleColor<span class="token punctuation">:</span> <span class="token string">&#x27;#6a7180&#x27;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       &lt;UIExplorerPage title<span class="token operator">=</span><span class="token string">&quot;&lt;ToolbarAndroid&gt;&quot;</span><span class="token operator">&gt;</span>
         &lt;UIExplorerBlock title<span class="token operator">=</span><span class="token string">&quot;Toolbar with title/subtitle and actions&quot;</span><span class="token operator">&gt;</span>
@@ -133,13 +131,14 @@ In addition to this property you need to add</p><p>  android:supportsRtl=&quot;t
         &lt;<span class="token operator">/</span>UIExplorerBlock<span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>UIExplorerPage<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  _onActionSelected<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>position<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token punctuation">}</span>
+
+  _onActionSelected <span class="token operator">=</span> <span class="token punctuation">(</span>position<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
       actionText<span class="token punctuation">:</span> <span class="token string">&#x27;Selected &#x27;</span> <span class="token operator">+</span> toolbarActions<span class="token punctuation">[</span>position<span class="token punctuation">]</span><span class="token punctuation">.</span>title<span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
 <span class="token keyword">var</span> toolbarActions <span class="token operator">=</span> <span class="token punctuation">[</span>
   <span class="token punctuation">{</span>title<span class="token punctuation">:</span> <span class="token string">&#x27;Create&#x27;</span><span class="token punctuation">,</span> icon<span class="token punctuation">:</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;image!ic_create_black_48dp&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span> show<span class="token punctuation">:</span> <span class="token string">&#x27;always&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>

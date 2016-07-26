@@ -64,13 +64,12 @@ it will give the link url, otherwise it will give <code>null</code></p><p>NOTE: 
 <span class="token punctuation">}</span> <span class="token operator">=</span> ReactNative<span class="token punctuation">;</span>
 <span class="token keyword">var</span> UIExplorerBlock <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./UIExplorerBlock&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-<span class="token keyword">var</span> OpenURLButton <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-
-  propTypes<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+class <span class="token class-name">OpenURLButton</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  static propTypes <span class="token operator">=</span> <span class="token punctuation">{</span>
     url<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>string<span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  handleClick<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  handleClick <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     Linking<span class="token punctuation">.</span><span class="token function">canOpenURL<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>url<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then<span class="token punctuation">(</span></span>supported <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
       <span class="token keyword">if</span> <span class="token punctuation">(</span>supported<span class="token punctuation">)</span> <span class="token punctuation">{</span>
         Linking<span class="token punctuation">.</span><span class="token function">openURL<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>url<span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -78,9 +77,9 @@ it will give the link url, otherwise it will give <code>null</code></p><p>NOTE: 
         console<span class="token punctuation">.</span><span class="token function">log<span class="token punctuation">(</span></span><span class="token string">&#x27;Don\&#x27;t know how to open URI: &#x27;</span> <span class="token operator">+</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>url<span class="token punctuation">)</span><span class="token punctuation">;</span>
       <span class="token punctuation">}</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       &lt;TouchableOpacity
         onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>handleClick<span class="token punctuation">}</span><span class="token operator">&gt;</span>
@@ -90,16 +89,13 @@ it will give the link url, otherwise it will give <code>null</code></p><p>NOTE: 
       &lt;<span class="token operator">/</span>TouchableOpacity<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
-<span class="token keyword">var</span> IntentAndroidExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+class <span class="token class-name">IntentAndroidExample</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  static title <span class="token operator">=</span> <span class="token string">&#x27;Linking&#x27;</span><span class="token punctuation">;</span>
+  static description <span class="token operator">=</span> <span class="token string">&#x27;Shows how to use Linking to open URLs.&#x27;</span><span class="token punctuation">;</span>
 
-  statics<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    title<span class="token punctuation">:</span> <span class="token string">&#x27;Linking&#x27;</span><span class="token punctuation">,</span>
-    description<span class="token punctuation">:</span> <span class="token string">&#x27;Shows how to use Linking to open URLs.&#x27;</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-
-  render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       &lt;UIExplorerBlock title<span class="token operator">=</span><span class="token string">&quot;Open external URLs&quot;</span><span class="token operator">&gt;</span>
         &lt;OpenURLButton url<span class="token operator">=</span><span class="token punctuation">{</span><span class="token string">&#x27;https://www.facebook.com&#x27;</span><span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
@@ -110,8 +106,8 @@ it will give the link url, otherwise it will give <code>null</code></p><p>NOTE: 
         &lt;OpenURLButton url<span class="token operator">=</span><span class="token punctuation">{</span><span class="token string">&#x27;tel:9876543210&#x27;</span><span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>UIExplorerBlock<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 
 <span class="token keyword">var</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
   container<span class="token punctuation">:</span> <span class="token punctuation">{</span>

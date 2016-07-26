@@ -30,26 +30,21 @@ when using the <code>minDate</code> and <code>maxDate</code> options.</p></div><
 <span class="token keyword">var</span> UIExplorerBlock <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./UIExplorerBlock&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> UIExplorerPage <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./UIExplorerPage&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-<span class="token keyword">var</span> DatePickerAndroidExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+class <span class="token class-name">DatePickerAndroidExample</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  static title <span class="token operator">=</span> <span class="token string">&#x27;DatePickerAndroid&#x27;</span><span class="token punctuation">;</span>
+  static description <span class="token operator">=</span> <span class="token string">&#x27;Standard Android date picker dialog&#x27;</span><span class="token punctuation">;</span>
 
-  statics<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    title<span class="token punctuation">:</span> <span class="token string">&#x27;DatePickerAndroid&#x27;</span><span class="token punctuation">,</span>
-    description<span class="token punctuation">:</span> <span class="token string">&#x27;Standard Android date picker dialog&#x27;</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  state <span class="token operator">=</span> <span class="token punctuation">{</span>
+    presetDate<span class="token punctuation">:</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token number">2020</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    allDate<span class="token punctuation">:</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token number">2020</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    simpleText<span class="token punctuation">:</span> <span class="token string">&#x27;pick a date&#x27;</span><span class="token punctuation">,</span>
+    minText<span class="token punctuation">:</span> <span class="token string">&#x27;pick a date, no earlier than today&#x27;</span><span class="token punctuation">,</span>
+    maxText<span class="token punctuation">:</span> <span class="token string">&#x27;pick a date, no later than today&#x27;</span><span class="token punctuation">,</span>
+    presetText<span class="token punctuation">:</span> <span class="token string">&#x27;pick a date, preset to 2020/5/5&#x27;</span><span class="token punctuation">,</span>
+    allText<span class="token punctuation">:</span> <span class="token string">&#x27;pick a date between 2020/5/1 and 2020/5/10&#x27;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token punctuation">{</span>
-      presetDate<span class="token punctuation">:</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token number">2020</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-      allDate<span class="token punctuation">:</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token number">2020</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-      simpleText<span class="token punctuation">:</span> <span class="token string">&#x27;pick a date&#x27;</span><span class="token punctuation">,</span>
-      minText<span class="token punctuation">:</span> <span class="token string">&#x27;pick a date, no earlier than today&#x27;</span><span class="token punctuation">,</span>
-      maxText<span class="token punctuation">:</span> <span class="token string">&#x27;pick a date, no later than today&#x27;</span><span class="token punctuation">,</span>
-      presetText<span class="token punctuation">:</span> <span class="token string">&#x27;pick a date, preset to 2020/5/5&#x27;</span><span class="token punctuation">,</span>
-      allText<span class="token punctuation">:</span> <span class="token string">&#x27;pick a date between 2020/5/1 and 2020/5/10&#x27;</span><span class="token punctuation">,</span>
-    <span class="token punctuation">}</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-
-  async <span class="token function">showPicker<span class="token punctuation">(</span></span>stateKey<span class="token punctuation">,</span> options<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  showPicker <span class="token operator">=</span> async <span class="token punctuation">(</span>stateKey<span class="token punctuation">,</span> options<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">try</span> <span class="token punctuation">{</span>
       <span class="token keyword">var</span> newState <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
       const <span class="token punctuation">{</span>action<span class="token punctuation">,</span> year<span class="token punctuation">,</span> month<span class="token punctuation">,</span> day<span class="token punctuation">}</span> <span class="token operator">=</span> await DatePickerAndroid<span class="token punctuation">.</span><span class="token function">open<span class="token punctuation">(</span></span>options<span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -64,7 +59,7 @@ when using the <code>minDate</code> and <code>maxDate</code> options.</p></div><
     <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token punctuation">{</span>code<span class="token punctuation">,</span> message<span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
       console<span class="token punctuation">.</span><span class="token function">warn<span class="token punctuation">(</span></span>`Error <span class="token keyword">in</span> example <span class="token string">&#x27;${stateKey}&#x27;</span><span class="token punctuation">:</span> `<span class="token punctuation">,</span> message<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
   <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
@@ -111,8 +106,8 @@ when using the <code>minDate</code> and <code>maxDate</code> options.</p></div><
           &lt;<span class="token operator">/</span>UIExplorerBlock<span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>UIExplorerPage<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 
 <span class="token keyword">var</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
   text<span class="token punctuation">:</span> <span class="token punctuation">{</span>

@@ -31,27 +31,19 @@ being undefined. <strong>Always</strong> check whether the <code>action</code> b
 <span class="token keyword">var</span> UIExplorerBlock <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./UIExplorerBlock&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> UIExplorerPage <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./UIExplorerPage&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-<span class="token keyword">var</span> TimePickerAndroidExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+class <span class="token class-name">TimePickerAndroidExample</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  static title <span class="token operator">=</span> <span class="token string">&#x27;TimePickerAndroid&#x27;</span><span class="token punctuation">;</span>
+  static description <span class="token operator">=</span> <span class="token string">&#x27;Standard Android time picker dialog&#x27;</span><span class="token punctuation">;</span>
 
-  statics<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    title<span class="token punctuation">:</span> <span class="token string">&#x27;TimePickerAndroid&#x27;</span><span class="token punctuation">,</span>
-    description<span class="token punctuation">:</span> <span class="token string">&#x27;Standard Android time picker dialog&#x27;</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  state <span class="token operator">=</span> <span class="token punctuation">{</span>
+    isoFormatText<span class="token punctuation">:</span> <span class="token string">&#x27;pick a time (24-hour format)&#x27;</span><span class="token punctuation">,</span>
+    presetHour<span class="token punctuation">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
+    presetMinute<span class="token punctuation">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
+    presetText<span class="token punctuation">:</span> <span class="token string">&#x27;pick a time, default: 4:04AM&#x27;</span><span class="token punctuation">,</span>
+    simpleText<span class="token punctuation">:</span> <span class="token string">&#x27;pick a time&#x27;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-   <span class="token comment" spellcheck="true"> // *Text, *Hour and *Minute are set by successCallback -- this updates the text with the time
-</span>   <span class="token comment" spellcheck="true"> // picked by the user and makes it so the next time they open it the hour and minute they picked
-</span>   <span class="token comment" spellcheck="true"> // before is displayed.
-</span>    <span class="token keyword">return</span> <span class="token punctuation">{</span>
-      isoFormatText<span class="token punctuation">:</span> <span class="token string">&#x27;pick a time (24-hour format)&#x27;</span><span class="token punctuation">,</span>
-      presetHour<span class="token punctuation">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
-      presetMinute<span class="token punctuation">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
-      presetText<span class="token punctuation">:</span> <span class="token string">&#x27;pick a time, default: 4:04AM&#x27;</span><span class="token punctuation">,</span>
-      simpleText<span class="token punctuation">:</span> <span class="token string">&#x27;pick a time&#x27;</span><span class="token punctuation">,</span>
-    <span class="token punctuation">}</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-
-  async <span class="token function">showPicker<span class="token punctuation">(</span></span>stateKey<span class="token punctuation">,</span> options<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  showPicker <span class="token operator">=</span> async <span class="token punctuation">(</span>stateKey<span class="token punctuation">,</span> options<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">try</span> <span class="token punctuation">{</span>
       const <span class="token punctuation">{</span>action<span class="token punctuation">,</span> minute<span class="token punctuation">,</span> hour<span class="token punctuation">}</span> <span class="token operator">=</span> await TimePickerAndroid<span class="token punctuation">.</span><span class="token function">open<span class="token punctuation">(</span></span>options<span class="token punctuation">)</span><span class="token punctuation">;</span>
       <span class="token keyword">var</span> newState <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
@@ -66,7 +58,7 @@ being undefined. <strong>Always</strong> check whether the <code>action</code> b
     <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token punctuation">{</span>code<span class="token punctuation">,</span> message<span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
       console<span class="token punctuation">.</span><span class="token function">warn<span class="token punctuation">(</span></span>`Error <span class="token keyword">in</span> example <span class="token string">&#x27;${stateKey}&#x27;</span><span class="token punctuation">:</span> `<span class="token punctuation">,</span> message<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
   <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
@@ -99,8 +91,8 @@ being undefined. <strong>Always</strong> check whether the <code>action</code> b
         &lt;<span class="token operator">/</span>UIExplorerBlock<span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>UIExplorerPage<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true">/**
  * Returns e.g. &#x27;3:05&#x27;.

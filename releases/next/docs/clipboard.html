@@ -12,14 +12,12 @@
   Text<span class="token punctuation">,</span>
 <span class="token punctuation">}</span> <span class="token operator">=</span> ReactNative<span class="token punctuation">;</span>
 
-<span class="token keyword">var</span> ClipboardExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token punctuation">{</span>
-      content<span class="token punctuation">:</span> <span class="token string">&#x27;Content will appear here&#x27;</span>
-    <span class="token punctuation">}</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+class <span class="token class-name">ClipboardExample</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  state <span class="token operator">=</span> <span class="token punctuation">{</span>
+    content<span class="token punctuation">:</span> <span class="token string">&#x27;Content will appear here&#x27;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  async <span class="token function">_setClipboardContent<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+  _setClipboardContent <span class="token operator">=</span> async <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     Clipboard<span class="token punctuation">.</span><span class="token function">setString<span class="token punctuation">(</span></span><span class="token string">&#x27;Hello World&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">try</span> <span class="token punctuation">{</span>
       <span class="token keyword">var</span> content <span class="token operator">=</span> await Clipboard<span class="token punctuation">.</span><span class="token function">getString<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -27,7 +25,7 @@
     <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">e</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>content<span class="token punctuation">:</span>e<span class="token punctuation">.</span>message<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
   <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
@@ -41,7 +39,7 @@
       &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
 exports<span class="token punctuation">.</span>title <span class="token operator">=</span> <span class="token string">&#x27;Clipboard&#x27;</span><span class="token punctuation">;</span>
 exports<span class="token punctuation">.</span>description <span class="token operator">=</span> <span class="token string">&#x27;Show Clipboard contents.&#x27;</span><span class="token punctuation">;</span>

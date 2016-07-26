@@ -33,7 +33,7 @@ settings for <code>UIScrollViewDecelerationRateNormal</code> and
 <code>UIScrollViewDecelerationRateFast</code> respectively:</p><ul><li>normal: 0.998</li><li>fast: 0.99 (the default for iOS web view)</li></ul></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="onshouldstartloadwithrequest"></a><span class="platform">ios</span>onShouldStartLoadWithRequest <span class="propType">function</span> <a class="hash-link" href="docs/webview.html#onshouldstartloadwithrequest">#</a></h4><div><p>Function that allows custom handling of any web view requests. Return
 <code>true</code> from the function to continue loading the request and <code>false</code>
 to stop loading.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="scrollenabled"></a><span class="platform">ios</span>scrollEnabled <span class="propType">bool</span> <a class="hash-link" href="docs/webview.html#scrollenabled">#</a></h4><div><p>Boolean value that determines whether scrolling is enabled in the
-<code>WebView</code>. The default value is <code>true</code>.</p></div></div></div><span><h3><a class="anchor" name="methods"></a>Methods <a class="hash-link" href="docs/webview.html#methods">#</a></h3><div class="props"><div class="prop"><h4 class="methodTitle"><a class="anchor" name="goforward"></a>goForward<span class="methodType">(0)</span> <a class="hash-link" href="docs/webview.html#goforward">#</a></h4><div><p>Go forward one page in the web view&#x27;s history.</p></div></div><div class="prop"><h4 class="methodTitle"><a class="anchor" name="goback"></a>goBack<span class="methodType">(0)</span> <a class="hash-link" href="docs/webview.html#goback">#</a></h4><div><p>Go back one page in the web view&#x27;s history.</p></div></div><div class="prop"><h4 class="methodTitle"><a class="anchor" name="reload"></a>reload<span class="methodType">(0)</span> <a class="hash-link" href="docs/webview.html#reload">#</a></h4><div><p>Reloads the current page.</p></div></div><div class="prop"><h4 class="methodTitle"><a class="anchor" name="stoploading"></a>stopLoading<span class="methodType">(0)</span> <a class="hash-link" href="docs/webview.html#stoploading">#</a></h4><div><p>Stop loading the current page.</p></div></div><div class="prop"><h4 class="methodTitle"><a class="anchor" name="getwebviewhandle"></a>getWebViewHandle<span class="methodType">(0): </span> <a class="hash-link" href="docs/webview.html#getwebviewhandle">#</a></h4><div><p>Returns the native <code>WebView</code> node.</p></div></div></div></span></div><div><div><table width="100%"><tbody><tr><td><h3><a class="anchor" name="examples"></a>Examples <a class="hash-link" href="docs/webview.html#examples">#</a></h3></td><td style="text-align:right;"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/js/WebViewExample.js">Edit on GitHub</a></td></tr></tbody></table><div class="example-container"><div class="prism language-javascript"><span class="token string">&#x27;use strict&#x27;</span><span class="token punctuation">;</span>
+<code>WebView</code>. The default value is <code>true</code>.</p></div></div></div></div><div><div><table width="100%"><tbody><tr><td><h3><a class="anchor" name="examples"></a>Examples <a class="hash-link" href="docs/webview.html#examples">#</a></h3></td><td style="text-align:right;"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/js/WebViewExample.js">Edit on GitHub</a></td></tr></tbody></table><div class="example-container"><div class="prism language-javascript"><span class="token string">&#x27;use strict&#x27;</span><span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> ReactNative <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -55,30 +55,27 @@ to stop loading.</p></div></div><div class="prop"><h4 class="propTitle"><a class
 <span class="token keyword">var</span> WEBVIEW_REF <span class="token operator">=</span> <span class="token string">&#x27;webview&#x27;</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> DEFAULT_URL <span class="token operator">=</span> <span class="token string">&#x27;https://m.facebook.com&#x27;</span><span class="token punctuation">;</span>
 
-<span class="token keyword">var</span> WebViewExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+class <span class="token class-name">WebViewExample</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  state <span class="token operator">=</span> <span class="token punctuation">{</span>
+    url<span class="token punctuation">:</span> DEFAULT_URL<span class="token punctuation">,</span>
+    status<span class="token punctuation">:</span> <span class="token string">&#x27;No Page Loaded&#x27;</span><span class="token punctuation">,</span>
+    backButtonEnabled<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    forwardButtonEnabled<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    loading<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    scalesPageToFit<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  getInitialState<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token punctuation">{</span>
-      url<span class="token punctuation">:</span> DEFAULT_URL<span class="token punctuation">,</span>
-      status<span class="token punctuation">:</span> <span class="token string">&#x27;No Page Loaded&#x27;</span><span class="token punctuation">,</span>
-      backButtonEnabled<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
-      forwardButtonEnabled<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
-      loading<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-      scalesPageToFit<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-    <span class="token punctuation">}</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  inputText <span class="token operator">=</span> <span class="token string">&#x27;&#x27;</span><span class="token punctuation">;</span>
 
-  inputText<span class="token punctuation">:</span> <span class="token string">&#x27;&#x27;</span><span class="token punctuation">,</span>
-
-  handleTextInputChange<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  handleTextInputChange <span class="token operator">=</span> <span class="token punctuation">(</span>event<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">var</span> url <span class="token operator">=</span> event<span class="token punctuation">.</span>nativeEvent<span class="token punctuation">.</span>text<span class="token punctuation">;</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token regex">/^[a-zA-Z-_]+:/</span><span class="token punctuation">.</span><span class="token function">test<span class="token punctuation">(</span></span>url<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
       url <span class="token operator">=</span> <span class="token string">&#x27;http://&#x27;</span> <span class="token operator">+</span> url<span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>inputText <span class="token operator">=</span> url<span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>inputText <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>url<span class="token punctuation">;</span>
 
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
@@ -133,26 +130,26 @@ to stop loading.</p></div></div><div class="prop"><h4 class="propTitle"><a class
         &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
 
-  goBack<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  goBack <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>refs<span class="token punctuation">[</span>WEBVIEW_REF<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">goBack<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  goForward<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  goForward <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>refs<span class="token punctuation">[</span>WEBVIEW_REF<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">goForward<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  reload<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  reload <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>refs<span class="token punctuation">[</span>WEBVIEW_REF<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">reload<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  onShouldStartLoadWithRequest<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  onShouldStartLoadWithRequest <span class="token operator">=</span> <span class="token punctuation">(</span>event<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
    <span class="token comment" spellcheck="true"> // Implement any custom loading logic here, don&#x27;t forget to return!
 </span>    <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  onNavigationStateChange<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>navState<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  onNavigationStateChange <span class="token operator">=</span> <span class="token punctuation">(</span>navState<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
       backButtonEnabled<span class="token punctuation">:</span> navState<span class="token punctuation">.</span>canGoBack<span class="token punctuation">,</span>
       forwardButtonEnabled<span class="token punctuation">:</span> navState<span class="token punctuation">.</span>canGoForward<span class="token punctuation">,</span>
@@ -161,13 +158,13 @@ to stop loading.</p></div></div><div class="prop"><h4 class="propTitle"><a class
       loading<span class="token punctuation">:</span> navState<span class="token punctuation">.</span>loading<span class="token punctuation">,</span>
       scalesPageToFit<span class="token punctuation">:</span> <span class="token boolean">true</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  onSubmitEditing<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  onSubmitEditing <span class="token operator">=</span> <span class="token punctuation">(</span>event<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">pressGoButton<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  pressGoButton<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  pressGoButton <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">var</span> url <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>inputText<span class="token punctuation">.</span><span class="token function">toLowerCase<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span>url <span class="token operator">===</span> <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>url<span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">reload<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -178,17 +175,17 @@ to stop loading.</p></div></div><div class="prop"><h4 class="propTitle"><a class
     <span class="token punctuation">}</span>
    <span class="token comment" spellcheck="true"> // dismiss keyboard
 </span>    <span class="token keyword">this</span><span class="token punctuation">.</span>refs<span class="token punctuation">[</span>TEXT_INPUT_REF<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">blur<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token keyword">var</span> Button <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-  _handlePress<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+class <span class="token class-name">Button</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  _handlePress <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>enabled <span class="token operator">!</span><span class="token operator">==</span> <span class="token boolean">false</span> &amp;&amp; <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>onPress<span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span><span class="token function">onPress<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       &lt;TouchableWithoutFeedback onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_handlePress<span class="token punctuation">}</span><span class="token operator">&gt;</span>
         &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span><span class="token operator">&gt;</span>
@@ -197,17 +194,14 @@ to stop loading.</p></div></div><div class="prop"><h4 class="propTitle"><a class
       &lt;<span class="token operator">/</span>TouchableWithoutFeedback<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
-<span class="token keyword">var</span> ScaledWebView <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+class <span class="token class-name">ScaledWebView</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  state <span class="token operator">=</span> <span class="token punctuation">{</span>
+    scalingEnabled<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  getInitialState<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token punctuation">{</span>
-      scalingEnabled<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-    <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-
-  render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       &lt;View<span class="token operator">&gt;</span>
         &lt;WebView
@@ -233,8 +227,8 @@ to stop loading.</p></div></div><div class="prop"><h4 class="propTitle"><a class
         &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 
 <span class="token keyword">var</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
   container<span class="token punctuation">:</span> <span class="token punctuation">{</span>

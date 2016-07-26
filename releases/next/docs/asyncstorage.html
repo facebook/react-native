@@ -130,12 +130,17 @@ AsyncStorage<span class="token punctuation">.</span><span class="token function"
 <span class="token keyword">var</span> STORAGE_KEY <span class="token operator">=</span> <span class="token string">&#x27;@AsyncStorageExample:key&#x27;</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> COLORS <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">&#x27;red&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;orange&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;yellow&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;green&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;blue&#x27;</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
 
-<span class="token keyword">var</span> BasicStorageExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+class <span class="token class-name">BasicStorageExample</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  state <span class="token operator">=</span> <span class="token punctuation">{</span>
+    selectedValue<span class="token punctuation">:</span> COLORS<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    messages<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
   <span class="token function">componentDidMount<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_loadInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">done<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
 
-  async <span class="token function">_loadInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  _loadInitialState <span class="token operator">=</span> async <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">try</span> <span class="token punctuation">{</span>
       <span class="token keyword">var</span> value <span class="token operator">=</span> await AsyncStorage<span class="token punctuation">.</span><span class="token function">getItem<span class="token punctuation">(</span></span>STORAGE_KEY<span class="token punctuation">)</span><span class="token punctuation">;</span>
       <span class="token keyword">if</span> <span class="token punctuation">(</span>value <span class="token operator">!</span><span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
@@ -147,14 +152,7 @@ AsyncStorage<span class="token punctuation">.</span><span class="token function"
     <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_appendMessage<span class="token punctuation">(</span></span><span class="token string">&#x27;AsyncStorage error: &#x27;</span> <span class="token operator">+</span> error<span class="token punctuation">.</span>message<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-
-  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token punctuation">{</span>
-      selectedValue<span class="token punctuation">:</span> COLORS<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-      messages<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-    <span class="token punctuation">}</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
   <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">var</span> color <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>selectedValue<span class="token punctuation">;</span>
@@ -186,9 +184,9 @@ AsyncStorage<span class="token punctuation">.</span><span class="token function"
         <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>messages<span class="token punctuation">.</span><span class="token function">map<span class="token punctuation">(</span></span><span class="token punctuation">(</span>m<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> &lt;Text key<span class="token operator">=</span><span class="token punctuation">{</span>m<span class="token punctuation">}</span><span class="token operator">&gt;</span><span class="token punctuation">{</span>m<span class="token punctuation">}</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
       &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
 
-  async <span class="token function">_onValueChange<span class="token punctuation">(</span></span>selectedValue<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  _onValueChange <span class="token operator">=</span> async <span class="token punctuation">(</span>selectedValue<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>selectedValue<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">try</span> <span class="token punctuation">{</span>
       await AsyncStorage<span class="token punctuation">.</span><span class="token function">setItem<span class="token punctuation">(</span></span>STORAGE_KEY<span class="token punctuation">,</span> selectedValue<span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -196,21 +194,21 @@ AsyncStorage<span class="token punctuation">.</span><span class="token function"
     <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_appendMessage<span class="token punctuation">(</span></span><span class="token string">&#x27;AsyncStorage error: &#x27;</span> <span class="token operator">+</span> error<span class="token punctuation">.</span>message<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  async <span class="token function">_removeStorage<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  _removeStorage <span class="token operator">=</span> async <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">try</span> <span class="token punctuation">{</span>
       await AsyncStorage<span class="token punctuation">.</span><span class="token function">removeItem<span class="token punctuation">(</span></span>STORAGE_KEY<span class="token punctuation">)</span><span class="token punctuation">;</span>
       <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_appendMessage<span class="token punctuation">(</span></span><span class="token string">&#x27;Selection removed from disk.&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_appendMessage<span class="token punctuation">(</span></span><span class="token string">&#x27;AsyncStorage error: &#x27;</span> <span class="token operator">+</span> error<span class="token punctuation">.</span>message<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  <span class="token function">_appendMessage<span class="token punctuation">(</span></span>message<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  _appendMessage <span class="token operator">=</span> <span class="token punctuation">(</span>message<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>messages<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>messages<span class="token punctuation">.</span><span class="token function">concat<span class="token punctuation">(</span></span>message<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
 exports<span class="token punctuation">.</span>title <span class="token operator">=</span> <span class="token string">&#x27;AsyncStorage&#x27;</span><span class="token punctuation">;</span>
 exports<span class="token punctuation">.</span>description <span class="token operator">=</span> <span class="token string">&#x27;Asynchronous local disk storage.&#x27;</span><span class="token punctuation">;</span>

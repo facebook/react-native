@@ -34,9 +34,8 @@ of a neutral, negative and a positive button:</p><ul><li>If you specify one butt
 <span class="token comment" spellcheck="true">/**
  * Simple alert examples.
  */</span>
-<span class="token keyword">var</span> SimpleAlertExampleBlock <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-
-  render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+class <span class="token class-name">SimpleAlertExampleBlock</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       &lt;View<span class="token operator">&gt;</span>
         &lt;TouchableHighlight style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>wrapper<span class="token punctuation">}</span>
@@ -102,23 +101,23 @@ of a neutral, negative and a positive button:</p><ul><li>If you specify one butt
         &lt;<span class="token operator">/</span>TouchableHighlight<span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 
-<span class="token keyword">var</span> AlertExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-  statics<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    title<span class="token punctuation">:</span> <span class="token string">&#x27;Alert&#x27;</span><span class="token punctuation">,</span>
-    description<span class="token punctuation">:</span> <span class="token string">&#x27;Alerts display a concise and informative message &#x27;</span> <span class="token operator">+</span>
-    <span class="token string">&#x27;and prompt the user to make a decision.&#x27;</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+class <span class="token class-name">AlertExample</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  static title <span class="token operator">=</span> <span class="token string">&#x27;Alert&#x27;</span><span class="token punctuation">;</span>
+
+  static description <span class="token operator">=</span> <span class="token string">&#x27;Alerts display a concise and informative message &#x27;</span> <span class="token operator">+</span>
+  <span class="token string">&#x27;and prompt the user to make a decision.&#x27;</span><span class="token punctuation">;</span>
+
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       &lt;UIExplorerBlock title<span class="token operator">=</span><span class="token punctuation">{</span><span class="token string">&#x27;Alert&#x27;</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
         &lt;SimpleAlertExampleBlock <span class="token operator">/</span><span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>UIExplorerBlock<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
 <span class="token keyword">var</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
   wrapper<span class="token punctuation">:</span> <span class="token punctuation">{</span>

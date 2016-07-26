@@ -18,27 +18,23 @@ const <span class="token punctuation">{</span>
   Picker<span class="token punctuation">,</span>
   Text<span class="token punctuation">,</span>
   TouchableWithoutFeedback<span class="token punctuation">,</span>
-<span class="token punctuation">}</span> <span class="token operator">=</span> ReactNative<span class="token punctuation">;</span>
-const Item <span class="token operator">=</span> Picker<span class="token punctuation">.</span>Item<span class="token punctuation">;</span>
+<span class="token punctuation">}</span> <span class="token operator">=</span> ReactNative<span class="token punctuation">;</span><span class="token comment" spellcheck="true">
+// $FlowFixMe found when converting React.createClass to ES6
+</span>const Item <span class="token operator">=</span> Picker<span class="token punctuation">.</span>Item<span class="token punctuation">;</span>
 
-const PickerExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+class <span class="token class-name">PickerExample</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  static title <span class="token operator">=</span> <span class="token string">&#x27;&lt;Picker&gt;&#x27;</span><span class="token punctuation">;</span>
+  static description <span class="token operator">=</span> <span class="token string">&#x27;Provides multiple options to choose from, using either a dropdown menu or a dialog.&#x27;</span><span class="token punctuation">;</span>
 
-  statics<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    title<span class="token punctuation">:</span> <span class="token string">&#x27;&lt;Picker&gt;&#x27;</span><span class="token punctuation">,</span>
-    description<span class="token punctuation">:</span> <span class="token string">&#x27;Provides multiple options to choose from, using either a dropdown menu or a dialog.&#x27;</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  state <span class="token operator">=</span> <span class="token punctuation">{</span>
+    selected1<span class="token punctuation">:</span> <span class="token string">&#x27;key1&#x27;</span><span class="token punctuation">,</span>
+    selected2<span class="token punctuation">:</span> <span class="token string">&#x27;key1&#x27;</span><span class="token punctuation">,</span>
+    selected3<span class="token punctuation">:</span> <span class="token string">&#x27;key1&#x27;</span><span class="token punctuation">,</span>
+    color<span class="token punctuation">:</span> <span class="token string">&#x27;red&#x27;</span><span class="token punctuation">,</span>
+    mode<span class="token punctuation">:</span> Picker<span class="token punctuation">.</span>MODE_DIALOG<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  getInitialState<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token punctuation">{</span>
-      selected1<span class="token punctuation">:</span> <span class="token string">&#x27;key1&#x27;</span><span class="token punctuation">,</span>
-      selected2<span class="token punctuation">:</span> <span class="token string">&#x27;key1&#x27;</span><span class="token punctuation">,</span>
-      selected3<span class="token punctuation">:</span> <span class="token string">&#x27;key1&#x27;</span><span class="token punctuation">,</span>
-      color<span class="token punctuation">:</span> <span class="token string">&#x27;red&#x27;</span><span class="token punctuation">,</span>
-      mode<span class="token punctuation">:</span> Picker<span class="token punctuation">.</span>MODE_DIALOG<span class="token punctuation">,</span>
-    <span class="token punctuation">}</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-
-  render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       &lt;UIExplorerPage title<span class="token operator">=</span><span class="token string">&quot;&lt;Picker&gt;&quot;</span><span class="token operator">&gt;</span>
         &lt;UIExplorerBlock title<span class="token operator">=</span><span class="token string">&quot;Basic Picker&quot;</span><span class="token operator">&gt;</span>
@@ -107,21 +103,21 @@ const PickerExample <span class="token operator">=</span> React<span class="toke
         &lt;<span class="token operator">/</span>UIExplorerBlock<span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>UIExplorerPage<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
 
-  changeMode<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  changeMode <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     const newMode <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>mode <span class="token operator">===</span> Picker<span class="token punctuation">.</span>MODE_DIALOG
         <span class="token operator">?</span> Picker<span class="token punctuation">.</span>MODE_DROPDOWN
         <span class="token punctuation">:</span> Picker<span class="token punctuation">.</span>MODE_DIALOG<span class="token punctuation">;</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>mode<span class="token punctuation">:</span> newMode<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  onValueChange<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>key<span class="token punctuation">:</span> string<span class="token punctuation">,</span> value<span class="token punctuation">:</span> string<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  onValueChange <span class="token operator">=</span> <span class="token punctuation">(</span>key<span class="token punctuation">:</span> string<span class="token punctuation">,</span> value<span class="token punctuation">:</span> string<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     const newState <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
     newState<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> value<span class="token punctuation">;</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span>newState<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
 <span class="token keyword">var</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
   picker<span class="token punctuation">:</span> <span class="token punctuation">{</span>

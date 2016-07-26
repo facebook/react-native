@@ -23,15 +23,12 @@ const AssetScaledImageExampleView <span class="token operator">=</span> <span cl
 
 const CAMERA_ROLL_VIEW <span class="token operator">=</span> <span class="token string">&#x27;camera_roll_view&#x27;</span><span class="token punctuation">;</span>
 
-const CameraRollExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-
-  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token punctuation">{</span>
-      groupTypes<span class="token punctuation">:</span> <span class="token string">&#x27;SavedPhotos&#x27;</span><span class="token punctuation">,</span>
-      sliderValue<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
-      bigImages<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-    <span class="token punctuation">}</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+class <span class="token class-name">CameraRollExample</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  state <span class="token operator">=</span> <span class="token punctuation">{</span>
+    groupTypes<span class="token punctuation">:</span> <span class="token string">&#x27;SavedPhotos&#x27;</span><span class="token punctuation">,</span>
+    sliderValue<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    bigImages<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
   <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
@@ -53,9 +50,9 @@ const CameraRollExample <span class="token operator">=</span> React<span class="
         <span class="token operator">/</span><span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
 
-  <span class="token function">loadAsset<span class="token punctuation">(</span></span>asset<span class="token punctuation">)</span><span class="token punctuation">{</span>
+  loadAsset <span class="token operator">=</span> <span class="token punctuation">(</span>asset<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>navigator<span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>navigator<span class="token punctuation">.</span><span class="token function">push<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
         title<span class="token punctuation">:</span> <span class="token string">&#x27;Camera Roll Image&#x27;</span><span class="token punctuation">,</span>
@@ -64,9 +61,9 @@ const CameraRollExample <span class="token operator">=</span> React<span class="
         passProps<span class="token punctuation">:</span> <span class="token punctuation">{</span> asset<span class="token punctuation">:</span> asset <span class="token punctuation">}</span><span class="token punctuation">,</span>
       <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  <span class="token function">_renderImage<span class="token punctuation">(</span></span>asset<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  _renderImage <span class="token operator">=</span> <span class="token punctuation">(</span>asset<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     const imageSize <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>bigImages <span class="token operator">?</span> <span class="token number">150</span> <span class="token punctuation">:</span> <span class="token number">75</span><span class="token punctuation">;</span>
     const imageStyle <span class="token operator">=</span> <span class="token punctuation">[</span>styles<span class="token punctuation">.</span>image<span class="token punctuation">,</span> <span class="token punctuation">{</span>width<span class="token punctuation">:</span> imageSize<span class="token punctuation">,</span> height<span class="token punctuation">:</span> imageSize<span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
     const location <span class="token operator">=</span> asset<span class="token punctuation">.</span>node<span class="token punctuation">.</span>location<span class="token punctuation">.</span>longitude <span class="token operator">?</span>
@@ -87,22 +84,22 @@ const CameraRollExample <span class="token operator">=</span> React<span class="
         &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>TouchableOpacity<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  <span class="token function">_onSliderChange<span class="token punctuation">(</span></span>value<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  _onSliderChange <span class="token operator">=</span> <span class="token punctuation">(</span>value<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     const options <span class="token operator">=</span> CameraRoll<span class="token punctuation">.</span>GroupTypesOptions<span class="token punctuation">;</span>
     const index <span class="token operator">=</span> Math<span class="token punctuation">.</span><span class="token function">floor<span class="token punctuation">(</span></span>value <span class="token operator">*</span> options<span class="token punctuation">.</span>length <span class="token operator">*</span> <span class="token number">0.99</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     const groupTypes <span class="token operator">=</span> options<span class="token punctuation">[</span>index<span class="token punctuation">]</span><span class="token punctuation">;</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span>groupTypes <span class="token operator">!</span><span class="token operator">==</span> <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>groupTypes<span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>groupTypes<span class="token punctuation">:</span> groupTypes<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  <span class="token function">_onSwitchChange<span class="token punctuation">(</span></span>value<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  _onSwitchChange <span class="token operator">=</span> <span class="token punctuation">(</span>value<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>refs<span class="token punctuation">[</span>CAMERA_ROLL_VIEW<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">rendererChanged<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span> bigImages<span class="token punctuation">:</span> value <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
 const styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
   row<span class="token punctuation">:</span> <span class="token punctuation">{</span>
