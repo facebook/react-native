@@ -24,6 +24,10 @@ export type Command = {
     parse?: (val: string) => any,
     default?: (config: Config) => any | any,
   }>,
+  examples?: Array<{
+    desc: string,
+    cmd: string,
+  }>,
 };
 
 const documentedCommands = [
