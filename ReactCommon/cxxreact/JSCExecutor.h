@@ -70,13 +70,13 @@ public:
   virtual void callFunction(
     const std::string& moduleId,
     const std::string& methodId,
-    const folly::dynamic& arguments) throw(JSException) override;
+    const folly::dynamic& arguments) override;
   virtual void invokeCallback(
     const double callbackId,
-    const folly::dynamic& arguments) throw(JSException) override;
+    const folly::dynamic& arguments) override;
   virtual void setGlobalVariable(
     std::string propName,
-    std::unique_ptr<const JSBigString> jsonValue) throw(JSException) override;
+    std::unique_ptr<const JSBigString> jsonValue) override;
   virtual void* getJavaScriptContext() override;
   virtual bool supportsProfiling() override;
   virtual void startProfiler(const std::string &titleString) override;
@@ -117,7 +117,7 @@ private:
   void initOnJSVMThread() throw(JSException);
   void terminateOnJSVMThread();
   void bindBridge() throw(JSException);
-  void flush() throw(JSException);
+  void flush();
   void flushQueueImmediate(std::string queueJSON);
   void loadModule(uint32_t moduleId);
 

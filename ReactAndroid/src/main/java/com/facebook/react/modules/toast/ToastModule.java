@@ -9,11 +9,11 @@
 
 package com.facebook.react.modules.toast;
 
+import android.view.Gravity;
 import android.widget.Toast;
 
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.common.MapBuilder;
@@ -29,6 +29,10 @@ public class ToastModule extends ReactContextBaseJavaModule {
   private static final String DURATION_SHORT_KEY = "SHORT";
   private static final String DURATION_LONG_KEY = "LONG";
 
+  private static final String GRAVITY_TOP_KEY = "TOP";
+  private static final String GRAVITY_BOTTOM_KEY = "BOTTOM";
+  private static final String GRAVITY_CENTER = "CENTER";
+
   public ToastModule(ReactApplicationContext reactContext) {
     super(reactContext);
   }
@@ -43,6 +47,9 @@ public class ToastModule extends ReactContextBaseJavaModule {
     final Map<String, Object> constants = MapBuilder.newHashMap();
     constants.put(DURATION_SHORT_KEY, Toast.LENGTH_SHORT);
     constants.put(DURATION_LONG_KEY, Toast.LENGTH_LONG);
+    constants.put(GRAVITY_TOP_KEY, Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+    constants.put(GRAVITY_BOTTOM_KEY, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+    constants.put(GRAVITY_CENTER, Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
     return constants;
   }
 
@@ -50,8 +57,20 @@ public class ToastModule extends ReactContextBaseJavaModule {
   public void show(final String message, final int duration) {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
-      public void run(){
+      public void run() {
         Toast.makeText(getReactApplicationContext(), message, duration).show();
+      }
+    });
+  }
+
+  @ReactMethod
+  public void showWithGravity(final String message, final int duration, final int gravity) {
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        Toast toast = Toast.makeText(getReactApplicationContext(), message, duration);
+        toast.setGravity(gravity, 0, 0);
+        toast.show();
       }
     });
   }

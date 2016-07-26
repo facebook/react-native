@@ -14,8 +14,8 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 public class RefreshEvent extends Event<RefreshEvent> {
 
-    protected RefreshEvent(int viewTag, long timestampMs) {
-        super(viewTag, timestampMs);
+    protected RefreshEvent(int viewTag) {
+        super(viewTag);
     }
 
     @Override

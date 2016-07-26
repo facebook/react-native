@@ -20,7 +20,6 @@ import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -81,7 +80,6 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSliderEvent(
                   seekbar.getId(),
-                  SystemClock.nanoTime(),
                   ((ReactSlider)seekbar).toRealProgress(progress),
                   fromUser));
         }
@@ -96,7 +94,6 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSlidingCompleteEvent(
                   seekbar.getId(),
-                  SystemClock.nanoTime(),
                   ((ReactSlider)seekbar).toRealProgress(seekbar.getProgress())));
         }
       };
