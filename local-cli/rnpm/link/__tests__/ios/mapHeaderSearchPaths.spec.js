@@ -7,7 +7,7 @@ const mapHeaderSearchPaths = require('../../src/ios/mapHeaderSearchPaths');
 const path = require('path');
 
 const project = xcode.project(
-  path.join(__dirname, '../fixtures/project.pbxproj')
+  path.join(__dirname, '../../__fixtures__/project.pbxproj')
 );
 const reactPath = '"$(SRCROOT)/../node_modules/react-native/React/**"';
 

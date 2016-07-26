@@ -9,9 +9,9 @@ const removeProjectFromProject = require('../../src/ios/removeProjectFromProject
 const path = require('path');
 
 const project = xcode.project(
-  path.join(__dirname, '../fixtures/project.pbxproj')
+  path.join(__dirname, '../../__fixtures__/project.pbxproj')
 );
-const filePath = '../fixtures/linearGradient.pbxproj';
+const filePath = '../../__fixtures__/linearGradient.pbxproj';
 
 describe('ios::addFileToProject', () => {
   beforeEach(() => {

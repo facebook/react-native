@@ -2,7 +2,7 @@ jest.autoMockOff();
 
 const getProjectConfig = require('../../src/config/android').projectConfig;
 const mockFs = require('mock-fs');
-const mocks = require('../fixtures/android');
+const mocks = require('../../__fixtures__/android');
 
 describe('android::getProjectConfig', () => {
   beforeAll(() => mockFs({

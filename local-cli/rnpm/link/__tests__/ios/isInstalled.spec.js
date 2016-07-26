@@ -6,7 +6,7 @@ const path = require('path');
 const isInstalled = require('../../src/ios/isInstalled');
 
 const baseProjectConfig = {
-  pbxprojPath: path.join(__dirname, '../fixtures/project.pbxproj'),
+  pbxprojPath: path.join(__dirname, '../../__fixtures__/project.pbxproj'),
   libraryFolder: 'Libraries',
 };
 

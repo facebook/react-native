@@ -8,7 +8,7 @@ const addSharedLibraries = require('../../src/ios/addSharedLibraries');
 const getGroup = require('../../src/ios/getGroup');
 
 const project = xcode.project(
-  path.join(__dirname, '../fixtures/project.pbxproj')
+  path.join(__dirname, '../../__fixtures__/project.pbxproj')
 );
 
 describe('ios::addSharedLibraries', () => {

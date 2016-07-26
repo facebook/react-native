@@ -6,7 +6,7 @@ const path = require('path');
 const isInstalled = require('../../src/android/isInstalled');
 
 const projectConfig = {
-  buildGradlePath: path.join(__dirname, '../fixtures/android/patchedBuild.gradle'),
+  buildGradlePath: path.join(__dirname, '../../__fixtures__/android/patchedBuild.gradle'),
 };
 
 describe('android::isInstalled', () => {

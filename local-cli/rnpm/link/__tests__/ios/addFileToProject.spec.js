@@ -5,10 +5,10 @@ jest.autoMockOff();
 const xcode = require('xcode');
 const path = require('path');
 const addFileToProject = require('../../src/ios/addFileToProject');
-const include = require('../include');
+const _ = require('lodash');
 
 const project = xcode.project(
-  path.join(__dirname, '../fixtures/project.pbxproj')
+  path.join(__dirname, '../../__fixtures__/project.pbxproj')
 );
 
 describe('ios::addFileToProject', () => {
@@ -18,9 +18,9 @@ describe('ios::addFileToProject', () => {
 
   xit('should add file to a project', () => {
     expect(
-      include(
-        project.pbxFileReferenceSection(),
-        addFileToProject(project, '../fixtures/linearGradient.pbxproj').fileRef
+      _.includes(
+        Object.keys(project.pbxFileReferenceSection()),
+        addFileToProject(project, '../../__fixtures__/linearGradient.pbxproj').fileRef
       )
     ).toBeTruthy();
   });

@@ -2,7 +2,7 @@ jest.autoMockOff();
 
 const getProjectConfig = require('../../src/config/ios').projectConfig;
 const mockFs = require('mock-fs');
-const projects = require('../fixtures/projects');
+const projects = require('../../__fixtures__/projects');
 
 describe('ios::getProjectConfig', () => {
   const userConfig = {};

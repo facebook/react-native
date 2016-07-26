@@ -7,7 +7,7 @@ const path = require('path');
 const getBuildProperty = require('../../src/ios/getBuildProperty');
 
 const project = xcode.project(
-  path.join(__dirname, '../fixtures/project.pbxproj')
+  path.join(__dirname, '../../__fixtures__/project.pbxproj')
 );
 
 describe('ios::getBuildProperty', () => {

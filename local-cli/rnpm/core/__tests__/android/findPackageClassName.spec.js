@@ -2,7 +2,7 @@ jest.autoMockOff();
 
 const findPackageClassName = require('../../src/config/android/findPackageClassName');
 const mockFs = require('mock-fs');
-const mocks = require('../fixtures/android');
+const mocks = require('../../__fixtures__/android');
 
 describe('android::findPackageClassName', () => {
 

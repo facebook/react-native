@@ -9,7 +9,7 @@ const getGroup = require('../../src/ios/getGroup');
 const last = require('lodash').last;
 
 const project = xcode.project(
-  path.join(__dirname, '../fixtures/project.pbxproj')
+  path.join(__dirname, '../../__fixtures__/project.pbxproj')
 );
 
 describe('ios::createGroup', () => {

@@ -2,7 +2,7 @@ jest.autoMockOff();
 
 const getDependencyConfig = require('../../src/config/android').dependencyConfig;
 const mockFs = require('mock-fs');
-const mocks = require('../fixtures/android');
+const mocks = require('../../__fixtures__/android');
 const userConfig = {};
 
 describe('android::getDependencyConfig', () => {

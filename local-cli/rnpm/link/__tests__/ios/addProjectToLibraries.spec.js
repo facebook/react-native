@@ -9,7 +9,7 @@ const addProjectToLibraries = require('../../src/ios/addProjectToLibraries');
 const last = require('lodash').last;
 
 const project = xcode.project(
-  path.join(__dirname, '../fixtures/project.pbxproj')
+  path.join(__dirname, '../../__fixtures__/project.pbxproj')
 );
 
 describe('ios::addProjectToLibraries', () => {
