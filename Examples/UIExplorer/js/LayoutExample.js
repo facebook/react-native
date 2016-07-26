@@ -33,8 +33,8 @@ var {
 var UIExplorerBlock = require('./UIExplorerBlock');
 var UIExplorerPage = require('./UIExplorerPage');
 
-var Circle = React.createClass({
-  render: function() {
+class Circle extends React.Component {
+  render() {
     var size = this.props.size || 20;
     var backgroundColor = this.props.bgColor || '#527fe4';
     return (
@@ -49,10 +49,10 @@ var Circle = React.createClass({
       />
     );
   }
-});
+}
 
-var CircleBlock = React.createClass({
-  render: function() {
+class CircleBlock extends React.Component {
+  render() {
     var circleStyle = {
       flexDirection: 'row',
       backgroundColor: '#f6f7f8',
@@ -66,17 +66,14 @@ var CircleBlock = React.createClass({
       </View>
     );
   }
-});
+}
 
-var LayoutExample = React.createClass({
-  statics: {
-    title: 'Layout - Flexbox',
-    description: 'Examples of using the flexbox API to layout views.',
-  },
+class LayoutExample extends React.Component {
+  static title = 'Layout - Flexbox';
+  static description = 'Examples of using the flexbox API to layout views.';
+  static displayName = 'LayoutExample';
 
-  displayName: 'LayoutExample',
-
-  render: function() {
+  render() {
     var fiveColoredCircles = [
       <Circle bgColor="#527fe4" key="blue" />,
       <Circle bgColor="#D443E3" key="violet" />,
@@ -168,7 +165,7 @@ var LayoutExample = React.createClass({
       </UIExplorerPage>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   overlay: {

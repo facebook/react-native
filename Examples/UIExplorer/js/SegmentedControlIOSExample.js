@@ -31,7 +31,7 @@ var {
   StyleSheet
 } = ReactNative;
 
-var BasicSegmentedControlExample = React.createClass({
+class BasicSegmentedControlExample extends React.Component {
   render() {
     return (
       <View>
@@ -44,9 +44,9 @@ var BasicSegmentedControlExample = React.createClass({
       </View>
     );
   }
-});
+}
 
-var PreSelectedSegmentedControlExample = React.createClass({
+class PreSelectedSegmentedControlExample extends React.Component {
   render() {
     return (
       <View>
@@ -56,9 +56,9 @@ var PreSelectedSegmentedControlExample = React.createClass({
       </View>
     );
   }
-});
+}
 
-var MomentarySegmentedControlExample = React.createClass({
+class MomentarySegmentedControlExample extends React.Component {
   render() {
     return (
       <View>
@@ -68,9 +68,9 @@ var MomentarySegmentedControlExample = React.createClass({
       </View>
     );
   }
-});
+}
 
-var DisabledSegmentedControlExample = React.createClass({
+class DisabledSegmentedControlExample extends React.Component {
   render() {
     return (
       <View>
@@ -79,10 +79,10 @@ var DisabledSegmentedControlExample = React.createClass({
         </View>
       </View>
     );
-  },
-});
+  }
+}
 
-var ColorSegmentedControlExample = React.createClass({
+class ColorSegmentedControlExample extends React.Component {
   render() {
     return (
       <View>
@@ -94,17 +94,15 @@ var ColorSegmentedControlExample = React.createClass({
         </View>
       </View>
     );
-  },
-});
+  }
+}
 
-var EventSegmentedControlExample = React.createClass({
-  getInitialState() {
-    return {
-      values: ['One', 'Two', 'Three'],
-      value: 'Not selected',
-      selectedIndex: undefined
-    };
-  },
+class EventSegmentedControlExample extends React.Component {
+  state = {
+    values: ['One', 'Two', 'Three'],
+    value: 'Not selected',
+    selectedIndex: undefined
+  };
 
   render() {
     return (
@@ -122,20 +120,20 @@ var EventSegmentedControlExample = React.createClass({
           onValueChange={this._onValueChange} />
       </View>
     );
-  },
+  }
 
-  _onChange(event) {
+  _onChange = (event) => {
     this.setState({
       selectedIndex: event.nativeEvent.selectedSegmentIndex,
     });
-  },
+  };
 
-  _onValueChange(value) {
+  _onValueChange = (value) => {
     this.setState({
       value: value,
     });
-  }
-});
+  };
+}
 
 var styles = StyleSheet.create({
   text: {
