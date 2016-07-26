@@ -27,13 +27,16 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.UnderlineSpan;
+import android.view.Gravity;
 import android.widget.TextView;
 
+import com.facebook.csslayout.CSSDirection;
 import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.IllegalViewOperationException;
@@ -288,8 +291,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   /**
    * Return -1 if the input string is not a valid numeric fontWeight (100, 200, ..., 900), otherwise
    * return the weight.
-   * 
-   * This code is duplicated in ReactTextInputManager 
+   *
+   * This code is duplicated in ReactTextInputManager
    * TODO: Factor into a common place they can both use
    */
   private static int parseNumericFontWeight(String fontWeightString) {
@@ -307,6 +310,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   protected int mNumberOfLines = UNSET;
   protected int mFontSize = UNSET;
+  protected int mTextAlign = UNSET;
 
   private float mTextShadowOffsetDx = 0;
   private float mTextShadowOffsetDy = 0;
@@ -364,6 +368,19 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     return useInlineViewHeight ? mHeightOfTallestInlineImage : mLineHeight;
   }
 
+  // Return text alignment according to LTR or RTL style
+  private int getTextAlign() {
+    int textAlign = mTextAlign;
+    if (getLayoutDirection() == CSSDirection.RTL) {
+      if (textAlign == Gravity.RIGHT) {
+        textAlign = Gravity.LEFT;
+      } else if (textAlign == Gravity.LEFT) {
+        textAlign = Gravity.RIGHT;
+      }
+    }
+    return textAlign;
+  }
+
   @Override
   public void onBeforeLayout() {
     if (mIsVirtual) {
@@ -400,6 +417,25 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
+  @ReactProp(name = ViewProps.TEXT_ALIGN)
+  public void setTextAlign(@Nullable String textAlign) {
+    if (textAlign == null || "auto".equals(textAlign)) {
+      mTextAlign = Gravity.NO_GRAVITY;
+    } else if ("left".equals(textAlign)) {
+      mTextAlign = Gravity.LEFT;
+    } else if ("right".equals(textAlign)) {
+      mTextAlign = Gravity.RIGHT;
+    } else if ("center".equals(textAlign)) {
+      mTextAlign = Gravity.CENTER_HORIZONTAL;
+    } else if ("justify".equals(textAlign)) {
+      // Fallback gracefully for cross-platform compat instead of error
+      mTextAlign = Gravity.LEFT;
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
+    }
+    markUpdated();
+  }
+
   @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = UNSET)
   public void setFontSize(float fontSize) {
     if (fontSize != UNSET) {
@@ -429,15 +465,15 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       markUpdated();
     }
   }
-    
+
   @ReactProp(name = ViewProps.FONT_FAMILY)
   public void setFontFamily(@Nullable String fontFamily) {
     mFontFamily = fontFamily;
     markUpdated();
   }
-    
+
   /**
-  /* This code is duplicated in ReactTextInputManager 
+  /* This code is duplicated in ReactTextInputManager
   /* TODO: Factor into a common place they can both use
   */
   @ReactProp(name = ViewProps.FONT_WEIGHT)
@@ -456,9 +492,9 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       markUpdated();
     }
   }
-  
+
   /**
-  /* This code is duplicated in ReactTextInputManager 
+  /* This code is duplicated in ReactTextInputManager
   /* TODO: Factor into a common place they can both use
   */
   @ReactProp(name = ViewProps.FONT_STYLE)
@@ -546,7 +582,14 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     super.onCollectExtraUpdates(uiViewOperationQueue);
     if (mPreparedSpannableText != null) {
       ReactTextUpdate reactTextUpdate =
-          new ReactTextUpdate(mPreparedSpannableText, UNSET, mContainsImages, getPadding(), getEffectiveLineHeight());
+        new ReactTextUpdate(
+          mPreparedSpannableText,
+          UNSET,
+          mContainsImages,
+          getPadding(),
+          getEffectiveLineHeight(),
+          getTextAlign()
+        );
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }
