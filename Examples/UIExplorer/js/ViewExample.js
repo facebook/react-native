@@ -46,12 +46,10 @@ var styles = StyleSheet.create({
   },
 });
 
-var ViewBorderStyleExample = React.createClass({
-  getInitialState() {
-    return {
-      showBorder: true
-    };
-  },
+class ViewBorderStyleExample extends React.Component {
+  state = {
+    showBorder: true
+  };
 
   render() {
     return (
@@ -80,19 +78,17 @@ var ViewBorderStyleExample = React.createClass({
         </View>
       </TouchableWithoutFeedback>
     );
-  },
-
-  _handlePress() {
-    this.setState({showBorder: !this.state.showBorder});
   }
-});
 
-var ZIndexExample = React.createClass({
-  getInitialState() {
-    return {
-      flipped: false
-    };
-  },
+  _handlePress = () => {
+    this.setState({showBorder: !this.state.showBorder});
+  };
+}
+
+class ZIndexExample extends React.Component {
+  state = {
+    flipped: false
+  };
 
   render() {
     const indices = this.state.flipped ? [-1, 0, 1, 2] : [2, 1, 0, -1];
@@ -127,12 +123,12 @@ var ZIndexExample = React.createClass({
         </View>
       </TouchableWithoutFeedback>
     );
-  },
-
-  _handlePress() {
-    this.setState({flipped: !this.state.flipped});
   }
-});
+
+  _handlePress = () => {
+    this.setState({flipped: !this.state.flipped});
+  };
+}
 
 exports.title = '<View>';
 exports.description = 'Basic building block of all UI, examples that ' +

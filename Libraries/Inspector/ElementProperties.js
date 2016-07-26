@@ -26,8 +26,17 @@ var flattenStyle = require('flattenStyle');
 var mapWithSeparator = require('mapWithSeparator');
 var openFileInEditor = require('openFileInEditor');
 
-var ElementProperties = React.createClass({
-  propTypes: {
+class ElementProperties extends React.Component {
+  props: {
+    hierarchy: Array<$FlowFixMe>,
+    style?: Object | Array<$FlowFixMe> | number,
+    source?: {
+      fileName?: string,
+      lineNumber?: number,
+    },
+  };
+
+  static propTypes = {
     hierarchy: PropTypes.array.isRequired,
     style: PropTypes.oneOfType([
       PropTypes.object,
@@ -38,10 +47,11 @@ var ElementProperties = React.createClass({
       fileName: PropTypes.string,
       lineNumber: PropTypes.number,
     }),
-  },
+  };
 
-  render: function() {
+  render() {
     var style = flattenStyle(this.props.style);
+    // $FlowFixMe found when converting React.createClass to ES6
     var selection = this.props.selection;
     var openFileButton;
     var source = this.props.source;
@@ -71,6 +81,7 @@ var ElementProperties = React.createClass({
                 <TouchableHighlight
                   key={'item-' + i}
                   style={[styles.breadItem, i === selection && styles.selected]}
+                  // $FlowFixMe found when converting React.createClass to ES6
                   onPress={() => this.props.setSelection(i)}>
                   <Text style={styles.breadItemText}>
                     {getInstanceName(item)}
@@ -89,13 +100,15 @@ var ElementProperties = React.createClass({
               <StyleInspector style={style} />
               {openFileButton}
             </View>
-            <BoxInspector style={style} frame={this.props.frame} />
+            {
+              // $FlowFixMe found when converting React.createClass to ES6
+            <BoxInspector style={style} frame={this.props.frame} />}
           </View>
         </View>
       </TouchableWithoutFeedback>
     );
-  },
-});
+  }
+}
 
 function getInstanceName(instance) {
   if (instance.getName) {
