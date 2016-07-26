@@ -45,17 +45,15 @@ exports.examples = [
   }
 ];
 
-var GeolocationExample = React.createClass({
-  watchID: (null: ?number),
+class GeolocationExample extends React.Component {
+  state = {
+    initialPosition: 'unknown',
+    lastPosition: 'unknown',
+  };
 
-  getInitialState: function() {
-    return {
-      initialPosition: 'unknown',
-      lastPosition: 'unknown',
-    };
-  },
+  watchID: ?number = null;
 
-  componentDidMount: function() {
+  componentDidMount() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         var initialPosition = JSON.stringify(position);
@@ -68,13 +66,13 @@ var GeolocationExample = React.createClass({
       var lastPosition = JSON.stringify(position);
       this.setState({lastPosition});
     });
-  },
+  }
 
-  componentWillUnmount: function() {
+  componentWillUnmount() {
     navigator.geolocation.clearWatch(this.watchID);
-  },
+  }
 
-  render: function() {
+  render() {
     return (
       <View>
         <Text>
@@ -88,7 +86,7 @@ var GeolocationExample = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   title: {
