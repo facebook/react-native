@@ -202,6 +202,7 @@
     "jest": "^13.1.0",
     "jest-repl": "^13.1.0",
     "jest-runtime": "^13.1.0",
+    "mock-fs": "^3.11.0",
     "portfinder": "0.4.0",
     "react": "~15.3.0-rc.2",
     "shelljs": "0.6.0"
