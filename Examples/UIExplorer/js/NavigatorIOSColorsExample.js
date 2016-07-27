@@ -30,9 +30,8 @@ var {
   View
 } = ReactNative;
 
-var EmptyPage = React.createClass({
-
-  render: function() {
+class EmptyPage extends React.Component {
+  render() {
     return (
       <View style={styles.emptyPage}>
         <Text style={styles.emptyPageText}>
@@ -40,18 +39,14 @@ var EmptyPage = React.createClass({
         </Text>
       </View>
     );
-  },
+  }
+}
 
-});
+class NavigatorIOSColors extends React.Component {
+  static title = '<NavigatorIOS> - Custom';
+  static description = 'iOS navigation with custom nav bar colors';
 
-var NavigatorIOSColors = React.createClass({
-
-  statics: {
-    title: '<NavigatorIOS> - Custom',
-    description: 'iOS navigation with custom nav bar colors',
-  },
-
-  render: function() {
+  render() {
     // Set StatusBar with light contents to get better contrast
     StatusBar.setBarStyle('light-content');
 
@@ -77,9 +72,8 @@ var NavigatorIOSColors = React.createClass({
         translucent={true}
       />
     );
-  },
-
-});
+  }
+}
 
 var styles = StyleSheet.create({
   container: {

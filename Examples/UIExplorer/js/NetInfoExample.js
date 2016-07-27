@@ -31,31 +31,33 @@ const {
   TouchableWithoutFeedback,
 } = ReactNative;
 
-const ConnectionInfoSubscription = React.createClass({
-  getInitialState() {
-    return {
-      connectionInfoHistory: [],
-    };
-  },
-  componentDidMount: function() {
+class ConnectionInfoSubscription extends React.Component {
+  state = {
+    connectionInfoHistory: [],
+  };
+
+  componentDidMount() {
     NetInfo.addEventListener(
         'change',
         this._handleConnectionInfoChange
     );
-  },
-  componentWillUnmount: function() {
+  }
+
+  componentWillUnmount() {
     NetInfo.removeEventListener(
         'change',
         this._handleConnectionInfoChange
     );
-  },
-  _handleConnectionInfoChange: function(connectionInfo) {
+  }
+
+  _handleConnectionInfoChange = (connectionInfo) => {
     const connectionInfoHistory = this.state.connectionInfoHistory.slice();
     connectionInfoHistory.push(connectionInfo);
     this.setState({
       connectionInfoHistory,
     });
-  },
+  };
+
   render() {
     return (
         <View>
@@ -63,15 +65,14 @@ const ConnectionInfoSubscription = React.createClass({
         </View>
     );
   }
-});
+}
 
-const ConnectionInfoCurrent = React.createClass({
-  getInitialState() {
-    return {
-      connectionInfo: null,
-    };
-  },
-  componentDidMount: function() {
+class ConnectionInfoCurrent extends React.Component {
+  state = {
+    connectionInfo: null,
+  };
+
+  componentDidMount() {
     NetInfo.addEventListener(
         'change',
         this._handleConnectionInfoChange
@@ -79,18 +80,21 @@ const ConnectionInfoCurrent = React.createClass({
     NetInfo.fetch().done(
         (connectionInfo) => { this.setState({connectionInfo}); }
     );
-  },
-  componentWillUnmount: function() {
+  }
+
+  componentWillUnmount() {
     NetInfo.removeEventListener(
         'change',
         this._handleConnectionInfoChange
     );
-  },
-  _handleConnectionInfoChange: function(connectionInfo) {
+  }
+
+  _handleConnectionInfoChange = (connectionInfo) => {
     this.setState({
       connectionInfo,
     });
-  },
+  };
+
   render() {
     return (
         <View>
@@ -98,15 +102,14 @@ const ConnectionInfoCurrent = React.createClass({
         </View>
     );
   }
-});
+}
 
-const IsConnected = React.createClass({
-  getInitialState() {
-    return {
-      isConnected: null,
-    };
-  },
-  componentDidMount: function() {
+class IsConnected extends React.Component {
+  state = {
+    isConnected: null,
+  };
+
+  componentDidMount() {
     NetInfo.isConnected.addEventListener(
         'change',
         this._handleConnectivityChange
@@ -114,18 +117,21 @@ const IsConnected = React.createClass({
     NetInfo.isConnected.fetch().done(
         (isConnected) => { this.setState({isConnected}); }
     );
-  },
-  componentWillUnmount: function() {
+  }
+
+  componentWillUnmount() {
     NetInfo.isConnected.removeEventListener(
         'change',
         this._handleConnectivityChange
     );
-  },
-  _handleConnectivityChange: function(isConnected) {
+  }
+
+  _handleConnectivityChange = (isConnected) => {
     this.setState({
       isConnected,
     });
-  },
+  };
+
   render() {
     return (
         <View>
@@ -133,19 +139,19 @@ const IsConnected = React.createClass({
         </View>
     );
   }
-});
+}
 
-const IsConnectionExpensive = React.createClass({
-  getInitialState() {
-    return {
-      isConnectionExpensive: (null : ?boolean),
-    };
-  },
-  _checkIfExpensive() {
+class IsConnectionExpensive extends React.Component {
+  state = {
+    isConnectionExpensive: (null : ?boolean),
+  };
+
+  _checkIfExpensive = () => {
     NetInfo.isConnectionExpensive().then(
         isConnectionExpensive => { this.setState({isConnectionExpensive}); }
     );
-  },
+  };
+
   render() {
     return (
         <View>
@@ -161,7 +167,7 @@ const IsConnectionExpensive = React.createClass({
         </View>
     );
   }
-});
+}
 
 exports.title = 'NetInfo';
 exports.description = 'Monitor network status';

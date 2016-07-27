@@ -34,7 +34,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.common.SystemClock;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -110,7 +109,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           webView,
           new TopLoadingStartEvent(
               webView.getId(),
-              SystemClock.nanoTime(),
               createWebViewEvent(webView, url)));
     }
 
@@ -145,7 +143,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
       dispatchEvent(
           webView,
-          new TopLoadingErrorEvent(webView.getId(), SystemClock.nanoTime(), eventData));
+          new TopLoadingErrorEvent(webView.getId(), eventData));
     }
 
     @Override
@@ -156,7 +154,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           webView,
           new TopLoadingStartEvent(
               webView.getId(),
-              SystemClock.nanoTime(),
               createWebViewEvent(webView, url)));
     }
 
@@ -165,7 +162,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           webView,
           new TopLoadingFinishEvent(
               webView.getId(),
-              SystemClock.nanoTime(),
               createWebViewEvent(webView, url)));
     }
 
