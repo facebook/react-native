@@ -15,6 +15,8 @@
   __weak RCTValueAnimatedNode *_parentNode;
   NSArray<NSNumber *> *_inputRange;
   NSArray<NSNumber *> *_outputRange;
+  BOOL _clampLeft;
+  BOOL _clampRight;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -29,6 +31,17 @@
       }
     }
     _outputRange = [outputRange copy];
+
+    if ([config[@"extrapolate"] isEqualToString:@"clamp"]) {
+      _clampLeft = YES;
+      _clampRight = YES;
+    }
+    if ([config[@"extrapolateLeft"] isEqualToString:@"clamp"]) {
+      _clampLeft = YES;
+    }
+    if ([config[@"extrapolateRight"] isEqualToString:@"clamp"]) {
+      _clampRight = YES;
+    }
   }
   return self;
 }
@@ -70,18 +83,27 @@
     return;
   }
 
-  NSUInteger rangeIndex = [self findIndexOfNearestValue:_parentNode.value
+  CGFloat inputValue = _parentNode.value;
+  if (_clampLeft) {
+    inputValue = MAX(inputValue, _inputRange.firstObject.doubleValue);
+  }
+  if (_clampRight) {
+    inputValue = MIN(inputValue, _inputRange.lastObject.doubleValue);
+  }
+
+  NSUInteger rangeIndex = [self findIndexOfNearestValue:inputValue
                                                 inRange:_inputRange];
   NSNumber *inputMin = _inputRange[rangeIndex];
   NSNumber *inputMax = _inputRange[rangeIndex + 1];
   NSNumber *outputMin = _outputRange[rangeIndex];
   NSNumber *outputMax = _outputRange[rangeIndex + 1];
 
-  CGFloat outputValue = RCTInterpolateValue(_parentNode.value,
+  CGFloat outputValue = RCTInterpolateValue(inputValue,
                                             inputMin.doubleValue,
                                             inputMax.doubleValue,
                                             outputMin.doubleValue,
                                             outputMax.doubleValue);
+
   self.value = outputValue;
 }
 

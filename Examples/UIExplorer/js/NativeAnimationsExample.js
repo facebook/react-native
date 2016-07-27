@@ -454,6 +454,40 @@ exports.examples = [
     },
   },
   {
+    title: 'Interpolation with clamping',
+    description: 'description',
+    render: function() {
+      return (
+        <Tester
+          type="spring"
+          config={{
+            speed: 8,
+            bounciness: 12,
+          }}
+        >
+          {anim => (
+            <Animated.View
+              style={[
+                styles.block,
+                {
+                  transform: [
+                    {
+                      translateX: anim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 100],
+                        extrapolateLeft: 'clamp',
+                      })
+                    }
+                  ],
+                }
+              ]}
+            />
+          )}
+        </Tester>
+      );
+    },
+  }
+  {
     title: 'Animated value listener',
     render: function() {
       return (
