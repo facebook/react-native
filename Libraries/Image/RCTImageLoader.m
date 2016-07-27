@@ -86,6 +86,11 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] removeObserver:_decodedImageCache];
 }
 
+- (float)handlerPriority
+{
+  return 1;
+}
+
 - (id<RCTImageURLLoader>)imageURLLoaderForURL:(NSURL *)URL
 {
   if (!_maxConcurrentLoadingTasks) {
