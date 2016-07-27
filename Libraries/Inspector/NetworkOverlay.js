@@ -14,6 +14,7 @@
 const ListView = require('ListView');
 const React = require('React');
 const RecyclerViewBackedScrollView = require('RecyclerViewBackedScrollView');
+const ScrollView = require('ScrollView');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TouchableHighlight = require('TouchableHighlight');
@@ -46,9 +47,12 @@ class NetworkOverlay extends React.Component {
   _listViewDataSource: ListView.DataSource;
   _listView: ?ListView;
   _listViewHighlighted: bool;
-  _listViewHeight: ?number;
+  _listViewHeight: number;
+  _scrollView: ?ScrollView;
+  _detailViewItems: Array<Array<ReactElement<any>>>;
   _listViewOnLayout: (event: Event) => void;
-  _captureRequestList: (listRef: ?ListView) => void;
+  _captureRequestListView: (listRef: ?ListView) => void;
+  _captureDetailScrollView: (scrollRef: ?ScrollView) => void;
   _renderRow: (
     rowData: NetworkRequestInfo,
     sectionID: number,
@@ -56,25 +60,33 @@ class NetworkOverlay extends React.Component {
     highlightRow: (sectionID: number, rowID: number) => void,
   ) => ReactElement<any>;
   _renderScrollComponent: (props: Object) => ReactElement<any>;
+  _closeButtonClicked: () => void;
 
   state: {
     dataSource: ListView.DataSource,
+    newDetailInfo: bool,
+    detailRowID: ?number,
   };
 
   constructor(props: Object) {
     super(props);
     this._requests = [];
+    this._detailViewItems = [];
     this._listViewDataSource =
       new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       dataSource: this._listViewDataSource.cloneWithRows([]),
+      newDetailInfo: false,
+      detailRowID: null,
     };
     this._listViewHighlighted = false;
-    this._listViewHeight = null;
-    this._captureRequestList = this._captureRequestList.bind(this);
+    this._listViewHeight = 0;
+    this._captureRequestListView = this._captureRequestListView.bind(this);
+    this._captureDetailScrollView = this._captureDetailScrollView.bind(this);
     this._listViewOnLayout = this._listViewOnLayout.bind(this);
     this._renderRow = this._renderRow.bind(this);
     this._renderScrollComponent = this._renderScrollComponent.bind(this);
+    this._closeButtonClicked = this._closeButtonClicked.bind(this);
   }
 
   _enableInterception(): void {
@@ -87,7 +99,9 @@ class NetworkOverlay extends React.Component {
       // so that we can distinguish different xhr objects in callbacks.
       xhr._index = this._requests.length;
       const _xhr: NetworkRequestInfo = {'method': method, 'url': url};
-      this._requests = this._requests.concat(_xhr);
+      this._requests.push(_xhr);
+      this._detailViewItems.push([]);
+      this._genDetailViewItem(xhr._index);
       this.setState(
         {dataSource: this._listViewDataSource.cloneWithRows(this._requests)},
         this._scrollToBottom(),
@@ -95,21 +109,26 @@ class NetworkOverlay extends React.Component {
     }.bind(this));
 
     XHRInterceptor.setRequestHeaderCallback(function(header, value, xhr) {
-      if (!this._requests[xhr._index].requestHeaders) {
-        this._requests[xhr._index].requestHeaders = {};
+      const networkInfo = this._requests[xhr._index];
+      if (!networkInfo.requestHeaders) {
+        networkInfo.requestHeaders = {};
       }
-      this._requests[xhr._index].requestHeaders[header] = value;
+      networkInfo.requestHeaders[header] = value;
+      this._genDetailViewItem(xhr._index);
     }.bind(this));
 
     XHRInterceptor.setSendCallback(function(data, xhr) {
       this._requests[xhr._index].dataSent = data;
+      this._genDetailViewItem(xhr._index);
     }.bind(this));
 
     XHRInterceptor.setHeaderReceivedCallback(
       function(type, size, responseHeaders, xhr) {
-        this._requests[xhr._index].responseContentType = type;
-        this._requests[xhr._index].responseSize = size;
-        this._requests[xhr._index].responseHeaders = responseHeaders;
+        const networkInfo = this._requests[xhr._index];
+        networkInfo.responseContentType = type;
+        networkInfo.responseSize = size;
+        networkInfo.responseHeaders = responseHeaders;
+        this._genDetailViewItem(xhr._index);
       }.bind(this)
     );
 
@@ -122,11 +141,13 @@ class NetworkOverlay extends React.Component {
         responseType,
         xhr,
       ) {
-        this._requests[xhr._index].status = status;
-        this._requests[xhr._index].timeout = timeout;
-        this._requests[xhr._index].response = response;
-        this._requests[xhr._index].responseURL = responseURL;
-        this._requests[xhr._index].responseType = responseType;
+        const networkInfo = this._requests[xhr._index];
+        networkInfo.status = status;
+        networkInfo.timeout = timeout;
+        networkInfo.response = response;
+        networkInfo.responseURL = responseURL;
+        networkInfo.responseType = responseType;
+        this._genDetailViewItem(xhr._index);
       }.bind(this)
     );
 
@@ -193,7 +214,7 @@ class NetworkOverlay extends React.Component {
   }
 
   _scrollToBottom(): void {
-    if (!!this._listView && !!this._listViewHeight) {
+    if (this._listView) {
       const scrollResponder = this._listView.getScrollResponder();
       if (scrollResponder) {
         const scrollY = Math.max(
@@ -211,7 +232,7 @@ class NetworkOverlay extends React.Component {
     }
   }
 
-  _captureRequestList(listRef: ?ListView): void {
+  _captureRequestListView(listRef: ?ListView): void {
     this._listView = listRef;
   }
 
@@ -227,17 +248,94 @@ class NetworkOverlay extends React.Component {
   }
 
   /**
-   * TODO: When item is pressed, should pop up another view to show details.
+   * Popup a scrollView to dynamically show detailed information of
+   * the request, when pressing a row in the network flow listView.
    */
   _pressRow(rowID: number): void {
     this._listViewHighlighted = true;
+    this.setState(
+      {detailRowID: rowID},
+      this._scrollToTop(),
+    );
+  }
+
+  _scrollToTop(): void {
+    if (this._scrollView) {
+      this._scrollView.scrollTo({
+        y: 0,
+        animated: false,
+      });
+    }
+  }
+
+  _captureDetailScrollView(scrollRef: ?ScrollView): void {
+    this._scrollView = scrollRef;
+  }
+
+  _closeButtonClicked() {
+    this.setState({detailRowID: null});
+  }
+
+  _getStringByValue(value: any): string {
+    if (value === undefined) {
+      return 'undefined';
+    }
+    if (typeof value === 'object') {
+      return JSON.stringify(value);
+    }
+    if (typeof value === 'string' && value.length > 500) {
+      return String(value).substr(0, 500).concat('\n***TRUNCATED TO 500 CHARACTERS***');
+    }
+    return value;
+  }
+
+  /**
+   * Generate a list of views containing network request information for
+   * a XHR object, to be shown in the detail scrollview. This function
+   * should be called every time there is a new update of the XHR object,
+   * in order to show network request/response information in real time.
+   */
+  _genDetailViewItem(index: number): void {
+    this._detailViewItems[index] = [];
+    const detailViewItem = this._detailViewItems[index];
+    const requestItem = this._requests[index];
+    for (let key in requestItem) {
+      detailViewItem.push(
+        <View style={styles.detailViewRow} key={key}>
+          <Text style={[styles.detailViewText, styles.detailKeyCellView]}>
+            {key}
+          </Text>
+          <Text style={[styles.detailViewText, styles.detailValueCellView]}>
+            {this._getStringByValue(requestItem[key])}
+          </Text>
+        </View>
+      );
+    }
+    // Re-render if this network request is showing in the detail view.
+    if (this.state.detailRowID != null && this.state.detailRowID == index) {
+      this.setState({newDetailInfo: true});
+    }
   }
 
   render() {
     return (
       <View style={styles.container}>
-        {this._requests.length > 0 &&
-        <View>
+        {this.state.detailRowID != null &&
+        <TouchableHighlight
+          style={styles.closeButton}
+          onPress={this._closeButtonClicked}>
+          <View>
+            <Text style={styles.clostButtonText}>v</Text>
+          </View>
+        </TouchableHighlight>}
+        {this.state.detailRowID != null &&
+        <ScrollView
+          style={styles.detailScrollView}
+          ref={this._captureDetailScrollView}>
+          {this._detailViewItems[this.state.detailRowID]}
+        </ScrollView>}
+        <View style={styles.listViewTitle}>
+          {this._requests.length > 0 &&
           <View style={styles.tableRow}>
             <View style={styles.urlTitleCellView}>
               <Text style={styles.cellText} numberOfLines={1}>URL</Text>
@@ -245,11 +343,11 @@ class NetworkOverlay extends React.Component {
             <View style={styles.methodTitleCellView}>
               <Text style={styles.cellText} numberOfLines={1}>Method</Text>
             </View>
-          </View>
-        </View>}
+          </View>}
+        </View>
         <ListView
           style={styles.listView}
-          ref={this._captureRequestList}
+          ref={this._captureRequestListView}
           dataSource={this.state.dataSource}
           renderRow={this._renderRow}
           renderScrollComponent={this._renderScrollComponent}
@@ -264,14 +362,17 @@ class NetworkOverlay extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    height: 100,
     paddingTop: 10,
     paddingBottom: 10,
     paddingLeft: 5,
     paddingRight: 5,
   },
+  listViewTitle: {
+    height: 20,
+  },
   listView: {
     flex: 1,
+    height: 60,
   },
   tableRow: {
     flexDirection: 'row',
@@ -341,6 +442,36 @@ const styles = StyleSheet.create({
     backgroundColor: '#888',
     flex: 5,
     paddingLeft: 3,
+  },
+  detailScrollView: {
+    flex: 1,
+    height: 180,
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  detailKeyCellView: {
+    flex: 1.3,
+  },
+  detailValueCellView: {
+    flex: 2,
+  },
+  detailViewRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 3,
+  },
+  detailViewText: {
+    color: 'white',
+    fontSize: 11,
+  },
+  clostButtonText: {
+    color: 'white',
+    fontSize: 10,
+  },
+  closeButton: {
+    backgroundColor: '#888',
+    justifyContent: 'center',
+    alignItems: 'center',
+    right: 0,
   },
 });
 
