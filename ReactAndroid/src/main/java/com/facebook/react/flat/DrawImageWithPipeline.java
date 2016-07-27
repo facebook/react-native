@@ -120,10 +120,11 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
     mFadeDuration = fadeDuration;
   }
 
+  /**
+   * If the bitmap isn't loaded by the first draw, fade it in, otherwise don't fade.
+   */
   @Override
   protected void onPreDraw(FlatViewGroup parent, Canvas canvas) {
-    super.onPreDraw(parent, canvas);
-
     Bitmap bitmap = Assertions.assumeNotNull(mRequestHelper).getBitmap();
     if (bitmap == null) {
       mFirstDrawTime = 0;
@@ -167,7 +168,7 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
       PAINT.setShader(mBitmapShader);
       canvas.drawPath(getPathForRoundedBitmap(), PAINT);
     }
-
+    bitmap = null;
     drawBorders(canvas);
   }
 

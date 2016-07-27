@@ -536,6 +536,10 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       addNativeChild(node);
       if (!parentIsAndroidView) {
         mDrawCommands.add(node.collectDrawView(
+            left,
+            top,
+            right,
+            bottom,
             parentClipLeft,
             parentClipTop,
             parentClipRight,
@@ -544,8 +548,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
       updated = collectStateForMountableNode(
           node,
-          left - left,
-          top - top,
+          0, // left - left
+          0, // top - top
           right - left,
           bottom - top,
           parentClipLeft - left,

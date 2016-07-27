@@ -19,8 +19,7 @@ import android.graphics.Color;
  * The idea is to be able to reuse unmodified objects when we build up DrawCommands before we ship
  * them to UI thread, but we can only do that if DrawCommands are immutable.
  */
-/* package */ abstract class AbstractDrawCommand extends AbstractClippingDrawCommand
-    implements Cloneable {
+/* package */ abstract class AbstractDrawCommand implements DrawCommand, Cloneable {
 
   private float mLeft;
   private float mTop;
@@ -28,10 +27,66 @@ import android.graphics.Color;
   private float mBottom;
   private boolean mFrozen;
 
+  protected boolean mNeedsClipping;
+  private float mClipLeft;
+  private float mClipTop;
+  private float mClipRight;
+  private float mClipBottom;
+
+  public final boolean clipBoundsMatch(
+      float clipLeft,
+      float clipTop,
+      float clipRight,
+      float clipBottom) {
+    return mClipLeft == clipLeft && mClipTop == clipTop
+        && mClipRight == clipRight && mClipBottom == clipBottom;
+  }
+
+  public final void setClipBounds(
+      float clipLeft,
+      float clipTop,
+      float clipRight,
+      float clipBottom) {
+    mClipLeft = clipLeft;
+    mClipTop = clipTop;
+    mClipRight = clipRight;
+    mClipBottom = clipBottom;
+    // We put this check here to not clip when we have the default [-infinity, infinity] bounds,
+    // since clipRect in those cases is essentially no-op anyway. This is needed to fix a bug that
+    // shows up during screenshot testing. Note that checking one side is enough, since if one side
+    // is infinite, all sides will be infinite, since we only set infinite for all sides at the
+    // same time - conversely, if one side is finite, all sides will be finite.
+    mNeedsClipping = mClipLeft != Float.NEGATIVE_INFINITY;
+  }
+
+  public final float getClipLeft() {
+    return mClipLeft;
+  }
+
+  public final float getClipTop() {
+    return mClipTop;
+  }
+
+  public final float getClipRight() {
+    return mClipRight;
+  }
+
+  public final float getClipBottom() {
+    return mClipBottom;
+  }
+
+  protected final void applyClipping(Canvas canvas) {
+    canvas.clipRect(mClipLeft, mClipTop, mClipRight, mClipBottom);
+  }
+
+  /**
+   * Don't override this unless you need to do custom clipping in a draw command.  Otherwise just
+   * override onPreDraw and onDraw.
+   */
   @Override
-  public final void draw(FlatViewGroup parent, Canvas canvas) {
+  public void draw(FlatViewGroup parent, Canvas canvas) {
     onPreDraw(parent, canvas);
-    if (shouldClip()) {
+    if (mNeedsClipping && shouldClip()) {
       canvas.save(Canvas.CLIP_SAVE_FLAG);
       applyClipping(canvas);
       onDraw(canvas);
@@ -67,8 +122,11 @@ import android.graphics.Color;
   /**
    * Updates boundaries of the AbstractDrawCommand and freezes it.
    * Will return a frozen copy if the current AbstractDrawCommand cannot be mutated.
+   *
+   * This should not be called on a DrawView, as the DrawView is modified on UI thread.  Use
+   * DrawView.collectDrawView instead to avoid race conditions.
    */
-  public final AbstractDrawCommand updateBoundsAndFreeze(
+  public AbstractDrawCommand updateBoundsAndFreeze(
       float left,
       float top,
       float right,

@@ -401,11 +401,7 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
   @Override
   protected void onDetachedFromWindow() {
     if (!mIsAttached) {
-      // Hack.  Our current behaviour of add then immediately remove if a view is clipped pretty
-      // much guarantees that we kill network requests for images in feed.  We have a fix, but are
-      // going to add it in master and patch this in in the meantime.
-      return;
-      // throw new RuntimeException("Double detach");
+      throw new RuntimeException("Double detach");
     }
 
     mIsAttached = false;
@@ -713,12 +709,12 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     addViewInLayout(view, -1, ensureLayoutParams(view.getLayoutParams()), true);
   }
 
-  /* package */ void attachViewToParent(View view) {
-    attachViewToParent(view, -1, ensureLayoutParams(view.getLayoutParams()));
+  /* package */ void addViewInLayout(View view, int index) {
+    addViewInLayout(view, index, ensureLayoutParams(view.getLayoutParams()), true);
   }
 
-  /* package */ void attachViewToParent(View view, int index) {
-    attachViewToParent(view, index, ensureLayoutParams(view.getLayoutParams()));
+  /* package */ void attachViewToParent(View view) {
+    attachViewToParent(view, -1, ensureLayoutParams(view.getLayoutParams()));
   }
 
   private void processLayoutRequest() {
@@ -756,6 +752,8 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     int right = Integer.MIN_VALUE;
     int bottom = Integer.MIN_VALUE;
     for (int i = 0; i < childCount; i++) {
+      // This is technically a dupe, since the DrawView has its bounds, but leaving in to handle if
+      // the View is animating or rebelling against the DrawView bounds for some reason.
       View child = getChildAt(i);
       left = Math.min(left, child.getLeft());
       top = Math.min(top, child.getTop());

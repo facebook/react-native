@@ -75,25 +75,57 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   public void mountViews(ViewResolver viewResolver, int[] viewsToAdd, int[] viewsToDetach) {
     for (int viewToAdd : viewsToAdd) {
       if (viewToAdd > 0) {
+        // This view was not previously attached to this parent.
         View view = viewResolver.getView(viewToAdd);
         ensureViewHasNoParent(view);
-        mFlatViewGroup.addViewInLayout(view);
-      } else {
-        View view = viewResolver.getView(-viewToAdd);
-        ensureViewHasNoParent(view);
-        DrawView drawView = Assertions.assertNotNull(mDrawViewMap.get(-viewToAdd));
-        if (!drawView.mPreviouslyDrawn) {
-          // The DrawView has not been drawn before, which means the bounds changed and triggered
-          // a new DrawView when it was collected from the shadow node.  We have a view with the
-          // same id temporarily detached, but we no longer know the bounds.
-          unclip(drawView.reactTag);
-          mFlatViewGroup.attachViewToParent(view);
-        } else if (!isClipped(drawView.reactTag)) {
-          // The DrawView has been drawn before, and is not clipped.  Attach it, and it will get
-          // removed if we update the clipping rect.
-          mFlatViewGroup.attachViewToParent(view);
+        DrawView drawView = Assertions.assertNotNull(mDrawViewMap.get(viewToAdd));
+        drawView.mWasMounted = true;
+        if (animating(view) || withinBounds(drawView)) {
+          // View should be drawn.  This view can't currently be clipped because it wasn't
+          // previously attached to this parent.
+          mFlatViewGroup.addViewInLayout(view);
+        } else {
+          clip(drawView.reactTag, view);
         }
-        // The DrawView has been previously drawn and is clipped, so don't attach it.
+      } else {
+        // This view was previously attached, and just temporarily detached.
+        DrawView drawView = Assertions.assertNotNull(mDrawViewMap.get(-viewToAdd));
+        View view = viewResolver.getView(drawView.reactTag);
+        ensureViewHasNoParent(view);
+        if (drawView.mWasMounted) {
+          // The DrawView has been mounted before.
+          if (!isClipped(drawView.reactTag)) {
+            // The DrawView is not clipped.  Attach it.
+            mFlatViewGroup.attachViewToParent(view);
+          }
+          // else The DrawView has been previously mounted and is clipped, so don't attach it.
+        } else {
+          // We are mounting it, so lets get this part out of the way.
+          drawView.mWasMounted = true;
+          // The DrawView has not been mounted before, which means the bounds changed and triggered
+          // a new DrawView when it was collected from the shadow node.  We have a view with the
+          // same id temporarily detached, but its bounds have changed.
+          if (animating(view) || withinBounds(drawView)) {
+            // View should be drawn.
+            if (isClipped(drawView.reactTag)) {
+              // View was clipped, so add it.
+              mFlatViewGroup.addViewInLayout(view);
+              unclip(drawView.reactTag);
+            } else {
+              // View was just temporarily removed, so attach it.  We already know it isn't clipped,
+              // so no need to unclip it.
+              mFlatViewGroup.attachViewToParent(view);
+            }
+          } else {
+            // View should be clipped.
+            if (!isClipped(drawView.reactTag)) {
+              // View was onscreen.
+              mFlatViewGroup.removeDetachedView(view);
+              clip(drawView.reactTag, view);
+            }
+            // else view is already clipped and not within bounds.
+          }
+        }
       }
     }
 
@@ -133,6 +165,15 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     }
   }
 
+  // Return true if a DrawView is currently onscreen.
+  boolean withinBounds(DrawView drawView) {
+    return mClippingRect.intersects(
+        Math.round(drawView.getLeft()),
+        Math.round(drawView.getTop()),
+        Math.round(drawView.getRight()),
+        Math.round(drawView.getBottom()));
+  }
+
   @Override
   public boolean updateClippingRect() {
     ReactClippingViewGroupHelper.calculateClippingRect(mFlatViewGroup, mClippingRect);
@@ -155,7 +196,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
             // Now off the screen.  Don't invalidate in this case, as the canvas should not be
             // redrawn unless new elements are coming onscreen.
             clip(drawView.reactTag, view);
-            mFlatViewGroup.detachView(--index);
+            mFlatViewGroup.removeViewsInLayout(--index, 1);
           }
         } else {
           // Clipped, invisible. We obviously aren't animating here, as if we were then we would not
@@ -163,7 +204,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
           if (withinBounds(view)) {
             // Now on the screen.  Invalidate as we have a new element to draw.
             unclip(drawView.reactTag);
-            mFlatViewGroup.attachViewToParent(view, index++);
+            mFlatViewGroup.addViewInLayout(view, index++);
             needsInvalidate = true;
           }
         }

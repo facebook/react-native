@@ -468,17 +468,32 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     }
   }
 
-  /* package */ final DrawView collectDrawView(float left, float top, float right, float bottom) {
+  /* package */ final DrawView collectDrawView(
+      float left,
+      float top,
+      float right,
+      float bottom,
+      float clipLeft,
+      float clipTop,
+      float clipRight,
+      float clipBottom) {
     Assertions.assumeNotNull(mDrawView);
     if (mDrawView.reactTag == 0) {
       // This is the first time we have collected this DrawView, but we have to create a new
-      // DrawView anyway, as reactTag is final.
-      mDrawView = new DrawView(getReactTag()).collectDrawView(left, top, right, bottom);
-    } else {
-      // We have collected the DrawView before, so the react tag is correct, but we may need a new
-      // copy with updated bounds.  If the bounds match, the same view is returned.
-      mDrawView = mDrawView.collectDrawView(left, top, right, bottom);
+      // DrawView anyway, as reactTag is final, and our DrawView instance is the static copy.
+      mDrawView = new DrawView(getReactTag());
     }
+    // We have the correct react tag, but we may need a new copy with updated bounds.  If the bounds
+    // match or were never set, the same view is returned.
+    mDrawView = mDrawView.collectDrawView(
+        left,
+        top,
+        right,
+        bottom,
+        clipLeft,
+        clipTop,
+        clipRight,
+        clipBottom);
     return mDrawView;
   }
 
