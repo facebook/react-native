@@ -266,9 +266,16 @@ static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, 
 
   _effectiveLetterSpacing = letterSpacing.doubleValue;
 
-  UIFont *font = [RCTConvert UIFont:nil withFamily:fontFamily
-                               size:fontSize weight:fontWeight style:fontStyle
-                    scaleMultiplier:_allowFontScaling ? _fontSizeMultiplier : 1.0];
+  NSArray *fontVariant = _fontVariant ? @[_fontVariant] : NULL;
+
+  UIFont *font = [RCTConvert UIFont:nil
+                         withFamily:fontFamily
+                               size:fontSize
+                             weight:fontWeight
+                              style:fontStyle
+                            variant:fontVariant
+                    scaleMultiplier:_allowFontScaling ? _fontSizeMultiplier : 1.0
+                  ];
 
   CGFloat heightOfTallestSubview = 0.0;
   NSMutableAttributedString *attributedString = [NSMutableAttributedString new];
@@ -466,6 +473,7 @@ RCT_TEXT_PROPERTY(FontFamily, _fontFamily, NSString *)
 RCT_TEXT_PROPERTY(FontSize, _fontSize, CGFloat)
 RCT_TEXT_PROPERTY(FontWeight, _fontWeight, NSString *)
 RCT_TEXT_PROPERTY(FontStyle, _fontStyle, NSString *)
+RCT_TEXT_PROPERTY(FontVariant, _fontVariant, NSString *)
 RCT_TEXT_PROPERTY(IsHighlighted, _isHighlighted, BOOL)
 RCT_TEXT_PROPERTY(LetterSpacing, _letterSpacing, CGFloat)
 RCT_TEXT_PROPERTY(LineHeight, _lineHeight, CGFloat)
