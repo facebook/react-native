@@ -30,7 +30,9 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
     ['normal' /*default*/, 'bold',
      '100', '200', '300', '400', '500', '600', '700', '800', '900']
   ),
-  fontVariant: ReactPropTypes.oneOf(['tabular-nums', 'proportional-nums']),
+  fontVariant: ReactPropTypes.arrayOf(
+    ReactPropTypes.oneOf(['tabular-nums', 'proportional-nums'])
+  ),
   textShadowOffset: ReactPropTypes.shape(
     {width: ReactPropTypes.number, height: ReactPropTypes.number}
   ),
