@@ -740,7 +740,7 @@ NSDictionary *RCTFontVariantMapping = NULL;
     }
 
     NSDictionary *attributes = @{
-      UIFontDescriptorFeatureSettingsAttribute: fontFeatureSettings
+      UIFontDescriptorFeatureSettingsAttribute: fontFeatureSettings,
     };
     fontDescriptor = [fontDescriptor fontDescriptorByAddingAttributes:attributes];
     font = [UIFont fontWithDescriptor:fontDescriptor size:fontSize];
