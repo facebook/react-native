@@ -571,6 +571,25 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   return (symbolicTraits & UIFontDescriptorTraitCondensed) != 0;
 }
 
+NSDictionary *RCTFontVariantMapping = NULL;
+
++ (NSDictionary *)getRCTFontVariantMapping
+{
+  if (!RCTFontVariantMapping) {
+    RCTFontVariantMapping = @{
+      @"tabular-nums": @{
+        UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
+        UIFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector),
+      },
+      @"proportional-nums": @{
+        UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
+        UIFontFeatureSelectorIdentifierKey: @(kProportionalNumbersSelector),
+      },
+    };
+  }
+  return RCTFontVariantMapping;
+}
+
 + (UIFont *)UIFont:(id)json
 {
   json = [self NSDictionary:json];
@@ -707,27 +726,16 @@ static BOOL RCTFontIsCondensed(UIFont *font)
     font = bestMatch;
   }
 
-
-  NSDictionary *RCTFontVariantMapping = @{
-    @"tabular-nums": @{
-      UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
-      UIFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector),
-    },
-    @"proportional-nums": @{
-      UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
-      UIFontFeatureSelectorIdentifierKey: @(kProportionalNumbersSelector),
-    },
-  };
-
   // Apply font variants to font object
   if (variant) {
+    NSDictionary *fontVariantMapping = [RCTConvert getRCTFontVariantMapping];
     UIFontDescriptor *fontDescriptor = [font fontDescriptor];
 
     NSMutableArray *fontFeatureSettings = [NSMutableArray array];
     for (id variantName in variant) {
-      NSDictionary *variant = RCTFontVariantMapping[variantName];
+      NSDictionary *variantDescriptor = fontVariantMapping[variantName];
       if (variant) {
-        [fontFeatureSettings addObject:variant];
+        [fontFeatureSettings addObject:variantDescriptor];
       }
     }
 
