@@ -86,7 +86,6 @@ typedef NSURL RCTFileURL;
 + (CGLineJoin)CGLineJoin:(id)json;
 
 + (CATransform3D)CATransform3D:(id)json;
-+ (CGAffineTransform)CGAffineTransform:(id)json;
 
 + (UIColor *)UIColor:(id)json;
 + (CGColorRef)CGColor:(id)json CF_RETURNS_NOT_RETAINED;

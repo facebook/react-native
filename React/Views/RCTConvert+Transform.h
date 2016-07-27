@@ -7,17 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTAnimatedNode.h"
+#import "RCTConvert.h"
 
-@class RCTUIManager;
-@class RCTViewPropertyMapper;
+@interface RCTConvert (Transform)
 
-@interface RCTPropsAnimatedNode : RCTAnimatedNode
-
-- (void)connectToView:(NSNumber *)viewTag
-             viewName:(NSString *)viewName
-            uiManager:(RCTUIManager *)uiManager;
-
-- (void)disconnectFromView:(NSNumber *)viewTag;
++ (CATransform3D)CATransform3D:(id)json;
 
 @end
