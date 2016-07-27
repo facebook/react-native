@@ -26,9 +26,10 @@ const METHOD_IDS = 1;
 const PARAMS = 2;
 const MIN_TIME_BETWEEN_FLUSHES_MS = 5;
 
-const TRACE_TAG_REACT_APPS = 1 << 17;
+const TO_NATIVE = 0
+const TO_JS = 1
 
-const SPY_MODE = false;
+const TRACE_TAG_REACT_APPS = 1 << 17;
 
 const MethodTypes = keyMirror({
   remote: null,
@@ -90,6 +91,11 @@ class MessageQueue {
   /**
    * Public APIs
    */
+
+  static spy(fn){
+    MessageQueue.prototype.__spy = fn
+  }
+
   callFunctionReturnFlushedQueue(module, method, args) {
     guard(() => {
       this.__callFunction(module, method, args);
@@ -182,9 +188,13 @@ class MessageQueue {
       this._lastFlush = now;
     }
     Systrace.counterEvent('pending_js_to_native_queue', this._queue[0].length);
-    if (__DEV__ && SPY_MODE && isFinite(module)) {
-      console.log('JS->N : ' + this._remoteModuleTable[module] + '.' +
-        this._remoteMethodTable[module][method] + '(' + JSON.stringify(params) + ')');
+    if (__DEV__ && this.__spy && isFinite(module)) {
+        this.__spy(
+          { type: TO_NATIVE,
+            module: this._remoteModuleTable[module],
+            method: this._remoteMethodTable[module][method],
+            args: params }
+        )
     }
   }
 
@@ -192,8 +202,8 @@ class MessageQueue {
     this._lastFlush = new Date().getTime();
     this._eventLoopStartTime = this._lastFlush;
     Systrace.beginEvent(`${module}.${method}()`);
-    if (__DEV__ && SPY_MODE) {
-      console.log('N->JS : ' + module + '.' + method + '(' + JSON.stringify(args) + ')');
+    if (__DEV__ && this.__spy) {
+      this.__spy({ type: TO_JS, module, method, args})
     }
     const moduleMethods = this._callableModules[module];
     invariant(
@@ -227,8 +237,8 @@ class MessageQueue {
         );
       }
       const profileName = debug ? '<callback for ' + module + '.' + method + '>' : cbID;
-      if (callback && SPY_MODE && __DEV__) {
-        console.log('N->JS : ' + profileName + '(' + JSON.stringify(args) + ')');
+      if (callback && this.__spy && __DEV__) {
+        this.__spy({ type: TO_JS, module:null, method:profileName, args })
       }
       Systrace.beginEvent(
         `MessageQueue.invokeCallback(${profileName}, ${stringifySafe(args)})`);
@@ -447,5 +457,7 @@ function lazyProperty(target: Object, name: string, f: () => any) {
     }
   });
 }
+
+
 
 module.exports = MessageQueue;
