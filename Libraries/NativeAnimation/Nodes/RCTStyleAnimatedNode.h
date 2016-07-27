@@ -7,10 +7,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <QuartzCore/QuartzCore.h>
 #import "RCTAnimatedNode.h"
 
 @interface RCTStyleAnimatedNode : RCTAnimatedNode
 
-- (NSDictionary<NSString *, NSNumber *> *)updatedPropsDictionary;
+@property (nonatomic, readonly) NSDictionary<NSString *, NSNumber *> *stylesDictionary;
+@property (nonatomic, readonly) CATransform3D transform;
 
 @end

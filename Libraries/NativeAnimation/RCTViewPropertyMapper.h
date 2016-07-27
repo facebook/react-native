@@ -6,7 +6,9 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
 #import <Foundation/Foundation.h>
+#import <QuartzCore/QuartzCore.h>
 
 @class RCTNativeAnimatedModule;
 
@@ -17,6 +19,8 @@
 - (instancetype)initWithViewTag:(NSNumber *)viewTag
                 animationModule:(RCTNativeAnimatedModule *)animationModule NS_DESIGNATED_INITIALIZER;
 
-- (void)updateViewWithDictionary:(NSDictionary<NSString *, NSNumber *> *)updates;
+- (void)updateViewWithProps:(NSDictionary<NSString *, NSNumber *> *)props
+                     styles:(NSDictionary<NSString *, NSNumber *> *)styles
+                  transform:(CATransform3D)transform;
 
 @end
