@@ -174,7 +174,7 @@ describe('Bundler', function() {
           {runMainModule: true, runBeforeMainModule: []}
         ]);
 
-        expect(bundle.addAsset.mock.calls).toContain([{
+        expect(bundle.addAsset.mock.calls[0]).toEqual([{
           __packager_asset: true,
           path: '/root/img/img.png',
           uri: 'img',
@@ -183,7 +183,7 @@ describe('Bundler', function() {
           deprecated: true,
         }]);
 
-        expect(bundle.addAsset.mock.calls).toContain([{
+        expect(bundle.addAsset.mock.calls[1]).toEqual([{
           __packager_asset: true,
           fileSystemLocation: '/root/img',
           httpServerLocation: '/assets/img',
