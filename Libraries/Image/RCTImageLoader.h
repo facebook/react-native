@@ -198,3 +198,25 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 - (float)decoderPriority;
 
 @end
+
+
+/**
+ * Provides an interface to use for providing a image caching strategy.
+ */
+
+@protocol RCTImageCacheDelegate <NSObject>
+
+- (UIImage *)imageForUrl:(NSString *)url
+                    size:(CGSize)size
+                   scale:(CGFloat)scale
+              resizeMode:(RCTResizeMode)resizeMode
+            responseDate:(NSString *)responseDate;
+
+- (void)addImageToCache:(UIImage *)image
+                    URL:(NSString *)url
+                   size:(CGSize)size
+                  scale:(CGFloat)scale
+             resizeMode:(RCTResizeMode)resizeMode
+           responseDate:(NSString *)responseDate;
+
+@end
