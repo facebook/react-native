@@ -44,6 +44,7 @@ const documentedCommands = [
   require('./upgrade/upgrade'),
   require('./logAndroid/logAndroid'),
   require('./logIOS/logIOS'),
+  require('./dependencies/dependencies'),
 ];
 
 // The user should never get here because projects are inited by
