@@ -27,6 +27,7 @@
     _value = [self.config[@"value"] floatValue];
   }
   return self;
+
 }
 
 - (void)flattenOffset

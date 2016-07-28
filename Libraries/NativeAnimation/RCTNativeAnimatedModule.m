@@ -51,7 +51,6 @@ RCT_EXPORT_MODULE()
   _propAnimationNodes = [NSMutableSet new];
 }
 
-
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
@@ -218,6 +217,8 @@ RCT_EXPORT_METHOD(connectAnimatedNodeToView:(nonnull NSNumber *)nodeTag
   if (viewTag && [node isKindOfClass:[RCTPropsAnimatedNode class]]) {
     [(RCTPropsAnimatedNode *)node connectToView:viewTag animatedModule:self];
   }
+  [node setNeedsUpdate];
+  [node updateNodeIfNecessary];
 }
 
 RCT_EXPORT_METHOD(disconnectAnimatedNodeFromView:(nonnull NSNumber *)nodeTag

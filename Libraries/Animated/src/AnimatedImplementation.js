@@ -659,6 +659,10 @@ class SpringAnimation extends Animation {
   }
 }
 
+type AnimatedValueConfig = {
+  useNativeDriver?: bool;
+};
+
 type ValueListenerCallback = (state: {value: number}) => void;
 
 var _uniqueId = 1;
@@ -678,12 +682,15 @@ class AnimatedValue extends AnimatedWithChildren {
   _listeners: {[key: string]: ValueListenerCallback};
   __nativeAnimatedValueListener: ?any;
 
-  constructor(value: number) {
+  constructor(value: number, config?: AnimatedValueConfig) {
     super();
     this._startingValue = this._value = value;
     this._offset = 0;
     this._animation = null;
     this._listeners = {};
+    if (config && config.useNativeDriver) {
+      this.__makeNative();
+    }
   }
 
   __detach() {
@@ -929,7 +936,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
   y: AnimatedValue;
   _listeners: {[key: string]: {x: string, y: string}};
 
-  constructor(valueIn?: ?{x: number | AnimatedValue, y: number | AnimatedValue}) {
+  constructor(valueIn?: ?{x: number | AnimatedValue; y: number | AnimatedValue}, config?: AnimatedValueConfig) {
     super();
     var value: any = valueIn || {x: 0, y: 0};  // @flowfixme: shouldn't need `: any`
     if (typeof value.x === 'number' && typeof value.y === 'number') {
@@ -946,6 +953,9 @@ class AnimatedValueXY extends AnimatedWithChildren {
       this.y = value.y;
     }
     this._listeners = {};
+    if (config && config.useNativeDriver) {
+      this.__makeNative();
+    }
   }
 
   setValue(value: {x: number, y: number}) {

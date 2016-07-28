@@ -46,7 +46,7 @@
     NSNumber *nodeTag = transformConfig[@"nodeTag"];
 
     RCTAnimatedNode *node = self.parentNodes[nodeTag];
-    if (node.hasUpdated && [node isKindOfClass:[RCTValueAnimatedNode class]]) {
+    if ([node isKindOfClass:[RCTValueAnimatedNode class]]) {
       RCTValueAnimatedNode *parentNode = (RCTValueAnimatedNode *)node;
 
       NSString *property = transformConfig[@"property"];
