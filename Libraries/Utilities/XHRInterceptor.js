@@ -82,7 +82,7 @@ const XHRInterceptor = {
     };
 
     // Override `setRequestHeader` method for all XHR requests to intercept
-    // the request headers, then pass them through the `openCallback`.
+    // the request headers, then pass them through the `requestHeaderCallback`.
     XMLHttpRequest.prototype.setRequestHeader = function(header, value) {
       requestHeaderCallback(header, value, this);
       originalXHRSetRequestHeader.apply(this, arguments);
