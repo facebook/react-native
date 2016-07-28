@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <CoreText/CoreText.h>
+
 #import "RCTConvert.h"
 
 #import <objc/message.h>
@@ -521,6 +523,8 @@ RCT_ENUM_CONVERTER(RCTFontStyle, (@{
   @"oblique": @YES,
 }), NO, boolValue)
 
+typedef NSString RCTFontVariant;
+
 static RCTFontWeight RCTWeightOfFont(UIFont *font)
 {
   static NSDictionary *nameToWeight;
@@ -575,31 +579,32 @@ static BOOL RCTFontIsCondensed(UIFont *font)
                  size:json[@"fontSize"]
                weight:json[@"fontWeight"]
                 style:json[@"fontStyle"]
+              variant:json[@"fontVariant"]
           scaleMultiplier:1.0f];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withSize:(id)json
 {
-  return [self UIFont:font withFamily:nil size:json weight:nil style:nil scaleMultiplier:1.0];
+  return [self UIFont:font withFamily:nil size:json weight:nil style:nil variant:nil scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withWeight:(id)json
 {
-  return [self UIFont:font withFamily:nil size:nil weight:json style:nil scaleMultiplier:1.0];
+  return [self UIFont:font withFamily:nil size:nil weight:json style:nil variant:nil scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withStyle:(id)json
 {
-  return [self UIFont:font withFamily:nil size:nil weight:nil style:json scaleMultiplier:1.0];
+  return [self UIFont:font withFamily:nil size:nil weight:nil style:json variant:nil scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)json
 {
-  return [self UIFont:font withFamily:json size:nil weight:nil style:nil scaleMultiplier:1.0];
+  return [self UIFont:font withFamily:json size:nil weight:nil style:nil variant:nil scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
-              size:(id)size weight:(id)weight style:(id)style
+              size:(id)size weight:(id)weight style:(id)style variant:(id)variant
    scaleMultiplier:(CGFloat)scaleMultiplier
 {
   // Defaults
@@ -649,6 +654,33 @@ static BOOL RCTFontIsCondensed(UIFont *font)
         fontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits:symbolicTraits];
         font = [UIFont fontWithDescriptor:fontDescriptor size:fontSize];
       }
+
+      NSDictionary *RCTFontVariantMapping = @{
+        @"tabular-nums": @{
+          UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
+          UIFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector),
+        },
+        @"proportional-nums": @{
+          UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
+          UIFontFeatureSelectorIdentifierKey: @(kProportionalNumbersSelector),
+        },
+      };
+
+      if (variant) {
+        UIFontDescriptor *fontDescriptor = [font fontDescriptor];
+
+        NSMutableArray *fontFeatureSettings = [NSMutableArray array];
+        for (id variantName in variant) {
+          [fontFeatureSettings addObject:RCTFontVariantMapping[variantName]];
+        }
+
+        NSDictionary *attributes = @{
+          UIFontDescriptorFeatureSettingsAttribute: fontFeatureSettings
+        };
+        fontDescriptor = [fontDescriptor fontDescriptorByAddingAttributes:attributes];
+        font = [UIFont fontWithDescriptor:fontDescriptor size:fontSize];
+      }
+
       return font;
     } else {
       // systemFontOfSize:weight: isn't available prior to iOS 8.2, so we

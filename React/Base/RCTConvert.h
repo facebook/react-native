@@ -92,7 +92,7 @@ typedef NSURL RCTFileURL;
 + (UIFont *)UIFont:(UIFont *)font withStyle:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
-              size:(id)size weight:(id)weight style:(id)style
+              size:(id)size weight:(id)weight style:(id)style variant:(id)variant
    scaleMultiplier:(CGFloat)scaleMultiplier;
 
 + (NSArray<NSArray *> *)NSArrayArray:(id)json;
