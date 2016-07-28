@@ -60,7 +60,6 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   private boolean mBackingViewIsCreated;
   private @Nullable DrawView mDrawView;
   private @Nullable DrawBackgroundColor mDrawBackground;
-  private boolean mClipToBounds = false;
   private boolean mIsUpdated = true;
   private boolean mForceMountChildrenToView;
   private float mClipLeft;
@@ -81,6 +80,10 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   private int mLayoutY;
   private int mLayoutWidth;
   private int mLayoutHeight;
+
+  // clip radius
+  float mClipRadius;
+  boolean mClipToBounds = false;
 
   /* package */ void handleUpdateProperties(ReactStylesDiffMap styles) {
     if (!mountsToView()) {
@@ -152,6 +155,11 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     mClipToBounds = "hidden".equals(overflow);
     if (mClipToBounds) {
       mOverflowsContainer = false;
+      if (mClipRadius > DrawView.MINIMUM_ROUNDED_CLIPPING_VALUE) {
+        // mount to a view if we are overflow: hidden and are clipping, so that we can do one
+        // clipPath to clip all the children of this node (both DrawCommands and Views).
+        forceMountToView();
+      }
     } else {
       updateOverflowsContainer();
     }
@@ -483,6 +491,9 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
       // DrawView anyway, as reactTag is final, and our DrawView instance is the static copy.
       mDrawView = new DrawView(getReactTag());
     }
+
+    // avoid path clipping if overflow: visible
+    float clipRadius = mClipToBounds ? mClipRadius : 0.0f;
     // We have the correct react tag, but we may need a new copy with updated bounds.  If the bounds
     // match or were never set, the same view is returned.
     mDrawView = mDrawView.collectDrawView(
@@ -493,7 +504,8 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
         clipLeft,
         clipTop,
         clipRight,
-        clipBottom);
+        clipBottom,
+        clipRadius);
     return mDrawView;
   }
 

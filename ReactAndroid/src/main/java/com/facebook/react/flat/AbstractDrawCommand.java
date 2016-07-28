@@ -75,7 +75,7 @@ import android.graphics.Color;
     return mClipBottom;
   }
 
-  protected final void applyClipping(Canvas canvas) {
+  protected void applyClipping(Canvas canvas) {
     canvas.clipRect(mClipLeft, mClipTop, mClipRight, mClipBottom);
   }
 

@@ -91,6 +91,12 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
   @ReactProp(name = "borderRadius")
   public void setBorderRadius(float borderRadius) {
+    mClipRadius = borderRadius;
+    if (mClipToBounds && borderRadius > DrawView.MINIMUM_ROUNDED_CLIPPING_VALUE) {
+      // mount to a view if we are overflow: hidden and are clipping, so that we can do one
+      // clipPath to clip all the children of this node (both DrawCommands and Views).
+      forceMountToView();
+    }
     getMutableBorder().setBorderRadius(PixelUtil.toPixelFromDIP(borderRadius));
   }
 
