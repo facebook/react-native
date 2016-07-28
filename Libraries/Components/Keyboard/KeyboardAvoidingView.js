@@ -53,11 +53,12 @@ const KeyboardAvoidingView = React.createClass({
   propTypes: {
     ...View.propTypes,
     behavior: PropTypes.oneOf(['height', 'position', 'padding']),
-
+    nestedStyle: View.propTypes.style,
     /**
      * This is the distance between the top of the user screen and the react native view,
      * may be non-zero in some use cases.
      */
+
     keyboardVerticalOffset: PropTypes.number.isRequired,
   },
 
@@ -160,9 +161,11 @@ const KeyboardAvoidingView = React.createClass({
 
       case 'position':
         const positionStyle = {bottom: this.state.bottom};
+        const { nestedStyle } = this.props;
+
         return (
           <View ref={viewRef} style={style} onLayout={this.onLayout} {...props}>
-            <View style={positionStyle}>
+            <View style={[positionStyle, nestedStyle]}>
               {children}
             </View>
           </View>
