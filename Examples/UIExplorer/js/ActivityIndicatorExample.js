@@ -113,8 +113,8 @@ exports.examples = [
       return (
         <ActivityIndicator
           style={[styles.centering, styles.gray]}
-          color="white"
           size="large"
+          color="white"
         />
       );
     }
@@ -161,7 +161,20 @@ exports.examples = [
       );
     }
   },
+  {
+    platform: 'android',
+    title: 'Custom size (size: 75)',
+    render() {
+      return (
+        <ActivityIndicator
+          style={styles.centering}
+          size={75}
+        />
+      );
+    }
+  },
 ];
+
 
 const styles = StyleSheet.create({
   centering: {
