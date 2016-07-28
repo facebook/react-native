@@ -91,4 +91,6 @@
   return imageSource;
 }
 
+RCT_ARRAY_CONVERTER(RCTImageSource)
+
 @end
