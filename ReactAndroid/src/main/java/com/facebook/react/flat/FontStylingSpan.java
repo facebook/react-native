@@ -11,6 +11,7 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
@@ -18,7 +19,7 @@ import android.text.style.MetricAffectingSpan;
 /* package */ final class FontStylingSpan extends MetricAffectingSpan {
 
   /* package */ static final FontStylingSpan INSTANCE = new FontStylingSpan(
-      Double.NaN /* mTextColor */,
+      Color.BLACK /* mTextColor */,
       0 /* mBackgroundColor */,
       -1 /* mFontSize */,
       -1 /* mFontStyle */,
