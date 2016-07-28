@@ -140,7 +140,12 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 
   /* package */ void dropViews(int[] viewsToDrop) {
     for (int viewToDrop : viewsToDrop) {
-      dropView(resolveView(viewToDrop));
+      if (viewToDrop > 0) {
+        dropView(resolveView(viewToDrop));
+      } else {
+        // Root views are noted with a negative tag from StateBuilder.
+        removeRootView(-viewToDrop);
+      }
     }
   }
 

@@ -230,7 +230,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     }
   }
 
-  public final class DetachAllChildrenFromViews implements UIViewOperationQueue.UIOperation {
+  public final class DetachAllChildrenFromViews implements UIOperation {
     private @Nullable int[] mViewsToDetachAllChildrenFrom;
 
     public void setViewsToDetachAllChildrenFrom(int[] viewsToDetachAllChildrenFrom) {
@@ -369,6 +369,9 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     enqueueUIOperation(new UpdateViewGroup(reactTag, viewsToAdd, viewsToDetach));
   }
 
+  /**
+   * Creates a new UIOperation that will update View bounds for a View defined by reactTag.
+   */
   public UpdateViewBounds createUpdateViewBounds(
       int reactTag,
       int left,
@@ -378,13 +381,6 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     return new UpdateViewBounds(reactTag, left, top, right, bottom);
   }
 
-  /**
-   * Enqueues a new UIOperation that will update View bounds for a View defined by reactTag.
-   */
-  public void enqueueUpdateViewBounds(UpdateViewBounds updateViewBounds) {
-    enqueueUIOperation(updateViewBounds);
-  }
-
   public ViewManagerCommand createViewManagerCommand(
       int reactTag,
       int command,
@@ -392,8 +388,8 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     return new ViewManagerCommand(reactTag, command, args);
   }
 
-  public void enqueueViewManagerCommand(ViewManagerCommand viewManagerCommand) {
-    enqueueUIOperation(viewManagerCommand);
+  /* package */ void enqueueFlatUIOperation(UIOperation operation) {
+    enqueueUIOperation(operation);
   }
 
   public void enqueueSetPadding(

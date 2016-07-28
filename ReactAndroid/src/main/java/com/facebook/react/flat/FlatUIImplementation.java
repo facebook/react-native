@@ -490,7 +490,6 @@ public class FlatUIImplementation extends UIImplementation {
   @Override
   public void removeRootView(int rootViewTag) {
     mStateBuilder.removeRootView(rootViewTag);
-    super.removeRootView(rootViewTag);
   }
 
   @Override

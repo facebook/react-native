@@ -18,6 +18,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.OnLayoutEvent;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
+import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.events.EventDispatcher;
 
 /**
@@ -45,11 +46,11 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
   private final ArrayList<FlatShadowNode> mViewsToDetachAllChildrenFrom = new ArrayList<>();
   private final ArrayList<FlatShadowNode> mViewsToDetach = new ArrayList<>();
-  private final ArrayList<FlatShadowNode> mViewsToDrop = new ArrayList<>();
+  private final ArrayList<Integer> mViewsToDrop = new ArrayList<>();
   private final ArrayList<OnLayoutEvent> mOnLayoutEvents = new ArrayList<>();
-  private final ArrayList<FlatUIViewOperationQueue.UpdateViewBounds> mUpdateViewBoundsOperations =
+  private final ArrayList<UIViewOperationQueue.UIOperation> mUpdateViewBoundsOperations =
       new ArrayList<>();
-  private final ArrayList<FlatUIViewOperationQueue.ViewManagerCommand> mViewManagerCommands =
+  private final ArrayList<UIViewOperationQueue.UIOperation> mViewManagerCommands =
       new ArrayList<>();
 
   private @Nullable FlatUIViewOperationQueue.DetachAllChildrenFromViews mDetachAllChildrenFromViews;
@@ -98,7 +99,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     }
 
     for (int i = 0, size = mUpdateViewBoundsOperations.size(); i != size; ++i) {
-      mOperationsQueue.enqueueUpdateViewBounds(mUpdateViewBoundsOperations.get(i));
+      mOperationsQueue.enqueueFlatUIOperation(mUpdateViewBoundsOperations.get(i));
     }
     mUpdateViewBoundsOperations.clear();
 
@@ -106,7 +107,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     // happened before we actually dispatch the view manager command.  This prevents things like
     // commands going to empty parents and views not yet being created.
     for (int i = 0, size = mViewManagerCommands.size(); i != size; i++) {
-      mOperationsQueue.enqueueViewManagerCommand(mViewManagerCommands.get(i));
+      mOperationsQueue.enqueueFlatUIOperation(mViewManagerCommands.get(i));
     }
     mViewManagerCommands.clear();
 
@@ -118,7 +119,12 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     mOnLayoutEvents.clear();
 
     if (!mViewsToDrop.isEmpty()) {
-      mOperationsQueue.enqueueDropViews(collectViewTags(mViewsToDrop));
+      int[] viewsToDrop = new int[mViewsToDrop.size()];
+      int i = 0;
+      for (int x : mViewsToDrop) {
+        viewsToDrop[i++] = x;
+      }
+      mOperationsQueue.enqueueDropViews(viewsToDrop);
       mViewsToDrop.clear();
     }
 
@@ -126,12 +132,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
   }
 
   /* package */ void removeRootView(int rootViewTag) {
-    // Don't remove Views that are connected to a View that we are about to remove.
-    for (int i = mViewsToDrop.size() - 1; i >= 0; --i) {
-      if (mViewsToDrop.get(i).getRootNode().getReactTag() == rootViewTag) {
-        mViewsToDrop.remove(i);
-      }
-    }
+    // Note root view tags with a negative value.
+    mViewsToDrop.add(-rootViewTag);
   }
 
   /**
@@ -185,7 +187,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
   }
 
   /* package */ void dropView(FlatShadowNode node) {
-    mViewsToDrop.add(node);
+    mViewsToDrop.add(node.getReactTag());
   }
 
   private void addNodeRegion(
