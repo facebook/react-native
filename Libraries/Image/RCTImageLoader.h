@@ -199,7 +199,6 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 
 @end
 
-
 /**
  * Provides an interface to use for providing a image caching strategy.
  */
