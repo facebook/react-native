@@ -49,11 +49,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const Row = React.createClass({
-  _onClick: function() {
+class Row extends React.Component {
+  _onClick = () => {
     this.props.onClick(this.props.data);
-  },
-  render: function() {
+  };
+
+  render() {
     return (
      <TouchableWithoutFeedback onPress={this._onClick} >
         <View style={styles.row}>
@@ -63,30 +64,26 @@ const Row = React.createClass({
         </View>
       </TouchableWithoutFeedback>
     );
-  },
-});
+  }
+}
 
-const RefreshControlExample = React.createClass({
-  statics: {
-    title: '<RefreshControl>',
-    description: 'Adds pull-to-refresh support to a scrollview.'
-  },
+class RefreshControlExample extends React.Component {
+  static title = '<RefreshControl>';
+  static description = 'Adds pull-to-refresh support to a scrollview.';
 
-  getInitialState() {
-    return {
-      isRefreshing: false,
-      loaded: 0,
-      rowData: Array.from(new Array(20)).map(
-        (val, i) => ({text: 'Initial row ' + i, clicks: 0})),
-    };
-  },
+  state = {
+    isRefreshing: false,
+    loaded: 0,
+    rowData: Array.from(new Array(20)).map(
+      (val, i) => ({text: 'Initial row ' + i, clicks: 0})),
+  };
 
-  _onClick(row) {
+  _onClick = (row) => {
     row.clicks++;
     this.setState({
       rowData: this.state.rowData,
     });
-  },
+  };
 
   render() {
     const rows = this.state.rowData.map((row, ii) => {
@@ -109,9 +106,9 @@ const RefreshControlExample = React.createClass({
         {rows}
       </ScrollView>
     );
-  },
+  }
 
-  _onRefresh() {
+  _onRefresh = () => {
     this.setState({isRefreshing: true});
     setTimeout(() => {
       // prepend 10 items
@@ -128,7 +125,7 @@ const RefreshControlExample = React.createClass({
         rowData: rowData,
       });
     }, 5000);
-  },
-});
+  };
+}
 
 module.exports = RefreshControlExample;
