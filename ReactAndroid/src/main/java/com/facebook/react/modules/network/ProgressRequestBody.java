@@ -12,22 +12,19 @@ package com.facebook.react.modules.network;
 import java.io.IOException;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-import okhttp3.internal.Util;
 import okio.BufferedSink;
 import okio.Buffer;
 import okio.Sink;
 import okio.ForwardingSink;
-import okio.ByteString;
 import okio.Okio;
-import okio.Source;
 
 public class ProgressRequestBody extends RequestBody {
 
   private final RequestBody mRequestBody;
-  private final ProgressRequestListener mProgressListener;
+  private final ProgressListener mProgressListener;
   private BufferedSink mBufferedSink;
 
-  public ProgressRequestBody(RequestBody requestBody, ProgressRequestListener progressListener) {
+  public ProgressRequestBody(RequestBody requestBody, ProgressListener progressListener) {
       mRequestBody = requestBody;
       mProgressListener = progressListener;
   }
@@ -63,7 +60,8 @@ public class ProgressRequestBody extends RequestBody {
                   contentLength = contentLength();
               }
               bytesWritten += byteCount;
-              mProgressListener.onRequestProgress(bytesWritten, contentLength, bytesWritten == contentLength);
+              mProgressListener.onProgress(
+                bytesWritten, contentLength, bytesWritten == contentLength);
           }
       };
   }

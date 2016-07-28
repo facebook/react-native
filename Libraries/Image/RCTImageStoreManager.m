@@ -23,7 +23,7 @@ static NSString *const RCTImageStoreURLScheme = @"rct-image-store";
 @implementation RCTImageStoreManager
 {
   NSMutableDictionary<NSString *, NSData *> *_store;
-  NSUInteger *_id;
+  NSUInteger _id;
 }
 
 @synthesize methodQueue = _methodQueue;

@@ -59,6 +59,15 @@ type ErrorEvent = {
 
 type Event = Object;
 
+const DataDetectorTypes = [
+  'phoneNumber',
+  'link',
+  'address',
+  'calendarEvent',
+  'none',
+  'all',
+];
+
 var defaultRenderLoading = () => (
   <View style={styles.loadingView}>
     <ActivityIndicator />
@@ -103,13 +112,11 @@ var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
  * You can use this component to navigate back and forth in the web view's
  * history and configure various properties for the web content.
  */
-var WebView = React.createClass({
-  statics: {
-    JSNavigationScheme: JSNavigationScheme,
-    NavigationType: NavigationType,
-  },
+class WebView extends React.Component {
+  static JSNavigationScheme = JSNavigationScheme;
+  static NavigationType = NavigationType;
 
-  propTypes: {
+  static propTypes = {
     ...View.propTypes,
 
     html: deprecatedPropType(
@@ -239,6 +246,28 @@ var WebView = React.createClass({
     style: View.propTypes.style,
 
     /**
+     * Determines the types of data converted to clickable URLs in the web view’s content.
+     * By default only phone numbers are detected.
+     *
+     * You can provide one type or an array of many types.
+     *
+     * Possible values for `dataDetectorTypes` are:
+     *
+     * - `'phoneNumber'`
+     * - `'link'`
+     * - `'address'`
+     * - `'calendarEvent'`
+     * - `'none'`
+     * - `'all'`
+     *
+     * @platform ios
+     */
+    dataDetectorTypes: PropTypes.oneOfType([
+      PropTypes.oneOf(DataDetectorTypes),
+      PropTypes.arrayOf(PropTypes.oneOf(DataDetectorTypes)),
+    ]),
+
+    /**
      * Boolean value to enable JavaScript in the `WebView`. Used on Android only
      * as JavaScript is enabled by default on iOS. The default value is `true`.
      * @platform android
@@ -295,23 +324,21 @@ var WebView = React.createClass({
      * to tap them before they start playing. The default value is `false`.
      */
     mediaPlaybackRequiresUserAction: PropTypes.bool,
-  },
+  };
 
-  getInitialState: function() {
-    return {
-      viewState: WebViewState.IDLE,
-      lastErrorEvent: (null: ?ErrorEvent),
-      startInLoadingState: true,
-    };
-  },
+  state = {
+    viewState: WebViewState.IDLE,
+    lastErrorEvent: (null: ?ErrorEvent),
+    startInLoadingState: true,
+  };
 
-  componentWillMount: function() {
+  componentWillMount() {
     if (this.props.startInLoadingState) {
       this.setState({viewState: WebViewState.LOADING});
     }
-  },
+  }
 
-  render: function() {
+  render() {
     var otherView = null;
 
     if (this.state.viewState === WebViewState.LOADING) {
@@ -374,6 +401,7 @@ var WebView = React.createClass({
         scalesPageToFit={this.props.scalesPageToFit}
         allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
+        dataDetectorTypes={this.props.dataDetectorTypes}
       />;
 
     return (
@@ -382,77 +410,77 @@ var WebView = React.createClass({
         {otherView}
       </View>
     );
-  },
+  }
 
   /**
    * Go forward one page in the web view's history.
    */
-  goForward: function() {
+  goForward = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.goForward,
       null
     );
-  },
+  };
 
   /**
    * Go back one page in the web view's history.
    */
-  goBack: function() {
+  goBack = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.goBack,
       null
     );
-  },
+  };
 
   /**
    * Reloads the current page.
    */
-  reload: function() {
+  reload = () => {
     this.setState({viewState: WebViewState.LOADING});
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.reload,
       null
     );
-  },
+  };
 
   /**
    * Stop loading the current page.
    */
-  stopLoading: function() {
+  stopLoading = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.stopLoading,
       null
     );
-  },
+  };
 
   /**
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
    */
-  _updateNavigationState: function(event: Event) {
+  _updateNavigationState = (event: Event) => {
     if (this.props.onNavigationStateChange) {
       this.props.onNavigationStateChange(event.nativeEvent);
     }
-  },
+  };
 
   /**
    * Returns the native `WebView` node.
    */
-  getWebViewHandle: function(): any {
+  getWebViewHandle = (): any => {
     return ReactNative.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
-  },
+  };
 
-  _onLoadingStart: function(event: Event) {
+  _onLoadingStart = (event: Event) => {
     var onLoadStart = this.props.onLoadStart;
     onLoadStart && onLoadStart(event);
     this._updateNavigationState(event);
-  },
+  };
 
-  _onLoadingError: function(event: Event) {
+  _onLoadingError = (event: Event) => {
     event.persist(); // persist this event because we need to store it
     var {onError, onLoadEnd} = this.props;
     onError && onError(event);
@@ -463,9 +491,9 @@ var WebView = React.createClass({
       lastErrorEvent: event.nativeEvent,
       viewState: WebViewState.ERROR
     });
-  },
+  };
 
-  _onLoadingFinish: function(event: Event) {
+  _onLoadingFinish = (event: Event) => {
     var {onLoad, onLoadEnd} = this.props;
     onLoad && onLoad(event);
     onLoadEnd && onLoadEnd(event);
@@ -473,8 +501,8 @@ var WebView = React.createClass({
       viewState: WebViewState.IDLE,
     });
     this._updateNavigationState(event);
-  },
-});
+  };
+}
 
 var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
   nativeOnly: {

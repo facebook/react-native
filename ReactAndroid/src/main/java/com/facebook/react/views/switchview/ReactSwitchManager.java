@@ -18,7 +18,6 @@ import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -78,7 +77,6 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSwitchEvent(
                   buttonView.getId(),
-                  SystemClock.nanoTime(),
                   isChecked));
         }
       };

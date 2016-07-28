@@ -5,13 +5,14 @@ layout: docs
 category: Guides
 permalink: docs/navigation.html
 next: performance
+previous: javascript-environment
 ---
 
 This guide covers the various navigation components available in React Native. If you are just getting started with navigation, you will probably want to use  `Navigator`. If you are only targeting iOS and would like to stick to the native look and feel, check out `NavigatorIOS`. If you are looking for greater control over your navigation stack, you can't go wrong with `NavigationExperimental`.
 
 ## Navigator
 
-`Navigator` provides a JavaScript implementation of a navigation stack, so it works on both iOS and Android and is easy to customize. This is the same component you used to build your first navigation stack in the [navigators tutorial](docs/navigators.html).
+`Navigator` provides a JavaScript implementation of a navigation stack, so it works on both iOS and Android and is easy to customize. This is the same component you used to build your first navigation stack in the [navigators tutorial](docs/using-navigators.html).
 
 ![](img/NavigationStack-Navigator.gif)
 
@@ -341,4 +342,4 @@ const styles = StyleSheet.create({
 
 ### Homework
 
-You are now an expert navigator. Take a look at [NavigationExperimental in UIExplorer](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer/NavigationExperimental) to learn how to implement other types of navigation hierarchies, such as a tabbed application with multiple navigation stacks.
+You are now an expert navigator. Take a look at [NavigationExperimental in UIExplorer](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer/js/NavigationExperimental) to learn how to implement other types of navigation hierarchies, such as a tabbed application with multiple navigation stacks.

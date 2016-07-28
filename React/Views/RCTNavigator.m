@@ -370,7 +370,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return _navigationController;
 }
 
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+- (BOOL)gestureRecognizerShouldBegin:(__unused UIGestureRecognizer *)gestureRecognizer
 {
   return _navigationController.viewControllers.count > 1;
 }

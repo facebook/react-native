@@ -501,13 +501,13 @@ var Navigator = React.createClass({
   },
 
   _transitionTo: function(destIndex, velocity, jumpSpringTo, cb) {
-    if (
-      destIndex === this.state.presentedIndex &&
-      this.state.transitionQueue.length === 0
-    ) {
+    if (this.state.presentedIndex === destIndex) {
+      cb && cb();
       return;
     }
+
     if (this.state.transitionFromIndex !== null) {
+      // Navigation is still transitioning, put the `destIndex` into queue.
       this.state.transitionQueue.push({
         destIndex,
         velocity,

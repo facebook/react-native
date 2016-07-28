@@ -1,20 +1,11 @@
-include_defs('//ReactAndroid/DEFS')
-
-android_library(
-  name = 'soloader',
-  srcs = glob(['*.java']),
-  proguard_config = 'soloader.pro',
-  deps = [
-    react_native_dep('third-party/java/jsr-305:jsr-305'),
-    # Be very careful adding new dependencies here, because this code
-    # has to run very early in the app startup process.
-    # Definitely do *not* depend on lib-base or guava.
-  ],
-  visibility = [
-    'PUBLIC',
-  ],
+android_prebuilt_aar(
+    name = 'soloader',
+    aar = ':soloader-binary-aar',
+    visibility = ['PUBLIC'],
 )
 
-project_config(
-  src_target = ':soloader',
+remote_file(
+    name = 'soloader-binary-aar',
+    url = 'mvn:com.facebook.soloader:soloader:aar:0.1.0',
+    sha1 = '918573465c94c6bc9bad48ef259f1e0cd6543c1b',
 )

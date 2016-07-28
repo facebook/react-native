@@ -92,6 +92,11 @@ RCT_EXPORT_MODULE()
   block();
 }
 
+- (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block
+{
+  block();
+}
+
 - (void)injectJSONText:(NSString *)script
    asGlobalObjectNamed:(NSString *)objectName
               callback:(RCTJavaScriptCompleteBlock)onComplete
@@ -151,7 +156,8 @@ RCT_EXPORT_MODULE(TestModule)
   [super setUp];
 
   _unregisteredTestModule = [UnregisteredTestModule new];
-  _bridge = [[RCTBridge alloc] initWithBundleURL:nil
+  NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+  _bridge = [[RCTBridge alloc] initWithBundleURL:[bundle URLForResource:@"TestBundle" withExtension:@"js"]
                                   moduleProvider:^{ return @[self, self->_unregisteredTestModule]; }
                                    launchOptions:nil];
 

@@ -42,8 +42,6 @@ const ReactComponentWithPureRenderMixin = require('react/lib/ReactComponentWithP
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
-const emptyFunction = require('fbjs/lib/emptyFunction');
-
 const {PropTypes} = React;
 const {Directions} = NavigationCardStackPanResponder;
 
@@ -66,11 +64,11 @@ type Props = {
   renderScene: NavigationSceneRenderer,
   cardStyle?: any,
   style: any,
+  gestureResponseDistance?: ?number,
 };
 
 type DefaultProps = {
   direction: NavigationGestureDirection,
-  renderOverlay: ?NavigationSceneRenderer,
 };
 
 /**
@@ -98,11 +96,11 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     renderOverlay: PropTypes.func,
     renderScene: PropTypes.func.isRequired,
     cardStyle: View.propTypes.style,
+    gestureResponseDistance: PropTypes.number,
   };
 
   static defaultProps: DefaultProps = {
     direction: Directions.HORIZONTAL,
-    renderOverlay: emptyFunction.thatReturnsNull,
   };
 
   constructor(props: Props, context: any) {
@@ -134,31 +132,16 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
 
   _render(props: NavigationTransitionProps): ReactElement<any> {
     const {
-       navigationState,
-     } = props;
+      renderOverlay
+    } = this.props;
 
-    let overlay = null;
-    const renderOverlay = this.props.renderOverlay;
-
-    if (renderOverlay) {
-      const route = navigationState.routes[navigationState.index];
-
-      const activeScene = props.scenes.find(
-       scene => !scene.isStale && scene.route === route ? scene : undefined
-      );
-
-      overlay = renderOverlay({
-       ...props,
-       scene: activeScene
-      });
-    }
+    const overlay = renderOverlay && renderOverlay(props);
 
     const scenes = props.scenes.map(
      scene => this._renderScene({
        ...props,
        scene,
-     }),
-     this
+     })
     );
 
     return (
@@ -183,6 +166,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     const panHandlersProps = {
       ...props,
       onNavigateBack: this.props.onNavigateBack,
+      gestureResponseDistance: this.props.gestureResponseDistance,
     };
     const panHandlers = isVertical ?
       NavigationCardStackPanResponder.forVertical(panHandlersProps) :

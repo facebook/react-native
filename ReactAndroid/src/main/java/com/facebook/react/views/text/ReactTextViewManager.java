@@ -55,35 +55,17 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
     view.setEllipsize(TextUtils.TruncateAt.END);
   }
 
-  @ReactProp(name = ViewProps.TEXT_ALIGN)
-  public void setTextAlign(ReactTextView view, @Nullable String textAlign) {
-    if (textAlign == null || "auto".equals(textAlign)) {
-      view.setGravityHorizontal(Gravity.NO_GRAVITY);
-    } else if ("left".equals(textAlign)) {
-      view.setGravityHorizontal(Gravity.LEFT);
-    } else if ("right".equals(textAlign)) {
-      view.setGravityHorizontal(Gravity.RIGHT);
-    } else if ("center".equals(textAlign)) {
-      view.setGravityHorizontal(Gravity.CENTER_HORIZONTAL);
-    } else if ("justify".equals(textAlign)) {
-      // Fallback gracefully for cross-platform compat instead of error
-      view.setGravityHorizontal(Gravity.LEFT);
-    } else {
-      throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
-    }
-  }
-
   @ReactProp(name = ViewProps.LINE_BREAK_MODE)
-  public void setLineBreakMode(ReactTextView view, @Nullable String lineBreakMode) {
-    if(lineBreakMode == null) {
+  public void setLineBreakMode(ReactTextView view, @Nullable String ellipsizeMode) {
+    if(ellipsizeMode == null) {
       return;
     }
 
-    if (lineBreakMode.equals("head")) {
+    if (ellipsizeMode.equals("head")) {
       view.setEllipsize(TextUtils.TruncateAt.START);
-    } else if (lineBreakMode.equals("middle")) {
+    } else if (ellipsizeMode.equals("middle")) {
       view.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-    } else if (lineBreakMode.equals("tail")) {
+    } else if (ellipsizeMode.equals("tail")) {
       view.setEllipsize(TextUtils.TruncateAt.END);
     }
   }
@@ -100,15 +82,6 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
       view.setGravityVertical(Gravity.CENTER_VERTICAL);
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid textAlignVertical: " + textAlignVertical);
-    }
-  }
-
-  @ReactProp(name = ViewProps.LINE_HEIGHT, defaultFloat = Float.NaN)
-  public void setLineHeight(ReactTextView view, float lineHeight) {
-    if (Float.isNaN(lineHeight)) { // NaN will be used if property gets reset
-      view.setLineSpacing(0, 1);
-    } else {
-      view.setLineSpacing(PixelUtil.toPixelFromSP(lineHeight), 0);
     }
   }
 

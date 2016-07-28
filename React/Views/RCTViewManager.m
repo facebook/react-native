@@ -288,12 +288,12 @@ RCT_EXPORT_SHADOW_PROPERTY(paddingHorizontal, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(padding, CGFloat)
 
 RCT_EXPORT_SHADOW_PROPERTY(flex, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(flexDirection, css_flex_direction_t)
-RCT_EXPORT_SHADOW_PROPERTY(flexWrap, css_wrap_type_t)
-RCT_EXPORT_SHADOW_PROPERTY(justifyContent, css_justify_t)
-RCT_EXPORT_SHADOW_PROPERTY(alignItems, css_align_t)
-RCT_EXPORT_SHADOW_PROPERTY(alignSelf, css_align_t)
-RCT_EXPORT_SHADOW_PROPERTY(position, css_position_type_t)
+RCT_EXPORT_SHADOW_PROPERTY(flexDirection, CSSFlexDirection)
+RCT_EXPORT_SHADOW_PROPERTY(flexWrap, CSSWrapType)
+RCT_EXPORT_SHADOW_PROPERTY(justifyContent, CSSJustify)
+RCT_EXPORT_SHADOW_PROPERTY(alignItems, CSSAlign)
+RCT_EXPORT_SHADOW_PROPERTY(alignSelf, CSSAlign)
+RCT_EXPORT_SHADOW_PROPERTY(position, CSSPositionType)
 
 RCT_EXPORT_SHADOW_PROPERTY(onLayout, RCTDirectEventBlock)
 

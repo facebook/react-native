@@ -40,7 +40,6 @@ public class ScrollEvent extends Event<ScrollEvent> {
 
   public static ScrollEvent obtain(
       int viewTag,
-      long timestampMs,
       ScrollEventType scrollEventType,
       int scrollX,
       int scrollY,
@@ -54,7 +53,6 @@ public class ScrollEvent extends Event<ScrollEvent> {
     }
     event.init(
         viewTag,
-        timestampMs,
         scrollEventType,
         scrollX,
         scrollY,
@@ -75,7 +73,6 @@ public class ScrollEvent extends Event<ScrollEvent> {
 
   private void init(
       int viewTag,
-      long timestampMs,
       ScrollEventType scrollEventType,
       int scrollX,
       int scrollY,
@@ -83,7 +80,7 @@ public class ScrollEvent extends Event<ScrollEvent> {
       int contentHeight,
       int scrollViewWidth,
       int scrollViewHeight) {
-    super.init(viewTag, timestampMs);
+    super.init(viewTag);
     mScrollEventType = scrollEventType;
     mScrollX = scrollX;
     mScrollY = scrollY;

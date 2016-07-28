@@ -19,6 +19,7 @@
 #import "RCTBridge+Private.h"
 #import "RCTBridgeModule.h"
 #import "RCTUtils.h"
+#import "RCTJavaScriptExecutor.h"
 
 #define RUN_RUNLOOP_WHILE(CONDITION) \
 { \
@@ -147,7 +148,8 @@ RCT_EXPORT_MODULE()
 
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
-  return nil;
+  NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+  return [bundle URLForResource:@"TestBundle" withExtension:@"js"];
 }
 
 - (NSArray *)extraModulesForBridge:(__unused RCTBridge *)bridge

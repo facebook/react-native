@@ -5,6 +5,7 @@ layout: docs
 category: The Basics
 permalink: docs/using-a-listview.html
 next: network
+previous: using-a-scrollview
 ---
 
 The `ListView` component displays a vertically scrolling list of changing, but similarly structured, data.
