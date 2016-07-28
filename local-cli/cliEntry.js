@@ -10,7 +10,7 @@
  */
 'use strict';
 
-const cli = require('commander');
+const commander = require('commander');
 
 const Config = require('./util/Config');
 const childProcess = require('child_process');
@@ -32,7 +32,7 @@ import type { Command } from './commands';
 // descriptors. When that happens it will enqueue the operation and retry it.
 gracefulFs.gracefulify(fs);
 
-cli.version(pkg.version);
+commander.version(pkg.version);
 
 const defaultOptParser = (val) => val;
 
@@ -96,7 +96,7 @@ function printUnknownCommand(cmdName) {
 const addCommand = (command: Command, config: Config) => {
   const options = command.options || [];
 
-  const cmd = cli
+  const cmd = commander
     .command(command.name, undefined, {
       noHelp: !command.description,
     })
@@ -135,7 +135,7 @@ function run() {
 
   commands.forEach(cmd => addCommand(cmd, config));
 
-  cli.parse(process.argv);
+  commander.parse(process.argv);
 
   const isValidCommand = commands.find(cmd => cmd.name === process.argv[2]);
 
@@ -144,8 +144,8 @@ function run() {
     return;
   }
 
-  if (!cli.args.length) {
-    cli.help();
+  if (!commander.args.length) {
+    commander.help();
   }
 }
 
