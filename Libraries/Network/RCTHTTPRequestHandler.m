@@ -66,7 +66,9 @@ RCT_EXPORT_MODULE()
   }
 
   NSURLSessionDataTask *task = [_session dataTaskWithRequest:request];
-  [_delegates setObject:delegate forKey:task];
+  @synchronized (_delegates) {
+    [_delegates setObject:delegate forKey:task];
+  }
   [task resume];
   return task;
 }
@@ -74,7 +76,9 @@ RCT_EXPORT_MODULE()
 - (void)cancelRequest:(NSURLSessionDataTask *)task
 {
   [task cancel];
-  [_delegates removeObjectForKey:task];
+  @synchronized (_delegates) {
+    [_delegates removeObjectForKey:task];
+  }
 }
 
 #pragma mark - NSURLSession delegate
@@ -85,7 +89,9 @@ RCT_EXPORT_MODULE()
     totalBytesSent:(int64_t)totalBytesSent
 totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 {
-  [[_delegates objectForKey:task] URLRequest:task didSendDataWithProgress:totalBytesSent];
+  @synchronized (_delegates) {
+    [[_delegates objectForKey:task] URLRequest:task didSendDataWithProgress:totalBytesSent];
+  }
 }
 
 - (void)URLSession:(NSURLSession *)session
@@ -93,7 +99,9 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 didReceiveResponse:(NSURLResponse *)response
  completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler
 {
-  [[_delegates objectForKey:task] URLRequest:task didReceiveResponse:response];
+  @synchronized (_delegates) {
+    [[_delegates objectForKey:task] URLRequest:task didReceiveResponse:response];
+  }
   completionHandler(NSURLSessionResponseAllow);
 }
 
@@ -101,13 +109,17 @@ didReceiveResponse:(NSURLResponse *)response
           dataTask:(NSURLSessionDataTask *)task
     didReceiveData:(NSData *)data
 {
-  [[_delegates objectForKey:task] URLRequest:task didReceiveData:data];
+  @synchronized (_delegates) {
+    [[_delegates objectForKey:task] URLRequest:task didReceiveData:data];
+  }
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-  [[_delegates objectForKey:task] URLRequest:task didCompleteWithError:error];
-  [_delegates removeObjectForKey:task];
+  @synchronized (_delegates) {
+    [[_delegates objectForKey:task] URLRequest:task didCompleteWithError:error];
+    [_delegates removeObjectForKey:task];
+  }
 }
 
 @end

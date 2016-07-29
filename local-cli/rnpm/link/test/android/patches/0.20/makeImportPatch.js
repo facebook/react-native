@@ -7,7 +7,7 @@ const makeImportPatch = require('../../../../src/android/patches/0.20/makeImport
 const applyPatch = require('../../../../src/android/patches/applyPatch');
 
 const projectConfig = {
-  mainFilePath: 'MainActivity.java',
+  mainActivityPath: 'MainActivity.java',
 };
 
 const packageImportPath = 'import some.example.project';
