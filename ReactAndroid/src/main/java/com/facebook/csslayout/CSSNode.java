@@ -378,11 +378,11 @@ public class CSSNode {
   /**
    * Get this node's position, as defined by style.
    */
-   public Spacing getPosition() {
+   public Spacing getPositionValue() {
     return style.position;
   }
 
-  public void setPosition(int spacingType, float position) {
+  public void setPositionValue(int spacingType, float position) {
     if (style.position.set(spacingType, position)) {
       dirty();
     }
@@ -396,9 +396,7 @@ public class CSSNode {
   }
 
   public void setPositionTop(float positionTop) {
-    if (style.position.set(TOP, positionTop)) {
-      dirty();
-    }
+    setPositionValue(TOP, positionTop);
   }
 
   /**
@@ -409,9 +407,7 @@ public class CSSNode {
   }
 
   public void setPositionBottom(float positionBottom) {
-    if (style.position.set(BOTTOM, positionBottom)) {
-      dirty();
-    }
+    setPositionValue(BOTTOM, positionBottom);
   }
 
   /**
@@ -422,9 +418,7 @@ public class CSSNode {
   }
 
   public void setPositionLeft(float positionLeft) {
-    if (style.position.set(LEFT, positionLeft)) {
-      dirty();
-    }
+    setPositionValue(LEFT, positionLeft);
   }
 
   /**
@@ -435,9 +429,7 @@ public class CSSNode {
   }
 
   public void setPositionRight(float positionRight) {
-    if (style.position.set(RIGHT, positionRight)) {
-      dirty();
-    }
+    setPositionValue(RIGHT, positionRight);
   }
 
   /**
