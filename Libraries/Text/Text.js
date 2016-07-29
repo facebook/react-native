@@ -29,7 +29,7 @@ const viewConfig = {
   validAttributes: merge(ReactNativeViewAttributes.UIView, {
     isHighlighted: true,
     numberOfLines: true,
-    lineBreakMode: true,
+    ellipsizeMode: true,
     allowFontScaling: true,
     selectable: true,
   }),
@@ -90,7 +90,7 @@ const viewConfig = {
 const Text = React.createClass({
   propTypes: {
     /**
-     * Line Break mode. This can be one of the following values:
+     * This can be one of the following values:
      *
      * - `head` - The line is displayed so that the end fits in the container and the missing text
      * at the beginning of the line is indicated by an ellipsis glyph. e.g., "...wxyz"
@@ -106,13 +106,13 @@ const Text = React.createClass({
      *
      * > `clip` is working only for iOS
      */
-    lineBreakMode: React.PropTypes.oneOf(['head', 'middle', 'tail', 'clip']),
+    ellipsizeMode: React.PropTypes.oneOf(['head', 'middle', 'tail', 'clip']),
     /**
      * Used to truncate the text with an ellipsis after computing the text
      * layout, including line wrapping, such that the total number of lines
      * does not exceed this number.
      *
-     * This prop is commonly used with `lineBreakMode`.
+     * This prop is commonly used with `ellipsizeMode`.
      */
     numberOfLines: React.PropTypes.number,
     /**
@@ -172,7 +172,7 @@ const Text = React.createClass({
     return {
       accessible: true,
       allowFontScaling: true,
-      lineBreakMode: 'tail',
+      ellipsizeMode: 'tail',
     };
   },
   getInitialState: function(): Object {

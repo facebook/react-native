@@ -1,4 +1,4 @@
-exports[`TouchableHighlight renders correctly 0`] = `
+exports[`TouchableHighlight renders correctly 1`] = `
 <View
   accessibilityComponentType={undefined}
   accessibilityLabel={undefined}
@@ -14,7 +14,9 @@ exports[`TouchableHighlight renders correctly 0`] = `
   onStartShouldSetResponder={[Function bound touchableHandleStartShouldSetResponder]}
   style={
     Array [
-      4,
+      Object {
+        "backgroundColor": "transparent"
+      },
       Object {}
     ]
   }

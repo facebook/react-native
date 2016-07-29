@@ -36,8 +36,8 @@ const {
   View,
 } = ReactNative;
 
-const EmptyPage = React.createClass({
-  render: function() {
+class EmptyPage extends React.Component {
+  render() {
     return (
       <View style={styles.emptyPage}>
         <Text style={styles.emptyPageText}>
@@ -45,11 +45,11 @@ const EmptyPage = React.createClass({
         </Text>
       </View>
     );
-  },
-});
+  }
+}
 
-const NavigatorIOSExamplePage = React.createClass({
-  render: function() {
+class NavigatorIOSExamplePage extends React.Component {
+  render() {
     var recurseTitle = 'Recurse Navigation';
     if (!this.props.depth || this.props.depth === 1) {
       recurseTitle += ' - more examples here';
@@ -128,9 +128,9 @@ const NavigatorIOSExamplePage = React.createClass({
         <View style={styles.line}/>
       </ScrollView>
     );
-  },
+  }
 
-  _renderReplace: function() {
+  _renderReplace = () => {
     if (!this.props.depth) {
       // this is to avoid replacing the top of the stack
       return null;
@@ -148,9 +148,9 @@ const NavigatorIOSExamplePage = React.createClass({
         }
       });
     });
-  },
+  };
 
-  _renderReplacePrevious: function() {
+  _renderReplacePrevious = () => {
     if (!this.props.depth || this.props.depth < 2) {
       // this is to avoid replacing the top of the stack
       return null;
@@ -165,9 +165,9 @@ const NavigatorIOSExamplePage = React.createClass({
         wrapperStyle: styles.customWrapperStyle,
       });
     });
-  },
+  };
 
-  _renderReplacePreviousAndPop: function() {
+  _renderReplacePreviousAndPop = () => {
     if (!this.props.depth || this.props.depth < 2) {
       // this is to avoid replacing the top of the stack
       return null;
@@ -182,9 +182,9 @@ const NavigatorIOSExamplePage = React.createClass({
         wrapperStyle: styles.customWrapperStyle,
       });
     });
-  },
+  };
 
-  _renderRow: function(title: string, onPress: Function) {
+  _renderRow = (title: string, onPress: Function) => {
     return (
       <View>
         <TouchableHighlight onPress={onPress}>
@@ -197,17 +197,15 @@ const NavigatorIOSExamplePage = React.createClass({
         <View style={styles.separator} />
       </View>
     );
-  },
-});
+  };
+}
 
-const NavigatorIOSExample = React.createClass({
-  statics: {
-    title: '<NavigatorIOS>',
-    description: 'iOS navigation capabilities',
-    external: true,
-  },
+class NavigatorIOSExample extends React.Component {
+  static title = '<NavigatorIOS>';
+  static description = 'iOS navigation capabilities';
+  static external = true;
 
-  render: function() {
+  render() {
     const {onExampleExit} = this.props;
     return (
       <NavigatorIOS
@@ -220,8 +218,8 @@ const NavigatorIOSExample = React.createClass({
         tintColor="#008888"
       />
     );
-  },
-});
+  }
+}
 
 const styles = StyleSheet.create({
   container: {

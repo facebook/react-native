@@ -103,6 +103,11 @@ const Image = React.createClass({
     style: StyleSheetPropType(ImageStylePropTypes),
     /**
      * The image source (either a remote URL or a local file resource).
+     *
+     * This prop can also contain several remote URLs, specified together with
+     * their width and height and potentially with scale/other URI arguments.
+     * The native side will then choose the best `uri` to display based on the
+     * measured size of the image container.
      */
     source: ImageSourcePropType,
     /**
@@ -268,14 +273,24 @@ const Image = React.createClass({
 
   render: function() {
     const source = resolveAssetSource(this.props.source) || { uri: undefined, width: undefined, height: undefined };
-    const {width, height, uri} = source;
-    const style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
+
+    let sources;
+    let style;
+    if (Array.isArray(source)) {
+      style = flattenStyle([styles.base, this.props.style]) || {};
+      sources = source;
+    } else {
+      const {width, height, uri} = source;
+      style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
+      sources = [source];
+
+      if (uri === '') {
+        console.warn('source.uri should not be an empty string');
+      }
+    }
+
     const resizeMode = this.props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
     const tintColor = (style || {}).tintColor; // Workaround for flow bug t7737108
-
-    if (uri === '') {
-      console.warn('source.uri should not be an empty string');
-    }
 
     if (this.props.src) {
       console.warn('The <Image> component requires a `source` property rather than `src`.');
@@ -287,7 +302,7 @@ const Image = React.createClass({
         style={style}
         resizeMode={resizeMode}
         tintColor={tintColor}
-        source={source}
+        source={sources}
       />
     );
   },

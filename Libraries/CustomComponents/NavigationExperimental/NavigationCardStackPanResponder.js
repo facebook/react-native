@@ -40,14 +40,6 @@ const POSITION_THRESHOLD = 1 / 3;
 const RESPOND_THRESHOLD = 15;
 
 /**
- * The distance from the edge of the navigator which gesture response can start for.
- * For horizontal scroll views, a distance of 30 from the left of the screen is the
- * standard maximum position to start touch responsiveness.
- */
-const RESPOND_POSITION_MAX_HORIZONTAL = 30;
-const RESPOND_POSITION_MAX_VERTICAL = null;
-
-/**
  * The threshold (in pixels) to finish the gesture action.
  */
 const DISTANCE_THRESHOLD = 100;
@@ -64,6 +56,10 @@ export type NavigationGestureDirection =  'horizontal' | 'vertical';
 
 type Props = NavigationSceneRendererProps & {
   onNavigateBack: ?Function,
+  /**
+  * The distance from the edge of the navigator which gesture response can start for.
+  **/
+  gestureResponseDistance: ?number,
 };
 
 /**
@@ -115,8 +111,12 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
       layout.width.__getValue();
 
     const positionMax = isVertical ?
-      RESPOND_POSITION_MAX_VERTICAL :
-      RESPOND_POSITION_MAX_HORIZONTAL;
+      props.gestureResponseDistance :
+      /**
+      * For horizontal scroll views, a distance of 30 from the left of the screen is the
+      * standard maximum position to start touch responsiveness.
+      */
+      props.gestureResponseDistance || 30;
 
     if (positionMax != null && currentDragPosition > positionMax) {
       return false;

@@ -35,13 +35,12 @@ TESTS.forEach(
   (test) => AppRegistry.registerComponent(test.displayName, () => test)
 );
 
-var RCTRootViewIntegrationTestsApp = React.createClass({
-  getInitialState: function() {
-    return {
-      test: null,
-    };
-  },
-  render: function() {
+class RCTRootViewIntegrationTestsApp extends React.Component {
+  state = {
+    test: null,
+  };
+
+  render() {
     if (this.state.test) {
       return (
         <ScrollView>
@@ -72,7 +71,7 @@ var RCTRootViewIntegrationTestsApp = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {

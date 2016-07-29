@@ -19,8 +19,8 @@ var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
 
-var TabBarItemIOS = React.createClass({
-  propTypes: {
+class TabBarItemIOS extends React.Component {
+  static propTypes = {
     ...View.propTypes,
     /**
      * Little red bubble that sits at the top right of the icon.
@@ -81,27 +81,25 @@ var TabBarItemIOS = React.createClass({
      * is defined.
      */
     title: React.PropTypes.string,
-  },
+  };
 
-  getInitialState: function() {
-    return {
-      hasBeenSelected: false,
-    };
-  },
+  state = {
+    hasBeenSelected: false,
+  };
 
-  componentWillMount: function() {
+  componentWillMount() {
     if (this.props.selected) {
       this.setState({hasBeenSelected: true});
     }
-  },
+  }
 
-  componentWillReceiveProps: function(nextProps: { selected?: boolean }) {
+  componentWillReceiveProps(nextProps: { selected?: boolean }) {
     if (this.state.hasBeenSelected || nextProps.selected) {
       this.setState({hasBeenSelected: true});
     }
-  },
+  }
 
-  render: function() {
+  render() {
     var {style, children, ...props} = this.props;
 
     // if the tab has already been shown once, always continue to show it so we
@@ -123,7 +121,7 @@ var TabBarItemIOS = React.createClass({
       </RCTTabBarItem>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   tab: {

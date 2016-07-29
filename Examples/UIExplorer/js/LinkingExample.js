@@ -31,13 +31,12 @@ var {
 } = ReactNative;
 var UIExplorerBlock = require('./UIExplorerBlock');
 
-var OpenURLButton = React.createClass({
-
-  propTypes: {
+class OpenURLButton extends React.Component {
+  static propTypes = {
     url: React.PropTypes.string,
-  },
+  };
 
-  handleClick: function() {
+  handleClick = () => {
     Linking.canOpenURL(this.props.url).then(supported => {
       if (supported) {
         Linking.openURL(this.props.url);
@@ -45,9 +44,9 @@ var OpenURLButton = React.createClass({
         console.log('Don\'t know how to open URI: ' + this.props.url);
       }
     });
-  },
+  };
 
-  render: function() {
+  render() {
     return (
       <TouchableOpacity
         onPress={this.handleClick}>
@@ -57,16 +56,13 @@ var OpenURLButton = React.createClass({
       </TouchableOpacity>
     );
   }
-});
+}
 
-var IntentAndroidExample = React.createClass({
+class IntentAndroidExample extends React.Component {
+  static title = 'Linking';
+  static description = 'Shows how to use Linking to open URLs.';
 
-  statics: {
-    title: 'Linking',
-    description: 'Shows how to use Linking to open URLs.',
-  },
-
-  render: function() {
+  render() {
     return (
       <UIExplorerBlock title="Open external URLs">
         <OpenURLButton url={'https://www.facebook.com'} />
@@ -77,8 +73,8 @@ var IntentAndroidExample = React.createClass({
         <OpenURLButton url={'tel:9876543210'} />
       </UIExplorerBlock>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   container: {
