@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 'use strict';
+
+const EventEmitter = require('events');
+
 const path = require('../fastpath');
 const getPlatformExtension = require('../lib/getPlatformExtension');
 
@@ -14,7 +17,7 @@ const GENERIC_PLATFORM = 'generic';
 const NATIVE_PLATFORM = 'native';
 const PACKAGE_JSON = path.sep + 'package.json';
 
-class HasteMap {
+class HasteMap extends EventEmitter {
   constructor({
     extensions,
     fastfs,
@@ -23,6 +26,7 @@ class HasteMap {
     helpers,
     platforms,
   }) {
+    super();
     this._extensions = extensions;
     this._fastfs = fastfs;
     this._moduleCache = moduleCache;
@@ -50,6 +54,7 @@ class HasteMap {
   processFileChange(type, absPath) {
     return Promise.resolve().then(() => {
       /*eslint no-labels: 0 */
+      let invalidated;
       if (type === 'delete' || type === 'change') {
         loop: for (const name in this._map) {
           const modulesMap = this._map[name];
@@ -57,21 +62,25 @@ class HasteMap {
             const module = modulesMap[platform];
             if (module.path === absPath) {
               delete modulesMap[platform];
+              invalidated = name;
               break loop;
             }
           }
         }
 
         if (type === 'delete') {
+          if (invalidated) {
+            this.emit('change');
+          }
           return null;
         }
       }
 
-      if (this._extensions.indexOf(this._helpers.extname(absPath)) !== -1) {
+      if (type !== 'delete' && this._extensions.indexOf(this._helpers.extname(absPath)) !== -1) {
         if (path.basename(absPath) === 'package.json') {
-          return this._processHastePackage(absPath);
+          return this._processHastePackage(absPath, invalidated);
         } else {
-          return this._processHasteModule(absPath);
+          return this._processHasteModule(absPath, invalidated);
         }
       }
     });
@@ -98,20 +107,32 @@ class HasteMap {
     return module;
   }
 
-  _processHasteModule(file) {
+  _processHasteModule(file, previousName) {
     const module = this._moduleCache.getModule(file);
     return module.isHaste().then(
       isHaste => isHaste && module.getName()
-        .then(name => this._updateHasteMap(name, module))
+        .then(name => {
+          const result = this._updateHasteMap(name, module);
+          if (previousName && name !== previousName) {
+            this.emit('change');
+          }
+          return result;
+        })
     );
   }
 
-  _processHastePackage(file) {
+  _processHastePackage(file, previousName) {
     file = path.resolve(file);
     const p = this._moduleCache.getPackage(file);
     return p.isHaste()
       .then(isHaste => isHaste && p.getName()
-            .then(name => this._updateHasteMap(name, p)))
+        .then(name => {
+          const result = this._updateHasteMap(name, p);
+          if (previousName && name !== previousName) {
+            this.emit('change');
+          }
+          return result;
+        }))
       .catch(e => {
         if (e instanceof SyntaxError) {
           // Malformed package.json.
@@ -135,8 +156,8 @@ class HasteMap {
         `@providesModule naming collision:\n` +
         `  Duplicate module name: ${name}\n` +
         `  Paths: ${mod.path} collides with ${existingModule.path}\n\n` +
-        `This error is caused by a @providesModule declaration ` +
-        `with the same name across two different files.`
+        'This error is caused by a @providesModule declaration ' +
+        'with the same name across two different files.'
       );
     }
 
