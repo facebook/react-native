@@ -47,47 +47,4 @@ This will check your files against the latest template and perform the following
 
 # Manual Upgrades
 
-### From 0.28 to 0.29
-
-The major change in this version happened in Android([see changelog](https://github.com/facebook/react-native/releases/tag/v0.29.0)).  Android in 0.29 moved to using an Application file with the existing Activity file.  
-
-**Follow these manual steps:**
-
-1. Create a new file MainApplication.java in the same folder as MainActivity.java
-1. Update it to match - https://github.com/facebook/react-native/blob/0.29-stable/local-cli/generator-android/templates/package/MainApplication.java and move your customisations from MainActivity.java to this file
-1. Update MainActivity.java to match - https://github.com/facebook/react-native/blob/0.29-stable/local-cli/generator-android/templates/package/MainActivity.java
-1. Add android:name=".MainApplication" in the <application /> section of AndroidManifest.xml. It should now look like,
-
-```xml
-<application
-+   android:name=".MainApplication"
-    android:allowBackup="true"
-    android:label="@string/app_name"
-    android:icon="@mipmap/ic_launcher"
-    android:theme="@style/AppTheme">
-```
-
-  i. Clean gradle cache - ./gradlew clean
-  
-The experience might vary according to the level of customization you've made. Check this commit to see how UIExplorer and MoviesApp were migrated - [dcc2abc](https://github.com/facebook/react-native/commit/dcc2abc1f63f91e53bf01f4bc56c5b7c76300617)
-
-### From 0.13 to 0.14
-
-The major change in this version happened to the CLI ([see changelog](https://github.com/facebook/react-native/releases/tag/v0.14.0-rc)) and static images ([see docs](docs/images.html)). To use the new asset system in existing Xcode project, do the following:
-
-Add new "Run Script" step to your project's build phases:
-
-![](https://cloud.githubusercontent.com/assets/192222/11050044/871bf926-86f7-11e5-8908-736106457bcb.png)
-
-Set the script to
-```sh
-../node_modules/react-native/packager/react-native-xcode.sh
-```
-
-![](https://cloud.githubusercontent.com/assets/192222/11050052/8f098252-86f7-11e5-994a-364aabbaa7d1.png)
-
-Move main.jsbundle to Trash (it will be generated automatically by Xcode using the script above)
-
-![](https://cloud.githubusercontent.com/assets/192222/11050104/f3d025e2-86f7-11e5-9101-a4622236338d.png)
-
-If you installed Node via nvm, you might experience "react-native: command not found". See [issues/3974](https://github.com/facebook/react-native/issues/3974) for workaround and [pull/4015](https://github.com/facebook/react-native/pull/4015) for the fix.
+Some upgrades require manual steps, e.g. 0.13 to 0.14, or 0.28 to 0.29. Be sure to check the [release notes](https://github.com/facebook/react-native/releases) when upgrading so that you can identify any manual changes your particular project may require.
