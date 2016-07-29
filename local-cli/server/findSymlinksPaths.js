@@ -3,7 +3,7 @@ const fs = require('fs');
 
 module.exports = function findSymlinksPaths(lookupFolder) {
   return fs.readdirSync(lookupFolder)
-    .map(f => path.resolve(lookupFolder, f))
-    .filter(d => fs.lstatSync(d).isSymbolicLink())
-    .map(s => path.resolve(process.cwd(), fs.readlinkSync(s)));
+    .map(file => path.resolve(lookupFolder, file))
+    .filter(filePath => fs.lstatSync(filePath).isSymbolicLink())
+    .map(symlink => path.resolve(process.cwd(), fs.readlinkSync(symlink)));
 };
