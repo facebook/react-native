@@ -43,6 +43,10 @@ function _runAndroid(argv, config, resolve, reject) {
     command: 'variant',
     type: 'string',
     required: false,
+  }, {
+    command: 'applicationId',
+    type: 'string',
+    required: false,
   }], argv);
 
   args.root = args.root || '';
@@ -154,6 +158,14 @@ function run(args, reject) {
       'utf8'
     ).match(/package="(.+?)"/)[1];
 
+    // Is there a different applicationId?
+    let applicationId;
+    if (args['applicationId']) {
+      applicationId = args['applicationId']
+    } else {
+      applicationId = packageName;
+    }
+
     const adbPath = getAdbPath();
 
     const devices = adb.getDevices();
@@ -161,7 +173,7 @@ function run(args, reject) {
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
 
-        const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
+        const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', applicationId + '/' + packageName + '.MainActivity'];
 
         console.log(chalk.bold(
           `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
