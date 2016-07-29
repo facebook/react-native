@@ -654,6 +654,19 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   }
 
   /**
+   * Update given {@param rootView} from current catalyst instance.
+   */
+  @Override
+  public void updateRootView(ReactRootView rootView) {
+    UiThreadUtil.assertOnUiThread();
+    if (mAttachedRootViews.contains(rootView)) {
+      if (mCurrentReactContext != null && mCurrentReactContext.hasActiveCatalystInstance()) {
+        runApplication(rootView, mCurrentReactContext.getCatalystInstance());
+      }
+    }
+  }
+
+  /**
    * Uses configured {@link ReactPackage} instances to create all view managers
    */
   @Override
@@ -764,13 +777,22 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     rootView.setId(View.NO_ID);
 
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
-    int rootTag = uiManagerModule.addMeasuredRootView(rootView);
+    uiManagerModule.addMeasuredRootView(rootView);
+    runApplication(rootView, catalystInstance);
+    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+  }
+
+  private void runApplication(
+      ReactRootView rootView,
+      CatalystInstance catalystInstance) {
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "runApplication");
+    UiThreadUtil.assertOnUiThread();
     @Nullable Bundle launchOptions = rootView.getLaunchOptions();
     WritableMap initialProps = Arguments.makeNativeMap(launchOptions);
     String jsAppModuleName = rootView.getJSModuleName();
 
     WritableNativeMap appParams = new WritableNativeMap();
-    appParams.putDouble("rootTag", rootTag);
+    appParams.putDouble("rootTag", rootView.getId());
     appParams.putMap("initialProps", initialProps);
     catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);

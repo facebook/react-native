@@ -244,6 +244,23 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   }
 
   /**
+   * Notifies the react application at this root view that initial properties has been changed and it
+   * should refresh itself.
+   */
+  public void setLaunchOptions(Bundle launchOptions) {
+    UiThreadUtil.assertOnUiThread();
+
+    if (mLaunchOptions == null ? launchOptions == null : mLaunchOptions.equals(launchOptions)) {
+      return;
+    }
+    mLaunchOptions = launchOptions;
+
+    if (mReactInstanceManager != null && mIsAttachedToInstance) {
+      mReactInstanceManager.updateRootView(this);
+    }
+  }
+
+  /**
    * Is used by unit test to setup mWasMeasured and mIsAttachedToWindow flags, that will let this
    * view to be properly attached to catalyst instance by startReactApplication call
    */

@@ -112,6 +112,15 @@ public abstract class ReactActivity extends Activity
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
   }
 
+  /**
+   * Notifies the react application at this root view that initial properties has been changed and it should refresh itself.
+   */
+  protected void notifyLaunchOptionsChanged() {
+    if (mReactRootView != null) {
+      mReactRootView.setLaunchOptions(getLaunchOptions());
+    }
+  }
+
   @Override
   protected void onPause() {
     super.onPause();
