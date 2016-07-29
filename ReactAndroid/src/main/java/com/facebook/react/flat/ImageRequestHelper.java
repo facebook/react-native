@@ -47,6 +47,7 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
       source.startsWith("http://") ||
       source.startsWith("https://") ||
       source.startsWith("data:") ||
-      source.startsWith("file:///");
+      source.startsWith("file:///") ||
+      source.startsWith("content://");
   }
 }
