@@ -975,8 +975,7 @@ class AnimatedInterpolation extends AnimatedWithChildren {
         let degrees = parseFloat(value, 10) || 0;
         let radians = degrees * Math.PI / 180.0;
         return radians;
-      }
-      else {
+      } else {
         // Assume radians
         return parseFloat(value, 10) || 0;
       }
