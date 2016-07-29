@@ -302,7 +302,7 @@ var featured = [
     linkAppStore: 'https://itunes.apple.com/app/id1128309540',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.zerocar',
     infoLink: 'https://zerocar.socar.kr',
-    infoTitle: 'ZEROCAR Sharing: Zero cost car sharing service in Korea.',
+    infoTitle: 'ZEROCAR Sharing : Korea based Zero Cost car-sharing service',
   }
 ];
 
