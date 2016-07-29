@@ -60,23 +60,23 @@ static void RCTPrint(void *context)
 #define DEFINE_PROCESS_META_PROPS(type)                                                            \
 static void RCTProcessMetaProps##type(const float metaProps[META_PROP_COUNT], CSSNodeRef node) {   \
   if (!isUndefined(metaProps[META_PROP_LEFT])) {                                                   \
-    CSSNodeStyleSet##type##Left(node, metaProps[META_PROP_LEFT]);                                  \
+    CSSNodeStyleSet##type##Start(node, metaProps[META_PROP_LEFT]);                                  \
   } else if (!isUndefined(metaProps[META_PROP_HORIZONTAL])) {                                      \
-    CSSNodeStyleSet##type##Left(node, metaProps[META_PROP_HORIZONTAL]);                            \
+    CSSNodeStyleSet##type##Start(node, metaProps[META_PROP_HORIZONTAL]);                            \
   } else if (!isUndefined(metaProps[META_PROP_ALL])) {                                             \
-    CSSNodeStyleSet##type##Left(node, metaProps[META_PROP_ALL]);                                   \
+    CSSNodeStyleSet##type##Start(node, metaProps[META_PROP_ALL]);                                   \
   } else {                                                                                         \
-    CSSNodeStyleSet##type##Left(node, 0);                                                          \
+    CSSNodeStyleSet##type##Start(node, 0);                                                          \
   }                                                                                                \
                                                                                                    \
   if (!isUndefined(metaProps[META_PROP_RIGHT])) {                                                  \
-    CSSNodeStyleSet##type##Right(node, metaProps[META_PROP_RIGHT]);                                \
+    CSSNodeStyleSet##type##End(node, metaProps[META_PROP_RIGHT]);                                \
   } else if (!isUndefined(metaProps[META_PROP_HORIZONTAL])) {                                      \
-    CSSNodeStyleSet##type##Right(node, metaProps[META_PROP_HORIZONTAL]);                           \
+    CSSNodeStyleSet##type##End(node, metaProps[META_PROP_HORIZONTAL]);                           \
   } else if (!isUndefined(metaProps[META_PROP_ALL])) {                                             \
-    CSSNodeStyleSet##type##Right(node, metaProps[META_PROP_ALL]);                                  \
+    CSSNodeStyleSet##type##End(node, metaProps[META_PROP_ALL]);                                  \
   } else {                                                                                         \
-    CSSNodeStyleSet##type##Right(node, 0);                                                         \
+    CSSNodeStyleSet##type##End(node, 0);                                                         \
   }                                                                                                \
                                                                                                    \
   if (!isUndefined(metaProps[META_PROP_TOP])) {                                                    \
@@ -470,12 +470,29 @@ RCT_PADDING_PROPERTY(Right, RIGHT)
 
 - (UIEdgeInsets)paddingAsInsets
 {
-  return (UIEdgeInsets){
-    CSSNodeStyleGetPaddingTop(_cssNode),
-    CSSNodeStyleGetPaddingLeft(_cssNode),
-    CSSNodeStyleGetPaddingBottom(_cssNode),
-    CSSNodeStyleGetPaddingRight(_cssNode)
-  };
+  if (CSSNodeLayoutGetDirection(_cssNode) == CSSDirectionRTL) {
+    return (UIEdgeInsets){
+      CSSNodeStyleGetPaddingTop(_cssNode),
+      !isUndefined(CSSNodeStyleGetPaddingEnd(_cssNode)) ?
+      CSSNodeStyleGetPaddingEnd(_cssNode) :
+      CSSNodeStyleGetPaddingLeft(_cssNode),
+      CSSNodeStyleGetPaddingBottom(_cssNode),
+      !isUndefined(CSSNodeStyleGetPaddingStart(_cssNode)) ?
+      CSSNodeStyleGetPaddingStart(_cssNode) :
+      CSSNodeStyleGetPaddingRight(_cssNode)
+    };
+  } else {
+    return (UIEdgeInsets){
+      CSSNodeStyleGetPaddingTop(_cssNode),
+      !isUndefined(CSSNodeStyleGetPaddingStart(_cssNode)) ?
+      CSSNodeStyleGetPaddingStart(_cssNode) :
+      CSSNodeStyleGetPaddingLeft(_cssNode),
+      CSSNodeStyleGetPaddingBottom(_cssNode),
+      !isUndefined(CSSNodeStyleGetPaddingEnd(_cssNode)) ?
+      CSSNodeStyleGetPaddingEnd(_cssNode) :
+      CSSNodeStyleGetPaddingRight(_cssNode)
+    };
+  }
 }
 
 // Border
@@ -521,9 +538,9 @@ RCT_DIMENSION_PROPERTY(MaxHeight, maxHeight, MaxHeight)
 // Position
 
 RCT_DIMENSION_PROPERTY(Top, top, PositionTop)
-RCT_DIMENSION_PROPERTY(Right, right, PositionRight)
+RCT_DIMENSION_PROPERTY(Right, right, PositionEnd)
 RCT_DIMENSION_PROPERTY(Bottom, bottom, PositionBottom)
-RCT_DIMENSION_PROPERTY(Left, left, PositionLeft)
+RCT_DIMENSION_PROPERTY(Left, left, PositionStart)
 
 - (void)setFrame:(CGRect)frame
 {
