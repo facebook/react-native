@@ -700,9 +700,8 @@ static void setTrailingPosition(CSSNode* node, CSSNode* child, CSSFlexDirection 
 // If both left and right are defined, then use left. Otherwise return
 // +left or -right depending on which is defined.
 static float getRelativePosition(CSSNode* node, CSSFlexDirection axis) {
-  float lead = getLeadingPosition(node, axis);
-  if (!isUndefined(lead)) {
-    return lead;
+  if (isLeadingPosDefined(node, axis)) {
+    return getLeadingPosition(node, axis);
   }
   return -getTrailingPosition(node, axis);
 }
