@@ -37,13 +37,13 @@ Tappable components should provide feedback that show the user what is handling 
 
 Which component you use will depend on what kind of feedback you want to provide:
 
-- Generally, you can use [**TouchableHighlight**](/docs/touchablehighlight.html) anywhere you would use a button or link on web. The view's background will be darkened when the user presses down on the button.
+- Generally, you can use [**TouchableHighlight**](/react-native/docs/touchablehighlight.html) anywhere you would use a button or link on web. The view's background will be darkened when the user presses down on the button.
 
-- You may consider using [**TouchableNativeFeedback**](/docs/touchablenativefeedback.html) on Android to display ink surface reaction ripples that respond to the user's touch.
+- You may consider using [**TouchableNativeFeedback**](/react-native/docs/touchablenativefeedback.html) on Android to display ink surface reaction ripples that respond to the user's touch.
 
-- [**TouchableOpacity**](/docs/touchableopacity.html) can be used to provide feedback by reducing the opacity of the button, allowing the background to be seen through while the user is pressing down.
+- [**TouchableOpacity**](/react-native/docs/touchableopacity.html) can be used to provide feedback by reducing the opacity of the button, allowing the background to be seen through while the user is pressing down.
 
-- If you need to handle a tap gesture but you don't want any feedback to be displayed, use [**TouchableWithoutFeedback**](/docs/touchablewithoutfeedback.html).
+- If you need to handle a tap gesture but you don't want any feedback to be displayed, use [**TouchableWithoutFeedback**](/react-native/docs/touchablewithoutfeedback.html).
 
 ### Long presses
 
