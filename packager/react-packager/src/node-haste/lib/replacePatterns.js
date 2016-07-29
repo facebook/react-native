@@ -6,6 +6,9 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
 'use strict';
 
-module.exports = require.requireActual('../node-haste/__mocks__/graceful-fs');
+exports.IMPORT_RE = /(\bimport\s+(?:[^'"]+\s+from\s+)??)(['"])([^'"]+)(\2)/g;
+exports.EXPORT_RE = /(\bexport\s+(?:[^'"]+\s+from\s+)??)(['"])([^'"]+)(\2)/g;
+exports.REQUIRE_RE = /(\brequire\s*?\(\s*?)(['"`])([^'"`]+)(\2\s*?\))/g;

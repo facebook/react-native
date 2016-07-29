@@ -8,4 +8,7 @@
  */
 'use strict';
 
-module.exports = require.requireActual('../node-haste/__mocks__/graceful-fs');
+module.exports = {
+  WatchmanWatcher: jest.genMockFromModule('sane/src/watchman_watcher'),
+  NodeWatcher: jest.genMockFromModule('sane/src/node_watcher'),
+};
