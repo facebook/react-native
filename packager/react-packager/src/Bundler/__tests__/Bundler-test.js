@@ -17,7 +17,7 @@ jest
   .mock('fs')
   .mock('assert')
   .mock('progress')
-  .mock('node-haste')
+  .mock('../../node-haste')
   .mock('../../JSTransformer')
   .mock('../../lib/declareOpts')
   .mock('../../Resolver')

@@ -8,4 +8,13 @@
  */
 'use strict';
 
-module.exports = require.requireActual('../node-haste/__mocks__/graceful-fs');
+class Cache {
+  get(filepath, field, cb) {
+    return cb(filepath);
+  }
+
+  invalidate(filepath) { }
+  end() { }
+}
+
+module.exports = Cache;
