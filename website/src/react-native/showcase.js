@@ -296,6 +296,14 @@ var featured = [
     infoLink: 'https://www.crunchbase.com/organization/bds-diet#/entity',
     infoTitle: 'Bdsdiet provides real estate brokerage services through web and live agents in Korea.',
   },
+  {
+    name: 'Zerocar',
+    icon: 'https://s3.ap-northeast-2.amazonaws.com/socar-public/zerocar-logo.png',
+    linkAppStore: 'https://itunes.apple.com/app/id1128309540',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.zerocar',
+    infoLink: 'https://zerocar.socar.kr',
+    infoTitle: 'ZEROCAR Sharing : Korea based Zero Cost car-sharing service',
+  }
 ];
 
 featured.sort(function(a, b) {
