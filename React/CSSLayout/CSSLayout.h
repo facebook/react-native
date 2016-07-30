@@ -169,6 +169,8 @@ CSS_NODE_STYLE_PROPERTY(float, PositionLeft, positionLeft);
 CSS_NODE_STYLE_PROPERTY(float, PositionTop, positionTop);
 CSS_NODE_STYLE_PROPERTY(float, PositionRight, positionRight);
 CSS_NODE_STYLE_PROPERTY(float, PositionBottom, positionBottom);
+CSS_NODE_STYLE_PROPERTY(float, PositionStart, positionStart);
+CSS_NODE_STYLE_PROPERTY(float, PositionEnd, positionEnd);
 
 CSS_NODE_STYLE_PROPERTY(float, MarginLeft, marginLeft);
 CSS_NODE_STYLE_PROPERTY(float, MarginTop, marginTop);
@@ -204,6 +206,7 @@ CSS_NODE_LAYOUT_PROPERTY(float, Right);
 CSS_NODE_LAYOUT_PROPERTY(float, Bottom);
 CSS_NODE_LAYOUT_PROPERTY(float, Width);
 CSS_NODE_LAYOUT_PROPERTY(float, Height);
+CSS_NODE_LAYOUT_PROPERTY(CSSDirection, Direction);
 
 CSS_EXTERN_C_END
 

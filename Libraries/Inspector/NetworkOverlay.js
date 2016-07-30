@@ -109,6 +109,9 @@ class NetworkOverlay extends React.Component {
     }.bind(this));
 
     XHRInterceptor.setRequestHeaderCallback(function(header, value, xhr) {
+      if (xhr._index === undefined) {
+        return;
+      }
       const networkInfo = this._requests[xhr._index];
       if (!networkInfo.requestHeaders) {
         networkInfo.requestHeaders = {};
@@ -118,12 +121,18 @@ class NetworkOverlay extends React.Component {
     }.bind(this));
 
     XHRInterceptor.setSendCallback(function(data, xhr) {
+      if (xhr._index === undefined) {
+        return;
+      }
       this._requests[xhr._index].dataSent = data;
       this._genDetailViewItem(xhr._index);
     }.bind(this));
 
     XHRInterceptor.setHeaderReceivedCallback(
       function(type, size, responseHeaders, xhr) {
+        if (xhr._index === undefined) {
+          return;
+        }
         const networkInfo = this._requests[xhr._index];
         networkInfo.responseContentType = type;
         networkInfo.responseSize = size;
@@ -141,6 +150,9 @@ class NetworkOverlay extends React.Component {
         responseType,
         xhr,
       ) {
+        if (xhr._index === undefined) {
+          return;
+        }
         const networkInfo = this._requests[xhr._index];
         networkInfo.status = status;
         networkInfo.timeout = timeout;

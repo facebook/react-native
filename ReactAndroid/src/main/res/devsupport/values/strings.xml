@@ -19,6 +19,6 @@
   <string name="catalyst_element_inspector" project="catalyst" translatable="false">Toggle Inspector</string>
   <string name="catalyst_heap_capture" project="catalyst" translatable="false">Capture Heap</string>
   <string name="catalyst_dismiss_button" project="catalyst" translatable="false">Dismiss (ESC)</string>
-  <string name="catalyst_reload_button" project="catalyst" translatable="false">Reload (R, R)</string>
+  <string name="catalyst_reload_button" project="catalyst" translatable="false">Reload (R,\u00A0R)</string>
   <string name="catalyst_copy_button" project="catalyst" translatable="false">Copy</string>
 </resources>
