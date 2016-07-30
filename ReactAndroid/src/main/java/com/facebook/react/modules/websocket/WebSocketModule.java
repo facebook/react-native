@@ -29,6 +29,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.network.ForwardingCookieHandler;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -43,6 +44,7 @@ import java.net.URISyntaxException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okio.Buffer;
@@ -54,10 +56,12 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
   private final Map<Integer, WebSocket> mWebSocketConnections = new HashMap<>();
 
   private ReactContext mReactContext;
+  private ForwardingCookieHandler mCookieHandler;
 
   public WebSocketModule(ReactApplicationContext context) {
     super(context);
     mReactContext = context;
+    mCookieHandler = new ForwardingCookieHandler(context);
   }
 
   private void sendEvent(String eventName, WritableMap params) {
@@ -87,11 +91,16 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
         .tag(id)
         .url(url);
 
+    String cookie = getCookie(url);
+    if (cookie != null) {
+      builder.addHeader("Cookie", cookie);
+    }
+
     if (headers != null) {
       ReadableMapKeySetIterator iterator = headers.keySetIterator();
 
       if (!headers.hasKey("origin")) {
-        builder.addHeader("origin", setDefaultOrigin(url));
+        builder.addHeader("origin", getDefaultOrigin(url));
       }
 
       while (iterator.hasNextKey()) {
@@ -105,7 +114,7 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
         }
       }
     } else {
-      builder.addHeader("origin", setDefaultOrigin(url));
+      builder.addHeader("origin", getDefaultOrigin(url));
     }
 
     if (protocols != null && protocols.size() > 0) {
@@ -256,13 +265,13 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
   }
 
   /**
-   * Set a default origin
+   * Get the default HTTP(S) origin for a specific WebSocket URI
    *
-   * @param Websocket connection endpoint
-   * @return A string of the endpoint converted to HTTP protocol
+   * @param String uri
+   * @return A string of the endpoint converted to HTTP protocol (http[s]://host[:port])
    */
 
-  private static String setDefaultOrigin(String uri) {
+  private static String getDefaultOrigin(String uri) {
     try {
       String defaultOrigin;
       String scheme = "";
@@ -285,8 +294,31 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       }
 
       return defaultOrigin;
+
     } catch (URISyntaxException e) {
-        throw new IllegalArgumentException("Unable to set " + uri + " as default origin header.");
+      throw new IllegalArgumentException("Unable to set " + uri + " as default origin header");
+    }
+  }
+
+  /**
+   * Get the cookie for a specific domain
+   *
+   * @param String uri
+   * @return The cookie header or null if none is set
+   */
+  private String getCookie(String uri) {
+    try {
+      URI origin = new URI(getDefaultOrigin(uri));
+      Map<String, List<String>> cookieMap = mCookieHandler.get(origin, new HashMap());
+      List<String> cookieList = cookieMap.get("Cookie");
+
+      if (cookieList == null || cookieList.isEmpty()) {
+        return null;
+      }
+
+      return cookieList.get(0);
+    } catch (URISyntaxException | IOException e) {
+      throw new IllegalArgumentException("Unable to get cookie from " + uri);
     }
   }
 }
