@@ -202,6 +202,7 @@ task cleanReactNdkLib(type: Exec) {
     commandLine getNdkBuildFullPath(),
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
             "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
+            "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             '-C', file('src/main/jni/react/jni').absolutePath,
             'clean'
 }
