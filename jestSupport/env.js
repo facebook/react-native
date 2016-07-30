@@ -23,6 +23,7 @@ global.regeneratorRuntime = require.requireActual('regenerator-runtime/runtime')
 jest
   .mock('ensureComponentIsNative')
   .mock('Image')
+  .mock('npmlog')
   .mock('NativeModules')
   .mock('Text')
   .mock('View');
