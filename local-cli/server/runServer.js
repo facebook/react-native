@@ -89,7 +89,7 @@ function getPackagerServer(args, config) {
       'aac', 'aiff', 'caf', 'm4a', 'mp3', 'wav', // Audio formats
       'html', 'pdf', // Document formats
     ],
-    resetCache: args.resetCache || args['reset-cache'],
+    resetCache: args.resetCache,
     verbose: args.verbose,
   });
 }
