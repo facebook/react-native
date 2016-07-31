@@ -8,7 +8,6 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <QuartzCore/QuartzCore.h>
 
 @class RCTNativeAnimatedModule;
 
@@ -19,8 +18,6 @@
 - (instancetype)initWithViewTag:(NSNumber *)viewTag
                 animationModule:(RCTNativeAnimatedModule *)animationModule NS_DESIGNATED_INITIALIZER;
 
-- (void)updateViewWithProps:(NSDictionary<NSString *, NSNumber *> *)props
-                     styles:(NSDictionary<NSString *, NSNumber *> *)styles
-                  transform:(CATransform3D)transform;
+- (void)updateViewWithDictionary:(NSDictionary<NSString *, NSObject *> *)updates;
 
 @end

@@ -10,7 +10,6 @@
 #import "RCTPropsAnimatedNode.h"
 #import "RCTAnimationUtils.h"
 #import "RCTNativeAnimatedModule.h"
-#import "RCTValueAnimatedNode.h"
 #import "RCTStyleAnimatedNode.h"
 #import "RCTViewPropertyMapper.h"
 
@@ -53,21 +52,10 @@
 
 - (void)performViewUpdatesIfNecessary
 {
-  NSMutableDictionary<NSString *, NSNumber *> *propsDictionary = [NSMutableDictionary dictionary];
-  NSDictionary<NSString *, NSNumber *> *props = self.config[@"props"];
-  [props enumerateKeysAndObjectsUsingBlock:^(NSString *property, NSNumber *nodeTag, __unused BOOL *stop) {
-    RCTAnimatedNode *node = self.parentNodes[nodeTag];
-    if (node) {
-      if ([node isKindOfClass:[RCTValueAnimatedNode class]]) {
-        RCTValueAnimatedNode *parentNode = (RCTValueAnimatedNode *)node;
-        [propsDictionary setObject:@(parentNode.value) forKey:property];
-      }
-    }
-  }];
-
-  [_propertyMapper updateViewWithProps:propsDictionary
-                                styles:_parentNode.stylesDictionary
-                             transform:_parentNode.transform];
+  NSDictionary *updates = [_parentNode updatedPropsDictionary];
+  if (updates.count) {
+    [_propertyMapper updateViewWithDictionary:updates];
+  }
 }
 
 @end

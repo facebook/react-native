@@ -11,6 +11,23 @@
 #import "RCTValueAnimatedNode.h"
 
 @implementation RCTTransformAnimatedNode
+{
+  NSMutableDictionary<NSString *, NSObject *> *_updatedPropsDictionary;
+}
+
+- (instancetype)initWithTag:(NSNumber *)tag
+                     config:(NSDictionary<NSString *, id> *)config;
+{
+  if ((self = [super initWithTag:tag config:config])) {
+    _updatedPropsDictionary = [NSMutableDictionary new];
+  }
+  return self;
+}
+
+- (NSDictionary *)updatedPropsDictionary
+{
+  return _updatedPropsDictionary;
+}
 
 - (void)performUpdate
 {
@@ -23,7 +40,7 @@
     NSNumber *nodeTag = transformConfig[@"nodeTag"];
 
     RCTAnimatedNode *node = self.parentNodes[nodeTag];
-    if ([node isKindOfClass:[RCTValueAnimatedNode class]]) {
+    if (node.hasUpdated && [node isKindOfClass:[RCTValueAnimatedNode class]]) {
       RCTValueAnimatedNode *parentNode = (RCTValueAnimatedNode *)node;
 
       NSString *property = transformConfig[@"property"];
@@ -59,7 +76,13 @@
     }
   }
 
-  _transform = transform;
+  _updatedPropsDictionary[@"transform"] = [NSValue valueWithCATransform3D:transform];
+}
+
+- (void)cleanupAnimationUpdate
+{
+  [super cleanupAnimationUpdate];
+  [_updatedPropsDictionary removeAllObjects];
 }
 
 @end

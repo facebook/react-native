@@ -12,55 +12,48 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTBridge.h"
+#import "RCTConvert.h"
 #import "RCTUIManager.h"
 #import "RCTNativeAnimatedModule.h"
-#import "RCTTransformAnimatedNode.h"
 
 @implementation RCTViewPropertyMapper
 {
   RCTNativeAnimatedModule *_animationModule;
-  CATransform3D _lastTransform;
-  CGFloat _lastOpacity;
 }
 
 - (instancetype)initWithViewTag:(NSNumber *)viewTag
                 animationModule:(RCTNativeAnimatedModule *)animationModule
 {
   if ((self = [super init])) {
+    _animationModule = animationModule;
     _viewTag = viewTag;
     _animationModule = animationModule;
-    _lastTransform = CATransform3DIdentity;
-    _lastOpacity = 1.0;
   }
   return self;
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-- (void)updateViewWithProps:(NSDictionary<NSString *,NSNumber *> *)props
-                     styles:(NSDictionary<NSString *,NSNumber *> *)styles
-                  transform:(CATransform3D)transform
+- (void)updateViewWithDictionary:(NSDictionary<NSString *, NSObject *> *)updates
 {
+  if (!updates.count) {
+    return;
+  }
+
   UIView *view = [_animationModule.bridge.uiManager viewForReactTag:_viewTag];
   if (!view) {
     return;
   }
 
-  if (styles.count) {
-    NSNumber *opacityUpdate = styles[@"opacity"];
-    if (opacityUpdate) {
-      CGFloat opacity = opacityUpdate.floatValue;
-      if (opacity != _lastOpacity) {
-        view.alpha = opacity;
-        _lastOpacity = opacity;
-      }
-    }
+  NSNumber *opacity = [RCTConvert NSNumber:updates[@"opacity"]];
+  if (opacity) {
+    view.alpha = opacity.floatValue;
   }
 
-  if (!CATransform3DEqualToTransform(transform, _lastTransform)) {
+  NSObject *transform = updates[@"transform"];
+  if ([transform isKindOfClass:[NSValue class]]) {
     view.layer.allowsEdgeAntialiasing = YES;
-    view.layer.transform = transform;
-    _lastTransform = transform;
+    view.layer.transform = ((NSValue *)transform).CATransform3DValue;
   }
 }
 

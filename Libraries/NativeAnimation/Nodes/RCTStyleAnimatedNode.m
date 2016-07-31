@@ -14,40 +14,46 @@
 
 @implementation RCTStyleAnimatedNode
 {
-  NSMutableDictionary<NSString *, NSNumber *> *_stylesDictionary;
-  CATransform3D _transform;
+  NSMutableDictionary<NSString *, NSObject *> *_updatedPropsDictionary;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
                      config:(NSDictionary<NSString *, id> *)config;
 {
   if ((self = [super initWithTag:tag config:config])) {
-    _stylesDictionary = [NSMutableDictionary new];
-    _transform = CATransform3DIdentity;
+    _updatedPropsDictionary = [NSMutableDictionary new];
   }
   return self;
+}
+
+- (NSDictionary *)updatedPropsDictionary
+{
+  return _updatedPropsDictionary;
 }
 
 - (void)performUpdate
 {
   [super performUpdate];
 
-  __block CATransform3D xform = CATransform3DIdentity;
   NSDictionary<NSString *, NSNumber *> *style = self.config[@"style"];
   [style enumerateKeysAndObjectsUsingBlock:^(NSString *property, NSNumber *nodeTag, __unused BOOL *stop) {
     RCTAnimatedNode *node = self.parentNodes[nodeTag];
-    if (node) {
+    if (node && node.hasUpdated) {
       if ([node isKindOfClass:[RCTValueAnimatedNode class]]) {
         RCTValueAnimatedNode *parentNode = (RCTValueAnimatedNode *)node;
-        [_stylesDictionary setObject:@(parentNode.value) forKey:property];
+        [self->_updatedPropsDictionary setObject:@(parentNode.value) forKey:property];
       } else if ([node isKindOfClass:[RCTTransformAnimatedNode class]]) {
         RCTTransformAnimatedNode *parentNode = (RCTTransformAnimatedNode *)node;
-        xform = CATransform3DConcat(xform, parentNode.transform);
+        [self->_updatedPropsDictionary addEntriesFromDictionary:parentNode.updatedPropsDictionary];
       }
     }
   }];
+}
 
-  _transform = xform;
+- (void)cleanupAnimationUpdate
+{
+  [super cleanupAnimationUpdate];
+  [_updatedPropsDictionary removeAllObjects];
 }
 
 @end
