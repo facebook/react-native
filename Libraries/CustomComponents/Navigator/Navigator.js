@@ -1050,25 +1050,52 @@ var Navigator = React.createClass({
 
   /**
    * Navigate forward to a new scene, squashing any scenes that you could
-   * jump forward to.
-   * @param {object} route Route to push into the navigator stack.
+   * `jumpForward` to.
    */
   push: function(route) {
+    this._push(route, null);
+  },
+
+  _push: function(route, transition_cb) {
     invariant(!!route, 'Must supply route to push');
     var activeLength = this.state.presentedIndex + 1;
     var activeStack = this.state.routeStack.slice(0, activeLength);
     var activeAnimationConfigStack = this.state.sceneConfigStack.slice(0, activeLength);
     var nextStack = activeStack.concat([route]);
     var destIndex = nextStack.length - 1;
-    var nextSceneConfig = this.props.configureScene(route, nextStack);
-    var nextAnimationConfigStack = activeAnimationConfigStack.concat([nextSceneConfig]);
+    var nextAnimationConfigStack = activeAnimationConfigStack.concat([
+      this.props.configureScene(route, nextStack)
+    ]);
     this._emitWillFocus(nextStack[destIndex]);
     this.setState({
       routeStack: nextStack,
-      sceneConfigStack: nextAnimationConfigStack,
+      sceneConfigStack: nextAnimationConfigStack
     }, () => {
       this._enableScene(destIndex);
-      this._transitionTo(destIndex, nextSceneConfig.defaultTransitionVelocity);
+      this._transitionTo(destIndex, null, null, transition_cb);
+    });
+  },
+
+  /**
+   * Navigate to a new scene and reset route stack.
+   */
+  resetTo: function(route) {
+    invariant(!!route, 'Must supply route to resetTo');
+    this._push(route, () => {
+      var nextStack = this.state.routeStack.slice(-1);
+      this.setState({
+        routeStack: nextStack,
+        sceneConfigStack: nextStack.map(
+          (route) => this.props.configureScene(route, nextStack)
+        ),
+        presentedIndex      : 0,
+        activeGesture       : null,
+        transitionFromIndex : null,
+        transitionQueue     : []
+      }, () => {
+          this._navBar.immediatelyRefresh();
+        }
+      );
     });
   },
 
@@ -1198,21 +1225,6 @@ var Navigator = React.createClass({
     }
     this.replacePrevious(route);
     this.pop();
-  },
-
-  /**
-   * Navigate to a new scene and reset route stack.
-   * @param {object} route Route to navigate to.
-   */
-  resetTo: function(route) {
-    invariant(!!route, 'Must supply route to push');
-    this.replaceAtIndex(route, 0, () => {
-      // Do not use popToRoute here, because race conditions could prevent the
-      // route from existing at this time. Instead, just go to index 0
-      if (this.state.presentedIndex > 0) {
-        this._popN(this.state.presentedIndex);
-      }
-    });
   },
 
   /**
