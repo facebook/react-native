@@ -690,6 +690,13 @@ exports.examples = [
             style={styles.multiline}
           />
           <TextInput
+            defaultValue="uneditable multiline text input with phone number detection: 88888888."
+            editable={false}
+            multiline={true}
+            style={styles.multiline}
+            dataDetectorTypes="phoneNumber"
+          />
+          <TextInput
             placeholder="multiline with children"
             multiline={true}
             enablesReturnKeyAutomatically={true}
