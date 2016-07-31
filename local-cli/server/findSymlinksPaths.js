@@ -2,8 +2,12 @@ const path = require('path');
 const fs = require('fs');
 
 module.exports = function findSymlinksPaths(lookupFolder) {
-  return fs.readdirSync(lookupFolder)
-    .map(file => path.resolve(lookupFolder, file))
-    .filter(filePath => fs.lstatSync(filePath).isSymbolicLink())
+  const timeStart = Date.now();
+  const folders = fs.readdirSync(lookupFolder);
+  const timeEnd = Date.now();
+  console.log(`Scanning ${folders.length} folders in ${lookupFolder} (${timeEnd - timeStart}ms)`);
+
+  return folders.map(folder => path.resolve(lookupFolder, folder))
+    .filter(folderPath => fs.lstatSync(folderPath).isSymbolicLink())
     .map(symlink => path.resolve(process.cwd(), fs.readlinkSync(symlink)));
 };
