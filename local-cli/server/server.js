@@ -92,6 +92,10 @@ module.exports = {
     parse: (val) => val.split(',').map(dir => path.resolve(process.cwd(), dir)),
     default: (config) => config.getAssetRoots(),
   }, {
+    command: 'assetExts',
+    type: 'string',
+    description: 'Specify any additional asset extentions to be used by the packager',
+  }, {
     command: '--skipflow',
     description: 'Disable flow checks'
   }, {
