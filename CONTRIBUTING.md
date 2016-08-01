@@ -21,7 +21,7 @@ Please submit your pull request on the *master* branch. If the fix is critical a
 1. Fork the repo and create your branch from `master`.
 2. **Describe your test plan in your commit.** If you've added code that should be tested, add tests!
 3. If you've changed APIs, update the documentation.
-4. If you've updated the docs, verify the website locally and submit screenshots if applicable
+4. If you've updated the docs, verify the website locally and submit screenshots if applicable.
 
     ```
     $ cd website
