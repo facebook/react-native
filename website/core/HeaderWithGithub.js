@@ -41,7 +41,7 @@ var HeaderWithGithub = React.createClass({
               <a
                 target="_blank"
                 href={getVersionedGithubPath(this.props.path, this.context.version)}>
-                Edit on GitHub
+                View on GitHub
               </a>
             </td>
           </tr>
