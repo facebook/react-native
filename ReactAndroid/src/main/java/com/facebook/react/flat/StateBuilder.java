@@ -536,6 +536,17 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       ensureBackingViewIsCreated(node);
 
       addNativeChild(node);
+      updated = collectStateForMountableNode(
+          node,
+          0, // left - left
+          0, // top - top
+          right - left,
+          bottom - top,
+          parentClipLeft - left,
+          parentClipTop - top,
+          parentClipRight - left,
+          parentClipBottom - top);
+
       if (!parentIsAndroidView) {
         mDrawCommands.add(node.collectDrawView(
             left,
@@ -547,17 +558,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
             parentClipRight,
             parentClipBottom));
       }
-
-      updated = collectStateForMountableNode(
-          node,
-          0, // left - left
-          0, // top - top
-          right - left,
-          bottom - top,
-          parentClipLeft - left,
-          parentClipTop - top,
-          parentClipRight - left,
-          parentClipBottom - top);
 
       if (!needsCustomLayout) {
         updateViewBounds(node, left, top, right, bottom);

@@ -90,4 +90,22 @@ import android.view.ViewParent;
           "Cannot add view " + view + " to DrawCommandManager while it has a parent " + oldParent);
     }
   }
+
+  static DrawCommandManager getClippingInstance(
+      FlatViewGroup flatViewGroup,
+      DrawCommand[] drawCommands) {
+    return new ClippingDrawCommandManager(flatViewGroup, drawCommands);
+  }
+
+  static DrawCommandManager getVerticalClippingInstance(
+      FlatViewGroup flatViewGroup,
+      DrawCommand[] drawCommands) {
+    return new VerticalClippingDrawCommandManager(flatViewGroup, drawCommands);
+  }
+
+  static DrawCommandManager getHorizontalClippingInstance(
+      FlatViewGroup flatViewGroup,
+      DrawCommand[] drawCommands) {
+    return new HorizontalClippingDrawCommandManager(flatViewGroup, drawCommands);
+  }
 }

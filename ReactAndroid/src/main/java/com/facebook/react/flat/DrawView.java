@@ -36,6 +36,14 @@ import android.graphics.RectF;
   // the path to clip against if we're doing path clipping for rounded borders.
   @Nullable private Path mPath;
 
+  // These should only ever be set from within the DrawView, their only purpose is to prevent
+  // excessive rounding on the UI thread in FlatViewGroup, and they are left package protected to
+  // speed up direct access.
+  /* package */ int mLogicalLeft;
+  /* package */ int mLogicalTop;
+  /* package */ int mLogicalRight;
+  /* package */ int mLogicalBottom;
+
   public DrawView(int reactTag) {
     this.reactTag = reactTag;
   }
@@ -52,6 +60,10 @@ import android.graphics.RectF;
       float top,
       float right,
       float bottom,
+      int logicalLeft,
+      int logicalTop,
+      int logicalRight,
+      int logicalBottom,
       float clipLeft,
       float clipTop,
       float clipRight,
@@ -68,7 +80,9 @@ import android.graphics.RectF;
             clipRight,
             clipBottom);
     boolean clipRadiusChanged = Math.abs(mClipRadius - clipRadius) > 0.001f;
-    if (clipRadiusChanged && drawView == this) {
+    boolean logicalBoundsChanged =
+        !logicalBoundsMatch(logicalLeft, logicalTop, logicalRight, logicalBottom);
+    if (drawView == this && (clipRadiusChanged || logicalBoundsChanged)) {
       // everything matches except the clip radius, so we clone the old one so that we can update
       // the clip radius in the block below.
       try {
@@ -88,12 +102,29 @@ import android.graphics.RectF;
         drawView.mPath = null;
       }
 
+      if (logicalBoundsChanged) {
+        drawView.setLogicalBounds(logicalLeft, logicalTop, logicalRight, logicalBottom);
+      }
+
       // It is very important that we unset this, as our spec is that newly created DrawViews are
       // handled differently by the FlatViewGroup.  This is needed because updateBoundsAndFreeze
       // uses .clone(), so we maintain the previous state.
       drawView.mWasMounted = false;
     }
     return drawView;
+  }
+
+  private boolean logicalBoundsMatch(int left, int top, int right, int bottom) {
+    return left == mLogicalLeft && top == mLogicalTop &&
+        right == mLogicalRight && bottom == mLogicalBottom;
+  }
+
+  private void setLogicalBounds(int left, int top, int right, int bottom) {
+    // Do rounding up front and off of the UI thread.
+    mLogicalLeft = left;
+    mLogicalTop = top;
+    mLogicalRight = right;
+    mLogicalBottom = bottom;
   }
 
   @Override

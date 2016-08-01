@@ -125,6 +125,8 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
    */
   @Override
   protected void onPreDraw(FlatViewGroup parent, Canvas canvas) {
+    super.onPreDraw(parent, canvas);
+
     Bitmap bitmap = Assertions.assumeNotNull(mRequestHelper).getBitmap();
     if (bitmap == null) {
       mFirstDrawTime = 0;
@@ -168,7 +170,7 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
       PAINT.setShader(mBitmapShader);
       canvas.drawPath(getPathForRoundedBitmap(), PAINT);
     }
-    bitmap = null;
+
     drawBorders(canvas);
   }
 

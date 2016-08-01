@@ -873,14 +873,14 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
       // We aren't changing state, so don't do anything.
       return;
     }
-    if (currentlyClipping && !removeClippedSubviews) {
+    if (currentlyClipping) {
       // Trying to go from a clipping to a non-clipping state, not currently supported by Nodes.
       // If this is an issue, let us know, but currently there does not seem to be a good case for
       // supporting this.
       throw new RuntimeException(
           "Trying to transition FlatViewGroup from clipping to non-clipping state");
     }
-    mDrawCommandManager = new ClippingDrawCommandManager(this, mDrawCommands);
+    mDrawCommandManager = DrawCommandManager.getClippingInstance(this, mDrawCommands);
     mDrawCommands = DrawCommand.EMPTY_ARRAY;
     // We don't need an invalidate here because this can't cause new views to come onscreen, since
     // everything was unclipped.

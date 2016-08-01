@@ -22,10 +22,9 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
 /**
- * Implementation of a {@link DrawCommandManager} with clipping.  Performs drawing by iterating
- * over an array of DrawCommands, executing them one by one except when the commands are clipped.
+ * Abstract {@link DrawCommandManager} with directional clipping.
  */
-/* package */ final class ClippingDrawCommandManager extends DrawCommandManager {
+/* package */ abstract class DirectionalClippingDrawCommandManager extends DrawCommandManager {
   private final FlatViewGroup mFlatViewGroup;
   DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
 
@@ -35,9 +34,15 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   // case that we clip subviews and don't promote grandchildren.
   private final Map<Integer, View> mClippedSubviews = new HashMap<>();
 
-  private final Rect mClippingRect = new Rect();
+  protected final Rect mClippingRect = new Rect();
 
-  ClippingDrawCommandManager(FlatViewGroup flatViewGroup, DrawCommand[] drawCommands) {
+  abstract boolean beforeRect(DrawView drawView);
+
+  abstract boolean afterRect(DrawView drawView);
+
+  /* package */ DirectionalClippingDrawCommandManager(
+      FlatViewGroup flatViewGroup,
+      DrawCommand[] drawCommands) {
     mFlatViewGroup = flatViewGroup;
     initialSetup(drawCommands);
   }
@@ -153,11 +158,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
   // Return true if a DrawView is currently onscreen.
   boolean withinBounds(DrawView drawView) {
-    return mClippingRect.intersects(
-        drawView.mLogicalLeft,
-        drawView.mLogicalTop,
-        drawView.mLogicalRight,
-        drawView.mLogicalBottom);
+    return !(beforeRect(drawView) || afterRect(drawView));
   }
 
   @Override
