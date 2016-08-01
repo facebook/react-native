@@ -296,10 +296,6 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                         forKey:@"trackingName"
                      inRequest:mutableRequest];
 
-    // Add missing png extension
-    if (request.URL.fileURL && request.URL.pathExtension.length == 0) {
-      mutableRequest.URL = [NSURL fileURLWithPath:[request.URL.path stringByAppendingPathExtension:@"png"]];
-    }
     request = mutableRequest;
   }
 
