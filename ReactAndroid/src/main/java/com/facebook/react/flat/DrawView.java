@@ -97,7 +97,7 @@ import android.graphics.RectF;
       drawView.mClipRadius = clipRadius;
       if (clipRadius > MINIMUM_ROUNDED_CLIPPING_VALUE) {
         // update the path that we'll clip based on
-        updateClipPath(drawView);
+        drawView.updateClipPath();
       } else {
         drawView.mPath = null;
       }
@@ -142,15 +142,9 @@ import android.graphics.RectF;
 
   /**
    * Update the path with which we'll clip this view
-   * @param drawView the drawView to update the path for
    */
-  private void updateClipPath(DrawView drawView) {
-    // make or reset the path
-    if (drawView.mPath == null) {
-      drawView.mPath = new Path();
-    } else {
-      drawView.mPath.reset();
-    }
+  private void updateClipPath() {
+    mPath = new Path();
 
     TMP_RECT.set(
         getLeft(),
@@ -159,10 +153,10 @@ import android.graphics.RectF;
         getBottom());
 
     // set the path
-    drawView.mPath.addRoundRect(
+    mPath.addRoundRect(
         TMP_RECT,
-        drawView.mClipRadius,
-        drawView.mClipRadius,
+        mClipRadius,
+        mClipRadius,
         Path.Direction.CW);
   }
 
