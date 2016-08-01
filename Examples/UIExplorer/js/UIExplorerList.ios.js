@@ -117,6 +117,10 @@ const ComponentExamples: Array<UIExplorerExample> = [
     module: require('./StatusBarExample'),
   },
   {
+    key: 'SwipeableListViewExample',
+    module: require('./SwipeableListViewExample')
+  },
+  {
     key: 'SwitchExample',
     module: require('./SwitchExample'),
   },
@@ -246,6 +250,10 @@ const APIExamples: Array<UIExplorerExample> = [
   {
     key: 'RCTRootViewIOSExample',
     module: require('./RCTRootViewIOSExample'),
+  },
+  {
+    key: 'ShareExample',
+    module: require('./ShareExample'),
   },
   {
     key: 'SnapshotExample',

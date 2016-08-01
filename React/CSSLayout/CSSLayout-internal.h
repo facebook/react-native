@@ -65,7 +65,7 @@ typedef struct CSSStyle {
   CSSOverflow overflow;
   float flex;
   float margin[6];
-  float position[4];
+  float position[6];
   /**
    * You should skip all the rules that contain negative values for the
    * following attributes. For example:
@@ -89,12 +89,13 @@ typedef struct CSSNode {
   int lineIndex;
   bool shouldUpdate;
   bool isTextNode;
+  CSSNodeRef parent;
   CSSNodeListRef children;
+  bool isDirty;
 
   struct CSSNode* nextChild;
 
   CSSSize (*measure)(void *context, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode);
-  bool (*isDirty)(void *context);
   void (*print)(void *context);
   void *context;
 } CSSNode;

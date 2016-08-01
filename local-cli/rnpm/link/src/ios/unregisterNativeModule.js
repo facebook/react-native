@@ -1,24 +1,25 @@
 const xcode = require('xcode');
 const path = require('path');
 const fs = require('fs');
+const difference = require('lodash').difference;
+const isEmpty = require('lodash').isEmpty;
 
+const getGroup = require('./getGroup');
 const getProducts = require('./getProducts');
 const getHeadersInFolder = require('./getHeadersInFolder');
-const isEmpty = require('lodash').isEmpty;
 const getHeaderSearchPath = require('./getHeaderSearchPath');
 const removeProjectFromProject = require('./removeProjectFromProject');
 const removeProjectFromLibraries = require('./removeProjectFromLibraries');
 const removeFromStaticLibraries = require('./removeFromStaticLibraries');
 const removeFromHeaderSearchPaths = require('./removeFromHeaderSearchPaths');
-const removeSharedLibraries = require('./addSharedLibraries');
-const getGroup = require('./getGroup');
+const removeSharedLibraries = require('./removeSharedLibraries');
 
 /**
  * Unregister native module IOS
  *
  * If library is already unlinked, this action is a no-op.
  */
-module.exports = function unregisterNativeModule(dependencyConfig, projectConfig) {
+module.exports = function unregisterNativeModule(dependencyConfig, projectConfig, iOSDependencies) {
   const project = xcode.project(projectConfig.pbxprojPath).parseSync();
   const dependencyProject = xcode.project(dependencyConfig.pbxprojPath).parseSync();
 
@@ -37,7 +38,15 @@ module.exports = function unregisterNativeModule(dependencyConfig, projectConfig
     });
   });
 
-  removeSharedLibraries(project, dependencyConfig.sharedLibraries);
+  const sharedLibraries = difference(
+    dependencyConfig.sharedLibraries,
+    iOSDependencies.reduce(
+      (libs, dependency) => libs.concat(dependency.sharedLibraries),
+      projectConfig.sharedLibraries
+    )
+  );
+
+  removeSharedLibraries(project, sharedLibraries);
 
   const headers = getHeadersInFolder(dependencyConfig.folder);
   if (!isEmpty(headers)) {
