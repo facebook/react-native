@@ -397,10 +397,6 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     }
   }
 
-  /* package */ final Rect getLogicalOffset() {
-    return mLogicalOffset;
-  }
-
   /* package */ void updateNodeRegion(
       float left,
       float top,

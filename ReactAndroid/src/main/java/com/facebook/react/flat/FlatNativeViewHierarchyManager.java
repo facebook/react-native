@@ -69,11 +69,10 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
       int reactTag,
       @Nullable DrawCommand[] drawCommands,
       @Nullable AttachDetachListener[] listeners,
-      @Nullable NodeRegion[] nodeRegions,
-      Rect logicalAdjustment) {
+      @Nullable NodeRegion[] nodeRegions) {
     FlatViewGroup view = (FlatViewGroup) resolveView(reactTag);
     if (drawCommands != null) {
-      view.mountDrawCommands(drawCommands, logicalAdjustment);
+      view.mountDrawCommands(drawCommands);
     }
     if (listeners != null) {
       view.mountAttachDetachListeners(listeners);

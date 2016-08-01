@@ -38,7 +38,8 @@ import android.graphics.RectF;
 
   // These should only ever be set from within the DrawView, their only purpose is to prevent
   // excessive rounding on the UI thread in FlatViewGroup, and they are left package protected to
-  // speed up direct access.
+  // speed up direct access.  For overflow visible, these are the adjusted bounds  while taking
+  // overflowing elements into account.
   /* package */ int mLogicalLeft;
   /* package */ int mLogicalTop;
   /* package */ int mLogicalRight;

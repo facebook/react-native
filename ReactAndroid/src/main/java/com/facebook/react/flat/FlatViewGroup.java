@@ -108,10 +108,6 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
   private static final ArrayList<View> EMPTY_DETACHED_VIEWS = new ArrayList<>(0);
   private @Nullable DrawCommandManager mDrawCommandManager;
 
-  // for overflow visible, these adjustments are what we can apply to know the actual bounds of
-  // a ViewGroup while taking overflowing elements into account.
-  /* package */ Rect mLogicalAdjustments = EMPTY_RECT;
-
   /* package */ FlatViewGroup(Context context) {
     super(context);
     setClipChildren(false);
@@ -568,8 +564,7 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     ++mDrawChildIndex;
   }
 
-  /* package */ void mountDrawCommands(DrawCommand[] drawCommands, Rect logicalAdjustments) {
-    mLogicalAdjustments = logicalAdjustments;
+  /* package */ void mountDrawCommands(DrawCommand[] drawCommands) {
     if (mDrawCommandManager != null) {
       mDrawCommandManager.mountDrawCommands(drawCommands);
     } else {

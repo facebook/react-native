@@ -334,8 +334,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
           node.getReactTag(),
           drawCommands,
           listeners,
-          nodeRegions,
-          node.getLogicalOffset());
+          nodeRegions);
     }
 
     if (node.hasUnseenUpdates()) {

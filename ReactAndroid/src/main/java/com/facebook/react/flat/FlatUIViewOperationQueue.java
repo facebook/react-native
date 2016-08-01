@@ -51,19 +51,16 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     private final @Nullable DrawCommand[] mDrawCommands;
     private final @Nullable AttachDetachListener[] mAttachDetachListeners;
     private final @Nullable NodeRegion[] mNodeRegions;
-    private final Rect mLogicalAdjustment;
 
     private UpdateMountState(
         int reactTag,
         @Nullable DrawCommand[] drawCommands,
         @Nullable AttachDetachListener[] listeners,
-        @Nullable NodeRegion[] nodeRegions,
-        Rect logicalAdjustment) {
+        @Nullable NodeRegion[] nodeRegions) {
       mReactTag = reactTag;
       mDrawCommands = drawCommands;
       mAttachDetachListeners = listeners;
       mNodeRegions = nodeRegions;
-      mLogicalAdjustment = logicalAdjustment;
     }
 
     @Override
@@ -72,8 +69,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
           mReactTag,
           mDrawCommands,
           mAttachDetachListeners,
-          mNodeRegions,
-          mLogicalAdjustment);
+          mNodeRegions);
     }
   }
 
@@ -355,14 +351,12 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
       int reactTag,
       @Nullable DrawCommand[] drawCommands,
       @Nullable AttachDetachListener[] listeners,
-      @Nullable NodeRegion[] nodeRegions,
-      Rect logicalOffset) {
+      @Nullable NodeRegion[] nodeRegions) {
     enqueueUIOperation(new UpdateMountState(
         reactTag,
         drawCommands,
         listeners,
-        nodeRegions,
-        logicalOffset));
+        nodeRegions));
   }
 
   public void enqueueUpdateViewGroup(int reactTag, int[] viewsToAdd, int[] viewsToDetach) {
