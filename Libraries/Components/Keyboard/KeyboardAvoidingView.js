@@ -53,12 +53,16 @@ const KeyboardAvoidingView = React.createClass({
   propTypes: {
     ...View.propTypes,
     behavior: PropTypes.oneOf(['height', 'position', 'padding']),
+    
+    /**
+     * The style of the content container(View) when behavior is 'position'.
+     */
     contentContainerStyle: View.propTypes.style,
+    
     /**
      * This is the distance between the top of the user screen and the react native view,
      * may be non-zero in some use cases.
      */
-
     keyboardVerticalOffset: PropTypes.number.isRequired,
   },
 
