@@ -9,7 +9,7 @@ module.exports = function findSymlinksPaths(lookupFolder) {
     .map(symlink => path.resolve(process.cwd(), fs.readlinkSync(symlink)));
   const timeEnd = Date.now();
 
-  console.log(`Scanning ${folders.length} folders in ${lookupFolder} (${timeEnd - timeStart}ms)`);
+  console.log(`Scanning ${folders.length} folders for symlinks in ${lookupFolder} (${timeEnd - timeStart}ms)`);
 
   return resolvedSymlinks;
 };
