@@ -834,8 +834,8 @@ h2 {
 }
 
 .docs-prevnext {
-  padding-top: 40px;
-  padding-bottom: 40px;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
 .button {
@@ -1630,6 +1630,13 @@ input#algolia-doc-search:focus {
     padding-bottom: 0;
 }
 
+.edit-page-block {
+    padding: 5px;
+    font-size: 12px;
+    color: #887766;
+    text-align: center;
+    background-color: rgba(5, 165, 209, 0.05);
+}
 
 /** Web player **/
 
