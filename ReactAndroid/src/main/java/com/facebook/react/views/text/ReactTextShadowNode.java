@@ -310,7 +310,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   protected int mNumberOfLines = UNSET;
   protected int mFontSize = UNSET;
-  protected int mTextAlign = UNSET;
+  protected int mTextAlign = Gravity.NO_GRAVITY;
 
   private float mTextShadowOffsetDx = 0;
   private float mTextShadowOffsetDy = 0;

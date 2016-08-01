@@ -1,5 +1,4 @@
 const path = require('path');
-const fs = require('fs');
 const union = require('lodash').union;
 const uniq = require('lodash').uniq;
 const flatten = require('lodash').flatten;
@@ -9,7 +8,7 @@ const flatten = require('lodash').flatten;
  * @param  {String} dependency Name of the dependency
  * @return {Boolean}           If dependency is a rnpm plugin
  */
-const isPlugin = (dependency) => !!~dependency.indexOf('rnpm-plugin-');
+const isPlugin = (dependency) => dependency.indexOf('rnpm-plugin-') === 0;
 
 const findPluginInFolder = (folder) => {
   var pjson;
