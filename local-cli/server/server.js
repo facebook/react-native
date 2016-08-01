@@ -12,12 +12,16 @@ const chalk = require('chalk');
 const formatBanner = require('./formatBanner');
 const path = require('path');
 const runServer = require('./runServer');
+const findSymlinksPaths = require('./findSymlinksPaths');
 
 /**
  * Starts the React Native Packager Server.
  */
 function server(argv, config, args) {
-  args.projectRoots = args.projectRoots.concat(args.root);
+  args.projectRoots = args.projectRoots.concat(
+    args.root,
+    findSymlinkPaths(path.resolve(process.cwd(), 'node_modules'))
+  );
 
   console.log(formatBanner(
     'Running packager on port ' + args.port + '.\n\n' +
