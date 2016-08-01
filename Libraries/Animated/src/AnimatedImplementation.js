@@ -984,10 +984,10 @@ class AnimatedInterpolation extends AnimatedWithChildren {
 
   __getNativeConfig(): any {
     NativeAnimatedHelper.validateInterpolation(this._config);
-    // Only the `outputRange` can contain strings so we don't need to tranform `inputRange` here
-    this._config.outputRange = this.__transformDataType(this._config.outputRange);
     return {
       ...this._config,
+      // Only the `outputRange` can contain strings so we don't need to tranform `inputRange` here
+      outputRange: this.__transformDataType(this._config.outputRange),
       type: 'interpolation',
     };
   }
