@@ -60,7 +60,7 @@ const KeyboardAvoidingView = React.createClass({
     contentContainerStyle (props, propName, componentName) {
       const isStyle = View.propTypes.style;
 
-      if (props.behavior !== 'position') {
+      if (props[propName] && props.behavior !== 'position') {
         return new Error('contentContainerStyle prop only available for position behavior');
       }
 
