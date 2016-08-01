@@ -32,14 +32,14 @@ let _asyncCookie = 0;
 
 const ReactSystraceDevtool = __DEV__ ? {
   onBeginReconcilerTimer(debugID, timerType) {
-    const displayName = require('react/lib/ReactComponentTreeDevtool').getDisplayName(debugID);
+    const displayName = require('react/lib/ReactComponentTreeHook').getDisplayName(debugID);
     Systrace.beginEvent(`ReactReconciler.${timerType}(${displayName})`);
   },
   onEndReconcilerTimer(debugID, timerType) {
     Systrace.endEvent();
   },
   onBeginLifeCycleTimer(debugID, timerType) {
-    const displayName = require('react/lib/ReactComponentTreeDevtool').getDisplayName(debugID);
+    const displayName = require('react/lib/ReactComponentTreeHook').getDisplayName(debugID);
     Systrace.beginEvent(`${displayName}.${timerType}()`);
   },
   onEndLifeCycleTimer(debugID, timerType) {
@@ -53,10 +53,10 @@ const Systrace = {
       if (__DEV__) {
         if (enabled) {
           global.nativeTraceBeginLegacy && global.nativeTraceBeginLegacy(TRACE_TAG_JSC_CALLS);
-          require('react/lib/ReactDebugTool').addDevtool(ReactSystraceDevtool);
+          require('react/lib/ReactDebugTool').addHook(ReactSystraceDevtool);
         } else {
           global.nativeTraceEndLegacy && global.nativeTraceEndLegacy(TRACE_TAG_JSC_CALLS);
-          require('react/lib/ReactDebugTool').removeDevtool(ReactSystraceDevtool);
+          require('react/lib/ReactDebugTool').removeHook(ReactSystraceDevtool);
         }
       }
       _enabled = enabled;

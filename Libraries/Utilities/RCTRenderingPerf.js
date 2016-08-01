@@ -54,7 +54,7 @@ var RCTRenderingPerf = {
     }
 
     ReactPerf.start();
-    ReactDebugTool.addDevtool(RCTRenderingPerfDevtool);
+    ReactDebugTool.addHook(RCTRenderingPerfDevtool);
     perfModules.forEach((module) => module.start());
   },
 
@@ -66,7 +66,7 @@ var RCTRenderingPerf = {
     ReactPerf.stop();
     ReactPerf.printInclusive();
     ReactPerf.printWasted();
-    ReactDebugTool.removeDevtool(RCTRenderingPerfDevtool);
+    ReactDebugTool.removeHook(RCTRenderingPerfDevtool);
 
     console.log(`Total time spent in render(): ${totalRenderDuration.toFixed(2)} ms`);
     lastRenderStartTime = 0;
