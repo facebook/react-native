@@ -20,7 +20,7 @@ const findSymlinksPaths = require('./findSymlinksPaths');
 function server(argv, config, args) {
   args.projectRoots = args.projectRoots.concat(
     args.root,
-    findSymlinkPaths(path.resolve(process.cwd(), 'node_modules'))
+    findSymlinksPaths(path.resolve(process.cwd(), 'node_modules'))
   );
 
   console.log(formatBanner(
