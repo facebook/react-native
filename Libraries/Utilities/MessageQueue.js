@@ -26,8 +26,8 @@ const METHOD_IDS = 1;
 const PARAMS = 2;
 const MIN_TIME_BETWEEN_FLUSHES_MS = 5;
 
-const TO_NATIVE = 0
-const TO_JS = 1
+const TO_NATIVE = 1
+const TO_JS = 0
 
 const TRACE_TAG_REACT_APPS = 1 << 17;
 
