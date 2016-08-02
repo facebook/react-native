@@ -296,6 +296,14 @@ var featured = [
     infoLink: 'https://www.crunchbase.com/organization/bds-diet#/entity',
     infoTitle: 'Bdsdiet provides real estate brokerage services through web and live agents in Korea.',
   },
+  {
+    name: '蜂鸟众包',
+    icon: 'http://img.wdjimg.com/mms/icon/v1/e/6e/687b129606504cd52632a8cc4ca816ee_256_256.png',
+    linkPlayStore: 'http://www.wandoujia.com/apps/me.ele.crowdsource',
+    linkAppStore: 'https://itunes.apple.com/cn/app/feng-niao-zhong-bao-jian-zhi/id1061034377?mt=8',
+    infoLink: 'https://elelogistics.github.io/about/Crowdsource-App-Write-In-React-Native.html',
+    infoTitle: '"Fengniao Crowdsource app" is a mobile app, developed by Eleme, Inc, for Fengniao Crowdsource, the largest crowdsourced logistics platform in China.',
+  },
 ];
 
 featured.sort(function(a, b) {

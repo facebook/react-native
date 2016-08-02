@@ -87,7 +87,12 @@ var TRANSFORM_WHITELIST = {
   translateX: true,
   translateY: true,
   scale: true,
+  scaleX: true,
+  scaleY: true,
   rotate: true,
+  rotateX: true,
+  rotateY: true,
+  perspective: true,
 };
 
 function validateProps(params: Object): void {
@@ -98,12 +103,12 @@ function validateProps(params: Object): void {
   }
 }
 
-function validateTransform(config: Object): void {
-  for (var key in config) {
-    if (!TRANSFORM_WHITELIST.hasOwnProperty(key)) {
-      throw new Error(`Property '${key}' is not supported by native animated module`);
+function validateTransform(configs: Array<Object>): void {
+  configs.forEach((config) => {
+    if (!TRANSFORM_WHITELIST.hasOwnProperty(config.property)) {
+      throw new Error(`Property '${config.property}' is not supported by native animated module`);
     }
-  }
+  });
 }
 
 function validateStyles(styles: Object): void {

@@ -166,6 +166,7 @@ react_library(
   ] + REACT_LIBRARY_EXTRA_COMPILER_FLAGS,
   deps = [
     '//xplat/fbsystrace:fbsystrace',
+    react_native_xplat_target('microprofiler:microprofiler'),
   ],
   visibility = [ 'PUBLIC' ],
 )

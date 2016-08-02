@@ -23,20 +23,29 @@ import com.facebook.react.bridge.ReactMethod;
 
 public class JSCHeapCapture extends ReactContextBaseJavaModule {
   public interface HeapCapture extends JavaScriptModule {
-    void captureHeap(int token, String path);
-    void setAllocationTracking(int token, boolean enabled);
+    void captureHeap(String path);
   }
 
   public static class CaptureException extends Exception {
     CaptureException(String message) {
       super(message);
     }
+    CaptureException(String message, Throwable cause) {
+      super(message, cause);
+    }
+  }
+
+  public interface CaptureCallback {
+    void onComplete(List<File> captures, List<CaptureException> failures);
+  }
+
+  private interface PerCaptureCallback {
+    void onSuccess(File capture);
+    void onFailure(CaptureException cause);
   }
 
   private @Nullable HeapCapture mHeapCapture;
-  private boolean mOperationInProgress;
-  private int mOperationToken;
-  private @Nullable String mOperationError;
+  private @Nullable PerCaptureCallback mCaptureInProgress;
 
   private static final HashSet<JSCHeapCapture> sRegisteredDumpers = new HashSet<>();
 
@@ -52,11 +61,14 @@ public class JSCHeapCapture extends ReactContextBaseJavaModule {
     sRegisteredDumpers.remove(dumper);
   }
 
-  public static synchronized List<String> captureHeap(String path, long timeout)
-      throws CaptureException {
-    LinkedList<String> captureFiles = new LinkedList<>();
+  public static synchronized void captureHeap(String path, final CaptureCallback callback) {
+    final LinkedList<File> captureFiles = new LinkedList<>();
+    final LinkedList<CaptureException> captureFailures = new LinkedList<>();
+
     if (sRegisteredDumpers.isEmpty()) {
-      throw new CaptureException("No JSC registered");
+      captureFailures.add(new CaptureException("No JSC registered"));
+      callback.onComplete(captureFiles, captureFailures);
+      return;
     }
 
     int disambiguate = 0;
@@ -66,64 +78,57 @@ public class JSCHeapCapture extends ReactContextBaseJavaModule {
       f = new File(path + "/capture" + Integer.toString(disambiguate) + ".json");
     }
 
+    final int numRegisteredDumpers = sRegisteredDumpers.size();
     disambiguate = 0;
     for (JSCHeapCapture dumper : sRegisteredDumpers) {
-      String file = path + "/capture" + Integer.toString(disambiguate) + ".json";
-      dumper.captureHeapHelper(file, timeout);
-      captureFiles.add(file);
+      File file = new File(path + "/capture" + Integer.toString(disambiguate) + ".json");
+      dumper.captureHeapHelper(file, new PerCaptureCallback() {
+        @Override
+        public void onSuccess(File capture) {
+          captureFiles.add(capture);
+          if (captureFiles.size() + captureFailures.size() == numRegisteredDumpers) {
+            callback.onComplete(captureFiles, captureFailures);
+          }
+        }
+        @Override
+        public void onFailure(CaptureException cause) {
+          captureFailures.add(cause);
+          if (captureFiles.size() + captureFailures.size() == numRegisteredDumpers) {
+            callback.onComplete(captureFiles, captureFailures);
+          }
+        }
+      });
     }
-    return captureFiles;
   }
 
   public JSCHeapCapture(ReactApplicationContext reactContext) {
     super(reactContext);
     mHeapCapture = null;
-    mOperationInProgress = false;
-    mOperationToken = 0;
-    mOperationError = null;
+    mCaptureInProgress = null;
   }
 
-  private synchronized void captureHeapHelper(String path, long timeout) throws CaptureException {
+  private synchronized void captureHeapHelper(File file, PerCaptureCallback callback) {
     if (mHeapCapture == null) {
-      throw new CaptureException("HeapCapture.js module not connected");
+      callback.onFailure(new CaptureException("HeapCapture.js module not connected"));
+      return;
     }
-    mHeapCapture.captureHeap(getOperationToken(), path);
-    waitForOperation(timeout);
-  }
-
-  private int getOperationToken() throws CaptureException {
-    if (mOperationInProgress) {
-      throw new CaptureException("Another operation already in progress.");
+    if (mCaptureInProgress != null) {
+      callback.onFailure(new CaptureException("Heap capture already in progress"));
+      return;
     }
-    mOperationInProgress = true;
-    return ++mOperationToken;
-  }
-
-  private void waitForOperation(long timeout) throws CaptureException {
-    try {
-      wait(timeout);
-    } catch (InterruptedException e) {
-      throw new CaptureException("Waiting for heap capture failed: " + e.getMessage());
-    }
-
-    if (mOperationInProgress) {
-      mOperationInProgress = false;
-      throw new CaptureException("heap capture timed out.");
-    }
-
-    if (mOperationError != null) {
-      throw new CaptureException(mOperationError);
-    }
+    mCaptureInProgress = callback;
+    mHeapCapture.captureHeap(file.getPath());
   }
 
   @ReactMethod
-  public synchronized void operationComplete(int token, String error) {
-    if (token == mOperationToken) {
-      mOperationInProgress = false;
-      mOperationError = error;
-      this.notify();
-    } else {
-      throw new RuntimeException("Completed operation is not in progress.");
+  public synchronized void captureComplete(String path, String error) {
+    if (mCaptureInProgress != null) {
+      if (error == null) {
+        mCaptureInProgress.onSuccess(new File(path));
+      } else {
+        mCaptureInProgress.onFailure(new CaptureException(error));
+      }
+      mCaptureInProgress = null;
     }
   }
 
