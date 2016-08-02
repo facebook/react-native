@@ -31,6 +31,7 @@ class TreeTransformator {
         line: tree.lineNumber,
         column: tree.columnNumber,
       });
+      tree.functionName = original.name;
       tree.scriptId = tree.id;
       tree.url = 'file://' + original.source;
       tree.lineNumber = original.line;
