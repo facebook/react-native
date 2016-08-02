@@ -17,12 +17,12 @@ struct CSSNodeList {
 
 CSSNodeListRef CSSNodeListNew(uint32_t initialCapacity) {
   CSSNodeListRef list = malloc(sizeof(struct CSSNodeList));
-  assert(list != NULL);
+  CSS_ASSERT(list != NULL, "Could not allocate memory for list");
 
   list->capacity = initialCapacity;
   list->count = 0;
   list->items = malloc(sizeof(void*) * list->capacity);
-  assert(list->items != NULL);
+  CSS_ASSERT(list->items != NULL, "Could not allocate memory for items");
 
   return list;
 }
@@ -43,7 +43,7 @@ void CSSNodeListInsert(CSSNodeListRef list, CSSNodeRef node, uint32_t index) {
   if (list->count == list->capacity) {
     list->capacity *= 2;
     list->items = realloc(list->items, sizeof(void*) * list->capacity);
-    assert(list->items != NULL);
+    CSS_ASSERT(list->items != NULL, "Could not extend allocation for items");
   }
 
   for (uint32_t i = list->count; i > index; i--) {
