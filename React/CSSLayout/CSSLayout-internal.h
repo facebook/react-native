@@ -7,8 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef __CSS_LAYOUT_INTERNAL_H
-#define __CSS_LAYOUT_INTERNAL_H
+#pragma once
 
 #include "CSSLayout.h"
 #include "CSSNodeList.h"
@@ -98,5 +97,3 @@ typedef struct CSSNode {
 } CSSNode;
 
 CSS_EXTERN_C_END
-
-#endif

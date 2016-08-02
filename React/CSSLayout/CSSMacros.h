@@ -7,8 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef __CSS_MACROS_H
-#define __CSS_MACROS_H
+#pragma once
 
 #ifdef __cplusplus
 # define CSS_EXTERN_C_BEGIN extern "C" {
@@ -16,6 +15,4 @@
 #else
 # define CSS_EXTERN_C_BEGIN
 # define CSS_EXTERN_C_END
-#endif
-
 #endif

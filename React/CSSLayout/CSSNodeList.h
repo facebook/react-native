@@ -7,8 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef __CSS_NODE_LIST_H
-#define __CSS_NODE_LIST_H
+#pragma once
 
 #include <assert.h>
 #include <stdlib.h>
@@ -31,5 +30,3 @@ CSSNodeRef CSSNodeListDelete(CSSNodeListRef list, CSSNodeRef node);
 CSSNodeRef CSSNodeListGet(CSSNodeListRef list, uint32_t index);
 
 CSS_EXTERN_C_END
-
-#endif

@@ -7,8 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef __CSS_LAYOUT_H
-#define __CSS_LAYOUT_H
+#pragma once
 
 #include <assert.h>
 #include <math.h>
@@ -214,5 +213,3 @@ CSS_NODE_LAYOUT_PROPERTY(float, Height);
 CSS_NODE_LAYOUT_PROPERTY(CSSDirection, Direction);
 
 CSS_EXTERN_C_END
-
-#endif
