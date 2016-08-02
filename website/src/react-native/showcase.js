@@ -127,6 +127,14 @@ var featured = [
     infoTitle: 'Refinery29 debuts its first app',
   },
   {
+    name: 'TRED - Sell your car for more',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple20/v4/b0/0c/07/b00c07d2-a057-06bc-6044-9fdab97f370f/icon175x175.jpeg',
+    linkAppStore:  'https://itunes.apple.com/us/app/tred-sell-my-car-for-more!/id1070071394?mt=8',
+    linkPlayStore:  'https://play.google.com/store/apps/details?id=com.tredmobile&hl=en',
+    infoLink: 'http://www.geekwire.com/2015/mobile-dealership-tred-raises-another-1m-to-help-used-car-owners-make-more-money/',
+    infoTitle: 'Sell your car for thousands more than Craigslist or the dealer with TRED',
+  },
+  {
     name: 'Bitt Wallet',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/5b/00/34/5b003497-cc85-a0d0-0d3e-4fb3bc6f95cd/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/us/app/bitt-wallet/id1081954916?mt=8',
