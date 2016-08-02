@@ -304,6 +304,14 @@ var featured = [
     infoLink: 'https://elelogistics.github.io/about/Crowdsource-App-Write-In-React-Native.html',
     infoTitle: '"Fengniao Crowdsource app" is a mobile app, developed by Eleme, Inc, for Fengniao Crowdsource, the largest crowdsourced logistics platform in China.',
   },
+  {
+    name: 'Amium',
+    icon: 'https://www.amium.com/img/amium-logo.png',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.aerofs.aeroim',
+    linkAppStore: 'https://itunes.apple.com/us/app/amium/id1082768188',
+    infoLink: 'https://blog.amium.com/a-better-way-to-collaborate-b33d9dc4cb86#.7dw4626o6',
+    infoTitle: 'Amium is a collaboration app for teams that turns any file into a real-time activity feed and conversation. So you can work better, together.',
+  },
 ];
 
 featured.sort(function(a, b) {
