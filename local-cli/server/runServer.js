@@ -24,6 +24,7 @@ const indexPageMiddleware = require('./middleware/indexPage');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
 const heapCaptureMiddleware = require('./middleware/heapCaptureMiddleware.js');
 const webSocketProxy = require('./util/webSocketProxy.js');
+const defaultAssetExts = require('../../packager/defaultAssetExts');
 
 function runServer(args, config, readyCallback) {
   var wsProxy = null;
@@ -85,12 +86,7 @@ function getPackagerServer(args, config) {
     transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
     assetRoots: args.assetRoots,
-    assetExts: [
-      'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'svg', 'webp', // Image formats
-      'm4v', 'mov', 'mp4', 'mpeg', 'mpg', 'webm', // Video formats
-      'aac', 'aiff', 'caf', 'm4a', 'mp3', 'wav', // Audio formats
-      'html', 'pdf', // Document formats
-    ],
+    assetExts: defaultAssetExts.concat(args.assetExts),
     resetCache: args.resetCache,
     verbose: args.verbose,
   });
