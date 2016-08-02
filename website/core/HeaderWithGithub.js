@@ -13,7 +13,7 @@ var H = require('Header');
 var React = require('React');
 
 function getGitHubPath(path) {
-  return  'https://github.com/facebook/react-native/blob/' + path;
+  return  'https://github.com/facebook/react-native/blob/master/' + path;
 }
 
 var HeaderWithGithub = React.createClass({
