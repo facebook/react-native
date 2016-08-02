@@ -13,6 +13,7 @@ const formatBanner = require('./formatBanner');
 const path = require('path');
 const runServer = require('./runServer');
 const findSymlinksPaths = require('./findSymlinksPaths');
+const NODE_MODULES = path.resolve(__dirname, '..', '..', '..');
 
 /**
  * Starts the React Native Packager Server.
@@ -20,7 +21,7 @@ const findSymlinksPaths = require('./findSymlinksPaths');
 function server(argv, config, args) {
   args.projectRoots = args.projectRoots.concat(
     args.root,
-    findSymlinkPaths(path.resolve(process.cwd(), 'node_modules'))
+    findSymlinksPaths(NODE_MODULES)
   );
 
   console.log(formatBanner(
