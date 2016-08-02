@@ -12,17 +12,14 @@
 var React = require('React');
 
 function getGitHubPath(path) {
-  return [
-    'https://github.com/facebook/react-native/blob/master',
-    path
-  ].join('/');
+  return 'https://github.com/facebook/react-native/blob/master/' + path;
 }
 
 var Footer = React.createClass({
   render: function() {
     return (
       <p className="edit-page-block">
-        You can <a target="_blank" href={getGitHubPath(this.props.path)} >edit this page on GitHub</a> and send us a pull request!
+        You can <a target="_blank" href={getGitHubPath(this.props.path)}>edit the content above on GitHub</a> and send us a pull request!
       </p>
     );
   }

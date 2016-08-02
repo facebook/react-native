@@ -13,6 +13,7 @@
 
 var DocsSidebar = require('DocsSidebar');
 var Header = require('Header');
+var HeaderWithGithub = require('HeaderWithGithub');
 var Footer = require('Footer');
 var Marked = require('Marked');
 var Prism = require('Prism');
@@ -830,14 +831,11 @@ var Autodocs = React.createClass({
     }
     return (
       <div>
-        <Header
-          toSlug='Description'
-        >
-          Description
-        </Header>
+        <Header level={1}>Description</Header>
         <Marked>
           {docs.fullDescription}
         </Marked>
+        <Footer path={'docs/' + docs.componentName + '.md'} />
       </div>
     );
   },
@@ -849,13 +847,12 @@ var Autodocs = React.createClass({
 
     return (
       <div>
-        <Header
+        <HeaderWithGithub
+          title={example.title || 'Examples'}
           level={example.title ? 4 : 3}
           path={example.path}
           metadata={metadata}
-        >
-          {example.title || 'Examples'}
-        </Header>
+        />
         <div className="example-container">
           <Prism>
            {example.content.replace(/^[\s\S]*?\*\//, '').trim()}
@@ -892,19 +889,14 @@ var Autodocs = React.createClass({
           <DocsSidebar metadata={metadata} />
           <div className="inner-content">
             <a id="content" />
-            <Header
-              level={1}
-            >
-              {metadata.title}
-            </Header>
-            {content}
+            <Header level={1}>{metadata.title}</Header>            {content}
+            <Footer path={metadata.path} />
             {this.renderFullDescription(docs)}
             {this.renderExamples(docs, metadata)}
             <div className="docs-prevnext">
               {metadata.previous && <a className="docs-prev" href={'docs/' + metadata.previous + '.html#content'}>&larr; Prev</a>}
               {metadata.next && <a className="docs-next" href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>}
             </div>
-            <Footer path={metadata.path} />
           </div>
         </section>
       </Site>

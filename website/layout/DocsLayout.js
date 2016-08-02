@@ -39,9 +39,7 @@ var DocsLayout = React.createClass({
           <DocsSidebar metadata={metadata} />
           <div className="inner-content">
             <a id="content" />
-            <Header level={1} >
-              {metadata.title}
-            </Header>
+            <Header level={1}>{metadata.title}</Header>
             <Marked>{content}</Marked>
             <div className="docs-prevnext">
               {metadata.previous && <a className="docs-prev" href={'docs/' + metadata.previous + '.html#content'}>&larr; Prev</a>}
