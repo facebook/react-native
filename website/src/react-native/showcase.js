@@ -296,6 +296,14 @@ var featured = [
     infoLink: 'https://www.crunchbase.com/organization/bds-diet#/entity',
     infoTitle: 'Bdsdiet provides real estate brokerage services through web and live agents in Korea.',
   },
+  {
+    name: 'CALLme',
+    icon: 'https://lh3.googleusercontent.com/o7KI7rQzdZoUdChhma9aPMyxsy2vCcz1ky6ZMkp1F7L-ZZMIP6ACnPYiUXxIIWTCEvU=w300',
+    linkAppStore: 'https://itunes.apple.com/jp/app/callme-dokidoki-sheng-shengtokuapuri/id1083836654?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=jp.co.appland.talkapp',
+    infoLink: 'https://callme-app.com/',
+    infoTitle: 'Have a voice call conversation with someone about anything. in Japan',
+  },
 ];
 
 featured.sort(function(a, b) {
