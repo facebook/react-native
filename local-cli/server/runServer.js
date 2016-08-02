@@ -22,6 +22,7 @@ const ReactPackager = require('../../packager/react-packager');
 const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
 const indexPageMiddleware = require('./middleware/indexPage');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
+const heapCaptureMiddleware = require('./middleware/heapCaptureMiddleware.js');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
 function runServer(args, config, readyCallback) {
@@ -37,6 +38,7 @@ function runServer(args, config, readyCallback) {
     .use(copyToClipBoardMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
+    .use(heapCaptureMiddleware)
     .use(cpuProfilerMiddleware)
     .use(indexPageMiddleware)
     .use(packagerServer.processRequest.bind(packagerServer));
