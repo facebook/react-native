@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const SourceMapConsumer = require('../../../node_modules/source-map').SourceMapConsumer;
+const SourceMapConsumer = require('source-map').SourceMapConsumer;
 const fs = require('fs');
 const http = require('http');
 const urlLib = require('url');
