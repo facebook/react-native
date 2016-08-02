@@ -45,7 +45,7 @@ void CSSNodeFree(CSSNodeRef node) {
 void CSSNodeInit(CSSNodeRef node) {
   node->parent = NULL;
   node->children = CSSNodeListNew(4);
-  node->shouldUpdate = true;
+  node->hasNewLayout = true;
   node->isDirty = false;
 
   node->style.alignItems = CSSAlignStretch;
@@ -158,7 +158,7 @@ CSS_NODE_PROPERTY_IMPL(void*, Context, context, context);
 CSS_NODE_PROPERTY_IMPL(CSSMeasureFunc, MeasureFunc, measureFunc, measure);
 CSS_NODE_PROPERTY_IMPL(CSSPrintFunc, PrintFunc, printFunc, print);
 CSS_NODE_PROPERTY_IMPL(bool, IsTextnode, isTextNode, isTextNode);
-CSS_NODE_PROPERTY_IMPL(bool, ShouldUpdate, shouldUpdate, shouldUpdate);
+CSS_NODE_PROPERTY_IMPL(bool, HasNewLayout, hasNewLayout, hasNewLayout);
 
 CSS_NODE_STYLE_PROPERTY_IMPL(CSSDirection, Direction, direction, direction);
 CSS_NODE_STYLE_PROPERTY_IMPL(CSSFlexDirection, FlexDirection, flexDirection, flexDirection);
@@ -1910,7 +1910,7 @@ bool layoutNodeInternal(CSSNode* node, float availableWidth, float availableHeig
   if (performLayout) {
     node->layout.dimensions[CSSDimensionWidth] = node->layout.measuredDimensions[CSSDimensionWidth];
     node->layout.dimensions[CSSDimensionHeight] = node->layout.measuredDimensions[CSSDimensionHeight];
-    node->shouldUpdate = true;
+    node->hasNewLayout = true;
     node->isDirty = false;
   }
 
