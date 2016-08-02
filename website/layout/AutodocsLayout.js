@@ -893,7 +893,8 @@ var Autodocs = React.createClass({
           <DocsSidebar metadata={metadata} />
           <div className="inner-content">
             <a id="content" />
-            <Header level={1}>{metadata.title}</Header>            {content}
+            <Header level={1}>{metadata.title}</Header>
+            {content}
             <Footer path={metadata.path} />
             {this.renderFullDescription(docs)}
             {this.renderExamples(docs, metadata)}
