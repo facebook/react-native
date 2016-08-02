@@ -226,6 +226,13 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     }
   }
 
+  @Override
+  protected void markUpdated() {
+    super.markUpdated();
+    mIsUpdated = true;
+    invalidate();
+  }
+
   /* package */ final boolean isUpdated() {
     return mIsUpdated;
   }
