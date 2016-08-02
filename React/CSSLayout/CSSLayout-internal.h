@@ -87,7 +87,7 @@ typedef struct CSSNode {
   CSSStyle style;
   CSSLayout layout;
   int lineIndex;
-  bool shouldUpdate;
+  bool hasNewLayout;
   bool isTextNode;
   CSSNodeRef parent;
   CSSNodeListRef children;

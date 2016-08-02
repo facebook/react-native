@@ -252,6 +252,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
             // JS errors are reported here after source mapping.
             if (mRedBoxHandler != null) {
               mRedBoxHandler.handleRedbox(message, stack, RedBoxHandler.ErrorType.JS);
+              mRedBoxDialog.resetReporting(true);
             }
             mRedBoxDialog.show();
           }
@@ -276,7 +277,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
           @Override
           public void run() {
             if (mRedBoxDialog == null) {
-              mRedBoxDialog = new RedBoxDialog(mApplicationContext, DevSupportManagerImpl.this);
+              mRedBoxDialog = new RedBoxDialog(mApplicationContext, DevSupportManagerImpl.this, mRedBoxHandler);
               mRedBoxDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
             }
             if (mRedBoxDialog.isShowing()) {
@@ -290,6 +291,9 @@ public class DevSupportManagerImpl implements DevSupportManager {
             // inside {@link #updateJSError} after source mapping.
             if (mRedBoxHandler != null && errorType == ErrorType.NATIVE) {
               mRedBoxHandler.handleRedbox(message, stack, RedBoxHandler.ErrorType.NATIVE);
+              mRedBoxDialog.resetReporting(true);
+            } else {
+              mRedBoxDialog.resetReporting(false);
             }
             mRedBoxDialog.show();
           }
