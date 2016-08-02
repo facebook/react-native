@@ -1632,6 +1632,7 @@ input#algolia-doc-search:focus {
 
 .edit-page-block {
     padding: 5px;
+    margin-bottom: 40px;
     font-size: 12px;
     color: #887766;
     text-align: center;
