@@ -24,6 +24,9 @@ const XHRInterceptor = require('XHRInterceptor');
 const LISTVIEW_CELL_HEIGHT = 15;
 const SEPARATOR_THICKNESS = 2;
 
+// Global id for the intercepted XMLHttpRequest objects.
+let nextXHRId = 0;
+
 type NetworkRequestInfo = {
   url?: string,
   method?: string,
@@ -61,6 +64,8 @@ class NetworkOverlay extends React.Component {
   ) => ReactElement<any>;
   _renderScrollComponent: (props: Object) => ReactElement<any>;
   _closeButtonClicked: () => void;
+  // Map of `xhr._index` -> `index in `_requests``.
+  _xhrIdMap: {[key: number]: number};
 
   state: {
     dataSource: ListView.DataSource,
@@ -87,6 +92,7 @@ class NetworkOverlay extends React.Component {
     this._renderRow = this._renderRow.bind(this);
     this._renderScrollComponent = this._renderScrollComponent.bind(this);
     this._closeButtonClicked = this._closeButtonClicked.bind(this);
+    this._xhrIdMap = {};
   }
 
   _enableInterception(): void {
@@ -95,13 +101,20 @@ class NetworkOverlay extends React.Component {
     }
     // Show the network request item in listView as soon as it was opened.
     XHRInterceptor.setOpenCallback(function(method, url, xhr) {
-      // Add one private `_index` property to identify the xhr object,
+      // Generate a global id for each intercepted xhr object, add this id
+      // to the xhr object as a private `_index` property to identify it,
       // so that we can distinguish different xhr objects in callbacks.
-      xhr._index = this._requests.length;
-      const _xhr: NetworkRequestInfo = {'method': method, 'url': url};
+      xhr._index = nextXHRId++;
+      const xhrIndex = this._requests.length;
+      this._xhrIdMap[xhr._index] = xhrIndex;
+
+      const _xhr: NetworkRequestInfo = {
+        'method': method,
+        'url': url
+      };
       this._requests.push(_xhr);
       this._detailViewItems.push([]);
-      this._genDetailViewItem(xhr._index);
+      this._genDetailViewItem(xhrIndex);
       this.setState(
         {dataSource: this._listViewDataSource.cloneWithRows(this._requests)},
         this._scrollToBottom(),
@@ -109,35 +122,38 @@ class NetworkOverlay extends React.Component {
     }.bind(this));
 
     XHRInterceptor.setRequestHeaderCallback(function(header, value, xhr) {
-      if (xhr._index === undefined) {
+      const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
+      if (xhrIndex === -1) {
         return;
       }
-      const networkInfo = this._requests[xhr._index];
+      const networkInfo = this._requests[xhrIndex];
       if (!networkInfo.requestHeaders) {
         networkInfo.requestHeaders = {};
       }
       networkInfo.requestHeaders[header] = value;
-      this._genDetailViewItem(xhr._index);
+      this._genDetailViewItem(xhrIndex);
     }.bind(this));
 
     XHRInterceptor.setSendCallback(function(data, xhr) {
-      if (xhr._index === undefined) {
+      const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
+      if (xhrIndex === -1) {
         return;
       }
-      this._requests[xhr._index].dataSent = data;
-      this._genDetailViewItem(xhr._index);
+      this._requests[xhrIndex].dataSent = data;
+      this._genDetailViewItem(xhrIndex);
     }.bind(this));
 
     XHRInterceptor.setHeaderReceivedCallback(
       function(type, size, responseHeaders, xhr) {
-        if (xhr._index === undefined) {
+        const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
+        if (xhrIndex === -1) {
           return;
         }
-        const networkInfo = this._requests[xhr._index];
+        const networkInfo = this._requests[xhrIndex];
         networkInfo.responseContentType = type;
         networkInfo.responseSize = size;
         networkInfo.responseHeaders = responseHeaders;
-        this._genDetailViewItem(xhr._index);
+        this._genDetailViewItem(xhrIndex);
       }.bind(this)
     );
 
@@ -150,16 +166,17 @@ class NetworkOverlay extends React.Component {
         responseType,
         xhr,
       ) {
-        if (xhr._index === undefined) {
+        const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
+        if (xhrIndex === -1) {
           return;
         }
-        const networkInfo = this._requests[xhr._index];
+        const networkInfo = this._requests[xhrIndex];
         networkInfo.status = status;
         networkInfo.timeout = timeout;
         networkInfo.response = response;
         networkInfo.responseURL = responseURL;
         networkInfo.responseType = responseType;
-        this._genDetailViewItem(xhr._index);
+        this._genDetailViewItem(xhrIndex);
       }.bind(this)
     );
 
@@ -296,9 +313,22 @@ class NetworkOverlay extends React.Component {
       return JSON.stringify(value);
     }
     if (typeof value === 'string' && value.length > 500) {
-      return String(value).substr(0, 500).concat('\n***TRUNCATED TO 500 CHARACTERS***');
+      return String(value).substr(0, 500).concat(
+        '\n***TRUNCATED TO 500 CHARACTERS***');
     }
     return value;
+  }
+
+  _getRequestIndexByXHRID(index: number): number {
+    if (index === undefined) {
+      return -1;
+    }
+    const xhrIndex = this._xhrIdMap[index];
+    if (xhrIndex === undefined) {
+      return -1;
+    } else {
+      return xhrIndex;
+    }
   }
 
   /**
@@ -324,7 +354,7 @@ class NetworkOverlay extends React.Component {
       );
     }
     // Re-render if this network request is showing in the detail view.
-    if (this.state.detailRowID != null && this.state.detailRowID == index) {
+    if (this.state.detailRowID != null && Number(this.state.detailRowID) === index) {
       this.setState({newDetailInfo: true});
     }
   }
