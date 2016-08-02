@@ -137,7 +137,7 @@ function run() {
 
   commander.parse(process.argv);
 
-  const isValidCommand = commands.find(cmd => cmd.name === process.argv[2]);
+  const isValidCommand = commands.find(cmd => cmd.name.split(' ')[0] === process.argv[2]);
 
   if (!isValidCommand) {
     printUnknownCommand(process.argv[2]);
