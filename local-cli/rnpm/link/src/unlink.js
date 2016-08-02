@@ -109,21 +109,23 @@ module.exports = function unlink(args, config) {
         flatten(allDependencies, d => d.assets)
       );
 
-      if (!isEmpty(assets)) {
-        if (project.ios) {
-          log.info('Unlinking assets from ios project');
-          unlinkAssetsIOS(assets, project.ios);
-        }
-
-        if (project.android) {
-          log.info('Unlinking assets from android project');
-          unlinkAssetsAndroid(assets, project.android.assetsPath);
-        }
-
-        log.info(
-          `${packageName} assets has been successfully unlinked from your project`
-        );
+      if (isEmpty(assets)) {
+        return Promise.resolve();
       }
+
+      if (project.ios) {
+        log.info('Unlinking assets from ios project');
+        unlinkAssetsIOS(assets, project.ios);
+      }
+
+      if (project.android) {
+        log.info('Unlinking assets from android project');
+        unlinkAssetsAndroid(assets, project.android.assetsPath);
+      }
+
+      log.info(
+        `${packageName} assets has been successfully unlinked from your project`
+      );
     })
     .catch(err => {
       log.error(
