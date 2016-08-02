@@ -18,6 +18,7 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.JSCHeapCapture;
+import com.facebook.react.devsupport.JSCSamplingProfiler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
@@ -84,6 +85,7 @@ import com.facebook.systrace.Systrace;
         new Timing(catalystApplicationContext, mReactInstanceManager.getDevSupportManager()),
         new SourceCodeModule(mReactInstanceManager.getSourceUrl()),
         uiManagerModule,
+        new JSCSamplingProfiler(catalystApplicationContext),
         new DebugComponentOwnershipModule(catalystApplicationContext)));
 
     if (ReactBuildConfig.DEBUG) {
@@ -103,6 +105,7 @@ import com.facebook.systrace.Systrace;
         AppRegistry.class,
         com.facebook.react.bridge.Systrace.class,
         HMRClient.class,
+        JSCSamplingProfiler.SamplingProfiler.class,
         DebugComponentOwnershipModule.RCTDebugComponentOwnership.class));
 
     if (ReactBuildConfig.DEBUG) {
