@@ -370,18 +370,9 @@ public class DevSupportManagerImpl implements DevSupportManager {
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
-            try {
-              String heapDumpPath = mApplicationContext.getCacheDir().getPath();
-              List<String> captureFiles = JSCHeapCapture.captureHeap(heapDumpPath, 60000);
-              for (String captureFile : captureFiles) {
-                Toast.makeText(
-                  mCurrentContext,
-                  "Heap captured to " + captureFile,
-                  Toast.LENGTH_LONG).show();
-              }
-            } catch (JSCHeapCapture.CaptureException e) {
-              showNewJavaError(e.getMessage(), e);
-            }
+            JSCHeapCapture.captureHeap(
+              mApplicationContext.getCacheDir().getPath(),
+              JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl()));
           }
         });
     options.put(
@@ -484,6 +475,11 @@ public class DevSupportManagerImpl implements DevSupportManager {
   @Override
   public String getDownloadedJSBundleFile() {
     return mJSBundleTempFile.getAbsolutePath();
+  }
+
+  @Override
+  public String getHeapCaptureUploadUrl() {
+    return mDevServerHelper.getHeapCaptureUploadUrl();
   }
 
   /**

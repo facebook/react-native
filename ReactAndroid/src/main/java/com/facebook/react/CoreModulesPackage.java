@@ -16,6 +16,7 @@ import java.util.List;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.JSCHeapCapture;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -73,7 +74,7 @@ import com.facebook.systrace.Systrace;
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
 
-    return Arrays.<NativeModule>asList(
+    List<NativeModule> nativeModulesList = new ArrayList<>(Arrays.<NativeModule>asList(
         new AnimationsDebugModule(
             catalystApplicationContext,
             mReactInstanceManager.getDevSupportManager().getDevSettings()),
@@ -83,13 +84,18 @@ import com.facebook.systrace.Systrace;
         new Timing(catalystApplicationContext, mReactInstanceManager.getDevSupportManager()),
         new SourceCodeModule(mReactInstanceManager.getSourceUrl()),
         uiManagerModule,
-        new JSCHeapCapture(catalystApplicationContext),
-        new DebugComponentOwnershipModule(catalystApplicationContext));
+        new DebugComponentOwnershipModule(catalystApplicationContext)));
+
+    if (ReactBuildConfig.DEBUG) {
+      nativeModulesList.add(new JSCHeapCapture(catalystApplicationContext));
+    }
+
+    return nativeModulesList;
   }
 
   @Override
   public List<Class<? extends JavaScriptModule>> createJSModules() {
-    return Arrays.asList(
+    List<Class<? extends JavaScriptModule>> jsModules = new ArrayList<>(Arrays.asList(
         DeviceEventManagerModule.RCTDeviceEventEmitter.class,
         JSTimersExecution.class,
         RCTEventEmitter.class,
@@ -97,8 +103,13 @@ import com.facebook.systrace.Systrace;
         AppRegistry.class,
         com.facebook.react.bridge.Systrace.class,
         HMRClient.class,
-        JSCHeapCapture.HeapCapture.class,
-        DebugComponentOwnershipModule.RCTDebugComponentOwnership.class);
+        DebugComponentOwnershipModule.RCTDebugComponentOwnership.class));
+
+    if (ReactBuildConfig.DEBUG) {
+      jsModules.add(JSCHeapCapture.HeapCapture.class);
+    }
+
+    return jsModules;
   }
 
   @Override
