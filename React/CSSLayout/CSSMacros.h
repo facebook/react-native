@@ -16,3 +16,17 @@
 # define CSS_EXTERN_C_BEGIN
 # define CSS_EXTERN_C_END
 #endif
+
+#ifndef FB_ASSERTIONS_ENABLED
+#define FB_ASSERTIONS_ENABLED 1
+#endif
+
+#if !(FB_ASSERTIONS_ENABLED)
+#define abort()
+#endif
+
+#define CSS_ASSERT(X, message) \
+if (!(X)) { \
+  fprintf(stderr, "%s\n", message); \
+  abort(); \
+}

@@ -27,7 +27,7 @@ __forceinline const float fmaxf(const float a, const float b) {
 
 CSSNodeRef CSSNodeNew() {
   CSSNodeRef node = calloc(1, sizeof(CSSNode));
-  assert(node != NULL);
+  CSS_ASSERT(node != NULL, "Could not allocate memory for node");
 
   CSSNodeInit(node);
   return node;
@@ -119,8 +119,7 @@ uint32_t CSSNodeChildCount(CSSNodeRef node) {
 }
 
 void CSSNodeMarkDirty(CSSNodeRef node) {
-  // Nodes without custom measure functions should not manually mark themselves as dirty
-  assert(node->measure != NULL);
+  CSS_ASSERT(node->measure != NULL, "Nodes without custom measure functions should not manually mark themselves as dirty");
   _CSSNodeMarkDirty(node);
 }
 
@@ -794,8 +793,8 @@ static void setPosition(CSSNode* node, CSSDirection direction) {
 static void layoutNodeImpl(CSSNode* node, float availableWidth, float availableHeight,
     CSSDirection parentDirection, CSSMeasureMode widthMeasureMode, CSSMeasureMode heightMeasureMode, bool performLayout) {
 
-  assert(isUndefined(availableWidth) ? widthMeasureMode == CSSMeasureModeUndefined : true); // availableWidth is indefinite so widthMeasureMode must be CSSMeasureModeUndefined
-  assert(isUndefined(availableHeight) ? heightMeasureMode == CSSMeasureModeUndefined : true); // availableHeight is indefinite so heightMeasureMode must be CSSMeasureModeUndefined
+  CSS_ASSERT(isUndefined(availableWidth) ? widthMeasureMode == CSSMeasureModeUndefined : true, "availableWidth is indefinite so widthMeasureMode must be CSSMeasureModeUndefined");
+  CSS_ASSERT(isUndefined(availableHeight) ? heightMeasureMode == CSSMeasureModeUndefined : true, "availableHeight is indefinite so heightMeasureMode must be CSSMeasureModeUndefined");
 
   float paddingAndBorderAxisRow = getPaddingAndBorderAxis(node, CSSFlexDirectionRow);
   float paddingAndBorderAxisColumn = getPaddingAndBorderAxis(node, CSSFlexDirectionColumn);
