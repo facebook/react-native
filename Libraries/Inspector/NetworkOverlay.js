@@ -19,6 +19,7 @@ const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TouchableHighlight = require('TouchableHighlight');
 const View = require('View');
+const WebSocketInterceptor = require('WebSocketInterceptor');
 const XHRInterceptor = require('XHRInterceptor');
 
 const LISTVIEW_CELL_HEIGHT = 15;
@@ -28,6 +29,7 @@ const SEPARATOR_THICKNESS = 2;
 let nextXHRId = 0;
 
 type NetworkRequestInfo = {
+  type?: string,
   url?: string,
   method?: string,
   status?: number,
@@ -40,6 +42,10 @@ type NetworkRequestInfo = {
   responseURL?: string,
   responseType?: string,
   timeout?: number,
+  closeReason?: string,
+  messages?: string,
+  serverClose?: Object,
+  serverError?: Object,
 };
 
 /**
@@ -64,6 +70,8 @@ class NetworkOverlay extends React.Component {
   ) => ReactElement<any>;
   _renderScrollComponent: (props: Object) => ReactElement<any>;
   _closeButtonClicked: () => void;
+  // Map of `socketId` -> `index in `_requests``.
+  _socketIdMap: Object;
   // Map of `xhr._index` -> `index in `_requests``.
   _xhrIdMap: {[key: number]: number};
 
@@ -92,15 +100,16 @@ class NetworkOverlay extends React.Component {
     this._renderRow = this._renderRow.bind(this);
     this._renderScrollComponent = this._renderScrollComponent.bind(this);
     this._closeButtonClicked = this._closeButtonClicked.bind(this);
+    this._socketIdMap = {};
     this._xhrIdMap = {};
   }
 
-  _enableInterception(): void {
+  _enableXHRInterception(): void {
     if (XHRInterceptor.isInterceptorEnabled()) {
       return;
     }
-    // Show the network request item in listView as soon as it was opened.
-    XHRInterceptor.setOpenCallback(function(method, url, xhr) {
+    // Show the XHR request item in listView as soon as it was opened.
+    XHRInterceptor.setOpenCallback((method, url, xhr) => {
       // Generate a global id for each intercepted xhr object, add this id
       // to the xhr object as a private `_index` property to identify it,
       // so that we can distinguish different xhr objects in callbacks.
@@ -109,6 +118,7 @@ class NetworkOverlay extends React.Component {
       this._xhrIdMap[xhr._index] = xhrIndex;
 
       const _xhr: NetworkRequestInfo = {
+        'type': 'XMLHttpRequest',
         'method': method,
         'url': url
       };
@@ -119,9 +129,9 @@ class NetworkOverlay extends React.Component {
         {dataSource: this._listViewDataSource.cloneWithRows(this._requests)},
         this._scrollToBottom(),
       );
-    }.bind(this));
+    });
 
-    XHRInterceptor.setRequestHeaderCallback(function(header, value, xhr) {
+    XHRInterceptor.setRequestHeaderCallback((header, value, xhr) => {
       const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
       if (xhrIndex === -1) {
         return;
@@ -132,19 +142,19 @@ class NetworkOverlay extends React.Component {
       }
       networkInfo.requestHeaders[header] = value;
       this._genDetailViewItem(xhrIndex);
-    }.bind(this));
+    });
 
-    XHRInterceptor.setSendCallback(function(data, xhr) {
+    XHRInterceptor.setSendCallback((data, xhr) => {
       const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
       if (xhrIndex === -1) {
         return;
       }
       this._requests[xhrIndex].dataSent = data;
       this._genDetailViewItem(xhrIndex);
-    }.bind(this));
+    });
 
     XHRInterceptor.setHeaderReceivedCallback(
-      function(type, size, responseHeaders, xhr) {
+      (type, size, responseHeaders, xhr) => {
         const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
         if (xhrIndex === -1) {
           return;
@@ -154,18 +164,17 @@ class NetworkOverlay extends React.Component {
         networkInfo.responseSize = size;
         networkInfo.responseHeaders = responseHeaders;
         this._genDetailViewItem(xhrIndex);
-      }.bind(this)
+      }
     );
 
-    XHRInterceptor.setResponseCallback(
-      function(
+    XHRInterceptor.setResponseCallback((
         status,
         timeout,
         response,
         responseURL,
         responseType,
         xhr,
-      ) {
+      ) => {
         const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
         if (xhrIndex === -1) {
           return;
@@ -177,19 +186,107 @@ class NetworkOverlay extends React.Component {
         networkInfo.responseURL = responseURL;
         networkInfo.responseType = responseType;
         this._genDetailViewItem(xhrIndex);
-      }.bind(this)
+      }
     );
 
     // Fire above callbacks.
     XHRInterceptor.enableInterception();
   }
 
+  _enableWebSocketInterception(): void {
+    if (WebSocketInterceptor.isInterceptorEnabled()) {
+      return;
+    }
+    // Show the WebSocket request item in listView when 'connect' is called.
+    WebSocketInterceptor.setConnectCallback(
+      (url, protocols, options, socketId) => {
+        const socketIndex = this._requests.length;
+        this._socketIdMap[socketId] = socketIndex;
+        const _webSocket: NetworkRequestInfo = {
+          'type': 'WebSocket',
+          'url': url,
+          'protocols': protocols,
+        };
+        this._requests.push(_webSocket);
+        this._detailViewItems.push([]);
+        this._genDetailViewItem(socketIndex);
+        this.setState(
+          {dataSource: this._listViewDataSource.cloneWithRows(this._requests)},
+          this._scrollToBottom(),
+        );
+      }
+    );
+
+    WebSocketInterceptor.setCloseCallback(
+      (statusCode, closeReason, socketId) => {
+        const socketIndex = this._socketIdMap[socketId];
+        if (socketIndex === undefined) {
+          return;
+        }
+        if (statusCode !== null && closeReason !== null) {
+          this._requests[socketIndex].status = statusCode;
+          this._requests[socketIndex].closeReason = closeReason;
+        }
+        this._genDetailViewItem(socketIndex);
+      }
+    );
+
+    WebSocketInterceptor.setSendCallback((data, socketId) => {
+      const socketIndex = this._socketIdMap[socketId];
+      if (socketIndex === undefined) {
+        return;
+      }
+      if (!this._requests[socketIndex].messages) {
+        this._requests[socketIndex].messages = '';
+      }
+      this._requests[socketIndex].messages +=
+        'Sent: ' + JSON.stringify(data) + '\n';
+      this._genDetailViewItem(socketIndex);
+    });
+
+    WebSocketInterceptor.setOnMessageCallback((socketId, message) => {
+      const socketIndex = this._socketIdMap[socketId];
+      if (socketIndex === undefined) {
+        return;
+      }
+      if (!this._requests[socketIndex].messages) {
+        this._requests[socketIndex].messages = '';
+      }
+      this._requests[socketIndex].messages +=
+        'Received: ' + JSON.stringify(message) + '\n';
+      this._genDetailViewItem(socketIndex);
+    });
+
+    WebSocketInterceptor.setOnCloseCallback((socketId, message) => {
+      const socketIndex = this._socketIdMap[socketId];
+      if (socketIndex === undefined) {
+        return;
+      }
+      this._requests[socketIndex].serverClose = message;
+      this._genDetailViewItem(socketIndex);
+    });
+
+    WebSocketInterceptor.setOnErrorCallback((socketId, message) => {
+      const socketIndex = this._socketIdMap[socketId];
+      if (socketIndex === undefined) {
+        return;
+      }
+      this._requests[socketIndex].serverError = message;
+      this._genDetailViewItem(socketIndex);
+    });
+
+    // Fire above callbacks.
+    WebSocketInterceptor.enableInterception();
+  }
+
   componentDidMount() {
-    this._enableInterception();
+    this._enableXHRInterception();
+    this._enableWebSocketInterception();
   }
 
   componentWillUnmount() {
     XHRInterceptor.disableInterception();
+    WebSocketInterceptor.disableInterception();
   }
 
   _renderRow(
@@ -218,7 +315,7 @@ class NetworkOverlay extends React.Component {
             </View>
             <View style={methodCellViewStyle}>
               <Text style={styles.cellText} numberOfLines={1}>
-                {rowData.method}
+                {this._getTypeShortName(rowData.type)}
               </Text>
             </View>
           </View>
@@ -331,6 +428,16 @@ class NetworkOverlay extends React.Component {
     }
   }
 
+  _getTypeShortName(type: any): string {
+    if (type === 'XMLHttpRequest') {
+      return 'XHR';
+    } else if (type === 'WebSocket') {
+      return 'WS';
+    }
+
+    return '';
+  }
+
   /**
    * Generate a list of views containing network request information for
    * a XHR object, to be shown in the detail scrollview. This function
@@ -354,7 +461,8 @@ class NetworkOverlay extends React.Component {
       );
     }
     // Re-render if this network request is showing in the detail view.
-    if (this.state.detailRowID != null && Number(this.state.detailRowID) === index) {
+    if (this.state.detailRowID != null &&
+        Number(this.state.detailRowID) === index) {
       this.setState({newDetailInfo: true});
     }
   }
@@ -383,7 +491,7 @@ class NetworkOverlay extends React.Component {
               <Text style={styles.cellText} numberOfLines={1}>URL</Text>
             </View>
             <View style={styles.methodTitleCellView}>
-              <Text style={styles.cellText} numberOfLines={1}>Method</Text>
+              <Text style={styles.cellText} numberOfLines={1}>Type</Text>
             </View>
           </View>}
         </View>
@@ -510,10 +618,10 @@ const styles = StyleSheet.create({
     fontSize: 10,
   },
   closeButton: {
+    marginTop: 5,
     backgroundColor: '#888',
     justifyContent: 'center',
     alignItems: 'center',
-    right: 0,
   },
 });
 
