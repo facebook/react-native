@@ -1160,21 +1160,24 @@ class AnimatedTransform extends AnimatedWithChildren {
   }
 
   __getNativeConfig(): any {
-    var transConfig = {};
+    var transConfigs = [];
 
     this._transforms.forEach(transform => {
       for (var key in transform) {
         var value = transform[key];
         if (value instanceof Animated) {
-          transConfig[key] = value.__getNativeTag();
+          transConfigs.push({
+            property: key,
+            nodeTag: value.__getNativeTag(),
+          });
         }
       }
     });
 
-    NativeAnimatedHelper.validateTransform(transConfig);
+    NativeAnimatedHelper.validateTransform(transConfigs);
     return {
       type: 'transform',
-      transform: transConfig,
+      transforms: transConfigs,
     };
   }
 }
