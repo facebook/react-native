@@ -26,8 +26,8 @@ const METHOD_IDS = 1;
 const PARAMS = 2;
 const MIN_TIME_BETWEEN_FLUSHES_MS = 5;
 
-const TO_NATIVE = 1
-const TO_JS = 0
+const TO_NATIVE = 1;
+const TO_JS = 0;
 
 const TRACE_TAG_REACT_APPS = 1 << 17;
 
@@ -93,7 +93,7 @@ class MessageQueue {
    */
 
   static spy(fn){
-    MessageQueue.prototype.__spy = fn
+    MessageQueue.prototype.__spy = fn;
   }
 
   callFunctionReturnFlushedQueue(module, method, args) {
@@ -194,7 +194,7 @@ class MessageQueue {
             module: this._remoteModuleTable[module],
             method: this._remoteMethodTable[module][method],
             args: params }
-        )
+        );
     }
   }
 
@@ -203,7 +203,7 @@ class MessageQueue {
     this._eventLoopStartTime = this._lastFlush;
     Systrace.beginEvent(`${module}.${method}()`);
     if (__DEV__ && this.__spy) {
-      this.__spy({ type: TO_JS, module, method, args})
+      this.__spy({ type: TO_JS, module, method, args});
     }
     const moduleMethods = this._callableModules[module];
     invariant(
@@ -238,7 +238,7 @@ class MessageQueue {
       }
       const profileName = debug ? '<callback for ' + module + '.' + method + '>' : cbID;
       if (callback && this.__spy && __DEV__) {
-        this.__spy({ type: TO_JS, module:null, method:profileName, args })
+        this.__spy({ type: TO_JS, module:null, method:profileName, args });
       }
       Systrace.beginEvent(
         `MessageQueue.invokeCallback(${profileName}, ${stringifySafe(args)})`);
