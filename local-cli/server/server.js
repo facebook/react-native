@@ -18,10 +18,11 @@ const findSymlinksPaths = require('./findSymlinksPaths');
  * Starts the React Native Packager Server.
  */
 function server(argv, config, args) {
-  args.projectRoots = args.projectRoots.concat(
-    args.root,
-    findSymlinksPaths(path.resolve(process.cwd(), 'node_modules'))
-  );
+  // Disabled temporarily to fix trunk
+  // args.projectRoots = args.projectRoots.concat(
+  //   args.root,
+  //   findSymlinksPaths(path.resolve(process.cwd(), 'node_modules'))
+  // );
 
   console.log(formatBanner(
     'Running packager on port ' + args.port + '.\n\n' +
