@@ -376,6 +376,26 @@ public class DevSupportManagerImpl implements DevSupportManager {
           }
         });
     options.put(
+        mApplicationContext.getString(R.string.catalyst_poke_sampling_profiler),
+        new DevOptionHandler() {
+          @Override
+          public void onOptionSelected() {
+            try {
+              List<String> pokeResults = JSCSamplingProfiler.poke(60000);
+              for (String result : pokeResults) {
+                Toast.makeText(
+                  mCurrentContext,
+                  result == null
+                    ? "Started JSC Sampling Profiler"
+                    : "Stopped JSC Sampling Profiler",
+                  Toast.LENGTH_LONG).show();
+              }
+            } catch (JSCSamplingProfiler.ProfilerException e) {
+              showNewJavaError(e.getMessage(), e);
+            }
+          }
+        });
+    options.put(
         mApplicationContext.getString(R.string.catalyst_settings), new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
