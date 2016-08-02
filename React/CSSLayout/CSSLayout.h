@@ -152,7 +152,7 @@ CSS_NODE_PROPERTY(void*, Context, context);
 CSS_NODE_PROPERTY(CSSMeasureFunc, MeasureFunc, measureFunc);
 CSS_NODE_PROPERTY(CSSPrintFunc, PrintFunc, printFunc);
 CSS_NODE_PROPERTY(bool, IsTextnode, isTextNode);
-CSS_NODE_PROPERTY(bool, ShouldUpdate, shouldUpdate);
+CSS_NODE_PROPERTY(bool, HasNewLayout, hasNewLayout);
 
 CSS_NODE_STYLE_PROPERTY(CSSDirection, Direction, direction);
 CSS_NODE_STYLE_PROPERTY(CSSFlexDirection, FlexDirection, flexDirection);
