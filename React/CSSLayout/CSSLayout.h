@@ -10,7 +10,12 @@
 #ifndef __CSS_LAYOUT_H
 #define __CSS_LAYOUT_H
 
+#include <assert.h>
 #include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
+
 #ifndef __cplusplus
 #include <stdbool.h>
 #endif
@@ -117,10 +122,10 @@ CSSNodeRef CSSNodeNew();
 void CSSNodeInit(CSSNodeRef node);
 void CSSNodeFree(CSSNodeRef node);
 
-void CSSNodeInsertChild(CSSNodeRef node, CSSNodeRef child, unsigned int index);
+void CSSNodeInsertChild(CSSNodeRef node, CSSNodeRef child, uint32_t index);
 void CSSNodeRemoveChild(CSSNodeRef node, CSSNodeRef child);
-CSSNodeRef CSSNodeGetChild(CSSNodeRef node, unsigned int index);
-unsigned int CSSNodeChildCount(CSSNodeRef node);
+CSSNodeRef CSSNodeGetChild(CSSNodeRef node, uint32_t index);
+uint32_t CSSNodeChildCount(CSSNodeRef node);
 
 void CSSNodeCalculateLayout(
   CSSNodeRef node,

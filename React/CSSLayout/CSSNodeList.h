@@ -10,20 +10,25 @@
 #ifndef __CSS_NODE_LIST_H
 #define __CSS_NODE_LIST_H
 
+#include <assert.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
+
 #include <CSSLayout/CSSLayout.h>
 
 CSS_EXTERN_C_BEGIN
 
 typedef struct CSSNodeList * CSSNodeListRef;
 
-CSSNodeListRef CSSNodeListNew(unsigned int initialCapacity);
+CSSNodeListRef CSSNodeListNew(uint32_t initialCapacity);
 void CSSNodeListFree(CSSNodeListRef list);
-unsigned int CSSNodeListCount(CSSNodeListRef list);
+uint32_t CSSNodeListCount(CSSNodeListRef list);
 void CSSNodeListAdd(CSSNodeListRef list, CSSNodeRef node);
-void CSSNodeListInsert(CSSNodeListRef list, CSSNodeRef node, unsigned int index);
-CSSNodeRef CSSNodeListRemove(CSSNodeListRef list, unsigned int index);
+void CSSNodeListInsert(CSSNodeListRef list, CSSNodeRef node, uint32_t index);
+CSSNodeRef CSSNodeListRemove(CSSNodeListRef list, uint32_t index);
 CSSNodeRef CSSNodeListDelete(CSSNodeListRef list, CSSNodeRef node);
-CSSNodeRef CSSNodeListGet(CSSNodeListRef list, unsigned int index);
+CSSNodeRef CSSNodeListGet(CSSNodeListRef list, uint32_t index);
 
 CSS_EXTERN_C_END
 

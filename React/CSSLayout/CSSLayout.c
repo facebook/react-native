@@ -7,10 +7,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "CSSLayout-internal.h"
@@ -102,7 +98,7 @@ void _CSSNodeMarkDirty(CSSNodeRef node) {
   }
 }
 
-void CSSNodeInsertChild(CSSNodeRef node, CSSNodeRef child, unsigned int index) {
+void CSSNodeInsertChild(CSSNodeRef node, CSSNodeRef child, uint32_t index) {
   CSSNodeListInsert(node->children, child, index);
   child->parent = node;
   _CSSNodeMarkDirty(node);
@@ -114,11 +110,11 @@ void CSSNodeRemoveChild(CSSNodeRef node, CSSNodeRef child) {
   _CSSNodeMarkDirty(node);
 }
 
-CSSNodeRef CSSNodeGetChild(CSSNodeRef node, unsigned int index) {
+CSSNodeRef CSSNodeGetChild(CSSNodeRef node, uint32_t index) {
   return CSSNodeListGet(node->children, index);
 }
 
-unsigned int CSSNodeChildCount(CSSNodeRef node) {
+uint32_t CSSNodeChildCount(CSSNodeRef node) {
   return CSSNodeListCount(node->children);
 }
 
@@ -214,7 +210,7 @@ CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Width, dimensions[CSSDimensionWidth]);
 CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Height, dimensions[CSSDimensionHeight]);
 CSS_NODE_LAYOUT_PROPERTY_IMPL(CSSDirection, Direction, direction);
 
-int gCurrentGenerationCount = 0;
+uint32_t gCurrentGenerationCount = 0;
 
 bool layoutNodeInternal(CSSNode* node, float availableWidth, float availableHeight, CSSDirection parentDirection,
   CSSMeasureMode widthMeasureMode, CSSMeasureMode heightMeasureMode, bool performLayout, char* reason);
@@ -230,8 +226,8 @@ static bool eq(float a, float b) {
   return fabs(a - b) < 0.0001;
 }
 
-static void indent(int n) {
-  for (int i = 0; i < n; ++i) {
+static void indent(uint32_t n) {
+  for (uint32_t i = 0; i < n; ++i) {
     printf("  ");
   }
 }
@@ -259,7 +255,7 @@ static bool four_equal(float four[4]) {
 static void print_css_node_rec(
   CSSNode* node,
   CSSPrintOptions options,
-  int level
+  uint32_t level
 ) {
   indent(level);
   printf("{");
@@ -382,10 +378,10 @@ static void print_css_node_rec(
     print_number_nan("bottom", node->style.position[CSSPositionBottom]);
   }
 
-  unsigned int childCount = CSSNodeListCount(node->children);
+  uint32_t childCount = CSSNodeListCount(node->children);
   if (options & CSSPrintOptionsChildren && childCount > 0) {
     printf("children: [\n");
-    for (unsigned int i = 0; i < childCount; ++i) {
+    for (uint32_t i = 0; i < childCount; ++i) {
       print_css_node_rec(CSSNodeGetChild(node, i), options, level + 1);
     }
     indent(level);
@@ -852,7 +848,7 @@ static void layoutNodeImpl(CSSNode* node, float availableWidth, float availableH
 
   // For nodes with no children, use the available values if they were provided, or
   // the minimum size as indicated by the padding and border sizes.
-  unsigned int childCount = CSSNodeListCount(node->children);
+  uint32_t childCount = CSSNodeListCount(node->children);
   if (childCount == 0) {
     node->layout.measuredDimensions[CSSDimensionWidth] = boundAxis(node, CSSFlexDirectionRow,
       (widthMeasureMode == CSSMeasureModeUndefined || widthMeasureMode == CSSMeasureModeAtMost) ?
@@ -924,7 +920,7 @@ static void layoutNodeImpl(CSSNode* node, float availableWidth, float availableH
 
   // STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
   CSSNode* child;
-  unsigned int i;
+  uint32_t i;
   float childWidth;
   float childHeight;
   CSSMeasureMode childWidthMeasureMode;
@@ -1031,11 +1027,11 @@ static void layoutNodeImpl(CSSNode* node, float availableWidth, float availableH
   // STEP 4: COLLECT FLEX ITEMS INTO FLEX LINES
 
   // Indexes of children that represent the first and last items in the line.
-  int startOfLineIndex = 0;
-  int endOfLineIndex = 0;
+  uint32_t startOfLineIndex = 0;
+  uint32_t endOfLineIndex = 0;
 
   // Number of lines.
-  int lineCount = 0;
+  uint32_t lineCount = 0;
 
   // Accumulated cross dimensions of all lines so far.
   float totalLineCrossDim = 0;
@@ -1047,7 +1043,7 @@ static void layoutNodeImpl(CSSNode* node, float availableWidth, float availableH
 
     // Number of items on the currently line. May be different than the difference
     // between start and end indicates because we skip over absolute-positioned items.
-    int itemsOnLine = 0;
+    uint32_t itemsOnLine = 0;
 
     // sizeConsumedOnCurrentLine is accumulation of the dimensions and margin
     // of all the children on the current line. This will be used in order to
@@ -1460,10 +1456,10 @@ static void layoutNodeImpl(CSSNode* node, float availableWidth, float availableH
       }
     }
 
-    int endIndex = 0;
+    uint32_t endIndex = 0;
     for (i = 0; i < lineCount; ++i) {
-      int startIndex = endIndex;
-      int j;
+      uint32_t startIndex = endIndex;
+      uint32_t j;
 
       // compute the line's height and find the endIndex
       float lineHeight = 0;
@@ -1654,7 +1650,7 @@ static void layoutNodeImpl(CSSNode* node, float availableWidth, float availableH
   }
 }
 
-int gDepth = 0;
+uint32_t gDepth = 0;
 bool gPrintTree = false;
 bool gPrintChanges = false;
 bool gPrintSkips = false;
@@ -1808,7 +1804,7 @@ bool layoutNodeInternal(CSSNode* node, float availableWidth, float availableHeig
       cachedResults = &layout->cached_layout;
     } else {
       // Try to use the measurement cache.
-      for (int i = 0; i < layout->nextCachedMeasurementsIndex; i++) {
+      for (uint32_t i = 0; i < layout->nextCachedMeasurementsIndex; i++) {
         if (canUseCachedMeasurement(node->isTextNode, availableWidth, availableHeight, marginAxisRow, marginAxisColumn,
             widthMeasureMode, heightMeasureMode, layout->cachedMeasurements[i])) {
           cachedResults = &layout->cachedMeasurements[i];
@@ -1825,7 +1821,7 @@ bool layoutNodeInternal(CSSNode* node, float availableWidth, float availableHeig
       cachedResults = &layout->cached_layout;
     }
   } else {
-    for (int i = 0; i < layout->nextCachedMeasurementsIndex; i++) {
+    for (uint32_t i = 0; i < layout->nextCachedMeasurementsIndex; i++) {
       if (eq(layout->cachedMeasurements[i].availableWidth, availableWidth) &&
           eq(layout->cachedMeasurements[i].availableHeight, availableHeight) &&
           layout->cachedMeasurements[i].widthMeasureMode == widthMeasureMode &&
