@@ -127,6 +127,17 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 - (BOOL)moduleIsInitialized:(Class)moduleClass;
 
 /**
+ * Call when your delegate's `whitelistedModulesForBridge:` value has changed.
+ * In response to this, the bridge will instantiate any (whitelisted) native modules
+ * that require main thread initialization, so we don't depend on dispatch_sync
+ * later on.
+ *
+ * This method must be called on the main thread, as any pending native modules
+ * will be initialized immediately.
+ */
+- (void)whitelistedModulesDidChange;
+
+/**
  * All registered bridge module classes.
  */
 @property (nonatomic, copy, readonly) NSArray<Class> *moduleClasses;

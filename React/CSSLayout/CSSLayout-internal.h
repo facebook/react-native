@@ -7,11 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef __CSS_LAYOUT_INTERNAL_H
-#define __CSS_LAYOUT_INTERNAL_H
-
-#include <stdio.h>
-#include <stdlib.h>
+#pragma once
 
 #include "CSSLayout.h"
 #include "CSSNodeList.h"
@@ -43,10 +39,10 @@ typedef struct CSSLayout {
 
   // Instead of recomputing the entire layout every single time, we
   // cache some information to break early when nothing changed
-  int generationCount;
+  uint32_t generationCount;
   CSSDirection lastParentDirection;
 
-  int nextCachedMeasurementsIndex;
+  uint32_t nextCachedMeasurementsIndex;
   CSSCachedMeasurement cachedMeasurements[CSS_MAX_CACHED_RESULT_COUNT];
   float measuredDimensions[2];
 
@@ -86,8 +82,8 @@ typedef struct CSSStyle {
 typedef struct CSSNode {
   CSSStyle style;
   CSSLayout layout;
-  int lineIndex;
-  bool shouldUpdate;
+  uint32_t lineIndex;
+  bool hasNewLayout;
   bool isTextNode;
   CSSNodeRef parent;
   CSSNodeListRef children;
@@ -101,5 +97,3 @@ typedef struct CSSNode {
 } CSSNode;
 
 CSS_EXTERN_C_END
-
-#endif
