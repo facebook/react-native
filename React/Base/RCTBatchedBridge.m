@@ -557,7 +557,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
     NSString *host = self.bundleURL.host;
     NSNumber *port = self.bundleURL.port;
-    [self enqueueJSCall:@"HMRClient.enable" args:@[@"ios", path, host, RCTNullIfNil(port)]];
+    [self enqueueJSCall:@"HMRClient"
+                 method:@"enable"
+                   args:@[@"ios", path, host, RCTNullIfNil(port)]
+             completion:NULL];
   }
 #endif
 }
@@ -745,8 +748,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (void)logMessage:(NSString *)message level:(NSString *)level
 {
   if (RCT_DEBUG && [_javaScriptExecutor isValid]) {
-    [self enqueueJSCall:@"RCTLog.logIfNoNativeHook"
-                   args:@[level, message]];
+    [self enqueueJSCall:@"RCTLog"
+                 method:@"logIfNoNativeHook"
+                   args:@[level, message]
+             completion:NULL];
   }
 }
 
