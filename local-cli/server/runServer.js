@@ -13,6 +13,7 @@ const connect = require('connect');
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
 const http = require('http');
+const jscProfilerMiddleware = require('./middleware/jscProfilerMiddleware');
 const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
 const messageSocket = require('./util/messageSocket.js');
 const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInEditorMiddleware');
@@ -41,6 +42,7 @@ function runServer(args, config, readyCallback) {
     .use(systraceProfileMiddleware)
     .use(heapCaptureMiddleware)
     .use(cpuProfilerMiddleware)
+    .use(jscProfilerMiddleware)
     .use(indexPageMiddleware)
     .use(packagerServer.processRequest.bind(packagerServer));
 

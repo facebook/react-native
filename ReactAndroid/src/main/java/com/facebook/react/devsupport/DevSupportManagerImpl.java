@@ -31,6 +31,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -49,6 +51,11 @@ import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
 import com.facebook.react.modules.debug.DeveloperSettings;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 /**
  * Interface for accessing and interacting with development features. Following features
@@ -113,6 +120,40 @@ public class DevSupportManagerImpl implements DevSupportManager {
   private @Nullable StackFrame[] mLastErrorStack;
   private int mLastErrorCookie = 0;
   private @Nullable ErrorType mLastErrorType;
+
+
+  private static class JscProfileTask extends AsyncTask<String, Void, Void> {
+    private static final MediaType JSON =
+      MediaType.parse("application/json; charset=utf-8");
+
+    private final String mSourceUrl;
+
+    private JscProfileTask(String sourceUrl) {
+      mSourceUrl = sourceUrl;
+    }
+
+    @Override
+    protected Void doInBackground(String... jsonData) {
+      try {
+        String jscProfileUrl =
+            Uri.parse(mSourceUrl).buildUpon()
+                .path("/jsc-profile")
+                .query(null)
+                .build()
+                .toString();
+        OkHttpClient client = new OkHttpClient();
+        for (String json: jsonData) {
+          RequestBody body = RequestBody.create(JSON, json);
+          Request request =
+            new Request.Builder().url(jscProfileUrl).post(body).build();
+          client.newCall(request).execute();
+        }
+      } catch (IOException e) {
+        FLog.e(ReactConstants.TAG, "Failed not talk to server", e);
+      }
+      return null;
+    }
+  }
 
   public DevSupportManagerImpl(
     Context applicationContext,
@@ -389,6 +430,11 @@ public class DevSupportManagerImpl implements DevSupportManager {
                     ? "Started JSC Sampling Profiler"
                     : "Stopped JSC Sampling Profiler",
                   Toast.LENGTH_LONG).show();
+                if (result != null) {
+                  new JscProfileTask(getSourceUrl()).executeOnExecutor(
+                      AsyncTask.THREAD_POOL_EXECUTOR,
+                      result);
+                }
               }
             } catch (JSCSamplingProfiler.ProfilerException e) {
               showNewJavaError(e.getMessage(), e);
