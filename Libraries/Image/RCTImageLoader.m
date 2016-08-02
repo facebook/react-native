@@ -43,7 +43,7 @@
   NSArray<id<RCTImageDataDecoder>> *_decoders;
   NSOperationQueue *_imageDecodeQueue;
   dispatch_queue_t _URLRequestQueue;
-  id<RCTImageCacheDelegate> _imageCache;
+  id<RCTImageCache> _imageCache;
   NSMutableArray *_pendingTasks;
   NSInteger _activeTasks;
   NSMutableArray *_pendingDecodes;
@@ -65,18 +65,26 @@ RCT_EXPORT_MODULE()
   _URLRequestQueue = dispatch_queue_create("com.facebook.react.ImageLoaderURLRequestQueue", DISPATCH_QUEUE_SERIAL);
 }
 
-- (id<RCTImageCacheDelegate>)getImageCache
-{
-    if (!_imageCache) {
-        //set up with default cache
-        _imageCache = [RCTImageCache new];
-    }
-    return _imageCache;
-}
-
 - (float)handlerPriority
 {
   return 1;
+}
+
+- (id<RCTImageCache>)imageCache
+{
+  if (!_imageCache) {
+    //set up with default cache
+    _imageCache = [RCTImageCache new];
+  }
+  return _imageCache;
+}
+
+- (void)setImageCache:(id<RCTImageCache>)cache
+{
+  if (_imageCache) {
+    RCTLogWarn(@"RCTImageCache was already set and has now been overriden.");
+  }
+  _imageCache = cache;
 }
 
 - (id<RCTImageURLLoader>)imageURLLoaderForURL:(NSURL *)URL
@@ -500,7 +508,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
     // Check decoded image cache
     if (cacheResult) {
-      UIImage *image = [[strongSelf getImageCache] imageForUrl:imageURLRequest.URL.absoluteString
+      UIImage *image = [[strongSelf imageCache] imageForUrl:imageURLRequest.URL.absoluteString
                                                           size:size
                                                          scale:scale
                                                     resizeMode:resizeMode
@@ -514,7 +522,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     // Store decoded image in cache
     RCTImageLoaderCompletionBlock cacheResultHandler = ^(NSError *error_, UIImage *image) {
       if (image) {
-        [[strongSelf getImageCache] addImageToCache:image
+        [[strongSelf imageCache] addImageToCache:image
                                                 URL:imageURLRequest.URL.absoluteString
                                                size:size
                                               scale:scale
