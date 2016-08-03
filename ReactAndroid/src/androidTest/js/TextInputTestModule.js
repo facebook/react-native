@@ -76,12 +76,12 @@ class TokenizedTextExample extends React.Component {
   }
 }
 
-var TextInputTestApp = React.createClass({
-  componentDidMount: function() {
+class TextInputTestApp extends React.Component {
+  componentDidMount() {
     app = this;
-  },
+  }
 
-  render: function() {
+  render() {
     return (
       <View style={styles.container}>
         <TextInput
@@ -131,8 +131,8 @@ var TextInputTestApp = React.createClass({
         <TokenizedTextExample />
       </View>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   container: {

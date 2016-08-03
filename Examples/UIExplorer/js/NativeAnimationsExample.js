@@ -33,16 +33,15 @@ var {
 } = ReactNative;
 var UIExplorerButton = require('./UIExplorerButton');
 
-var Tester = React.createClass({
-  current: 0,
-  getInitialState() {
-    return {
-      native: new Animated.Value(0),
-      js: new Animated.Value(0),
-    };
-  },
+class Tester extends React.Component {
+  state = {
+    native: new Animated.Value(0),
+    js: new Animated.Value(0),
+  };
 
-  onPress() {
+  current = 0;
+
+  onPress = () => {
     this.current = this.current ? 0 : 1;
     const config = {
       ...this.props.config,
@@ -55,7 +54,7 @@ var Tester = React.createClass({
       throw e;
     }
     Animated[this.props.type](this.state.js, { ...config, useNativeDriver: false }).start();
-  },
+  };
 
   render() {
     return (
@@ -76,8 +75,8 @@ var Tester = React.createClass({
         </View>
       </TouchableWithoutFeedback>
     );
-  },
-});
+  }
+}
 
 const styles = StyleSheet.create({
   row: {

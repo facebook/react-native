@@ -132,6 +132,10 @@ The debugger will receive a list of all project roots, separated by a space. For
 
 5. In a new chrome tab, open : ```chrome://inspect```, click on 'Inspect device' (the one followed by "Powered by Stetho")
 
+## Debugging native code
+
+When working with native code (e.g. when writing native modules) you can launch the app from Android Studio or Xcode and take advantage of the debugging features (setup breakpoints, etc.) as you would in case of building a standard native app.
+
 ## Performance Monitor
 
 You can enable a performance overlay to help you debug performance problems by selecting "Perf Monitor" in the Developer Menu.

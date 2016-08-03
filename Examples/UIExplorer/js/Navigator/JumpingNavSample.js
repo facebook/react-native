@@ -106,8 +106,8 @@ class JumpingNavBar extends React.Component {
   }
 }
 
-var JumpingNavSample = React.createClass({
-  render: function() {
+class JumpingNavSample extends React.Component {
+  render() {
     return (
       <Navigator
         debugOverlay={false}
@@ -133,9 +133,9 @@ var JumpingNavSample = React.createClass({
         }
       />
     );
-  },
+  }
 
-  renderScene: function(route, navigator) {
+  renderScene = (route, navigator) => {
     var backBtn;
     var forwardBtn;
     if (ROUTE_STACK.indexOf(route) !== 0) {
@@ -185,8 +185,8 @@ var JumpingNavSample = React.createClass({
         />
       </ScrollView>
     );
-  },
-});
+  };
+}
 
 var styles = StyleSheet.create({
   button: {

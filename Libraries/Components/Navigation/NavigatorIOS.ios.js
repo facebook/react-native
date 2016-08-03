@@ -34,21 +34,21 @@ function getuid() {
   return __uid++;
 }
 
-var NavigatorTransitionerIOS = React.createClass({
-  requestSchedulingNavigation: function(cb) {
+class NavigatorTransitionerIOS extends React.Component {
+  requestSchedulingNavigation = (cb) => {
     RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
       ReactNative.findNodeHandle(this),
       logError,
       cb
     );
-  },
+  };
 
-  render: function() {
+  render() {
     return (
       <RCTNavigator {...this.props}/>
     );
-  },
-});
+  }
+}
 
 type Route = {
   component: Function,
@@ -110,7 +110,7 @@ type Event = Object;
  * navigates to. `initialRoute` represents the first route in your navigator.
  *
  * ```
- * import React, { Component } from 'react';
+ * import React, { Component, PropTypes } from 'react';
  * import { NavigatorIOS, Text } from 'react-native';
  *
  * export default class NavigatorIOSApp extends Component {
