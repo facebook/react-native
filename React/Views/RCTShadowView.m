@@ -137,10 +137,10 @@ DEFINE_PROCESS_META_PROPS(Border);
       viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
        absolutePosition:(CGPoint)absolutePosition
 {
-  if (!CSSNodeGetShouldUpdate(node)) {
+  if (!CSSNodeGetHasNewLayout(node)) {
     return;
   }
-  CSSNodeSetShouldUpdate(node, false);
+  CSSNodeSetHasNewLayout(node, false);
 
   CGPoint absoluteTopLeft = {
     absolutePosition.x + CSSNodeLayoutGetLeft(node),
@@ -277,6 +277,17 @@ DEFINE_PROCESS_META_PROPS(Border);
     return CGRectNull;
   }
   return (CGRect){offset, self.frame.size};
+}
+
+- (BOOL)viewIsDescendantOf:(RCTShadowView *)ancestor
+{
+  NSInteger depth = 30; // max depth to search
+  RCTShadowView *shadowView = self;
+  while (depth && shadowView && shadowView != ancestor) {
+    shadowView = shadowView->_superview;
+    depth--;
+  }
+  return ancestor == shadowView;
 }
 
 - (instancetype)init

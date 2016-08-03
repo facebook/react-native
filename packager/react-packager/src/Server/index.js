@@ -17,9 +17,10 @@ const Promise = require('promise');
 const SourceMapConsumer = require('source-map').SourceMapConsumer;
 
 const declareOpts = require('../lib/declareOpts');
+const defaultAssetExts = require('../../../defaultAssetExts');
+const mime = require('mime-types');
 const path = require('path');
 const url = require('url');
-const mime = require('mime-types');
 
 function debounce(fn, delay) {
   var timeout;
@@ -71,12 +72,7 @@ const validateOpts = declareOpts({
   },
   assetExts: {
     type: 'array',
-    default: [
-      'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'svg', 'webp', // Image formats
-      'm4v', 'mov', 'mp4', 'mpeg', 'mpg', 'webm', // Video formats
-      'aac', 'aiff', 'caf', 'm4a', 'mp3', 'wav', // Audio formats
-      'html', 'pdf', // Document formats
-    ],
+    default: defaultAssetExts,
   },
   transformTimeoutInterval: {
     type: 'number',
