@@ -6,7 +6,8 @@
 #include <fbsystrace.h>
 #endif
 
-#include "ModuleRegistryHolder.h"
+#include <cxxreact/CxxNativeModule.h>
+
 #include "JCallback.h"
 #include "JExecutorToken.h"
 #include "ReadableNativeArray.h"
