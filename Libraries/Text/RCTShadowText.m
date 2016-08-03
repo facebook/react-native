@@ -266,14 +266,12 @@ static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, 
 
   _effectiveLetterSpacing = letterSpacing.doubleValue;
 
-  NSArray *fontVariant = _fontVariant ? _fontVariant : NULL;
-
   UIFont *font = [RCTConvert UIFont:nil
                          withFamily:fontFamily
                                size:fontSize
                              weight:fontWeight
                               style:fontStyle
-                            variant:fontVariant
+                            variant:_fontVariant
                     scaleMultiplier:_allowFontScaling ? _fontSizeMultiplier : 1.0
                   ];
 

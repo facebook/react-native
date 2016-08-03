@@ -573,10 +573,12 @@ static BOOL RCTFontIsCondensed(UIFont *font)
 
 NSDictionary *RCTFontVariantMapping = NULL;
 
-+ (NSDictionary *)getRCTFontVariantMapping
+static NSDictionary *fontVariantMaping()
 {
-  if (!RCTFontVariantMapping) {
-    RCTFontVariantMapping = @{
+  static NSDictionary *mapping;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    mapping = @{
       @"tabular-nums": @{
         UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
         UIFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector),
@@ -586,8 +588,8 @@ NSDictionary *RCTFontVariantMapping = NULL;
         UIFontFeatureSelectorIdentifierKey: @(kProportionalNumbersSelector),
       },
     };
-  }
-  return RCTFontVariantMapping;
+  });
+  return mapping;
 }
 
 + (UIFont *)UIFont:(id)json
@@ -656,7 +658,7 @@ NSDictionary *RCTFontVariantMapping = NULL;
   isItalic = style ? [self RCTFontStyle:style] : isItalic;
   fontWeight = weight ? [self RCTFontWeight:weight] : fontWeight;
 
-  bool didFindFont = false;
+  bool didFindFont = NO;
 
   // Handle system font as special case. This ensures that we preserve
   // the specific metrics of the standard system font as closely as possible.
@@ -675,7 +677,7 @@ NSDictionary *RCTFontVariantMapping = NULL;
         fontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits:symbolicTraits];
         font = [UIFont fontWithDescriptor:fontDescriptor size:fontSize];
       }
-      didFindFont = true;
+      didFindFont = YES;
     } else {
       // systemFontOfSize:weight: isn't available prior to iOS 8.2, so we
       // fall back to finding the correct font manually, by linear search.
@@ -728,12 +730,11 @@ NSDictionary *RCTFontVariantMapping = NULL;
 
   // Apply font variants to font object
   if (variant) {
-    NSDictionary *fontVariantMapping = [RCTConvert getRCTFontVariantMapping];
     UIFontDescriptor *fontDescriptor = [font fontDescriptor];
 
     NSMutableArray *fontFeatureSettings = [NSMutableArray array];
     for (id variantName in variant) {
-      NSDictionary *variantDescriptor = fontVariantMapping[variantName];
+      NSDictionary *variantDescriptor = RCTConvert.fontVariantMaping[variantName];
       if (variant) {
         [fontFeatureSettings addObject:variantDescriptor];
       }
