@@ -559,7 +559,10 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
 {
   [self executeBlockOnJavaScriptQueue:^{
     BOOL enabled = [notification.name isEqualToString:RCTProfileDidStartProfiling];
-    [self->_bridge enqueueJSCall:@"Systrace.setEnabled" args:@[enabled ? @YES : @NO]];
+    [self->_bridge enqueueJSCall:@"Systrace"
+                          method:@"setEnabled"
+                            args:@[enabled ? @YES : @NO]
+                      completion:NULL];
   }];
 }
 
