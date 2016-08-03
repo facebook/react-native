@@ -53,7 +53,7 @@ function printHelpInformation() {
 
   let output = [
     '',
-    chalk.bold(chalk.cyan((`  react-native ${cmdName} [options]`))),
+    chalk.bold(chalk.cyan((`  react-native ${cmdName} ${this.usage()}`))),
     `  ${this._description}`,
     '',
     `  ${chalk.bold('Options:')}`,
@@ -62,10 +62,8 @@ function printHelpInformation() {
     '',
   ];
 
-  const usage = this.usage();
-
-  if (usage !== '[options]') {
-    const formattedUsage = usage.map(
+  if (this.examples && this.examples.length > 0) {
+    const formattedUsage = this.examples.map(
       example => `    ${example.desc}: \n    ${chalk.cyan(example.cmd)}`,
     ).join('\n\n');
 
@@ -100,7 +98,6 @@ const addCommand = (command: Command, config: Config) => {
     .command(command.name, undefined, {
       noHelp: !command.description,
     })
-    .usage(command.examples)
     .description(command.description)
     .action(function runAction() {
       const passedOptions = this.opts();
@@ -115,6 +112,7 @@ const addCommand = (command: Command, config: Config) => {
     });
 
     cmd.helpInformation = printHelpInformation.bind(cmd);
+    cmd.examples = command.examples;
 
   options
     .forEach(opt => cmd.option(
