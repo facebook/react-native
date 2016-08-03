@@ -397,7 +397,7 @@ const TextInput = React.createClass({
      */
     selection: PropTypes.shape({
       start: PropTypes.number.isRequired,
-      end: PropTypes.number.isRequired
+      end: PropTypes.number,
     }),
     /**
      * The value to show for the text input. `TextInput` is a controlled
@@ -587,6 +587,11 @@ const TextInput = React.createClass({
 
     var props = Object.assign({}, this.props);
     props.style = [styles.input, this.props.style];
+
+    if (props.selection && props.selection.end == null) {
+      props.selection = {start: props.selection.start, end: props.selection.start};
+    }
+
     if (!props.multiline) {
       if (__DEV__) {
         for (var propKey in onlyMultiline) {
