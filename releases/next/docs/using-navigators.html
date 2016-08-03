@@ -33,7 +33,7 @@ AppRegistry<span class="token punctuation">.</span><span class="token function">
     &lt;Navigator
       initialRoute<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> title<span class="token punctuation">:</span> <span class="token string">&#x27;My Initial Scene&#x27;</span><span class="token punctuation">,</span> index<span class="token punctuation">:</span> <span class="token number">0</span> <span class="token punctuation">}</span><span class="token punctuation">}</span>
       renderScene<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span>route<span class="token punctuation">,</span> navigator<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
-        &lt;MyScene title<span class="token operator">=</span><span class="token punctuation">{</span>route<span class="token punctuation">.</span>title<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
+        <span class="token keyword">return</span> &lt;MyScene title<span class="token operator">=</span><span class="token punctuation">{</span>route<span class="token punctuation">.</span>title<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
       <span class="token punctuation">}</span><span class="token punctuation">}</span>
     <span class="token operator">/</span><span class="token operator">&gt;</span>
   <span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -51,25 +51,27 @@ export default class <span class="token class-name">SimpleNavigationApp</span> e
       &lt;Navigator
         initialRoute<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> title<span class="token punctuation">:</span> <span class="token string">&#x27;My Initial Scene&#x27;</span><span class="token punctuation">,</span> index<span class="token punctuation">:</span> <span class="token number">0</span> <span class="token punctuation">}</span><span class="token punctuation">}</span>
         renderScene<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span>route<span class="token punctuation">,</span> navigator<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span>
-          &lt;MyScene
-            title<span class="token operator">=</span><span class="token punctuation">{</span>route<span class="token punctuation">.</span>title<span class="token punctuation">}</span>
+          <span class="token keyword">return</span> <span class="token punctuation">(</span>
+            &lt;MyScene
+              title<span class="token operator">=</span><span class="token punctuation">{</span>route<span class="token punctuation">.</span>title<span class="token punctuation">}</span>
 
-           <span class="token comment" spellcheck="true"> // Function to call when a new scene should be displayed           
-</span>            onForward<span class="token operator">=</span><span class="token punctuation">{</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>    
-              const nextIndex <span class="token operator">=</span> route<span class="token punctuation">.</span>index <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
-              navigator<span class="token punctuation">.</span><span class="token function">push<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-                title<span class="token punctuation">:</span> <span class="token string">&#x27;Scene &#x27;</span> <span class="token operator">+</span> nextIndex<span class="token punctuation">,</span>
-                index<span class="token punctuation">:</span> nextIndex<span class="token punctuation">,</span>
-              <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token punctuation">}</span><span class="token punctuation">}</span>
+             <span class="token comment" spellcheck="true"> // Function to call when a new scene should be displayed           
+</span>              onForward<span class="token operator">=</span><span class="token punctuation">{</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>    
+                const nextIndex <span class="token operator">=</span> route<span class="token punctuation">.</span>index <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+                navigator<span class="token punctuation">.</span><span class="token function">push<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+                  title<span class="token punctuation">:</span> <span class="token string">&#x27;Scene &#x27;</span> <span class="token operator">+</span> nextIndex<span class="token punctuation">,</span>
+                  index<span class="token punctuation">:</span> nextIndex<span class="token punctuation">,</span>
+                <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token punctuation">}</span><span class="token punctuation">}</span>
 
-           <span class="token comment" spellcheck="true"> // Function to call to go back to the previous scene
-</span>            onBack<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
-              <span class="token keyword">if</span> <span class="token punctuation">(</span>route<span class="token punctuation">.</span>index <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-                navigator<span class="token punctuation">.</span><span class="token function">pop<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-              <span class="token punctuation">}</span>
-            <span class="token punctuation">}</span><span class="token punctuation">}</span>
-          <span class="token operator">/</span><span class="token operator">&gt;</span>
+             <span class="token comment" spellcheck="true"> // Function to call to go back to the previous scene
+</span>              onBack<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>route<span class="token punctuation">.</span>index <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                  navigator<span class="token punctuation">.</span><span class="token function">pop<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+              <span class="token punctuation">}</span><span class="token punctuation">}</span>
+            <span class="token operator">/</span><span class="token operator">&gt;</span>
+          <span class="token punctuation">)</span>
         <span class="token punctuation">}</span>
       <span class="token operator">/</span><span class="token operator">&gt;</span>
     <span class="token punctuation">)</span>
