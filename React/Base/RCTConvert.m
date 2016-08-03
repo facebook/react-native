@@ -523,8 +523,6 @@ RCT_ENUM_CONVERTER(RCTFontStyle, (@{
   @"oblique": @YES,
 }), NO, boolValue)
 
-typedef NSString RCTFontVariant;
-
 static RCTFontWeight RCTWeightOfFont(UIFont *font)
 {
   static NSDictionary *nameToWeight;
@@ -571,14 +569,24 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   return (symbolicTraits & UIFontDescriptorTraitCondensed) != 0;
 }
 
-NSDictionary *RCTFontVariantMapping = NULL;
-
-static NSDictionary *fontVariantMaping()
++ (NSDictionary *)RCTFontVariant:(NSString *)variant
 {
   static NSDictionary *mapping;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     mapping = @{
+      @"small-caps": @{
+        UIFontFeatureTypeIdentifierKey: @(kLowerCaseType),
+        UIFontFeatureSelectorIdentifierKey: @(kLowerCaseSmallCapsSelector),
+      },
+      @"oldstyle-nums": @{
+        UIFontFeatureTypeIdentifierKey: @(kNumberCaseType),
+        UIFontFeatureSelectorIdentifierKey: @(kLowerCaseNumbersSelector),
+      },
+      @"lining-nums": @{
+        UIFontFeatureTypeIdentifierKey: @(kNumberCaseType),
+        UIFontFeatureSelectorIdentifierKey: @(kUpperCaseNumbersSelector),
+      },
       @"tabular-nums": @{
         UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
         UIFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector),
@@ -589,7 +597,7 @@ static NSDictionary *fontVariantMaping()
       },
     };
   });
-  return mapping;
+  return mapping[variant];
 }
 
 + (UIFont *)UIFont:(id)json
@@ -734,9 +742,11 @@ static NSDictionary *fontVariantMaping()
 
     NSMutableArray *fontFeatureSettings = [NSMutableArray array];
     for (id variantName in variant) {
-      NSDictionary *variantDescriptor = RCTConvert.fontVariantMaping[variantName];
+      NSDictionary *variant = [RCTConvert RCTFontVariant:variantName];
       if (variant) {
-        [fontFeatureSettings addObject:variantDescriptor];
+        [fontFeatureSettings addObject:variant];
+      } else {
+        NSLog(variant);
       }
     }
 
