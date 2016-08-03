@@ -28,6 +28,7 @@ const MIN_TIME_BETWEEN_FLUSHES_MS = 5;
 
 const TO_NATIVE = 1;
 const TO_JS = 0;
+const defaultSpy = (info)=>console.log(`${info.type == TO_JS ? 'N->JS' : 'JS->N'} : ${info.module ? (info.module+'.') : ''}${info.method}(${JSON.stringify(info.args)})`);
 
 const TRACE_TAG_REACT_APPS = 1 << 17;
 
@@ -92,8 +93,14 @@ class MessageQueue {
    * Public APIs
    */
 
-  static spy(fn){
-    MessageQueue.prototype.__spy = fn;
+  static spy(spyOrToggle){
+    if(spyOrToggle === true){
+      MessageQueue.prototype.__spy = defaultSpy;
+    } else if(spyOrToggle === false) {
+      MessageQueue.prototype.__spy = null;
+    } else {
+      MessageQueue.prototype.__spy = spyOrToggle;
+    }
   }
 
   callFunctionReturnFlushedQueue(module, method, args) {
