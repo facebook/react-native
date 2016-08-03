@@ -159,7 +159,7 @@ var ListView = React.createClass({
      * it so that the first screen worth of data appears at one time instead of
      * over the course of multiple frames.
      */
-    initialListSize: PropTypes.number.isRequired,
+    initialListSize: PropTypes.number,
     /**
      * Called when all rows have been rendered and the list has been scrolled
      * to within onEndReachedThreshold of the bottom.  The native scroll
@@ -169,7 +169,7 @@ var ListView = React.createClass({
     /**
      * Threshold in pixels (virtual, not physical) for calling onEndReached.
      */
-    onEndReachedThreshold: PropTypes.number.isRequired,
+    onEndReachedThreshold: PropTypes.number,
     /**
      * Number of rows to render per event loop. Note: if your 'rows' are actually
      * cells, i.e. they don't span the full width of your view (as in the
@@ -177,7 +177,7 @@ var ListView = React.createClass({
      * of the number of cells per row, otherwise you're likely to see gaps at
      * the edge of the ListView as new pages are loaded.
      */
-    pageSize: PropTypes.number.isRequired,
+    pageSize: PropTypes.number,
     /**
      * () => renderable
      *
@@ -211,7 +211,7 @@ var ListView = React.createClass({
      * How early to start rendering rows before they come on screen, in
      * pixels.
      */
-    scrollRenderAheadDistance: React.PropTypes.number.isRequired,
+    scrollRenderAheadDistance: React.PropTypes.number,
     /**
      * (visibleRows, changedRows) => void
      *
@@ -236,7 +236,7 @@ var ListView = React.createClass({
      * with `horizontal={true}`.
      * @platform ios
      */
-    stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number).isRequired,
+    stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number),
     /**
      * Flag indicating whether empty section headers should be rendered. In the future release
      * empty section headers will be rendered by default, and the flag will be deprecated.
