@@ -15,11 +15,7 @@ const path = require('path');
 const isPackagerRunning = require('../util/isPackagerRunning');
 const Promise = require('promise');
 const adb = require('./adb');
-
-// Verifies this is an Android project
-function checkAndroid(root) {
-  return fs.existsSync(path.join(root, 'android/gradlew'));
-}
+const readlineSync = require('readline-sync');
 
 /**
  * Starts the app on a connected Android emulator or device.
@@ -51,10 +47,15 @@ function getAdbPath() {
 }
 
 // Runs ADB reverse tcp:8081 tcp:8081 to allow loading the jsbundle from the packager
-function tryRunAdbReverse() {
+function tryRunAdbReverse(device) {
   try {
     const adbPath = getAdbPath();
     const adbArgs = ['reverse', 'tcp:8081', 'tcp:8081'];
+
+    // If a device is specified then tell adb to use it
+    if (device !== undefined) {
+      adbArgs.unshift('-s', device);
+    };
 
     console.log(chalk.bold(
       `Running ${adbPath} ${adbArgs.join(' ')}`
@@ -67,6 +68,22 @@ function tryRunAdbReverse() {
     console.log(chalk.yellow(
       `Could not run adb reverse: ${e.message}`
     ));
+
+    // Try again but specifying a device this time
+    if (device === undefined) {
+      const devices = adb.getDevices();
+      let choosenDevice = -1;
+
+      console.log(chalk.green(
+          `\nChoose a device: \n${devices.map(function (device, index) { return `\t${index+1}. ${device}` }).join('\n')}\n`
+      ));
+
+      while(isNaN(choosenDevice) || choosenDevice < 1 || choosenDevice > devices.length) {
+        choosenDevice = readlineSync.question('Your choice : ')
+      }
+
+      tryRunAdbReverse(devices[choosenDevice-1]);
+    }
   }
 }
 
