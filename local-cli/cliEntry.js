@@ -62,6 +62,18 @@ function printHelpInformation() {
     '',
   ];
 
+  if (this.examples) {
+    const formattedExamples = this.examples.map(
+      example => `    ${example.desc}: \n    ${chalk.cyan(example.cmd)}`,
+    ).join('\n\n');
+
+    output = output.concat([
+      chalk.bold('  Example usage:'),
+      '',
+      formattedExamples,
+    ]);
+  }
+
   return output.concat([
     '',
     '',
