@@ -57,15 +57,7 @@ const KeyboardAvoidingView = React.createClass({
     /**
      * The style of the content container(View) when behavior is 'position'.
      */
-    contentContainerStyle (props, propName, componentName) {
-      const isStyle = View.propTypes.style;
-
-      if (props[propName] && props.behavior !== 'position') {
-        return new Error('contentContainerStyle prop only available for position behavior');
-      }
-
-      return isStyle(props, propName, componentName);
-    },
+    contentContainerStyle: View.propTypes.style,
     
     /**
      * This is the distance between the top of the user screen and the react native view,
@@ -177,7 +169,7 @@ const KeyboardAvoidingView = React.createClass({
 
         return (
           <View ref={viewRef} style={style} onLayout={this.onLayout} {...props}>
-            <View style={[positionStyle, contentContainerStyle]}>
+            <View style={[contentContainerStyle, positionStyle]}>
               {children}
             </View>
           </View>
