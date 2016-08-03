@@ -21,12 +21,14 @@
 #define FB_ASSERTIONS_ENABLED 1
 #endif
 
-#if !(FB_ASSERTIONS_ENABLED)
-#define abort()
+#if FB_ASSERTIONS_ENABLED
+#define CSS_ABORT() abort()
+#else
+#define CSS_ABORT()
 #endif
 
 #define CSS_ASSERT(X, message) \
 if (!(X)) { \
   fprintf(stderr, "%s\n", message); \
-  abort(); \
+  CSS_ABORT(); \
 }
