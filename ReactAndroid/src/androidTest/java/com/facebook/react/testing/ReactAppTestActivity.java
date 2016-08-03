@@ -25,7 +25,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.LifecycleState;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.ReactInstanceManager;
-import com.facebook.react.ReactPackage;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.uimanager.UIImplementationProvider;
