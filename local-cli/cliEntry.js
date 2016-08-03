@@ -51,9 +51,13 @@ function printHelpInformation() {
     cmdName = cmdName + '|' + this._alias;
   }
 
+  const usage = this.usage();
+  const usageIsString = typeof(usage) === 'string';
+  const usageString = usageIsString ? usage : '[options]';  
+  
   let output = [
     '',
-    chalk.bold(chalk.cyan((`  react-native ${cmdName} ${this.usage()}`))),
+    chalk.bold(chalk.cyan((`  react-native ${cmdName} ${usageString}`))),
     `  ${this._description}`,
     '',
     `  ${chalk.bold('Options:')}`,
@@ -62,15 +66,15 @@ function printHelpInformation() {
     '',
   ];
 
-  if (this.examples) {
-    const formattedExamples = this.examples.map(
+  if (!usageIsString) {
+    const formattedUsage = usage.map(
       example => `    ${example.desc}: \n    ${chalk.cyan(example.cmd)}`,
     ).join('\n\n');
 
     output = output.concat([
       chalk.bold('  Example usage:'),
       '',
-      formattedExamples,
+      formattedUsage,
     ]);
   }
 
