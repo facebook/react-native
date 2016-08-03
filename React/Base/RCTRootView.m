@@ -228,8 +228,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     @"initialProps": _appProperties ?: @{},
   };
 
-  [bridge enqueueJSCall:@"AppRegistry.runApplication"
-                   args:@[moduleName, appParameters]];
+  [bridge enqueueJSCall:@"AppRegistry"
+                 method:@"runApplication"
+                   args:@[moduleName, appParameters]
+             completion:NULL];
 }
 
 - (void)setSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
@@ -376,8 +378,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
   if (self.userInteractionEnabled) {
     self.userInteractionEnabled = NO;
     [(RCTRootView *)self.superview contentViewInvalidated];
-    [_bridge enqueueJSCall:@"AppRegistry.unmountApplicationComponentAtRootTag"
-                      args:@[self.reactTag]];
+    [_bridge enqueueJSCall:@"AppRegistry"
+                    method:@"unmountApplicationComponentAtRootTag"
+                      args:@[self.reactTag]
+                completion:NULL];
   }
 }
 

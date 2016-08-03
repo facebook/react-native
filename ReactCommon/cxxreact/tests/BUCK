@@ -7,11 +7,16 @@ jni_instrumentation_test_lib(
   soname = 'libxplat-bridge.so',
   srcs = [
     'CxxMessageQueueTest.cpp',
+    'value.cpp',
+    'methodcall.cpp',
+    'jsclogging.cpp',
+    'jscexecutor.cpp',
   ],
   compiler_flags = [
     '-fexceptions',
   ],
   deps = [
+    '//native/third-party/android-ndk:android',
     '//xplat/third-party/gmock:gtest',
     react_native_xplat_target('cxxreact:bridge'),
   ],

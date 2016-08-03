@@ -31,7 +31,6 @@
 
 - (void)contentSizeMultiplierDidChange:(NSNotification *)note
 {
-  CSSNodeMarkDirty(self.cssNode);
   [self dirtyText];
 }
 

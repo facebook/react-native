@@ -587,7 +587,6 @@ exports.examples = [
     render: function() {
       return <MultipleSourcesExample />;
     },
-    platform: 'android',
   },
   {
     title: 'Legacy local image',

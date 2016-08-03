@@ -23,7 +23,6 @@ var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
 
-var emptyFunction = require('emptyFunction');
 var flattenStyle = require('flattenStyle');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
@@ -131,6 +130,22 @@ var Image = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
+    /**
+     * Determines how to resize the image when the frame doesn't match the raw
+     * image dimensions.
+     *
+     * 'cover': Scale the image uniformly (maintain the image's aspect ratio)
+     * so that both dimensions (width and height) of the image will be equal
+     * to or larger than the corresponding dimension of the view (minus padding).
+     *
+     * 'contain': Scale the image uniformly (maintain the image's aspect ratio)
+     * so that both dimensions (width and height) of the image will be equal to
+     * or less than the corresponding dimension of the view (minus padding).
+     *
+     * 'stretch': Scale width and height independently, This may change the
+     * aspect ratio of the src.
+     */
+    resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch']),
   },
 
   statics: {
@@ -141,12 +156,6 @@ var Image = React.createClass({
       success: (width: number, height: number) => void,
       failure: (error: any) => void,
     ) {
-      if (!ImageLoader) {
-        failure ?
-          failure() :
-          console.warn('ImageLoader native module is missing, image size cannot be fetched.');
-        return;
-      }
       return ImageLoader.getSize(url)
         .then(function(sizes) {
           success(sizes.width, sizes.height);
@@ -161,10 +170,6 @@ var Image = React.createClass({
      * cache
      */
     prefetch(url: string, callback: ?Function) {
-      if (!ImageLoader) {
-        console.warn('ImageLoader native module is missing, image will not preload.');
-        return new Promise(emptyFunction);
-      }
       const requestId = generateRequestId();
       callback && callback(requestId);
       return ImageLoader.prefetchImage(url, requestId);
@@ -174,7 +179,7 @@ var Image = React.createClass({
      * Abort prefetch request
      */
     abortPrefetch(requestId: number) {
-      ImageLoader && ImageLoader.abortRequest(requestId);
+      ImageLoader.abortRequest(requestId);
     },
   },
 

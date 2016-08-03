@@ -31,16 +31,14 @@ var {
   StyleSheet,
 } = ReactNative;
 
-var TextEventsExample = React.createClass({
-  getInitialState: function() {
-    return {
-      curText: '<No Event>',
-      prevText: '<No Event>',
-      prev2Text: '<No Event>',
-    };
-  },
+class TextEventsExample extends React.Component {
+  state = {
+    curText: '<No Event>',
+    prevText: '<No Event>',
+    prev2Text: '<No Event>',
+  };
 
-  updateText: function(text) {
+  updateText = (text) => {
     this.setState((state) => {
       return {
         curText: text,
@@ -48,9 +46,9 @@ var TextEventsExample = React.createClass({
         prev2Text: state.prevText,
       };
     });
-  },
+  };
 
-  render: function() {
+  render() {
     return (
       <View>
         <TextInput
@@ -78,7 +76,7 @@ var TextEventsExample = React.createClass({
       </View>
     );
   }
-});
+}
 
 class AutoExpandingTextInput extends React.Component {
   constructor(props) {
@@ -189,12 +187,12 @@ class TokenizedTextExample extends React.Component {
   }
 }
 
-var BlurOnSubmitExample = React.createClass({
-  focusNextField(nextField) {
+class BlurOnSubmitExample extends React.Component {
+  focusNextField = (nextField) => {
     this.refs[nextField].focus();
-  },
+  };
 
-  render: function() {
+  render() {
     return (
       <View>
         <TextInput
@@ -241,7 +239,7 @@ var BlurOnSubmitExample = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   multiline: {
