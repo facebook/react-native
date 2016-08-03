@@ -25,6 +25,7 @@ import com.facebook.drawee.drawable.ScalingUtils.ScaleType;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -253,15 +254,11 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
       mRequestHelper = null;
       return;
     }
-    ImageRequest imageRequest = ImageRequestHelper.createImageRequest(
-        Assertions.assertNotNull(mContext),
-        source.getSource());
+    ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(source.getUri()).build();
 
     ImageRequest cachedImageRequest = null;
     if (cachedSource != null) {
-      cachedImageRequest = ImageRequestHelper.createImageRequest(
-          Assertions.assumeNotNull(mContext),
-          cachedSource.getSource());
+      cachedImageRequest = ImageRequestBuilder.newBuilderWithSource(cachedSource.getUri()).build();
     }
     mRequestHelper = new
       DraweeRequestHelper(Assertions.assertNotNull(imageRequest), cachedImageRequest, this);

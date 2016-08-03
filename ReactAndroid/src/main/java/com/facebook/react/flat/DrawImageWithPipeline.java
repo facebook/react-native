@@ -27,6 +27,7 @@ import android.graphics.Shader;
 
 import com.facebook.drawee.drawable.ScalingUtils.ScaleType;
 import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -240,9 +241,7 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
       mRequestHelper = null;
       return;
     }
-    ImageRequest imageRequest = ImageRequestHelper.createImageRequest(
-        Assertions.assertNotNull(mContext),
-        source.getSource());
+    ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(source.getUri()).build();
 
     // DrawImageWithPipeline does now support displaying low res cache images before request
     mRequestHelper = new PipelineRequestHelper(Assertions.assertNotNull(imageRequest));

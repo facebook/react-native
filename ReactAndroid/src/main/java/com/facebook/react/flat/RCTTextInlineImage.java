@@ -14,8 +14,10 @@ import javax.annotation.Nullable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.views.imagehelper.ImageSource;
 
 /**
  * RCTTextInlineImage
@@ -73,8 +75,10 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   public void setSource(@Nullable ReadableArray sources) {
     final String source =
         (sources == null || sources.size() == 0) ? null : sources.getMap(0).getString("uri");
-    getMutableSpan().setImageRequest(
-        ImageRequestHelper.createImageRequest(getThemedContext(), source));
+    final ImageSource imageSource = source == null ? null :
+        new ImageSource(getThemedContext(), source);
+    getMutableSpan().setImageRequest(imageSource == null ? null :
+        ImageRequestBuilder.newBuilderWithSource(imageSource.getUri()).build());
   }
 
   private InlineImageSpanWithPipeline getMutableSpan() {
