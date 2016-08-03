@@ -62,6 +62,7 @@ public class DevServerHelper {
   private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
   private static final String PACKAGER_CONNECTION_URL_FORMAT = "ws://%s/message?role=shell";
   private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
+  private static final String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
 
   private static final String PACKAGER_OK_STATUS = "packager-status:running";
 
@@ -128,6 +129,10 @@ public class DevServerHelper {
 
   private String getPackagerConnectionURL() {
     return String.format(Locale.US, PACKAGER_CONNECTION_URL_FORMAT, getDebugServerHost());
+  }
+
+  public String getHeapCaptureUploadUrl() {
+    return String.format(Locale.US, HEAP_CAPTURE_UPLOAD_URL_FORMAT, getDebugServerHost());
   }
 
   /**
@@ -383,7 +388,7 @@ public class DevServerHelper {
   }
 
   private String createLaunchJSDevtoolsCommandUrl() {
-    return String.format(LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT, getDebugServerHost());
+    return String.format(Locale.US, LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT, getDebugServerHost());
   }
 
   public void launchJSDevtools() {

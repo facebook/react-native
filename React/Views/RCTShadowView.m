@@ -137,10 +137,10 @@ DEFINE_PROCESS_META_PROPS(Border);
       viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
        absolutePosition:(CGPoint)absolutePosition
 {
-  if (!CSSNodeGetShouldUpdate(node)) {
+  if (!CSSNodeGetHasNewLayout(node)) {
     return;
   }
-  CSSNodeSetShouldUpdate(node, false);
+  CSSNodeSetHasNewLayout(node, false);
 
   CGPoint absoluteTopLeft = {
     absolutePosition.x + CSSNodeLayoutGetLeft(node),

@@ -12,12 +12,17 @@ const chalk = require('chalk');
 const formatBanner = require('./formatBanner');
 const path = require('path');
 const runServer = require('./runServer');
+const findSymlinksPaths = require('./findSymlinksPaths');
 
 /**
  * Starts the React Native Packager Server.
  */
 function server(argv, config, args) {
-  args.projectRoots = args.projectRoots.concat(args.root);
+  // Disabled temporarily to fix trunk
+  // args.projectRoots = args.projectRoots.concat(
+  //   args.root,
+  //   findSymlinksPaths(path.resolve(process.cwd(), 'node_modules'))
+  // );
 
   console.log(formatBanner(
     'Running packager on port ' + args.port + '.\n\n' +
@@ -91,6 +96,11 @@ module.exports = {
     description: 'specify the root directories of app assets',
     parse: (val) => val.split(',').map(dir => path.resolve(process.cwd(), dir)),
     default: (config) => config.getAssetRoots(),
+  }, {
+    command: '--assetExts [list]',
+    description: 'Specify any additional asset extentions to be used by the packager',
+    parse: (val) => val.split(','),
+    default: (config) => config.getAssetExts(),
   }, {
     command: '--skipflow',
     description: 'Disable flow checks'
