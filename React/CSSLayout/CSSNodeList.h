@@ -19,7 +19,7 @@
 
 CSS_EXTERN_C_BEGIN
 
-typedef struct CSSNodeList * CSSNodeListRef;
+typedef struct CSSNodeList *CSSNodeListRef;
 
 CSSNodeListRef CSSNodeListNew(uint32_t initialCapacity);
 void CSSNodeListFree(CSSNodeListRef list);

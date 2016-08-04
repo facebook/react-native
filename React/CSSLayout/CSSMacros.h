@@ -10,11 +10,11 @@
 #pragma once
 
 #ifdef __cplusplus
-# define CSS_EXTERN_C_BEGIN extern "C" {
-# define CSS_EXTERN_C_END   }
+#define CSS_EXTERN_C_BEGIN extern "C" {
+#define CSS_EXTERN_C_END }
 #else
-# define CSS_EXTERN_C_BEGIN
-# define CSS_EXTERN_C_END
+#define CSS_EXTERN_C_BEGIN
+#define CSS_EXTERN_C_END
 #endif
 
 #ifndef FB_ASSERTIONS_ENABLED
@@ -27,8 +27,8 @@
 #define CSS_ABORT()
 #endif
 
-#define CSS_ASSERT(X, message) \
-if (!(X)) { \
-  fprintf(stderr, "%s\n", message); \
-  CSS_ABORT(); \
-}
+#define CSS_ASSERT(X, message)                                                                     \
+  if (!(X)) {                                                                                      \
+    fprintf(stderr, "%s\n", message);                                                              \
+    CSS_ABORT();                                                                                   \
+  }
