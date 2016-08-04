@@ -333,10 +333,10 @@ const YourHeader = createAppNavigationContainer(class extends Component {
     this.props.navigate({type: 'pop'});
   }
 
-  _renderTitleComponent(): ReactElement {
+  _renderTitleComponent(props: Object): ReactElement {
     return (
       <NavigationHeader.Title>
-        {this.props.scene.route.key}
+        {props.scene.route.key}
       </NavigationHeader.Title>
     );
   }
