@@ -244,11 +244,6 @@ const styles = StyleSheet.create({
     elevation: 4,
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    left: 0,
-    marginBottom: 16, // This is needed for elevation shadow
-    position: 'absolute',
-    right: 0,
-    top: 0,
   },
 
   title: {

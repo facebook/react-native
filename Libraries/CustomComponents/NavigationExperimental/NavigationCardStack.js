@@ -75,8 +75,8 @@ type DefaultProps = {
  * A controlled navigation view that renders a stack of cards.
  *
  *     +------------+
- *   +-+            |
- * +-+ |            |
+ *   +-|   Header   |
+ * +-+ |------------|
  * | | |            |
  * | | |  Focused   |
  * | | |   Card     |
@@ -135,7 +135,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
       renderHeader
     } = this.props;
 
-    const overlay = renderHeader && renderHeader(props);
+    const header = renderHeader ? <View>{renderHeader(props)}</View> : null;
 
     const scenes = props.scenes.map(
      scene => this._renderScene({
@@ -145,13 +145,12 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     );
 
     return (
-      <View
-        style={styles.container}>
+      <View style={styles.container}>
         <View
           style={styles.scenes}>
           {scenes}
         </View>
-        {overlay}
+        {header}
       </View>
     );
   }
@@ -187,6 +186,11 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    // Header is physically rendered after scenes so that Header won't be
+    // covered by the shadows of the scenes.
+    // That said, we'd have use `flexDirection: 'column-reverse'` to move
+    // Header above the scenes.
+    flexDirection: 'column-reverse',
   },
   scenes: {
     flex: 1,

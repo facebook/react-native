@@ -194,7 +194,6 @@ const styles = StyleSheet.create({
   },
   exampleContainer: {
     flex: 1,
-    paddingTop: NavigationHeader.HEIGHT,
   },
 });
 
