@@ -95,7 +95,7 @@ function _multiplyTransform(
   var matrixToApply = MatrixMath.createIdentityMatrix();
   var argsWithIdentity = [matrixToApply].concat(args);
   matrixMathFunction.apply(this, argsWithIdentity);
-  MatrixMath.multiplyInto(result, result, matrixToApply);
+  MatrixMath.multiplyInto(result, matrixToApply, result);
 }
 
 /**
