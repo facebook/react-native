@@ -63,6 +63,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private @Nullable MeasureFunction mMeasureFunction = null;
   private LayoutState mLayoutState = LayoutState.DIRTY;
   private boolean mIsTextNode = false;
+  private Object mData;
 
   @Override
   public void init() {
@@ -619,6 +620,16 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
       style.overflow = overflow;
       dirty();
     }
+  }
+
+  @Override
+  public void setData(Object data) {
+    mData = data;
+  }
+
+  @Override
+  public Object getData() {
+    return mData;
   }
 
   /**
