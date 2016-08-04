@@ -8,7 +8,7 @@ next: running-on-simulator-ios
 previous: linking-libraries-ios
 ---
 
-Running an iOS app on a device requires an [Apple Developer account](https://developer.apple.com/) and provisioning your iPhone. This guide covers only React Native specific topics.
+Running an iOS app on a device requires only an Apple ID and a Mac. This guide covers only React Native specific topics.
 
 ## Accessing the development server from device
 

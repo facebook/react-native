@@ -329,6 +329,10 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       }
       if (source.hasKey("uri")) {
         String url = source.getString("uri");
+        String previousUrl = view.getUrl();
+        if (previousUrl != null && previousUrl.equals(url)) {
+          return;
+        }
         if (source.hasKey("method")) {
           String method = source.getString("method");
           if (method.equals(HTTP_METHOD_POST)) {

@@ -77,23 +77,32 @@ const XHRInterceptor = {
     // Override `open` method for all XHR requests to intercept the request
     // method and url, then pass them through the `openCallback`.
     XMLHttpRequest.prototype.open = function(method, url) {
-      openCallback(method, url, this);
+      if (openCallback) {
+        openCallback(method, url, this);
+      }
       originalXHROpen.apply(this, arguments);
     };
 
     // Override `setRequestHeader` method for all XHR requests to intercept
     // the request headers, then pass them through the `requestHeaderCallback`.
     XMLHttpRequest.prototype.setRequestHeader = function(header, value) {
-      requestHeaderCallback(header, value, this);
+      if (requestHeaderCallback) {
+        requestHeaderCallback(header, value, this);
+      }
       originalXHRSetRequestHeader.apply(this, arguments);
     };
 
     // Override `send` method of all XHR requests to intercept the data sent,
     // register listeners to intercept the response, and invoke the callbacks.
     XMLHttpRequest.prototype.send = function(data) {
-      sendCallback(data, this);
+      if (sendCallback) {
+        sendCallback(data, this);
+      }
       if (this.addEventListener) {
         this.addEventListener('readystatechange', () => {
+          if (!isInterceptorEnabled) {
+            return;
+          }
           if (this.readyState === this.HEADERS_RECEIVED) {
             const contentTypeString = this.getResponseHeader('Content-Type');
             const contentLengthString =
@@ -105,22 +114,26 @@ const XHRInterceptor = {
             if (contentLengthString) {
               responseSize = parseInt(contentLengthString, 10);
             }
-            headerReceivedCallback(
-              responseContentType,
-              responseSize,
-              this.getAllResponseHeaders(),
-              this,
-            );
+            if (headerReceivedCallback) {
+              headerReceivedCallback(
+                responseContentType,
+                responseSize,
+                this.getAllResponseHeaders(),
+                this,
+              );
+            }
           }
           if (this.readyState === this.DONE) {
-            responseCallback(
-              this.status,
-              this.timeout,
-              this.response,
-              this.responseURL,
-              this.responseType,
-              this,
-            );
+            if (responseCallback) {
+              responseCallback(
+                this.status,
+                this.timeout,
+                this.response,
+                this.responseURL,
+                this.responseType,
+                this,
+              );
+            }
           }
         }, false);
       }

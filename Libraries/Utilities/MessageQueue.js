@@ -201,6 +201,11 @@ class MessageQueue {
       'Module %s is not a registered callable module.',
       module
     );
+    invariant(
+      !!moduleMethods[method],
+      'Method %s does not exist on module %s',
+      method, module
+    );
     const result = moduleMethods[method].apply(moduleMethods, args);
     Systrace.endEvent();
     return result;
@@ -219,7 +224,7 @@ class MessageQueue {
         let errorMessage = `Callback with id ${cbID}: ${module}.${method}() not found`;
         if (method) {
           errorMessage = `The callback ${method}() exists in module ${module}, `
-          + `but only one callback may be registered to a function in a native module.`;
+          + 'but only one callback may be registered to a function in a native module.';
         }
         invariant(
           callback,

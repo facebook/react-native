@@ -202,7 +202,6 @@ public abstract class ReactInstanceManager {
     protected @Nullable Activity mCurrentActivity;
     protected @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
     protected @Nullable RedBoxHandler mRedBoxHandler;
-    protected boolean mUseOldBridge;
 
     protected Builder() {
     }
@@ -330,11 +329,6 @@ public abstract class ReactInstanceManager {
       return this;
     }
 
-    public Builder setUseOldBridge(boolean enable) {
-      mUseOldBridge = enable;
-      return this;
-    }
-
     /**
      * Instantiates a new {@link ReactInstanceManagerImpl}.
      * Before calling {@code build}, the following must be called:
@@ -351,10 +345,6 @@ public abstract class ReactInstanceManager {
           "Application property has not been set with this builder");
 
       Assertions.assertCondition(
-          mJSBundleLoader == null || !mUseOldBridge,
-          "JSBundleLoader can't be used with the old bridge");
-
-      Assertions.assertCondition(
           mUseDeveloperSupport || mJSBundleFile != null || mJSBundleLoader != null,
           "JS Bundle File has to be provided when dev support is disabled");
 
@@ -367,38 +357,21 @@ public abstract class ReactInstanceManager {
         mUIImplementationProvider = new UIImplementationProvider();
       }
 
-      if (mUseOldBridge) {
-        return new ReactInstanceManagerImpl(
-            mApplication,
-            mCurrentActivity,
-            mDefaultHardwareBackBtnHandler,
-            mJSBundleFile,
-            mJSMainModuleName,
-            mPackages,
-            mUseDeveloperSupport,
-            mBridgeIdleDebugListener,
-            Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
-            mUIImplementationProvider,
-            mNativeModuleCallExceptionHandler,
-            mJSCConfig,
-            mRedBoxHandler);
-      } else {
-        return new XReactInstanceManagerImpl(
-            mApplication,
-            mCurrentActivity,
-            mDefaultHardwareBackBtnHandler,
-            (mJSBundleLoader == null && mJSBundleFile != null) ?
-              JSBundleLoader.createFileLoader(mApplication, mJSBundleFile) : mJSBundleLoader,
-            mJSMainModuleName,
-            mPackages,
-            mUseDeveloperSupport,
-            mBridgeIdleDebugListener,
-            Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
-            mUIImplementationProvider,
-            mNativeModuleCallExceptionHandler,
-            mJSCConfig,
-            mRedBoxHandler);
-      }
+      return new XReactInstanceManagerImpl(
+          mApplication,
+          mCurrentActivity,
+          mDefaultHardwareBackBtnHandler,
+          (mJSBundleLoader == null && mJSBundleFile != null) ?
+            JSBundleLoader.createFileLoader(mApplication, mJSBundleFile) : mJSBundleLoader,
+          mJSMainModuleName,
+          mPackages,
+          mUseDeveloperSupport,
+          mBridgeIdleDebugListener,
+          Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
+          mUIImplementationProvider,
+          mNativeModuleCallExceptionHandler,
+          mJSCConfig,
+          mRedBoxHandler);
     }
   }
 }
