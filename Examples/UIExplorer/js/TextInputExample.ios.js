@@ -297,7 +297,7 @@ class BlurOnSubmitExample extends React.Component {
 type SelectionExampleState = {
   selection: {
     start: number;
-    end: number;
+    end?: number;
   };
   value: string;
 };

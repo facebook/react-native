@@ -48,7 +48,7 @@ if (Platform.OS === 'android') {
 type Event = Object;
 type Selection = {
   start: number;
-  end: number;
+  end?: number;
 };
 
 const DataDetectorTypes = [
