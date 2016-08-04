@@ -30,6 +30,14 @@ var API = {
     assertNativeAnimatedModule();
     NativeAnimatedModule.createAnimatedNode(tag, config);
   },
+  startListeningToAnimatedNodeValue: function(tag: number) {
+    assertNativeAnimatedModule();
+    NativeAnimatedModule.startListeningToAnimatedNodeValue(tag);
+  },
+  stopListeningToAnimatedNodeValue: function(tag: number) {
+    assertNativeAnimatedModule();
+    NativeAnimatedModule.stopListeningToAnimatedNodeValue(tag);
+  },
   connectAnimatedNodes: function(parentTag: number, childTag: number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.connectAnimatedNodes(parentTag, childTag);
@@ -144,6 +152,11 @@ function assertNativeAnimatedModule(): void {
   invariant(NativeAnimatedModule, 'Native animated module is not available');
 }
 
+// TODO: remove this when iOS supports native listeners.
+function supportsNativeListener(): bool {
+  return !!NativeAnimatedModule.startListeningToAnimatedNodeValue;
+}
+
 module.exports = {
   API,
   validateProps,
@@ -153,4 +166,5 @@ module.exports = {
   generateNewNodeTag,
   generateNewAnimationId,
   assertNativeAnimatedModule,
+  supportsNativeListener,
 };
