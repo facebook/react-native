@@ -27,7 +27,7 @@ __forceinline const float fmaxf(const float a, const float b) {
 
 CSSNodeRef CSSNodeNew() {
   CSSNodeRef node = calloc(1, sizeof(CSSNode));
-  CSS_ASSERT(node != NULL, "Could not allocate memory for node");
+  CSS_ASSERT(node, "Could not allocate memory for node");
 
   CSSNodeInit(node);
   return node;
@@ -123,6 +123,10 @@ void CSSNodeMarkDirty(CSSNodeRef node) {
   _CSSNodeMarkDirty(node);
 }
 
+bool CSSNodeIsDirty(CSSNodeRef node) {
+  return node->isDirty;
+}
+
 #define CSS_NODE_PROPERTY_IMPL(type, name, paramName, instanceName) \
 void CSSNodeSet##name(CSSNodeRef node, type paramName) { \
   node->instanceName = paramName; \
@@ -130,7 +134,7 @@ void CSSNodeSet##name(CSSNodeRef node, type paramName) { \
 \
 type CSSNodeGet##name(CSSNodeRef node) { \
   return node->instanceName; \
-} \
+}
 
 #define CSS_NODE_STYLE_PROPERTY_IMPL(type, name, paramName, instanceName) \
 void CSSNodeStyleSet##name(CSSNodeRef node, type paramName) { \
@@ -142,12 +146,12 @@ void CSSNodeStyleSet##name(CSSNodeRef node, type paramName) { \
 \
 type CSSNodeStyleGet##name(CSSNodeRef node) { \
   return node->style.instanceName; \
-} \
+}
 
 #define CSS_NODE_LAYOUT_PROPERTY_IMPL(type, name, instanceName) \
 type CSSNodeLayoutGet##name(CSSNodeRef node) { \
   return node->layout.instanceName; \
-} \
+}
 
 CSS_NODE_PROPERTY_IMPL(void*, Context, context, context);
 CSS_NODE_PROPERTY_IMPL(CSSMeasureFunc, MeasureFunc, measureFunc, measure);
@@ -211,8 +215,15 @@ CSS_NODE_LAYOUT_PROPERTY_IMPL(CSSDirection, Direction, direction);
 
 uint32_t gCurrentGenerationCount = 0;
 
-bool layoutNodeInternal(CSSNode* node, float availableWidth, float availableHeight, CSSDirection parentDirection,
-  CSSMeasureMode widthMeasureMode, CSSMeasureMode heightMeasureMode, bool performLayout, char* reason);
+bool layoutNodeInternal(
+  CSSNode* node,
+  float availableWidth,
+  float availableHeight,
+  CSSDirection parentDirection,
+  CSSMeasureMode widthMeasureMode,
+  CSSMeasureMode heightMeasureMode,
+  bool performLayout,
+  char* reason);
 
 bool isUndefined(float value) {
   return isnan(value);
