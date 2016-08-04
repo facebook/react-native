@@ -20,7 +20,13 @@ import com.facebook.soloader.SoLoader;
 public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
 
   static {
-    SoLoader.loadLibrary("csslayout");
+    try {
+      SoLoader.loadLibrary("csslayout");
+    } catch (Exception ignored) {
+      // The user probably didn't call SoLoader.init(). Fall back to System.loadLibrary() instead.
+      System.out.println("Falling back to System.loadLibrary()");
+      System.loadLibrary("csslayout");
+    }
   }
 
   private CSSNodeJNI mParent;
