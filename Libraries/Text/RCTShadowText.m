@@ -326,7 +326,9 @@ static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, 
   [self _addAttribute:NSFontAttributeName withValue:font toAttributedString:attributedString];
   [self _addAttribute:NSKernAttributeName withValue:letterSpacing toAttributedString:attributedString];
   [self _addAttribute:RCTReactTagAttributeName withValue:self.reactTag toAttributedString:attributedString];
-  [self _setParagraphStyleOnAttributedString:attributedString heightOfTallestSubview:heightOfTallestSubview];
+  [self _setParagraphStyleOnAttributedString:attributedString
+                                    fontSize:[font pointSize]
+                      heightOfTallestSubview:heightOfTallestSubview];
 
   // create a non-mutable attributedString for use by the Text system which avoids copies down the line
   _cachedAttributedString = [[NSAttributedString alloc] initWithAttributedString:attributedString];
@@ -349,6 +351,7 @@ static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, 
  * varying lineHeights, we simply take the max.
  */
 - (void)_setParagraphStyleOnAttributedString:(NSMutableAttributedString *)attributedString
+                                    fontSize:(CGFloat)fontSize
                       heightOfTallestSubview:(CGFloat)heightOfTallestSubview
 {
   // check if we have lineHeight set on self
@@ -415,9 +418,16 @@ static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, 
     }
     paragraphStyle.minimumLineHeight = lineHeight;
     paragraphStyle.maximumLineHeight = lineHeight;
+
     [attributedString addAttribute:NSParagraphStyleAttributeName
                              value:paragraphStyle
                              range:(NSRange){0, attributedString.length}];
+
+    if (lineHeight > fontSize) {
+      [attributedString addAttribute:NSBaselineOffsetAttributeName
+                               value:@(lineHeight/2 - fontSize/2)
+                               range:(NSRange){0, attributedString.length}];
+    }
   }
 
   // Text decoration
