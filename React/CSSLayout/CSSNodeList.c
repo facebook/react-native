@@ -21,19 +21,15 @@ CSSNodeListRef CSSNodeListNew(uint32_t initialCapacity) {
 
   list->capacity = initialCapacity;
   list->count = 0;
-  list->items = malloc(sizeof(void*) * list->capacity);
+  list->items = malloc(sizeof(void *) * list->capacity);
   CSS_ASSERT(list->items != NULL, "Could not allocate memory for items");
 
   return list;
 }
 
-void CSSNodeListFree(CSSNodeListRef list) {
-  free(list);
-}
+void CSSNodeListFree(CSSNodeListRef list) { free(list); }
 
-uint32_t CSSNodeListCount(CSSNodeListRef list) {
-  return list->count;
-}
+uint32_t CSSNodeListCount(CSSNodeListRef list) { return list->count; }
 
 void CSSNodeListAdd(CSSNodeListRef list, CSSNodeRef node) {
   CSSNodeListInsert(list, node, list->count);
@@ -42,7 +38,7 @@ void CSSNodeListAdd(CSSNodeListRef list, CSSNodeRef node) {
 void CSSNodeListInsert(CSSNodeListRef list, CSSNodeRef node, uint32_t index) {
   if (list->count == list->capacity) {
     list->capacity *= 2;
-    list->items = realloc(list->items, sizeof(void*) * list->capacity);
+    list->items = realloc(list->items, sizeof(void *) * list->capacity);
     CSS_ASSERT(list->items != NULL, "Could not extend allocation for items");
   }
 
@@ -77,6 +73,4 @@ CSSNodeRef CSSNodeListDelete(CSSNodeListRef list, CSSNodeRef node) {
   return NULL;
 }
 
-CSSNodeRef CSSNodeListGet(CSSNodeListRef list, uint32_t index) {
-  return list->items[index];
-}
+CSSNodeRef CSSNodeListGet(CSSNodeListRef list, uint32_t index) { return list->items[index]; }

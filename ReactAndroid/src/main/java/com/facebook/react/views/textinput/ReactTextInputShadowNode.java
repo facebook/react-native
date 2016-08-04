@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
@@ -33,7 +33,7 @@ import com.facebook.react.views.text.ReactTextUpdate;
 
 @VisibleForTesting
 public class ReactTextInputShadowNode extends ReactTextShadowNode implements
-    CSSNode.MeasureFunction {
+    CSSNodeAPI.MeasureFunction {
 
   private @Nullable EditText mEditText;
   private @Nullable float[] mComputedPadding;
@@ -66,7 +66,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
 
   @Override
   public void measure(
-      CSSNode node,
+      CSSNodeAPI node,
       float width,
       CSSMeasureMode widthMode,
       float height,
