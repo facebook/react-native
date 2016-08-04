@@ -104,6 +104,7 @@ public abstract class JSBundleLoader {
       .setDestinationPath(new File(context.getFilesDir(), "optimized-bundle"))
       .checkAndUnpackFile(bundleName + ".meta", "bundle.meta")
       .unpackFile(bundleName, "bundle.js")
+      .setLoadFlags(UnpackingJSBundleLoader.UNPACKED_JS_SOURCE)
       .build();
   }
 
