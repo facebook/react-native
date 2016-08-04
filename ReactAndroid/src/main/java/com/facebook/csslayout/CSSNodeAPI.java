@@ -88,6 +88,8 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   void setDefaultPadding(int spacingType, float padding);
   CSSOverflow getOverflow();
   void setOverflow(CSSOverflow overflow);
+  void setData(Object data);
+  Object getData();
   void init();
   void reset();
 }

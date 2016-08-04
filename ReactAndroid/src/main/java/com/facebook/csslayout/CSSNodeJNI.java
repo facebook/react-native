@@ -33,6 +33,7 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
   private List<CSSNodeJNI> mChildren;
   private MeasureFunction mMeasureFunction;
   private int mNativePointer;
+  private Object mData;
 
   private void assertNativeInstance() {
     if (mNativePointer == 0) {
@@ -717,5 +718,15 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
   @Override
   public boolean valuesEqual(float f1, float f2) {
     return FloatUtil.floatsEqual(f1, f2);
+  }
+
+  @Override
+  public void setData(Object data) {
+    mData = data;
+  }
+
+  @Override
+  public Object getData() {
+    return mData;
   }
 }
