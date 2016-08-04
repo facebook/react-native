@@ -359,7 +359,7 @@ const YourScene = createAppNavigationContainer(class extends Component {
 
   render(): ReactElement {
     return (
-      <ScrollView style={styles.scrollView}>
+      <ScrollView>
         <NavigationExampleRow
           text="Push Route"
           onPress={this._pushRoute}
@@ -462,9 +462,6 @@ const styles = StyleSheet.create({
   },
   navigatorCardStack: {
     flex: 20,
-  },
-  scrollView: {
-    marginTop: 64
   },
   tabs: {
     flex: 1,
