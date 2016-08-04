@@ -21,6 +21,7 @@ namespace react {
 
 enum {
   UNPACKED_JS_SOURCE = (1 << 0),
+  UNPACKED_BC_CACHE = (1 << 1),
 };
 
 class JSExecutor;
