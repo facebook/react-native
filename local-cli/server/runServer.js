@@ -89,6 +89,7 @@ function getPackagerServer(args, config) {
     extraNodeModules: config.extraNodeModules,
     assetRoots: args.assetRoots,
     assetExts: defaultAssetExts.concat(args.assetExts),
+    infixExts: args.infixExts || [],
     resetCache: args.resetCache,
     verbose: args.verbose,
   });

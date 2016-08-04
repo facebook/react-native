@@ -37,6 +37,8 @@ module.exports = function(descriptor) {
 
     if (record.required) {
       propValidator = propValidator.required();
+    } else {
+      propValidator = propValidator.allow(null);
     }
 
     if (record.default) {

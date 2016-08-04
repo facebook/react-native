@@ -41,6 +41,10 @@ const validateOpts = declareOpts({
     type: 'array',
     required: true,
   },
+  infixExts: {
+    type: 'array',
+    required: false
+  }
 });
 
 class AssetServer {
@@ -48,47 +52,44 @@ class AssetServer {
     const opts = validateOpts(options);
     this._roots = opts.projectRoots;
     this._assetExts = opts.assetExts;
+    this._infixExts = opts.infixExts;
   }
 
-  get(assetPath, platform = null) {
-    const assetData = getAssetDataFromName(assetPath, new Set([platform]));
-    return this._getAssetRecord(assetPath, platform).then(record => {
+  get(assetPath, platforms = null) {
+    const assetData = getAssetDataFromName(assetPath, new Set([platforms]), this._infixExts);
+    return this._getAssetRecord(assetPath, platforms).then(record => {
+
       for (let i = 0; i < record.scales.length; i++) {
         if (record.scales[i] >= assetData.resolution) {
           return readFile(record.files[i]);
         }
       }
-
       return readFile(record.files[record.files.length - 1]);
     });
   }
-
   getAssetData(assetPath, platform = null) {
-    const nameData = getAssetDataFromName(assetPath, new Set([platform]));
+    const nameData = getAssetDataFromName(assetPath, new Set([platform]), this._infixExts);
+
     const data = {
       name: nameData.name,
       type: nameData.type,
     };
-
     return this._getAssetRecord(assetPath, platform).then(record => {
       data.scales = record.scales;
       data.files = record.files;
-
       return Promise.all(
         record.files.map(file => stat(file))
       );
+
     }).then(stats => {
       const hash = crypto.createHash('md5');
-
       stats.forEach(fstat =>
         hash.update(fstat.mtime.getTime().toString())
       );
-
       data.hash = hash.digest('hex');
       return data;
     });
   }
-
   /**
    * Given a request for an image by path. That could contain a resolution
    * postfix, we need to find that image (or the closest one to it's resolution)
@@ -96,13 +97,13 @@ class AssetServer {
    *
    * 1. We first parse the directory of the asset
    * 2. We check to find a matching directory in one of the project roots
+
    * 3. We then build a map of all assets and their scales in this directory
    * 4. Then try to pick platform-specific asset records
    * 5. Then pick the closest resolution (rounding up) to the requested one
    */
   _getAssetRecord(assetPath, platform = null) {
     const filename = path.basename(assetPath);
-
     return (
       this._findRoot(
         this._roots,
@@ -116,14 +117,13 @@ class AssetServer {
       .then(res => {
         const dir = res[0];
         const files = res[1];
-        const assetData = getAssetDataFromName(filename, new Set([platform]));
+        const assetData = getAssetDataFromName(filename, new Set([platform]), this._infixExts);
 
         const map = this._buildAssetMap(dir, files, platform);
 
         let record;
         if (platform != null){
-          record = map[getAssetKey(assetData.assetName, platform)] ||
-                   map[assetData.assetName];
+          record = map[getAssetKey(assetData.assetName, platform, assetData.infixExt)] || map[assetData.assetName];
         } else {
           record = map[assetData.assetName];
         }
@@ -199,12 +199,15 @@ class AssetServer {
   }
 
   _getAssetDataFromName(platform, file) {
-    return getAssetDataFromName(file, platform);
+    return getAssetDataFromName(file, platform, this._infixExts);
   }
 }
 
-function getAssetKey(assetName, platform) {
-  if (platform != null) {
+function getAssetKey(assetName, platform, infixExt) {
+  if(platform != null && infixExt != null && assetName != null) {
+    var assetNameArr = assetName.split('.');
+    return `${assetNameArr[0]}.${infixExt}.${assetNameArr[1]} : ${platform}`;
+  } else if (platform != null && assetName != null) {
     return `${assetName} : ${platform}`;
   } else {
     return assetName;

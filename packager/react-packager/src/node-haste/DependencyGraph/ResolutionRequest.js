@@ -16,6 +16,7 @@ const path = require('../fastpath');
 const realPath = require('path');
 const isAbsolutePath = require('absolute-path');
 const getAssetDataFromName = require('../lib/getAssetDataFromName');
+const permute = require('../lib/permutations');
 
 class ResolutionRequest {
   constructor({
@@ -30,6 +31,8 @@ class ResolutionRequest {
     fastfs,
     shouldThrowOnUnresolvedErrors,
     extraNodeModules,
+    infixExt,
+    infixExts,
   }) {
     this._platform = platform;
     this._platforms = platforms;
@@ -43,6 +46,8 @@ class ResolutionRequest {
     this._shouldThrowOnUnresolvedErrors = shouldThrowOnUnresolvedErrors;
     this._extraNodeModules = extraNodeModules;
     this._resetResolutionCache();
+    this._infixExt = infixExt;
+    this._infixExts = infixExts;
   }
 
   _tryResolve(action, secondaryAction) {
@@ -402,44 +407,65 @@ class ResolutionRequest {
           );
         }
 
-        const {name, type} = getAssetDataFromName(potentialModulePath, this._platforms);
+        const {name, type} = getAssetDataFromName(potentialModulePath, this._platforms, this._infixExts);
 
-        let pattern = '^' + name + '(@[\\d\\.]+x)?';
-        if (this._platform != null) {
-          pattern += '(\\.' + this._platform + ')?';
-        }
-        pattern += '\\.' + type;
+        const permutations = permute([
+          {test: true, value: '(@[\\d\\.]+x)?'},
+          {test: this._platform, value: '(\\.' + this._platform + ')?'},
+          {test: this._infixExt, value: '(\\.' + this._infixExt + ')?'},
+        ].filter(addition => addition.test));
 
-        // We arbitrarly grab the first one, because scale selection
-        // will happen somewhere
-        const [assetFile] = this._fastfs.matches(
-          dirname,
-          new RegExp(pattern)
-        );
+        for (let i = 0; i < permutations.length; ++i) {
+          const permutation = permutations[i];
+          let pattern = '^' + name;
+          for (let j = 0; j < permutation.length; ++j) {
+            pattern += permutation[j].value;
+          }
+          pattern += '\\.' + type;
 
-        if (assetFile) {
-          return this._moduleCache.getAssetModule(assetFile);
+          // We arbitrarly grab the first one, because scale selection
+          // will happen somewhere else
+          const [assetFile] = this._fastfs.matches(
+            dirname,
+            new RegExp(pattern)
+          );
+
+          if (assetFile) {
+            return this._moduleCache.getAssetModule(assetFile);
+          }
         }
       }
 
       let file;
+
       if (this._fastfs.fileExists(potentialModulePath)) {
-        file = potentialModulePath;
-      } else if (this._platform != null &&
-                 this._fastfs.fileExists(potentialModulePath + '.' + this._platform + '.js')) {
-        file = potentialModulePath + '.' + this._platform + '.js';
-      } else if (this._preferNativePlatform &&
-                 this._fastfs.fileExists(potentialModulePath + '.native.js')) {
-        file = potentialModulePath + '.native.js';
-      } else if (this._fastfs.fileExists(potentialModulePath + '.js')) {
-        file = potentialModulePath + '.js';
-      } else if (this._fastfs.fileExists(potentialModulePath + '.json')) {
+        return this._moduleCache.getModule(potentialModulePath);
+      }
+
+      const permutations = permute([
+        {test: this._preferNativePlatform, value: 'native'},
+        {test: this._infixExt, value: this._infixExt},
+        {test: this._platform, value: this._platform},
+      ].filter(addition => addition.test));
+      permutations.push([]);
+
+      const possibleFileNames = permutations.map(additions => ResolutionRequest._addAdditions(potentialModulePath, additions) + '.js');
+      for (let x = 0; x < possibleFileNames.length; ++x) {
+        if (this._fastfs.fileExists(possibleFileNames[x])) {
+          file = possibleFileNames[x];
+          break;
+        }
+      }
+
+      if (!file && this._fastfs.fileExists(potentialModulePath + '.json')) {
         file = potentialModulePath + '.json';
-      } else {
+      }
+
+      if (!file) {
         throw new UnableToResolveError(
           fromModule,
           toModule,
-          `File ${potentialModulePath} doesnt exist`,
+          `File ${potentialModulePath} does not exist`,
         );
       }
 
@@ -447,13 +473,18 @@ class ResolutionRequest {
     });
   }
 
+  static _addAdditions(potentialModuleName, additions) {
+    return additions.length === 0 ? potentialModuleName : potentialModuleName + '.' + additions.map(addition => addition.value).join('.');
+  }
+
+
   _loadAsDir(potentialDirPath, fromModule, toModule) {
     return Promise.resolve().then(() => {
       if (!this._fastfs.dirExists(potentialDirPath)) {
         throw new UnableToResolveError(
           fromModule,
           toModule,
-`Unable to find this module in its module map or any of the node_modules directories under ${potentialDirPath} and its parent directories
+          `Unable to find this module in its module map or any of the node_modules directories under ${potentialDirPath} and its parent directories
 
 This might be related to https://github.com/facebook/react-native/issues/4968
 To resolve try the following:

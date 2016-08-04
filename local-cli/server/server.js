@@ -102,6 +102,11 @@ module.exports = {
     parse: (val) => val.split(','),
     default: (config) => config.getAssetExts(),
   }, {
+    command: '--infixExts [list]',
+    description: 'Specify a list of possible custom infix extensions to be used by the packager',
+    parse: (val) => val.split(','),
+    default: () => []
+  }, {
     command: '--skipflow',
     description: 'Disable flow checks'
   }, {
