@@ -12,6 +12,7 @@ package com.facebook.react.flat;
 import javax.annotation.Nullable;
 
 import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -27,9 +28,9 @@ import com.facebook.react.uimanager.ViewManager;
 
   /* package */ NativeViewWrapper(ViewManager viewManager) {
     ReactShadowNode reactShadowNode = viewManager.createShadowNodeInstance();
-    if (reactShadowNode instanceof CSSNode.MeasureFunction) {
+    if (reactShadowNode instanceof CSSNodeAPI.MeasureFunction) {
       mReactShadowNode = reactShadowNode;
-      setMeasureFunction((CSSNode.MeasureFunction) reactShadowNode);
+      setMeasureFunction((CSSNodeAPI.MeasureFunction) reactShadowNode);
     } else {
       mReactShadowNode = null;
     }

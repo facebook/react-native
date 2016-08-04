@@ -16,7 +16,7 @@ import android.text.Layout;
 import android.text.TextUtils;
 
 import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.csslayout.Spacing;
 import com.facebook.fbui.widget.text.layoutbuilder.TextLayoutBuilder;
@@ -34,7 +34,7 @@ import com.facebook.textcachewarmer.DefaultTextLayoutCacheWarmer;
  * a) RCTText is not a virtual node, and can be measured and laid out.
  * b) when no font size is specified, a font size of ViewDefaults#FONT_SIZE_SP is assumed.
  */
-/* package */ final class RCTText extends RCTVirtualText implements CSSNode.MeasureFunction {
+/* package */ final class RCTText extends RCTVirtualText implements CSSNodeAPI.MeasureFunction {
 
   // We set every value we use every time we use the layout builder, so we can get away with only
   // using a single instance.
@@ -68,7 +68,7 @@ import com.facebook.textcachewarmer.DefaultTextLayoutCacheWarmer;
 
   @Override
   public void measure(
-      CSSNode node,
+      CSSNodeAPI node,
       float width,
       CSSMeasureMode widthMode,
       float height,

@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import android.graphics.Rect;
 
 import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.OnLayoutEvent;
@@ -227,7 +228,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   }
 
   @Override
-  protected void markUpdated() {
+  public void markUpdated() {
     super.markUpdated();
     mIsUpdated = true;
     invalidate();

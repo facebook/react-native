@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
@@ -33,7 +33,7 @@ import com.facebook.react.views.view.MeasureUtil;
 import static com.facebook.react.views.text.ReactTextShadowNode.PROP_TEXT;
 import static com.facebook.react.views.text.ReactTextShadowNode.UNSET;
 
-public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode.MeasureFunction {
+public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNodeAPI.MeasureFunction {
 
   @Nullable private String mText;
   private int mJsEventCount = UNSET;
@@ -73,7 +73,7 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
 
   @Override
   public void measure(
-      CSSNode node,
+      CSSNodeAPI node,
       float width,
       CSSMeasureMode widthMode,
       float height,
