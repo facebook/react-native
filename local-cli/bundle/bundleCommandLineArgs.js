@@ -45,12 +45,14 @@ module.exports = [
     command: '--assets-dest [string]',
     description: 'Directory name where to store assets referenced in the bundle',
   }, {
-    command: '--verbose',
+    command: '--verbose [boolean]',
     description: 'Enables logging',
+    parse: (val) => val === 'false' ? false : true,
     default: false,
   }, {
-    command: '--reset-cache',
+    command: '--reset-cache [boolean]',
     description: 'Removes cached files',
+    parse: (val) => val === 'false' ? false : true,
     default: false,
   },
 ];
