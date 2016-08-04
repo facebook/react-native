@@ -12,6 +12,32 @@
 
 #import <AudioToolbox/AudioToolbox.h>
 
+@interface _RCTVibrationTimerProxy : NSObject
+
+@end
+
+// NSTimer retains its target, insert this class to break potential retain cycles
+@implementation _RCTVibrationTimerProxy
+{
+  __weak id _target;
+}
+
++ (instancetype)proxyWithTarget:(id)target
+{
+  _RCTVibrationTimerProxy *proxy = [self new];
+  if (proxy) {
+    proxy->_target = target;
+  }
+  return proxy;
+}
+
+- (void)timerDidFire
+{
+  [_target timerDidFire];
+}
+
+@end
+
 @implementation RCTVibration {
   NSTimer *_timer;
   NSArray *_pattern;
@@ -58,15 +84,15 @@ RCT_EXPORT_METHOD(cancel)
   }
   _timer =
     [NSTimer timerWithTimeInterval:interval
-                                     target:self
-                                   selector:@selector(_onTick:)
+                                     target:[_RCTVibrationTimerProxy proxyWithTarget:self]
+                                   selector:@selector(timerDidFire)
                                    userInfo:nil
                                     repeats:NO];
   [[NSRunLoop mainRunLoop] addTimer:_timer
                             forMode:NSRunLoopCommonModes];
 }
 
-- (void)_onTick:(NSTimer *)timer
+- (void)timerDidFire
 {
   if (!_vibrating) {
     return;
