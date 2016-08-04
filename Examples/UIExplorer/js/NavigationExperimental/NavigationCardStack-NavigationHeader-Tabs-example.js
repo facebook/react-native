@@ -267,7 +267,7 @@ const YourNavigator = createAppNavigationContainer(class extends Component {
           key={'stack_' + tabKey}
           onNavigateBack={this._back}
           navigationState={scenes}
-          renderOverlay={this._renderHeader}
+          renderHeader={this._renderHeader}
           renderScene={this._renderScene}
           style={styles.navigatorCardStack}
         />
