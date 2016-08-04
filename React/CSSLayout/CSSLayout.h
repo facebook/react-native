@@ -136,6 +136,7 @@ void CSSNodeCalculateLayout(
 // CSSLayout knows when to mark all other nodes as dirty but because nodes with measure functions
 // depends on information not known to CSSLayout they must perform this dirty marking manually.
 void CSSNodeMarkDirty(CSSNodeRef node);
+bool CSSNodeIsDirty(CSSNodeRef node);
 
 void CSSNodePrint(CSSNodeRef node, CSSPrintOptions options);
 
