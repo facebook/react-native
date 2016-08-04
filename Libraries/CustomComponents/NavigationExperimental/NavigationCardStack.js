@@ -60,7 +60,7 @@ type Props = {
   direction: NavigationGestureDirection,
   navigationState: NavigationState,
   onNavigateBack?: Function,
-  renderOverlay: ?NavigationSceneRenderer,
+  renderHeader: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
   cardStyle?: any,
   style: any,
@@ -93,7 +93,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
     navigationState: NavigationPropTypes.navigationState.isRequired,
     onNavigateBack: PropTypes.func,
-    renderOverlay: PropTypes.func,
+    renderHeader: PropTypes.func,
     renderScene: PropTypes.func.isRequired,
     cardStyle: View.propTypes.style,
     gestureResponseDistance: PropTypes.number,
@@ -132,10 +132,10 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
 
   _render(props: NavigationTransitionProps): ReactElement<any> {
     const {
-      renderOverlay
+      renderHeader
     } = this.props;
 
-    const overlay = renderOverlay && renderOverlay(props);
+    const overlay = renderHeader && renderHeader(props);
 
     const scenes = props.scenes.map(
      scene => this._renderScene({
