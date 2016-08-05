@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.facebook.react.ReactPackage;
+import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -25,12 +26,14 @@ import com.facebook.react.modules.clipboard.ClipboardModule;
 import com.facebook.react.modules.datepicker.DatePickerDialogModule;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
+import com.facebook.react.modules.i18nmanager.I18nManagerModule;
 import com.facebook.react.modules.image.ImageLoaderModule;
 import com.facebook.react.modules.intent.IntentModule;
 import com.facebook.react.modules.location.LocationModule;
 import com.facebook.react.modules.netinfo.NetInfoModule;
 import com.facebook.react.modules.network.NetworkingModule;
 import com.facebook.react.modules.permissions.PermissionsModule;
+import com.facebook.react.modules.share.ShareModule;
 import com.facebook.react.modules.statusbar.StatusBarModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.timepicker.TimePickerDialogModule;
@@ -77,14 +80,17 @@ public class MainReactPackage implements ReactPackage {
       new DatePickerDialogModule(reactContext),
       new DialogModule(reactContext),
       new FrescoModule(reactContext),
+      new I18nManagerModule(reactContext),
       new ImageEditingManager(reactContext),
       new ImageLoaderModule(reactContext),
       new ImageStoreManager(reactContext),
       new IntentModule(reactContext),
       new LocationModule(reactContext),
+      new NativeAnimatedModule(reactContext),
       new NetworkingModule(reactContext),
       new NetInfoModule(reactContext),
       new PermissionsModule(reactContext),
+      new ShareModule(reactContext),
       new StatusBarModule(reactContext),
       new TimePickerDialogModule(reactContext),
       new ToastModule(reactContext),

@@ -57,6 +57,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 @synthesize flowIDMapLock = _flowIDMapLock;
 @synthesize loading = _loading;
 @synthesize valid = _valid;
+@synthesize performanceLogger = _performanceLogger;
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge
 {
@@ -67,6 +68,10 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
                       moduleProvider:bridge.moduleProvider
                        launchOptions:bridge.launchOptions]) {
     _parentBridge = bridge;
+
+    _performanceLogger = [RCTPerformanceLogger new];
+    [_performanceLogger markStartForTag:RCTPLBridgeStartup];
+    [_performanceLogger markStartForTag:RCTPLTTI];
 
     /**
      * Set Initial State
@@ -491,7 +496,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
     NSString *host = self.bundleURL.host;
     NSNumber *port = self.bundleURL.port;
-    [self enqueueJSCall:@"HMRClient.enable" args:@[@"ios", path, host, RCTNullIfNil(port)]];
+    [self enqueueJSCall:@"HMRClient"
+                 method:@"enable"
+                   args:@[@"ios", path, host, RCTNullIfNil(port)]
+             completion:NULL];
   }
 #endif
 }
@@ -680,8 +688,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (void)logMessage:(NSString *)message level:(NSString *)level
 {
   if (RCT_DEBUG && [_javaScriptExecutor isValid]) {
-    [self enqueueJSCall:@"RCTLog.logIfNoNativeHook"
-                   args:@[level, message]];
+    [self enqueueJSCall:@"RCTLog"
+                 method:@"logIfNoNativeHook"
+                   args:@[level, message]
+             completion:NULL];
   }
 }
 
@@ -891,6 +901,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       @autoreleasepool {
         for (NSNumber *indexObj in calls) {
           NSUInteger index = indexObj.unsignedIntegerValue;
+#if RCT_PROFILE
           if (RCT_DEV && callID != -1 && self->_flowIDMap != NULL && RCTProfileIsProfiling()) {
             [self.flowIDMapLock lock];
             int64_t newFlowID = (int64_t)CFDictionaryGetValue(self->_flowIDMap, (const void *)(self->_flowID + index));
@@ -898,6 +909,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
             CFDictionaryRemoveValue(self->_flowIDMap, (const void *)(self->_flowID + index));
             [self.flowIDMapLock unlock];
           }
+#endif
           [self _handleRequestNumber:index
                             moduleID:[moduleIDs[index] integerValue]
                             methodID:[methodIDs[index] integerValue]

@@ -39,6 +39,7 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   String getSourceUrl();
   String getJSBundleURLForRemoteDebugging();
   String getDownloadedJSBundleFile();
+  String getHeapCaptureUploadUrl();
   boolean hasUpToDateJSBundleInCache();
   void reloadSettings();
   void handleReloadJS();

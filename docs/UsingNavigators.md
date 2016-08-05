@@ -31,7 +31,7 @@ import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 
 export default class MyScene extends Component {
-  getDefaultProps() {
+  static get defaultProps() {
     return {
       title: 'MyScene'
     };
@@ -51,7 +51,7 @@ Notice the `export default` in front of the component declaration. This will _ex
 
 ```javascript
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { AppRegistry } from 'react-native';
 
 import MyScene from './MyScene';
 
@@ -78,7 +78,7 @@ render() {
     <Navigator
       initialRoute={{ title: 'My Initial Scene', index: 0 }}
       renderScene={(route, navigator) => {
-        <MyScene title={route.title} />
+        return <MyScene title={route.title} />
       }}
     />
   );
@@ -112,25 +112,27 @@ export default class SimpleNavigationApp extends Component {
       <Navigator
         initialRoute={{ title: 'My Initial Scene', index: 0 }}
         renderScene={(route, navigator) =>
-          <MyScene
-            title={route.title}
-
-            // Function to call when a new scene should be displayed           
-            onForward={ () => {    
-              const nextIndex = route.index + 1;
-              navigator.push({
-                title: 'Scene ' + nextIndex,
-                index: nextIndex,
-              });
-            }}
-
-            // Function to call to go back to the previous scene
-            onBack={() => {
-              if (route.index > 0) {
-                navigator.pop();
-              }
-            }}
-          />
+          return (
+            <MyScene
+              title={route.title}
+  
+              // Function to call when a new scene should be displayed           
+              onForward={ () => {    
+                const nextIndex = route.index + 1;
+                navigator.push({
+                  title: 'Scene ' + nextIndex,
+                  index: nextIndex,
+                });
+              }}
+  
+              // Function to call to go back to the previous scene
+              onBack={() => {
+                if (route.index > 0) {
+                  navigator.pop();
+                }
+              }}
+            />
+          )
         }
       />
     )

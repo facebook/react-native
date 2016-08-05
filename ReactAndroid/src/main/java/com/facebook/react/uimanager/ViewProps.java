@@ -72,7 +72,7 @@ public class ViewProps {
   public static final String LINE_HEIGHT = "lineHeight";
   public static final String NEEDS_OFFSCREEN_ALPHA_COMPOSITING = "needsOffscreenAlphaCompositing";
   public static final String NUMBER_OF_LINES = "numberOfLines";
-  public static final String LINE_BREAK_MODE = "lineBreakMode";
+  public static final String LINE_BREAK_MODE = "ellipsizeMode";
   public static final String ON = "on";
   public static final String RESIZE_MODE = "resizeMode";
   public static final String TEXT_ALIGN = "textAlign";
@@ -90,11 +90,14 @@ public class ViewProps {
   public static final String BORDER_BOTTOM_LEFT_RADIUS = "borderBottomLeftRadius";
   public static final String BORDER_BOTTOM_RIGHT_RADIUS = "borderBottomRightRadius";
   public static final int[] BORDER_SPACING_TYPES = {
-      Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM
+      Spacing.ALL, Spacing.START, Spacing.END, Spacing.TOP, Spacing.BOTTOM
   };
   public static final int[] PADDING_MARGIN_SPACING_TYPES = {
-      Spacing.ALL, Spacing.VERTICAL, Spacing.HORIZONTAL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP,
+      Spacing.ALL, Spacing.VERTICAL, Spacing.HORIZONTAL, Spacing.START, Spacing.END, Spacing.TOP,
       Spacing.BOTTOM
+  };
+  public static final int[] POSITION_SPACING_TYPES = {
+      Spacing.START, Spacing.END, Spacing.TOP, Spacing.BOTTOM
   };
 
   private static final HashSet<String> LAYOUT_ONLY_PROPS = new HashSet<>(

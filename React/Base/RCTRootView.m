@@ -14,7 +14,7 @@
 #import <objc/runtime.h>
 
 #import "RCTAssert.h"
-#import "RCTBridge+Private.h"
+#import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
@@ -92,7 +92,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
                                                object:self];
 
     if (!_bridge.loading) {
-      [self bundleFinishedLoading:_bridge.batchedBridge];
+      [self bundleFinishedLoading:_bridge];
     }
 
     [self showLoadingView];
@@ -228,8 +228,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     @"initialProps": _appProperties ?: @{},
   };
 
-  [bridge enqueueJSCall:@"AppRegistry.runApplication"
-                   args:@[moduleName, appParameters]];
+  [bridge enqueueJSCall:@"AppRegistry"
+                 method:@"runApplication"
+                   args:@[moduleName, appParameters]
+             completion:NULL];
 }
 
 - (void)setSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
@@ -259,7 +261,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _appProperties = [appProperties copy];
 
   if (_contentView && _bridge.valid && !_bridge.loading) {
-    [self runApplication:_bridge.batchedBridge];
+    [self runApplication:_bridge];
   }
 }
 
@@ -340,7 +342,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
 {
   [super insertReactSubview:subview atIndex:atIndex];
-  [_bridge->_performanceLogger markStopForTag:RCTPLTTI];
+  [_bridge.performanceLogger markStopForTag:RCTPLTTI];
   dispatch_async(dispatch_get_main_queue(), ^{
     if (!self->_contentHasAppeared) {
       self->_contentHasAppeared = YES;
@@ -376,8 +378,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
   if (self.userInteractionEnabled) {
     self.userInteractionEnabled = NO;
     [(RCTRootView *)self.superview contentViewInvalidated];
-    [_bridge enqueueJSCall:@"AppRegistry.unmountApplicationComponentAtRootTag"
-                      args:@[self.reactTag]];
+    [_bridge enqueueJSCall:@"AppRegistry"
+                    method:@"unmountApplicationComponentAtRootTag"
+                      args:@[self.reactTag]
+                completion:NULL];
   }
 }
 

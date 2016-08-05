@@ -46,8 +46,10 @@
                 eventName, [self class], [[self supportedEvents] componentsJoinedByString:@"`, `"]);
   }
   if (_listenerCount > 0) {
-    [_bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
-                      args:body ? @[eventName, body] : @[eventName]];
+    [_bridge enqueueJSCall:@"RCTDeviceEventEmitter"
+                    method:@"emit"
+                      args:body ? @[eventName, body] : @[eventName]
+                completion:NULL];
   } else {
     RCTLogWarn(@"Sending `%@` with no listeners registered.", eventName);
   }

@@ -610,6 +610,14 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     return Assertions.assertNotNull(mSourceUrl);
   }
 
+  @Override
+  public @Nullable String getJSBundleFile() {
+    if (mBundleLoader == null) {
+      return null;
+    }
+    return mBundleLoader.getSourceUrl();
+  }
+
   /**
    * Attach given {@param rootView} to a catalyst instance manager and start JS application using
    * JS module provided by {@link ReactRootView#getJSModuleName}. If the react context is currently
@@ -757,6 +765,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
     int rootTag = uiManagerModule.addMeasuredRootView(rootView);
+    rootView.setRootViewTag(rootTag);
     @Nullable Bundle launchOptions = rootView.getLaunchOptions();
     WritableMap initialProps = Arguments.makeNativeMap(launchOptions);
     String jsAppModuleName = rootView.getJSModuleName();

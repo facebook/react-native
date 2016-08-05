@@ -44,6 +44,7 @@ class Inspector extends React.Component {
     perfing: bool,
     inspected: any,
     inspectedViewTag: any,
+    networking: bool,
   };
 
   _subs: ?Array<() => void>;
@@ -60,6 +61,7 @@ class Inspector extends React.Component {
       inspected: null,
       selection: null,
       inspectedViewTag: this.props.inspectedViewTag,
+      networking: false,
     };
   }
 
@@ -174,6 +176,7 @@ class Inspector extends React.Component {
       perfing: val,
       inspecting: false,
       inspected: null,
+      networking: false,
     });
   }
 
@@ -188,6 +191,15 @@ class Inspector extends React.Component {
     Touchable.TOUCH_TARGET_DEBUG = val;
     this.props.onRequestRerenderApp((inspectedViewTag) => {
       this.setState({inspectedViewTag});
+    });
+  }
+
+  setNetworking(val: bool) {
+    this.setState({
+      networking: val,
+      perfing: false,
+      inspecting: false,
+      inspected: null,
     });
   }
 
@@ -214,6 +226,8 @@ class Inspector extends React.Component {
             setSelection={this.setSelection.bind(this)}
             touchTargetting={Touchable.TOUCH_TARGET_DEBUG}
             setTouchTargetting={this.setTouchTargetting.bind(this)}
+            networking={this.state.networking}
+            setNetworking={this.setNetworking.bind(this)}
           />
         </View>
       </View>

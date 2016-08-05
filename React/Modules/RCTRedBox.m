@@ -12,6 +12,7 @@
 #import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTDefines.h"
+#import "RCTErrorInfo.h"
 #import "RCTUtils.h"
 #import "RCTJSStackFrame.h"
 
@@ -64,11 +65,21 @@
     _stackTraceTableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
     [rootView addSubview:_stackTraceTableView];
 
+  #if TARGET_OS_SIMULATOR
+    NSString *reloadText = @"Reload JS (\u2318R)";
+    NSString *dismissText = @"Dismiss (ESC)";
+    NSString *copyText = @"Copy (\u2325\u2318C)";
+  #else
+    NSString *reloadText = @"Reload JS";
+    NSString *dismissText = @"Dismiss";
+    NSString *copyText = @"Copy";
+  #endif
+
     UIButton *dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
     dismissButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin;
     dismissButton.accessibilityIdentifier = @"redbox-dismiss";
     dismissButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [dismissButton setTitle:@"Dismiss (ESC)" forState:UIControlStateNormal];
+    [dismissButton setTitle:dismissText forState:UIControlStateNormal];
     [dismissButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
     [dismissButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [dismissButton addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventTouchUpInside];
@@ -77,7 +88,8 @@
     reloadButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
     reloadButton.accessibilityIdentifier = @"redbox-reload";
     reloadButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [reloadButton setTitle:@"Reload JS (\u2318R)" forState:UIControlStateNormal];
+
+    [reloadButton setTitle:reloadText forState:UIControlStateNormal];
     [reloadButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
     [reloadButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [reloadButton addTarget:self action:@selector(reload) forControlEvents:UIControlEventTouchUpInside];
@@ -86,7 +98,7 @@
     copyButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
     copyButton.accessibilityIdentifier = @"redbox-copy";
     copyButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [copyButton setTitle:@"Copy (\u2325\u2318C)" forState:UIControlStateNormal];
+    [copyButton setTitle:copyText forState:UIControlStateNormal];
     [copyButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
     [copyButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [copyButton addTarget:self action:@selector(copyStack) forControlEvents:UIControlEventTouchUpInside];
@@ -314,11 +326,41 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 @implementation RCTRedBox
 {
   RCTRedBoxWindow *_window;
+  NSMutableArray<id<RCTErrorCustomizer>> *_errorCustomizers;
 }
 
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
+
+- (void)registerErrorCustomizer:(id<RCTErrorCustomizer>)errorCustomizer
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (!self->_errorCustomizers) {
+      self->_errorCustomizers = [NSMutableArray array];
+    }
+    if (![self->_errorCustomizers containsObject:errorCustomizer]) {
+      [self->_errorCustomizers addObject:errorCustomizer];
+    }
+  });
+}
+
+// WARNING: Should only be called from the main thread/dispatch queue.
+- (RCTErrorInfo *)_customizeError:(RCTErrorInfo *)error
+{
+  RCTAssertMainQueue();
+
+  if (!self->_errorCustomizers) {
+    return error;
+  }
+  for (id<RCTErrorCustomizer> customizer in self->_errorCustomizers) {
+    RCTErrorInfo *newInfo = [customizer customizeErrorInfo:error];
+    if (newInfo) {
+      error = newInfo;
+    }
+  }
+  return error;
+}
 
 - (void)showError:(NSError *)error
 {
@@ -367,7 +409,12 @@ RCT_EXPORT_MODULE()
       self->_window = [[RCTRedBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
       self->_window.actionDelegate = self;
     }
-    [self->_window showErrorMessage:message withStack:stack isUpdate:isUpdate];
+    RCTErrorInfo *errorInfo = [[RCTErrorInfo alloc] initWithErrorMessage:message
+                                                                   stack:stack];
+    errorInfo = [self _customizeError:errorInfo];
+    [self->_window showErrorMessage:errorInfo.errorMessage
+                          withStack:errorInfo.stack
+                           isUpdate:isUpdate];
   });
 }
 
@@ -422,6 +469,7 @@ RCT_EXPORT_METHOD(dismiss)
 @implementation RCTRedBox
 
 + (NSString *)moduleName { return nil; }
+- (void)registerErrorCustomizer:(id<RCTErrorCustomizer>)errorCustomizer {}
 - (void)showError:(NSError *)message {}
 - (void)showErrorMessage:(NSString *)message {}
 - (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details {}
