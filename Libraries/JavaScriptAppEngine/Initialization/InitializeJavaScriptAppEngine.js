@@ -72,7 +72,7 @@ function defineProperty(object: Object, name: string, newValue: mixed): void {
   const descriptor = Object.getOwnPropertyDescriptor(object, name);
   const {enumerable, writable, configurable} = descriptor || {};
 
-  if (descriptor && configurable) {
+  if (descriptor) {
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
     Object.defineProperty(object, backupName, {
       ...descriptor,
@@ -100,7 +100,7 @@ function defineLazyProperty<T>(
   const descriptor = getPropertyDescriptor(object, name);
   const {configurable} = descriptor || {};
 
-  if (descriptor && configurable) {
+  if (descriptor) {
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
     Object.defineProperty(object, backupName, descriptor);
   }
