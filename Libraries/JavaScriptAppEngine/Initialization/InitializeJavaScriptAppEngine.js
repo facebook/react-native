@@ -70,20 +70,24 @@ function setUpConsole(): void {
  */
 function defineProperty(object: Object, name: string, newValue: mixed): void {
   const descriptor = Object.getOwnPropertyDescriptor(object, name);
-  if (descriptor) {
+  const {enumerable, writable, configurable} = descriptor || {};
+
+  if (descriptor && configurable) {
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
     Object.defineProperty(object, backupName, {
       ...descriptor,
       value: object[name],
     });
   }
-  const {enumerable, writable} = descriptor || {};
-  Object.defineProperty(object, name, {
-    configurable: true,
-    enumerable: enumerable !== false,
-    writable: writable !== false,
-    value: newValue,
-  });
+
+  if (!descriptor || configurable) {
+    Object.defineProperty(object, name, {
+      configurable: true,
+      enumerable: enumerable !== false,
+      writable: writable !== false,
+      value: newValue,
+    });
+  }
 }
 
 function defineLazyProperty<T>(
@@ -94,15 +98,20 @@ function defineLazyProperty<T>(
   const defineLazyObjectProperty = require('defineLazyObjectProperty');
 
   const descriptor = getPropertyDescriptor(object, name);
-  if (descriptor) {
+  const {configurable} = descriptor || {};
+
+  if (descriptor && configurable) {
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
     Object.defineProperty(object, backupName, descriptor);
   }
-  defineLazyObjectProperty(object, name, {
-    get: getNewValue,
-    enumerable: descriptor ? descriptor.enumerable !== false : true,
-    writable: descriptor ? descriptor.writable !== false : true,
-  });
+
+  if (!descriptor || configurable) {
+    defineLazyObjectProperty(object, name, {
+      get: getNewValue,
+      enumerable: descriptor ? descriptor.enumerable !== false : true,
+      writable: descriptor ? descriptor.writable !== false : true,
+    });
+  }
 }
 
 function setUpErrorHandler(): void {
