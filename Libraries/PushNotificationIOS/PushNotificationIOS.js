@@ -194,7 +194,6 @@ class PushNotificationIOS {
       listener =  PushNotificationEmitter.addListener(
         DEVICE_NOTIF_EVENT,
         (notifData) => {
-          notifData.isRemote = true;
           handler(new PushNotificationIOS(notifData));
         }
       );
@@ -202,7 +201,6 @@ class PushNotificationIOS {
       listener = PushNotificationEmitter.addListener(
         DEVICE_LOCAL_NOTIF_EVENT,
         (notifData) => {
-          notifData.isRemote = false;
           handler(new PushNotificationIOS(notifData));
         }
       );
@@ -324,12 +322,10 @@ class PushNotificationIOS {
   constructor(nativeNotif: Object) {
     this._data = {};
     this._remoteNotificationCompleteCalllbackCalled = false;
-    this._isRemote = nativeNotif.isRemote;
+    this._isRemote = nativeNotif.remote;
     if (this._isRemote) {
       this._notificationId = nativeNotif.notificationId;
-      delete nativeNotif.notificationId;
     }
-    delete nativeNotif.isRemote;
 
     if (nativeNotif.remote) {
       // Extract data from Apple's `aps` dict as defined:
