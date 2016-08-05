@@ -9,6 +9,8 @@
 
 #import "RCTFont.h"
 
+#import <mutex>
+
 typedef CGFloat RCTFontWeight;
 static RCTFontWeight weightOfFont(UIFont *font)
 {
@@ -54,6 +56,46 @@ static BOOL isCondensedFont(UIFont *font)
   NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
   UIFontDescriptorSymbolicTraits symbolicTraits = [traits[UIFontSymbolicTrait] unsignedIntValue];
   return (symbolicTraits & UIFontDescriptorTraitCondensed) != 0;
+}
+
+static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
+{
+  static NSCache *fontCache;
+  static std::mutex fontCacheMutex;
+
+  NSString *cacheKey = [NSString stringWithFormat:@"%.1f/%.2f", size, weight];
+  UIFont *font;
+  {
+    std::lock_guard<std::mutex> lock(fontCacheMutex);
+    if (!fontCache) {
+      fontCache = [NSCache new];
+    }
+    font = [fontCache objectForKey:cacheKey];
+  }
+
+  if (!font) {
+    // Only supported on iOS8.2 and above
+    if ([UIFont respondsToSelector:@selector(systemFontOfSize:weight:)]) {
+      font = [UIFont systemFontOfSize:size weight:weight];
+    } else {
+      if (weight >= UIFontWeightBold) {
+        font = [UIFont boldSystemFontOfSize:size];
+      } else if (weight >= UIFontWeightMedium) {
+        font = [UIFont fontWithName:@"HelveticaNeue-Medium" size:size];
+      } else if (weight <= UIFontWeightLight) {
+        font = [UIFont fontWithName:@"HelveticaNeue-Light" size:size];
+      } else {
+        font = [UIFont systemFontOfSize:size];
+      }
+    }
+
+    {
+      std::lock_guard<std::mutex> lock(fontCacheMutex);
+      [fontCache setObject:font forKey:cacheKey];
+    }
+  }
+
+  return font;
 }
 
 @implementation RCTConvert (RCTFont)
@@ -137,8 +179,8 @@ RCT_ENUM_CONVERTER(RCTFontStyle, (@{
   // Handle system font as special case. This ensures that we preserve
   // the specific metrics of the standard system font as closely as possible.
   if ([familyName isEqual:defaultFontFamily] || [familyName isEqualToString:@"System"]) {
-    if ([UIFont respondsToSelector:@selector(systemFontOfSize:weight:)]) {
-      font = [UIFont systemFontOfSize:fontSize weight:fontWeight];
+    font = cachedSystemFont(fontSize, fontWeight);
+    if (font) {
       if (isItalic || isCondensed) {
         UIFontDescriptor *fontDescriptor = [font fontDescriptor];
         UIFontDescriptorSymbolicTraits symbolicTraits = fontDescriptor.symbolicTraits;
