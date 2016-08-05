@@ -31,11 +31,12 @@ import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 
 export default class MyScene extends Component {
-  getDefaultProps() {
-    return {
-      title: 'MyScene'
-    };
-  }
+  static propTypes = {
+    title: React.PropTypes.string,
+  };    
+  static defaultProps = {
+    title: 'MyScene',
+  };
 
   render() {
     return (
