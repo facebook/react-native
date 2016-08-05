@@ -52,6 +52,7 @@ class Picker extends React.Component {
   enabled?: boolean,
   mode?: 'dialog' | 'dropdown',
   itemStyle?: $FlowFixMe,
+  loop?: boolean,
   prompt?: string,
   testID?: string,
  };
@@ -103,6 +104,11 @@ class Picker extends React.Component {
     * @platform ios
     */
    itemStyle: itemStylePropType,
+     /**
+     * Wrap the items around.
+     * @platform ios
+     */
+    loop: React.PropTypes.bool,
    /**
     * Prompt string for this picker, used on Android in dialog mode as the title of the dialog.
     * @platform android

@@ -24,6 +24,7 @@
     _font = [UIFont systemFontOfSize:21]; // TODO: selected title default should be 23.5
     _selectedIndex = NSNotFound;
     _textAlign = NSTextAlignmentCenter;
+    _loop = false;
     self.delegate = self;
   }
   return self;
@@ -40,7 +41,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)setSelectedIndex:(NSInteger)selectedIndex
 {
   if (_selectedIndex != selectedIndex) {
-    BOOL animated = _selectedIndex != NSNotFound; // Don't animate the initial value
+    BOOL animated = _selectedIndex != NSNotFound && !_loop; // Don't animate the initial value
     _selectedIndex = selectedIndex;
     dispatch_async(dispatch_get_main_queue(), ^{
       [self selectRow:selectedIndex inComponent:0 animated:animated];
@@ -58,7 +59,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (NSInteger)pickerView:(__unused UIPickerView *)pickerView
 numberOfRowsInComponent:(__unused NSInteger)component
 {
-  return _items.count;
+  NSInteger itemCount = _items.count;
+  if (_loop) {
+    itemCount *= 100;
+  }
+  return itemCount;
 }
 
 #pragma mark - UIPickerViewDelegate methods
@@ -67,7 +72,14 @@ numberOfRowsInComponent:(__unused NSInteger)component
              titleForRow:(NSInteger)row
             forComponent:(__unused NSInteger)component
 {
+  if (_loop) {
+    row %= _items.count;
+  }
   return [RCTConvert NSString:_items[row][@"label"]];
+}
+
+- (CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component {
+    return _font.pointSize + 8;
 }
 
 - (UIView *)pickerView:(UIPickerView *)pickerView
@@ -95,7 +107,12 @@ numberOfRowsInComponent:(__unused NSInteger)component
 - (void)pickerView:(__unused UIPickerView *)pickerView
       didSelectRow:(NSInteger)row inComponent:(__unused NSInteger)component
 {
-  _selectedIndex = row;
+  if (_loop) {
+    row %= _items.count;
+    _selectedIndex = row + _items.count * 50;
+  } else {
+    _selectedIndex = row;
+  }
   if (_onChange) {
     _onChange(@{
       @"newIndex": @(row),

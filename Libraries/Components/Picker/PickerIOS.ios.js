@@ -29,6 +29,7 @@ var PickerIOS = React.createClass({
   propTypes: {
     ...View.propTypes,
     itemStyle: itemStylePropType,
+    loop: React.PropTypes.bool,
     onValueChange: React.PropTypes.func,
     selectedValue: React.PropTypes.any, // string or integer basically
   },
@@ -51,6 +52,11 @@ var PickerIOS = React.createClass({
       }
       items.push({value: child.props.value, label: child.props.label});
     });
+
+    if (props.loop) {
+      selectedIndex += items.length * 50;
+    }
+
     return {selectedIndex, items};
   },
 
@@ -61,6 +67,7 @@ var PickerIOS = React.createClass({
           ref={picker => this._picker = picker}
           style={[styles.pickerIOS, this.props.itemStyle]}
           items={this.state.items}
+          loop={this.props.loop}
           selectedIndex={this.state.selectedIndex}
           onChange={this._onChange}
         />
@@ -117,6 +124,7 @@ var RCTPickerIOS = requireNativeComponent('RCTPicker', {
   },
 }, {
   nativeOnly: {
+    loop: true,
     items: true,
     onChange: true,
     selectedIndex: true,
