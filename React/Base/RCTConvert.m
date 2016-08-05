@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <CoreText/CoreText.h>
+
 #import "RCTConvert.h"
 
 #import <objc/message.h>
@@ -567,6 +569,37 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   return (symbolicTraits & UIFontDescriptorTraitCondensed) != 0;
 }
 
++ (NSDictionary *)RCTFontVariant:(NSString *)variant
+{
+  static NSDictionary *mapping;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    mapping = @{
+      @"small-caps": @{
+        UIFontFeatureTypeIdentifierKey: @(kLowerCaseType),
+        UIFontFeatureSelectorIdentifierKey: @(kLowerCaseSmallCapsSelector),
+      },
+      @"oldstyle-nums": @{
+        UIFontFeatureTypeIdentifierKey: @(kNumberCaseType),
+        UIFontFeatureSelectorIdentifierKey: @(kLowerCaseNumbersSelector),
+      },
+      @"lining-nums": @{
+        UIFontFeatureTypeIdentifierKey: @(kNumberCaseType),
+        UIFontFeatureSelectorIdentifierKey: @(kUpperCaseNumbersSelector),
+      },
+      @"tabular-nums": @{
+        UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
+        UIFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector),
+      },
+      @"proportional-nums": @{
+        UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
+        UIFontFeatureSelectorIdentifierKey: @(kProportionalNumbersSelector),
+      },
+    };
+  });
+  return mapping[variant];
+}
+
 + (UIFont *)UIFont:(id)json
 {
   json = [self NSDictionary:json];
@@ -575,31 +608,32 @@ static BOOL RCTFontIsCondensed(UIFont *font)
                  size:json[@"fontSize"]
                weight:json[@"fontWeight"]
                 style:json[@"fontStyle"]
+              variant:json[@"fontVariant"]
           scaleMultiplier:1.0f];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withSize:(id)json
 {
-  return [self UIFont:font withFamily:nil size:json weight:nil style:nil scaleMultiplier:1.0];
+  return [self UIFont:font withFamily:nil size:json weight:nil style:nil variant:nil scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withWeight:(id)json
 {
-  return [self UIFont:font withFamily:nil size:nil weight:json style:nil scaleMultiplier:1.0];
+  return [self UIFont:font withFamily:nil size:nil weight:json style:nil variant:nil scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withStyle:(id)json
 {
-  return [self UIFont:font withFamily:nil size:nil weight:nil style:json scaleMultiplier:1.0];
+  return [self UIFont:font withFamily:nil size:nil weight:nil style:json variant:nil scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)json
 {
-  return [self UIFont:font withFamily:json size:nil weight:nil style:nil scaleMultiplier:1.0];
+  return [self UIFont:font withFamily:json size:nil weight:nil style:nil variant:nil scaleMultiplier:1.0];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
-              size:(id)size weight:(id)weight style:(id)style
+              size:(id)size weight:(id)weight style:(id)style variant:(id)variant
    scaleMultiplier:(CGFloat)scaleMultiplier
 {
   // Defaults
@@ -632,6 +666,8 @@ static BOOL RCTFontIsCondensed(UIFont *font)
   isItalic = style ? [self RCTFontStyle:style] : isItalic;
   fontWeight = weight ? [self RCTFontWeight:weight] : fontWeight;
 
+  bool didFindFont = NO;
+
   // Handle system font as special case. This ensures that we preserve
   // the specific metrics of the standard system font as closely as possible.
   if ([familyName isEqual:RCTDefaultFontFamily]) {
@@ -649,7 +685,7 @@ static BOOL RCTFontIsCondensed(UIFont *font)
         fontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits:symbolicTraits];
         font = [UIFont fontWithDescriptor:fontDescriptor size:fontSize];
       }
-      return font;
+      didFindFont = YES;
     } else {
       // systemFontOfSize:weight: isn't available prior to iOS 8.2, so we
       // fall back to finding the correct font manually, by linear search.
@@ -657,46 +693,71 @@ static BOOL RCTFontIsCondensed(UIFont *font)
     }
   }
 
-  // Gracefully handle being given a font name rather than font family, for
-  // example: "Helvetica Light Oblique" rather than just "Helvetica".
-  if ([UIFont fontNamesForFamilyName:familyName].count == 0) {
-    font = [UIFont fontWithName:familyName size:fontSize];
-    if (font) {
-      // It's actually a font name, not a font family name,
-      // but we'll do what was meant, not what was said.
-      familyName = font.familyName;
-      fontWeight = weight ? fontWeight : RCTWeightOfFont(font);
-      isItalic = style ? isItalic : RCTFontIsItalic(font);
-      isCondensed = RCTFontIsCondensed(font);
-    } else {
-      // Not a valid font or family
-      RCTLogError(@"Unrecognized font family '%@'", familyName);
-      if ([UIFont respondsToSelector:@selector(systemFontOfSize:weight:)]) {
-        font = [UIFont systemFontOfSize:fontSize weight:fontWeight];
-      } else if (fontWeight > UIFontWeightRegular) {
-        font = [UIFont boldSystemFontOfSize:fontSize];
+  if (!didFindFont) {
+    // Gracefully handle being given a font name rather than font family, for
+    // example: "Helvetica Light Oblique" rather than just "Helvetica".
+    if ([UIFont fontNamesForFamilyName:familyName].count == 0) {
+      font = [UIFont fontWithName:familyName size:fontSize];
+      if (font) {
+        // It's actually a font name, not a font family name,
+        // but we'll do what was meant, not what was said.
+        familyName = font.familyName;
+        fontWeight = weight ? fontWeight : RCTWeightOfFont(font);
+        isItalic = style ? isItalic : RCTFontIsItalic(font);
+        isCondensed = RCTFontIsCondensed(font);
       } else {
-        font = [UIFont systemFontOfSize:fontSize];
+        // Not a valid font or family
+        RCTLogError(@"Unrecognized font family '%@'", familyName);
+        if ([UIFont respondsToSelector:@selector(systemFontOfSize:weight:)]) {
+          font = [UIFont systemFontOfSize:fontSize weight:fontWeight];
+        } else if (fontWeight > UIFontWeightRegular) {
+          font = [UIFont boldSystemFontOfSize:fontSize];
+        } else {
+          font = [UIFont systemFontOfSize:fontSize];
+        }
       }
     }
-  }
 
-  // Get the closest font that matches the given weight for the fontFamily
-  UIFont *bestMatch = font;
-  CGFloat closestWeight = INFINITY;
-  for (NSString *name in [UIFont fontNamesForFamilyName:familyName]) {
-    UIFont *match = [UIFont fontWithName:name size:fontSize];
-    if (isItalic == RCTFontIsItalic(match) &&
-        isCondensed == RCTFontIsCondensed(match)) {
-      CGFloat testWeight = RCTWeightOfFont(match);
-      if (ABS(testWeight - fontWeight) < ABS(closestWeight - fontWeight)) {
-        bestMatch = match;
-        closestWeight = testWeight;
+    // Get the closest font that matches the given weight for the fontFamily
+    UIFont *bestMatch = font;
+    CGFloat closestWeight = INFINITY;
+    for (NSString *name in [UIFont fontNamesForFamilyName:familyName]) {
+      UIFont *match = [UIFont fontWithName:name size:fontSize];
+      if (isItalic == RCTFontIsItalic(match) &&
+          isCondensed == RCTFontIsCondensed(match)) {
+        CGFloat testWeight = RCTWeightOfFont(match);
+        if (ABS(testWeight - fontWeight) < ABS(closestWeight - fontWeight)) {
+          bestMatch = match;
+          closestWeight = testWeight;
+        }
       }
     }
+
+    font = bestMatch;
   }
 
-  return bestMatch;
+  // Apply font variants to font object
+  if (variant) {
+    UIFontDescriptor *fontDescriptor = [font fontDescriptor];
+
+    NSMutableArray *fontFeatureSettings = [NSMutableArray array];
+    for (id variantName in variant) {
+      NSDictionary *variant = [RCTConvert RCTFontVariant:variantName];
+      if (variant) {
+        [fontFeatureSettings addObject:variant];
+      } else {
+        NSLog(variant);
+      }
+    }
+
+    NSDictionary *attributes = @{
+      UIFontDescriptorFeatureSettingsAttribute: fontFeatureSettings,
+    };
+    fontDescriptor = [fontDescriptor fontDescriptorByAddingAttributes:attributes];
+    font = [UIFont fontWithDescriptor:fontDescriptor size:fontSize];
+  }
+
+  return font;
 }
 
 NSArray *RCTConvertArrayValue(SEL type, id json)
