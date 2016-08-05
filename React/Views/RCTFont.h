@@ -19,16 +19,16 @@
  * If font is nil, the default system font of size 14 will be used.
  */
 + (UIFont *)updateFont:(UIFont *)font
-            withFamily:(id)family
-                  size:(id)size
-                weight:(id)weight
-                 style:(id)style
+            withFamily:(NSString *)family
+                  size:(NSNumber *)size
+                weight:(NSString *)weight
+                 style:(NSString *)style
        scaleMultiplier:(CGFloat)scaleMultiplier;
 
-+ (UIFont *)updateFont:(UIFont *)font withFamily:(id)json;
-+ (UIFont *)updateFont:(UIFont *)font withSize:(id)json;
-+ (UIFont *)updateFont:(UIFont *)font withWeight:(id)json;
-+ (UIFont *)updateFont:(UIFont *)font withStyle:(id)json;
++ (UIFont *)updateFont:(UIFont *)font withFamily:(NSString *)family;
++ (UIFont *)updateFont:(UIFont *)font withSize:(NSNumber *)size;
++ (UIFont *)updateFont:(UIFont *)font withWeight:(NSString *)weight;
++ (UIFont *)updateFont:(UIFont *)font withStyle:(NSString *)style;
 
 @end
 
