@@ -87,10 +87,10 @@ The generated APK can be found under `android/app/build/outputs/apk/app-release.
 Before uploading the release build to the Play Store, make sure you test it thoroughly. Install it on the device using:
 
 ```sh
-$ cd android && ./gradlew installRelease
+$ react-native run-android --variant=release
 ```
 
-Note that `installRelease` is only available if you've set up signing as described above.
+Note that `--variant=release` is only available if you've set up signing as described above.
 
 You can kill any running packager instances, all your and framework JavaScript code is bundled in the APK's assets.
 
