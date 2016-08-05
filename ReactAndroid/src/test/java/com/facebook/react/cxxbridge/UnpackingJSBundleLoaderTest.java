@@ -105,8 +105,19 @@ public class UnpackingJSBundleLoaderTest {
     verify(mCatalystInstanceImpl).loadScriptFromOptimizedBundle(
       eq(mDestinationPath.getPath()),
       eq(URL),
-      eq(UnpackingJSBundleLoader.UNPACKED_JS_SOURCE));
+      eq(0));
     verifyNoMoreInteractions(mCatalystInstanceImpl);
+  }
+
+  @Test
+  public void testSetLoadFlags() throws IOException {
+    mBuilder.setLoadFlags(UnpackingJSBundleLoader.UNPACKED_JS_SOURCE)
+      .build()
+      .loadScript(mCatalystInstanceImpl);
+    verify(mCatalystInstanceImpl).loadScriptFromOptimizedBundle(
+      eq(mDestinationPath.getPath()),
+      eq(URL),
+      eq(UnpackingJSBundleLoader.UNPACKED_JS_SOURCE));
   }
 
   @Test

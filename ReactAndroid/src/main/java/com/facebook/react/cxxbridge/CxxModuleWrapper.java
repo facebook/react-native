@@ -44,12 +44,11 @@ public class CxxModuleWrapper implements NativeModule
     public native HybridData initHybrid();
 
     @Override
-    public native void invoke(CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray args);
+    public native void invoke(CatalystInstance catalystInstance, ExecutorToken executorToken,
+                              ReadableNativeArray args);
 
     @Override
-    public String getType() {
-      return BaseJavaModule.METHOD_TYPE_REMOTE;
-    }
+    public native String getType();
   }
 
   public CxxModuleWrapper(String library, String factory) {

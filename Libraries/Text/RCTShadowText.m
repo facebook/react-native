@@ -151,7 +151,7 @@ static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, 
       CSSNodeRef childNode = child.cssNode;
       float width = CSSNodeStyleGetWidth(childNode);
       float height = CSSNodeStyleGetHeight(childNode);
-      if (isUndefined(width) || isUndefined(height)) {
+      if (CSSValueIsUndefined(width) || CSSValueIsUndefined(height)) {
         RCTLogError(@"Views nested within a <Text> must have a width and height");
       }
       UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
@@ -293,7 +293,7 @@ static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, 
     } else {
       float width = CSSNodeStyleGetWidth(child.cssNode);
       float height = CSSNodeStyleGetHeight(child.cssNode);
-      if (isUndefined(width) || isUndefined(height)) {
+      if (CSSValueIsUndefined(width) || CSSValueIsUndefined(height)) {
         RCTLogError(@"Views nested within a <Text> must have a width and height");
       }
       NSTextAttachment *attachment = [NSTextAttachment new];

@@ -34,6 +34,7 @@ import com.facebook.csslayout.CSSDirection;
 import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -210,11 +211,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     return sb;
   }
 
-  private static final CSSNode.MeasureFunction TEXT_MEASURE_FUNCTION =
-      new CSSNode.MeasureFunction() {
+  private static final CSSNodeAPI.MeasureFunction TEXT_MEASURE_FUNCTION =
+      new CSSNodeAPI.MeasureFunction() {
         @Override
         public void measure(
-            CSSNode node,
+            CSSNodeAPI node,
             float width,
             CSSMeasureMode widthMode,
             float height,
@@ -391,7 +392,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   }
 
   @Override
-  protected void markUpdated() {
+  public void markUpdated() {
     super.markUpdated();
     // We mark virtual anchor node as dirty as updated text needs to be re-measured
     if (!mIsVirtual) {
