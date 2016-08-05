@@ -8,7 +8,7 @@ describe('applyParams', () => {
   it('apply params to the string', () => {
     expect(
       applyParams('${foo}', {foo: 'foo'}, 'react-native')
-    ).toEqual('this.getResources().getString(R.strings.reactNative_foo)');
+    ).toEqual('this.getResources().getString(R.string.reactNative_foo)');
   });
 
   it('use null if no params provided', () => {
