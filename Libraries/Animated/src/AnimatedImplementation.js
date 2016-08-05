@@ -1008,10 +1008,30 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     super.__detach();
   }
 
+  __transformDataType(range) {
+    // Change the string array type to number array
+    // So we can reuse the same logic in iOS and Android platform
+    return range.map(function (value) {
+      if (typeof value !== 'string') {
+        return value;
+      }
+      if (/deg$/.test(value)) {
+        let degrees = parseFloat(value, 10) || 0;
+        let radians = degrees * Math.PI / 180.0;
+        return radians;
+      } else {
+        // Assume radians
+        return parseFloat(value, 10) || 0;
+      }
+    });
+  }
+
   __getNativeConfig(): any {
     NativeAnimatedHelper.validateInterpolation(this._config);
     return {
       ...this._config,
+      // Only the `outputRange` can contain strings so we don't need to tranform `inputRange` here
+      outputRange: this.__transformDataType(this._config.outputRange),
       type: 'interpolation',
     };
   }
