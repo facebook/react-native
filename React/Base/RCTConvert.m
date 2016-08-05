@@ -481,24 +481,6 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   return [self UIColor:json].CGColor;
 }
 
-#if !defined(__IPHONE_8_2) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_2
-
-// These constants are defined in iPhone SDK 8.2, but the app cannot run on
-// iOS < 8.2 unless we redefine them here. If you target iOS 8.2 or above
-// as a base target, the standard constants will be used instead.
-
-#define UIFontWeightUltraLight -0.8
-#define UIFontWeightThin -0.6
-#define UIFontWeightLight -0.4
-#define UIFontWeightRegular 0
-#define UIFontWeightMedium 0.23
-#define UIFontWeightSemibold 0.3
-#define UIFontWeightBold 0.4
-#define UIFontWeightHeavy 0.56
-#define UIFontWeightBlack 0.62
-
-#endif
-
 typedef CGFloat RCTFontWeight;
 RCT_ENUM_CONVERTER(RCTFontWeight, (@{
   @"normal": @(UIFontWeightRegular),
@@ -575,27 +557,27 @@ static BOOL RCTFontIsCondensed(UIFont *font)
                  size:json[@"fontSize"]
                weight:json[@"fontWeight"]
                 style:json[@"fontStyle"]
-          scaleMultiplier:1.0f];
+      scaleMultiplier:1];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withSize:(id)json
 {
-  return [self UIFont:font withFamily:nil size:json weight:nil style:nil scaleMultiplier:1.0];
+  return [self UIFont:font withFamily:nil size:json weight:nil style:nil scaleMultiplier:1];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withWeight:(id)json
 {
-  return [self UIFont:font withFamily:nil size:nil weight:json style:nil scaleMultiplier:1.0];
+  return [self UIFont:font withFamily:nil size:nil weight:json style:nil scaleMultiplier:1];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withStyle:(id)json
 {
-  return [self UIFont:font withFamily:nil size:nil weight:nil style:json scaleMultiplier:1.0];
+  return [self UIFont:font withFamily:nil size:nil weight:nil style:json scaleMultiplier:1];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)json
 {
-  return [self UIFont:font withFamily:json size:nil weight:nil style:nil scaleMultiplier:1.0];
+  return [self UIFont:font withFamily:json size:nil weight:nil style:nil scaleMultiplier:1];
 }
 
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
@@ -603,21 +585,24 @@ static BOOL RCTFontIsCondensed(UIFont *font)
    scaleMultiplier:(CGFloat)scaleMultiplier
 {
   // Defaults
-  NSString *const RCTDefaultFontFamily = @"System";
-  NSString *const RCTIOS8SystemFontFamily = @"Helvetica Neue";
-  const RCTFontWeight RCTDefaultFontWeight = UIFontWeightRegular;
-  const CGFloat RCTDefaultFontSize = 14;
+  static NSString *defaultFontFamily;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    defaultFontFamily = [UIFont systemFontOfSize:14].familyName;
+  });
+  const RCTFontWeight defaultFontWeight = UIFontWeightRegular;
+  const CGFloat defaultFontSize = 14;
 
   // Initialize properties to defaults
-  CGFloat fontSize = RCTDefaultFontSize;
-  RCTFontWeight fontWeight = RCTDefaultFontWeight;
-  NSString *familyName = RCTDefaultFontFamily;
+  CGFloat fontSize = defaultFontSize;
+  RCTFontWeight fontWeight = defaultFontWeight;
+  NSString *familyName = defaultFontFamily;
   BOOL isItalic = NO;
   BOOL isCondensed = NO;
 
   if (font) {
-    familyName = font.familyName ?: RCTDefaultFontFamily;
-    fontSize = font.pointSize ?: RCTDefaultFontSize;
+    familyName = font.familyName ?: defaultFontFamily;
+    fontSize = font.pointSize ?: defaultFontSize;
     fontWeight = RCTWeightOfFont(font);
     isItalic = RCTFontIsItalic(font);
     isCondensed = RCTFontIsCondensed(font);
@@ -634,7 +619,7 @@ static BOOL RCTFontIsCondensed(UIFont *font)
 
   // Handle system font as special case. This ensures that we preserve
   // the specific metrics of the standard system font as closely as possible.
-  if ([familyName isEqual:RCTDefaultFontFamily]) {
+  if ([familyName isEqual:defaultFontFamily] || [familyName isEqualToString:@"System"]) {
     if ([UIFont respondsToSelector:@selector(systemFontOfSize:weight:)]) {
       font = [UIFont systemFontOfSize:fontSize weight:fontWeight];
       if (isItalic || isCondensed) {
@@ -650,10 +635,6 @@ static BOOL RCTFontIsCondensed(UIFont *font)
         font = [UIFont fontWithDescriptor:fontDescriptor size:fontSize];
       }
       return font;
-    } else {
-      // systemFontOfSize:weight: isn't available prior to iOS 8.2, so we
-      // fall back to finding the correct font manually, by linear search.
-      familyName = RCTIOS8SystemFontFamily;
     }
   }
 
