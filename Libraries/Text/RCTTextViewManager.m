@@ -46,7 +46,7 @@ RCT_REMAP_VIEW_PROPERTY(secureTextEntry, textView.secureTextEntry, BOOL)
 RCT_REMAP_VIEW_PROPERTY(selectionColor, tintColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(selectTextOnFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(text, NSString)
-RCT_CUSTOM_VIEW_PROPERTY(fontSize, CGFloat, RCTTextView)
+RCT_CUSTOM_VIEW_PROPERTY(fontSize, NSNumber, RCTTextView)
 {
   view.font = [RCTFont updateFont:view.font withSize:json ?: @(defaultView.font.pointSize)];
 }

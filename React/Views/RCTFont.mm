@@ -104,10 +104,10 @@ static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
 {
   json = [self NSDictionary:json];
   return [RCTFont updateFont:nil
-                  withFamily:json[@"fontFamily"]
-                        size:json[@"fontSize"]
-                      weight:json[@"fontWeight"]
-                       style:json[@"fontStyle"]
+                  withFamily:[RCTConvert NSString:json[@"fontFamily"]]
+                        size:[RCTConvert NSNumber:json[@"fontSize"]]
+                      weight:[RCTConvert NSString:json[@"fontWeight"]]
+                       style:[RCTConvert NSString:json[@"fontStyle"]]
              scaleMultiplier:1];
 }
 
@@ -137,10 +137,10 @@ RCT_ENUM_CONVERTER(RCTFontStyle, (@{
 @implementation RCTFont
 
 + (UIFont *)updateFont:(UIFont *)font
-            withFamily:(id)family
-                  size:(id)size
-                weight:(id)weight
-                 style:(id)style
+            withFamily:(NSString *)family
+                  size:(NSNumber *)size
+                weight:(NSString *)weight
+                 style:(NSString *)style
        scaleMultiplier:(CGFloat)scaleMultiplier
 {
   // Defaults
@@ -239,24 +239,24 @@ RCT_ENUM_CONVERTER(RCTFontStyle, (@{
   return bestMatch;
 }
 
-+ (UIFont *)updateFont:(UIFont *)font withFamily:(id)json
++ (UIFont *)updateFont:(UIFont *)font withFamily:(NSString *)family
 {
-  return [self updateFont:font withFamily:json size:nil weight:nil style:nil scaleMultiplier:1];
+  return [self updateFont:font withFamily:family size:nil weight:nil style:nil scaleMultiplier:1];
 }
 
-+ (UIFont *)updateFont:(UIFont *)font withSize:(id)json
++ (UIFont *)updateFont:(UIFont *)font withSize:(NSNumber *)size
 {
-  return [self updateFont:font withFamily:nil size:json weight:nil style:nil scaleMultiplier:1];
+  return [self updateFont:font withFamily:nil size:size weight:nil style:nil scaleMultiplier:1];
 }
 
-+ (UIFont *)updateFont:(UIFont *)font withWeight:(id)json
++ (UIFont *)updateFont:(UIFont *)font withWeight:(NSString *)weight
 {
-  return [self updateFont:font withFamily:nil size:nil weight:json style:nil scaleMultiplier:1];
+  return [self updateFont:font withFamily:nil size:nil weight:weight style:nil scaleMultiplier:1];
 }
 
-+ (UIFont *)updateFont:(UIFont *)font withStyle:(id)json
++ (UIFont *)updateFont:(UIFont *)font withStyle:(NSString *)style
 {
-  return [self updateFont:font withFamily:nil size:nil weight:nil style:json scaleMultiplier:1];
+  return [self updateFont:font withFamily:nil size:nil weight:nil style:style scaleMultiplier:1];
 }
 
 @end
