@@ -59,41 +59,41 @@ static void RCTPrint(void *context)
 // Enforces precedence rules, e.g. marginLeft > marginHorizontal > margin.
 #define DEFINE_PROCESS_META_PROPS(type)                                                            \
 static void RCTProcessMetaProps##type(const float metaProps[META_PROP_COUNT], CSSNodeRef node) {   \
-  if (!isUndefined(metaProps[META_PROP_LEFT])) {                                                   \
-    CSSNodeStyleSet##type##Start(node, metaProps[META_PROP_LEFT]);                                  \
-  } else if (!isUndefined(metaProps[META_PROP_HORIZONTAL])) {                                      \
-    CSSNodeStyleSet##type##Start(node, metaProps[META_PROP_HORIZONTAL]);                            \
-  } else if (!isUndefined(metaProps[META_PROP_ALL])) {                                             \
-    CSSNodeStyleSet##type##Start(node, metaProps[META_PROP_ALL]);                                   \
+  if (!CSSValueIsUndefined(metaProps[META_PROP_LEFT])) {                                           \
+    CSSNodeStyleSet##type##Start(node, metaProps[META_PROP_LEFT]);                                 \
+  } else if (!CSSValueIsUndefined(metaProps[META_PROP_HORIZONTAL])) {                              \
+    CSSNodeStyleSet##type##Start(node, metaProps[META_PROP_HORIZONTAL]);                           \
+  } else if (!CSSValueIsUndefined(metaProps[META_PROP_ALL])) {                                     \
+    CSSNodeStyleSet##type##Start(node, metaProps[META_PROP_ALL]);                                  \
   } else {                                                                                         \
-    CSSNodeStyleSet##type##Start(node, 0);                                                          \
+    CSSNodeStyleSet##type##Start(node, 0);                                                         \
   }                                                                                                \
                                                                                                    \
-  if (!isUndefined(metaProps[META_PROP_RIGHT])) {                                                  \
-    CSSNodeStyleSet##type##End(node, metaProps[META_PROP_RIGHT]);                                \
-  } else if (!isUndefined(metaProps[META_PROP_HORIZONTAL])) {                                      \
-    CSSNodeStyleSet##type##End(node, metaProps[META_PROP_HORIZONTAL]);                           \
-  } else if (!isUndefined(metaProps[META_PROP_ALL])) {                                             \
-    CSSNodeStyleSet##type##End(node, metaProps[META_PROP_ALL]);                                  \
+  if (!CSSValueIsUndefined(metaProps[META_PROP_RIGHT])) {                                          \
+    CSSNodeStyleSet##type##End(node, metaProps[META_PROP_RIGHT]);                                  \
+  } else if (!CSSValueIsUndefined(metaProps[META_PROP_HORIZONTAL])) {                              \
+    CSSNodeStyleSet##type##End(node, metaProps[META_PROP_HORIZONTAL]);                             \
+  } else if (!CSSValueIsUndefined(metaProps[META_PROP_ALL])) {                                     \
+    CSSNodeStyleSet##type##End(node, metaProps[META_PROP_ALL]);                                    \
   } else {                                                                                         \
-    CSSNodeStyleSet##type##End(node, 0);                                                         \
+    CSSNodeStyleSet##type##End(node, 0);                                                           \
   }                                                                                                \
                                                                                                    \
-  if (!isUndefined(metaProps[META_PROP_TOP])) {                                                    \
+  if (!CSSValueIsUndefined(metaProps[META_PROP_TOP])) {                                            \
     CSSNodeStyleSet##type##Top(node, metaProps[META_PROP_TOP]);                                    \
-  } else if (!isUndefined(metaProps[META_PROP_VERTICAL])) {                                        \
+  } else if (!CSSValueIsUndefined(metaProps[META_PROP_VERTICAL])) {                                \
     CSSNodeStyleSet##type##Top(node, metaProps[META_PROP_VERTICAL]);                               \
-  } else if (!isUndefined(metaProps[META_PROP_ALL])) {                                             \
+  } else if (!CSSValueIsUndefined(metaProps[META_PROP_ALL])) {                                     \
     CSSNodeStyleSet##type##Top(node, metaProps[META_PROP_ALL]);                                    \
   } else {                                                                                         \
     CSSNodeStyleSet##type##Top(node, 0);                                                           \
   }                                                                                                \
                                                                                                    \
-  if (!isUndefined(metaProps[META_PROP_BOTTOM])) {                                                 \
+  if (!CSSValueIsUndefined(metaProps[META_PROP_BOTTOM])) {                                         \
     CSSNodeStyleSet##type##Bottom(node, metaProps[META_PROP_BOTTOM]);                              \
-  } else if (!isUndefined(metaProps[META_PROP_VERTICAL])) {                                        \
+  } else if (!CSSValueIsUndefined(metaProps[META_PROP_VERTICAL])) {                                \
     CSSNodeStyleSet##type##Bottom(node, metaProps[META_PROP_VERTICAL]);                            \
-  } else if (!isUndefined(metaProps[META_PROP_ALL])) {                                             \
+  } else if (!CSSValueIsUndefined(metaProps[META_PROP_ALL])) {                                     \
     CSSNodeStyleSet##type##Bottom(node, metaProps[META_PROP_ALL]);                                 \
   } else {                                                                                         \
     CSSNodeStyleSet##type##Bottom(node, 0);                                                        \
@@ -484,22 +484,22 @@ RCT_PADDING_PROPERTY(Right, RIGHT)
   if (CSSNodeLayoutGetDirection(_cssNode) == CSSDirectionRTL) {
     return (UIEdgeInsets){
       CSSNodeStyleGetPaddingTop(_cssNode),
-      !isUndefined(CSSNodeStyleGetPaddingEnd(_cssNode)) ?
+      !CSSValueIsUndefined(CSSNodeStyleGetPaddingEnd(_cssNode)) ?
       CSSNodeStyleGetPaddingEnd(_cssNode) :
       CSSNodeStyleGetPaddingLeft(_cssNode),
       CSSNodeStyleGetPaddingBottom(_cssNode),
-      !isUndefined(CSSNodeStyleGetPaddingStart(_cssNode)) ?
+      !CSSValueIsUndefined(CSSNodeStyleGetPaddingStart(_cssNode)) ?
       CSSNodeStyleGetPaddingStart(_cssNode) :
       CSSNodeStyleGetPaddingRight(_cssNode)
     };
   } else {
     return (UIEdgeInsets){
       CSSNodeStyleGetPaddingTop(_cssNode),
-      !isUndefined(CSSNodeStyleGetPaddingStart(_cssNode)) ?
+      !CSSValueIsUndefined(CSSNodeStyleGetPaddingStart(_cssNode)) ?
       CSSNodeStyleGetPaddingStart(_cssNode) :
       CSSNodeStyleGetPaddingLeft(_cssNode),
       CSSNodeStyleGetPaddingBottom(_cssNode),
-      !isUndefined(CSSNodeStyleGetPaddingEnd(_cssNode)) ?
+      !CSSValueIsUndefined(CSSNodeStyleGetPaddingEnd(_cssNode)) ?
       CSSNodeStyleGetPaddingEnd(_cssNode) :
       CSSNodeStyleGetPaddingRight(_cssNode)
     };
