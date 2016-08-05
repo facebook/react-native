@@ -618,9 +618,7 @@ BOOL RCTIsLocalAssetURL(NSURL *__nullable imageURL)
   if (!name) {
     return NO;
   }
-
-  NSString *extension = [name pathExtension];
-  return [extension isEqualToString:@"png"] || [extension isEqualToString:@"jpg"];
+  return YES;
 }
 
 RCT_EXTERN NSString *__nullable RCTTempFilePath(NSString *extension, NSError **error)
