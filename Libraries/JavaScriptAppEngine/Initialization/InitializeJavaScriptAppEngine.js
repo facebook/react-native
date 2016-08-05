@@ -70,8 +70,6 @@ function setUpConsole(): void {
  */
 function defineProperty(object: Object, name: string, newValue: mixed): void {
   const descriptor = Object.getOwnPropertyDescriptor(object, name);
-  const {enumerable, writable, configurable} = descriptor || {};
-
   if (descriptor) {
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
     Object.defineProperty(object, backupName, {
@@ -80,6 +78,7 @@ function defineProperty(object: Object, name: string, newValue: mixed): void {
     });
   }
 
+  const {enumerable, writable, configurable} = descriptor || {};
   if (!descriptor || configurable) {
     Object.defineProperty(object, name, {
       configurable: true,
@@ -98,13 +97,12 @@ function defineLazyProperty<T>(
   const defineLazyObjectProperty = require('defineLazyObjectProperty');
 
   const descriptor = getPropertyDescriptor(object, name);
-  const {configurable} = descriptor || {};
-
   if (descriptor) {
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
     Object.defineProperty(object, backupName, descriptor);
   }
 
+  const {configurable} = descriptor || {};
   if (!descriptor || configurable) {
     defineLazyObjectProperty(object, name, {
       get: getNewValue,
