@@ -46,6 +46,11 @@ var PickerIOS = React.createClass({
     var selectedIndex = 0;
     var items = [];
     ReactChildren.forEach(props.children, function (child, index) {
+      // Only add items that are valid React elements, avoid `null`, `false`, etc
+      if (!React.isValidElement(child)) {
+        return;
+      }
+
       if (child.props.value === props.selectedValue) {
         selectedIndex = index;
       }
