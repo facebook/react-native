@@ -141,7 +141,7 @@ bool CSSNodeIsDirty(CSSNodeRef node);
 
 void CSSNodePrint(CSSNodeRef node, CSSPrintOptions options);
 
-bool isUndefined(float value);
+bool CSSValueIsUndefined(float value);
 
 #define CSS_NODE_PROPERTY(type, name, paramName)                                                   \
   void CSSNodeSet##name(CSSNodeRef node, type paramName);                                          \

@@ -40,9 +40,15 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
 
   /**
    * Flag passed to loadScriptFromOptimizedBundle to let the bridge know that
-   * the unpacked unpacked js source file.
+   * the unpacker unpacked js source file.
    */
-  static final int UNPACKED_JS_SOURCE = (1 << 0);
+  public static final int UNPACKED_JS_SOURCE = (1 << 0);
+
+  /**
+   * Flag passed to loadScriptFromOptimizedBundle to let the bridge know that
+   * the unpacker unpacked bytecode cache files.
+   */
+  public static final int UNPACKED_BC_CACHE = (1 << 1);
 
   /**
    * Name of the lock files. Multiple processes can be spawned off the same app
@@ -71,6 +77,7 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
 
   private final String mSourceURL;
   private final Context mContext;
+  private final int mLoadFlags;
 
   /**
    * Description of what needs to be unpacked.
@@ -82,6 +89,7 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
     mDirectoryPath = Assertions.assertNotNull(builder.destinationPath);
     mSourceURL = Assertions.assertNotNull(builder.sourceURL);
     mUnpackers = builder.unpackers.toArray(new Unpacker[builder.unpackers.size()]);
+    mLoadFlags = builder.loadFlags;
   }
 
   /**
@@ -150,7 +158,7 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
     instance.loadScriptFromOptimizedBundle(
       mDirectoryPath.getPath(),
       mSourceURL,
-      UNPACKED_JS_SOURCE);
+      mLoadFlags);
   }
 
   @Override
@@ -204,12 +212,14 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
     private @Nullable File destinationPath;
     private @Nullable String sourceURL;
     private final ArrayList<Unpacker> unpackers;
+    private int loadFlags;
 
     public Builder() {
       this.unpackers = new ArrayList<Unpacker>();
       context = null;
       destinationPath = null;
       sourceURL = null;
+      loadFlags = 0;
     }
 
     public Builder setContext(Context context) {
@@ -224,6 +234,11 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
 
     public Builder setSourceURL(String sourceURL) {
       this.sourceURL = sourceURL;
+      return this;
+    }
+
+    public Builder setLoadFlags(int loadFlags) {
+      this.loadFlags = loadFlags;
       return this;
     }
 

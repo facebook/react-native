@@ -11,6 +11,7 @@
 const SourceMapConsumer = require('source-map').SourceMapConsumer;
 const fs = require('fs');
 const http = require('http');
+const path = require('path');
 const urlLib = require('url');
 
 class TreeTransformator {
@@ -31,7 +32,8 @@ class TreeTransformator {
         line: tree.lineNumber,
         column: tree.columnNumber,
       });
-      tree.functionName = original.name;
+      tree.functionName = original.name
+        || (path.posix.basename(original.source) + ':' + original.line);
       tree.scriptId = tree.id;
       tree.url = 'file://' + original.source;
       tree.lineNumber = original.line;
@@ -89,8 +91,7 @@ class TreeTransformator {
         resBody += chunk;
       }).on('end', () => {
         sawEnd = true;
-        const map = JSON.parse(resBody.replace(/^\)\]\}'/, ''));
-        this.urlResults[url] = new SourceMapConsumer(map);
+        this.urlResults[url] = new SourceMapConsumer(resBody);
         callback();
       }).on('close', (err) => {
         if (!sawEnd) {
