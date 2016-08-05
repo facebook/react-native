@@ -14,13 +14,13 @@
 
 #import <XCTest/XCTest.h>
 
-#import "RCTConvert.h"
+#import "RCTFont.h"
 
-@interface RCTConvert_UIFontTests : XCTestCase
+@interface RCTFontTests : XCTestCase
 
 @end
 
-@implementation RCTConvert_UIFontTests
+@implementation RCTFontTests
 
 #define RCTAssertEqualFonts(font1, font2) { \
   XCTAssertEqualObjects(font1, font2); \
