@@ -651,7 +651,7 @@ protected void onPause() {
     super.onPause();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onHostPause();
+        mReactInstanceManager.onPause();
     }
 }
 
@@ -660,7 +660,7 @@ protected void onResume() {
     super.onResume();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onHostResume(this, this);
+        mReactInstanceManager.onResume(this, this);
     }
 }
 
@@ -669,7 +669,7 @@ protected void onDestroy() {
     super.onDestroy();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onHostDestroy();
+        mReactInstanceManager.onDestroy();
     }
 }
 ```
