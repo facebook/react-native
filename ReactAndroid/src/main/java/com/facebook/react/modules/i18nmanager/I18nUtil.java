@@ -22,8 +22,10 @@ public class I18nUtil {
 
   private static final String MY_PREFS_NAME =
     "com.facebook.react.modules.i18nmanager.I18nUtil";
-  private static final String KEY_FOR_PREFS =
+  private static final String KEY_FOR_PREFS_ALLOWRTL =
     "RCTI18nUtil_allowRTL";
+  private static final String KEY_FOR_PREFS_FORCERTL =
+    "RCTI18nUtil_forceRTL";
 
   private I18nUtil() {
      // Exists only to defeat instantiation.
@@ -36,23 +38,51 @@ public class I18nUtil {
     return sharedI18nUtilInstance;
   }
 
-  // If the current device language is RTL and RTL is allowed for the app,
-  // the RN app will automatically have a RTL layout.
+  /**
+   * Check if the device is currently running on an RTL locale.
+   * This only happens when the app:
+   * - is forcing RTL layout, regardless of the active language (for development purpose)
+   * - allows RTL layout when using RTL locale
+   */
   public boolean isRTL(Context context) {
-    return allowRTL(context) &&
+    if (isRTLForced(context)) {
+      return true;
+    }
+    return isRTLAllowed(context) &&
       isDevicePreferredLanguageRTL();
   }
 
-  private boolean allowRTL(Context context) {
+  /**
+   * Should be used very early during app start up
+   * Before the bridge is initialized
+   */
+  private boolean isRTLAllowed(Context context) {
     SharedPreferences prefs =
       context.getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE);
-    return prefs.getBoolean(KEY_FOR_PREFS, false);
+    return prefs.getBoolean(KEY_FOR_PREFS_ALLOWRTL, false);
   }
 
-  public void setAllowRTL(Context context, boolean allowRTL) {
+  public void allowRTL(Context context, boolean allowRTL) {
     SharedPreferences.Editor editor =
       context.getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE).edit();
-    editor.putBoolean(KEY_FOR_PREFS, allowRTL);
+    editor.putBoolean(KEY_FOR_PREFS_ALLOWRTL, allowRTL);
+    editor.apply();
+  }
+
+  /**
+   * Could be used to test RTL layout with English
+   * Used for development and testing purpose
+   */
+  private boolean isRTLForced(Context context) {
+    SharedPreferences prefs =
+      context.getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE);
+    return prefs.getBoolean(KEY_FOR_PREFS_FORCERTL, false);
+  }
+
+  public void forceRTL(Context context, boolean allowRTL) {
+    SharedPreferences.Editor editor =
+      context.getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE).edit();
+    editor.putBoolean(KEY_FOR_PREFS_FORCERTL, allowRTL);
     editor.apply();
   }
 
