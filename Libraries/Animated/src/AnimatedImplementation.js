@@ -11,6 +11,7 @@
  */
 'use strict';
 
+var DeviceEventEmitter = require('RCTDeviceEventEmitter');
 var InteractionManager = require('InteractionManager');
 var Interpolation = require('Interpolation');
 var React = require('React');
@@ -634,6 +635,7 @@ class AnimatedValue extends AnimatedWithChildren {
   _animation: ?Animation;
   _tracking: ?Animated;
   _listeners: {[key: string]: ValueListenerCallback};
+  __nativeAnimatedValueListener: ?any;
 
   constructor(value: number) {
     super();
@@ -650,6 +652,14 @@ class AnimatedValue extends AnimatedWithChildren {
 
   __getValue(): number {
     return this._value + this._offset;
+  }
+
+  __makeNative() {
+    super.__makeNative();
+
+    if (Object.keys(this._listeners).length) {
+      this._startListeningToNativeValueUpdates();
+    }
   }
 
   /**
@@ -693,15 +703,49 @@ class AnimatedValue extends AnimatedWithChildren {
   addListener(callback: ValueListenerCallback): string {
     var id = String(_uniqueId++);
     this._listeners[id] = callback;
+    if (this.__isNative) {
+      this._startListeningToNativeValueUpdates();
+    }
     return id;
   }
 
   removeListener(id: string): void {
     delete this._listeners[id];
+    if (this.__isNative && Object.keys(this._listeners).length === 0) {
+      this._stopListeningForNativeValueUpdates();
+    }
   }
 
   removeAllListeners(): void {
     this._listeners = {};
+    if (this.__isNative) {
+      this._stopListeningForNativeValueUpdates();
+    }
+  }
+
+  _startListeningToNativeValueUpdates() {
+    if (this.__nativeAnimatedValueListener ||
+        !NativeAnimatedHelper.supportsNativeListener()) {
+      return;
+    }
+
+    NativeAnimatedAPI.startListeningToAnimatedNodeValue(this.__getNativeTag());
+    this.__nativeAnimatedValueListener = DeviceEventEmitter.addListener('onAnimatedValueUpdate', (data) => {
+      if (data.tag !== this.__getNativeTag()) {
+        return;
+      }
+      this._updateValue(data.value, false /* flush */);
+    });
+  }
+
+  _stopListeningForNativeValueUpdates() {
+    if (!this.__nativeAnimatedValueListener ||
+        !NativeAnimatedHelper.supportsNativeListener()) {
+      return;
+    }
+
+    this.__nativeAnimatedValueListener.remove();
+    NativeAnimatedAPI.stopListeningToAnimatedNodeValue(this.__getNativeTag());
   }
 
   /**
@@ -964,10 +1008,30 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     super.__detach();
   }
 
+  __transformDataType(range) {
+    // Change the string array type to number array
+    // So we can reuse the same logic in iOS and Android platform
+    return range.map(function (value) {
+      if (typeof value !== 'string') {
+        return value;
+      }
+      if (/deg$/.test(value)) {
+        let degrees = parseFloat(value, 10) || 0;
+        let radians = degrees * Math.PI / 180.0;
+        return radians;
+      } else {
+        // Assume radians
+        return parseFloat(value, 10) || 0;
+      }
+    });
+  }
+
   __getNativeConfig(): any {
     NativeAnimatedHelper.validateInterpolation(this._config);
     return {
       ...this._config,
+      // Only the `outputRange` can contain strings so we don't need to tranform `inputRange` here
+      outputRange: this.__transformDataType(this._config.outputRange),
       type: 'interpolation',
     };
   }
@@ -1204,7 +1268,7 @@ class AnimatedStyle extends AnimatedWithChildren {
       if (value instanceof Animated) {
         if (!value.__isNative) {
           // We cannot use value of natively driven nodes this way as the value we have access from JS
-          // may not be up to date
+          // may not be up to date.
           style[key] = value.__getValue();
         }
       } else {
@@ -1296,9 +1360,9 @@ class AnimatedProps extends Animated {
     for (var key in this._props) {
       var value = this._props[key];
       if (value instanceof Animated) {
-        if (!value.__isNative) {
+        if (!value.__isNative || value instanceof AnimatedStyle) {
           // We cannot use value of natively driven nodes this way as the value we have access from JS
-          // may not be up to date
+          // may not be up to date.
           props[key] = value.__getValue();
         }
       } else {
