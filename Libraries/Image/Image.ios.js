@@ -49,7 +49,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *           source={require('./img/favicon.png')}
  *         />
  *         <Image
- *           source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
+ *           source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
  *         />
  *       </View>
  *     );
