@@ -16,20 +16,20 @@ var View = require('View');
 
 var RecordingModule = require('NativeModules').Recording;
 
-var LayoutEventsTestApp = React.createClass({
-  handleOnLayout: function(e) {
+class LayoutEventsTestApp extends React.Component {
+  handleOnLayout = (e) => {
     var layout = e.nativeEvent.layout;
     RecordingModule.record(layout.x + ',' + layout.y + '-' + layout.width + 'x' + layout.height);
-  },
+  };
 
-  render: function() {
+  render() {
     return (
         <View
             onLayout={this.handleOnLayout}
             testID="container"
             style={{left: 10, top: 10, width: 100, height: 100}}/>
     );
-  },
-});
+  }
+}
 
 module.exports = LayoutEventsTestApp;

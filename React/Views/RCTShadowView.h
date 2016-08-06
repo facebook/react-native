@@ -47,7 +47,6 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign, readonly) CSSNodeRef cssNode;
 @property (nonatomic, copy) NSString *viewName;
 @property (nonatomic, strong) UIColor *backgroundColor; // Used to propagate to children
-@property (nonatomic, assign) RCTUpdateLifecycle layoutLifecycle;
 @property (nonatomic, copy) RCTDirectEventBlock onLayout;
 
 /**
@@ -184,12 +183,6 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
              absolutePosition:(CGPoint)absolutePosition;
 
 /**
- * The following are implementation details exposed to subclasses. Do not call them directly
- */
-- (void)dirtyLayout NS_REQUIRES_SUPER;
-- (BOOL)isLayoutDirty;
-
-/**
  * Return whether or not this node acts as a leaf node in the eyes of CSSLayout. For example
  * RCTShadowText has children which it does not want CSSLayout to lay out so in the eyes of
  * CSSLayout it is a leaf node.
@@ -218,5 +211,10 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * transforms or anchor points.
  */
 - (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor;
+
+/**
+ * Checks if the current shadow view is a descendant of the provided `ancestor`
+ */
+- (BOOL)viewIsDescendantOf:(RCTShadowView *)ancestor;
 
 @end

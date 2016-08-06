@@ -284,8 +284,8 @@ class PushNotificationIOS {
   }
 
   /**
-   * If the app launch was triggered by a push notification,
-   * it will give the notification object, otherwise it will give `null`
+   * This method returns a promise that resolves to either the notification
+   * object if the app was launched by a push notification, or `null` otherwise.
    */
   static getInitialNotification(): Promise<?PushNotificationIOS> {
     return RCTPushNotificationManager.getInitialNotification().then(notification => {

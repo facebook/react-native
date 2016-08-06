@@ -89,6 +89,24 @@ import javax.annotation.Nullable;
     mAnimatedNodes.remove(tag);
   }
 
+  public void startListeningToAnimatedNodeValue(int tag, AnimatedNodeValueListener listener) {
+    AnimatedNode node = mAnimatedNodes.get(tag);
+    if (node == null || !(node instanceof ValueAnimatedNode)) {
+      throw new JSApplicationIllegalArgumentException("Animated node with tag " + tag +
+              " does not exists or is not a 'value' node");
+    }
+    ((ValueAnimatedNode) node).setValueListener(listener);
+  }
+
+  public void stopListeningToAnimatedNodeValue(int tag) {
+    AnimatedNode node = mAnimatedNodes.get(tag);
+    if (node == null || !(node instanceof ValueAnimatedNode)) {
+      throw new JSApplicationIllegalArgumentException("Animated node with tag " + tag +
+              " does not exists or is not a 'value' node");
+    }
+    ((ValueAnimatedNode) node).setValueListener(null);
+  }
+
   public void setAnimatedNodeValue(int tag, double value) {
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
@@ -117,6 +135,8 @@ import javax.annotation.Nullable;
     final AnimationDriver animation;
     if ("frames".equals(type)) {
       animation = new FrameBasedAnimationDriver(animationConfig);
+    } else if ("spring".equals(type)) {
+      animation = new SpringAnimation(animationConfig);
     } else {
       throw new JSApplicationIllegalArgumentException("Unsupported animation type: " + type);
     }
@@ -323,6 +343,10 @@ import javax.annotation.Nullable;
       if (nextNode instanceof PropsAnimatedNode) {
         // Send property updates to native view manager
         ((PropsAnimatedNode) nextNode).updateView(mUIImplementation);
+      }
+      if (nextNode instanceof ValueAnimatedNode) {
+        // Potentially send events to JS when the node's value is updated
+        ((ValueAnimatedNode) nextNode).onValueUpdate();
       }
       if (nextNode.mChildren != null) {
         for (int i = 0; i < nextNode.mChildren.size(); i++) {

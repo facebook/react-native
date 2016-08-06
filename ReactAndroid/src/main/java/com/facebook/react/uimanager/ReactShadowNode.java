@@ -94,7 +94,7 @@ public class ReactShadowNode extends CSSNode {
     }
   }
 
-  protected void markUpdated() {
+  public void markUpdated() {
     if (mNodeUpdated) {
       return;
     }
@@ -110,7 +110,7 @@ public class ReactShadowNode extends CSSNode {
   }
 
   @Override
-  protected void dirty() {
+  public void dirty() {
     if (!isVirtual()) {
       super.dirty();
     }

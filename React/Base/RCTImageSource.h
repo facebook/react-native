@@ -46,5 +46,6 @@ __deprecated_msg("Use request.URL instead.");
 @interface RCTConvert (ImageSource)
 
 + (RCTImageSource *)RCTImageSource:(id)json;
++ (NSArray<RCTImageSource *> *)RCTImageSourceArray:(id)json;
 
 @end

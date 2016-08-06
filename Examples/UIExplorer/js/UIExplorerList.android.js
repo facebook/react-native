@@ -75,6 +75,10 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./StatusBarExample'),
   },
   {
+    key: 'SwipeableListViewExample',
+    module: require('./SwipeableListViewExample')
+  },
+  {
     key: 'SwitchExample',
     module: require('./SwitchExample'),
   },
@@ -180,6 +184,10 @@ const APIExamples = [
   {
     key: 'PointerEventsExample',
     module: require('./PointerEventsExample'),
+  },
+  {
+    key: 'ShareExample',
+    module: require('./ShareExample'),
   },
   {
     key: 'TimePickerAndroidExample',

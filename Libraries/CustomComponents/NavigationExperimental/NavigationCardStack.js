@@ -60,10 +60,11 @@ type Props = {
   direction: NavigationGestureDirection,
   navigationState: NavigationState,
   onNavigateBack?: Function,
-  renderOverlay: ?NavigationSceneRenderer,
+  renderHeader: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
   cardStyle?: any,
   style: any,
+  gestureResponseDistance?: ?number,
 };
 
 type DefaultProps = {
@@ -74,8 +75,8 @@ type DefaultProps = {
  * A controlled navigation view that renders a stack of cards.
  *
  *     +------------+
- *   +-+            |
- * +-+ |            |
+ *   +-|   Header   |
+ * +-+ |------------|
  * | | |            |
  * | | |  Focused   |
  * | | |   Card     |
@@ -92,9 +93,10 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
     navigationState: NavigationPropTypes.navigationState.isRequired,
     onNavigateBack: PropTypes.func,
-    renderOverlay: PropTypes.func,
+    renderHeader: PropTypes.func,
     renderScene: PropTypes.func.isRequired,
     cardStyle: View.propTypes.style,
+    gestureResponseDistance: PropTypes.number,
   };
 
   static defaultProps: DefaultProps = {
@@ -130,10 +132,10 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
 
   _render(props: NavigationTransitionProps): ReactElement<any> {
     const {
-      renderOverlay
+      renderHeader
     } = this.props;
 
-    const overlay = renderOverlay && renderOverlay(props);
+    const header = renderHeader ? <View>{renderHeader(props)}</View> : null;
 
     const scenes = props.scenes.map(
      scene => this._renderScene({
@@ -143,13 +145,12 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     );
 
     return (
-      <View
-        style={styles.container}>
+      <View style={styles.container}>
         <View
           style={styles.scenes}>
           {scenes}
         </View>
-        {overlay}
+        {header}
       </View>
     );
   }
@@ -164,6 +165,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     const panHandlersProps = {
       ...props,
       onNavigateBack: this.props.onNavigateBack,
+      gestureResponseDistance: this.props.gestureResponseDistance,
     };
     const panHandlers = isVertical ?
       NavigationCardStackPanResponder.forVertical(panHandlersProps) :
@@ -184,6 +186,11 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    // Header is physically rendered after scenes so that Header won't be
+    // covered by the shadows of the scenes.
+    // That said, we'd have use `flexDirection: 'column-reverse'` to move
+    // Header above the scenes.
+    flexDirection: 'column-reverse',
   },
   scenes: {
     flex: 1,

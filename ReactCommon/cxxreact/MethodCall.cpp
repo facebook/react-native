@@ -40,6 +40,11 @@ std::vector<MethodCall> parseMethodCalls(const std::string& json) throw(std::inv
           folly::to<std::string>("Did not get valid calls back from JS: ", json.c_str()));
   }
 
+  if (moduleIds.size() != methodIds.size() || moduleIds.size() != params.size()) {
+    throw std::invalid_argument(
+          folly::to<std::string>("Did not get valid calls back from JS: ", json.c_str()));
+  }
+
   if (jsonData.size() > REQUEST_CALLID) {
     if (!jsonData[REQUEST_CALLID].isInt()) {
       throw std::invalid_argument(

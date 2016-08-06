@@ -30,6 +30,7 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   private int mDefaultGravityVertical;
   private boolean mTextIsSelectable;
   private float mLineHeight = Float.NaN;
+  private int mTextAlign = Gravity.NO_GRAVITY;
 
   public ReactTextView(Context context) {
     super(context);
@@ -62,6 +63,12 @@ public class ReactTextView extends TextView implements ReactCompoundView {
         setLineSpacing(mLineHeight, 0);
       }
     }
+
+    int nextTextAlign = update.getTextAlign();
+    if (mTextAlign != nextTextAlign) {
+      mTextAlign = nextTextAlign;
+    }
+    setGravityHorizontal(mTextAlign);
   }
 
   @Override

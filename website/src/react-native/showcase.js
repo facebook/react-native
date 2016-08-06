@@ -127,6 +127,14 @@ var featured = [
     infoTitle: 'Refinery29 debuts its first app',
   },
   {
+    name: 'TRED - Sell your car for more',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple20/v4/b0/0c/07/b00c07d2-a057-06bc-6044-9fdab97f370f/icon175x175.jpeg',
+    linkAppStore:  'https://itunes.apple.com/us/app/tred-sell-my-car-for-more!/id1070071394?mt=8',
+    linkPlayStore:  'https://play.google.com/store/apps/details?id=com.tredmobile&hl=en',
+    infoLink: 'http://www.geekwire.com/2015/mobile-dealership-tred-raises-another-1m-to-help-used-car-owners-make-more-money/',
+    infoTitle: 'Sell your car for thousands more than Craigslist or the dealer with TRED',
+  },
+  {
     name: 'Bitt Wallet',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/5b/00/34/5b003497-cc85-a0d0-0d3e-4fb3bc6f95cd/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/us/app/bitt-wallet/id1081954916?mt=8',
@@ -295,6 +303,14 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.bdsdiet_app',
     infoLink: 'https://www.crunchbase.com/organization/bds-diet#/entity',
     infoTitle: 'Bdsdiet provides real estate brokerage services through web and live agents in Korea.',
+  },
+  {
+    name: '蜂鸟众包',
+    icon: 'http://img.wdjimg.com/mms/icon/v1/e/6e/687b129606504cd52632a8cc4ca816ee_256_256.png',
+    linkPlayStore: 'http://www.wandoujia.com/apps/me.ele.crowdsource',
+    linkAppStore: 'https://itunes.apple.com/cn/app/feng-niao-zhong-bao-jian-zhi/id1061034377?mt=8',
+    infoLink: 'https://elelogistics.github.io/about/Crowdsource-App-Write-In-React-Native.html',
+    infoTitle: '"Fengniao Crowdsource app" is a mobile app, developed by Eleme, Inc, for Fengniao Crowdsource, the largest crowdsourced logistics platform in China.',
   },
 ];
 

@@ -29,6 +29,7 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -93,6 +94,24 @@ public class ReactEditText extends EditText {
     mTextWatcherDelegator = null;
     mStagedInputType = getInputType();
     mKeyListener = new InternalKeyListener();
+  }
+
+  /**
+   * Make sure multiline text input can be scrolled within a ScrollView
+   */
+  @Override
+  public boolean dispatchTouchEvent(MotionEvent ev) {
+    switch (ev.getAction()) {
+      case MotionEvent.ACTION_DOWN:
+        // Disallow ScrollView to intercept touch events.
+        this.getParent().requestDisallowInterceptTouchEvent(true);
+        break;
+      case MotionEvent.ACTION_UP:
+        // Allow ScrollView to intercept touch events.
+        this.getParent().requestDisallowInterceptTouchEvent(false);
+        break;
+    }
+    return super.dispatchTouchEvent(ev);
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.

@@ -7,17 +7,21 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef __CSS_LAYOUT_H
-#define __CSS_LAYOUT_H
+#pragma once
 
+#include <assert.h>
 #include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
+
 #ifndef __cplusplus
 #include <stdbool.h>
 #endif
 
 // Not defined in MSVC++
 #ifndef NAN
-static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
+static const unsigned long __nan[2] = { 0xffffffff, 0x7fffffff };
 #define NAN (*(const float *)__nan)
 #endif
 
@@ -108,9 +112,9 @@ typedef struct CSSSize {
   float height;
 } CSSSize;
 
-typedef struct CSSNode * CSSNodeRef;
-typedef CSSSize (*CSSMeasureFunc)(void *context, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode);
-typedef bool (*CSSIsDirtyFunc)(void *context);
+typedef struct CSSNode *CSSNodeRef;
+typedef CSSSize (*CSSMeasureFunc)(
+    void *context, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode);
 typedef void (*CSSPrintFunc)(void *context);
 
 // CSSNode
@@ -118,38 +122,42 @@ CSSNodeRef CSSNodeNew();
 void CSSNodeInit(CSSNodeRef node);
 void CSSNodeFree(CSSNodeRef node);
 
-void CSSNodeInsertChild(CSSNodeRef node, CSSNodeRef child, unsigned int index);
+void CSSNodeInsertChild(CSSNodeRef node, CSSNodeRef child, uint32_t index);
 void CSSNodeRemoveChild(CSSNodeRef node, CSSNodeRef child);
-CSSNodeRef CSSNodeGetChild(CSSNodeRef node, unsigned int index);
-unsigned int CSSNodeChildCount(CSSNodeRef node);
+CSSNodeRef CSSNodeGetChild(CSSNodeRef node, uint32_t index);
+uint32_t CSSNodeChildCount(CSSNodeRef node);
 
 void CSSNodeCalculateLayout(
-  CSSNodeRef node,
-  float availableWidth,
-  float availableHeight,
-  CSSDirection parentDirection);
+    CSSNodeRef node, float availableWidth, float availableHeight, CSSDirection parentDirection);
+
+// Mark a node as dirty. Only valid for nodes with a custom measure function
+// set.
+// CSSLayout knows when to mark all other nodes as dirty but because nodes with
+// measure functions
+// depends on information not known to CSSLayout they must perform this dirty
+// marking manually.
+void CSSNodeMarkDirty(CSSNodeRef node);
+bool CSSNodeIsDirty(CSSNodeRef node);
 
 void CSSNodePrint(CSSNodeRef node, CSSPrintOptions options);
 
-bool isUndefined(float value);
+bool CSSValueIsUndefined(float value);
 
-#define CSS_NODE_PROPERTY(type, name, paramName) \
-void CSSNodeSet##name(CSSNodeRef node, type paramName); \
-type CSSNodeGet##name(CSSNodeRef node);
+#define CSS_NODE_PROPERTY(type, name, paramName)                                                   \
+  void CSSNodeSet##name(CSSNodeRef node, type paramName);                                          \
+  type CSSNodeGet##name(CSSNodeRef node);
 
-#define CSS_NODE_STYLE_PROPERTY(type, name, paramName) \
-void CSSNodeStyleSet##name(CSSNodeRef node, type paramName); \
-type CSSNodeStyleGet##name(CSSNodeRef node);
+#define CSS_NODE_STYLE_PROPERTY(type, name, paramName)                                             \
+  void CSSNodeStyleSet##name(CSSNodeRef node, type paramName);                                     \
+  type CSSNodeStyleGet##name(CSSNodeRef node);
 
-#define CSS_NODE_LAYOUT_PROPERTY(type, name) \
-type CSSNodeLayoutGet##name(CSSNodeRef node);
+#define CSS_NODE_LAYOUT_PROPERTY(type, name) type CSSNodeLayoutGet##name(CSSNodeRef node);
 
-CSS_NODE_PROPERTY(void*, Context, context);
+CSS_NODE_PROPERTY(void *, Context, context);
 CSS_NODE_PROPERTY(CSSMeasureFunc, MeasureFunc, measureFunc);
-CSS_NODE_PROPERTY(CSSIsDirtyFunc, IsDirtyFunc, isDirtyFunc);
 CSS_NODE_PROPERTY(CSSPrintFunc, PrintFunc, printFunc);
 CSS_NODE_PROPERTY(bool, IsTextnode, isTextNode);
-CSS_NODE_PROPERTY(bool, ShouldUpdate, shouldUpdate);
+CSS_NODE_PROPERTY(bool, HasNewLayout, hasNewLayout);
 
 CSS_NODE_STYLE_PROPERTY(CSSDirection, Direction, direction);
 CSS_NODE_STYLE_PROPERTY(CSSFlexDirection, FlexDirection, flexDirection);
@@ -166,6 +174,8 @@ CSS_NODE_STYLE_PROPERTY(float, PositionLeft, positionLeft);
 CSS_NODE_STYLE_PROPERTY(float, PositionTop, positionTop);
 CSS_NODE_STYLE_PROPERTY(float, PositionRight, positionRight);
 CSS_NODE_STYLE_PROPERTY(float, PositionBottom, positionBottom);
+CSS_NODE_STYLE_PROPERTY(float, PositionStart, positionStart);
+CSS_NODE_STYLE_PROPERTY(float, PositionEnd, positionEnd);
 
 CSS_NODE_STYLE_PROPERTY(float, MarginLeft, marginLeft);
 CSS_NODE_STYLE_PROPERTY(float, MarginTop, marginTop);
@@ -201,7 +211,6 @@ CSS_NODE_LAYOUT_PROPERTY(float, Right);
 CSS_NODE_LAYOUT_PROPERTY(float, Bottom);
 CSS_NODE_LAYOUT_PROPERTY(float, Width);
 CSS_NODE_LAYOUT_PROPERTY(float, Height);
+CSS_NODE_LAYOUT_PROPERTY(CSSDirection, Direction);
 
 CSS_EXTERN_C_END
-
-#endif

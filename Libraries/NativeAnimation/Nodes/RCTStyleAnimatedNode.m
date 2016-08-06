@@ -14,7 +14,7 @@
 
 @implementation RCTStyleAnimatedNode
 {
-  NSMutableDictionary<NSString *, NSNumber *> *_updatedPropsDictionary;
+  NSMutableDictionary<NSString *, NSObject *> *_updatedPropsDictionary;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
