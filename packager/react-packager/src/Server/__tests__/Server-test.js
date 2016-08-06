@@ -362,7 +362,7 @@ describe('processRequest', () => {
       server.processRequest(req, res);
       jest.runAllTimers();
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
-      expect(res.end).toBeCalledWith(mockData.slice(0, 3));
+      expect(res.end).toBeCalledWith(mockData.slice(0, 4));
     });
   });
 
