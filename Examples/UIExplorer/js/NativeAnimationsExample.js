@@ -335,7 +335,7 @@ exports.examples = [
                         inputRange: [0, 1],
                         outputRange: [0, 100],
                       })
-                    }
+                    },
                   ],
                 }
               ]}
