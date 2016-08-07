@@ -407,7 +407,7 @@ class Server {
         'Content-Type': mime.lookup(path.basename(assetPath[1]))
       });
 
-      return data.slice(dataStart, dataEnd);
+      return data.slice(dataStart, dataEnd + 1);
     }
 
     return data;

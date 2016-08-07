@@ -20,13 +20,13 @@ public class TransformHelper {
 
   private static double convertToRadians(ReadableMap transformMap, String key) {
     double value;
-    boolean inRadians = false;
+    boolean inRadians = true;
     if (transformMap.getType(key) == ReadableType.String) {
       String stringValue = transformMap.getString(key);
       if (stringValue.endsWith("rad")) {
-        inRadians = true;
         stringValue = stringValue.substring(0, stringValue.length() - 3);
       } else if (stringValue.endsWith("deg")) {
+        inRadians = false;
         stringValue = stringValue.substring(0, stringValue.length() - 3);
       }
       value = Float.parseFloat(stringValue);
@@ -65,7 +65,9 @@ public class TransformHelper {
           helperMatrix,
           convertToRadians(transform, transformType));
       } else if ("scale".equals(transformType)) {
-        MatrixMathHelper.applyScaleZ(helperMatrix, transform.getDouble(transformType));
+        double scale = transform.getDouble(transformType);
+        MatrixMathHelper.applyScaleX(helperMatrix, scale);
+        MatrixMathHelper.applyScaleY(helperMatrix, scale);
       } else if ("scaleX".equals(transformType)) {
         MatrixMathHelper.applyScaleX(helperMatrix, transform.getDouble(transformType));
       } else if ("scaleY".equals(transformType)) {
