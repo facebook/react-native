@@ -36,6 +36,8 @@ public abstract class ReactActivity extends Activity
 
   private static final String REDBOX_PERMISSION_MESSAGE =
       "Overlay permissions needs to be granted in order for react native apps to run in dev mode";
+  
+  private static int sCreatedActivityCount = 0;
 
   private @Nullable PermissionListener mPermissionListener;
   private @Nullable ReactInstanceManager mReactInstanceManager;
@@ -91,6 +93,8 @@ public abstract class ReactActivity extends Activity
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    sCreatedActivityCount++;
+    
     super.onCreate(savedInstanceState);
 
     if (getUseDeveloperSupport() && Build.VERSION.SDK_INT >= 23) {
@@ -132,13 +136,17 @@ public abstract class ReactActivity extends Activity
 
   @Override
   protected void onDestroy() {
+    sCreatedActivityCount--;
+    
     super.onDestroy();
 
     if (mReactRootView != null) {
       mReactRootView.unmountReactApplication();
       mReactRootView = null;
     }
-    getReactNativeHost().clear();
+    if (sCreatedActivityCount == 0) {
+      getReactNativeHost().clear();
+    }
   }
 
   @Override
