@@ -47,6 +47,11 @@ RCT_EXPORT_MODULE()
   _propAnimationNodes = [NSMutableSet new];
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 RCT_EXPORT_METHOD(createAnimatedNode:(nonnull NSNumber *)tag
                   config:(NSDictionary<NSString *, id> *)config)
 {
