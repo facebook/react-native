@@ -149,8 +149,11 @@ const RefreshControl = React.createClass({
   },
 
   render() {
-    var adjustedProps = {...this.props}
-    if (!this.props.style || !this.props.style.backgroundColor) adjustedProps.style = {...this.props.style, backgroundColor: 'transparent'}
+    var adjustedProps = {...this.props};
+    // Fix for refresh position bug #7976
+    if (!this.props.style || !this.props.style.backgroundColor) {
+      adjustedProps.style = {...this.props.style, backgroundColor: 'transparent'};
+    }
     return (
       <NativeRefreshControl
         {...adjustedProps}
