@@ -31,12 +31,6 @@ import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 
 export default class MyScene extends Component {
-  static get defaultProps() {
-    return {
-      title: 'MyScene'
-    };
-  }
-
   render() {
     return (
       <View>
@@ -45,6 +39,8 @@ export default class MyScene extends Component {
     )
   }
 }
+
+
 ```
 
 Notice the `export default` in front of the component declaration. This will _export_ the component, and in turn allow other components to _import_ it later on, like so:
@@ -55,15 +51,15 @@ import { AppRegistry } from 'react-native';
 
 import MyScene from './MyScene';
 
-class YoDawgApp extends Component {
+class SimpleNavigationApp extends Component {
   render() {
     return (
-      <MyScene />
+      <MyScene title='My Initial Scene' />
     )
   }
 }
 
-AppRegistry.registerComponent('YoDawgApp', () => YoDawgApp);
+AppRegistry.registerComponent('SimpleNavigationApp', () => SimpleNavigationApp);
 ```
 
 We now have a simple app that renders your scene and nothing else. In this case, `MyScene` is a simple example of a [reusable React component](https://facebook.github.io/react/docs/reusable-components.html).
@@ -104,7 +100,7 @@ A more complete example that demonstrates the pushing and popping of routes coul
 
 ```javascript
 import React, { Component, PropTypes } from 'react';
-import { Navigator, Text, TouchableHighlight, View } from 'react-native';
+import { AppRegistry, Navigator, Text, TouchableHighlight, View } from 'react-native';
 
 export default class SimpleNavigationApp extends Component {
   render() {
@@ -115,7 +111,7 @@ export default class SimpleNavigationApp extends Component {
           return (
             <MyScene
               title={route.title}
-  
+
               // Function to call when a new scene should be displayed           
               onForward={ () => {    
                 const nextIndex = route.index + 1;
@@ -124,7 +120,7 @@ export default class SimpleNavigationApp extends Component {
                   index: nextIndex,
                 });
               }}
-  
+
               // Function to call to go back to the previous scene
               onBack={() => {
                 if (route.index > 0) {
@@ -145,6 +141,7 @@ class MyScene extends Component {
     onForward: PropTypes.func.isRequired,
     onBack: PropTypes.func.isRequired,
   }
+
   render() {
     return (
       <View>
@@ -159,6 +156,8 @@ class MyScene extends Component {
     )
   }
 }
+
+AppRegistry.registerComponent('SimpleNavigationApp', () => SimpleNavigationApp);
 ```
 
 In this example, the `MyScene` component is passed the title of the current route via the `title` prop. It displays two tappable components that call the `onForward` and `onBack` functions passed through its props, which in turn will call `navigator.push()` and `navigator.pop()` as needed.
