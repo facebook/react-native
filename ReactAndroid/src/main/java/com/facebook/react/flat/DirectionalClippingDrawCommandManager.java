@@ -24,7 +24,8 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 /**
  * Abstract {@link DrawCommandManager} with directional clipping.
  */
-/* package */ abstract class DirectionalClippingDrawCommandManager extends DrawCommandManager {
+/* package */ abstract class DirectionalClippingDrawCommandManager {
+  // This will be fixed in the next diff!!!
   private final FlatViewGroup mFlatViewGroup;
   DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
 
@@ -52,7 +53,6 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     updateClippingRect();
   }
 
-  @Override
   public void mountDrawCommands(DrawCommand[] drawCommands) {
     mDrawCommands = drawCommands;
     mDrawViewMap.clear();
@@ -80,13 +80,12 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     return !mClippedSubviews.containsKey(id);
   }
 
-  @Override
   public void mountViews(ViewResolver viewResolver, int[] viewsToAdd, int[] viewsToDetach) {
     for (int viewToAdd : viewsToAdd) {
       if (viewToAdd > 0) {
         // This view was not previously attached to this parent.
         View view = viewResolver.getView(viewToAdd);
-        ensureViewHasNoParent(view);
+        // ensureViewHasNoParent(view);
         DrawView drawView = Assertions.assertNotNull(mDrawViewMap.get(viewToAdd));
         drawView.mWasMounted = true;
         if (animating(view) || withinBounds(drawView)) {
@@ -100,7 +99,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
         // This view was previously attached, and just temporarily detached.
         DrawView drawView = Assertions.assertNotNull(mDrawViewMap.get(-viewToAdd));
         View view = viewResolver.getView(drawView.reactTag);
-        ensureViewHasNoParent(view);
+        // ensureViewHasNoParent(view);
         if (drawView.mWasMounted) {
           // The DrawView has been mounted before.
           if (isNotClipped(drawView.reactTag)) {
@@ -161,7 +160,6 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     return !(beforeRect(drawView) || afterRect(drawView));
   }
 
-  @Override
   public boolean updateClippingRect() {
     ReactClippingViewGroupHelper.calculateClippingRect(mFlatViewGroup, mClippingRect);
     if (mFlatViewGroup.getParent() == null || mClippingRect.top == mClippingRect.bottom) {
@@ -201,17 +199,14 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     return needsInvalidate;
   }
 
-  @Override
   public void getClippingRect(Rect outClippingRect) {
     outClippingRect.set(mClippingRect);
   }
 
-  @Override
   public Collection<View> getDetachedViews() {
     return mClippedSubviews.values();
   }
 
-  @Override
   public void draw(Canvas canvas) {
     for (DrawCommand drawCommand : mDrawCommands) {
       if (drawCommand instanceof DrawView) {
@@ -225,7 +220,6 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     }
   }
 
-  @Override
   void debugDraw(Canvas canvas) {
     for (DrawCommand drawCommand : mDrawCommands) {
       if (drawCommand instanceof DrawView) {

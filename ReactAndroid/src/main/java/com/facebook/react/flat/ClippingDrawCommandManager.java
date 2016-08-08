@@ -9,12 +9,18 @@
 
 package com.facebook.react.flat;
 
+import javax.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.view.animation.Animation;
 
@@ -27,15 +33,31 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
  */
 /* package */ final class ClippingDrawCommandManager extends DrawCommandManager {
   private final FlatViewGroup mFlatViewGroup;
-  DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
+  private DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
+  private float[] mCommandMaxBottom = StateBuilder.EMPTY_FLOAT_ARRAY;
+  private float[] mCommandMinTop = StateBuilder.EMPTY_FLOAT_ARRAY;
 
-  // lookups in o(1) instead of o(log n) - trade space for time
-  private final Map<Integer, DrawView> mDrawViewMap = new HashMap<>();
-  // When grandchildren are promoted, these can only be FlatViewGroups, but we need to handle the
-  // case that we clip subviews and don't promote grandchildren.
+  private NodeRegion[] mNodeRegions = NodeRegion.EMPTY_ARRAY;
+  private float[] mRegionMaxBottom = StateBuilder.EMPTY_FLOAT_ARRAY;
+  private float[] mRegionMinTop = StateBuilder.EMPTY_FLOAT_ARRAY;
+
+  // Onscreen bounds of draw command array.
+  private int mStart;
+  private int mStop;
+
+  // Mapping of ids to index position within the draw command array.  O(log n) lookups should be
+  // less in our case because of the large constant overhead and auto boxing of the map.
+  private SparseIntArray mDrawViewIndexMap = StateBuilder.EMPTY_SPARSE_INT;
+  // Map of views that are currently clipped.
   private final Map<Integer, View> mClippedSubviews = new HashMap<>();
 
   private final Rect mClippingRect = new Rect();
+
+  // Used in updating the clipping rect, as sometimes we want to detach all views, which means we
+  // need to temporarily store the views we are detaching and removing.  These are always of size
+  // 0, except when used in update clipping rect.
+  private final SparseArray<View> mViewsToRemove = new SparseArray<>();
+  private final ArrayList<View> mViewsToKeep = new ArrayList<>();
 
   ClippingDrawCommandManager(FlatViewGroup flatViewGroup, DrawCommand[] drawCommands) {
     mFlatViewGroup = flatViewGroup;
@@ -43,20 +65,99 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   }
 
   private void initialSetup(DrawCommand[] drawCommands) {
-    mountDrawCommands(drawCommands);
+    mountDrawCommands(
+        drawCommands,
+        mDrawViewIndexMap,
+        mCommandMaxBottom,
+        mCommandMinTop,
+        true);
     updateClippingRect();
   }
 
   @Override
-  public void mountDrawCommands(DrawCommand[] drawCommands) {
+  public void mountDrawCommands(
+      DrawCommand[] drawCommands,
+      SparseIntArray drawViewIndexMap,
+      float[] maxBottom,
+      float[] minTop,
+      boolean willMountViews) {
     mDrawCommands = drawCommands;
-    mDrawViewMap.clear();
-    for (DrawCommand drawCommand : mDrawCommands) {
-      if (drawCommand instanceof DrawView) {
-        DrawView drawView = (DrawView) drawCommand;
-        mDrawViewMap.put(drawView.reactTag, drawView);
+    mCommandMaxBottom = maxBottom;
+    mCommandMinTop = minTop;
+    mDrawViewIndexMap = drawViewIndexMap;
+    if (mClippingRect.bottom != mClippingRect.top) {
+      mStart = Arrays.binarySearch(mCommandMaxBottom, mClippingRect.top);
+      if (mStart < 0) {
+        // We don't care whether we matched or not, but positive indices are helpful.
+        mStart = ~mStart;
+      }
+      mStop = Arrays.binarySearch(
+          mCommandMinTop,
+          mStart,
+          mCommandMinTop.length,
+          mClippingRect.bottom);
+      if (mStop < 0) {
+        // We don't care whether we matched or not, but positive indices are helpful.
+        mStop = ~mStop;
+      }
+      if (!willMountViews) {
+        // If we are not mounting views, we still need to update view indices and positions.  It is
+        // possible that a child changed size and we still need new clipping even though we are not
+        // mounting views.
+        updateClippingToCurrentRect();
       }
     }
+  }
+
+  @Override
+  public void mountNodeRegions(NodeRegion[] nodeRegions, float[] maxBottom, float[] minTop) {
+    mNodeRegions = nodeRegions;
+    mRegionMaxBottom = maxBottom;
+    mRegionMinTop = minTop;
+  }
+
+  @Override
+  public @Nullable NodeRegion virtualNodeRegionWithinBounds(float touchX, float touchY) {
+    int i = Arrays.binarySearch(mRegionMinTop, touchY + 0.0001f);
+    if (i < 0) {
+      // We don't care whether we matched or not, but positive indices are helpful.
+      i = ~i;
+    }
+    while (i-- > 0) {
+      NodeRegion nodeRegion = mNodeRegions[i];
+      if (!nodeRegion.mIsVirtual) {
+        // only interested in virtual nodes
+        continue;
+      }
+      if (mRegionMaxBottom[i] < touchY) {
+        break;
+      }
+      if (nodeRegion.withinBounds(touchX, touchY)) {
+        return nodeRegion;
+      }
+    }
+
+    return null;
+  }
+
+  @Override
+  public @Nullable NodeRegion anyNodeRegionWithinBounds(float touchX, float touchY) {
+    int i = Arrays.binarySearch(mRegionMinTop, touchY + 0.0001f);
+    if (i < 0) {
+      // We don't care whether we matched or not, but positive indices are helpful.
+      i = ~i;
+    }
+    while (i-- > 0) {
+      NodeRegion nodeRegion = mNodeRegions[i];
+      if (mRegionMaxBottom[i] < touchY) {
+        break;
+      }
+      if (nodeRegion.withinBounds(touchX, touchY)) {
+        return nodeRegion;
+      }
+    }
+
+    return null;
   }
 
   private void clip(int id, View view) {
@@ -78,13 +179,19 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   @Override
   public void mountViews(ViewResolver viewResolver, int[] viewsToAdd, int[] viewsToDetach) {
     for (int viewToAdd : viewsToAdd) {
-      if (viewToAdd > 0) {
+      // Views that are just temporarily detached are marked with a negative value.
+      boolean newView = viewToAdd > 0;
+      if (!newView) {
+        viewToAdd = -viewToAdd;
+      }
+      int commandArrayIndex = mDrawViewIndexMap.get(viewToAdd);
+      DrawView drawView = (DrawView) mDrawCommands[commandArrayIndex];
+      View view = viewResolver.getView(drawView.reactTag);
+      ensureViewHasNoParent(view);
+      if (newView) {
         // This view was not previously attached to this parent.
-        View view = viewResolver.getView(viewToAdd);
-        ensureViewHasNoParent(view);
-        DrawView drawView = Assertions.assertNotNull(mDrawViewMap.get(viewToAdd));
         drawView.mWasMounted = true;
-        if (animating(view) || withinBounds(drawView)) {
+        if (animating(view) || withinBounds(commandArrayIndex)) {
           // View should be drawn.  This view can't currently be clipped because it wasn't
           // previously attached to this parent.
           mFlatViewGroup.addViewInLayout(view);
@@ -93,9 +200,6 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
         }
       } else {
         // This view was previously attached, and just temporarily detached.
-        DrawView drawView = Assertions.assertNotNull(mDrawViewMap.get(-viewToAdd));
-        View view = viewResolver.getView(drawView.reactTag);
-        ensureViewHasNoParent(view);
         if (drawView.mWasMounted) {
           // The DrawView has been mounted before.
           if (isNotClipped(drawView.reactTag)) {
@@ -109,7 +213,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
           // The DrawView has not been mounted before, which means the bounds changed and triggered
           // a new DrawView when it was collected from the shadow node.  We have a view with the
           // same id temporarily detached, but its bounds have changed.
-          if (animating(view) || withinBounds(drawView)) {
+          if (animating(view) || withinBounds(commandArrayIndex)) {
             // View should be drawn.
             if (isClipped(drawView.reactTag)) {
               // View was clipped, so add it.
@@ -151,13 +255,9 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     return animation != null && !animation.hasEnded();
   }
 
-  // Return true if a DrawView is currently onscreen.
-  boolean withinBounds(DrawView drawView) {
-    return mClippingRect.intersects(
-        drawView.mLogicalLeft,
-        drawView.mLogicalTop,
-        drawView.mLogicalRight,
-        drawView.mLogicalBottom);
+  // Return true if a command index is currently onscreen.
+  boolean withinBounds(int i) {
+    return mStart <= i && i < mStop;
   }
 
   @Override
@@ -169,35 +269,102 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
       return false;
     }
 
-    int index = 0;
-    boolean needsInvalidate = false;
-    for (DrawCommand drawCommand : mDrawCommands) {
-      if (drawCommand instanceof DrawView) {
-        DrawView drawView = (DrawView) drawCommand;
-        View view = mClippedSubviews.get(drawView.reactTag);
-        if (view == null) {
-          // Not clipped, visible
-          view = mFlatViewGroup.getChildAt(index++);
-          if (!animating(view) && !withinBounds(drawView)) {
-            // Now off the screen.  Don't invalidate in this case, as the canvas should not be
-            // redrawn unless new elements are coming onscreen.
-            clip(drawView.reactTag, view);
-            mFlatViewGroup.removeViewsInLayout(--index, 1);
-          }
-        } else {
-          // Clipped, invisible. We obviously aren't animating here, as if we were then we would not
-          // have clipped in the first place.
-          if (withinBounds(drawView)) {
-            // Now on the screen.  Invalidate as we have a new element to draw.
-            unclip(drawView.reactTag);
-            mFlatViewGroup.addViewInLayout(view, index++);
-            needsInvalidate = true;
-          }
-        }
+    int start = Arrays.binarySearch(mCommandMaxBottom, mClippingRect.top);
+    if (start < 0) {
+      // We don't care whether we matched or not, but positive indices are helpful.
+      start = ~start;
+    }
+    int stop = Arrays.binarySearch(
+        mCommandMinTop,
+        start,
+        mCommandMinTop.length,
+        mClippingRect.bottom);
+    if (stop < 0) {
+      // We don't care whether we matched or not, but positive indices are helpful.
+      stop = ~stop;
+    }
+
+    if (mStart <= start && stop <= mStop) {
+      return false;
+    }
+
+    mStart = start;
+    mStop = stop;
+
+    updateClippingToCurrentRect();
+
+    return true;
+  }
+
+  private void updateClippingToCurrentRect() {
+    for (int i = 0, size = mFlatViewGroup.getChildCount(); i < size; i++) {
+      View view = mFlatViewGroup.getChildAt(i);
+      int index = mDrawViewIndexMap.get(view.getId());
+      if (withinBounds(index) || animating(view)) {
+        mViewsToKeep.add(view);
+      } else {
+        mViewsToRemove.append(i, view);
+        clip(view.getId(), view);
       }
     }
 
-    return needsInvalidate;
+    int removeSize = mViewsToRemove.size();
+    boolean removeAll = removeSize > 2;
+
+    if (removeAll) {
+      // Detach all, as we are changing quite a few views, whether flinging or otherwise.
+      mFlatViewGroup.detachAllViewsFromParent();
+
+      for (int i = 0; i < removeSize; i++) {
+        mFlatViewGroup.removeDetachedView(mViewsToRemove.valueAt(i));
+      }
+    } else {
+      // Simple clipping sweep, as we are changing relatively few views.
+      while (removeSize-- > 0) {
+        mFlatViewGroup.removeViewsInLayout(mViewsToRemove.keyAt(removeSize), 1);
+      }
+    }
+    mViewsToRemove.clear();
+
+    int current = mStart;
+    int childIndex = 0;
+
+    for (int i = 0, size = mViewsToKeep.size(); i < size; i++) {
+      View view = mViewsToKeep.get(i);
+      int commandIndex = mDrawViewIndexMap.get(view.getId());
+      if (current <= commandIndex) {
+        while (current != commandIndex) {
+          if (mDrawCommands[current] instanceof DrawView) {
+            DrawView drawView = (DrawView) mDrawCommands[current];
+            mFlatViewGroup.addViewInLayout(
+                Assertions.assumeNotNull(mClippedSubviews.get(drawView.reactTag)),
+                childIndex++);
+            unclip(drawView.reactTag);
+          }
+          current++;
+        }
+        // We are currently at the command index, but we want to increment beyond it.
+        current++;
+      }
+      if (removeAll) {
+        mFlatViewGroup.attachViewToParent(view, childIndex);
+      }
+      // We want to make sure we increment the child index even if we didn't detach it to maintain
+      // order.
+      childIndex++;
+    }
+    mViewsToKeep.clear();
+
+    while (current < mStop) {
+      if (mDrawCommands[current] instanceof DrawView) {
+        DrawView drawView = (DrawView) mDrawCommands[current];
+        mFlatViewGroup.addViewInLayout(
+            Assertions.assumeNotNull(mClippedSubviews.get(drawView.reactTag)),
+            childIndex++);
+        unclip(drawView.reactTag);
+      }
+      current++;
+    }
   }
 
   @Override
@@ -212,20 +379,42 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
   @Override
   public void draw(Canvas canvas) {
-    for (DrawCommand drawCommand : mDrawCommands) {
-      if (drawCommand instanceof DrawView) {
-        if (isNotClipped(((DrawView) drawCommand).reactTag)) {
-          drawCommand.draw(mFlatViewGroup, canvas);
+    int commandIndex = mStart;
+    int size = mFlatViewGroup.getChildCount();
+
+    for (int i = 0; i < size; i++) {
+      int viewIndex = mDrawViewIndexMap.get(mFlatViewGroup.getChildAt(i).getId());
+      if (mStop < viewIndex) {
+        while (commandIndex < mStop) {
+          mDrawCommands[commandIndex++].draw(mFlatViewGroup, canvas);
         }
-        // else, don't draw, and don't increment index
-      } else {
-        drawCommand.draw(mFlatViewGroup, canvas);
+        // We are now out of commands to draw, so we can just draw the remaining attached children.
+        mDrawCommands[viewIndex].draw(mFlatViewGroup, canvas);
+        while (++i != size) {
+          viewIndex = mDrawViewIndexMap.get(mFlatViewGroup.getChildAt(i).getId());
+          mDrawCommands[viewIndex].draw(mFlatViewGroup, canvas);
+        }
+        // Everything is drawn, lets get out of here.
+        return;
+      } else if (commandIndex <= viewIndex) {
+        while (commandIndex < viewIndex) {
+          mDrawCommands[commandIndex++].draw(mFlatViewGroup, canvas);
+        }
+        // Command index now == viewIndex, so increment beyond it.
+        commandIndex++;
       }
+      mDrawCommands[viewIndex].draw(mFlatViewGroup, canvas);
+    }
+
+    // We have drawn all the views, now just draw the remaining draw commands.
+    while (commandIndex < mStop) {
+      mDrawCommands[commandIndex++].draw(mFlatViewGroup, canvas);
     }
   }
 
   @Override
   void debugDraw(Canvas canvas) {
+    // Draws clipped draw commands, but does not draw clipped views.
     for (DrawCommand drawCommand : mDrawCommands) {
       if (drawCommand instanceof DrawView) {
         if (isNotClipped(((DrawView) drawCommand).reactTag)) {

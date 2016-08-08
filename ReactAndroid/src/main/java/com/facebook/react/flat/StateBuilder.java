@@ -13,6 +13,9 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 
+import android.util.SparseArray;
+import android.util.SparseIntArray;
+
 import com.facebook.csslayout.Spacing;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.OnLayoutEvent;
@@ -28,6 +31,9 @@ import com.facebook.react.uimanager.events.EventDispatcher;
  * that Android finally can display.
  */
 /* package */ final class StateBuilder {
+  /* package */ static final float[] EMPTY_FLOAT_ARRAY = new float[0];
+  /* package */ static final SparseArray<DrawView> EMPTY_SPARSE_DRAWVIEW = new SparseArray<>();
+  /* package */ static final SparseIntArray EMPTY_SPARSE_INT = new SparseIntArray();
 
   private static final boolean SKIP_UP_TO_DATE_NODES = true;
 
@@ -329,12 +335,86 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       node.updateOverflowsContainer();
     }
 
+    // We need to finish the native children so that we can process clipping FlatViewGroup.
+    final FlatShadowNode[] nativeChildren = mNativeChildren.finish();
     if (shouldUpdateMountState) {
-      mOperationsQueue.enqueueUpdateMountState(
-          node.getReactTag(),
-          drawCommands,
-          listeners,
-          nodeRegions);
+      if (node.clipsSubviews()) {
+        // Node is a clipping FlatViewGroup, so lets do some calculations off the UI thread.
+        // DrawCommandManager has a better explanation of the data incoming from these calculations,
+        // and is where they are actually used.
+        float[] commandMaxBottom = EMPTY_FLOAT_ARRAY;
+        float[] commandMinTop = EMPTY_FLOAT_ARRAY;
+        SparseIntArray drawViewIndexMap = EMPTY_SPARSE_INT;
+        if (drawCommands != null) {
+          drawViewIndexMap = new SparseIntArray();
+
+          commandMaxBottom = new float[drawCommands.length];
+          commandMinTop = new float[drawCommands.length];
+
+          float last = 0;
+          // Loop through the DrawCommands, keeping track of the maximum y we've seen if we only
+          // iterated through items up to this position
+          for (int i = 0; i < drawCommands.length; i++) {
+            if (drawCommands[i] instanceof DrawView) {
+              DrawView drawView = (DrawView) drawCommands[i];
+              // These will generally be roughly sorted by id, so try to insert at the end if
+              // possible.
+              drawViewIndexMap.append(drawView.reactTag, i);
+              last = Math.max(last, drawView.mLogicalBottom);
+            } else {
+              last = Math.max(last, drawCommands[i].getBottom());
+            }
+            commandMaxBottom[i] = last;
+          }
+          // Intentionally leave last as it was, since it's at the maximum bottom position we've
+          // seen so far, we can use it again.
+          // Loop through the DrawCommands backwards, keeping track of the minimum y we've seen at
+          // this position
+          for (int i = drawCommands.length - 1; i >= 0; i--) {
+            if (drawCommands[i] instanceof DrawView) {
+              last = Math.min(last, ((DrawView) drawCommands[i]).mLogicalTop);
+            } else {
+              last = Math.min(last, drawCommands[i].getTop());
+            }
+            commandMinTop[i] = last;
+          }
+        }
+        float[] regionMaxBottom = EMPTY_FLOAT_ARRAY;
+        float[] regionMinTop = EMPTY_FLOAT_ARRAY;
+        if (nodeRegions != null) {
+          regionMaxBottom = new float[nodeRegions.length];
+          regionMinTop = new float[nodeRegions.length];
+
+          float last = 0;
+          for (int i = 0; i < nodeRegions.length; i++) {
+            last = Math.max(last, nodeRegions[i].mBottom);
+            regionMaxBottom[i] = last;
+          }
+          for (int i = nodeRegions.length - 1; i >= 0; i--) {
+            last = Math.min(last, nodeRegions[i].mTop);
+            regionMinTop[i] = last;
+          }
+        }
+
+        boolean willMountViews = nativeChildren != null;
+        mOperationsQueue.enqueueUpdateClippingMountState(
+            node.getReactTag(),
+            drawCommands,
+            drawViewIndexMap,
+            commandMaxBottom,
+            commandMinTop,
+            listeners,
+            nodeRegions,
+            regionMaxBottom,
+            regionMinTop,
+            willMountViews);
+      } else {
+        mOperationsQueue.enqueueUpdateMountState(
+            node.getReactTag(),
+            drawCommands,
+            listeners,
+            nodeRegions);
+      }
     }
 
     if (node.hasUnseenUpdates()) {
@@ -342,7 +422,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       node.markUpdateSeen();
     }
 
-    final FlatShadowNode[] nativeChildren = mNativeChildren.finish();
     if (nativeChildren != null) {
       updateNativeChildren(node, node.getNativeChildren(), nativeChildren);
     }

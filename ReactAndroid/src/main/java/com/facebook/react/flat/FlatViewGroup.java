@@ -22,11 +22,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
@@ -90,7 +92,6 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
 
   private static final ArrayList<FlatViewGroup> LAYOUT_REQUESTS = new ArrayList<>();
   private static final Rect VIEW_BOUNDS = new Rect();
-  private static final Rect EMPTY_RECT = new Rect();
 
   private @Nullable InvalidateCallback mInvalidateCallback;
   private DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
@@ -565,11 +566,22 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
   }
 
   /* package */ void mountDrawCommands(DrawCommand[] drawCommands) {
-    if (mDrawCommandManager != null) {
-      mDrawCommandManager.mountDrawCommands(drawCommands);
-    } else {
-      mDrawCommands = drawCommands;
-    }
+    mDrawCommands = drawCommands;
+    invalidate();
+  }
+
+  /* package */ void mountClippingDrawCommands(
+      DrawCommand[] drawCommands,
+      SparseIntArray drawViewIndexMap,
+      float[] maxBottom,
+      float[] minTop,
+      boolean willMountViews) {
+    Assertions.assertNotNull(mDrawCommandManager).mountDrawCommands(
+        drawCommands,
+        drawViewIndexMap,
+        maxBottom,
+        minTop,
+        willMountViews);
     invalidate();
   }
 
@@ -646,6 +658,14 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     mNodeRegions = nodeRegions;
   }
 
+  /* package */ void mountClippingNodeRegions(
+      NodeRegion[] nodeRegions,
+      float[] maxBottom,
+      float[] minTop) {
+    mNodeRegions = nodeRegions;
+    Assertions.assertNotNull(mDrawCommandManager).mountNodeRegions(nodeRegions, maxBottom, minTop);
+  }
+
   /**
    * Mount a list of views to add, and dismount a list of views to detach.  Ids will not appear in
    * both lists, aka:
@@ -712,6 +732,10 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     attachViewToParent(view, -1, ensureLayoutParams(view.getLayoutParams()));
   }
 
+  /* package */ void attachViewToParent(View view, int index) {
+    attachViewToParent(view, index, ensureLayoutParams(view.getLayoutParams()));
+  }
+
   private void processLayoutRequest() {
     mIsLayoutRequested = false;
     for (int i = 0, childCount = getChildCount(); i != childCount; ++i) {
@@ -769,6 +793,9 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
   }
 
   private @Nullable NodeRegion virtualNodeRegionWithinBounds(float touchX, float touchY) {
+    if (mDrawCommandManager != null) {
+      return mDrawCommandManager.virtualNodeRegionWithinBounds(touchX, touchY);
+    }
     for (int i = mNodeRegions.length - 1; i >= 0; --i) {
       NodeRegion nodeRegion = mNodeRegions[i];
       if (!nodeRegion.mIsVirtual) {
@@ -784,6 +811,9 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
   }
 
   private @Nullable NodeRegion anyNodeRegionWithinBounds(float touchX, float touchY) {
+    if (mDrawCommandManager != null) {
+      return mDrawCommandManager.anyNodeRegionWithinBounds(touchX, touchY);
+    }
     for (int i = mNodeRegions.length - 1; i >= 0; --i) {
       NodeRegion nodeRegion = mNodeRegions[i];
       if (nodeRegion.withinBounds(touchX, touchY)) {

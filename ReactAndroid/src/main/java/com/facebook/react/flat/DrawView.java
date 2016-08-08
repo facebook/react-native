@@ -16,6 +16,7 @@ import android.graphics.Path;
 import android.graphics.RectF;
 
 /* package */ final class DrawView extends AbstractDrawCommand {
+  public static final DrawView[] EMPTY_ARRAY = new DrawView[0];
   // the minimum rounded clipping value before we actually do rounded clipping
   /* package */ static final float MINIMUM_ROUNDED_CLIPPING_VALUE = 0.5f;
   private final RectF TMP_RECT = new RectF();

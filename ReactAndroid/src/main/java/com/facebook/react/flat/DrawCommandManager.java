@@ -9,15 +9,18 @@
 
 package com.facebook.react.flat;
 
+import javax.annotation.Nullable;
+
 import java.util.Collection;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewParent;
 
 /**
- * Underlying logic behind handling draw commands from {@link FlatViewGroup}.
+ * Underlying logic behind handling clipping draw commands from {@link FlatViewGroup}.
  */
 /* package */ abstract class DrawCommandManager {
 
@@ -27,8 +30,20 @@ import android.view.ViewParent;
    * called after by the UIManager.
    *
    * @param drawCommands The draw commands to mount.
+   * @param drawViewIndexMap Mapping of ids to index position within the draw command array.
+   * @param maxBottom At each index i, the maximum bottom value (or right value in the case of
+   *   horizontal clipping) value of all draw commands at or below i.
+   * @param minTop At each index i, the minimum top value (or left value in the case of horizontal
+   *   clipping) value of all draw commands at or below i.
+   * @param willMountViews Whether we are going to also receive a mountViews command in this state
+   *   cycle.
    */
-  abstract void mountDrawCommands(DrawCommand[] drawCommands);
+  abstract void mountDrawCommands(
+      DrawCommand[] drawCommands,
+      SparseIntArray drawViewIndexMap,
+      float[] maxBottom,
+      float[] minTop,
+      boolean willMountViews);
 
   /**
    * Add and detach a set of views.  The views added here will already have a DrawView passed in
@@ -79,6 +94,36 @@ import android.view.ViewParent;
   abstract void debugDraw(Canvas canvas);
 
   /**
+   * Mount node regions, which are the hit boxes of the shadow node children of this FlatViewGroup,
+   * though some may not have a corresponding draw command.
+   *
+   * @param nodeRegions Array of node regions to mount.
+   * @param maxBottom At each index i, the maximum bottom value (or right value in the case of
+   *   horizontal clipping) value of all node regions at or below i.
+   * @param minTop At each index i, the minimum top value (or left value in the case of horizontal
+   *   clipping) value of all draw commands at or below i.
+   */
+  abstract void mountNodeRegions(NodeRegion[] nodeRegions, float[] maxBottom, float[] minTop);
+
+  /**
+   * Find a matching node region for a touch.
+   *
+   * @param touchX X coordinate of touch.
+   * @param touchY Y coordinate of touch.
+   * @return Matching node region, or null if none are found.
+   */
+  abstract @Nullable NodeRegion anyNodeRegionWithinBounds(float touchX, float touchY);
+
+  /**
+   * Find a matching virtual node region for a touch.
+   *
+   * @param touchX X coordinate of touch.
+   * @param touchY Y coordinate of touch.
+   * @return Matching node region, or null if none are found.
+   */
+  abstract @Nullable NodeRegion virtualNodeRegionWithinBounds(float touchX, float touchY);
+
+  /**
    * Throw a runtime exception if a view we are trying to attach is already parented.
    *
    * @param view The view to check.
@@ -95,17 +140,5 @@ import android.view.ViewParent;
       FlatViewGroup flatViewGroup,
       DrawCommand[] drawCommands) {
     return new ClippingDrawCommandManager(flatViewGroup, drawCommands);
-  }
-
-  static DrawCommandManager getVerticalClippingInstance(
-      FlatViewGroup flatViewGroup,
-      DrawCommand[] drawCommands) {
-    return new VerticalClippingDrawCommandManager(flatViewGroup, drawCommands);
-  }
-
-  static DrawCommandManager getHorizontalClippingInstance(
-      FlatViewGroup flatViewGroup,
-      DrawCommand[] drawCommands) {
-    return new HorizontalClippingDrawCommandManager(flatViewGroup, drawCommands);
   }
 }

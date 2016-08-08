@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import android.graphics.Rect;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
@@ -79,6 +79,55 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
     }
     if (nodeRegions != null) {
       view.mountNodeRegions(nodeRegions);
+    }
+  }
+
+  /**
+   * Updates DrawCommands and AttachDetachListeners of a clipping FlatViewGroup specified by a
+   * reactTag.
+   *
+   * @param reactTag The react tag to lookup FlatViewGroup by.
+   * @param drawCommands If non-null, new draw commands to execute during the drawing.
+   * @param drawViewIndexMap Mapping of react tags to the index of the corresponding DrawView
+   *   command in the draw command array.
+   * @param commandMaxBot At each index i, the maximum bottom value (or right value in the case of
+   *   horizontal clipping) value of all draw commands at or below i.
+   * @param commandMinTop At each index i, the minimum top value (or left value in the case of
+   *   horizontal clipping) value of all draw commands at or below i.
+   * @param listeners If non-null, new attach-detach listeners.
+   * @param nodeRegions Node regions to mount.
+   * @param regionMaxBot At each index i, the maximum bottom value (or right value in the case of
+   *   horizontal clipping) value of all node regions at or below i.
+   * @param regionMinTop At each index i, the minimum top value (or left value in the case of
+   *   horizontal clipping) value of all draw commands at or below i.
+   * @param willMountViews Whether we are going to also send a mountViews command in this state
+   *   cycle.
+   */
+  /* package */ void updateClippingMountState(
+      int reactTag,
+      @Nullable DrawCommand[] drawCommands,
+      SparseIntArray drawViewIndexMap,
+      float[] commandMaxBot,
+      float[] commandMinTop,
+      @Nullable AttachDetachListener[] listeners,
+      @Nullable NodeRegion[] nodeRegions,
+      float[] regionMaxBot,
+      float[] regionMinTop,
+      boolean willMountViews) {
+    FlatViewGroup view = (FlatViewGroup) resolveView(reactTag);
+    if (drawCommands != null) {
+      view.mountClippingDrawCommands(
+          drawCommands,
+          drawViewIndexMap,
+          commandMaxBot,
+          commandMinTop,
+          willMountViews);
+    }
+    if (listeners != null) {
+      view.mountAttachDetachListeners(listeners);
+    }
+    if (nodeRegions != null) {
+      view.mountClippingNodeRegions(nodeRegions, regionMaxBot, regionMinTop);
     }
   }
 

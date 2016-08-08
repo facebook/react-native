@@ -16,7 +16,7 @@ import android.graphics.Canvas;
  * Instances of DrawCommand are created in background thread and passed to UI thread.
  * Once a DrawCommand is shared with UI thread, it can no longer be mutated in background thread.
  */
-public interface DrawCommand {
+public abstract class DrawCommand {
   // used by StateBuilder, FlatViewGroup and FlatShadowNode
   /* package */ static final DrawCommand[] EMPTY_ARRAY = new DrawCommand[0];
 
@@ -26,7 +26,7 @@ public interface DrawCommand {
    * @param parent The parent to get child information from, if needed
    * @param canvas The canvas to draw into
    */
-  public void draw(FlatViewGroup parent, Canvas canvas);
+  abstract void draw(FlatViewGroup parent, Canvas canvas);
 
   /**
    * Performs debug bounds drawing into the given canvas.
@@ -34,5 +34,13 @@ public interface DrawCommand {
    * @param parent The parent to get child information from, if needed
    * @param canvas The canvas to draw into
    */
-  public void debugDraw(FlatViewGroup parent, Canvas canvas);
+  abstract void debugDraw(FlatViewGroup parent, Canvas canvas);
+
+  abstract float getLeft();
+
+  abstract float getTop();
+
+  abstract float getRight();
+
+  abstract float getBottom();
 }

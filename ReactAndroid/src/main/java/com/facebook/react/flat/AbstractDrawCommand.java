@@ -19,7 +19,7 @@ import android.graphics.Color;
  * The idea is to be able to reuse unmodified objects when we build up DrawCommands before we ship
  * them to UI thread, but we can only do that if DrawCommands are immutable.
  */
-/* package */ abstract class AbstractDrawCommand implements DrawCommand, Cloneable {
+/* package */ abstract class AbstractDrawCommand extends DrawCommand implements Cloneable {
 
   private float mLeft;
   private float mTop;

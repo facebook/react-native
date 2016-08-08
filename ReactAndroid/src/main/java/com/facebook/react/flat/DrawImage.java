@@ -19,7 +19,7 @@ import com.facebook.react.bridge.ReadableArray;
 /**
  * Common interface for DrawImageWithPipeline and DrawImageWithDrawee.
  */
-/* package */ interface DrawImage extends DrawCommand, AttachDetachListener {
+/* package */ interface DrawImage extends AttachDetachListener {
   /**
    * Returns true if an image source was assigned to the DrawImage.
    * A DrawImage with no source will not draw anything.

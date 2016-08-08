@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
@@ -20,6 +21,23 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
 /* package */ final class RCTView extends FlatShadowNode {
 
   private @Nullable DrawBorder mDrawBorder;
+
+  boolean mRemoveClippedSubviews;
+  boolean mHorizontal;
+
+  @Override
+  /* package */ void handleUpdateProperties(ReactStylesDiffMap styles) {
+    mRemoveClippedSubviews = mRemoveClippedSubviews ||
+        (styles.hasKey(PROP_REMOVE_CLIPPED_SUBVIEWS) &&
+            styles.getBoolean(PROP_REMOVE_CLIPPED_SUBVIEWS, false));
+
+    if (mRemoveClippedSubviews) {
+      mHorizontal = mHorizontal ||
+          (styles.hasKey(PROP_HORIZONTAL) && styles.getBoolean(PROP_HORIZONTAL, false));
+    }
+
+    super.handleUpdateProperties(styles);
+  }
 
   @Override
   protected void collectState(
@@ -118,5 +136,10 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
     }
     invalidate();
     return mDrawBorder;
+  }
+
+  @Override
+  public boolean clipsSubviews() {
+    return mRemoveClippedSubviews;
   }
 }

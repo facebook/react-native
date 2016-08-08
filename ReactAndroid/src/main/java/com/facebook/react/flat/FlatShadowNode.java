@@ -41,8 +41,9 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   private static final String PROP_IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
   private static final String PROP_TEST_ID = "testID";
   private static final String PROP_TRANSFORM = "transform";
-  private static final String PROP_REMOVE_CLIPPED_SUBVIEWS =
+  protected static final String PROP_REMOVE_CLIPPED_SUBVIEWS =
       ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS;
+  protected static final String PROP_HORIZONTAL = "horizontal";
   private static final Rect LOGICAL_OFFSET_EMPTY = new Rect();
   // When we first initialize a backing view, we create a view we are going to throw away anyway,
   // so instead initialize with a shared view.
@@ -541,5 +542,9 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
   /* package */ final void signalBackingViewIsCreated() {
     mBackingViewIsCreated = true;
+  }
+
+  public boolean clipsSubviews() {
+    return false;
   }
 }

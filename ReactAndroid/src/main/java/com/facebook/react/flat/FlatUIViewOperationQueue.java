@@ -11,7 +11,7 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
-import android.graphics.Rect;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -70,6 +70,61 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
           mDrawCommands,
           mAttachDetachListeners,
           mNodeRegions);
+    }
+  }
+
+  /**
+   * UIOperation that updates DrawCommands for a View defined by reactTag.
+   */
+  private final class UpdateClippingMountState implements UIOperation {
+
+    private final int mReactTag;
+    private final @Nullable DrawCommand[] mDrawCommands;
+    private final SparseIntArray mDrawViewIndexMap;
+    private final float[] mCommandMaxBot;
+    private final float[] mCommandMinTop;
+    private final @Nullable AttachDetachListener[] mAttachDetachListeners;
+    private final @Nullable NodeRegion[] mNodeRegions;
+    private final float[] mRegionMaxBot;
+    private final float[] mRegionMinTop;
+    private final boolean mWillMountViews;
+
+    private UpdateClippingMountState(
+        int reactTag,
+        @Nullable DrawCommand[] drawCommands,
+        SparseIntArray drawViewIndexMap,
+        float[] commandMaxBot,
+        float[] commandMinTop,
+        @Nullable AttachDetachListener[] listeners,
+        @Nullable NodeRegion[] nodeRegions,
+        float[] regionMaxBot,
+        float[] regionMinTop,
+        boolean willMountViews) {
+      mReactTag = reactTag;
+      mDrawCommands = drawCommands;
+      mDrawViewIndexMap = drawViewIndexMap;
+      mCommandMaxBot = commandMaxBot;
+      mCommandMinTop = commandMinTop;
+      mAttachDetachListeners = listeners;
+      mNodeRegions = nodeRegions;
+      mRegionMaxBot = regionMaxBot;
+      mRegionMinTop = regionMinTop;
+      mWillMountViews = willMountViews;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.updateClippingMountState(
+          mReactTag,
+          mDrawCommands,
+          mDrawViewIndexMap,
+          mCommandMaxBot,
+          mCommandMinTop,
+          mAttachDetachListeners,
+          mNodeRegions,
+          mRegionMaxBot,
+          mRegionMinTop,
+          mWillMountViews);
     }
   }
 
@@ -357,6 +412,33 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
         drawCommands,
         listeners,
         nodeRegions));
+  }
+
+  /**
+   * Enqueues a new UIOperation that will update DrawCommands for a View defined by reactTag.
+   */
+  public void enqueueUpdateClippingMountState(
+      int reactTag,
+      @Nullable DrawCommand[] drawCommands,
+      SparseIntArray drawViewIndexMap,
+      float[] commandMaxBot,
+      float[] commandMinTop,
+      @Nullable AttachDetachListener[] listeners,
+      @Nullable NodeRegion[] nodeRegions,
+      float[] regionMaxBot,
+      float[] regionMinTop,
+      boolean willMountViews) {
+    enqueueUIOperation(new UpdateClippingMountState(
+        reactTag,
+        drawCommands,
+        drawViewIndexMap,
+        commandMaxBot,
+        commandMinTop,
+        listeners,
+        nodeRegions,
+        regionMaxBot,
+        regionMinTop,
+        willMountViews));
   }
 
   public void enqueueUpdateViewGroup(int reactTag, int[] viewsToAdd, int[] viewsToDetach) {
