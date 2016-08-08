@@ -94,14 +94,14 @@ The debugger will receive a list of all project roots, separated by a space. For
 
 ### Debugging with [Stetho](http://facebook.github.io/stetho/) on Android 
 
-1. In ```android/app/build.gradle``` , add
+1. In ```android/app/build.gradle```, add these lines in the `dependencies` section:
 
    ```gradle
    compile 'com.facebook.stetho:stetho:1.3.1'
    compile 'com.facebook.stetho:stetho-okhttp3:1.3.1'
    ```
 
-2. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java```, add the following imports : 
+2. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java```, add the following imports: 
 
    ```java
    import com.facebook.react.modules.network.ReactCookieJarContainer;
