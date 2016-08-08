@@ -17,6 +17,7 @@
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
+#import "RCTProfile.h"
 #import "RCTUtils.h"
 
 NSString *const RCTReloadNotification = @"RCTReloadNotification";
@@ -176,7 +177,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                                         object:nil
                                                       userInfo:nil];
   }];
-
 #endif
 }
 
@@ -219,6 +219,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge moduleIsInitialized:moduleClass];
 }
 
+- (void)whitelistedModulesDidChange
+{
+  [self.batchedBridge whitelistedModulesDidChange];
+}
+
 - (void)reload
 {
   /**
@@ -232,6 +237,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)setUp
 {
+  RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBridge setUp]", nil);
+
   // Only update bundleURL from delegate if delegate bundleURL has changed
   NSURL *previousDelegateURL = _delegateBundleURL;
   _delegateBundleURL = [self.delegate sourceURLForBridge:self];
@@ -243,6 +250,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
   [self createBatchedBridge];
+
+  RCT_PROFILE_END_EVENT(0, @"", nil);
 }
 
 - (void)createBatchedBridge

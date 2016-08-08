@@ -124,7 +124,7 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "~15.3.0-rc.2"
+    "react": "~15.3.0"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -193,7 +193,8 @@
     "yeoman-generator": "0.21.2",
     "mime-types": "2.1.11",
     "whatwg-fetch": "^1.0.0",
-    "denodeify": "^1.2.1"
+    "denodeify": "^1.2.1",
+    "react": "~15.3.0"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.0",
@@ -207,7 +208,7 @@
     "jest-runtime": "~14.1.0",
     "mock-fs": "^3.11.0",
     "portfinder": "0.4.0",
-    "react": "~15.3.0-rc.2",
+    "react": "~15.3.0",
     "shelljs": "0.6.0"
   }
 }

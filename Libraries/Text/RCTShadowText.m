@@ -19,6 +19,7 @@
 #import "RCTUtils.h"
 #import "RCTConvert.h"
 #import "RCTTextView.h"
+#import "RCTFont.h"
 
 NSString *const RCTShadowViewAttributeName = @"RCTShadowViewAttributeName";
 NSString *const RCTIsHighlightedAttributeName = @"IsHighlightedAttributeName";
@@ -266,9 +267,9 @@ static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, 
 
   _effectiveLetterSpacing = letterSpacing.doubleValue;
 
-  UIFont *font = [RCTConvert UIFont:nil withFamily:fontFamily
-                               size:fontSize weight:fontWeight style:fontStyle
-                    scaleMultiplier:_allowFontScaling ? _fontSizeMultiplier : 1.0];
+  UIFont *font = [RCTFont updateFont:nil withFamily:fontFamily
+                                size:fontSize weight:fontWeight style:fontStyle
+                     scaleMultiplier:_allowFontScaling ? _fontSizeMultiplier : 1.0];
 
   CGFloat heightOfTallestSubview = 0.0;
   NSMutableAttributedString *attributedString = [NSMutableAttributedString new];

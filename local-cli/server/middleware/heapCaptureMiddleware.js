@@ -7,8 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 'use strict';
+/*eslint no-console-disallow: "off"*/
 
-const exec = require('child_process').exec;
+const spawn = require('child_process').spawn;
 const fs = require('fs');
 const path = require('path');
 
@@ -18,9 +19,27 @@ module.exports = function(req, res, next) {
     return;
   }
 
-  console.log('Receiving heap capture...');
-  var captureName = '/tmp/capture_' + Date.now() + '.json';
-  fs.writeFileSync(captureName, req.rawBody);
-  console.log('Capture written to ' + captureName);
+  console.log('Downloading Heap Capture');
+  var preload = path.join(__dirname, 'heapCapture/preLoadedCapture.js');
+  fs.writeFileSync(preload, 'var preLoadedCapture = ');
+  fs.appendFileSync(preload, req.rawBody);
+  fs.appendFileSync(preload, ';');
   res.end();
+  console.log('Packaging Trace');
+  var captureHtml = path.join(__dirname, 'heapCapture/captures/capture_' + Date.now() + '.html');
+  var capture = fs.createWriteStream(captureHtml);
+  var inliner = spawn(
+    'inliner',
+    ['--nocompress', 'heapCapture.html'],
+    { cwd: path.join(__dirname, '/heapCapture/'),
+      stdio: [ process.stdin, 'pipe', process.stderr ],
+    });
+  inliner.stdout.pipe(capture);
+  inliner.on('exit', (code, signal) => {
+    if (code === 0) {
+      console.log('Heap capture written to: ' + captureHtml);
+    } else {
+      console.error('Error processing heap capture, inliner returned code: ' + code);
+    }
+  });
 };

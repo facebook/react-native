@@ -37,6 +37,12 @@
 
   NSArray<NSDictionary *> *transformConfigs = self.config[@"transforms"];
   for (NSDictionary *transformConfig in transformConfigs) {
+    NSString *type = transformConfig[@"type"];
+    // TODO: Support static transform values.
+    if (![type isEqualToString: @"animated"]) {
+      continue;
+    }
+
     NSNumber *nodeTag = transformConfig[@"nodeTag"];
 
     RCTAnimatedNode *node = self.parentNodes[nodeTag];
