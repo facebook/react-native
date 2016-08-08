@@ -275,6 +275,10 @@ void JSCExecutor::loadApplicationScript(
     return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
   }
 
+  if (flags & UNPACKED_BC_CACHE) {
+    configureJSCBCCache(m_context, bundlePath);
+  }
+
   String jsSourceURL(sourceURL.c_str());
   JSSourceCodeRef sourceCode = JSCreateSourceCode(
       jsScriptBigString->fd(),

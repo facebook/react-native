@@ -54,10 +54,12 @@
 
 - (void)markStartForTag:(RCTPLTag)tag
 {
+#if RCT_PROFILE
   if (RCTProfileIsProfiling()) {
     NSString *label = _labelsForTags[tag];
     _cookies[tag] = RCTProfileBeginAsyncEvent(RCTProfileTagAlways, label, nil);
   }
+#endif
   _data[tag][0] = CACurrentMediaTime() * 1000;
   _data[tag][1] = 0;
 }
@@ -65,10 +67,12 @@
 
 - (void)markStopForTag:(RCTPLTag)tag
 {
+#if RCT_PROFILE
   if (RCTProfileIsProfiling()) {
     NSString *label =_labelsForTags[tag];
     RCTProfileEndAsyncEvent(RCTProfileTagAlways, @"native", _cookies[tag], label, @"RCTPerformanceLogger", nil);
   }
+#endif
   if (_data[tag][0] != 0 && _data[tag][1] == 0) {
     _data[tag][1] = CACurrentMediaTime() * 1000;
   } else {

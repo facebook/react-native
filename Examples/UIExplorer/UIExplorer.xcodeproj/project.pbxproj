@@ -39,7 +39,7 @@
 		1497CFAD1B21F5E400C1F8F2 /* RCTBridgeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA51B21F5E400C1F8F2 /* RCTBridgeTests.m */; };
 		1497CFAE1B21F5E400C1F8F2 /* RCTJSCExecutorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA61B21F5E400C1F8F2 /* RCTJSCExecutorTests.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		1497CFAF1B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA71B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m */; };
-		1497CFB01B21F5E400C1F8F2 /* RCTConvert_UIFontTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA81B21F5E400C1F8F2 /* RCTConvert_UIFontTests.m */; };
+		1497CFB01B21F5E400C1F8F2 /* RCTFontTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA81B21F5E400C1F8F2 /* RCTFontTests.m */; };
 		1497CFB11B21F5E400C1F8F2 /* RCTEventDispatcherTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA91B21F5E400C1F8F2 /* RCTEventDispatcherTests.m */; };
 		1497CFB31B21F5E400C1F8F2 /* RCTUIManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFAB1B21F5E400C1F8F2 /* RCTUIManagerTests.m */; };
 		14AADF051AC3DBB1002390C9 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14AADF041AC3DB95002390C9 /* libReact.a */; };
@@ -228,7 +228,7 @@
 		1497CFA51B21F5E400C1F8F2 /* RCTBridgeTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBridgeTests.m; sourceTree = "<group>"; };
 		1497CFA61B21F5E400C1F8F2 /* RCTJSCExecutorTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTJSCExecutorTests.m; sourceTree = "<group>"; };
 		1497CFA71B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTConvert_NSURLTests.m; sourceTree = "<group>"; };
-		1497CFA81B21F5E400C1F8F2 /* RCTConvert_UIFontTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTConvert_UIFontTests.m; sourceTree = "<group>"; };
+		1497CFA81B21F5E400C1F8F2 /* RCTFontTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTFontTests.m; sourceTree = "<group>"; };
 		1497CFA91B21F5E400C1F8F2 /* RCTEventDispatcherTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTEventDispatcherTests.m; sourceTree = "<group>"; };
 		1497CFAB1B21F5E400C1F8F2 /* RCTUIManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIManagerTests.m; sourceTree = "<group>"; };
 		14AADEFF1AC3DB95002390C9 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = ../../React/React.xcodeproj; sourceTree = "<group>"; };
@@ -436,7 +436,7 @@
 				1497CFA51B21F5E400C1F8F2 /* RCTBridgeTests.m */,
 				1497CFA61B21F5E400C1F8F2 /* RCTJSCExecutorTests.m */,
 				1497CFA71B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m */,
-				1497CFA81B21F5E400C1F8F2 /* RCTConvert_UIFontTests.m */,
+				1497CFA81B21F5E400C1F8F2 /* RCTFontTests.m */,
 				1497CFA91B21F5E400C1F8F2 /* RCTEventDispatcherTests.m */,
 				1300627E1B59179B0043FE5A /* RCTGzipTests.m */,
 				8385CF051B8747A000C6273E /* RCTImageLoaderHelpers.h */,
@@ -911,7 +911,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1497CFB01B21F5E400C1F8F2 /* RCTConvert_UIFontTests.m in Sources */,
+				1497CFB01B21F5E400C1F8F2 /* RCTFontTests.m in Sources */,
 				13BCE84F1C9C209600DD7AAD /* RCTComponentPropsTests.m in Sources */,
 				144D21241B2204C5006DB32B /* RCTImageUtilTests.m in Sources */,
 				1393D0381B68CD1300E1B601 /* RCTModuleMethodTests.m in Sources */,

@@ -49,6 +49,10 @@ class JInstanceCallback : public InstanceCallback {
   }
 
   void incrementPendingJSCalls() override {
+    // For C++ modules, this can be called from an arbitrary thread
+    // managed by the module, via callJSCallback or callJSFunction.  So,
+    // we ensure that it is registered with the JVM.
+    jni::ThreadScope guard;
     static auto method =
       ReactCallback::javaClassStatic()->getMethod<void()>("incrementPendingJSCalls");
     method(jobj_);
