@@ -124,7 +124,7 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "~15.3.0-rc.2"
+    "react": "~15.3.0"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -207,7 +207,7 @@
     "jest-runtime": "~14.1.0",
     "mock-fs": "^3.11.0",
     "portfinder": "0.4.0",
-    "react": "~15.3.0-rc.2",
+    "react": "~15.3.0",
     "shelljs": "0.6.0"
   }
 }
