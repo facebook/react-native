@@ -232,7 +232,7 @@ RCT_EXPORT_MODULE()
   dispatch_async(RCTGetUIManagerQueue(), ^{
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
                                                         object:self];
-    [self batchDidComplete];
+    [self setNeedsLayout];
   });
 }
 
@@ -424,8 +424,10 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
     RCTShadowView *shadowView = self->_shadowViewRegistry[reactTag];
     RCTAssert(shadowView != nil, @"Could not locate shadow view with tag #%@", reactTag);
 
+    BOOL needsLayout = NO;
     if (!CGRectEqualToRect(frame, shadowView.frame)) {
       shadowView.frame = frame;
+      needsLayout = YES;
     }
 
     // Trigger re-layout when size flexibility changes, as the root view might grow or
@@ -434,8 +436,12 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
       RCTRootShadowView *rootShadowView = (RCTRootShadowView *)shadowView;
       if (rootShadowView.sizeFlexibility != sizeFlexibility) {
         rootShadowView.sizeFlexibility = sizeFlexibility;
-        [self batchDidComplete];
+        needsLayout = YES;
       }
+    }
+
+    if (needsLayout) {
+      [self setNeedsLayout];
     }
   });
 }
@@ -451,7 +457,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
     shadowView.intrinsicContentSize = size;
 
-    [self batchDidComplete];
+    [self setNeedsLayout];
   });
 }
 
