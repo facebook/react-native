@@ -12,6 +12,7 @@ const Activity = require('../Activity');
 const AssetServer = require('../AssetServer');
 const FileWatcher = require('../node-haste').FileWatcher;
 const getPlatformExtension = require('../node-haste').getPlatformExtension;
+const getInfixExt = require('../node-haste').getInfixExt;
 const Bundler = require('../Bundler');
 const Promise = require('promise');
 const SourceMapConsumer = require('source-map').SourceMapConsumer;
@@ -74,6 +75,10 @@ const validateOpts = declareOpts({
     type: 'array',
     default: defaultAssetExts,
   },
+  infixExts: {
+    type: 'array',
+    default: [],
+  },
   transformTimeoutInterval: {
     type: 'number',
     required: false,
@@ -117,6 +122,10 @@ const bundleOpts = declareOpts({
     type: 'string',
     required: true,
   },
+  infixExt: {
+    type: 'string',
+    required: false
+  },
   runBeforeMainModule: {
     type: 'array',
     default: [
@@ -146,6 +155,10 @@ const dependencyOpts = declareOpts({
   platform: {
     type: 'string',
     required: true,
+  },
+  infixExt: {
+    type: 'string',
+    required: false
   },
   dev: {
     type: 'boolean',
@@ -204,11 +217,13 @@ class Server {
     this._assetServer = new AssetServer({
       projectRoots: opts.projectRoots,
       assetExts: opts.assetExts,
+      infixExts: opts.infixExts
     });
 
     const bundlerOpts = Object.create(opts);
     bundlerOpts.fileWatcher = this._fileWatcher;
     bundlerOpts.assetServer = this._assetServer;
+
     this._bundler = new Bundler(bundlerOpts);
 
     this._fileWatcher.on('all', this._onFileChange.bind(this));
@@ -241,8 +256,12 @@ class Server {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
       }
+      if (!options.infixExt) {
+        options.infixExt = getInfixExt(options.entryFile);
+      }
 
       const opts = bundleOpts(options);
+
       return this._bundler.bundle(opts);
     });
   }
@@ -629,6 +648,10 @@ class Server {
     const platform = urlObj.query.platform ||
       getPlatformExtension(pathname);
 
+    // try to get the infixExts from the url
+    const infixExt = urlObj.query.infixExt ||
+      getInfixExt(pathname);
+
     return {
       sourceMapUrl: url.format(sourceMapUrlObj),
       entryFile: entryFile,
@@ -647,6 +670,7 @@ class Server {
         'entryModuleOnly',
         false,
       ),
+      infixExt: infixExt,
     };
   }
 

@@ -9,46 +9,66 @@
 'use strict';
 
 const path = require('../fastpath');
-const getPlatformExtension = require('./getPlatformExtension');
+const {getPlatformExtension, getInfixExt} = require('./getExtensions');
+const permute = require('./permutations');
 
-function getAssetDataFromName(filename, platforms) {
+function getAssetDataFromName(filename, platforms, infixExts) {
   const ext = path.extname(filename);
   const platformExt = getPlatformExtension(filename, platforms);
+  const infixExt = getInfixExt(filename, infixExts);
 
-  let pattern = '@([\\d\\.]+)x';
-  if (platformExt != null) {
-    pattern += '(\\.' + platformExt + ')?';
-  }
-  pattern += '\\' + ext + '$';
-  const re = new RegExp(pattern);
+  const resolutionPattern = {
+    test: 'resolution',
+    value: '(@([\\d\\.]+)x)?',
+  };
+  const permutations = permute([
+    resolutionPattern,
+    { test: platformExt, value: '(\\.' + platformExt + ')?' },
+    { test: infixExt, value: '(\\.' + infixExt + ')?' },
+  ].filter(addition => addition.test));
 
-  const match = filename.match(re);
-  let resolution;
+  for (let i = 0; i < permutations.length; ++i) {
+    const permutation = permutations[i];
+    let pattern = '';
+    for (let j = 0; j < permutation.length; ++j) {
+      pattern += permutation[j].value;
+    }
+    pattern += '\\' + ext + '$';
+    const re = new RegExp(pattern);
 
-  if (!(match && match[1])) {
-    resolution = 1;
-  } else {
-    resolution = parseFloat(match[1], 10);
-    if (isNaN(resolution)) {
+    const resolutionIndex = permutation.indexOf(resolutionPattern);
+    const match = filename.match(re);
+    let resolution;
+
+    if (!(match && match[resolutionIndex + 2])) {
       resolution = 1;
+    } else {
+      resolution = parseFloat(match[resolutionIndex + 2], 10);
+      if (isNaN(resolution)) {
+        resolution = 1;
+      }
+    }
+
+    let assetName;
+    if (match) {
+      assetName = filename.replace(re, ext);
+      return {
+        resolution: resolution,
+        assetName: assetName,
+        type: ext.slice(1),
+        name: path.basename(assetName, ext),
+        platform: platformExt,
+        infixExt: infixExt,
+      };
     }
   }
-
-  let assetName;
-  if (match) {
-    assetName = filename.replace(re, ext);
-  } else if (platformExt != null) {
-    assetName = filename.replace(new RegExp(`\\.${platformExt}\\${ext}`), ext);
-  } else {
-    assetName = filename;
-  }
-
   return {
-    resolution: resolution,
-    assetName: assetName,
+    resolution: 1,
+    assetName: filename,
     type: ext.slice(1),
-    name: path.basename(assetName, ext),
+    name: path.basename(filename, ext),
     platform: platformExt,
+    infixExt: infixExt,
   };
 }
 

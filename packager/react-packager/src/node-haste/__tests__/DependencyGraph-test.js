@@ -20,8 +20,8 @@ describe('DependencyGraph', function() {
   let Module;
   let defaults;
 
-  function getOrderedDependenciesAsJSON(dgraph, entryPath, platform, recursive = true) {
-    return dgraph.getDependencies({entryPath, platform, recursive})
+  function getOrderedDependenciesAsJSON(dgraph, entryPath, platform, recursive = true, infixExt) {
+    return dgraph.getDependencies({entryPath, platform, recursive, infixExt})
       .then(response => response.finalize())
       .then(({ dependencies }) => Promise.all(dependencies.map(dep => Promise.all([
         dep.getName(),
@@ -100,6 +100,7 @@ describe('DependencyGraph', function() {
         'parse',
       ],
       platforms: ['ios', 'android'],
+      infixExts: ['chicago', 'newyork'],
       shouldThrowOnUnresolvedErrors: () => false,
     };
   });
@@ -3576,9 +3577,10 @@ describe('DependencyGraph', function() {
       var dgraph = new DependencyGraph({
         ...defaults,
         platforms: ['ios', 'android', 'web'],
+        infixExts: ['london', 'newyork', 'chicago'],
         roots: [root],
       });
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.ios.js').then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.ios.js', null, false, ).then(function(deps) {
         expect(deps)
           .toEqual([
             {
@@ -6080,7 +6082,7 @@ describe('DependencyGraph', function() {
     });
   });
 
-  fdescribe('Deterministic order of dependencies', () => {
+  describe('Deterministic order of dependencies', () => {
     let callDeferreds, dependencyGraph, moduleReadDeferreds;
     let moduleRead;
     let DependencyGraph;
@@ -6183,6 +6185,159 @@ describe('DependencyGraph', function() {
             'b.js',
           ]);
         });
+    });
+  });
+
+  describe('infix related tests', function () {
+    let DependencyGraph;
+
+    beforeEach(function () {
+      DependencyGraph = require('../index');
+    });
+
+    pit('should work with both infixExt and platform', function() {
+
+      var root = '/root';
+      setMockFileSystem({
+        'root': {
+          'index.js': `
+   /!**
+   * @providesModule index
+   *!/
+   require('./a');
+   `,
+          'a.c.js': '',
+          'a.android.js': '',
+          'a.chicago.android.js': '',
+          'a.js': '',
+        },
+      });
+
+      var dgraph = new DependencyGraph({
+        ...defaults,
+        roots: [root],
+      });
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js', 'android', '', 'chicago').then(function(deps) {
+        expect(deps)
+          .toEqual([
+            {
+              id: 'index',
+              path: '/root/index.js',
+              dependencies: ['./a'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: '/root/a.chicago.android.js',
+              path: '/root/a.chicago.android.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+          ]);
+      });
+    });
+
+    pit('should work with only infix', function() {
+      var root = '/root';
+      setMockFileSystem({
+        'root': {
+          'index.js': `
+   /!**
+   * @providesModule index
+   *!/
+   require('./a');
+   `,
+          'a.chicago.js': '',
+          'a.android.js': '',
+          'a.newyork.android.js': '',
+          'a.newyork.js': '',
+          'a.js': '',
+        },
+      });
+
+      var dgraph = new DependencyGraph({
+        ...defaults,
+        roots: [root],
+      });
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js', null, '', 'newyork').then(function(deps) {
+        expect(deps)
+          .toEqual([
+            {
+              id: 'index',
+              path: '/root/index.js',
+              dependencies: ['./a'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: '/root/a.newyork.js',
+              path: '/root/a.newyork.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+          ]);
+      });
+    });
+
+    pit('should find file without infix, even when infix is specified', function() {
+      var root = '/root';
+      setMockFileSystem({
+        'root': {
+          'index.js': `
+   /!**
+   * @providesModule index
+   *!/
+   require('./a');
+   `,
+          'a.c.js': '',
+          'a.android.js': '',
+          'a.js': '',
+        },
+      });
+
+      var dgraph = new DependencyGraph({
+        ...defaults,
+        roots: [root],
+      });
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js', 'android', '', 'chicago').then(function(deps) {
+        expect(deps)
+          .toEqual([
+            {
+              id: 'index',
+              path: '/root/index.js',
+              dependencies: ['./a'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: '/root/a.android.js',
+              path: '/root/a.android.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+          ]);
+      });
     });
   });
 

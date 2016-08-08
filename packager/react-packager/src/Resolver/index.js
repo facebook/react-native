@@ -43,6 +43,10 @@ const validateOpts = declareOpts({
     type: 'array',
     required: true,
   },
+  infixExts: {
+    type: 'array',
+    required: false,
+  },
   cache: {
     type: 'object',
     required: true,
@@ -68,6 +72,10 @@ const getDependenciesValidateOpts = declareOpts({
     type: 'string',
     required: false,
   },
+  infixExt: {
+    type: 'string',
+    required: false
+  },
   unbundle: {
     type: 'boolean',
     default: false
@@ -88,6 +96,7 @@ class Resolver {
       roots: opts.projectRoots,
       assetRoots_DEPRECATED: opts.assetRoots,
       assetExts: opts.assetExts,
+      infixExts: opts.infixExts,
       ignoreFilePath: function(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
@@ -133,10 +142,11 @@ class Resolver {
   }
 
   getDependencies(entryPath, options, transformOptions, onProgress, getModuleId) {
-    const {platform, recursive} = getDependenciesValidateOpts(options);
+    const {platform, recursive, infixExt} = getDependenciesValidateOpts(options);
     return this._depGraph.getDependencies({
       entryPath,
       platform,
+      infixExt,
       transformOptions,
       recursive,
       onProgress,
