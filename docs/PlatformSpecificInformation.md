@@ -12,8 +12,8 @@ When building a cross-platform app, you'll want to re-use as much code as possib
 
 React Native provides two ways to easily organize your code and separate it by platform:
 
-* Using the [`Platform` module](#platform-module).
-* Using [platform-specific file extensions](#platform-specific-extensions).
+* Using the [`Platform` module](docs/platform-specific-code.html#platform-module).
+* Using [platform-specific file extensions](docs/platform-specific-code.html#platform-specific-extensions).
 
 Certain components may have properties that work on one platform only. All of these props are annotated with `@platform` and have a small badge next to them on the website.
 
