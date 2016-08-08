@@ -487,7 +487,6 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     }
 
     moveToBeforeResumeLifecycleState();
-    mCurrentActivity = null;
   }
 
   /**
