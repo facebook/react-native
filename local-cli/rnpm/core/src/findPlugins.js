@@ -1,5 +1,4 @@
 const path = require('path');
-const fs = require('fs');
 const union = require('lodash').union;
 const uniq = require('lodash').uniq;
 const flatten = require('lodash').flatten;
@@ -9,13 +8,29 @@ const flatten = require('lodash').flatten;
  * @param  {String} dependency Name of the dependency
  * @return {Boolean}           If dependency is a rnpm plugin
  */
-const isPlugin = (dependency) => !!~dependency.indexOf('rnpm-plugin-');
+const isRNPMPlugin = (dependency) => dependency.indexOf('rnpm-plugin-') === 0;
+const isReactNativePlugin = (dependency) => dependency.indexOf('react-native-') === 0;
+
+const readPackage = (folder) => {
+  try {
+    return require(path.join(folder, 'package.json'));
+  } catch (e) {
+    return null;
+  }
+};
+
+const findPluginsInReactNativePackage = (pjson) => {
+  if (!pjson.rnpm || !pjson.rnpm.plugin) {
+    return [];
+  }
+
+  return path.join(pjson.name, pjson.rnpm.plugin);
+};
 
 const findPluginInFolder = (folder) => {
-  var pjson;
-  try {
-    pjson = require(path.join(folder, 'package.json'));
-  } catch (e) {
+  const pjson = readPackage(folder);
+
+  if (!pjson) {
     return [];
   }
 
@@ -24,7 +39,22 @@ const findPluginInFolder = (folder) => {
     Object.keys(pjson.devDependencies || {})
   );
 
-  return deps.filter(isPlugin);
+  return deps.reduce(
+    (acc, pkg) => {
+      if (isRNPMPlugin(pkg)) {
+        return acc.concat(pkg);
+      }
+      if (isReactNativePlugin(pkg)) {
+        const pkgJson = readPackage(path.join(folder, 'node_modules', pkg));
+        if (!pkgJson) {
+          return acc;
+        }
+        return acc.concat(findPluginsInReactNativePackage(pkgJson));
+      }
+      return acc;
+    },
+    []
+  );
 };
 
 /**

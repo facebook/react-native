@@ -200,6 +200,8 @@ task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConvers
 
 task cleanReactNdkLib(type: Exec) {
     commandLine getNdkBuildFullPath(),
+            "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
+            "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
             '-C', file('src/main/jni/react/jni').absolutePath,
             'clean'
 }

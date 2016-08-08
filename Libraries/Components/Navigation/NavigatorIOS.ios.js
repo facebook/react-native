@@ -34,21 +34,21 @@ function getuid() {
   return __uid++;
 }
 
-var NavigatorTransitionerIOS = React.createClass({
-  requestSchedulingNavigation: function(cb) {
+class NavigatorTransitionerIOS extends React.Component {
+  requestSchedulingNavigation = (cb) => {
     RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
       ReactNative.findNodeHandle(this),
       logError,
       cb
     );
-  },
+  };
 
-  render: function() {
+  render() {
     return (
       <RCTNavigator {...this.props}/>
     );
-  },
-});
+  }
+}
 
 type Route = {
   component: Function,
@@ -100,7 +100,7 @@ type Event = Object;
  * animations and behavior from UIKIt.
  *
  * As the name implies, it is only available on iOS. Take a look at
- * [`Navigator`](/docs/navigator.html) for a similar solution for your
+ * [`Navigator`](/react-native/docs/navigator.html) for a similar solution for your
  * cross-platform needs, or check out
  * [react-native-navigation](https://github.com/wix/react-native-navigation), a
  * component that aims to provide native navigation on both iOS and Android.
@@ -110,7 +110,7 @@ type Event = Object;
  * navigates to. `initialRoute` represents the first route in your navigator.
  *
  * ```
- * import React, { Component } from 'react';
+ * import React, { Component, PropTypes } from 'react';
  * import { NavigatorIOS, Text } from 'react-native';
  *
  * export default class NavigatorIOSApp extends Component {

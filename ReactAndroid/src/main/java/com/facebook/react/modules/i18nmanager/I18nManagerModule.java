@@ -46,7 +46,15 @@ public class I18nManagerModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void allowRTL(boolean value) {
-    sharedI18nUtilInstance.setAllowRTL(
+    sharedI18nUtilInstance.allowRTL(
+      getReactApplicationContext(),
+      value
+    );
+  }
+
+  @ReactMethod
+  public void forceRTL(boolean value) {
+    sharedI18nUtilInstance.forceRTL(
       getReactApplicationContext(),
       value
     );

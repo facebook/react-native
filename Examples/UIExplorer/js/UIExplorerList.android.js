@@ -51,10 +51,6 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ModalExample'),
   },
   {
-    key: 'NativeAnimationsExample',
-    module: require('./NativeAnimationsExample'),
-  },
-  {
     key: 'PickerExample',
     module: require('./PickerExample'),
   },
@@ -73,6 +69,10 @@ var ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'StatusBarExample',
     module: require('./StatusBarExample'),
+  },
+  {
+    key: 'SwipeableListViewExample',
+    module: require('./SwipeableListViewExample')
   },
   {
     key: 'SwitchExample',
@@ -116,6 +116,10 @@ const APIExamples = [
   {
     key: 'AlertExample',
     module: require('./AlertExample').AlertExample,
+  },
+  {
+    key: 'AnimatedExample',
+    module: require('./AnimatedExample'),
   },
   {
     key: 'AppStateExample',
@@ -162,6 +166,10 @@ const APIExamples = [
     module: require('./LayoutExample'),
   },
   {
+    key: 'NativeAnimationsExample',
+    module: require('./NativeAnimationsExample'),
+  },
+  {
     key: 'NavigationExperimentalExample',
     module: require('./NavigationExperimental/NavigationExperimentalExample'),
   },
@@ -180,6 +188,10 @@ const APIExamples = [
   {
     key: 'PointerEventsExample',
     module: require('./PointerEventsExample'),
+  },
+  {
+    key: 'ShareExample',
+    module: require('./ShareExample'),
   },
   {
     key: 'TimePickerAndroidExample',

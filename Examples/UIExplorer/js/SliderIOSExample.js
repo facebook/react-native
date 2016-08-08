@@ -31,12 +31,10 @@ var {
   View,
 } = ReactNative;
 
-var SliderExample = React.createClass({
-  getInitialState() {
-    return {
-      value: 0,
-    };
-  },
+class SliderExample extends React.Component {
+  state = {
+    value: 0,
+  };
 
   render() {
     return (
@@ -50,7 +48,7 @@ var SliderExample = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   slider: {

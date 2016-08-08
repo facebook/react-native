@@ -587,7 +587,20 @@ exports.examples = [
     render: function() {
       return <MultipleSourcesExample />;
     },
-    platform: 'android',
+  },
+  {
+    title: 'Legacy local image',
+    description:
+      'Images shipped with the native bundle, but not managed ' +
+      'by the JS packager',
+    render: function() {
+      return (
+        <Image
+          source={require('image!hawk')}
+          style={styles.base}
+        />
+      );
+    },
   },
 ];
 

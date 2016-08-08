@@ -424,11 +424,8 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
     RCTShadowView *shadowView = self->_shadowViewRegistry[reactTag];
     RCTAssert(shadowView != nil, @"Could not locate shadow view with tag #%@", reactTag);
 
-    BOOL dirtyLayout = NO;
-
     if (!CGRectEqualToRect(frame, shadowView.frame)) {
       shadowView.frame = frame;
-      dirtyLayout = YES;
     }
 
     // Trigger re-layout when size flexibility changes, as the root view might grow or
@@ -437,13 +434,8 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
       RCTRootShadowView *rootShadowView = (RCTRootShadowView *)shadowView;
       if (rootShadowView.sizeFlexibility != sizeFlexibility) {
         rootShadowView.sizeFlexibility = sizeFlexibility;
-        dirtyLayout = YES;
+        [self batchDidComplete];
       }
-    }
-
-    if (dirtyLayout) {
-      [shadowView dirtyLayout];
-      [self batchDidComplete];
     }
   });
 }
@@ -1232,6 +1224,26 @@ RCT_EXPORT_METHOD(measureInWindow:(nonnull NSNumber *)reactTag
       @(windowFrame.size.height),
     ]);
   }];
+}
+
+/**
+ * Returs if the shadow view provided has the `ancestor` shadow view as
+ * an actual ancestor.
+ */
+RCT_EXPORT_METHOD(viewIsDescendantOf:(nonnull NSNumber *)reactTag
+                  ancestor:(nonnull NSNumber *)ancestorReactTag
+                  callback:(RCTResponseSenderBlock)callback)
+{
+  RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
+  RCTShadowView *ancestorShadowView = _shadowViewRegistry[ancestorReactTag];
+  if (!shadowView) {
+    return;
+  }
+  if (!ancestorShadowView) {
+    return;
+  }
+  BOOL viewIsAncestor = [shadowView viewIsDescendantOf:ancestorShadowView];
+  callback(@[@(viewIsAncestor)]);
 }
 
 static void RCTMeasureLayout(RCTShadowView *view,

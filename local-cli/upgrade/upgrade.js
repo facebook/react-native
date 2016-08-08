@@ -15,7 +15,7 @@ const Promise = require('promise');
 const yeoman = require('yeoman-environment');
 const semver = require('semver');
 
-module.exports = function upgrade(args, config) {
+function upgrade(args, config) {
   args = args || process.argv;
   const env = yeoman.createEnv();
   const pak = JSON.parse(fs.readFileSync('package.json', 'utf8'));
@@ -46,7 +46,7 @@ module.exports = function upgrade(args, config) {
           );
 
           // >= v0.21.0, we require react to be a peer dependency
-          if (semver.gte(v, '0.21.0') && !pak.dependencies['react']) {
+          if (semver.gte(v, '0.21.0') && !pak.dependencies.react) {
             console.log(
               chalk.yellow(
                 '\nYour \'package.json\' file doesn\'t seem to have \'react\' as a dependency.\n' +
@@ -55,9 +55,9 @@ module.exports = function upgrade(args, config) {
                 'Just run \'npm install --save react\', then re-run \'react-native upgrade\'.\n'
               )
             );
-            return Promise.resolve();
+            return;
           }
-          
+
           if (semver.satisfies(v, '~0.26.0')) {
             console.log(
               chalk.yellow(
@@ -96,4 +96,11 @@ module.exports = function upgrade(args, config) {
   env.register(generatorPath, 'react:app');
   const generatorArgs = ['react:app', pak.name].concat(args);
   return new Promise((resolve) => env.run(generatorArgs, {upgrade: true}, resolve));
+}
+
+module.exports = {
+  name: 'upgrade',
+  description: 'upgrade your app\'s template files to the latest version; run this after ' +
+    'updating the react-native version in your package.json and running npm install',
+  func: upgrade,
 };

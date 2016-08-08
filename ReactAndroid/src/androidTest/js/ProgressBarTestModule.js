@@ -18,8 +18,10 @@ var View = require('View');
 
 var renderApplication = require('renderApplication');
 
-var ProgressBarSampleApp = React.createClass({
-  render: function() {
+class ProgressBarSampleApp extends React.Component {
+  state = {};
+
+  render() {
     return (
       <View>
         <ProgressBar styleAttr="Horizontal" testID="Horizontal"/>
@@ -34,11 +36,8 @@ var ProgressBarSampleApp = React.createClass({
         </View>
       </View>
     );
-  },
-  getInitialState: function() {
-    return {};
-  },
-});
+  }
+}
 
 var ProgressBarTestModule = {
   renderProgressBarApplication: function(rootTag) {

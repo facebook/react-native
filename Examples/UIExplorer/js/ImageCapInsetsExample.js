@@ -32,8 +32,8 @@ var {
   View,
 } = ReactNative;
 
-var ImageCapInsetsExample = React.createClass({
-  render: function() {
+class ImageCapInsetsExample extends React.Component {
+  render() {
     return (
       <View>
         <View style={styles.background}>
@@ -61,7 +61,7 @@ var ImageCapInsetsExample = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   background: {

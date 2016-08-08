@@ -34,7 +34,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * including network images, static resources, temporary local images, and
  * images from local disk, such as the camera roll.
  *
- * This exmaples shows both fetching and displaying an image from local storage as well as on from
+ * This example shows both fetching and displaying an image from local storage as well as on from
  * network.
  *
  * ```ReactNativeWebPlayer
@@ -49,7 +49,8 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *           source={require('./img/favicon.png')}
  *         />
  *         <Image
- *           source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
+ *           style={{width: 50, height: 50}}
+ *           source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
  *         />
  *       </View>
  *     );
@@ -73,7 +74,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *   }
  * });
  *
-  *class DisplayAnImageWithStyle extends Component {
+ * class DisplayAnImageWithStyle extends Component {
  *   render() {
  *     return (
  *       <View>
@@ -92,6 +93,37 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *   () => DisplayAnImageWithStyle
  * );
  * ```
+ *
+ * ### GIF and WebP support on Android
+ *
+ * By default, GIF and WebP are not supported on Android.
+ *
+ * You will need to add some optional modules in `android/app/build.gradle`, depending on the needs of your app.
+ *
+ * ```
+ * dependencies {
+ *   // If your app supports Android versions before Ice Cream Sandwich (API level 14)
+ *   compile 'com.facebook.fresco:animated-base-support:0.11.0'
+ *
+ *   // For animated GIF support
+ *   compile 'com.facebook.fresco:animated-gif:0.11.0'
+ *
+ *   // For WebP support, including animated WebP
+ *   compile 'com.facebook.fresco:animated-webp:0.11.0'
+ *   compile 'com.facebook.fresco:webpsupport:0.11.0'
+ *
+ *   // For WebP support, without animations
+ *   compile 'com.facebook.fresco:webpsupport:0.11.0'
+ * }
+ * ```
+ *
+ * Also, if you use GIF with ProGuard, you will need to add this rule in `proguard-rules.pro` :
+ * ```
+ * -keep class com.facebook.imagepipeline.animated.factory.AnimatedFactoryImpl {
+ *   public AnimatedFactoryImpl(com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory, com.facebook.imagepipeline.core.ExecutorSupplier);
+ * }
+ * ```
+ *
  */
 const Image = React.createClass({
   propTypes: {
@@ -103,6 +135,11 @@ const Image = React.createClass({
     style: StyleSheetPropType(ImageStylePropTypes),
     /**
      * The image source (either a remote URL or a local file resource).
+     *
+     * This prop can also contain several remote URLs, specified together with
+     * their width and height and potentially with scale/other URI arguments.
+     * The native side will then choose the best `uri` to display based on the
+     * measured size of the image container.
      */
     source: ImageSourcePropType,
     /**
@@ -268,14 +305,24 @@ const Image = React.createClass({
 
   render: function() {
     const source = resolveAssetSource(this.props.source) || { uri: undefined, width: undefined, height: undefined };
-    const {width, height, uri} = source;
-    const style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
+
+    let sources;
+    let style;
+    if (Array.isArray(source)) {
+      style = flattenStyle([styles.base, this.props.style]) || {};
+      sources = source;
+    } else {
+      const {width, height, uri} = source;
+      style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
+      sources = [source];
+
+      if (uri === '') {
+        console.warn('source.uri should not be an empty string');
+      }
+    }
+
     const resizeMode = this.props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
     const tintColor = (style || {}).tintColor; // Workaround for flow bug t7737108
-
-    if (uri === '') {
-      console.warn('source.uri should not be an empty string');
-    }
 
     if (this.props.src) {
       console.warn('The <Image> component requires a `source` property rather than `src`.');
@@ -287,7 +334,7 @@ const Image = React.createClass({
         style={style}
         resizeMode={resizeMode}
         tintColor={tintColor}
-        source={source}
+        source={sources}
       />
     );
   },

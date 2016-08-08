@@ -13,6 +13,7 @@ android_library(
     react_native_dep('third-party/java/testing-support-lib:runner'),
     react_native_target('java/com/facebook/react/bridge:bridge'),
     react_native_target('java/com/facebook/react/common:common'),
+    react_native_target('java/com/facebook/react/cxxbridge:bridge'),
     react_native_target('java/com/facebook/react/devsupport:devsupport'),
     react_native_target('java/com/facebook/react/modules/core:core'),
     react_native_target('java/com/facebook/react/modules/debug:debug'),

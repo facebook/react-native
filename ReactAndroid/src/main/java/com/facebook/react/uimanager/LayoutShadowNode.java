@@ -51,26 +51,6 @@ public class LayoutShadowNode extends ReactShadowNode {
     setStyleMaxHeight(CSSConstants.isUndefined(maxHeight) ? maxHeight : PixelUtil.toPixelFromDIP(maxHeight));
   }
 
-  @ReactProp(name = ViewProps.LEFT, defaultFloat = CSSConstants.UNDEFINED)
-  public void setLeft(float left) {
-    setPositionLeft(CSSConstants.isUndefined(left) ? left : PixelUtil.toPixelFromDIP(left));
-  }
-
-  @ReactProp(name = ViewProps.TOP, defaultFloat = CSSConstants.UNDEFINED)
-  public void setTop(float top) {
-    setPositionTop(CSSConstants.isUndefined(top) ? top : PixelUtil.toPixelFromDIP(top));
-  }
-
-  @ReactProp(name = ViewProps.BOTTOM, defaultFloat = CSSConstants.UNDEFINED)
-  public void setBottom(float bottom) {
-    setPositionBottom(CSSConstants.isUndefined(bottom) ? bottom : PixelUtil.toPixelFromDIP(bottom));
-  }
-
-  @ReactProp(name = ViewProps.RIGHT, defaultFloat = CSSConstants.UNDEFINED)
-  public void setRight(float right) {
-    setPositionRight(CSSConstants.isUndefined(right) ? right : PixelUtil.toPixelFromDIP(right));
-  }
-
   @ReactProp(name = ViewProps.FLEX, defaultFloat = 0f)
   public void setFlex(float flex) {
     super.setFlex(flex);
@@ -144,6 +124,19 @@ public class LayoutShadowNode extends ReactShadowNode {
   }, defaultFloat = CSSConstants.UNDEFINED)
   public void setBorderWidths(int index, float borderWidth) {
     setBorder(ViewProps.BORDER_SPACING_TYPES[index], PixelUtil.toPixelFromDIP(borderWidth));
+  }
+
+  @ReactPropGroup(names = {
+      ViewProps.LEFT,
+      ViewProps.RIGHT,
+      ViewProps.TOP,
+      ViewProps.BOTTOM,
+  }, defaultFloat = CSSConstants.UNDEFINED)
+  public void setPositionValues(int index, float position) {
+    setPositionValue(
+      ViewProps.POSITION_SPACING_TYPES[index],
+      CSSConstants.isUndefined(position) ? position : PixelUtil.toPixelFromDIP(position)
+    );
   }
 
   @ReactProp(name = ViewProps.POSITION)

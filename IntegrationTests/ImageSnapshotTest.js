@@ -18,16 +18,16 @@ var {
 } = ReactNative;
 var { TestModule } = ReactNative.NativeModules;
 
-var ImageSnapshotTest = React.createClass({
+class ImageSnapshotTest extends React.Component {
   componentDidMount() {
     if (!TestModule.verifySnapshot) {
       throw new Error('TestModule.verifySnapshot not defined.');
     }
-  },
+  }
 
-  done(success : boolean) {
+  done = (success : boolean) => {
     TestModule.markTestPassed(success);
-  },
+  };
 
   render() {
     return (
@@ -37,7 +37,7 @@ var ImageSnapshotTest = React.createClass({
         onLoad={() => TestModule.verifySnapshot(this.done)} />
     );
   }
-});
+}
 
 ImageSnapshotTest.displayName = 'ImageSnapshotTest';
 
