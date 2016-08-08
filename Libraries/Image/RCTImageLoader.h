@@ -17,6 +17,26 @@ typedef void (^RCTImageLoaderProgressBlock)(int64_t progress, int64_t total);
 typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, UIImage *image);
 typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 
+/**
+ * Provides an interface to use for providing a image caching strategy.
+ */
+@protocol RCTImageCache <NSObject>
+
+- (UIImage *)imageForUrl:(NSString *)url
+                    size:(CGSize)size
+                   scale:(CGFloat)scale
+              resizeMode:(RCTResizeMode)resizeMode
+            responseDate:(NSString *)responseDate;
+
+- (void)addImageToCache:(UIImage *)image
+                    URL:(NSString *)url
+                   size:(CGSize)size
+                  scale:(CGFloat)scale
+             resizeMode:(RCTResizeMode)resizeMode
+           responseDate:(NSString *)responseDate;
+
+@end
+
 @interface UIImage (React)
 
 @property (nonatomic, copy) CAKeyframeAnimation *reactKeyframeAnimation;
@@ -91,6 +111,13 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
  */
 - (RCTImageLoaderCancellationBlock)getImageSizeForURLRequest:(NSURLRequest *)imageURLRequest
                                                        block:(void(^)(NSError *error, CGSize size))completionBlock;
+
+/**
+ * Allows developers to set their own caching implementation for
+ * decoded images as long as it conforms to the RCTImageCacheDelegate
+ * protocol. This method should be called in bridgeDidInitializeModule.
+ */
+- (void)setImageCache:(id<RCTImageCache>)cache;
 
 @end
 

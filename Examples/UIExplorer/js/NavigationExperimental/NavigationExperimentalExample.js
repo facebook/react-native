@@ -41,18 +41,14 @@ const EXAMPLES = {
 
 const EXAMPLE_STORAGE_KEY = 'NavigationExperimentalExample';
 
-const NavigationExperimentalExample = React.createClass({
-  statics: {
-    title: 'Navigation (Experimental)',
-    description: 'Upcoming navigation APIs and animated navigation views',
-    external: true,
-  },
+class NavigationExperimentalExample extends React.Component {
+  static title = 'Navigation (Experimental)';
+  static description = 'Upcoming navigation APIs and animated navigation views';
+  static external = true;
 
-  getInitialState: function() {
-    return {
-      example: null,
-    };
-  },
+  state = {
+    example: null,
+  };
 
   componentDidMount() {
     AsyncStorage.getItem(EXAMPLE_STORAGE_KEY, (err, example) => {
@@ -66,16 +62,16 @@ const NavigationExperimentalExample = React.createClass({
         example,
       });
     });
-  },
+  }
 
-  setExample: function(example) {
+  setExample = (example) => {
     this.setState({
       example,
     });
     AsyncStorage.setItem(EXAMPLE_STORAGE_KEY, example);
-  },
+  };
 
-  _renderMenu: function() {
+  _renderMenu = () => {
     let exitRow = null;
     if (this.props.onExampleExit) {
       exitRow = (
@@ -93,9 +89,9 @@ const NavigationExperimentalExample = React.createClass({
         </ScrollView>
       </View>
     );
-  },
+  };
 
-  _renderExampleList: function() {
+  _renderExampleList = () => {
     return Object.keys(EXAMPLES).map(exampleName => (
       <NavigationExampleRow
         key={exampleName}
@@ -105,13 +101,13 @@ const NavigationExperimentalExample = React.createClass({
         }}
       />
     ));
-  },
+  };
 
-  _exitInnerExample: function() {
+  _exitInnerExample = () => {
     this.setExample('menu');
-  },
+  };
 
-  handleBackAction: function() {
+  handleBackAction = () => {
     const wasHandledByExample = (
       this.exampleRef &&
       this.exampleRef.handleBackAction &&
@@ -125,9 +121,9 @@ const NavigationExperimentalExample = React.createClass({
       return true;
     }
     return false;
-  },
+  };
 
-  render: function() {
+  render() {
     if (this.state.example === 'menu') {
       return this._renderMenu();
     }
@@ -141,8 +137,8 @@ const NavigationExperimentalExample = React.createClass({
       );
     }
     return null;
-  },
-});
+  }
+}
 
 const styles = StyleSheet.create({
   menu: {

@@ -57,6 +57,10 @@ void Sample::call_later(int msec, std::function<void()> f) {
   t.detach();
 }
 
+double Sample::twice(double n) {
+  return n * 2;
+}
+
 SampleCxxModule::SampleCxxModule(std::unique_ptr<Sample> sample)
   : sample_(std::move(sample)) {}
 
@@ -100,6 +104,13 @@ auto SampleCxxModule::getMethods() -> std::vector<Method> {
     Method("except", [this] {
         sample_->except();
       }),
+    Method("twice", [this](dynamic args) -> dynamic {
+        return sample_->twice(jsArgAsDouble(args, 0));
+      }, SyncTag),
+    Method("syncHello", [this]() -> dynamic {
+        sample_->hello();
+        return nullptr;
+      }, SyncTag),
   };
 }
 

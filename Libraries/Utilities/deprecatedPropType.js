@@ -12,6 +12,8 @@
 'use strict';
 
 const UIManager = require('UIManager');
+const ReactPropTypesSecret = require('react/lib/ReactPropTypesSecret');
+const ReactPropTypeLocations = require('react/lib/ReactPropTypeLocations');
 
 /**
  * Adds a deprecation warning when the prop is used.
@@ -26,7 +28,14 @@ function deprecatedPropType(
       console.warn(`\`${propName}\` supplied to \`${componentName}\` has been deprecated. ${explanation}`);
     }
 
-    return propType(props, propName, componentName);
+    return propType(
+      props,
+      propName,
+      componentName,
+      ReactPropTypeLocations.prop,
+      null,
+      ReactPropTypesSecret
+    );
   };
 }
 
