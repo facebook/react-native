@@ -9,9 +9,9 @@
 
 package com.facebook.react;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -19,14 +19,15 @@ import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 
 /**
- * Base Activity for React Native applications.
+ * Base Activity for React Native applications. Like {@link ReactActivity} but extends
+ * {@link FragmentActivity} instead of {@link android.app.Activity}.
  */
-public abstract class ReactActivity extends Activity
-    implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
+public abstract class ReactFragmentActivity extends FragmentActivity implements
+  DefaultHardwareBackBtnHandler, PermissionAwareActivity {
 
   private final ReactActivityDelegate mDelegate;
 
-  protected ReactActivity() {
+  protected ReactFragmentActivity() {
     mDelegate = createReactActivityDelegate();
   }
 

@@ -178,7 +178,6 @@ public class ReactContext extends ContextWrapper {
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostPause();
     }
-    mCurrentActivity = null;
   }
 
   /**
@@ -189,6 +188,7 @@ public class ReactContext extends ContextWrapper {
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostDestroy();
     }
+    mCurrentActivity = null;
   }
 
   /**
