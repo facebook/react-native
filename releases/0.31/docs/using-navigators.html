@@ -2,11 +2,12 @@
 import <span class="token punctuation">{</span> View<span class="token punctuation">,</span> Text <span class="token punctuation">}</span> from <span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">;</span>
 
 export default class <span class="token class-name">MyScene</span> extends <span class="token class-name">Component</span> <span class="token punctuation">{</span>
-  <span class="token function">getDefaultProps<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token punctuation">{</span>
-      title<span class="token punctuation">:</span> <span class="token string">&#x27;MyScene&#x27;</span>
-    <span class="token punctuation">}</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
+  static propTypes <span class="token operator">=</span> <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>string<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>    
+  static defaultProps <span class="token operator">=</span> <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;MyScene&#x27;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
   <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
