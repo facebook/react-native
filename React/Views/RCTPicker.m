@@ -18,7 +18,8 @@
 @implementation RCTPicker
 
 #define maxItems MAX(_items.count, 10000)
-#define itemCountMultiplier ((1 - _items.count / maxItems) * 100)
+#define minItemCountMultiplier 3
+#define itemCountMultiplier MAX(minItemCountMultiplier, ((1 - _items.count / maxItems) * 100))
 #define loopMiddle (_items.count * (itemCountMultiplier / 2))
 
 - (instancetype)initWithFrame:(CGRect)frame

@@ -44,7 +44,9 @@ var PickerIOS = React.createClass({
 
   _getLoopMiddle: function(itemCount) {
     var maxItems = Math.max(itemCount, 10000);
+    var minItemCountMultiplier = 3;
     var itemCountMultiplier = Math.round((1 - itemCount / maxItems) * 100);
+    itemCountMultiplier = Math.max(minItemCountMultiplier, itemCountMultiplier);
     return Math.round((itemCountMultiplier / 2));
   },
 
