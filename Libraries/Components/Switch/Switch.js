@@ -21,8 +21,8 @@ var View = require('View');
 var requireNativeComponent = require('requireNativeComponent');
 
 type DefaultProps = {
-  value: boolean;
-  disabled: boolean;
+  value: boolean,
+  disabled: boolean,
 };
 
 /**

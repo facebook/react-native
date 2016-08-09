@@ -308,10 +308,10 @@ const Text = React.createClass({
 });
 
 type RectOffset = {
-  top: number;
-  left: number;
-  right: number;
-  bottom: number;
+  top: number,
+  left: number,
+  right: number,
+  bottom: number,
 }
 
 var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};

@@ -365,7 +365,7 @@ DEFINE_PROCESS_META_PROPS(Border);
 {
   [_reactSubviews insertObject:subview atIndex:atIndex];
   if (![self isCSSLeafNode]) {
-    CSSNodeInsertChild(_cssNode, subview.cssNode, atIndex);
+    CSSNodeInsertChild(_cssNode, subview.cssNode, (uint32_t)atIndex);
   }
   subview->_superview = self;
   _didUpdateSubviews = YES;

@@ -193,8 +193,7 @@
     "yeoman-generator": "0.21.2",
     "mime-types": "2.1.11",
     "whatwg-fetch": "^1.0.0",
-    "denodeify": "^1.2.1",
-    "react": "~15.3.0"
+    "denodeify": "^1.2.1"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.0",

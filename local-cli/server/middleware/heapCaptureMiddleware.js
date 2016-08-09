@@ -25,8 +25,12 @@ module.exports = function(req, res, next) {
   fs.appendFileSync(preload, req.rawBody);
   fs.appendFileSync(preload, ';');
   res.end();
+  const captureDir = path.join(__dirname, 'heapCapture/captures');
+  if (!fs.existsSync(captureDir)) {
+    fs.mkdirSync(captureDir);
+  }
   console.log('Packaging Trace');
-  var captureHtml = path.join(__dirname, 'heapCapture/captures/capture_' + Date.now() + '.html');
+  var captureHtml = captureDir + '/capture_' + Date.now() + '.html';
   var capture = fs.createWriteStream(captureHtml);
   var inliner = spawn(
     'inliner',
@@ -35,6 +39,10 @@ module.exports = function(req, res, next) {
       stdio: [ process.stdin, 'pipe', process.stderr ],
     });
   inliner.stdout.pipe(capture);
+  inliner.on('error', (err) => {
+    console.error('Error processing heap capture: ' + err.message);
+    console.error('make sure you have installed inliner with \'npm install inliner -g\'');
+  });
   inliner.on('exit', (code, signal) => {
     if (code === 0) {
       console.log('Heap capture written to: ' + captureHtml);

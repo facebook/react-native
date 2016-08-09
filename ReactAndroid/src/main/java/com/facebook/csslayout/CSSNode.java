@@ -20,8 +20,10 @@ import static com.facebook.csslayout.CSSLayout.DIMENSION_WIDTH;
 import static com.facebook.csslayout.CSSLayout.POSITION_LEFT;
 import static com.facebook.csslayout.CSSLayout.POSITION_TOP;
 import static com.facebook.csslayout.Spacing.BOTTOM;
+import static com.facebook.csslayout.Spacing.END;
 import static com.facebook.csslayout.Spacing.LEFT;
 import static com.facebook.csslayout.Spacing.RIGHT;
+import static com.facebook.csslayout.Spacing.START;
 import static com.facebook.csslayout.Spacing.TOP;
 
 /**
@@ -473,6 +475,32 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   @Override
   public void setPositionRight(float positionRight) {
     setPositionValue(RIGHT, positionRight);
+  }
+
+  /**
+   * Get this node's position start, as defined by style.
+   */
+  @Override
+  public float getPositionStart() {
+    return style.position.get(START);
+  }
+
+  @Override
+  public void setPositionStart(float positionStart) {
+    setPositionValue(START, positionStart);
+  }
+
+  /**
+   * Get this node's position end, as defined by style.
+   */
+  @Override
+  public float getPositionEnd() {
+    return style.position.get(END);
+  }
+
+  @Override
+  public void setPositionEnd(float positionEnd) {
+    setPositionValue(END, positionEnd);
   }
 
   /**
