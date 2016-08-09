@@ -379,16 +379,6 @@ RCT_EXPORT_MODULE()
           *undecodableLength = undecodablePartialData.length;
         }
         
-        NSLog(@"%zd", undecodablePartialData.length);
-        NSLog(@"begin:%@", NSDataToHex([data subdataWithRange:NSMakeRange(0, 4)]));
-        NSLog(@"end  :%@", NSDataToHex(undecodablePartialData));
-        
-        NSLog(@"<<<<<< GuessedResponse Begin");
-        NSLog(@"%@", encodedResponse);
-        NSLog(@"---");
-        NSLog(@"%@", encdodedResponseWithoutInvalidTail);
-        NSLog(@"<<<<<< GuessedResponse End");
-        
         encodedResponse = encdodedResponseWithoutInvalidTail;
       }
     }
@@ -585,30 +575,6 @@ RCT_EXPORT_METHOD(abortRequest:(nonnull NSNumber *)requestID)
 
 #pragma mark - Decoding Helper
 
-static inline char itoh(int i) {
-  if (i > 9) return 'A' + (i - 10);
-  return '0' + i;
-}
-
-NSString * NSDataToHex(NSData *data) {
-  NSUInteger i, len;
-  unsigned char *buf, *bytes;
-  
-  len = data.length;
-  bytes = (unsigned char*)data.bytes;
-  buf = malloc(len*2);
-  
-  for (i=0; i<len; i++) {
-    buf[i*2] = itoh((bytes[i] >> 4) & 0xF);
-    buf[i*2+1] = itoh(bytes[i] & 0xF);
-  }
-  
-  return [[NSString alloc] initWithBytesNoCopy:buf
-                                        length:len*2
-                                      encoding:NSASCIIStringEncoding
-                                  freeWhenDone:YES];
-}
-
 static NSMutableDictionary *undecodablePartialDataPool;
 
 + (void)saveUndecodablePartialData:(NSData *)data task:(RCTNetworkTask *)task {
@@ -627,10 +593,6 @@ static NSMutableDictionary *undecodablePartialDataPool;
   
   NSMutableData *cominbedData = [NSMutableData dataWithData:undecodablePartialData];
   [cominbedData appendData:data];
-  
-  NSLog(@"++++++Append Begin");
-  NSLog(@"Partial:%@", NSDataToHex(undecodablePartialData));
-  NSLog(@"++++++Append Begin");
   
   [undecodablePartialDataPool removeObjectForKey:task.requestID];
   
