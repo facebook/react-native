@@ -10,16 +10,15 @@
 #import "RCTShadowText.h"
 
 #import "RCTAccessibilityManager.h"
-#import "RCTUIManager.h"
 #import "RCTBridge.h"
 #import "RCTConvert.h"
+#import "RCTFont.h"
 #import "RCTLog.h"
 #import "RCTShadowRawText.h"
 #import "RCTText.h"
-#import "RCTUtils.h"
-#import "RCTConvert.h"
 #import "RCTTextView.h"
-#import "RCTFont.h"
+#import "RCTUIManager.h"
+#import "RCTUtils.h"
 
 NSString *const RCTShadowViewAttributeName = @"RCTShadowViewAttributeName";
 NSString *const RCTIsHighlightedAttributeName = @"IsHighlightedAttributeName";
@@ -267,8 +266,12 @@ static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, 
 
   _effectiveLetterSpacing = letterSpacing.doubleValue;
 
-  UIFont *font = [RCTFont updateFont:nil withFamily:fontFamily
-                                size:fontSize weight:fontWeight style:fontStyle
+  UIFont *font = [RCTFont updateFont:nil
+                          withFamily:fontFamily
+                                size:fontSize
+                              weight:fontWeight
+                               style:fontStyle
+                             variant:_fontVariant
                      scaleMultiplier:_allowFontScaling ? _fontSizeMultiplier : 1.0];
 
   CGFloat heightOfTallestSubview = 0.0;
@@ -467,6 +470,7 @@ RCT_TEXT_PROPERTY(FontFamily, _fontFamily, NSString *)
 RCT_TEXT_PROPERTY(FontSize, _fontSize, CGFloat)
 RCT_TEXT_PROPERTY(FontWeight, _fontWeight, NSString *)
 RCT_TEXT_PROPERTY(FontStyle, _fontStyle, NSString *)
+RCT_TEXT_PROPERTY(FontVariant, _fontVariant, NSArray *)
 RCT_TEXT_PROPERTY(IsHighlighted, _isHighlighted, BOOL)
 RCT_TEXT_PROPERTY(LetterSpacing, _letterSpacing, CGFloat)
 RCT_TEXT_PROPERTY(LineHeight, _lineHeight, CGFloat)
