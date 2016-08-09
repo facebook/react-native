@@ -412,7 +412,7 @@ class TextExample extends React.Component {
           </Text>
         </UIExplorerBlock>
         <UIExplorerBlock title="Include Font Padding">
-          <View style={{flexDirection: "row", justifyContent: 'space-around', marginBottom: 10}}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-around', marginBottom: 10}}>
             <View style={{alignItems: 'center'}}>
               <Text style={styles.includeFontPaddingText}>
                 Ey
@@ -442,7 +442,7 @@ var styles = StyleSheet.create({
     fontSize: 120,
     fontFamily: 'sans-serif',
     backgroundColor: '#EEEEEE',
-    color: "#000000",
+    color: '#000000',
     textAlignVertical: 'center',
     alignSelf: 'center',
   }
