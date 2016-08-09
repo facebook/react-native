@@ -17,6 +17,10 @@
 
 @implementation RCTPicker
 
+#define maxItems MAX(_items.count, 10000)
+#define itemCountMultiplier ((1 - _items.count / maxItems) * 100)
+#define loopMiddle (_items.count * (itemCountMultiplier / 2))
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
@@ -61,7 +65,7 @@ numberOfRowsInComponent:(__unused NSInteger)component
 {
   NSInteger itemCount = _items.count;
   if (_loop) {
-    itemCount *= 100;
+    itemCount *= itemCountMultiplier;
   }
   return itemCount;
 }
@@ -109,7 +113,7 @@ numberOfRowsInComponent:(__unused NSInteger)component
 {
   if (_loop) {
     row %= _items.count;
-    _selectedIndex = row + _items.count * 50;
+    _selectedIndex = row + loopMiddle;
   } else {
     _selectedIndex = row;
   }

@@ -42,6 +42,12 @@ var PickerIOS = React.createClass({
     this.setState(this._stateFromProps(nextProps));
   },
 
+  _getLoopMiddle: function(itemCount) {
+    var maxItems = Math.max(itemCount, 10000);
+    var itemCountMultiplier = Math.round((1 - itemCount / maxItems) * 100);
+    return Math.round((itemCountMultiplier / 2));
+  },
+
   // Translate PickerIOS prop and children into stuff that RCTPickerIOS understands.
   _stateFromProps: function(props) {
     var selectedIndex = 0;
@@ -54,7 +60,7 @@ var PickerIOS = React.createClass({
     });
 
     if (props.loop) {
-      selectedIndex += items.length * 50;
+      selectedIndex += items.length * this._getLoopMiddle(items.length);
     }
 
     return {selectedIndex, items};
