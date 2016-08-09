@@ -19,11 +19,13 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Animatable;
+import android.net.Uri;
 
 import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.drawable.ScalingUtils.ScaleType;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.RoundingParams;
+import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.infer.annotation.Assertions;
@@ -42,9 +44,10 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
  */
 /* package */ final class DrawImageWithDrawee extends AbstractDrawCommand
     implements DrawImage, ControllerListener {
+  private static final String LOCAL_FILE_SCHEME = "file";
+  private static final String LOCAL_CONTENT_SCHEME = "content";
 
   private final List<ImageSource> mSources = new LinkedList<>();
-  private @Nullable Context mContext;
   private @Nullable DraweeRequestHelper mRequestHelper;
   private @Nullable PorterDuffColorFilter mColorFilter;
   private ScaleType mScaleType = ImageResizeMode.defaultValue();
@@ -79,7 +82,6 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
         }
       }
     }
-    mContext = context;
   }
 
   @Override
@@ -254,11 +256,23 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
       mRequestHelper = null;
       return;
     }
-    ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(source.getUri()).build();
+
+    ResizeOptions resizeOptions = null;
+    if (shouldResize(source)) {
+      final int width = (int) (getRight() - getLeft());
+      final int height = (int) (getBottom() - getTop());
+      resizeOptions = new ResizeOptions(width, height);
+    }
+
+    ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(source.getUri())
+        .setResizeOptions(resizeOptions)
+        .build();
 
     ImageRequest cachedImageRequest = null;
     if (cachedSource != null) {
-      cachedImageRequest = ImageRequestBuilder.newBuilderWithSource(cachedSource.getUri()).build();
+      cachedImageRequest = ImageRequestBuilder.newBuilderWithSource(cachedSource.getUri())
+          .setResizeOptions(resizeOptions)
+          .build();
     }
     mRequestHelper = new
       DraweeRequestHelper(Assertions.assertNotNull(imageRequest), cachedImageRequest, this);
@@ -266,5 +280,17 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
 
   private boolean shouldDisplayBorder() {
     return mBorderColor != 0 || mBorderRadius >= 0.5f;
+  }
+
+  private static boolean shouldResize(ImageSource imageSource) {
+    // Resizing is inferior to scaling. See http://frescolib.org/docs/resizing-rotating.html
+    // We resize here only for images likely to be from the device's camera, where the app developer
+    // has no control over the original size
+    Uri uri = imageSource.getUri();
+    String type = uri == null ? null : uri.getScheme();
+    // one day, we can replace this with what non-Nodes does, which is:
+    // UriUtil.isLocalContentUri || UriUtil.isLocalFileUri
+    // not doing this just to save including eyt another BUCK dependency
+    return LOCAL_FILE_SCHEME.equals(type) || LOCAL_CONTENT_SCHEME.equals(type);
   }
 }
