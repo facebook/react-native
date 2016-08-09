@@ -1036,8 +1036,8 @@ class AnimatedInterpolation extends AnimatedWithChildren {
         return value;
       }
       if (/deg$/.test(value)) {
-        let degrees = parseFloat(value, 10) || 0;
-        let radians = degrees * Math.PI / 180.0;
+        const degrees = parseFloat(value, 10) || 0;
+        const radians = degrees * Math.PI / 180.0;
         return radians;
       } else {
         // Assume radians
@@ -1346,7 +1346,7 @@ class AnimatedStyle extends AnimatedWithChildren {
 
   __getNativeConfig(): Object {
     var styleConfig = {};
-    for (let styleKey in this._style) {
+    for (const styleKey in this._style) {
       if (this._style[styleKey] instanceof Animated) {
         styleConfig[styleKey] = this._style[styleKey].__getNativeTag();
       }
@@ -1475,7 +1475,7 @@ class AnimatedProps extends Animated {
 
   __getNativeConfig(): Object {
     var propsConfig = {};
-    for (let propKey in this._props) {
+    for (const propKey in this._props) {
       var value = this._props[propKey];
       if (value instanceof Animated) {
         propsConfig[propKey] = value.__getNativeTag();

@@ -20,8 +20,8 @@ var Touchable = require('Touchable');
 type Event = Object;
 
 type State = {
-  animationID: ?number;
-  scale: Animated.Value;
+  animationID: ?number,
+  scale: Animated.Value,
 };
 
 var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};

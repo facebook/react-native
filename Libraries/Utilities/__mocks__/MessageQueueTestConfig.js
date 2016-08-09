@@ -10,29 +10,29 @@
  */
 'use strict';
 var remoteModulesConfig = {
-  "RemoteModule1": {
-    "moduleID":0,
-    "methods":{
-      "remoteMethod1":{
-        "type":"remote",
-        "methodID":0
+  'RemoteModule1': {
+    'moduleID':0,
+    'methods':{
+      'remoteMethod1':{
+        'type':'remote',
+        'methodID':0
       },
-      "remoteMethod2":{
-        "type":"remote",
-        "methodID":1
+      'remoteMethod2':{
+        'type':'remote',
+        'methodID':1
       }
     }
   },
-  "RemoteModule2":{
-    "moduleID":1,
-    "methods":{
-      "remoteMethod1":{
-        "type":"remote",
-        "methodID":0
+  'RemoteModule2':{
+    'moduleID':1,
+    'methods':{
+      'remoteMethod1':{
+        'type':'remote',
+        'methodID':0
       },
-      "remoteMethod2":{
-        "type":"remote",
-        "methodID":1
+      'remoteMethod2':{
+        'type':'remote',
+        'methodID':1
       }
     }
   }
@@ -42,29 +42,29 @@ var remoteModulesConfig = {
  * These actually exist in the __tests__ folder.
  */
 var localModulesConfig = {
-  "MessageQueueTestModule1": {
-    "moduleID":"MessageQueueTestModule1",
-    "methods":{
-      "testHook1":{
-        "type":"local",
-        "methodID":"testHook1"
+  'MessageQueueTestModule1': {
+    'moduleID':'MessageQueueTestModule1',
+    'methods':{
+      'testHook1':{
+        'type':'local',
+        'methodID':'testHook1'
       },
-      "testHook2":{
-        "type":"local",
-        "methodID":"testHook2"
+      'testHook2':{
+        'type':'local',
+        'methodID':'testHook2'
       }
     }
   },
-  "MessageQueueTestModule2": {
-    "moduleID":"MessageQueueTestModule2",
-    "methods": {
-      "runLocalCode":{
-        "type":"local",
-        "methodID":"runLocalCode"
+  'MessageQueueTestModule2': {
+    'moduleID':'MessageQueueTestModule2',
+    'methods': {
+      'runLocalCode':{
+        'type':'local',
+        'methodID':'runLocalCode'
       },
-      "runLocalCode2":{
-        "type":"local",
-        "methodID":"runLocalCode2"
+      'runLocalCode2':{
+        'type':'local',
+        'methodID':'runLocalCode2'
       }
     }
   }

@@ -18,9 +18,9 @@ var DialogModuleAndroid = require('NativeModules').DialogManagerAndroid;
 import type { AlertType, AlertButtonStyle } from 'AlertIOS';
 
 type Buttons = Array<{
-  text?: string;
-  onPress?: ?Function;
-  style?: AlertButtonStyle;
+  text?: string,
+  onPress?: ?Function,
+  style?: AlertButtonStyle,
 }>;
 
 type Options = {
@@ -113,13 +113,13 @@ class AlertAndroid {
     var buttonNegative = validButtons.pop();
     var buttonNeutral = validButtons.pop();
     if (buttonNeutral) {
-      config = {...config, buttonNeutral: buttonNeutral.text || '' }
+      config = {...config, buttonNeutral: buttonNeutral.text || '' };
     }
     if (buttonNegative) {
-      config = {...config, buttonNegative: buttonNegative.text || '' }
+      config = {...config, buttonNegative: buttonNegative.text || '' };
     }
     if (buttonPositive) {
-      config = {...config, buttonPositive: buttonPositive.text || '' }
+      config = {...config, buttonPositive: buttonPositive.text || '' };
     }
     DialogModuleAndroid.showAlert(
       config,
