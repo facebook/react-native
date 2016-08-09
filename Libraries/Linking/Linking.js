@@ -48,13 +48,13 @@ const LinkingManager = Platform.OS === 'android' ?
  * you may set the `launchMode` of MainActivity to `singleTask` in
  * `AndroidManifest.xml`. See [`<activity>`](http://developer.android.com/guide/topics/manifest/activity-element.html)
  * documentation for more information.
- * 
+ *
  * ```
  * <activity
  *   android:name=".MainActivity"
  *   android:launchMode="singleTask">
  * ```
- * 
+ *
  * NOTE: On iOS you'll need to link `RCTLinking` to your project by following
  * the steps described [here](docs/linking-libraries-ios.html#manual-linking).
  * In case you also want to listen to incoming app links during your app's
@@ -115,11 +115,11 @@ const LinkingManager = Platform.OS === 'android' ?
  * ```
  */
 class Linking extends NativeEventEmitter {
-  
+
   constructor() {
-    super(LinkingManager); 
+    super(LinkingManager);
   }
-  
+
   /**
    * Add a handler to Linking changes by listening to the `url` event type
    * and providing the handler

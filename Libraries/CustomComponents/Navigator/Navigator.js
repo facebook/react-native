@@ -1258,7 +1258,7 @@ var Navigator = React.createClass({
   },
 
   _renderNavigationBar: function() {
-    let { navigationBar } = this.props;
+    const { navigationBar } = this.props;
     if (!navigationBar) {
       return null;
     }
