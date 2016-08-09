@@ -501,10 +501,6 @@ public abstract class BaseJavaModule implements NativeModule {
   public boolean supportsWebWorkers() {
     ReactModule module = getClass().getAnnotation(ReactModule.class);
     if (module == null) {
-      FLog.w(
-        ReactConstants.TAG,
-        "Module " + getName() +
-          " lacks @ReactModule annotation, assuming false for supportsWebWorkers()");
       return false;
     }
     return module.supportsWebWorkers();
