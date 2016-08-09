@@ -94,7 +94,7 @@ class PermissionsExample extends React.Component {
           'The app needs the following permission ' + this.state.permission +
           ' because of reasons. Please approve.'
       },
-    )
+    );
     this.setState({
       hasPermission: (result ? 'Granted' : 'Revoked') + ' for ' +
         this.state.permission,
