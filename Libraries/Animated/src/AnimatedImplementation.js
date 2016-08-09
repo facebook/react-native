@@ -97,7 +97,7 @@ class Animation {
       NativeAnimatedAPI.stopAnimation(this.__nativeId);
     }
   }
-  _getNativeAnimationConfig(): any {
+  __getNativeAnimationConfig(): any {
     // Subclasses that have corresponding animation implementation done in native
     // should override this method
     throw new Error('This animation type cannot be offloaded to native');
@@ -114,7 +114,7 @@ class Animation {
     NativeAnimatedAPI.startAnimatingNode(
       this.__nativeId,
       animatedValue.__getNativeTag(),
-      this._getNativeAnimationConfig(),
+      this.__getNativeAnimationConfig(),
       this.__debouncedOnEnd.bind(this)
     );
   }
@@ -253,7 +253,7 @@ class TimingAnimation extends Animation {
     this._useNativeDriver = config.useNativeDriver !== undefined ? config.useNativeDriver : false;
   }
 
-  _getNativeAnimationConfig(): any {
+  __getNativeAnimationConfig(): any {
     var frameDuration = 1000.0 / 60.0;
     var frames = [];
     for (var dt = 0.0; dt < this._duration; dt += frameDuration) {
@@ -485,7 +485,7 @@ class SpringAnimation extends Animation {
     this._friction = springConfig.friction;
   }
 
-  _getNativeAnimationConfig() {
+  __getNativeAnimationConfig() {
     return {
       type: 'spring',
       overshootClamping: this._overshootClamping,
