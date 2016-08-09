@@ -90,6 +90,11 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
     view.setTextIsSelectable(isSelectable);
   }
 
+  @ReactProp(name = "includeFontPadding", defaultBoolean = true)
+  public void setIncludeFontPadding(ReactTextView view, boolean includepad) {
+    view.setIncludeFontPadding(includepad);
+  }
+
   @Override
   public void updateExtraData(ReactTextView view, Object extraData) {
     ReactTextUpdate update = (ReactTextUpdate) extraData;
