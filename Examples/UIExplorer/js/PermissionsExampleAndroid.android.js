@@ -62,7 +62,7 @@ class PermissionsExample extends React.Component {
           </View>
         </TouchableWithoutFeedback>
         <Text style={styles.text}>Permission Status: {this.state.hasPermission}</Text>
-        <TouchableWithoutFeedback onPress={this._shouldExplainPermission}>
+        <TouchableWithoutFeedback onPress={this._requestPermission}>
           <View>
             <Text style={[styles.touchable, styles.text]}>Request Permission</Text>
           </View>
