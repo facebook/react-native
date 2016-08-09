@@ -351,32 +351,12 @@ import com.facebook.react.uimanager.events.EventDispatcher;
           commandMaxBottom = new float[drawCommands.length];
           commandMinTop = new float[drawCommands.length];
 
-          float last = 0;
-          // Loop through the DrawCommands, keeping track of the maximum y we've seen if we only
-          // iterated through items up to this position
-          for (int i = 0; i < drawCommands.length; i++) {
-            if (drawCommands[i] instanceof DrawView) {
-              DrawView drawView = (DrawView) drawCommands[i];
-              // These will generally be roughly sorted by id, so try to insert at the end if
-              // possible.
-              drawViewIndexMap.append(drawView.reactTag, i);
-              last = Math.max(last, drawView.mLogicalBottom);
-            } else {
-              last = Math.max(last, drawCommands[i].getBottom());
-            }
-            commandMaxBottom[i] = last;
-          }
-          // Intentionally leave last as it was, since it's at the maximum bottom position we've
-          // seen so far, we can use it again.
-          // Loop through the DrawCommands backwards, keeping track of the minimum y we've seen at
-          // this position
-          for (int i = drawCommands.length - 1; i >= 0; i--) {
-            if (drawCommands[i] instanceof DrawView) {
-              last = Math.min(last, ((DrawView) drawCommands[i]).mLogicalTop);
-            } else {
-              last = Math.min(last, drawCommands[i].getTop());
-            }
-            commandMinTop[i] = last;
+          if (node.isHorizontal()) {
+            HorizontalDrawCommandManager
+                .fillMaxMinArrays(drawCommands, commandMaxBottom, commandMinTop, drawViewIndexMap);
+          } else {
+            VerticalDrawCommandManager
+                .fillMaxMinArrays(drawCommands, commandMaxBottom, commandMinTop, drawViewIndexMap);
           }
         }
         float[] regionMaxBottom = EMPTY_FLOAT_ARRAY;
@@ -385,14 +365,12 @@ import com.facebook.react.uimanager.events.EventDispatcher;
           regionMaxBottom = new float[nodeRegions.length];
           regionMinTop = new float[nodeRegions.length];
 
-          float last = 0;
-          for (int i = 0; i < nodeRegions.length; i++) {
-            last = Math.max(last, nodeRegions[i].mBottom);
-            regionMaxBottom[i] = last;
-          }
-          for (int i = nodeRegions.length - 1; i >= 0; i--) {
-            last = Math.min(last, nodeRegions[i].mTop);
-            regionMinTop[i] = last;
+          if (node.isHorizontal()) {
+            HorizontalDrawCommandManager
+                .fillMaxMinArrays(nodeRegions, regionMaxBottom, regionMinTop);
+          } else {
+            VerticalDrawCommandManager
+                .fillMaxMinArrays(nodeRegions, regionMaxBottom, regionMinTop);
           }
         }
 

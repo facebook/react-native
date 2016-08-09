@@ -37,14 +37,15 @@ import android.graphics.RectF;
   // the path to clip against if we're doing path clipping for rounded borders.
   @Nullable private Path mPath;
 
-  // These should only ever be set from within the DrawView, their only purpose is to prevent
-  // excessive rounding on the UI thread in FlatViewGroup, and they are left package protected to
-  // speed up direct access.  For overflow visible, these are the adjusted bounds  while taking
-  // overflowing elements into account.
-  /* package */ int mLogicalLeft;
-  /* package */ int mLogicalTop;
-  /* package */ int mLogicalRight;
-  /* package */ int mLogicalBottom;
+  // These should only ever be set from within the DrawView, they serve to provide clipping bounds
+  // for FlatViewGroups, which have strange clipping when it comes to overflow: visible.  They are
+  // left package protected to speed up direct access.  For overflow visible, these are the adjusted
+  // bounds while taking overflowing elements into account, other wise they are just the regular
+  // bounds of the view.
+  /* package */ float mLogicalLeft;
+  /* package */ float mLogicalTop;
+  /* package */ float mLogicalRight;
+  /* package */ float mLogicalBottom;
 
   public DrawView(int reactTag) {
     this.reactTag = reactTag;
@@ -62,10 +63,10 @@ import android.graphics.RectF;
       float top,
       float right,
       float bottom,
-      int logicalLeft,
-      int logicalTop,
-      int logicalRight,
-      int logicalBottom,
+      float logicalLeft,
+      float logicalTop,
+      float logicalRight,
+      float logicalBottom,
       float clipLeft,
       float clipTop,
       float clipRight,
@@ -116,12 +117,12 @@ import android.graphics.RectF;
     return drawView;
   }
 
-  private boolean logicalBoundsMatch(int left, int top, int right, int bottom) {
+  private boolean logicalBoundsMatch(float left, float top, float right, float bottom) {
     return left == mLogicalLeft && top == mLogicalTop &&
         right == mLogicalRight && bottom == mLogicalBottom;
   }
 
-  private void setLogicalBounds(int left, int top, int right, int bottom) {
+  private void setLogicalBounds(float left, float top, float right, float bottom) {
     // Do rounding up front and off of the UI thread.
     mLogicalLeft = left;
     mLogicalTop = top;

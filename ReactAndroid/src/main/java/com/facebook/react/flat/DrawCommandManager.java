@@ -136,9 +136,9 @@ import android.view.ViewParent;
     }
   }
 
-  static DrawCommandManager getClippingInstance(
+  static DrawCommandManager getVerticalClippingInstance(
       FlatViewGroup flatViewGroup,
       DrawCommand[] drawCommands) {
-    return new ClippingDrawCommandManager(flatViewGroup, drawCommands);
+    return new VerticalDrawCommandManager(flatViewGroup, drawCommands);
   }
 }

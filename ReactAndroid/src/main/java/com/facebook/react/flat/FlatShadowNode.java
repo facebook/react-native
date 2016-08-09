@@ -506,10 +506,10 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
         top,
         right,
         bottom,
-        Math.round(left + mLogicalOffset.left),
-        Math.round(top + mLogicalOffset.top),
-        Math.round(right + mLogicalOffset.right),
-        Math.round(bottom + mLogicalOffset.bottom),
+        left + mLogicalOffset.left,
+        top + mLogicalOffset.top,
+        right + mLogicalOffset.right,
+        bottom + mLogicalOffset.bottom,
         clipLeft,
         clipTop,
         clipRight,
@@ -545,6 +545,10 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   }
 
   public boolean clipsSubviews() {
+    return false;
+  }
+
+  public boolean isHorizontal() {
     return false;
   }
 }

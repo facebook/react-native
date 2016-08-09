@@ -12,7 +12,6 @@ package com.facebook.react.flat;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,15 +30,15 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
  * Implementation of a {@link DrawCommandManager} with clipping.  Performs drawing by iterating
  * over an array of DrawCommands, executing them one by one except when the commands are clipped.
  */
-/* package */ final class ClippingDrawCommandManager extends DrawCommandManager {
+/* package */ abstract class ClippingDrawCommandManager extends DrawCommandManager {
   private final FlatViewGroup mFlatViewGroup;
   private DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
-  private float[] mCommandMaxBottom = StateBuilder.EMPTY_FLOAT_ARRAY;
-  private float[] mCommandMinTop = StateBuilder.EMPTY_FLOAT_ARRAY;
+  protected float[] mCommandMaxBottom = StateBuilder.EMPTY_FLOAT_ARRAY;
+  protected float[] mCommandMinTop = StateBuilder.EMPTY_FLOAT_ARRAY;
 
   private NodeRegion[] mNodeRegions = NodeRegion.EMPTY_ARRAY;
-  private float[] mRegionMaxBottom = StateBuilder.EMPTY_FLOAT_ARRAY;
-  private float[] mRegionMinTop = StateBuilder.EMPTY_FLOAT_ARRAY;
+  protected float[] mRegionMaxBottom = StateBuilder.EMPTY_FLOAT_ARRAY;
+  protected float[] mRegionMinTop = StateBuilder.EMPTY_FLOAT_ARRAY;
 
   // Onscreen bounds of draw command array.
   private int mStart;
@@ -51,7 +50,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   // Map of views that are currently clipped.
   private final Map<Integer, View> mClippedSubviews = new HashMap<>();
 
-  private final Rect mClippingRect = new Rect();
+  protected final Rect mClippingRect = new Rect();
 
   // Used in updating the clipping rect, as sometimes we want to detach all views, which means we
   // need to temporarily store the views we are detaching and removing.  These are always of size
@@ -74,6 +73,33 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     updateClippingRect();
   }
 
+  /**
+   * @return index of the first command that could be on the screen.
+   */
+  abstract int commandStartIndex();
+
+  /**
+   * @return index of the first command that is guaranteed to be off the screen, starting from the
+   *   given start.
+   */
+  abstract int commandStopIndex(int start);
+
+  /**
+   * @return index of the first region that is guaranteed to be outside of the bounds for touch.
+   */
+  abstract int regionStopIndex(float touchX, float touchY);
+
+  /**
+   * Whether an index and all indices before it are guaranteed to be out of bounds for the current
+   * touch.
+   *
+   * @param index The region index to check.
+   * @param touchX X coordinate.
+   * @param touchY Y coordinate.
+   * @return true if the index and all before it are out of bounds.
+   */
+  abstract boolean regionAboveTouch(int index, float touchX, float touchY);
+
   @Override
   public void mountDrawCommands(
       DrawCommand[] drawCommands,
@@ -86,20 +112,8 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     mCommandMinTop = minTop;
     mDrawViewIndexMap = drawViewIndexMap;
     if (mClippingRect.bottom != mClippingRect.top) {
-      mStart = Arrays.binarySearch(mCommandMaxBottom, mClippingRect.top);
-      if (mStart < 0) {
-        // We don't care whether we matched or not, but positive indices are helpful.
-        mStart = ~mStart;
-      }
-      mStop = Arrays.binarySearch(
-          mCommandMinTop,
-          mStart,
-          mCommandMinTop.length,
-          mClippingRect.bottom);
-      if (mStop < 0) {
-        // We don't care whether we matched or not, but positive indices are helpful.
-        mStop = ~mStop;
-      }
+      mStart = commandStartIndex();
+      mStop = commandStopIndex(mStart);
       if (!willMountViews) {
         // If we are not mounting views, we still need to update view indices and positions.  It is
         // possible that a child changed size and we still need new clipping even though we are not
@@ -118,18 +132,14 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
   @Override
   public @Nullable NodeRegion virtualNodeRegionWithinBounds(float touchX, float touchY) {
-    int i = Arrays.binarySearch(mRegionMinTop, touchY + 0.0001f);
-    if (i < 0) {
-      // We don't care whether we matched or not, but positive indices are helpful.
-      i = ~i;
-    }
+    int i = regionStopIndex(touchX, touchY);
     while (i-- > 0) {
       NodeRegion nodeRegion = mNodeRegions[i];
       if (!nodeRegion.mIsVirtual) {
         // only interested in virtual nodes
         continue;
       }
-      if (mRegionMaxBottom[i] < touchY) {
+      if (regionAboveTouch(i, touchX, touchY)) {
         break;
       }
       if (nodeRegion.withinBounds(touchX, touchY)) {
@@ -142,14 +152,10 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
   @Override
   public @Nullable NodeRegion anyNodeRegionWithinBounds(float touchX, float touchY) {
-    int i = Arrays.binarySearch(mRegionMinTop, touchY + 0.0001f);
-    if (i < 0) {
-      // We don't care whether we matched or not, but positive indices are helpful.
-      i = ~i;
-    }
+    int i = regionStopIndex(touchX, touchY);
     while (i-- > 0) {
       NodeRegion nodeRegion = mNodeRegions[i];
-      if (mRegionMaxBottom[i] < touchY) {
+      if (regionAboveTouch(i, touchX, touchY)) {
         break;
       }
       if (nodeRegion.withinBounds(touchX, touchY)) {
@@ -250,7 +256,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   }
 
   // Returns true if a view is currently animating.
-  static boolean animating(View view) {
+  private static boolean animating(View view) {
     Animation animation = view.getAnimation();
     return animation != null && !animation.hasEnded();
   }
@@ -269,22 +275,11 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
       return false;
     }
 
-    int start = Arrays.binarySearch(mCommandMaxBottom, mClippingRect.top);
-    if (start < 0) {
-      // We don't care whether we matched or not, but positive indices are helpful.
-      start = ~start;
-    }
-    int stop = Arrays.binarySearch(
-        mCommandMinTop,
-        start,
-        mCommandMinTop.length,
-        mClippingRect.bottom);
-    if (stop < 0) {
-      // We don't care whether we matched or not, but positive indices are helpful.
-      stop = ~stop;
-    }
-
+    int start = commandStartIndex();
+    int stop = commandStopIndex(start);
     if (mStart <= start && stop <= mStop) {
+      // We would only be removing children, don't invalidate and don't bother changing the
+      // attached children.
       return false;
     }
 
@@ -382,21 +377,24 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     int commandIndex = mStart;
     int size = mFlatViewGroup.getChildCount();
 
+    // Iterate through the children, making sure that we draw any draw commands we haven't drawn
+    // that should happen before the next draw view.
     for (int i = 0; i < size; i++) {
+      // This is the command index of the next view that we need to draw.  Since a view might be
+      // animating, this view is either before all the commands onscreen, onscreen, or after the
+      // onscreen commands.
       int viewIndex = mDrawViewIndexMap.get(mFlatViewGroup.getChildAt(i).getId());
       if (mStop < viewIndex) {
+        // The current view is outside of the viewport bounds.  We want to draw all the commands
+        // up to the stop, then draw all the views outside the viewport bounds.
         while (commandIndex < mStop) {
           mDrawCommands[commandIndex++].draw(mFlatViewGroup, canvas);
         }
-        // We are now out of commands to draw, so we can just draw the remaining attached children.
-        mDrawCommands[viewIndex].draw(mFlatViewGroup, canvas);
-        while (++i != size) {
-          viewIndex = mDrawViewIndexMap.get(mFlatViewGroup.getChildAt(i).getId());
-          mDrawCommands[viewIndex].draw(mFlatViewGroup, canvas);
-        }
-        // Everything is drawn, lets get out of here.
-        return;
+        // We are now out of commands to draw, so we could just draw the remaining attached
+        // children, but the for loop logic will draw the rest anyway.
       } else if (commandIndex <= viewIndex) {
+        // The viewIndex is within our onscreen bounds (or == stop).  We want to draw all the
+        // commands from the current position to the current view, inclusive.
         while (commandIndex < viewIndex) {
           mDrawCommands[commandIndex++].draw(mFlatViewGroup, canvas);
         }
@@ -406,7 +404,8 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
       mDrawCommands[viewIndex].draw(mFlatViewGroup, canvas);
     }
 
-    // We have drawn all the views, now just draw the remaining draw commands.
+    // If we get here, it means we have drawn all the views, now just draw the remaining draw
+    // commands.
     while (commandIndex < mStop) {
       mDrawCommands[commandIndex++].draw(mFlatViewGroup, canvas);
     }

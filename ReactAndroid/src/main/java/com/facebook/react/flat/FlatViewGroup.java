@@ -876,10 +876,6 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     }
   }
 
-  /* package */ void detachView(int index) {
-    detachViewFromParent(index);
-  }
-
   @Override
   public void getClippingRect(Rect outClippingRect) {
     if (mDrawCommandManager == null) {
@@ -905,7 +901,7 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
       throw new RuntimeException(
           "Trying to transition FlatViewGroup from clipping to non-clipping state");
     }
-    mDrawCommandManager = DrawCommandManager.getClippingInstance(this, mDrawCommands);
+    mDrawCommandManager = DrawCommandManager.getVerticalClippingInstance(this, mDrawCommands);
     mDrawCommands = DrawCommand.EMPTY_ARRAY;
     // We don't need an invalidate here because this can't cause new views to come onscreen, since
     // everything was unclipped.
