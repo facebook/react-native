@@ -68,6 +68,10 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   void setPositionLeft(float positionLeft);
   float getPositionRight();
   void setPositionRight(float positionRight);
+  float getPositionStart();
+  void setPositionStart(float positionStart);
+  float getPositionEnd();
+  void setPositionEnd(float positionEnd);
   float getStyleWidth();
   void setStyleWidth(float width);
   float getStyleHeight();
