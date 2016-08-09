@@ -14,18 +14,28 @@
 
 package com.facebook.react.uiapp;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import com.facebook.react.ReactActivity;
+import com.facebook.react.ReactActivityDelegate;
 
-public class UIExplorerActivity extends ReactActivity {
+import javax.annotation.Nullable;
+
+class UIExplorerActivityDelegate extends ReactActivityDelegate {
   private final String PARAM_ROUTE = "route";
   private Bundle mInitialProps = null;
+  private final @Nullable Activity mActivity;
+
+  public UIExplorerActivityDelegate(Activity activity, String mainComponentName) {
+    super(activity, mainComponentName);
+    this.mActivity = activity;
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     // Get remote param before calling super which uses it
-    Bundle bundle = getIntent().getExtras();
+    Bundle bundle = mActivity.getIntent().getExtras();
     if (bundle != null && bundle.containsKey(PARAM_ROUTE)) {
       String routeUri = new StringBuilder("rnuiexplorer://example/")
         .append(bundle.getString(PARAM_ROUTE))
@@ -40,6 +50,13 @@ public class UIExplorerActivity extends ReactActivity {
   @Override
   protected Bundle getLaunchOptions() {
     return mInitialProps;
+  }
+}
+
+public class UIExplorerActivity extends ReactActivity {
+  @Override
+  protected ReactActivityDelegate createReactActivityDelegate() {
+    return new UIExplorerActivityDelegate(this, getMainComponentName());
   }
 
   @Override
