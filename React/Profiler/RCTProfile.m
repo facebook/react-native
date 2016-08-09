@@ -693,18 +693,16 @@ void RCTProfileImmediateEvent(
   });
 }
 
-NSNumber *_RCTProfileBeginFlowEvent(void)
+NSUInteger _RCTProfileBeginFlowEvent(void)
 {
   static NSUInteger flowID = 0;
 
   CHECK(@0);
 
-  unsigned int cookie = ++flowID;
-  NSNumber *currentID = @(cookie);
-
+  NSUInteger cookie = ++flowID;
   if (callbacks != NULL) {
     callbacks->begin_async_flow(1, "flow", cookie);
-    return currentID;
+    return @(cookie);
   }
 
   NSTimeInterval time = CACurrentMediaTime();
@@ -714,7 +712,7 @@ NSNumber *_RCTProfileBeginFlowEvent(void)
     RCTProfileAddEvent(RCTProfileTraceEvents,
       @"tid": threadName,
       @"name": @"flow",
-      @"id": currentID,
+      @"id": @(cookie),
       @"cat": @"flow",
       @"ph": @"s",
       @"ts": RCTProfileTimestamp(time),
@@ -722,15 +720,15 @@ NSNumber *_RCTProfileBeginFlowEvent(void)
 
   });
 
-  return currentID;
+  return cookie;
 }
 
-void _RCTProfileEndFlowEvent(NSNumber *flowID)
+void _RCTProfileEndFlowEvent(NSUInteger cookie)
 {
   CHECK();
 
   if (callbacks != NULL) {
-    callbacks->end_async_flow(1, "flow", [flowID integerValue]);
+    callbacks->end_async_flow(1, "flow", cookie);
     return;
   }
 
@@ -741,7 +739,7 @@ void _RCTProfileEndFlowEvent(NSNumber *flowID)
     RCTProfileAddEvent(RCTProfileTraceEvents,
       @"tid": threadName,
       @"name": @"flow",
-      @"id": flowID,
+      @"id": @(cookie),
       @"cat": @"flow",
       @"ph": @"f",
       @"ts": RCTProfileTimestamp(time),
