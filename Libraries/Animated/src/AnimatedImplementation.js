@@ -73,8 +73,8 @@ class Animated {
 }
 
 type AnimationConfig = {
-  isInteraction?: bool;
-  useNativeDriver?: bool;
+  isInteraction?: bool,
+  useNativeDriver?: bool,
 };
 
 // Important note: start() and stop() will only be called at most once.
@@ -207,17 +207,17 @@ function _flush(rootNode: AnimatedValue): void {
 }
 
 type TimingAnimationConfig =  AnimationConfig & {
-  toValue: number | AnimatedValue | {x: number, y: number} | AnimatedValueXY;
-  easing?: (value: number) => number;
-  duration?: number;
-  delay?: number;
+  toValue: number | AnimatedValue | {x: number, y: number} | AnimatedValueXY,
+  easing?: (value: number) => number,
+  duration?: number,
+  delay?: number,
 };
 
 type TimingAnimationConfigSingle = AnimationConfig & {
-  toValue: number | AnimatedValue;
-  easing?: (value: number) => number;
-  duration?: number;
-  delay?: number;
+  toValue: number | AnimatedValue,
+  easing?: (value: number) => number,
+  duration?: number,
+  delay?: number,
 };
 
 let _easeInOut;
@@ -334,13 +334,13 @@ class TimingAnimation extends Animation {
 }
 
 type DecayAnimationConfig = AnimationConfig & {
-  velocity: number | {x: number, y: number};
-  deceleration?: number;
+  velocity: number | {x: number, y: number},
+  deceleration?: number,
 };
 
 type DecayAnimationConfigSingle = AnimationConfig & {
-  velocity: number;
-  deceleration?: number;
+  velocity: number,
+  deceleration?: number,
 };
 
 class DecayAnimation extends Animation {
@@ -404,27 +404,27 @@ class DecayAnimation extends Animation {
 }
 
 type SpringAnimationConfig = AnimationConfig & {
-  toValue: number | AnimatedValue | {x: number, y: number} | AnimatedValueXY;
-  overshootClamping?: bool;
-  restDisplacementThreshold?: number;
-  restSpeedThreshold?: number;
-  velocity?: number | {x: number, y: number};
-  bounciness?: number;
-  speed?: number;
-  tension?: number;
-  friction?: number;
+  toValue: number | AnimatedValue | {x: number, y: number} | AnimatedValueXY,
+  overshootClamping?: bool,
+  restDisplacementThreshold?: number,
+  restSpeedThreshold?: number,
+  velocity?: number | {x: number, y: number},
+  bounciness?: number,
+  speed?: number,
+  tension?: number,
+  friction?: number,
 };
 
 type SpringAnimationConfigSingle = AnimationConfig & {
-  toValue: number | AnimatedValue;
-  overshootClamping?: bool;
-  restDisplacementThreshold?: number;
-  restSpeedThreshold?: number;
-  velocity?: number;
-  bounciness?: number;
-  speed?: number;
-  tension?: number;
-  friction?: number;
+  toValue: number | AnimatedValue,
+  overshootClamping?: bool,
+  restDisplacementThreshold?: number,
+  restSpeedThreshold?: number,
+  velocity?: number,
+  bounciness?: number,
+  speed?: number,
+  tension?: number,
+  friction?: number,
 };
 
 function withDefault<T>(value: ?T, defaultValue: T): T {
@@ -853,7 +853,7 @@ class AnimatedValue extends AnimatedWithChildren {
   }
 }
 
-type ValueXYListenerCallback = (value: {x: number; y: number}) => void;
+type ValueXYListenerCallback = (value: {x: number, y: number}) => void;
 
 /**
  * 2D Value for driving 2D animations, such as pan gestures.  Almost identical
@@ -896,9 +896,9 @@ type ValueXYListenerCallback = (value: {x: number; y: number}) => void;
 class AnimatedValueXY extends AnimatedWithChildren {
   x: AnimatedValue;
   y: AnimatedValue;
-  _listeners: {[key: string]: {x: string; y: string}};
+  _listeners: {[key: string]: {x: string, y: string}};
 
-  constructor(valueIn?: ?{x: number | AnimatedValue; y: number | AnimatedValue}) {
+  constructor(valueIn?: ?{x: number | AnimatedValue, y: number | AnimatedValue}) {
     super();
     var value: any = valueIn || {x: 0, y: 0};  // @flowfixme: shouldn't need `: any`
     if (typeof value.x === 'number' && typeof value.y === 'number') {
@@ -917,12 +917,12 @@ class AnimatedValueXY extends AnimatedWithChildren {
     this._listeners = {};
   }
 
-  setValue(value: {x: number; y: number}) {
+  setValue(value: {x: number, y: number}) {
     this.x.setValue(value.x);
     this.y.setValue(value.y);
   }
 
-  setOffset(offset: {x: number; y: number}) {
+  setOffset(offset: {x: number, y: number}) {
     this.x.setOffset(offset.x);
     this.y.setOffset(offset.y);
   }
@@ -932,7 +932,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
     this.y.flattenOffset();
   }
 
-  __getValue(): {x: number; y: number} {
+  __getValue(): {x: number, y: number} {
     return {
       x: this.x.__getValue(),
       y: this.y.__getValue(),
@@ -1636,8 +1636,8 @@ class AnimatedTracking extends Animated {
 }
 
 type CompositeAnimation = {
-  start: (callback?: ?EndCallback) => void;
-  stop: () => void;
+  start: (callback?: ?EndCallback) => void,
+  stop: () => void,
 };
 
 var add = function(
@@ -1798,7 +1798,7 @@ var sequence = function(
 };
 
 type ParallelConfig = {
-  stopTogether?: bool; // If one is stopped, stop all.  default: true
+  stopTogether?: bool, // If one is stopped, stop all.  default: true
 }
 var parallel = function(
   animations: Array<CompositeAnimation>,
