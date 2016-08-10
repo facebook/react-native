@@ -488,116 +488,70 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
     }
   }
 
+  private native float jni_CSSNodeStyleGetPositionLeft(int nativePointer);
+  private native float jni_CSSNodeStyleGetPositionTop(int nativePointer);
+  private native float jni_CSSNodeStyleGetPositionRight(int nativePointer);
+  private native float jni_CSSNodeStyleGetPositionBottom(int nativePointer);
+  private native float jni_CSSNodeStyleGetPositionStart(int nativePointer);
+  private native float jni_CSSNodeStyleGetPositionEnd(int nativePointer);
   @Override
-  public Spacing getPositionValue() {
+  public Spacing getPosition() {
     Spacing position = new Spacing();
-    position.set(Spacing.LEFT, getPositionLeft());
-    position.set(Spacing.TOP, getPositionTop());
-    position.set(Spacing.RIGHT, getPositionRight());
-    position.set(Spacing.BOTTOM, getPositionBottom());
+    position.set(Spacing.LEFT, jni_CSSNodeStyleGetPositionLeft(mNativePointer));
+    position.set(Spacing.TOP, jni_CSSNodeStyleGetPositionTop(mNativePointer));
+    position.set(Spacing.RIGHT, jni_CSSNodeStyleGetPositionRight(mNativePointer));
+    position.set(Spacing.BOTTOM, jni_CSSNodeStyleGetPositionBottom(mNativePointer));
+    position.set(Spacing.START, jni_CSSNodeStyleGetPositionStart(mNativePointer));
+    position.set(Spacing.END, jni_CSSNodeStyleGetPositionEnd(mNativePointer));
     return position;
   }
 
+  private native void jni_CSSNodeStyleSetPositionLeft(int nativePointer, float position);
+  private native void jni_CSSNodeStyleSetPositionTop(int nativePointer, float position);
+  private native void jni_CSSNodeStyleSetPositionRight(int nativePointer, float position);
+  private native void jni_CSSNodeStyleSetPositionBottom(int nativePointer, float position);
+  private native void jni_CSSNodeStyleSetPositionStart(int nativePointer, float position);
+  private native void jni_CSSNodeStyleSetPositionEnd(int nativePointer, float position);
   @Override
-  public void setPositionValue(int spacingType, float position) {
+  public void setPosition(int spacingType, float position) {
     switch (spacingType) {
       case Spacing.LEFT:
-        setPositionLeft(position);
+        jni_CSSNodeStyleSetPositionLeft(mNativePointer, position);
         break;
       case Spacing.TOP:
-        setPositionTop(position);
+        jni_CSSNodeStyleSetPositionTop(mNativePointer, position);
         break;
       case Spacing.RIGHT:
-        setPositionRight(position);
+        jni_CSSNodeStyleSetPositionRight(mNativePointer, position);
         break;
       case Spacing.BOTTOM:
-        setPositionBottom(position);
+        jni_CSSNodeStyleSetPositionBottom(mNativePointer, position);
+        break;
+      case Spacing.START:
+        jni_CSSNodeStyleSetPositionStart(mNativePointer, position);
+        break;
+      case Spacing.END:
+        jni_CSSNodeStyleSetPositionEnd(mNativePointer, position);
+        break;
+      case Spacing.HORIZONTAL:
+        jni_CSSNodeStyleSetPositionLeft(mNativePointer, position);
+        jni_CSSNodeStyleSetPositionRight(mNativePointer, position);
+        jni_CSSNodeStyleSetPositionStart(mNativePointer, position);
+        jni_CSSNodeStyleSetPositionEnd(mNativePointer, position);
+        break;
+      case Spacing.VERTICAL:
+        jni_CSSNodeStyleSetPositionTop(mNativePointer, position);
+        jni_CSSNodeStyleSetPositionBottom(mNativePointer, position);
+        break;
+      case Spacing.ALL:
+        jni_CSSNodeStyleSetPositionLeft(mNativePointer, position);
+        jni_CSSNodeStyleSetPositionRight(mNativePointer, position);
+        jni_CSSNodeStyleSetPositionStart(mNativePointer, position);
+        jni_CSSNodeStyleSetPositionEnd(mNativePointer, position);
+        jni_CSSNodeStyleSetPositionTop(mNativePointer, position);
+        jni_CSSNodeStyleSetPositionBottom(mNativePointer, position);
         break;
     }
-  }
-
-  private native float jni_CSSNodeStyleGetPositionTop(int nativePointer);
-  @Override
-  public float getPositionTop() {
-    assertNativeInstance();
-    return jni_CSSNodeStyleGetPositionTop(mNativePointer);
-  }
-
-  private native void jni_CSSNodeStyleSetPositionTop(int nativePointer, float positionTop);
-  @Override
-  public void setPositionTop(float positionTop) {
-    assertNativeInstance();
-    jni_CSSNodeStyleSetPositionTop(mNativePointer, positionTop);
-  }
-
-  private native float jni_CSSNodeStyleGetPositionBottom(int nativePointer);
-  @Override
-  public float getPositionBottom() {
-    assertNativeInstance();
-    return jni_CSSNodeStyleGetPositionBottom(mNativePointer);
-  }
-
-  private native void jni_CSSNodeStyleSetPositionBottom(int nativePointer, float positionBottom);
-  @Override
-  public void setPositionBottom(float positionBottom) {
-    assertNativeInstance();
-    jni_CSSNodeStyleSetPositionBottom(mNativePointer, positionBottom);
-  }
-
-  private native float jni_CSSNodeStyleGetPositionLeft(int nativePointer);
-  @Override
-  public float getPositionLeft() {
-    assertNativeInstance();
-    return jni_CSSNodeStyleGetPositionLeft(mNativePointer);
-  }
-
-  private native void jni_CSSNodeStyleSetPositionLeft(int nativePointer, float positionLeft);
-  @Override
-  public void setPositionLeft(float positionLeft) {
-    assertNativeInstance();
-    jni_CSSNodeStyleSetPositionLeft(mNativePointer, positionLeft);
-  }
-
-  private native float jni_CSSNodeStyleGetPositionRight(int nativePointer);
-  @Override
-  public float getPositionRight() {
-    assertNativeInstance();
-    return jni_CSSNodeStyleGetPositionRight(mNativePointer);
-  }
-
-  private native void jni_CSSNodeStyleSetPositionRight(int nativePointer, float positionRight);
-  @Override
-  public void setPositionRight(float positionRight) {
-    assertNativeInstance();
-    jni_CSSNodeStyleSetPositionRight(mNativePointer, positionRight);
-  }
-
-  private native float jni_CSSNodeStyleGetPositionStart(int nativePointer);
-  @Override
-  public float getPositionStart() {
-    assertNativeInstance();
-    return jni_CSSNodeStyleGetPositionStart(mNativePointer);
-  }
-
-  private native void jni_CSSNodeStyleSetPositionStart(int nativePointer, float positionStart);
-  @Override
-  public void setPositionStart(float positionStart) {
-    assertNativeInstance();
-    jni_CSSNodeStyleSetPositionStart(mNativePointer, positionStart);
-  }
-
-  private native float jni_CSSNodeStyleGetPositionEnd(int nativePointer);
-  @Override
-  public float getPositionEnd() {
-    assertNativeInstance();
-    return jni_CSSNodeStyleGetPositionEnd(mNativePointer);
-  }
-
-  private native void jni_CSSNodeStyleSetPositionEnd(int nativePointer, float positionEnd);
-  @Override
-  public void setPositionEnd(float positionEnd) {
-    assertNativeInstance();
-    jni_CSSNodeStyleSetPositionEnd(mNativePointer, positionEnd);
   }
 
   private native float jni_CSSNodeStyleGetWidth(int nativePointer);
