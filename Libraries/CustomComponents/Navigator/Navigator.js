@@ -1204,14 +1204,16 @@ var Navigator = React.createClass({
   /**
    * Navigate to a new scene and reset route stack.
    * @param {object} route Route to navigate to.
+   * @param {boolean} avoidTransition Set to true to avoir using the popN transition
    */
-  resetTo: function(route) {
-    invariant(!!route, 'Must supply route to push');
-    this.replaceAtIndex(route, 0, () => {
+  resetTo: function(route, avoidTransition) {
+    invariant(!!route, 'Must supply route to reset to');
+    const callback = avoidTransition ? null : () => {
       // Do not use popToRoute here, because race conditions could prevent the
       // route from existing at this time. Instead, just go to index 0
       this.popN(this.state.presentedIndex);
-    });
+    };
+    this.replaceAtIndex(route, 0, callback);
   },
 
   /**
