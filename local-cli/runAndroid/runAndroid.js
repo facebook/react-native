@@ -53,7 +53,7 @@ function tryRunAdbReverse(device) {
     const adbArgs = ['reverse', 'tcp:8081', 'tcp:8081'];
 
     // If a device is specified then tell adb to use it
-    if (device !== undefined) {
+    if (device) {
       adbArgs.unshift('-s', device);
     };
 
@@ -70,19 +70,19 @@ function tryRunAdbReverse(device) {
     ));
 
     // Try again but specifying a device this time
-    if (device === undefined) {
+    if (!device) {
       const devices = adb.getDevices();
-      let choosenDevice = -1;
+      let chosenDevice = -1;
 
       console.log(chalk.green(
-          `\nChoose a device: \n${devices.map(function (device, index) { return `\t${index+1}. ${device}` }).join('\n')}\n`
+          `\nChoose a device: \n${devices.map((device, index) => `\t${index+1}. ${device}`).join('\n')}\n`
       ));
 
-      while(isNaN(choosenDevice) || choosenDevice < 1 || choosenDevice > devices.length) {
-        choosenDevice = readlineSync.question('Your choice : ')
+      while (isNaN(chosenDevice) || chosenDevice < 1 || chosenDevice > devices.length) {
+        chosenDevice = readlineSync.question('Your choice : ')
       }
 
-      tryRunAdbReverse(devices[choosenDevice-1]);
+      tryRunAdbReverse(devices[chosenDevice - 1]);
     }
   }
 }
