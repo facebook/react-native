@@ -15,7 +15,6 @@ const path = require('path');
 const isPackagerRunning = require('../util/isPackagerRunning');
 const Promise = require('promise');
 const adb = require('./adb');
-const readlineSync = require('readline-sync');
 
 /**
  * Starts the app on a connected Android emulator or device.

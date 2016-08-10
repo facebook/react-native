@@ -175,7 +175,6 @@
     "react-clone-referenced-element": "^1.0.1",
     "react-timer-mixin": "^0.13.2",
     "react-transform-hmr": "^1.0.4",
-    "readline-sync": "^1.4.4",
     "rebound": "^0.0.13",
     "regenerator-runtime": "^0.9.5",
     "sane": "^1.3.1",
