@@ -12,7 +12,11 @@
 
 // iOS doesn't support 'thread_local'. If we reimplement this to use pthread_setspecific
 // we can get rid of this
-#define MICRO_PROFILER_STUB_IMPLEMENTATION defined(__APPLE__)
+#if defined(__APPLE__)
+#define MICRO_PROFILER_STUB_IMPLEMENTATION 1
+#else
+#define MICRO_PROFILER_STUB_IMPLEMENTATION 0
+#endif
 
 namespace facebook {
 namespace react {

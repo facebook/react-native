@@ -7,7 +7,11 @@
 #include "JSCHelpers.h"
 
 // See the comment under Value::fromDynamic()
-#define USE_FAST_FOLLY_DYNAMIC_CONVERSION !defined(__APPLE__) && defined(WITH_FB_JSC_TUNING)
+#if !defined(__APPLE__) && defined(WITH_FB_JSC_TUNING)
+#define USE_FAST_FOLLY_DYNAMIC_CONVERSION 1
+#else
+#define USE_FAST_FOLLY_DYNAMIC_CONVERSION 0
+#endif
 
 namespace facebook {
 namespace react {
