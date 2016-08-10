@@ -68,22 +68,6 @@ function tryRunAdbReverse(device) {
     console.log(chalk.yellow(
       `Could not run adb reverse: ${e.message}`
     ));
-
-    // Try again but specifying a device this time
-    if (!device) {
-      const devices = adb.getDevices();
-      let chosenDevice = -1;
-
-      console.log(chalk.green(
-          `\nChoose a device: \n${devices.map((device, index) => `\t${index+1}. ${device}`).join('\n')}\n`
-      ));
-
-      while (isNaN(chosenDevice) || chosenDevice < 1 || chosenDevice > devices.length) {
-        chosenDevice = readlineSync.question('Your choice : ')
-      }
-
-      tryRunAdbReverse(devices[chosenDevice - 1]);
-    }
   }
 }
 
@@ -91,7 +75,8 @@ function tryRunAdbReverse(device) {
 function buildAndRun(args) {
   process.chdir(path.join(args.root, 'android'));
   try {
-    tryRunAdbReverse();
+	  
+    adb.getDevices().map((device) => tryRunAdbReverse(device));
 
     const cmd = process.platform.startsWith('win')
       ? 'gradlew.bat'
