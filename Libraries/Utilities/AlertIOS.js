@@ -21,19 +21,19 @@ export type AlertType = $Enum<{
   /**
    * Default alert with no inputs
    */
-  'default': string;
+  'default': string,
   /**
    * Plain text input alert
    */
-  'plain-text': string;
+  'plain-text': string,
   /**
    * Secure text input alert
    */
-  'secure-text': string;
+  'secure-text': string,
   /**
    * Login and password alert
    */
-  'login-password': string;
+  'login-password': string,
 }>;
 
 /**
@@ -43,15 +43,15 @@ export type AlertButtonStyle = $Enum<{
   /**
    * Default button style
    */
-  'default': string;
+  'default': string,
   /**
    * Cancel button style
    */
-  'cancel': string;
+  'cancel': string,
   /**
    * Destructive button style
    */
-  'destructive': string;
+  'destructive': string,
 }>;
 
 /**
@@ -65,15 +65,15 @@ type ButtonsArray = Array<{
   /**
    * Button label
    */
-  text?: string;
+  text?: string,
   /**
    * Callback function when button pressed
    */
-  onPress?: ?Function;
+  onPress?: ?Function,
   /**
    * Button style
    */
-  style?: AlertButtonStyle;
+  style?: AlertButtonStyle,
 }>;
 
 /**

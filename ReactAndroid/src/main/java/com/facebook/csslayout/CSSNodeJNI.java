@@ -572,6 +572,34 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
     jni_CSSNodeStyleSetPositionRight(mNativePointer, positionRight);
   }
 
+  private native float jni_CSSNodeStyleGetPositionStart(int nativePointer);
+  @Override
+  public float getPositionStart() {
+    assertNativeInstance();
+    return jni_CSSNodeStyleGetPositionStart(mNativePointer);
+  }
+
+  private native void jni_CSSNodeStyleSetPositionStart(int nativePointer, float positionStart);
+  @Override
+  public void setPositionStart(float positionStart) {
+    assertNativeInstance();
+    jni_CSSNodeStyleSetPositionStart(mNativePointer, positionStart);
+  }
+
+  private native float jni_CSSNodeStyleGetPositionEnd(int nativePointer);
+  @Override
+  public float getPositionEnd() {
+    assertNativeInstance();
+    return jni_CSSNodeStyleGetPositionEnd(mNativePointer);
+  }
+
+  private native void jni_CSSNodeStyleSetPositionEnd(int nativePointer, float positionEnd);
+  @Override
+  public void setPositionEnd(float positionEnd) {
+    assertNativeInstance();
+    jni_CSSNodeStyleSetPositionEnd(mNativePointer, positionEnd);
+  }
+
   private native float jni_CSSNodeStyleGetWidth(int nativePointer);
   @Override
   public float getStyleWidth() {

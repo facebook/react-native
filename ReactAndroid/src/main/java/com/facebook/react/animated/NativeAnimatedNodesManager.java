@@ -78,6 +78,8 @@ import javax.annotation.Nullable;
       node = new AdditionAnimatedNode(config, this);
     } else if ("multiplication".equals(type)) {
       node = new MultiplicationAnimatedNode(config, this);
+    } else if ("transform".equals(type)) {
+      node = new TransformAnimatedNode(config, this);
     } else {
       throw new JSApplicationIllegalArgumentException("Unsupported node type: " + type);
     }

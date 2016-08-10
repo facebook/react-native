@@ -91,6 +91,12 @@ const validateOpts = declareOpts({
   },
 });
 
+const assetPropertyBlacklist = new Set([
+  'files',
+  'fileSystemLocation',
+  'path',
+]);
+
 class Bundler {
 
   constructor(options) {
@@ -583,7 +589,10 @@ class Bundler {
 
       bundle.addAsset(img);
 
-      const code = 'module.exports=' + JSON.stringify(img) + ';';
+      const code =
+        'module.exports=' +
+        JSON.stringify(filterObject(img, assetPropertyBlacklist))
+        + ';';
 
       return new ModuleTransport({
         name: id,
@@ -630,7 +639,7 @@ class Bundler {
         type: assetData.type,
       };
 
-      const json = JSON.stringify(asset);
+      const json =  JSON.stringify(filterObject(asset, assetPropertyBlacklist));
       const assetRegistryPath = 'react-native/Libraries/Image/AssetRegistry';
       const code =
         `module.exports = require(${JSON.stringify(assetRegistryPath)}).registerAsset(${json});`;
@@ -724,6 +733,14 @@ function debouncedTick(progressBar) {
       start = Date.now();
     }
   };
+}
+
+function filterObject(object, blacklist) {
+  const copied = Object.assign({}, object);
+  for (const key of blacklist) {
+    delete copied[key];
+  }
+  return copied;
 }
 
 module.exports = Bundler;

@@ -97,8 +97,22 @@ public abstract class ReactInstanceManager {
   /**
    * Call this from {@link Activity#onPause()}. This notifies any listening modules so they can do
    * any necessary cleanup.
+   *
+   * @deprecated Use {@link #onHostPause(Activity)} instead.
    */
+  @Deprecated
   public abstract void onHostPause();
+
+  /**
+   * Call this from {@link Activity#onPause()}. This notifies any listening modules so they can do
+   * any necessary cleanup. The passed Activity is the current Activity being paused. This will
+   * always be the foreground activity that would be returned by
+   * {@link ReactContext#getCurrentActivity()}.
+   *
+   * @param activity the activity being paused
+   */
+  public abstract void onHostPause(Activity activity);
+
   /**
    * Use this method when the activity resumes to enable invoking the back button directly from JS.
    *
@@ -117,8 +131,21 @@ public abstract class ReactInstanceManager {
   /**
    * Call this from {@link Activity#onDestroy()}. This notifies any listening modules so they can do
    * any necessary cleanup.
+   *
+   * @deprecated use {@link #onHostDestroy(Activity)} instead
    */
+  @Deprecated
   public abstract void onHostDestroy();
+
+  /**
+   * Call this from {@link Activity#onDestroy()}. This notifies any listening modules so they can do
+   * any necessary cleanup. If the activity being destroyed is not the current activity, no modules
+   * are notified.
+   *
+   * @param activity the activity being destroyed
+   */
+  public abstract void onHostDestroy(Activity activity);
+
   public abstract void onActivityResult(int requestCode, int resultCode, Intent data);
   public abstract void showDevOptionsDialog();
 

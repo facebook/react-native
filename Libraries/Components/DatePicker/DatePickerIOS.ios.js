@@ -22,7 +22,7 @@ const View = require('View');
 const requireNativeComponent = require('requireNativeComponent');
 
 type DefaultProps = {
-  mode: 'date' | 'time' | 'datetime';
+  mode: 'date' | 'time' | 'datetime',
 };
 
 type Event = Object;
