@@ -12,6 +12,6 @@
  */
 'use strict';
 
-import 'whatwg-fetch';
+import { fetch, Headers, Request, Response } from 'whatwg-fetch';
 
 module.exports = {fetch, Headers, Request, Response};
