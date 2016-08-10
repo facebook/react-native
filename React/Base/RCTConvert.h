@@ -232,7 +232,7 @@ RCT_CUSTOM_CONVERTER(type, type, [RCT_DEBUG ? [self NSNumber:json] : json getter
  * This macro is used for creating converter functions for typed arrays.
  */
 #define RCT_ARRAY_CONVERTER(type)                      \
-+ (NSArray<id> *)type##Array:(id)json                      \
++ (NSArray<type *> *)type##Array:(id)json              \
 {                                                      \
   return RCTConvertArrayValue(@selector(type:), json); \
 }

@@ -23,6 +23,7 @@
                   size:(NSNumber *)size
                 weight:(NSString *)weight
                  style:(NSString *)style
+               variant:(NSArray<NSString *> *)variant
        scaleMultiplier:(CGFloat)scaleMultiplier;
 
 + (UIFont *)updateFont:(UIFont *)font withFamily:(NSString *)family;

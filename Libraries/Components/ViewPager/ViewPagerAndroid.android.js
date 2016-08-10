@@ -26,9 +26,9 @@ var VIEWPAGER_REF = 'viewPager';
 type Event = Object;
 
 export type ViewPagerScrollState = $Enum<{
-  idle: string;
-  dragging: string;
-  settling: string;
+  idle: string,
+  dragging: string,
+  settling: string,
 }>;
 
 /**

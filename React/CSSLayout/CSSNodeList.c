@@ -27,7 +27,10 @@ CSSNodeListRef CSSNodeListNew(uint32_t initialCapacity) {
   return list;
 }
 
-void CSSNodeListFree(CSSNodeListRef list) { free(list); }
+void CSSNodeListFree(CSSNodeListRef list) {
+    free(list->items);
+    free(list);
+}
 
 uint32_t CSSNodeListCount(CSSNodeListRef list) { return list->count; }
 

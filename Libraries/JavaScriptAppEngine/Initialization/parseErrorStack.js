@@ -12,9 +12,9 @@
 'use strict';
 
 export type StackFrame = {
-  file: string;
-  lineNumber: number;
-  column: number;
+  file: string,
+  lineNumber: number,
+  column: number,
 };
 
 var stacktraceParser = require('stacktrace-parser');

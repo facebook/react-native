@@ -22,26 +22,26 @@ const View = require('View');
 import type EmitterSubscription from 'EmitterSubscription';
 
 type Rect = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+  x: number,
+  y: number,
+  width: number,
+  height: number,
 };
 type ScreenRect = {
-  screenX: number;
-  screenY: number;
-  width: number;
-  height: number;
+  screenX: number,
+  screenY: number,
+  width: number,
+  height: number,
 };
 type KeyboardChangeEvent = {
-  startCoordinates?: ScreenRect;
-  endCoordinates: ScreenRect;
-  duration?: number;
-  easing?: string;
+  startCoordinates?: ScreenRect,
+  endCoordinates: ScreenRect,
+  duration?: number,
+  easing?: string,
 };
 type LayoutEvent = {
   nativeEvent: {
-    layout: Rect;
+    layout: Rect,
   }
 };
 
@@ -53,12 +53,12 @@ const KeyboardAvoidingView = React.createClass({
   propTypes: {
     ...View.propTypes,
     behavior: PropTypes.oneOf(['height', 'position', 'padding']),
-    
+
     /**
      * The style of the content container(View) when behavior is 'position'.
      */
     contentContainerStyle: View.propTypes.style,
-    
+
     /**
      * This is the distance between the top of the user screen and the react native view,
      * may be non-zero in some use cases.

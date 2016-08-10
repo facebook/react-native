@@ -42,7 +42,7 @@ RCT_EXPORT_MODULE()
 - (UIView *)view
 {
   UIView *view = [[RCTModalHostView alloc] initWithBridge:self.bridge];
-  if (_hostViews) {
+  if (!_hostViews) {
     _hostViews = [NSHashTable weakObjectsHashTable];
   }
   [_hostViews addObject:view];
