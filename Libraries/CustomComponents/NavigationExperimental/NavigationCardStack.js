@@ -38,7 +38,6 @@ const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleIn
 const NavigationCardStackPanResponder = require('NavigationCardStackPanResponder');
 const NavigationPropTypes = require('NavigationPropTypes');
 const React = require('React');
-const ReactComponentWithPureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
@@ -110,14 +109,6 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   componentWillMount(): void {
     this._render = this._render.bind(this);
     this._renderScene = this._renderScene.bind(this);
-  }
-
-  shouldComponentUpdate(nextProps: Object, nextState: void): boolean {
-    return ReactComponentWithPureRenderMixin.shouldComponentUpdate.call(
-      this,
-      nextProps,
-      nextState
-    );
   }
 
   render(): ReactElement<any> {
