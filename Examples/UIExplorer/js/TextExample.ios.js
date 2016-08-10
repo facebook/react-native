@@ -465,6 +465,33 @@ exports.examples = [
       </View>
     );
   },
+}, {
+  title: 'Font variants',
+  render: function() {
+    return (
+      <View>
+        <Text style={{fontVariant: ['small-caps']}}>
+          Small Caps{'\n'}
+        </Text>
+        <Text style={{fontFamily: 'Hoefler Text', fontVariant: ['oldstyle-nums']}}>
+          Old Style nums 0123456789{'\n'}
+        </Text>
+        <Text style={{fontFamily: 'Hoefler Text', fontVariant: ['lining-nums']}}>
+          Lining nums 0123456789{'\n'}
+        </Text>
+        <Text style={{fontVariant: ['tabular-nums']}}>
+          Tabular nums{'\n'}
+          1111{'\n'}
+          2222{'\n'}
+        </Text>
+        <Text style={{fontVariant: ['proportional-nums']}}>
+          Proportional nums{'\n'}
+          1111{'\n'}
+          2222{'\n'}
+        </Text>
+      </View>
+    );
+  },
 }];
 
 var styles = StyleSheet.create({

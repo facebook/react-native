@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <CoreText/CoreText.h>
+
 #import "RCTConvert.h"
 
 #import <objc/message.h>
