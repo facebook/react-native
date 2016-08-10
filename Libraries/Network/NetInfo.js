@@ -23,37 +23,37 @@ const NetInfoEventEmitter = new NativeEventEmitter(RCTNetInfo);
 const DEVICE_CONNECTIVITY_EVENT = 'networkStatusDidChange';
 
 type ChangeEventName = $Enum<{
-  change: string;
+  change: string,
 }>;
 
 type ReachabilityStateIOS = $Enum<{
-  cell: string;
-  none: string;
-  unknown: string;
-  wifi: string;
+  cell: string,
+  none: string,
+  unknown: string,
+  wifi: string,
 }>;
 
 type ConnectivityStateAndroid = $Enum<{
-  NONE: string;
-  MOBILE: string;
-  WIFI: string;
-  MOBILE_MMS: string;
-  MOBILE_SUPL: string;
-  MOBILE_DUN: string;
-  MOBILE_HIPRI: string;
-  WIMAX: string;
-  BLUETOOTH: string;
-  DUMMY: string;
-  ETHERNET: string;
-  MOBILE_FOTA: string;
-  MOBILE_IMS: string;
-  MOBILE_CBS: string;
-  WIFI_P2P: string;
-  MOBILE_IA: string;
-  MOBILE_EMERGENCY: string;
-  PROXY: string;
-  VPN: string;
-  UNKNOWN: string;
+  NONE: string,
+  MOBILE: string,
+  WIFI: string,
+  MOBILE_MMS: string,
+  MOBILE_SUPL: string,
+  MOBILE_DUN: string,
+  MOBILE_HIPRI: string,
+  WIMAX: string,
+  BLUETOOTH: string,
+  DUMMY: string,
+  ETHERNET: string,
+  MOBILE_FOTA: string,
+  MOBILE_IMS: string,
+  MOBILE_CBS: string,
+  WIFI_P2P: string,
+  MOBILE_IA: string,
+  MOBILE_EMERGENCY: string,
+  PROXY: string,
+  VPN: string,
+  UNKNOWN: string,
 }>;
 
 

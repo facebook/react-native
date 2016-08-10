@@ -18,10 +18,14 @@ var DialogModuleAndroid = require('NativeModules').DialogManagerAndroid;
 import type { AlertType, AlertButtonStyle } from 'AlertIOS';
 
 type Buttons = Array<{
-  text?: string;
-  onPress?: ?Function;
-  style?: AlertButtonStyle;
+  text?: string,
+  onPress?: ?Function,
+  style?: AlertButtonStyle,
 }>;
+
+type Options = {
+  cancelable?: ?boolean;
+};
 
 /**
  * Launches an alert dialog with the specified title and message.
@@ -67,6 +71,7 @@ class Alert {
     title: ?string,
     message?: ?string,
     buttons?: Buttons,
+    options?: Options,
     type?: AlertType,
   ): void {
     if (Platform.OS === 'ios') {
@@ -77,7 +82,7 @@ class Alert {
       }
       AlertIOS.alert(title, message, buttons);
     } else if (Platform.OS === 'android') {
-      AlertAndroid.alert(title, message, buttons);
+      AlertAndroid.alert(title, message, buttons, options);
     }
   }
 }
@@ -91,11 +96,16 @@ class AlertAndroid {
     title: ?string,
     message?: ?string,
     buttons?: Buttons,
+    options?: Options,
   ): void {
     var config = {
       title: title || '',
       message: message || '',
     };
+
+    if (options) {
+      config = {...config, cancelable: options.cancelable};
+    }
     // At most three buttons (neutral, negative, positive). Ignore rest.
     // The text 'OK' should be probably localized. iOS Alert does that in native.
     var validButtons: Buttons = buttons ? buttons.slice(0, 3) : [{text: 'OK'}];
@@ -103,13 +113,13 @@ class AlertAndroid {
     var buttonNegative = validButtons.pop();
     var buttonNeutral = validButtons.pop();
     if (buttonNeutral) {
-      config = {...config, buttonNeutral: buttonNeutral.text || '' }
+      config = {...config, buttonNeutral: buttonNeutral.text || '' };
     }
     if (buttonNegative) {
-      config = {...config, buttonNegative: buttonNegative.text || '' }
+      config = {...config, buttonNegative: buttonNegative.text || '' };
     }
     if (buttonPositive) {
-      config = {...config, buttonPositive: buttonPositive.text || '' }
+      config = {...config, buttonPositive: buttonPositive.text || '' };
     }
     DialogModuleAndroid.showAlert(
       config,

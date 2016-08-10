@@ -140,7 +140,7 @@ var Slider = React.createClass({
   },
 
   render: function() {
-    let {style, onValueChange, onSlidingComplete, ...props} = this.props;
+    const {style, onValueChange, onSlidingComplete, ...props} = this.props;
     props.style = [styles.slider, style];
 
     props.onValueChange = onValueChange && ((event: Event) => {

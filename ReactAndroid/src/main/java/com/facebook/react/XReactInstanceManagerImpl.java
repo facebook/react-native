@@ -487,7 +487,17 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     }
 
     moveToBeforeResumeLifecycleState();
-    mCurrentActivity = null;
+  }
+
+  @Override
+  public void onHostPause(Activity activity) {
+    Assertions.assertNotNull(mCurrentActivity);
+    Assertions.assertCondition(
+      activity == mCurrentActivity,
+      "Pausing an activity that is not the current activity, this is incorrect! " +
+        "Current activity: " + mCurrentActivity.getClass().getSimpleName() + " " +
+        "Paused activity: " + activity.getClass().getSimpleName());
+    onHostPause();
   }
 
   /**
@@ -524,6 +534,13 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
     moveToBeforeCreateLifecycleState();
     mCurrentActivity = null;
+  }
+
+  @Override
+  public void onHostDestroy(Activity activity) {
+    if (activity == mCurrentActivity) {
+      onHostDestroy();
+    }
   }
 
   @Override
