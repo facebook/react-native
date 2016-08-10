@@ -136,6 +136,20 @@ return (
 );
 ```
 
+## Sizing Images
+
+Pass an optional `resizeMode` property to determine how the image will automatically size itself according to its container. Options are one of the following:
+
+- `cover`
+- `contain`
+- `stretch`
+- `repeat`
+- `center`
+
+```javascript
+return <Image source={...} resizeMode={Image.resizeMode.contain} />;
+```
+
 ## Off-thread Decoding
 
 Image decoding can take more than a frame-worth of time. This is one of the major source of frame drops on the web because decoding is done in the main thread. In React Native, image decoding is done in a different thread. In practice, you already need to handle the case when the image is not downloaded yet, so displaying the placeholder for a few more frames while it is decoding does not require any code change.
