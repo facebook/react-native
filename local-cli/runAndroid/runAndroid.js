@@ -75,7 +75,6 @@ function tryRunAdbReverse(device) {
 function buildAndRun(args) {
   process.chdir(path.join(args.root, 'android'));
   try {
-	  
     adb.getDevices().map((device) => tryRunAdbReverse(device));
 
     const cmd = process.platform.startsWith('win')
