@@ -555,10 +555,13 @@ RCT_DIMENSION_PROPERTY(Left, left, PositionStart)
 
 - (void)setFrame:(CGRect)frame
 {
-  CSSNodeStyleSetPositionLeft(_cssNode, CGRectGetMinX(frame));
-  CSSNodeStyleSetPositionTop(_cssNode, CGRectGetMinY(frame));
-  CSSNodeStyleSetWidth(_cssNode, CGRectGetWidth(frame));
-  CSSNodeStyleSetHeight(_cssNode, CGRectGetHeight(frame));
+  if (!CGRectEqualToRect(frame, _frame)) {
+    _frame = frame;
+    CSSNodeStyleSetPositionLeft(_cssNode, CGRectGetMinX(frame));
+    CSSNodeStyleSetPositionTop(_cssNode, CGRectGetMinY(frame));
+    CSSNodeStyleSetWidth(_cssNode, CGRectGetWidth(frame));
+    CSSNodeStyleSetHeight(_cssNode, CGRectGetHeight(frame));
+  }
 }
 
 static inline void RCTAssignSuggestedDimension(CSSNodeRef cssNode, CSSDimension dimension, CGFloat amount)

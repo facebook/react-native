@@ -217,11 +217,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds
                                                     bridge:bridge
                                                   reactTag:self.reactTag
-                                            sizeFlexiblity:self.sizeFlexibility];
+                                            sizeFlexiblity:_sizeFlexibility];
   [self runApplication:bridge];
 
   _contentView.backgroundColor = self.backgroundColor;
   [self insertSubview:_contentView atIndex:0];
+
+  if (_sizeFlexibility == RCTRootViewSizeFlexibilityNone) {
+    self.intrinsicSize = self.bounds.size;
+  }
 }
 
 - (void)runApplication:(RCTBridge *)bridge
