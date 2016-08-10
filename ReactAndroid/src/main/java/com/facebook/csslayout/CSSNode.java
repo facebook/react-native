@@ -19,12 +19,6 @@ import static com.facebook.csslayout.CSSLayout.DIMENSION_HEIGHT;
 import static com.facebook.csslayout.CSSLayout.DIMENSION_WIDTH;
 import static com.facebook.csslayout.CSSLayout.POSITION_LEFT;
 import static com.facebook.csslayout.CSSLayout.POSITION_TOP;
-import static com.facebook.csslayout.Spacing.BOTTOM;
-import static com.facebook.csslayout.Spacing.END;
-import static com.facebook.csslayout.Spacing.LEFT;
-import static com.facebook.csslayout.Spacing.RIGHT;
-import static com.facebook.csslayout.Spacing.START;
-import static com.facebook.csslayout.Spacing.TOP;
 
 /**
  * A CSS Node. It has a style object you can manipulate at {@link #style}. After calling
@@ -414,93 +408,15 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
    * Get this node's position, as defined by style.
    */
   @Override
-  public Spacing getPositionValue() {
+  public Spacing getPosition() {
     return style.position;
   }
 
   @Override
-  public void setPositionValue(int spacingType, float position) {
+  public void setPosition(int spacingType, float position) {
     if (style.position.set(spacingType, position)) {
       dirty();
     }
-  }
-
-  /**
-   * Get this node's position top, as defined by style.
-   */
-  @Override
-  public float getPositionTop() {
-    return style.position.get(TOP);
-  }
-
-  @Override
-  public void setPositionTop(float positionTop) {
-    setPositionValue(TOP, positionTop);
-  }
-
-  /**
-   * Get this node's position bottom, as defined by style.
-   */
-  @Override
-  public float getPositionBottom() {
-    return style.position.get(BOTTOM);
-  }
-
-  @Override
-  public void setPositionBottom(float positionBottom) {
-    setPositionValue(BOTTOM, positionBottom);
-  }
-
-  /**
-   * Get this node's position left, as defined by style.
-   */
-  @Override
-  public float getPositionLeft() {
-    return style.position.get(LEFT);
-  }
-
-  @Override
-  public void setPositionLeft(float positionLeft) {
-    setPositionValue(LEFT, positionLeft);
-  }
-
-  /**
-   * Get this node's position right, as defined by style.
-   */
-  @Override
-  public float getPositionRight() {
-    return style.position.get(RIGHT);
-  }
-
-  @Override
-  public void setPositionRight(float positionRight) {
-    setPositionValue(RIGHT, positionRight);
-  }
-
-  /**
-   * Get this node's position start, as defined by style.
-   */
-  @Override
-  public float getPositionStart() {
-    return style.position.get(START);
-  }
-
-  @Override
-  public void setPositionStart(float positionStart) {
-    setPositionValue(START, positionStart);
-  }
-
-  /**
-   * Get this node's position end, as defined by style.
-   */
-  @Override
-  public float getPositionEnd() {
-    return style.position.get(END);
-  }
-
-  @Override
-  public void setPositionEnd(float positionEnd) {
-    setPositionValue(END, positionEnd);
   }
 
   /**
