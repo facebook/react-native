@@ -1502,6 +1502,12 @@ function createAnimatedComponent(Component: any): any {
   class AnimatedComponent extends React.Component {
     _component: any;
     _propsAnimated: AnimatedProps;
+    _setComponentRef: Function;
+
+    constructor(props: Object) {
+      super(props);
+      this._setComponentRef = this._setComponentRef.bind(this);
+    }
 
     componentWillUnmount() {
       this._propsAnimated && this._propsAnimated.__detach();
@@ -1578,7 +1584,7 @@ function createAnimatedComponent(Component: any): any {
       );
     }
 
-    _setComponentRef = c => {
+    _setComponentRef(c) {
       this._component = c;
     }
   }
