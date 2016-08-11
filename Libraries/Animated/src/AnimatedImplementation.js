@@ -1578,7 +1578,7 @@ function createAnimatedComponent(Component: any): any {
       );
     }
 
-    _setComponentRef = c => {
+    _setComponentRef(c) {
       this._component = c;
     }
   }
