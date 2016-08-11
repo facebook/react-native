@@ -29,6 +29,7 @@ import com.facebook.react.bridge.UnexpectedNativeTypeException;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.bridge.annotations.ReactModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactIntegrationTestCase;
@@ -668,16 +669,12 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     }
   }
 
+  @ReactModule(name = "Recording")
   private class RecordingTestModule extends BaseJavaModule {
 
     private final List<Object[]> mBasicTypesCalls = new ArrayList<Object[]>();
     private final List<ReadableArray> mArrayCalls = new ArrayList<ReadableArray>();
     private final List<ReadableMap> mMapCalls = new ArrayList<ReadableMap>();
-
-    @Override
-    public String getName() {
-      return "Recording";
-    }
 
     @ReactMethod
     public void receiveBasicTypes(String s, double d, boolean b, String nullableString) {

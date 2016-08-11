@@ -22,12 +22,14 @@ import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.annotations.ReactModule;
 import com.facebook.react.common.ReactConstants;
 
 /**
  * Module that records debug information during transitions (animated navigation events such as
  * going from one screen to another).
  */
+@ReactModule(name = "AnimationsDebugModule")
 public class AnimationsDebugModule extends ReactContextBaseJavaModule {
 
   private @Nullable FpsDebugFrameCallback mFrameCallback;
@@ -38,11 +40,6 @@ public class AnimationsDebugModule extends ReactContextBaseJavaModule {
       DeveloperSettings catalystSettings) {
     super(reactContext);
     mCatalystSettings = catalystSettings;
-  }
-
-  @Override
-  public String getName() {
-    return "AnimationsDebugModule";
   }
 
   @ReactMethod

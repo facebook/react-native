@@ -26,6 +26,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.annotations.ReactModule;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
@@ -47,6 +48,7 @@ import java.util.concurrent.TimeUnit;
 import okio.Buffer;
 import okio.ByteString;
 
+@ReactModule(name = "WebSocketModule")
 public class WebSocketModule extends ReactContextBaseJavaModule {
 
   private Map<Integer, WebSocket> mWebSocketConnections = new HashMap<>();
@@ -61,11 +63,6 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     mReactContext
       .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
       .emit(eventName, params);
-  }
-
-  @Override
-  public String getName() {
-    return "WebSocketModule";
   }
 
   @ReactMethod
@@ -273,10 +270,8 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       }
 
       return defaultOrigin;
-
-    } catch(URISyntaxException e) {
+    } catch (URISyntaxException e) {
         throw new IllegalArgumentException("Unable to set " + uri + " as default origin header.");
     }
   }
-
 }

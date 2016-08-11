@@ -11,17 +11,17 @@ package com.facebook.react.modules.i18nmanager;
 
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.annotations.ReactModule;
 import com.facebook.react.common.MapBuilder;
 
 import java.util.Map;
 
-
 /**
  * {@link NativeModule} that allows JS to set allowRTL and get isRTL status.
  */
+@ReactModule(name = "I18nManager")
 public class I18nManagerModule extends ReactContextBaseJavaModule {
 
   private final I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
@@ -31,14 +31,11 @@ public class I18nManagerModule extends ReactContextBaseJavaModule {
   }
 
   @Override
-  public String getName() {
-    return "I18nManager";
-  }
-
-  @Override
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = MapBuilder.newHashMap();
-    constants.put("isRTL", sharedI18nUtilInstance.isRTL(
+    constants.put(
+        "isRTL",
+        sharedI18nUtilInstance.isRTL(
       getReactApplicationContext()
     ));
     return constants;
@@ -48,15 +45,13 @@ public class I18nManagerModule extends ReactContextBaseJavaModule {
   public void allowRTL(boolean value) {
     sharedI18nUtilInstance.allowRTL(
       getReactApplicationContext(),
-      value
-    );
+      value);
   }
 
   @ReactMethod
   public void forceRTL(boolean value) {
     sharedI18nUtilInstance.forceRTL(
       getReactApplicationContext(),
-      value
-    );
+      value);
   }
 }

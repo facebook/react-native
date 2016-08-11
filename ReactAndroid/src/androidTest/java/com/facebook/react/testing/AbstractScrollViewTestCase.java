@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.JavaScriptModule;
+import com.facebook.react.bridge.annotations.ReactModule;
 import com.facebook.react.testing.ReactInstanceSpecForTest;
 import com.facebook.react.testing.ReactAppInstrumentationTestCase;
 
@@ -45,6 +46,8 @@ public abstract class AbstractScrollViewTestCase extends ReactAppInstrumentation
   }
 
   // See ScrollViewListenerModule.js
+  // Matches ScrollViewListenerModule.js
+  @ReactModule(name = "ScrollListener")
   protected static class ScrollListenerModule extends BaseJavaModule {
 
     private final ArrayList<Double> mXOffsets = new ArrayList<Double>();
@@ -53,12 +56,6 @@ public abstract class AbstractScrollViewTestCase extends ReactAppInstrumentation
     private final Semaphore mScrollSignaler = new Semaphore(0);
     private boolean mScrollBeginDragCalled;
     private boolean mScrollEndDragCalled;
-
-    // Matches ScrollViewListenerModule.js
-    @Override
-    public String getName() {
-      return "ScrollListener";
-    }
 
     @ReactMethod
     public void onScroll(double x, double y) {

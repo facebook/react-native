@@ -21,10 +21,12 @@ import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.SupportsWebWorkers;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.annotations.ReactModule;
 
 /**
  * Native module that handles device hardware events like hardware back presses.
  */
+@ReactModule(name = "DeviceEventManager")
 public class DeviceEventManagerModule extends ReactContextBaseJavaModule {
 
   @SupportsWebWorkers
@@ -74,10 +76,5 @@ public class DeviceEventManagerModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void invokeDefaultBackPressHandler() {
     getReactApplicationContext().runOnUiQueueThread(mInvokeDefaultBackPressRunnable);
-  }
-
-  @Override
-  public String getName() {
-    return "DeviceEventManager";
   }
 }

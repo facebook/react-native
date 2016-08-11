@@ -14,21 +14,18 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.annotations.ReactModule;
 
 /**
  * Dummy implementation of storage module, used for testing
  */
+@ReactModule(name = "AsyncSQLiteDBStorage")
 public final class FakeAsyncLocalStorage extends BaseJavaModule {
 
   private static WritableMap errorMessage;
   static {
     errorMessage = Arguments.createMap();
     errorMessage.putString("message", "Fake Async Local Storage");
-  }
-
-  @Override
-  public String getName() {
-    return "AsyncSQLiteDBStorage";
   }
 
   @ReactMethod
