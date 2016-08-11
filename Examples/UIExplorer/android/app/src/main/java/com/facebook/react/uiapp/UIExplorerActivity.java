@@ -23,8 +23,8 @@ import com.facebook.react.ReactActivityDelegate;
 import javax.annotation.Nullable;
 
 public class UIExplorerActivity extends ReactActivity {
-  class UIExplorerActivityDelegate extends ReactActivityDelegate {
-    private final String PARAM_ROUTE = "route";
+  public static class UIExplorerActivityDelegate extends ReactActivityDelegate {
+    private static final String PARAM_ROUTE = "route";
     private Bundle mInitialProps = null;
     private final @Nullable Activity mActivity;
 
