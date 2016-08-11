@@ -19,6 +19,7 @@ android_library(
   exported_deps = [
     react_native_dep('java/com/facebook/jni:jni'),
     react_native_dep('java/com/facebook/proguard/annotations:annotations'),
+    react_native_dep('third-party/java/jsr-330:jsr-330'),
   ],
   deps = [
     react_native_dep('java/com/facebook/systrace:systrace'),
