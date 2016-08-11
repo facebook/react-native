@@ -22,7 +22,7 @@ let __nativeAnimationIdCount = 1; /* used for started animations */
 type EndResult = {finished: bool};
 type EndCallback = (result: EndResult) => void;
 
-const nativeEventEmitter = new NativeEventEmitter(NativeAnimatedModule);
+let nativeEventEmitter;
 
 /**
  * Simple wrappers around NativeAnimatedModule to provide flow and autocmplete support for
@@ -164,5 +164,10 @@ module.exports = {
   generateNewNodeTag,
   generateNewAnimationId,
   assertNativeAnimatedModule,
-  nativeEventEmitter,
+  get nativeEventEmitter() {
+    if (!nativeEventEmitter) {
+      nativeEventEmitter = new NativeEventEmitter(NativeAnimatedModule);
+    }
+    return nativeEventEmitter;
+  },
 };
