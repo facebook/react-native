@@ -13,8 +13,7 @@ jest
   .setMock('Text', {})
   .setMock('View', {})
   .setMock('Image', {})
-  .setMock('React', {Component: class {}})
-  .setMock('NativeEventEmitter', class {});
+  .setMock('React', {Component: class {}});
 
 var Animated = require('Animated');
 
