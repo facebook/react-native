@@ -40,7 +40,7 @@ public class ModuleSpec {
         try {
           return getConstructor(type, EMPTY_SIGNATURE).newInstance();
         } catch (Exception e) {
-          throw new RuntimeException(e);
+          throw new RuntimeException("ModuleSpec with class: " + type.getName(), e);
         }
       }
     });
@@ -58,7 +58,7 @@ public class ModuleSpec {
         try {
           return getConstructor(type, CONTEXT_SIGNATURE).newInstance(context);
         } catch (Exception e) {
-          throw new RuntimeException(e);
+          throw new RuntimeException("ModuleSpec with class: " + type.getName(), e);
         }
       }
     });
