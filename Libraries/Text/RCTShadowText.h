@@ -32,6 +32,7 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, assign) BOOL isHighlighted;
 @property (nonatomic, assign) CGFloat letterSpacing;
 @property (nonatomic, assign) CGFloat lineHeight;
+@property (nonatomic, assign) CGFloat IOSLineHeight;
 @property (nonatomic, assign) NSUInteger numberOfLines;
 @property (nonatomic, assign) NSLineBreakMode ellipsizeMode;
 @property (nonatomic, assign) CGSize shadowOffset;

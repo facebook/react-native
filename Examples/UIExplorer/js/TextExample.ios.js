@@ -424,6 +424,18 @@ exports.examples = [
     );
   },
 }, {
+  title: 'IOS Line Height',
+  render: function() {
+    return (
+      <Text>
+        <Text style={{IOSLineHeight: 35}}>
+          A lot of space between the lines of this long passage that should
+          wrap twice. This text is vertically centered.
+        </Text>
+      </Text>
+    );
+  },
+}, {
   title: 'Empty Text',
   description: 'It\'s ok to have Text with zero or null children.',
   render: function() {

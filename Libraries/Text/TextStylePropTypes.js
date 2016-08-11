@@ -50,6 +50,12 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   letterSpacing: ReactPropTypes.number,
   lineHeight: ReactPropTypes.number,
   /**
+   * @platform ios
+   *
+   * Vertically centers the text within a line on iOS.
+   */
+  IOSLineHeight: ReactPropTypes.number,
+  /**
    * Specifies text alignment. The value 'justify' is only supported on iOS and
    * fallbacks to `left` on Android.
    */

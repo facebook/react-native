@@ -366,11 +366,11 @@ static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, 
 {
   // check if we have lineHeight set on self
   __block BOOL hasParagraphStyle = NO;
-  if (_lineHeight || _textAlign) {
+  if (_IOSLineHeight || _lineHeight || _textAlign) {
     hasParagraphStyle = YES;
   }
 
-  __block float newLineHeight = _lineHeight ?: 0.0;
+  __block float newLineHeight = _IOSLineHeight ?: _lineHeight ?: 0.0;
 
   CGFloat fontSizeMultiplier = _allowFontScaling ? _fontSizeMultiplier : 1.0;
 
@@ -422,12 +422,22 @@ static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, 
     NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
     paragraphStyle.alignment = _textAlign;
     paragraphStyle.baseWritingDirection = _writingDirection;
-    CGFloat lineHeight = round(_lineHeight * fontSizeMultiplier);
+    CGFloat lineHeight = round(newLineHeight * fontSizeMultiplier);
     if (heightOfTallestSubview > lineHeight) {
       lineHeight = ceilf(heightOfTallestSubview);
     }
     paragraphStyle.minimumLineHeight = lineHeight;
     paragraphStyle.maximumLineHeight = lineHeight;
+
+    if (_IOSLineHeight) {
+      // vertically center text
+      CGFloat fontSize = _fontSize && !isnan(_fontSize) ? _fontSize : UIFont.systemFontSize;
+      fontSize *= fontSizeMultiplier;
+
+      [attributedString addAttribute:NSBaselineOffsetAttributeName
+                               value:@(lineHeight/2 - fontSize/2)
+                               range:(NSRange){0, attributedString.length}];
+    }
     [attributedString addAttribute:NSParagraphStyleAttributeName
                              value:paragraphStyle
                              range:(NSRange){0, attributedString.length}];
@@ -633,6 +643,7 @@ RCT_TEXT_PROPERTY(FontVariant, _fontVariant, NSArray *)
 RCT_TEXT_PROPERTY(IsHighlighted, _isHighlighted, BOOL)
 RCT_TEXT_PROPERTY(LetterSpacing, _letterSpacing, CGFloat)
 RCT_TEXT_PROPERTY(LineHeight, _lineHeight, CGFloat)
+RCT_TEXT_PROPERTY(IOSLineHeight, _IOSLineHeight, CGFloat)
 RCT_TEXT_PROPERTY(NumberOfLines, _numberOfLines, NSUInteger)
 RCT_TEXT_PROPERTY(EllipsizeMode, _ellipsizeMode, NSLineBreakMode)
 RCT_TEXT_PROPERTY(TextAlign, _textAlign, NSTextAlignment)
