@@ -29,12 +29,14 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.annotations.ReactModule;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.PixelUtil;
 
 /**
  * {@link NativeModule} that allows changing the appearance of the status bar.
  */
+@ReactModule(name = "StatusBarManager")
 public class StatusBarModule extends ReactContextBaseJavaModule {
 
   private static final String ERROR_NO_ACTIVITY = "E_NO_ACTIVITY";
@@ -48,11 +50,6 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
   }
 
   @Override
-  public String getName() {
-    return "StatusBarManager";
-  }
-
-  @Override
   public @Nullable Map<String, Object> getConstants() {
     final Context context = getReactApplicationContext();
     final int heightResId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -61,8 +58,7 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
       0;
 
     return MapBuilder.<String, Object>of(
-      HEIGHT_KEY, height
-    );
+      HEIGHT_KEY, height);
   }
 
   @ReactMethod
@@ -99,8 +95,7 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
             }
             res.resolve(null);
           }
-        }
-      );
+        });
     } else {
       res.resolve(null);
     }
@@ -143,8 +138,7 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
             ViewCompat.requestApplyInsets(decorView);
             res.resolve(null);
           }
-        }
-      );
+        });
     }
   }
 
@@ -169,7 +163,6 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
 
           res.resolve(null);
         }
-      }
-    );
+      });
   }
 }

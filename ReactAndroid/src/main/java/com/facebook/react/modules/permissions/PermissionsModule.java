@@ -19,12 +19,14 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.annotations.ReactModule;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 
 /**
  * Module that exposes the Android M Permission system to JS.
  */
+@ReactModule(name = "AndroidPermissions")
 public class PermissionsModule extends ReactContextBaseJavaModule implements PermissionListener {
 
   private final SparseArray<Callback> mCallbacks;
@@ -33,11 +35,6 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
   public PermissionsModule(ReactApplicationContext reactContext) {
     super(reactContext);
     mCallbacks = new SparseArray<Callback>();
-  }
-
-  @Override
-  public String getName() {
-    return "AndroidPermissions";
   }
 
   /**

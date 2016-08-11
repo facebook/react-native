@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.annotations.ReactModule;
 
 /**
  * This class is used to verify that some JS integration tests have completed successfully.
@@ -23,17 +24,13 @@ import com.facebook.react.bridge.ReactMethod;
  * to wait for the test to run, and {#link JSIntegrationTestChecker#isTestDone()} to check if it
  * completed successfully.
  */
+@ReactModule(name = "TestModule")
 public class JSIntegrationTestChecker extends BaseJavaModule {
 
   private final CountDownLatch mLatch;
 
   public JSIntegrationTestChecker() {
     mLatch = new CountDownLatch(1);
-  }
-
-  @Override
-  public String getName() {
-    return "TestModule";
   }
 
   @ReactMethod

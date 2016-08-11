@@ -13,19 +13,16 @@ import java.util.List;
 
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.annotations.ReactModule;
 
 /**
  * Native module provides single method {@link #record} which records its single string argument
  * in calls array
  */
+@ReactModule(name = "Recording")
 public class StringRecordingModule extends BaseJavaModule {
 
   private final List<String> mCalls = new ArrayList<String>();
-
-  @Override
-  public String getName() {
-    return "Recording";
-  }
 
   @ReactMethod
   public void record(String text) {

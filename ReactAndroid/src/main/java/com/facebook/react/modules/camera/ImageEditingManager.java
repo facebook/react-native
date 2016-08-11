@@ -46,11 +46,13 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.annotations.ReactModule;
 import com.facebook.react.common.ReactConstants;
 
 /**
  * Native module that provides image cropping functionality.
  */
+@ReactModule(name = "RKImageEditingManager")
 public class ImageEditingManager extends ReactContextBaseJavaModule {
 
   private static final List<String> LOCAL_URI_PREFIXES = Arrays.asList(
@@ -89,15 +91,9 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
     ExifInterface.TAG_WHITE_BALANCE
   };
 
-
   public ImageEditingManager(ReactApplicationContext reactContext) {
     super(reactContext);
     new CleanTask(getReactApplicationContext()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-  }
-
-  @Override
-  public String getName() {
-    return "RKImageEditingManager";
   }
 
   @Override
@@ -282,7 +278,6 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
         }
 
         mSuccess.invoke(Uri.fromFile(tempFile).toString());
-
       } catch (Exception e) {
         mError.invoke(e.getMessage());
       }

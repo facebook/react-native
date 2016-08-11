@@ -24,7 +24,9 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.annotations.ReactModule;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -59,6 +61,7 @@ import com.facebook.systrace.SystraceMessage;
  *                consider implementing a pool
  * TODO(5483063): Don't dispatch the view hierarchy at the end of a batch if no UI changes occurred
  */
+@ReactModule(name = "RKUIManager")
 public class UIManagerModule extends ReactContextBaseJavaModule implements
     OnBatchCompleteListener, LifecycleEventListener {
 
@@ -93,11 +96,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    */
   public UIImplementation getUIImplementation() {
     return mUIImplementation;
-  }
-
-  @Override
-  public String getName() {
-    return "RKUIManager";
   }
 
   @Override
