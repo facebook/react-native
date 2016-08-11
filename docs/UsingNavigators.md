@@ -133,7 +133,7 @@ export default class UsingNavigators extends Component {
       <Navigator
         initialRoute={{ title: 'My Initial Scene' }}
         renderScene={(route, navigator) =>
-          <MyScene title={route.title} nav={navigator} />
+          <MyScene title={route.title} navigator={navigator} />
         }
       />
     )
@@ -143,7 +143,7 @@ export default class UsingNavigators extends Component {
 class MyScene extends Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
-    nav: PropTypes.object.isRequired,
+    navigator: PropTypes.object.isRequired,
   }
 
   constructor(props, context) {
@@ -154,12 +154,12 @@ class MyScene extends Component {
 
   // Function to call when a new scene should be displayed           
   _onForward() {    
-    this.props.nav.push({ title: 'Next Scene' });
+    this.props.navigator.push({ title: 'Next Scene' });
   }
 
   // Function to call to go back to the previous scene
   _onBack() {
-    this.props.nav.pop();
+    this.props.navigator.pop();
   }
 
   render() {
