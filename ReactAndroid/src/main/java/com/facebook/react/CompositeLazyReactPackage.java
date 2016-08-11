@@ -45,7 +45,7 @@ public class CompositeLazyReactPackage extends LazyReactPackage {
     // This would require us to use ModuleHolder here
     final Map<Class<?>, ModuleSpec> moduleMap = new HashMap<>();
     for (LazyReactPackage reactPackage: mChildReactPackages) {
-      for (ModuleSpec module: reactPackage.getNativeModules(reactContext)) {
+      for (ModuleSpec module : reactPackage.getNativeModules(reactContext)) {
         moduleMap.put(module.getType(), module);
       }
     }
