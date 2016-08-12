@@ -7,7 +7,7 @@ module.exports = function applyParams(str, params, prefix) {
       const name = toCamelCase(prefix) + '_' + param;
 
       return params[param]
-        ? `this.getResources().getString(R.string.${name})`
+        ? `getResources().getString(R.string.${name})`
         : null;
     }
   );
