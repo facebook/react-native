@@ -319,6 +319,19 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     }
   }
 
+  @Override
+  public CSSAlign getAlignContent() {
+    return style.alignContent;
+  }
+
+  @Override
+  public void setAlignContent(CSSAlign alignContent) {
+    if (style.alignContent != alignContent) {
+      style.alignContent = alignContent;
+      dirty();
+    }
+  }
+
   /**
    * Get this node's position type, as defined by style.
    */

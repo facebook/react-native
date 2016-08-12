@@ -230,6 +230,20 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
     jni_CSSNodeStyleSetAlignSelf(mNativePointer, alignSelf.ordinal());
   }
 
+  private native int jni_CSSNodeStyleGetAlignContent(int nativePointer);
+  @Override
+  public CSSAlign getAlignContent() {
+    assertNativeInstance();
+    return CSSAlign.values()[jni_CSSNodeStyleGetAlignContent(mNativePointer)];
+  }
+
+  private native void jni_CSSNodeStyleSetAlignContent(int nativePointer, int alignContent);
+  @Override
+  public void setAlignContent(CSSAlign alignContent) {
+    assertNativeInstance();
+    jni_CSSNodeStyleSetAlignContent(mNativePointer, alignContent.ordinal());
+  }
+
   private native int jni_CSSNodeStyleGetPositionType(int nativePointer);
   @Override
   public CSSPositionType getPositionType() {
