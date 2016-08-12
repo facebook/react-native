@@ -347,7 +347,6 @@ exports.examples = [
   },
   {
     title: 'Animated value listener',
-    platform: 'android',
     render: function() {
       return (
         <ValueListenerExample />
