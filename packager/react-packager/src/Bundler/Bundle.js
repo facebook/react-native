@@ -59,7 +59,7 @@ class Bundle extends BundleBase {
       this._addRequireCall(super.getMainModuleId());
     }
 
-    super.finalize(options);
+    super.finalize();
   }
 
   _addRequireCall(moduleId) {

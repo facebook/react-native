@@ -8,8 +8,6 @@
  */
 'use strict';
 
-const NO_OPTIONS = {};
-
 class ResolutionResponse {
   constructor({transformOptions}) {
     this.transformOptions = transformOptions;
@@ -78,10 +76,8 @@ class ResolutionResponse {
     this.numPrependedDependencies += 1;
   }
 
-  setResolvedDependencyPairs(module, pairs, options = NO_OPTIONS) {
-    if (!options.ignoreFinalized) {
-      this._assertNotFinalized();
-    }
+  setResolvedDependencyPairs(module, pairs) {
+    this._assertNotFinalized();
     const hash = module.hash();
     if (this._mappings[hash] == null) {
       this._mappings[hash] = pairs;
