@@ -47,6 +47,8 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   void setAlignItems(CSSAlign alignItems);
   CSSAlign getAlignSelf();
   void setAlignSelf(CSSAlign alignSelf);
+  CSSAlign getAlignContent();
+  void setAlignContent(CSSAlign alignContent);
   CSSPositionType getPositionType();
   void setPositionType(CSSPositionType positionType);
   void setWrap(CSSWrap flexWrap);
