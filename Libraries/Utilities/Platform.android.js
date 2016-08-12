@@ -14,6 +14,8 @@
 
 var Platform = {
   OS: 'android',
+  isIos: false,
+  isAndroid: true,
   get Version() { return require('NativeModules').AndroidConstants.Version; },
   select: (obj: Object) => obj.android,
 };
