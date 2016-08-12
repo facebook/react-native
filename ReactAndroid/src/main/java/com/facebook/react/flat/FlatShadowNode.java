@@ -184,12 +184,24 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
   @Override
   public final int getScreenWidth() {
-    return mViewRight - mViewLeft;
+    if (mountsToView()) {
+      return mViewRight - mViewLeft;
+    } else {
+      // this is not technically correct since hitSlop affects the NodeRegion, but it's a temporary
+      // work around for now, since mView{Right,Left} are only set for views
+      return Math.round(mNodeRegion.mRight - mNodeRegion.mLeft);
+    }
   }
 
   @Override
   public final int getScreenHeight() {
-    return mViewBottom - mViewTop;
+    if (mountsToView()) {
+      return mViewBottom - mViewTop;
+    } else {
+      // this is not technically correct since hitSlop affects the NodeRegion, but it's a temporary
+      // work around for now, since mView{Bottom,Top} are only set for views
+      return Math.round(mNodeRegion.mBottom - mNodeRegion.mTop);
+    }
   }
 
   @Override
