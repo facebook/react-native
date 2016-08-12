@@ -11,6 +11,8 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import android.graphics.Rect;
+
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -18,12 +20,17 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
+/**
+ * Node for a react View.
+ */
 /* package */ final class RCTView extends FlatShadowNode {
 
   private @Nullable DrawBorder mDrawBorder;
 
   boolean mRemoveClippedSubviews;
   boolean mHorizontal;
+
+  private @Nullable Rect mHitSlop;
 
   @Override
   /* package */ void handleUpdateProperties(ReactStylesDiffMap styles) {
@@ -123,9 +130,41 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
     getMutableBorder().setBorderStyle(borderStyle);
   }
 
+  @ReactProp(name = "hitSlop")
+  public void setHitSlop(@Nullable ReadableMap hitSlop) {
+    if (hitSlop == null) {
+      mHitSlop = null;
+    } else {
+      mHitSlop = new Rect(
+          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("left")),
+          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("top")),
+          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("right")),
+          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("bottom")));
+    }
+  }
+
   @ReactProp(name = "pointerEvents")
   public void setPointerEvents(@Nullable String pointerEventsStr) {
     forceMountToView();
+  }
+
+  @Override
+  /* package */ void updateNodeRegion(
+      float left,
+      float top,
+      float right,
+      float bottom,
+      boolean isVirtual) {
+    if (mHitSlop != null) {
+      left -= mHitSlop.left;
+      top -= mHitSlop.top;
+      bottom += mHitSlop.bottom;
+      right += mHitSlop.right;
+    }
+
+    if (!getNodeRegion().matches(left, top, right, bottom, isVirtual)) {
+      setNodeRegion(new NodeRegion(left, top, right, bottom, getReactTag(), isVirtual));
+    }
   }
 
   private DrawBorder getMutableBorder() {

@@ -35,6 +35,16 @@ package com.facebook.react.flat;
     mIsVirtual = isVirtual;
   }
 
+  /* package */ final boolean matches(
+      float left,
+      float top,
+      float right,
+      float bottom,
+      boolean isVirtual) {
+    return left == mLeft && top == mTop && bottom == mBottom && right == mRight &&
+        isVirtual == mIsVirtual;
+  }
+
   /* package */ final boolean withinBounds(float touchX, float touchY) {
       return mLeft <= touchX && touchX < mRight && mTop <= touchY && touchY < mBottom;
   }

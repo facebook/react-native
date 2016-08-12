@@ -32,6 +32,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
+import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactCompoundViewGroup;
@@ -48,7 +49,7 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
  */
 /* package */ final class FlatViewGroup extends ViewGroup
     implements ReactInterceptingViewGroup, ReactClippingViewGroup,
-    ReactCompoundViewGroup, ReactPointerEventsView, FlatMeasuredViewGroup {
+    ReactCompoundViewGroup, ReactHitSlopView, ReactPointerEventsView, FlatMeasuredViewGroup {
   /**
    * Helper class that allows AttachDetachListener to invalidate the hosting View.
    */
@@ -108,6 +109,8 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
 
   private static final ArrayList<View> EMPTY_DETACHED_VIEWS = new ArrayList<>(0);
   private @Nullable DrawCommandManager mDrawCommandManager;
+
+  private @Nullable Rect mHitSlopRect;
 
   /* package */ FlatViewGroup(Context context) {
     super(context);
@@ -910,5 +913,14 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
   @Override
   public boolean getRemoveClippedSubviews() {
     return mDrawCommandManager != null;
+  }
+
+  @Override
+  public @Nullable Rect getHitSlopRect() {
+    return mHitSlopRect;
+  }
+
+  public void setHitSlopRect(@Nullable Rect rect) {
+    mHitSlopRect = rect;
   }
 }

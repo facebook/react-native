@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import java.util.Map;
 
+import android.graphics.Rect;
 import android.os.Build;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -123,5 +124,19 @@ import com.facebook.react.views.view.ReactDrawableHelper;
     }
     // default or invalid
     return PointerEvents.AUTO;
+  }
+
+  @ReactProp(name = "hitSlop")
+  public void setHitSlop(FlatViewGroup view, @Nullable ReadableMap hitSlop) {
+    if (hitSlop == null) {
+      view.setHitSlopRect(null);
+    } else {
+      view.setHitSlopRect(new Rect(
+          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("left")),
+          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("top")),
+          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("right")),
+          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("bottom"))
+      ));
+    }
   }
 }
