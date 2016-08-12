@@ -30,7 +30,6 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.annotations.ReactModule;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
@@ -50,7 +49,6 @@ import okhttp3.ResponseBody;
 /**
  * Implements the XMLHttpRequest JavaScript interface.
  */
-@ReactModule(name = "RCTNetworking")
 public final class NetworkingModule extends ReactContextBaseJavaModule {
 
   private static final String CONTENT_ENCODING_HEADER_NAME = "content-encoding";
@@ -135,6 +133,11 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   @Override
   public void initialize() {
     mCookieJarContainer.setCookieJar(new JavaNetCookieJar(mCookieHandler));
+  }
+
+  @Override
+  public String getName() {
+    return "RCTNetworking";
   }
 
   @Override

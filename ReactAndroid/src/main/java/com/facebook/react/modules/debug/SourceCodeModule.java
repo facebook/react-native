@@ -14,19 +14,26 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.annotations.ReactModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 
 /**
  * Module that exposes the URL to the source code map (used for exception stack trace parsing) to JS
  */
-@ReactModule(name = "RCTSourceCode")
 public class SourceCodeModule extends BaseJavaModule {
 
   private final String mSourceUrl;
 
   public SourceCodeModule(String sourceUrl) {
     mSourceUrl = sourceUrl;
+  }
+
+  @Override
+  public String getName() {
+    return "RCTSourceCode";
   }
 
   @Override

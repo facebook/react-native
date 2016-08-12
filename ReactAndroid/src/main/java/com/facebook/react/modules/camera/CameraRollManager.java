@@ -50,7 +50,6 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
-import com.facebook.react.bridge.annotations.ReactModule;
 import com.facebook.react.common.ReactConstants;
 
 // TODO #6015104: rename to something less iOSish
@@ -58,7 +57,6 @@ import com.facebook.react.common.ReactConstants;
  * {@link NativeModule} that allows JS to interact with the photos on the device (i.e.
  * {@link MediaStore.Images}).
  */
-@ReactModule(name = "RKCameraRollManager")
 public class CameraRollManager extends ReactContextBaseJavaModule {
 
   private static final String ERROR_UNABLE_TO_LOAD = "E_UNABLE_TO_LOAD";
@@ -98,6 +96,11 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
 
   public CameraRollManager(ReactApplicationContext reactContext) {
     super(reactContext);
+  }
+
+  @Override
+  public String getName() {
+    return "RKCameraRollManager";
   }
 
   @Override
@@ -437,4 +440,5 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       node.putMap("location", location);
     }
   }
+
 }
