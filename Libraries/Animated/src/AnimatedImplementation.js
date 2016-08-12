@@ -11,7 +11,6 @@
  */
 'use strict';
 
-var DeviceEventEmitter = require('RCTDeviceEventEmitter');
 var InteractionManager = require('InteractionManager');
 var Interpolation = require('Interpolation');
 var React = require('React');
@@ -750,13 +749,12 @@ class AnimatedValue extends AnimatedWithChildren {
   }
 
   _startListeningToNativeValueUpdates() {
-    if (this.__nativeAnimatedValueListener ||
-        !NativeAnimatedHelper.supportsNativeListener()) {
+    if (this.__nativeAnimatedValueListener) {
       return;
     }
 
     NativeAnimatedAPI.startListeningToAnimatedNodeValue(this.__getNativeTag());
-    this.__nativeAnimatedValueListener = DeviceEventEmitter.addListener(
+    this.__nativeAnimatedValueListener = NativeAnimatedHelper.nativeEventEmitter.addListener(
       'onAnimatedValueUpdate',
       (data) => {
         if (data.tag !== this.__getNativeTag()) {
@@ -768,8 +766,7 @@ class AnimatedValue extends AnimatedWithChildren {
   }
 
   _stopListeningForNativeValueUpdates() {
-    if (!this.__nativeAnimatedValueListener ||
-        !NativeAnimatedHelper.supportsNativeListener()) {
+    if (!this.__nativeAnimatedValueListener) {
       return;
     }
 
