@@ -28,7 +28,7 @@ function timeoutableDenodeify(fsFunc, timeout) {
   };
 }
 
-const FS_OP_TIMEOUT = 15000;
+const FS_OP_TIMEOUT = parseInt(process.env.REACT_NATIVE_FSOP_TIMEOUT, 10) || 15000;
 
 const stat = timeoutableDenodeify(fs.stat, FS_OP_TIMEOUT);
 const readDir = timeoutableDenodeify(fs.readdir, FS_OP_TIMEOUT);
