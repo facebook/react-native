@@ -15,17 +15,20 @@ import java.util.concurrent.TimeUnit;
 
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.annotations.ReactModule;
 
 /**
  * Native module provides single method {@link #record} which records its single int argument
  * in calls array
  */
-@ReactModule(name = "Recording")
 public class IntRecordingModule extends BaseJavaModule {
 
   private final List<Integer> mCalls = new ArrayList<>();
   private final CountDownLatch mCountDownLatch = new CountDownLatch(1);
+
+  @Override
+  public String getName() {
+    return "Recording";
+  }
 
   @ReactMethod
   public void record(int i) {

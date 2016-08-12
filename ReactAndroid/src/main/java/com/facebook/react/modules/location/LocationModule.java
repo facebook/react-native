@@ -27,14 +27,12 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.annotations.ReactModule;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 /**
  * Native module that exposes Geolocation to JS.
  */
-@ReactModule(name = "LocationObserver")
 public class LocationModule extends ReactContextBaseJavaModule {
 
   private @Nullable String mWatchedProvider;
@@ -65,6 +63,11 @@ public class LocationModule extends ReactContextBaseJavaModule {
 
   public LocationModule(ReactApplicationContext reactContext) {
     super(reactContext);
+  }
+
+  @Override
+  public String getName() {
+    return "LocationObserver";
   }
 
   private static class LocationOptions {

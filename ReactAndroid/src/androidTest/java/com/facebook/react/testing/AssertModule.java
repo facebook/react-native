@@ -12,7 +12,6 @@ import javax.annotation.Nullable;
 
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.annotations.ReactModule;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -20,12 +19,16 @@ import static junit.framework.Assert.assertTrue;
 /**
  * NativeModule for tests that allows assertions from JS to propagate to Java.
  */
-@ReactModule(name = "Assert")
 public class AssertModule extends BaseJavaModule {
 
   private boolean mGotSuccess;
   private boolean mGotFailure;
   private @Nullable String mFirstFailureStackTrace;
+
+  @Override
+  public String getName() {
+    return "Assert";
+  }
 
   @ReactMethod
   public void fail(String stackTrace) {

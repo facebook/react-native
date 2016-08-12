@@ -16,13 +16,16 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.annotations.ReactModule;
 
-@ReactModule(name = "Vibration")
 public class VibrationModule extends ReactContextBaseJavaModule {
 
   public VibrationModule(ReactApplicationContext reactContext) {
     super(reactContext);
+  }
+
+  @Override
+  public String getName() {
+    return "Vibration";
   }
 
   @ReactMethod

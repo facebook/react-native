@@ -14,21 +14,33 @@ import android.content.ClipboardManager;
 import android.content.ClipData;
 import android.os.Build;
 
+import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.annotations.ReactModule;
+import com.facebook.react.common.ReactConstants;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A module that allows JS to get/set clipboard contents.
  */
-@ReactModule(name = "Clipboard")
 public class ClipboardModule extends ReactContextBaseJavaModule {
 
   public ClipboardModule(ReactApplicationContext reactContext) {
     super(reactContext);
+  }
+
+  @Override
+  public String getName() {
+    return "Clipboard";
   }
 
   private ClipboardManager getClipboardService() {
@@ -36,7 +48,7 @@ public class ClipboardModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void getString(Promise promise) {
+  public void getString(Promise promise){
     try {
       ClipboardManager clipboard = getClipboardService();
       ClipData clipData = clipboard.getPrimaryClip();
@@ -48,7 +60,7 @@ public class ClipboardModule extends ReactContextBaseJavaModule {
       } else {
         promise.resolve("");
       }
-    } catch (Exception e) {
+    } catch(Exception e) {
       promise.reject(e);
     }
   }

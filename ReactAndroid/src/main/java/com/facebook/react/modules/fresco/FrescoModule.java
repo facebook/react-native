@@ -25,7 +25,6 @@ import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.facebook.imagepipeline.listener.RequestListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.annotations.ReactModule;
 import com.facebook.react.modules.common.ModuleDataCleaner;
 import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.facebook.soloader.SoLoader;
@@ -37,7 +36,6 @@ import okhttp3.OkHttpClient;
  *
  * <p>Does not expose any methods to JavaScript code. For initialization and cleanup only.
  */
-@ReactModule(name = "FrescoModule", needsEagerInit = true)
 public class FrescoModule extends ReactContextBaseJavaModule implements
     ModuleDataCleaner.Cleanable {
 
@@ -73,6 +71,11 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     Context context = getReactApplicationContext().getApplicationContext();
     Fresco.initialize(context, mConfig);
     mConfig = null;
+  }
+
+  @Override
+  public String getName() {
+    return "FrescoModule";
   }
 
   @Override

@@ -11,6 +11,7 @@ package com.facebook.react.modules.timepicker;
 
 import javax.annotation.Nullable;
 
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.DialogFragment;
@@ -29,14 +30,12 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
-import com.facebook.react.bridge.annotations.ReactModule;
 import com.facebook.react.common.annotations.VisibleForTesting;
 
 /**
  * {@link NativeModule} that allows JS to show a native time picker dialog and get called back when
  * the user selects a time.
  */
-@ReactModule(name = "TimePickerAndroid")
 public class TimePickerDialogModule extends ReactContextBaseJavaModule {
 
   @VisibleForTesting
@@ -52,6 +51,11 @@ public class TimePickerDialogModule extends ReactContextBaseJavaModule {
 
   public TimePickerDialogModule(ReactApplicationContext reactContext) {
     super(reactContext);
+  }
+
+  @Override
+  public String getName() {
+    return "TimePickerAndroid";
   }
 
   private class TimePickerDialogListener implements OnTimeSetListener, OnDismissListener {
@@ -102,7 +106,7 @@ public class TimePickerDialogModule extends ReactContextBaseJavaModule {
       android.support.v4.app.FragmentManager fragmentManager =
           ((android.support.v4.app.FragmentActivity) activity).getSupportFragmentManager();
       android.support.v4.app.DialogFragment oldFragment =
-          (android.support.v4.app.DialogFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);
+          (android.support.v4.app.DialogFragment)fragmentManager.findFragmentByTag(FRAGMENT_TAG);
       if (oldFragment != null) {
         oldFragment.dismiss();
       }
