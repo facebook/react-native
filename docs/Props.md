@@ -31,6 +31,18 @@ class Bananas extends Component {
 AppRegistry.registerComponent('Bananas', () => Bananas);
 ```
 
+## Registering the Top-Level Component
+
+`AppRegistry.registerComponent` exposes a React Component to `AppDelegate.m`
+(for iOS) and `MainActivity.java` (for android). Conceptually, we can *think* of
+the first argument to `AppRegistry.registerComponent` as the name of a function,
+and the second argument as the function itself. This function will be invoked by
+`AppDelegate.m` or `MainActivity.java` to mount the root React Native component.
+It is therefore important that the first argument to
+`AppRegistry.registerComponent` matches the option to `moduleName` (in
+`AppDelegate.m`) and / or the return value of `getMainComponentName` (in
+`MainActivity.java`).
+
 Notice that `{pic}` is surrounded by braces, to embed the variable `pic` into JSX. You can put any JavaScript expression inside braces in JSX.
 
 Your own components can also use `props`. This lets you make a single component
