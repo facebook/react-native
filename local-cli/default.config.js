@@ -2,6 +2,7 @@
 
 var blacklist = require('../packager/blacklist');
 var path = require('path');
+var rnpmConfig = require('./rnpm/core/src/config');
 
 /**
  * Default configuration for the CLI.
@@ -15,6 +16,9 @@ var config = {
     return getRoots();
   },
 
+  getProjectConfig: rnpmConfig.getProjectConfig,
+  getDependencyConfig: rnpmConfig.getDependencyConfig,
+
   /**
    * Specify where to look for assets that are referenced using
    * `image!<image_name>`. Asset directories for images referenced using
@@ -25,12 +29,29 @@ var config = {
   },
 
   /**
+   * Specify any additional asset extentions to be used by the packager.
+   * For example, if you want to include a .ttf file, you would return ['ttf']
+   * from here and use `require('./fonts/example.ttf')` inside your app.
+   */
+  getAssetExts() {
+    return [];
+  },
+
+  /**
    * Returns a regular expression for modules that should be ignored by the
    * packager on a given platform.
    */
   getBlacklistRE(platform) {
     return blacklist(platform);
-  }
+  },
+
+  /**
+   * Returns the path to a custom transformer. This can also be overridden
+   * with the --transformer commandline argument.
+   */
+  getTransformModulePath() {
+    return require.resolve('../packager/transformer');
+  },
 };
 
 function getRoots() {

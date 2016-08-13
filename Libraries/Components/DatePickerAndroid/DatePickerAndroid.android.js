@@ -62,7 +62,7 @@ class DatePickerAndroid {
    * when using the `minDate` and `maxDate` options.
    */
   static async open(options: Object): Promise<Object> {
-    let optionsMs = options;
+    const optionsMs = options;
     if (optionsMs) {
       _toMillis(options, 'date');
       _toMillis(options, 'minDate');

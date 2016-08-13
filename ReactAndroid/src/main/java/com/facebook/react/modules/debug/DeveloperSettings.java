@@ -38,4 +38,15 @@ public interface DeveloperSettings {
    * @return Whether element inspector is enabled.
    */
   boolean isElementInspectorEnabled();
+
+  /**
+   * @return Whether remote JS debugging is enabled.
+   */
+  boolean isRemoteJSDebugEnabled();
+
+  /**
+   * Enable/Disable remote JS debugging.
+   */
+  void setRemoteJSDebugEnabled(boolean remoteJSDebugEnabled);
+
 }

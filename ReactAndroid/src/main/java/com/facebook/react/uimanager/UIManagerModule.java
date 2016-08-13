@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -23,7 +24,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.uimanager.DisplayMetricsHolder;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -64,6 +65,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   // Keep in sync with ReactIOSTagHandles JS module - see that file for an explanation on why the
   // increment here is 10
   private static final int ROOT_VIEW_TAG_INCREMENT = 10;
+  private static final boolean DEBUG = false;
 
   private final EventDispatcher mEventDispatcher;
   private final Map<String, Object> mModuleConstants;
@@ -141,9 +143,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    * CatalystApplicationFragment as an example.
    *
    * TODO(6242243): Make addMeasuredRootView thread safe
-   * NB: this method is horribly not-thread-safe, the only reason it works right now is because
-   * it's called exactly once and is called before any JS calls are made. As soon as that fact no
-   * longer holds, this method will need to be fixed.
+   * NB: this method is horribly not-thread-safe.
    */
   public int addMeasuredRootView(final SizeMonitoringFrameLayout rootView) {
     final int tag = mNextRootViewTag;
@@ -168,18 +168,18 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.registerRootView(rootView, tag, width, height, themedRootContext);
 
     rootView.setOnSizeChangedListener(
-        new SizeMonitoringFrameLayout.OnSizeChangedListener() {
-          @Override
-          public void onSizeChanged(final int width, final int height, int oldW, int oldH) {
-            getReactApplicationContext().runOnNativeModulesQueueThread(
-                new Runnable() {
-                  @Override
-                  public void run() {
-                    updateRootNodeSize(tag, width, height);
-                  }
-                });
-          }
-        });
+      new SizeMonitoringFrameLayout.OnSizeChangedListener() {
+        @Override
+        public void onSizeChanged(final int width, final int height, int oldW, int oldH) {
+          getReactApplicationContext().runOnNativeModulesQueueThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                updateRootNodeSize(tag, width, height);
+              }
+            });
+        }
+      });
 
     return tag;
   }
@@ -197,11 +197,21 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   @ReactMethod
   public void createView(int tag, String className, int rootViewTag, ReadableMap props) {
+    if (DEBUG) {
+      FLog.d(
+          ReactConstants.TAG,
+          "(UIManager.createView) tag: " + tag + ", class: " + className + ", props: " + props);
+    }
     mUIImplementation.createView(tag, className, rootViewTag, props);
   }
 
   @ReactMethod
   public void updateView(int tag, String className, ReadableMap props) {
+    if (DEBUG) {
+      FLog.d(
+          ReactConstants.TAG,
+          "(UIManager.updateView) tag: " + tag + ", class: " + className + ", props: " + props);
+    }
     mUIImplementation.updateView(tag, className, props);
   }
 
@@ -224,6 +234,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       @Nullable ReadableArray addChildTags,
       @Nullable ReadableArray addAtIndices,
       @Nullable ReadableArray removeFrom) {
+    if (DEBUG) {
+      FLog.d(
+          ReactConstants.TAG,
+          "(UIManager.manageChildren) tag: " + viewTag +
+          ", moveFrom: " + moveFrom +
+          ", moveTo: " + moveTo +
+          ", addTags: " + addChildTags +
+          ", atIndices: " + addAtIndices +
+          ", removeFrom: " + removeFrom);
+    }
     mUIImplementation.manageChildren(
         viewTag,
         moveFrom,
@@ -244,6 +264,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public void setChildren(
     int viewTag,
     ReadableArray childrenTags) {
+    if (DEBUG) {
+      FLog.d(
+          ReactConstants.TAG,
+          "(UIManager.setChildren) tag: " + viewTag + ", children: " + childrenTags);
+    }
     mUIImplementation.setChildren(viewTag, childrenTags);
   }
 
@@ -338,10 +363,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       final ReadableArray point,
       final Callback callback) {
     mUIImplementation.findSubviewIn(
-        reactTag,
-        Math.round(PixelUtil.toPixelFromDIP(point.getDouble(0))),
-        Math.round(PixelUtil.toPixelFromDIP(point.getDouble(1))),
-        callback);
+      reactTag,
+      Math.round(PixelUtil.toPixelFromDIP(point.getDouble(0))),
+      Math.round(PixelUtil.toPixelFromDIP(point.getDouble(1))),
+      callback);
   }
 
   /**
@@ -472,5 +497,25 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void sendAccessibilityEvent(int tag, int eventType) {
     mUIImplementation.sendAccessibilityEvent(tag, eventType);
+  }
+
+  /**
+   * Schedule a block to be executed on the UI thread. Useful if you need to execute
+   * view logic after all currently queued view updates have completed.
+   *
+   * @param block that contains UI logic you want to execute.
+   *
+   * Usage Example:
+
+   UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+   uiManager.addUIBlock(new UIBlock() {
+     public void execute (NativeViewHierarchyManager nvhm) {
+       View view = nvhm.resolveView(tag);
+       // ...execute your code on View (e.g. snapshot the view)
+     }
+   });
+     */
+  public void addUIBlock (UIBlock block) {
+    mUIImplementation.addUIBlock(block);
   }
 }

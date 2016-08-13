@@ -12,46 +12,48 @@
 'use strict';
 
 const Map = require('Map');
+const NativeEventEmitter = require('NativeEventEmitter');
 const NativeModules = require('NativeModules');
 const Platform = require('Platform');
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 const RCTNetInfo = NativeModules.NetInfo;
 const deprecatedCallback = require('deprecatedCallback');
+
+const NetInfoEventEmitter = new NativeEventEmitter(RCTNetInfo);
 
 const DEVICE_CONNECTIVITY_EVENT = 'networkStatusDidChange';
 
 type ChangeEventName = $Enum<{
-  change: string;
+  change: string,
 }>;
 
 type ReachabilityStateIOS = $Enum<{
-  cell: string;
-  none: string;
-  unknown: string;
-  wifi: string;
+  cell: string,
+  none: string,
+  unknown: string,
+  wifi: string,
 }>;
 
 type ConnectivityStateAndroid = $Enum<{
-  NONE: string;
-  MOBILE: string;
-  WIFI: string;
-  MOBILE_MMS: string;
-  MOBILE_SUPL: string;
-  MOBILE_DUN: string;
-  MOBILE_HIPRI: string;
-  WIMAX: string;
-  BLUETOOTH: string;
-  DUMMY: string;
-  ETHERNET: string;
-  MOBILE_FOTA: string;
-  MOBILE_IMS: string;
-  MOBILE_CBS: string;
-  WIFI_P2P: string;
-  MOBILE_IA: string;
-  MOBILE_EMERGENCY: string;
-  PROXY: string;
-  VPN: string;
-  UNKNOWN: string;
+  NONE: string,
+  MOBILE: string,
+  WIFI: string,
+  MOBILE_MMS: string,
+  MOBILE_SUPL: string,
+  MOBILE_DUN: string,
+  MOBILE_HIPRI: string,
+  WIMAX: string,
+  BLUETOOTH: string,
+  DUMMY: string,
+  ETHERNET: string,
+  MOBILE_FOTA: string,
+  MOBILE_IMS: string,
+  MOBILE_CBS: string,
+  WIFI_P2P: string,
+  MOBILE_IA: string,
+  MOBILE_EMERGENCY: string,
+  PROXY: string,
+  VPN: string,
+  UNKNOWN: string,
 }>;
 
 
@@ -176,7 +178,7 @@ const NetInfo = {
     eventName: ChangeEventName,
     handler: Function
   ): {remove: () => void} {
-    const listener = RCTDeviceEventEmitter.addListener(
+    const listener = NetInfoEventEmitter.addListener(
       DEVICE_CONNECTIVITY_EVENT,
       (appStateData) => {
         handler(appStateData.network_info);
@@ -207,7 +209,7 @@ const NetInfo = {
    * Returns a promise that resolves with one of the connectivity types listed
    * above.
    */
-  fetch(): Promise {
+  fetch(): Promise<any> {
     return RCTNetInfo.getCurrentConnectivity().then(resp => resp.network_info);
   },
 
@@ -248,14 +250,14 @@ const NetInfo = {
       _isConnectedSubscriptions.delete(handler);
     },
 
-    fetch(): Promise {
+    fetch(): Promise<any> {
       return NetInfo.fetch().then(
         (connection) => _isConnected(connection)
       );
     },
   },
 
-  isConnectionExpensive(): Promise {
+  isConnectionExpensive(): Promise<any> {
     return deprecatedCallback(
       Platform.OS === 'android' ? RCTNetInfo.isConnectionMetered() : Promise.reject(new Error('Currently not supported on iOS')),
       Array.prototype.slice.call(arguments),

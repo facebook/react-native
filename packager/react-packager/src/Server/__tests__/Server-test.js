@@ -14,23 +14,25 @@ jest.setMock('worker-farm', function() { return () => {}; })
     .setMock('timers', { setImmediate: (fn) => setTimeout(fn, 0) })
     .setMock('uglify-js')
     .setMock('crypto')
-    .setMock('source-map', { SourceMapConsumer: (fn) => {}})
+    .setMock('source-map', { SourceMapConsumer: function(fn) {}})
     .mock('../../Bundler')
     .mock('../../AssetServer')
     .mock('../../lib/declareOpts')
-    .mock('node-haste')
+    .mock('../../node-haste')
     .mock('../../Activity');
-
-const Promise = require('promise');
-const SourceMapConsumer = require('source-map').SourceMapConsumer;
-
-const Bundler = require('../../Bundler');
-const Server = require('../');
-const AssetServer = require('../../AssetServer');
 
 let FileWatcher;
 
 describe('processRequest', () => {
+  let SourceMapConsumer, Bundler, Server, AssetServer, Promise;
+  beforeEach(() => {
+    SourceMapConsumer = require('source-map').SourceMapConsumer;
+    Bundler = require('../../Bundler');
+    Server = require('../');
+    AssetServer = require('../../AssetServer');
+    Promise = require('promise');
+  });
+
   let server;
 
   const options = {
@@ -62,7 +64,7 @@ describe('processRequest', () => {
   let triggerFileChange;
 
   beforeEach(() => {
-    FileWatcher = require('node-haste').FileWatcher;
+    FileWatcher = require('../../node-haste').FileWatcher;
     Bundler.prototype.bundle = jest.fn(() =>
       Promise.resolve({
         getSource: () => 'this is the source',
@@ -137,7 +139,7 @@ describe('processRequest', () => {
       requestHandler,
       'index.ios.includeRequire.bundle'
     ).then(response => {
-      expect(response.body).toEqual('this is the source')
+      expect(response.body).toEqual('this is the source');
       expect(Bundler.prototype.bundle).toBeCalledWith({
         entryFile: 'index.ios.js',
         inlineSourceMap: false,
@@ -349,6 +351,19 @@ describe('processRequest', () => {
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
       expect(res.end).toBeCalledWith('i am image');
     });
+
+    it('should serve range request', () => {
+      const req = {url: '/assets/imgs/a.png?platform=ios', headers: {range: 'bytes=0-3'}};
+      const res = {end: jest.fn(), writeHead: jest.fn()};
+      const mockData = 'i am image';
+
+      AssetServer.prototype.get.mockImpl(() => Promise.resolve(mockData));
+
+      server.processRequest(req, res);
+      jest.runAllTimers();
+      expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
+      expect(res.end).toBeCalledWith(mockData.slice(0, 4));
+    });
   });
 
   describe('buildbundle(options)', () => {
@@ -398,7 +413,7 @@ describe('processRequest', () => {
   describe('/symbolicate endpoint', () => {
     pit('should symbolicate given stack trace', () => {
       const body = JSON.stringify({stack: [{
-        file: 'foo.bundle?platform=ios',
+        file: 'http://foo.bundle?platform=ios',
         lineNumber: 2100,
         column: 44,
         customPropShouldBeLeftUnchanged: 'foo',
@@ -425,6 +440,28 @@ describe('processRequest', () => {
             lineNumber: 21,
             column: 4,
             customPropShouldBeLeftUnchanged: 'foo',
+          }]
+        });
+      });
+    });
+
+    pit('ignores `/debuggerWorker.js` stack frames', () => {
+      const body = JSON.stringify({stack: [{
+        file: 'http://localhost:8081/debuggerWorker.js',
+        lineNumber: 123,
+        column: 456,
+      }]});
+
+      return makeRequest(
+        requestHandler,
+        '/symbolicate',
+        { rawBody: body }
+      ).then(response => {
+        expect(JSON.parse(response.body)).toEqual({
+          stack: [{
+            file: 'http://localhost:8081/debuggerWorker.js',
+            lineNumber: 123,
+            column: 456,
           }]
         });
       });

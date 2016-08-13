@@ -19,19 +19,40 @@ const processColor = require('processColor');
 
 const StatusBarManager = require('NativeModules').StatusBarManager;
 
+/**
+ * Status bar style
+ */
 export type StatusBarStyle = $Enum<{
+  /**
+   * Default status bar style
+   */
   'default': string,
+  /**
+   * Dark background style
+   */
   'light-content': string,
 }>;
 
+/**
+ * Status bar animation
+ */
 export type StatusBarAnimation = $Enum<{
+  /**
+   * No animation
+   */
   'none': string,
+  /**
+   * Fade animation
+   */
   'fade': string,
+  /**
+   * Slide animation
+   */
   'slide': string,
 }>;
 
 type DefaultProps = {
-  animated: boolean;
+  animated: boolean,
 };
 
 /**
@@ -39,7 +60,7 @@ type DefaultProps = {
  */
 function mergePropsStack(propsStack: Array<Object>, defaultValues: Object): Object {
   return propsStack.reduce((prev, cur) => {
-    for (let prop in cur) {
+    for (const prop in cur) {
       if (cur[prop] != null) {
         prev[prop] = cur[prop];
       }
@@ -107,84 +128,120 @@ function createStackEntry(props: any): any {
  * set by the static API will get overriden by the one set by the component in
  * the next render.
  */
-const StatusBar = React.createClass({
-  statics: {
-    _propsStack: [],
-    _defaultProps: createStackEntry({
-      animated: false,
-      showHideTransition: 'fade',
-      backgroundColor: 'black',
-      barStyle: 'default',
-      translucent: false,
-      hidden: false,
-      networkActivityIndicatorVisible: false,
-    }),
-    // Timer for updating the native module values at the end of the frame.
-    _updateImmediate: null,
-    // The current merged values from the props stack.
-    _currentValues: null,
+class StatusBar extends React.Component {
+  props: {
+    hidden?: boolean,
+    animated?: boolean,
+    backgroundColor?: $FlowFixMe,
+    translucent?: boolean,
+    barStyle?: 'default' | 'light-content',
+    networkActivityIndicatorVisible?: boolean,
+    showHideTransition?: 'fade' | 'slide',
+  };
 
-    // TODO(janic): Provide a real API to deal with status bar height. See the
-    // discussion in #6195.
-    /**
-     * The current height of the status bar on the device.
-     *
-     * @platform android
-     */
-    currentHeight: StatusBarManager.HEIGHT,
+  static _propsStack = [];
 
-    // Provide an imperative API as static functions of the component.
-    // See the corresponding prop for more detail.
-    setHidden(hidden: boolean, animation?: StatusBarAnimation) {
-      animation = animation || 'none';
-      StatusBar._defaultProps.hidden.value = hidden;
-      if (Platform.OS === 'ios') {
-        StatusBarManager.setHidden(hidden, animation);
-      } else if (Platform.OS === 'android') {
-        StatusBarManager.setHidden(hidden);
-      }
-    },
+  static _defaultProps = createStackEntry({
+    animated: false,
+    showHideTransition: 'fade',
+    backgroundColor: 'black',
+    barStyle: 'default',
+    translucent: false,
+    hidden: false,
+    networkActivityIndicatorVisible: false,
+  });
 
-    setBarStyle(style: StatusBarStyle, animated?: boolean) {
-      if (Platform.OS !== 'ios') {
-        console.warn('`setBarStyle` is only available on iOS');
-        return;
-      }
-      animated = animated || false;
-      StatusBar._defaultProps.barStyle.value = style;
-      StatusBarManager.setStyle(style, animated);
-    },
+  // Timer for updating the native module values at the end of the frame.
+  static _updateImmediate = null;
 
-    setNetworkActivityIndicatorVisible(visible: boolean) {
-      if (Platform.OS !== 'ios') {
-        console.warn('`setNetworkActivityIndicatorVisible` is only available on iOS');
-        return;
-      }
-      StatusBar._defaultProps.networkActivityIndicatorVisible = visible;
-      StatusBarManager.setNetworkActivityIndicatorVisible(visible);
-    },
+  // The current merged values from the props stack.
+  static _currentValues = null;
 
-    setBackgroundColor(color: string, animated?: boolean) {
-      if (Platform.OS !== 'android') {
-        console.warn('`setBackgroundColor` is only available on Android');
-        return;
-      }
-      animated = animated || false;
-      StatusBar._defaultProps.backgroundColor.value = color;
-      StatusBarManager.setColor(processColor(color), animated);
-    },
+  // TODO(janic): Provide a real API to deal with status bar height. See the
+  // discussion in #6195.
+  /**
+   * The current height of the status bar on the device.
+   *
+   * @platform android
+   */
+  static currentHeight = StatusBarManager.HEIGHT;
 
-    setTranslucent(translucent: boolean) {
-      if (Platform.OS !== 'android') {
-        console.warn('`setTranslucent` is only available on Android');
-        return;
-      }
-      StatusBar._defaultProps.translucent = translucent;
-      StatusBarManager.setTranslucent(translucent);
-    },
-  },
+  // Provide an imperative API as static functions of the component.
+  // See the corresponding prop for more detail.
 
-  propTypes: {
+  /**
+   * Show or hide the status bar
+   * @param hidden The dialog's title.
+   * @param animation Optional animation when
+   *    changing the status bar hidden property.
+   */
+  static setHidden(hidden: boolean, animation?: StatusBarAnimation) {
+    animation = animation || 'none';
+    StatusBar._defaultProps.hidden.value = hidden;
+    if (Platform.OS === 'ios') {
+      StatusBarManager.setHidden(hidden, animation);
+    } else if (Platform.OS === 'android') {
+      StatusBarManager.setHidden(hidden);
+    }
+  }
+
+  /**
+   * Set the status bar style
+   * @param style Status bar style to set
+   * @param animated Animate the style change.
+   */
+  static setBarStyle(style: StatusBarStyle, animated?: boolean) {
+    if (Platform.OS !== 'ios') {
+      console.warn('`setBarStyle` is only available on iOS');
+      return;
+    }
+    animated = animated || false;
+    StatusBar._defaultProps.barStyle.value = style;
+    StatusBarManager.setStyle(style, animated);
+  }
+
+  /**
+   * Control the visibility of the network activity indicator
+   * @param visible Show the indicator.
+   */
+  static setNetworkActivityIndicatorVisible(visible: boolean) {
+    if (Platform.OS !== 'ios') {
+      console.warn('`setNetworkActivityIndicatorVisible` is only available on iOS');
+      return;
+    }
+    StatusBar._defaultProps.networkActivityIndicatorVisible = visible;
+    StatusBarManager.setNetworkActivityIndicatorVisible(visible);
+  }
+
+  /**
+   * Set the background color for the status bar
+   * @param color Background color.
+   * @param animated Animate the style change.
+   */
+  static setBackgroundColor(color: string, animated?: boolean) {
+    if (Platform.OS !== 'android') {
+      console.warn('`setBackgroundColor` is only available on Android');
+      return;
+    }
+    animated = animated || false;
+    StatusBar._defaultProps.backgroundColor.value = color;
+    StatusBarManager.setColor(processColor(color), animated);
+  }
+
+  /**
+   * Control the translucency of the status bar
+   * @param translucent Set as translucent.
+   */
+  static setTranslucent(translucent: boolean) {
+    if (Platform.OS !== 'android') {
+      console.warn('`setTranslucent` is only available on Android');
+      return;
+    }
+    StatusBar._defaultProps.translucent = translucent;
+    StatusBarManager.setTranslucent(translucent);
+  }
+
+  static propTypes = {
     /**
      * If the status bar is hidden.
      */
@@ -232,16 +289,14 @@ const StatusBar = React.createClass({
       'fade',
       'slide',
     ]),
-  },
+  };
 
-  getDefaultProps(): DefaultProps {
-    return {
-      animated: false,
-      showHideTransition: 'fade',
-    };
-  },
+  static defaultProps = {
+    animated: false,
+    showHideTransition: 'fade',
+  };
 
-  _stackEntry: null,
+  _stackEntry = null;
 
   componentDidMount() {
     // Every time a StatusBar component is mounted, we push it's prop to a stack
@@ -251,29 +306,31 @@ const StatusBar = React.createClass({
     this._stackEntry = createStackEntry(this.props);
     StatusBar._propsStack.push(this._stackEntry);
     this._updatePropsStack();
-  },
+  }
 
   componentWillUnmount() {
     // When a StatusBar is unmounted, remove itself from the stack and update
     // the native bar with the next props.
+    // $FlowFixMe found when converting React.createClass to ES6
     const index = StatusBar._propsStack.indexOf(this._stackEntry);
     StatusBar._propsStack.splice(index, 1);
 
     this._updatePropsStack();
-  },
+  }
 
   componentDidUpdate() {
+    // $FlowFixMe found when converting React.createClass to ES6
     const index = StatusBar._propsStack.indexOf(this._stackEntry);
     this._stackEntry = createStackEntry(this.props);
     StatusBar._propsStack[index] = this._stackEntry;
 
     this._updatePropsStack();
-  },
+  }
 
   /**
    * Updates the native status bar with the props from the stack.
    */
-  _updatePropsStack() {
+  _updatePropsStack = () => {
     // Send the update to the native module only once at the end of the frame.
     clearImmediate(StatusBar._updateImmediate);
     StatusBar._updateImmediate = setImmediate(() => {
@@ -319,11 +376,11 @@ const StatusBar = React.createClass({
       // Update the current prop values.
       StatusBar._currentValues = mergedProps;
     });
-  },
+  };
 
-  render(): ?ReactElement {
+  render(): ?ReactElement<any> {
     return null;
-  },
-});
+  }
+}
 
 module.exports = StatusBar;

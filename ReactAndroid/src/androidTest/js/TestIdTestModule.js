@@ -34,8 +34,8 @@ var WebView = require('WebView');
  * - The app renders fine
  * - The testID property is passed to the native views
  */
-var TestIdTestApp = React.createClass({
-  render: function() {
+class TestIdTestApp extends React.Component {
+  render() {
     return (
       <View>
 
@@ -111,17 +111,21 @@ var TestIdTestApp = React.createClass({
 
         <View testID="View" />
 
-        <WebView
+        {/*
+          Webview gets tests crashing or stalling occasionally
+          e.g. https://circleci.com/gh/facebook/react-native/7054
+          TODO t11449130
+          <WebView
           testID="WebView"
           url={'http://newsroom.fb.com'}
           renderError={() => <View /> }
           style={styles.base}
-        />
+        />*/}
 
       </View>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   base: {

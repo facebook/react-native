@@ -13,7 +13,7 @@ const Promise = require('promise');
 const crypto = require('crypto');
 const declareOpts = require('../lib/declareOpts');
 const fs = require('fs');
-const getAssetDataFromName = require('node-haste').getAssetDataFromName;
+const getAssetDataFromName = require('../node-haste').getAssetDataFromName;
 const path = require('path');
 
 const createTimeoutPromise = (timeout) => new Promise((resolve, reject) => {
@@ -28,9 +28,11 @@ function timeoutableDenodeify(fsFunc, timeout) {
   };
 }
 
-const stat = timeoutableDenodeify(fs.stat, 5000);
-const readDir = timeoutableDenodeify(fs.readdir, 5000);
-const readFile = timeoutableDenodeify(fs.readFile, 5000);
+const FS_OP_TIMEOUT = parseInt(process.env.REACT_NATIVE_FSOP_TIMEOUT, 10) || 15000;
+
+const stat = timeoutableDenodeify(fs.stat, FS_OP_TIMEOUT);
+const readDir = timeoutableDenodeify(fs.readdir, FS_OP_TIMEOUT);
+const readFile = timeoutableDenodeify(fs.readFile, FS_OP_TIMEOUT);
 
 const validateOpts = declareOpts({
   projectRoots: {
@@ -51,7 +53,7 @@ class AssetServer {
   }
 
   get(assetPath, platform = null) {
-    const assetData = getAssetDataFromName(assetPath);
+    const assetData = getAssetDataFromName(assetPath, new Set([platform]));
     return this._getAssetRecord(assetPath, platform).then(record => {
       for (let i = 0; i < record.scales.length; i++) {
         if (record.scales[i] >= assetData.resolution) {
@@ -64,7 +66,7 @@ class AssetServer {
   }
 
   getAssetData(assetPath, platform = null) {
-    const nameData = getAssetDataFromName(assetPath);
+    const nameData = getAssetDataFromName(assetPath, new Set([platform]));
     const data = {
       name: nameData.name,
       type: nameData.type,
@@ -106,7 +108,8 @@ class AssetServer {
     return (
       this._findRoot(
         this._roots,
-        path.dirname(assetPath)
+        path.dirname(assetPath),
+        assetPath,
       )
       .then(dir => Promise.all([
         dir,
@@ -115,7 +118,7 @@ class AssetServer {
       .then(res => {
         const dir = res[0];
         const files = res[1];
-        const assetData = getAssetDataFromName(filename);
+        const assetData = getAssetDataFromName(filename, new Set([platform]));
 
         const map = this._buildAssetMap(dir, files, platform);
 
@@ -138,7 +141,7 @@ class AssetServer {
     );
   }
 
-  _findRoot(roots, dir) {
+  _findRoot(roots, dir, debugInfoFile) {
     return Promise.all(
       roots.map(root => {
         const absRoot = path.resolve(root);
@@ -162,12 +165,14 @@ class AssetServer {
           return stats[i].path;
         }
       }
-      throw new Error('Could not find any directories');
+
+      const rootsString = roots.map(s => `'${s}'`).join(', ');
+      throw new Error(`'${debugInfoFile}' could not be found, because '${dir}' is not a subdirectory of any of the roots  (${rootsString})`);
     });
   }
 
-  _buildAssetMap(dir, files) {
-    const assets = files.map(getAssetDataFromName);
+  _buildAssetMap(dir, files, platform) {
+    const assets = files.map(this._getAssetDataFromName.bind(this, new Set([platform])));
     const map = Object.create(null);
     assets.forEach(function(asset, i) {
       const file = files[i];
@@ -193,6 +198,10 @@ class AssetServer {
     });
 
     return map;
+  }
+
+  _getAssetDataFromName(platform, file) {
+    return getAssetDataFromName(file, platform);
   }
 }
 

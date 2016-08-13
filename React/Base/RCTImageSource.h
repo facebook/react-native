@@ -16,7 +16,7 @@
  */
 @interface RCTImageSource : NSObject
 
-@property (nonatomic, strong, readonly) NSURL *imageURL;
+@property (nonatomic, copy, readonly) NSURLRequest *request;
 @property (nonatomic, assign, readonly) CGSize size;
 @property (nonatomic, assign, readonly) CGFloat scale;
 
@@ -25,9 +25,9 @@
  * Pass a size of CGSizeZero if you do not know or wish to specify the image
  * size. Pass a scale of zero if you do not know or wish to specify the scale.
  */
-- (instancetype)initWithURL:(NSURL *)url
-                       size:(CGSize)size
-                      scale:(CGFloat)scale;
+- (instancetype)initWithURLRequest:(NSURLRequest *)request
+                              size:(CGSize)size
+                             scale:(CGFloat)scale;
 
 /**
  * Create a copy of the image source with the specified size and scale.
@@ -36,8 +36,16 @@
 
 @end
 
+@interface RCTImageSource (Deprecated)
+
+@property (nonatomic, strong, readonly) NSURL *imageURL
+__deprecated_msg("Use request.URL instead.");
+
+@end
+
 @interface RCTConvert (ImageSource)
 
 + (RCTImageSource *)RCTImageSource:(id)json;
++ (NSArray<RCTImageSource *> *)RCTImageSourceArray:(id)json;
 
 @end

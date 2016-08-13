@@ -10,7 +10,8 @@
  */
 
 var DocsSidebar = require('DocsSidebar');
-var HeaderWithGithub = require('HeaderWithGithub');
+var Header = require('Header');
+var Footer = require('Footer');
 var Marked = require('Marked');
 var React = require('React');
 var Site = require('Site');
@@ -38,23 +39,20 @@ var DocsLayout = React.createClass({
           <DocsSidebar metadata={metadata} />
           <div className="inner-content">
             <a id="content" />
-            <HeaderWithGithub
-              title={metadata.title}
-              level={1}
-              path={'docs/' + metadata.filename}
-            />
+            <Header level={1}>{metadata.title}</Header>
             <Marked>{content}</Marked>
             <div className="docs-prevnext">
               {metadata.previous && <a className="docs-prev" href={'docs/' + metadata.previous + '.html#content'}>&larr; Prev</a>}
               {metadata.next && <a className="docs-next" href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>}
             </div>
+            <Footer path={'docs/' + metadata.filename} />
             <div className="survey">
               <div className="survey-image" />
               <p>
-                We are planning improvements to the React Native documentation. Your responses to this short survey will go a long way in helping us provide valuable content. Thank you!
+                Recently, we have been working hard to make the documentation better based on your feedback. Your responses to this yes/no style survey will help us gauge whether we moved in the right direction with the improvements. Thank you!
               </p>
               <center>
-                <a className="button" href="https://www.facebook.com/survey?oid=681969738611332">Take Survey</a>
+                <a className="button" href="https://www.facebook.com/survey?oid=516954245168428">Take Survey</a>
               </center>
             </div>
           </div>

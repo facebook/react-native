@@ -5,6 +5,7 @@ layout: docs
 category: Guides (Android)
 permalink: docs/android-ui-performance.html
 next: android-building-from-source
+previous: signed-apk-android
 ---
 
 We try our best to deliver buttery-smooth UI performance by default, but sometimes that just isn't possible. Remember, Android supports 10k+ different phones and is generalized to support software rendering: the framework architecture and need to generalize across many hardware targets unfortunately means you get less for free relative to iOS. But sometimes, there are things you can improve (and many times it's not native code's fault at all!).
@@ -44,6 +45,16 @@ Once the trace starts collecting, perform the animation or interaction you care 
 After opening the trace in your browser (preferably Chrome), you should see something like this:
 
 ![Example](img/SystraceExample.png)
+
+If your trace .html file isn't opening correctly, check your browser console for the following:
+
+![ObjectObserveError](img/ObjectObserveError.png)
+
+Since Object.observe was deprecated in recent browsers, you may have to open the file from the Google Chrome Tracing tool. You can do so by:
+
+- Opening tab in chrome chrome://tracing
+- Selecting load
+- Selecting the html file generated from the previous command.
 
 **HINT**: Use the WASD keys to strafe and zoom
 

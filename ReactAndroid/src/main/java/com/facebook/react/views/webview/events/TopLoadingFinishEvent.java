@@ -21,8 +21,8 @@ public class TopLoadingFinishEvent extends Event<TopLoadingFinishEvent> {
   public static final String EVENT_NAME = "topLoadingFinish";
   private WritableMap mEventData;
 
-  public TopLoadingFinishEvent(int viewId, long timestampMs, WritableMap eventData) {
-    super(viewId, timestampMs);
+  public TopLoadingFinishEvent(int viewId, WritableMap eventData) {
+    super(viewId);
     mEventData = eventData;
   }
 

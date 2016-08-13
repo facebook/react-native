@@ -12,91 +12,92 @@ const chalk = require('chalk');
 const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const parseCommandLine = require('../util/parseCommandLine');
 const isPackagerRunning = require('../util/isPackagerRunning');
 const Promise = require('promise');
 const adb = require('./adb');
 
+// Verifies this is an Android project
+function checkAndroid(root) {
+  return fs.existsSync(path.join(root, 'android/gradlew'));
+}
+
 /**
  * Starts the app on a connected Android emulator or device.
  */
-function runAndroid(argv, config) {
-  return new Promise((resolve, reject) => {
-    _runAndroid(argv, config, resolve, reject);
-  });
-}
-
-function _runAndroid(argv, config, resolve, reject) {
-  const args = parseCommandLine([{
-    command: 'install-debug',
-    type: 'string',
-    required: false,
-  }, {
-    command: 'root',
-    type: 'string',
-    description: 'Override the root directory for the android build (which contains the android directory)',
-  }, {
-    command: 'flavor',
-    type: 'string',
-    required: false,
-  }, {
-    command: 'variant',
-    type: 'string',
-    required: false,
-  }], argv);
-
-  args.root = args.root || '';
-
-  if (!checkAndroid(args)) {
+function runAndroid(argv, config, args) {
+  if (!checkAndroid(args.root)) {
     console.log(chalk.red('Android project not found. Maybe run react-native android first?'));
     return;
   }
 
-  resolve(isPackagerRunning().then(result => {
+  return isPackagerRunning().then(result => {
     if (result === 'running') {
-      console.log(chalk.bold(`JS server already running.`));
+      console.log(chalk.bold('JS server already running.'));
     } else if (result === 'unrecognized') {
-      console.warn(chalk.yellow(`JS server not recognized, continuing with build...`));
+      console.warn(chalk.yellow('JS server not recognized, continuing with build...'));
     } else {
       // result == 'not_running'
-      console.log(chalk.bold(`Starting JS server...`));
+      console.log(chalk.bold('Starting JS server...'));
       startServerInNewWindow();
     }
-    buildAndRun(args, reject);
-  }));
+    return buildAndRun(args);
+  });
 }
 
-// Verifies this is an Android project
-function checkAndroid(args) {
-  return fs.existsSync(path.join(args.root, 'android/gradlew'));
+function getAdbPath() {
+  return process.env.ANDROID_HOME
+    ? process.env.ANDROID_HOME + '/platform-tools/adb'
+    : 'adb';
+}
+
+// Runs ADB reverse tcp:8081 tcp:8081 to allow loading the jsbundle from the packager
+function tryRunAdbReverse() {
+  try {
+    const adbPath = getAdbPath();
+    const adbArgs = ['reverse', 'tcp:8081', 'tcp:8081'];
+
+    console.log(chalk.bold(
+      `Running ${adbPath} ${adbArgs.join(' ')}`
+    ));
+
+    child_process.execFileSync(adbPath, adbArgs, {
+      stdio: [process.stdin, process.stdout, process.stderr],
+    });
+  } catch(e) {
+    console.log(chalk.yellow(
+      `Could not run adb reverse: ${e.message}`
+    ));
+  }
 }
 
 // Builds the app and runs it on a connected emulator / device.
-function buildAndRun(args, reject) {
+function buildAndRun(args) {
   process.chdir(path.join(args.root, 'android'));
   try {
+    tryRunAdbReverse();
+
     const cmd = process.platform.startsWith('win')
       ? 'gradlew.bat'
       : './gradlew';
 
     const gradleArgs = [];
-    if (args['variant']) {
-        gradleArgs.push('install' +
-          args['variant'][0].toUpperCase() + args['variant'].slice(1)
-        );
-    } else if (args['flavor']) {
-        console.warn(chalk.yellow(
-          `--flavor has been deprecated. Use --variant instead`
-        ));
-        gradleArgs.push('install' +
-          args['flavor'][0].toUpperCase() + args['flavor'].slice(1)
-        );
+    if (args.variant) {
+      gradleArgs.push('install' +
+        args.variant[0].toUpperCase() + args.variant.slice(1)
+      );
+    } else if (args.flavor) {
+      console.warn(chalk.yellow(
+        '--flavor has been deprecated. Use --variant instead'
+      ));
+      gradleArgs.push('install' +
+        args.flavor[0].toUpperCase() + args.flavor.slice(1)
+      );
     } else {
-        gradleArgs.push('installDebug');
+      gradleArgs.push('installDebug');
     }
 
-    if (args['install-debug']) {
-      gradleArgs.push(args['install-debug']);
+    if (args.installDebug) {
+      gradleArgs.push(args.installDebug);
     }
 
     console.log(chalk.bold(
@@ -116,8 +117,7 @@ function buildAndRun(args, reject) {
     // stderr is automatically piped from the gradle process, so the user
     // should see the error already, there is no need to do
     // `console.log(e.stderr)`
-    reject();
-    return;
+    return Promise.reject();
   }
 
   try {
@@ -126,9 +126,7 @@ function buildAndRun(args, reject) {
       'utf8'
     ).match(/package="(.+?)"/)[1];
 
-    const adbPath = process.env.ANDROID_HOME
-      ? process.env.ANDROID_HOME + '/platform-tools/adb'
-      : 'adb';
+    const adbPath = getAdbPath();
 
     const devices = adb.getDevices();
 
@@ -157,13 +155,12 @@ function buildAndRun(args, reject) {
 
   } catch (e) {
     console.log(chalk.red(
-      `adb invocation failed. Do you have adb in your PATH?`
+      'adb invocation failed. Do you have adb in your PATH?'
     ));
     // stderr is automatically piped from the gradle process, so the user
     // should see the error already, there is no need to do
     // `console.log(e.stderr)`
-    reject();
-    return;
+    return Promise.reject();
   }
 }
 
@@ -198,4 +195,20 @@ function startServerInNewWindow() {
   }
 }
 
-module.exports = runAndroid;
+module.exports = {
+  name: 'run-android',
+  description: 'builds your app and starts it on a connected Android emulator or device',
+  func: runAndroid,
+  options: [{
+    command: '--install-debug',
+  }, {
+    command: '--root [string]',
+    description: 'Override the root directory for the android build (which contains the android directory)',
+    default: '',
+  }, {
+    command: '--flavor [string]',
+    description: '--flavor has been deprecated. Use --variant instead',
+  }, {
+    command: '--variant [string]',
+  }],
+};

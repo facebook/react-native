@@ -11,47 +11,14 @@
 const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const parseCommandLine = require('../util/parseCommandLine');
 const findXcodeProject = require('./findXcodeProject');
 const parseIOSSimulatorsList = require('./parseIOSSimulatorsList');
-const Promise = require('promise');
 
-/**
- * Starts the app on iOS simulator
- */
-function runIOS(argv, config) {
-  return new Promise((resolve, reject) => {
-    _runIOS(argv, config, resolve, reject);
-    resolve();
-  });
-}
-
-function _runIOS(argv, config, resolve, reject) {
-  const args = parseCommandLine([
-    {
-      command: 'simulator',
-      description: 'Explicitly set simulator to use',
-      type: 'string',
-      required: false,
-      default: 'iPhone 6',
-    }, {
-      command: 'scheme',
-      description: 'Explicitly set Xcode scheme to use',
-      type: 'string',
-      required: false,
-    }, {
-      command: 'project-path',
-      description: 'Path relative to project root where the Xcode project (.xcodeproj) lives. The default is \'ios\'.',
-      type: 'string',
-      required: false,
-      default: 'ios',
-    }
-  ], argv);
-
-  process.chdir(args['project-path']);
+function runIOS(argv, config, args) {
+  process.chdir(args.projectPath);
   const xcodeProject = findXcodeProject(fs.readdirSync('.'));
   if (!xcodeProject) {
-    throw new Error(`Could not find Xcode project files in ios folder`);
+    throw new Error('Could not find Xcode project files in ios folder');
   }
 
   const inferredSchemeName = path.basename(xcodeProject.name, path.extname(xcodeProject.name));
@@ -66,11 +33,11 @@ function _runIOS(argv, config, resolve, reject) {
     throw new Error(`Cound't find ${args.simulator} simulator`);
   }
 
-  const simulatorFullName = `${selectedSimulator.name} (${selectedSimulator.version})`;
+  const simulatorFullName = formattedSimulatorName(selectedSimulator);
   console.log(`Launching ${simulatorFullName}...`);
   try {
     child_process.spawnSync('xcrun', ['instruments', '-w', simulatorFullName]);
-  } catch(e) {
+  } catch (e) {
     // instruments always fail with 255 because it expects more arguments,
     // but we want it to only launch the simulator
   }
@@ -100,10 +67,41 @@ function _runIOS(argv, config, resolve, reject) {
 
 function matchingSimulator(simulators, simulatorName) {
   for (let i = simulators.length - 1; i >= 0; i--) {
-    if (simulators[i].name === simulatorName) {
+    if (simulators[i].name === simulatorName || formattedSimulatorName(simulators[i]) === simulatorName) {
       return simulators[i];
     }
   }
 }
 
-module.exports = runIOS;
+function formattedSimulatorName(simulator) {
+  return `${simulator.name} (${simulator.version})`;
+}
+
+module.exports = {
+  name: 'run-ios',
+  description: 'builds your app and starts it on iOS simulator',
+  func: runIOS,
+  examples: [
+    {
+      desc: 'Run on a different simulator, e.g. iPhone 5',
+      cmd: 'react-native run-ios --simulator "iPhone 5"',
+    },
+    {
+      desc: 'Pass a non-standard location of iOS directory',
+      cmd: 'react-native run-ios --project-path "./app/ios"',
+    },
+  ],
+  options: [{
+    command: '--simulator [string]',
+    description: 'Explicitly set simulator to use',
+    default: 'iPhone 6',
+  }, {
+    command: '--scheme [string]',
+    description: 'Explicitly set Xcode scheme to use',
+  }, {
+    command: '--project-path [string]',
+    description: 'Path relative to project root where the Xcode project '
+     + '(.xcodeproj) lives. The default is \'ios\'.',
+    default: 'ios',
+  }]
+};

@@ -18,6 +18,7 @@ let exceptionID = 0;
  */
 function reportException(e: Error, isFatal: bool) {
   const parseErrorStack = require('parseErrorStack');
+  const symbolicateStackTrace = require('symbolicateStackTrace');
   const RCTExceptionsManager = require('NativeModules').ExceptionsManager;
 
   const currentExceptionID = ++exceptionID;
@@ -29,26 +30,20 @@ function reportException(e: Error, isFatal: bool) {
       RCTExceptionsManager.reportSoftException(e.message, stack, currentExceptionID);
     }
     if (__DEV__) {
-      symbolicateAndUpdateStack(currentExceptionID, e.message, stack);
+      symbolicateStackTrace(stack).then(
+        (prettyStack) => {
+          if (prettyStack) {
+            RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack, currentExceptionID);
+          } else {
+            throw new Error('The stack is null');
+          }
+        }
+      ).catch(
+        (error) =>
+          console.warn('Unable to symbolicate stack trace: ' + error.message)
+      );
     }
   }
-}
-
-function symbolicateAndUpdateStack(id, message, stack) {
-  const {fetch} = require('fetch');
-  const {SourceCode, ExceptionsManager} = require('NativeModules');
-  const match = SourceCode.scriptURL && SourceCode.scriptURL.match(/^https?:\/\/.*?\//);
-  const endpoint = (match && match[0] : 'http://localhost:8081/') + 'symbolicate';
-
-  fetch(endpoint, { method: 'POST', body: JSON.stringify({stack}) })
-    .then(response => response.json())
-    .then(response =>
-      ExceptionsManager.updateExceptionMessage(message, response.stack, id))
-    .catch(error => {
-      // This can happen in a variety of normal situations, such as
-      // Network module not being available, or when running locally
-      console.warn('Unable to symbolicate stack trace: ' + error.message);
-    });
 }
 
 /**
@@ -76,9 +71,11 @@ function installConsoleErrorReporter() {
   if (console._errorOriginal) {
     return; // already installed
   }
-  console._errorOriginal = console.error.bind(console);
+  // Flow doesn't like it when you set arbitrary values on a global object
+  (console: any)._errorOriginal = console.error.bind(console);
   console.error = function reactConsoleError() {
-    console._errorOriginal.apply(null, arguments);
+    // Flow doesn't like it when you set arbitrary values on a global object
+    (console: any)._errorOriginal.apply(null, arguments);
     if (!console.reportErrorsAsExceptions) {
       return;
     }
@@ -100,7 +97,8 @@ function installConsoleErrorReporter() {
     }
   };
   if (console.reportErrorsAsExceptions === undefined) {
-    console.reportErrorsAsExceptions = true; // Individual apps can disable this
+    // Flow doesn't like it when you set arbitrary values on a global object
+    (console: any).reportErrorsAsExceptions = true; // Individual apps can disable this
   }
 }
 

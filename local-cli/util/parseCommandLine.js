@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * Wrapper on-top of `optimist` in order to properly support boolean flags
- * and have a slightly less akward API.
+ * and have a slightly less awkward API.
  *
  * Usage example:
  *   var argv = parseCommandLine([{
@@ -15,6 +15,9 @@
  *     description: 'Run in a web browser instead of iOS',
  *     default: true
  *   }])
+ *
+ * NOTE: This file is used internally at Facebook and not in `local-cli` itself.
+ * No changes should be made to this file without prior discussion with FB team.
  */
 'use strict';
 

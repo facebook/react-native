@@ -26,7 +26,7 @@ import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 
 /**
- * Abstract ContextWrapper for Android applicaiton or activity {@link Context} and
+ * Abstract ContextWrapper for Android application or activity {@link Context} and
  * {@link CatalystInstance}
  */
 public class ReactContext extends ContextWrapper {
@@ -162,6 +162,14 @@ public class ReactContext extends ContextWrapper {
     }
   }
 
+  public void onNewIntent(@Nullable Activity activity, Intent intent) {
+    UiThreadUtil.assertOnUiThread();
+    mCurrentActivity = new WeakReference(activity);
+    for (ActivityEventListener listener : mActivityEventListeners) {
+      listener.onNewIntent(intent);
+    }
+  }
+
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onPause}
    */
@@ -170,7 +178,6 @@ public class ReactContext extends ContextWrapper {
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostPause();
     }
-    mCurrentActivity = null;
   }
 
   /**
@@ -181,6 +188,7 @@ public class ReactContext extends ContextWrapper {
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostDestroy();
     }
+    mCurrentActivity = null;
   }
 
   /**
@@ -197,9 +205,9 @@ public class ReactContext extends ContextWrapper {
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onActivityResult}
    */
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
     for (ActivityEventListener listener : mActivityEventListeners) {
-      listener.onActivityResult(requestCode, resultCode, data);
+      listener.onActivityResult(activity, requestCode, resultCode, data);
     }
   }
 
@@ -275,7 +283,7 @@ public class ReactContext extends ContextWrapper {
    * DO NOT HOLD LONG-LIVED REFERENCES TO THE OBJECT RETURNED BY THIS METHOD, AS THIS WILL CAUSE
    * MEMORY LEAKS.
    */
-  /* package */ @Nullable Activity getCurrentActivity() {
+  public @Nullable Activity getCurrentActivity() {
     if (mCurrentActivity == null) {
       return null;
     }

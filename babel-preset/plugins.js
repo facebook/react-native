@@ -26,6 +26,7 @@ module.exports = {
   'babel-plugin-transform-es2015-shorthand-properties': require('babel-plugin-transform-es2015-shorthand-properties'),
   'babel-plugin-transform-es2015-spread': require('babel-plugin-transform-es2015-spread'),
   'babel-plugin-transform-es2015-template-literals': require('babel-plugin-transform-es2015-template-literals'),
+  'babel-plugin-transform-es2015-literals' : require('babel-plugin-transform-es2015-literals'),
   'babel-plugin-transform-flow-strip-types': require('babel-plugin-transform-flow-strip-types'),
   'babel-plugin-transform-object-assign': require('babel-plugin-transform-object-assign'),
   'babel-plugin-transform-object-rest-spread': require('babel-plugin-transform-object-rest-spread'),

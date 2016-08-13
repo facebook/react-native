@@ -87,7 +87,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (UIView *)createViewWithTag:(NSNumber *)tag
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   UIView *view = [self.manager view];
   view.reactTag = tag;
@@ -180,7 +180,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
           ((void (*)(id, SEL, id))objc_msgSend)(target, setter, [RCTConvert BOOL:json] ? ^(NSDictionary *body) {
             body = [NSMutableDictionary dictionaryWithDictionary:body];
             ((NSMutableDictionary *)body)[@"target"] = weakTarget.reactTag;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
             [weakManager.bridge.eventDispatcher sendInputEventWithName:RCTNormalizeInputEventName(name) body:body];
+#pragma clang diagnostic pop
           } : nil);
         };
 
@@ -340,7 +343,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
-    [self propBlockForKey:key inDictionary:_viewPropBlocks](view, json);
+    [self propBlockForKey:key inDictionary:self->_viewPropBlocks](view, json);
   }];
 
   if ([view respondsToSelector:@selector(didSetProps:)]) {
@@ -355,7 +358,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
-    [self propBlockForKey:key inDictionary:_shadowPropBlocks](shadowView, json);
+    [self propBlockForKey:key inDictionary:self->_shadowPropBlocks](shadowView, json);
   }];
 
   if ([shadowView respondsToSelector:@selector(didSetProps:)]) {
@@ -365,9 +368,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (NSDictionary<NSString *, id> *)viewConfig
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   NSMutableArray<NSString *> *directEvents = [NSMutableArray new];
   if (RCTClassOverridesInstanceMethod(_managerClass, @selector(customDirectEventTypes))) {
     NSArray<NSString *> *events = [self.manager customDirectEventTypes];
+#pragma clang diagnostic pop
     if (RCT_DEBUG) {
       RCTAssert(!events || [events isKindOfClass:[NSArray class]],
         @"customDirectEventTypes must return an array, but %@ returned %@",
@@ -378,8 +384,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     }
   }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   NSMutableArray<NSString *> *bubblingEvents = [NSMutableArray new];
   if (RCTClassOverridesInstanceMethod(_managerClass, @selector(customBubblingEventTypes))) {
+#pragma clang diagnostic pop
     NSArray<NSString *> *events = [self.manager customBubblingEventTypes];
     if (RCT_DEBUG) {
       RCTAssert(!events || [events isKindOfClass:[NSArray class]],

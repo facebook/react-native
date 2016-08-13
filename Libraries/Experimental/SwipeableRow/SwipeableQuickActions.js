@@ -29,12 +29,25 @@ const View = require('View');
 
 const MAX_QUICK_ACTIONS = 2;
 
-const SwipeableQuickActions = React.createClass({
-  propTypes: {
-    style: View.propTypes.style,
-  },
+/**
+ * A thin wrapper around standard quick action buttons that can, if the user
+ * chooses, be used with SwipeableListView. Sample usage is as follows, in the
+ * renderQuickActions callback:
+ *
+ * <SwipeableQuickActions>
+ *   <SwipeableQuickActionButton {..props} />
+ *   <SwipeableQuickActionButton {..props} />
+ * </SwipeableQuickActions>
+ */
+class SwipeableQuickActions extends React.Component {
+  props: {style?: $FlowFixMe};
 
-  render(): ReactElement {
+  static propTypes = {
+    style: View.propTypes.style,
+  };
+
+  render(): ReactElement<any> {
+    // $FlowFixMe found when converting React.createClass to ES6
     const children = this.props.children;
     let buttons = [];
 
@@ -43,6 +56,7 @@ const SwipeableQuickActions = React.createClass({
       for (let i = 0; i < children.length && i < MAX_QUICK_ACTIONS; i++) {
         buttons.push(children[i]);
 
+        // $FlowFixMe found when converting React.createClass to ES6
         if (i < this.props.children.length - 1) { // Not last button
           buttons.push(<View key={i} style={styles.divider} />);
         }
@@ -56,8 +70,8 @@ const SwipeableQuickActions = React.createClass({
         {buttons}
       </View>
     );
-  },
-});
+  }
+}
 
 const styles = StyleSheet.create({
   background: {

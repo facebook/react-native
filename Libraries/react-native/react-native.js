@@ -10,7 +10,7 @@
  */
 'use strict';
 
-var warning = require('fbjs/lib/warning');
+const warning = require('fbjs/lib/warning');
 
 if (__DEV__) {
   var warningDedupe = {};
@@ -25,8 +25,9 @@ if (__DEV__) {
 }
 
 // Export React, plus some native additions.
-var ReactNative = {
+const ReactNative = {
   // Components
+  get ActivityIndicator() { return require('ActivityIndicator'); },
   get ActivityIndicatorIOS() { return require('ActivityIndicatorIOS'); },
   get ART() { return require('ReactNativeART'); },
   get DatePickerIOS() { return require('DatePickerIOS'); },
@@ -34,6 +35,7 @@ var ReactNative = {
   get Image() { return require('Image'); },
   get ImageEditor() { return require('ImageEditor'); },
   get ImageStore() { return require('ImageStore'); },
+  get KeyboardAvoidingView() { return require('KeyboardAvoidingView'); },
   get ListView() { return require('ListView'); },
   get MapView() { return require('MapView'); },
   get Modal() { return require('Modal'); },
@@ -49,10 +51,10 @@ var ReactNative = {
   get SliderIOS() { return require('SliderIOS'); },
   get SnapshotViewIOS() { return require('SnapshotViewIOS'); },
   get Switch() { return require('Switch'); },
-  get PullToRefreshViewAndroid() { return require('PullToRefreshViewAndroid'); },
   get RecyclerViewBackedScrollView() { return require('RecyclerViewBackedScrollView'); },
   get RefreshControl() { return require('RefreshControl'); },
   get StatusBar() { return require('StatusBar'); },
+  get SwipeableListView() { return require('SwipeableListView'); },
   get SwitchAndroid() { return require('SwitchAndroid'); },
   get SwitchIOS() { return require('SwitchIOS'); },
   get TabBarIOS() { return require('TabBarIOS'); },
@@ -88,17 +90,21 @@ var ReactNative = {
   get ImagePickerIOS() { return require('ImagePickerIOS'); },
   get IntentAndroid() { return require('IntentAndroid'); },
   get InteractionManager() { return require('InteractionManager'); },
+  get Keyboard() { return require('Keyboard'); },
   get LayoutAnimation() { return require('LayoutAnimation'); },
   get Linking() { return require('Linking'); },
   get LinkingIOS() { return require('LinkingIOS'); },
+  get NativeEventEmitter() { return require('NativeEventEmitter'); },
   get NavigationExperimental() { return require('NavigationExperimental'); },
   get NetInfo() { return require('NetInfo'); },
   get PanResponder() { return require('PanResponder'); },
   get PixelRatio() { return require('PixelRatio'); },
   get PushNotificationIOS() { return require('PushNotificationIOS'); },
   get Settings() { return require('Settings'); },
+  get Share() { return require('Share'); },
   get StatusBarIOS() { return require('StatusBarIOS'); },
   get StyleSheet() { return require('StyleSheet'); },
+  get Systrace() { return require('Systrace'); },
   get TimePickerAndroid() { return require('TimePickerAndroid'); },
   get UIManager() { return require('UIManager'); },
   get Vibration() { return require('Vibration'); },
@@ -123,14 +129,14 @@ var ReactNative = {
       if (__DEV__) {
         addonWarn('LinkedStateMixin', 'react-addons-linked-state-mixin');
       }
-      return require('LinkedStateMixin');
+      return require('react/lib/LinkedStateMixin');
     },
     Perf: undefined,
     get PureRenderMixin() {
       if (__DEV__) {
         addonWarn('PureRenderMixin', 'react-addons-pure-render-mixin');
       }
-      return require('ReactComponentWithPureRenderMixin');
+      return require('react/lib/ReactComponentWithPureRenderMixin');
     },
     get TestModule() {
       if (__DEV__) {
@@ -153,26 +159,40 @@ var ReactNative = {
         );
         warningDedupe.batchedUpdates = true;
       }
-      return require('ReactUpdates').batchedUpdates;
+      return require('react/lib/ReactUpdates').batchedUpdates;
     },
     get createFragment() {
       if (__DEV__) {
         addonWarn('createFragment', 'react-addons-create-fragment');
       }
-      return require('ReactFragment').create;
+      return require('react/lib/ReactFragment').create;
     },
     get update() {
       if (__DEV__) {
         addonWarn('update', 'react-addons-update');
       }
-      return require('update');
+      return require('react/lib/update');
     },
   },
 };
 
+// Better error messages when accessing React APIs on ReactNative
+if (__DEV__) {
+  const throwOnWrongReactAPI = require('throwOnWrongReactAPI');
+  const reactAPIs = [ 'createClass', 'Component' ];
+
+  for (const key of reactAPIs) {
+    Object.defineProperty(ReactNative, key, {
+      get() { throwOnWrongReactAPI(key); },
+      enumerable: false,
+      configurable: false
+    });
+  }
+}
+
 // Preserve getters with warnings on the internal ReactNative copy without
 // invoking them.
-var ReactNativeInternal = require('ReactNative');
+const ReactNativeInternal = require('react/lib/ReactNative');
 function applyForwarding(key) {
   if (__DEV__) {
     Object.defineProperty(
@@ -184,7 +204,7 @@ function applyForwarding(key) {
   }
   ReactNative[key] = ReactNativeInternal[key];
 }
-for (var key in ReactNativeInternal) {
+for (const key in ReactNativeInternal) {
   applyForwarding(key);
 }
 
@@ -195,7 +215,7 @@ if (__DEV__) {
       if (__DEV__) {
         addonWarn('Perf', 'react-addons-perf');
       }
-      return require('ReactPerf');
+      return require('react/lib/ReactPerf');
     }
   });
   Object.defineProperty(ReactNative.addons, 'TestUtils', {
@@ -204,7 +224,7 @@ if (__DEV__) {
       if (__DEV__) {
         addonWarn('update', 'react-addons-test-utils');
       }
-      return require('ReactTestUtils');
+      return require('react/lib/ReactTestUtils');
     }
   });
 }

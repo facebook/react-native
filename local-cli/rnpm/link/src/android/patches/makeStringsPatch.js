@@ -1,4 +1,4 @@
-const toCamelCase = require('to-camel-case');
+const toCamelCase = require('lodash').camelCase;
 
 module.exports = function makeStringsPatch(params, prefix) {
   const patch = Object.keys(params).map(param => {

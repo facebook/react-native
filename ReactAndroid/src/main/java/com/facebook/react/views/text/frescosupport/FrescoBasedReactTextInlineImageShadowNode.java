@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.views.textfrescosupport;
+package com.facebook.react.views.text.frescosupport;
 
 import javax.annotation.Nullable;
 
@@ -20,9 +20,11 @@ import android.net.Uri;
 import com.facebook.common.util.UriUtil;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactTextInlineImageShadowNode;
 import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.react.views.textfrescosupport.FrescoBasedReactTextInlineImageSpan;
 
 /**
  * {@link CSSNode} that represents an inline image. Loading is done using Fresco.
@@ -42,7 +44,9 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
   }
 
   @ReactProp(name = "src")
-  public void setSource(@Nullable String source) {
+  public void setSource(@Nullable ReadableArray sources) {
+    final String source =
+      (sources == null || sources.size() == 0) ? null : sources.getMap(0).getString("uri");
     Uri uri = null;
     if (source != null) {
       try {

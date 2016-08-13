@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.facebook.csslayout.CSSLayoutContext;
+import com.facebook.csslayout.CSSDirection;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
@@ -23,6 +24,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -40,6 +42,7 @@ public class UIImplementation {
   private final UIViewOperationQueue mOperationsQueue;
   private final NativeViewHierarchyOptimizer mNativeViewHierarchyOptimizer;
   private final int[] mMeasureBuffer = new int[4];
+  private final ReactApplicationContext mReactContext;
 
   public UIImplementation(ReactApplicationContext reactContext, List<ViewManager> viewManagers) {
     this(reactContext, new ViewManagerRegistry(viewManagers));
@@ -47,13 +50,16 @@ public class UIImplementation {
 
   private UIImplementation(ReactApplicationContext reactContext, ViewManagerRegistry viewManagers) {
     this(
+        reactContext,
         viewManagers,
         new UIViewOperationQueue(reactContext, new NativeViewHierarchyManager(viewManagers)));
   }
 
   protected UIImplementation(
+      ReactApplicationContext reactContext,
       ViewManagerRegistry viewManagers,
       UIViewOperationQueue operationsQueue) {
+    mReactContext = reactContext;
     mViewManagers = viewManagers;
     mOperationsQueue = operationsQueue;
     mNativeViewHierarchyOptimizer = new NativeViewHierarchyOptimizer(
@@ -63,6 +69,10 @@ public class UIImplementation {
 
   protected ReactShadowNode createRootShadowNode() {
     ReactShadowNode rootCSSNode = new ReactShadowNode();
+    I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
+    if (sharedI18nUtilInstance.isRTL(mReactContext)) {
+      rootCSSNode.setDirection(CSSDirection.RTL);
+    }
     rootCSSNode.setViewClassName("Root");
     return rootCSSNode;
   }
@@ -99,6 +109,7 @@ public class UIImplementation {
     rootCSSNode.setThemedContext(context);
     rootCSSNode.setStyleWidth(width);
     rootCSSNode.setStyleHeight(height);
+
     mShadowNodeRegistry.addRootNode(rootCSSNode);
 
     // register it within NativeViewHierarchyManager
@@ -773,5 +784,9 @@ public class UIImplementation {
       }
     }
     cssNode.markUpdateSeen();
+  }
+
+  public void addUIBlock(UIBlock block) {
+    mOperationsQueue.enqueueUIBlock(block);
   }
 }

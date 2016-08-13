@@ -2,14 +2,10 @@
 
 #include "CxxModuleWrapper.h"
 
-#include <react/jni/ReadableNativeArray.h>
-
 #include <fb/fbjni.h>
 #include <fb/Environment.h>
 #include <jni/LocalString.h>
 #include <jni/Registration.h>
-
-#include <Module/JsArgumentHelpers.h>
 
 #include <android/log.h>
 
@@ -18,6 +14,12 @@
 
 #include <unordered_set>
 #include <dlfcn.h>
+
+#include <cxxreact/JsArgumentHelpers.h>
+#include <cxxreact/FollySupport.h>
+
+#include "ReadableNativeArray.h"
+
 
 using namespace facebook::jni;
 using namespace facebook::xplat::module;
@@ -42,10 +44,19 @@ public:
   static void registerNatives() {
     registerHybrid({
       makeNativeMethod("initHybrid", CxxMethodWrapper::initHybrid),
+      makeNativeMethod("getType", CxxMethodWrapper::getType),
       makeNativeMethod("invoke",
                        "(Lcom/facebook/react/bridge/CatalystInstance;Lcom/facebook/react/bridge/ExecutorToken;Lcom/facebook/react/bridge/ReadableNativeArray;)V",
                        CxxMethodWrapper::invoke),
     });
+  }
+
+  std::string getType() {
+    if (method_->func) {
+      return "remote";
+    } else {
+      return "syncHook";
+    }
   }
 
   void invoke(jobject catalystinstance, ExecutorToken::jhybridobject executorToken, NativeArray* args);
@@ -56,6 +67,12 @@ public:
 void CxxMethodWrapper::invoke(jobject jCatalystInstance, ExecutorToken::jhybridobject jExecutorToken, NativeArray* arguments) {
   CxxModule::Callback first;
   CxxModule::Callback second;
+
+  if (!method_->func) {
+    throw std::runtime_error(
+      folly::to<std::string>("Method ", method_->name,
+                             " is synchronous but invoked asynchronously"));
+  }
 
   if (method_->callbacks >= 1) {
     auto catalystInstance = make_global(adopt_local(jCatalystInstance));
@@ -190,7 +207,7 @@ std::string CxxModuleWrapper::getConstantsJson() {
     constsobject.insert(std::move(c.first), std::move(c.second));
   }
 
-  return folly::toJson(constsobject);
+  return facebook::react::detail::toStdString(folly::toJson(constsobject));
 }
 
 jobject CxxModuleWrapper::getMethods() {

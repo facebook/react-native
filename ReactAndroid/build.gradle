@@ -114,7 +114,7 @@ task prepareGlog(dependsOn: downloadGlog, type: Copy) {
 
 task downloadJSCHeaders(type: Download) {
     def jscAPIBaseURL = 'https://svn.webkit.org/repository/webkit/!svn/bc/174650/trunk/Source/JavaScriptCore/API/'
-    def jscHeaderFiles = ['JSBase.h', 'JSContextRef.h', 'JSObjectRef.h', 'JSRetainPtr.h', 'JSStringRef.h', 'JSValueRef.h', 'WebKitAvailability.h']
+    def jscHeaderFiles = ['JavaScript.h', 'JSBase.h', 'JSContextRef.h', 'JSObjectRef.h', 'JSRetainPtr.h', 'JSStringRef.h', 'JSValueRef.h', 'WebKitAvailability.h']
     def output = new File(downloadsDir, 'jsc')
     output.mkdirs()
     src(jscHeaderFiles.collect { headerName -> "$jscAPIBaseURL$headerName" })
@@ -185,7 +185,7 @@ def getNdkBuildFullPath() {
 }
 
 task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
-    inputs.file('src/main/jni/react')
+    inputs.file('src/main/jni/xreact')
     outputs.dir("$buildDir/react-ndk/all")
     commandLine getNdkBuildFullPath(),
             'NDK_PROJECT_PATH=null',
@@ -193,12 +193,15 @@ task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConvers
             'NDK_OUT=' + temporaryDir,
             "NDK_LIBS_OUT=$buildDir/react-ndk/all",
             "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
+            "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             '-C', file('src/main/jni/react/jni').absolutePath,
             '--jobs', project.hasProperty("jobs") ? project.property("jobs") : Runtime.runtime.availableProcessors()
 }
 
 task cleanReactNdkLib(type: Exec) {
     commandLine getNdkBuildFullPath(),
+            "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
+            "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
             '-C', file('src/main/jni/react/jni').absolutePath,
             'clean'
 }
@@ -239,7 +242,7 @@ android {
         jniLibs.srcDir "$buildDir/react-ndk/exported"
         res.srcDirs = ['src/main/res/devsupport', 'src/main/res/shell', 'src/main/res/views/modal']
         java {
-          srcDirs = ['src/main/java', 'src/main/libraries/soloader']
+          srcDirs = ['src/main/java', 'src/main/libraries/soloader/java', 'src/main/jni/first-party/fb/jni/java']
           exclude 'com/facebook/react/processing'
         }
     }
@@ -253,20 +256,26 @@ android {
     lintOptions {
         abortOnError false
     }
+    packagingOptions {
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
+    compile 'javax.inject:javax.inject:1'
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.android.support:recyclerview-v7:23.0.1'
-    compile 'com.facebook.fresco:fresco:0.10.0'
-    compile 'com.facebook.fresco:imagepipeline-okhttp3:0.10.0'
+    compile 'com.facebook.fresco:fresco:0.11.0'
+    compile 'com.facebook.fresco:imagepipeline-okhttp3:0.11.0'
+    compile 'com.facebook.soloader:soloader:0.1.0'
     compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
-    compile 'com.squareup.okhttp3:okhttp:3.2.0'
-    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.2.0'
-    compile 'com.squareup.okhttp3:okhttp-ws:3.2.0'
-    compile 'com.squareup.okio:okio:1.8.0'
+    compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
+    compile 'com.squareup.okhttp3:okhttp-ws:3.4.1'
+    compile 'com.squareup.okio:okio:1.9.0'
     compile 'org.webkit:android-jsc:r174650'
 
     testCompile "junit:junit:${JUNIT_VERSION}"
@@ -279,6 +288,7 @@ dependencies {
     testCompile "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
 
     androidTestCompile 'com.android.support.test:runner:0.3'
+    androidTestCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
 }
 
 apply from: 'release.gradle'

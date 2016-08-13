@@ -18,6 +18,8 @@ import java.util.Map;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.text.TextUtils;
+import android.view.ViewGroup.LayoutParams;
+import android.webkit.GeolocationPermissions;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebChromeClient;
@@ -33,7 +35,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.common.SystemClock;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -41,6 +42,8 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import android.content.Intent;
+import android.net.Uri;
 
 /**
  * Manages instances of {@link WebView}
@@ -107,8 +110,19 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           webView,
           new TopLoadingStartEvent(
               webView.getId(),
-              SystemClock.nanoTime(),
               createWebViewEvent(webView, url)));
+    }
+
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        if (url.startsWith("http://") || url.startsWith("https://")) {
+          return false;
+        } else {
+          Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url)); 
+          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          view.getContext().startActivity(intent);   
+          return true;   
+        }              
     }
 
     @Override
@@ -130,7 +144,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
       dispatchEvent(
           webView,
-          new TopLoadingErrorEvent(webView.getId(), SystemClock.nanoTime(), eventData));
+          new TopLoadingErrorEvent(webView.getId(), eventData));
     }
 
     @Override
@@ -141,7 +155,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           webView,
           new TopLoadingStartEvent(
               webView.getId(),
-              SystemClock.nanoTime(),
               createWebViewEvent(webView, url)));
     }
 
@@ -150,7 +163,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           webView,
           new TopLoadingFinishEvent(
               webView.getId(),
-              SystemClock.nanoTime(),
               createWebViewEvent(webView, url)));
     }
 
@@ -245,9 +257,21 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @Override
   protected WebView createViewInstance(ThemedReactContext reactContext) {
     ReactWebView webView = new ReactWebView(reactContext);
-    webView.setWebChromeClient(new WebChromeClient());
+    webView.setWebChromeClient(new WebChromeClient() {
+      @Override
+      public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+        callback.invoke(origin, true, false);
+      }
+    });
     reactContext.addLifecycleEventListener(webView);
     mWebViewConfig.configWebView(webView);
+    webView.getSettings().setBuiltInZoomControls(true);
+    webView.getSettings().setDisplayZoomControls(false);
+
+    // Fixes broken full-screen modals/galleries due to body height being 0.
+    webView.setLayoutParams(
+            new LayoutParams(LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT));
 
     if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
       WebView.setWebContentsDebuggingEnabled(true);
@@ -305,6 +329,10 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       }
       if (source.hasKey("uri")) {
         String url = source.getString("uri");
+        String previousUrl = view.getUrl();
+        if (previousUrl != null && previousUrl.equals(url)) {
+          return;
+        }
         if (source.hasKey("method")) {
           String method = source.getString("method");
           if (method.equals(HTTP_METHOD_POST)) {

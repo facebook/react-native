@@ -28,7 +28,7 @@ import type {
 const ANIMATION_DURATION = 250;
 
 /**
- * The threshold to invoke the `onNavigate` action.
+ * The threshold to invoke the `onNavigateBack` action.
  * For instance, `1 / 3` means that moving greater than 1 / 3 of the width of
  * the view will navigate.
  */
@@ -38,14 +38,6 @@ const POSITION_THRESHOLD = 1 / 3;
  * The threshold (in pixels) to start the gesture action.
  */
 const RESPOND_THRESHOLD = 15;
-
-/**
- * The distance from the edge of the navigator which gesture response can start for.
- * For horizontal scroll views, a distance of 30 from the left of the screen is the
- * standard maximum position to start touch responsiveness.
- */
-const RESPOND_POSITION_MAX_HORIZONTAL = 30;
-const RESPOND_POSITION_MAX_VERTICAL = null;
 
 /**
  * The threshold (in pixels) to finish the gesture action.
@@ -62,14 +54,12 @@ const Directions = {
 
 export type NavigationGestureDirection =  'horizontal' | 'vertical';
 
-/**
- * Primitive gesture actions.
- */
-const Actions = {
-  // The gesture to navigate backward.
-  // This is done by swiping from the left to the right or from the top to the
-  // bottom.
-  BACK: {type: 'back'},
+type Props = NavigationSceneRendererProps & {
+  onNavigateBack: ?Function,
+  /**
+  * The distance from the edge of the navigator which gesture response can start for.
+  **/
+  gestureResponseDistance: ?number,
 };
 
 /**
@@ -90,12 +80,12 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
 
   _isResponding: boolean;
   _isVertical: boolean;
-  _props: NavigationSceneRendererProps;
+  _props: Props;
   _startValue: number;
 
   constructor(
     direction: NavigationGestureDirection,
-    props: NavigationSceneRendererProps,
+    props: Props,
   ) {
     super();
     this._isResponding = false;
@@ -121,8 +111,12 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
       layout.width.__getValue();
 
     const positionMax = isVertical ?
-      RESPOND_POSITION_MAX_VERTICAL :
-      RESPOND_POSITION_MAX_HORIZONTAL;
+      props.gestureResponseDistance :
+      /**
+      * For horizontal scroll views, a distance of 30 from the left of the screen is the
+      * standard maximum position to start touch responsiveness.
+      */
+      props.gestureResponseDistance || 30;
 
     if (positionMax != null && currentDragPosition > positionMax) {
       return false;
@@ -181,8 +175,16 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
 
     props.position.stopAnimation((value: number) => {
       this._reset();
-       if (distance > DISTANCE_THRESHOLD  || value <= index - POSITION_THRESHOLD) {
-        props.onNavigate(Actions.BACK);
+
+      if (!props.onNavigateBack) {
+        return;
+      }
+
+      if (
+        distance > DISTANCE_THRESHOLD  ||
+        value <= index - POSITION_THRESHOLD
+      ) {
+        props.onNavigateBack();
       }
     });
   }
@@ -206,20 +208,20 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
 
 function createPanHandlers(
   direction: NavigationGestureDirection,
-  props: NavigationSceneRendererProps,
+  props: Props,
 ): NavigationPanPanHandlers {
   const responder = new NavigationCardStackPanResponder(direction, props);
   return responder.panHandlers;
 }
 
 function forHorizontal(
-  props: NavigationSceneRendererProps,
+  props: Props,
 ): NavigationPanPanHandlers {
   return createPanHandlers(Directions.HORIZONTAL, props);
 }
 
 function forVertical(
-  props: NavigationSceneRendererProps,
+  props: Props,
 ): NavigationPanPanHandlers {
   return createPanHandlers(Directions.VERTICAL, props);
 }
@@ -232,7 +234,6 @@ module.exports = {
   RESPOND_THRESHOLD,
 
   // enums
-  Actions,
   Directions,
 
   // methods.

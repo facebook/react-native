@@ -125,6 +125,33 @@ html * {
   rendering-intent: auto;
 }
 
+.example-container {
+  position: relative;
+}
+
+.embedded-simulator, .embedded-simulator * {
+  box-sizing: border-box;
+}
+
+.embedded-simulator p {
+  text-align: center;
+  color: #999;
+}
+
+.embedded-simulator {
+  width: 210px;
+  position: absolute;
+  right: -200px;
+  top: 0;
+}
+
+@media screen and (max-width: 680px) {
+  .embedded-simulator {
+    position: relative;
+    right: 0;
+  }
+}
+
 .prism {
   white-space: pre-wrap;
   font-family: 'source-code-pro', Menlo, 'Courier New', Consolas, monospace;
@@ -377,7 +404,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 }
 
 .hero {
-  background: #05A5D1;
+  background: #2D2D2D;
   padding: 50px 0;
   color: #FDF3E7;
   font-weight: 300;
@@ -482,41 +509,52 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 }
 
 @media only screen and (max-device-width: 1024px) {
+  @-webkit-keyframes slide-in {
+    0% { top: -30px; opacity: 0; }
+    100% { top: 0; opacity: 1; }
+  }
+  @-moz-keyframes slide-in {
+    0% { top: -30px; opacity: 0; }
+    100% { top: 0; opacity: 1; }
+  }
+  @-o-keyframes slide-in {
+    0% { top: -30px; opacity: 0; }
+    100% { top: 0; opacity: 1; }
+  }
+  @keyframes slide-in {
+    0% { top: -30px; opacity: 0; }
+    100% { top: 0; opacity: 1; }
+  }
+
   .nav-docs {
     position: fixed;
     z-index: 90;
-    top: 0;
+    top: -100%;
     left: 0;
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 53px 0 0 0;
     background: #3B3738;
-    /* Transition these properties */
-    transition: opacity 0.3s, visibility 0.3s;
-    visibility: hidden;
-    opacity: 0;
   }
 
   .nav-docs-viewport {
     border-top: 1px solid rgb(5, 165, 209);
-    height: 100%;
     padding: 25px;
     overflow: scroll;
     -webkit-overflow-scrolling: touch;
-    top: -30px;
     position: relative;
-    transition: top 0.3s;
+    width: 100%;
+    height: 100%;
   }
 
   /* Active state */
   .nav-docs.in {
-    visibility: visible;
-    opacity: 1;
-  }
-
-  .nav-docs.in .nav-docs-viewport {
     top: 0;
+    -webkit-animation: slide-in 0.3s forwards;
+    -moz-animation: slide-in 0.3s forwards;
+    -o-animation: slide-in 0.3s forwards;
+    animation: slide-in 0.3s forwards;
   }
 
   .nav-docs * {
@@ -796,8 +834,8 @@ h2 {
 }
 
 .docs-prevnext {
-  padding-top: 40px;
-  padding-bottom: 40px;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
 .button {
@@ -1016,21 +1054,6 @@ small code, li code, p code {
   text-decoration: none !important;
 }
 
-.column-left, .column-left * {
-  box-sizing: border-box;
-}
-
-.column-left p {
-  text-align: center;
-  color: #999;
-}
-
-.column-left {
-  float: left;
-  padding: 20px;
-  width: 210px;
-}
-
 /* Modal */
 .modal-backdrop {
   background: rgba(0,0,0,.4);
@@ -1214,6 +1237,23 @@ div[data-twttr-id] iframe {
   margin-left: 20px;
 }
 
+.methodTitle {
+  font-weight: bold;
+  font-size: 24px;
+  color: #2F9C0A;
+}
+
+.compactProps .methodTitle {
+  font-size: 14px;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.compactProps .methodTitle div {
+  font-weight: normal;
+  margin-left: 20px;
+}
+
 .prop {
   padding: 5px 10px;
 }
@@ -1228,6 +1268,16 @@ div[data-twttr-id] iframe {
 }
 
 .compactProps .propType {
+  font-weight: normal;
+  font-size: 13px;
+}
+
+.methodType {
+  font-weight: normal;
+  font-size: 24px;
+}
+
+.compactProps .methodType {
   font-weight: normal;
   font-size: 13px;
 }
@@ -1315,13 +1365,8 @@ div[data-twttr-id] iframe {
 @media only screen
   and (min-device-width: 1024px) {
   .showcase {
-    width: 20%;
+    width: 25%;
   }
-}
-
-.showcase:hover {
-  text-decoration: none;
-  opacity: 0.8;
 }
 
 .showcase h3 {
@@ -1371,13 +1416,10 @@ div[data-twttr-id] iframe {
 }
 
 .survey-image {
-  position: absolute;
-  top: 10px;
-  height: 83px;
-  width: 120px;
+  float: left;
+  height: 128px;
+  width: 128px;
   background-image: url('../img/survey.png');
-  background-size: 272px 198px;
-  background-position: -8px -8px;
 }
 
 .survey p {
@@ -1536,4 +1578,71 @@ input#algolia-doc-search:focus {
   border-right-color: hsl(198, 100%, 94%);
   background-color: hsl(198, 100%, 96%);
   color: #3B3738;
+}
+
+.params, .props {
+  border-spacing: 0;
+  border: 0;
+  border-collapse: collapse;
+}
+
+.params .name, .props .name, .name code {
+  color: #4D4E53;
+}
+
+.params td, .params th, .props td, .props th {
+  border: 1px solid #ddd;
+  margin: 0px;
+  text-align: left;
+  vertical-align: top;
+  padding: 4px 6px;
+  display: table-cell;
+}
+
+.params thead tr, .props thead tr {
+  background-color: hsl(198, 75%, 88%);
+  font-weight: bold;
+}
+
+.params .params thead tr, .props .props thead tr {
+  background-color: #fff;
+  font-weight: bold;
+}
+
+.params th, .props th { border-right: 1px solid #aaa; }
+.params thead .last, .props thead .last { border-right: 1px solid #ddd; }
+
+.params td.description > div > p:first-child,
+.props td.description > div > p:first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.params td.description > p:last-child,
+.props td.description > p:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.edit-page-block {
+  padding: 5px;
+  margin-bottom: 40px;
+  font-size: 12px;
+  color: #887766;
+  text-align: center;
+  background-color: rgba(5, 165, 209, 0.05);
+}
+
+/** Web player **/
+
+.web-player > iframe, .web-player > .prism {
+  display: none;
+}
+
+.web-player.desktop > iframe {
+  display: block;
+}
+
+.web-player.mobile > .prism {
+  display: block;
 }

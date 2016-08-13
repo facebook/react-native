@@ -49,12 +49,15 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       ModuleRegistryHolder* mrh);
   void loadScriptFromAssets(jobject assetManager, const std::string& assetURL);
   void loadScriptFromFile(jni::alias_ref<jstring> fileName, const std::string& sourceURL);
-  void callJSFunction(JExecutorToken* token, std::string module, std::string method, NativeArray* arguments,
-                      const std::string& tracingName);
+  void loadScriptFromOptimizedBundle(const std::string& bundlePath, const std::string& sourceURL, jint flags);
+  void callJSFunction(JExecutorToken* token, std::string module, std::string method, NativeArray* arguments);
   void callJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments);
   local_ref<JExecutorToken::JavaPart> getMainExecutorToken();
   void setGlobalVariable(std::string propName,
                          std::string&& jsonValue);
+  void handleMemoryPressureUiHidden();
+  void handleMemoryPressureModerate();
+  void handleMemoryPressureCritical();
   jboolean supportsProfiling();
   void startProfiler(const std::string& title);
   void stopProfiler(const std::string& title, const std::string& filename);

@@ -11,7 +11,7 @@
 
 const path = require('path');
 const Activity = require('../Activity');
-const DependencyGraph = require('node-haste');
+const DependencyGraph = require('../node-haste');
 const declareOpts = require('../lib/declareOpts');
 const Promise = require('promise');
 
@@ -93,7 +93,6 @@ class Resolver {
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
       providesModuleNodeModules: [
-        'react',
         'react-native',
         'react-native-windows',
         // Parse requires AsyncStorage. They will
@@ -102,7 +101,7 @@ class Resolver {
         // remove it from here.
         'parse',
       ],
-      platforms: ['ios', 'android', 'windows'],
+      platforms: ['ios', 'android', 'windows', 'web'],
       preferNativePlatform: true,
       fileWatcher: opts.fileWatcher,
       cache: opts.cache,
@@ -264,10 +263,6 @@ class Resolver {
 
   minifyModule({path, code, map}) {
     return this._minifyCode(path, code, map);
-  }
-
-  getDebugInfo() {
-    return this._depGraph.getDebugInfo();
   }
 }
 

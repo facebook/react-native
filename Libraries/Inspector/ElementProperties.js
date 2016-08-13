@@ -12,7 +12,7 @@
 'use strict';
 
 var BoxInspector = require('BoxInspector');
-var PropTypes = require('ReactPropTypes');
+var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
 var StyleInspector = require('StyleInspector');
 var StyleSheet = require('StyleSheet');
@@ -20,14 +20,23 @@ var Text = require('Text');
 var TouchableHighlight = require('TouchableHighlight');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
-var {SourceCode} = require('NativeModules');
 var {fetch} = require('fetch');
 
 var flattenStyle = require('flattenStyle');
 var mapWithSeparator = require('mapWithSeparator');
+var openFileInEditor = require('openFileInEditor');
 
-var ElementProperties = React.createClass({
-  propTypes: {
+class ElementProperties extends React.Component {
+  props: {
+    hierarchy: Array<$FlowFixMe>,
+    style?: Object | Array<$FlowFixMe> | number,
+    source?: {
+      fileName?: string,
+      lineNumber?: number,
+    },
+  };
+
+  static propTypes = {
     hierarchy: PropTypes.array.isRequired,
     style: PropTypes.oneOfType([
       PropTypes.object,
@@ -38,10 +47,11 @@ var ElementProperties = React.createClass({
       fileName: PropTypes.string,
       lineNumber: PropTypes.number,
     }),
-  },
+  };
 
-  render: function() {
+  render() {
     var style = flattenStyle(this.props.style);
+    // $FlowFixMe found when converting React.createClass to ES6
     var selection = this.props.selection;
     var openFileButton;
     var source = this.props.source;
@@ -52,7 +62,7 @@ var ElementProperties = React.createClass({
       openFileButton = (
         <TouchableHighlight
           style={styles.openButton}
-          onPress={this._openFile.bind(null, fileName, lineNumber)}>
+          onPress={openFileInEditor.bind(null, fileName, lineNumber)}>
           <Text style={styles.openButtonTitle} numberOfLines={1}>
             {fileNameShort}:{lineNumber}
           </Text>
@@ -71,9 +81,10 @@ var ElementProperties = React.createClass({
                 <TouchableHighlight
                   key={'item-' + i}
                   style={[styles.breadItem, i === selection && styles.selected]}
+                  // $FlowFixMe found when converting React.createClass to ES6
                   onPress={() => this.props.setSelection(i)}>
                   <Text style={styles.breadItemText}>
-                    {item.getName ? item.getName() : 'Unknown'}
+                    {getInstanceName(item)}
                   </Text>
                 </TouchableHighlight>
               ),
@@ -89,23 +100,25 @@ var ElementProperties = React.createClass({
               <StyleInspector style={style} />
               {openFileButton}
             </View>
-            <BoxInspector style={style} frame={this.props.frame} />
+            {
+              // $FlowFixMe found when converting React.createClass to ES6
+            <BoxInspector style={style} frame={this.props.frame} />}
           </View>
         </View>
       </TouchableWithoutFeedback>
     );
-  },
+  }
+}
 
-  _openFile: function(fileName: string, lineNumber: number) {
-    var match = SourceCode.scriptURL && SourceCode.scriptURL.match(/^https?:\/\/.*?\//);
-    var baseURL = match ? match[0] : 'http://localhost:8081/';
-
-    fetch(baseURL + 'open-stack-frame', {
-      method: 'POST',
-      body: JSON.stringify({file: fileName, lineNumber}),
-    });
-  },
-});
+function getInstanceName(instance) {
+  if (instance.getName) {
+    return instance.getName();
+  }
+  if (instance.constructor && instance.constructor.displayName) {
+    return instance.constructor.displayName;
+  }
+  return 'Unknown';
+}
 
 var styles = StyleSheet.create({
   breadSep: {
@@ -115,6 +128,7 @@ var styles = StyleSheet.create({
   breadcrumb: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    alignItems: 'flex-start',
     marginBottom: 5,
   },
   selected: {

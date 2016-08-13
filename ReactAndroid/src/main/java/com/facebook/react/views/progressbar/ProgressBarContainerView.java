@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
@@ -22,6 +23,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 
   private @Nullable Integer mColor;
   private boolean mIndeterminate = true;
+  private boolean mAnimating = true;
   private double mProgress;
   private @Nullable ProgressBar mProgressBar;
 
@@ -53,6 +55,10 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
     mProgress = progress;
   }
 
+  public void setAnimating(boolean animating) {
+    mAnimating = animating;
+  }
+
   public void apply() {
     if (mProgressBar == null) {
       throw new JSApplicationIllegalArgumentException("setStyle() not called");
@@ -61,6 +67,11 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
     mProgressBar.setIndeterminate(mIndeterminate);
     setColor(mProgressBar);
     mProgressBar.setProgress((int) (mProgress * MAX_PROGRESS));
+    if (mAnimating) {
+      mProgressBar.setVisibility(View.VISIBLE);
+    } else {
+      mProgressBar.setVisibility(View.GONE);
+    }
   }
 
   private void setColor(ProgressBar progressBar) {

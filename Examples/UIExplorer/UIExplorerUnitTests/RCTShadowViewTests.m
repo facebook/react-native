@@ -28,10 +28,10 @@
 {
   [super setUp];
 
-  self.parentView = [self _shadowViewWithStyle:^(css_style_t *style) {
-    style->flex_direction = CSS_FLEX_DIRECTION_COLUMN;
-    style->dimensions[0] = 440;
-    style->dimensions[1] = 440;
+  self.parentView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
+    CSSNodeStyleSetFlexDirection(node, CSSFlexDirectionColumn);
+    CSSNodeStyleSetWidth(node, 440);
+    CSSNodeStyleSetHeight(node, 440);
   }];
   self.parentView.reactTag = @1; // must be valid rootView tag
 }
@@ -50,43 +50,43 @@
 //
 - (void)testApplyingLayoutRecursivelyToShadowView
 {
-  RCTShadowView *leftView = [self _shadowViewWithStyle:^(css_style_t *style) {
-    style->flex = 1;
+  RCTShadowView *leftView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
+    CSSNodeStyleSetFlex(node, 1);
   }];
 
-  RCTShadowView *centerView = [self _shadowViewWithStyle:^(css_style_t *style) {
-    style->flex = 2;
-    style->margin[0] = 10;
-    style->margin[2] = 10;
+  RCTShadowView *centerView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
+    CSSNodeStyleSetFlex(node, 2);
+    CSSNodeStyleSetMarginLeft(node, 10);
+    CSSNodeStyleSetMarginRight(node, 10);
   }];
 
-  RCTShadowView *rightView = [self _shadowViewWithStyle:^(css_style_t *style) {
-    style->flex = 1;
+  RCTShadowView *rightView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
+    CSSNodeStyleSetFlex(node, 1);
   }];
 
-  RCTShadowView *mainView = [self _shadowViewWithStyle:^(css_style_t *style) {
-    style->flex_direction = CSS_FLEX_DIRECTION_ROW;
-    style->flex = 2;
-    style->margin[1] = 10;
-    style->margin[3] = 10;
+  RCTShadowView *mainView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
+    CSSNodeStyleSetFlexDirection(node, CSSFlexDirectionRow);
+    CSSNodeStyleSetFlex(node, 2);
+    CSSNodeStyleSetMarginTop(node, 10);
+    CSSNodeStyleSetMarginBottom(node, 10);
   }];
 
   [mainView insertReactSubview:leftView atIndex:0];
   [mainView insertReactSubview:centerView atIndex:1];
   [mainView insertReactSubview:rightView atIndex:2];
 
-  RCTShadowView *headerView = [self _shadowViewWithStyle:^(css_style_t *style) {
-    style->flex = 1;
+  RCTShadowView *headerView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
+    CSSNodeStyleSetFlex(node, 1);
   }];
 
-  RCTShadowView *footerView = [self _shadowViewWithStyle:^(css_style_t *style) {
-    style->flex = 1;
+  RCTShadowView *footerView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
+    CSSNodeStyleSetFlex(node, 1);
   }];
 
-  self.parentView.cssNode->style.padding[0] = 10;
-  self.parentView.cssNode->style.padding[1] = 10;
-  self.parentView.cssNode->style.padding[2] = 10;
-  self.parentView.cssNode->style.padding[3] = 10;
+  CSSNodeStyleSetPaddingLeft(self.parentView.cssNode, 10);
+  CSSNodeStyleSetPaddingTop(self.parentView.cssNode, 10);
+  CSSNodeStyleSetPaddingRight(self.parentView.cssNode, 10);
+  CSSNodeStyleSetPaddingBottom(self.parentView.cssNode, 10);
 
   [self.parentView insertReactSubview:headerView atIndex:0];
   [self.parentView insertReactSubview:mainView atIndex:1];
@@ -106,12 +106,35 @@
   XCTAssertTrue(CGRectEqualToRect([rightView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(330, 120, 100, 200)));
 }
 
+- (void)testAncestorCheck
+{
+  RCTShadowView *centerView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
+    CSSNodeStyleSetFlex(node, 1);
+  }];
+  
+  RCTShadowView *mainView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
+    CSSNodeStyleSetFlex(node, 1);
+  }];
+  
+  [mainView insertReactSubview:centerView atIndex:0];
+
+  RCTShadowView *footerView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
+    CSSNodeStyleSetFlex(node, 1);
+  }];
+  
+  [self.parentView insertReactSubview:mainView atIndex:0];
+  [self.parentView insertReactSubview:footerView atIndex:1];
+  
+  XCTAssertTrue([centerView viewIsDescendantOf:mainView]);
+  XCTAssertFalse([footerView viewIsDescendantOf:mainView]);
+}
+
 - (void)testAssignsSuggestedWidthDimension
 {
-  [self _withShadowViewWithStyle:^(css_style_t *style) {
-                                   style->position[CSS_LEFT] = 0;
-                                   style->position[CSS_TOP] = 0;
-                                   style->dimensions[CSS_HEIGHT] = 10;
+  [self _withShadowViewWithStyle:^(CSSNodeRef node) {
+                                   CSSNodeStyleSetPositionLeft(node, 0);
+                                   CSSNodeStyleSetPositionTop(node, 0);
+                                   CSSNodeStyleSetHeight(node, 10);
                                  }
             assertRelativeLayout:CGRectMake(0, 0, 3, 10)
         withIntrinsicContentSize:CGSizeMake(3, UIViewNoIntrinsicMetric)];
@@ -119,10 +142,10 @@
 
 - (void)testAssignsSuggestedHeightDimension
 {
-  [self _withShadowViewWithStyle:^(css_style_t *style) {
-                                   style->position[CSS_LEFT] = 0;
-                                   style->position[CSS_TOP] = 0;
-                                   style->dimensions[CSS_WIDTH] = 10;
+  [self _withShadowViewWithStyle:^(CSSNodeRef node) {
+                                   CSSNodeStyleSetPositionLeft(node, 0);
+                                   CSSNodeStyleSetPositionTop(node, 0);
+                                   CSSNodeStyleSetWidth(node, 10);
                                  }
             assertRelativeLayout:CGRectMake(0, 0, 10, 4)
         withIntrinsicContentSize:CGSizeMake(UIViewNoIntrinsicMetric, 4)];
@@ -130,11 +153,11 @@
 
 - (void)testDoesNotOverrideDimensionStyleWithSuggestedDimensions
 {
-  [self _withShadowViewWithStyle:^(css_style_t *style) {
-                                   style->position[CSS_LEFT] = 0;
-                                   style->position[CSS_TOP] = 0;
-                                   style->dimensions[CSS_WIDTH] = 10;
-                                   style->dimensions[CSS_HEIGHT] = 10;
+  [self _withShadowViewWithStyle:^(CSSNodeRef node) {
+                                   CSSNodeStyleSetPositionLeft(node, 0);
+                                   CSSNodeStyleSetPositionTop(node, 0);
+                                   CSSNodeStyleSetWidth(node, 10);
+                                   CSSNodeStyleSetHeight(node, 10);
                                  }
           assertRelativeLayout:CGRectMake(0, 0, 10, 10)
       withIntrinsicContentSize:CGSizeMake(3, 4)];
@@ -142,20 +165,20 @@
 
 - (void)testDoesNotAssignSuggestedDimensionsWhenStyledWithFlexAttribute
 {
-  float parentWidth = self.parentView.cssNode->style.dimensions[CSS_WIDTH];
-  float parentHeight = self.parentView.cssNode->style.dimensions[CSS_HEIGHT];
-  [self _withShadowViewWithStyle:^(css_style_t *style) {
-                                   style->flex = 1;
+  float parentWidth = CSSNodeStyleGetWidth(self.parentView.cssNode);
+  float parentHeight = CSSNodeStyleGetHeight(self.parentView.cssNode);
+  [self _withShadowViewWithStyle:^(CSSNodeRef node) {
+                                   CSSNodeStyleSetFlex(node, 1);
                                  }
             assertRelativeLayout:CGRectMake(0, 0, parentWidth, parentHeight)
         withIntrinsicContentSize:CGSizeMake(3, 4)];
 }
 
-- (void)_withShadowViewWithStyle:(void(^)(css_style_t *style))styleBlock
+- (void)_withShadowViewWithStyle:(void(^)(CSSNodeRef node))configBlock
             assertRelativeLayout:(CGRect)expectedRect
         withIntrinsicContentSize:(CGSize)contentSize
 {
-  RCTShadowView *view = [self _shadowViewWithStyle:styleBlock];
+  RCTShadowView *view = [self _shadowViewWithConfig:configBlock];
   [self.parentView insertReactSubview:view atIndex:0];
   view.intrinsicContentSize = contentSize;
   [self.parentView collectViewsWithUpdatedFrames];
@@ -166,14 +189,10 @@
                 NSStringFromCGRect(actualRect));
 }
 
-- (RCTRootShadowView *)_shadowViewWithStyle:(void(^)(css_style_t *style))styleBlock
+- (RCTRootShadowView *)_shadowViewWithConfig:(void(^)(CSSNodeRef node))configBlock
 {
   RCTRootShadowView *shadowView = [RCTRootShadowView new];
-
-  css_style_t style = shadowView.cssNode->style;
-  styleBlock(&style);
-  shadowView.cssNode->style = style;
-
+  configBlock(shadowView.cssNode);
   return shadowView;
 }
 

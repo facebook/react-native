@@ -14,8 +14,8 @@
 const performanceNow = require('performanceNow');
 
 type Handler = {
-  onIterate?: () => void;
-  onStall: (params: {lastInterval: number}) => string;
+  onIterate?: () => void,
+  onStall: (params: {lastInterval: number}) => string,
 };
 
 /**

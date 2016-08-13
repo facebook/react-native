@@ -15,6 +15,9 @@ const fs = require('fs');
 const jsDocs = require('../jsdocs/jsdocs.js');
 const path = require('path');
 const slugify = require('../core/slugify');
+const babel = require('babel-core');
+const jsdocApi = require('jsdoc-api');
+const deepAssign = require('deep-assign');
 
 const ANDROID_SUFFIX = 'android';
 const CROSS_SUFFIX = 'cross';
@@ -36,7 +39,9 @@ function removeExtName(filepath) {
 function getNameFromPath(filepath) {
   filepath = removeExtName(filepath);
   if (filepath === 'LayoutPropTypes') {
-    return 'Flexbox';
+    return 'Layout Props';
+  } else if (filepath == 'ShadowPropTypesIOS') {
+    return 'Shadow Props';
   } else if (filepath === 'TransformPropTypes') {
     return 'Transforms';
   } else if (filepath === 'TabBarItemIOS') {
@@ -58,8 +63,8 @@ function getPlatformFromPath(filepath) {
 }
 
 function getExamplePaths(componentName, componentPlatform) {
-  var componentExample = '../Examples/UIExplorer/' + componentName + 'Example.';
-  var pathsToCheck = [
+  const componentExample = '../Examples/UIExplorer/js/' + componentName + 'Example.';
+  let pathsToCheck = [
     componentExample + 'js',
     componentExample + componentPlatform + '.js',
   ];
@@ -69,7 +74,7 @@ function getExamplePaths(componentName, componentPlatform) {
       componentExample + ANDROID_SUFFIX + '.js'
     );
   }
-  var paths = [];
+  let paths = [];
   pathsToCheck.map((p) => {
     if (fs.existsSync(p)) {
       paths.push(p);
@@ -79,12 +84,12 @@ function getExamplePaths(componentName, componentPlatform) {
 }
 
 function getExamples(componentName, componentPlatform) {
-  var paths = getExamplePaths(componentName, componentPlatform);
+  const paths = getExamplePaths(componentName, componentPlatform);
   if (paths) {
-    var examples = [];
+    let examples = [];
     paths.map((p) => {
-      var platform = p.match(/Example\.(.*)\.js$/);
-      var title = '';
+      const platform = p.match(/Example\.(.*)\.js$/);
+      let title = '';
       if ((componentPlatform === CROSS_SUFFIX) && (platform !== null)) {
         title = platform[1].toUpperCase();
       }
@@ -128,7 +133,7 @@ function filterMethods(method) {
 // Determines whether a component should have a link to a runnable example
 
 function isRunnable(componentName, componentPlatform) {
-  var paths = getExamplePaths(componentName, componentPlatform);
+  const paths = getExamplePaths(componentName, componentPlatform);
   if (paths && paths.length > 0) {
     return true;
   } else {
@@ -156,9 +161,21 @@ function getNextComponent(idx) {
     } else {
       return getNextComponent(idx + 1);
     }
-  } else {
-    return 'network';
   }
+  return null;
+}
+
+function getPreviousComponent(idx) {
+  if (all[idx - 1]) {
+    const previousComponentName = getNameFromPath(all[idx - 1]);
+
+    if (shouldDisplayInSidebar(previousComponentName)) {
+      return slugify(previousComponentName);
+    } else {
+      return getPreviousComponent(idx - 1);
+    }
+  }
+  return null;
 }
 
 function componentsToMarkdown(type, json, filepath, idx, styles) {
@@ -182,9 +199,10 @@ function componentsToMarkdown(type, json, filepath, idx, styles) {
     json.methods = json.methods.filter(filterMethods);
   }
 
-  // Put Flexbox into the Polyfills category
-  const category = (type === 'style' ? 'Polyfills' : type + 's');
+  // Put styles (e.g. Flexbox) into the API category
+  const category = (type === 'style' ? 'apis' : type + 's');
   const next = getNextComponent(idx);
+  const previous = getPreviousComponent(idx);
 
   const res = [
     '---',
@@ -195,6 +213,7 @@ function componentsToMarkdown(type, json, filepath, idx, styles) {
     'permalink: docs/' + slugify(componentName) + '.html',
     'platform: ' + componentPlatform,
     'next: ' + next,
+    'previous: ' + previous,
     'sidebar: ' + shouldDisplayInSidebar(componentName),
     'runnable:' + isRunnable(componentName, componentPlatform),
     'path:' + json.filepath,
@@ -206,37 +225,252 @@ function componentsToMarkdown(type, json, filepath, idx, styles) {
 
 let componentCount;
 
-function renderComponent(filepath) {
-  const json = docgen.parse(
-    fs.readFileSync(filepath),
-    docgenHelpers.findExportedOrFirst,
-    docgen.defaultHandlers.concat([
-      docgenHelpers.stylePropTypeHandler,
-      docgenHelpers.deprecatedPropTypeHandler,
-    ])
-  );
-
-  return componentsToMarkdown('component', json, filepath, componentCount++, styleDocs);
+function getTypedef(filepath, fileContent, json) {
+  let typedefDocgen;
+  try {
+    typedefDocgen = docgen.parse(
+      fileContent,
+      docgenHelpers.findExportedType,
+      [docgenHelpers.typedefHandler]
+    ).map((type) => type.typedef);
+  } catch (e) {
+    // Ignore errors due to missing exported type definitions
+    if (e.message.indexOf(docgen.ERROR_MISSING_DEFINITION) !== -1) {
+      console.error('Cannot parse file', filepath, e);
+    }
+  }
+  if (!json) {
+    return typedefDocgen;
+  }
+  let typedef = typedefDocgen;
+  if (json.typedef && json.typedef.length !== 0) {
+    json.typedef.forEach(def => {
+      const typedefMatch = typedefDocgen.find(t => t.name === def.name);
+      if (typedefMatch) {
+        typedef.name = Object.assign(typedefMatch, def);
+      } else {
+        typedef.push(def);
+      }
+    });
+  }
+  return typedef;
 }
 
-function renderAPI(type) {
-  return function(filepath) {
-    let json;
-    try {
-      json = jsDocs(fs.readFileSync(filepath).toString());
-    } catch (e) {
-      console.error('Cannot parse file', filepath, e);
-      json = {};
+function renderComponent(filepath) {
+  try {
+    const fileContent = fs.readFileSync(filepath);
+    const json = docgen.parse(
+      fileContent,
+      docgenHelpers.findExportedOrFirst,
+      docgen.defaultHandlers.concat([
+        docgenHelpers.stylePropTypeHandler,
+        docgenHelpers.deprecatedPropTypeHandler,
+        docgenHelpers.jsDocFormatHandler,
+      ])
+    );
+    json.typedef = getTypedef(filepath, fileContent);
+
+    return componentsToMarkdown('component', json, filepath, componentCount++, styleDocs);
+  } catch (e) {
+    console.log('error in renderComponent for', filepath);
+    throw e;
+  }
+}
+
+function isJsDocFormat(fileContent) {
+  const reComment = /\/\*\*[\s\S]+?\*\//g;
+  const comments = fileContent.match(reComment);
+  if (!comments) {
+    return false;
+  }
+  return !!comments[0].match(/\s*\*\s+@jsdoc/);
+}
+
+function parseAPIJsDocFormat(filepath, fileContent) {
+  const fileName = path.basename(filepath);
+  const babelRC = {
+    'filename': fileName,
+    'sourceFileName': fileName,
+    'plugins': [
+      'transform-flow-strip-types',
+      'babel-plugin-syntax-trailing-function-commas',
+    ]
+  };
+  // Babel transform
+  const code = babel.transform(fileContent, babelRC).code;
+  // Parse via jsdocs
+  let jsonParsed = jsdocApi.explainSync({
+    source: code,
+    configure: './jsdocs/jsdoc-conf.json'
+  });
+  // Cleanup jsdocs return
+  jsonParsed = jsonParsed.filter(i => {
+    return !i.undocumented && !/package|file/.test(i.kind);
+  });
+  jsonParsed = jsonParsed.map((identifier) => {
+    delete identifier.comment;
+    return identifier;
+  });
+  jsonParsed.forEach((identifier, index) => {
+    identifier.order = index;
+  });
+  // Group by "kind"
+  let json = {};
+  jsonParsed.forEach((identifier, index) => {
+    let kind = identifier.kind;
+    if (kind === 'function') {
+      kind = 'methods';
+    }
+    if (!json[kind]) {
+      json[kind] = [];
+    }
+    delete identifier.kind;
+    json[kind].push(identifier);
+  });
+  json.typedef = getTypedef(filepath, fileContent, json);
+  return json;
+}
+
+function parseAPIInferred(filepath, fileContent) {
+  let json;
+  try {
+    json = jsDocs(fileContent);
+    if (!json) {
+      throw new Error('jsDocs returned falsy');
+    }
+  } catch (e) {
+    console.error('Cannot parse file', filepath, e);
+    json = {};
+  }
+  return json;
+}
+
+function getTypeName(type) {
+  let typeName;
+  switch (type.name) {
+    case 'signature':
+      typeName = type.type;
+      break;
+    case 'union':
+      typeName = type.value ?
+        type.value.map(getTypeName) :
+        type.elements.map(getTypeName);
+      break;
+    case 'enum':
+      if (typeof type.value === 'string') {
+        typeName = type.value;
+      } else {
+        typeName = 'enum';
+      }
+      break;
+    case '$Enum':
+      if (type.elements[0].signature.properties) {
+        typeName = type.elements[0].signature.properties.map(p => p.key);
+      }
+      break;
+    case 'arrayOf':
+      typeName = getTypeName(type.value);
+      break;
+    case 'instanceOf':
+      typeName = type.value;
+      break;
+    case 'func':
+      typeName = 'function';
+      break;
+    default:
+      typeName = type.alias ? type.alias : type.name;
+      break;
+  }
+  return typeName;
+}
+
+function getTypehintRec(typehint) {
+  if (typehint.type === 'simple') {
+    return typehint.value;
+  }
+  if (typehint.type === 'generic') {
+    return getTypehintRec(typehint.value[0]) +
+      '<' + getTypehintRec(typehint.value[1]) + '>';
+  }
+  return JSON.stringify(typehint);
+}
+
+function getTypehint(typehint) {
+  if (typeof typehint === 'object' && typehint.name) {
+    return getTypeName(typehint);
+  }
+  try {
+    var typehint = JSON.parse(typehint);
+  } catch (e) {
+    return typehint.toString().split('|').map(type => type.trim());
+  }
+  return getTypehintRec(typehint);
+}
+
+function getJsDocFormatType(entities) {
+  let modEntities = entities;
+  if (entities) {
+    if (typeof entities === 'object' && entities.length) {
+      entities.map((entity, entityIndex) => {
+        if (entity.typehint) {
+          const typeNames = [].concat(getTypehint(entity.typehint));
+          modEntities[entityIndex].type = { names: typeNames };
+          delete modEntities[entityIndex].typehint;
+        }
+        if (entity.name) {
+          const regexOptionalType = /\?$/;
+          if (regexOptionalType.test(entity.name)) {
+            modEntities[entityIndex].optional = true;
+            modEntities[entityIndex].name =
+              entity.name.replace(regexOptionalType, '');
+          }
+        }
+      });
+    } else {
+      const typeNames = [].concat(getTypehint(entities));
+      return { type: { names : typeNames } };
+    }
+  }
+  return modEntities;
+}
+
+function renderAPI(filepath, type) {
+  try {
+    const fileContent = fs.readFileSync(filepath).toString();
+    let json = parseAPIInferred(filepath, fileContent);
+    if (isJsDocFormat(fileContent)) {
+      let jsonJsDoc = parseAPIJsDocFormat(filepath, fileContent);
+      // Combine method info with jsdoc formatted content
+      const methods = json.methods;
+      if (methods && methods.length) {
+        let modMethods = methods;
+        methods.map((method, methodIndex) => {
+          modMethods[methodIndex].params = getJsDocFormatType(method.params);
+          modMethods[methodIndex].returns =
+          getJsDocFormatType(method.returntypehint);
+          delete modMethods[methodIndex].returntypehint;
+        });
+        json.methods = modMethods;
+        // Use deep Object.assign so duplicate properties are overwritten.
+        deepAssign(jsonJsDoc.methods, json.methods);
+      }
+      json = jsonJsDoc;
     }
     return componentsToMarkdown(type, json, filepath, componentCount++);
-  };
+  } catch (e) {
+    console.log('error in renderAPI for', filepath);
+    throw e;
+  }
 }
 
 function renderStyle(filepath) {
   const json = docgen.parse(
     fs.readFileSync(filepath),
     docgenHelpers.findExportedObject,
-    [docgen.handlers.propTypeHandler]
+    [
+      docgen.handlers.propTypeHandler,
+      docgen.handlers.propDocBlockHandler,
+    ]
   );
 
   // Remove deprecated transform props from docs
@@ -250,7 +484,8 @@ function renderStyle(filepath) {
 }
 
 const components = [
-  '../Libraries/Components/ActivityIndicatorIOS/ActivityIndicatorIOS.ios.js',
+  '../Libraries/Components/ActivityIndicator/ActivityIndicator.js',
+  '../Libraries/Components/ActivityIndicator/ActivityIndicatorIOS.ios.js',
   '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
   '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
   '../Libraries/Image/Image.ios.js',
@@ -259,8 +494,8 @@ const components = [
   '../Libraries/Modal/Modal.js',
   '../Libraries/CustomComponents/Navigator/Navigator.js',
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
-  '../Libraries/Components/Picker/PickerIOS.ios.js',
   '../Libraries/Components/Picker/Picker.js',
+  '../Libraries/Components/Picker/PickerIOS.ios.js',
   '../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.android.js',
   '../Libraries/Components/ProgressViewIOS/ProgressViewIOS.ios.js',
   '../Libraries/Components/RefreshControl/RefreshControl.js',
@@ -269,7 +504,10 @@ const components = [
   '../Libraries/Components/Slider/Slider.js',
   '../Libraries/Components/SliderIOS/SliderIOS.ios.js',
   '../Libraries/Components/StatusBar/StatusBar.js',
+  '../Libraries/RCTTest/SnapshotViewIOS.ios.js',
   '../Libraries/Components/Switch/Switch.js',
+  '../Libraries/Components/SwitchAndroid/SwitchAndroid.android.js',
+  '../Libraries/Components/SwitchIOS/SwitchIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarItemIOS.ios.js',
   '../Libraries/Text/Text.js',
@@ -286,11 +524,11 @@ const components = [
 
 const apis = [
   '../Libraries/ActionSheetIOS/ActionSheetIOS.js',
+  '../Libraries/AdSupport/AdSupportIOS.js',
   '../Libraries/Utilities/Alert.js',
   '../Libraries/Utilities/AlertIOS.js',
   '../Libraries/Animated/src/AnimatedImplementation.js',
   '../Libraries/AppRegistry/AppRegistry.js',
-  '../Libraries/AppStateIOS/AppStateIOS.ios.js',
   '../Libraries/AppState/AppState.js',
   '../Libraries/Storage/AsyncStorage.js',
   '../Libraries/Utilities/BackAndroid.android.js',
@@ -298,23 +536,30 @@ const apis = [
   '../Libraries/Components/Clipboard/Clipboard.js',
   '../Libraries/Components/DatePickerAndroid/DatePickerAndroid.android.js',
   '../Libraries/Utilities/Dimensions.js',
+  '../Libraries/Animated/src/Easing.js',
+  '../Libraries/Geolocation/Geolocation.js',
+  '../Libraries/Image/ImageEditor.js',
+  '../Libraries/CameraRoll/ImagePickerIOS.js',
+  '../Libraries/Image/ImageStore.js',
   '../Libraries/Components/Intent/IntentAndroid.android.js',
   '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/Linking/Linking.js',
-  '../Libraries/LinkingIOS/LinkingIOS.js',
   '../Libraries/CustomComponents/ListView/ListViewDataSource.js',
   '../node_modules/react/lib/NativeMethodsMixin.js',
+  '../Libraries/BatchedBridge/BatchedBridgedModules/NativeModules.js',
   '../Libraries/Network/NetInfo.js',
   '../Libraries/Interaction/PanResponder.js',
   '../Libraries/Utilities/PixelRatio.js',
   '../Libraries/PushNotificationIOS/PushNotificationIOS.js',
+  '../Libraries/Settings/Settings.ios.js',
   '../Libraries/Components/StatusBar/StatusBarIOS.ios.js',
   '../Libraries/StyleSheet/StyleSheet.js',
+  '../Libraries/Utilities/Systrace.js',
   '../Libraries/Components/TimePickerAndroid/TimePickerAndroid.android.js',
   '../Libraries/Components/ToastAndroid/ToastAndroid.android.js',
-  '../Libraries/Vibration/VibrationIOS.ios.js',
   '../Libraries/Vibration/Vibration.js',
+  '../Libraries/Vibration/VibrationIOS.ios.js',
 ];
 
 const stylesWithPermalink = [
@@ -329,14 +574,9 @@ const stylesForEmbed = [
   '../Libraries/Image/ImageStylePropTypes.js',
 ];
 
-const polyfills = [
-  '../Libraries/Geolocation/Geolocation.js',
-];
-
 const all = components
   .concat(apis)
-  .concat(stylesWithPermalink)
-  .concat(polyfills);
+  .concat(stylesWithPermalink);
 
 const styleDocs = stylesForEmbed.reduce(function(docs, filepath) {
   docs[path.basename(filepath).replace(path.extname(filepath), '')] =
@@ -357,8 +597,9 @@ module.exports = function() {
   componentCount = 0;
   return [].concat(
     components.map(renderComponent),
-    apis.map(renderAPI('api')),
-    stylesWithPermalink.map(renderStyle),
-    polyfills.map(renderAPI('Polyfill'))
+    apis.map((filepath) => {
+      return renderAPI(filepath, 'api');
+    }),
+    stylesWithPermalink.map(renderStyle)
   );
 };

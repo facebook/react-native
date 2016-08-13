@@ -18,7 +18,7 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
   for (UIView *child in view.reactSubviews) {
     if ([child isKindOfClass:[RCTText class]]) {
       collectNonTextDescendants((RCTText *)child, nonTextDescendants);
-    } else {
+    } else if (!CGRectEqualToRect(child.frame, CGRectZero)) {
       [nonTextDescendants addObject:child];
     }
   }
@@ -27,7 +27,6 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
 @implementation RCTText
 {
   NSTextStorage *_textStorage;
-  NSMutableArray<UIView *> *_reactSubviews;
   CAShapeLayer *_highlightLayer;
 }
 
@@ -35,8 +34,6 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
 {
   if ((self = [super initWithFrame:frame])) {
     _textStorage = [NSTextStorage new];
-    _reactSubviews = [NSMutableArray array];
-
     self.isAccessibilityElement = YES;
     self.accessibilityTraits |= UIAccessibilityTraitStaticText;
 
@@ -68,36 +65,42 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
   self.backgroundColor = inheritedBackgroundColor;
 }
 
-- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
+- (void)didUpdateReactSubviews
 {
-  [_reactSubviews insertObject:subview atIndex:atIndex];
-}
-
-- (void)removeReactSubview:(UIView *)subview
-{
-  [_reactSubviews removeObject:subview];
-}
-
-- (NSArray<UIView *> *)reactSubviews
-{
-  return _reactSubviews;
+  // Do nothing, as subviews are managed by `setTextStorage:` method
 }
 
 - (void)setTextStorage:(NSTextStorage *)textStorage
 {
   if (_textStorage != textStorage) {
     _textStorage = textStorage;
+
+    // Update subviews
+    NSMutableArray *nonTextDescendants = [NSMutableArray new];
+    collectNonTextDescendants(self, nonTextDescendants);
+    NSArray *subviews = self.subviews;
+    if (![subviews isEqualToArray:nonTextDescendants]) {
+      for (UIView *child in subviews) {
+        if (![nonTextDescendants containsObject:child]) {
+          [child removeFromSuperview];
+        }
+      }
+      for (UIView *child in nonTextDescendants) {
+        [self addSubview:child];
+      }
+    }
+
     [self setNeedsDisplay];
   }
 }
 
 - (void)drawRect:(CGRect)rect
 {
-  NSLayoutManager *layoutManager = _textStorage.layoutManagers.firstObject;
-  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
-  CGRect textFrame = UIEdgeInsetsInsetRect(self.bounds, _contentInset);
-  NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+  NSLayoutManager *layoutManager = [_textStorage.layoutManagers firstObject];
+  NSTextContainer *textContainer = [layoutManager.textContainers firstObject];
 
+  NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+  CGRect textFrame = self.textFrame;
   [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:textFrame.origin];
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:textFrame.origin];
 
@@ -130,15 +133,6 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
     [_highlightLayer removeFromSuperlayer];
     _highlightLayer = nil;
   }
-
-  for (UIView *child in [self subviews]) {
-    [child removeFromSuperview];
-  }
-  NSMutableArray *nonTextDescendants = [NSMutableArray new];
-  collectNonTextDescendants(self, nonTextDescendants);
-  for (UIView *child in nonTextDescendants) {
-    [self addSubview:child];
-  }
 }
 
 - (NSNumber *)reactTagAtPoint:(CGPoint)point
@@ -160,7 +154,6 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
   return reactTag;
 }
 
-
 - (void)didMoveToWindow
 {
   [super didMoveToWindow];
@@ -175,6 +168,7 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
     [self setNeedsDisplay];
   }
 }
+
 
 #pragma mark - Accessibility
 

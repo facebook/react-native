@@ -13,8 +13,6 @@
 #include <jni/Countable.h>
 #include <jni/LocalReference.h>
 
-#include <react/jni/NativeArray.h>
-
 #include <cxxreact/Instance.h>
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/ModuleRegistry.h>
@@ -23,6 +21,7 @@
 #include "JavaScriptExecutorHolder.h"
 #include "JniJSModulesUnbundle.h"
 #include "ModuleRegistryHolder.h"
+#include "NativeArray.h"
 #include "JNativeRunnable.h"
 
 using namespace facebook::jni;
@@ -50,6 +49,10 @@ class JInstanceCallback : public InstanceCallback {
   }
 
   void incrementPendingJSCalls() override {
+    // For C++ modules, this can be called from an arbitrary thread
+    // managed by the module, via callJSCallback or callJSFunction.  So,
+    // we ensure that it is registered with the JVM.
+    jni::ThreadScope guard;
     static auto method =
       ReactCallback::javaClassStatic()->getMethod<void()>("incrementPendingJSCalls");
     method(jobj_);
@@ -102,10 +105,15 @@ void CatalystInstanceImpl::registerNatives() {
                        "(Landroid/content/res/AssetManager;Ljava/lang/String;)V",
                        CatalystInstanceImpl::loadScriptFromAssets),
       makeNativeMethod("loadScriptFromFile", CatalystInstanceImpl::loadScriptFromFile),
+      makeNativeMethod("loadScriptFromOptimizedBundle",
+                       CatalystInstanceImpl::loadScriptFromOptimizedBundle),
       makeNativeMethod("callJSFunction", CatalystInstanceImpl::callJSFunction),
       makeNativeMethod("callJSCallback", CatalystInstanceImpl::callJSCallback),
       makeNativeMethod("getMainExecutorToken", CatalystInstanceImpl::getMainExecutorToken),
       makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
+      makeNativeMethod("handleMemoryPressureUiHidden", CatalystInstanceImpl::handleMemoryPressureUiHidden),
+      makeNativeMethod("handleMemoryPressureModerate", CatalystInstanceImpl::handleMemoryPressureModerate),
+      makeNativeMethod("handleMemoryPressureCritical", CatalystInstanceImpl::handleMemoryPressureCritical),
       makeNativeMethod("supportsProfiling", CatalystInstanceImpl::supportsProfiling),
       makeNativeMethod("startProfiler", CatalystInstanceImpl::startProfiler),
       makeNativeMethod("stopProfiler", CatalystInstanceImpl::stopProfiler),
@@ -159,8 +167,9 @@ void CatalystInstanceImpl::loadScriptFromAssets(jobject assetManager,
       folly::make_unique<JniJSModulesUnbundle>(manager, sourceURL),
       std::move(script),
       sourceURL);
+    return;
   } else {
-    instance_->loadScriptFromString(std::move(script), std::move(sourceURL));
+    instance_->loadScriptFromString(std::move(script), sourceURL);
   }
 }
 
@@ -170,9 +179,16 @@ void CatalystInstanceImpl::loadScriptFromFile(jni::alias_ref<jstring> fileName,
                                        sourceURL);
 }
 
+void CatalystInstanceImpl::loadScriptFromOptimizedBundle(const std::string& bundlePath,
+                                                         const std::string& sourceURL,
+                                                         jint flags) {
+  return instance_->loadScriptFromOptimizedBundle(std::move(bundlePath),
+                                                  std::move(sourceURL),
+                                                  flags);
+}
+
 void CatalystInstanceImpl::callJSFunction(
-    JExecutorToken* token, std::string module, std::string method, NativeArray* arguments,
-    const std::string& tracingName) {
+    JExecutorToken* token, std::string module, std::string method, NativeArray* arguments) {
   // We want to share the C++ code, and on iOS, modules pass module/method
   // names as strings all the way through to JS, and there's no way to do
   // string -> id mapping on the objc side.  So on Android, we convert the
@@ -181,10 +197,9 @@ void CatalystInstanceImpl::callJSFunction(
   // strings otherwise.  Eventually, we'll probably want to modify the stack
   // from the JS proxy through here to use strings, too.
   instance_->callJSFunction(token->getExecutorToken(nullptr),
-                            module,
-                            method,
-                            std::move(arguments->array),
-                            tracingName);
+                            std::move(module),
+                            std::move(method),
+                            std::move(arguments->array));
 }
 
 void CatalystInstanceImpl::callJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments) {
@@ -202,6 +217,18 @@ void CatalystInstanceImpl::setGlobalVariable(std::string propName,
 
   instance_->setGlobalVariable(std::move(propName),
                                folly::make_unique<JSBigStdString>(std::move(jsonValue)));
+}
+
+void CatalystInstanceImpl::handleMemoryPressureUiHidden() {
+  instance_->handleMemoryPressureUiHidden();
+}
+
+void CatalystInstanceImpl::handleMemoryPressureModerate() {
+  instance_->handleMemoryPressureModerate();
+}
+
+void CatalystInstanceImpl::handleMemoryPressureCritical() {
+  instance_->handleMemoryPressureCritical();
 }
 
 jboolean CatalystInstanceImpl::supportsProfiling() {

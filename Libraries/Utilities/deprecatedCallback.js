@@ -14,7 +14,7 @@
 
 'use strict';
 
-module.exports = function(promise: Promise, callbacks: Array<Function>, type: string, warning: string): Promise {
+module.exports = function(promise: Promise<any>, callbacks: Array<Function>, type: string, warning: string): Promise<any> {
   if (callbacks.length === 0) {
     return promise;
   }
@@ -49,6 +49,6 @@ module.exports = function(promise: Promise, callbacks: Array<Function>, type: st
       err => callback(err)
     );
   default:
-    throw new Error(`Type of callbacks not specified. Must be one of 'success-first', 'error-first', 'single-callback-value-first', or 'node'`);
+    throw new Error('Type of callbacks not specified. Must be one of \'success-first\', \'error-first\', \'single-callback-value-first\', or \'node\'');
   }
 };

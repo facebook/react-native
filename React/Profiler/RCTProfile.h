@@ -26,14 +26,14 @@ RCT_EXTERN NSString *const RCTProfileDidEndProfiling;
 
 RCT_EXTERN const uint64_t RCTProfileTagAlways;
 
-#if RCT_DEV
+#if RCT_PROFILE
 
 @class RCTBridge;
 
 #define RCTProfileBeginFlowEvent() \
 _Pragma("clang diagnostic push") \
 _Pragma("clang diagnostic ignored \"-Wshadow\"") \
-NSNumber *__rct_profile_flow_id = _RCTProfileBeginFlowEvent(); \
+NSUInteger __rct_profile_flow_id = _RCTProfileBeginFlowEvent(); \
 _Pragma("clang diagnostic pop")
 
 #define RCTProfileEndFlowEvent() \
@@ -41,8 +41,8 @@ _RCTProfileEndFlowEvent(__rct_profile_flow_id)
 
 RCT_EXTERN dispatch_queue_t RCTProfileGetQueue(void);
 
-RCT_EXTERN NSNumber *_RCTProfileBeginFlowEvent(void);
-RCT_EXTERN void _RCTProfileEndFlowEvent(NSNumber *);
+RCT_EXTERN NSUInteger _RCTProfileBeginFlowEvent(void);
+RCT_EXTERN void _RCTProfileEndFlowEvent(NSUInteger);
 
 /**
  * Returns YES if the profiling information is currently being collected
@@ -132,6 +132,8 @@ RCT_EXTERN void RCTProfileImmediateEvent(uint64_t tag,
  * self and _cmd to name this event for simplicity sake.
  *
  * NOTE: The block can't expect any argument
+ *
+ * DEPRECATED: this approach breaks debugging and stepping through instrumented block functions
  */
 #define RCTProfileBlock(block, tag, category, arguments) \
 ^{ \
