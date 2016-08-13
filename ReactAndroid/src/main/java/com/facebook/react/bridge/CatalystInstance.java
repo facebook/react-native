@@ -21,12 +21,18 @@ import com.facebook.proguard.annotations.DoNotStrip;
  * Java APIs be invokable from JavaScript as well.
  */
 @DoNotStrip
-public interface CatalystInstance {
+public interface CatalystInstance extends MemoryPressureListener {
   void runJSBundle();
   // This is called from java code, so it won't be stripped anyway, but proguard will rename it,
   // which this prevents.
   @DoNotStrip
   void invokeCallback(ExecutorToken executorToken, final int callbackID, final NativeArray arguments);
+  @DoNotStrip
+  void callFunction(
+      ExecutorToken executorToken,
+      String module,
+      String method,
+      NativeArray arguments);
   /**
    * Destroys this catalyst instance, waiting for any other threads in ReactQueueConfiguration
    * (besides the UI thread) to finish running. Must be called from the UI thread so that we can
@@ -45,10 +51,9 @@ public interface CatalystInstance {
 
   <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface);
   <T extends JavaScriptModule> T getJSModule(ExecutorToken executorToken, Class<T> jsInterface);
+  <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface);
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface);
   Collection<NativeModule> getNativeModules();
-
-  void handleMemoryPressure(MemoryPressure level);
 
   /**
    * Adds a idle listener for this Catalyst instance. The listener will receive notifications

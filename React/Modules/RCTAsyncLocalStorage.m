@@ -117,7 +117,7 @@ static dispatch_queue_t RCTGetMethodQueue()
   static dispatch_queue_t queue;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    queue = dispatch_queue_create("com.facebook.React.AsyncLocalStorageQueue", DISPATCH_QUEUE_SERIAL);
+    queue = dispatch_queue_create("com.facebook.react.AsyncLocalStorageQueue", DISPATCH_QUEUE_SERIAL);
   });
   return queue;
 }
@@ -169,7 +169,7 @@ RCT_EXPORT_MODULE()
 - (void)clearAllData
 {
   dispatch_async(RCTGetMethodQueue(), ^{
-    [_manifest removeAllObjects];
+    [self->_manifest removeAllObjects];
     [RCTGetCache() removeAllObjects];
     RCTDeleteStorageDirectory();
   });

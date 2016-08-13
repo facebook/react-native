@@ -1,5 +1,10 @@
 /**
- * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
@@ -27,227 +32,241 @@
  */
 'use strict';
 
-const React = require('react-native');
-const NavigationContainer = require('NavigationContainer');
+const React = require('React');
+const ReactNative = require('react-native');
 const NavigationHeaderTitle = require('NavigationHeaderTitle');
 const NavigationHeaderBackButton = require('NavigationHeaderBackButton');
+const NavigationPropTypes = require('NavigationPropTypes');
+const NavigationHeaderStyleInterpolator = require('NavigationHeaderStyleInterpolator');
+const ReactComponentWithPureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
 
 const {
   Animated,
   Platform,
   StyleSheet,
   View,
-} = React;
+} = ReactNative;
+
+import type  {
+  NavigationSceneRendererProps,
+  NavigationStyleInterpolator,
+} from 'NavigationTypeDefinition';
+
+type SubViewProps = NavigationSceneRendererProps & {
+  onNavigateBack: ?Function,
+};
+
+type SubViewRenderer = (subViewProps: SubViewProps) => ?ReactElement<any>;
+
+type DefaultProps = {
+  renderLeftComponent: SubViewRenderer,
+  renderRightComponent: SubViewRenderer,
+  renderTitleComponent: SubViewRenderer,
+  statusBarHeight: number | Animated.Value,
+};
+
+type Props = NavigationSceneRendererProps & {
+  onNavigateBack: ?Function,
+  renderLeftComponent: SubViewRenderer,
+  renderRightComponent: SubViewRenderer,
+  renderTitleComponent: SubViewRenderer,
+  style?: any,
+  viewProps?: any,
+  statusBarHeight: number | Animated.Value,
+};
+
+type SubViewName = 'left' | 'title' | 'right';
 
 const APPBAR_HEIGHT = Platform.OS === 'ios' ? 44 : 56;
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : 0;
+const {PropTypes} = React;
 
-import type {
-  NavigationScene,
-} from 'NavigationStateUtils';
+class NavigationHeader extends React.Component<DefaultProps, Props, any> {
+  props: Props;
 
-type Renderer = (scene: NavigationScene) => ReactElement;
+  static defaultProps = {
 
-type DefaultProps = {
-  renderTitleComponent: Renderer;
-  renderLeftComponent: Renderer;
-};
+    renderTitleComponent: (props: SubViewProps) => {
+      const title = String(props.scene.route.title || '');
+      return <NavigationHeaderTitle>{title}</NavigationHeaderTitle>;
+    },
 
-type Props = {
-  position: Animated.Value,
-  scenes: Array<NavigationScene>;
-  index: number;
-  renderTitleComponent: Renderer;
-  renderLeftComponent: Renderer;
-  renderRightComponent: Renderer;
-  style: any,
-};
-
-class NavigationHeader extends React.Component<DefaultProps, Props, void> {
-  _renderLeftComponent(scene) {
-    const {
-      renderLeftComponent,
-      position,
-    } = this.props;
-
-    if (renderLeftComponent) {
-      const {
-        index,
-        state,
-      } = scene;
-
+    renderLeftComponent: (props: SubViewProps) => {
+      if (props.scene.index === 0 || !props.onNavigateBack) {
+        return null;
+      }
       return (
-        <Animated.View
-          pointerEvents={this.props.index === index ? 'auto' : 'none'}
-          key={state.key}
-          style={[
-            styles.left,
-            {
-              opacity: position.interpolate({
-                inputRange: [ index - 1, index, index + 1 ],
-                outputRange: [ 0, 1, 0 ],
-              })
-            }
-          ]}
-        >
-          {renderLeftComponent(state, index)}
-        </Animated.View>
+        <NavigationHeaderBackButton
+          onPress={props.onNavigateBack}
+        />
       );
-    }
+    },
 
-    return null;
-  }
+    renderRightComponent: (props: SubViewProps) => {
+      return null;
+    },
 
-  _renderRightComponent(scene) {
-    const {
-      renderRightComponent,
-      position,
-    } = this.props;
+    statusBarHeight: STATUSBAR_HEIGHT,
+  };
 
-    if (renderRightComponent) {
-      const {
-        index,
-        state,
-      } = scene;
+  static propTypes = {
+    ...NavigationPropTypes.SceneRendererProps,
+    onNavigateBack: PropTypes.func,
+    renderLeftComponent: PropTypes.func,
+    renderRightComponent: PropTypes.func,
+    renderTitleComponent: PropTypes.func,
+    style: View.propTypes.style,
+    statusBarHeight: PropTypes.number,
+    viewProps: PropTypes.shape(View.propTypes),
+  };
 
-      return (
-        <Animated.View
-          pointerEvents={this.props.index === index ? 'auto' : 'none'}
-          key={state.key}
-          style={[
-            styles.right,
-            {
-              opacity: position.interpolate({
-                inputRange: [ index - 1, index, index + 1 ],
-                outputRange: [ 0, 1, 0 ],
-              })
-            }
-          ]}
-        >
-          {renderRightComponent(state, index)}
-        </Animated.View>
-      );
-    }
-
-    return null;
-  }
-
-  _renderTitleComponent(scene) {
-    const {
-      renderTitleComponent,
-      position,
-    } = this.props;
-
-    if (renderTitleComponent) {
-      const {
-        index,
-        state,
-      } = scene;
-
-      return (
-        <Animated.View
-          pointerEvents={this.props.index === index ? 'auto' : 'none'}
-          key={state.key}
-          style={[
-            styles.title,
-            {
-              opacity: position.interpolate({
-                inputRange: [ index - 1, index, index + 1 ],
-                outputRange: [ 0, 1, 0 ],
-              }),
-              transform: [
-                {
-                  translateX: position.interpolate({
-                    inputRange: [ index - 1, index + 1 ],
-                    outputRange: [ 200, -200 ],
-                  }),
-                }
-              ],
-            }
-          ]}
-        >
-          {renderTitleComponent(state, index)}
-        </Animated.View>
-      );
-    }
-
-    return null;
-  }
-
-  render() {
-    const { scenes } = this.props;
-
-    return (
-      <View style={[ styles.appbar, this.props.style ]}>
-        {scenes.map(this._renderLeftComponent, this)}
-        {scenes.map(this._renderTitleComponent, this)}
-        {scenes.map(this._renderRightComponent, this)}
-      </View>
+  shouldComponentUpdate(nextProps: Props, nextState: any): boolean {
+    return ReactComponentWithPureRenderMixin.shouldComponentUpdate.call(
+      this,
+      nextProps,
+      nextState
     );
   }
+
+  render(): ReactElement<any> {
+    const { scenes, style, viewProps } = this.props;
+
+    const scenesProps = scenes.map(scene => {
+      const props = NavigationPropTypes.extractSceneRendererProps(this.props);
+      props.scene = scene;
+      return props;
+    });
+
+    const barHeight = (this.props.statusBarHeight instanceof Animated.Value)
+      ? Animated.add(this.props.statusBarHeight, new Animated.Value(APPBAR_HEIGHT))
+      : APPBAR_HEIGHT + this.props.statusBarHeight;
+
+    return (
+      <Animated.View style={[
+          styles.appbar,
+          { height: barHeight },
+          style
+        ]}
+        {...viewProps}
+      >
+        {scenesProps.map(this._renderLeft, this)}
+        {scenesProps.map(this._renderTitle, this)}
+        {scenesProps.map(this._renderRight, this)}
+      </Animated.View>
+    );
+  }
+
+  _renderLeft(props: NavigationSceneRendererProps): ?ReactElement<any> {
+    return this._renderSubView(
+      props,
+      'left',
+      this.props.renderLeftComponent,
+      NavigationHeaderStyleInterpolator.forLeft,
+    );
+  }
+
+  _renderTitle(props: NavigationSceneRendererProps): ?ReactElement<any> {
+    return this._renderSubView(
+      props,
+      'title',
+      this.props.renderTitleComponent,
+      NavigationHeaderStyleInterpolator.forCenter,
+    );
+  }
+
+  _renderRight(props: NavigationSceneRendererProps): ?ReactElement<any> {
+    return this._renderSubView(
+      props,
+      'right',
+      this.props.renderRightComponent,
+      NavigationHeaderStyleInterpolator.forRight,
+    );
+  }
+
+  _renderSubView(
+    props: NavigationSceneRendererProps,
+    name: SubViewName,
+    renderer: SubViewRenderer,
+    styleInterpolator: NavigationStyleInterpolator,
+  ): ?ReactElement<any> {
+    const {
+      scene,
+      navigationState,
+    } = props;
+
+    const {
+      index,
+      isStale,
+      key,
+    } = scene;
+
+    const offset = navigationState.index - index;
+
+    if (Math.abs(offset) > 2) {
+      // Scene is far away from the active scene. Hides it to avoid unnecessary
+      // rendering.
+      return null;
+    }
+
+    const subViewProps = {...props, onNavigateBack: this.props.onNavigateBack};
+    const subView = renderer(subViewProps);
+    if (subView === null) {
+      return null;
+    }
+
+    const pointerEvents = offset !== 0 || isStale ? 'none' : 'box-none';
+    return (
+      <Animated.View
+        pointerEvents={pointerEvents}
+        key={name + '_' + key}
+        style={[
+          styles[name],
+          { marginTop: this.props.statusBarHeight },
+          styleInterpolator(props),
+        ]}>
+        {subView}
+      </Animated.View>
+    );
+  }
+
+  static HEIGHT = APPBAR_HEIGHT + STATUSBAR_HEIGHT;
+  static Title = NavigationHeaderTitle;
+  static BackButton = NavigationHeaderBackButton;
+
 }
-
-const renderTitleComponent = pageState => <NavigationHeaderTitle>{pageState.title}</NavigationHeaderTitle>;
-const renderLeftComponent = (pageState, index) => index !== 0 ? <NavigationHeaderBackButton /> : null;
-
-NavigationHeader.defaultProps = {
-  renderTitleComponent,
-  renderLeftComponent,
-};
-
-NavigationHeader.propTypes = {
-  position: React.PropTypes.object.isRequired,
-  scenes: React.PropTypes.arrayOf(React.PropTypes.shape({
-    index: React.PropTypes.number,
-    state: React.PropTypes.any,
-  })).isRequired,
-  index: React.PropTypes.number.isRequired,
-  renderTitleComponent: React.PropTypes.func,
-  renderLeftComponent: React.PropTypes.func,
-  renderRightComponent: React.PropTypes.func,
-  style: View.propTypes.style,
-};
-
-NavigationHeader.APPBAR_HEIGHT = APPBAR_HEIGHT;
-NavigationHeader.STATUSBAR_HEIGHT = STATUSBAR_HEIGHT;
 
 const styles = StyleSheet.create({
   appbar: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
-    backgroundColor: Platform.OS === 'ios' ? 'rgba(255, 255, 255, .9)' : 'rgba(255, 255, 255, 1)',
-    borderBottomWidth: Platform.OS === 'ios' ? StyleSheet.hairlineWidth : 0,
+    backgroundColor: Platform.OS === 'ios' ? '#EFEFF2' : '#FFF',
     borderBottomColor: 'rgba(0, 0, 0, .15)',
-    height: APPBAR_HEIGHT + STATUSBAR_HEIGHT,
-    marginBottom: 16, // This is needed for elevation shadow
-    elevation: 2,
+    borderBottomWidth: Platform.OS === 'ios' ? StyleSheet.hairlineWidth : 0,
+    elevation: 4,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
   },
 
   title: {
-    position: 'absolute',
-    top: 0,
     bottom: 0,
     left: APPBAR_HEIGHT,
+    position: 'absolute',
     right: APPBAR_HEIGHT,
-    marginTop: STATUSBAR_HEIGHT,
+    top: 0,
   },
 
   left: {
-    position: 'absolute',
-    top: 0,
     bottom: 0,
     left: 0,
-    marginTop: STATUSBAR_HEIGHT,
+    position: 'absolute',
+    top: 0,
   },
 
   right: {
-    position: 'absolute',
-    top: 0,
     bottom: 0,
+    position: 'absolute',
     right: 0,
-    marginTop: STATUSBAR_HEIGHT,
-  }
+    top: 0,
+  },
 });
 
-module.exports = NavigationContainer.create(NavigationHeader);
+module.exports = NavigationHeader;

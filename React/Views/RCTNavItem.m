@@ -15,6 +15,15 @@
 @synthesize leftButtonItem = _leftButtonItem;
 @synthesize rightButtonItem = _rightButtonItem;
 
+- (UIImageView *)titleImageView
+{
+  if (_titleImage) {
+    return [[UIImageView alloc] initWithImage:_titleImage];
+  } else {
+    return nil;
+  }
+}
+
 - (void)setBackButtonTitle:(NSString *)backButtonTitle
 {
   _backButtonTitle = backButtonTitle;

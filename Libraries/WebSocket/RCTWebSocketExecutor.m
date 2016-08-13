@@ -13,6 +13,7 @@
 
 #import "RCTWebSocketExecutor.h"
 
+#import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
@@ -36,6 +37,8 @@ typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary<NSString *, id
 
 RCT_EXPORT_MODULE()
 
+@synthesize bridge = _bridge;
+
 - (instancetype)initWithURL:(NSURL *)URL
 {
   RCTAssertParam(URL);
@@ -51,18 +54,22 @@ RCT_EXPORT_MODULE()
   if (!_url) {
     NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
     NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"] ?: 8081;
-    NSString *URLString = [NSString stringWithFormat:@"http://localhost:%zd/debugger-proxy?role=client", port];
+    NSString *host = [[_bridge bundleURL] host];
+    if (!host) {
+      host = @"localhost";
+    }
+    NSString *URLString = [NSString stringWithFormat:@"http://%@:%zd/debugger-proxy?role=client", host, port];
     _url = [RCTConvert NSURL:URLString];
   }
 
-  _jsQueue = dispatch_queue_create("com.facebook.React.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
+  _jsQueue = dispatch_queue_create("com.facebook.react.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
   _socket = [[RCTSRWebSocket alloc] initWithURL:_url];
   _socket.delegate = self;
   _callbacks = [NSMutableDictionary new];
   _injectedObjects = [NSMutableDictionary new];
   [_socket setDelegateDispatchQueue:_jsQueue];
 
-  NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-chrome-devtools" relativeToURL:_url];
+  NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-js-devtools" relativeToURL:_url];
   [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:startDevToolsURL] delegate:nil];
 
   if (![self connectToProxy]) {
@@ -82,7 +89,7 @@ RCT_EXPORT_MODULE()
   if (!runtimeIsReady) {
     RCTLogError(@"Runtime is not ready for debugging.\n "
                  "- Make sure Packager server is running.\n"
-                 "- Make sure Chrome is running and not paused on a breakpoint or exception and try reloading again.");
+                 "- Make sure the JavaScript Debugger is running and not paused on a breakpoint or exception and try reloading again.");
     [self invalidate];
     return;
   }
@@ -92,7 +99,7 @@ RCT_EXPORT_MODULE()
 {
   _socketOpenSemaphore = dispatch_semaphore_create(0);
   [_socket open];
-  long connected = dispatch_semaphore_wait(_socketOpenSemaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2));
+  long connected = dispatch_semaphore_wait(_socketOpenSemaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 10));
   return connected == 0;
 }
 
@@ -147,10 +154,10 @@ RCT_EXPORT_MODULE()
     }
 
     NSNumber *expectedID = @(lastID++);
-    _callbacks[expectedID] = [callback copy];
+    self->_callbacks[expectedID] = [callback copy];
     NSMutableDictionary<NSString *, id> *messageWithID = [message mutableCopy];
     messageWithID[@"id"] = expectedID;
-    [_socket send:RCTJSONStringify(messageWithID, NULL)];
+    [self->_socket send:RCTJSONStringify(messageWithID, NULL)];
   });
 }
 
@@ -208,14 +215,14 @@ RCT_EXPORT_MODULE()
 - (void)injectJSONText:(NSString *)script asGlobalObjectNamed:(NSString *)objectName callback:(RCTJavaScriptCompleteBlock)onComplete
 {
   dispatch_async(_jsQueue, ^{
-    _injectedObjects[objectName] = script;
+    self->_injectedObjects[objectName] = script;
     onComplete(nil);
   });
 }
 
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
 {
-  RCTExecuteOnMainThread(block, NO);
+  RCTExecuteOnMainQueue(block);
 }
 
 - (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block

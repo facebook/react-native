@@ -24,6 +24,9 @@ project.xcworkspace
 # Gradle
 /build/
 /Examples/**/android/app/build/
+/Examples/**/android/app/gradle/
+/Examples/**/android/app/gradlew
+/Examples/**/android/app/gradlew.bat
 /ReactAndroid/build/
 
 # Buck
@@ -37,6 +40,7 @@ buck-out
 .gradle
 local.properties
 *.iml
+/android/
 
 # Node
 node_modules
@@ -45,3 +49,6 @@ node_modules
 
 # OS X
 .DS_Store
+
+# Test generated files
+/ReactAndroid/src/androidTest/assets/AndroidTestBundle.js

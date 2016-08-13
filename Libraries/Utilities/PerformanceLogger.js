@@ -10,9 +10,10 @@
  */
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
+const BatchedBridge = require('BatchedBridge');
+const fbjsPerformanceNow = require('fbjs/lib/performanceNow');
 
-var performanceNow = require('fbjs/lib/performanceNow');
+const performanceNow = global.nativePerformanceNow || fbjsPerformanceNow;
 
 var timespans = {};
 var extras = {};

@@ -16,32 +16,22 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Image,
   Platform,
-  ProgressBarAndroid,
+  ActivityIndicator,
   TextInput,
   StyleSheet,
   TouchableNativeFeedback,
   View,
-} = React;
+} = ReactNative;
 
 var IS_RIPPLE_EFFECT_SUPPORTED = Platform.Version >= 21;
 
-var SearchBar = React.createClass({
-  render: function() {
-    var loadingView;
-    if (this.props.isLoading) {
-      loadingView = (
-        <ProgressBarAndroid
-          styleAttr="Large"
-          style={styles.spinner}
-        />
-      );
-    } else {
-      loadingView = <View style={styles.spinner} />;
-    }
+class SearchBar extends React.Component {
+  render() {
     var background = IS_RIPPLE_EFFECT_SUPPORTED ?
       TouchableNativeFeedback.SelectableBackgroundBorderless() :
       TouchableNativeFeedback.SelectableBackground();
@@ -68,11 +58,16 @@ var SearchBar = React.createClass({
           onFocus={this.props.onFocus}
           style={styles.searchBarInput}
         />
-        {loadingView}
+        <ActivityIndicator
+          animating={this.props.isLoading}
+          color="white"
+          size="large"
+          style={styles.spinner}
+        />
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   searchBar: {
@@ -93,6 +88,7 @@ var styles = StyleSheet.create({
   spinner: {
     width: 30,
     height: 30,
+    marginRight: 16,
   },
   icon: {
     width: 24,

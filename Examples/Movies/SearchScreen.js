@@ -15,16 +15,16 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
-  ActivityIndicatorIOS,
+  ActivityIndicator,
   ListView,
   Platform,
-  ProgressBarAndroid,
   StyleSheet,
   Text,
   View,
-} = React;
+} = ReactNative;
 var TimerMixin = require('react-timer-mixin');
 
 var invariant = require('fbjs/lib/invariant');
@@ -249,15 +249,8 @@ var SearchScreen = React.createClass({
     if (!this.hasMore() || !this.state.isLoadingTail) {
       return <View style={styles.scrollSpinner} />;
     }
-    if (Platform.OS === 'ios') {
-      return <ActivityIndicatorIOS style={styles.scrollSpinner} />;
-    } else {
-      return (
-        <View  style={{alignItems: 'center'}}>
-          <ProgressBarAndroid styleAttr="Large"/>
-        </View>
-      );
-    }
+
+    return <ActivityIndicator style={styles.scrollSpinner} />;
   },
 
   renderSeparator: function(
@@ -325,8 +318,8 @@ var SearchScreen = React.createClass({
   },
 });
 
-var NoMovies = React.createClass({
-  render: function() {
+class NoMovies extends React.Component {
+  render() {
     var text = '';
     if (this.props.filter) {
       text = `No results for "${this.props.filter}"`;
@@ -342,7 +335,7 @@ var NoMovies = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {

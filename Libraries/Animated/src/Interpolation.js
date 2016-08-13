@@ -18,12 +18,12 @@ var normalizeColor = require('normalizeColor');
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
 export type InterpolationConfigType = {
-  inputRange: Array<number>;
-  outputRange: (Array<number> | Array<string>);
-  easing?: ((input: number) => number);
-  extrapolate?: ExtrapolateType;
-  extrapolateLeft?: ExtrapolateType;
-  extrapolateRight?: ExtrapolateType;
+  inputRange: Array<number>,
+  outputRange: (Array<number> | Array<string>),
+  easing?: ((input: number) => number),
+  extrapolate?: ExtrapolateType,
+  extrapolateLeft?: ExtrapolateType,
+  extrapolateRight?: ExtrapolateType,
 };
 
 var linear = (t) => t;
@@ -222,15 +222,25 @@ function createInterpolationFromStringOutputRange(
     });
   });
 
+  // rgba requires that the r,g,b are integers.... so we want to round them, but we *dont* want to
+  // round the opacity (4th column).
+  const shouldRound = isRgbOrRgba(outputRange[0]);
+
   return (input) => {
     var i = 0;
     // 'rgba(0, 100, 200, 0)'
     // ->
     // 'rgba(${interpolations[0](input)}, ${interpolations[1](input)}, ...'
     return outputRange[0].replace(stringShapeRegex, () => {
-      return String(interpolations[i++](input));
+      const val = +interpolations[i++](input);
+      const rounded = shouldRound && i < 4 ? Math.round(val) : Math.round(val * 1000) / 1000;
+      return String(rounded);
     });
   };
+}
+
+function isRgbOrRgba(range) {
+  return typeof range === 'string' && range.startsWith('rgb');
 }
 
 function checkPattern(arr: Array<string>) {

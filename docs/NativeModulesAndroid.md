@@ -5,6 +5,7 @@ layout: docs
 category: Guides (Android)
 permalink: docs/native-modules-android.html
 next: native-components-android
+previous: communication-ios
 ---
 
 Sometimes an app needs access to a platform API that React Native doesn't have a corresponding module for yet. Maybe you want to reuse some existing Java code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.
@@ -95,7 +96,15 @@ The last step within Java is to register the Module; this happens in the `create
 ```java
 class AnExampleReactPackage implements ReactPackage {
 
-  ...
+  @Override
+  public List<Class<? extends JavaScriptModule>> createJSModules() {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+    return Collections.emptyList();
+  }
 
   @Override
   public List<NativeModule> createNativeModules(
@@ -108,7 +117,7 @@ class AnExampleReactPackage implements ReactPackage {
   }
 ```
 
-The package needs to be provided in the `getPackages` method of the `MainActivity.java` file. This file exists under the android folder in your react-native application directory. The path to this file is: `android/app/src/main/java/com/your-app-name/MainActivity.java`.
+The package needs to be provided in the `getPackages` method of the `MainApplication.java` file. This file exists under the android folder in your react-native application directory. The path to this file is: `android/app/src/main/java/com/your-app-name/MainApplication.java`.
 
 ```java
 protected List<ReactPackage> getPackages() {
@@ -309,7 +318,7 @@ componentWillMount: function() {
 
 ### Getting activity result from `startActivityForResult`
 
-You'll need to listen to `onActivityResult` if you want to get results from an activity you started with `startActivityForResult`. To to do this, the module must implement `ActivityEventListener`. Then, you need to register a listener in the module's constructor,
+You'll need to listen to `onActivityResult` if you want to get results from an activity you started with `startActivityForResult`. To do this, the module must implement `ActivityEventListener`. Then, you need to register a listener in the module's constructor,
 
 ```java
 reactContext.addActivityEventListener(this);
@@ -368,7 +377,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
 
       final Intent chooserIntent = Intent.createChooser(galleryIntent, "Pick an image");
 
-      currentActivity.startActivityForResult(chooserIntent, PICK_IMAGE);
+      currentActivity.startActivityForResult(chooserIntent, IMAGE_PICKER_REQUEST);
     } catch (Exception e) {
       mPickerPromise.reject(E_FAILED_TO_SHOW_PICKER, e);
       mPickerPromise = null;
@@ -412,16 +421,16 @@ Now you can listen to the activity's LifeCycle events by implementing the follow
 ```java
 @Override
 public void onHostResume() {
-    // Actvity `onResume`
+    // Activity `onResume`
 }
 
 @Override
 public void onHostPause() {
-    // Actvity `onPause`
+    // Activity `onPause`
 }
 
 @Override
 public void onHostDestroy() {
-    // Actvity `onDestroy`
+    // Activity `onDestroy`
 }
 ```

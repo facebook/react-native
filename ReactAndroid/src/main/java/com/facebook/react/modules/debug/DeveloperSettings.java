@@ -30,7 +30,23 @@ public interface DeveloperSettings {
   boolean isJSDevModeEnabled();
 
   /**
+   * @return Whether JS bundle should be minified.
+   */
+  boolean isJSMinifyEnabled();
+
+  /**
    * @return Whether element inspector is enabled.
    */
   boolean isElementInspectorEnabled();
+
+  /**
+   * @return Whether remote JS debugging is enabled.
+   */
+  boolean isRemoteJSDebugEnabled();
+
+  /**
+   * Enable/Disable remote JS debugging.
+   */
+  void setRemoteJSDebugEnabled(boolean remoteJSDebugEnabled);
+
 }

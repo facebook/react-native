@@ -7,9 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-typedef void (^RCTSourceLoadBlock)(NSError *error, NSData *source);
+#import "RCTJavaScriptLoader.h"
 
 @class RCTBridge;
+@protocol RCTBridgeModule;
 
 @protocol RCTBridgeDelegate <NSObject>
 
@@ -22,6 +23,15 @@ typedef void (^RCTSourceLoadBlock)(NSError *error, NSData *source);
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge;
 
 @optional
+
+/**
+ * The bridge will attempt to load the JS source code from the location specified
+ * by the `sourceURLForBridge:` method, if loading fails, you can implement this
+ * method to specify fallbackSourceURL.
+ * NOTE: We don't plan to support this API permanently (this method will be
+ * removed after we track down why a valid sourceURL fails to load sometimes).
+ */
+- (NSURL *)fallbackSourceURLForBridge:(RCTBridge *)bridge;
 
 /**
  * The bridge initializes any registered RCTBridgeModules automatically, however
@@ -37,7 +47,31 @@ typedef void (^RCTSourceLoadBlock)(NSError *error, NSData *source);
  * not recommended in most cases - if the module methods and behavior do not
  * match exactly, it may lead to bugs or crashes.
  */
-- (NSArray *)extraModulesForBridge:(RCTBridge *)bridge;
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge;
+
+/**
+ * Customize how bridge native modules are initialized.
+ *
+ * By default all modules are created lazily except those that have constants to export
+ * or require main thread initialization. If you want to limit the set of native
+ * modules that this should be considered for, implement this method.
+ *
+ * Return nil to whitelist all modules found. Modules passed in extraModulesForBridge:
+ * are automatically whitelisted.
+ *
+ * @experimental
+ */
+- (NSArray<Class> *)whitelistedModulesForBridge:(RCTBridge *)bridge;
+
+/**
+ * When initializing native modules that require main thread initialization, the bridge
+ * will default to dispatch module creation blocks asynchrously. If we're blockingly
+ * waiting on the main thread to finish bridge creation on the main thread, this will
+ * deadlock. Override this method to initialize modules synchronously instead.
+ *
+ * @experimental
+ */
+- (BOOL)shouldBridgeInitializeNativeModulesSynchronously:(RCTBridge *)bridge;
 
 /**
  * The bridge will automatically attempt to load the JS source code from the

@@ -12,6 +12,7 @@ package com.facebook.react.views.textinput;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.text.InputType;
+import android.text.InputFilter;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.widget.EditText;
@@ -241,13 +242,13 @@ public class ReactTextInputPropertyTest {
     mManager.updateProperties(view, buildStyles());
     assertThat(view.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD).isZero();
 
-    mManager.updateProperties(view, buildStyles("password", false));
+    mManager.updateProperties(view, buildStyles("secureTextEntry", false));
     assertThat(view.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD).isZero();
 
-    mManager.updateProperties(view, buildStyles("password", true));
+    mManager.updateProperties(view, buildStyles("secureTextEntry", true));
     assertThat(view.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD).isNotZero();
 
-    mManager.updateProperties(view, buildStyles("password", null));
+    mManager.updateProperties(view, buildStyles("secureTextEntry", null));
     assertThat(view.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD).isZero();
   }
 
@@ -289,26 +290,54 @@ public class ReactTextInputPropertyTest {
   @Test
   public void testTextAlign() {
     ReactEditText view = mManager.createViewInstance(mThemedContext);
-    int gravity = view.getGravity();
-    assertThat(view.getGravity() & Gravity.BOTTOM).isNotEqualTo(Gravity.BOTTOM);
+    int defaultGravity = view.getGravity();
+    int defaultHorizontalGravity = defaultGravity & Gravity.HORIZONTAL_GRAVITY_MASK;
+    int defaultVerticalGravity = defaultGravity & Gravity.VERTICAL_GRAVITY_MASK;
 
-    mManager.updateProperties(view, buildStyles("textAlignVertical", "bottom"));
-    assertThat(view.getGravity() & Gravity.BOTTOM).isEqualTo(Gravity.BOTTOM);
+    // Theme
+    assertThat(view.getGravity()).isNotEqualTo(Gravity.NO_GRAVITY);
 
-    mManager.updateProperties(
-        view,
-        buildStyles("textAlign", "right", "textAlignVertical", "top"));
-    assertThat(view.getGravity() & Gravity.BOTTOM).isNotEqualTo(Gravity.BOTTOM);
-    assertThat(view.getGravity() & (Gravity.RIGHT | Gravity.TOP))
-        .isEqualTo(Gravity.RIGHT | Gravity.TOP);
-
-    mManager.updateProperties(
-        view,
-        buildStyles("textAlignVertical", null));
-    assertThat(view.getGravity() & Gravity.RIGHT).isEqualTo(Gravity.RIGHT);
-    assertThat(view.getGravity() & Gravity.TOP).isNotEqualTo(Gravity.TOP);
-
+    // TextAlign
+    mManager.updateProperties(view, buildStyles("textAlign", "left"));
+    assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.LEFT);
+    mManager.updateProperties(view, buildStyles("textAlign", "right"));
+    assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.RIGHT);
+    mManager.updateProperties(view, buildStyles("textAlign", "center"));
+    assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.CENTER_HORIZONTAL);
     mManager.updateProperties(view, buildStyles("textAlign", null));
-    assertThat(view.getGravity()).isEqualTo(gravity);
+    assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(defaultHorizontalGravity);
+
+    // TextAlignVertical
+    mManager.updateProperties(view, buildStyles("textAlignVertical", "top"));
+    assertThat(view.getGravity() & Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(Gravity.TOP);
+    mManager.updateProperties(view, buildStyles("textAlignVertical", "bottom"));
+    assertThat(view.getGravity() & Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(Gravity.BOTTOM);
+    mManager.updateProperties(view, buildStyles("textAlignVertical", "center"));
+    assertThat(view.getGravity() & Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(Gravity.CENTER_VERTICAL);
+    mManager.updateProperties(view, buildStyles("textAlignVertical", null));
+    assertThat(view.getGravity() & Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(defaultVerticalGravity);
+
+    // TextAlign + TextAlignVertical
+    mManager.updateProperties(
+      view,
+      buildStyles("textAlign", "center", "textAlignVertical", "center"));
+    assertThat(view.getGravity()).isEqualTo(Gravity.CENTER);
+    mManager.updateProperties(
+      view,
+      buildStyles("textAlign", "right", "textAlignVertical", "bottom"));
+    assertThat(view.getGravity()).isEqualTo(Gravity.RIGHT | Gravity.BOTTOM);
+    mManager.updateProperties(
+      view,
+      buildStyles("textAlign", null, "textAlignVertical", null));
+    assertThat(view.getGravity()).isEqualTo(defaultGravity);
+  }
+  
+  @Test
+  public void testMaxLength() {
+    ReactEditText view = mManager.createViewInstance(mThemedContext);
+    InputFilter[] filters = new InputFilter[] { new InputFilter.AllCaps() };
+    view.setFilters(filters);
+    mManager.setMaxLength(view, null);
+    assertThat(view.getFilters()).isEqualTo(filters);
   }
 }

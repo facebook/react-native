@@ -10,14 +10,16 @@
  */
 'use strict';
 
-var React = require('react-native');
-var { TestModule } = React.NativeModules;
+var React = require('react');
+var ReactNative = require('react-native');
+var { View } = ReactNative;
+var { TestModule } = ReactNative.NativeModules;
 
-var PromiseTest = React.createClass({
-  shouldResolve: false,
-  shouldReject: false,
-  shouldSucceedAsync: false,
-  shouldThrowAsync: false,
+class PromiseTest extends React.Component {
+  shouldResolve = false;
+  shouldReject = false;
+  shouldSucceedAsync = false;
+  shouldThrowAsync = false;
 
   componentDidMount() {
     Promise.all([
@@ -26,48 +28,49 @@ var PromiseTest = React.createClass({
       this.testShouldSucceedAsync(),
       this.testShouldThrowAsync(),
     ]).then(() => TestModule.markTestPassed(
+      // $FlowFixMe found when converting React.createClass to ES6
       this.shouldResolve && this.shouldReject &&
+      // $FlowFixMe found when converting React.createClass to ES6
       this.shouldSucceedAsync && this.shouldThrowAsync
     ));
-  },
+  }
 
-  testShouldResolve() {
+  testShouldResolve = () => {
     return TestModule
       .shouldResolve()
       .then(() => this.shouldResolve = true)
       .catch(() => this.shouldResolve = false);
-  },
+  };
 
-  testShouldReject() {
+  testShouldReject = () => {
     return TestModule
       .shouldReject()
       .then(() => this.shouldReject = false)
       .catch(() => this.shouldReject = true);
-  },
+  };
 
-  async testShouldSucceedAsync() : Promise {
+  testShouldSucceedAsync = async (): Promise<any> => {
     try {
       await TestModule.shouldResolve();
       this.shouldSucceedAsync = true;
     } catch (e) {
       this.shouldSucceedAsync = false;
     }
-  },
+  };
 
-  async testShouldThrowAsync() : Promise {
+  testShouldThrowAsync = async (): Promise<any> => {
     try {
       await TestModule.shouldReject();
       this.shouldThrowAsync = false;
     } catch (e) {
       this.shouldThrowAsync = true;
     }
-  },
+  };
 
-  render() : ReactElement {
-    return <React.View />;
+  render(): ReactElement<any> {
+    return <View />;
   }
-
-});
+}
 
 PromiseTest.displayName = 'PromiseTest';
 

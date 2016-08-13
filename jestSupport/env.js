@@ -8,7 +8,9 @@
  */
 'use strict';
 
-require('../packager/react-packager/src/Resolver/polyfills/babelHelpers.js');
+require.requireActual('../packager/react-packager/src/Resolver/polyfills/babelHelpers.js');
+require.requireActual('../packager/react-packager/src/Resolver/polyfills/Object.es7.js');
+
 global.__DEV__ = true;
 global.__fbBatchedBridgeConfig = {
   remoteModuleConfig: [],
@@ -16,6 +18,20 @@ global.__fbBatchedBridgeConfig = {
 };
 
 global.Promise = require('promise');
-global.regeneratorRuntime = require.requireActual('regenerator/runtime');
+global.regeneratorRuntime = require.requireActual('regenerator-runtime/runtime');
+
+jest
+  .mock('ensureComponentIsNative')
+  .mock('Image')
+  .mock('npmlog')
+  .mock('NativeModules')
+  .mock('Text')
+  .mock('View');
+
+const mockEmptyObject = {};
+jest.mock('ReactNativePropRegistry', () => ({
+  register: id => id,
+  getByID: () => mockEmptyObject,
+}));
 
 jest.setMock('ErrorUtils', require('ErrorUtils'));

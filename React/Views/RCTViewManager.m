@@ -52,7 +52,7 @@ RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue
 {
-  return _bridge.uiManager.methodQueue;
+  return RCTGetUIManagerQueue();
 }
 
 - (UIView *)view
@@ -115,8 +115,8 @@ RCT_REMAP_VIEW_PROPERTY(accessible, isAccessibilityElement, BOOL)
 RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)
 RCT_REMAP_VIEW_PROPERTY(backfaceVisibility, layer.doubleSided, css_backface_visibility_t)
 RCT_REMAP_VIEW_PROPERTY(opacity, alpha, CGFloat)
-RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor);
-RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize);
+RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor)
+RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize)
 RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
 RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(overflow, clipsToBounds, css_clip_t)
@@ -125,7 +125,14 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
   view.layer.shouldRasterize = json ? [RCTConvert BOOL:json] : defaultView.layer.shouldRasterize;
   view.layer.rasterizationScale = view.layer.shouldRasterize ? [UIScreen mainScreen].scale : defaultView.layer.rasterizationScale;
 }
+// TODO: t11041683 Remove this duplicate property name.
 RCT_CUSTOM_VIEW_PROPERTY(transformMatrix, CATransform3D, RCTView)
+{
+  view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
+  // TODO: Improve this by enabling edge antialiasing only for transforms with rotation or skewing
+  view.layer.allowsEdgeAntialiasing = !CATransform3DIsIdentity(view.layer.transform);
+}
+RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 {
   view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
   // TODO: Improve this by enabling edge antialiasing only for transforms with rotation or skewing
@@ -239,6 +246,8 @@ RCT_VIEW_BORDER_RADIUS_PROPERTY(TopRight)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomLeft)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomRight)
 
+RCT_REMAP_VIEW_PROPERTY(zIndex, reactZIndex, NSInteger)
+
 #pragma mark - ShadowView properties
 
 RCT_EXPORT_SHADOW_PROPERTY(backgroundColor, UIColor)
@@ -250,6 +259,11 @@ RCT_EXPORT_SHADOW_PROPERTY(left, CGFloat);
 
 RCT_EXPORT_SHADOW_PROPERTY(width, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(height, CGFloat)
+
+RCT_EXPORT_SHADOW_PROPERTY(minWidth, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(maxWidth, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(minHeight, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(maxHeight, CGFloat)
 
 RCT_EXPORT_SHADOW_PROPERTY(borderTopWidth, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(borderRightWidth, CGFloat)
@@ -274,13 +288,15 @@ RCT_EXPORT_SHADOW_PROPERTY(paddingHorizontal, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(padding, CGFloat)
 
 RCT_EXPORT_SHADOW_PROPERTY(flex, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(flexDirection, css_flex_direction_t)
-RCT_EXPORT_SHADOW_PROPERTY(flexWrap, css_wrap_type_t)
-RCT_EXPORT_SHADOW_PROPERTY(justifyContent, css_justify_t)
-RCT_EXPORT_SHADOW_PROPERTY(alignItems, css_align_t)
-RCT_EXPORT_SHADOW_PROPERTY(alignSelf, css_align_t)
-RCT_EXPORT_SHADOW_PROPERTY(position, css_position_type_t)
+RCT_EXPORT_SHADOW_PROPERTY(flexDirection, CSSFlexDirection)
+RCT_EXPORT_SHADOW_PROPERTY(flexWrap, CSSWrapType)
+RCT_EXPORT_SHADOW_PROPERTY(justifyContent, CSSJustify)
+RCT_EXPORT_SHADOW_PROPERTY(alignItems, CSSAlign)
+RCT_EXPORT_SHADOW_PROPERTY(alignSelf, CSSAlign)
+RCT_EXPORT_SHADOW_PROPERTY(position, CSSPositionType)
 
 RCT_EXPORT_SHADOW_PROPERTY(onLayout, RCTDirectEventBlock)
+
+RCT_EXPORT_SHADOW_PROPERTY(zIndex, NSInteger)
 
 @end

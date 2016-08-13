@@ -14,7 +14,7 @@
 // Note (avik): add @flow when Flow supports spread properties in propTypes
 
 var ColorPropType = require('ColorPropType');
-var NativeMethodsMixin = require('NativeMethodsMixin');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
@@ -27,7 +27,7 @@ var ensureComponentIsNative = require('ensureComponentIsNative');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var keyOf = require('fbjs/lib/keyOf');
 var merge = require('merge');
-var onlyChild = require('onlyChild');
+var onlyChild = require('react/lib/onlyChild');
 
 type Event = Object;
 
@@ -54,7 +54,7 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  *     <TouchableHighlight onPress={this._onPressButton}>
  *       <Image
  *         style={styles.button}
- *         source={require('image!myButton')}
+ *         source={require('./myButton.png')}
  *       />
  *     </TouchableHighlight>
  *   );
@@ -94,7 +94,7 @@ var TouchableHighlight = React.createClass({
   getDefaultProps: () => DEFAULT_PROPS,
 
   // Performance optimization to avoid constantly re-generating these objects.
-  computeSyntheticState: function(props) {
+  _computeSyntheticState: function(props) {
     return {
       activeProps: {
         style: {
@@ -115,7 +115,7 @@ var TouchableHighlight = React.createClass({
 
   getInitialState: function() {
     return merge(
-      this.touchableGetInitialState(), this.computeSyntheticState(this.props)
+      this.touchableGetInitialState(), this._computeSyntheticState(this.props)
     );
   },
 
@@ -133,7 +133,7 @@ var TouchableHighlight = React.createClass({
     if (nextProps.activeOpacity !== this.props.activeOpacity ||
         nextProps.underlayColor !== this.props.underlayColor ||
         nextProps.style !== this.props.style) {
-      this.setState(this.computeSyntheticState(nextProps));
+      this.setState(this._computeSyntheticState(nextProps));
     }
   },
 
@@ -227,7 +227,7 @@ var TouchableHighlight = React.createClass({
   render: function() {
     return (
       <View
-        accessible={true}
+        accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}
         accessibilityTraits={this.props.accessibilityTraits}
@@ -248,6 +248,7 @@ var TouchableHighlight = React.createClass({
             ref: CHILD_REF,
           }
         )}
+        {Touchable.renderDebugView({color: 'green', hitSlop: this.props.hitSlop})}
       </View>
     );
   }

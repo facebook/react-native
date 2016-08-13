@@ -35,6 +35,21 @@ Open the Movies app in your emulator.
 
 See [Running on Device](https://facebook.github.io/react-native/docs/running-on-device-android.html) in case you want to use a physical device.
 
+### Running with Buck
+
+Follow the same setup as running with gradle.
+
+Install Buck from [here](https://buckbuild.com/setup/install.html).
+
+Run the following commands from the react-native folder:
+
+    ./gradlew :ReactAndroid:packageReactNdkLibsForBuck
+    buck fetch movies
+    buck install -r movies
+    ./packager/packager.sh
+
+_Note: The native libs are still built using gradle. Full build with buck is coming soon(tm)._
+
 ## Built from source
 
 Building the app on both iOS and Android means building the React Native framework from source. This way you're running the latest native and JS code the way you see it in your clone of the github repo.

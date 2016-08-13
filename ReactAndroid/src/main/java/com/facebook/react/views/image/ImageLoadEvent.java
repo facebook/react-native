@@ -9,8 +9,12 @@
 
 package com.facebook.react.views.image;
 
+import javax.annotation.Nullable;
+
 import android.support.annotation.IntDef;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
@@ -22,7 +26,7 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   @Retention(RetentionPolicy.SOURCE)
   @interface ImageEventType {}
 
-  // Currently ON_ERROR and ON_PROGRESS are not implemented, these can be added
+  // Currently ON_PROGRESS is not implemented, these can be added
   // easily once support exists in fresco.
   public static final int ON_ERROR = 1;
   public static final int ON_LOAD = 2;
@@ -31,10 +35,19 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   public static final int ON_PROGRESS = 5;
 
   private final int mEventType;
+  private final @Nullable String mImageUri;
 
-  public ImageLoadEvent(int viewId, long timestampMs, @ImageEventType int eventType) {
-    super(viewId, timestampMs);
+  public ImageLoadEvent(int viewId, @ImageEventType int eventType) {
+    this(viewId, eventType, null);
+  }
+
+  public ImageLoadEvent(
+    int viewId,
+    @ImageEventType int eventType,
+    @Nullable String imageUri) {
+    super(viewId);
     mEventType = eventType;
+    mImageUri = imageUri;
   }
 
   public static String eventNameForType(@ImageEventType int eventType) {
@@ -68,6 +81,11 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
 
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), null);
+    WritableMap eventData = null;
+    if (mImageUri != null) {
+      eventData = Arguments.createMap();
+      eventData.putString("uri", mImageUri);
+    }
+    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), eventData);
   }
 }

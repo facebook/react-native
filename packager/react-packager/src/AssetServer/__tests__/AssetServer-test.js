@@ -1,9 +1,15 @@
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 'use strict';
 
-jest
-  .dontMock('node-haste/lib/lib/getPlatformExtension')
-  .dontMock('node-haste/node_modules/throat')
-  .dontMock('../');
+jest.disableAutomock();
 
 jest
   .mock('crypto')
@@ -17,8 +23,8 @@ var fs = require('fs');
 
 describe('AssetServer', () => {
   beforeEach(() => {
-    const NodeHaste = require('node-haste');
-    NodeHaste.getAssetDataFromName = require.requireActual('node-haste/lib/lib/getAssetDataFromName');
+    const NodeHaste = require('../../node-haste');
+    NodeHaste.getAssetDataFromName = require.requireActual('../../node-haste/lib/getAssetDataFromName');
   });
 
   describe('assetServer.get', () => {
@@ -193,8 +199,8 @@ describe('AssetServer', () => {
   describe('assetServer.getAssetData', () => {
     pit('should get assetData', () => {
       const hash = {
-        update: jest.genMockFn(),
-        digest: jest.genMockFn(),
+        update: jest.fn(),
+        digest: jest.fn(),
       };
 
       hash.digest.mockImpl(() => 'wow such hash');
@@ -235,8 +241,8 @@ describe('AssetServer', () => {
 
     pit('should get assetData for non-png images', () => {
       const hash = {
-        update: jest.genMockFn(),
-        digest: jest.genMockFn(),
+        update: jest.fn(),
+        digest: jest.fn(),
       };
 
       hash.digest.mockImpl(() => 'wow such hash');

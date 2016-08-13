@@ -21,6 +21,7 @@
 #import "RCTUtils.h"
 #import "RCTUIManager.h"
 #import "RCTViewManager.h"
+#import "RCTJavaScriptExecutor.h"
 
 #define RUN_RUNLOOP_WHILE(CONDITION) \
 { \
@@ -34,30 +35,22 @@
   } \
 }
 
-// Must be declared before RCTTestCustomSetBridgeModule in order to trigger the
-// race condition that we are testing for - namely that the
-// RCTDidInitializeModuleNotification for RCTTestViewManager gets sent before
-// setBridge: is called on RCTTestCustomSetBridgeModule
 @interface RCTTestViewManager : RCTViewManager
 @end
 
 @implementation RCTTestViewManager
 
-@synthesize bridge = _bridge;
-@synthesize methodQueue = _methodQueue;
-
 RCT_EXPORT_MODULE()
 
-- (void)setBridge:(RCTBridge *)bridge
-{
-  _bridge = bridge;
-  (void)[_bridge uiManager]; // Needed to trigger a race condition
-}
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 
 - (NSArray<NSString *> *)customDirectEventTypes
 {
   return @[@"foo"];
 }
+
+#pragma clang diagnostic pop
 
 @end
 
@@ -107,12 +100,13 @@ RCT_EXPORT_MODULE()
 
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
-  return nil;
+  NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+  return [bundle URLForResource:@"TestBundle" withExtension:@"js"];
 }
 
 - (NSArray *)extraModulesForBridge:(__unused RCTBridge *)bridge
 {
-  return @[_notificationObserver];
+  return @[[RCTTestViewManager new], _notificationObserver];
 }
 
 - (void)setUp

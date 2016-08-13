@@ -13,15 +13,15 @@
 
 var Animated = require('Animated');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
-var NativeMethodsMixin = require('NativeMethodsMixin');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 var React = require('React');
 var Touchable = require('Touchable');
 
 type Event = Object;
 
 type State = {
-  animationID: ?number;
-  scale: Animated.Value;
+  animationID: ?number,
+  scale: Animated.Value,
 };
 
 var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
@@ -37,6 +37,12 @@ var TouchableBounce = React.createClass({
   mixins: [Touchable.Mixin, NativeMethodsMixin],
 
   propTypes: {
+    /**
+     * When true, indicates that the view is an accessibility element. By default,
+     * all the touchable elements are accessible.
+     */
+    accessible: React.PropTypes.bool,
+
     onPress: React.PropTypes.func,
     onPressIn: React.PropTypes.func,
     onPressOut: React.PropTypes.func,
@@ -125,11 +131,11 @@ var TouchableBounce = React.createClass({
     return 0;
   },
 
-  render: function(): ReactElement {
+  render: function(): ReactElement<any> {
     return (
       <Animated.View
         style={[{transform: [{scale: this.state.scale}]}, this.props.style]}
-        accessible={true}
+        accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}
         accessibilityTraits={this.props.accessibilityTraits}
@@ -142,6 +148,7 @@ var TouchableBounce = React.createClass({
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}>
         {this.props.children}
+        {Touchable.renderDebugView({color: 'orange', hitSlop: this.props.hitSlop})}
       </Animated.View>
     );
   }

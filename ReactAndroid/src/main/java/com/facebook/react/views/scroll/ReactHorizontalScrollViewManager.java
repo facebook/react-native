@@ -11,6 +11,8 @@ package com.facebook.react.views.scroll;
 
 import javax.annotation.Nullable;
 
+import android.graphics.Color;
+
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -28,6 +30,15 @@ public class ReactHorizontalScrollViewManager
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactHorizontalScrollView> {
 
   private static final String REACT_CLASS = "AndroidHorizontalScrollView";
+  private @Nullable FpsListener mFpsListener = null;
+
+  public ReactHorizontalScrollViewManager() {
+    this(null);
+  }
+
+  public ReactHorizontalScrollViewManager(@Nullable FpsListener fpsListener) {
+    mFpsListener = fpsListener;
+  }
 
   @Override
   public String getName() {
@@ -36,7 +47,7 @@ public class ReactHorizontalScrollViewManager
 
   @Override
   public ReactHorizontalScrollView createViewInstance(ThemedReactContext context) {
-    return new ReactHorizontalScrollView(context);
+    return new ReactHorizontalScrollView(context, mFpsListener);
   }
 
   @ReactProp(name = "scrollEnabled", defaultBoolean = true)
@@ -67,6 +78,23 @@ public class ReactHorizontalScrollViewManager
     view.setSendMomentumEvents(sendMomentumEvents);
   }
 
+  /**
+   * Tag used for logging scroll performance on this scroll view. Will force momentum events to be
+   * turned on (see setSendMomentumEvents).
+   *
+   * @param view
+   * @param scrollPerfTag
+   */
+  @ReactProp(name = "scrollPerfTag")
+  public void setScrollPerfTag(ReactHorizontalScrollView view, String scrollPerfTag) {
+    view.setScrollPerfTag(scrollPerfTag);
+  }
+
+  @ReactProp(name = "pagingEnabled")
+  public void setPagingEnabled(ReactHorizontalScrollView view, boolean pagingEnabled) {
+    view.setPagingEnabled(pagingEnabled);
+  }
+
   @Override
   public void receiveCommand(
       ReactHorizontalScrollView scrollView,
@@ -84,5 +112,16 @@ public class ReactHorizontalScrollViewManager
     } else {
       scrollView.scrollTo(data.mDestX, data.mDestY);
     }
+  }
+
+  /**
+   * When set, fills the rest of the scrollview with a color to avoid setting a background and
+   * creating unnecessary overdraw.
+   * @param view
+   * @param color
+   */
+  @ReactProp(name = "endFillColor", defaultInt = Color.TRANSPARENT, customType = "Color")
+  public void setBottomFillColor(ReactHorizontalScrollView view, int color) {
+    view.setEndFillColor(color);
   }
 }

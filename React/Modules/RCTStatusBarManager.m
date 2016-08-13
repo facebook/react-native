@@ -44,18 +44,20 @@ static BOOL RCTViewControllerBasedStatusBarAppearance()
 
 RCT_EXPORT_MODULE()
 
-@synthesize bridge = _bridge;
-
-- (void)setBridge:(RCTBridge *)bridge
+- (NSArray<NSString *> *)supportedEvents
 {
-  _bridge = bridge;
+  return @[@"statusBarFrameDidChange",
+           @"statusBarFrameWillChange"];
+}
 
+- (void)startObserving
+{
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   [nc addObserver:self selector:@selector(applicationDidChangeStatusBarFrame:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
   [nc addObserver:self selector:@selector(applicationWillChangeStatusBarFrame:) name:UIApplicationWillChangeStatusBarFrameNotification object:nil];
 }
 
-- (void)dealloc
+- (void)stopObserving
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -76,7 +78,7 @@ RCT_EXPORT_MODULE()
       @"height": @(frame.size.height),
     },
   };
-  [_bridge.eventDispatcher sendDeviceEventWithName:eventName body:event];
+  [self sendEventWithName:eventName body:event];
 }
 
 - (void)applicationDidChangeStatusBarFrame:(NSNotification *)notification

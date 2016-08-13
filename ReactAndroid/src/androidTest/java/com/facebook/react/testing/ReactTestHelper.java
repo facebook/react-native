@@ -10,6 +10,8 @@ package com.facebook.react.testing;
 
 import javax.annotation.Nullable;
 
+import java.util.concurrent.Callable;
+
 import android.app.Instrumentation;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -18,13 +20,14 @@ import android.view.ViewGroup;
 
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.CatalystInstanceImpl;
-import com.facebook.react.bridge.JSBundleLoader;
-import com.facebook.react.bridge.JSCJavaScriptExecutor;
-import com.facebook.react.bridge.JavaScriptModulesConfig;
+import com.facebook.react.cxxbridge.CatalystInstanceImpl;
+import com.facebook.react.cxxbridge.JSBundleLoader;
+import com.facebook.react.cxxbridge.NativeModuleRegistry;
+import com.facebook.react.cxxbridge.JSCJavaScriptExecutor;
+import com.facebook.react.cxxbridge.JavaScriptExecutor;
+import com.facebook.react.bridge.JavaScriptModuleRegistry;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
-import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 
@@ -36,8 +39,8 @@ public class ReactTestHelper {
       private @Nullable Context mContext;
       private final NativeModuleRegistry.Builder mNativeModuleRegistryBuilder =
         new NativeModuleRegistry.Builder();
-      private final JavaScriptModulesConfig.Builder mJSModulesConfigBuilder =
-        new JavaScriptModulesConfig.Builder();
+      private final JavaScriptModuleRegistry.Builder mJSModuleRegistryBuilder =
+        new JavaScriptModuleRegistry.Builder();
 
       @Override
       public ReactInstanceEasyBuilder setContext(Context context) {
@@ -53,17 +56,23 @@ public class ReactTestHelper {
 
       @Override
       public ReactInstanceEasyBuilder addJSModule(Class moduleInterfaceClass) {
-        mJSModulesConfigBuilder.add(moduleInterfaceClass);
+        mJSModuleRegistryBuilder.add(moduleInterfaceClass);
         return this;
       }
 
       @Override
       public CatalystInstance build() {
+        JavaScriptExecutor executor = null;
+        try {
+          executor = new JSCJavaScriptExecutor.Factory(new WritableNativeMap()).create();
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
         return new CatalystInstanceImpl.Builder()
           .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
-          .setJSExecutor(new JSCJavaScriptExecutor(new WritableNativeMap()))
+          .setJSExecutor(executor)
           .setRegistry(mNativeModuleRegistryBuilder.build())
-          .setJSModulesConfig(mJSModulesConfigBuilder.build())
+          .setJSModuleRegistry(mJSModuleRegistryBuilder.build())
           .setJSBundleLoader(JSBundleLoader.createFileLoader(
                                mContext,
                                "assets://AndroidTestBundle.js"))
@@ -124,9 +133,26 @@ public class ReactTestHelper {
 
         @Override
         public CatalystInstance build() {
-          CatalystInstance instance = builder.build();
-          testCase.initializeWithInstance(instance);
-          instance.runJSBundle();
+          final CatalystInstance instance = builder.build();
+          try {
+            instance.getReactQueueConfiguration().getJSQueueThread().callOnQueue(
+              new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                  testCase.initializeWithInstance(instance);
+                  instance.runJSBundle();
+                  return null;
+                }
+              }).get();
+            InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+              @Override
+              public void run() {
+                instance.initialize();
+              }
+            });
+          } catch (Exception e) {
+            throw new RuntimeException(e);
+          }
           testCase.waitForBridgeAndUIIdle();
           return instance;
         }

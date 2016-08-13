@@ -14,12 +14,6 @@ var path = require('path');
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
   /node_modules[/\\]react[/\\]dist[/\\].*/,
-  'node_modules/react/lib/React.js',
-  'node_modules/react/lib/ReactDOM.js',
-
-  // fbjs forks:
-  'node_modules/fbjs/lib/Map.js',
-  'node_modules/fbjs/lib/isEmpty.js',
 
   'downstream/core/invariant.js',
 
@@ -33,14 +27,22 @@ var platformBlacklists = {
   web: [
     '.ios.js',
     '.android.js',
+    '.windows.js'
   ],
   ios: [
     '.web.js',
     '.android.js',
+    '.windows.js',
   ],
   android: [
     '.web.js',
     '.ios.js',
+    '.windows.js'
+  ],
+  windows: [
+    '.web.js',
+    '.ios.js',
+    '.android.js'
   ],
 };
 

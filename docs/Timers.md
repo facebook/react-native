@@ -2,9 +2,10 @@
 id: timers
 title: Timers
 layout: docs
-category: Polyfills
+category: Guides
 permalink: docs/timers.html
-next: colors
+next: direct-manipulation
+previous: accessibility
 ---
 
 Timers are an important part of an application and React Native implements the [browser timers](https://developer.mozilla.org/en-US/Add-ons/Code_snippets/Timers).
@@ -74,4 +75,6 @@ var Component = React.createClass({
 });
 ```
 
-We strongly discourage using the global `setTimeout(...)` and recommend instead that you use `this.setTimeout(...)` provided by react-timer-mixin. This will eliminate a lot of hard work tracking down bugs, such as crashes caused by timeouts firing after a component has been unmounted.
+This will eliminate a lot of hard work tracking down bugs, such as crashes caused by timeouts firing after a component has been unmounted.
+
+Keep in mind that if you use ES6 classes for your React components [there is no built-in API for mixins](https://facebook.github.io/react/blog/2015/01/27/react-v0.13.0-beta-1.html#mixins). To use `TimerMixin` with ES6 classes, we recommend [react-mixin](https://github.com/brigand/react-mixin).

@@ -13,11 +13,31 @@
 #import "RCTURLRequestHandler.h"
 #import "RCTResizeMode.h"
 
-@class ALAssetsLibrary;
-
 typedef void (^RCTImageLoaderProgressBlock)(int64_t progress, int64_t total);
 typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, UIImage *image);
-typedef void (^RCTImageLoaderCancellationBlock)(void);
+typedef dispatch_block_t RCTImageLoaderCancellationBlock;
+
+/**
+ * Provides an interface to use for providing a image caching strategy.
+ */
+@protocol RCTImageCache <NSObject>
+
+- (UIImage *)imageForUrl:(NSString *)url
+              bundlePath:(NSString *)bundlePath
+                    size:(CGSize)size
+                   scale:(CGFloat)scale
+              resizeMode:(RCTResizeMode)resizeMode
+            responseDate:(NSString *)responseDate;
+
+- (void)addImageToCache:(UIImage *)image
+                    URL:(NSString *)url
+             bundlePath:(NSString *)bundlePath
+                   size:(CGSize)size
+                  scale:(CGFloat)scale
+             resizeMode:(RCTResizeMode)resizeMode
+           responseDate:(NSString *)responseDate;
+
+@end
 
 @interface UIImage (React)
 
@@ -56,41 +76,36 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
  * Loads the specified image at the highest available resolution.
  * Can be called from any thread, will call back on an unspecified thread.
  */
-- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
-                                         bundlePath:(NSString *)bundlePath
-                                           callback:(RCTImageLoaderCompletionBlock)callback;
+- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+                                                bundlePath:(NSString *)bundlePath
+                                                  callback:(RCTImageLoaderCompletionBlock)callback;
 
 /**
- * As above, but includes target size, scale and resizeMode, which are used to
- * select the optimal dimensions for the loaded image.
+ * As above, but includes target `size`, `scale` and `resizeMode`, which are used to
+ * select the optimal dimensions for the loaded image. The `clipped` option
+ * controls whether the image will be clipped to fit the specified size exactly,
+ * or if the original aspect ratio should be retained.
  */
-- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
-                                         bundlePath:(NSString *)bundlePath
-                                               size:(CGSize)size
-                                              scale:(CGFloat)scale
-                                         resizeMode:(RCTResizeMode)resizeMode
-                                      progressBlock:(RCTImageLoaderProgressBlock)progressBlock
-                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
+- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+                                                bundlePath:(NSString *)bundlePath
+                                                      size:(CGSize)size
+                                                     scale:(CGFloat)scale
+                                                   clipped:(BOOL)clipped
+                                                resizeMode:(RCTResizeMode)resizeMode
+                                             progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                           completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
 
 /**
- * Loads an image without clipping the result to fit - used by RCTImageView.
- */
-- (RCTImageLoaderCancellationBlock)loadImageWithoutClipping:(NSString *)imageTag
-                                                 bundlePath:(NSString *)bundlePath
-                                                       size:(CGSize)size
-                                                      scale:(CGFloat)scale
-                                                 resizeMode:(RCTResizeMode)resizeMode
-                                              progressBlock:(RCTImageLoaderProgressBlock)progressBlock
-                                            completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
-
-/**
- * Finds an appropriate image decoder and passes the target size, scale and
- * resizeMode for optimal image decoding. Can be called from any thread,
- * will call callback on an unspecified thread.
+ * Finds an appropriate image decoder and passes the target `size`, `scale` and
+ * `resizeMode` for optimal image decoding.  The `clipped` option controls
+ * whether the image will be clipped to fit the specified size exactly, or
+ * if the original aspect ratio should be retained. Can be called from any
+ * thread, will call callback on an unspecified thread.
  */
 - (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData
                                               size:(CGSize)size
                                              scale:(CGFloat)scale
+                                           clipped:(BOOL)clipped
                                         resizeMode:(RCTResizeMode)resizeMode
                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
 
@@ -98,9 +113,16 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
  * Get image size, in pixels. This method will do the least work possible to get
  * the information, and won't decode the image if it doesn't have to.
  */
-- (RCTImageLoaderCancellationBlock)getImageSize:(NSString *)imageTag
-                                     bundlePath:(NSString *)bundlePath
-                                          block:(void(^)(NSError *error, CGSize size))completionBlock;
+- (RCTImageLoaderCancellationBlock)getImageSizeForURLRequest:(NSURLRequest *)imageURLRequest
+                                                  bundlePath:(NSString *)bundlePath
+                                                       block:(void(^)(NSError *error, CGSize size))completionBlock;
+
+/**
+ * Allows developers to set their own caching implementation for
+ * decoded images as long as it conforms to the RCTImageCacheDelegate
+ * protocol. This method should be called in bridgeDidInitializeModule.
+ */
+- (void)setImageCache:(id<RCTImageCache>)cache;
 
 @end
 
@@ -152,6 +174,22 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
  */
 - (float)loaderPriority;
 
+/**
+ * If the loader must be called on the serial url cache queue, and whether the completion
+ * block should be dispatched off the main thread. If this is NO, the loader will be
+ * called from the main queue. Defaults to YES.
+ *
+ * Use with care: disabling scheduling will reduce RCTImageLoader's ability to throttle
+ * network requests.
+ */
+- (BOOL)requiresScheduling;
+
+/**
+ * If images loaded by the loader should be cached in the decoded image cache.
+ * Defaults to YES.
+ */
+- (BOOL)shouldCacheLoadedImages;
+
 @end
 
 /**
@@ -171,6 +209,9 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
  * Decode an image from the data object. The method should call the
  * completionHandler when the decoding operation  has finished. The method
  * should also return a cancellation block, if applicable.
+ *
+ * If you provide a custom image decoder, you most implement scheduling yourself,
+ * to avoid decoding large amounts of images at the same time.
  */
 - (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData
                                               size:(CGSize)size

@@ -11,24 +11,28 @@
 'use strict';
 
 var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Text,
   View,
-} = React;
-var { TestModule } = React.NativeModules;
+} = ReactNative;
+var { TestModule } = ReactNative.NativeModules;
 
-var IntegrationTestHarnessTest = React.createClass({
-  propTypes: {
+class IntegrationTestHarnessTest extends React.Component {
+  props: {
+    shouldThrow?: boolean,
+    waitOneFrame?: boolean,
+  };
+
+  static propTypes = {
     shouldThrow: React.PropTypes.bool,
     waitOneFrame: React.PropTypes.bool,
-  },
+  };
 
-  getInitialState() {
-    return {
-      done: false,
-    };
-  },
+  state = {
+    done: false,
+  };
 
   componentDidMount() {
     if (this.props.waitOneFrame) {
@@ -36,9 +40,9 @@ var IntegrationTestHarnessTest = React.createClass({
     } else {
       this.runTest();
     }
-  },
+  }
 
-  runTest() {
+  runTest = () => {
     if (this.props.shouldThrow) {
       throw new Error('Throwing error because shouldThrow');
     }
@@ -48,7 +52,7 @@ var IntegrationTestHarnessTest = React.createClass({
       throw new Error('RCTTestModule.markTestCompleted not defined.');
     }
     this.setState({done: true}, TestModule.markTestCompleted);
-  },
+  };
 
   render() {
     return (
@@ -60,7 +64,7 @@ var IntegrationTestHarnessTest = React.createClass({
       </View>
     );
   }
-});
+}
 
 IntegrationTestHarnessTest.displayName = 'IntegrationTestHarnessTest';
 

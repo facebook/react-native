@@ -15,7 +15,7 @@ const externalHelpersPlugin = require('babel-plugin-external-helpers');
 const fs = require('fs');
 const makeHMRConfig = require('babel-preset-react-native/configs/hmr');
 const resolvePlugins = require('babel-preset-react-native/lib/resolvePlugins');
-const inlineRequiresPlugin = require('fbjs-scripts/babel-6/inline-requires');
+const inlineRequiresPlugin = require('babel-preset-fbjs/plugins/inline-requires');
 const json5 = require('json5');
 const path = require('path');
 
@@ -61,7 +61,7 @@ const getBabelRC = (function() {
     }
 
     return babelRC;
-  }
+  };
 })();
 
 /**
@@ -81,14 +81,16 @@ function buildBabelConfig(filename, options) {
   // Add extra plugins
   const extraPlugins = [externalHelpersPlugin];
 
-  if (options.inlineRequires) {
+  var inlineRequires = options.inlineRequires;
+  var blacklist = inlineRequires && inlineRequires.blacklist;
+  if (inlineRequires && !(blacklist && filename in blacklist)) {
     extraPlugins.push(inlineRequiresPlugin);
   }
 
   config.plugins = extraPlugins.concat(config.plugins);
 
   if (options.hot) {
-    const hmrConfig = makeHMRConfig(options);
+    const hmrConfig = makeHMRConfig(options, filename);
     config = Object.assign({}, config, hmrConfig);
   }
 
@@ -98,13 +100,22 @@ function buildBabelConfig(filename, options) {
 function transform(src, filename, options) {
   options = options || {};
 
-  const babelConfig = buildBabelConfig(filename, options);
-  const result = babel.transform(src, babelConfig);
+  const OLD_BABEL_ENV = process.env.BABEL_ENV;
+  process.env.BABEL_ENV = options.dev ? 'development' : 'production';
 
-  return {
-    code: result.code,
-    filename: filename,
-  };
+  try {
+    const babelConfig = buildBabelConfig(filename, options);
+    const result = babel.transform(src, babelConfig);
+
+    return {
+      ast: result.ast,
+      code: result.code,
+      map: result.map,
+      filename: filename,
+    };
+  } finally {
+    process.env.BABEL_ENV = OLD_BABEL_ENV;
+  }
 }
 
 module.exports = function(data, callback) {

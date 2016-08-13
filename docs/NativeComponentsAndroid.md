@@ -5,6 +5,7 @@ layout: docs
 category: Guides (Android)
 permalink: docs/native-components-android.html
 next: running-on-device-android
+previous: native-modules-android
 ---
 
 There are tons of native UI widgets out there ready to be used in the latest apps - some of them are part of the platform, others are available as third-party libraries, and still more might be in use in your very own portfolio. React Native has several of the most critical platform components already wrapped, like `ScrollView` and `TextInput`, but not all of them, and certainly not ones you might have written yourself for a previous app. Fortunately, it's quite easy to wrap up these existing components for seamless integration with your React Native application.
@@ -105,7 +106,8 @@ The very final step is to create the JavaScript module that defines the interfac
 ```js
 // ImageView.js
 
-import { requireNativeComponent, PropTypes } from 'react-native';
+import { PropTypes } from 'react';
+import { requireNativeComponent, View } from 'react-native';
 
 var iface = {
   name: 'ImageView',
@@ -113,6 +115,7 @@ var iface = {
     src: PropTypes.string,
     borderRadius: PropTypes.number,
     resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch']),
+    ...View.propTypes // include the default view properties
   },
 };
 
@@ -146,7 +149,8 @@ The event name `topChange` maps to the `onChange` callback prop in JavaScript (m
 // MyCustomView.js
 
 class MyCustomView extends React.Component {
-  constructor() {
+  constructor(props) {
+    super(props);
     this._onChange = this._onChange.bind(this);
   }
   _onChange(event: Event) {

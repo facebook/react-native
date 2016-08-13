@@ -2,18 +2,29 @@
 
 ## Nested Text
 
-In iOS, the way to display formatted text is by using `NSAttributedString`: you give the text that you want to display and annotate ranges with some specific formatting. In practice, this is very tedious. For React Native, we decided to use web paradigm for this where you can nest text to achieve the same effect.
+Both iOS and Android allow you to display formatted text by annotating ranges of a string with specific formatting like bold or colored text (`NSAttributedString` on iOS, `SpannableString` on Android). In practice, this is very tedious. For React Native, we decided to use web paradigm for this where you can nest text to achieve the same effect.
 
-```javascript
-<Text style={{fontWeight: 'bold'}}>
-  I am bold
-  <Text style={{color: 'red'}}>
-    and red
-  </Text>
-</Text>
+```ReactNativeWebPlayer
+import React, { Component } from 'react';
+import { AppRegistry, Text } from 'react-native';
+
+class BoldAndBeautiful extends Component {
+  render() {
+    return (
+      <Text style={{fontWeight: 'bold'}}>
+        I am bold
+        <Text style={{color: 'red'}}>
+          and red
+        </Text>
+      </Text>
+    );
+  }
+}
+
+AppRegistry.registerComponent('BoldAndBeautiful', () => BoldAndBeautiful);
 ```
 
-Behind the scenes, this is going to be converted to a flat `NSAttributedString` that contains the following information
+Behind the scenes, React Native converts this to a flat `NSAttributedString` or `SpannableString` that contains the following information:
 
 ```javascript
 "I am bold and red"
@@ -21,9 +32,34 @@ Behind the scenes, this is going to be converted to a flat `NSAttributedString` 
 9-17: bold, red
 ```
 
+## Nested Views (iOS Only)
+
+On iOS, you can nest views within your Text component. Here's an example:
+
+```ReactNativeWebPlayer
+import React, { Component } from 'react';
+import { AppRegistry, Text, View } from 'react-native';
+
+class BlueIsCool extends Component {
+  render() {
+    return (
+      <Text>
+        There is a blue square
+        <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
+        in between my text.
+      </Text>
+    );
+  }
+}
+
+AppRegistry.registerComponent('BlueIsCool', () => BlueIsCool);
+```
+
+> In order to use this feature, you must give the view a `width` and a `height`.
+
 ## Containers
 
-The `<Text>` element is special relative to layout: everything inside is no longer using the flexbox layout but using text layout. This means that elements inside of a `<Text>` are no longer rectangles, but wrap when they see the end of the line. 
+The `<Text>` element is special relative to layout: everything inside is no longer using the flexbox layout but using text layout. This means that elements inside of a `<Text>` are no longer rectangles, but wrap when they see the end of the line.
 
 ```javascript
 <Text>
@@ -63,7 +99,7 @@ When the browser is trying to render a text node, it's going to go all the way u
 In React Native, we are more strict about it: **you must wrap all the text nodes inside of a `<Text>` component**; you cannot have a text node directly under a `<View>`.
 
 ```javascript
-// BAD: will fatal, can't have a text node as child of a <View>
+// BAD: will raise exception, can't have a text node as child of a <View>
 <View>
   Some text
 </View>

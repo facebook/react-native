@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.facebook.csslayout.CSSLayoutContext;
+import com.facebook.csslayout.CSSDirection;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
@@ -21,7 +22,9 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -39,6 +42,7 @@ public class UIImplementation {
   private final UIViewOperationQueue mOperationsQueue;
   private final NativeViewHierarchyOptimizer mNativeViewHierarchyOptimizer;
   private final int[] mMeasureBuffer = new int[4];
+  private final ReactApplicationContext mReactContext;
 
   public UIImplementation(ReactApplicationContext reactContext, List<ViewManager> viewManagers) {
     this(reactContext, new ViewManagerRegistry(viewManagers));
@@ -46,13 +50,16 @@ public class UIImplementation {
 
   private UIImplementation(ReactApplicationContext reactContext, ViewManagerRegistry viewManagers) {
     this(
+        reactContext,
         viewManagers,
         new UIViewOperationQueue(reactContext, new NativeViewHierarchyManager(viewManagers)));
   }
 
   protected UIImplementation(
+      ReactApplicationContext reactContext,
       ViewManagerRegistry viewManagers,
       UIViewOperationQueue operationsQueue) {
+    mReactContext = reactContext;
     mViewManagers = viewManagers;
     mOperationsQueue = operationsQueue;
     mNativeViewHierarchyOptimizer = new NativeViewHierarchyOptimizer(
@@ -62,6 +69,10 @@ public class UIImplementation {
 
   protected ReactShadowNode createRootShadowNode() {
     ReactShadowNode rootCSSNode = new ReactShadowNode();
+    I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
+    if (sharedI18nUtilInstance.isRTL(mReactContext)) {
+      rootCSSNode.setDirection(CSSDirection.RTL);
+    }
     rootCSSNode.setViewClassName("Root");
     return rootCSSNode;
   }
@@ -79,6 +90,10 @@ public class UIImplementation {
     return mViewManagers.get(className);
   }
 
+  /*package*/ UIViewOperationQueue getUIViewOperationQueue() {
+    return mOperationsQueue;
+  }
+
   /**
    * Registers a root node with a given tag, size and ThemedReactContext
    * and adds it to a node registry.
@@ -94,6 +109,7 @@ public class UIImplementation {
     rootCSSNode.setThemedContext(context);
     rootCSSNode.setStyleWidth(width);
     rootCSSNode.setStyleHeight(height);
+
     mShadowNodeRegistry.addRootNode(rootCSSNode);
 
     // register it within NativeViewHierarchyManager
@@ -177,6 +193,17 @@ public class UIImplementation {
       cssNode.updateProperties(styles);
       handleUpdateView(cssNode, className, styles);
     }
+  }
+
+  /**
+   * Used by native animated module to bypass the process of updating the values through the shadow
+   * view hierarchy. This method will directly update native views, which means that updates for
+   * layout-related propertied won't be handled properly.
+   * Make sure you know what you're doing before calling this method :)
+   */
+  public void synchronouslyUpdateViewOnUIThread(int tag, ReactStylesDiffMap props) {
+    UiThreadUtil.assertOnUiThread();
+    mOperationsQueue.getNativeViewHierarchyManager().updateProperties(tag, props);
   }
 
   protected void handleUpdateView(
@@ -304,6 +331,35 @@ public class UIImplementation {
 
     for (int i = 0; i < tagsToDelete.length; i++) {
       removeShadowNode(mShadowNodeRegistry.getNode(tagsToDelete[i]));
+    }
+  }
+
+  /**
+   * An optimized version of manageChildren that is used for initial setting of child views.
+   * The children are assumed to be in index order
+   *
+   * @param viewTag tag of the parent
+   * @param childrenTags tags of the children
+   */
+  public void setChildren(
+    int viewTag,
+    ReadableArray childrenTags) {
+
+    ReactShadowNode cssNodeToManage = mShadowNodeRegistry.getNode(viewTag);
+
+    for (int i = 0; i < childrenTags.size(); i++) {
+      ReactShadowNode cssNodeToAdd = mShadowNodeRegistry.getNode(childrenTags.getInt(i));
+      if (cssNodeToAdd == null) {
+        throw new IllegalViewOperationException("Trying to add unknown view tag: "
+          + childrenTags.getInt(i));
+      }
+      cssNodeToManage.addChildAt(cssNodeToAdd, i);
+    }
+
+    if (!cssNodeToManage.isVirtual() && !cssNodeToManage.isVirtualAnchor()) {
+      mNativeViewHierarchyOptimizer.handleSetChildren(
+        cssNodeToManage,
+        childrenTags);
     }
   }
 
@@ -446,6 +502,12 @@ public class UIImplementation {
    * Invoked at the end of the transaction to commit any updates to the node hierarchy.
    */
   public void dispatchViewUpdates(EventDispatcher eventDispatcher, int batchId) {
+    updateViewHierarchy(eventDispatcher);
+    mNativeViewHierarchyOptimizer.onBatchComplete();
+    mOperationsQueue.dispatchViewUpdates(batchId);
+  }
+
+  protected void updateViewHierarchy(EventDispatcher eventDispatcher) {
     for (int i = 0; i < mShadowNodeRegistry.getRootNodeCount(); i++) {
       int tag = mShadowNodeRegistry.getRootTag(i);
       ReactShadowNode cssRoot = mShadowNodeRegistry.getNode(tag);
@@ -454,9 +516,6 @@ public class UIImplementation {
       calculateRootLayout(cssRoot);
       applyUpdatesRecursive(cssRoot, 0f, 0f, eventDispatcher);
     }
-
-    mNativeViewHierarchyOptimizer.onBatchComplete();
-    mOperationsQueue.dispatchViewUpdates(batchId);
   }
 
   /**
@@ -712,7 +771,7 @@ public class UIImplementation {
           absoluteY,
           mOperationsQueue,
           mNativeViewHierarchyOptimizer);
-      
+
       // notify JS about layout event if requested
       if (cssNode.shouldNotifyOnLayout()) {
         eventDispatcher.dispatchEvent(
@@ -725,5 +784,9 @@ public class UIImplementation {
       }
     }
     cssNode.markUpdateSeen();
+  }
+
+  public void addUIBlock(UIBlock block) {
+    mOperationsQueue.enqueueUIBlock(block);
   }
 }

@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.common.SystemClock;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
@@ -26,7 +25,7 @@ import com.facebook.react.views.scroll.ScrollEventType;
  * will be rendered as a separate {@link RecyclerView} row.
  *
  * Currently supports only vertically positioned item. Views will not be automatically recycled but
- * they will be detache from native view hierarchy when scrolled offscreen.
+ * they will be detached from native view hierarchy when scrolled offscreen.
  *
  * It works by storing all child views in an array within adapter and binding appropriate views to
  * rows when requested.
@@ -344,7 +343,6 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
     ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
         .dispatchEvent(ScrollEvent.obtain(
                 getId(),
-                SystemClock.nanoTime(),
                 ScrollEventType.SCROLL,
                 0, /* offsetX = 0, horizontal scrolling only */
                 calculateAbsoluteOffset(),
@@ -359,7 +357,6 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
       ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
           .dispatchEvent(new ContentSizeChangeEvent(
                   getId(),
-                  SystemClock.nanoTime(),
                   getWidth(),
                   newTotalChildrenHeight));
     }

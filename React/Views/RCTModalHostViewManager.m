@@ -12,6 +12,25 @@
 #import "RCTBridge.h"
 #import "RCTModalHostView.h"
 #import "RCTTouchHandler.h"
+#import "RCTShadowView.h"
+#import "RCTUtils.h"
+
+@interface RCTModalHostShadowView : RCTShadowView
+
+@end
+
+@implementation RCTModalHostShadowView
+
+- (void)insertReactSubview:(id<RCTComponent>)subview atIndex:(NSInteger)atIndex
+{
+  [super insertReactSubview:subview atIndex:atIndex];
+  if ([subview isKindOfClass:[RCTShadowView class]]) {
+    CGRect frame = {.origin = CGPointZero, .size = RCTScreenSize()};
+    [(RCTShadowView *)subview setFrame:frame];
+  }
+}
+
+@end
 
 @implementation RCTModalHostViewManager
 {
@@ -23,11 +42,16 @@ RCT_EXPORT_MODULE()
 - (UIView *)view
 {
   UIView *view = [[RCTModalHostView alloc] initWithBridge:self.bridge];
-  if (_hostViews) {
+  if (!_hostViews) {
     _hostViews = [NSHashTable weakObjectsHashTable];
   }
   [_hostViews addObject:view];
   return view;
+}
+
+- (RCTShadowView *)shadowView
+{
+  return [RCTModalHostShadowView new];
 }
 
 - (void)invalidate
@@ -38,7 +62,8 @@ RCT_EXPORT_MODULE()
   [_hostViews removeAllObjects];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(animated, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(animationType, NSString)
 RCT_EXPORT_VIEW_PROPERTY(transparent, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(onShow, RCTDirectEventBlock)
 
 @end

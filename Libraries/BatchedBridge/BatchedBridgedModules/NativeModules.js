@@ -41,72 +41,27 @@ Object.keys(RemoteModules).forEach((moduleName) => {
 const NativeModules = {};
 Object.keys(RemoteModules).forEach((moduleName) => {
   Object.defineProperty(NativeModules, moduleName, {
+    configurable: true,
     enumerable: true,
     get: () => {
       let module = RemoteModules[moduleName];
       if (module && typeof module.moduleID === 'number' && global.nativeRequireModuleConfig) {
-        const json = global.nativeRequireModuleConfig(moduleName);
-        const config = json && JSON.parse(json);
+        // The old bridge (still used by iOS) will send the config as
+        //  a JSON string that needs parsing, so we set config according
+        //  to the type of response we got.
+        const rawConfig = global.nativeRequireModuleConfig(moduleName);
+        const config = typeof rawConfig === 'string' ? JSON.parse(rawConfig) : rawConfig;
         module = config && BatchedBridge.processModuleConfig(config, module.moduleID);
         RemoteModules[moduleName] = module;
       }
+      Object.defineProperty(NativeModules, moduleName, {
+        configurable: true,
+        enumerable: true,
+        value: module,
+      });
       return module;
     },
   });
-});
-
-/**
- * Copies the ViewManager constants and commands into UIManager. This is
- * only needed for iOS, which puts the constants in the ViewManager
- * namespace instead of UIManager, unlike Android.
- *
- * We'll eventually move this logic to UIManager.js, once all
- * the call sites accessing NativeModules.UIManager directly have
- * been removed #9344445
- */
-const UIManager = NativeModules.UIManager;
-UIManager && Object.keys(UIManager).forEach(viewName => {
-  const viewConfig = UIManager[viewName];
-  if (viewConfig.Manager) {
-    let constants;
-    /* $FlowFixMe - nice try. Flow doesn't like getters */
-    Object.defineProperty(viewConfig, 'Constants', {
-      enumerable: true,
-      get: () => {
-        if (constants) {
-          return constants;
-        }
-        constants = {};
-        const viewManager = NativeModules[normalizePrefix(viewConfig.Manager)];
-        viewManager && Object.keys(viewManager).forEach(key => {
-          const value = viewManager[key];
-          if (typeof value !== 'function') {
-            constants[key] = value;
-          }
-        });
-        return constants;
-      },
-    });
-    let commands;
-    /* $FlowFixMe - nice try. Flow doesn't like getters */
-    Object.defineProperty(viewConfig, 'Commands', {
-      enumerable: true,
-      get: () => {
-        if (commands) {
-          return commands;
-        }
-        commands = {};
-        const viewManager = NativeModules[normalizePrefix(viewConfig.Manager)];
-        viewManager && Object.keys(viewManager).forEach((key, index) => {
-          const value = viewManager[key];
-          if (typeof value === 'function') {
-            commands[key] = index;
-          }
-        });
-        return commands;
-      },
-    });
-  }
 });
 
 module.exports = NativeModules;

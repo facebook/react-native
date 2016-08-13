@@ -3,7 +3,7 @@
  */
 'use strict';
 
-jest.dontMock('../getImageSource');
+jest.unmock('../getImageSource');
 
 var getImageSource = require('../getImageSource');
 

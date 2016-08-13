@@ -7,3 +7,4 @@
 
 [alias]
   movies = //Examples/Movies/android/app:app
+  uiexplorer = //Examples/UIExplorer/android/app:app

@@ -10,6 +10,14 @@
 #import "RCTShadowView.h"
 #import "RCTTextDecorationLineType.h"
 
+typedef NS_ENUM(NSInteger, RCTSizeComparison)
+{
+  RCTSizeTooLarge,
+  RCTSizeTooSmall,
+  RCTSizeWithinRange,
+};
+
+
 extern NSString *const RCTIsHighlightedAttributeName;
 extern NSString *const RCTReactTagAttributeName;
 
@@ -20,10 +28,12 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, assign) CGFloat fontSize;
 @property (nonatomic, copy) NSString *fontWeight;
 @property (nonatomic, copy) NSString *fontStyle;
+@property (nonatomic, copy) NSArray *fontVariant;
 @property (nonatomic, assign) BOOL isHighlighted;
 @property (nonatomic, assign) CGFloat letterSpacing;
 @property (nonatomic, assign) CGFloat lineHeight;
 @property (nonatomic, assign) NSUInteger numberOfLines;
+@property (nonatomic, assign) NSLineBreakMode ellipsizeMode;
 @property (nonatomic, assign) CGSize shadowOffset;
 @property (nonatomic, assign) NSTextAlignment textAlign;
 @property (nonatomic, assign) NSWritingDirection writingDirection;
@@ -36,6 +46,8 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, assign) CGSize textShadowOffset;
 @property (nonatomic, assign) CGFloat textShadowRadius;
 @property (nonatomic, strong) UIColor *textShadowColor;
+@property (nonatomic, assign) BOOL adjustsFontSizeToFit;
+@property (nonatomic, assign) CGFloat minimumFontScale;
 
 - (void)recomputeText;
 

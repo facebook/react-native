@@ -5,6 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/animations.html
 next: accessibility
+previous: handling-touches
 ---
 
 Fluid, meaningful animations are essential to the mobile user experience. Like
@@ -24,13 +25,13 @@ component with a simple spring bounce on mount looks like this:
 
 ```javascript
 class Playground extends React.Component {
-  constructor(props: any) {
+  constructor(props) {
     super(props);
     this.state = {
       bounceValue: new Animated.Value(0),
     };
   }
-  render(): ReactElement {
+  render() {
     return (
       <Animated.Image                         // Base: Image, Text, View
         source={{uri: 'http://i.imgur.com/XMKOH81.jpg'}}
@@ -247,7 +248,7 @@ vertical panning.
 
 The above API gives a powerful tool for expressing all sorts of animations in a
 concise, robust, and performant way.  Check out more example code in
-[UIExplorer/AnimationExample](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer/AnimatedGratuitousApp).  Of course there may still be times where `Animated`
+[UIExplorer/AnimationExample](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer/js/AnimatedGratuitousApp).  Of course there may still be times where `Animated`
 doesn't support what you need, and the following sections cover other animation
 systems.
 
@@ -267,26 +268,34 @@ it provides much less control than `Animated` and other animation libraries, so
 you may need to use another approach if you can't get `LayoutAnimation` to do
 what you want.
 
+Note that in order to get this to work on **Android** you need to set the following flags via `UIManager`:
+
+```javascript
+UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+```
+
 ![](img/LayoutAnimationExample.gif)
 
 ```javascript
-var App = React.createClass({
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { w: 100, h: 100 };
+    this._onPress = this._onPress.bind(this);
+  }
+
   componentWillMount() {
     // Animate creation
     LayoutAnimation.spring();
-  },
-
-  getInitialState() {
-    return { w: 100, h: 100 }
-  },
+  }
 
   _onPress() {
     // Animate the update
     LayoutAnimation.spring();
     this.setState({w: this.state.w + 15, h: this.state.h + 15})
-  },
+  }
 
-  render: function() {
+  render() {
     return (
       <View style={styles.container}>
         <View style={[styles.box, {width: this.state.w, height: this.state.h}]} />
@@ -298,7 +307,7 @@ var App = React.createClass({
       </View>
     );
   }
-});
+}
 ```
 [Run this example](https://rnplay.org/apps/uaQrGQ)
 
@@ -315,7 +324,7 @@ animations that underlies all of the JavaScript-based animation APIs.  In
 general, you shouldn't need to call this yourself - the animation APIs will
 manage frame updates for you.
 
-### react-tween-state (Not recommended - use [Animated](#animated) instead)
+### react-tween-state (Not recommended - use [Animated](docs/animations.html#animated) instead)
 
 [react-tween-state](https://github.com/chenglou/react-tween-state) is a
 minimal library that does exactly what its name suggests: it *tweens* a
@@ -345,13 +354,14 @@ your project, you will need to install it with `npm i react-tween-state
 
 ```javascript
 import tweenState from 'react-tween-state';
+import reactMixin from 'react-mixin'; // https://github.com/brigand/react-mixin
 
-var App = React.createClass({
-  mixins: [tweenState.Mixin],
-
-  getInitialState() {
-    return { opacity: 1 }
-  },
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { opacity: 1 };
+    this._animateOpacity = this._animateOpacity.bind(this);
+  }
 
   _animateOpacity() {
     this.tweenState('opacity', {
@@ -359,7 +369,7 @@ var App = React.createClass({
       duration: 1000,
       endValue: this.state.opacity === 0.2 ? 1 : 0.2,
     });
-  },
+  }
 
   render() {
     return (
@@ -371,8 +381,10 @@ var App = React.createClass({
         </TouchableWithoutFeedback>
       </View>
     )
-  },
-});
+  }
+}
+
+reactMixin.onClass(App, tweenState.Mixin);
 ```
 [Run this example](https://rnplay.org/apps/4FUQ-A)
 
@@ -382,7 +394,7 @@ Here we animated the opacity, but as you might guess, we can animate any
 numeric value. Read more about react-tween-state in its
 [README](https://github.com/chenglou/react-tween-state).
 
-### Rebound (Not recommended - use [Animated](docs/animation.html) instead)
+### Rebound (Not recommended - use [Animated](docs/animations.html#animated) instead)
 
 [Rebound.js](https://github.com/facebook/rebound-js) is a JavaScript port of
 [Rebound for Android](https://github.com/facebook/rebound). It is
@@ -404,7 +416,12 @@ the original value.
 ```javascript
 import rebound from 'rebound';
 
-var App = React.createClass({
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this._onPressIn = this._onPressIn.bind(this);
+    this._onPressOut = this._onPressOut.bind(this);
+  }
   // First we initialize the spring and add a listener, which calls
   // setState whenever it updates
   componentWillMount() {
@@ -423,17 +440,17 @@ var App = React.createClass({
 
     // Initialize the spring value at 1
     this._scrollSpring.setCurrentValue(1);
-  },
+  }
 
   _onPressIn() {
     this._scrollSpring.setEndValue(0.5);
-  },
+  }
 
   _onPressOut() {
     this._scrollSpring.setEndValue(1);
-  },
+  }
 
-  render: function() {
+  render() {
     var imageStyle = {
       width: 250,
       height: 200,
@@ -451,7 +468,7 @@ var App = React.createClass({
       </View>
     );
   }
-});
+}
 ```
 [Run this example](https://rnplay.org/apps/NNI5eA)
 
@@ -492,7 +509,7 @@ this._scrollSpring.addListener({
 // Lastly, we update the render function to no longer pass in the
 // transform via style (avoid clashes when re-rendering) and to set the
 // photo ref
-render: function() {
+render() {
   return (
     <View style={styles.container}>
       <TouchableWithoutFeedback onPressIn={this._onPressIn} onPressOut={this._onPressOut}>

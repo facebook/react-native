@@ -1,16 +1,20 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ViewPagerAndroid
  * @flow
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
-var ReactElement = require('ReactElement');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var ReactPropTypes = require('ReactPropTypes');
+var ReactNative = require('react/lib/ReactNative');
+var ReactElement = require('react/lib/ReactElement');
+var ReactPropTypes = require('react/lib/ReactPropTypes');
 var UIManager = require('UIManager');
 var View = require('View');
 
@@ -22,9 +26,9 @@ var VIEWPAGER_REF = 'viewPager';
 type Event = Object;
 
 export type ViewPagerScrollState = $Enum<{
-  idle: string;
-  dragging: string;
-  settling: string;
+  idle: string,
+  dragging: string,
+  settling: string,
 }>;
 
 /**
@@ -65,9 +69,18 @@ export type ViewPagerScrollState = $Enum<{
  * }
  * ```
  */
-var ViewPagerAndroid = React.createClass({
+class ViewPagerAndroid extends React.Component {
+  props: {
+    initialPage?: number,
+    onPageScroll?: Function,
+    onPageScrollStateChanged?: Function,
+    onPageSelected?: Function,
+    pageMargin?: number,
+    keyboardDismissMode?: 'none' | 'on-drag',
+    scrollEnabled?: boolean,
+  };
 
-  propTypes: {
+  static propTypes = {
     ...View.propTypes,
     /**
      * Index of initial page that should be selected. Use `setPage` method to
@@ -105,6 +118,12 @@ var ViewPagerAndroid = React.createClass({
     onPageSelected: ReactPropTypes.func,
 
     /**
+     * Blank space to show between pages. This is only visible while scrolling, pages are still
+     * edge-to-edge.
+     */
+    pageMargin: ReactPropTypes.number,
+
+    /**
      * Determines whether the keyboard gets dismissed in response to a drag.
      *   - 'none' (the default), drags do not dismiss the keyboard.
      *   - 'on-drag', the keyboard is dismissed when a drag begins.
@@ -113,19 +132,25 @@ var ViewPagerAndroid = React.createClass({
       'none', // default
       'on-drag',
     ]),
-  },
 
-  componentDidMount: function() {
+    /**
+    * When false, the content does not scroll.
+    * The default value is true.
+    */
+    scrollEnabled: ReactPropTypes.bool,
+  };
+
+  componentDidMount() {
     if (this.props.initialPage) {
       this.setPageWithoutAnimation(this.props.initialPage);
     }
-  },
+  }
 
-  getInnerViewNode: function(): ReactComponent {
+  getInnerViewNode = (): ReactComponent => {
     return this.refs[VIEWPAGER_REF].getInnerViewNode();
-  },
+  };
 
-  _childrenWithOverridenStyle: function(): Array {
+  _childrenWithOverridenStyle = (): Array => {
     // Override styles so that each page will fill the parent. Native component
     // will handle positioning of elements, so it's not important to offset
     // them correctly.
@@ -154,56 +179,57 @@ var ViewPagerAndroid = React.createClass({
       }
       return ReactElement.createElement(child.type, newProps);
     });
-  },
+  };
 
-  _onPageScroll: function(e: Event) {
+  _onPageScroll = (e: Event) => {
     if (this.props.onPageScroll) {
       this.props.onPageScroll(e);
     }
     if (this.props.keyboardDismissMode === 'on-drag') {
       dismissKeyboard();
     }
-  },
+  };
 
-  _onPageScrollStateChanged: function(e: Event) {
+  _onPageScrollStateChanged = (e: Event) => {
     if (this.props.onPageScrollStateChanged) {
       this.props.onPageScrollStateChanged(e.nativeEvent.pageScrollState);
     }
-  },
+  };
 
-  _onPageSelected: function(e: Event) {
+  _onPageSelected = (e: Event) => {
     if (this.props.onPageSelected) {
       this.props.onPageSelected(e);
     }
-  },
+  };
 
   /**
    * A helper function to scroll to a specific page in the ViewPager.
    * The transition between pages will be animated.
    */
-  setPage: function(selectedPage: number) {
+  setPage = (selectedPage: number) => {
     UIManager.dispatchViewManagerCommand(
-      React.findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       UIManager.AndroidViewPager.Commands.setPage,
       [selectedPage],
     );
-  },
+  };
 
   /**
    * A helper function to scroll to a specific page in the ViewPager.
-   * The transition between pages will be *not* be animated.
+   * The transition between pages will *not* be animated.
    */
-  setPageWithoutAnimation: function(selectedPage: number) {
+  setPageWithoutAnimation = (selectedPage: number) => {
     UIManager.dispatchViewManagerCommand(
-      React.findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       UIManager.AndroidViewPager.Commands.setPageWithoutAnimation,
       [selectedPage],
     );
-  },
+  };
 
-  render: function() {
+  render() {
     return (
       <NativeAndroidViewPager
+        {...this.props}
         ref={VIEWPAGER_REF}
         style={this.props.style}
         onPageScroll={this._onPageScroll}
@@ -212,8 +238,8 @@ var ViewPagerAndroid = React.createClass({
         children={this._childrenWithOverridenStyle()}
       />
     );
-  },
-});
+  }
+}
 
 var NativeAndroidViewPager = requireNativeComponent('AndroidViewPager', ViewPagerAndroid);
 

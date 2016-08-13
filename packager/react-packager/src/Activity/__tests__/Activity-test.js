@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.autoMockOff();
+jest.disableAutomock();
 
 var Activity = require('../');
 
@@ -16,7 +16,7 @@ describe('Activity', () => {
   const origConsoleLog = console.log;
 
   beforeEach(() => {
-    console.log = jest.genMockFn();
+    console.log = jest.fn();
     jest.runOnlyPendingTimers();
   });
 

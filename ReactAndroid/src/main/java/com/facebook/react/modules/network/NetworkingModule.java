@@ -9,37 +9,42 @@
 
 package com.facebook.react.modules.network;
 
+import android.util.Base64;
+
 import javax.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.stetho.okhttp.StethoInterceptor;
+import com.facebook.react.common.network.OkHttpCallUtil;
+import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.MultipartBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
-
-import static java.lang.Math.min;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Headers;
+import okhttp3.Interceptor;
+import okhttp3.JavaNetCookieJar;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * Implements the XMLHttpRequest JavaScript interface.
@@ -52,34 +57,68 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private static final String REQUEST_BODY_KEY_URI = "uri";
   private static final String REQUEST_BODY_KEY_FORMDATA = "formData";
   private static final String USER_AGENT_HEADER_NAME = "user-agent";
-
-  private static final int MIN_BUFFER_SIZE = 8 * 1024; // 8kb
-  private static final int MAX_BUFFER_SIZE = 512 * 1024; // 512kb
-
   private static final int CHUNK_TIMEOUT_NS = 100 * 1000000; // 100ms
+  private static final int MAX_CHUNK_SIZE_BETWEEN_FLUSHES = 8 * 1024; // 8K
 
   private final OkHttpClient mClient;
   private final ForwardingCookieHandler mCookieHandler;
   private final @Nullable String mDefaultUserAgent;
+  private final CookieJarContainer mCookieJarContainer;
+  private final Set<Integer> mRequestIds;
   private boolean mShuttingDown;
 
   /* package */ NetworkingModule(
       ReactApplicationContext reactContext,
       @Nullable String defaultUserAgent,
-      OkHttpClient client) {
+      OkHttpClient client,
+      @Nullable List<NetworkInterceptorCreator> networkInterceptorCreators) {
     super(reactContext);
+
+    if (networkInterceptorCreators != null) {
+      OkHttpClient.Builder clientBuilder = client.newBuilder();
+      for (NetworkInterceptorCreator networkInterceptorCreator : networkInterceptorCreators) {
+        clientBuilder.addNetworkInterceptor(networkInterceptorCreator.create());
+      }
+      client = clientBuilder.build();
+    }
     mClient = client;
-    mClient.networkInterceptors().add(new StethoInterceptor());
+    OkHttpClientProvider.replaceOkHttpClient(client);
     mCookieHandler = new ForwardingCookieHandler(reactContext);
+    mCookieJarContainer = (CookieJarContainer) mClient.cookieJar();
     mShuttingDown = false;
     mDefaultUserAgent = defaultUserAgent;
+    mRequestIds = new HashSet<>();
+  }
+
+  /**
+   * @param context the ReactContext of the application
+   * @param defaultUserAgent the User-Agent header that will be set for all requests where the
+   * caller does not provide one explicitly
+   * @param client the {@link OkHttpClient} to be used for networking
+   */
+  /* package */ NetworkingModule(
+    ReactApplicationContext context,
+    @Nullable String defaultUserAgent,
+    OkHttpClient client) {
+    this(context, defaultUserAgent, client, null);
   }
 
   /**
    * @param context the ReactContext of the application
    */
   public NetworkingModule(final ReactApplicationContext context) {
-    this(context, null, OkHttpClientProvider.getOkHttpClient());
+    this(context, null, OkHttpClientProvider.getOkHttpClient(), null);
+  }
+
+  /**
+   * @param context the ReactContext of the application
+   * @param networkInterceptorCreators list of {@link NetworkInterceptorCreator}'s whose create()
+   * methods would be called to attach the interceptors to the client.
+   */
+  public NetworkingModule(
+    ReactApplicationContext context,
+    List<NetworkInterceptorCreator> networkInterceptorCreators) {
+    this(context, null, OkHttpClientProvider.getOkHttpClient(), networkInterceptorCreators);
   }
 
   /**
@@ -88,16 +127,12 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * caller does not provide one explicitly
    */
   public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
-    this(context, defaultUserAgent, OkHttpClientProvider.getOkHttpClient());
-  }
-
-  public NetworkingModule(ReactApplicationContext reactContext, OkHttpClient client) {
-    this(reactContext, null, client);
+    this(context, defaultUserAgent, OkHttpClientProvider.getOkHttpClient(), null);
   }
 
   @Override
   public void initialize() {
-    mClient.setCookieHandler(mCookieHandler);
+    mCookieJarContainer.setCookieJar(new JavaNetCookieJar(mCookieHandler));
   }
 
   @Override
@@ -108,22 +143,24 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   @Override
   public void onCatalystInstanceDestroy() {
     mShuttingDown = true;
-    mClient.cancel(null);
+    cancelAllRequests();
 
     mCookieHandler.destroy();
-    mClient.setCookieHandler(null);
+    mCookieJarContainer.removeCookieJar();
   }
 
   @ReactMethod
   /**
-  * @param timeout value of 0 results in no timeout
-  */
+   * @param timeout value of 0 results in no timeout
+   */
   public void sendRequest(
+      final ExecutorToken executorToken,
       String method,
       String url,
       final int requestId,
       ReadableArray headers,
       ReadableMap data,
+      final String responseType,
       final boolean useIncrementalUpdates,
       int timeout) {
     Request.Builder requestBuilder = new Request.Builder().url(url);
@@ -132,19 +169,57 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       requestBuilder.tag(requestId);
     }
 
-    OkHttpClient client = mClient;
+    final RCTDeviceEventEmitter eventEmitter = getEventEmitter(executorToken);
+    OkHttpClient.Builder clientBuilder = mClient.newBuilder();
+
+    // If JS is listening for progress updates, install a ProgressResponseBody that intercepts the
+    // response and counts bytes received.
+    if (useIncrementalUpdates) {
+      clientBuilder.addNetworkInterceptor(new Interceptor() {
+        @Override
+        public Response intercept(Interceptor.Chain chain) throws IOException {
+          Response originalResponse = chain.proceed(chain.request());
+          ProgressResponseBody responseBody = new ProgressResponseBody(
+            originalResponse.body(),
+            new ProgressListener() {
+              long last = System.nanoTime();
+
+              @Override
+              public void onProgress(long bytesWritten, long contentLength, boolean done) {
+                long now = System.nanoTime();
+                if (!done && !shouldDispatch(now, last)) {
+                  return;
+                }
+                if (responseType.equals("text")) {
+                  // For 'text' responses we continuously send response data with progress info to
+                  // JS below, so no need to do anything here.
+                  return;
+                }
+                ResponseUtil.onDataReceivedProgress(
+                  eventEmitter,
+                  requestId,
+                  bytesWritten,
+                  contentLength);
+                last = now;
+              }
+            });
+          return originalResponse.newBuilder().body(responseBody).build();
+        }
+      });
+    }
+
     // If the current timeout does not equal the passed in timeout, we need to clone the existing
     // client and set the timeout explicitly on the clone.  This is cheap as everything else is
     // shared under the hood.
     // See https://github.com/square/okhttp/wiki/Recipes#per-call-configuration for more information
-    if (timeout != mClient.getConnectTimeout()) {
-      client = mClient.clone();
-      client.setReadTimeout(timeout, TimeUnit.MILLISECONDS);
+    if (timeout != mClient.connectTimeoutMillis()) {
+      clientBuilder.readTimeout(timeout, TimeUnit.MILLISECONDS);
     }
+    OkHttpClient client = clientBuilder.build();
 
     Headers requestHeaders = extractHeaders(headers, data);
     if (requestHeaders == null) {
-      onRequestError(requestId, "Unrecognized headers format");
+      ResponseUtil.onRequestError(eventEmitter, requestId, "Unrecognized headers format", null);
       return;
     }
     String contentType = requestHeaders.get(CONTENT_TYPE_HEADER_NAME);
@@ -155,7 +230,11 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
     } else if (data.hasKey(REQUEST_BODY_KEY_STRING)) {
       if (contentType == null) {
-        onRequestError(requestId, "Payload is set but no content-type header specified");
+        ResponseUtil.onRequestError(
+          eventEmitter,
+          requestId,
+          "Payload is set but no content-type header specified",
+          null);
         return;
       }
       String body = data.getString(REQUEST_BODY_KEY_STRING);
@@ -163,7 +242,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       if (RequestBodyUtil.isGzipEncoding(contentEncoding)) {
         RequestBody requestBody = RequestBodyUtil.createGzip(contentMediaType, body);
         if (requestBody == null) {
-          onRequestError(requestId, "Failed to gzip request body");
+          ResponseUtil.onRequestError(eventEmitter, requestId, "Failed to gzip request body", null);
           return;
         }
         requestBuilder.method(method, requestBody);
@@ -172,14 +251,22 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       }
     } else if (data.hasKey(REQUEST_BODY_KEY_URI)) {
       if (contentType == null) {
-        onRequestError(requestId, "Payload is set but no content-type header specified");
+        ResponseUtil.onRequestError(
+          eventEmitter,
+          requestId,
+          "Payload is set but no content-type header specified",
+          null);
         return;
       }
       String uri = data.getString(REQUEST_BODY_KEY_URI);
       InputStream fileInputStream =
           RequestBodyUtil.getFileInputStream(getReactApplicationContext(), uri);
       if (fileInputStream == null) {
-        onRequestError(requestId, "Could not retrieve file for uri " + uri);
+        ResponseUtil.onRequestError(
+          eventEmitter,
+          requestId,
+          "Could not retrieve file for uri " + uri,
+          null);
         return;
       }
       requestBuilder.method(
@@ -190,70 +277,110 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
         contentType = "multipart/form-data";
       }
       ReadableArray parts = data.getArray(REQUEST_BODY_KEY_FORMDATA);
-      MultipartBuilder multipartBuilder = constructMultipartBody(parts, contentType, requestId);
+      MultipartBody.Builder multipartBuilder =
+          constructMultipartBody(executorToken, parts, contentType, requestId);
       if (multipartBuilder == null) {
         return;
       }
-      requestBuilder.method(method, multipartBuilder.build());
+
+      requestBuilder.method(
+        method,
+        RequestBodyUtil.createProgressRequest(
+          multipartBuilder.build(),
+          new ProgressListener() {
+        long last = System.nanoTime();
+
+        @Override
+        public void onProgress(long bytesWritten, long contentLength, boolean done) {
+          long now = System.nanoTime();
+          if (done || shouldDispatch(now, last)) {
+            ResponseUtil.onDataSend(eventEmitter, requestId, bytesWritten, contentLength);
+            last = now;
+          }
+        }
+      }));
     } else {
       // Nothing in data payload, at least nothing we could understand anyway.
       requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
     }
 
+    addRequest(requestId);
     client.newCall(requestBuilder.build()).enqueue(
         new Callback() {
           @Override
-          public void onFailure(Request request, IOException e) {
+          public void onFailure(Call call, IOException e) {
             if (mShuttingDown) {
               return;
             }
-            onRequestError(requestId, e.getMessage());
+            removeRequest(requestId);
+            ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
           }
 
           @Override
-          public void onResponse(Response response) throws IOException {
+          public void onResponse(Call call, Response response) throws IOException {
             if (mShuttingDown) {
               return;
             }
-
+            removeRequest(requestId);
             // Before we touch the body send headers to JS
-            onResponseReceived(requestId, response);
+            ResponseUtil.onResponseReceived(
+              eventEmitter,
+              requestId,
+              response.code(),
+              translateHeaders(response.headers()),
+              response.request().url().toString());
 
             ResponseBody responseBody = response.body();
             try {
-              if (useIncrementalUpdates) {
-                readWithProgress(requestId, responseBody);
-                onRequestSuccess(requestId);
-              } else {
-                onDataReceived(requestId, responseBody.string());
-                onRequestSuccess(requestId);
+              // If JS wants progress updates during the download, and it requested a text response,
+              // periodically send response data updates to JS.
+              if (useIncrementalUpdates && responseType.equals("text")) {
+                readWithProgress(eventEmitter, requestId, responseBody);
+                ResponseUtil.onRequestSuccess(eventEmitter, requestId);
+                return;
               }
+
+              // Otherwise send the data in one big chunk, in the format that JS requested.
+              String responseString = "";
+              if (responseType.equals("text")) {
+                responseString = responseBody.string();
+              } else if (responseType.equals("base64")) {
+                responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
+              }
+              ResponseUtil.onDataReceived(eventEmitter, requestId, responseString);
+              ResponseUtil.onRequestSuccess(eventEmitter, requestId);
             } catch (IOException e) {
-              onRequestError(requestId, e.getMessage());
+              ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
             }
           }
         });
   }
 
-  private void readWithProgress(int requestId, ResponseBody responseBody) throws IOException {
+  private void readWithProgress(
+      RCTDeviceEventEmitter eventEmitter,
+      int requestId,
+      ResponseBody responseBody) throws IOException {
+    long totalBytesRead = -1;
+    long contentLength = -1;
+    try {
+      ProgressResponseBody progressResponseBody = (ProgressResponseBody) responseBody;
+      totalBytesRead = progressResponseBody.totalBytesRead();
+      contentLength = progressResponseBody.contentLength();
+    } catch (ClassCastException e) {
+      // Ignore
+    }
+
     Reader reader = responseBody.charStream();
     try {
-      StringBuilder sb = new StringBuilder(getBufferSize(responseBody));
-      char[] buffer = new char[MIN_BUFFER_SIZE];
+      char[] buffer = new char[MAX_CHUNK_SIZE_BETWEEN_FLUSHES];
       int read;
-      long last = System.nanoTime();
       while ((read = reader.read(buffer)) != -1) {
-        sb.append(buffer, 0, read);
-        long now = System.nanoTime();
-        if (shouldDispatch(now, last)) {
-          onDataReceived(requestId, sb.toString());
-          sb.setLength(0);
-          last = now;
-        }
-      }
-
-      if (sb.length() > 0) {
-        onDataReceived(requestId, sb.toString());
+        ResponseUtil.onIncrementalDataReceived(
+          eventEmitter,
+          requestId,
+          new String(buffer, 0, read),
+          totalBytesRead,
+          contentLength);
       }
     } finally {
       reader.close();
@@ -264,49 +391,19 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     return last + CHUNK_TIMEOUT_NS < now;
   }
 
-  private static int getBufferSize(ResponseBody responseBody) throws IOException {
-    long length = responseBody.contentLength();
-    if (length == -1) {
-      return MIN_BUFFER_SIZE;
-    } else {
-      return (int) min(length, MAX_BUFFER_SIZE);
+  private synchronized void addRequest(int requestId) {
+    mRequestIds.add(requestId);
+  }
+
+  private synchronized void removeRequest(int requestId) {
+    mRequestIds.remove(requestId);
+  }
+
+  private synchronized void cancelAllRequests() {
+    for (Integer requestId : mRequestIds) {
+      cancelRequest(requestId);
     }
-  }
-
-  private void onDataReceived(int requestId, String data) {
-    WritableArray args = Arguments.createArray();
-    args.pushInt(requestId);
-    args.pushString(data);
-
-    getEventEmitter().emit("didReceiveNetworkData", args);
-  }
-
-  private void onRequestError(int requestId, String error) {
-    WritableArray args = Arguments.createArray();
-    args.pushInt(requestId);
-    args.pushString(error);
-
-    getEventEmitter().emit("didCompleteNetworkResponse", args);
-  }
-
-  private void onRequestSuccess(int requestId) {
-    WritableArray args = Arguments.createArray();
-    args.pushInt(requestId);
-    args.pushNull();
-
-    getEventEmitter().emit("didCompleteNetworkResponse", args);
-  }
-
-  private void onResponseReceived(int requestId, Response response) {
-    WritableMap headers = translateHeaders(response.headers());
-
-    WritableArray args = Arguments.createArray();
-    args.pushInt(requestId);
-    args.pushInt(response.code());
-    args.pushMap(headers);
-    args.pushString(response.request().urlString());
-
-    getEventEmitter().emit("didReceiveNetworkResponse", args);
+    mRequestIds.clear();
   }
 
   private static WritableMap translateHeaders(Headers headers) {
@@ -326,28 +423,42 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void abortRequest(final int requestId) {
+  public void abortRequest(ExecutorToken executorToken, final int requestId) {
+    cancelRequest(requestId);
+    removeRequest(requestId);
+  }
+
+  private void cancelRequest(final int requestId) {
     // We have to use AsyncTask since this might trigger a NetworkOnMainThreadException, this is an
     // open issue on OkHttp: https://github.com/square/okhttp/issues/869
     new GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
       @Override
       protected void doInBackgroundGuarded(Void... params) {
-        mClient.cancel(requestId);
+        OkHttpCallUtil.cancelTag(mClient, Integer.valueOf(requestId));
       }
     }.execute();
   }
 
   @ReactMethod
-  public void clearCookies(com.facebook.react.bridge.Callback callback) {
+  public void clearCookies(
+      ExecutorToken executorToken,
+      com.facebook.react.bridge.Callback callback) {
     mCookieHandler.clearCookies(callback);
   }
 
-  private @Nullable MultipartBuilder constructMultipartBody(
+  @Override
+  public boolean supportsWebWorkers() {
+    return true;
+  }
+
+  private @Nullable MultipartBody.Builder constructMultipartBody(
+      ExecutorToken ExecutorToken,
       ReadableArray body,
       String contentType,
       int requestId) {
-    MultipartBuilder multipartBuilder = new MultipartBuilder();
-    multipartBuilder.type(MediaType.parse(contentType));
+    RCTDeviceEventEmitter eventEmitter = getEventEmitter(ExecutorToken);
+    MultipartBody.Builder multipartBuilder = new MultipartBody.Builder();
+    multipartBuilder.setType(MediaType.parse(contentType));
 
     for (int i = 0, size = body.size(); i < size; i++) {
       ReadableMap bodyPart = body.getMap(i);
@@ -356,7 +467,11 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       ReadableArray headersArray = bodyPart.getArray("headers");
       Headers headers = extractHeaders(headersArray, null);
       if (headers == null) {
-        onRequestError(requestId, "Missing or invalid header format for FormData part.");
+        ResponseUtil.onRequestError(
+          eventEmitter,
+          requestId,
+          "Missing or invalid header format for FormData part.",
+          null);
         return null;
       }
       MediaType partContentType = null;
@@ -373,19 +488,27 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
         multipartBuilder.addPart(headers, RequestBody.create(partContentType, bodyValue));
       } else if (bodyPart.hasKey(REQUEST_BODY_KEY_URI)) {
         if (partContentType == null) {
-          onRequestError(requestId, "Binary FormData part needs a content-type header.");
+          ResponseUtil.onRequestError(
+            eventEmitter,
+            requestId,
+            "Binary FormData part needs a content-type header.",
+            null);
           return null;
         }
         String fileContentUriStr = bodyPart.getString(REQUEST_BODY_KEY_URI);
         InputStream fileInputStream =
             RequestBodyUtil.getFileInputStream(getReactApplicationContext(), fileContentUriStr);
         if (fileInputStream == null) {
-          onRequestError(requestId, "Could not retrieve file for uri " + fileContentUriStr);
+          ResponseUtil.onRequestError(
+            eventEmitter,
+            requestId,
+            "Could not retrieve file for uri " + fileContentUriStr,
+            null);
           return null;
         }
         multipartBuilder.addPart(headers, RequestBodyUtil.create(partContentType, fileInputStream));
       } else {
-        onRequestError(requestId, "Unrecognized FormData part.");
+        ResponseUtil.onRequestError(eventEmitter, requestId, "Unrecognized FormData part.", null);
       }
     }
     return multipartBuilder;
@@ -423,8 +546,8 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     return headersBuilder.build();
   }
 
-  private DeviceEventManagerModule.RCTDeviceEventEmitter getEventEmitter() {
+  private RCTDeviceEventEmitter getEventEmitter(ExecutorToken ExecutorToken) {
     return getReactApplicationContext()
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+        .getJSModule(ExecutorToken, RCTDeviceEventEmitter.class);
   }
 }

@@ -16,15 +16,30 @@
  */
 'use strict';
 
-// Export React, plus some native additions.
+// Export some ReactNative properties, plus native additions.
 //
-// The use of Object.create/assign is to work around a Flow bug (#6560135).
-// Once that is fixed, change this back to
+
+// Our ReactNative.js has had its types stripped, so here we
+// need to enumerate and type the properties we need access to.
 //
-//   var ReactNative = {...require('React'), /* additions */}
-//
-var ReactNative = Object.assign(Object.create(require('react')), {
+var ReactNativeInternal = (require('react/lib/ReactNative'): {
+  // render
+  render: (
+    element: ReactElement<any>,
+    mountInto: number,
+    callback?: ?(() => void)
+  ) => ?ReactComponent<any, any, any>,
+  // findNodeHandle
+  findNodeHandle: (componentOrHandle: any) => ?number,
+});
+
+// export
+var ReactNative = {
+  // from ReactNative internal
+  findNodeHandle: ReactNativeInternal.findNodeHandle,
+  render: ReactNativeInternal.render,
   // Components
+  ActivityIndicator: require('ActivityIndicator'),
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
   ART: require('ReactNativeART'),
   DatePickerIOS: require('DatePickerIOS'),
@@ -32,6 +47,7 @@ var ReactNative = Object.assign(Object.create(require('react')), {
   Image: require('Image'),
   ImageEditor: require('ImageEditor'),
   ImageStore: require('ImageStore'),
+  KeyboardAvoidingView: require('KeyboardAvoidingView'),
   ListView: require('ListView'),
   MapView: require('MapView'),
   Modal: require('Modal'),
@@ -44,10 +60,11 @@ var ReactNative = Object.assign(Object.create(require('react')), {
   ScrollView: require('ScrollView'),
   SegmentedControlIOS: require('SegmentedControlIOS'),
   SliderIOS: require('SliderIOS'),
+  Slider: require('Slider'),
   SnapshotViewIOS: require('SnapshotViewIOS'),
   StatusBar: require('StatusBar'),
+  SwipeableListView: require('SwipeableListView'),
   Switch: require('Switch'),
-  PullToRefreshViewAndroid: require('PullToRefreshViewAndroid'),
   RecyclerViewBackedScrollView: require('RecyclerViewBackedScrollView'),
   RefreshControl: require('RefreshControl'),
   SwitchAndroid: require('SwitchAndroid'),
@@ -85,19 +102,24 @@ var ReactNative = Object.assign(Object.create(require('react')), {
   ImagePickerIOS: require('ImagePickerIOS'),
   IntentAndroid: require('IntentAndroid'),
   InteractionManager: require('InteractionManager'),
+  Keyboard: require('Keyboard'),
   LayoutAnimation: require('LayoutAnimation'),
   Linking: require('Linking'),
   LinkingIOS: require('LinkingIOS'),
+  NativeEventEmitter: require('NativeEventEmitter'),
   NavigationExperimental: require('NavigationExperimental'),
   NetInfo: require('NetInfo'),
   PanResponder: require('PanResponder'),
   PixelRatio: require('PixelRatio'),
   PushNotificationIOS: require('PushNotificationIOS'),
   Settings: require('Settings'),
+  Share: require('Share'),
   StatusBarIOS: require('StatusBarIOS'),
   StyleSheet: require('StyleSheet'),
+  Systrace: require('Systrace'),
   TimePickerAndroid: require('TimePickerAndroid'),
   UIManager: require('UIManager'),
+  Vibration: require('Vibration'),
   VibrationIOS: require('VibrationIOS'),
 
   // Plugins
@@ -112,24 +134,6 @@ var ReactNative = Object.assign(Object.create(require('react')), {
   ColorPropType: require('ColorPropType'),
   EdgeInsetsPropType: require('EdgeInsetsPropType'),
   PointPropType: require('PointPropType'),
-
-  // See http://facebook.github.io/react/docs/addons.html
-  addons: {
-    LinkedStateMixin: require('LinkedStateMixin'),
-    Perf: undefined,
-    PureRenderMixin: require('ReactComponentWithPureRenderMixin'),
-    TestModule: require('NativeModules').TestModule,
-    TestUtils: undefined,
-    batchedUpdates: require('ReactUpdates').batchedUpdates,
-    cloneWithProps: require('cloneWithProps'),
-    createFragment: require('ReactFragment').create,
-    update: require('update'),
-  },
-});
-
-if (__DEV__) {
-  ReactNative.addons.Perf = require('ReactDefaultPerf');
-  ReactNative.addons.TestUtils = require('ReactTestUtils');
-}
+};
 
 module.exports = ReactNative;

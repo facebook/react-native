@@ -1,0 +1,54 @@
+include_defs('//ReactAndroid/DEFS')
+
+# We depend on JSC, support the same platforms
+SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
+
+EXPORTED_HEADERS = [
+  'CxxModuleWrapper.h',
+  'NativeArray.h',
+  'NativeCommon.h',
+  'NativeMap.h',
+  'ReadableNativeArray.h',
+  'ReadableNativeMap.h',
+  'WritableNativeArray.h',
+  'WritableNativeMap.h',
+]
+
+cxx_library(
+  name='jni',
+  soname = 'libreactnativejnifb.so',
+  header_namespace = 'xreact/jni',
+  supported_platforms_regex = SUPPORTED_PLATFORMS,
+  deps = JSC_DEPS + [
+    '//native/fb:fb',
+    '//native/third-party/android-ndk:android',
+    '//xplat/folly:molly',
+    '//xplat/fbsystrace:fbsystrace',
+    react_native_xplat_target('cxxreact:bridge'),
+    react_native_xplat_target('cxxreact:module'),
+  ],
+  srcs = glob(['*.cpp']),
+  exported_headers = EXPORTED_HEADERS,
+  headers = glob(['*.h'], excludes=EXPORTED_HEADERS),
+  preprocessor_flags = [
+    '-DLOG_TAG="ReactNativeJNI"',
+    '-DWITH_FBSYSTRACE=1',
+  ],
+  compiler_flags = [
+    '-Wall',
+    '-Werror',
+    '-fexceptions',
+    '-std=c++11',
+    '-fvisibility=hidden',
+    '-frtti',
+    '-Wno-pessimizing-move',
+    '-Wno-inconsistent-missing-override',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+project_config(
+  src_target = ':jni',
+)

@@ -16,13 +16,14 @@
 
 static NSString *RCTCurrentAppBackgroundState()
 {
+  RCTAssertMainQueue();
+
   static NSDictionary *states;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     states = @{
       @(UIApplicationStateActive): @"active",
-      @(UIApplicationStateBackground): @"background",
-      @(UIApplicationStateInactive): @"inactive"
+      @(UIApplicationStateBackground): @"background"
     };
   });
 
@@ -38,24 +39,35 @@ static NSString *RCTCurrentAppBackgroundState()
   NSString *_lastKnownState;
 }
 
-@synthesize bridge = _bridge;
-
 RCT_EXPORT_MODULE()
+
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
+- (NSDictionary *)constantsToExport
+{
+  return @{@"initialAppState": RCTCurrentAppBackgroundState()};
+}
 
 #pragma mark - Lifecycle
 
-- (void)setBridge:(RCTBridge *)bridge
+- (NSArray<NSString *> *)supportedEvents
 {
-  _bridge = bridge;
+  return @[@"appStateDidChange", @"memoryWarning"];
+}
 
-  // Is this thread-safe?
-  _lastKnownState = RCTCurrentAppBackgroundState();
-
+- (void)startObserving
+{
   for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
                            UIApplicationDidEnterBackgroundNotification,
-                           UIApplicationDidFinishLaunchingNotification]) {
+                           UIApplicationDidFinishLaunchingNotification,
+                           UIApplicationWillResignActiveNotification,
+                           UIApplicationWillEnterForegroundNotification]) {
+
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleAppStateDidChange)
+                                             selector:@selector(handleAppStateDidChange:)
                                                  name:name
                                                object:nil];
   }
@@ -66,26 +78,34 @@ RCT_EXPORT_MODULE()
                                              object:nil];
 }
 
-- (void)handleMemoryWarning
-{
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"memoryWarning"
-                                              body:nil];
-}
-
-- (void)dealloc
+- (void)stopObserving
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - App Notification Methods
 
-- (void)handleAppStateDidChange
+- (void)handleMemoryWarning
 {
-  NSString *newState = RCTCurrentAppBackgroundState();
+  [self sendEventWithName:@"memoryWarning" body:nil];
+}
+
+- (void)handleAppStateDidChange:(NSNotification *)notification
+{
+  NSString *newState;
+
+  if ([notification.name isEqualToString:UIApplicationWillResignActiveNotification]) {
+    newState = @"inactive";
+  } else if ([notification.name isEqualToString:UIApplicationWillEnterForegroundNotification]) {
+    newState = @"background";
+  } else {
+    newState = RCTCurrentAppBackgroundState();
+  }
+
   if (![newState isEqualToString:_lastKnownState]) {
     _lastKnownState = newState;
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"appStateDidChange"
-                                                body:@{@"app_state": _lastKnownState}];
+    [self sendEventWithName:@"appStateDidChange"
+                       body:@{@"app_state": _lastKnownState}];
   }
 }
 
@@ -97,7 +117,7 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(getCurrentAppState:(RCTResponseSenderBlock)callback
                   error:(__unused RCTResponseSenderBlock)error)
 {
-  callback(@[@{@"app_state": _lastKnownState}]);
+  callback(@[@{@"app_state": RCTCurrentAppBackgroundState()}]);
 }
 
 @end

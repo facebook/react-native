@@ -21,7 +21,7 @@ import android.os.Bundle;
 /**
  * A fragment used to display the dialog.
  */
-/* package */ class AlertFragment extends DialogFragment implements DialogInterface.OnClickListener {
+public class AlertFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
   /* package */ static final String ARG_TITLE = "title";
   /* package */ static final String ARG_MESSAGE = "message";
@@ -31,6 +31,10 @@ import android.os.Bundle;
   /* package */ static final String ARG_ITEMS = "items";
 
   private final @Nullable DialogModule.AlertFragmentListener mListener;
+
+  public AlertFragment() {
+      mListener = null;
+  }
 
   public AlertFragment(@Nullable DialogModule.AlertFragmentListener listener, Bundle arguments) {
     mListener = listener;

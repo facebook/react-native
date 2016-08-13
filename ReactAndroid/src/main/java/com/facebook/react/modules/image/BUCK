@@ -1,0 +1,23 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_library(
+  name = 'image',
+  srcs = glob(['*.java']),
+  deps = [
+    react_native_dep('libraries/fresco/fresco-react-native:fbcore'),
+    react_native_dep('libraries/fresco/fresco-react-native:fresco-drawee'),
+    react_native_dep('libraries/fresco/fresco-react-native:fresco-react-native'),
+    react_native_dep('libraries/fresco/fresco-react-native:imagepipeline'),
+    react_native_dep('third-party/java/infer-annotations:infer-annotations'),
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/common:common'),
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+project_config(
+  src_target = ':image',
+)

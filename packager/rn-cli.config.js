@@ -5,7 +5,7 @@
  */
 'use strict';
 
-const blacklist = require('./blacklist.js');
+const blacklist = require('./blacklist');
 const path = require('path');
 
 module.exports = {
@@ -17,8 +17,12 @@ module.exports = {
     return this._getRoots();
   },
 
-  getBlacklistRE() {
-    return blacklist('');
+  getAssetExts() {
+    return [];
+  },
+
+  getBlacklistRE(platform) {
+    return blacklist(platform);
   },
 
   _getRoots() {
@@ -33,4 +37,9 @@ module.exports = {
       return [path.resolve(__dirname, '..')];
     }
   },
+
+  getTransformModulePath() {
+    return require.resolve('./transformer');
+  },
+
 };

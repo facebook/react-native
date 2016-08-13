@@ -79,7 +79,7 @@ global.ErrorUtils = ErrorUtils;
  */
 function setupErrorGuard() {
   var onError = function(e) {
-    global.console.error('Error: ' + e.message + ', stack:\n' + e.stack);
+    throw e;
   };
   global.ErrorUtils.setGlobalHandler(onError);
 }

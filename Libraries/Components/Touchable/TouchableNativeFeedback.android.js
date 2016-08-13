@@ -10,15 +10,15 @@
  */
 'use strict';
 
-var PropTypes = require('ReactPropTypes');
+var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+var ReactNative = require('react/lib/ReactNative');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var UIManager = require('UIManager');
 
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-var onlyChild = require('onlyChild');
+var onlyChild = require('react/lib/onlyChild');
 var processColor = require('processColor');
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -43,6 +43,8 @@ var TouchableView = requireNativeComponent('RCTView', null, {
     nativeBackgroundAndroid: backgroundPropType,
   }
 });
+
+type Event = Object;
 
 var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
@@ -80,36 +82,39 @@ var TouchableNativeFeedback = React.createClass({
     /**
      * Determines the type of background drawable that's going to be used to
      * display feedback. It takes an object with `type` property and extra data
-     * depending on the `type`. It's recommended to use one of the following
-     * static methods to generate that dictionary:
-     *
-     * 1) TouchableNativeFeedback.SelectableBackground() - will create object
-     * that represents android theme's default background for selectable
-     * elements (?android:attr/selectableItemBackground)
-     *
-     * 2) TouchableNativeFeedback.SelectableBackgroundBorderless() - will create
-     * object that represent android theme's default background for borderless
-     * selectable elements (?android:attr/selectableItemBackgroundBorderless).
-     * Available on android API level 21+
-     *
-     * 3) TouchableNativeFeedback.Ripple(color, borderless) - will create
-     * object that represents ripple drawable with specified color (as a
-     * string). If property `borderless` evaluates to true the ripple will
-     * render outside of the view bounds (see native actionbar buttons as an
-     * example of that behavior). This background type is available on Android
-     * API level 21+
+     * depending on the `type`. It's recommended to use one of the static
+     * methods to generate that dictionary.
      */
     background: backgroundPropType,
   },
 
   statics: {
+    /**
+     * Creates an object that represents android theme's default background for
+     * selectable elements (?android:attr/selectableItemBackground).
+     */
     SelectableBackground: function() {
       return {type: 'ThemeAttrAndroid', attribute: 'selectableItemBackground'};
     },
+    /**
+     * Creates an object that represent android theme's default background for borderless
+     * selectable elements (?android:attr/selectableItemBackgroundBorderless).
+     * Available on android API level 21+.
+     */
     SelectableBackgroundBorderless: function() {
       return {type: 'ThemeAttrAndroid', attribute: 'selectableItemBackgroundBorderless'};
     },
-    Ripple: function(color, borderless) {
+    /**
+     * Creates an object that represents ripple drawable with specified color (as a
+     * string). If property `borderless` evaluates to true the ripple will
+     * render outside of the view bounds (see native actionbar buttons as an
+     * example of that behavior). This background type is available on Android
+     * API level 21+.
+     *
+     * @param color The ripple color
+     * @param borderless If the ripple can render outside it's bounds
+     */
+    Ripple: function(color: string, borderless: boolean) {
       return {type: 'RippleAndroid', color: processColor(color), borderless: borderless};
     },
   },
@@ -138,23 +143,23 @@ var TouchableNativeFeedback = React.createClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function() {
-    this.props.onPressIn && this.props.onPressIn();
+  touchableHandleActivePressIn: function(e: Event) {
+    this.props.onPressIn && this.props.onPressIn(e);
     this._dispatchPressedStateChange(true);
     this._dispatchHotspotUpdate(this.pressInLocation.locationX, this.pressInLocation.locationY);
   },
 
-  touchableHandleActivePressOut: function() {
-    this.props.onPressOut && this.props.onPressOut();
+  touchableHandleActivePressOut: function(e: Event) {
+    this.props.onPressOut && this.props.onPressOut(e);
     this._dispatchPressedStateChange(false);
   },
 
-  touchableHandlePress: function() {
-    this.props.onPress && this.props.onPress();
+  touchableHandlePress: function(e: Event) {
+    this.props.onPress && this.props.onPress(e);
   },
 
-  touchableHandleLongPress: function() {
-    this.props.onLongPress && this.props.onLongPress();
+  touchableHandleLongPress: function(e: Event) {
+    this.props.onLongPress && this.props.onLongPress(e);
   },
 
   touchableGetPressRectOffset: function() {
@@ -180,12 +185,12 @@ var TouchableNativeFeedback = React.createClass({
 
   _handleResponderMove: function(e) {
     this.touchableHandleResponderMove(e);
-    this._dispatchHotspotUpdate(e.nativeEvent.pageX, e.nativeEvent.pageY);
+    this._dispatchHotspotUpdate(e.nativeEvent.locationX, e.nativeEvent.locationY);
   },
 
   _dispatchHotspotUpdate: function(destX, destY) {
     UIManager.dispatchViewManagerCommand(
-      React.findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       UIManager.RCTView.Commands.hotspotUpdate,
       [destX || 0, destY || 0]
     );
@@ -193,20 +198,29 @@ var TouchableNativeFeedback = React.createClass({
 
   _dispatchPressedStateChange: function(pressed) {
     UIManager.dispatchViewManagerCommand(
-      React.findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       UIManager.RCTView.Commands.setPressed,
       [pressed]
     );
   },
 
   render: function() {
+    const child = onlyChild(this.props.children);
+    let children = child.props.children;
+    if (Touchable.TOUCH_TARGET_DEBUG && child.type.displayName === 'View') {
+      if (!Array.isArray(children)) {
+        children = [children];
+      }
+      children.push(Touchable.renderDebugView({color: 'brown', hitSlop: this.props.hitSlop}));
+    }
     var childProps = {
-      ...onlyChild(this.props.children).props,
+      ...child.props,
       nativeBackgroundAndroid: this.props.background,
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
       accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityTraits: this.props.accessibilityTraits,
+      children,
       testID: this.props.testID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,

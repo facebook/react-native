@@ -1,5 +1,10 @@
 /**
- * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
@@ -42,7 +47,6 @@ var TimerMixin = require('react-timer-mixin');
 var View = require('View');
 
 var clamp = require('clamp');
-var deprecatedPropType = require('deprecatedPropType');
 var flattenStyle = require('flattenStyle');
 var invariant = require('fbjs/lib/invariant');
 var rebound = require('rebound');
@@ -125,82 +129,193 @@ var GESTURE_ACTIONS = [
 ];
 
 /**
- * Use `Navigator` to transition between different scenes in your app. To
- * accomplish this, provide route objects to the navigator to identify each
- * scene, and also a `renderScene` function that the navigator can use to
- * render the scene for a given route.
+ * `Navigator` handles the transition between different scenes in your app.
+ * It is implemented in JavaScript and is available on both iOS and Android. If
+ * you are targeting iOS only, you may also want to consider using
+ * [`NavigatorIOS`](docs/navigatorios.html) as it leverages native UIKit
+ * navigation.
  *
- * To change the animation or gesture properties of the scene, provide a
- * `configureScene` prop to get the config object for a given route. See
- * `Navigator.SceneConfigs` for default animations and more info on
- * scene config options.
- *
- * ### Basic Usage
+ * To set up the `Navigator` you provide one or more objects called routes,
+ * to identify each scene. You also provide a `renderScene` function that
+ * renders the scene for each route object.
  *
  * ```
- *   <Navigator
- *     initialRoute={{name: 'My First Scene', index: 0}}
- *     renderScene={(route, navigator) =>
- *       <MySceneComponent
- *         name={route.name}
- *         onForward={() => {
- *           var nextIndex = route.index + 1;
- *           navigator.push({
- *             name: 'Scene ' + nextIndex,
- *             index: nextIndex,
- *           });
- *         }}
- *         onBack={() => {
- *           if (route.index > 0) {
+ * import React, { Component } from 'react';
+ * import { Text, Navigator } from 'react-native';
+ *
+ * export default class NavAllDay extends Component {
+ *   render() {
+ *     return (
+ *       <Navigator
+ *         initialRoute={{ title: 'Awesome Scene', index: 0 }}
+ *         renderScene={(route, navigator) =>
+ *           <Text>Hello {route.title}!</Text>
+ *         }
+ *         style={{padding: 100}}
+ *       />
+ *     );
+ *   }
+ * }
+ * ```
+ *
+ * In the above example, `initialRoute` is used to specify the first route. It
+ * contains a `title` property that identifies the route. The `renderScene`
+ * prop returns a function that displays text based on the route's title.
+ *
+ * ### Additional Scenes
+ *
+ * The first example demonstrated one scene. To set up multiple scenes, you pass
+ * the `initialRouteStack` prop to `Navigator`:
+ *
+ * ```
+ * render() {
+ *   const routes = [
+ *     {title: 'First Scene', index: 0},
+ *     {title: 'Second Scene', index: 1},
+ *   ];
+ *   return (
+ *     <Navigator
+ *       initialRoute={routes[0]}
+ *       initialRouteStack={routes}
+ *       renderScene={(route, navigator) =>
+ *         <TouchableHighlight onPress={() => {
+ *           if (route.index === 0) {
+ *             navigator.push(routes[1]);
+ *           } else {
  *             navigator.pop();
  *           }
- *         }}
- *       />
- *     }
- *   />
+ *         }}>
+ *         <Text>Hello {route.title}!</Text>
+ *         </TouchableHighlight>
+ *       }
+ *       style={{padding: 100}}
+ *     />
+ *   );
+ * }
  * ```
  *
- * ### Navigator Methods
+ * In the above example, a `routes` variable is defined with two route objects
+ * representing two scenes. Each route has an `index` property that is used to
+ * manage the scene being rendered. The `renderScene` method is changed to
+ * either push or pop the navigator depending on the current route's index.
+ * Finally, the `Text` component in the scene is now wrapped in a
+ * `TouchableHighlight` component to help trigger the navigator transitions.
  *
- * If you have a ref to the Navigator element, you can invoke several methods
- * on it to trigger navigation:
+ * ### Navigation Bar
  *
- *  - `getCurrentRoutes()` - returns the current list of routes
- *  - `jumpBack()` - Jump backward without unmounting the current scene
- *  - `jumpForward()` - Jump forward to the next scene in the route stack
- *  - `jumpTo(route)` - Transition to an existing scene without unmounting
- *  - `push(route)` - Navigate forward to a new scene, squashing any scenes
- *     that you could `jumpForward` to
- *  - `pop()` - Transition back and unmount the current scene
- *  - `replace(route)` - Replace the current scene with a new route
- *  - `replaceAtIndex(route, index)` - Replace a scene as specified by an index
- *  - `replacePrevious(route)` - Replace the previous scene
- *  - `resetTo(route)` - Navigate to a new scene and reset route stack
- *  - `immediatelyResetRouteStack(routeStack)` - Reset every scene with an
- *     array of routes
- *  - `popToRoute(route)` - Pop to a particular scene, as specified by its
- *     route. All scenes after it will be unmounted
- *  - `popToTop()` - Pop to the first scene in the stack, unmounting every
- *     other scene
+ * You can optionally pass in your own navigation bar by returning a
+ * `Navigator.NavigationBar` component to the `navigationBar` prop in
+ * `Navigator`. You can configure the navigation bar properties, through
+ * the `routeMapper` prop. There you set up the left, right, and title
+ * properties of the navigation bar:
  *
+ * ```
+ * <Navigator
+ *   renderScene={(route, navigator) =>
+ *     // ...
+ *   }
+ *   navigationBar={
+ *      <Navigator.NavigationBar
+ *        routeMapper={{
+ *          LeftButton: (route, navigator, index, navState) =>
+ *           { return (<Text>Cancel</Text>); },
+ *          RightButton: (route, navigator, index, navState) =>
+ *            { return (<Text>Done</Text>); },
+ *          Title: (route, navigator, index, navState) =>
+ *            { return (<Text>Awesome Nav Bar</Text>); },
+ *        }}
+ *        style={{backgroundColor: 'gray'}}
+ *      />
+ *   }
+ * />
+ * ```
+ *
+ * When configuring the left, right, and title items for the navigation bar,
+ * you have access to info such as the current route object and navigation
+ * state. This allows you to customize the title for each scene as well as
+ * the buttons. For example, you can choose to hide the left button for one of
+ * the scenes.
+ *
+ * Typically you want buttons to represent the left and right buttons. Building
+ * on the previous example, you can set this up as follows:
+ *
+ * ```
+ * LeftButton: (route, navigator, index, navState) =>
+ *   {
+ *     if (route.index === 0) {
+ *       return null;
+ *     } else {
+ *       return (
+ *         <TouchableHighlight onPress={() => navigator.pop()}>
+ *           <Text>Back</Text>
+ *         </TouchableHighlight>
+ *       );
+ *     }
+ *   },
+ * ```
+ *
+ * This sets up a left navigator bar button that's visible on scenes after the
+ * the first one. When the button is tapped the navigator is popped.
+ *
+ * Another type of navigation bar, with breadcrumbs, is provided by
+ * `Navigator.BreadcrumbNavigationBar`. You can also provide your own navigation
+ * bar by passing it through the `navigationBar` prop. See the
+ * [UIExplorer](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer)
+ * demo to try out both built-in navigation bars out and see how to use them.
+ *
+ * ### Scene Transitions
+ *
+ * To change the animation or gesture properties of the scene, provide a
+ * `configureScene` prop to get the config object for a given route:
+ *
+ * ```
+ * <Navigator
+ *   renderScene={(route, navigator) =>
+ *     // ...
+ *   }
+ *   configureScene={(route, routeStack) =>
+ *     Navigator.SceneConfigs.FloatFromBottom}
+ * />
+ * ```
+ * In the above example, the newly pushed scene will float up from the bottom.
+ * See `Navigator.SceneConfigs` for default animations and more info on
+ * available [scene config options](/react-native/docs/navigator.html#configurescene).
  */
 var Navigator = React.createClass({
 
   propTypes: {
     /**
-     * Optional function that allows configuration about scene animations and
-     * gestures. Will be invoked with the route and the routeStack and should
-     * return a scene configuration object
+     * Optional function where you can configure scene animations and
+     * gestures. Will be invoked with `route` and `routeStack` parameters,
+     * where `route` corresponds to the current scene being rendered by the
+     * `Navigator` and `routeStack` is the set of currently mounted routes
+     * that the navigator could transition to.
+     *
+     * The function should return a scene configuration object.
      *
      * ```
      * (route, routeStack) => Navigator.SceneConfigs.FloatFromRight
      * ```
+     *
+     * Available scene configutation options are:
+     *
+     *  - Navigator.SceneConfigs.PushFromRight (default)
+     *  - Navigator.SceneConfigs.FloatFromRight
+     *  - Navigator.SceneConfigs.FloatFromLeft
+     *  - Navigator.SceneConfigs.FloatFromBottom
+     *  - Navigator.SceneConfigs.FloatFromBottomAndroid
+     *  - Navigator.SceneConfigs.FadeAndroid
+     *  - Navigator.SceneConfigs.HorizontalSwipeJump
+     *  - Navigator.SceneConfigs.HorizontalSwipeJumpFromRight
+     *  - Navigator.SceneConfigs.VerticalUpSwipeJump
+     *  - Navigator.SceneConfigs.VerticalDownSwipeJump
+     *
      */
     configureScene: PropTypes.func,
 
     /**
      * Required function which renders the scene for a given route. Will be
-     * invoked with the route and the navigator object
+     * invoked with the `route` and the `navigator` object.
      *
      * ```
      * (route, navigator) =>
@@ -210,44 +325,53 @@ var Navigator = React.createClass({
     renderScene: PropTypes.func.isRequired,
 
     /**
-     * Specify a route to start on. A route is an object that the navigator
-     * will use to identify each scene to render. `initialRoute` must be
-     * a route in the `initialRouteStack` if both props are provided. The
-     * `initialRoute` will default to the last item in the `initialRouteStack`.
+     * The initial route for navigation. A route is an object that the navigator
+     * will use to identify each scene it renders.
+     *
+     * If both `initialRoute` and `initialRouteStack` props are passed to
+     * `Navigator`, then `initialRoute` must be in a route in
+     * `initialRouteStack`. If `initialRouteStack` is passed as a prop but
+     * `initialRoute` is not, then `initialRoute` will default internally to
+     * the last item in `initialRouteStack`.
      */
     initialRoute: PropTypes.object,
 
     /**
-     * Provide a set of routes to initially mount. Required if no initialRoute
-     * is provided. Otherwise, it will default to an array containing only the
-     * `initialRoute`
+     * Pass this in to provide a set of routes to initially mount. This prop
+     * is required if `initialRoute` is not provided to the navigator. If this
+     * prop is not passed in, it will default internally to an array
+     * containing only `initialRoute`.
      */
     initialRouteStack: PropTypes.arrayOf(PropTypes.object),
 
     /**
-     * Will emit the target route upon mounting and before each nav transition
+     * Pass in a function to get notified with the target route when
+     * the navigator component is mounted and before each navigator transition.
      */
     onWillFocus: PropTypes.func,
 
     /**
      * Will be called with the new route of each scene after the transition is
-     * complete or after the initial mounting
+     * complete or after the initial mounting.
      */
     onDidFocus: PropTypes.func,
 
     /**
-     * Optionally provide a navigation bar that persists across scene
-     * transitions
+     * Use this to provide an optional component representing a navigation bar
+     * that is persisted across scene transitions. This component will receive
+     * two props: `navigator` and `navState` representing the navigator
+     * component and its state. The component is re-rendered when the route
+     * changes.
      */
     navigationBar: PropTypes.node,
 
     /**
-     * Optionally provide the navigator object from a parent Navigator
+     * Optionally pass in the navigator object from a parent `Navigator`.
      */
     navigator: PropTypes.object,
 
     /**
-     * Styles to apply to the container of each scene
+     * Styles to apply to the container of each scene.
      */
     sceneStyle: View.propTypes.style,
   },
@@ -351,11 +475,12 @@ var Navigator = React.createClass({
   },
 
   /**
-   * @param {RouteStack} nextRouteStack Next route stack to reinitialize. This
-   * doesn't accept stack item `id`s, which implies that all existing items are
-   * destroyed, and then potentially recreated according to `routeStack`. Does
-   * not animate, immediately replaces and rerenders navigation bar and stack
-   * items.
+   * Reset every scene with an array of routes.
+   *
+   * @param {RouteStack} nextRouteStack Next route stack to reinitialize.
+   * All existing route stacks are destroyed an potentially recreated. There
+   * is no accompanying animation and this method immediately replaces and
+   * re-renders the navigation bar and the stack items.
    */
   immediatelyResetRouteStack: function(nextRouteStack) {
     var destIndex = nextRouteStack.length - 1;
@@ -371,14 +496,18 @@ var Navigator = React.createClass({
     }, () => {
       this._handleSpringUpdate();
       this._navBar && this._navBar.immediatelyRefresh();
+      this._emitDidFocus(this.state.routeStack[this.state.presentedIndex]);
     });
   },
 
   _transitionTo: function(destIndex, velocity, jumpSpringTo, cb) {
-    if (destIndex === this.state.presentedIndex) {
+    if (this.state.presentedIndex === destIndex) {
+      cb && cb();
       return;
     }
+
     if (this.state.transitionFromIndex !== null) {
+      // Navigation is still transitioning, put the `destIndex` into queue.
       this.state.transitionQueue.push({
         destIndex,
         velocity,
@@ -386,6 +515,7 @@ var Navigator = React.createClass({
       });
       return;
     }
+
     this.state.transitionFromIndex = this.state.presentedIndex;
     this.state.presentedIndex = destIndex;
     this.state.transitionCb = cb;
@@ -453,7 +583,7 @@ var Navigator = React.createClass({
     this._onAnimationEnd();
     var presentedIndex = this.state.presentedIndex;
     var didFocusRoute = this._subRouteFocus[presentedIndex] || this.state.routeStack[presentedIndex];
-    this._emitDidFocus(didFocusRoute);
+
     if (AnimationsDebugModule) {
       AnimationsDebugModule.stopRecordingFps(Date.now());
     }
@@ -464,6 +594,9 @@ var Navigator = React.createClass({
       this.state.transitionCb();
       this.state.transitionCb = null;
     }
+
+    this._emitDidFocus(didFocusRoute);
+
     if (this._interactionHandle) {
       this.clearInteractionHandle(this._interactionHandle);
       this._interactionHandle = null;
@@ -791,12 +924,14 @@ var Navigator = React.createClass({
       }
       var isTravelVertical = gesture.direction === 'top-to-bottom' || gesture.direction === 'bottom-to-top';
       var isTravelInverted = gesture.direction === 'right-to-left' || gesture.direction === 'bottom-to-top';
+      var startedLoc = isTravelVertical ? gestureState.y0 : gestureState.x0;
       var currentLoc = isTravelVertical ? gestureState.moveY : gestureState.moveX;
       var travelDist = isTravelVertical ? gestureState.dy : gestureState.dx;
       var oppositeAxisTravelDist =
         isTravelVertical ? gestureState.dx : gestureState.dy;
       var edgeHitWidth = gesture.edgeHitWidth;
       if (isTravelInverted) {
+        startedLoc = -startedLoc;
         currentLoc = -currentLoc;
         travelDist = -travelDist;
         oppositeAxisTravelDist = -oppositeAxisTravelDist;
@@ -804,8 +939,11 @@ var Navigator = React.createClass({
           -(SCREEN_HEIGHT - edgeHitWidth) :
           -(SCREEN_WIDTH - edgeHitWidth);
       }
+      if (startedLoc === 0) {
+        startedLoc = currentLoc;
+      }
       var moveStartedInRegion = gesture.edgeHitWidth == null ||
-        currentLoc < edgeHitWidth;
+        startedLoc < edgeHitWidth;
       if (!moveStartedInRegion) {
         return false;
       }
@@ -882,6 +1020,11 @@ var Navigator = React.createClass({
     this._transitionTo(destIndex);
   },
 
+  /**
+   * Transition to an existing scene without unmounting.
+   * @param {object} route Route to transition to. The specified route must
+   * be in the currently mounted set of routes defined in `routeStack`.
+   */
   jumpTo: function(route) {
     var destIndex = this.state.routeStack.indexOf(route);
     invariant(
@@ -891,14 +1034,25 @@ var Navigator = React.createClass({
     this._jumpN(destIndex - this.state.presentedIndex);
   },
 
+  /**
+   * Jump forward to the next scene in the route stack.
+   */
   jumpForward: function() {
     this._jumpN(1);
   },
 
+  /**
+   * Jump backward without unmounting the current scene.
+   */
   jumpBack: function() {
     this._jumpN(-1);
   },
 
+  /**
+   * Navigate forward to a new scene, squashing any scenes that you could
+   * jump forward to.
+   * @param {object} route Route to push into the navigator stack.
+   */
   push: function(route) {
     invariant(!!route, 'Must supply route to push');
     var activeLength = this.state.presentedIndex + 1;
@@ -906,33 +1060,37 @@ var Navigator = React.createClass({
     var activeAnimationConfigStack = this.state.sceneConfigStack.slice(0, activeLength);
     var nextStack = activeStack.concat([route]);
     var destIndex = nextStack.length - 1;
-    var nextAnimationConfigStack = activeAnimationConfigStack.concat([
-      this.props.configureScene(route, nextStack),
-    ]);
+    var nextSceneConfig = this.props.configureScene(route, nextStack);
+    var nextAnimationConfigStack = activeAnimationConfigStack.concat([nextSceneConfig]);
     this._emitWillFocus(nextStack[destIndex]);
     this.setState({
       routeStack: nextStack,
       sceneConfigStack: nextAnimationConfigStack,
     }, () => {
       this._enableScene(destIndex);
-      this._transitionTo(destIndex);
+      this._transitionTo(destIndex, nextSceneConfig.defaultTransitionVelocity);
     });
   },
 
-  _popN: function(n) {
-    if (n === 0) {
+  /**
+   * Go back N scenes at once. When N=1, behavior matches `pop()`.
+   * When N is invalid(negative or bigger than current routes count), do nothing.
+   * @param {number} n The number of scenes to pop. Should be an integer.
+   */
+  popN: function(n) {
+    invariant(typeof n === 'number', 'Must supply a number to popN');
+    n = parseInt(n, 10);
+    if (n <= 0 || this.state.presentedIndex - n < 0) {
       return;
     }
-    invariant(
-      this.state.presentedIndex - n >= 0,
-      'Cannot pop below zero'
-    );
     var popIndex = this.state.presentedIndex - n;
+    var presentedRoute = this.state.routeStack[this.state.presentedIndex];
+    var popSceneConfig = this.props.configureScene(presentedRoute); // using the scene config of the currently presented view
     this._enableScene(popIndex);
     this._emitWillFocus(this.state.routeStack[popIndex]);
     this._transitionTo(
       popIndex,
-      null, // default velocity
+      popSceneConfig.defaultTransitionVelocity,
       null, // no spring jumping
       () => {
         this._cleanScenesPastIndex(popIndex);
@@ -940,6 +1098,9 @@ var Navigator = React.createClass({
     );
   },
 
+  /**
+   * Transition back and unmount the current scene.
+   */
   pop: function() {
     if (this.state.transitionQueue.length) {
       // This is the workaround to prevent user from firing multiple `pop()`
@@ -951,16 +1112,15 @@ var Navigator = React.createClass({
       return;
     }
 
-    if (this.state.presentedIndex > 0) {
-      this._popN(1);
-    }
+    this.popN(1);
   },
 
   /**
-   * Replace a route in the navigation stack.
-   *
-   * `index` specifies the route in the stack that should be replaced.
-   * If it's negative, it counts from the back.
+   * Replace a scene as specified by an index.
+   * @param {object} route Route representing the new scene to render.
+   * @param {number} index The route in the stack that should be replaced.
+   *   If negative, it counts from the back of the stack.
+   * @param {Function} cb Callback function when the scene has been replaced.
    */
   replaceAtIndex: function(route, index, cb) {
     invariant(!!route, 'Must supply route to replace');
@@ -992,23 +1152,33 @@ var Navigator = React.createClass({
   },
 
   /**
-   * Replaces the current scene in the stack.
+   * Replace the current scene with a new route.
+   * @param {object} route Route that replaces the current scene.
    */
   replace: function(route) {
     this.replaceAtIndex(route, this.state.presentedIndex);
   },
 
   /**
-   * Replace the current route's parent.
+   * Replace the previous scene.
+   * @param {object} route Route that replaces the previous scene.
    */
   replacePrevious: function(route) {
     this.replaceAtIndex(route, this.state.presentedIndex - 1);
   },
 
+  /**
+   * Pop to the first scene in the stack, unmounting every other scene.
+   */
   popToTop: function() {
     this.popToRoute(this.state.routeStack[0]);
   },
 
+  /**
+   * Pop to a particular scene, as specified by its route.
+   * All scenes after it will be unmounted.
+   * @param {object} route Route to pop to.
+   */
   popToRoute: function(route) {
     var indexOfRoute = this.state.routeStack.indexOf(route);
     invariant(
@@ -1016,9 +1186,13 @@ var Navigator = React.createClass({
       'Calling popToRoute for a route that doesn\'t exist!'
     );
     var numToPop = this.state.presentedIndex - indexOfRoute;
-    this._popN(numToPop);
+    this.popN(numToPop);
   },
 
+  /**
+   * Replace the previous scene and pop to it.
+   * @param {object} route Route that replaces the previous scene.
+   */
   replacePreviousAndPop: function(route) {
     if (this.state.routeStack.length < 2) {
       return;
@@ -1027,17 +1201,22 @@ var Navigator = React.createClass({
     this.pop();
   },
 
+  /**
+   * Navigate to a new scene and reset route stack.
+   * @param {object} route Route to navigate to.
+   */
   resetTo: function(route) {
     invariant(!!route, 'Must supply route to push');
     this.replaceAtIndex(route, 0, () => {
       // Do not use popToRoute here, because race conditions could prevent the
       // route from existing at this time. Instead, just go to index 0
-      if (this.state.presentedIndex > 0) {
-        this._popN(this.state.presentedIndex);
-      }
+      this.popN(this.state.presentedIndex);
     });
   },
 
+  /**
+   * Returns the current list of routes.
+   */
   getCurrentRoutes: function() {
     // Clone before returning to avoid caller mutating the stack
     return this.state.routeStack.slice();
@@ -1079,7 +1258,7 @@ var Navigator = React.createClass({
   },
 
   _renderNavigationBar: function() {
-    let { navigationBar } = this.props;
+    const { navigationBar } = this.props;
     if (!navigationBar) {
       return null;
     }

@@ -8,15 +8,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   View,
-} = React;
+} = ReactNative;
 
-var { TestModule } = React.addons;
+var { TestModule } = ReactNative.NativeModules;
 
-var PropertiesUpdateTest = React.createClass({
-
+class PropertiesUpdateTest extends React.Component {
   render() {
     if (this.props.markTestPassed) {
       TestModule.markTestPassed(true);
@@ -25,7 +25,7 @@ var PropertiesUpdateTest = React.createClass({
       <View/>
     );
   }
-});
+}
 
 PropertiesUpdateTest.displayName = 'PropertiesUpdateTest';
 

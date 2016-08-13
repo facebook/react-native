@@ -16,13 +16,13 @@ type FormDataNameValuePair = [string, FormDataValue];
 
 type Headers = {[name: string]: string};
 type FormDataPart = {
-  string: string;
-  headers: Headers;
+  string: string,
+  headers: Headers,
 } | {
-  uri: string;
-  headers: Headers;
-  name?: string;
-  type?: string;
+  uri: string,
+  headers: Headers,
+  name?: string,
+  type?: string,
 };
 
 /**
@@ -64,12 +64,7 @@ class FormData {
   getParts(): Array<FormDataPart> {
     return this._parts.map(([name, value]) => {
       var contentDisposition = 'form-data; name="' + name + '"';
-      // Convert non-object values to strings as per FormData.append() spec
-      if (typeof value !== 'object') {
-        value = '' + value;
-      }
 
-      /* $FlowIssue(>=0.20.1) #9463928 */
       var headers: Headers = {'content-disposition': contentDisposition};
 
       // The body part is a "blob", which in React Native just means
@@ -85,7 +80,7 @@ class FormData {
         }
         return {...value, headers, fieldName: name};
       }
-      // Cast to string all other values
+      // Convert non-object values to strings as per FormData.append() spec
       return {string: String(value), headers, fieldName: name};
     });
   }

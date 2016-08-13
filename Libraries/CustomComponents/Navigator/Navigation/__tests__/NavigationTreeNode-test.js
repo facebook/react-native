@@ -5,9 +5,9 @@
 'use strict';
 
 jest
-  .dontMock('NavigationTreeNode')
-  .dontMock('fbjs/lib/invariant')
-  .dontMock('immutable');
+  .unmock('NavigationTreeNode')
+  .unmock('fbjs/lib/invariant')
+  .unmock('immutable');
 
 var NavigationTreeNode = require('NavigationTreeNode');
 

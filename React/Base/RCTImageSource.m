@@ -18,11 +18,11 @@
 
 @implementation RCTImageSource
 
-- (instancetype)initWithURL:(NSURL *)url bundleURL:(NSURL *)bundleURL size:(CGSize)size scale:(CGFloat)scale
+- (instancetype)initWithURLRequest:(NSURLRequest *)request bundleURL:(NSURL *)bundleURL size:(CGSize)size scale:(CGFloat)scale
 {
   if ((self = [super init])) {
-    _imageURL  = url;
-    _bundleURL = bundleURL;
+    _request = [request copy];
+    _bundleURL = [bundleURL copy];
     _size = size;
     _scale = scale;
   }
@@ -31,10 +31,10 @@
 
 - (instancetype)imageSourceWithSize:(CGSize)size scale:(CGFloat)scale
 {
-  RCTImageSource *imageSource = [[RCTImageSource alloc] initWithURL:_imageURL
-                                                          bundleURL:_bundleURL
-                                                               size:size
-                                                              scale:scale];
+  RCTImageSource *imageSource = [[RCTImageSource alloc] initWithURLRequest:_request
+                                                                 bundleURL:_bundleURL
+                                                                      size:size
+                                                                     scale:scale];
   imageSource.packagerAsset = _packagerAsset;
   return imageSource;
 }
@@ -45,8 +45,18 @@
     return NO;
   }
   BOOL bundleURLEqual = ((_bundleURL == nil && object.bundleURL == nil) || [_bundleURL isEqual:object.bundleURL]);
-  return [_imageURL isEqual:object.imageURL] && bundleURLEqual && _scale == object.scale &&
-    (CGSizeEqualToSize(_size, object.size) || CGSizeEqualToSize(object.size, CGSizeZero));
+  return [_request isEqual:object.request] && bundleURLEqual && _scale == object.scale &&
+  (CGSizeEqualToSize(_size, object.size) || CGSizeEqualToSize(object.size, CGSizeZero));
+}
+
+@end
+
+
+@implementation RCTImageSource (Deprecated)
+
+- (NSURL *)imageURL
+{
+  return self.request.URL;
 }
 
 @end
@@ -59,13 +69,13 @@
     return nil;
   }
 
-  NSURL *imageURL;
+  NSURLRequest *request;
   NSURL *bundleURL;
   CGSize size = CGSizeZero;
   CGFloat scale = 1.0;
   BOOL packagerAsset = NO;
   if ([json isKindOfClass:[NSDictionary class]]) {
-    if (!(imageURL = [self NSURL:RCTNilIfNull(json[@"uri"])])) {
+    if (!(request = [self NSURLRequest:json])) {
       return nil;
     }
     bundleURL = [self NSURL:RCTNilIfNull(json[@"bundle"])];
@@ -73,18 +83,20 @@
     scale = [self CGFloat:json[@"scale"]] ?: [self BOOL:json[@"deprecated"]] ? 0.0 : 1.0;
     packagerAsset = [self BOOL:json[@"__packager_asset"]];
   } else if ([json isKindOfClass:[NSString class]]) {
-    imageURL = [self NSURL:json];
+    request = [self NSURLRequest:json];
   } else {
     RCTLogConvertError(json, @"an image. Did you forget to call resolveAssetSource() on the JS side?");
     return nil;
   }
 
-  RCTImageSource *imageSource = [[RCTImageSource alloc] initWithURL:imageURL
+  RCTImageSource *imageSource = [[RCTImageSource alloc] initWithURLRequest:request
                                                           bundleURL:bundleURL
                                                                size:size
                                                               scale:scale];
   imageSource.packagerAsset = packagerAsset;
   return imageSource;
 }
+
+RCT_ARRAY_CONVERTER(RCTImageSource)
 
 @end

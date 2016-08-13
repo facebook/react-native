@@ -150,17 +150,10 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
 #endif
 
   {
-    UIViewController *presentingController = RCTKeyWindow().rootViewController;
+    UIViewController *presentingController = RCTPresentedViewController();
     if (presentingController == nil) {
       RCTLogError(@"Tried to display alert view but there is no application window. args: %@", args);
       return;
-    }
-
-    // Walk the chain up to get the topmost modal view controller. If modals are
-    // presented the root view controller's view might not be in the window
-    // hierarchy, and presenting from it will fail.
-    while (presentingController.presentedViewController) {
-      presentingController = presentingController.presentedViewController;
     }
 
     UIAlertController *alertController =
@@ -168,25 +161,32 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
                                           message:nil
                                    preferredStyle:UIAlertControllerStyleAlert];
     switch (type) {
-      case UIAlertViewStylePlainTextInput:
+      case UIAlertViewStylePlainTextInput: {
         [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
           textField.secureTextEntry = NO;
+          textField.text = defaultValue;
         }];
         break;
-      case UIAlertViewStyleSecureTextInput:
+      }
+      case UIAlertViewStyleSecureTextInput: {
         [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
           textField.placeholder = RCTUIKitLocalizedString(@"Password");
           textField.secureTextEntry = YES;
+          textField.text = defaultValue;
         }];
         break;
-      case UIAlertViewStyleLoginAndPasswordInput:
+      }
+      case UIAlertViewStyleLoginAndPasswordInput: {
         [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
           textField.placeholder = RCTUIKitLocalizedString(@"Login");
+          textField.text = defaultValue;
         }];
         [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
           textField.placeholder = RCTUIKitLocalizedString(@"Password");
           textField.secureTextEntry = YES;
         }];
+        break;
+      }
       case UIAlertViewStyleDefault:
         break;
     }

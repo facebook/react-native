@@ -1,10 +1,16 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  */
 
 'use strict';
 
-jest.dontMock('TaskQueue');
+jest.unmock('TaskQueue');
 
 function expectToBeCalledOnce(fn) {
   expect(fn.mock.calls.length).toBe(1);
@@ -15,7 +21,7 @@ function clearTaskQueue(taskQueue) {
     jest.runAllTimers();
     taskQueue.processNext();
     jest.runAllTimers();
-  } while (taskQueue.hasTasksToProcess())
+  } while (taskQueue.hasTasksToProcess());
 }
 
 describe('TaskQueue', () => {
@@ -23,13 +29,13 @@ describe('TaskQueue', () => {
   let onMoreTasks;
   let sequenceId;
   function createSequenceTask(expectedSequenceId) {
-    return jest.genMockFunction().mockImplementation(() => {
+    return jest.fn(() => {
       expect(++sequenceId).toBe(expectedSequenceId);
     });
   }
   beforeEach(() => {
     jest.resetModuleRegistry();
-    onMoreTasks = jest.genMockFunction();
+    onMoreTasks = jest.fn();
     const TaskQueue = require('TaskQueue');
     taskQueue = new TaskQueue({onMoreTasks});
     sequenceId = 0;
@@ -45,7 +51,7 @@ describe('TaskQueue', () => {
   });
 
   it('should handle blocking promise task', () => {
-    const task1 = jest.genMockFunction().mockImplementation(() => {
+    const task1 = jest.fn(() => {
       return new Promise(resolve => {
         setTimeout(() => {
           expect(++sequenceId).toBe(1);
@@ -71,7 +77,7 @@ describe('TaskQueue', () => {
   });
 
   it('should handle nested simple tasks', () => {
-    const task1 = jest.genMockFunction().mockImplementation(() => {
+    const task1 = jest.fn(() => {
       expect(++sequenceId).toBe(1);
       taskQueue.enqueue({run: task3, name: 'run3'});
     });
@@ -88,7 +94,7 @@ describe('TaskQueue', () => {
   });
 
   it('should handle nested promises', () => {
-    const task1 = jest.genMockFunction().mockImplementation(() => {
+    const task1 = jest.fn(() => {
       return new Promise(resolve => {
         setTimeout(() => {
           expect(++sequenceId).toBe(1);
@@ -97,7 +103,7 @@ describe('TaskQueue', () => {
         }, 1);
       });
     });
-    const task2 = jest.genMockFunction().mockImplementation(() => {
+    const task2 = jest.fn(() => {
       return new Promise(resolve => {
         setTimeout(() => {
           expect(++sequenceId).toBe(2);
@@ -117,5 +123,32 @@ describe('TaskQueue', () => {
     expectToBeCalledOnce(task2);
     expectToBeCalledOnce(task3);
     expectToBeCalledOnce(task4);
+  });
+
+  it('should be able to cancel tasks', () => {
+    const task1 = jest.fn();
+    const task2 = createSequenceTask(1);
+    const task3 = jest.fn();
+    const task4 = createSequenceTask(2);
+    taskQueue.enqueue(task1);
+    taskQueue.enqueue(task2);
+    taskQueue.enqueue(task3);
+    taskQueue.enqueue(task4);
+    taskQueue.cancelTasks([task1, task3]);
+    clearTaskQueue(taskQueue);
+    expect(task1).not.toBeCalled();
+    expect(task3).not.toBeCalled();
+    expectToBeCalledOnce(task2);
+    expectToBeCalledOnce(task4);
+    expect(taskQueue.hasTasksToProcess()).toBe(false);
+  });
+
+  it('should not crash when last task is cancelled', () => {
+    const task1 = jest.fn();
+    taskQueue.enqueue(task1);
+    taskQueue.cancelTasks([task1]);
+    clearTaskQueue(taskQueue);
+    expect(task1).not.toBeCalled();
+    expect(taskQueue.hasTasksToProcess()).toBe(false);
   });
 });

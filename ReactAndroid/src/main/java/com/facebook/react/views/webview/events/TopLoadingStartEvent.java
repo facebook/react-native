@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.catalyst.views.webview.events;
+package com.facebook.react.views.webview.events;
 
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
@@ -21,8 +21,8 @@ public class TopLoadingStartEvent extends Event<TopLoadingStartEvent> {
   public static final String EVENT_NAME = "topLoadingStart";
   private WritableMap mEventData;
 
-  public TopLoadingStartEvent(int viewId, long timestampMs, WritableMap eventData) {
-    super(viewId, timestampMs);
+  public TopLoadingStartEvent(int viewId, WritableMap eventData) {
+    super(viewId);
     mEventData = eventData;
   }
 

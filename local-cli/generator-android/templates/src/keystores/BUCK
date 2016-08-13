@@ -1,0 +1,8 @@
+keystore(
+  name = 'debug',
+  store = 'debug.keystore',
+  properties = 'debug.keystore.properties',
+  visibility = [
+    'PUBLIC',
+  ],
+)

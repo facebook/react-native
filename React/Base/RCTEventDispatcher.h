@@ -11,22 +11,14 @@
 
 #import "RCTBridge.h"
 
-typedef NS_ENUM(NSInteger, RCTTextEventType) {
+typedef NS_ENUM(NSInteger, RCTTextEventType)
+{
   RCTTextEventTypeFocus,
   RCTTextEventTypeBlur,
   RCTTextEventTypeChange,
   RCTTextEventTypeSubmit,
   RCTTextEventTypeEnd,
   RCTTextEventTypeKeyPress
-};
-
-typedef NS_ENUM(NSInteger, RCTScrollEventType) {
-  RCTScrollEventTypeStart,
-  RCTScrollEventTypeMove,
-  RCTScrollEventTypeEnd,
-  RCTScrollEventTypeStartDeceleration,
-  RCTScrollEventTypeEndDeceleration,
-  RCTScrollEventTypeEndAnimation,
 };
 
 /**
@@ -43,11 +35,11 @@ RCT_EXTERN const NSInteger RCTTextUpdateLagWarningThreshold;
 RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 
 @protocol RCTEvent <NSObject>
-
 @required
 
 @property (nonatomic, strong, readonly) NSNumber *viewTag;
 @property (nonatomic, copy, readonly) NSString *eventName;
+@property (nonatomic, assign, readonly) uint16_t coalescingKey;
 
 - (BOOL)canCoalesce;
 - (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent;
@@ -67,25 +59,25 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 @interface RCTEventDispatcher : NSObject <RCTBridgeModule>
 
 /**
- * Send an application-specific event that does not relate to a specific
- * view, e.g. a navigation or data update notification.
+ * Deprecated, do not use.
  */
-- (void)sendAppEventWithName:(NSString *)name body:(id)body;
+- (void)sendAppEventWithName:(NSString *)name body:(id)body
+__deprecated_msg("Subclass RCTEventEmitter instead");
 
 /**
- * Send a device or iOS event that does not relate to a specific view,
- * e.g.rotation, location, keyboard show/hide, background/awake, etc.
+ * Deprecated, do not use.
  */
-- (void)sendDeviceEventWithName:(NSString *)name body:(id)body;
+- (void)sendDeviceEventWithName:(NSString *)name body:(id)body
+__deprecated_msg("Subclass RCTEventEmitter instead");
 
 /**
- * Send a user input event. The body dictionary must contain a "target"
- * parameter, representing the React tag of the view sending the event
+ * Deprecated, do not use.
  */
-- (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body;
+- (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body
+__deprecated_msg("Use RCTDirectEventBlock or RCTBubblingEventBlock instead");
 
 /**
- * Send a text input/focus event.
+ * Send a text input/focus event. For internal use only.
  */
 - (void)sendTextEventWithType:(RCTTextEventType)type
                      reactTag:(NSNumber *)reactTag
@@ -95,15 +87,16 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 
 /**
  * Send a pre-prepared event object.
- * 
- * If the event can be coalesced it is added to a pool of events that are sent at the beginning of the next js frame.
- * Otherwise if the event cannot be coalesced we first flush the pool of coalesced events and the new event after that.
  *
- * Why it works this way?
- * Making sure js gets events in the right order is crucial for correctly interpreting gestures.
- * Unfortunately we cannot emit all events as they come. If we would do that we would have to emit scroll and touch moved event on every frame,
- * which is too much data to transfer and process on older devices. This is especially bad when js starts lagging behind main thread.
+ * Events are sent to JS as soon as the thread is free to process them.
+ * If an event can be coalesced and there is another compatible event waiting, the coalescing will happen immediately.
  */
 - (void)sendEvent:(id<RCTEvent>)event;
+
+@end
+
+@interface RCTBridge (RCTEventDispatcher)
+
+- (RCTEventDispatcher *)eventDispatcher;
 
 @end

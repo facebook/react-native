@@ -16,8 +16,6 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
-static const CGFloat RCTThresholdValue = 0.0001;
-
 static CGFloat RCTCeilValue(CGFloat value, CGFloat scale)
 {
   return ceil(value * scale) / scale;
@@ -55,9 +53,10 @@ CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize,
     destSize.height = destSize.width / aspect;
   }
 
-  // Calculate target aspect ratio if needed (don't bother if resizeMode == stretch)
+  // Calculate target aspect ratio if needed
   CGFloat targetAspect = 0.0;
-  if (resizeMode != UIViewContentModeScaleToFill) {
+  if (resizeMode != RCTResizeModeCenter &&
+      resizeMode != RCTResizeModeStretch) {
     targetAspect = destSize.width / destSize.height;
     if (aspect == targetAspect) {
       resizeMode = RCTResizeModeStretch;
@@ -66,6 +65,7 @@ CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize,
 
   switch (resizeMode) {
     case RCTResizeModeStretch:
+    case RCTResizeModeRepeat:
 
       return (CGRect){CGPointZero, RCTCeilSize(destSize, destScale)};
 
@@ -73,12 +73,12 @@ CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize,
 
       if (targetAspect <= aspect) { // target is taller than content
 
-        sourceSize.width = destSize.width = destSize.width;
+        sourceSize.width = destSize.width;
         sourceSize.height = sourceSize.width / aspect;
 
       } else { // target is wider than content
 
-        sourceSize.height = destSize.height = destSize.height;
+        sourceSize.height = destSize.height;
         sourceSize.width = sourceSize.height * aspect;
       }
       return (CGRect){
@@ -93,7 +93,7 @@ CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize,
 
       if (targetAspect <= aspect) { // target is taller than content
 
-        sourceSize.height = destSize.height = destSize.height;
+        sourceSize.height = destSize.height;
         sourceSize.width = sourceSize.height * aspect;
         destSize.width = destSize.height * targetAspect;
         return (CGRect){
@@ -103,7 +103,7 @@ CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize,
 
       } else { // target is wider than content
 
-        sourceSize.width = destSize.width = destSize.width;
+        sourceSize.width = destSize.width;
         sourceSize.height = sourceSize.width / aspect;
         destSize.height = destSize.width / targetAspect;
         return (CGRect){
@@ -111,6 +111,26 @@ CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize,
           RCTCeilSize(sourceSize, destScale)
         };
       }
+
+    case RCTResizeModeCenter:
+
+      // Make sure the image is not clipped by the target.
+      if (sourceSize.height > destSize.height) {
+        sourceSize.width = destSize.width;
+        sourceSize.height = sourceSize.width / aspect;
+      }
+      if (sourceSize.width > destSize.width) {
+        sourceSize.height = destSize.height;
+        sourceSize.width = sourceSize.height * aspect;
+      }
+
+      return (CGRect){
+        {
+          RCTFloorValue((destSize.width - sourceSize.width) / 2, destScale),
+          RCTFloorValue((destSize.height - sourceSize.height) / 2, destScale),
+        },
+        RCTCeilSize(sourceSize, destScale)
+      };
   }
 }
 
@@ -132,6 +152,10 @@ CGSize RCTTargetSize(CGSize sourceSize, CGFloat sourceScale,
                      BOOL allowUpscaling)
 {
   switch (resizeMode) {
+    case RCTResizeModeCenter:
+
+      return RCTTargetRect(sourceSize, destSize, destScale, resizeMode).size;
+
     case RCTResizeModeStretch:
 
       if (!allowUpscaling) {
@@ -206,6 +230,11 @@ BOOL RCTUpscalingRequired(CGSize sourceSize, CGFloat sourceScale,
 
         return destSize.width > sourceSize.width;
       }
+
+    case RCTResizeModeRepeat:
+    case RCTResizeModeCenter:
+
+      return NO;
   }
 }
 
@@ -336,47 +365,4 @@ BOOL RCTImageHasAlpha(CGImageRef image)
     default:
       return YES;
   }
-}
-
-UIImage *__nullable RCTGetPlaceholderImage(CGSize size,
-                                           UIColor *__nullable color)
-{
-  if (size.width <= 0 || size.height <= 0) {
-    return nil;
-  }
-
-  // If dimensions are nonintegral, increase scale
-  CGFloat scale = 1;
-  if (size.width - floor(size.width) > RCTThresholdValue) {
-    scale *= round(1.0 / (size.width - floor(size.width)));
-  }
-  if (size.height - floor(size.height) > RCTThresholdValue) {
-    scale *= round(1.0 / (size.height - floor(size.height)));
-  }
-
-  // Use Euclid's algorithm to find the greatest common divisor
-  // between the specified placeholder width and height;
-  NSInteger a = size.width * scale;
-  NSInteger b = size.height * scale;
-  while (a != 0) {
-    NSInteger c = a;
-    a = b % a;
-    b = c;
-  }
-
-  // Divide the placeholder image scale by the GCD we found above. This allows
-  // us to save memory by creating the smallest possible placeholder image
-  // with the correct aspect ratio, then scaling it up at display time.
-  scale /= b;
-
-  // Fill image with specified color
-  CGFloat alpha = CGColorGetAlpha(color.CGColor);
-  UIGraphicsBeginImageContextWithOptions(size, ABS(1.0 - alpha) < RCTThresholdValue, scale);
-  if (alpha > 0) {
-    [color setFill];
-    UIRectFill((CGRect){CGPointZero, size});
-  }
-  UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return image;
 }

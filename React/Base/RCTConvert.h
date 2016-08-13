@@ -10,7 +10,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
-#import "Layout.h"
+#import <CSSLayout/CSSLayout.h>
 #import "RCTAnimationType.h"
 #import "RCTBorderStyle.h"
 #import "RCTTextDecorationLineType.h"
@@ -66,6 +66,7 @@ typedef NSURL RCTFileURL;
 + (UIKeyboardType)UIKeyboardType:(id)json;
 + (UIKeyboardAppearance)UIKeyboardAppearance:(id)json;
 + (UIReturnKeyType)UIReturnKeyType:(id)json;
++ (UIDataDetectorTypes)UIDataDetectorTypes:(id)json;
 
 + (UIViewContentMode)UIViewContentMode:(id)json;
 + (UIBarStyle)UIBarStyle:(id)json;
@@ -84,15 +85,6 @@ typedef NSURL RCTFileURL;
 
 + (UIColor *)UIColor:(id)json;
 + (CGColorRef)CGColor:(id)json CF_RETURNS_NOT_RETAINED;
-
-+ (UIFont *)UIFont:(id)json;
-+ (UIFont *)UIFont:(UIFont *)font withSize:(id)json;
-+ (UIFont *)UIFont:(UIFont *)font withWeight:(id)json;
-+ (UIFont *)UIFont:(UIFont *)font withStyle:(id)json;
-+ (UIFont *)UIFont:(UIFont *)font withFamily:(id)json;
-+ (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
-              size:(id)size weight:(id)weight style:(id)style
-   scaleMultiplier:(CGFloat)scaleMultiplier;
 
 + (NSArray<NSArray *> *)NSArrayArray:(id)json;
 + (NSArray<NSString *> *)NSStringArray:(id)json;
@@ -115,11 +107,11 @@ typedef id NSPropertyList;
 typedef BOOL css_clip_t, css_backface_visibility_t;
 + (css_clip_t)css_clip_t:(id)json;
 + (css_backface_visibility_t)css_backface_visibility_t:(id)json;
-+ (css_flex_direction_t)css_flex_direction_t:(id)json;
-+ (css_justify_t)css_justify_t:(id)json;
-+ (css_align_t)css_align_t:(id)json;
-+ (css_position_type_t)css_position_type_t:(id)json;
-+ (css_wrap_type_t)css_wrap_type_t:(id)json;
++ (CSSFlexDirection)CSSFlexDirection:(id)json;
++ (CSSJustify)CSSJustify:(id)json;
++ (CSSAlign)CSSAlign:(id)json;
++ (CSSPositionType)CSSPositionType:(id)json;
++ (CSSWrapType)CSSWrapType:(id)json;
 
 + (RCTPointerEvents)RCTPointerEvents:(id)json;
 + (RCTAnimationType)RCTAnimationType:(id)json;
@@ -240,7 +232,7 @@ RCT_CUSTOM_CONVERTER(type, type, [RCT_DEBUG ? [self NSNumber:json] : json getter
  * This macro is used for creating converter functions for typed arrays.
  */
 #define RCT_ARRAY_CONVERTER(type)                      \
-+ (NSArray<id> *)type##Array:(id)json                      \
++ (NSArray<type *> *)type##Array:(id)json              \
 {                                                      \
   return RCTConvertArrayValue(@selector(type:), json); \
 }

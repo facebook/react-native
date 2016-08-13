@@ -16,7 +16,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   AppRegistry,
   BackAndroid,
@@ -24,7 +25,7 @@ var {
   StyleSheet,
   ToolbarAndroid,
   View,
-} = React;
+} = ReactNative;
 
 var MovieScreen = require('./MovieScreen');
 var SearchScreen = require('./SearchScreen');
@@ -64,8 +65,8 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
   }
 };
 
-var MoviesApp = React.createClass({
-  render: function() {
+class MoviesApp extends React.Component {
+  render() {
     var initialRoute = {name: 'search'};
     return (
       <Navigator
@@ -76,7 +77,7 @@ var MoviesApp = React.createClass({
       />
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {

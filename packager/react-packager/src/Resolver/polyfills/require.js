@@ -1,108 +1,199 @@
-/* eslint strict:0 */
-var modules = Object.create(null);
-var inGuard = false;
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 
-function define(id, factory) {
-  modules[id] = {
+'use strict';
+
+global.require = require;
+global.__d = define;
+
+const modules = Object.create(null);
+if (__DEV__) {
+  var verboseNamesToModuleIds = Object.create(null);
+}
+
+function define(moduleId, factory) {
+  if (moduleId in modules) {
+    // prevent repeated calls to `global.nativeRequire` to overwrite modules
+    // that are already loaded
+    return;
+  }
+  modules[moduleId] = {
     factory,
-    module: {exports: {}},
-    isInitialized: false,
     hasError: false,
+    isInitialized: false,
+    exports: undefined,
   };
+  if (__DEV__) {
+    // HMR
+    modules[moduleId].hot = createHotReloadingObject();
 
-  if (__DEV__) { // HMR
-    Object.assign(modules[id].module, {
-      hot: {
-        acceptCallback: null,
-        accept: function(callback) {
-          modules[id].module.hot.acceptCallback = callback;
-        }
-      }
-    });
+    // DEBUGGABLE MODULES NAMES
+    // avoid unnecessary parameter in prod
+    const verboseName = modules[moduleId].verboseName = arguments[2];
+    verboseNamesToModuleIds[verboseName] = moduleId;
   }
 }
 
-function require(id) {
-  var mod = modules[id];
-  if (mod && mod.isInitialized) {
-    return mod.module.exports;
-  }
-
-  return requireImpl(id);
+function require(moduleId) {
+  const module = __DEV__
+    ? modules[moduleId] || modules[verboseNamesToModuleIds[moduleId]]
+    : modules[moduleId];
+  return module && module.isInitialized
+    ? module.exports
+    : guardedLoadModule(moduleId, module);
 }
 
-function requireImpl(id) {
-  if (global.ErrorUtils && !inGuard) {
+let inGuard = false;
+function guardedLoadModule(moduleId, module) {
+  if (!inGuard && global.ErrorUtils) {
     inGuard = true;
-    var returnValue;
+    let returnValue;
     try {
-      returnValue = requireImpl.apply(this, arguments);
+      returnValue = loadModuleImplementation(moduleId, module);
     } catch (e) {
       global.ErrorUtils.reportFatalError(e);
     }
     inGuard = false;
     return returnValue;
+  } else {
+    return loadModuleImplementation(moduleId, module);
+  }
+}
+
+function loadModuleImplementation(moduleId, module) {
+  const nativeRequire = global.nativeRequire;
+  if (!module && nativeRequire) {
+    nativeRequire(moduleId);
+    module = modules[moduleId];
   }
 
-  var mod = modules[id];
-  if (!mod) {
-    var msg = 'Requiring unknown module "' + id + '"';
-    if (__DEV__) {
-      msg += '. If you are sure the module is there, try restarting the packager or running "npm install".';
+  if (__DEV__ && !module) {
+    // allow verbose module names to be passed as module ID
+    module = modules[verboseNamesToModuleIds[moduleId]];
+    if (module) {
+      console.warn(
+        `Requiring module '${moduleId}' by name is only supported for ` +
+        'debugging purposes and will break in production'
+      );
     }
-    throw new Error(msg);
   }
 
-  if (mod.hasError) {
-    throw new Error(
-      'Requiring module "' + id + '" which threw an exception'
-    );
+  if (!module) {
+    throw unknownModuleError(moduleId);
   }
 
+  if (module.hasError) {
+    throw moduleThrewError(moduleId);
+  }
+
+  // `require` calls int  the require polyfill itself are not analyzed and
+  // replaced so that they use numeric module IDs.
+  // The systrace module will expose itself on the require function so that
+  // it can be used here.
+  // TODO(davidaurelio) Scan polyfills for dependencies, too (t9759686)
+  if (__DEV__) {
+    var {Systrace} = require;
+  }
+
+  // We must optimistically mark module as initialized before running the
+  // factory to keep any require cycles inside the factory from causing an
+  // infinite require loop.
+  module.isInitialized = true;
+  const exports = module.exports = {};
+  const {factory} = module;
   try {
-    // We must optimistically mark mod as initialized before running the factory to keep any
-    // require cycles inside the factory from causing an infinite require loop.
-    mod.isInitialized = true;
+    if (__DEV__) {
+      Systrace.beginEvent('JS_require_' + (module.verboseName || moduleId));
+    }
 
-    __DEV__ && Systrace().beginEvent('JS_require_' + id);
+    const moduleObject = {exports};
+    if (__DEV__ && module.hot) {
+      moduleObject.hot = module.hot;
+    }
 
     // keep args in sync with with defineModuleCode in
     // packager/react-packager/src/Resolver/index.js
-    mod.factory.call(global, global, require, mod.module, mod.module.exports);
+    factory(global, require, moduleObject, exports);
 
-    __DEV__ && Systrace().endEvent();
+    // avoid removing factory in DEV mode as it breaks HMR
+    if (!__DEV__) {
+      module.factory = undefined;
+    }
+
+    if (__DEV__) {
+      Systrace.endEvent();
+    }
+    return (module.exports = moduleObject.exports);
   } catch (e) {
-    mod.hasError = true;
-    mod.isInitialized = false;
+    module.hasError = true;
+    module.isInitialized = false;
+    module.exports = undefined;
     throw e;
   }
-
-  return mod.module.exports;
 }
 
-const Systrace = __DEV__ && (() => {
-  var _Systrace;
-  try {
-    _Systrace = require('Systrace');
-  } catch (e) {}
+function unknownModuleError(id) {
+  let message = 'Requiring unknown module "' + id + '".';
+  if (__DEV__) {
+    message +=
+      'If you are sure the module is there, try restarting the packager or running "npm install".';
+  }
+  return Error(message);
+}
 
-  return _Systrace && _Systrace.beginEvent ?
-    _Systrace : { beginEvent: () => {}, endEvent: () => {} };
-});
+function moduleThrewError(id) {
+  return Error('Requiring module "' + id + '", which threw an exception.');
+}
 
-global.__d = define;
-global.require = require;
+if (__DEV__) {
+  require.Systrace = { beginEvent: () => {}, endEvent: () => {} };
 
-if (__DEV__) { // HMR
-  function accept(id, factory, inverseDependencies) {
-    var mod = modules[id];
+  // HOT MODULE RELOADING
+  var createHotReloadingObject = function() {
+    const hot = {
+      acceptCallback: null,
+      accept: callback => { hot.acceptCallback = callback; },
+    };
+    return hot;
+  };
+
+  const acceptAll = function(dependentModules, inverseDependencies) {
+    if (!dependentModules || dependentModules.length === 0) {
+      return true;
+    }
+
+    const notAccepted = dependentModules.filter(
+      module => !accept(module, /*factory*/ undefined, inverseDependencies));
+
+    const parents = [];
+    for (let i = 0; i < notAccepted.length; i++) {
+      // if the module has no parents then the change cannot be hot loaded
+      if (inverseDependencies[notAccepted[i]].length === 0) {
+        return false;
+      }
+
+      parents.pushAll(inverseDependencies[notAccepted[i]]);
+    }
+
+    return acceptAll(parents, inverseDependencies);
+  };
+
+  const accept = function(id, factory, inverseDependencies) {
+    const mod = modules[id];
 
     if (!mod) {
       define(id, factory);
       return true; // new modules don't need to be accepted
     }
 
-    if (!mod.module.hot) {
+    const {hot} = mod;
+    if (!hot) {
       console.warn(
         'Cannot accept module because Hot Module Replacement ' +
         'API was not installed.'
@@ -114,11 +205,12 @@ if (__DEV__) { // HMR
     if (factory) {
       mod.factory = factory;
     }
+    mod.hasError = false;
     mod.isInitialized = false;
     require(id);
 
-    if (mod.module.hot.acceptCallback) {
-      mod.module.hot.acceptCallback();
+    if (hot.acceptCallback) {
+      hot.acceptCallback();
       return true;
     } else {
       // need to have inverseDependencies to bubble up accept
@@ -129,29 +221,7 @@ if (__DEV__) { // HMR
       // accept parent modules recursively up until all siblings are accepted
       return acceptAll(inverseDependencies[id], inverseDependencies);
     }
-  }
-
-  function acceptAll(modules, inverseDependencies) {
-    if (modules.length === 0) {
-      return true;
-    }
-
-    var notAccepted = modules.filter(function(module) {
-      return !accept(module, /*factory*/ undefined, inverseDependencies);
-    });
-
-    var parents = [];
-    for (var i = 0; i < notAccepted.length; i++) {
-      // if this the module has no parents then the change cannot be hot loaded
-      if (inverseDependencies[notAccepted[i]].length === 0) {
-        return false;
-      }
-
-      parents.pushAll(inverseDependencies[notAccepted[i]]);
-    }
-
-    return acceptAll(parents, inverseDependencies);
-  }
+  };
 
   global.__accept = accept;
 }

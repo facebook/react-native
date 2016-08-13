@@ -34,13 +34,16 @@ public class ImageResizeModeTest {
         .isEqualTo(ScalingUtils.ScaleType.CENTER_CROP);
 
     assertThat(ImageResizeMode.toScaleType("contain"))
-        .isEqualTo(ScalingUtils.ScaleType.CENTER_INSIDE);
+        .isEqualTo(ScalingUtils.ScaleType.FIT_CENTER);
 
     assertThat(ImageResizeMode.toScaleType("cover"))
         .isEqualTo(ScalingUtils.ScaleType.CENTER_CROP);
 
     assertThat(ImageResizeMode.toScaleType("stretch"))
         .isEqualTo(ScalingUtils.ScaleType.FIT_XY);
+
+    assertThat(ImageResizeMode.toScaleType("center"))
+        .isEqualTo(ScalingUtils.ScaleType.CENTER_INSIDE);
 
     // No resizeMode set
     assertThat(ImageResizeMode.defaultValue())

@@ -11,39 +11,26 @@
  */
 'use strict';
 
-const NavigationAnimatedView = require('NavigationAnimatedView');
 const NavigationCard = require('NavigationCard');
 const NavigationCardStack = require('NavigationCardStack');
-const NavigationContainer = require('NavigationContainer');
 const NavigationHeader = require('NavigationHeader');
-const NavigationHeaderTitle = require('NavigationHeaderTitle');
-const NavigationHeaderBackButton = require('NavigationHeaderBackButton');
-const NavigationLegacyNavigator = require('NavigationLegacyNavigator');
-const NavigationReducer = require('NavigationReducer');
-const NavigationRootContainer = require('NavigationRootContainer');
+const NavigationPropTypes = require('NavigationPropTypes');
 const NavigationStateUtils = require('NavigationStateUtils');
-const NavigationView = require('NavigationView');
+const NavigationTransitioner = require('NavigationTransitioner');
 
 const NavigationExperimental = {
   // Core
   StateUtils: NavigationStateUtils,
-  Reducer: NavigationReducer,
-
-  // Containers
-  Container: NavigationContainer,
-  RootContainer: NavigationRootContainer,
 
   // Views
-  View: NavigationView,
-  AnimatedView: NavigationAnimatedView,
+  Transitioner: NavigationTransitioner,
 
   // CustomComponents:
   Card: NavigationCard,
   CardStack: NavigationCardStack,
   Header: NavigationHeader,
-  HeaderTitle: NavigationHeaderTitle,
-  HeaderBackButton: NavigationHeaderBackButton,
-  LegacyNavigator: NavigationLegacyNavigator,
+
+  PropTypes: NavigationPropTypes,
 };
 
 module.exports = NavigationExperimental;

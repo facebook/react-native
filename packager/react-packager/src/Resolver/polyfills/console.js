@@ -422,7 +422,7 @@ function setupConsole(global) {
     columns.forEach(function(k, i) {
       columnWidths[i] = k.length;
       for (var j = 0; j < rows.length; j++) {
-        var cellStr = rows[j][k].toString();
+        var cellStr = (rows[j][k] || '?').toString();
         stringRows[j] = stringRows[j] || [];
         stringRows[j][i] = cellStr;
         columnWidths[i] = Math.max(columnWidths[i], cellStr.length);
@@ -471,6 +471,7 @@ function setupConsole(global) {
     log: getNativeLogFunction(LOG_LEVELS.info),
     warn: getNativeLogFunction(LOG_LEVELS.warn),
     trace: getNativeLogFunction(LOG_LEVELS.trace),
+    debug: getNativeLogFunction(LOG_LEVELS.trace),
     table: consoleTablePolyfill
   };
 

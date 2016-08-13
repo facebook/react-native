@@ -117,22 +117,26 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
    * @param promise to be resolved or rejected
    */
   @ReactMethod
-  public void saveImageWithTag(String uri, Promise promise) {
-    new SaveImageTag(getReactApplicationContext(), Uri.parse(uri), promise)
+  public void saveToCameraRoll(String uri, String type, Promise promise) {
+    MediaType parsedType = type.equals("video") ? MediaType.VIDEO : MediaType.PHOTO;
+    new SaveToCameraRoll(getReactApplicationContext(), Uri.parse(uri), parsedType, promise)
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
-  private static class SaveImageTag extends GuardedAsyncTask<Void, Void> {
+  private enum MediaType { PHOTO, VIDEO };
+  private static class SaveToCameraRoll extends GuardedAsyncTask<Void, Void> {
 
     private final Context mContext;
     private final Uri mUri;
     private final Promise mPromise;
+    private final MediaType mType;
 
-    public SaveImageTag(ReactContext context, Uri uri, Promise promise) {
+    public SaveToCameraRoll(ReactContext context, Uri uri, MediaType type, Promise promise) {
       super(context);
       mContext = context;
       mUri = uri;
       mPromise = promise;
+      mType = type;
     }
 
     @Override
@@ -140,14 +144,15 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       File source = new File(mUri.getPath());
       FileChannel input = null, output = null;
       try {
-        File pictures =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        pictures.mkdirs();
-        if (!pictures.isDirectory()) {
-          mPromise.reject(ERROR_UNABLE_TO_LOAD, "External storage pictures directory not available");
+        File exportDir = (mType == MediaType.PHOTO)
+          ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+          : Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+        exportDir.mkdirs();
+        if (!exportDir.isDirectory()) {
+          mPromise.reject(ERROR_UNABLE_TO_LOAD, "External media storage directory not available");
           return;
         }
-        File dest = new File(pictures, source.getName());
+        File dest = new File(exportDir, source.getName());
         int n = 0;
         String fullSourceName = source.getName();
         String sourceName, sourceExt;
@@ -159,7 +164,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
           sourceExt = "";
         }
         while (!dest.createNewFile()) {
-          dest = new File(pictures, sourceName + "_" + (n++) + sourceExt);
+          dest = new File(exportDir, sourceName + "_" + (n++) + sourceExt);
         }
         input = new FileInputStream(source).getChannel();
         output = new FileOutputStream(dest).getChannel();

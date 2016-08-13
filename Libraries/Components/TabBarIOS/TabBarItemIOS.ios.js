@@ -19,8 +19,8 @@ var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
 
-var TabBarItemIOS = React.createClass({
-  propTypes: {
+class TabBarItemIOS extends React.Component {
+  static propTypes = {
     ...View.propTypes,
     /**
      * Little red bubble that sits at the top right of the icon.
@@ -63,6 +63,11 @@ var TabBarItemIOS = React.createClass({
      */
     onPress: React.PropTypes.func,
     /**
+     * If set to true it renders the image as original,
+     * it defaults to being displayed as a template
+     */
+    renderAsOriginal: React.PropTypes.bool,
+    /**
      * It specifies whether the children are visible or not. If you see a
      * blank content, you probably forgot to add a selected one.
      */
@@ -76,27 +81,25 @@ var TabBarItemIOS = React.createClass({
      * is defined.
      */
     title: React.PropTypes.string,
-  },
+  };
 
-  getInitialState: function() {
-    return {
-      hasBeenSelected: false,
-    };
-  },
+  state = {
+    hasBeenSelected: false,
+  };
 
-  componentWillMount: function() {
+  componentWillMount() {
     if (this.props.selected) {
       this.setState({hasBeenSelected: true});
     }
-  },
+  }
 
-  componentWillReceiveProps: function(nextProps: { selected?: boolean }) {
+  componentWillReceiveProps(nextProps: { selected?: boolean }) {
     if (this.state.hasBeenSelected || nextProps.selected) {
       this.setState({hasBeenSelected: true});
     }
-  },
+  }
 
-  render: function() {
+  render() {
     var {style, children, ...props} = this.props;
 
     // if the tab has already been shown once, always continue to show it so we
@@ -118,7 +121,7 @@ var TabBarItemIOS = React.createClass({
       </RCTTabBarItem>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   tab: {

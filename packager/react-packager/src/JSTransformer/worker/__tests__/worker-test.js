@@ -8,21 +8,23 @@
  */
 'use strict';
 
-jest.autoMockOff();
+jest.disableAutomock();
 jest.mock('../constant-folding');
 jest.mock('../extract-dependencies');
 jest.mock('../inline');
 jest.mock('../minify');
 
-const {transformCode} = require('..');
 const {any, objectContaining} = jasmine;
 
 describe('code transformation worker:', () => {
+  let transformCode;
+
   let extractDependencies, transform;
   beforeEach(() => {
+    ({transformCode} = require('..'));
     extractDependencies =
       require('../extract-dependencies').mockReturnValue({});
-    transform = jest.genMockFunction();
+    transform = jest.fn();
   });
 
   it('calls the transform with file name, source code, and transform options', function() {
@@ -69,38 +71,24 @@ describe('code transformation worker:', () => {
     });
   });
 
+  it('removes shebang when present', done => {
+    const shebang = '#!/usr/bin/env node';
+    const result = {
+      code: `${shebang} \n arbitrary(code)`,
+    };
+    transform.mockImplementation((_, callback) => callback(null, result));
+    transformCode(transform, 'arbitrary/file.js', 'b', {}, (_, data) => {
+      expect(data.code).not.toContain(shebang);
+      expect(data.code.split('\n').length).toEqual(result.code.split('\n').length);
+      done();
+    });
+  });
+
   it('calls back with any error yielded by the transform', done => {
     const error = Error('arbitrary error');
     transform.mockImplementation((_, callback) => callback(error));
     transformCode(transform, 'filename', 'code', {}, e => {
       expect(e).toBe(error);
-      done();
-    });
-  });
-
-  it('puts an empty `moduleLocals` object on the result', done => {
-    transform.mockImplementation(
-      (_, callback) => callback(null, {code: 'arbitrary'}));
-    transformCode(transform, 'filename', 'code', {}, (_, data) => {
-      expect(data.moduleLocals).toEqual({});
-      done();
-    });
-  });
-
-  it('if a `moduleLocals` array is passed, the `moduleLocals` object is a key mirror of its items', done => {
-    transform.mockImplementation(
-      (_, callback) => callback(null, {code: 'arbitrary'}));
-    const moduleLocals =
-      ['arbitrary', 'list', 'containing', 'variable', 'names'];
-
-    transformCode(transform, 'filename', 'code', {moduleLocals}, (_, data) => {
-      expect(data.moduleLocals).toEqual({
-        arbitrary: 'arbitrary',
-        list: 'list',
-        containing: 'containing',
-        variable: 'variable',
-        names: 'names',
-      });
       done();
     });
   });
@@ -155,21 +143,19 @@ describe('code transformation worker:', () => {
   });
 
   describe('Minifications:', () => {
-    let constantFolding, extractDependencies, inline, minify, options;
-    let transformResult, dependencyData, moduleLocals;
+    let constantFolding, inline, options;
+    let transformResult, dependencyData;
     const filename = 'arbitrary/file.js';
-    const foldedCode = 'arbitrary(folded(code));'
-    const foldedMap = {version: 3, sources: ['fold.js']}
+    const foldedCode = 'arbitrary(folded(code));';
+    const foldedMap = {version: 3, sources: ['fold.js']};
 
     beforeEach(() => {
       constantFolding = require('../constant-folding')
         .mockReturnValue({code: foldedCode, map: foldedMap});
       extractDependencies = require('../extract-dependencies');
       inline = require('../inline');
-      minify = require('../minify').mockReturnValue({});
 
-      moduleLocals = ['module', 'require', 'exports'];
-      options = {moduleLocals, minify: true};
+      options = {minify: true};
       dependencyData = {
         dependencies: ['a', 'b', 'c'],
         dependencyOffsets: [100, 120, 140]
@@ -206,19 +192,6 @@ describe('code transformation worker:', () => {
       });
     });
 
-    it('passes the code obtained from `constant-folding` to `minify`', done => {
-      transformCode(transform, filename, 'code', options, () => {
-        expect(minify).toBeCalledWith(
-          filename,
-          foldedCode,
-          foldedMap,
-          dependencyData.dependencyOffsets,
-          moduleLocals
-        );
-        done();
-      });
-    });
-
     it('uses the dependencies obtained from the optimized result', done => {
       transformCode(transform, filename, 'code', options, (_, result) => {
         expect(result.dependencies).toEqual(dependencyData.dependencies);
@@ -226,17 +199,10 @@ describe('code transformation worker:', () => {
       });
     });
 
-    it('uses data produced by `minify` for the result', done => {
-      const minifyResult = {
-        code: 'minified(code)',
-        dependencyOffsets: [10, 30, 60],
-        map: {version: 3, sources: ['minified.js']},
-        moduleLocals: {module: 'x', require: 'y', exports: 'z'},
-      };
-      minify.mockReturnValue(minifyResult);
-
+    it('uses data produced by `constant-folding` for the result', done => {
       transformCode(transform, 'filename', 'code', options, (_, result) => {
-        expect(result).toEqual(objectContaining(minifyResult))
+        expect(result)
+          .toEqual(objectContaining({code: foldedCode, map: foldedMap}));
         done();
       });
     });

@@ -4,7 +4,8 @@ title: Accessibility
 layout: docs
 category: Guides
 permalink: docs/accessibility.html
-next: direct-manipulation
+next: timers
+previous: animations
 ---
 
 ## Native App Accessibility (iOS and Android)
@@ -23,7 +24,7 @@ On Android, ‘accessible={true}’ property for a react-native View will be tra
 ```javascript
 <View accessible={true}>
   <Text>text one</Text>
-  <Text >text two</Text>
+  <Text>text two</Text>
 </View>
 ```
 
@@ -146,7 +147,7 @@ _onPress: function() {
   “radiobutton_unchecked” : “radiobutton_checked”;
   if (this.state.radioButton === “radiobutton_checked”) {
     RCTUIManager.sendAccessibilityEvent(
-      React.findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       RCTUIManager.AccessibilityEventTypes.typeViewClicked);
   }
 }
