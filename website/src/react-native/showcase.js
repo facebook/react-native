@@ -312,6 +312,13 @@ var featured = [
     infoLink: 'https://elelogistics.github.io/about/Crowdsource-App-Write-In-React-Native.html',
     infoTitle: '"Fengniao Crowdsource app" is a mobile app, developed by Eleme, Inc, for Fengniao Crowdsource, the largest crowdsourced logistics platform in China.',
   },
+  {
+    name: '昨日热推',
+    icon: 'https://frontbin.com/images/apple-touch-icon.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/zuo-ri-re-tui/id1137163693?l=en&mt=8',
+    infoLink: 'https://www.zfanw.com/blog/developing-react-native-image-viewer-library.html',
+    infoTitle: 'Developing the react-native-image-viewer library',
+  },
 ];
 
 featured.sort(function(a, b) {
