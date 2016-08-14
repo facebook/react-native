@@ -22,6 +22,7 @@
 
 CGFloat const ZINDEX_DEFAULT = 0;
 CGFloat const ZINDEX_STICKY_HEADER = 50;
+CGFloat const ZINDEX_STICKY_FOOTER = 50;
 
 @interface RCTScrollEvent : NSObject <RCTEvent>
 
@@ -134,11 +135,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 /**
  * Include a custom scroll view subclass because we want to limit certain
  * default UIKit behaviors such as textFields automatically scrolling
- * scroll views that contain them and support sticky headers.
+ * scroll views that contain them and support sticky headers and footers.
  */
 @interface RCTCustomScrollView : UIScrollView<UIGestureRecognizerDelegate>
 
 @property (nonatomic, copy) NSIndexSet *stickyHeaderIndices;
+@property (nonatomic, copy) NSIndexSet *stickyFooterIndices;
 @property (nonatomic, assign) BOOL centerContent;
 @property (nonatomic, strong) RCTRefreshControl *rctRefreshControl;
 
@@ -148,6 +150,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 @implementation RCTCustomScrollView
 {
   __weak UIView *_dockedHeaderView;
+  __weak UIView *_dockedFooterView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -346,11 +349,80 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
+- (void)dockClosestSectionFooter
+{
+  UIView *contentView = [self contentView];
+  CGFloat scrollTop = self.bounds.origin.y + self.bounds.size.height + self.contentInset.top;
+  // Unlike the sticky footer we do not need to account for the RefreshControl
+  
+  // Find the section footers that need to be docked
+  __block UIView *previousFooter = nil;
+  __block UIView *currentFooter = nil;
+  NSUInteger subviewCount = contentView.reactSubviews.count;
+  [_stickyFooterIndices enumerateIndexesWithOptions:NSEnumerationReverse usingBlock:
+   ^(NSUInteger idx, BOOL *stop) {
+     
+     // If the subviews are out of sync with the sticky footer indices don't
+     // do anything.
+     if (idx >= subviewCount) {
+       *stop = YES;
+       return;
+     }
+     
+     UIView *footer = contentView.reactSubviews[idx];
+     
+     // If previousFooter not yet found, search for docked footers
+     if (!previousFooter) {
+       CGFloat height = footer.bounds.size.height;
+       CGFloat top = footer.center.y - height * footer.layer.anchorPoint.y;
+       if (top + height < scrollTop) {
+         previousFooter = footer;
+       } else {
+         currentFooter = footer;
+       }
+     }
+     
+     // Reset transforms for footer views
+     footer.transform = CGAffineTransformIdentity;
+     footer.layer.zPosition = ZINDEX_DEFAULT;
+     
+   }];
+  
+  // If no docked footer, bail out
+  if (!currentFooter) {
+    return;
+  }
+  
+  // Adjust current footer to hug the bottom of the screen
+  CGFloat currentFrameHeight = currentFooter.bounds.size.height;
+  CGFloat currentFrameTop = currentFooter.center.y - currentFrameHeight * currentFooter.layer.anchorPoint.y;
+  CGFloat yOffset = scrollTop - currentFrameTop - currentFrameHeight;
+  if (previousFooter) {
+    // The previous footer nudges the current footer out of the way when it reaches
+    // the bottom of the screen
+    CGFloat previousFrameHeight = previousFooter.bounds.size.height;
+    CGFloat previousFrameTop = previousFooter.center.y + previousFrameHeight * previousFooter.layer.anchorPoint.y;
+    CGFloat overlap = (previousFrameTop + previousFrameHeight - scrollTop);
+    yOffset += MAX(0, overlap);
+  }
+  currentFooter.transform = CGAffineTransformMakeTranslation(0, yOffset);
+  currentFooter.layer.zPosition = ZINDEX_STICKY_FOOTER;
+  _dockedFooterView = currentFooter;
+}
+
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
   if (_dockedHeaderView && [self pointInside:point withEvent:event]) {
     CGPoint convertedPoint = [_dockedHeaderView convertPoint:point fromView:self];
     UIView *hitView = [_dockedHeaderView hitTest:convertedPoint withEvent:event];
+    if (hitView) {
+      return hitView;
+    }
+  }
+  
+  if (_dockedFooterView && [self pointInside:point withEvent:event]) {
+    CGPoint convertedPoint = [_dockedFooterView convertPoint:point fromView:self];
+    UIView *hitView = [_dockedFooterView hitTest:convertedPoint withEvent:event];
     if (hitView) {
       return hitView;
     }
@@ -466,6 +538,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _scrollView.stickyHeaderIndices = headerIndices;
 }
 
+- (NSIndexSet *)stickyFooterIndices
+{
+  return _scrollView.stickyFooterIndices;
+}
+
+- (void)setStickyFooterIndices:(NSIndexSet *)footerIndicies
+{
+  RCTAssert(_scrollView.contentSize.width <= self.frame.size.width,
+            @"sticky footers are not supported with horizontal scrolled views");
+  _scrollView.stickyFooterIndices = footerIndicies;
+}
+
 - (void)setClipsToBounds:(BOOL)clipsToBounds
 {
   super.clipsToBounds = clipsToBounds;
@@ -484,6 +568,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   RCTAssert([self.subviews lastObject] == _scrollView, @"our only subview should be a scrollview");
 
   CGPoint originalOffset = _scrollView.contentOffset;
+  CGRect previousFrame = _scrollView.frame;
   _scrollView.frame = self.bounds;
   _scrollView.contentOffset = originalOffset;
 
@@ -493,6 +578,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     refreshControl.frame = (CGRect){_scrollView.contentOffset, {_scrollView.frame.size.width, refreshControl.frame.size.height}};
   }
 
+  if (previousFrame.size.height != _scrollView.frame.size.height) {
+    [_scrollView dockClosestSectionFooter];
+  }
+  
   [self updateClippedSubviews];
 }
 
@@ -603,6 +692,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
   [_scrollView dockClosestSectionHeader];
+  [_scrollView dockClosestSectionFooter];
   [self updateClippedSubviews];
 
   NSTimeInterval now = CACurrentMediaTime();
@@ -869,14 +959,24 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
   if (RCT_DEBUG) {
     // Validate that sticky headers are not out of range.
     NSUInteger subviewCount = _scrollView.contentView.reactSubviews.count;
-    NSUInteger lastIndex = NSNotFound;
+    NSUInteger lastHeaderIndex = NSNotFound;
     if (_scrollView.stickyHeaderIndices != nil) {
-      lastIndex = _scrollView.stickyHeaderIndices.lastIndex;
+      lastHeaderIndex = _scrollView.stickyHeaderIndices.lastIndex;
     }
-    if (lastIndex != NSNotFound && lastIndex >= subviewCount) {
+    if (lastHeaderIndex != NSNotFound && lastHeaderIndex >= subviewCount) {
       RCTLogWarn(@"Sticky header index %zd was outside the range {0, %zd}",
-                 lastIndex, subviewCount);
+                 lastHeaderIndex, subviewCount);
     }
+
+    NSUInteger lastFooterIndex = NSNotFound;
+    if (_scrollView.stickyFooterIndices != nil) {
+      lastFooterIndex = _scrollView.stickyFooterIndices.lastIndex;
+    }
+    if (lastFooterIndex != NSNotFound && lastFooterIndex >= subviewCount) {
+      RCTLogWarn(@"Sticky footer index %zd was outside the range {0, %zd}",
+                 lastFooterIndex, subviewCount);
+    }
+
   }
 }
 
@@ -885,6 +985,10 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
   if ([changedProps containsObject:@"stickyHeaderIndices"]) {
     [_scrollView dockClosestSectionHeader];
   }
+  if ([changedProps containsObject:@"stickyFooterIndices"]) {
+    [_scrollView dockClosestSectionFooter];
+  }
+
 }
 
 // Note: setting several properties of UIScrollView has the effect of

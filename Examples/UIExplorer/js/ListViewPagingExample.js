@@ -156,6 +156,16 @@ class ListViewPagingExample extends React.Component {
     );
   };
 
+  renderSectionFooter = (sectionData: string, sectionID: string) => {
+    return (
+      <View style={styles.section}>
+        <Text style={styles.text}>
+          Footer: {sectionData}
+        </Text>
+      </View>
+    );
+  };
+
   renderHeader = () => {
     var headerLikeText = this.state.headerPressCount % 2 ?
       <View><Text style={styles.text}>1 Like</Text></View> :
@@ -191,6 +201,7 @@ class ListViewPagingExample extends React.Component {
         renderHeader={this.renderHeader}
         renderFooter={this.renderFooter}
         renderSectionHeader={this.renderSectionHeader}
+        renderSectionFooter={this.renderSectionFooter}
         renderRow={this.renderRow}
         initialListSize={10}
         pageSize={4}
