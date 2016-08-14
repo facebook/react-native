@@ -303,8 +303,7 @@ var LayoutPropTypes = {
   /** `alignItems` aligns children in the cross direction.
    *  For example, if children are flowing vertically, `alignItems`
    *  controls how they align horizontally.
-   *  It works like `align-items` in CSS, except the default value
-   *  is `stretch` instead of `flex-start`.
+   *  It works like `align-items` in CSS.
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
    *  for more details.
    */
