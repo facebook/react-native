@@ -352,7 +352,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)dockClosestSectionFooter
 {
   UIView *contentView = [self contentView];
-  CGFloat scrollTop = self.bounds.origin.y + self.bounds.size.height + self.contentInset.top;
+  CGFloat scrollTopPlusHeight = self.bounds.origin.y + self.bounds.size.height + self.contentInset.top;
   // Unlike the sticky footer we do not need to account for the RefreshControl
   
   // Find the section footers that need to be docked
@@ -375,7 +375,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
      if (!previousFooter) {
        CGFloat height = footer.bounds.size.height;
        CGFloat top = footer.center.y - height * footer.layer.anchorPoint.y;
-       if (top + height < scrollTop) {
+       if (top + height < scrollTopPlusHeight) {
          previousFooter = footer;
        } else {
          currentFooter = footer;
@@ -396,13 +396,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Adjust current footer to hug the bottom of the screen
   CGFloat currentFrameHeight = currentFooter.bounds.size.height;
   CGFloat currentFrameTop = currentFooter.center.y - currentFrameHeight * currentFooter.layer.anchorPoint.y;
-  CGFloat yOffset = scrollTop - currentFrameTop - currentFrameHeight;
+  CGFloat yOffset = scrollTopPlusHeight - currentFrameTop - currentFrameHeight;
   if (previousFooter) {
     // The previous footer nudges the current footer out of the way when it reaches
     // the bottom of the screen
     CGFloat previousFrameHeight = previousFooter.bounds.size.height;
     CGFloat previousFrameTop = previousFooter.center.y + previousFrameHeight * previousFooter.layer.anchorPoint.y;
-    CGFloat overlap = (previousFrameTop + previousFrameHeight - scrollTop);
+    CGFloat overlap = (previousFrameTop + previousFrameHeight - scrollTopPlusHeight);
     yOffset += MAX(0, overlap);
   }
   currentFooter.transform = CGAffineTransformMakeTranslation(0, yOffset);
