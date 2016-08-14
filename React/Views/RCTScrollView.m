@@ -352,7 +352,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)dockClosestSectionFooter
 {
   UIView *contentView = [self contentView];
-  CGFloat scrollTopPlusHeight = self.bounds.origin.y + self.bounds.size.height + self.contentInset.top;
+  CGFloat scrollTopPlusHeight = self.bounds.origin.y + self.bounds.size.height - self.contentInset.bottom;
   // Unlike the sticky footer we do not need to account for the RefreshControl
   
   // Find the section footers that need to be docked
