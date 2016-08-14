@@ -18,6 +18,10 @@ Run the following command on a Mac to find the id for the process that is listen
 
 `$ sudo lsof -n -i4TCP:8081 | grep LISTEN`
 
+If that does not work, try:
+
+`$ sudo lsof -i :8081`
+
 Then run the following to terminate the process:
 
 `$ kill -9 <PID>`
