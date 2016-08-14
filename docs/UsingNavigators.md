@@ -52,7 +52,7 @@ Notice the `export default` in front of the component declaration. This will _ex
 
 ```javascript
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { AppRegistry, View, Text } from 'react-native';
 
 import MyScene from './MyScene';
 
