@@ -615,7 +615,7 @@ var ListView = React.createClass({
         var min = isVertical ? frame.y : frame.x;
         var max = min + (isVertical ? frame.height : frame.width);
         if ((!min && !max) || (min === max)) {
-          break;
+          continue;
         }
         if (min > visibleMax || max < visibleMin) {
           if (rowVisible) {
