@@ -42,16 +42,64 @@ import com.facebook.react.views.image.ImageLoadEvent;
 import com.facebook.react.views.view.ReactClippingViewGroup;
 
 /**
- * A view that FlatShadowNode hierarchy maps to. Performs drawing by iterating over
- * array of DrawCommands, executing them one by one.  In the case of clipping, the underlying logic
- * is handled by {@link DrawCommandManager}.  This lets us separate logic, while also allowing us
- * to save on memory for data structures only used in clipping.
+ * A view that the {@link FlatShadowNode} hierarchy maps to.  Can mount and draw native views as
+ * well as draw commands.  We reuse some of Android's ViewGroup logic, but in Nodes we try to
+ * minimize the amount of shadow nodes that map to native children, so we have a lot of logic
+ * specific to draw commands.
+ *
+ * In a very simple case with no Android children, the FlatViewGroup will receive:
+ *
+ *   flatViewGroup.mountDrawCommands(...);
+ *   flatViewGroup.dispatchDraw(...);
+ *
+ * The draw commands are mounted, then draw iterates through and draws them one by one.
+ *
+ * In a simple case where there are native children:
+ *
+ *   flatViewGroup.mountDrawCommands(...);
+ *   flatViewGroup.detachAllViewsFromParent(...);
+ *   flatViewGroup.mountViews(...);
+ *   flatViewGroup.dispatchDraw(...);
+ *
+ * Draw commands are mounted, with a draw view command for each mounted view.  As an optimization
+ * we then detach all views from the FlatViewGroup, then allow mountViews to selectively reattach
+ * and add views in order.  We do this as adding a single view is a O(n) operation (On average you
+ * have to move all the views in the array to the right one position), as is dropping and re-adding
+ * all views (One pass to clear the array and one pass to re-attach detached children and add new
+ * children).
+ *
+ * FlatViewGroups also have arrays of node regions, which are little more than a rects that
+ * represents a touch target.  Native views contain their own touch logic, but not all react tags
+ * map to native views.  We use node regions to find touch targets among commands as well as nodes
+ * which map to native views.
+ *
+ * In the case of clipping, much of the underlying logic for is handled by
+ * {@link DrawCommandManager}.  This lets us separate logic, while also allowing us to save on
+ * memory for data structures only used in clipping.  In a case of a clipping FlatViewGroup which
+ * is scrolling:
+ *
+ *   flatViewGroup.setRemoveClippedSubviews(true);
+ *   flatViewGroup.mountClippingDrawCommands(...);
+ *   flatViewGroup.detachAllViewsFromParent(...);
+ *   flatViewGroup.mountViews(...);
+ *   flatViewGroup.updateClippingRect(...);
+ *   flatViewGroup.dispatchDraw(...);
+ *   flatViewGroup.updateClippingRect(...);
+ *   flatViewGroup.dispatchDraw(...);
+ *   flatViewGroup.updateClippingRect(...);
+ *   flatViewGroup.dispatchDraw(...);
+ *
+ * Setting remove clipped subviews creates a {@link DrawCommandManager} to handle clipping, which
+ * allows the rest of the methods to simply call in to draw command manager to handle the clipping
+ * logic.
  */
 /* package */ final class FlatViewGroup extends ViewGroup
     implements ReactInterceptingViewGroup, ReactClippingViewGroup,
     ReactCompoundViewGroup, ReactHitSlopView, ReactPointerEventsView, FlatMeasuredViewGroup {
   /**
-   * Helper class that allows AttachDetachListener to invalidate the hosting View.
+   * Helper class that allows our AttachDetachListeners to invalidate the hosting View.  When a
+   * listener gets an attach it is passed an invalidate callback for the FlatViewGroup it is being
+   * attached to.
    */
   static final class InvalidateCallback extends WeakReference<FlatViewGroup> {
 
@@ -69,6 +117,12 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
       }
     }
 
+    /**
+     * Propogates image load events to javascript if the hosting view is still alive.
+     *
+     * @param reactTag The view id.
+     * @param imageLoadEvent The event type.
+     */
     public void dispatchImageLoadEvent(int reactTag, int imageLoadEvent) {
       FlatViewGroup view = get();
       if (view == null) {
@@ -82,6 +136,7 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     }
   }
 
+  // Resources for debug drawing.
   private static final boolean DEBUG_DRAW = false;
   private static final boolean DEBUG_DRAW_TEXT = false;
   private boolean mAndroidDebugDraw;
@@ -94,10 +149,14 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
   private static final ArrayList<FlatViewGroup> LAYOUT_REQUESTS = new ArrayList<>();
   private static final Rect VIEW_BOUNDS = new Rect();
 
+  // An invalidate callback singleton for this FlatViewGroup.
   private @Nullable InvalidateCallback mInvalidateCallback;
   private DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
   private AttachDetachListener[] mAttachDetachListeners = AttachDetachListener.EMPTY_ARRAY;
   private NodeRegion[] mNodeRegions = NodeRegion.EMPTY_ARRAY;
+
+  // The index of the next native child to draw.  This is used in dispatchDraw to check that we are
+  // actually drawing all of our attached children, then is reset to 0.
   private int mDrawChildIndex = 0;
   private boolean mIsAttached = false;
   private boolean mIsLayoutRequested = false;
@@ -108,6 +167,7 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
 
   private static final ArrayList<View> EMPTY_DETACHED_VIEWS = new ArrayList<>(0);
+  // Provides clipping, drawing and node region finding logic if subview clipping is enabled.
   private @Nullable DrawCommandManager mDrawCommandManager;
 
   private @Nullable Rect mHitSlopRect;
@@ -165,12 +225,22 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     return nodeRegion != null && nodeRegion.mIsVirtual;
   }
 
-  // This is hidden in the Android ViewGroup, but still gets called in super.dispatchDraw.
+  /**
+   * Secretly Overrides the hidden ViewGroup.onDebugDraw method.  This is hidden in the Android
+   * ViewGroup, but still gets called in super.dispatchDraw.  Overriding here allows us to draw
+   * layout bounds for Nodes when android is drawing layout bounds.
+   */
   protected void onDebugDraw(Canvas canvas) {
     // Android is drawing layout bounds, so we should as well.
     mAndroidDebugDraw = true;
   }
 
+  /**
+   * Draw FlatViewGroup on a canvas.  Also checks that all children are drawn, as a draw view calls
+   * back to the FlatViewGroup to draw each child.
+   *
+   * @param canvas The canvas to draw on.
+   */
   @Override
   public void dispatchDraw(Canvas canvas) {
     mAndroidDebugDraw = false;
@@ -217,6 +287,38 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     mDrawChildIndex = 0;
   }
 
+  /**
+   * This override exists to suppress the default drawing behaviour of the ViewGroup.  dispatchDraw
+   * calls super.dispatchDraw, which lets Android perform some of our child management logic.
+   * super.dispatchDraw then calls our drawChild, which is suppressed.
+   *
+   * dispatchDraw within the FlatViewGroup then calls super.drawChild, which actually draws the
+   * child.
+   *
+   *   // Pseudocode example.
+   *   Class FlatViewGroup {
+   *     void dispatchDraw() {
+   *       super.dispatchDraw(); // Eventually calls our drawChild, which is a no op.
+   *       super.drawChild();    // Calls the actual drawChild.
+   *     }
+   *
+   *     boolean drawChild(...) {
+   *       // No op.
+   *     }
+   *   }
+   *
+   *   Class ViewGroup {
+   *     void dispatchDraw() {
+   *       drawChild(); // No op.
+   *     }
+   *
+   *     boolean drawChild(...) {
+   *       getChildAt(...).draw();
+   *     }
+   *   }
+   *
+   * @return false, as we are suppressing drawChild.
+   */
   @Override
   protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
     // suppress
@@ -224,6 +326,11 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     return false;
   }
 
+  /**
+   * Draw layout bounds for the next child.
+   *
+   * @param canvas The canvas to draw on.
+   */
   /* package */ void debugDrawNextChild(Canvas canvas) {
     View child = getChildAt(mDrawChildIndex);
     // Draw FlatViewGroups a different color than regular child views.
@@ -291,6 +398,10 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     drawCorner(canvas, paint, x2, y2, -lineLength, -lineLength, lineWidth);
   }
 
+  /**
+   * Makes sure that we only initialize one instance of each of our layout bounds drawing
+   * resources.
+   */
   private void initDebugDrawResources() {
     if (sDebugTextPaint == null) {
       sDebugTextPaint = new Paint();
@@ -320,6 +431,17 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     }
   }
 
+  /**
+   * Used in drawing layout bounds, draws a layout bounds rectangle similar to the Android default
+   * implementation, with a specifiable border color.
+   *
+   * @param canvas The canvas to draw on.
+   * @param color The border color of the layout bounds.
+   * @param left Left bound of the rectangle.
+   * @param top Top bound of the rectangle.
+   * @param right Right bound of the rectangle.
+   * @param bottom Bottom bound of the rectangle.
+   */
   private void debugDrawRect(
       Canvas canvas,
       int color,
@@ -330,6 +452,19 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     debugDrawNamedRect(canvas, color, "", left, top, right, bottom);
   }
 
+  /**
+   * Used in drawing layout bounds, draws a layout bounds rectangle similar to the Android default
+   * implementation, with a specifiable border color.  Also draws a name text in the bottom right
+   * corner of the rectangle if DEBUG_DRAW_TEXT is set.
+   *
+   * @param canvas The canvas to draw on.
+   * @param color The border color of the layout bounds.
+   * @param name Name to be drawn on top of the rectangle if DEBUG_DRAW_TEXT is set.
+   * @param left Left bound of the rectangle.
+   * @param top Top bound of the rectangle.
+   * @param right Right bound of the rectangle.
+   * @param bottom Bottom bound of the rectangle.
+   */
   /* package */ void debugDrawNamedRect(
       Canvas canvas,
       int color,
@@ -385,7 +520,7 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
   @Override
   protected void onAttachedToWindow() {
     if (mIsAttached) {
-      // this is possible, unfortunately.
+      // This is possible, unfortunately.
       return;
     }
 
@@ -552,6 +687,12 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     invalidate();
   }
 
+  /**
+   * Draws the next child of the FlatViewGroup.  Each draw view calls FlatViewGroup.drawNextChild,
+   * which keeps track of the current child index to draw.
+   *
+   * @param canvas The canvas to draw on.
+   */
   /* package */ void drawNextChild(Canvas canvas) {
     View child = getChildAt(mDrawChildIndex);
     if (child instanceof FlatViewGroup) {
@@ -568,11 +709,38 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     ++mDrawChildIndex;
   }
 
+  /**
+   * Mount a list of draw commands to this FlatViewGroup.  Draw commands sometimes map to a view,
+   * as in the case of {@link DrawView}, and sometimes to a simple canvas operation.  We only
+   * receive a call to mount draw commands when our commands have changed, so we always invalidate.
+   *
+   * A call to mount draw commands will only be followed by a call to mount views if the draw view
+   * commands within the draw command array have changed since last mount.
+   *
+   * @param drawCommands The draw commands to mount.
+   */
   /* package */ void mountDrawCommands(DrawCommand[] drawCommands) {
     mDrawCommands = drawCommands;
     invalidate();
   }
 
+  /**
+   * Mount a list of draw commands to this FlatViewGroup, which is clipping subviews.  Clipping
+   * logic is handled by a {@link DrawCommandManager}, which provides a better explanation of
+   * these arguments and logic.
+   *
+   * A call to mount draw commands will only be followed by a call to mount views if the draw view
+   * commands within the draw command array have changed since last mount, which is indicated here
+   * by willMountViews.
+   *
+   * @param drawCommands The draw commands to mount.
+   * @param drawViewIndexMap See {@link DrawCommandManager}.
+   * @param maxBottom See {@link DrawCommandManager}.
+   * @param minTop See {@link DrawCommandManager}.
+   * @param willMountViews True if we will also receive a mountViews call.  If we are going to
+   *   receive a call to mount views, that will take care of updating the commands that are
+   *   currently onscreen, otherwise we need to update the onscreen commands.
+   */
   /* package */ void mountClippingDrawCommands(
       DrawCommand[] drawCommands,
       SparseIntArray drawViewIndexMap,
@@ -589,9 +757,10 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
   }
 
   /**
-   * Finds a NodeRegion which matches the said reactTag
-   * @param reactTag the reactTag to look for
-   * @return the NodeRegion, or NodeRegion.EMPTY
+   * Return the NodeRegion which matches a reactTag, or EMPTY if none match.
+   *
+   * @param reactTag The reactTag to look for
+   * @return The matching NodeRegion, or NodeRegion.EMPTY if none match.
    */
   /* package */ NodeRegion getNodeRegionForTag(int reactTag) {
     for (NodeRegion region : mNodeRegions) {
@@ -607,7 +776,7 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
    * strong reference to. This is used by the FlatNativeViewHierarchyManager to explicitly clean up
    * those views when removing this parent.
    *
-   * @return a Collection of Views to clean up
+   * @return A Collection of Views to clean up.
    */
   Collection<View> getDetachedViews() {
     if (mDrawCommandManager == null) {
@@ -618,9 +787,10 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
 
   /**
    * Remove the detached view from the parent
-   * This is used during cleanup to trigger onDetachedFromWindow on any views that were in a
-   * temporary detached state due to them being clipped. This is called for cleanup of said views
-   * by FlatNativeViewHierarchyManager.
+   * This is used in the DrawCommandManagers and during cleanup to trigger onDetachedFromWindow on
+   * any views that were in a temporary detached state due to them being clipped. This is called
+   * for cleanup of said views by FlatNativeViewHierarchyManager.
+   *
    * @param view the detached View to remove
    */
   void removeDetachedView(View view) {
@@ -637,6 +807,16 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     super.removeAllViewsInLayout();
   }
 
+  /**
+   * Mounts attach detach listeners to a FlatViewGroup.  The Nodes spec states that children and
+   * commands deal gracefully with multiple attaches and detaches, and as long as:
+   *
+   *   attachCount - detachCount > 0
+   *
+   * Then children still consider themselves as attached.
+   *
+   * @param listeners The listeners to mount.
+   */
   /* package */ void mountAttachDetachListeners(AttachDetachListener[] listeners) {
     if (mIsAttached) {
       // Ordering of the following 2 statements is very important. While logically it makes sense to
@@ -657,10 +837,25 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     mAttachDetachListeners = listeners;
   }
 
+  /**
+   * Mount node regions to a FlatViewGroup.  A node region is a touch target for a react tag.  As
+   * not all react tags map to a view, we use node regions to determine whether a non-native region
+   * should receive a touch.
+   *
+   * @param nodeRegions The node regions to mount.
+   */
   /* package */ void mountNodeRegions(NodeRegion[] nodeRegions) {
     mNodeRegions = nodeRegions;
   }
 
+  /**
+   * Mount node regions in clipping.  See {@link DrawCommandManager} for more complete
+   * documentation.
+   *
+   * @param nodeRegions The node regions to mount.
+   * @param maxBottom See {@link DrawCommandManager}.
+   * @param minTop See {@link DrawCommandManager}.
+   */
   /* package */ void mountClippingNodeRegions(
       NodeRegion[] nodeRegions,
       float[] maxBottom,
@@ -723,18 +918,40 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     invalidate();
   }
 
+  /**
+   * Exposes the protected addViewInLayout call for the {@link DrawCommandManager}.
+   *
+   * @param view The view to add.
+   */
   /* package */ void addViewInLayout(View view) {
     addViewInLayout(view, -1, ensureLayoutParams(view.getLayoutParams()), true);
   }
 
+  /**
+   * Exposes the protected addViewInLayout call for the {@link DrawCommandManager}.
+   *
+   * @param view The view to add.
+   * @param index The index position at which to add this child.
+   */
   /* package */ void addViewInLayout(View view, int index) {
     addViewInLayout(view, index, ensureLayoutParams(view.getLayoutParams()), true);
   }
 
+  /**
+   * Exposes the protected attachViewToParent call for the {@link DrawCommandManager}.
+   *
+   * @param view The view to attach.
+   */
   /* package */ void attachViewToParent(View view) {
     attachViewToParent(view, -1, ensureLayoutParams(view.getLayoutParams()));
   }
 
+  /**
+   * Exposes the protected attachViewToParent call for the {@link DrawCommandManager}.
+   *
+   * @param view The view to attach.
+   * @param index The index position at which to attach this child.
+   */
   /* package */ void attachViewToParent(View view, int index) {
     attachViewToParent(view, index, ensureLayoutParams(view.getLayoutParams()));
   }
@@ -754,6 +971,10 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     }
   }
 
+  /**
+   * Called after the view hierarchy is updated in {@link StateBuilder}, to process all the
+   * FlatViewGroups that have requested layout.
+   */
   /* package */ static void processLayoutRequests() {
     for (int i = 0, numLayoutRequests = LAYOUT_REQUESTS.size(); i != numLayoutRequests; ++i) {
       FlatViewGroup flatViewGroup = LAYOUT_REQUESTS.get(i);
@@ -795,6 +1016,14 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     return new Rect(left, top, right, bottom);
   }
 
+  /**
+   * Searches for a virtual node region matching the specified x and y touch.  Virtual in this case
+   * means simply that the node region represents a command, rather than a native view.
+   *
+   * @param touchX The touch x coordinate.
+   * @param touchY The touch y coordinate.
+   * @return A virtual node region matching the specified touch, or null if no regions match.
+   */
   private @Nullable NodeRegion virtualNodeRegionWithinBounds(float touchX, float touchY) {
     if (mDrawCommandManager != null) {
       return mDrawCommandManager.virtualNodeRegionWithinBounds(touchX, touchY);
@@ -813,6 +1042,14 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     return null;
   }
 
+  /**
+   * Searches for a node region matching the specified x and y touch.  Will search regions which
+   * representing both commands and native views.
+   *
+   * @param touchX The touch x coordinate.
+   * @param touchY The touch y coordinate.
+   * @return A node region matching the specified touch, or null if no regions match.
+   */
   private @Nullable NodeRegion anyNodeRegionWithinBounds(float touchX, float touchY) {
     if (mDrawCommandManager != null) {
       return mDrawCommandManager.anyNodeRegionWithinBounds(touchX, touchY);
@@ -835,6 +1072,11 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     }
   }
 
+  /**
+   * Propagate attach to a list of listeners, passing a callback by which they can invalidate.
+   *
+   * @param listeners List of listeners to attach.
+   */
   private void dispatchOnAttached(AttachDetachListener[] listeners) {
     int numListeners = listeners.length;
     if (numListeners == 0) {
@@ -847,6 +1089,11 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     }
   }
 
+  /**
+   * Get an invalidate callback singleton for this view instance.
+   *
+   * @return Invalidate callback singleton.
+   */
   private InvalidateCallback getInvalidateCallback() {
     if (mInvalidateCallback == null) {
       mInvalidateCallback = new InvalidateCallback(this);
@@ -854,6 +1101,11 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     return mInvalidateCallback;
   }
 
+  /**
+   * Propagate detach to a list of listeners.
+   *
+   * @param listeners List of listeners to detach.
+   */
   private static void dispatchOnDetached(AttachDetachListener[] listeners) {
     for (AttachDetachListener listener : listeners) {
       listener.onDetached();

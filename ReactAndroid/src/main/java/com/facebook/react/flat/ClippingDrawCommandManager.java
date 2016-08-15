@@ -27,8 +27,123 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
 /**
- * Implementation of a {@link DrawCommandManager} with clipping.  Performs drawing by iterating
- * over an array of DrawCommands, executing them one by one except when the commands are clipped.
+ * Abstract class for a {@link DrawCommandManager} with directional clipping.  Allows support for
+ * vertical and horizontal clipping by implementing abstract methods.
+ *
+ * Uses two dynamic programming arrays to efficiently update which views and commands are onscreen,
+ * while not having to sort the incoming draw commands.  The draw commands are loosely sorted, as
+ * they represent a flattening of the normal view hierarchy, and we use that information to quickly
+ * find children that should be considered onscreen.  One array keeps track of, for each index, the
+ * maximum bottom position that occurs at or before that index; the other keeps track of the
+ * minimum top position that occurs at or after that index. Given the following children:
+ *
+ *       +---------------------------------+    0 (Y coordinate)
+ *       | 0                               |
+ *       |  +-----------+                  |   10
+ *       |  | 1         |                  |
+ *       |  |           | +--------------+ |   20
+ *       |  |           | | 3            | |
+ *       |  +-----------+ |              | |   30
+ *       |                |              | |
+ *       |  +-----------+ |              | |   40
+ *       |  | 2         | |              | |
+ *       |  |           | +--------------+ |   50
+ *       |  |           |                  |
+ *       |  +-----------+                  |   60
+ *       |                                 |
+ *       +---------------------------------+   70
+ *
+ *          +-----------+                      80
+ *          | 4         |
+ *          |           | +--------------+     90
+ *          |           | | 6            |
+ *          +-----------+ |              |    100
+ *                        |              |
+ *          +-----------+ |              |    110
+ *          | 5         | |              |
+ *          |           | +--------------+    120
+ *          |           |
+ *          +-----------+                     130
+ *
+ * The two arrays are:
+ *                 0   1   2   3    4    5    6
+ *   Max Bottom: [70, 70, 70, 70, 100, 130, 130]
+ *   Min Top:    [ 0,  0,  0,  0,  80,  90,  90]
+ *
+ * We can then binary search for the first max bottom that is below our rect, and the first min top
+ * that is above our rect.
+ *
+ * If the top and bottom of the rect are 55 and 85, respectively, we will start drawing at index 0
+ * and stop at index 4.
+ *
+ *       +---------------------------------+    0 (Y coordinate)
+ *       | 0                               |
+ *       |  +-----------+                  |   10
+ *       |  | 1         |                  |
+ *       |  |           | +--------------+ |   20
+ *       |  |           | | 3            | |
+ *       |  +-----------+ |              | |   30
+ *       |                |              | |
+ *       |  +-----------+ |              | |   40
+ *       |  | 2         | |              | |
+ *       |  |           | +--------------+ |   50
+ *   -  -| -| -  -  -  -| -  -  -  -  -  - |-  -  -
+ *       |  +-----------+                  |   60
+ *       |                                 |
+ *       +---------------------------------+   70
+ *
+ *          +-----------+                      80
+ *   -  -  -| 4 -  -  - | -  -  -  -  -  -  -  -  -
+ *          |           | +--------------+     90
+ *          |           | | 6            |
+ *          +-----------+ |              |    100
+ *                        |              |
+ *          +-----------+ |              |    110
+ *          | 5         | |              |
+ *          |           | +--------------+    120
+ *          |           |
+ *          +-----------+                     130
+ *
+ * If the top and bottom are 75 and 105 respectively, we will start drawing at index 4 and stop at
+ * index 6.
+ *
+ *       +---------------------------------+    0 (Y coordinate)
+ *       | 0                               |
+ *       |  +-----------+                  |   10
+ *       |  | 1         |                  |
+ *       |  |           | +--------------+ |   20
+ *       |  |           | | 3            | |
+ *       |  +-----------+ |              | |   30
+ *       |                |              | |
+ *       |  +-----------+ |              | |   40
+ *       |  | 2         | |              | |
+ *       |  |           | +--------------+ |   50
+ *       |  |           |                  |
+ *       |  +-----------+                  |   60
+ *       |                                 |
+ *       +---------------------------------+   70
+ *   -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+ *          +-----------+                      80
+ *          | 4         |
+ *          |           | +--------------+     90
+ *          |           | | 6            |
+ *          +-----------+ |              |    100
+ *   -  -  -  -  -  -  -  |-  -  -  -  - |  -  -  -
+ *          +-----------+ |              |    110
+ *          | 5         | |              |
+ *          |           | +--------------+    120
+ *          |           |
+ *          +-----------+                     130
+ *
+ * While this doesn't map exactly to all of the commands that could be clipped, it means that
+ * children which contain other children (a pretty common case when flattening views) are clipped
+ * or unclipped as one logical unit.  This has the side effect of minimizing the amount of
+ * invalidates coming from minor clipping rect adjustments.  The underlying dynamic programming
+ * arrays can be calculated off the UI thread in O(n) time, requiring just two passes through the
+ * command array.
+ *
+ * We do a similar optimization when searching for matching node regions, as node regions are
+ * loosely sorted as well when clipping.
  */
 /* package */ abstract class ClippingDrawCommandManager extends DrawCommandManager {
   private final FlatViewGroup mFlatViewGroup;
@@ -63,6 +178,13 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     initialSetup(drawCommands);
   }
 
+  /**
+   * Initially setup this instance.  Makes sure the draw commands are mounted, and that our
+   * clipping rect reflects our current bounds.
+   *
+   * @param drawCommands The list of current draw commands.  In current implementations, this will
+   *   always be DrawCommand.EMPTY_ARRAY
+   */
   private void initialSetup(DrawCommand[] drawCommands) {
     mountDrawCommands(
         drawCommands,
@@ -255,14 +377,18 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     }
   }
 
-  // Returns true if a view is currently animating.
+  /**
+   * Returns true if a view is currently animating.
+   */
   private static boolean animating(View view) {
     Animation animation = view.getAnimation();
     return animation != null && !animation.hasEnded();
   }
 
-  // Return true if a command index is currently onscreen.
-  boolean withinBounds(int i) {
+  /**
+   * Returns true if a command index is currently onscreen.
+   */
+  private boolean withinBounds(int i) {
     return mStart <= i && i < mStop;
   }
 
@@ -291,6 +417,22 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     return true;
   }
 
+  /**
+   * Used either after we have updated the current rect, or when we have mounted new commands and
+   * the rect hasn't changed.  Updates the clipping after mStart and mStop have been set to the
+   * correct values.  For draw commands, this is all it takes to update the command mounting, as
+   * draw commands are only attached in a conceptual sense, and rely on the android view
+   * hierarchy.
+   *
+   * For native children, we have to walk through our current views and remove any that are no
+   * longer on screen, and add those that are newly on screen.  As an optimization for fling, if we
+   * are removing two or more native views we instead detachAllViews from the {@link FlatViewGroup}
+   * and re-attach or add as needed.
+   *
+   * This approximation is roughly correct, as we tend to add and remove the same amount of views,
+   * and each add and remove pair is O(n); detachAllViews and re-attach requires two passes, so
+   * using this once we are removing more than two native views is a good breakpoint.
+   */
   private void updateClippingToCurrentRect() {
     for (int i = 0, size = mFlatViewGroup.getChildCount(); i < size; i++) {
       View view = mFlatViewGroup.getChildAt(i);
@@ -372,6 +514,47 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     return mClippedSubviews.values();
   }
 
+  /**
+   * Draws the unclipped commands on the given canvas.  This would be much simpler if we didn't
+   * have to worry about animating views, as we could simply:
+   *
+   *   for (int i = start; i < stop; i++) {
+   *     drawCommands[i].draw(...);
+   *   }
+   *
+   * This is complicated however by animating views, which may occur before or after the current
+   * clipping rect.  Consider the following array:
+   *
+   *   +--------------+
+   *   |  DrawView    | 0
+   *   | *animating*  |
+   *   +--------------+
+   *   | DrawCommmand | 1
+   *   |  *clipped*   |
+   *   +--------------+
+   *   | DrawCommand  | 2 start
+   *   |              |
+   *   +--------------+
+   *   | DrawCommand  | 3
+   *   |              |
+   *   +--------------+
+   *   |  DrawView    | 4
+   *   |              |
+   *   +--------------+
+   *   |  DrawView    | 5 stop
+   *   |  *clipped*   |
+   *   +--------------+
+   *   |  DrawView    | 6
+   *   | *animating*  |
+   *   +--------------+
+   *
+   * 2, 3, and 4 are onscreen according to bounds, while 0 and 6 are onscreen according to
+   * animation.  We have to walk through the attached children making sure to draw any draw
+   * commands that should be drawn before that draw view, as well as making sure not to draw any
+   * draw commands that are out of bounds.
+   *
+   * @param canvas The canvas to draw on.
+   */
   @Override
   public void draw(Canvas canvas) {
     int commandIndex = mStart;

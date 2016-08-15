@@ -20,7 +20,8 @@ import android.view.View;
 import android.view.ViewParent;
 
 /**
- * Underlying logic behind handling clipping draw commands from {@link FlatViewGroup}.
+ * Underlying logic which handles draw commands, views and node regions when clipping in a
+ * {@link FlatViewGroup}.
  */
 /* package */ abstract class DrawCommandManager {
 
@@ -136,6 +137,13 @@ import android.view.ViewParent;
     }
   }
 
+  /**
+   * Get a draw command manager that will clip vertically (The view scrolls up and down).
+   *
+   * @param flatViewGroup FlatViewGroup to use for drawing.
+   * @param drawCommands List of commands to mount.
+   * @return Vertically clipping draw command manager.
+   */
   static DrawCommandManager getVerticalClippingInstance(
       FlatViewGroup flatViewGroup,
       DrawCommand[] drawCommands) {

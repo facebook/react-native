@@ -57,24 +57,44 @@ import android.util.SparseIntArray;
     return mRegionMaxBottom[index] < touchX;
   }
 
-  // These should never be called from the UI thread, as the reason they exist is to do work off the
-  // UI thread.
-  public static void fillMaxMinArrays(NodeRegion[] regions, float[] maxBottom, float[] minTop) {
+  /**
+   * Populates the max and min arrays for a given set of node regions.
+   *
+   * This should never be called from the UI thread, as the reason it exists is to do work off the
+   * UI thread.
+   *
+   * @param regions The regions that will eventually be mounted.
+   * @param maxRight  At each index i, the maximum right value of all regions at or below i.
+   * @param minLeft  At each index i, the minimum left value of all regions at or below i.
+   */
+  public static void fillMaxMinArrays(NodeRegion[] regions, float[] maxRight, float[] minLeft) {
     float last = 0;
     for (int i = 0; i < regions.length; i++) {
       last = Math.max(last, regions[i].mRight);
-      maxBottom[i] = last;
+      maxRight[i] = last;
     }
     for (int i = regions.length - 1; i >= 0; i--) {
       last = Math.min(last, regions[i].mLeft);
-      minTop[i] = last;
+      minLeft[i] = last;
     }
   }
 
+  /**
+   * Populates the max and min arrays for a given set of draw commands.  Also populates a mapping of
+   * react tags to their index position in the command array.
+   *
+   * This should never be called from the UI thread, as the reason it exists is to do work off the
+   * UI thread.
+   *
+   * @param commands The draw commands that will eventually be mounted.
+   * @param maxRight At each index i, the maximum right value of all draw commands at or below i.
+   * @param minLeft At each index i, the minimum left value of all draw commands at or below i.
+   * @param drawViewIndexMap Mapping of ids to index position within the draw command array.
+   */
   public static void fillMaxMinArrays(
       DrawCommand[] commands,
-      float[] maxBottom,
-      float[] minTop,
+      float[] maxRight,
+      float[] minLeft,
       SparseIntArray drawViewIndexMap) {
     float last = 0;
     // Loop through the DrawCommands, keeping track of the maximum we've seen if we only iterated
@@ -88,7 +108,7 @@ import android.util.SparseIntArray;
       } else {
         last = Math.max(last, commands[i].getRight());
       }
-      maxBottom[i] = last;
+      maxRight[i] = last;
     }
     // Intentionally leave last as it was, since it's at the maximum bottom position we've seen so
     // far, we can use it again.
@@ -100,7 +120,7 @@ import android.util.SparseIntArray;
       } else {
         last = Math.min(last, commands[i].getLeft());
       }
-      minTop[i] = last;
+      minLeft[i] = last;
     }
   }
 }

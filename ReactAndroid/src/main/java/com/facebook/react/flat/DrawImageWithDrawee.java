@@ -39,7 +39,7 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper;
 import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
 
 /**
- * DrawImageWithDrawee is DrawCommand that can draw a local or remote image.
+ * DrawImageWithDrawee is a DrawCommand that can draw a local or remote image.
  * It uses DraweeRequestHelper internally to fetch and cache the images.
  */
 /* package */ final class DrawImageWithDrawee extends AbstractDrawCommand

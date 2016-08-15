@@ -26,17 +26,17 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
 /**
  * Shadow node hierarchy by itself cannot display UI, it is only a representation of what UI should
- * be from JavaScript perspective. StateBuilder is a helper class that can walk the shadow node tree
- * and collect information that can then be passed to UI thread and applied to a hierarchy of Views
- * that Android finally can display.
+ * be from JavaScript perspective. StateBuilder is a helper class that walks the shadow node tree
+ * and collects information into an operation queue that is run on the UI thread and applied to the
+ * non-shadow hierarchy of Views that Android can finally display.
  */
 /* package */ final class StateBuilder {
   /* package */ static final float[] EMPTY_FLOAT_ARRAY = new float[0];
-  /* package */ static final SparseArray<DrawView> EMPTY_SPARSE_DRAWVIEW = new SparseArray<>();
   /* package */ static final SparseIntArray EMPTY_SPARSE_INT = new SparseIntArray();
 
   private static final boolean SKIP_UP_TO_DATE_NODES = true;
 
+  // Optimization to avoid re-allocating zero length arrays.
   private static final int[] EMPTY_INT_ARRAY = new int[0];
 
   private final FlatUIViewOperationQueue mOperationsQueue;
@@ -70,8 +70,9 @@ import com.facebook.react.uimanager.events.EventDispatcher;
   }
 
   /**
-   * Given a root of the laid-out shadow node hierarchy, walks the tree and generates an array of
-   * DrawCommands that will then mount in UI thread to a root FlatViewGroup so that it can draw.
+   * Given a root of the laid-out shadow node hierarchy, walks the tree and generates arrays from
+   * element lists that are mounted in the UI thread to FlatViewGroups to handle drawing, touch,
+   * and other logic.
    */
   /* package */ void applyUpdates(FlatShadowNode node) {
     float width = node.getLayoutWidth();
@@ -95,6 +96,13 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     updateViewBounds(node, left, top, right, bottom);
   }
 
+  /**
+   * Run after the shadow node hierarchy is updated.  Detaches all children from Views that are
+   * changing their native children, updates views, and dispatches commands before discarding any
+   * dropped views.
+   *
+   * @param eventDispatcher Dispatcher for onLayout events.
+   */
   void afterUpdateViewHierarchy(EventDispatcher eventDispatcher) {
     if (mDetachAllChildrenFromViews != null) {
       int[] viewsToDetachAllChildrenFrom = collectViewTags(mViewsToDetachAllChildrenFrom);
@@ -109,7 +117,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     }
     mUpdateViewBoundsOperations.clear();
 
-    // Process view manager commands after bounds operations, so that any ui operations have already
+    // Process view manager commands after bounds operations, so that any UI operations have already
     // happened before we actually dispatch the view manager command.  This prevents things like
     // commands going to empty parents and views not yet being created.
     for (int i = 0, size = mViewManagerCommands.size(); i != size; i++) {
@@ -143,16 +151,33 @@ import com.facebook.react.uimanager.events.EventDispatcher;
   }
 
   /**
-   * Adds a DrawCommand for current mountable node.
+   * Adds a draw command to the element list for the current scope.  Allows collectState within the
+   * shadow node to add commands.
+   *
+   * @param drawCommand The draw command to add.
    */
   /* package */ void addDrawCommand(AbstractDrawCommand drawCommand) {
     mDrawCommands.add(drawCommand);
   }
 
+  /**
+   * Adds a listener to the element list for the current scope.  Allows collectState within the
+   * shadow node to add listeners.
+   *
+   * @param listener The listener to add
+   */
   /* package */ void addAttachDetachListener(AttachDetachListener listener) {
     mAttachDetachListeners.add(listener);
   }
 
+  /**
+   * Adds a command for a view manager to the queue.  We have to delay adding it to the operations
+   * queue until we have added our view moves, creations and updates.
+   *
+   * @param reactTag The react tag of the command target.
+   * @param commandId ID of the command.
+   * @param commandArgs Arguments for the command.
+   */
   /* package */ void enqueueViewManagerCommand(
       int reactTag,
       int commandId,
@@ -161,11 +186,17 @@ import com.facebook.react.uimanager.events.EventDispatcher;
         mOperationsQueue.createViewManagerCommand(reactTag, commandId, commandArgs));
   }
 
+  /**
+   * Create a backing view for a node, or update the backing view if it has already been created.
+   *
+   * @param node The node to create the backing view for.
+   * @param styles Styles for the view.
+   */
   /* package */ void enqueueCreateOrUpdateView(
       FlatShadowNode node,
       @Nullable ReactStylesDiffMap styles) {
     if (node.isBackingViewCreated()) {
-      // if the View is already created, make sure propagate new styles.
+      // If the View is already created, make sure to propagate the new styles.
       mOperationsQueue.enqueueUpdateProperties(
           node.getReactTag(),
           node.getViewClass(),
@@ -181,6 +212,11 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     }
   }
 
+  /**
+   * Create a backing view for a node if not already created.
+   *
+   * @param node The node to create the backing view for.
+   */
   /* package */ void ensureBackingViewIsCreated(FlatShadowNode node) {
     if (node.isBackingViewCreated()) {
       return;
@@ -192,10 +228,28 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     node.signalBackingViewIsCreated();
   }
 
+  /**
+   * Enqueue dropping of the view for a node that has a backing view.  Used in conjuction with
+   * remove the node from the shadow hierarchy.
+   *
+   * @param node The node to drop the backing view for.
+   */
   /* package */ void dropView(FlatShadowNode node) {
     mViewsToDrop.add(node.getReactTag());
   }
 
+  /**
+   * Adds a node region to the element list for the current scope.  Allows collectState to add
+   * regions.
+   *
+   * @param node The node to add a region for.
+   * @param left Bound of the region.
+   * @param top Bound of the region.
+   * @param right Bound of the region.
+   * @param bottom Bound of the region.
+   * @param isVirtual True if the region does not map to a native view.  Used to determine touch
+   *   targets.
+   */
   private void addNodeRegion(
       FlatShadowNode node,
       float left,
@@ -212,6 +266,12 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     mNodeRegions.add(node.getNodeRegion());
   }
 
+  /**
+   * Adds a native child to the element list for the current scope.  Allows collectState to add
+   * native children.
+   *
+   * @param nativeChild The view-backed native child to add.
+   */
   private void addNativeChild(FlatShadowNode nativeChild) {
     mNativeChildren.add(nativeChild);
   }
@@ -244,8 +304,9 @@ import com.facebook.react.uimanager.events.EventDispatcher;
   }
 
   /**
-   * Collects state (DrawCommands) for a given node that will mount to a View.
-   * Returns true if this node or any of its descendants that mount to View generated any updates.
+   * Collects state (Draw commands, listeners, regions, native children) for a given node that will
+   * mount to a View. Returns true if this node or any of its descendants that mount to View
+   * generated any updates.
    */
   private boolean collectStateForMountableNode(
       FlatShadowNode node,
@@ -413,6 +474,14 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     return updated;
   }
 
+  /**
+   * Handles updating the children of a node when they change.  Updates the shadow node and
+   * enqueues state updates that will eventually be run on the UI thread.
+   *
+   * @param node The node to update native children for.
+   * @param oldNativeChildren The previously mounted native children.
+   * @param newNativeChildren The newly mounted native children.
+   */
   private void updateNativeChildren(
       FlatShadowNode node,
       FlatShadowNode[] oldNativeChildren,
@@ -470,7 +539,9 @@ import com.facebook.react.uimanager.events.EventDispatcher;
   }
 
   /**
-   * Recursively walks node tree from a given node and collects DrawCommands.
+   * Recursively walks node tree from a given node and collects draw commands, listeners, node
+   * regions and native children.  Calls collect state on the node, then processNodeAndCollectState
+   * for the recursion.
    */
   private boolean collectStateRecursively(
       FlatShadowNode node,
@@ -548,6 +619,11 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     return updated;
   }
 
+  /**
+   * Recursively walks this node and child nodes, marking the layout state as UP_TO_DATE.
+   *
+   * @param node The node to recur down from.
+   */
   private void markLayoutSeenRecursively(ReactShadowNode node) {
     if (node.hasNewLayout()) {
       node.markLayoutSeen();
@@ -559,8 +635,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
   }
 
   /**
-   * Collects state and updates View boundaries for a given node tree.
-   * Returns true if this node or any of its descendants that mount to View generated any updates.
+   * Collects state and enqueues View boundary updates for a given node tree.  Returns true if
+   * this node or any of its descendants that mount to View generated any updates.
    */
   private boolean processNodeAndCollectState(
       FlatShadowNode node,

@@ -14,34 +14,49 @@ import java.util.ArrayList;
 import java.lang.reflect.Array;
 
 /**
- * Helper class that supports 3 main operations: start(), add() an element and finish().
+ * Diffing scope stack class that supports 3 main operations: start(), add() an element and
+ * finish().
  *
  * When started, it takes a baseline array to compare to. When adding a new element, it checks
  * whether a corresponding element in baseline array is the same. On finish(), it will return null
  * if baseline array contains exactly the same elements that were added with a sequence of add()
- * calls, or a new array the recorded elements:
+ * calls, or a new array of the recorded elements:
  *
  * Example 1:
  * -----
- * start([A])
- * add(A)
- * finish() -> null (because [A] == [A])
+ *   start([A])
+ *   add(A)
+ *   finish() -> null (because [A] == [A])
  *
  * Example 2:
  * ----
- * start([A])
- * add(B)
- * finish() -> [B] (because [A] != [B])
+ *   start([A])
+ *   add(B)
+ *   finish() -> [B] (because [A] != [B])
+ *
+ * Example 3:
+ * ----
+ *   start([A])
+ *   add(B)
+ *   add(A)
+ *   finish() -> [B, A] (because [B, A] != [A])
+ *
+ * Example 4:
+ * ----
+ *   start([A, B])
+ *   add(B)
+ *   add(A)
+ *   finish() -> [B, A] (because [B, A] != [A, B])
  *
  * It is important that start/finish can be nested:
  * ----
- * start([A])
- * add(A)
- *   start([B])
- *   add(B)
- *   finish() -> null
- * add(C)
- * finish() -> [A, C]
+ *   start([A])
+ *   add(A)
+ *     start([B])
+ *     add(B)
+ *     finish() -> null
+ *   add(C)
+ *   finish() -> [A, C]
  *
  * StateBuilder is using this class to check if e.g. a DrawCommand list for a given View needs to be
  * updated.
@@ -54,7 +69,12 @@ import java.lang.reflect.Array;
     int size;
   }
 
+  // List of scopes.  These are never cleared, but instead recycled when a new scope is needed at
+  // a given depth.
   private final ArrayList<Scope> mScopesStack = new ArrayList<>();
+  // Working list of all new elements we are gathering across scopes.  Whenever we get a call to
+  // finish() we pop the new elements off the collection, either discarding them if there was no
+  // change from the base or accumulating and returning them as a list of new elements.
   private final ArrayDeque<E> mElements = new ArrayDeque<>();
   private final E[] mEmptyArray;
   private Scope mCurrentScope = null;
@@ -78,8 +98,8 @@ import java.lang.reflect.Array;
   }
 
   /**
-   * Finished current scope, and returns null if there were no changes recorded, or a new array
-   * containing all the recorded elements otherwise.
+   * Finish current scope, returning null if there were no changes recorded, or a new array
+   * containing all the newly recorded elements otherwise.
    */
   public E[] finish() {
     Scope scope = getCurrentScope();
@@ -96,14 +116,15 @@ import java.lang.reflect.Array;
       }
     }
 
-    // to prevent leaks
+    // To prevent resource leaks.
     scope.elements = null;
 
     return result;
   }
 
   /**
-   * Adds a new element to the list. This method can be optimized to avoid inserts on same elements.
+   * Adds a new element to the list.  This method can be optimized to avoid inserts on same
+   * elements, but would involve copying from scope.elements when we extract elements.
    */
   public void add(E element) {
     Scope scope = getCurrentScope();
@@ -119,7 +140,7 @@ import java.lang.reflect.Array;
   }
 
   /**
-   * Resets all references to the elements to null to avoid memory leaks.
+   * Resets all references to elements in our new stack to null to avoid memory leaks.
    */
   public void clear() {
     if (getCurrentScope() != null) {
@@ -129,7 +150,8 @@ import java.lang.reflect.Array;
   }
 
   /**
-   * Extracts last size elements into an array.
+   * Extracts last size elements into an array.  Used to extract our new array of items from our
+   * stack when the new items != old items.
    */
   private E[] extractElements(int size) {
     if (size == 0) {
@@ -151,15 +173,18 @@ import java.lang.reflect.Array;
   private void pushScope() {
     ++mScopeIndex;
     if (mScopeIndex == mScopesStack.size()) {
+      // We reached a new deepest scope, we need to create a scope for this depth.
       mCurrentScope = new Scope();
       mScopesStack.add(mCurrentScope);
     } else {
+      // We have had a scope at this depth before, lets recycle it.
       mCurrentScope = mScopesStack.get(mScopeIndex);
     }
   }
 
   /**
-   * Restores last save current scope.
+   * Restores last saved current scope.  Doesn't actually remove the scope, as scopes are
+   * recycled.
    */
   private void popScope() {
     --mScopeIndex;
