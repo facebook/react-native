@@ -25,9 +25,9 @@ import type EmitterSubscription from 'EmitterSubscription';
 import type {StackFrame} from 'parseErrorStack';
 
 type WarningInfo = {
-  count: number;
-  stacktrace: Array<StackFrame>;
-  symbolicated: boolean;
+  count: number,
+  stacktrace: Array<StackFrame>,
+  symbolicated: boolean,
 };
 
 const _warningEmitter = new EventEmitter();
@@ -85,6 +85,9 @@ function sprintf(format, ...args) {
 }
 
 function updateWarningMap(format, ...args): void {
+  if (console.disableYellowBox) {
+    return;
+  }
   const stringifySafe = require('stringifySafe');
 
   format = String(format);
@@ -268,9 +271,9 @@ const WarningInspector = ({
 
 class YellowBox extends React.Component {
   state: {
-    stacktraceVisible: boolean;
-    inspecting: ?string;
-    warningMap: Map<any, any>;
+    stacktraceVisible: boolean,
+    inspecting: ?string,
+    warningMap: Map<any, any>,
   };
   _listener: ?EmitterSubscription;
   dismissWarning: (warning: ?string) => void;

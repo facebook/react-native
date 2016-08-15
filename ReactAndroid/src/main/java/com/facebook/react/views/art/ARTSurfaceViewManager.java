@@ -12,7 +12,7 @@ package com.facebook.react.views.art;
 import android.graphics.Bitmap;
 
 import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -26,10 +26,10 @@ public class ARTSurfaceViewManager extends
 
   private static final String REACT_CLASS = "ARTSurfaceView";
 
-  private static final CSSNode.MeasureFunction MEASURE_FUNCTION = new CSSNode.MeasureFunction() {
+  private static final CSSNodeAPI.MeasureFunction MEASURE_FUNCTION = new CSSNodeAPI.MeasureFunction() {
     @Override
     public void measure(
-        CSSNode node,
+        CSSNodeAPI node,
         float width,
         CSSMeasureMode widthMode,
         float height,

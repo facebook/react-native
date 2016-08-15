@@ -23,8 +23,8 @@ var fs = require('fs');
 
 describe('AssetServer', () => {
   beforeEach(() => {
-    const NodeHaste = require('node-haste');
-    NodeHaste.getAssetDataFromName = require.requireActual('node-haste/lib/lib/getAssetDataFromName');
+    const NodeHaste = require('../../node-haste');
+    NodeHaste.getAssetDataFromName = require.requireActual('../../node-haste/lib/getAssetDataFromName');
   });
 
   describe('assetServer.get', () => {

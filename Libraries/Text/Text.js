@@ -29,9 +29,11 @@ const viewConfig = {
   validAttributes: merge(ReactNativeViewAttributes.UIView, {
     isHighlighted: true,
     numberOfLines: true,
-    lineBreakMode: true,
+    ellipsizeMode: true,
     allowFontScaling: true,
     selectable: true,
+    adjustsFontSizeToFit: true,
+    minimumFontScale: true,
   }),
   uiViewClassName: 'RCTText',
 };
@@ -90,7 +92,7 @@ const viewConfig = {
 const Text = React.createClass({
   propTypes: {
     /**
-     * Line Break mode. This can be one of the following values:
+     * This can be one of the following values:
      *
      * - `head` - The line is displayed so that the end fits in the container and the missing text
      * at the beginning of the line is indicated by an ellipsis glyph. e.g., "...wxyz"
@@ -106,13 +108,13 @@ const Text = React.createClass({
      *
      * > `clip` is working only for iOS
      */
-    lineBreakMode: React.PropTypes.oneOf(['head', 'middle', 'tail', 'clip']),
+    ellipsizeMode: React.PropTypes.oneOf(['head', 'middle', 'tail', 'clip']),
     /**
      * Used to truncate the text with an ellipsis after computing the text
      * layout, including line wrapping, such that the total number of lines
      * does not exceed this number.
      *
-     * This prop is commonly used with `lineBreakMode`.
+     * This prop is commonly used with `ellipsizeMode`.
      */
     numberOfLines: React.PropTypes.number,
     /**
@@ -166,13 +168,24 @@ const Text = React.createClass({
      * [Accessibility guide](/react-native/docs/accessibility.html#accessible-ios-android)
      * for more information.
      */
-     accessible: React.PropTypes.bool,
+    accessible: React.PropTypes.bool,
+    /**
+     * Specifies whether font should be scaled down automatically to fit given style constraints.
+     * @platform ios
+     */
+    adjustsFontSizeToFit: React.PropTypes.bool,
+
+    /**
+     * Specifies smallest possible scale a font can reach when adjustsFontSizeToFit is enabled. (values 0.01-1.0).
+     * @platform ios
+     */
+    minimumFontScale: React.PropTypes.number,
   },
   getDefaultProps(): Object {
     return {
       accessible: true,
       allowFontScaling: true,
-      lineBreakMode: 'tail',
+      ellipsizeMode: 'tail',
     };
   },
   getInitialState: function(): Object {
@@ -308,10 +321,10 @@ const Text = React.createClass({
 });
 
 type RectOffset = {
-  top: number;
-  left: number;
-  right: number;
-  bottom: number;
+  top: number,
+  left: number,
+  right: number,
+  bottom: number,
 }
 
 var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};

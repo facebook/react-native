@@ -20,13 +20,14 @@ import android.view.ViewGroup;
 
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.CatalystInstanceImpl;
-import com.facebook.react.bridge.JSBundleLoader;
-import com.facebook.react.bridge.JSCJavaScriptExecutor;
+import com.facebook.react.cxxbridge.CatalystInstanceImpl;
+import com.facebook.react.cxxbridge.JSBundleLoader;
+import com.facebook.react.cxxbridge.NativeModuleRegistry;
+import com.facebook.react.cxxbridge.JSCJavaScriptExecutor;
+import com.facebook.react.cxxbridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptModuleRegistry;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
-import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 
@@ -61,9 +62,15 @@ public class ReactTestHelper {
 
       @Override
       public CatalystInstance build() {
+        JavaScriptExecutor executor = null;
+        try {
+          executor = new JSCJavaScriptExecutor.Factory(new WritableNativeMap()).create();
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
         return new CatalystInstanceImpl.Builder()
           .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
-          .setJSExecutor(new JSCJavaScriptExecutor(new WritableNativeMap()))
+          .setJSExecutor(executor)
           .setRegistry(mNativeModuleRegistryBuilder.build())
           .setJSModuleRegistry(mJSModuleRegistryBuilder.build())
           .setJSBundleLoader(JSBundleLoader.createFileLoader(

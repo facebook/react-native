@@ -78,7 +78,7 @@ void stopAndOutputProfilingFile(
 }
 
 void addNativeProfilingHooks(JSGlobalContextRef ctx) {
-  JSEnableByteCodeProfiling();
+  // JSEnableByteCodeProfiling();
   installGlobalFunction(ctx, "nativeProfilerStart", nativeProfilerStart);
   installGlobalFunction(ctx, "nativeProfilerEnd", nativeProfilerEnd);
 }

@@ -10,7 +10,7 @@ previous: images
 
 Users interact with mobile apps mainly through touch. They can use a combination of gestures, such as tapping on a button, scrolling a list, or zooming on a map.
 
-React Native provides components to handle common gestures, such as taps and swipes, as well as a comprehensive [gesture responder system](/react-native/docs/gesturerespondersystem.html) to allow for more advanced gesture recognition.
+React Native provides components to handle common gestures, such as taps and swipes, as well as a comprehensive [gesture responder system](/react-native/docs/gesture-responder-system.html) to allow for more advanced gesture recognition.
 
 ## Tappable Components
 
@@ -64,4 +64,4 @@ A ScrollView with a single item can be used to allow the user to zoom content. S
 
 ## Handling additional gestures
 
-If you want to allow a user to drag a view around the screen, or you want to implement your own custom pan/drag gesture, take a look at the [PanResponder](/react-native/docs/panresponder.html) API or the [gesture responder system docs](/react-native/docs/gesturerespondersystem.html).
+If you want to allow a user to drag a view around the screen, or you want to implement your own custom pan/drag gesture, take a look at the [PanResponder](/react-native/docs/panresponder.html) API or the [gesture responder system docs](/react-native/docs/gesture-responder-system.html).

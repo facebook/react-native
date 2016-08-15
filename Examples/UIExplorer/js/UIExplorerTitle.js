@@ -31,8 +31,8 @@ var {
   View,
 } = ReactNative;
 
-var UIExplorerTitle = React.createClass({
-  render: function() {
+class UIExplorerTitle extends React.Component {
+  render() {
     return (
       <View style={styles.container}>
         <Text style={styles.text}>
@@ -41,7 +41,7 @@ var UIExplorerTitle = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {

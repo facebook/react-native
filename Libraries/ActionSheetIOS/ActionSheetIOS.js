@@ -44,7 +44,7 @@ var ActionSheetIOS = {
 
   /**
    * Display the iOS share sheet. The `options` object should contain
-   * one or both of `message` and `url` and can additionally have 
+   * one or both of `message` and `url` and can additionally have
    * a `subject` or `excludedActivityTypes`:
    *
    * - `url` (string) - a URL to share

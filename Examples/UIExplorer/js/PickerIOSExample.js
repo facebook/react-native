@@ -73,15 +73,13 @@ var CAR_MAKES_AND_MODELS = {
   },
 };
 
-var PickerExample = React.createClass({
-  getInitialState: function() {
-    return {
-      carMake: 'cadillac',
-      modelIndex: 3,
-    };
-  },
+class PickerExample extends React.Component {
+  state = {
+    carMake: 'cadillac',
+    modelIndex: 3,
+  };
 
-  render: function() {
+  render() {
     var make = CAR_MAKES_AND_MODELS[this.state.carMake];
     var selectionString = make.name + ' ' + make.models[this.state.modelIndex];
     return (
@@ -114,18 +112,16 @@ var PickerExample = React.createClass({
         <Text>You selected: {selectionString}</Text>
       </View>
     );
-  },
-});
+  }
+}
 
-var PickerStyleExample = React.createClass({
-  getInitialState: function() {
-    return {
-      carMake: 'cadillac',
-      modelIndex: 0,
-    };
-  },
+class PickerStyleExample extends React.Component {
+  state = {
+    carMake: 'cadillac',
+    modelIndex: 0,
+  };
 
-  render: function() {
+  render() {
     var make = CAR_MAKES_AND_MODELS[this.state.carMake];
     var selectionString = make.name + ' ' + make.models[this.state.modelIndex];
     return (
@@ -142,8 +138,8 @@ var PickerStyleExample = React.createClass({
         ))}
       </PickerIOS>
     );
-  },
-});
+  }
+}
 
 exports.displayName = (undefined: ?string);
 exports.title = '<PickerIOS>';

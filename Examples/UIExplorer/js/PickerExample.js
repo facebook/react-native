@@ -33,26 +33,22 @@ const {
   Text,
   TouchableWithoutFeedback,
 } = ReactNative;
+// $FlowFixMe found when converting React.createClass to ES6
 const Item = Picker.Item;
 
-const PickerExample = React.createClass({
+class PickerExample extends React.Component {
+  static title = '<Picker>';
+  static description = 'Provides multiple options to choose from, using either a dropdown menu or a dialog.';
 
-  statics: {
-    title: '<Picker>',
-    description: 'Provides multiple options to choose from, using either a dropdown menu or a dialog.',
-  },
+  state = {
+    selected1: 'key1',
+    selected2: 'key1',
+    selected3: 'key1',
+    color: 'red',
+    mode: Picker.MODE_DIALOG,
+  };
 
-  getInitialState: function() {
-    return {
-      selected1: 'key1',
-      selected2: 'key1',
-      selected3: 'key1',
-      color: 'red',
-      mode: Picker.MODE_DIALOG,
-    };
-  },
-
-  render: function() {
+  render() {
     return (
       <UIExplorerPage title="<Picker>">
         <UIExplorerBlock title="Basic Picker">
@@ -121,21 +117,21 @@ const PickerExample = React.createClass({
         </UIExplorerBlock>
       </UIExplorerPage>
     );
-  },
+  }
 
-  changeMode: function() {
+  changeMode = () => {
     const newMode = this.state.mode === Picker.MODE_DIALOG
         ? Picker.MODE_DROPDOWN
         : Picker.MODE_DIALOG;
     this.setState({mode: newMode});
-  },
+  };
 
-  onValueChange: function(key: string, value: string) {
+  onValueChange = (key: string, value: string) => {
     const newState = {};
     newState[key] = value;
     this.setState(newState);
-  },
-});
+  };
+}
 
 var styles = StyleSheet.create({
   picker: {

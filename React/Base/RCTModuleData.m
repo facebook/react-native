@@ -83,14 +83,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (void)setUpInstanceAndBridge
 {
-  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] [_instanceLock lock]", nil);
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] [_instanceLock lock]", @{ @"moduleClass": _moduleClass });
   [_instanceLock lock];
   if (!_setupComplete && _bridge.valid) {
     if (!_instance) {
       if (RCT_DEBUG && _requiresMainQueueSetup) {
         RCTAssertMainQueue();
       }
-      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] [_moduleClass new]", nil);
+      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] [_moduleClass new]",  @{ @"moduleClass": _moduleClass });
       _instance = [_moduleClass new];
       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
       if (!_instance) {
@@ -216,9 +216,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
       // get accessed by client code during bridge setup, and a very low risk of
       // deadlock is better than a fairly high risk of an assertion being thrown.
       RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData instance] main thread setup", nil);
+
+      if (!RCTIsMainQueue()) {
+        RCTLogWarn(@"RCTBridge required dispatch_sync to load %@. This may lead to deadlocks", _moduleClass);
+      }
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
       RCTExecuteOnMainThread(^{
         [self setUpInstanceAndBridge];
       }, YES);
+#pragma clang diagnostic pop
       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
     } else {
       [self setUpInstanceAndBridge];
@@ -278,9 +285,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   if (_hasConstantsToExport && !_constantsToExport) {
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, [NSString stringWithFormat:@"[RCTModuleData gatherConstants] %@", _moduleClass], nil);
     (void)[self instance];
+    if (!RCTIsMainQueue()) {
+      RCTLogWarn(@"Required dispatch_sync to load constants for %@. This may lead to deadlocks", _moduleClass);
+    }
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     RCTExecuteOnMainThread(^{
       self->_constantsToExport = [self->_instance constantsToExport] ?: @{};
     }, YES);
+#pragma clang diagnostic pop
   }
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
 }

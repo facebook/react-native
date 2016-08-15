@@ -49,6 +49,6 @@ module.exports = function(promise: Promise<any>, callbacks: Array<Function>, typ
       err => callback(err)
     );
   default:
-    throw new Error(`Type of callbacks not specified. Must be one of 'success-first', 'error-first', 'single-callback-value-first', or 'node'`);
+    throw new Error('Type of callbacks not specified. Must be one of \'success-first\', \'error-first\', \'single-callback-value-first\', or \'node\'');
   }
 };

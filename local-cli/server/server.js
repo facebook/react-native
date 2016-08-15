@@ -10,82 +10,19 @@
 
 const chalk = require('chalk');
 const formatBanner = require('./formatBanner');
-const parseCommandLine = require('../util/parseCommandLine');
 const path = require('path');
-const Promise = require('promise');
 const runServer = require('./runServer');
+const findSymlinksPaths = require('./findSymlinksPaths');
+const NODE_MODULES = path.resolve(__dirname, '..', '..', '..');
 
 /**
  * Starts the React Native Packager Server.
  */
-function server(argv, config) {
-  return new Promise((resolve, reject) => {
-    _server(argv, config, resolve, reject);
-  });
-}
-
-function _server(argv, config, resolve, reject) {
-  const args = parseCommandLine([{
-    command: 'port',
-    default: 8081,
-    type: 'string',
-  }, {
-    command: 'host',
-    default: '',
-    type: 'string',
-  }, {
-    command: 'root',
-    type: 'string',
-    description: 'add another root(s) to be used by the packager in this project',
-  }, {
-    command: 'projectRoots',
-    type: 'string',
-    description: 'override the root(s) to be used by the packager',
-  },{
-    command: 'assetRoots',
-    type: 'string',
-    description: 'specify the root directories of app assets'
-  }, {
-    command: 'skipflow',
-    description: 'Disable flow checks'
-  }, {
-    command: 'nonPersistent',
-    description: 'Disable file watcher'
-  }, {
-    command: 'transformer',
-    type: 'string',
-    default: null,
-    description: 'Specify a custom transformer to be used'
-  }, {
-    command: 'resetCache',
-    description: 'Removes cached files',
-    default: false,
-  }, {
-    command: 'reset-cache',
-    description: 'Removes cached files',
-    default: false,
-  }, {
-    command: 'verbose',
-    description: 'Enables logging',
-    default: false,
-  }]);
-
-  args.projectRoots = args.projectRoots
-    ? argToArray(args.projectRoots)
-    : config.getProjectRoots();
-
-  if (args.root) {
-    const additionalRoots = argToArray(args.root);
-    additionalRoots.forEach(root => {
-      args.projectRoots.push(path.resolve(root));
-    });
-  }
-
-  args.assetRoots = args.assetRoots
-    ? argToArray(args.assetRoots).map(dir =>
-      path.resolve(process.cwd(), dir)
-    )
-    : config.getAssetRoots();
+function server(argv, config, args) {
+  args.projectRoots = args.projectRoots.concat(
+    args.root,
+    findSymlinksPaths(NODE_MODULES)
+  );
 
   console.log(formatBanner(
     'Running packager on port ' + args.port + '.\n\n' +
@@ -130,25 +67,55 @@ function _server(argv, config, resolve, reject) {
     process.exit(1);
   });
 
-  // TODO: remove once we deprecate this arg
-  if (args.resetCache) {
-    console.log(
-      'Please start using `--reset-cache` instead. ' +
-      'We\'ll deprecate this argument soon.'
-    );
-  }
-
-  startServer(args, config);
+  runServer(args, config, () => console.log('\nReact packager ready.\n'));
 }
 
-function startServer(args, config) {
-  runServer(args, config, () =>
-    console.log('\nReact packager ready.\n')
-  );
-}
-
-function argToArray(arg) {
-  return Array.isArray(arg) ? arg : arg.split(',');
-}
-
-module.exports = server;
+module.exports = {
+  name: 'start',
+  func: server,
+  description: 'starts the webserver',
+  options: [{
+    command: '--port [number]',
+    default: 8081,
+    parse: (val) => Number(val),
+  }, {
+    command: '--host [string]',
+    default: '',
+  }, {
+    command: '--root [list]',
+    description: 'add another root(s) to be used by the packager in this project',
+    parse: (val) => val.split(',').map(root => path.resolve(root)),
+    default: [],
+  }, {
+    command: '--projectRoots [list]',
+    description: 'override the root(s) to be used by the packager',
+    parse: (val) => val.split(','),
+    default: (config) => config.getProjectRoots(),
+  }, {
+    command: '--assetRoots [list]',
+    description: 'specify the root directories of app assets',
+    parse: (val) => val.split(',').map(dir => path.resolve(process.cwd(), dir)),
+    default: (config) => config.getAssetRoots(),
+  }, {
+    command: '--assetExts [list]',
+    description: 'Specify any additional asset extentions to be used by the packager',
+    parse: (val) => val.split(','),
+    default: (config) => config.getAssetExts(),
+  }, {
+    command: '--skipflow',
+    description: 'Disable flow checks'
+  }, {
+    command: '--nonPersistent',
+    description: 'Disable file watcher'
+  }, {
+    command: '--transformer [string]',
+    default: require.resolve('../../packager/transformer'),
+    description: 'Specify a custom transformer to be used (absolute path)'
+  }, {
+    command: '--reset-cache, --resetCache',
+    description: 'Removes cached files',
+  }, {
+    command: '--verbose',
+    description: 'Enables logging',
+  }],
+};
