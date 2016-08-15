@@ -102,6 +102,7 @@ if (cli) {
       );
       process.exit(1);
     } else {
+      if(!argv.verbose) console.log('This may take some time...');
       init(commands[1], argv.verbose, argv.version);
     }
     break;
