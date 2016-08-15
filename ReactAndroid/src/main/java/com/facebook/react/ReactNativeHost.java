@@ -90,6 +90,10 @@ public abstract class ReactNativeHost {
     return null;
   }
 
+  protected final Application getApplication() {
+    return mApplication;
+  }
+
   /**
    * Get the {@link UIImplementationProvider} to use. Override this method if you want to use a
    * custom UI implementation.
