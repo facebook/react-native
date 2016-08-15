@@ -304,6 +304,10 @@ class DependencyGraph {
   createPolyfill(options) {
     return this._moduleCache.createPolyfill(options);
   }
+
+  getHasteMap() {
+    return this._hasteMap;
+  }
 }
 
 Object.assign(DependencyGraph, {
