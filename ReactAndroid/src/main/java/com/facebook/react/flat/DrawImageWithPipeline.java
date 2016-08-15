@@ -48,7 +48,6 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
   private static final int BORDER_BITMAP_PATH_DIRTY = 1 << 1;
 
   private final List<ImageSource> mSources = new LinkedList<>();
-  private @Nullable Context mContext;
   private final Matrix mTransform = new Matrix();
   private ScaleType mScaleType = ImageResizeMode.defaultValue();
   private @Nullable PipelineRequestHelper mRequestHelper;
@@ -62,6 +61,7 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
 
   // variables used for fading the image in
   private long mFirstDrawTime = -1;
+  private boolean mProgressiveRenderingEnabled;
   private int mFadeDuration = ReactImageView.REMOTE_IMAGE_FADE_DURATION_MS;
 
   @Override
@@ -88,7 +88,6 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
         }
       }
     }
-    mContext = context;
     mBitmapShader = null;
   }
 
@@ -119,6 +118,11 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
   @Override
   public void setFadeDuration(int fadeDuration) {
     mFadeDuration = fadeDuration;
+  }
+
+  @Override
+  public void setProgressiveRenderingEnabled(boolean enabled) {
+    mProgressiveRenderingEnabled = enabled;
   }
 
   /**
@@ -241,7 +245,9 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
       mRequestHelper = null;
       return;
     }
-    ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(source.getUri()).build();
+    ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(source.getUri())
+        .setProgressiveRenderingEnabled(mProgressiveRenderingEnabled)
+        .build();
 
     // DrawImageWithPipeline does now support displaying low res cache images before request
     mRequestHelper = new PipelineRequestHelper(Assertions.assertNotNull(imageRequest));

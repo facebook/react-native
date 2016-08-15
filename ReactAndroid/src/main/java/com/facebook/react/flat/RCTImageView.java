@@ -132,6 +132,11 @@ import com.facebook.react.views.image.ImageResizeMode;
     getMutableDrawImage().setFadeDuration(durationMs);
   }
 
+  @ReactProp(name = "progressiveRenderingEnabled")
+  public void setProgressiveRenderingEnabled(boolean enabled) {
+    getMutableDrawImage().setProgressiveRenderingEnabled(enabled);
+  }
+
   private T getMutableDrawImage() {
     if (mDrawImage.isFrozen()) {
       mDrawImage = (T) mDrawImage.mutableCopy();

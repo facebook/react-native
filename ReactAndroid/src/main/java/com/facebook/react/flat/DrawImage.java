@@ -64,4 +64,6 @@ import com.facebook.react.bridge.ReadableArray;
   int getBorderColor();
 
   void setFadeDuration(int fadeDuration);
+
+  void setProgressiveRenderingEnabled(boolean enabled);
 }

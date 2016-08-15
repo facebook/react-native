@@ -55,6 +55,7 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
   private float mBorderRadius;
   private int mBorderColor;
   private int mReactTag;
+  private boolean mProgressiveRenderingEnabled;
   private int mFadeDuration = ReactImageView.REMOTE_IMAGE_FADE_DURATION_MS;
   private @Nullable FlatViewGroup.InvalidateCallback mCallback;
 
@@ -136,6 +137,11 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
   @Override
   public void setFadeDuration(int fadeDuration) {
     mFadeDuration = fadeDuration;
+  }
+
+  @Override
+  public void setProgressiveRenderingEnabled(boolean enabled) {
+    mProgressiveRenderingEnabled = enabled;
   }
 
   @Override
@@ -266,12 +272,14 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
 
     ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(source.getUri())
         .setResizeOptions(resizeOptions)
+        .setProgressiveRenderingEnabled(mProgressiveRenderingEnabled)
         .build();
 
     ImageRequest cachedImageRequest = null;
     if (cachedSource != null) {
       cachedImageRequest = ImageRequestBuilder.newBuilderWithSource(cachedSource.getUri())
           .setResizeOptions(resizeOptions)
+          .setProgressiveRenderingEnabled(mProgressiveRenderingEnabled)
           .build();
     }
     mRequestHelper = new
