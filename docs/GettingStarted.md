@@ -161,7 +161,7 @@ If you plan to make changes in Java code, we recommend [Gradle Daemon](https://d
 Use the React Native command line tools to generate a new React Native project called "AwesomeProject", then run `react-native run-ios` inside the newly created folder.
 
 ```
-react-native init AwesomeProject
+react-native init AwesomeProject --verbose
 cd AwesomeProject
 react-native run-ios
 ```
