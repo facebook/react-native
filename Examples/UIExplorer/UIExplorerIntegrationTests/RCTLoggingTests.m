@@ -69,7 +69,7 @@
   RCTSetLogFunction(RCTDefaultLogFunction);
 }
 
-- (void)testLogging 
+- (void)testLogging
 {
   [_bridge enqueueJSCall:@"LoggingTestModule.logToConsole" args:@[@"Invoking console.log"]];
   dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
