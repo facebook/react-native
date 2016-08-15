@@ -11,4 +11,6 @@
 
 @interface RCTLocalAssetImageLoader : NSObject <RCTImageURLLoader>
 
+@property (nonatomic, strong) NSMutableDictionary *bundleCache;
+
 @end
