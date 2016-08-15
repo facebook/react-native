@@ -134,8 +134,19 @@ import com.facebook.textcachewarmer.DefaultTextLayoutCacheWarmer;
         clipBottom);
 
     if (mText == null) {
-      // nothing to draw (empty text).
-      return;
+      // as an optimization, LayoutEngine may not call measure in certain cases, such as when the
+      // dimensions are already defined. in these cases, we should still draw the text.
+      if (bottom - top > 0 && right - left > 0) {
+        CharSequence text = getText();
+        if (!TextUtils.isEmpty(text)) {
+          mText = text;
+        }
+      }
+
+      if (mText == null) {
+        // nothing to draw (empty text).
+        return;
+      }
     }
 
     boolean updateNodeRegion = false;
