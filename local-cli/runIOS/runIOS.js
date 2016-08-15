@@ -13,6 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const findXcodeProject = require('./findXcodeProject');
 const parseIOSSimulatorsList = require('./parseIOSSimulatorsList');
+const parseIOSDevicesList = require('./parseIOSDevicesList');
 
 function runIOS(argv, config, args) {
   process.chdir(args.projectPath);
@@ -25,15 +26,37 @@ function runIOS(argv, config, args) {
   const scheme = args.scheme || inferredSchemeName;
   console.log(`Found Xcode ${xcodeProject.isWorkspace ? 'workspace' : 'project'} ${xcodeProject.name}`);
 
+  if (args.device) {
+    const devices = parseIOSDevicesList(
+      child_process.execFileSync('xcrun', ['instruments', '-s'], {encoding: 'utf8'})
+    );
+    const selectedDevice = matchingDevice(devices, args.device);
+    if (selectedDevice){
+      runOnDevice(selectedDevice, scheme, xcodeProject);
+    } else {
+      if (devices){
+        console.log('Could not find device with the name: "' + args.device + '".');
+        console.log('Choose one of the following:');
+        printFoundDevices(devices);
+      } else {
+        console.log('No iOS devices connected.');
+      }
+    }
+  } else {
+    runOnSimulator(xcodeProject, args, inferredSchemeName, scheme);
+  }
+}
+
+function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
   const simulators = parseIOSSimulatorsList(
     child_process.execFileSync('xcrun', ['simctl', 'list', 'devices'], {encoding: 'utf8'})
   );
-  const selectedSimulator = matchingSimulator(simulators, args.simulator);
+  const selectedSimulator = matchingDevice(simulators, args.simulator);
   if (!selectedSimulator) {
     throw new Error(`Cound't find ${args.simulator} simulator`);
   }
 
-  const simulatorFullName = formattedSimulatorName(selectedSimulator);
+  const simulatorFullName = formattedDeviceName(selectedSimulator);
   console.log(`Launching ${simulatorFullName}...`);
   try {
     child_process.spawnSync('xcrun', ['instruments', '-w', simulatorFullName]);
@@ -42,14 +65,7 @@ function runIOS(argv, config, args) {
     // but we want it to only launch the simulator
   }
 
-  const xcodebuildArgs = [
-    xcodeProject.isWorkspace ? '-workspace' : '-project', xcodeProject.name,
-    '-scheme', scheme,
-    '-destination', `id=${selectedSimulator.udid}`,
-    '-derivedDataPath', 'build',
-  ];
-  console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
-  child_process.spawnSync('xcodebuild', xcodebuildArgs, {stdio: 'inherit'});
+  buildProject(xcodeProject, selectedSimulator.udid, scheme);
 
   const appPath = `build/Build/Products/Debug-iphonesimulator/${inferredSchemeName}.app`;
   console.log(`Installing ${appPath}`);
@@ -65,16 +81,44 @@ function runIOS(argv, config, args) {
   child_process.spawnSync('xcrun', ['simctl', 'launch', 'booted', bundleID], {stdio: 'inherit'});
 }
 
-function matchingSimulator(simulators, simulatorName) {
-  for (let i = simulators.length - 1; i >= 0; i--) {
-    if (simulators[i].name === simulatorName || formattedSimulatorName(simulators[i]) === simulatorName) {
-      return simulators[i];
+function runOnDevice(selectedDevice, scheme, xcodeProject){
+  buildProject(xcodeProject, selectedDevice.udid, scheme);
+  const iosDeployInstallArgs = [
+    '--bundle', 'build/Build/Products/Debug-iphoneos/' + scheme + '.app',
+    '--id' , selectedDevice.udid,
+    '--justlaunch'
+  ];
+  console.log('installing and launching app on connected device...');
+  child_process.spawnSync('ios-deploy', iosDeployInstallArgs, {stdio: 'inherit'});
+}
+
+function buildProject(xcodeProject, udid, scheme){
+  const xcodebuildArgs = [
+    xcodeProject.isWorkspace ? '-workspace' : '-project', xcodeProject.name,
+    '-scheme', scheme,
+    '-destination', `id=${udid}`,
+    '-derivedDataPath', 'build',
+  ];
+  console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
+  child_process.spawnSync('xcodebuild', xcodebuildArgs, {stdio: 'inherit'});
+}
+
+function matchingDevice(devices, deviceName) {
+  for (let i = devices.length - 1; i >= 0; i--) {
+    if (devices[i].name === deviceName || formattedDeviceName(devices[i]) === deviceName) {
+      return devices[i];
     }
   }
 }
 
-function formattedSimulatorName(simulator) {
+function formattedDeviceName(simulator) {
   return `${simulator.name} (${simulator.version})`;
+}
+
+function printFoundDevices(devices){
+  for (let i = devices.length - 1; i >= 0; i--) {
+    console.log(devices[i].name);
+  }
 }
 
 module.exports = {
@@ -90,6 +134,10 @@ module.exports = {
       desc: 'Pass a non-standard location of iOS directory',
       cmd: 'react-native run-ios --project-path "./app/ios"',
     },
+    {
+      desc: "Run on a connected device, e.g. Max's iPhone",
+      cmd: "react-native run-ios --device 'Max's iPhone'",
+    },
   ],
   options: [{
     command: '--simulator [string]',
@@ -103,5 +151,8 @@ module.exports = {
     description: 'Path relative to project root where the Xcode project '
      + '(.xcodeproj) lives. The default is \'ios\'.',
     default: 'ios',
+  }, {
+    command: '--device [string]',
+    description: 'Explicitly set device to use',
   }]
 };
