@@ -114,7 +114,6 @@ class Bundle extends BundleBase {
       this._ramBundle = {
         startupModules,
         lazyModules,
-        allModules: modules,
       };
     }
 
