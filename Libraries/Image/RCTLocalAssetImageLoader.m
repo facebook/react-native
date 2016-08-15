@@ -13,6 +13,12 @@
 
 #import "RCTUtils.h"
 
+@interface RCTLocalAssetImageLoader ()
+
+@property (nonatomic, strong) NSMutableDictionary *bundleCache;
+
+@end
+
 @implementation RCTLocalAssetImageLoader
 
 RCT_EXPORT_MODULE()
