@@ -1646,3 +1646,9 @@ input#algolia-doc-search:focus {
 .web-player.mobile > .prism {
   display: block;
 }
+
+/** Blog **/
+
+.article {
+  margin: 0 0 40px 0; 
+}
