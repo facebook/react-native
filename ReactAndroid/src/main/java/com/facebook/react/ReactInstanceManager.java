@@ -146,7 +146,11 @@ public abstract class ReactInstanceManager {
    */
   public abstract void onHostDestroy(Activity activity);
 
-  public abstract void onActivityResult(int requestCode, int resultCode, Intent data);
+  public abstract void onActivityResult(
+    Activity activity,
+    int requestCode,
+    int resultCode,
+    Intent data);
   public abstract void showDevOptionsDialog();
 
   /**

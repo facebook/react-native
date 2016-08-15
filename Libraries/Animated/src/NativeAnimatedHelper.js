@@ -11,21 +11,24 @@
  */
 'use strict';
 
-var NativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
+const NativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
+const NativeEventEmitter = require('NativeEventEmitter');
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
-var __nativeAnimatedNodeTagCount = 1; /* used for animated nodes */
-var __nativeAnimationIdCount = 1; /* used for started animations */
+let __nativeAnimatedNodeTagCount = 1; /* used for animated nodes */
+let __nativeAnimationIdCount = 1; /* used for started animations */
 
 type EndResult = {finished: bool};
 type EndCallback = (result: EndResult) => void;
 
+let nativeEventEmitter;
+
 /**
- * Simple wrappers around NativeANimatedModule to provide flow and autocmplete support for
+ * Simple wrappers around NativeAnimatedModule to provide flow and autocmplete support for
  * the native module methods
  */
-var API = {
+const API = {
   createAnimatedNode: function(tag: number, config: Object): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.createAnimatedNode(tag, config);
@@ -79,7 +82,7 @@ var API = {
  * to be updated through the shadow view hierarchy (all non-layout properties). This list is limited
  * to the properties that will perform best when animated off the JS thread.
  */
-var PROPS_WHITELIST = {
+const PROPS_WHITELIST = {
   style: {
     opacity: true,
     transform: true,
@@ -91,7 +94,7 @@ var PROPS_WHITELIST = {
   },
 };
 
-var TRANSFORM_WHITELIST = {
+const TRANSFORM_WHITELIST = {
   translateX: true,
   translateY: true,
   scale: true,
@@ -152,11 +155,6 @@ function assertNativeAnimatedModule(): void {
   invariant(NativeAnimatedModule, 'Native animated module is not available');
 }
 
-// TODO: remove this when iOS supports native listeners.
-function supportsNativeListener(): bool {
-  return !!NativeAnimatedModule.startListeningToAnimatedNodeValue;
-}
-
 module.exports = {
   API,
   validateProps,
@@ -166,5 +164,10 @@ module.exports = {
   generateNewNodeTag,
   generateNewAnimationId,
   assertNativeAnimatedModule,
-  supportsNativeListener,
+  get nativeEventEmitter() {
+    if (!nativeEventEmitter) {
+      nativeEventEmitter = new NativeEventEmitter(NativeAnimatedModule);
+    }
+    return nativeEventEmitter;
+  },
 };

@@ -408,7 +408,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = UNSET)
   public void setNumberOfLines(int numberOfLines) {
-    mNumberOfLines = numberOfLines;
+    mNumberOfLines = numberOfLines == 0 ? UNSET : numberOfLines;
     markUpdated();
   }
 

@@ -218,8 +218,8 @@ class MessageQueue {
     const moduleMethods = this._callableModules[module];
     invariant(
       !!moduleMethods,
-      'Module %s is not a registered callable module.',
-      module
+      'Module %s is not a registered callable module (calling %s)',
+      module, method
     );
     invariant(
       !!moduleMethods[method],

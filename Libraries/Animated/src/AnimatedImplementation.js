@@ -11,7 +11,6 @@
  */
 'use strict';
 
-var DeviceEventEmitter = require('RCTDeviceEventEmitter');
 var InteractionManager = require('InteractionManager');
 var Interpolation = require('Interpolation');
 var React = require('React');
@@ -568,22 +567,26 @@ class SpringAnimation extends Animation {
       // This is using RK4. A good blog post to understand how it works:
       // http://gafferongames.com/game-physics/integration-basics/
       var aVelocity = velocity;
-      var aAcceleration = this._tension * (this._toValue - tempPosition) - this._friction * tempVelocity;
+      var aAcceleration = this._tension *
+        (this._toValue - tempPosition) - this._friction * tempVelocity;
       var tempPosition = position + aVelocity * step / 2;
       var tempVelocity = velocity + aAcceleration * step / 2;
 
       var bVelocity = tempVelocity;
-      var bAcceleration = this._tension * (this._toValue - tempPosition) - this._friction * tempVelocity;
+      var bAcceleration = this._tension *
+        (this._toValue - tempPosition) - this._friction * tempVelocity;
       tempPosition = position + bVelocity * step / 2;
       tempVelocity = velocity + bAcceleration * step / 2;
 
       var cVelocity = tempVelocity;
-      var cAcceleration = this._tension * (this._toValue - tempPosition) - this._friction * tempVelocity;
+      var cAcceleration = this._tension *
+        (this._toValue - tempPosition) - this._friction * tempVelocity;
       tempPosition = position + cVelocity * step / 2;
       tempVelocity = velocity + cAcceleration * step / 2;
 
       var dVelocity = tempVelocity;
-      var dAcceleration = this._tension * (this._toValue - tempPosition) - this._friction * tempVelocity;
+      var dAcceleration = this._tension *
+        (this._toValue - tempPosition) - this._friction * tempVelocity;
       tempPosition = position + cVelocity * step / 2;
       tempVelocity = velocity + cAcceleration * step / 2;
 
@@ -691,7 +694,9 @@ class AnimatedValue extends AnimatedWithChildren {
       this._animation.stop();
       this._animation = null;
     }
-    this._updateValue(value, !this.__isNative /* don't perform a flush for natively driven values */);
+    this._updateValue(
+      value,
+      !this.__isNative /* don't perform a flush for natively driven values */);
     if (this.__isNative) {
       NativeAnimatedAPI.setAnimatedNodeValue(this.__getNativeTag(), value);
     }
@@ -744,23 +749,24 @@ class AnimatedValue extends AnimatedWithChildren {
   }
 
   _startListeningToNativeValueUpdates() {
-    if (this.__nativeAnimatedValueListener ||
-        !NativeAnimatedHelper.supportsNativeListener()) {
+    if (this.__nativeAnimatedValueListener) {
       return;
     }
 
     NativeAnimatedAPI.startListeningToAnimatedNodeValue(this.__getNativeTag());
-    this.__nativeAnimatedValueListener = DeviceEventEmitter.addListener('onAnimatedValueUpdate', (data) => {
-      if (data.tag !== this.__getNativeTag()) {
-        return;
+    this.__nativeAnimatedValueListener = NativeAnimatedHelper.nativeEventEmitter.addListener(
+      'onAnimatedValueUpdate',
+      (data) => {
+        if (data.tag !== this.__getNativeTag()) {
+          return;
+        }
+        this._updateValue(data.value, false /* flush */);
       }
-      this._updateValue(data.value, false /* flush */);
-    });
+    );
   }
 
   _stopListeningForNativeValueUpdates() {
-    if (!this.__nativeAnimatedValueListener ||
-        !NativeAnimatedHelper.supportsNativeListener()) {
+    if (!this.__nativeAnimatedValueListener) {
       return;
     }
 
@@ -803,8 +809,8 @@ class AnimatedValue extends AnimatedWithChildren {
     animation.start(
       this._value,
       (value) => {
-        // Natively driven animations will never call into that callback, therefore we can always pass `flush = true`
-        // to allow the updated value to propagate to native with `setNativeProps`
+        // Natively driven animations will never call into that callback, therefore we can always
+        // pass flush = true to allow the updated value to propagate to native with setNativeProps
         this._updateValue(value, true /* flush */);
       },
       (result) => {
@@ -1294,8 +1300,8 @@ class AnimatedStyle extends AnimatedWithChildren {
       var value = this._style[key];
       if (value instanceof Animated) {
         if (!value.__isNative) {
-          // We cannot use value of natively driven nodes this way as the value we have access from JS
-          // may not be up to date.
+          // We cannot use value of natively driven nodes this way as the value we have access from
+          // JS may not be up to date.
           style[key] = value.__getValue();
         }
       } else {
@@ -1388,8 +1394,8 @@ class AnimatedProps extends Animated {
       var value = this._props[key];
       if (value instanceof Animated) {
         if (!value.__isNative || value instanceof AnimatedStyle) {
-          // We cannot use value of natively driven nodes this way as the value we have access from JS
-          // may not be up to date.
+          // We cannot use value of natively driven nodes this way as the value we have access from
+          // JS may not be up to date.
           props[key] = value.__getValue();
         }
       } else {
@@ -1490,17 +1496,22 @@ class AnimatedProps extends Animated {
 }
 
 function createAnimatedComponent(Component: any): any {
-  var refName = 'node';
-
   class AnimatedComponent extends React.Component {
+    _component: any;
     _propsAnimated: AnimatedProps;
+    _setComponentRef: Function;
+
+    constructor(props: Object) {
+      super(props);
+      this._setComponentRef = this._setComponentRef.bind(this);
+    }
 
     componentWillUnmount() {
       this._propsAnimated && this._propsAnimated.__detach();
     }
 
     setNativeProps(props) {
-      this.refs[refName].setNativeProps(props);
+      this._component.setNativeProps(props);
     }
 
     componentWillMount() {
@@ -1508,7 +1519,7 @@ function createAnimatedComponent(Component: any): any {
     }
 
     componentDidMount() {
-      this._propsAnimated.setNativeView(this.refs[refName]);
+      this._propsAnimated.setNativeView(this._component);
     }
 
     attachProps(nextProps) {
@@ -1521,9 +1532,9 @@ function createAnimatedComponent(Component: any): any {
       // need to re-render it. In this case, we have a fallback that uses
       // forceUpdate.
       var callback = () => {
-        if (this.refs[refName].setNativeProps) {
+        if (this._component.setNativeProps) {
           if (!this._propsAnimated.__isNative) {
-            this.refs[refName].setNativeProps(
+            this._component.setNativeProps(
               this._propsAnimated.__getAnimatedValue()
             );
           } else {
@@ -1542,8 +1553,8 @@ function createAnimatedComponent(Component: any): any {
       );
 
 
-      if (this.refs && this.refs[refName]) {
-        this._propsAnimated.setNativeView(this.refs[refName]);
+      if (this._component) {
+        this._propsAnimated.setNativeView(this._component);
       }
 
       // When you call detach, it removes the element from the parent list
@@ -1565,9 +1576,13 @@ function createAnimatedComponent(Component: any): any {
       return (
         <Component
           {...this._propsAnimated.__getValue()}
-          ref={refName}
+          ref={this._setComponentRef}
         />
       );
+    }
+
+    _setComponentRef(c) {
+      this._component = c;
     }
   }
   AnimatedComponent.propTypes = {
