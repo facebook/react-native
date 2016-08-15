@@ -693,6 +693,10 @@ class Bundler {
     return Promise.resolve(extraOptions)
       .then(extraOptions => Object.assign(options, extraOptions));
   }
+
+  getResolver() {
+    return this._resolver;
+  }
 }
 
 function getPathRelativeToRoot(roots, absPath) {

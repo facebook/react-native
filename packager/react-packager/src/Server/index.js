@@ -180,6 +180,7 @@ const dependencyOpts = declareOpts({
 });
 
 const bundleDeps = new WeakMap();
+const NODE_MODULES = `${path.sep}node_modules${path.sep}`;
 
 class Server {
   constructor(options) {
@@ -230,6 +231,16 @@ class Server {
 
     this._fileWatcher.on('all', this._onFileChange.bind(this));
 
+    // changes to the haste map can affect resolution of files in the bundle
+    this._bundler
+      .getResolver()
+      .getDependecyGraph()
+      .getHasteMap()
+      .on('change', () => {
+        debug('Clearing bundle cache due to haste map change');
+        this._clearBundles();
+      });
+
     this._debouncedFileChangeHandler = debounceAndBatch(filePaths => {
       // only clear bundles for non-JS changes
       if (filePaths.every(RegExp.prototype.test, /\.js(?:on)?$/i)) {
@@ -244,6 +255,7 @@ class Server {
           });
         }
       } else {
+        debug('Clearing bundles due to non-JS change');
         this._clearBundles();
       }
       this._informChangeWatchers();
@@ -362,6 +374,10 @@ class Server {
       this._clearBundles();
       this._hmrFileChangeListener(absPath, this._bundler.stat(absPath));
       return;
+    } else if (type !== 'change' && absPath.indexOf(NODE_MODULES) !== -1) {
+      // node module resolution can be affected by added or removed files
+      debug('Clearing bundles due to potential node_modules resolution change');
+      this._clearBundles();
     }
 
     Promise.all(
