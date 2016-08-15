@@ -12,11 +12,11 @@
 'use strict';
 
 const DialogManagerAndroid = require('NativeModules').DialogManagerAndroid;
-const AndroidPermissions = require('NativeModules').AndroidPermissions;
+const Permissions = require('NativeModules').PermissionsAndroid;
 
 type Rationale = {
-  title: string,
-  message: string,
+  title: string;
+  message: string;
 }
 
 /**
@@ -99,13 +99,7 @@ class PermissionsAndroid {
    * permissions has been granted
    */
   checkPermission(permission: string) : Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      AndroidPermissions.checkPermission(
-        permission,
-        function(perm: string, result: boolean) { resolve(result); },
-        function(error: string) { reject(error); },
-      );
-    });
+    return Permissions.checkPermission(permission)
   }
 
   /**
@@ -119,36 +113,25 @@ class PermissionsAndroid {
    * and then shows the system permission dialog
    */
   requestPermission(permission: string, rationale?: Rationale) : Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      const requestPermission = () => {
-        AndroidPermissions.requestPermission(
-          permission,
-          function(perm: string, result: boolean) { resolve(result); },
-          function(error: string) { reject(error); },
-        );
-      };
+    return new Promise(async (resolve, reject) => {
+      const requestPermission = () => resolve(Permissions.requestPermission(permission));
 
       if (rationale) {
-        AndroidPermissions.shouldShowRequestPermissionRationale(
-          permission,
-          function(perm: string, shouldShowRationale: boolean) {
-            if (shouldShowRationale) {
-              DialogManagerAndroid.showAlert(
-                rationale,
-                () => {
-                  DialogManagerAndroid.showAlert({
-                    message: 'Error Requesting Permissions'
-                  }, {}, {});
-                  reject();
-                },
-                requestPermission
-              );
-            } else {
-              requestPermission();
-            }
-          },
-          function(error: string) { reject(error); },
-        );
+        const shouldShowRationale = await Permissions.shouldShowRequestPermissionRationale(permission)
+        if (shouldShowRationale) {
+          DialogManagerAndroid.showAlert(
+            rationale,
+            () => {
+              DialogManagerAndroid.showAlert({
+                message: 'Error Requesting Permissions'
+              }, {}, {});
+              reject();
+            },
+            requestPermission
+          );
+        } else {
+          requestPermission();
+        }
       } else {
         requestPermission();
       }
