@@ -127,6 +127,10 @@ var Image = React.createClass({
      */
     onLoadEnd: PropTypes.func,
     /**
+     * Invoked when load fails
+     */
+    onError: PropTypes.func,
+    /**
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
@@ -248,10 +252,10 @@ var Image = React.createClass({
         sources = source;
       }
 
-      const {onLoadStart, onLoad, onLoadEnd} = this.props;
+      const {onLoadStart, onLoad, onLoadEnd, onError} = this.props;
       const nativeProps = merge(this.props, {
         style,
-        shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd),
+        shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
         src: sources,
         loadingIndicatorSrc: loadingIndicatorSource ? loadingIndicatorSource.uri : null,
       });
