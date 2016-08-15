@@ -62,16 +62,6 @@ typedef struct CSSStyle {
   float flexBasis;
   float margin[6];
   float position[6];
-  /**
-   * You should skip all the rules that contain negative values for the
-   * following attributes. For example:
-   *   {padding: 10, paddingLeft: -5}
-   * should output:
-   *   {left: 10 ...}
-   * the following two are incorrect:
-   *   {left: -5 ...}
-   *   {left: 0 ...}
-   */
   float padding[6];
   float border[6];
   float dimensions[2];

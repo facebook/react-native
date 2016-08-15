@@ -179,6 +179,37 @@ float CSSNodeStyleGetFlex(CSSNodeRef node) {
     return node->style.instanceName;                                      \
   }
 
+#define CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(type, name, paramName, instanceName) \
+  void CSSNodeStyleSet##name(CSSNodeRef node, CSSEdge edge, type paramName) {  \
+    switch (edge) {                                                            \
+      case CSSEdgeHorizontal:                                                  \
+        CSSNodeStyleSet##name(node, CSSEdgeLeft, paramName);                   \
+        CSSNodeStyleSet##name(node, CSSEdgeRight, paramName);                  \
+        CSSNodeStyleSet##name(node, CSSEdgeStart, paramName);                  \
+        CSSNodeStyleSet##name(node, CSSEdgeEnd, paramName);                    \
+        break;                                                                 \
+      case CSSEdgeVertical:                                                    \
+        CSSNodeStyleSet##name(node, CSSEdgeTop, paramName);                    \
+        CSSNodeStyleSet##name(node, CSSEdgeBottom, paramName);                 \
+        break;                                                                 \
+      case CSSEdgeAll:                                                         \
+        CSSNodeStyleSet##name(node, CSSEdgeHorizontal, paramName);             \
+        CSSNodeStyleSet##name(node, CSSEdgeVertical, paramName);               \
+        break;                                                                 \
+      default:                                                                 \
+        if (node->style.instanceName[edge] != paramName) {                     \
+          node->style.instanceName[edge] = paramName;                          \
+          _CSSNodeMarkDirty(node);                                             \
+        }                                                                      \
+        break;                                                                 \
+    }                                                                          \
+  }                                                                            \
+                                                                               \
+  type CSSNodeStyleGet##name(CSSNodeRef node, CSSEdge edge) {                  \
+    CSS_ASSERT(edge <= CSSEdgeEnd, "Cannot get value of compound edge");       \
+    return node->style.instanceName[edge];                                     \
+  }
+
 #define CSS_NODE_LAYOUT_PROPERTY_IMPL(type, name, instanceName) \
   type CSSNodeLayoutGet##name(CSSNodeRef node) {                \
     return node->layout.instanceName;                           \
@@ -203,33 +234,10 @@ CSS_NODE_STYLE_PROPERTY_IMPL(float, FlexGrow, flexGrow, flexGrow);
 CSS_NODE_STYLE_PROPERTY_IMPL(float, FlexShrink, flexShrink, flexShrink);
 CSS_NODE_STYLE_PROPERTY_IMPL(float, FlexBasis, flexBasis, flexBasis);
 
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PositionLeft, positionLeft, position[CSSPositionLeft]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PositionTop, positionTop, position[CSSPositionTop]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PositionRight, positionRight, position[CSSPositionRight]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PositionBottom, positionBottom, position[CSSPositionBottom]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PositionStart, positionStart, position[CSSPositionStart]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PositionEnd, positionEnd, position[CSSPositionEnd]);
-
-CSS_NODE_STYLE_PROPERTY_IMPL(float, MarginLeft, marginLeft, margin[CSSPositionLeft]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, MarginTop, marginTop, margin[CSSPositionTop]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, MarginRight, marginRight, margin[CSSPositionRight]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, MarginBottom, marginBottom, margin[CSSPositionBottom]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, MarginStart, marginStart, margin[CSSPositionStart]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, MarginEnd, marginEnd, margin[CSSPositionEnd]);
-
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PaddingLeft, paddingLeft, padding[CSSPositionLeft]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PaddingTop, paddingTop, padding[CSSPositionTop]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PaddingRight, paddingRight, padding[CSSPositionRight]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PaddingBottom, paddingBottom, padding[CSSPositionBottom]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PaddingStart, paddingStart, padding[CSSPositionStart]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PaddingEnd, paddingEnd, padding[CSSPositionEnd]);
-
-CSS_NODE_STYLE_PROPERTY_IMPL(float, BorderLeft, borderLeft, border[CSSPositionLeft]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, BorderTop, borderTop, border[CSSPositionTop]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, BorderRight, borderRight, border[CSSPositionRight]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, BorderBottom, borderBottom, border[CSSPositionBottom]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, BorderStart, borderStart, border[CSSPositionStart]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, BorderEnd, BorderEnd, border[CSSPositionEnd]);
+CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Position, position, position);
+CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Margin, margin, margin);
+CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Padding, padding, padding);
+CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Border, border, border);
 
 CSS_NODE_STYLE_PROPERTY_IMPL(float, Width, width, dimensions[CSSDimensionWidth]);
 CSS_NODE_STYLE_PROPERTY_IMPL(float, Height, height, dimensions[CSSDimensionHeight]);

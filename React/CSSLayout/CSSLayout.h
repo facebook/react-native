@@ -101,6 +101,18 @@ typedef enum CSSDimension {
   CSSDimensionHeight,
 } CSSDimension;
 
+typedef enum CSSEdge {
+  CSSEdgeLeft,
+  CSSEdgeTop,
+  CSSEdgeRight,
+  CSSEdgeBottom,
+  CSSEdgeStart,
+  CSSEdgeEnd,
+  CSSEdgeHorizontal,
+  CSSEdgeVertical,
+  CSSEdgeAll,
+} CSSEdge;
+
 typedef enum CSSPrintOptions {
   CSSPrintOptionsLayout = 1,
   CSSPrintOptionsStyle = 2,
@@ -156,6 +168,10 @@ bool CSSValueIsUndefined(float value);
   void CSSNodeStyleSet##name(CSSNodeRef node, type paramName); \
   type CSSNodeStyleGet##name(CSSNodeRef node);
 
+#define CSS_NODE_STYLE_EDGE_PROPERTY(type, name, paramName)                  \
+  void CSSNodeStyleSet##name(CSSNodeRef node, CSSEdge edge, type paramName); \
+  type CSSNodeStyleGet##name(CSSNodeRef node, CSSEdge edge);
+
 #define CSS_NODE_LAYOUT_PROPERTY(type, name) type CSSNodeLayoutGet##name(CSSNodeRef node);
 
 CSS_NODE_PROPERTY(void *, Context, context);
@@ -178,33 +194,10 @@ CSS_NODE_STYLE_PROPERTY(float, FlexGrow, flexGrow);
 CSS_NODE_STYLE_PROPERTY(float, FlexShrink, flexShrink);
 CSS_NODE_STYLE_PROPERTY(float, FlexBasis, flexBasis);
 
-CSS_NODE_STYLE_PROPERTY(float, PositionLeft, positionLeft);
-CSS_NODE_STYLE_PROPERTY(float, PositionTop, positionTop);
-CSS_NODE_STYLE_PROPERTY(float, PositionRight, positionRight);
-CSS_NODE_STYLE_PROPERTY(float, PositionBottom, positionBottom);
-CSS_NODE_STYLE_PROPERTY(float, PositionStart, positionStart);
-CSS_NODE_STYLE_PROPERTY(float, PositionEnd, positionEnd);
-
-CSS_NODE_STYLE_PROPERTY(float, MarginLeft, marginLeft);
-CSS_NODE_STYLE_PROPERTY(float, MarginTop, marginTop);
-CSS_NODE_STYLE_PROPERTY(float, MarginRight, marginRight);
-CSS_NODE_STYLE_PROPERTY(float, MarginBottom, marginBottom);
-CSS_NODE_STYLE_PROPERTY(float, MarginStart, marginStart);
-CSS_NODE_STYLE_PROPERTY(float, MarginEnd, marginEnd);
-
-CSS_NODE_STYLE_PROPERTY(float, PaddingLeft, paddingLeft);
-CSS_NODE_STYLE_PROPERTY(float, PaddingTop, paddingTop);
-CSS_NODE_STYLE_PROPERTY(float, PaddingRight, paddingRight);
-CSS_NODE_STYLE_PROPERTY(float, PaddingBottom, paddingBottom);
-CSS_NODE_STYLE_PROPERTY(float, PaddingStart, paddingStart);
-CSS_NODE_STYLE_PROPERTY(float, PaddingEnd, paddingEnd);
-
-CSS_NODE_STYLE_PROPERTY(float, BorderLeft, borderLeft);
-CSS_NODE_STYLE_PROPERTY(float, BorderTop, borderTop);
-CSS_NODE_STYLE_PROPERTY(float, BorderRight, borderRight);
-CSS_NODE_STYLE_PROPERTY(float, BorderBottom, borderBottom);
-CSS_NODE_STYLE_PROPERTY(float, BorderStart, borderStart);
-CSS_NODE_STYLE_PROPERTY(float, BorderEnd, borderEnd);
+CSS_NODE_STYLE_EDGE_PROPERTY(float, Position, position);
+CSS_NODE_STYLE_EDGE_PROPERTY(float, Margin, margin);
+CSS_NODE_STYLE_EDGE_PROPERTY(float, Padding, padding);
+CSS_NODE_STYLE_EDGE_PROPERTY(float, Border, border);
 
 CSS_NODE_STYLE_PROPERTY(float, Width, width);
 CSS_NODE_STYLE_PROPERTY(float, Height, height);

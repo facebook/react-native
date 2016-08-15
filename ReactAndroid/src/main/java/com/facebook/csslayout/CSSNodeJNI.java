@@ -293,140 +293,46 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
     jni_CSSNodeStyleSetFlex(mNativePointer, flex);
   }
 
-  private native float jni_CSSNodeStyleGetMarginLeft(int nativePointer);
-  private native float jni_CSSNodeStyleGetMarginTop(int nativePointer);
-  private native float jni_CSSNodeStyleGetMarginRight(int nativePointer);
-  private native float jni_CSSNodeStyleGetMarginBottom(int nativePointer);
-  private native float jni_CSSNodeStyleGetMarginStart(int nativePointer);
-  private native float jni_CSSNodeStyleGetMarginEnd(int nativePointer);
+  private native float jni_CSSNodeStyleGetMargin(int nativePointer, int edge);
   @Override
   public Spacing getMargin() {
     assertNativeInstance();
     Spacing margin = new Spacing();
-    margin.set(Spacing.LEFT, jni_CSSNodeStyleGetMarginLeft(mNativePointer));
-    margin.set(Spacing.TOP, jni_CSSNodeStyleGetMarginTop(mNativePointer));
-    margin.set(Spacing.RIGHT, jni_CSSNodeStyleGetMarginRight(mNativePointer));
-    margin.set(Spacing.BOTTOM, jni_CSSNodeStyleGetMarginBottom(mNativePointer));
-    margin.set(Spacing.START, jni_CSSNodeStyleGetMarginStart(mNativePointer));
-    margin.set(Spacing.END, jni_CSSNodeStyleGetMarginEnd(mNativePointer));
+    margin.set(Spacing.LEFT, jni_CSSNodeStyleGetMargin(Spacing.LEFT, mNativePointer));
+    margin.set(Spacing.TOP, jni_CSSNodeStyleGetMargin(Spacing.TOP, mNativePointer));
+    margin.set(Spacing.RIGHT, jni_CSSNodeStyleGetMargin(Spacing.RIGHT, mNativePointer));
+    margin.set(Spacing.BOTTOM, jni_CSSNodeStyleGetMargin(Spacing.BOTTOM, mNativePointer));
+    margin.set(Spacing.START, jni_CSSNodeStyleGetMargin(Spacing.START, mNativePointer));
+    margin.set(Spacing.END, jni_CSSNodeStyleGetMargin(Spacing.END, mNativePointer));
     return margin;
   }
 
-  private native void jni_CSSNodeStyleSetMarginLeft(int nativePointer, float marginLeft);
-  private native void jni_CSSNodeStyleSetMarginTop(int nativePointer, float marginTop);
-  private native void jni_CSSNodeStyleSetMarginRight(int nativePointer, float marginRight);
-  private native void jni_CSSNodeStyleSetMarginBottom(int nativePointer, float marginBottom);
-  private native void jni_CSSNodeStyleSetMarginStart(int nativePointer, float marginStart);
-  private native void jni_CSSNodeStyleSetMarginEnd(int nativePointer, float marginEnd);
+  private native void jni_CSSNodeStyleSetMargin(int nativePointer, int edge, float margin);
   @Override
   public void setMargin(int spacingType, float margin) {
     assertNativeInstance();
-    switch (spacingType) {
-      case Spacing.LEFT:
-        jni_CSSNodeStyleSetMarginLeft(mNativePointer, margin);
-        break;
-      case Spacing.TOP:
-        jni_CSSNodeStyleSetMarginTop(mNativePointer, margin);
-        break;
-      case Spacing.RIGHT:
-        jni_CSSNodeStyleSetMarginRight(mNativePointer, margin);
-        break;
-      case Spacing.BOTTOM:
-        jni_CSSNodeStyleSetMarginBottom(mNativePointer, margin);
-        break;
-      case Spacing.START:
-        jni_CSSNodeStyleSetMarginStart(mNativePointer, margin);
-        break;
-      case Spacing.END:
-        jni_CSSNodeStyleSetMarginEnd(mNativePointer, margin);
-        break;
-      case Spacing.HORIZONTAL:
-        jni_CSSNodeStyleSetMarginLeft(mNativePointer, margin);
-        jni_CSSNodeStyleSetMarginRight(mNativePointer, margin);
-        jni_CSSNodeStyleSetMarginStart(mNativePointer, margin);
-        jni_CSSNodeStyleSetMarginEnd(mNativePointer, margin);
-        break;
-      case Spacing.VERTICAL:
-        jni_CSSNodeStyleSetMarginTop(mNativePointer, margin);
-        jni_CSSNodeStyleSetMarginBottom(mNativePointer, margin);
-        break;
-      case Spacing.ALL:
-        jni_CSSNodeStyleSetMarginLeft(mNativePointer, margin);
-        jni_CSSNodeStyleSetMarginRight(mNativePointer, margin);
-        jni_CSSNodeStyleSetMarginStart(mNativePointer, margin);
-        jni_CSSNodeStyleSetMarginEnd(mNativePointer, margin);
-        jni_CSSNodeStyleSetMarginTop(mNativePointer, margin);
-        jni_CSSNodeStyleSetMarginBottom(mNativePointer, margin);
-        break;
-    }
+    jni_CSSNodeStyleSetMargin(mNativePointer, spacingType, margin);
   }
 
-  private native float jni_CSSNodeStyleGetPaddingLeft(int nativePointer);
-  private native float jni_CSSNodeStyleGetPaddingTop(int nativePointer);
-  private native float jni_CSSNodeStyleGetPaddingRight(int nativePointer);
-  private native float jni_CSSNodeStyleGetPaddingBottom(int nativePointer);
-  private native float jni_CSSNodeStyleGetPaddingStart(int nativePointer);
-  private native float jni_CSSNodeStyleGetPaddingEnd(int nativePointer);
+  private native float jni_CSSNodeStyleGetPadding(int nativePointer, int edge);
   @Override
   public Spacing getPadding() {
     assertNativeInstance();
     Spacing padding = new Spacing();
-    padding.set(Spacing.LEFT, jni_CSSNodeStyleGetPaddingLeft(mNativePointer));
-    padding.set(Spacing.TOP, jni_CSSNodeStyleGetPaddingTop(mNativePointer));
-    padding.set(Spacing.RIGHT, jni_CSSNodeStyleGetPaddingRight(mNativePointer));
-    padding.set(Spacing.BOTTOM, jni_CSSNodeStyleGetPaddingBottom(mNativePointer));
-    padding.set(Spacing.START, jni_CSSNodeStyleGetPaddingStart(mNativePointer));
-    padding.set(Spacing.END, jni_CSSNodeStyleGetPaddingEnd(mNativePointer));
+    padding.set(Spacing.LEFT, jni_CSSNodeStyleGetPadding(Spacing.LEFT, mNativePointer));
+    padding.set(Spacing.TOP, jni_CSSNodeStyleGetPadding(Spacing.TOP, mNativePointer));
+    padding.set(Spacing.RIGHT, jni_CSSNodeStyleGetPadding(Spacing.RIGHT, mNativePointer));
+    padding.set(Spacing.BOTTOM, jni_CSSNodeStyleGetPadding(Spacing.BOTTOM, mNativePointer));
+    padding.set(Spacing.START, jni_CSSNodeStyleGetPadding(Spacing.START, mNativePointer));
+    padding.set(Spacing.END, jni_CSSNodeStyleGetPadding(Spacing.END, mNativePointer));
     return padding;
   }
 
-  private native void jni_CSSNodeStyleSetPaddingLeft(int nativePointer, float paddingLeft);
-  private native void jni_CSSNodeStyleSetPaddingTop(int nativePointer, float paddingTop);
-  private native void jni_CSSNodeStyleSetPaddingRight(int nativePointer, float paddingRight);
-  private native void jni_CSSNodeStyleSetPaddingBottom(int nativePointer, float paddingBottom);
-  private native void jni_CSSNodeStyleSetPaddingStart(int nativePointer, float paddingStart);
-  private native void jni_CSSNodeStyleSetPaddingEnd(int nativePointer, float paddingEnd);
+  private native void jni_CSSNodeStyleSetPadding(int nativePointer, int edge, float padding);
   @Override
   public void setPadding(int spacingType, float padding) {
     assertNativeInstance();
-    switch (spacingType) {
-      case Spacing.LEFT:
-        jni_CSSNodeStyleSetPaddingLeft(mNativePointer, padding);
-        break;
-      case Spacing.TOP:
-        jni_CSSNodeStyleSetPaddingTop(mNativePointer, padding);
-        break;
-      case Spacing.RIGHT:
-        jni_CSSNodeStyleSetPaddingRight(mNativePointer, padding);
-        break;
-      case Spacing.BOTTOM:
-        jni_CSSNodeStyleSetPaddingBottom(mNativePointer, padding);
-        break;
-      case Spacing.START:
-        jni_CSSNodeStyleSetPaddingStart(mNativePointer, padding);
-        break;
-      case Spacing.END:
-        jni_CSSNodeStyleSetPaddingEnd(mNativePointer, padding);
-        break;
-      case Spacing.HORIZONTAL:
-        jni_CSSNodeStyleSetPaddingLeft(mNativePointer, padding);
-        jni_CSSNodeStyleSetPaddingRight(mNativePointer, padding);
-        jni_CSSNodeStyleSetPaddingStart(mNativePointer, padding);
-        jni_CSSNodeStyleSetPaddingEnd(mNativePointer, padding);
-        break;
-      case Spacing.VERTICAL:
-        jni_CSSNodeStyleSetPaddingTop(mNativePointer, padding);
-        jni_CSSNodeStyleSetPaddingBottom(mNativePointer, padding);
-        break;
-      case Spacing.ALL:
-        jni_CSSNodeStyleSetPaddingLeft(mNativePointer, padding);
-        jni_CSSNodeStyleSetPaddingRight(mNativePointer, padding);
-        jni_CSSNodeStyleSetPaddingStart(mNativePointer, padding);
-        jni_CSSNodeStyleSetPaddingEnd(mNativePointer, padding);
-        jni_CSSNodeStyleSetPaddingTop(mNativePointer, padding);
-        jni_CSSNodeStyleSetPaddingBottom(mNativePointer, padding);
-        break;
-    }
+    jni_CSSNodeStyleSetPadding(mNativePointer, spacingType, padding);
   }
 
   @Override
@@ -434,138 +340,46 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
     // TODO
   }
 
-  private native float jni_CSSNodeStyleGetBorderLeft(int nativePointer);
-  private native float jni_CSSNodeStyleGetBorderTop(int nativePointer);
-  private native float jni_CSSNodeStyleGetBorderRight(int nativePointer);
-  private native float jni_CSSNodeStyleGetBorderBottom(int nativePointer);
-  private native float jni_CSSNodeStyleGetBorderStart(int nativePointer);
-  private native float jni_CSSNodeStyleGetBorderEnd(int nativePointer);
+  private native float jni_CSSNodeStyleGetBorder(int nativePointer, int edge);
   @Override
   public Spacing getBorder() {
     assertNativeInstance();
     Spacing border = new Spacing();
-    border.set(Spacing.LEFT, jni_CSSNodeStyleGetBorderLeft(mNativePointer));
-    border.set(Spacing.TOP, jni_CSSNodeStyleGetBorderTop(mNativePointer));
-    border.set(Spacing.RIGHT, jni_CSSNodeStyleGetBorderRight(mNativePointer));
-    border.set(Spacing.BOTTOM, jni_CSSNodeStyleGetBorderBottom(mNativePointer));
-    border.set(Spacing.START, jni_CSSNodeStyleGetBorderStart(mNativePointer));
-    border.set(Spacing.END, jni_CSSNodeStyleGetBorderEnd(mNativePointer));
+    border.set(Spacing.LEFT, jni_CSSNodeStyleGetBorder(Spacing.LEFT, mNativePointer));
+    border.set(Spacing.TOP, jni_CSSNodeStyleGetBorder(Spacing.TOP, mNativePointer));
+    border.set(Spacing.RIGHT, jni_CSSNodeStyleGetBorder(Spacing.RIGHT, mNativePointer));
+    border.set(Spacing.BOTTOM, jni_CSSNodeStyleGetBorder(Spacing.BOTTOM, mNativePointer));
+    border.set(Spacing.START, jni_CSSNodeStyleGetBorder(Spacing.START, mNativePointer));
+    border.set(Spacing.END, jni_CSSNodeStyleGetBorder(Spacing.END, mNativePointer));
     return border;
   }
 
-  private native void jni_CSSNodeStyleSetBorderLeft(int nativePointer, float borderLeft);
-  private native void jni_CSSNodeStyleSetBorderTop(int nativePointer, float borderTop);
-  private native void jni_CSSNodeStyleSetBorderRight(int nativePointer, float borderRight);
-  private native void jni_CSSNodeStyleSetBorderBottom(int nativePointer, float borderBottom);
-  private native void jni_CSSNodeStyleSetBorderStart(int nativePointer, float borderStart);
-  private native void jni_CSSNodeStyleSetBorderEnd(int nativePointer, float borderEnd);
+  private native void jni_CSSNodeStyleSetBorder(int nativePointer, int edge, float border);
   @Override
   public void setBorder(int spacingType, float border) {
     assertNativeInstance();
-    switch (spacingType) {
-      case Spacing.LEFT:
-        jni_CSSNodeStyleSetBorderLeft(mNativePointer, border);
-        break;
-      case Spacing.TOP:
-        jni_CSSNodeStyleSetBorderTop(mNativePointer, border);
-        break;
-      case Spacing.RIGHT:
-        jni_CSSNodeStyleSetBorderRight(mNativePointer, border);
-        break;
-      case Spacing.BOTTOM:
-        jni_CSSNodeStyleSetBorderBottom(mNativePointer, border);
-        break;
-      case Spacing.START:
-        jni_CSSNodeStyleSetBorderStart(mNativePointer, border);
-        break;
-      case Spacing.END:
-        jni_CSSNodeStyleSetBorderEnd(mNativePointer, border);
-        break;
-      case Spacing.HORIZONTAL:
-        jni_CSSNodeStyleSetBorderLeft(mNativePointer, border);
-        jni_CSSNodeStyleSetBorderRight(mNativePointer, border);
-        jni_CSSNodeStyleSetBorderStart(mNativePointer, border);
-        jni_CSSNodeStyleSetBorderEnd(mNativePointer, border);
-        break;
-      case Spacing.VERTICAL:
-        jni_CSSNodeStyleSetBorderTop(mNativePointer, border);
-        jni_CSSNodeStyleSetBorderBottom(mNativePointer, border);
-        break;
-      case Spacing.ALL:
-        jni_CSSNodeStyleSetBorderLeft(mNativePointer, border);
-        jni_CSSNodeStyleSetBorderRight(mNativePointer, border);
-        jni_CSSNodeStyleSetBorderStart(mNativePointer, border);
-        jni_CSSNodeStyleSetBorderEnd(mNativePointer, border);
-        jni_CSSNodeStyleSetBorderTop(mNativePointer, border);
-        jni_CSSNodeStyleSetBorderBottom(mNativePointer, border);
-        break;
-    }
+    jni_CSSNodeStyleSetBorder(mNativePointer, spacingType, border);
   }
 
-  private native float jni_CSSNodeStyleGetPositionLeft(int nativePointer);
-  private native float jni_CSSNodeStyleGetPositionTop(int nativePointer);
-  private native float jni_CSSNodeStyleGetPositionRight(int nativePointer);
-  private native float jni_CSSNodeStyleGetPositionBottom(int nativePointer);
-  private native float jni_CSSNodeStyleGetPositionStart(int nativePointer);
-  private native float jni_CSSNodeStyleGetPositionEnd(int nativePointer);
+  private native float jni_CSSNodeStyleGetPosition(int nativePointer, int edge);
   @Override
   public Spacing getPosition() {
+    assertNativeInstance();
     Spacing position = new Spacing();
-    position.set(Spacing.LEFT, jni_CSSNodeStyleGetPositionLeft(mNativePointer));
-    position.set(Spacing.TOP, jni_CSSNodeStyleGetPositionTop(mNativePointer));
-    position.set(Spacing.RIGHT, jni_CSSNodeStyleGetPositionRight(mNativePointer));
-    position.set(Spacing.BOTTOM, jni_CSSNodeStyleGetPositionBottom(mNativePointer));
-    position.set(Spacing.START, jni_CSSNodeStyleGetPositionStart(mNativePointer));
-    position.set(Spacing.END, jni_CSSNodeStyleGetPositionEnd(mNativePointer));
+    position.set(Spacing.LEFT, jni_CSSNodeStyleGetPosition(Spacing.LEFT, mNativePointer));
+    position.set(Spacing.TOP, jni_CSSNodeStyleGetPosition(Spacing.TOP, mNativePointer));
+    position.set(Spacing.RIGHT, jni_CSSNodeStyleGetPosition(Spacing.RIGHT, mNativePointer));
+    position.set(Spacing.BOTTOM, jni_CSSNodeStyleGetPosition(Spacing.BOTTOM, mNativePointer));
+    position.set(Spacing.START, jni_CSSNodeStyleGetPosition(Spacing.START, mNativePointer));
+    position.set(Spacing.END, jni_CSSNodeStyleGetPosition(Spacing.END, mNativePointer));
     return position;
   }
 
-  private native void jni_CSSNodeStyleSetPositionLeft(int nativePointer, float position);
-  private native void jni_CSSNodeStyleSetPositionTop(int nativePointer, float position);
-  private native void jni_CSSNodeStyleSetPositionRight(int nativePointer, float position);
-  private native void jni_CSSNodeStyleSetPositionBottom(int nativePointer, float position);
-  private native void jni_CSSNodeStyleSetPositionStart(int nativePointer, float position);
-  private native void jni_CSSNodeStyleSetPositionEnd(int nativePointer, float position);
+  private native void jni_CSSNodeStyleSetPosition(int nativePointer, int edge, float position);
   @Override
   public void setPosition(int spacingType, float position) {
-    switch (spacingType) {
-      case Spacing.LEFT:
-        jni_CSSNodeStyleSetPositionLeft(mNativePointer, position);
-        break;
-      case Spacing.TOP:
-        jni_CSSNodeStyleSetPositionTop(mNativePointer, position);
-        break;
-      case Spacing.RIGHT:
-        jni_CSSNodeStyleSetPositionRight(mNativePointer, position);
-        break;
-      case Spacing.BOTTOM:
-        jni_CSSNodeStyleSetPositionBottom(mNativePointer, position);
-        break;
-      case Spacing.START:
-        jni_CSSNodeStyleSetPositionStart(mNativePointer, position);
-        break;
-      case Spacing.END:
-        jni_CSSNodeStyleSetPositionEnd(mNativePointer, position);
-        break;
-      case Spacing.HORIZONTAL:
-        jni_CSSNodeStyleSetPositionLeft(mNativePointer, position);
-        jni_CSSNodeStyleSetPositionRight(mNativePointer, position);
-        jni_CSSNodeStyleSetPositionStart(mNativePointer, position);
-        jni_CSSNodeStyleSetPositionEnd(mNativePointer, position);
-        break;
-      case Spacing.VERTICAL:
-        jni_CSSNodeStyleSetPositionTop(mNativePointer, position);
-        jni_CSSNodeStyleSetPositionBottom(mNativePointer, position);
-        break;
-      case Spacing.ALL:
-        jni_CSSNodeStyleSetPositionLeft(mNativePointer, position);
-        jni_CSSNodeStyleSetPositionRight(mNativePointer, position);
-        jni_CSSNodeStyleSetPositionStart(mNativePointer, position);
-        jni_CSSNodeStyleSetPositionEnd(mNativePointer, position);
-        jni_CSSNodeStyleSetPositionTop(mNativePointer, position);
-        jni_CSSNodeStyleSetPositionBottom(mNativePointer, position);
-        break;
-    }
+    assertNativeInstance();
+    jni_CSSNodeStyleSetPosition(mNativePointer, spacingType, position);
   }
 
   private native float jni_CSSNodeStyleGetWidth(int nativePointer);
