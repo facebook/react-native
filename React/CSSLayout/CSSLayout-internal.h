@@ -90,10 +90,10 @@ typedef struct CSSNode {
   struct CSSNode *nextChild;
 
   CSSSize (*measure)(void *context,
-      float width,
-      CSSMeasureMode widthMode,
-      float height,
-      CSSMeasureMode heightMode);
+                     float width,
+                     CSSMeasureMode widthMode,
+                     float height,
+                     CSSMeasureMode heightMode);
   void (*print)(void *context);
   void *context;
 } CSSNode;
