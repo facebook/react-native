@@ -21,7 +21,7 @@ static void *RCTCustomLibraryHandler(void)
   static dispatch_once_t token;
   static void *handler;
   dispatch_once(&token, ^{
-    handler = dlopen("@executable_path/Frameworks/JavaScriptCore.framework/JavaScriptCore", RTLD_LAZY | RTLD_LOCAL);
+    handler = dlopen("@executable_path/Frameworks/JSC.framework/JSC", RTLD_LAZY | RTLD_LOCAL);
     if (!handler) {
       const char *err = dlerror();
 
