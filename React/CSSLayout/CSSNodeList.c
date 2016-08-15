@@ -28,11 +28,13 @@ CSSNodeListRef CSSNodeListNew(uint32_t initialCapacity) {
 }
 
 void CSSNodeListFree(CSSNodeListRef list) {
-    free(list->items);
-    free(list);
+  free(list->items);
+  free(list);
 }
 
-uint32_t CSSNodeListCount(CSSNodeListRef list) { return list->count; }
+uint32_t CSSNodeListCount(CSSNodeListRef list) {
+  return list->count;
+}
 
 void CSSNodeListAdd(CSSNodeListRef list, CSSNodeRef node) {
   CSSNodeListInsert(list, node, list->count);
@@ -76,4 +78,6 @@ CSSNodeRef CSSNodeListDelete(CSSNodeListRef list, CSSNodeRef node) {
   return NULL;
 }
 
-CSSNodeRef CSSNodeListGet(CSSNodeListRef list, uint32_t index) { return list->items[index]; }
+CSSNodeRef CSSNodeListGet(CSSNodeListRef list, uint32_t index) {
+  return list->items[index];
+}

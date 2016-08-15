@@ -82,6 +82,12 @@ describe('processRequest', () => {
     };
 
     Bundler.prototype.invalidateFile = invalidatorFunc;
+    Bundler.prototype.getResolver =
+      jest.fn().mockReturnValue({
+        getDependecyGraph: jest.fn().mockReturnValue({
+          getHasteMap: jest.fn().mockReturnValue({on: jest.fn()}),
+        }),
+      });
 
     server = new Server(options);
     requestHandler = server.processRequest.bind(server);
