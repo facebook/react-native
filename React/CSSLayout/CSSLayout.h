@@ -11,9 +11,9 @@
 
 #include <assert.h>
 #include <math.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifndef __cplusplus
 #include <stdbool.h>
@@ -21,8 +21,8 @@
 
 // Not defined in MSVC++
 #ifndef NAN
-static const unsigned long __nan[2] = { 0xffffffff, 0x7fffffff };
-#define NAN (*(const float *)__nan)
+static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
+#define NAN (*(const float *) __nan)
 #endif
 
 #define CSSUndefined NAN
@@ -113,8 +113,11 @@ typedef struct CSSSize {
 } CSSSize;
 
 typedef struct CSSNode *CSSNodeRef;
-typedef CSSSize (*CSSMeasureFunc)(
-    void *context, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode);
+typedef CSSSize (*CSSMeasureFunc)(void *context,
+                                  float width,
+                                  CSSMeasureMode widthMode,
+                                  float height,
+                                  CSSMeasureMode heightMode);
 typedef void (*CSSPrintFunc)(void *context);
 
 // CSSNode
@@ -127,8 +130,10 @@ void CSSNodeRemoveChild(CSSNodeRef node, CSSNodeRef child);
 CSSNodeRef CSSNodeGetChild(CSSNodeRef node, uint32_t index);
 uint32_t CSSNodeChildCount(CSSNodeRef node);
 
-void CSSNodeCalculateLayout(
-    CSSNodeRef node, float availableWidth, float availableHeight, CSSDirection parentDirection);
+void CSSNodeCalculateLayout(CSSNodeRef node,
+                            float availableWidth,
+                            float availableHeight,
+                            CSSDirection parentDirection);
 
 // Mark a node as dirty. Only valid for nodes with a custom measure function
 // set.
@@ -143,12 +148,12 @@ void CSSNodePrint(CSSNodeRef node, CSSPrintOptions options);
 
 bool CSSValueIsUndefined(float value);
 
-#define CSS_NODE_PROPERTY(type, name, paramName)                                                   \
-  void CSSNodeSet##name(CSSNodeRef node, type paramName);                                          \
+#define CSS_NODE_PROPERTY(type, name, paramName)          \
+  void CSSNodeSet##name(CSSNodeRef node, type paramName); \
   type CSSNodeGet##name(CSSNodeRef node);
 
-#define CSS_NODE_STYLE_PROPERTY(type, name, paramName)                                             \
-  void CSSNodeStyleSet##name(CSSNodeRef node, type paramName);                                     \
+#define CSS_NODE_STYLE_PROPERTY(type, name, paramName)         \
+  void CSSNodeStyleSet##name(CSSNodeRef node, type paramName); \
   type CSSNodeStyleGet##name(CSSNodeRef node);
 
 #define CSS_NODE_LAYOUT_PROPERTY(type, name) type CSSNodeLayoutGet##name(CSSNodeRef node);
