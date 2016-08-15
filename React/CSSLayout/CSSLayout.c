@@ -23,8 +23,6 @@ __forceinline const float fmaxf(const float a, const float b) {
 #endif
 #endif
 
-#define POSITIVE_FLEX_IS_AUTO 0
-
 CSSNodeRef CSSNodeNew() {
   CSSNodeRef node = calloc(1, sizeof(CSSNode));
   CSS_ASSERT(node, "Could not allocate memory for node");
@@ -43,6 +41,10 @@ void CSSNodeInit(CSSNodeRef node) {
   node->children = CSSNodeListNew(4);
   node->hasNewLayout = true;
   node->isDirty = false;
+
+  node->style.flexGrow = 0;
+  node->style.flexShrink = 0;
+  node->style.flexBasis = CSSUndefined;
 
   node->style.alignItems = CSSAlignStretch;
   node->style.alignContent = CSSAlignFlexStart;
@@ -130,6 +132,32 @@ bool CSSNodeIsDirty(CSSNodeRef node) {
   return node->isDirty;
 }
 
+void CSSNodeStyleSetFlex(CSSNodeRef node, float flex) {
+  if (CSSValueIsUndefined(flex) || flex == 0) {
+    CSSNodeStyleSetFlexGrow(node, 0);
+    CSSNodeStyleSetFlexShrink(node, 0);
+    CSSNodeStyleSetFlexBasis(node, CSSUndefined);
+  } else if (flex > 0) {
+    CSSNodeStyleSetFlexGrow(node, flex);
+    CSSNodeStyleSetFlexShrink(node, 0);
+    CSSNodeStyleSetFlexBasis(node, 0);
+  } else {
+    CSSNodeStyleSetFlexGrow(node, 0);
+    CSSNodeStyleSetFlexShrink(node, -flex);
+    CSSNodeStyleSetFlexBasis(node, CSSUndefined);
+  }
+}
+
+float CSSNodeStyleGetFlex(CSSNodeRef node) {
+  if (node->style.flexGrow > 0) {
+    return node->style.flexGrow;
+  } else if (node->style.flexShrink > 0) {
+    return -node->style.flexShrink;
+  }
+
+  return 0;
+}
+
 #define CSS_NODE_PROPERTY_IMPL(type, name, paramName, instanceName) \
   void CSSNodeSet##name(CSSNodeRef node, type paramName) {          \
     node->instanceName = paramName;                                 \
@@ -171,7 +199,9 @@ CSS_NODE_STYLE_PROPERTY_IMPL(CSSAlign, AlignSelf, alignSelf, alignSelf);
 CSS_NODE_STYLE_PROPERTY_IMPL(CSSPositionType, PositionType, positionType, positionType);
 CSS_NODE_STYLE_PROPERTY_IMPL(CSSWrapType, FlexWrap, flexWrap, flexWrap);
 CSS_NODE_STYLE_PROPERTY_IMPL(CSSOverflow, Overflow, overflow, overflow);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, Flex, flex, flex);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, FlexGrow, flexGrow, flexGrow);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, FlexShrink, flexShrink, flexShrink);
+CSS_NODE_STYLE_PROPERTY_IMPL(float, FlexBasis, flexBasis, flexBasis);
 
 CSS_NODE_STYLE_PROPERTY_IMPL(float, PositionLeft, positionLeft, position[CSSPositionLeft]);
 CSS_NODE_STYLE_PROPERTY_IMPL(float, PositionTop, positionTop, position[CSSPositionTop]);
@@ -324,7 +354,9 @@ static void print_css_node_rec(CSSNode *node, CSSPrintOptions options, uint32_t 
       printf("alignSelf: 'stretch', ");
     }
 
-    print_number_nan("flex", node->style.flex);
+    print_number_nan("flexGrow", node->style.flexGrow);
+    print_number_nan("flexShrink", node->style.flexShrink);
+    print_number_nan("flexBasis", node->style.flexBasis);
 
     if (node->style.overflow == CSSOverflowHidden) {
       printf("overflow: 'hidden', ");
@@ -430,40 +462,6 @@ static bool isRowDirection(CSSFlexDirection flexDirection) {
 
 static bool isColumnDirection(CSSFlexDirection flexDirection) {
   return flexDirection == CSSFlexDirectionColumn || flexDirection == CSSFlexDirectionColumnReverse;
-}
-
-static bool isFlexBasisAuto(CSSNode *node) {
-#if POSITIVE_FLEX_IS_AUTO
-  // All flex values are auto.
-  (void) node;
-  return true;
-#else
-  // A flex value > 0 implies a basis of zero.
-  return node->style.flex <= 0;
-#endif
-}
-
-static float getFlexGrowFactor(CSSNode *node) {
-  // Flex grow is implied by positive values for flex.
-  if (node->style.flex > 0) {
-    return node->style.flex;
-  }
-  return 0;
-}
-
-static float getFlexShrinkFactor(CSSNode *node) {
-#if POSITIVE_FLEX_IS_AUTO
-  // A flex shrink factor of 1 is implied by non-zero values for flex.
-  if (node->style.flex != 0) {
-    return 1;
-  }
-#else
-  // A flex shrink factor of 1 is implied by negative values for flex.
-  if (node->style.flex < 0) {
-    return 1;
-  }
-#endif
-  return 0;
 }
 
 static float getLeadingMargin(CSSNode *node, CSSFlexDirection axis) {
@@ -592,12 +590,9 @@ static CSSFlexDirection getCrossFlexDirection(CSSFlexDirection flexDirection,
   }
 }
 
-static float getFlex(CSSNode *node) {
-  return node->style.flex;
-}
-
 static bool isFlex(CSSNode *node) {
-  return (node->style.positionType == CSSPositionTypeRelative && getFlex(node) != 0);
+  return (node->style.positionType == CSSPositionTypeRelative &&
+          (node->style.flexGrow != 0 || node->style.flexShrink != 0));
 }
 
 static bool isFlexWrap(CSSNode *node) {
@@ -1022,15 +1017,18 @@ static void layoutNodeImpl(CSSNode *node,
     } else {
       if (isMainAxisRow && isStyleDimDefined(child, CSSFlexDirectionRow)) {
         // The width is definite, so use that as the flex basis.
-        child->layout.flexBasis = fmaxf(child->style.dimensions[CSSDimensionWidth],
-                                        getPaddingAndBorderAxis(child, CSSFlexDirectionRow));
+        child->layout.computedFlexBasis =
+            fmaxf(child->style.dimensions[CSSDimensionWidth],
+                  getPaddingAndBorderAxis(child, CSSFlexDirectionRow));
       } else if (!isMainAxisRow && isStyleDimDefined(child, CSSFlexDirectionColumn)) {
         // The height is definite, so use that as the flex basis.
-        child->layout.flexBasis = fmaxf(child->style.dimensions[CSSDimensionHeight],
-                                        getPaddingAndBorderAxis(child, CSSFlexDirectionColumn));
-      } else if (!isFlexBasisAuto(child) && !CSSValueIsUndefined(availableInnerMainDim)) {
-        // If the basis isn't 'auto', it is assumed to be zero.
-        child->layout.flexBasis = fmaxf(0, getPaddingAndBorderAxis(child, mainAxis));
+        child->layout.computedFlexBasis =
+            fmaxf(child->style.dimensions[CSSDimensionHeight],
+                  getPaddingAndBorderAxis(child, CSSFlexDirectionColumn));
+      } else if (!CSSValueIsUndefined(child->style.flexBasis) &&
+                 !CSSValueIsUndefined(availableInnerMainDim)) {
+        child->layout.computedFlexBasis =
+            fmaxf(child->style.flexBasis, getPaddingAndBorderAxis(child, mainAxis));
       } else {
         // Compute the flex basis and hypothetical main size (i.e. the clamped
         // flex basis).
@@ -1098,7 +1096,7 @@ static void layoutNodeImpl(CSSNode *node,
                            false,
                            "measure");
 
-        child->layout.flexBasis =
+        child->layout.computedFlexBasis =
             fmaxf(isMainAxisRow ? child->layout.measuredDimensions[CSSDimensionWidth]
                                 : child->layout.measuredDimensions[CSSDimensionHeight],
                   getPaddingAndBorderAxis(child, mainAxis));
@@ -1149,7 +1147,7 @@ static void layoutNodeImpl(CSSNode *node,
       child->lineIndex = lineCount;
 
       if (child->style.positionType != CSSPositionTypeAbsolute) {
-        float outerFlexBasis = child->layout.flexBasis + getMarginAxis(child, mainAxis);
+        float outerFlexBasis = child->layout.computedFlexBasis + getMarginAxis(child, mainAxis);
 
         // If this is a multi-line flow and this item pushes us over the
         // available size, we've
@@ -1164,12 +1162,13 @@ static void layoutNodeImpl(CSSNode *node,
         itemsOnLine++;
 
         if (isFlex(child)) {
-          totalFlexGrowFactors += getFlexGrowFactor(child);
+          totalFlexGrowFactors += child->style.flexGrow;
 
           // Unlike the grow factor, the shrink factor is scaled relative to the
           // child
           // dimension.
-          totalFlexShrinkScaledFactors += getFlexShrinkFactor(child) * child->layout.flexBasis;
+          totalFlexShrinkScaledFactors +=
+              -child->style.flexShrink * child->layout.computedFlexBasis;
         }
 
         // Store a private linked list of children that need to be layed out.
@@ -1252,10 +1251,10 @@ static void layoutNodeImpl(CSSNode *node,
       float deltaFlexGrowFactors = 0;
       currentRelativeChild = firstRelativeChild;
       while (currentRelativeChild != NULL) {
-        childFlexBasis = currentRelativeChild->layout.flexBasis;
+        childFlexBasis = currentRelativeChild->layout.computedFlexBasis;
 
         if (remainingFreeSpace < 0) {
-          flexShrinkScaledFactor = getFlexShrinkFactor(currentRelativeChild) * childFlexBasis;
+          flexShrinkScaledFactor = -currentRelativeChild->style.flexShrink * childFlexBasis;
 
           // Is this child able to shrink?
           if (flexShrinkScaledFactor != 0) {
@@ -1275,7 +1274,7 @@ static void layoutNodeImpl(CSSNode *node,
             }
           }
         } else if (remainingFreeSpace > 0) {
-          flexGrowFactor = getFlexGrowFactor(currentRelativeChild);
+          flexGrowFactor = currentRelativeChild->style.flexGrow;
 
           // Is this child able to grow?
           if (flexGrowFactor != 0) {
@@ -1306,11 +1305,11 @@ static void layoutNodeImpl(CSSNode *node,
       deltaFreeSpace = 0;
       currentRelativeChild = firstRelativeChild;
       while (currentRelativeChild != NULL) {
-        childFlexBasis = currentRelativeChild->layout.flexBasis;
+        childFlexBasis = currentRelativeChild->layout.computedFlexBasis;
         float updatedMainSize = childFlexBasis;
 
         if (remainingFreeSpace < 0) {
-          flexShrinkScaledFactor = getFlexShrinkFactor(currentRelativeChild) * childFlexBasis;
+          flexShrinkScaledFactor = -currentRelativeChild->style.flexShrink * childFlexBasis;
 
           // Is this child able to shrink?
           if (flexShrinkScaledFactor != 0) {
@@ -1321,7 +1320,7 @@ static void layoutNodeImpl(CSSNode *node,
                                                 flexShrinkScaledFactor);
           }
         } else if (remainingFreeSpace > 0) {
-          flexGrowFactor = getFlexGrowFactor(currentRelativeChild);
+          flexGrowFactor = currentRelativeChild->style.flexGrow;
 
           // Is this child able to grow?
           if (flexGrowFactor != 0) {
@@ -1463,7 +1462,8 @@ static void layoutNodeImpl(CSSNode *node,
             // If we skipped the flex step, then we can't rely on the
             // measuredDims because
             // they weren't computed. This means we can't call getDimWithMargin.
-            mainDim += betweenMainDim + getMarginAxis(child, mainAxis) + child->layout.flexBasis;
+            mainDim +=
+                betweenMainDim + getMarginAxis(child, mainAxis) + child->layout.computedFlexBasis;
             crossDim = availableInnerCrossDim;
           } else {
             // The main dimension is the sum of all the elements dimension plus

@@ -174,6 +174,9 @@ CSS_NODE_STYLE_PROPERTY(CSSPositionType, PositionType, positionType);
 CSS_NODE_STYLE_PROPERTY(CSSWrapType, FlexWrap, flexWrap);
 CSS_NODE_STYLE_PROPERTY(CSSOverflow, Overflow, overflow);
 CSS_NODE_STYLE_PROPERTY(float, Flex, flex);
+CSS_NODE_STYLE_PROPERTY(float, FlexGrow, flexGrow);
+CSS_NODE_STYLE_PROPERTY(float, FlexShrink, flexShrink);
+CSS_NODE_STYLE_PROPERTY(float, FlexBasis, flexBasis);
 
 CSS_NODE_STYLE_PROPERTY(float, PositionLeft, positionLeft);
 CSS_NODE_STYLE_PROPERTY(float, PositionTop, positionTop);

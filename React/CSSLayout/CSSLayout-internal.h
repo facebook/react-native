@@ -33,7 +33,7 @@ typedef struct CSSLayout {
   float dimensions[2];
   CSSDirection direction;
 
-  float flexBasis;
+  float computedFlexBasis;
 
   // Instead of recomputing the entire layout every single time, we
   // cache some information to break early when nothing changed
@@ -57,7 +57,9 @@ typedef struct CSSStyle {
   CSSPositionType positionType;
   CSSWrapType flexWrap;
   CSSOverflow overflow;
-  float flex;
+  float flexGrow;
+  float flexShrink;
+  float flexBasis;
   float margin[6];
   float position[6];
   /**
