@@ -276,16 +276,17 @@ class Server {
       const opts = bundleOpts(options);
       const building = this._bundler.bundle(opts);
       building.then(bundle => {
-        const modules = bundle.getModules().filter(m => !m.virtual);
+        const modules = bundle.getModules();
+        const nonVirtual = modules.filter(m => !m.virtual);
         bundleDeps.set(bundle, {
           files: new Map(
-            modules
+            nonVirtual
               .map(({sourcePath, meta = {dependencies: []}}) =>
                 [sourcePath, meta.dependencies])
           ),
           idToIndex: new Map(modules.map(({id}, i) => [id, i])),
           dependencyPairs: new Map(
-            modules
+            nonVirtual
               .filter(({meta}) => meta && meta.dependencyPairs)
               .map(m => [m.sourcePath, m.meta.dependencyPairs])
           ),

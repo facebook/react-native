@@ -16,10 +16,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
-@ReactModule(name = "AppState")
 public class AppStateModule extends ReactContextBaseJavaModule
         implements LifecycleEventListener {
 
@@ -30,6 +28,11 @@ public class AppStateModule extends ReactContextBaseJavaModule
 
   public AppStateModule(ReactApplicationContext reactContext) {
     super(reactContext);
+  }
+
+  @Override
+  public String getName() {
+    return "AppState";
   }
 
   @Override

@@ -12,13 +12,12 @@ import android.os.Bundle;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.annotations.ReactModule;
+import com.facebook.react.testing.FakeWebSocketModule;
+import com.facebook.react.testing.ReactInstanceSpecForTest;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactAppTestActivity;
-import com.facebook.react.testing.ReactInstanceSpecForTest;
 
 /**
  * Simple test case for passing initial props to the root React application.
@@ -28,10 +27,14 @@ public class InitialPropsTestCase extends
 
   public static final String DEFAULT_JS_BUNDLE = "AndroidTestBundle.js";
 
-  @ReactModule(name = "InitialPropsRecordingModule")
   private static class RecordingModule extends BaseJavaModule {
     private int mCount = 0;
     private ReadableMap mProps;
+
+    @Override
+    public String getName() {
+      return "InitialPropsRecordingModule";
+    }
 
     @ReactMethod
     public void recordProps(ReadableMap props) {

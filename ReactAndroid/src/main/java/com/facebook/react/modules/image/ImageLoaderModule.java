@@ -30,11 +30,9 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.annotations.ReactModule;
 
-@ReactModule(name = "ImageLoader")
-public class ImageLoaderModule extends ReactContextBaseJavaModule
-  implements LifecycleEventListener {
+public class ImageLoaderModule extends ReactContextBaseJavaModule implements
+  LifecycleEventListener {
 
   private static final String ERROR_INVALID_URI = "E_INVALID_URI";
   private static final String ERROR_PREFETCH_FAILURE = "E_PREFETCH_FAILURE";
@@ -52,6 +50,11 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule
   public ImageLoaderModule(ReactApplicationContext reactContext, Object callerContext) {
     super(reactContext);
     mCallerContext = callerContext;
+  }
+
+  @Override
+  public String getName() {
+    return "ImageLoader";
   }
 
   /**
