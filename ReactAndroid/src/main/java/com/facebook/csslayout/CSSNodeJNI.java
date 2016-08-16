@@ -298,12 +298,12 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
   public Spacing getMargin() {
     assertNativeInstance();
     Spacing margin = new Spacing();
-    margin.set(Spacing.LEFT, jni_CSSNodeStyleGetMargin(Spacing.LEFT, mNativePointer));
-    margin.set(Spacing.TOP, jni_CSSNodeStyleGetMargin(Spacing.TOP, mNativePointer));
-    margin.set(Spacing.RIGHT, jni_CSSNodeStyleGetMargin(Spacing.RIGHT, mNativePointer));
-    margin.set(Spacing.BOTTOM, jni_CSSNodeStyleGetMargin(Spacing.BOTTOM, mNativePointer));
-    margin.set(Spacing.START, jni_CSSNodeStyleGetMargin(Spacing.START, mNativePointer));
-    margin.set(Spacing.END, jni_CSSNodeStyleGetMargin(Spacing.END, mNativePointer));
+    margin.set(Spacing.LEFT, jni_CSSNodeStyleGetMargin(mNativePointer, Spacing.LEFT));
+    margin.set(Spacing.TOP, jni_CSSNodeStyleGetMargin(mNativePointer, Spacing.TOP));
+    margin.set(Spacing.RIGHT, jni_CSSNodeStyleGetMargin(mNativePointer, Spacing.RIGHT));
+    margin.set(Spacing.BOTTOM, jni_CSSNodeStyleGetMargin(mNativePointer, Spacing.BOTTOM));
+    margin.set(Spacing.START, jni_CSSNodeStyleGetMargin(mNativePointer, Spacing.START));
+    margin.set(Spacing.END, jni_CSSNodeStyleGetMargin(mNativePointer, Spacing.END));
     return margin;
   }
 
@@ -319,12 +319,12 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
   public Spacing getPadding() {
     assertNativeInstance();
     Spacing padding = new Spacing();
-    padding.set(Spacing.LEFT, jni_CSSNodeStyleGetPadding(Spacing.LEFT, mNativePointer));
-    padding.set(Spacing.TOP, jni_CSSNodeStyleGetPadding(Spacing.TOP, mNativePointer));
-    padding.set(Spacing.RIGHT, jni_CSSNodeStyleGetPadding(Spacing.RIGHT, mNativePointer));
-    padding.set(Spacing.BOTTOM, jni_CSSNodeStyleGetPadding(Spacing.BOTTOM, mNativePointer));
-    padding.set(Spacing.START, jni_CSSNodeStyleGetPadding(Spacing.START, mNativePointer));
-    padding.set(Spacing.END, jni_CSSNodeStyleGetPadding(Spacing.END, mNativePointer));
+    padding.set(Spacing.LEFT, jni_CSSNodeStyleGetPadding(mNativePointer, Spacing.LEFT));
+    padding.set(Spacing.TOP, jni_CSSNodeStyleGetPadding(mNativePointer, Spacing.TOP));
+    padding.set(Spacing.RIGHT, jni_CSSNodeStyleGetPadding(mNativePointer, Spacing.RIGHT));
+    padding.set(Spacing.BOTTOM, jni_CSSNodeStyleGetPadding(mNativePointer, Spacing.BOTTOM));
+    padding.set(Spacing.START, jni_CSSNodeStyleGetPadding(mNativePointer, Spacing.START));
+    padding.set(Spacing.END, jni_CSSNodeStyleGetPadding(mNativePointer, Spacing.END));
     return padding;
   }
 
@@ -345,12 +345,12 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
   public Spacing getBorder() {
     assertNativeInstance();
     Spacing border = new Spacing();
-    border.set(Spacing.LEFT, jni_CSSNodeStyleGetBorder(Spacing.LEFT, mNativePointer));
-    border.set(Spacing.TOP, jni_CSSNodeStyleGetBorder(Spacing.TOP, mNativePointer));
-    border.set(Spacing.RIGHT, jni_CSSNodeStyleGetBorder(Spacing.RIGHT, mNativePointer));
-    border.set(Spacing.BOTTOM, jni_CSSNodeStyleGetBorder(Spacing.BOTTOM, mNativePointer));
-    border.set(Spacing.START, jni_CSSNodeStyleGetBorder(Spacing.START, mNativePointer));
-    border.set(Spacing.END, jni_CSSNodeStyleGetBorder(Spacing.END, mNativePointer));
+    border.set(Spacing.LEFT, jni_CSSNodeStyleGetBorder(mNativePointer, Spacing.LEFT));
+    border.set(Spacing.TOP, jni_CSSNodeStyleGetBorder(mNativePointer, Spacing.TOP));
+    border.set(Spacing.RIGHT, jni_CSSNodeStyleGetBorder(mNativePointer, Spacing.RIGHT));
+    border.set(Spacing.BOTTOM, jni_CSSNodeStyleGetBorder(mNativePointer, Spacing.BOTTOM));
+    border.set(Spacing.START, jni_CSSNodeStyleGetBorder(mNativePointer, Spacing.START));
+    border.set(Spacing.END, jni_CSSNodeStyleGetBorder(mNativePointer, Spacing.END));
     return border;
   }
 
@@ -366,12 +366,12 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
   public Spacing getPosition() {
     assertNativeInstance();
     Spacing position = new Spacing();
-    position.set(Spacing.LEFT, jni_CSSNodeStyleGetPosition(Spacing.LEFT, mNativePointer));
-    position.set(Spacing.TOP, jni_CSSNodeStyleGetPosition(Spacing.TOP, mNativePointer));
-    position.set(Spacing.RIGHT, jni_CSSNodeStyleGetPosition(Spacing.RIGHT, mNativePointer));
-    position.set(Spacing.BOTTOM, jni_CSSNodeStyleGetPosition(Spacing.BOTTOM, mNativePointer));
-    position.set(Spacing.START, jni_CSSNodeStyleGetPosition(Spacing.START, mNativePointer));
-    position.set(Spacing.END, jni_CSSNodeStyleGetPosition(Spacing.END, mNativePointer));
+    position.set(Spacing.LEFT, jni_CSSNodeStyleGetPosition(mNativePointer, Spacing.LEFT));
+    position.set(Spacing.TOP, jni_CSSNodeStyleGetPosition(mNativePointer, Spacing.TOP));
+    position.set(Spacing.RIGHT, jni_CSSNodeStyleGetPosition(mNativePointer, Spacing.RIGHT));
+    position.set(Spacing.BOTTOM, jni_CSSNodeStyleGetPosition(mNativePointer, Spacing.BOTTOM));
+    position.set(Spacing.START, jni_CSSNodeStyleGetPosition(mNativePointer, Spacing.START));
+    position.set(Spacing.END, jni_CSSNodeStyleGetPosition(mNativePointer, Spacing.END));
     return position;
   }
 
