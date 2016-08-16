@@ -3,21 +3,24 @@ scrolling lists of changing data.  The minimal API is to create a
 <a href="docs/listviewdatasource.html" target="_blank"><code>ListView.DataSource</code></a>, populate it with a simple
 array of data blobs, and instantiate a <code>ListView</code> component with that data
 source and a <code>renderRow</code> callback which takes a blob from the data array and
-returns a renderable component.</p><p>Minimal example:</p><div class="prism language-javascript">getInitialState<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">var</span> ds <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ListView<span class="token punctuation">.</span>DataSource</span><span class="token punctuation">(</span><span class="token punctuation">{</span>rowHasChanged<span class="token punctuation">:</span> <span class="token punctuation">(</span>r1<span class="token punctuation">,</span> r2<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> r1 <span class="token operator">!</span><span class="token operator">==</span> r2<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> <span class="token punctuation">{</span>
-    dataSource<span class="token punctuation">:</span> ds<span class="token punctuation">.</span><span class="token function">cloneWithRows<span class="token punctuation">(</span></span><span class="token punctuation">[</span><span class="token string">&#x27;row 1&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;row 2&#x27;</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">,</span>
+returns a renderable component.</p><p>Minimal example:</p><div class="prism language-javascript">class <span class="token class-name">MyComponent</span> extends <span class="token class-name">Component</span> <span class="token punctuation">{</span>
+  <span class="token function">constructor<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">super<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    const ds <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ListView<span class="token punctuation">.</span>DataSource</span><span class="token punctuation">(</span><span class="token punctuation">{</span>rowHasChanged<span class="token punctuation">:</span> <span class="token punctuation">(</span>r1<span class="token punctuation">,</span> r2<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> r1 <span class="token operator">!</span><span class="token operator">==</span> r2<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>state <span class="token operator">=</span> <span class="token punctuation">{</span>
+      dataSource<span class="token punctuation">:</span> ds<span class="token punctuation">.</span><span class="token function">cloneWithRows<span class="token punctuation">(</span></span><span class="token punctuation">[</span><span class="token string">&#x27;row 1&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;row 2&#x27;</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
 
-render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">return</span> <span class="token punctuation">(</span>
-    &lt;ListView
-      dataSource<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>dataSource<span class="token punctuation">}</span>
-      renderRow<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span>rowData<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> &lt;Text<span class="token operator">&gt;</span><span class="token punctuation">{</span>rowData<span class="token punctuation">}</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span><span class="token punctuation">}</span>
-    <span class="token operator">/</span><span class="token operator">&gt;</span>
-  <span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">,</span></div><p>ListView also supports more advanced features, including sections with sticky
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      &lt;ListView
+        dataSource<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>dataSource<span class="token punctuation">}</span>
+        renderRow<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span>rowData<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> &lt;Text<span class="token operator">&gt;</span><span class="token punctuation">{</span>rowData<span class="token punctuation">}</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span><span class="token punctuation">}</span>
+      <span class="token operator">/</span><span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></div><p>ListView also supports more advanced features, including sections with sticky
 section headers, header and footer support, callbacks on reaching the end of
 the available data (<code>onEndReached</code>) and on the set of rows that are visible
 in the device viewport change (<code>onChangeVisibleRows</code>), and several
