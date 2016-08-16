@@ -78,7 +78,7 @@ render() {
     <Navigator
       initialRoute={{ title: 'My Initial Scene' }}
       renderScene={(route, navigator) =>
-        <MyScene title={route.title} nav={navigator} />
+        <MyScene title={route.title} navigator={navigator} />
       }
     />
   );
