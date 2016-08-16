@@ -42,7 +42,7 @@ import android.graphics.Color;
         && mClipRight == clipRight && mClipBottom == clipBottom;
   }
 
-  public final void setClipBounds(
+  protected final void setClipBounds(
       float clipLeft,
       float clipTop,
       float clipRight,
@@ -186,6 +186,13 @@ import android.graphics.Color;
   }
 
   /**
+   * Mark this object as frozen, indicating that it should not be mutated.
+   */
+  public final void freeze() {
+    mFrozen = true;
+  }
+
+  /**
    * Left position of this DrawCommand relative to the hosting View.
    */
   public final float getLeft() {
@@ -226,7 +233,7 @@ import android.graphics.Color;
   /**
    * Updates boundaries of this DrawCommand.
    */
-  private void setBounds(float left, float top, float right, float bottom) {
+  protected final void setBounds(float left, float top, float right, float bottom) {
     mLeft = left;
     mTop = top;
     mRight = right;
@@ -238,7 +245,7 @@ import android.graphics.Color;
   /**
    * Returns true if boundaries match and don't need to be updated. False otherwise.
    */
-  private boolean boundsMatch(float left, float top, float right, float bottom) {
+  protected final boolean boundsMatch(float left, float top, float right, float bottom) {
     return mLeft == left && mTop == top && mRight == right && mBottom == bottom;
   }
 }

@@ -503,7 +503,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
       float clipRight,
       float clipBottom) {
     Assertions.assumeNotNull(mDrawView);
-    if (mDrawView.reactTag == 0) {
+    if (mDrawView == EMPTY_DRAW_VIEW) {
       // This is the first time we have collected this DrawView, but we have to create a new
       // DrawView anyway, as reactTag is final, and our DrawView instance is the static copy.
       mDrawView = new DrawView(getReactTag());

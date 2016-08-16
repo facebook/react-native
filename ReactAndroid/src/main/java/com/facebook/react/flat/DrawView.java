@@ -72,48 +72,53 @@ import android.graphics.RectF;
       float clipRight,
       float clipBottom,
       float clipRadius) {
-    DrawView drawView = (DrawView)
-        updateBoundsAndFreeze(
-            left,
-            top,
-            right,
-            bottom,
-            clipLeft,
-            clipTop,
-            clipRight,
-            clipBottom);
-    boolean clipRadiusChanged = Math.abs(mClipRadius - clipRadius) > 0.001f;
-    boolean logicalBoundsChanged =
-        !logicalBoundsMatch(logicalLeft, logicalTop, logicalRight, logicalBottom);
-    if (drawView == this && (clipRadiusChanged || logicalBoundsChanged)) {
-      // everything matches except the clip radius, so we clone the old one so that we can update
-      // the clip radius in the block below.
-      try {
-        drawView = (DrawView) clone();
-      } catch (CloneNotSupportedException e) {
-        // This should not happen since AbstractDrawCommand implements Cloneable
-        throw new RuntimeException(e);
-      }
+    if (!isFrozen()) {
+      // We haven't collected this draw view yet, so we can just set everything.
+      setBounds(left, top, right, bottom);
+      setClipBounds(clipLeft, clipTop, clipRight, clipBottom);
+      setClipRadius(clipRadius);
+      setLogicalBounds(logicalLeft, logicalTop, logicalRight, logicalBottom);
+      freeze();
+      return this;
     }
 
-    if (drawView != this) {
-      drawView.mClipRadius = clipRadius;
-      if (clipRadius > MINIMUM_ROUNDED_CLIPPING_VALUE) {
-        // update the path that we'll clip based on
-        drawView.updateClipPath();
-      } else {
-        drawView.mPath = null;
-      }
+    boolean boundsMatch = boundsMatch(left, top, right, bottom);
+    boolean clipBoundsMatch = clipBoundsMatch(clipLeft, clipTop, clipRight, clipBottom);
+    boolean clipRadiusMatch = mClipRadius == clipRadius;
+    boolean logicalBoundsMatch =
+        logicalBoundsMatch(logicalLeft, logicalTop, logicalRight, logicalBottom);
 
-      if (logicalBoundsChanged) {
-        drawView.setLogicalBounds(logicalLeft, logicalTop, logicalRight, logicalBottom);
-      }
-
-      // It is very important that we unset this, as our spec is that newly created DrawViews are
-      // handled differently by the FlatViewGroup.  This is needed because updateBoundsAndFreeze
-      // uses .clone(), so we maintain the previous state.
-      drawView.mWasMounted = false;
+    // See if we can reuse the draw view.
+    if (boundsMatch && clipBoundsMatch && clipRadiusMatch && logicalBoundsMatch) {
+      return this;
     }
+
+    DrawView drawView = (DrawView) mutableCopy();
+
+    if (!boundsMatch) {
+      drawView.setBounds(left, top, right, bottom);
+    }
+
+    if (!clipBoundsMatch) {
+      drawView.setClipBounds(clipLeft, clipTop, clipRight, clipBottom);
+    }
+
+    if (!logicalBoundsMatch) {
+      drawView.setLogicalBounds(logicalLeft, logicalTop, logicalRight, logicalBottom);
+    }
+
+    if (!clipRadiusMatch || !boundsMatch) {
+      // If the bounds change, we need to update the clip path.
+      drawView.setClipRadius(clipRadius);
+    }
+
+    // It is very important that we unset this, as our spec is that newly created DrawViews
+    // are handled differently by the FlatViewGroup.  This is needed because clone() maintains
+    // the previous state.
+    drawView.mWasMounted = false;
+
+    drawView.freeze();
+
     return drawView;
   }
 
@@ -140,6 +145,22 @@ import android.graphics.RectF;
       canvas.restore();
     } else {
       parent.drawNextChild(canvas);
+    }
+  }
+
+  /**
+   * Set the clip radius.  Should only be called when the clip radius is first set or when it
+   * changes, in order to avoid extra work.
+   *
+   * @param clipRadius The new clip radius.
+   */
+  void setClipRadius(float clipRadius) {
+    mClipRadius = clipRadius;
+    if (clipRadius > MINIMUM_ROUNDED_CLIPPING_VALUE) {
+      // update the path that we'll clip based on
+      updateClipPath();
+    } else {
+      mPath = null;
     }
   }
 
