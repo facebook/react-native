@@ -1,4 +1,5 @@
 /**
+/**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -178,7 +179,7 @@ describe('findMatchingSimulator', () => {
             },
             {
               "state": "Booted",
-              "availability": "(unavailable, runtime profile not found)",
+              "availability": "(available)",
               "name": "iPhone 6s",
               "udid": "D0F29BE7-CC3C-4976-888D-C739B4F50508"
             }
