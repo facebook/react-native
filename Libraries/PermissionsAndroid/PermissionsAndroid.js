@@ -112,30 +112,21 @@ class PermissionsAndroid {
    * (https://developer.android.com/training/permissions/requesting.html#explain)
    * and then shows the system permission dialog
    */
-  requestPermission(permission: string, rationale?: Rationale) : Promise<boolean> {
-    return new Promise(async (resolve, reject) => {
-      const requestPermission = () => resolve(Permissions.requestPermission(permission));
+  async requestPermission(permission: string, rationale?: Rationale) : Promise<boolean> {
+    if (rationale) {
+      const shouldShowRationale = await Permissions.shouldShowRequestPermissionRationale(permission)
 
-      if (rationale) {
-        const shouldShowRationale = await Permissions.shouldShowRequestPermissionRationale(permission)
-        if (shouldShowRationale) {
+      if (shouldShowRationale) {
+        return new Promise((resolve, reject) => {
           DialogManagerAndroid.showAlert(
             rationale,
-            () => {
-              DialogManagerAndroid.showAlert({
-                message: 'Error Requesting Permissions'
-              }, {}, {});
-              reject();
-            },
-            requestPermission
+            () => reject(new Error('Error showing rationale')),
+            () => resolve(Permissions.requestPermission(permission))
           );
-        } else {
-          requestPermission();
-        }
-      } else {
-        requestPermission();
+        });
       }
-    });
+    }
+    return Permissions.requestPermission(permission);
   }
 }
 
