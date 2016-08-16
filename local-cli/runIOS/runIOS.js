@@ -12,8 +12,8 @@ const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const findXcodeProject = require('./findXcodeProject');
-const parseIOSSimulatorsList = require('./parseIOSSimulatorsList');
 const parseIOSDevicesList = require('./parseIOSDevicesList');
+const findMatchingSimulator = require('./findMatchingSimulator');
 
 function runIOS(argv, config, args) {
   process.chdir(args.projectPath);
@@ -48,10 +48,16 @@ function runIOS(argv, config, args) {
 }
 
 function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
-  const simulators = parseIOSSimulatorsList(
-    child_process.execFileSync('xcrun', ['simctl', 'list', 'devices'], {encoding: 'utf8'})
-  );
-  const selectedSimulator = matchingDevice(simulators, args.simulator);
+
+  try {
+    var simulators = JSON.parse(
+      child_process.execFileSync('xcrun', ['simctl', 'list', '--json', 'devices'], {encoding: 'utf8'})
+    );
+  } catch (e) {
+    throw new Error('Could not parse the simulator list output');
+  }
+
+  const selectedSimulator = findMatchingSimulator(simulators, args.simulator);
   if (!selectedSimulator) {
     throw new Error(`Cound't find ${args.simulator} simulator`);
   }
