@@ -105,7 +105,7 @@ class ViewPagerAndroid extends React.Component {
      * - idle, meaning there is no interaction with the page scroller happening at the time
      * - dragging, meaning there is currently an interaction with the page scroller
      * - settling, meaning that there was an interaction with the page scroller, and the
-     *   page scroller is now finishing it's closing or opening animation
+     *   page scroller is now finishing its closing or opening animation
      */
     onPageScrollStateChanged: ReactPropTypes.func,
 
