@@ -59,7 +59,7 @@ class Bundle extends BundleBase {
       this._addRequireCall(super.getMainModuleId());
     }
 
-    super.finalize();
+    super.finalize(options);
   }
 
   _addRequireCall(moduleId) {
@@ -114,7 +114,6 @@ class Bundle extends BundleBase {
       this._ramBundle = {
         startupModules,
         lazyModules,
-        allModules: modules,
       };
     }
 

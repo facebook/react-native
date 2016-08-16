@@ -491,7 +491,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Host"), (__bridge CFStringRef)(_url.port ? [NSString stringWithFormat:@"%@:%@", _url.host, _url.port] : _url.host));
 
   NSMutableData *keyBytes = [[NSMutableData alloc] initWithLength:16];
-  SecRandomCopyBytes(kSecRandomDefault, keyBytes.length, keyBytes.mutableBytes);
+  int result = SecRandomCopyBytes(kSecRandomDefault, keyBytes.length, keyBytes.mutableBytes);
+  assert(result == 0);
   _secKey = [keyBytes base64EncodedStringWithOptions:0];
   assert([_secKey length] == 24);
 
@@ -1331,7 +1332,8 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
     }
   } else {
     uint8_t *mask_key = frame_buffer + frame_buffer_size;
-    SecRandomCopyBytes(kSecRandomDefault, sizeof(uint32_t), (uint8_t *)mask_key);
+    int result = SecRandomCopyBytes(kSecRandomDefault, sizeof(uint32_t), (uint8_t *)mask_key);
+    assert(result == 0);
     frame_buffer_size += sizeof(uint32_t);
 
     // TODO: could probably optimize this with SIMD

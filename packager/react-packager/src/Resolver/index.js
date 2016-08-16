@@ -264,6 +264,10 @@ class Resolver {
   minifyModule({path, code, map}) {
     return this._minifyCode(path, code, map);
   }
+
+  getDependecyGraph() {
+    return this._depGraph;
+  }
 }
 
 function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
@@ -280,7 +284,7 @@ function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
 
 function definePolyfillCode(code,) {
   return [
-    `(function(global) {`,
+    '(function(global) {',
     code,
     `\n})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);`,
   ].join('');
