@@ -19,7 +19,7 @@ import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.csslayout.Spacing;
-import com.facebook.fbui.widget.text.layoutbuilder.TextLayoutBuilder;
+import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ViewDefaults;
