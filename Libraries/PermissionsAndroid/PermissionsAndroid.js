@@ -99,7 +99,7 @@ class PermissionsAndroid {
    * permissions has been granted
    */
   checkPermission(permission: string) : Promise<boolean> {
-    return Permissions.checkPermission(permission)
+    return Permissions.checkPermission(permission);
   }
 
   /**
@@ -114,7 +114,7 @@ class PermissionsAndroid {
    */
   async requestPermission(permission: string, rationale?: Rationale) : Promise<boolean> {
     if (rationale) {
-      const shouldShowRationale = await Permissions.shouldShowRequestPermissionRationale(permission)
+      const shouldShowRationale = await Permissions.shouldShowRequestPermissionRationale(permission);
 
       if (shouldShowRationale) {
         return new Promise((resolve, reject) => {
