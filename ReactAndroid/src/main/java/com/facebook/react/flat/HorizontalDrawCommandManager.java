@@ -70,11 +70,11 @@ import android.util.SparseIntArray;
   public static void fillMaxMinArrays(NodeRegion[] regions, float[] maxRight, float[] minLeft) {
     float last = 0;
     for (int i = 0; i < regions.length; i++) {
-      last = Math.max(last, regions[i].mRight);
+      last = Math.max(last, regions[i].getTouchableRight());
       maxRight[i] = last;
     }
     for (int i = regions.length - 1; i >= 0; i--) {
-      last = Math.min(last, regions[i].mLeft);
+      last = Math.min(last, regions[i].getTouchableLeft());
       minLeft[i] = last;
     }
   }

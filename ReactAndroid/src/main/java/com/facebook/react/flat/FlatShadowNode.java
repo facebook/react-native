@@ -187,9 +187,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     if (mountsToView()) {
       return mViewRight - mViewLeft;
     } else {
-      // this is not technically correct since hitSlop affects the NodeRegion, but it's a temporary
-      // work around for now, since mView{Right,Left} are only set for views
-      return Math.round(mNodeRegion.mRight - mNodeRegion.mLeft);
+      return Math.round(mNodeRegion.getRight() - mNodeRegion.getLeft());
     }
   }
 
@@ -198,9 +196,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     if (mountsToView()) {
       return mViewBottom - mViewTop;
     } else {
-      // this is not technically correct since hitSlop affects the NodeRegion, but it's a temporary
-      // work around for now, since mView{Bottom,Top} are only set for views
-      return Math.round(mNodeRegion.mBottom - mNodeRegion.mTop);
+      return Math.round(mNodeRegion.getBottom() - mNodeRegion.getTop());
     }
   }
 
@@ -332,8 +328,8 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
   /* package */ final void updateOverflowsContainer() {
     boolean overflowsContainer = false;
-    int width = (int) (mNodeRegion.mRight - mNodeRegion.mLeft);
-    int height = (int) (mNodeRegion.mBottom - mNodeRegion.mTop);
+    int width = (int) (mNodeRegion.getRight() - mNodeRegion.getLeft());
+    int height = (int) (mNodeRegion.getBottom() - mNodeRegion.getTop());
 
     float leftBound = 0;
     float rightBound = width;
@@ -349,23 +345,23 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
     // to clip certain subviews.
     if (!mClipToBounds && height > 0 && width > 0) {
       for (NodeRegion region : mNodeRegions) {
-        if (region.mLeft < leftBound) {
-          leftBound = region.mLeft;
+        if (region.getLeft() < leftBound) {
+          leftBound = region.getLeft();
           overflowsContainer = true;
         }
 
-        if (region.mRight > rightBound) {
-          rightBound = region.mRight;
+        if (region.getRight() > rightBound) {
+          rightBound = region.getRight();
           overflowsContainer = true;
         }
 
-        if (region.mTop < topBound) {
-          topBound = region.mTop;
+        if (region.getTop() < topBound) {
+          topBound = region.getTop();
           overflowsContainer = true;
         }
 
-        if (region.mBottom > bottomBound) {
-          bottomBound = region.mBottom;
+        if (region.getBottom() > bottomBound) {
+          bottomBound = region.getBottom();
           overflowsContainer = true;
         }
       }
@@ -424,8 +420,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
       float right,
       float bottom,
       boolean isVirtual) {
-    if (mNodeRegion.mLeft != left || mNodeRegion.mTop != top || mNodeRegion.mRight != right ||
-        mNodeRegion.mBottom != bottom || mNodeRegion.mIsVirtual != isVirtual) {
+    if (!mNodeRegion.matches(left, top, right, bottom, isVirtual)) {
       setNodeRegion(new NodeRegion(left, top, right, bottom, getReactTag(), isVirtual));
     }
   }

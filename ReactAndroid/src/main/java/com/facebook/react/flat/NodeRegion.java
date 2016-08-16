@@ -13,10 +13,10 @@ package com.facebook.react.flat;
   /* package */ static final NodeRegion[] EMPTY_ARRAY = new NodeRegion[0];
   /* package */ static final NodeRegion EMPTY = new NodeRegion(0, 0, 0, 0, -1, false);
 
-  /* package */ final float mLeft;
-  /* package */ final float mTop;
-  /* package */ final float mRight;
-  /* package */ final float mBottom;
+  private final float mLeft;
+  private final float mTop;
+  private final float mRight;
+  private final float mBottom;
   /* package */ final int mTag;
   /* package */ final boolean mIsVirtual;
 
@@ -41,12 +41,88 @@ package com.facebook.react.flat;
       float right,
       float bottom,
       boolean isVirtual) {
-    return left == mLeft && top == mTop && bottom == mBottom && right == mRight &&
+    return left == mLeft && top == mTop && right == mRight && bottom == mBottom &&
         isVirtual == mIsVirtual;
   }
 
-  /* package */ final boolean withinBounds(float touchX, float touchY) {
-      return mLeft <= touchX && touchX < mRight && mTop <= touchY && touchY < mBottom;
+  /**
+   * The left bound of the underlying node.
+   *
+   * @return The node bound.
+   */
+  /* package */ final float getLeft() {
+    return mLeft;
+  }
+
+  /**
+   * The top bound of the underlying node.
+   *
+   * @return The node bound.
+   */
+  /* package */ final float getTop() {
+    return mTop;
+  }
+
+  /**
+   * The right bound of the underlying node.
+   *
+   * @return The node bound.
+   */
+  /* package */ final float getRight() {
+    return mRight;
+  }
+
+  /**
+   * The bottom bound of the underlying node.
+   *
+   * @return The node bound.
+   */
+  /* package */ final float getBottom() {
+    return mBottom;
+  }
+
+  /**
+   * The left bound of the region for the purpose of touch.  This is usually the bound of the
+   * underlying node, except in the case of hit slop.
+   *
+   * @return The touch bound.
+   */
+  /* package */ float getTouchableLeft() {
+    return getLeft();
+  }
+
+  /**
+   * The top bound of the region for the purpose of touch.  This is usually the bound of the
+   * underlying node, except in the case of hit slop.
+   *
+   * @return The touch bound.
+   */
+  /* package */ float getTouchableTop() {
+    return getTop();
+  }
+
+  /**
+   * The right bound of the region for the purpose of touch.  This is usually the bound of the
+   * underlying node, except in the case of hit slop.
+   *
+   * @return The touch bound.
+   */
+  /* package */ float getTouchableRight() {
+    return getRight();
+  }
+
+  /**
+   * The bottom bound of the region for the purpose of touch.  This is usually the bound of the
+   * underlying node, except in the case of hit slop.
+   *
+   * @return The touch bound.
+   */
+  /* package */ float getTouchableBottom() {
+    return getBottom();
+  }
+
+  /* package */ boolean withinBounds(float touchX, float touchY) {
+    return mLeft <= touchX && touchX < mRight && mTop <= touchY && touchY < mBottom;
   }
 
   /* package */ int getReactTag(float touchX, float touchY) {

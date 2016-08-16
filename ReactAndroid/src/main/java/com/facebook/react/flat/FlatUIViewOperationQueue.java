@@ -356,12 +356,12 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
       }
 
       int resultTag = region == NodeRegion.EMPTY ? touchTargetReactTag : region.mTag;
-      float x = PixelUtil.toDIPFromPixel(region.mLeft + MEASURE_BUFFER[0] - containerX);
-      float y = PixelUtil.toDIPFromPixel(region.mTop + MEASURE_BUFFER[1] - containerY);
+      float x = PixelUtil.toDIPFromPixel(region.getLeft() + MEASURE_BUFFER[0] - containerX);
+      float y = PixelUtil.toDIPFromPixel(region.getTop() + MEASURE_BUFFER[1] - containerY);
       float width = PixelUtil.toDIPFromPixel(isNativeView ?
-          MEASURE_BUFFER[2] : region.mRight - region.mLeft);
+          MEASURE_BUFFER[2] : region.getRight() - region.getLeft());
       float height = PixelUtil.toDIPFromPixel(isNativeView ?
-          MEASURE_BUFFER[3] : region.mBottom - region.mTop);
+          MEASURE_BUFFER[3] : region.getBottom() - region.getTop());
       mCallback.invoke(resultTag, x, y, width, height);
     }
   }

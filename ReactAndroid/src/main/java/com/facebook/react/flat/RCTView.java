@@ -155,15 +155,10 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
       float right,
       float bottom,
       boolean isVirtual) {
-    if (mHitSlop != null) {
-      left -= mHitSlop.left;
-      top -= mHitSlop.top;
-      bottom += mHitSlop.bottom;
-      right += mHitSlop.right;
-    }
-
     if (!getNodeRegion().matches(left, top, right, bottom, isVirtual)) {
-      setNodeRegion(new NodeRegion(left, top, right, bottom, getReactTag(), isVirtual));
+      setNodeRegion(mHitSlop == null ?
+          new NodeRegion(left, top, right, bottom, getReactTag(), isVirtual) :
+          new HitSlopNodeRegion(mHitSlop, left, top, right, bottom, getReactTag(), isVirtual));
     }
   }
 

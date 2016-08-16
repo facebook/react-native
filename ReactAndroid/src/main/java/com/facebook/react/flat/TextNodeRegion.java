@@ -41,9 +41,9 @@ import android.text.Spanned;
     if (mLayout != null) {
       CharSequence text = mLayout.getText();
       if (text instanceof Spanned) {
-        int y = Math.round(touchY - mTop);
+        int y = Math.round(touchY - getTop());
         if (y >= mLayout.getLineTop(0) && y < mLayout.getLineBottom(mLayout.getLineCount() - 1)) {
-          float x = Math.round(touchX - mLeft);
+          float x = Math.round(touchX - getLeft());
           int line = mLayout.getLineForVertical(y);
 
           if (mLayout.getLineLeft(line) <= x && x <= mLayout.getLineRight(line)) {

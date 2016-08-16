@@ -225,8 +225,7 @@ import com.facebook.textcachewarmer.DefaultTextLayoutCacheWarmer;
 
     NodeRegion nodeRegion = getNodeRegion();
     if (mDrawCommand == null) {
-      if (nodeRegion.mLeft != left || nodeRegion.mTop != top || nodeRegion.mRight != right ||
-          nodeRegion.mBottom != bottom || nodeRegion.mIsVirtual != isVirtual) {
+      if (!nodeRegion.matches(left, top, right, bottom, isVirtual)) {
         setNodeRegion(new TextNodeRegion(left, top, right, bottom, getReactTag(), isVirtual, null));
       }
       return;
@@ -239,9 +238,7 @@ import com.facebook.textcachewarmer.DefaultTextLayoutCacheWarmer;
     }
 
     Layout newLayout = mDrawCommand.getLayout();
-    if (nodeRegion.mLeft != left || nodeRegion.mTop != top ||
-        nodeRegion.mRight != right || nodeRegion.mBottom != bottom ||
-        nodeRegion.mIsVirtual != isVirtual || layout != newLayout) {
+    if (!nodeRegion.matches(left, top, right, bottom, isVirtual) || layout != newLayout) {
       setNodeRegion(
           new TextNodeRegion(left, top, right, bottom, getReactTag(), isVirtual, newLayout));
     }
