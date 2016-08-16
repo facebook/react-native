@@ -9,6 +9,8 @@
 
 package com.facebook.react;
 
+import javax.annotation.Nullable;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -36,7 +38,9 @@ public abstract class ReactFragmentActivity extends FragmentActivity implements
    * This is used to schedule rendering of the component.
    * e.g. "MoviesApp"
    */
-  protected abstract String getMainComponentName();
+  protected @Nullable String getMainComponentName() {
+    return null;
+  }
 
   /**
    * Called at construction time, override if you have a custom delegate implementation.
@@ -120,5 +124,9 @@ public abstract class ReactFragmentActivity extends FragmentActivity implements
 
   protected final ReactInstanceManager getReactInstanceManager() {
     return mDelegate.getReactInstanceManager();
+  }
+
+  protected final void loadApp(String appKey) {
+    mDelegate.loadApp(appKey);
   }
 }
