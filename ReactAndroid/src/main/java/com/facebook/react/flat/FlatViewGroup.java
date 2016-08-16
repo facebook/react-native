@@ -22,6 +22,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -166,7 +167,7 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
   private long mLastTouchDownTime;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
 
-  private static final ArrayList<View> EMPTY_DETACHED_VIEWS = new ArrayList<>(0);
+  private static final SparseArray<View> EMPTY_DETACHED_VIEWS = new SparseArray<>(0);
   // Provides clipping, drawing and node region finding logic if subview clipping is enabled.
   private @Nullable DrawCommandManager mDrawCommandManager;
 
@@ -778,7 +779,7 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
    *
    * @return A Collection of Views to clean up.
    */
-  Collection<View> getDetachedViews() {
+  /* package */ SparseArray<View> getDetachedViews() {
     if (mDrawCommandManager == null) {
       return EMPTY_DETACHED_VIEWS;
     }

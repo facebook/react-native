@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -208,8 +209,9 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
     if (view instanceof FlatViewGroup) {
       FlatViewGroup flatViewGroup = (FlatViewGroup) view;
       if (flatViewGroup.getRemoveClippedSubviews()) {
-        Collection<View> detachedViews = flatViewGroup.getDetachedViews();
-        for (View detachedChild : detachedViews) {
+        SparseArray<View> detachedViews = flatViewGroup.getDetachedViews();
+        for (int i = 0, size = detachedViews.size(); i < size; i++) {
+          View detachedChild = detachedViews.valueAt(i);
           // we can do super here because removeClippedSubviews is currently not recursive. if/when
           // we become recursive one day, this should call vanilla dropView to be recursive as well.
           super.dropView(detachedChild);

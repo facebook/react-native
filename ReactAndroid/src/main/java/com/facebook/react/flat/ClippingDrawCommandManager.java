@@ -163,7 +163,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   // less in our case because of the large constant overhead and auto boxing of the map.
   private SparseIntArray mDrawViewIndexMap = StateBuilder.EMPTY_SPARSE_INT;
   // Map of views that are currently clipped.
-  private final Map<Integer, View> mClippedSubviews = new HashMap<>();
+  private final SparseArray<View> mClippedSubviews = new SparseArray<>();
 
   protected final Rect mClippingRect = new Rect();
 
@@ -297,11 +297,11 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   }
 
   private boolean isClipped(int id) {
-    return mClippedSubviews.containsKey(id);
+    return mClippedSubviews.get(id) != null;
   }
 
   private boolean isNotClipped(int id) {
-    return !mClippedSubviews.containsKey(id);
+    return mClippedSubviews.get(id) == null;
   }
 
   @Override
@@ -510,8 +510,8 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
   }
 
   @Override
-  public Collection<View> getDetachedViews() {
-    return mClippedSubviews.values();
+  public SparseArray<View> getDetachedViews() {
+    return mClippedSubviews;
   }
 
   /**

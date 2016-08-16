@@ -15,6 +15,7 @@ import java.util.Collection;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewParent;
@@ -78,7 +79,7 @@ import android.view.ViewParent;
    *
    * @return A collection of the currently detached views.
    */
-  abstract Collection<View> getDetachedViews();
+  abstract SparseArray<View> getDetachedViews();
 
   /**
    * Draw the relevant items.  This should do as little work as possible.
