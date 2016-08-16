@@ -10,6 +10,13 @@
 /*eslint no-console-disallow: "off"*/
 /*global React ReactDOM Table stringInterner stackRegistry aggrow preLoadedCapture:true*/
 
+function getTypeName(ref) {
+  if (ref.type === 'Function' && !!ref.value) {
+    return 'Function ' + ref.value.name;
+  }
+  return ref.type;
+}
+
 function registerReactComponentTreeImpl(refs, registry, parents, inEdgeNames, trees, id) {
   if (parents[id] === undefined) {
     // not a component
@@ -93,7 +100,7 @@ function registerPathToRoot(roots, refs, registry, reactComponentTree) {
     const id = roots[i];
     if (visited[id] === undefined) {
       const ref = refs[id];
-      visited[id] = registry.insert(registry.root, ref.type);
+      visited[id] = registry.insert(registry.root, getTypeName(ref));
       breadth.push(id);
     }
   }
@@ -133,7 +140,7 @@ function registerPathToRoot(roots, refs, registry, reactComponentTree) {
             // TODO: figure out why we have edges that point to things not JSCell
             //console.log('registerPathToRoot unable to follow edge from ' + id + ' to ' + edgeId);
           } else {
-            visited[edgeId] = registry.insert(node, edgeName + edgeRef.type);
+            visited[edgeId] = registry.insert(node, edgeName + getTypeName(edgeRef));
             nextBreadth.push(edgeId);
             if (reactComponentTree[edgeId] === undefined) {
               reactComponentTree[edgeId] = reactComponentTree[id];
@@ -191,7 +198,7 @@ function captureRegistry() {
       for (const id in capture.refs) {
         const ref = capture.refs[id];
         newData[dataOffset + idField] = parseInt(id, 16);
-        newData[dataOffset + typeField] = this.strings.intern(ref.type);
+        newData[dataOffset + typeField] = this.strings.intern(getTypeName(ref));
         newData[dataOffset + sizeField] = ref.size;
         newData[dataOffset + traceField] = internedCaptureId;
         const pathNode = rootPathMap[id];
