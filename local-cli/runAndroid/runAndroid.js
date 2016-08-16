@@ -16,11 +16,6 @@ const isPackagerRunning = require('../util/isPackagerRunning');
 const Promise = require('promise');
 const adb = require('./adb');
 
-// Verifies this is an Android project
-function checkAndroid(root) {
-  return fs.existsSync(path.join(root, 'android/gradlew'));
-}
-
 /**
  * Starts the app on a connected Android emulator or device.
  */
@@ -51,10 +46,15 @@ function getAdbPath() {
 }
 
 // Runs ADB reverse tcp:8081 tcp:8081 to allow loading the jsbundle from the packager
-function tryRunAdbReverse() {
+function tryRunAdbReverse(device) {
   try {
     const adbPath = getAdbPath();
     const adbArgs = ['reverse', 'tcp:8081', 'tcp:8081'];
+
+    // If a device is specified then tell adb to use it
+    if (device) {
+      adbArgs.unshift('-s', device);
+    }
 
     console.log(chalk.bold(
       `Running ${adbPath} ${adbArgs.join(' ')}`
@@ -63,7 +63,7 @@ function tryRunAdbReverse() {
     child_process.execFileSync(adbPath, adbArgs, {
       stdio: [process.stdin, process.stdout, process.stderr],
     });
-  } catch(e) {
+  } catch (e) {
     console.log(chalk.yellow(
       `Could not run adb reverse: ${e.message}`
     ));
@@ -74,7 +74,7 @@ function tryRunAdbReverse() {
 function buildAndRun(args) {
   process.chdir(path.join(args.root, 'android'));
   try {
-    tryRunAdbReverse();
+    adb.getDevices().map((device) => tryRunAdbReverse(device));
 
     const cmd = process.platform.startsWith('win')
       ? 'gradlew.bat'
