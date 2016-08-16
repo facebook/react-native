@@ -48,7 +48,7 @@ Networking is an inherently asynchronous operation. Fetch methods will return a 
 
   ```js
   getMoviesFromApiAsync() {
-    return fetch('http://facebook.github.io/react-native/movies.json')
+    return fetch('https://facebook.github.io/react-native/movies.json')
       .then((response) => response.json())
       .then((responseJson) => {
         return responseJson.movies;
@@ -64,7 +64,7 @@ You can also use the proposed ES2017 `async`/`await` syntax in a React Native ap
   ```js
   async getMoviesFromApi() {
     try {
-      let response = await fetch('http://facebook.github.io/react-native/movies.json');
+      let response = await fetch('https://facebook.github.io/react-native/movies.json');
       let responseJson = await response.json();
       return responseJson.movies;
     } catch(error) {

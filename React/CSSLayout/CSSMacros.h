@@ -27,8 +27,8 @@
 #define CSS_ABORT()
 #endif
 
-#define CSS_ASSERT(X, message)                                                                     \
-  if (!(X)) {                                                                                      \
-    fprintf(stderr, "%s\n", message);                                                              \
-    CSS_ABORT();                                                                                   \
+#define CSS_ASSERT(X, message)        \
+  if (!(X)) {                         \
+    fprintf(stderr, "%s\n", message); \
+    CSS_ABORT();                      \
   }
