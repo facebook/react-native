@@ -29,6 +29,8 @@ public class ReactTextUpdate {
   private final float mPaddingRight;
   private final float mPaddingBottom;
   private final float mLineHeight;
+  private final float mLetterSpacing;
+  private final int mFontSize;
   private final int mTextAlign;
 
   public ReactTextUpdate(
@@ -36,6 +38,8 @@ public class ReactTextUpdate {
     int jsEventCounter,
     boolean containsImages,
     Spacing padding,
+    float letterSpacing,
+    int fontSize,
     float lineHeight,
     int textAlign) {
     mText = text;
@@ -45,6 +49,8 @@ public class ReactTextUpdate {
     mPaddingTop = padding.get(Spacing.TOP);
     mPaddingRight = padding.get(Spacing.END);
     mPaddingBottom = padding.get(Spacing.BOTTOM);
+    mLetterSpacing = letterSpacing;
+    mFontSize = fontSize;
     mLineHeight = lineHeight;
     mTextAlign = textAlign;
   }
@@ -75,6 +81,14 @@ public class ReactTextUpdate {
 
   public float getPaddingBottom() {
     return mPaddingBottom;
+  }
+
+  public float getLetterSpacing() {
+    return mLetterSpacing;
+  }
+
+  public int getFontSize() {
+    return mFontSize;
   }
 
   public float getLineHeight() {
