@@ -17,11 +17,45 @@ function getTypeName(ref) {
   return ref.type;
 }
 
+function idGetProp(refs, id, prop) {
+  const ref = refs[id];
+  if (ref && ref.edges) {
+    const edges = ref.edges;
+    for (const edgeId in edges) {
+      if (edges[edgeId] === prop) {
+        return edgeId;
+      }
+    }
+  }
+  return undefined;
+}
+
+function idPropForEach(refs, id, callback) {
+  const ref = refs[id];
+  if (ref && ref.edges) {
+    const edges = ref.edges;
+    for (const edgeId in edges) {
+      callback(edges[edgeId], edgeId);
+    }
+  }
+}
+
+function getInternalInstanceName(refs, id) {
+  const elementId = idGetProp(refs, id, '_currentElement');
+  const typeId = idGetProp(refs, elementId, 'type');
+  const typeRef = refs[typeId];
+  if (typeRef && typeRef.type === 'Function' && typeRef.value) {
+    return typeRef.value.name;
+  } else {
+    return '<unknown component>';
+  }
+}
+
 function registerReactComponentTreeImpl(refs, registry, parents, inEdgeNames, trees, id) {
   if (parents[id] === undefined) {
     // not a component
   } else if (parents[id] === null) {
-    trees[id] = registry.insert(registry.root, '<internalInstance>');
+    trees[id] = registry.insert(registry.root, getInternalInstanceName(refs, id));
   } else {
     const parent = parents[id];
     const inEdgeName = inEdgeNames[id];
@@ -46,32 +80,29 @@ function registerReactComponentTree(refs, registry) {
   const parents = {};
   const inEdgeNames = {};
   for (const id in refs) {
-    const ref = refs[id];
-    for (const linkId in ref.edges) {
-      if (linkId !== '0x0') {
-        const name = ref.edges[linkId];
+    idPropForEach(refs, id, (name, propId) => {
+      if (propId !== '0x0') {
         if (name === '_renderedChildren') {
           if (parents[id] === undefined) {
             // mark that we are a react component, even if we don't have a parent
             parents[id] = null;
           }
-          const childrenRef = refs[linkId];
-          for (const childId in childrenRef.edges) {
-            const linkName = childrenRef.edges[childId];
-            if (linkName.startsWith('.')) {
-              parents[childId] = id;
-              inEdgeNames[childId] = linkName;
+          idPropForEach(refs, propId, (childName, childPropId) => {
+            if (childName.startsWith('.')) {
+              parents[childPropId] = id;
+              inEdgeNames[childPropId] = childName + ': '
+                + getInternalInstanceName(refs, childPropId);
             }
-          }
+          });
         } else if (name === '_renderedComponent') {
           if (parents[id] === undefined) {
             parents[id] = null;
           }
-          parents[linkId] = id;
-          inEdgeNames[linkId] = '_renderedComponent';
+          parents[propId] = id;
+          inEdgeNames[propId] = getInternalInstanceName(refs, propId);
         }
       }
-    }
+    });
   }
   // build tree of react internal instances (since that's what has the structure)
   const trees = {};
@@ -80,14 +111,9 @@ function registerReactComponentTree(refs, registry) {
   }
   // hook in components by looking at their _reactInternalInstance fields
   for (const id in refs) {
-    const ref = refs[id];
-    for (const linkId in ref.edges) {
-      const name = ref.edges[linkId];
-      if (name === '_reactInternalInstance') {
-        if (trees[linkId] !== undefined) {
-          trees[id] = registry.insert(trees[linkId], '<component>');
-        }
-      }
+    const internalInstance = idGetProp(refs, id, '_reactInternalInstance');
+    if (internalInstance && trees[internalInstance]) {
+      trees[id] = trees[internalInstance];
     }
   }
   return trees;
