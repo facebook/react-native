@@ -204,6 +204,9 @@ var rowCount=0;
 for(var id in capture.refs){// eslint-disable-line no-unused-vars
 rowCount++;
 }
+for(var _id3 in capture.markedBlocks){// eslint-disable-line no-unused-vars
+rowCount++;
+}
 console.log(
 'increasing row data from '+(this.data.length*4).toString()+'B to '+
 (this.data.length*4+rowCount*numFields*4).toString()+'B');
@@ -221,24 +224,34 @@ this.stacks,
 reactComponentTreeMap);
 
 var internedCaptureId=this.strings.intern(captureId);
-for(var _id3 in capture.refs){
-var ref=capture.refs[_id3];
-newData[dataOffset+idField]=parseInt(_id3,16);
+for(var _id4 in capture.refs){
+var ref=capture.refs[_id4];
+newData[dataOffset+idField]=parseInt(_id4,16);
 newData[dataOffset+typeField]=this.strings.intern(getTypeName(ref));
 newData[dataOffset+sizeField]=ref.size;
 newData[dataOffset+traceField]=internedCaptureId;
-var pathNode=rootPathMap[_id3];
+var pathNode=rootPathMap[_id4];
 if(pathNode===undefined){
 throw'did not find path for ref!';
 }
 newData[dataOffset+pathField]=pathNode.id;
-var reactTree=reactComponentTreeMap[_id3];
+var reactTree=reactComponentTreeMap[_id4];
 if(reactTree===undefined){
 newData[dataOffset+reactField]=
 this.stacks.insert(this.stacks.root,'<not-under-tree>').id;
 }else{
 newData[dataOffset+reactField]=reactTree.id;
 }
+dataOffset+=numFields;
+}
+for(var _id5 in capture.markedBlocks){
+var block=capture.markedBlocks[_id5];
+newData[dataOffset+idField]=parseInt(_id5,16);
+newData[dataOffset+typeField]=this.strings.intern('Marked Block Overhead');
+newData[dataOffset+sizeField]=block.capacity-block.size;
+newData[dataOffset+traceField]=internedCaptureId;
+newData[dataOffset+pathField]=this.stacks.root;
+newData[dataOffset+reactField]=this.stacks.root;
 dataOffset+=numFields;
 }
 this.data=newData;
