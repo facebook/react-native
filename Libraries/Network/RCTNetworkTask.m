@@ -10,21 +10,24 @@
 #import "RCTNetworkTask.h"
 
 #import "RCTLog.h"
+#import "RCTUtils.h"
 
 @implementation RCTNetworkTask
 {
   NSMutableData *_data;
   id<RCTURLRequestHandler> _handler;
+  dispatch_queue_t _callbackQueue;
+
   RCTNetworkTask *_selfReference;
 }
 
 - (instancetype)initWithRequest:(NSURLRequest *)request
                         handler:(id<RCTURLRequestHandler>)handler
-                completionBlock:(RCTURLRequestCompletionBlock)completionBlock
+                  callbackQueue:(dispatch_queue_t)callbackQueue
 {
   RCTAssertParam(request);
   RCTAssertParam(handler);
-  RCTAssertParam(completionBlock);
+  RCTAssertParam(callbackQueue);
 
   static NSUInteger requestID = 0;
 
@@ -32,7 +35,7 @@
     _requestID = @(requestID++);
     _request = request;
     _handler = handler;
-    _completionBlock = completionBlock;
+    _callbackQueue = callbackQueue;
     _status = RCTNetworkTaskPending;
   }
   return self;
@@ -53,8 +56,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)start
 {
   if (_requestToken == nil) {
-    if ([self validateRequestToken:[_handler sendRequest:_request
-                                            withDelegate:self]]) {
+    id token = [_handler sendRequest:_request withDelegate:self];
+    if ([self validateRequestToken:token]) {
       _selfReference = self;
       _status = RCTNetworkTaskInProgress;
     }
@@ -88,11 +91,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     }
     valid = NO;
   }
+
   if (!valid) {
     _status = RCTNetworkTaskFinished;
     if (_completionBlock) {
-      _completionBlock(_response, nil, [NSError errorWithDomain:RCTErrorDomain code:0
-        userInfo:@{NSLocalizedDescriptionKey: @"Invalid request token."}]);
+      RCTURLRequestCompletionBlock completionBlock = _completionBlock;
+      dispatch_async(_callbackQueue, ^{
+        completionBlock(self->_response, nil, RCTErrorWithMessage(@"Invalid request token."));
+      });
     }
     [self invalidate];
   }
@@ -101,48 +107,76 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)URLRequest:(id)requestToken didSendDataWithProgress:(int64_t)bytesSent
 {
-  if ([self validateRequestToken:requestToken]) {
-    if (_uploadProgressBlock) {
-      _uploadProgressBlock(bytesSent, _request.HTTPBody.length);
-    }
+  if (![self validateRequestToken:requestToken]) {
+    return;
+  }
+
+  if (_uploadProgressBlock) {
+    RCTURLRequestProgressBlock uploadProgressBlock = _uploadProgressBlock;
+    int64_t length = _request.HTTPBody.length;
+    dispatch_async(_callbackQueue, ^{
+      uploadProgressBlock(bytesSent, length);
+    });
   }
 }
 
 - (void)URLRequest:(id)requestToken didReceiveResponse:(NSURLResponse *)response
 {
-  if ([self validateRequestToken:requestToken]) {
-    _response = response;
-    if (_responseBlock) {
-      _responseBlock(response);
-    }
+  if (![self validateRequestToken:requestToken]) {
+    return;
+  }
+
+  _response = response;
+  if (_responseBlock) {
+    RCTURLRequestResponseBlock responseBlock = _responseBlock;
+    dispatch_async(_callbackQueue, ^{
+      responseBlock(response);
+    });
   }
 }
 
 - (void)URLRequest:(id)requestToken didReceiveData:(NSData *)data
 {
-  if ([self validateRequestToken:requestToken]) {
-    if (!_data) {
-      _data = [NSMutableData new];
-    }
-    [_data appendData:data];
-    if (_incrementalDataBlock) {
-      _incrementalDataBlock(data, _data.length, _response.expectedContentLength);
-    }
-    if (_downloadProgressBlock && _response.expectedContentLength > 0) {
-      _downloadProgressBlock(_data.length, _response.expectedContentLength);
-    }
+  if (![self validateRequestToken:requestToken]) {
+    return;
+  }
+
+  if (!_data) {
+    _data = [NSMutableData new];
+  }
+  [_data appendData:data];
+
+  int64_t length = _data.length;
+  int64_t total = _response.expectedContentLength;
+
+  if (_incrementalDataBlock) {
+    RCTURLRequestIncrementalDataBlock incrementalDataBlock = _incrementalDataBlock;
+    dispatch_async(_callbackQueue, ^{
+      incrementalDataBlock(data, length, total);
+    });
+  }
+  if (_downloadProgressBlock && total > 0) {
+    RCTURLRequestProgressBlock downloadProgressBlock = _downloadProgressBlock;
+    dispatch_async(_callbackQueue, ^{
+      downloadProgressBlock(length, total);
+    });
   }
 }
 
 - (void)URLRequest:(id)requestToken didCompleteWithError:(NSError *)error
 {
-  if ([self validateRequestToken:requestToken]) {
-    _status = RCTNetworkTaskFinished;
-    if (_completionBlock) {
-      _completionBlock(_response, _data, error);
-    }
-    [self invalidate];
+  if (![self validateRequestToken:requestToken]) {
+    return;
   }
+
+  _status = RCTNetworkTaskFinished;
+  if (_completionBlock) {
+    RCTURLRequestCompletionBlock completionBlock = _completionBlock;
+    dispatch_async(_callbackQueue, ^{
+      completionBlock(self->_response, self->_data, error);
+    });
+  }
+  [self invalidate];
 }
 
 @end

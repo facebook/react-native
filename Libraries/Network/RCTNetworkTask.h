@@ -30,8 +30,8 @@ typedef NS_ENUM(NSInteger, RCTNetworkTaskStatus) {
 @property (nonatomic, readonly) NSNumber *requestID;
 @property (nonatomic, readonly, weak) id requestToken;
 @property (nonatomic, readonly) NSURLResponse *response;
-@property (nonatomic, readonly) RCTURLRequestCompletionBlock completionBlock;
 
+@property (nonatomic, copy) RCTURLRequestCompletionBlock completionBlock;
 @property (nonatomic, copy) RCTURLRequestProgressBlock downloadProgressBlock;
 @property (nonatomic, copy) RCTURLRequestIncrementalDataBlock incrementalDataBlock;
 @property (nonatomic, copy) RCTURLRequestResponseBlock responseBlock;
@@ -41,7 +41,7 @@ typedef NS_ENUM(NSInteger, RCTNetworkTaskStatus) {
 
 - (instancetype)initWithRequest:(NSURLRequest *)request
                         handler:(id<RCTURLRequestHandler>)handler
-                completionBlock:(RCTURLRequestCompletionBlock)completionBlock NS_DESIGNATED_INITIALIZER;
+                  callbackQueue:(dispatch_queue_t)callbackQueue NS_DESIGNATED_INITIALIZER;
 
 - (void)start;
 - (void)cancel;
