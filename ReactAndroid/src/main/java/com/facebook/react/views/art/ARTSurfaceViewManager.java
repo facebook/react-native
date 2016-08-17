@@ -10,6 +10,9 @@
 package com.facebook.react.views.art;
 
 import android.graphics.Bitmap;
+import android.view.TextureView;
+import android.view.Surface;
+import android.graphics.SurfaceTexture;
 
 import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNodeAPI;
@@ -22,7 +25,9 @@ import com.facebook.react.uimanager.ThemedReactContext;
  * invalidating the native view on shadow view updates happening in the underlying tree.
  */
 public class ARTSurfaceViewManager extends
-    BaseViewManager<ARTSurfaceView, ARTSurfaceViewShadowNode> {
+    BaseViewManager<ARTSurfaceView, ARTSurfaceViewShadowNode> implements TextureView.SurfaceTextureListener {
+
+  private ARTSurfaceViewShadowNode mShadowNode;
 
   private static final String REACT_CLASS = "ARTSurfaceView";
 
@@ -46,9 +51,9 @@ public class ARTSurfaceViewManager extends
 
   @Override
   public ARTSurfaceViewShadowNode createShadowNodeInstance() {
-    ARTSurfaceViewShadowNode node = new ARTSurfaceViewShadowNode();
-    node.setMeasureFunction(MEASURE_FUNCTION);
-    return node;
+    mShadowNode = new ARTSurfaceViewShadowNode();
+    mShadowNode.setMeasureFunction(MEASURE_FUNCTION);
+    return mShadowNode;
   }
 
   @Override
@@ -58,11 +63,23 @@ public class ARTSurfaceViewManager extends
 
   @Override
   protected ARTSurfaceView createViewInstance(ThemedReactContext reactContext) {
-    return new ARTSurfaceView(reactContext);
+    ARTSurfaceView node = new ARTSurfaceView(reactContext);
+    node.setSurfaceTextureListener(this);
+    return node;
   }
 
   @Override
-  public void updateExtraData(ARTSurfaceView root, Object extraData) {
-    root.setBitmap((Bitmap) extraData);
+  public void updateExtraData(ARTSurfaceView root, Object extraData) {}
+
+  public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+      mShadowNode.setSurface(new Surface(surface));
   }
+
+  public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+      mShadowNode.setSurface(null);
+      return true;
+  }
+
+  public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {}
+  public void onSurfaceTextureUpdated(SurfaceTexture surface) {}
 }
