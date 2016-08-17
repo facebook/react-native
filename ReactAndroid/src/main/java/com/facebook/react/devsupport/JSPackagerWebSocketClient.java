@@ -6,7 +6,7 @@
  * file in the same directory.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.devsupport;
 
 import javax.annotation.Nullable;
 

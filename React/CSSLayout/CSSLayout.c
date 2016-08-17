@@ -381,28 +381,28 @@ static void print_css_node_rec(CSSNode *node, CSSPrintOptions options, uint32_t 
 void CSSNodePrint(CSSNode *node, CSSPrintOptions options) { print_css_node_rec(node, options, 0); }
 
 static CSSPosition leading[4] = {
-  /* CSSFlexDirectionColumn = */ CSSPositionTop,
-  /* CSSFlexDirectionColumnReverse = */ CSSPositionBottom,
-  /* CSSFlexDirectionRow = */ CSSPositionLeft,
-  /* CSSFlexDirectionRowReverse = */ CSSPositionRight
+  [CSSFlexDirectionColumn] = CSSPositionTop,
+  [CSSFlexDirectionColumnReverse] = CSSPositionBottom,
+  [CSSFlexDirectionRow] = CSSPositionLeft,
+  [CSSFlexDirectionRowReverse] = CSSPositionRight,
 };
 static CSSPosition trailing[4] = {
-  /* CSSFlexDirectionColumn = */ CSSPositionBottom,
-  /* CSSFlexDirectionColumnReverse = */ CSSPositionTop,
-  /* CSSFlexDirectionRow = */ CSSPositionRight,
-  /* CSSFlexDirectionRowReverse = */ CSSPositionLeft
+  [CSSFlexDirectionColumn] = CSSPositionBottom,
+  [CSSFlexDirectionColumnReverse] = CSSPositionTop,
+  [CSSFlexDirectionRow] = CSSPositionRight,
+  [CSSFlexDirectionRowReverse] = CSSPositionLeft,
 };
 static CSSPosition pos[4] = {
-  /* CSSFlexDirectionColumn = */ CSSPositionTop,
-  /* CSSFlexDirectionColumnReverse = */ CSSPositionBottom,
-  /* CSSFlexDirectionRow = */ CSSPositionLeft,
-  /* CSSFlexDirectionRowReverse = */ CSSPositionRight
+  [CSSFlexDirectionColumn] = CSSPositionTop,
+  [CSSFlexDirectionColumnReverse] = CSSPositionBottom,
+  [CSSFlexDirectionRow] = CSSPositionLeft,
+  [CSSFlexDirectionRowReverse] = CSSPositionRight,
 };
 static CSSDimension dim[4] = {
-  /* CSSFlexDirectionColumn = */ CSSDimensionHeight,
-  /* CSSFlexDirectionColumnReverse = */ CSSDimensionHeight,
-  /* CSSFlexDirectionRow = */ CSSDimensionWidth,
-  /* CSSFlexDirectionRowReverse = */ CSSDimensionWidth
+  [CSSFlexDirectionColumn] = CSSDimensionHeight,
+  [CSSFlexDirectionColumnReverse] = CSSDimensionHeight,
+  [CSSFlexDirectionRow] = CSSDimensionWidth,
+  [CSSFlexDirectionRowReverse] = CSSDimensionWidth,
 };
 
 static bool isRowDirection(CSSFlexDirection flexDirection) {

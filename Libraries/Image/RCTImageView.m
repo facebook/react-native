@@ -358,10 +358,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
         _targetSize = idealSize;
         [self reloadImage];
       }
-    } else {
-      // Our existing image is good enough.
-      [self cancelImageLoad];
-      _targetSize = imageSize;
     }
   }
 }
