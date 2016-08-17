@@ -252,6 +252,9 @@ class Server {
                 deps.outdated.add(filePath);
               }
             });
+          }).catch(e => {
+            debug(`Could not update bundle: ${e}, evicting from cache`);
+            delete this._bundles[key];
           });
         }
       } else {
