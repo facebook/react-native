@@ -80,7 +80,8 @@ function Table(props){_classCallCheck(this,Table);var _this3=_possibleConstructo
 props));
 _this3.state={
 aggrow:props.aggrow,
-viewport:{top:0,height:100}};return _this3;
+viewport:{top:0,height:100},
+cursor:0};return _this3;
 
 }_createClass(Table,[{key:'scroll',value:function scroll(
 
@@ -88,9 +89,88 @@ e){
 var viewport=e.target;
 var top=Math.floor((viewport.scrollTop-viewport.clientHeight*1.0)/rowHeight);
 var height=Math.ceil(viewport.clientHeight*3.0/rowHeight);
-this.state.viewport.top=top;
-this.state.viewport.height=height;
-this.forceUpdate();
+if(top!==this.state.viewport.top||height!==this.state.viewport.height){
+this.setState({viewport:{top:top,height:height}});
+}
+}},{key:'_contractRow',value:function _contractRow(
+
+row){
+var newCursor=this.state.cursor;
+if(newCursor>row.top&&newCursor<row.top+row.height){// in contracted section
+newCursor=row.top;
+}else if(newCursor>=row.top+row.height){// below contracted section
+newCursor-=row.height-1;
+}
+this.state.aggrow.contract(row);
+this.setState({cursor:newCursor});
+}},{key:'_expandRow',value:function _expandRow(
+
+row){
+var newCursor=this.state.cursor;
+this.state.aggrow.expand(row);
+if(newCursor>row.top){// below expanded section
+newCursor+=row.height-1;
+}
+this.setState({cursor:newCursor});
+}},{key:'_keepCursorInViewport',value:function _keepCursorInViewport()
+
+
+
+{
+if(this._scrollDiv){
+var cursor=this.state.cursor;
+var scrollDiv=this._scrollDiv;
+if(cursor*rowHeight<scrollDiv.scrollTop+scrollDiv.clientHeight*0.1){
+scrollDiv.scrollTop=cursor*rowHeight-scrollDiv.clientHeight*0.1;
+}else if((cursor+1)*rowHeight>scrollDiv.scrollTop+scrollDiv.clientHeight*0.9){
+scrollDiv.scrollTop=(cursor+1)*rowHeight-scrollDiv.clientHeight*0.9;
+}
+}
+}},{key:'keydown',value:function keydown(
+
+e){
+var aggrow=this.state.aggrow;
+var cursor=this.state.cursor;
+var row=aggrow.getRows(cursor,1)[0];
+switch(e.keyCode){
+case 38:// up
+if(cursor>0){
+this.setState({cursor:cursor-1});
+this._keepCursorInViewport();
+}
+e.preventDefault();
+break;
+case 40:// down
+if(cursor<aggrow.getHeight()-1){
+this.setState({cursor:cursor+1});
+this._keepCursorInViewport();
+}
+e.preventDefault();
+break;
+case 37:// left
+if(aggrow.canContract(row)){
+this._contractRow(row);
+}else if(aggrow.getRowIndent(row)>0){
+var indent=aggrow.getRowIndent(row)-1;
+while(aggrow.getRowIndent(row)>indent){
+cursor--;
+row=aggrow.getRows(cursor,1)[0];
+}
+this.setState({cursor:cursor});
+this._keepCursorInViewport();
+}
+e.preventDefault();
+break;
+case 39:// right
+if(aggrow.canExpand(row)){
+this._expandRow(row);
+}else if(cursor<aggrow.getHeight()-1){
+this.setState({cursor:cursor+1});
+this._keepCursorInViewport();
+}
+e.preventDefault();
+break;}
+
 }},{key:'dropAggregator',value:function dropAggregator(
 
 s,d){
@@ -114,7 +194,7 @@ dIndex--;
 active.splice(sIndex,1);
 active.splice(dIndex,0,dragged);
 aggrow.setActiveAggregators(active);
-this.forceUpdate();
+this.setState({cursor:0});
 }else if(s.startsWith('expander:active:')){
 var _sIndex=parseInt(s.substr(16),10);
 var _dIndex=-1;
@@ -133,7 +213,7 @@ _dIndex--;
 _active.splice(_sIndex,1);
 _active.splice(_dIndex,0,_dragged);
 aggrow.setActiveExpanders(_active);
-this.forceUpdate();
+this.setState({cursor:0});
 }
 }},{key:'render',value:function render()
 
@@ -218,11 +298,14 @@ borderBottom:'2px solid black'}},
 
 headers),
 
-React.createElement('div',{style:{
+React.createElement('div',{
+style:{
 width:'100%',
 flexGrow:'1',
 overflow:'scroll'},
-onScroll:function onScroll(e){return _this4.scroll(e);}},
+
+onScroll:function onScroll(e){return _this4.scroll(e);},
+ref:function ref(div){_this4._scrollDiv=div;}},
 React.createElement('div',{style:{position:'relative'}},
 this.renderVirtualizedRows()))));
 
@@ -259,6 +342,9 @@ var aggregates=aggrow.getActiveAggregators();
 if(row.parent!==null&&row.parent.expander%2===0){
 bg='white';
 }
+if(row.top===this.state.cursor){
+bg='lightblue';
+}
 for(var i=0;i<aggregates.length;i++){
 var aggregate=aggrow.getRowAggregate(row,i);
 columns.push(
@@ -288,42 +374,76 @@ flexShrink:'0'}}));
 
 
 if(aggrow.canExpand(row)){
-rowText+='+';
+columns.push(
+React.createElement('div',{
+style:{
+marginLeft:indent.toString()+'px',
+flexShrink:'0',
+width:'12px',
+textAlign:'center',
+border:'1px solid gray'},
+
+onClick:function onClick(){return _this6._expandRow(row);}},'+'));
+
+
 }else if(aggrow.canContract(row)){
-rowText+='-';
+columns.push(
+React.createElement('div',{
+style:{
+marginLeft:indent.toString()+'px',
+flexShrink:'0',
+width:'12px',
+textAlign:'center',
+border:'1px solid gray'},
+
+onClick:function onClick(){return _this6._contractRow(row);}},'-'));
+
+
 }else{
-rowText+=' ';
+columns.push(
+React.createElement('div',{
+style:{
+marginLeft:indent.toString()+'px'}}));
+
+
+
 }
 rowText+=aggrow.getRowLabel(row);
 columns.push(
 React.createElement('div',{style:{
-marginLeft:indent.toString()+'px',
 flexShrink:'0',
-whiteSpace:'nowrap'}},
+whiteSpace:'nowrap',
+marginRight:'20px'}},
 
 rowText));
 
 
 return(
-React.createElement('div',{style:{
+React.createElement('div',{
+key:row.top,
+style:{
 position:'absolute',
 height:(rowHeight-1).toString()+'px',
 top:(rowHeight*row.top).toString()+'px',
 display:'flex',
 flexDirection:'row',
+alignItems:'center',
 backgroundColor:bg,
 borderBottom:'1px solid gray'},
 
 onClick:function onClick(){
-if(aggrow.canExpand(row)){
-aggrow.expand(row);
-_this6.forceUpdate();
-}else if(aggrow.canContract(row)){
-aggrow.contract(row);
-_this6.forceUpdate();
-}
+_this6.setState({cursor:row.top});
 }},
 columns));
 
 
+}},{key:'componentDidMount',value:function componentDidMount()
+
+{
+this.keydown=this.keydown.bind(this);
+document.body.addEventListener('keydown',this.keydown);
+}},{key:'componentWillUnmount',value:function componentWillUnmount()
+
+{
+document.body.removeEventListener('keydown',this.keydown);
 }}]);return Table;}(React.Component);// @generated
