@@ -210,5 +210,8 @@
     "portfinder": "0.4.0",
     "react": "~15.3.0",
     "shelljs": "0.6.0"
+  },
+  "optionalDependencies": {
+    "ios-deploy": "^1.8.6"
   }
 }
