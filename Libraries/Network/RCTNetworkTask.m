@@ -37,6 +37,8 @@
     _handler = handler;
     _callbackQueue = callbackQueue;
     _status = RCTNetworkTaskPending;
+
+    dispatch_queue_set_specific(callbackQueue, (__bridge void *)self, (__bridge void *)self, NULL);
   }
   return self;
 }
@@ -51,6 +53,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   _incrementalDataBlock = nil;
   _responseBlock = nil;
   _uploadProgressBlock = nil;
+}
+
+- (void)dispatchCallback:(dispatch_block_t)callback
+{
+  if (dispatch_get_specific((__bridge void *)self) == (__bridge void *)self) {
+    callback();
+  } else {
+    dispatch_async(_callbackQueue, callback);
+  }
 }
 
 - (void)start
@@ -96,9 +107,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     _status = RCTNetworkTaskFinished;
     if (_completionBlock) {
       RCTURLRequestCompletionBlock completionBlock = _completionBlock;
-      dispatch_async(_callbackQueue, ^{
+      [self dispatchCallback:^{
         completionBlock(self->_response, nil, RCTErrorWithMessage(@"Invalid request token."));
-      });
+      }];
     }
     [self invalidate];
   }
@@ -114,9 +125,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (_uploadProgressBlock) {
     RCTURLRequestProgressBlock uploadProgressBlock = _uploadProgressBlock;
     int64_t length = _request.HTTPBody.length;
-    dispatch_async(_callbackQueue, ^{
+    [self dispatchCallback:^{
       uploadProgressBlock(bytesSent, length);
-    });
+    }];
   }
 }
 
@@ -129,9 +140,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   _response = response;
   if (_responseBlock) {
     RCTURLRequestResponseBlock responseBlock = _responseBlock;
-    dispatch_async(_callbackQueue, ^{
+    [self dispatchCallback:^{
       responseBlock(response);
-    });
+    }];
   }
 }
 
@@ -151,15 +162,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   if (_incrementalDataBlock) {
     RCTURLRequestIncrementalDataBlock incrementalDataBlock = _incrementalDataBlock;
-    dispatch_async(_callbackQueue, ^{
+    [self dispatchCallback:^{
       incrementalDataBlock(data, length, total);
-    });
+    }];
   }
   if (_downloadProgressBlock && total > 0) {
     RCTURLRequestProgressBlock downloadProgressBlock = _downloadProgressBlock;
-    dispatch_async(_callbackQueue, ^{
+    [self dispatchCallback:^{
       downloadProgressBlock(length, total);
-    });
+    }];
   }
 }
 
@@ -172,9 +183,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   _status = RCTNetworkTaskFinished;
   if (_completionBlock) {
     RCTURLRequestCompletionBlock completionBlock = _completionBlock;
-    dispatch_async(_callbackQueue, ^{
+    [self dispatchCallback:^{
       completionBlock(self->_response, self->_data, error);
-    });
+    }];
   }
   [self invalidate];
 }
