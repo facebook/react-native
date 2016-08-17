@@ -596,7 +596,7 @@ exports.examples = [
     render: function() {
       return (
         <Image
-          source={require('image!hawk')}
+          source={require('image!LegacyImage')}
           style={styles.base}
         />
       );
