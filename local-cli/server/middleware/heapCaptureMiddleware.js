@@ -26,6 +26,11 @@ function getSourceMapForUrl(url, onFailure, onSuccess) {
     return;
   }
 
+  if (url === 'assets://default_bundle') {
+    onFailure('Don\'t know how to symbolicate in-app bundle, please load from server');
+    return;
+  }
+
   const parsedUrl = urlLib.parse(url);
   const options = {
     host: 'localhost',
