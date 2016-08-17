@@ -33,6 +33,7 @@
 'use strict';
 
 var ListViewDataSource = require('ListViewDataSource');
+var Platform = require('Platform');
 var React = require('React');
 var ReactNative = require('ReactNative');
 var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
@@ -234,9 +235,17 @@ var ListView = React.createClass({
      * `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the
      * top of the scroll view. This property is not supported in conjunction
      * with `horizontal={true}`.
-     * @platform ios
+     *
+     * **Note:**
+     * On Android if sticky headers are not working properly make sure the child
+     * views are not getting collapsed by adding collapsable={false} on each child.
      */
     stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number).isRequired,
+    /**
+     * If the sections headers should be sticky. Defaults to `true` on iOS and
+     * `false` on Android.
+     */
+    stickySectionHeaders: PropTypes.bool.isRequired,
     /**
      * Flag indicating whether empty section headers should be rendered. In the future release
      * empty section headers will be rendered by default, and the flag will be deprecated.
@@ -297,6 +306,7 @@ var ListView = React.createClass({
       scrollRenderAheadDistance: DEFAULT_SCROLL_RENDER_AHEAD,
       onEndReachedThreshold: DEFAULT_END_REACHED_THRESHOLD,
       stickyHeaderIndices: [],
+      stickySectionHeaders: Platform.OS === 'ios',
     };
   },
 
@@ -464,9 +474,14 @@ var ListView = React.createClass({
     if (props.removeClippedSubviews === undefined) {
       props.removeClippedSubviews = true;
     }
+
+    var stickyHeaderIndices = this.props.stickySectionHeaders ?
+      this.props.stickyHeaderIndices.concat(sectionHeaderIndices) :
+      this.props.stickyHeaderIndices;
+
     Object.assign(props, {
       onScroll: this._onScroll,
-      stickyHeaderIndices: this.props.stickyHeaderIndices.concat(sectionHeaderIndices),
+      stickyHeaderIndices,
 
       // Do not pass these events downstream to ScrollView since they will be
       // registered in ListView's own ScrollResponder.Mixin
