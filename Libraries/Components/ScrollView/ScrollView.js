@@ -263,7 +263,6 @@ const ScrollView = React.createClass({
      * `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the
      * top of the scroll view. This property is not supported in conjunction
      * with `horizontal={true}`.
-     * @platform ios
      */
     stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number),
     style: StyleSheetPropType(ViewStylePropTypes),
@@ -453,7 +452,8 @@ const ScrollView = React.createClass({
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
         removeClippedSubviews={this.props.removeClippedSubviews}
-        collapsable={false}>
+        collapsable={false}
+        collapsableChildren={!this.props.stickyHeaderIndices}>
         {this.props.children}
       </View>;
 

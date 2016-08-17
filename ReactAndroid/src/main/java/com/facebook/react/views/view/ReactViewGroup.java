@@ -42,6 +42,10 @@ public class ReactViewGroup extends ViewGroup implements
   /* should only be used in {@link #updateClippingToRect} */
   private static final Rect sHelperRect = new Rect();
 
+  public interface ChildDrawingOrderDelegate {
+    int getChildDrawingOrder(ReactViewGroup view, int i);
+  }
+
   /**
    * This listener will be set for child views when removeClippedSubview property is enabled. When
    * children layout is updated, it will call {@link #updateSubviewClipStatus} to notify parent
@@ -93,6 +97,7 @@ public class ReactViewGroup extends ViewGroup implements
   private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
   private boolean mNeedsOffscreenAlphaCompositing = false;
+  private @Nullable ChildDrawingOrderDelegate mChildDrawingOrderDelegate;
 
   public ReactViewGroup(Context context) {
     super(context);
@@ -289,7 +294,11 @@ public class ReactViewGroup extends ViewGroup implements
 
   private void updateSubviewClipStatus(Rect clippingRect, int idx, int clippedSoFar) {
     View child = Assertions.assertNotNull(mAllChildren)[idx];
-    sHelperRect.set(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
+    sHelperRect.set(
+      child.getLeft() + (int) child.getTranslationX(),
+      child.getTop() + (int) child.getTranslationY(),
+      child.getRight() + (int) child.getTranslationX(),
+      child.getBottom() + (int) child.getTranslationY());
     boolean intersects = clippingRect
         .intersects(sHelperRect.left, sHelperRect.top, sHelperRect.right, sHelperRect.bottom);
     boolean needUpdateClippingRecursive = false;
@@ -531,4 +540,17 @@ public class ReactViewGroup extends ViewGroup implements
     mHitSlopRect = rect;
   }
 
+  @Override
+  protected int getChildDrawingOrder(int childCount, int i) {
+    if (mChildDrawingOrderDelegate == null) {
+      return super.getChildDrawingOrder(childCount, i);
+    } else {
+      return mChildDrawingOrderDelegate.getChildDrawingOrder(this, i);
+    }
+  }
+
+  public void setChildDrawingOrderDelegate(@Nullable ChildDrawingOrderDelegate delegate) {
+    setChildrenDrawingOrderEnabled(delegate != null);
+    mChildDrawingOrderDelegate = delegate;
+  }
 }

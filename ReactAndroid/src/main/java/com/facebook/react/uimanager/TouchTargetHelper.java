@@ -136,7 +136,13 @@ public class TouchTargetHelper {
         float restoreY = eventCoords[1];
         eventCoords[0] = childPoint.x;
         eventCoords[1] = childPoint.y;
-        View targetView = findTouchTargetViewWithPointerEvents(eventCoords, child);
+        View targetView;
+        // If the child is a ReactHitTestView it handles finding the touch target itself.
+        if (child instanceof ReactHitTestView) {
+          targetView = ((ReactHitTestView) child).hitTest(eventCoords);
+        } else {
+          targetView = findTouchTargetViewWithPointerEvents(eventCoords, child);
+        }
         if (targetView != null) {
           return targetView;
         }
@@ -152,7 +158,7 @@ public class TouchTargetHelper {
    * It is transform aware and will invert the transform Matrix to find the true local points
    * This code is taken from {@link ViewGroup#isTransformedTouchPointInView()}
    */
-  private static boolean isTransformedTouchPointInView(
+  public static boolean isTransformedTouchPointInView(
       float x,
       float y,
       ViewGroup parent,
@@ -196,7 +202,7 @@ public class TouchTargetHelper {
    * Returns the touch target View of the event given, or null if neither the given View nor any of
    * its descendants are the touch target.
    */
-  private static @Nullable View findTouchTargetViewWithPointerEvents(
+  public static @Nullable View findTouchTargetViewWithPointerEvents(
       float eventCoords[], View view) {
     PointerEvents pointerEvents = view instanceof ReactPointerEventsView ?
         ((ReactPointerEventsView) view).getPointerEvents() : PointerEvents.AUTO;
