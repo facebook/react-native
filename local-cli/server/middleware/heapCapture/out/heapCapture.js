@@ -44,11 +44,32 @@ function getInternalInstanceName(refs,id){
 var elementId=idGetProp(refs,id,'_currentElement');
 var typeId=idGetProp(refs,elementId,'type');
 var typeRef=refs[typeId];
-if(typeRef&&typeRef.type==='Function'&&typeRef.value){
-return typeRef.value.name;
-}else{
-return'<unknown component>';
+if(typeRef){
+if(typeRef.type==='string'){// element.type is string
+if(typeRef.value){
+return typeRef.value;
 }
+}else if(typeRef.type==='Function'){// element.type is function
+var displayNameId=idGetProp(refs,typeId,'displayName');
+if(displayNameId){
+var displayNameRef=refs[displayNameId];
+if(displayNameRef&&displayNameRef.value){
+return displayNameRef.value;// element.type.displayName
+}
+}
+var nameId=idGetProp(refs,typeId,'name');
+if(nameId){
+var nameRef=refs[nameId];
+if(nameRef&&nameRef.value){
+return nameRef.value;// element.type.name
+}
+}
+if(typeRef.value&&typeRef.value.name){
+return typeRef.value.name;// element.type symbolicated function name
+}
+}
+}
+return'#unknown';
 }
 
 function registerReactComponentTreeImpl(refs,registry,parents,inEdgeNames,trees,id){
