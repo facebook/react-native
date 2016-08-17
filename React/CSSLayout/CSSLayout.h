@@ -77,18 +77,6 @@ typedef enum CSSWrapType {
   CSSWrapTypeWrap,
 } CSSWrapType;
 
-// Note: left and top are shared between position[2] and position[4], so
-// they have to be before right and bottom.
-typedef enum CSSPosition {
-  CSSPositionLeft,
-  CSSPositionTop,
-  CSSPositionRight,
-  CSSPositionBottom,
-  CSSPositionStart,
-  CSSPositionEnd,
-  CSSPositionCount,
-} CSSPosition;
-
 typedef enum CSSMeasureMode {
   CSSMeasureModeUndefined,
   CSSMeasureModeExactly,
@@ -111,6 +99,7 @@ typedef enum CSSEdge {
   CSSEdgeHorizontal,
   CSSEdgeVertical,
   CSSEdgeAll,
+  CSSEdgeCount,
 } CSSEdge;
 
 typedef enum CSSPrintOptions {
