@@ -65,6 +65,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
+- (void)dispatchCallback:(dispatch_block_t)callback
+{
+  if (dispatch_get_specific((__bridge void *)self) == (__bridge void *)self) {
+    callback();
+  } else {
+    dispatch_async(_callbackQueue, callback);
+  }
+}
+
 - (void)start
 {
   if (_status != RCTNetworkTaskPending) {
