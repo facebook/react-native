@@ -87,10 +87,11 @@ $NODE_BINARY "$REACT_NATIVE_DIR/local-cli/cli.js" bundle \
   --platform ios \
   --dev $DEV \
   --reset-cache \
-  --bundle-output $BUNDLE_FILE \
+  --bundle-output "$BUNDLE_FILE" \
   --assets-dest "$DEST"
 
-if [[ ! $DEV && ! -f $BUNDLE_FILE ]]; then
-  echo "Error: File $BUNDLE_FILE does not exist."
+if [[ ! $DEV && ! -f "$BUNDLE_FILE" ]]; then
+  echo "error: File $BUNDLE_FILE does not exist. This must be a bug with" >&2
+  echo "React Native, please report it here: https://github.com/facebook/react-native/issues"
   exit 2
 fi
