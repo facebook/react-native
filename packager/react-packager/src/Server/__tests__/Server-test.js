@@ -82,6 +82,12 @@ describe('processRequest', () => {
     };
 
     Bundler.prototype.invalidateFile = invalidatorFunc;
+    Bundler.prototype.getResolver =
+      jest.fn().mockReturnValue({
+        getDependecyGraph: jest.fn().mockReturnValue({
+          getHasteMap: jest.fn().mockReturnValue({on: jest.fn()}),
+        }),
+      });
 
     server = new Server(options);
     requestHandler = server.processRequest.bind(server);
@@ -362,7 +368,7 @@ describe('processRequest', () => {
       server.processRequest(req, res);
       jest.runAllTimers();
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
-      expect(res.end).toBeCalledWith(mockData.slice(0, 3));
+      expect(res.end).toBeCalledWith(mockData.slice(0, 4));
     });
   });
 

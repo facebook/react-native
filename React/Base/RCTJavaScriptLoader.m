@@ -61,7 +61,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
                                    code:RCTJavaScriptLoaderErrorNoScriptURL
                                userInfo:@{NSLocalizedDescriptionKey:
-                                            [NSString stringWithFormat:@"No script URL provided. "
+                                            [NSString stringWithFormat:@"No script URL provided. Make sure the packager is "
+                                             @"running or you have embedded a JS bundle in your application bundle."
                                              @"unsanitizedScriptURLString:(%@)", unsanitizedScriptURLString]}];
     }
     return nil;

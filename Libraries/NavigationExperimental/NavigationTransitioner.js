@@ -217,12 +217,13 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
     };
 
     this._transitionProps = buildTransitionProps(this.props, nextState);
-    this.setState(nextState);
 
-    this.props.onTransitionEnd && this.props.onTransitionEnd(
-      this._transitionProps,
-      prevTransitionProps,
-    );
+    this.setState(nextState, () => {
+      this.props.onTransitionEnd && this.props.onTransitionEnd(
+        this._transitionProps,
+        prevTransitionProps,
+      );
+    });
   }
 }
 

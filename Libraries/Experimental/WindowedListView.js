@@ -84,86 +84,86 @@ type Props = {
    * A simple array of data blobs that are passed to the renderRow function in
    * order. Note there is no dataSource like in the standard `ListView`.
    */
-  data: Array<{rowKey: string, rowData: any}>;
+  data: Array<{rowKey: string, rowData: any}>,
   /**
    * Takes a data blob from the `data` array prop plus some meta info and should
    * return a row.
    */
   renderRow: (
     rowData: any, sectionIdx: number, rowIdx: number, rowKey: string
-  ) => ?ReactElement<any>;
+  ) => ?ReactElement<any>,
   /**
    * Rendered when the list is scrolled faster than rows can be rendered.
    */
-  renderWindowBoundaryIndicator?: () => ?ReactElement<any>;
+  renderWindowBoundaryIndicator?: () => ?ReactElement<any>,
   /**
    * Always rendered at the bottom of all the rows.
    */
-  renderFooter?: () => ?ReactElement<any>;
+  renderFooter?: () => ?ReactElement<any>,
   /**
    * Pipes through normal onScroll events from the underlying `ScrollView`.
    */
-  onScroll?: (event: Object) => void;
+  onScroll?: (event: Object) => void,
   /**
    * Called when the rows that are visible in the viewport change.
    */
-  onVisibleRowsChanged?: (firstIdx: number, count: number) => void;
+  onVisibleRowsChanged?: (firstIdx: number, count: number) => void,
   /**
    * Called when the viewability of rows changes, as defined by the
    * `viewablePercentThreshold` prop.
    */
-  onViewableRowsChanged?: (viewableRows: Array<number>) => void;
+  onViewableRowsChanged?: (viewableRows: Array<number>) => void,
   /**
    * The percent of a row that must be visible to consider it "viewable".
    */
-  viewablePercentThreshold: number;
+  viewablePercentThreshold: number,
   /**
    * Number of rows to render on first mount.
    */
-  initialNumToRender: number;
+  initialNumToRender: number,
   /**
    * Maximum number of rows to render while scrolling, i.e. the window size.
    */
-  maxNumToRender: number;
+  maxNumToRender: number,
   /**
    * Number of rows to render beyond the viewport. Note that this combined with
    * `maxNumToRender` and the number of rows that can fit in one screen will
    * determine how many rows to render above the viewport.
    */
-  numToRenderAhead: number;
+  numToRenderAhead: number,
   /**
    * Used to log perf events for async row rendering.
    */
-  asyncRowPerfEventName?: string;
+  asyncRowPerfEventName?: string,
   /**
    * A function that returns the scrollable component in which the list rows
    * are rendered. Defaults to returning a ScrollView with the given props.
    */
-  renderScrollComponent: (props: ?Object) => ReactElement<any>;
+  renderScrollComponent: (props: ?Object) => ReactElement<any>,
   /**
    * Use to disable incremental rendering when not wanted, e.g. to speed up initial render.
    */
-  disableIncrementalRendering: boolean;
+  disableIncrementalRendering: boolean,
   /**
    * This determines how frequently events such as scroll and layout can trigger a re-render.
    */
-  recomputeRowsBatchingPeriod: number;
+  recomputeRowsBatchingPeriod: number,
   /**
    * Called when rows will be mounted/unmounted. Mounted rows always form a contiguous block so it is expressed as a
    * range of start plus count.
    */
-  onMountedRowsWillChange?: (firstIdx: number, count: number) => void;
+  onMountedRowsWillChange?: (firstIdx: number, count: number) => void,
   /**
    * Change this when you want to make sure the WindowedListView will re-render, for example when the result of
    * `renderScrollComponent` might change. It will be compared in `shouldComponentUpdate`.
    */
-  shouldUpdateToken?: string;
+  shouldUpdateToken?: string,
 };
 
 type State = {
-  boundaryIndicatorHeight?: number;
-  firstRow: number;
-  lastRow: number;
+  boundaryIndicatorHeight?: number,
+  firstRow: number,
+  lastRow: number,
 };
 class WindowedListView extends React.Component {
   props: Props;
@@ -573,22 +573,22 @@ type CellProps = {
   /**
    * Row-specific data passed to renderRow and used in shouldComponentUpdate with ===
    */
-  rowData: mixed;
-  rowKey: string;
+  rowData: mixed,
+  rowKey: string,
   /**
    * Renders the actual row contents.
    */
    renderRow: (
       rowData: mixed, sectionIdx: number, rowIdx: number, rowKey: string
-   ) => ?ReactElement<any>;
+   ) => ?ReactElement<any>,
   /**
    * Index of the row, passed through to other callbacks.
    */
-  rowIndex: number;
+  rowIndex: number,
   /**
    * Used for marking async begin/end events for row rendering.
    */
-  asyncRowPerfEventName: ?string;
+  asyncRowPerfEventName: ?string,
   /**
    * Initially false to indicate the cell should be rendered "offscreen" with position: absolute so that incremental
    * rendering doesn't cause things to jump around. Once onNewLayout is called after offscreen rendering has completed,
@@ -597,21 +597,21 @@ type CellProps = {
    * This is coordinated outside this component so the parent can syncronize this re-render with managing the
    * placeholder sizing.
    */
-  includeInLayout: boolean;
+  includeInLayout: boolean,
   /**
    * Updates the parent with the latest layout. Only called when incremental rendering is done and triggers the parent
    * to re-render this row with includeInLayout true.
    */
-  onNewLayout: (params: {rowKey: string, layout: Object}) => void;
+  onNewLayout: (params: {rowKey: string, layout: Object}) => void,
   /**
    * Used to track when rendering is in progress so the parent can avoid wastedful re-renders that are just going to be
    * invalidated once the cell finishes.
    */
-  onProgressChange: (progress: {rowKey: string; inProgress: boolean}) => void;
+  onProgressChange: (progress: {rowKey: string, inProgress: boolean}) => void,
   /**
    * Used to invalidate the layout so the parent knows it needs to compensate for the height in the placeholder size.
    */
-  onWillUnmount: (rowKey: string) => void;
+  onWillUnmount: (rowKey: string) => void,
 };
 class CellRenderer extends React.Component {
   props: CellProps;

@@ -26,15 +26,6 @@
     for (id value in config[@"outputRange"]) {
       if ([value isKindOfClass:[NSNumber class]]) {
         [outputRange addObject:value];
-      } else if ([value isKindOfClass:[NSString class]]) {
-        NSString *str = (NSString *)value;
-        if ([str hasSuffix:@"deg"]) {
-          double degrees = str.doubleValue;
-          [outputRange addObject:@(RCTDegreesToRadians(degrees))];
-        } else {
-          // Assume radians
-          [outputRange addObject:@(str.doubleValue)];
-        }
       }
     }
     _outputRange = [outputRange copy];

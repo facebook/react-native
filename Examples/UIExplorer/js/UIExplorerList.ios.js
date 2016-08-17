@@ -69,10 +69,6 @@ const ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ModalExample'),
   },
   {
-    key: 'NativeAnimationsExample',
-    module: require('./NativeAnimationsExample'),
-  },
-  {
     key: 'NavigatorExample',
     module: require('./Navigator/NavigatorExample'),
   },
@@ -226,6 +222,10 @@ const APIExamples: Array<UIExplorerExample> = [
   {
     key: 'LinkingExample',
     module: require('./LinkingExample'),
+  },
+  {
+    key: 'NativeAnimationsExample',
+    module: require('./NativeAnimationsExample'),
   },
   {
     key: 'NavigationExperimentalExample',

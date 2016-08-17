@@ -14,11 +14,13 @@
 type I18nManagerStatus = {
   isRTL: boolean,
   allowRTL: (allowRTL: boolean) => {},
+  forceRTL: (forceRTL: boolean) => {},
 };
 
 const I18nManager : I18nManagerStatus = require('NativeModules').I18nManager || {
   isRTL: false,
   allowRTL: () => {},
+  forceRTL: () => {},
 };
 
 module.exports = I18nManager;

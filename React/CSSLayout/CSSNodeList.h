@@ -7,24 +7,27 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef __CSS_NODE_LIST_H
-#define __CSS_NODE_LIST_H
+#pragma once
+
+#include <assert.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include <CSSLayout/CSSLayout.h>
+#include <CSSLayout/CSSMacros.h>
 
 CSS_EXTERN_C_BEGIN
 
-typedef struct CSSNodeList * CSSNodeListRef;
+typedef struct CSSNodeList *CSSNodeListRef;
 
-CSSNodeListRef CSSNodeListNew(unsigned int initialCapacity);
+CSSNodeListRef CSSNodeListNew(uint32_t initialCapacity);
 void CSSNodeListFree(CSSNodeListRef list);
-unsigned int CSSNodeListCount(CSSNodeListRef list);
+uint32_t CSSNodeListCount(CSSNodeListRef list);
 void CSSNodeListAdd(CSSNodeListRef list, CSSNodeRef node);
-void CSSNodeListInsert(CSSNodeListRef list, CSSNodeRef node, unsigned int index);
-CSSNodeRef CSSNodeListRemove(CSSNodeListRef list, unsigned int index);
+void CSSNodeListInsert(CSSNodeListRef list, CSSNodeRef node, uint32_t index);
+CSSNodeRef CSSNodeListRemove(CSSNodeListRef list, uint32_t index);
 CSSNodeRef CSSNodeListDelete(CSSNodeListRef list, CSSNodeRef node);
-CSSNodeRef CSSNodeListGet(CSSNodeListRef list, unsigned int index);
+CSSNodeRef CSSNodeListGet(CSSNodeListRef list, uint32_t index);
 
 CSS_EXTERN_C_END
-
-#endif

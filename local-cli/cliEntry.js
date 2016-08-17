@@ -16,6 +16,7 @@ const Config = require('./util/Config');
 const childProcess = require('child_process');
 const Promise = require('promise');
 const chalk = require('chalk');
+const minimist = require('minimist');
 const path = require('path');
 const fs = require('fs');
 const gracefulFs = require('graceful-fs');
@@ -53,7 +54,7 @@ function printHelpInformation() {
 
   let output = [
     '',
-    chalk.bold(chalk.cyan((`  react-native ${cmdName} [options]`))),
+    chalk.bold(chalk.cyan((`  react-native ${cmdName} ${this.usage()}`))),
     `  ${this._description}`,
     '',
     `  ${chalk.bold('Options:')}`,
@@ -62,10 +63,8 @@ function printHelpInformation() {
     '',
   ];
 
-  const usage = this.usage();
-
-  if (usage !== '[options]') {
-    const formattedUsage = usage.map(
+  if (this.examples && this.examples.length > 0) {
+    const formattedUsage = this.examples.map(
       example => `    ${example.desc}: \n    ${chalk.cyan(example.cmd)}`,
     ).join('\n\n');
 
@@ -100,7 +99,6 @@ const addCommand = (command: Command, config: Config) => {
     .command(command.name, undefined, {
       noHelp: !command.description,
     })
-    .usage(command.examples)
     .description(command.description)
     .action(function runAction() {
       const passedOptions = this.opts();
@@ -115,6 +113,7 @@ const addCommand = (command: Command, config: Config) => {
     });
 
     cmd.helpInformation = printHelpInformation.bind(cmd);
+    cmd.examples = command.examples;
 
   options
     .forEach(opt => cmd.option(
@@ -123,21 +122,43 @@ const addCommand = (command: Command, config: Config) => {
       opt.parse || defaultOptParser,
       typeof opt.default === 'function' ? opt.default(config) : opt.default,
     ));
+
+  // Placeholder option for --config, which is parsed before any other option,
+  // but needs to be here to avoid "unknown option" errors when specified
+  cmd.option('--config [string]', 'Path to the CLI configuration file');
 };
 
+function getCliConfig() {
+  // Use a lightweight option parser to look up the CLI configuration file,
+  // which we need to set up the parser for the other args and options
+  let cliArgs = minimist(process.argv.slice(2));
+
+  let cwd;
+  let configPath;
+  if (cliArgs.config != null) {
+    cwd = process.cwd();
+    configPath = cliArgs.config;
+  } else {
+    cwd = __dirname;
+    configPath = Config.findConfigPath(cwd);
+  }
+
+  return Config.get(cwd, defaultConfig, configPath);
+}
+
 function run() {
-  const config = Config.get(__dirname, defaultConfig);
   const setupEnvScript = /^win/.test(process.platform)
     ? 'setup_env.bat'
     : 'setup_env.sh';
 
   childProcess.execFileSync(path.join(__dirname, setupEnvScript));
 
+  const config = getCliConfig();
   commands.forEach(cmd => addCommand(cmd, config));
 
   commander.parse(process.argv);
 
-  const isValidCommand = commands.find(cmd => cmd.name === process.argv[2]);
+  const isValidCommand = commands.find(cmd => cmd.name.split(' ')[0] === process.argv[2]);
 
   if (!isValidCommand) {
     printUnknownCommand(process.argv[2]);

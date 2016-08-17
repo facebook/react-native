@@ -31,9 +31,9 @@ var runCount = 1;
 type ComponentProvider = () => ReactClass<any>;
 
 type AppConfig = {
-  appKey: string;
-  component?: ComponentProvider;
-  run?: Function;
+  appKey: string,
+  component?: ComponentProvider,
+  run?: Function,
 };
 
 /**

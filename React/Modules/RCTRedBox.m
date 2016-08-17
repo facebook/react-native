@@ -65,11 +65,21 @@
     _stackTraceTableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
     [rootView addSubview:_stackTraceTableView];
 
+  #if TARGET_OS_SIMULATOR
+    NSString *reloadText = @"Reload JS (\u2318R)";
+    NSString *dismissText = @"Dismiss (ESC)";
+    NSString *copyText = @"Copy (\u2325\u2318C)";
+  #else
+    NSString *reloadText = @"Reload JS";
+    NSString *dismissText = @"Dismiss";
+    NSString *copyText = @"Copy";
+  #endif
+
     UIButton *dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
     dismissButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin;
     dismissButton.accessibilityIdentifier = @"redbox-dismiss";
     dismissButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [dismissButton setTitle:@"Dismiss (ESC)" forState:UIControlStateNormal];
+    [dismissButton setTitle:dismissText forState:UIControlStateNormal];
     [dismissButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
     [dismissButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [dismissButton addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventTouchUpInside];
@@ -78,7 +88,8 @@
     reloadButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
     reloadButton.accessibilityIdentifier = @"redbox-reload";
     reloadButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [reloadButton setTitle:@"Reload JS (\u2318R)" forState:UIControlStateNormal];
+
+    [reloadButton setTitle:reloadText forState:UIControlStateNormal];
     [reloadButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
     [reloadButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [reloadButton addTarget:self action:@selector(reload) forControlEvents:UIControlEventTouchUpInside];
@@ -87,7 +98,7 @@
     copyButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
     copyButton.accessibilityIdentifier = @"redbox-copy";
     copyButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [copyButton setTitle:@"Copy (\u2325\u2318C)" forState:UIControlStateNormal];
+    [copyButton setTitle:copyText forState:UIControlStateNormal];
     [copyButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
     [copyButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [copyButton addTarget:self action:@selector(copyStack) forControlEvents:UIControlEventTouchUpInside];
