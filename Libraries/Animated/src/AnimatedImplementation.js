@@ -1879,9 +1879,9 @@ var parallel = function(
   return result;
 };
 
-var delay = function(time: number): CompositeAnimation {
+var delay = function(time: number, isInteraction: boolean = true): CompositeAnimation {
   // Would be nice to make a specialized implementation
-  return timing(new AnimatedValue(0), {toValue: 0, delay: time, duration: 0});
+  return timing(new AnimatedValue(0), {toValue: 0, delay: time, duration: 0, isInteraction});
 };
 
 var stagger = function(

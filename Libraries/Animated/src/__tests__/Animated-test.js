@@ -308,6 +308,40 @@ describe('Animated Parallel', () => {
 });
 
 describe('Animated delays', () => {
+  /*eslint-disable no-shadow*/
+  var Animated;
+  /*eslint-enable*/
+  var InteractionManager;
+  beforeEach(() => {
+    jest.mock('InteractionManager');
+    Animated = require('Animated');
+    InteractionManager = require('InteractionManager');
+  });
+
+  afterEach(()=> {
+    jest.dontMock('InteractionManager');
+  });
+
+  it('should register an interaction by default', () => {
+    InteractionManager.createInteractionHandle.mockReturnValue(777);
+    var cb = jest.fn();
+    Animated.delay(1000).start(cb);
+    jest.runAllTimers();
+    expect(InteractionManager.createInteractionHandle).toBeCalled();
+    expect(InteractionManager.clearInteractionHandle).toBeCalledWith(777);
+    expect(cb).toBeCalledWith({finished: true});
+  });
+
+  it('should not register an interaction when specified', () => {
+    InteractionManager.createInteractionHandle.mockReturnValue(777);
+    var cb = jest.fn();
+    Animated.delay(1000, false).start(cb);
+    jest.runAllTimers();
+    expect(InteractionManager.createInteractionHandle).not.toBeCalled();
+    expect(InteractionManager.clearInteractionHandle).not.toBeCalled();
+    expect(cb).toBeCalledWith({finished: true});
+  });
+
   it('should call anim after delay in sequence', () => {
     var anim = {start: jest.fn(), stop: jest.fn()};
     var cb = jest.fn();
