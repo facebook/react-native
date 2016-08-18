@@ -12,6 +12,7 @@ package com.facebook.react.animated;
 import javax.annotation.Nullable;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.OnBatchCompleteListener;
@@ -19,6 +20,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.GuardedChoreographerFrameCallback;
 import com.facebook.react.uimanager.ReactChoreographer;
 import com.facebook.react.uimanager.UIImplementation;
@@ -186,6 +189,36 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
       @Override
       public void execute(NativeAnimatedNodesManager animatedNodesManager) {
         animatedNodesManager.createAnimatedNode(tag, config);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void startListeningToAnimatedNodeValue(final int tag) {
+    final AnimatedNodeValueListener listener = new AnimatedNodeValueListener() {
+      public void onValueUpdate(double value) {
+        WritableMap onAnimatedValueData = Arguments.createMap();
+        onAnimatedValueData.putInt("tag", tag);
+        onAnimatedValueData.putDouble("value", value);
+        getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+            .emit("onAnimatedValueUpdate", onAnimatedValueData);
+      }
+    };
+
+    mOperations.add(new UIThreadOperation() {
+      @Override
+      public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+        animatedNodesManager.startListeningToAnimatedNodeValue(tag, listener);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void stopListeningToAnimatedNodeValue(final int tag) {
+    mOperations.add(new UIThreadOperation() {
+      @Override
+      public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+        animatedNodesManager.stopListeningToAnimatedNodeValue(tag);
       }
     });
   }

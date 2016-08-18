@@ -114,21 +114,12 @@ public class MatrixMathHelperTest {
     verifyXRotatedMatrix(360, 0d, 0d, 0d);
   }
 
-  private static double[] createIdentityMatrix() {
-    return new double[] {
-      1, 0, 0, 0,
-      0, 1, 0, 0,
-      0, 0, 1, 0,
-      0, 0, 0, 1
-    };
-  }
-
   private static double degreesToRadians(double degrees) {
     return degrees * Math.PI / 180;
   }
 
   private static double[] createRotateZ(double radians) {
-    double[] mat = createIdentityMatrix();
+    double[] mat = MatrixMathHelper.createIdentityMatrix();
     mat[0] = Math.cos(radians);
     mat[1] = Math.sin(radians);
     mat[4] = -Math.sin(radians);
@@ -137,7 +128,7 @@ public class MatrixMathHelperTest {
   }
 
   private static double[] createRotateY(double radians) {
-    double[] mat = createIdentityMatrix();
+    double[] mat = MatrixMathHelper.createIdentityMatrix();
     mat[0] = Math.cos(radians);
     mat[2] = -Math.sin(radians);
     mat[8] = Math.sin(radians);
@@ -146,7 +137,7 @@ public class MatrixMathHelperTest {
   }
 
   private static double[] createRotateX(double radians) {
-    double[] mat = createIdentityMatrix();
+    double[] mat = MatrixMathHelper.createIdentityMatrix();
     mat[5] = Math.cos(radians);
     mat[6] = Math.sin(radians);
     mat[9] = -Math.sin(radians);

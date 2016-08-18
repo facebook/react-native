@@ -98,6 +98,7 @@ const ReactNative = {
   get NavigationExperimental() { return require('NavigationExperimental'); },
   get NetInfo() { return require('NetInfo'); },
   get PanResponder() { return require('PanResponder'); },
+  get PermissionsAndroid() { return require('PermissionsAndroid'); },
   get PixelRatio() { return require('PixelRatio'); },
   get PushNotificationIOS() { return require('PushNotificationIOS'); },
   get Settings() { return require('Settings'); },

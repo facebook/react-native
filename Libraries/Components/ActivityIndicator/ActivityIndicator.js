@@ -26,10 +26,10 @@ const GRAY = '#999999';
 type IndicatorSize = number | 'small' | 'large';
 
 type DefaultProps = {
-  animating: boolean;
-  color: any;
-  hidesWhenStopped: boolean;
-  size: IndicatorSize;
+  animating: boolean,
+  color: any,
+  hidesWhenStopped: boolean,
+  size: IndicatorSize,
 }
 
 /**

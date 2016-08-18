@@ -110,6 +110,7 @@ var ReactNative = {
   NavigationExperimental: require('NavigationExperimental'),
   NetInfo: require('NetInfo'),
   PanResponder: require('PanResponder'),
+  PermissionsAndroid: require('PermissionsAndroid'),
   PixelRatio: require('PixelRatio'),
   PushNotificationIOS: require('PushNotificationIOS'),
   Settings: require('Settings'),

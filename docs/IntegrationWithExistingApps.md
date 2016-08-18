@@ -103,7 +103,7 @@ $ sudo gem install cocoapods
 
 <block class="objc" />
 
-Assume the [app for integration](https://github.com/JoelMarcey/iOS-2048) is a [2048](https://en.wikipedia.org/wiki/2048_(video_game) game. Here is what the main menu of the native application looks like without React Native.
+Assume the [app for integration](https://github.com/JoelMarcey/iOS-2048) is a [2048](https://en.wikipedia.org/wiki/2048_(video_game)) game. Here is what the main menu of the native application looks like without React Native.
 
 <block class="swift" />
 
@@ -651,7 +651,7 @@ protected void onPause() {
     super.onPause();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onHostPause();
+        mReactInstanceManager.onPause();
     }
 }
 
@@ -660,7 +660,7 @@ protected void onResume() {
     super.onResume();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onHostResume(this, this);
+        mReactInstanceManager.onResume(this, this);
     }
 }
 
@@ -669,7 +669,7 @@ protected void onDestroy() {
     super.onDestroy();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onHostDestroy();
+        mReactInstanceManager.onDestroy();
     }
 }
 ```

@@ -28,7 +28,7 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
 
   const requestOpts = {
     entryFile: args.entryFile,
-    sourceMapUrl: args.sourcemapOutput,
+    sourceMapUrl: args.sourcemapOutput && path.basename(args.sourcemapOutput),
     dev: args.dev,
     minify: !args.dev,
     platform: args.platform,

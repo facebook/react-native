@@ -10,16 +10,16 @@
 #pragma once
 
 #include <assert.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include <CSSLayout/CSSLayout.h>
 #include <CSSLayout/CSSMacros.h>
 
 CSS_EXTERN_C_BEGIN
 
-typedef struct CSSNodeList * CSSNodeListRef;
+typedef struct CSSNodeList *CSSNodeListRef;
 
 CSSNodeListRef CSSNodeListNew(uint32_t initialCapacity);
 void CSSNodeListFree(CSSNodeListRef list);

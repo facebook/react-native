@@ -86,15 +86,6 @@ typedef NSURL RCTFileURL;
 + (UIColor *)UIColor:(id)json;
 + (CGColorRef)CGColor:(id)json CF_RETURNS_NOT_RETAINED;
 
-+ (UIFont *)UIFont:(id)json;
-+ (UIFont *)UIFont:(UIFont *)font withSize:(id)json;
-+ (UIFont *)UIFont:(UIFont *)font withWeight:(id)json;
-+ (UIFont *)UIFont:(UIFont *)font withStyle:(id)json;
-+ (UIFont *)UIFont:(UIFont *)font withFamily:(id)json;
-+ (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
-              size:(id)size weight:(id)weight style:(id)style
-   scaleMultiplier:(CGFloat)scaleMultiplier;
-
 + (NSArray<NSArray *> *)NSArrayArray:(id)json;
 + (NSArray<NSString *> *)NSStringArray:(id)json;
 + (NSArray<NSArray<NSString *> *> *)NSStringArrayArray:(id)json;
@@ -241,7 +232,7 @@ RCT_CUSTOM_CONVERTER(type, type, [RCT_DEBUG ? [self NSNumber:json] : json getter
  * This macro is used for creating converter functions for typed arrays.
  */
 #define RCT_ARRAY_CONVERTER(type)                      \
-+ (NSArray<id> *)type##Array:(id)json                      \
++ (NSArray<type *> *)type##Array:(id)json              \
 {                                                      \
   return RCTConvertArrayValue(@selector(type:), json); \
 }

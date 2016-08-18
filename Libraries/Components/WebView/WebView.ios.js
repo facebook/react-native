@@ -52,9 +52,9 @@ const NavigationType = keyMirror({
 const JSNavigationScheme = 'react-js-navigation';
 
 type ErrorEvent = {
-  domain: any;
-  code: any;
-  description: any;
+  domain: any,
+  code: any,
+  description: any,
 }
 
 type Event = Object;

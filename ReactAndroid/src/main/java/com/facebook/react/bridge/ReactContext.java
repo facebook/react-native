@@ -178,7 +178,6 @@ public class ReactContext extends ContextWrapper {
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostPause();
     }
-    mCurrentActivity = null;
   }
 
   /**
@@ -189,6 +188,7 @@ public class ReactContext extends ContextWrapper {
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostDestroy();
     }
+    mCurrentActivity = null;
   }
 
   /**
@@ -205,9 +205,9 @@ public class ReactContext extends ContextWrapper {
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onActivityResult}
    */
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
     for (ActivityEventListener listener : mActivityEventListeners) {
-      listener.onActivityResult(requestCode, resultCode, data);
+      listener.onActivityResult(activity, requestCode, resultCode, data);
     }
   }
 

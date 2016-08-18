@@ -41,9 +41,9 @@ public class ReactTextUpdate {
     mText = text;
     mJsEventCounter = jsEventCounter;
     mContainsImages = containsImages;
-    mPaddingLeft = padding.get(Spacing.LEFT);
+    mPaddingLeft = padding.get(Spacing.START);
     mPaddingTop = padding.get(Spacing.TOP);
-    mPaddingRight = padding.get(Spacing.RIGHT);
+    mPaddingRight = padding.get(Spacing.END);
     mPaddingBottom = padding.get(Spacing.BOTTOM);
     mLineHeight = lineHeight;
     mTextAlign = textAlign;

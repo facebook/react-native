@@ -11,4 +11,13 @@
 
 @implementation RCTValueAnimatedNode
 
+- (void)setValue:(CGFloat)value
+{
+  _value = value;
+
+  if (_valueObserver) {
+    [_valueObserver animatedNode:self didUpdateValue:_value];
+  }
+}
+
 @end

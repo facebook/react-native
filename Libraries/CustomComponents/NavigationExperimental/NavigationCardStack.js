@@ -38,7 +38,6 @@ const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleIn
 const NavigationCardStackPanResponder = require('NavigationCardStackPanResponder');
 const NavigationPropTypes = require('NavigationPropTypes');
 const React = require('React');
-const ReactComponentWithPureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
@@ -60,7 +59,7 @@ type Props = {
   direction: NavigationGestureDirection,
   navigationState: NavigationState,
   onNavigateBack?: Function,
-  renderOverlay: ?NavigationSceneRenderer,
+  renderHeader: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
   cardStyle?: any,
   style: any,
@@ -74,9 +73,10 @@ type DefaultProps = {
 /**
  * A controlled navigation view that renders a stack of cards.
  *
+ * ```html
  *     +------------+
- *   +-+            |
- * +-+ |            |
+ *   +-|   Header   |
+ * +-+ |------------|
  * | | |            |
  * | | |  Focused   |
  * | | |   Card     |
@@ -84,19 +84,101 @@ type DefaultProps = {
  * +-+ |            |
  *   +-+            |
  *     +------------+
+ * ```
+ *
+ * ## Example
+ *
+ * ```js
+ *
+ * class App extends React.Component {
+ *   constructor(props, context) {
+ *     this.state = {
+ *       navigation: {
+ *         index: 0,
+ *         routes: [
+ *           {key: 'page 1'},
+ *         },
+ *       },
+ *     };
+ *   }
+ *
+ *   render() {
+ *     return (
+ *       <NavigationCardStack
+ *         navigationState={this.state.navigation}
+ *         renderScene={this._renderScene}
+ *       />
+ *     );
+ *   }
+ *
+ *   _renderScene: (props) => {
+ *     return (
+ *       <View>
+ *         <Text>{props.scene.route.key}</Text>
+ *       </View>
+ *     );
+ *   };
+ * ```
  */
 class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   _render : NavigationSceneRenderer;
   _renderScene : NavigationSceneRenderer;
 
   static propTypes = {
-    direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
-    navigationState: NavigationPropTypes.navigationState.isRequired,
-    onNavigateBack: PropTypes.func,
-    renderOverlay: PropTypes.func,
-    renderScene: PropTypes.func.isRequired,
+    /**
+     * Custom style applied to the card.
+     */
     cardStyle: View.propTypes.style,
+
+    /**
+     * Direction of the cards movement. Value could be `horizontal` or
+     * `vertical`. Default value is `horizontal`.
+     */
+    direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
+
+    /**
+     * The distance from the edge of the card which gesture response can start
+     * for. Defaults value is `30`.
+     */
     gestureResponseDistance: PropTypes.number,
+
+    /**
+     * The controlled navigation state. Typically, the navigation state
+     * look like this:
+     *
+     * ```js
+     * const navigationState = {
+     *   index: 0, // the index of the selected route.
+     *   routes: [ // A list of routes.
+     *     {key: 'page 1'}, // The 1st route.
+     *     {key: 'page 2'}, // The second route.
+     *   ],
+     * };
+     * ```
+     */
+    navigationState: NavigationPropTypes.navigationState.isRequired,
+
+    /**
+     * Callback that is called when the "back" action is performed.
+     * This happens when the back button is pressed or the back gesture is
+     * performed.
+     */
+    onNavigateBack: PropTypes.func,
+
+    /**
+     * Function that renders the header.
+     */
+    renderHeader: PropTypes.func,
+
+    /**
+     * Function that renders the a scene for a route.
+     */
+    renderScene: PropTypes.func.isRequired,
+
+    /**
+     * Custom style applied to the cards stack.
+     */
+    style: View.propTypes.style,
   };
 
   static defaultProps: DefaultProps = {
@@ -112,14 +194,6 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     this._renderScene = this._renderScene.bind(this);
   }
 
-  shouldComponentUpdate(nextProps: Object, nextState: void): boolean {
-    return ReactComponentWithPureRenderMixin.shouldComponentUpdate.call(
-      this,
-      nextProps,
-      nextState
-    );
-  }
-
   render(): ReactElement<any> {
     return (
       <NavigationTransitioner
@@ -132,10 +206,10 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
 
   _render(props: NavigationTransitionProps): ReactElement<any> {
     const {
-      renderOverlay
+      renderHeader
     } = this.props;
 
-    const overlay = renderOverlay && renderOverlay(props);
+    const header = renderHeader ? <View>{renderHeader(props)}</View> : null;
 
     const scenes = props.scenes.map(
      scene => this._renderScene({
@@ -145,13 +219,12 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     );
 
     return (
-      <View
-        style={styles.container}>
+      <View style={styles.container}>
         <View
           style={styles.scenes}>
           {scenes}
         </View>
-        {overlay}
+        {header}
       </View>
     );
   }
@@ -187,6 +260,11 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    // Header is physically rendered after scenes so that Header won't be
+    // covered by the shadows of the scenes.
+    // That said, we'd have use `flexDirection: 'column-reverse'` to move
+    // Header above the scenes.
+    flexDirection: 'column-reverse',
   },
   scenes: {
     flex: 1,
