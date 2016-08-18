@@ -2,6 +2,7 @@
 title: San Francisco Meetup Recap
 author: Héctor Ramos
 authorURL: https://twitter.com/hectorramos
+twitterUsername: hectorramos
 ---
 
 ![](/react-native/blog/img/rnmsf-august-2016-hero.jpg)

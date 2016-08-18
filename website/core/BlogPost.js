@@ -28,15 +28,28 @@ var BlogPost = React.createClass({
     ][parseInt(match[2], 10) - 1];
     var day = parseInt(match[3], 10);
 
+    var shareURL = '/react-native/blog/' + post.path;
     return (
       <div className="article">
-        <h1>{post.title}</h1>
         <p className="meta">
-          {month} {day}, {year} by{' '}
-          <a href={post.authorURL} target="_blank">{post.author}</a>
+          <a href={post.authorURL} target="_blank"
+          className="author">
+            {post.author}
+          </a>
+          {' — '}
+          <span className="date">{month} {day}, {year}</span>
         </p>
-        <hr />
+        <h1>{post.title}</h1>
         <Marked>{content}</Marked>
+        <p>
+          <div
+            className="fb-like"
+            data-share="true"
+            data-width="450"
+            data-show-faces="true">
+          </div>
+          <a href="https://twitter.com/share" className="twitter-share-button" data-text={post.title} data-url={"http://facebook.github.io/react-native/blog/" + post.path} data-via={post.twitterUsername} data-related="reactnative" data-show-count="false">Tweet</a>
+        </p>
       </div>
     );
   }
