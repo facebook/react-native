@@ -321,6 +321,15 @@ var featured = [
     infoLink: 'https://www.zfanw.com/blog/developing-react-native-image-viewer-library.html',
     infoTitle: 'Developing the react-native-image-viewer library',
   },
+  {
+    name: 'Reading',
+    icon: 'http://7xr0xq.com1.z0.glb.clouddn.com/about_logo.png',
+    link: 'http://www.wandoujia.com/apps/com.reading',
+    author: 'RichardCao',
+    blogs: [
+      'http://richard-cao.github.io/2016/02/06/Reading-App-Write-In-React-Native/',
+    ],
+  },
 ];
 
 featured.sort(function(a, b) {
