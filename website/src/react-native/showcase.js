@@ -60,8 +60,8 @@ var featured = [
     icon: 'https://cloud.githubusercontent.com/assets/8927467/17780478/bafd341e-656b-11e6-8c94-b8a05d39d863.png',
     linkAppStore: 'https://itunes.apple.com/us/app/post-affiliate-pro-mobile/id1100644457',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.qualityunit.android.postaffiliatepro',
-    infoLink: 'https://www.postaffiliatepro.com/',
-    infoTitle: 'Affiliate program software',
+    infoLink: 'https://www.postaffiliatepro.com/index.php?id=440',
+    infoTitle: 'Post Affiliate Pro finally released as a React Native based app for both platforms.',
   },
   {
     name: 'FanVision Bolt',
