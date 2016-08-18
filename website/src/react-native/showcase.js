@@ -321,6 +321,12 @@ var featured = [
     infoLink: 'https://www.zfanw.com/blog/developing-react-native-image-viewer-library.html',
     infoTitle: 'Developing the react-native-image-viewer library',
   },
+  {
+    name: 'Deskbookers',
+    icon: 'http://a4.mzstatic.com/eu/r30/Purple69/v4/be/61/7d/be617d63-88f5-5629-7ac0-bc2c9eb4802a/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/nl/app/deskbookers/id964447401?mt=8',
+    author: 'Emilio Rodriguez'
+  },
 ];
 
 featured.sort(function(a, b) {
