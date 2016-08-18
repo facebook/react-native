@@ -56,6 +56,14 @@ var featured = [
     infoTitle: 'Building the F8 App',
   },
   {
+    name: 'Post Affiliate Pro',
+    icon: 'https://cloud.githubusercontent.com/assets/8927467/17780478/bafd341e-656b-11e6-8c94-b8a05d39d863.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/post-affiliate-pro-mobile/id1100644457',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.qualityunit.android.postaffiliatepro',
+    infoLink: 'https://www.postaffiliatepro.com/',
+    infoTitle: 'Affiliate program software',
+  },
+  {
     name: 'FanVision Bolt',
     icon: 'http://a4.mzstatic.com/us/r30/Purple18/v4/94/b4/6e/94b46ee5-80e3-ff6e-513d-16da926b03a3/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/us/app/fanvision-bolt/id1081891275',
