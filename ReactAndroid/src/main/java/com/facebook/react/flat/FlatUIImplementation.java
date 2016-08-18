@@ -15,10 +15,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.facebook.csslayout.CSSDirection;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.UIImplementation;
@@ -82,6 +84,7 @@ public class FlatUIImplementation extends UIImplementation {
   private final MoveProxy mMoveProxy = new MoveProxy();
   private final StateBuilder mStateBuilder;
   private @Nullable ReactImageManager mReactImageManager;
+  private final ReactApplicationContext mReactContext;
 
   private FlatUIImplementation(
       ReactApplicationContext reactContext,
@@ -89,6 +92,7 @@ public class FlatUIImplementation extends UIImplementation {
       ViewManagerRegistry viewManagers,
       FlatUIViewOperationQueue operationsQueue) {
     super(reactContext, viewManagers, operationsQueue);
+    mReactContext = reactContext;
     mStateBuilder = new StateBuilder(operationsQueue);
     mReactImageManager = reactImageManager;
   }
@@ -105,7 +109,12 @@ public class FlatUIImplementation extends UIImplementation {
       mReactImageManager = null;
     }
 
-    return new FlatRootShadowNode();
+    ReactShadowNode node = new FlatRootShadowNode();
+    I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
+    if (sharedI18nUtilInstance.isRTL(mReactContext)) {
+      node.setDirection(CSSDirection.RTL);
+    }
+    return node;
   }
 
   @Override

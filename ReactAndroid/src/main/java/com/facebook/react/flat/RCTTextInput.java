@@ -11,11 +11,14 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.text.SpannableStringBuilder;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.facebook.csslayout.CSSDirection;
 import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
@@ -53,6 +56,7 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
     markUpdated();
   }
 
+  @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   @Override
   public void setThemedContext(ThemedReactContext themedContext) {
     super.setThemedContext(themedContext);
@@ -65,9 +69,9 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT));
 
-    setDefaultPadding(Spacing.LEFT, mEditText.getPaddingLeft());
+    setDefaultPadding(Spacing.START, mEditText.getPaddingStart());
     setDefaultPadding(Spacing.TOP, mEditText.getPaddingTop());
-    setDefaultPadding(Spacing.RIGHT, mEditText.getPaddingRight());
+    setDefaultPadding(Spacing.END, mEditText.getPaddingEnd());
     setDefaultPadding(Spacing.BOTTOM, mEditText.getPaddingBottom());
   }
 
@@ -89,9 +93,9 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
             (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)) : fontSize);
     Spacing padding = getPadding();
     editText.setPadding(
-        (int) Math.ceil(padding.get(Spacing.LEFT)),
+        (int) Math.ceil(padding.get(Spacing.START)),
         (int) Math.ceil(padding.get(Spacing.TOP)),
-        (int) Math.ceil(padding.get(Spacing.RIGHT)),
+        (int) Math.ceil(padding.get(Spacing.END)),
         (int) Math.ceil(padding.get(Spacing.BOTTOM)));
 
     if (mNumberOfLines != UNSET) {

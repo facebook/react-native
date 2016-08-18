@@ -14,7 +14,9 @@ import javax.annotation.Nullable;
 import android.support.v4.text.TextDirectionHeuristicsCompat;
 import android.text.Layout;
 import android.text.TextUtils;
+import android.view.Gravity;
 
+import com.facebook.csslayout.CSSDirection;
 import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
@@ -49,7 +51,7 @@ import com.facebook.textcachewarmer.DefaultTextLayoutCacheWarmer;
   private float mSpacingMult = 1.0f;
   private float mSpacingAdd = 0.0f;
   private int mNumberOfLines = Integer.MAX_VALUE;
-  private Layout.Alignment mAlignment = Layout.Alignment.ALIGN_NORMAL;
+  private int mAlignment = Gravity.NO_GRAVITY;
 
   public RCTText() {
     setMeasureFunction(this);
@@ -98,7 +100,7 @@ import com.facebook.textcachewarmer.DefaultTextLayoutCacheWarmer;
         mSpacingAdd,
         mSpacingMult,
         getFontStyle(),
-        mAlignment);
+        getAlignment());
 
     if (mDrawCommand != null && !mDrawCommand.isFrozen()) {
       mDrawCommand.setLayout(layout);
@@ -163,7 +165,7 @@ import com.facebook.textcachewarmer.DefaultTextLayoutCacheWarmer;
           mSpacingAdd,
           mSpacingMult,
           getFontStyle(),
-          mAlignment));
+          getAlignment()));
       updateNodeRegion = true;
     }
 
@@ -259,19 +261,38 @@ import com.facebook.textcachewarmer.DefaultTextLayoutCacheWarmer;
   @ReactProp(name = ViewProps.TEXT_ALIGN)
   public void setTextAlign(@Nullable String textAlign) {
     if (textAlign == null || "auto".equals(textAlign)) {
-      mAlignment = Layout.Alignment.ALIGN_NORMAL;
+      mAlignment = Gravity.NO_GRAVITY;
     } else if ("left".equals(textAlign)) {
       // left and right may yield potentially different results (relative to non-nodes) in cases
       // when supportsRTL="true" in the manifest.
-      mAlignment = Layout.Alignment.ALIGN_NORMAL;
+      mAlignment = Gravity.LEFT;
     } else if ("right".equals(textAlign)) {
-      mAlignment = Layout.Alignment.ALIGN_OPPOSITE;
+      mAlignment = Gravity.RIGHT;
     } else if ("center".equals(textAlign)) {
-      mAlignment = Layout.Alignment.ALIGN_CENTER;
+      mAlignment = Gravity.CENTER;
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
     }
+
     notifyChanged(false);
+  }
+
+  public Layout.Alignment getAlignment() {
+    boolean isRtl = getLayoutDirection() == CSSDirection.RTL;
+    switch (mAlignment) {
+      // Layout.Alignment.RIGHT and Layout.Alignment.LEFT are @hide :(
+      case Gravity.LEFT:
+        int index = isRtl ? /* RIGHT */ 4 : /* LEFT */ 3;
+        return Layout.Alignment.values()[index];
+      case Gravity.RIGHT:
+        index = isRtl ? /* LEFT */ 3 : /* RIGHT */ 4;
+        return Layout.Alignment.values()[index];
+      case Gravity.CENTER:
+        return Layout.Alignment.ALIGN_CENTER;
+      case Gravity.NO_GRAVITY:
+      default:
+        return Layout.Alignment.ALIGN_NORMAL;
+    }
   }
 
   private static Layout createTextLayout(

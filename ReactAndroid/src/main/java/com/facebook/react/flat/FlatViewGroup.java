@@ -201,14 +201,14 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
 
   @Override
   public int reactTagForTouch(float touchX, float touchY) {
-    /**
+    /*
      * Make sure we don't find any children if the pointer events are set to BOX_ONLY.
      * There is no need to special-case any other modes, because if PointerEvents are set to:
      * a) PointerEvents.AUTO - all children are included, nothing to exclude
      * b) PointerEvents.NONE - this method will NOT be executed, because the View will be filtered
      *    out by TouchTargetHelper.
      * c) PointerEvents.BOX_NONE - TouchTargetHelper will make sure that {@link #reactTagForTouch()}
-    *     doesn't return getId().
+     *     doesn't return getId().
      */
     SoftAssertions.assertCondition(
         mPointerEvents != PointerEvents.NONE,
@@ -1011,11 +1011,12 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
       right = Math.max(right, child.getRight());
       bottom = Math.max(bottom, child.getBottom());
     }
-    for (int i = 0; i < mDrawCommands.length; i++) {
-      if (!(mDrawCommands[i] instanceof AbstractDrawCommand)) {
+
+    for (DrawCommand mDrawCommand : mDrawCommands) {
+      if (!(mDrawCommand instanceof AbstractDrawCommand)) {
         continue;
       }
-      AbstractDrawCommand drawCommand = (AbstractDrawCommand) mDrawCommands[i];
+      AbstractDrawCommand drawCommand = (AbstractDrawCommand) mDrawCommand;
       left = Math.min(left, Math.round(drawCommand.getLeft()));
       top = Math.min(top, Math.round(drawCommand.getTop()));
       right = Math.max(right, Math.round(drawCommand.getRight()));
@@ -1180,7 +1181,7 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     return mHitSlopRect;
   }
 
-  public void setHitSlopRect(@Nullable Rect rect) {
+  /* package */ void setHitSlopRect(@Nullable Rect rect) {
     mHitSlopRect = rect;
   }
 }
