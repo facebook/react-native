@@ -145,7 +145,7 @@ import com.facebook.csslayout.Spacing;
       super.getOutline(outline);
       return;
     }
-    if((!CSSConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) || mBorderCornerRadii != null) {
+    if ((!CSSConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) || mBorderCornerRadii != null) {
       updatePath();
 
       outline.setConvexPath(mPathForBorderRadiusOutline);
@@ -176,10 +176,10 @@ import com.facebook.csslayout.Spacing;
     // set RGB component
     if (mBorderRGB == null) {
       mBorderRGB = new Spacing();
-      mBorderRGB.setDefault(Spacing.LEFT, DEFAULT_BORDER_RGB);
-      mBorderRGB.setDefault(Spacing.TOP, DEFAULT_BORDER_RGB);
-      mBorderRGB.setDefault(Spacing.RIGHT, DEFAULT_BORDER_RGB);
-      mBorderRGB.setDefault(Spacing.BOTTOM, DEFAULT_BORDER_RGB);
+      mBorderRGB.set(Spacing.LEFT, DEFAULT_BORDER_RGB);
+      mBorderRGB.set(Spacing.TOP, DEFAULT_BORDER_RGB);
+      mBorderRGB.set(Spacing.RIGHT, DEFAULT_BORDER_RGB);
+      mBorderRGB.set(Spacing.BOTTOM, DEFAULT_BORDER_RGB);
     }
     if (!FloatUtil.floatsEqual(mBorderRGB.getRaw(position), rgb)) {
       mBorderRGB.set(position, rgb);
@@ -191,10 +191,10 @@ import com.facebook.csslayout.Spacing;
     // set Alpha component
     if (mBorderAlpha == null) {
       mBorderAlpha = new Spacing();
-      mBorderAlpha.setDefault(Spacing.LEFT, DEFAULT_BORDER_ALPHA);
-      mBorderAlpha.setDefault(Spacing.TOP, DEFAULT_BORDER_ALPHA);
-      mBorderAlpha.setDefault(Spacing.RIGHT, DEFAULT_BORDER_ALPHA);
-      mBorderAlpha.setDefault(Spacing.BOTTOM, DEFAULT_BORDER_ALPHA);
+      mBorderAlpha.set(Spacing.LEFT, DEFAULT_BORDER_ALPHA);
+      mBorderAlpha.set(Spacing.TOP, DEFAULT_BORDER_ALPHA);
+      mBorderAlpha.set(Spacing.RIGHT, DEFAULT_BORDER_ALPHA);
+      mBorderAlpha.set(Spacing.BOTTOM, DEFAULT_BORDER_ALPHA);
     }
     if (!FloatUtil.floatsEqual(mBorderAlpha.getRaw(position), alpha)) {
       mBorderAlpha.set(position, alpha);
@@ -290,7 +290,6 @@ import com.facebook.csslayout.Spacing;
     float topRightRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[1]) ? mBorderCornerRadii[1] : defaultBorderRadius;
     float bottomRightRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[2]) ? mBorderCornerRadii[2] : defaultBorderRadius;
     float bottomLeftRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[3]) ? mBorderCornerRadii[3] : defaultBorderRadius;
-
 
     mPathForBorderRadius.addRoundRect(
         mTempRectForBorderRadius,

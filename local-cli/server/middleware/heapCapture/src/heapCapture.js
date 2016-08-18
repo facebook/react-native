@@ -44,11 +44,32 @@ function getInternalInstanceName(refs, id) {
   const elementId = idGetProp(refs, id, '_currentElement');
   const typeId = idGetProp(refs, elementId, 'type');
   const typeRef = refs[typeId];
-  if (typeRef && typeRef.type === 'Function' && typeRef.value) {
-    return typeRef.value.name;
-  } else {
-    return '<unknown component>';
+  if (typeRef) {
+    if (typeRef.type === 'string') {  // element.type is string
+      if (typeRef.value) {
+        return typeRef.value;
+      }
+    } else if (typeRef.type === 'Function') { // element.type is function
+      const displayNameId = idGetProp(refs, typeId, 'displayName');
+      if (displayNameId) {
+        const displayNameRef = refs[displayNameId];
+        if (displayNameRef && displayNameRef.value) {
+          return displayNameRef.value;  // element.type.displayName
+        }
+      }
+      const nameId = idGetProp(refs, typeId, 'name');
+      if (nameId) {
+        const nameRef = refs[nameId];
+        if (nameRef && nameRef.value) {
+          return nameRef.value; // element.type.name
+        }
+      }
+      if (typeRef.value && typeRef.value.name) {
+        return typeRef.value.name;  // element.type symbolicated function name
+      }
+    }
   }
+  return '#unknown';
 }
 
 function registerReactComponentTreeImpl(refs, registry, parents, inEdgeNames, trees, id) {
@@ -204,6 +225,9 @@ function captureRegistry() {
       for (const id in capture.refs) { // eslint-disable-line no-unused-vars
         rowCount++;
       }
+      for (const id in capture.markedBlocks) { // eslint-disable-line no-unused-vars
+        rowCount++;
+      }
       console.log(
         'increasing row data from ' + (this.data.length * 4).toString() + 'B to ' +
         (this.data.length * 4 + rowCount * numFields * 4).toString() + 'B'
@@ -239,6 +263,16 @@ function captureRegistry() {
         } else {
           newData[dataOffset + reactField] = reactTree.id;
         }
+        dataOffset += numFields;
+      }
+      for (const id in capture.markedBlocks) {
+        const block = capture.markedBlocks[id];
+        newData[dataOffset + idField] = parseInt(id, 16);
+        newData[dataOffset + typeField] = this.strings.intern('Marked Block Overhead');
+        newData[dataOffset + sizeField] = block.capacity - block.size;
+        newData[dataOffset + traceField] = internedCaptureId;
+        newData[dataOffset + pathField] = this.stacks.root;
+        newData[dataOffset + reactField] = this.stacks.root;
         dataOffset += numFields;
       }
       this.data = newData;

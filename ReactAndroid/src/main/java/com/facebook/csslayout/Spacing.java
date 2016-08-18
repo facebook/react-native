@@ -9,8 +9,6 @@
 
 package com.facebook.csslayout;
 
-import javax.annotation.Nullable;
-
 import java.util.Arrays;
 
 /**
@@ -71,9 +69,17 @@ public class Spacing {
   };
 
   private final float[] mSpacing = newFullSpacingArray();
-  @Nullable private float[] mDefaultSpacing = null;
   private int mValueFlags = 0;
+  private float mDefaultValue;
   private boolean mHasAliasesSet;
+
+  public Spacing() {
+    this(0);
+  }
+
+  public Spacing(float defaultValue) {
+    mDefaultValue = defaultValue;
+  }
 
   /**
    * Set a spacing value.
@@ -101,25 +107,7 @@ public class Spacing {
 
       return true;
     }
-    return false;
-  }
 
-  /**
-   * Set a default spacing value. This is used as a fallback when no spacing has been set for a
-   * particular direction.
-   *
-   * @param spacingType one of {@link #LEFT}, {@link #TOP}, {@link #RIGHT}, {@link #BOTTOM}
-   * @param value the default value for this direction
-   * @return
-   */
-  public boolean setDefault(int spacingType, float value) {
-    if (mDefaultSpacing == null) {
-      mDefaultSpacing = newSpacingResultArray();
-    }
-    if (!FloatUtil.floatsEqual(mDefaultSpacing[spacingType], value)) {
-      mDefaultSpacing[spacingType] = value;
-      return true;
-    }
     return false;
   }
 
@@ -129,9 +117,9 @@ public class Spacing {
    * @param spacingType one of {@link #LEFT}, {@link #TOP}, {@link #RIGHT}, {@link #BOTTOM}
    */
   public float get(int spacingType) {
-    float defaultValue = (mDefaultSpacing != null)
-        ? mDefaultSpacing[spacingType]
-        : (spacingType == START || spacingType == END ? CSSConstants.UNDEFINED : 0);
+    float defaultValue = (spacingType == START || spacingType == END
+        ? CSSConstants.UNDEFINED
+        : mDefaultValue);
 
     if (mValueFlags == 0) {
       return defaultValue;
@@ -170,7 +158,6 @@ public class Spacing {
    */
   void reset() {
     Arrays.fill(mSpacing, CSSConstants.UNDEFINED);
-    mDefaultSpacing = null;
     mHasAliasesSet = false;
     mValueFlags = 0;
   }
@@ -198,24 +185,6 @@ public class Spacing {
         CSSConstants.UNDEFINED,
         CSSConstants.UNDEFINED,
         CSSConstants.UNDEFINED,
-    };
-  }
-
-  private static float[] newSpacingResultArray() {
-    return newSpacingResultArray(0);
-  }
-
-  private static float[] newSpacingResultArray(float defaultValue) {
-    return new float[] {
-        defaultValue,
-        defaultValue,
-        defaultValue,
-        defaultValue,
-        CSSConstants.UNDEFINED,
-        CSSConstants.UNDEFINED,
-        defaultValue,
-        defaultValue,
-        defaultValue,
     };
   }
 }
