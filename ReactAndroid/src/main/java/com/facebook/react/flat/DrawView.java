@@ -201,7 +201,35 @@ import android.graphics.RectF;
   }
 
   @Override
-  public void debugDraw(FlatViewGroup parent, Canvas canvas) {
+  protected void onDebugDraw(FlatViewGroup parent, Canvas canvas) {
     parent.debugDrawNextChild(canvas);
+  }
+
+  @Override
+  protected void onDebugDrawHighlight(Canvas canvas) {
+    if (mPath != null) {
+      debugDrawWarningHighlight(canvas, "borderRadius: " + mClipRadius);
+    } else if (!boundsMatch(mLogicalLeft, mLogicalTop, mLogicalRight, mLogicalBottom)) {
+      StringBuilder warn = new StringBuilder("Overflow: { ");
+      String[] names = { "left: ", "top: ", "right: ", "bottom: "};
+      int i = 0;
+      float[] offsets = new float[4];
+      offsets[i++] = getLeft() - mLogicalLeft;
+      offsets[i++] = getTop() - mLogicalTop;
+      offsets[i++] = mLogicalRight - getRight();
+      offsets[i++] = mLogicalBottom - getBottom();
+
+      for (i = 0; i < 4; i++) {
+        if (offsets[i] != 0f) {
+          warn.append(names[i]);
+          warn.append(offsets[i]);
+          warn.append(", ");
+        }
+      }
+
+      warn.append("}");
+
+      debugDrawCautionHighlight(canvas, warn.toString());
+    }
   }
 }

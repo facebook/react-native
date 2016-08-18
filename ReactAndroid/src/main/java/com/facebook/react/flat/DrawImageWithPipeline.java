@@ -308,4 +308,11 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
 
     return mPathForRoundedBitmap;
   }
+
+  @Override
+  protected void onDebugDrawHighlight(Canvas canvas) {
+    if (mCallback != null) {
+      debugDrawCautionHighlight(canvas, "Invalidate Pipeline");
+    }
+  }
 }

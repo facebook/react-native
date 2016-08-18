@@ -21,6 +21,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
@@ -137,9 +138,13 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
     }
   }
 
-  // Resources for debug drawing.
-  private static final boolean DEBUG_DRAW = false;
+  // Draws the name of the draw commands at the bottom right corner of it's bounds.
   private static final boolean DEBUG_DRAW_TEXT = false;
+  // Draws colored rectangles over known performance issues.
+  /* package */ static final boolean DEBUG_HIGHLIGHT_PERFORMANCE_ISSUES = false;
+  // Force layout bounds drawing.  This can also be enabled by turning on layout bounds in Android.
+  private static final boolean DEBUG_DRAW = DEBUG_DRAW_TEXT || DEBUG_HIGHLIGHT_PERFORMANCE_ISSUES;
+  // Resources for debug drawing.
   private boolean mAndroidDebugDraw;
   private static Paint sDebugTextPaint;
   private static Paint sDebugTextBackgroundPaint;
@@ -347,7 +352,7 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
   }
 
   // Used in debug drawing.
-  private int dipsToPixels(int dips) {
+  /* package */ int dipsToPixels(int dips) {
     float scale = getResources().getDisplayMetrics().density;
     return (int) (dips * scale + 0.5f);
   }
@@ -408,6 +413,8 @@ import com.facebook.react.views.view.ReactClippingViewGroup;
       sDebugTextPaint = new Paint();
       sDebugTextPaint.setTextAlign(Paint.Align.RIGHT);
       sDebugTextPaint.setTextSize(dipsToPixels(9));
+      sDebugTextPaint.setTypeface(Typeface.MONOSPACE);
+      sDebugTextPaint.setAntiAlias(true);
       sDebugTextPaint.setColor(Color.RED);
     }
     if (sDebugTextBackgroundPaint == null) {

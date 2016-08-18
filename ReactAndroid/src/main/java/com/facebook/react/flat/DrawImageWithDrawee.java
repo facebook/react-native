@@ -301,4 +301,11 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
     // not doing this just to save including eyt another BUCK dependency
     return LOCAL_FILE_SCHEME.equals(type) || LOCAL_CONTENT_SCHEME.equals(type);
   }
+
+  @Override
+  protected void onDebugDrawHighlight(Canvas canvas) {
+    if (mCallback != null) {
+      debugDrawCautionHighlight(canvas, "Invalidate Drawee");
+    }
+  }
 }

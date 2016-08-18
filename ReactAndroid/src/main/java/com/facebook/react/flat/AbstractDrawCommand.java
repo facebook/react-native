@@ -11,6 +11,8 @@ package com.facebook.react.flat;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 
 /**
  * Base class for all DrawCommands. Becomes immutable once it has its bounds set. Until then, a
@@ -32,6 +34,11 @@ import android.graphics.Color;
   private float mClipTop;
   private float mClipRight;
   private float mClipBottom;
+
+  // Used to draw highlights in debug draw.
+  private static Paint sDebugHighlightRed;
+  private static Paint sDebugHighlightYellow;
+  private static Paint sDebugHighlightOverlayText;
 
   public final boolean clipBoundsMatch(
       float clipLeft,
@@ -104,8 +111,48 @@ import android.graphics.Color;
     return getClass().getSimpleName().substring(4);
   }
 
+  private void initDebugHighlightResources(FlatViewGroup parent) {
+    if (sDebugHighlightRed == null) {
+      sDebugHighlightRed = new Paint();
+      sDebugHighlightRed.setARGB(75, 255, 0, 0);
+    }
+    if (sDebugHighlightYellow == null) {
+      sDebugHighlightYellow = new Paint();
+      sDebugHighlightYellow.setARGB(100, 255, 204, 0);
+    }
+    if (sDebugHighlightOverlayText == null) {
+      sDebugHighlightOverlayText = new Paint();
+      sDebugHighlightOverlayText.setAntiAlias(true);
+      sDebugHighlightOverlayText.setARGB(200, 50, 50, 50);
+      sDebugHighlightOverlayText.setTextAlign(Paint.Align.RIGHT);
+      sDebugHighlightOverlayText.setTypeface(Typeface.MONOSPACE);
+      sDebugHighlightOverlayText.setTextSize(parent.dipsToPixels(9));
+    }
+  }
+
+  private void debugDrawHighlightRect(Canvas canvas, Paint paint, String text) {
+    canvas.drawRect(getLeft(), getTop(), getRight(), getBottom(), paint);
+    canvas.drawText(text, getRight() - 5, getBottom() - 5, sDebugHighlightOverlayText);
+  }
+
+  protected void debugDrawWarningHighlight(Canvas canvas, String text) {
+    debugDrawHighlightRect(canvas, sDebugHighlightRed, text);
+  }
+
+  protected void debugDrawCautionHighlight(Canvas canvas, String text) {
+    debugDrawHighlightRect(canvas, sDebugHighlightYellow, text);
+  }
+
   @Override
-  public void debugDraw(FlatViewGroup parent, Canvas canvas) {
+  public final void debugDraw(FlatViewGroup parent, Canvas canvas) {
+    onDebugDraw(parent, canvas);
+    if (FlatViewGroup.DEBUG_HIGHLIGHT_PERFORMANCE_ISSUES) {
+      initDebugHighlightResources(parent);
+      onDebugDrawHighlight(canvas);
+    }
+  }
+
+  protected void onDebugDraw(FlatViewGroup parent, Canvas canvas) {
     parent.debugDrawNamedRect(
         canvas,
         getDebugBorderColor(),
@@ -114,6 +161,9 @@ import android.graphics.Color;
         mTop,
         mRight,
         mBottom);
+  }
+
+  protected void onDebugDrawHighlight(Canvas canvas) {
   }
 
   protected void onPreDraw(FlatViewGroup parent, Canvas canvas) {
