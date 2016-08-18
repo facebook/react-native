@@ -321,6 +321,12 @@ var featured = [
     infoLink: 'https://www.zfanw.com/blog/developing-react-native-image-viewer-library.html',
     infoTitle: 'Developing the react-native-image-viewer library',
   },
+  {
+    name: '厕所在哪',
+    icon: 'http://7xtp9h.com2.z0.glb.clouddn.com/toilet_icon.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/ce-suo-zai-na/id1114729267?l=en&mt=8'
+    author: 'lihua wang',
+  },
 ];
 
 featured.sort(function(a, b) {
