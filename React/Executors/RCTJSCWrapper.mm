@@ -93,7 +93,7 @@ static void RCTSetUpCustomLibraryPointers(RCTJSCWrapper *wrapper)
 RCTJSCWrapper *RCTJSCWrapperCreate(BOOL useCustomJSC)
 {
   RCTJSCWrapper *wrapper = (RCTJSCWrapper *)malloc(sizeof(RCTJSCWrapper));
-  if (useCustomJSC && [UIDevice currentDevice].systemVersion.floatValue >= 8) {
+  if (useCustomJSC) {
     RCTSetUpCustomLibraryPointers(wrapper);
   } else {
     RCTSetUpSystemLibraryPointers(wrapper);
