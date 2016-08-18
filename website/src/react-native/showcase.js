@@ -321,6 +321,14 @@ var featured = [
     infoLink: 'https://www.zfanw.com/blog/developing-react-native-image-viewer-library.html',
     infoTitle: 'Developing the react-native-image-viewer library',
   },
+  {
+    name: '鉅亨網財經新聞',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple62/v4/d2/93/5c/d2935cae-28c8-0f6a-101d-d02926a5f7fc/icon175x175.jpeg',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.cnyes.android',
+    linkAppStore: 'https://itunes.apple.com/tw/app/ju-heng-cai-jing-xin-wen/id1071014509',
+    infoLink: 'http://blog.blackbing.net/post/2016/07/24/we-developed-cnyes-app-with-react-native',
+    infoTitle: 'Developing CNYES News App with react-native',
+  },
 ];
 
 featured.sort(function(a, b) {
