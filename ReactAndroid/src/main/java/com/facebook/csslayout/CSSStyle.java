@@ -30,7 +30,7 @@ public class CSSStyle {
   public Spacing margin = new Spacing();
   public Spacing padding = new Spacing();
   public Spacing border = new Spacing();
-  public Spacing position = new Spacing();
+  public Spacing position = new Spacing(CSSConstants.UNDEFINED);
 
   public float[] dimensions = new float[2];
 
@@ -60,13 +60,6 @@ public class CSSStyle {
     padding.reset();
     border.reset();
     position.reset();
-
-    position.setDefault(Spacing.LEFT, CSSConstants.UNDEFINED);
-    position.setDefault(Spacing.RIGHT, CSSConstants.UNDEFINED);
-    position.setDefault(Spacing.TOP, CSSConstants.UNDEFINED);
-    position.setDefault(Spacing.BOTTOM, CSSConstants.UNDEFINED);
-    position.setDefault(Spacing.START, CSSConstants.UNDEFINED);
-    position.setDefault(Spacing.END, CSSConstants.UNDEFINED);
 
     Arrays.fill(dimensions, CSSConstants.UNDEFINED);
 
