@@ -70,8 +70,8 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
  *   Max Bottom: [70, 70, 70, 70, 100, 130, 130]
  *   Min Top:    [ 0,  0,  0,  0,  80,  90,  90]
  *
- * We can then binary search for the first max bottom that is below our rect, and the first min top
- * that is above our rect.
+ * We can then binary search for the first max bottom that is above our rect, and the first min top
+ * that is below our rect.
  *
  * If the top and bottom of the rect are 55 and 85, respectively, we will start drawing at index 0
  * and stop at index 4.
@@ -421,7 +421,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
    * Used either after we have updated the current rect, or when we have mounted new commands and
    * the rect hasn't changed.  Updates the clipping after mStart and mStop have been set to the
    * correct values.  For draw commands, this is all it takes to update the command mounting, as
-   * draw commands are only attached in a conceptual sense, and rely on the android view
+   * draw commands are only attached in a conceptual sense, and don't rely on the android view
    * hierarchy.
    *
    * For native children, we have to walk through our current views and remove any that are no
