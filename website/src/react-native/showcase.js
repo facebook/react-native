@@ -321,6 +321,12 @@ var featured = [
     infoLink: 'https://www.zfanw.com/blog/developing-react-native-image-viewer-library.html',
     infoTitle: 'Developing the react-native-image-viewer library',
   },
+  {
+    name: 'stitchchat',
+    icon: 'https://github.com/ramsundark5/stitchchat/blob/master/screenshots/icons/AppIconDesign.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/stitchchat/id1124511781?mt=8',
+    author: 'Ram Kuppusamy',
+  },
 ];
 
 featured.sort(function(a, b) {
