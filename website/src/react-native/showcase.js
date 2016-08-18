@@ -321,6 +321,12 @@ var featured = [
     infoLink: 'https://www.zfanw.com/blog/developing-react-native-image-viewer-library.html',
     infoTitle: 'Developing the react-native-image-viewer library',
   },
+  {
+    name: '烘焙帮',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/79/85/ba/7985ba1d-a807-7c34-98f1-e9e2ed5d2cb5/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/cn/app/hong-bei-bang-hai-liang-hong/id1007812319?mt=8',
+    author: 'Hongbeibang'
+  },
 ];
 
 featured.sort(function(a, b) {
