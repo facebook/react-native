@@ -335,11 +335,6 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
     jni_CSSNodeStyleSetPadding(mNativePointer, spacingType, padding);
   }
 
-  @Override
-  public void setDefaultPadding(int spacingType, float padding) {
-    // TODO
-  }
-
   private native float jni_CSSNodeStyleGetBorder(long nativePointer, int edge);
   @Override
   public Spacing getBorder() {

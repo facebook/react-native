@@ -79,7 +79,6 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   float getLayoutWidth();
   float getLayoutHeight();
   CSSDirection getLayoutDirection();
-  void setDefaultPadding(int spacingType, float padding);
   CSSOverflow getOverflow();
   void setOverflow(CSSOverflow overflow);
   void setData(Object data);
