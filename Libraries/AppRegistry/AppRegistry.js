@@ -19,6 +19,7 @@ var invariant = require('fbjs/lib/invariant');
 var renderApplication = require('renderApplication');
 const infoLog = require('infoLog');
 
+
 if (__DEV__) {
   // In order to use Cmd+P to record/dump perf data, we need to make sure
   // this module is available in the bundle
