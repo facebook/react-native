@@ -175,11 +175,7 @@ import com.facebook.csslayout.Spacing;
   private void setBorderRGB(int position, float rgb) {
     // set RGB component
     if (mBorderRGB == null) {
-      mBorderRGB = new Spacing();
-      mBorderRGB.set(Spacing.LEFT, DEFAULT_BORDER_RGB);
-      mBorderRGB.set(Spacing.TOP, DEFAULT_BORDER_RGB);
-      mBorderRGB.set(Spacing.RIGHT, DEFAULT_BORDER_RGB);
-      mBorderRGB.set(Spacing.BOTTOM, DEFAULT_BORDER_RGB);
+      mBorderRGB = new Spacing(DEFAULT_BORDER_RGB);
     }
     if (!FloatUtil.floatsEqual(mBorderRGB.getRaw(position), rgb)) {
       mBorderRGB.set(position, rgb);
@@ -190,11 +186,7 @@ import com.facebook.csslayout.Spacing;
   private void setBorderAlpha(int position, float alpha) {
     // set Alpha component
     if (mBorderAlpha == null) {
-      mBorderAlpha = new Spacing();
-      mBorderAlpha.set(Spacing.LEFT, DEFAULT_BORDER_ALPHA);
-      mBorderAlpha.set(Spacing.TOP, DEFAULT_BORDER_ALPHA);
-      mBorderAlpha.set(Spacing.RIGHT, DEFAULT_BORDER_ALPHA);
-      mBorderAlpha.set(Spacing.BOTTOM, DEFAULT_BORDER_ALPHA);
+      mBorderAlpha = new Spacing(DEFAULT_BORDER_ALPHA);
     }
     if (!FloatUtil.floatsEqual(mBorderAlpha.getRaw(position), alpha)) {
       mBorderAlpha.set(position, alpha);

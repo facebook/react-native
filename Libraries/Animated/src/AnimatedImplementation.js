@@ -74,6 +74,7 @@ class Animated {
 type AnimationConfig = {
   isInteraction?: bool,
   useNativeDriver?: bool,
+  onComplete?: ?EndCallback,
 };
 
 // Important note: start() and stop() will only be called at most once.
@@ -1676,6 +1677,16 @@ var modulo = function(
   return new AnimatedModulo(a, modulus);
 };
 
+const _combineCallbacks = function(callback: ?EndCallback, config : AnimationConfig) {
+  if (callback && config.onComplete) {
+    return (...args) => {
+      config.onComplete && config.onComplete(...args);
+      callback && callback(...args);
+    };
+  } else {
+    return callback || config.onComplete;
+  }
+};
 
 var maybeVectorAnim = function(
   value: AnimatedValue | AnimatedValueXY,
@@ -1707,6 +1718,7 @@ var spring = function(
 ): CompositeAnimation {
   return maybeVectorAnim(value, config, spring) || {
     start: function(callback?: ?EndCallback): void {
+      callback = _combineCallbacks(callback, config);
       var singleValue: any = value;
       var singleConfig: any = config;
       singleValue.stopTracking();
@@ -1735,6 +1747,7 @@ var timing = function(
 ): CompositeAnimation {
   return maybeVectorAnim(value, config, timing) || {
     start: function(callback?: ?EndCallback): void {
+      callback = _combineCallbacks(callback, config);
       var singleValue: any = value;
       var singleConfig: any = config;
       singleValue.stopTracking();
@@ -1763,6 +1776,7 @@ var decay = function(
 ): CompositeAnimation {
   return maybeVectorAnim(value, config, decay) || {
     start: function(callback?: ?EndCallback): void {
+      callback = _combineCallbacks(callback, config);
       var singleValue: any = value;
       var singleConfig: any = config;
       singleValue.stopTracking();
