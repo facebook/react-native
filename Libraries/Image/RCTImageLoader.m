@@ -294,10 +294,6 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                                     progressBlock:(RCTImageLoaderProgressBlock)progressHandler
                                                   completionBlock:(void (^)(NSError *error, id imageOrData, BOOL cacheResult, NSString *fetchDate))completionBlock
 {
-  __block volatile uint32_t cancelled = 0;
-  __block dispatch_block_t cancelLoad = nil;
-  __weak RCTImageLoader *weakSelf = self;
-
   {
     NSMutableURLRequest *mutableRequest = [request mutableCopy];
     [NSURLProtocol setProperty:@"RCTImageLoader"
@@ -316,9 +312,14 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   BOOL requiresScheduling = [loadHandler respondsToSelector:@selector(requiresScheduling)] ?
       [loadHandler requiresScheduling] : YES;
 
+  __block volatile uint32_t cancelled = 0;
+  __block dispatch_block_t cancelLoad = nil;
   void (^completionHandler)(NSError *, id, NSString *) = ^(NSError *error, id imageOrData, NSString *fetchDate) {
+    cancelLoad = nil;
+
     BOOL cacheResult = [loadHandler respondsToSelector:@selector(shouldCacheLoadedImages)] ?
       [loadHandler shouldCacheLoadedImages] : YES;
+
     // If we've received an image, we should try to set it synchronously,
     // if it's data, do decoding on a background thread.
     if (RCTIsMainQueue() && ![imageOrData isKindOfClass:[UIImage class]]) {
@@ -352,6 +353,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     [self setUp];
   }
 
+  __weak RCTImageLoader *weakSelf = self;
   dispatch_async(_URLRequestQueue, ^{
     __typeof(self) strongSelf = weakSelf;
     if (cancelled || !strongSelf) {
@@ -364,7 +366,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                           scale:scale
                                      resizeMode:resizeMode
                                 progressHandler:progressHandler
-                              completionHandler:^(NSError *error, UIImage *image){
+                              completionHandler:^(NSError *error, UIImage *image) {
                                 completionHandler(error, image, nil);
                               }];
     } else {
@@ -378,6 +380,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   return ^{
     if (cancelLoad) {
       cancelLoad();
+      cancelLoad = nil;
     }
     OSAtomicOr32Barrier(1, &cancelled);
   };
@@ -464,7 +467,6 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       // Prepare for next task
       [strongSelf dequeueTasks];
     });
-
   }];
 
   task.downloadProgressBlock = progressHandler;
@@ -488,13 +490,19 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                                      scale:(CGFloat)scale
                                                    clipped:(BOOL)clipped
                                                 resizeMode:(RCTResizeMode)resizeMode
-                                             progressBlock:(RCTImageLoaderProgressBlock)progressHandler
+                                             progressBlock:(RCTImageLoaderProgressBlock)progressBlock
                                            completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
 {
   __block volatile uint32_t cancelled = 0;
-  __block void(^cancelLoad)(void) = nil;
-  __weak RCTImageLoader *weakSelf = self;
+  __block dispatch_block_t cancelLoad = nil;
+  dispatch_block_t cancellationBlock = ^{
+    if (cancelLoad) {
+      cancelLoad();
+    }
+    OSAtomicOr32Barrier(1, &cancelled);
+  };
 
+  __weak RCTImageLoader *weakSelf = self;
   void (^completionHandler)(NSError *, id, BOOL, NSString *) = ^(NSError *error, id imageOrData, BOOL cacheResult, NSString *fetchDate) {
     __typeof(self) strongSelf = weakSelf;
     if (cancelled || !strongSelf) {
@@ -502,6 +510,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     }
 
     if (!imageOrData || [imageOrData isKindOfClass:[UIImage class]]) {
+      cancelLoad = nil;
       completionBlock(error, imageOrData);
       return;
     }
@@ -509,27 +518,29 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     // Check decoded image cache
     if (cacheResult) {
       UIImage *image = [[strongSelf imageCache] imageForUrl:imageURLRequest.URL.absoluteString
-                                                          size:size
-                                                         scale:scale
-                                                    resizeMode:resizeMode
-                                                  responseDate:fetchDate];
+                                                       size:size
+                                                      scale:scale
+                                                 resizeMode:resizeMode
+                                               responseDate:fetchDate];
       if (image) {
+        cancelLoad = nil;
         completionBlock(nil, image);
         return;
       }
     }
 
-    // Store decoded image in cache
-    RCTImageLoaderCompletionBlock cacheResultHandler = ^(NSError *error_, UIImage *image) {
-      if (image) {
+    RCTImageLoaderCompletionBlock decodeCompletionHandler = ^(NSError *error_, UIImage *image) {
+      if (cacheResult && image) {
+        // Store decoded image in cache
         [[strongSelf imageCache] addImageToCache:image
-                                                URL:imageURLRequest.URL.absoluteString
-                                               size:size
-                                              scale:scale
-                                         resizeMode:resizeMode
-                                       responseDate:fetchDate];
+                                             URL:imageURLRequest.URL.absoluteString
+                                            size:size
+                                           scale:scale
+                                      resizeMode:resizeMode
+                                    responseDate:fetchDate];
       }
 
+      cancelLoad = nil;
       completionBlock(error_, image);
     };
 
@@ -538,21 +549,16 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                      scale:scale
                                    clipped:clipped
                                 resizeMode:resizeMode
-                           completionBlock:cacheResult ? cacheResultHandler: completionBlock];
+                           completionBlock:decodeCompletionHandler];
   };
 
   cancelLoad = [self _loadImageOrDataWithURLRequest:imageURLRequest
                                                size:size
                                               scale:scale
                                          resizeMode:resizeMode
-                                      progressBlock:progressHandler
+                                      progressBlock:progressBlock
                                     completionBlock:completionHandler];
-  return ^{
-    if (cancelLoad) {
-      cancelLoad();
-    }
-    OSAtomicOr32Barrier(1, &cancelled);
-  };
+  return cancellationBlock;
 }
 
 - (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)data

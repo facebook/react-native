@@ -925,10 +925,10 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   }
 
   private void processPackage(
-      ReactPackage reactPackage,
-      ReactApplicationContext reactContext,
-      NativeModuleRegistry.Builder nativeRegistryBuilder,
-      JavaScriptModuleRegistry.Builder jsModulesBuilder) {
+    ReactPackage reactPackage,
+    ReactApplicationContext reactContext,
+    NativeModuleRegistry.Builder nativeRegistryBuilder,
+    JavaScriptModuleRegistry.Builder jsModulesBuilder) {
     for (NativeModule nativeModule : reactPackage.createNativeModules(reactContext)) {
       nativeRegistryBuilder.add(nativeModule);
     }
