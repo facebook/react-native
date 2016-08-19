@@ -12,8 +12,8 @@ This involved changing [css-layout](https://github.com/facebook/css-layout), the
 To battle test the RTL support in production, the latest version of the **Facebook Ads Manager** app (the first cross-platform 100% RN app) is now available in Arabic and Hebrew with RTL layouts for both [iOS](https://itunes.apple.com/app/id964397083) and [Android](https://play.google.com/store/apps/details?id=com.facebook.adsmanager). Here is how it looks like in those RTL languages:
 
 <p align="center">
-  <img src="/react-native/blog/img/rtl-ama-ios-arabic.png" height="480" style="margin:25px">
-  <img src="/react-native/blog/img/rtl-ama-android-hebrew.png" height="480" style="margin:25px">
+  <img src="/react-native/blog/img/rtl-ama-ios-arabic.png" width="280" style="margin:10px">
+  <img src="/react-native/blog/img/rtl-ama-android-hebrew.png" width="280" style="margin:10px">
 </p>
 
 ## Overview Changes in RN for RTL support
@@ -80,6 +80,7 @@ However, there are several cases to be aware of, for which you will need the [`I
 
 #### Icons with Directional Meaning
 If your component has icons or images, they will be displayed the same way in LTR and RTL layout, because RN will not flip your source image. Therefore, you should flip them according to the layout style.
+
 * Left-to-Right Layout
 
   <p align="left">
@@ -120,12 +121,12 @@ In iOS and Android development, when you change to RTL layout, the gestures and 
 A good example to illustrate gesture RTL support is [`SwipeableRow`](https://github.com/facebook/react-native/blob/38a6eec0db85a5204e85a9a92b4dee2db9641671/Libraries/Experimental/SwipeableRow/SwipeableRow.js).
 
 <p align="center">
-  <img src="/react-native/blog/img/rtl-demo-swipe-ltr.png" height="480" style="margin:25px">
-  <img src="/react-native/blog/img/rtl-demo-swipe-rtl.png" height="480" style="margin:25px">
+  <img src="/react-native/blog/img/rtl-demo-swipe-ltr.png" width="280" style="margin:10px">
+  <img src="/react-native/blog/img/rtl-demo-swipe-rtl.png" width="280" style="margin:10px">
 </p>
 
 
-###### Gestures Example
+##### Gestures Example
 ```js
 // SwipeableRow.js
 _isSwipingExcessivelyRightFromClosedPosition(gestureState: Object): boolean {
@@ -138,7 +139,7 @@ _isSwipingExcessivelyRightFromClosedPosition(gestureState: Object): boolean {
 },
 ```
 
-###### Animation Example
+##### Animation Example
 ```js
 // SwipeableRow.js
 _animateBounceBack(duration: number): void {
@@ -210,6 +211,6 @@ The RTL support should cover most of the UX in your app; however, there are some
    In the future, it would be ideal to find a way to make gestures and animations RTL support more developer friendly.
 
 ## Try it Out!
-Check out the `RTLExample` in the `UIExplorer` to understand more about RTL support, and let us know how it works for you!
+Check out the [`RTLExample`](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/js/RTLExample.js) in the `UIExplorer` to understand more about RTL support, and let us know how it works for you!
 
 Finally, thank you for reading! We hope that the RTL support for React Native helps you grow your apps for international audience!
