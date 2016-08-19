@@ -74,6 +74,7 @@ class Animated {
 type AnimationConfig = {
   isInteraction?: bool,
   useNativeDriver?: bool,
+  onComplete?: ?EndCallback,
 };
 
 // Important note: start() and stop() will only be called at most once.
@@ -350,6 +351,7 @@ class DecayAnimation extends Animation {
   _velocity: number;
   _onUpdate: (value: number) => void;
   _animationFrame: any;
+  _useNativeDriver: bool;
 
   constructor(
     config: DecayAnimationConfigSingle,
@@ -357,13 +359,24 @@ class DecayAnimation extends Animation {
     super();
     this._deceleration = config.deceleration !== undefined ? config.deceleration : 0.998;
     this._velocity = config.velocity;
+    this._useNativeDriver = config.useNativeDriver !== undefined ? config.useNativeDriver : false;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
+  }
+
+  __getNativeAnimationConfig() {
+    return {
+      type: 'decay',
+      deceleration: this._deceleration,
+      velocity: this._velocity,
+    };
   }
 
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
     onEnd: ?EndCallback,
+    previousAnimation: ?Animation,
+    animatedValue: AnimatedValue,
   ): void {
     this.__active = true;
     this._lastValue = fromValue;
@@ -371,7 +384,11 @@ class DecayAnimation extends Animation {
     this._onUpdate = onUpdate;
     this.__onEnd = onEnd;
     this._startTime = Date.now();
-    this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
+    if (this._useNativeDriver) {
+      this.__startNativeAnimation(animatedValue);
+    } else {
+      this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
+    }
   }
 
   onUpdate(): void {
@@ -1676,6 +1693,16 @@ var modulo = function(
   return new AnimatedModulo(a, modulus);
 };
 
+const _combineCallbacks = function(callback: ?EndCallback, config : AnimationConfig) {
+  if (callback && config.onComplete) {
+    return (...args) => {
+      config.onComplete && config.onComplete(...args);
+      callback && callback(...args);
+    };
+  } else {
+    return callback || config.onComplete;
+  }
+};
 
 var maybeVectorAnim = function(
   value: AnimatedValue | AnimatedValueXY,
@@ -1707,6 +1734,7 @@ var spring = function(
 ): CompositeAnimation {
   return maybeVectorAnim(value, config, spring) || {
     start: function(callback?: ?EndCallback): void {
+      callback = _combineCallbacks(callback, config);
       var singleValue: any = value;
       var singleConfig: any = config;
       singleValue.stopTracking();
@@ -1735,6 +1763,7 @@ var timing = function(
 ): CompositeAnimation {
   return maybeVectorAnim(value, config, timing) || {
     start: function(callback?: ?EndCallback): void {
+      callback = _combineCallbacks(callback, config);
       var singleValue: any = value;
       var singleConfig: any = config;
       singleValue.stopTracking();
@@ -1763,6 +1792,7 @@ var decay = function(
 ): CompositeAnimation {
   return maybeVectorAnim(value, config, decay) || {
     start: function(callback?: ?EndCallback): void {
+      callback = _combineCallbacks(callback, config);
       var singleValue: any = value;
       var singleConfig: any = config;
       singleValue.stopTracking();

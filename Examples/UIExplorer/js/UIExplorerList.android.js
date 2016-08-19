@@ -190,6 +190,10 @@ const APIExamples = [
     module: require('./PointerEventsExample'),
   },
   {
+    key: 'RTLExample',
+    module: require('./RTLExample'),
+  },
+  {
     key: 'ShareExample',
     module: require('./ShareExample'),
   },
