@@ -99,6 +99,7 @@ var ReactNative = {
   DatePickerAndroid: require('DatePickerAndroid'),
   Dimensions: require('Dimensions'),
   Easing: require('Easing'),
+  I18nManager: require('I18nManager'),
   ImagePickerIOS: require('ImagePickerIOS'),
   IntentAndroid: require('IntentAndroid'),
   InteractionManager: require('InteractionManager'),
