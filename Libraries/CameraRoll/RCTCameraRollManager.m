@@ -147,6 +147,8 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
+  checkPhotoLibraryConfig();
+
   NSUInteger first = [RCTConvert NSInteger:params[@"first"]];
   NSString *afterCursor = [RCTConvert NSString:params[@"after"]];
   NSString *groupName = [RCTConvert NSString:params[@"groupName"]];
@@ -219,6 +221,15 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
     }
     reject(RCTErrorUnableToLoad, nil, error);
   }];
+}
+
+static void checkPhotoLibraryConfig()
+{
+#if RCT_DEV
+  if (![[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSPhotoLibraryUsageDescription"]) {
+    RCTLogError(@"NSPhotoLibraryUsageDescription key must be present in Info.plist to use camera roll.");
+  }
+#endif
 }
 
 @end
