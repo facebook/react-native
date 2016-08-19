@@ -60,10 +60,10 @@ typedef struct CSSStyle {
   float flexGrow;
   float flexShrink;
   float flexBasis;
-  float margin[6];
-  float position[6];
-  float padding[6];
-  float border[6];
+  float margin[CSSEdgeCount];
+  float position[CSSEdgeCount];
+  float padding[CSSEdgeCount];
+  float border[CSSEdgeCount];
   float dimensions[2];
   float minDimensions[2];
   float maxDimensions[2];

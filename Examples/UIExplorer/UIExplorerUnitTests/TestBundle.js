@@ -7,3 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+var __fbBatchedBridge = {
+  flushedQueue: function() {
+    return null;
+  }
+};

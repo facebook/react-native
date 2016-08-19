@@ -87,6 +87,7 @@ const ReactNative = {
   get DatePickerAndroid() { return require('DatePickerAndroid'); },
   get Dimensions() { return require('Dimensions'); },
   get Easing() { return require('Easing'); },
+  get I18nManager() { return require('I18nManager'); },
   get ImagePickerIOS() { return require('ImagePickerIOS'); },
   get IntentAndroid() { return require('IntentAndroid'); },
   get InteractionManager() { return require('InteractionManager'); },

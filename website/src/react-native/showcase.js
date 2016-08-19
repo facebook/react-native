@@ -10,10 +10,12 @@
 /*
 Thousands of applications use React Native, so we can't list all of them
 in our showcase. To be useful to someone looking through the showcase,
-either the app must be something that most readers would recognize, or the makers of the application must have posted useful technical content about the making of the app. It also must be useful considering that the majority of readers only speak English. So, each app in the showcase should link to either:
+either the app must be something that most readers would recognize, or the makers of the application must have
+posted useful technical content about the making of the app. It also must be useful considering that the majority
+of readers only speak English. So, each app in the showcase should link to either:
 
 1/ An English-language news article discussing the app, built either by a funded startup or for a public company
-2/ An English-language technical blog post by the app creators specifically discussing React Native
+2/ An English-language technical post on a funded startup or public company blog discussing React Native
 
 For each app in the showcase, use infoLink and infoTitle to reference this content.
 */
@@ -311,6 +313,13 @@ var featured = [
     linkAppStore: 'https://itunes.apple.com/cn/app/feng-niao-zhong-bao-jian-zhi/id1061034377?mt=8',
     infoLink: 'https://elelogistics.github.io/about/Crowdsource-App-Write-In-React-Native.html',
     infoTitle: '"Fengniao Crowdsource app" is a mobile app, developed by Eleme, Inc, for Fengniao Crowdsource, the largest crowdsourced logistics platform in China.',
+  },
+  {
+    name: '昨日热推',
+    icon: 'https://frontbin.com/images/apple-touch-icon.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/zuo-ri-re-tui/id1137163693?l=en&mt=8',
+    infoLink: 'https://www.zfanw.com/blog/developing-react-native-image-viewer-library.html',
+    infoTitle: 'Developing the react-native-image-viewer library',
   },
 ];
 
