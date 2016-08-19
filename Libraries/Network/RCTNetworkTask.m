@@ -78,9 +78,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)cancel
 {
   _status = RCTNetworkTaskFinished;
-  __strong id strongToken = _requestToken;
-  if (strongToken && [_handler respondsToSelector:@selector(cancelRequest:)]) {
-    [_handler cancelRequest:strongToken];
+  id token = _requestToken;
+  if (token && [_handler respondsToSelector:@selector(cancelRequest:)]) {
+    [_handler cancelRequest:token];
   }
   [self invalidate];
 }
