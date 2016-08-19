@@ -32,6 +32,7 @@
  */
 'use strict';
 
+const I18nManager = require('I18nManager');
 
 import type  {
   NavigationSceneRendererProps,
@@ -71,7 +72,9 @@ function forCenter(props: NavigationSceneRendererProps): Object {
       {
         translateX: position.interpolate({
           inputRange: [ index - 1, index + 1 ],
-          outputRange: ([ 200, -200 ]: Array<number>),
+          outputRange: I18nManager.isRTL ?
+            ([ -200, 200 ]: Array<number>) :
+            ([ 200, -200 ]: Array<number>),
         }),
       }
     ],
