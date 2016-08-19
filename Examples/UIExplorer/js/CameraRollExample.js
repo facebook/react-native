@@ -41,15 +41,12 @@ const AssetScaledImageExampleView = require('./AssetScaledImageExample');
 
 const CAMERA_ROLL_VIEW = 'camera_roll_view';
 
-const CameraRollExample = React.createClass({
-
-  getInitialState() {
-    return {
-      groupTypes: 'SavedPhotos',
-      sliderValue: 1,
-      bigImages: true,
-    };
-  },
+class CameraRollExample extends React.Component {
+  state = {
+    groupTypes: 'SavedPhotos',
+    sliderValue: 1,
+    bigImages: true,
+  };
 
   render() {
     return (
@@ -71,9 +68,9 @@ const CameraRollExample = React.createClass({
         />
       </View>
     );
-  },
+  }
 
-  loadAsset(asset){
+  loadAsset = (asset) => {
     if (this.props.navigator) {
       this.props.navigator.push({
         title: 'Camera Roll Image',
@@ -82,9 +79,9 @@ const CameraRollExample = React.createClass({
         passProps: { asset: asset },
       });
     }
-  },
+  };
 
-  _renderImage(asset) {
+  _renderImage = (asset) => {
     const imageSize = this.state.bigImages ? 150 : 75;
     const imageStyle = [styles.image, {width: imageSize, height: imageSize}];
     const location = asset.node.location.longitude ?
@@ -105,22 +102,22 @@ const CameraRollExample = React.createClass({
         </View>
       </TouchableOpacity>
     );
-  },
+  };
 
-  _onSliderChange(value) {
+  _onSliderChange = (value) => {
     const options = CameraRoll.GroupTypesOptions;
     const index = Math.floor(value * options.length * 0.99);
     const groupTypes = options[index];
     if (groupTypes !== this.state.groupTypes) {
       this.setState({groupTypes: groupTypes});
     }
-  },
+  };
 
-  _onSwitchChange(value) {
+  _onSwitchChange = (value) => {
     this.refs[CAMERA_ROLL_VIEW].rendererChanged();
     this.setState({ bigImages: value });
-  }
-});
+  };
+}
 
 const styles = StyleSheet.create({
   row: {

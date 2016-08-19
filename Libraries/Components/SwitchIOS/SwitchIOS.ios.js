@@ -25,8 +25,8 @@ var requireNativeComponent = require('requireNativeComponent');
 var SWITCH = 'switch';
 
 type DefaultProps = {
-  value: boolean;
-  disabled: boolean;
+  value: boolean,
+  disabled: boolean,
 };
 
 type Event = Object;

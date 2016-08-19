@@ -16,6 +16,8 @@
 #import "RCTUtils.h"
 
 static const NSTimeInterval kMinimumSleepInterval = 1;
+
+// These timing contants should be kept in sync with the ones in `JSTimersExecution.js`.
 // The duration of a frame. This assumes that we want to run at 60 fps.
 static const NSTimeInterval kFrameDuration = 1.0 / 60.0;
 // The minimum time left in a frame to trigger the idle callback.
@@ -138,14 +140,6 @@ RCT_EXPORT_MODULE()
   return RCTJSThread;
 }
 
-- (NSDictionary *)constantsToExport
-{
-  return @{
-    @"frameDuration": @(kFrameDuration * 1000),
-    @"idleCallbackFrameDeadline": @(kIdleCallbackFrameDeadline * 1000),
-  };
-}
-
 - (void)invalidate
 {
   [self stopTimers];
@@ -198,7 +192,10 @@ RCT_EXPORT_MODULE()
 
   // Call timers that need to be called
   if (timersToCall.count > 0) {
-    [_bridge enqueueJSCall:@"JSTimersExecution.callTimers" args:@[timersToCall]];
+    [_bridge enqueueJSCall:@"JSTimersExecution"
+                    method:@"callTimers"
+                      args:@[timersToCall]
+                completion:NULL];
   }
 
   if (_sendIdleEvents) {
@@ -206,7 +203,10 @@ RCT_EXPORT_MODULE()
     if (kFrameDuration - frameElapsed >= kIdleCallbackFrameDeadline) {
       NSTimeInterval currentTimestamp = [[NSDate date] timeIntervalSince1970];
       NSNumber *absoluteFrameStartMS = @((currentTimestamp - frameElapsed) * 1000);
-      [_bridge enqueueJSCall:@"JSTimersExecution.callIdleCallbacks" args:@[absoluteFrameStartMS]];
+      [_bridge enqueueJSCall:@"JSTimersExecution"
+                      method:@"callIdleCallbacks"
+                        args:@[absoluteFrameStartMS]
+                  completion:NULL];
     }
   }
 

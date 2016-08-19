@@ -109,6 +109,7 @@ react_library(
   force_static = True,
   srcs = [
     'CxxMessageQueue.cpp',
+    'CxxNativeModule.cpp',
     'Executor.cpp',
     'Instance.cpp',
     'JSCExecutor.cpp',
@@ -117,6 +118,7 @@ react_library(
     'JSCLegacyTracing.cpp',
     'JSCMemory.cpp',
     'JSCPerfStats.cpp',
+    'JSCSamplingProfiler.cpp',
     'JSCTracing.cpp',
     'JSCWebWorker.cpp',
     'MethodCall.cpp',
@@ -130,10 +132,12 @@ react_library(
     'JSCLegacyTracing.h',
     'JSCMemory.h',
     'JSCPerfStats.h',
+    'JSCSamplingProfiler.h',
     'JSCTracing.h',
   ],
   exported_headers = [
     'CxxMessageQueue.h',
+    'CxxNativeModule.h',
     'Executor.h',
     'ExecutorToken.h',
     'ExecutorTokenFactory.h',
@@ -163,7 +167,9 @@ react_library(
     '-frtti',
   ] + REACT_LIBRARY_EXTRA_COMPILER_FLAGS,
   deps = [
+    ':module',
     '//xplat/fbsystrace:fbsystrace',
+    react_native_xplat_target('microprofiler:microprofiler'),
   ],
   visibility = [ 'PUBLIC' ],
 )

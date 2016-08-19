@@ -21,19 +21,19 @@ export type AlertType = $Enum<{
   /**
    * Default alert with no inputs
    */
-  'default': string;
+  'default': string,
   /**
    * Plain text input alert
    */
-  'plain-text': string;
+  'plain-text': string,
   /**
    * Secure text input alert
    */
-  'secure-text': string;
+  'secure-text': string,
   /**
    * Login and password alert
    */
-  'login-password': string;
+  'login-password': string,
 }>;
 
 /**
@@ -43,15 +43,15 @@ export type AlertButtonStyle = $Enum<{
   /**
    * Default button style
    */
-  'default': string;
+  'default': string,
   /**
    * Cancel button style
    */
-  'cancel': string;
+  'cancel': string,
   /**
    * Destructive button style
    */
-  'destructive': string;
+  'destructive': string,
 }>;
 
 /**
@@ -65,15 +65,15 @@ type ButtonsArray = Array<{
   /**
    * Button label
    */
-  text?: string;
+  text?: string,
   /**
    * Callback function when button pressed
    */
-  onPress?: ?Function;
+  onPress?: ?Function,
   /**
    * Button style
    */
-  style?: AlertButtonStyle;
+  style?: AlertButtonStyle,
 }>;
 
 /**
@@ -163,7 +163,7 @@ class AlertIOS {
    *    example). `style` should be one of 'default', 'cancel' or 'destructive'.
    * @param type This configures the text input. One of 'plain-text',
    *    'secure-text' or 'login-password'.
-   * @param defaultValue The dialog's title.
+   * @param defaultValue The default text in text input.
    *
    * @example <caption>Example with custom buttons</caption>
    *

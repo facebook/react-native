@@ -33,31 +33,32 @@ var {
 var UIExplorerBlock = require('./UIExplorerBlock');
 var UIExplorerPage = require('./UIExplorerPage');
 
-var Entity = React.createClass({
-  render: function() {
+class Entity extends React.Component {
+  render() {
     return (
       <Text style={{fontWeight: 'bold', color: '#527fe4'}}>
         {this.props.children}
       </Text>
     );
   }
-});
+}
 
-var AttributeToggler = React.createClass({
-  getInitialState: function() {
-    return {fontWeight: 'bold', fontSize: 15};
-  },
-  toggleWeight: function() {
+class AttributeToggler extends React.Component {
+  state = {fontWeight: 'bold', fontSize: 15};
+
+  toggleWeight = () => {
     this.setState({
       fontWeight: this.state.fontWeight === 'bold' ? 'normal' : 'bold'
     });
-  },
-  increaseSize: function() {
+  };
+
+  increaseSize = () => {
     this.setState({
       fontSize: this.state.fontSize + 1
     });
-  },
-  render: function() {
+  };
+
+  render() {
     var curStyle = {fontWeight: this.state.fontWeight, fontSize: this.state.fontSize};
     return (
       <View>
@@ -77,14 +78,13 @@ var AttributeToggler = React.createClass({
       </View>
     );
   }
-});
+}
 
-var TextExample = React.createClass({
-  statics: {
-    title: '<Text>',
-    description: 'Base component for rendering styled text.',
-  },
-  render: function() {
+class TextExample extends React.Component {
+  static title = '<Text>';
+  static description = 'Base component for rendering styled text.';
+
+  render() {
     return (
       <UIExplorerPage title="<Text>">
         <UIExplorerBlock title="Wrap">
@@ -400,21 +400,21 @@ var TextExample = React.createClass({
             Demo text shadow
           </Text>
         </UIExplorerBlock>
-        <UIExplorerBlock title="Line break mode">
+        <UIExplorerBlock title="Ellipsize mode">
           <Text numberOfLines={1}>
             This very long text should be truncated with dots in the end.
           </Text>
-          <Text lineBreakMode="middle" numberOfLines={1}>
+          <Text ellipsizeMode="middle" numberOfLines={1}>
             This very long text should be truncated with dots in the middle.
           </Text>
-          <Text lineBreakMode="head" numberOfLines={1}>
+          <Text ellipsizeMode="head" numberOfLines={1}>
             This very long text should be truncated with dots in the beginning.
           </Text>
         </UIExplorerBlock>
       </UIExplorerPage>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   backgroundColorText: {

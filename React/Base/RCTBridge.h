@@ -14,7 +14,6 @@
 #import "RCTDefines.h"
 #import "RCTFrameUpdate.h"
 #import "RCTInvalidating.h"
-#import "RCTJavaScriptExecutor.h"
 
 @class RCTBridge;
 @class RCTEventDispatcher;
@@ -101,6 +100,8 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * with the JavaScript code. Safe to call from any thread.
  */
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args;
+- (void)enqueueJSCall:(NSString *)module method:(NSString *)method args:(NSArray *)args completion:(dispatch_block_t)completion;
+
 
 /**
  * Retrieve a bridge module instance by name or class. Note that modules are
@@ -124,6 +125,17 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * to be instantiated if it hasn't been already.
  */
 - (BOOL)moduleIsInitialized:(Class)moduleClass;
+
+/**
+ * Call when your delegate's `whitelistedModulesForBridge:` value has changed.
+ * In response to this, the bridge will immediately instantiate any (whitelisted)
+ * native modules that require main thread initialization. Modules that do not require
+ * main thread initialization will still be created lazily.
+ *
+ * This method must be called on the main thread, as any pending native modules
+ * will be initialized immediately.
+ */
+- (void)whitelistedModulesDidChange;
 
 /**
  * All registered bridge module classes.

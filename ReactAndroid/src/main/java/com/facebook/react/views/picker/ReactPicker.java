@@ -79,6 +79,10 @@ public class ReactPicker extends Spinner {
 
   public void setOnSelectListener(@Nullable OnSelectListener onSelectListener) {
     if (getOnItemSelectedListener() == null) {
+      // onItemSelected gets fired immediately after layout because checkSelectionChanged() in
+      // AdapterView updates the selection position from the default INVALID_POSITION. To match iOS
+      // behavior, we don't want the event emitter for onItemSelected to fire right after layout.
+      mSuppressNextEvent = true;
       setOnItemSelectedListener(
           new OnItemSelectedListener() {
             @Override

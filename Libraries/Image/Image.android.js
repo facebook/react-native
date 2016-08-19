@@ -34,6 +34,11 @@ var {
   ImageLoader,
 } = NativeModules;
 
+let _requestId = 1;
+function generateRequestId() {
+  return _requestId++;
+}
+
 /**
  * <Image> - A react component for displaying different types of images,
  * including network images, static resources, temporary local images, and
@@ -125,6 +130,26 @@ var Image = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
+    /**
+     * Determines how to resize the image when the frame doesn't match the raw
+     * image dimensions.
+     *
+     * 'cover': Scale the image uniformly (maintain the image's aspect ratio)
+     * so that both dimensions (width and height) of the image will be equal
+     * to or larger than the corresponding dimension of the view (minus padding).
+     *
+     * 'contain': Scale the image uniformly (maintain the image's aspect ratio)
+     * so that both dimensions (width and height) of the image will be equal to
+     * or less than the corresponding dimension of the view (minus padding).
+     *
+     * 'stretch': Scale width and height independently, This may change the
+     * aspect ratio of the src.
+     *
+     * 'center': Scale the image down so that it is completely visible,
+     * if bigger than the area of the view.
+     * The image will not be scaled up.
+     */
+    resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch', 'center']),
   },
 
   statics: {
@@ -148,8 +173,17 @@ var Image = React.createClass({
      * Prefetches a remote image for later use by downloading it to the disk
      * cache
      */
-    prefetch(url: string) {
-      return ImageLoader.prefetchImage(url);
+    prefetch(url: string, callback: ?Function) {
+      const requestId = generateRequestId();
+      callback && callback(requestId);
+      return ImageLoader.prefetchImage(url, requestId);
+    },
+
+    /**
+     * Abort prefetch request
+     */
+    abortPrefetch(requestId: number) {
+      ImageLoader.abortRequest(requestId);
     },
   },
 

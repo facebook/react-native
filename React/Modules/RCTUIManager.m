@@ -11,7 +11,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import "Layout.h"
+#import <CSSLayout/CSSLayout.h>
 #import "RCTAccessibilityManager.h"
 #import "RCTAnimationType.h"
 #import "RCTAssert.h"
@@ -206,7 +206,7 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
 {
   // Root views are only mutated on the shadow queue
   NSMutableSet<NSNumber *> *_rootViewTags;
-  NSMutableArray<dispatch_block_t> *_pendingUIBlocks;
+  NSMutableArray<RCTViewManagerUIBlock> *_pendingUIBlocks;
 
   // Animation
   RCTLayoutAnimation *_layoutAnimation; // Main thread only
@@ -232,7 +232,7 @@ RCT_EXPORT_MODULE()
   dispatch_async(RCTGetUIManagerQueue(), ^{
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
                                                         object:self];
-    [self batchDidComplete];
+    [self setNeedsLayout];
   });
 }
 
@@ -424,11 +424,10 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
     RCTShadowView *shadowView = self->_shadowViewRegistry[reactTag];
     RCTAssert(shadowView != nil, @"Could not locate shadow view with tag #%@", reactTag);
 
-    BOOL dirtyLayout = NO;
-
+    BOOL needsLayout = NO;
     if (!CGRectEqualToRect(frame, shadowView.frame)) {
       shadowView.frame = frame;
-      dirtyLayout = YES;
+      needsLayout = YES;
     }
 
     // Trigger re-layout when size flexibility changes, as the root view might grow or
@@ -437,13 +436,12 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
       RCTRootShadowView *rootShadowView = (RCTRootShadowView *)shadowView;
       if (rootShadowView.sizeFlexibility != sizeFlexibility) {
         rootShadowView.sizeFlexibility = sizeFlexibility;
-        dirtyLayout = YES;
+        needsLayout = YES;
       }
     }
 
-    if (dirtyLayout) {
-      [shadowView dirtyLayout];
-      [self batchDidComplete];
+    if (needsLayout) {
+      [self setNeedsLayout];
     }
   });
 }
@@ -459,7 +457,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
     shadowView.intrinsicContentSize = size;
 
-    [self batchDidComplete];
+    [self setNeedsLayout];
   });
 }
 
@@ -512,15 +510,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
     return;
   }
 
-  __weak RCTUIManager *weakSelf = self;
-  dispatch_block_t outerBlock = ^{
-    RCTUIManager *strongSelf = weakSelf;
-    if (strongSelf && strongSelf->_viewRegistry) {
-      block(strongSelf, strongSelf->_viewRegistry);
-    }
-  };
-
-  [_pendingUIBlocks addObject:outerBlock];
+  [_pendingUIBlocks addObject:block];
 }
 
 - (RCTViewManagerUIBlock)uiBlockWithLayoutUpdateForRootView:(RCTRootShadowView *)rootShadowView
@@ -1152,7 +1142,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
   // First copy the previous blocks into a temporary variable, then reset the
   // pending blocks to a new array. This guards against mutation while
   // processing the pending blocks in another thread.
-  NSArray<dispatch_block_t> *previousPendingUIBlocks = _pendingUIBlocks;
+  NSArray<RCTViewManagerUIBlock> *previousPendingUIBlocks = _pendingUIBlocks;
   _pendingUIBlocks = [NSMutableArray new];
 
   if (previousPendingUIBlocks.count) {
@@ -1162,8 +1152,8 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
       RCTProfileEndFlowEvent();
       RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[UIManager flushUIBlocks]", nil);
       @try {
-        for (dispatch_block_t block in previousPendingUIBlocks) {
-          block();
+        for (RCTViewManagerUIBlock block in previousPendingUIBlocks) {
+          block(self, self->_viewRegistry);
         }
       }
       @catch (NSException *exception) {
@@ -1240,6 +1230,26 @@ RCT_EXPORT_METHOD(measureInWindow:(nonnull NSNumber *)reactTag
       @(windowFrame.size.height),
     ]);
   }];
+}
+
+/**
+ * Returs if the shadow view provided has the `ancestor` shadow view as
+ * an actual ancestor.
+ */
+RCT_EXPORT_METHOD(viewIsDescendantOf:(nonnull NSNumber *)reactTag
+                  ancestor:(nonnull NSNumber *)ancestorReactTag
+                  callback:(RCTResponseSenderBlock)callback)
+{
+  RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
+  RCTShadowView *ancestorShadowView = _shadowViewRegistry[ancestorReactTag];
+  if (!shadowView) {
+    return;
+  }
+  if (!ancestorShadowView) {
+    return;
+  }
+  BOOL viewIsAncestor = [shadowView viewIsDescendantOf:ancestorShadowView];
+  callback(@[@(viewIsAncestor)]);
 }
 
 static void RCTMeasureLayout(RCTShadowView *view,

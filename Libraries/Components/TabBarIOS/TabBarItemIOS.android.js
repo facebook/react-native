@@ -15,8 +15,8 @@ var React = require('React');
 var View = require('View');
 var StyleSheet = require('StyleSheet');
 
-var DummyTab = React.createClass({
-  render: function() {
+class DummyTab extends React.Component {
+  render() {
     if (!this.props.selected) {
       return <View />;
     }
@@ -26,7 +26,7 @@ var DummyTab = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   tab: {

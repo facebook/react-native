@@ -19,8 +19,8 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
   public static final String EVENT_NAME = "topRequestClose";
 
-  protected RequestCloseEvent(int viewTag, long timestampMs) {
-    super(viewTag, timestampMs);
+  protected RequestCloseEvent(int viewTag) {
+    super(viewTag);
   }
 
   @Override

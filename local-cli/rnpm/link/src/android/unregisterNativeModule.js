@@ -1,12 +1,12 @@
 const fs = require('fs');
-const getReactVersion = require('../getReactNativeVersion');
-const getPrefix = require('./getPrefix');
 const toCamelCase = require('lodash').camelCase;
 
 const revokePatch = require('./patches/revokePatch');
 const makeSettingsPatch = require('./patches/makeSettingsPatch');
 const makeBuildPatch = require('./patches/makeBuildPatch');
 const makeStringsPatch = require('./patches/makeStringsPatch');
+const makeImportPatch = require('./patches/makeImportPatch');
+const makePackagePatch = require('./patches/makePackagePatch');
 
 module.exports = function unregisterNativeAndroidModule(
   name,
@@ -14,9 +14,6 @@ module.exports = function unregisterNativeAndroidModule(
   projectConfig
 ) {
   const buildPatch = makeBuildPatch(name);
-  const prefix = getPrefix(getReactVersion(projectConfig.folder));
-  const makeImportPatch = require(`./${prefix}/makeImportPatch`);
-  const makePackagePatch = require(`./${prefix}/makePackagePatch`);
   const strings = fs.readFileSync(projectConfig.stringsPath, 'utf8');
   var params = {};
 
@@ -36,12 +33,12 @@ module.exports = function unregisterNativeAndroidModule(
   revokePatch(projectConfig.stringsPath, makeStringsPatch(params, name));
 
   revokePatch(
-    projectConfig.mainActivityPath,
+    projectConfig.mainFilePath,
     makePackagePatch(androidConfig.packageInstance, params, name)
   );
 
   revokePatch(
-    projectConfig.mainActivityPath,
+    projectConfig.mainFilePath,
     makeImportPatch(androidConfig.packageImportPath)
   );
 };

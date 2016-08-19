@@ -39,12 +39,15 @@ const MAX_QUICK_ACTIONS = 2;
  *   <SwipeableQuickActionButton {..props} />
  * </SwipeableQuickActions>
  */
-const SwipeableQuickActions = React.createClass({
-  propTypes: {
+class SwipeableQuickActions extends React.Component {
+  props: {style?: $FlowFixMe};
+
+  static propTypes = {
     style: View.propTypes.style,
-  },
+  };
 
   render(): ReactElement<any> {
+    // $FlowFixMe found when converting React.createClass to ES6
     const children = this.props.children;
     let buttons = [];
 
@@ -53,6 +56,7 @@ const SwipeableQuickActions = React.createClass({
       for (let i = 0; i < children.length && i < MAX_QUICK_ACTIONS; i++) {
         buttons.push(children[i]);
 
+        // $FlowFixMe found when converting React.createClass to ES6
         if (i < this.props.children.length - 1) { // Not last button
           buttons.push(<View key={i} style={styles.divider} />);
         }
@@ -66,8 +70,8 @@ const SwipeableQuickActions = React.createClass({
         {buttons}
       </View>
     );
-  },
-});
+  }
+}
 
 const styles = StyleSheet.create({
   background: {
