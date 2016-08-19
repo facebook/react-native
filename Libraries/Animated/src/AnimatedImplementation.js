@@ -351,6 +351,7 @@ class DecayAnimation extends Animation {
   _velocity: number;
   _onUpdate: (value: number) => void;
   _animationFrame: any;
+  _useNativeDriver: bool;
 
   constructor(
     config: DecayAnimationConfigSingle,
@@ -358,13 +359,24 @@ class DecayAnimation extends Animation {
     super();
     this._deceleration = config.deceleration !== undefined ? config.deceleration : 0.998;
     this._velocity = config.velocity;
+    this._useNativeDriver = config.useNativeDriver !== undefined ? config.useNativeDriver : false;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
+  }
+
+  __getNativeAnimationConfig() {
+    return {
+      type: 'decay',
+      deceleration: this._deceleration,
+      velocity: this._velocity,
+    };
   }
 
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
     onEnd: ?EndCallback,
+    previousAnimation: ?Animation,
+    animatedValue: AnimatedValue,
   ): void {
     this.__active = true;
     this._lastValue = fromValue;
@@ -372,7 +384,11 @@ class DecayAnimation extends Animation {
     this._onUpdate = onUpdate;
     this.__onEnd = onEnd;
     this._startTime = Date.now();
-    this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
+    if (this._useNativeDriver) {
+      this.__startNativeAnimation(animatedValue);
+    } else {
+      this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
+    }
   }
 
   onUpdate(): void {
