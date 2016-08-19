@@ -12,7 +12,11 @@ package com.facebook.react.views.art;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Color;
 import android.view.Surface;
+import android.graphics.PorterDuff;
+import android.graphics.SurfaceTexture;
+import android.view.TextureView;
 
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.UIViewOperationQueue;
@@ -21,13 +25,9 @@ import com.facebook.react.uimanager.ReactShadowNode;
 /**
  * Shadow node for ART virtual tree root - ARTSurfaceView
  */
-public class ARTSurfaceViewShadowNode extends LayoutShadowNode {
+public class ARTSurfaceViewShadowNode extends LayoutShadowNode implements TextureView.SurfaceTextureListener {
 
   private Surface mSurface;
-
-  public void setSurface(Surface surface) {
-    mSurface = surface;
-  }
 
   @Override
   public boolean isVirtual() {
@@ -43,6 +43,7 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode {
   public void onCollectExtraUpdates(UIViewOperationQueue uiUpdater) {
     super.onCollectExtraUpdates(uiUpdater);
     drawOutput();
+    uiUpdater.enqueueUpdateExtraData(getReactTag(), this);
   }
 
   private void drawOutput() {
@@ -51,7 +52,8 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode {
       return;
     }
 
-    Canvas canvas = mSurface.lockHardwareCanvas();
+    Canvas canvas = mSurface.lockCanvas(null);
+    canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 
     Paint paint = new Paint();
     for (int i = 0; i < getChildCount(); i++) {
@@ -70,4 +72,16 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode {
         markChildrenUpdatesSeen(child);
       }
   }
+
+  public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+      mSurface = new Surface(surface);
+  }
+
+  public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+      mSurface = null;
+      return true;
+  }
+
+  public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {}
+  public void onSurfaceTextureUpdated(SurfaceTexture surface) {}
 }

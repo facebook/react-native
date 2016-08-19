@@ -11,8 +11,6 @@ package com.facebook.react.views.art;
 
 import android.graphics.Bitmap;
 import android.view.TextureView;
-import android.view.Surface;
-import android.graphics.SurfaceTexture;
 
 import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNodeAPI;
@@ -25,7 +23,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
  * invalidating the native view on shadow view updates happening in the underlying tree.
  */
 public class ARTSurfaceViewManager extends
-    BaseViewManager<ARTSurfaceView, ARTSurfaceViewShadowNode> implements TextureView.SurfaceTextureListener {
+    BaseViewManager<ARTSurfaceView, ARTSurfaceViewShadowNode> {
 
   private ARTSurfaceViewShadowNode mShadowNode;
 
@@ -63,23 +61,13 @@ public class ARTSurfaceViewManager extends
 
   @Override
   protected ARTSurfaceView createViewInstance(ThemedReactContext reactContext) {
-    ARTSurfaceView node = new ARTSurfaceView(reactContext);
-    node.setSurfaceTextureListener(this);
+    ARTSurfaceView node = new ARTSurfaceView(reactContext);    
     return node;
   }
 
   @Override
-  public void updateExtraData(ARTSurfaceView root, Object extraData) {}
-
-  public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-      mShadowNode.setSurface(new Surface(surface));
+  public void updateExtraData(ARTSurfaceView root, Object extraData) {
+    ARTSurfaceViewShadowNode shadowNode = (ARTSurfaceViewShadowNode)extraData;
+    root.setSurfaceTextureListener(shadowNode);
   }
-
-  public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-      mShadowNode.setSurface(null);
-      return true;
-  }
-
-  public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {}
-  public void onSurfaceTextureUpdated(SurfaceTexture surface) {}
 }
