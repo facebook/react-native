@@ -554,16 +554,6 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   }
 
   /**
-   * Set a default padding (left/top/right/bottom) for this node.
-   */
-  @Override
-  public void setDefaultPadding(int spacingType, float padding) {
-    if (style.padding.setDefault(spacingType, padding)) {
-      dirty();
-    }
-  }
-
-  /**
    * Get this node's overflow property, as defined in the style
    */
   @Override

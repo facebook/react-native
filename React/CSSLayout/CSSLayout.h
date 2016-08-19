@@ -11,9 +11,9 @@
 
 #include <assert.h>
 #include <math.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifndef __cplusplus
 #include <stdbool.h>
@@ -21,8 +21,8 @@
 
 // Not defined in MSVC++
 #ifndef NAN
-static const unsigned long __nan[2] = { 0xffffffff, 0x7fffffff };
-#define NAN (*(const float *)__nan)
+static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
+#define NAN (*(const float *) __nan)
 #endif
 
 #define CSSUndefined NAN
@@ -77,18 +77,6 @@ typedef enum CSSWrapType {
   CSSWrapTypeWrap,
 } CSSWrapType;
 
-// Note: left and top are shared between position[2] and position[4], so
-// they have to be before right and bottom.
-typedef enum CSSPosition {
-  CSSPositionLeft,
-  CSSPositionTop,
-  CSSPositionRight,
-  CSSPositionBottom,
-  CSSPositionStart,
-  CSSPositionEnd,
-  CSSPositionCount,
-} CSSPosition;
-
 typedef enum CSSMeasureMode {
   CSSMeasureModeUndefined,
   CSSMeasureModeExactly,
@@ -100,6 +88,19 @@ typedef enum CSSDimension {
   CSSDimensionWidth,
   CSSDimensionHeight,
 } CSSDimension;
+
+typedef enum CSSEdge {
+  CSSEdgeLeft,
+  CSSEdgeTop,
+  CSSEdgeRight,
+  CSSEdgeBottom,
+  CSSEdgeStart,
+  CSSEdgeEnd,
+  CSSEdgeHorizontal,
+  CSSEdgeVertical,
+  CSSEdgeAll,
+  CSSEdgeCount,
+} CSSEdge;
 
 typedef enum CSSPrintOptions {
   CSSPrintOptionsLayout = 1,
@@ -113,8 +114,11 @@ typedef struct CSSSize {
 } CSSSize;
 
 typedef struct CSSNode *CSSNodeRef;
-typedef CSSSize (*CSSMeasureFunc)(
-    void *context, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode);
+typedef CSSSize (*CSSMeasureFunc)(void *context,
+                                  float width,
+                                  CSSMeasureMode widthMode,
+                                  float height,
+                                  CSSMeasureMode heightMode);
 typedef void (*CSSPrintFunc)(void *context);
 
 // CSSNode
@@ -127,8 +131,10 @@ void CSSNodeRemoveChild(CSSNodeRef node, CSSNodeRef child);
 CSSNodeRef CSSNodeGetChild(CSSNodeRef node, uint32_t index);
 uint32_t CSSNodeChildCount(CSSNodeRef node);
 
-void CSSNodeCalculateLayout(
-    CSSNodeRef node, float availableWidth, float availableHeight, CSSDirection parentDirection);
+void CSSNodeCalculateLayout(CSSNodeRef node,
+                            float availableWidth,
+                            float availableHeight,
+                            CSSDirection parentDirection);
 
 // Mark a node as dirty. Only valid for nodes with a custom measure function
 // set.
@@ -143,13 +149,17 @@ void CSSNodePrint(CSSNodeRef node, CSSPrintOptions options);
 
 bool CSSValueIsUndefined(float value);
 
-#define CSS_NODE_PROPERTY(type, name, paramName)                                                   \
-  void CSSNodeSet##name(CSSNodeRef node, type paramName);                                          \
+#define CSS_NODE_PROPERTY(type, name, paramName)          \
+  void CSSNodeSet##name(CSSNodeRef node, type paramName); \
   type CSSNodeGet##name(CSSNodeRef node);
 
-#define CSS_NODE_STYLE_PROPERTY(type, name, paramName)                                             \
-  void CSSNodeStyleSet##name(CSSNodeRef node, type paramName);                                     \
+#define CSS_NODE_STYLE_PROPERTY(type, name, paramName)         \
+  void CSSNodeStyleSet##name(CSSNodeRef node, type paramName); \
   type CSSNodeStyleGet##name(CSSNodeRef node);
+
+#define CSS_NODE_STYLE_EDGE_PROPERTY(type, name, paramName)                  \
+  void CSSNodeStyleSet##name(CSSNodeRef node, CSSEdge edge, type paramName); \
+  type CSSNodeStyleGet##name(CSSNodeRef node, CSSEdge edge);
 
 #define CSS_NODE_LAYOUT_PROPERTY(type, name) type CSSNodeLayoutGet##name(CSSNodeRef node);
 
@@ -169,34 +179,14 @@ CSS_NODE_STYLE_PROPERTY(CSSPositionType, PositionType, positionType);
 CSS_NODE_STYLE_PROPERTY(CSSWrapType, FlexWrap, flexWrap);
 CSS_NODE_STYLE_PROPERTY(CSSOverflow, Overflow, overflow);
 CSS_NODE_STYLE_PROPERTY(float, Flex, flex);
+CSS_NODE_STYLE_PROPERTY(float, FlexGrow, flexGrow);
+CSS_NODE_STYLE_PROPERTY(float, FlexShrink, flexShrink);
+CSS_NODE_STYLE_PROPERTY(float, FlexBasis, flexBasis);
 
-CSS_NODE_STYLE_PROPERTY(float, PositionLeft, positionLeft);
-CSS_NODE_STYLE_PROPERTY(float, PositionTop, positionTop);
-CSS_NODE_STYLE_PROPERTY(float, PositionRight, positionRight);
-CSS_NODE_STYLE_PROPERTY(float, PositionBottom, positionBottom);
-CSS_NODE_STYLE_PROPERTY(float, PositionStart, positionStart);
-CSS_NODE_STYLE_PROPERTY(float, PositionEnd, positionEnd);
-
-CSS_NODE_STYLE_PROPERTY(float, MarginLeft, marginLeft);
-CSS_NODE_STYLE_PROPERTY(float, MarginTop, marginTop);
-CSS_NODE_STYLE_PROPERTY(float, MarginRight, marginRight);
-CSS_NODE_STYLE_PROPERTY(float, MarginBottom, marginBottom);
-CSS_NODE_STYLE_PROPERTY(float, MarginStart, marginStart);
-CSS_NODE_STYLE_PROPERTY(float, MarginEnd, marginEnd);
-
-CSS_NODE_STYLE_PROPERTY(float, PaddingLeft, paddingLeft);
-CSS_NODE_STYLE_PROPERTY(float, PaddingTop, paddingTop);
-CSS_NODE_STYLE_PROPERTY(float, PaddingRight, paddingRight);
-CSS_NODE_STYLE_PROPERTY(float, PaddingBottom, paddingBottom);
-CSS_NODE_STYLE_PROPERTY(float, PaddingStart, paddingStart);
-CSS_NODE_STYLE_PROPERTY(float, PaddingEnd, paddingEnd);
-
-CSS_NODE_STYLE_PROPERTY(float, BorderLeft, borderLeft);
-CSS_NODE_STYLE_PROPERTY(float, BorderTop, borderTop);
-CSS_NODE_STYLE_PROPERTY(float, BorderRight, borderRight);
-CSS_NODE_STYLE_PROPERTY(float, BorderBottom, borderBottom);
-CSS_NODE_STYLE_PROPERTY(float, BorderStart, borderStart);
-CSS_NODE_STYLE_PROPERTY(float, BorderEnd, borderEnd);
+CSS_NODE_STYLE_EDGE_PROPERTY(float, Position, position);
+CSS_NODE_STYLE_EDGE_PROPERTY(float, Margin, margin);
+CSS_NODE_STYLE_EDGE_PROPERTY(float, Padding, padding);
+CSS_NODE_STYLE_EDGE_PROPERTY(float, Border, border);
 
 CSS_NODE_STYLE_PROPERTY(float, Width, width);
 CSS_NODE_STYLE_PROPERTY(float, Height, height);

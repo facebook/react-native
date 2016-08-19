@@ -65,21 +65,24 @@ var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
  * Minimal example:
  *
  * ```
- * getInitialState: function() {
- *   var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
- *   return {
- *     dataSource: ds.cloneWithRows(['row 1', 'row 2']),
- *   };
- * },
+ * class MyComponent extends Component {
+ *   constructor() {
+ *     super();
+ *     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+ *     this.state = {
+ *       dataSource: ds.cloneWithRows(['row 1', 'row 2']),
+ *     };
+ *   }
  *
- * render: function() {
- *   return (
- *     <ListView
- *       dataSource={this.state.dataSource}
- *       renderRow={(rowData) => <Text>{rowData}</Text>}
- *     />
- *   );
- * },
+ *   render() {
+ *     return (
+ *       <ListView
+ *         dataSource={this.state.dataSource}
+ *         renderRow={(rowData) => <Text>{rowData}</Text>}
+ *       />
+ *     );
+ *   }
+ * }
  * ```
  *
  * ListView also supports more advanced features, including sections with sticky

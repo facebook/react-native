@@ -21,7 +21,7 @@ static void *RCTCustomLibraryHandler(void)
   static dispatch_once_t token;
   static void *handler;
   dispatch_once(&token, ^{
-    handler = dlopen("@executable_path/Frameworks/JavaScriptCore.framework/JavaScriptCore", RTLD_LAZY);
+    handler = dlopen("@executable_path/Frameworks/JSC.framework/JSC", RTLD_LAZY | RTLD_LOCAL);
     if (!handler) {
       const char *err = dlerror();
 
@@ -93,7 +93,7 @@ static void RCTSetUpCustomLibraryPointers(RCTJSCWrapper *wrapper)
 RCTJSCWrapper *RCTJSCWrapperCreate(BOOL useCustomJSC)
 {
   RCTJSCWrapper *wrapper = (RCTJSCWrapper *)malloc(sizeof(RCTJSCWrapper));
-  if (useCustomJSC && [UIDevice currentDevice].systemVersion.floatValue >= 8) {
+  if (useCustomJSC) {
     RCTSetUpCustomLibraryPointers(wrapper);
   } else {
     RCTSetUpSystemLibraryPointers(wrapper);

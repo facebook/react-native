@@ -139,6 +139,8 @@ import javax.annotation.Nullable;
       animation = new FrameBasedAnimationDriver(animationConfig);
     } else if ("spring".equals(type)) {
       animation = new SpringAnimation(animationConfig);
+    } else if ("decay".equals(type)) {
+      animation = new DecayAnimation(animationConfig);
     } else {
       throw new JSApplicationIllegalArgumentException("Unsupported animation type: " + type);
     }

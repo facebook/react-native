@@ -81,6 +81,7 @@ class Table extends React.Component { // eslint-disable-line no-unused-vars
     this.state = {
       aggrow: props.aggrow,
       viewport: { top: 0, height: 100 },
+      cursor: 0,
     };
   }
 
@@ -88,9 +89,88 @@ class Table extends React.Component { // eslint-disable-line no-unused-vars
     const viewport = e.target;
     const top = Math.floor((viewport.scrollTop - viewport.clientHeight * 1.0) / rowHeight);
     const height = Math.ceil(viewport.clientHeight * 3.0 / rowHeight);
-    this.state.viewport.top = top;
-    this.state.viewport.height = height;
-    this.forceUpdate();
+    if (top !== this.state.viewport.top || height !== this.state.viewport.height) {
+      this.setState({viewport: {top, height}});
+    }
+  }
+
+  _contractRow(row) {
+    let newCursor = this.state.cursor;
+    if (newCursor > row.top && newCursor < row.top + row.height) { // in contracted section
+      newCursor = row.top;
+    } else if (newCursor >= row.top + row.height) { // below contracted section
+      newCursor -= row.height - 1;
+    }
+    this.state.aggrow.contract(row);
+    this.setState({cursor: newCursor});
+  }
+
+  _expandRow(row) {
+    let newCursor = this.state.cursor;
+    this.state.aggrow.expand(row);
+    if (newCursor > row.top) {  // below expanded section
+      newCursor += row.height - 1;
+    }
+    this.setState({cursor: newCursor});
+  }
+
+  _scrollDiv: null;
+
+  _keepCursorInViewport() {
+    if (this._scrollDiv) {
+      const cursor = this.state.cursor;
+      const scrollDiv = this._scrollDiv;
+      if (cursor * rowHeight < scrollDiv.scrollTop + scrollDiv.clientHeight * 0.1) {
+        scrollDiv.scrollTop = cursor * rowHeight - scrollDiv.clientHeight * 0.1;
+      } else if ((cursor + 1) * rowHeight > scrollDiv.scrollTop + scrollDiv.clientHeight * 0.9) {
+        scrollDiv.scrollTop = (cursor + 1) * rowHeight - scrollDiv.clientHeight * 0.9;
+      }
+    }
+  }
+
+  keydown(e) {
+    const aggrow = this.state.aggrow;
+    let cursor = this.state.cursor;
+    let row = aggrow.getRows(cursor, 1)[0];
+    switch (e.keyCode) {
+      case 38: // up
+        if (cursor > 0) {
+          this.setState({cursor: cursor - 1});
+          this._keepCursorInViewport();
+        }
+        e.preventDefault();
+        break;
+      case 40: // down
+        if (cursor < aggrow.getHeight() - 1) {
+          this.setState({cursor: cursor + 1});
+          this._keepCursorInViewport();
+        }
+        e.preventDefault();
+        break;
+      case 37: // left
+        if (aggrow.canContract(row)) {
+          this._contractRow(row);
+        } else if (aggrow.getRowIndent(row) > 0) {
+          const indent = aggrow.getRowIndent(row) - 1;
+          while (aggrow.getRowIndent(row) > indent) {
+            cursor--;
+            row = aggrow.getRows(cursor, 1)[0];
+          }
+          this.setState({cursor: cursor});
+          this._keepCursorInViewport();
+        }
+        e.preventDefault();
+        break;
+      case 39: // right
+        if (aggrow.canExpand(row)) {
+          this._expandRow(row);
+        } else if (cursor < aggrow.getHeight() - 1) {
+          this.setState({cursor: cursor + 1});
+          this._keepCursorInViewport();
+        }
+        e.preventDefault();
+        break;
+    }
   }
 
   dropAggregator(s, d) {
@@ -114,7 +194,7 @@ class Table extends React.Component { // eslint-disable-line no-unused-vars
       active.splice(sIndex, 1);
       active.splice(dIndex, 0, dragged);
       aggrow.setActiveAggregators(active);
-      this.forceUpdate();
+      this.setState({cursor:0});
     } else if (s.startsWith('expander:active:')) {
       const sIndex = parseInt(s.substr(16), 10);
       let dIndex = -1;
@@ -133,7 +213,7 @@ class Table extends React.Component { // eslint-disable-line no-unused-vars
       active.splice(sIndex, 1);
       active.splice(dIndex, 0, dragged);
       aggrow.setActiveExpanders(active);
-      this.forceUpdate();
+      this.setState({cursor:0});
     }
   }
 
@@ -218,11 +298,14 @@ class Table extends React.Component { // eslint-disable-line no-unused-vars
         }}>
           {headers}
         </div>
-        <div style={{
-          width: '100%',
-          flexGrow: '1',
-          overflow: 'scroll'
-        }} onScroll={ (e) => this.scroll(e) }>
+        <div
+          style={{
+            width: '100%',
+            flexGrow: '1',
+            overflow: 'scroll'
+          }}
+          onScroll={ (e) => this.scroll(e) }
+          ref={(div) => { this._scrollDiv = div; } }>
           <div style={{ position: 'relative' }}>
             { this.renderVirtualizedRows() }
           </div>
@@ -259,6 +342,9 @@ class Table extends React.Component { // eslint-disable-line no-unused-vars
     if (row.parent !== null && (row.parent.expander % 2 === 0)) {
       bg = 'white';
     }
+    if (row.top === this.state.cursor) {
+      bg = 'lightblue';
+    }
     for (let i = 0; i < aggregates.length; i++) {
       var aggregate = aggrow.getRowAggregate(row, i);
       columns.push((
@@ -288,43 +374,77 @@ class Table extends React.Component { // eslint-disable-line no-unused-vars
       }}></div>
     ));
     if (aggrow.canExpand(row)) {
-      rowText += '+';
+      columns.push((
+        <div
+          style={{
+            marginLeft: indent.toString() + 'px',
+            flexShrink: '0',
+            width: '12px',
+            textAlign: 'center',
+            border: '1px solid gray',
+          }}
+          onClick={ () => this._expandRow(row) }
+        >+</div>
+      ));
     } else if (aggrow.canContract(row)) {
-      rowText += '-';
+      columns.push((
+        <div
+          style={{
+            marginLeft: indent.toString() + 'px',
+            flexShrink: '0',
+            width: '12px',
+            textAlign: 'center',
+            border: '1px solid gray',
+          }}
+          onClick={ () => this._contractRow(row) }
+        >-</div>
+      ));
     } else {
-      rowText += ' ';
+      columns.push((
+        <div
+          style={{
+            marginLeft: indent.toString() + 'px',
+          }}
+        ></div>
+      ));
     }
     rowText += aggrow.getRowLabel(row);
     columns.push((
       <div style={{
-        marginLeft: indent.toString() + 'px',
         flexShrink: '0',
-        whiteSpace: 'nowrap'
+        whiteSpace: 'nowrap',
+        marginRight: '20px'
       }}>
         {rowText}
       </div>
     ));
     return (
-      <div style={{
+      <div
+        key={row.top}
+        style={{
           position: 'absolute',
           height: (rowHeight - 1).toString() + 'px',
           top: (rowHeight * row.top).toString() + 'px',
           display: 'flex',
           flexDirection: 'row',
+          alignItems: 'center',
           backgroundColor: bg,
           borderBottom: '1px solid gray',
         }}
         onClick={ () => {
-          if (aggrow.canExpand(row)) {
-            aggrow.expand(row);
-            this.forceUpdate();
-          } else if (aggrow.canContract(row)) {
-            aggrow.contract(row);
-            this.forceUpdate();
-          }
+          this.setState({cursor: row.top});
         }}>
         {columns}
       </div>
     );
+  }
+
+  componentDidMount() {
+    this.keydown = this.keydown.bind(this);
+    document.body.addEventListener('keydown', this.keydown);
+  }
+
+  componentWillUnmount() {
+    document.body.removeEventListener('keydown', this.keydown);
   }
 }

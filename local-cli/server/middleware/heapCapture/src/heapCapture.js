@@ -10,11 +10,73 @@
 /*eslint no-console-disallow: "off"*/
 /*global React ReactDOM Table stringInterner stackRegistry aggrow preLoadedCapture:true*/
 
+function getTypeName(ref) {
+  if (ref.type === 'Function' && !!ref.value) {
+    return 'Function ' + ref.value.name;
+  }
+  return ref.type;
+}
+
+function idGetProp(refs, id, prop) {
+  const ref = refs[id];
+  if (ref && ref.edges) {
+    const edges = ref.edges;
+    for (const edgeId in edges) {
+      if (edges[edgeId] === prop) {
+        return edgeId;
+      }
+    }
+  }
+  return undefined;
+}
+
+function idPropForEach(refs, id, callback) {
+  const ref = refs[id];
+  if (ref && ref.edges) {
+    const edges = ref.edges;
+    for (const edgeId in edges) {
+      callback(edges[edgeId], edgeId);
+    }
+  }
+}
+
+function getInternalInstanceName(refs, id) {
+  const elementId = idGetProp(refs, id, '_currentElement');
+  const typeId = idGetProp(refs, elementId, 'type');
+  const typeRef = refs[typeId];
+  if (typeRef) {
+    if (typeRef.type === 'string') {  // element.type is string
+      if (typeRef.value) {
+        return typeRef.value;
+      }
+    } else if (typeRef.type === 'Function') { // element.type is function
+      const displayNameId = idGetProp(refs, typeId, 'displayName');
+      if (displayNameId) {
+        const displayNameRef = refs[displayNameId];
+        if (displayNameRef && displayNameRef.value) {
+          return displayNameRef.value;  // element.type.displayName
+        }
+      }
+      const nameId = idGetProp(refs, typeId, 'name');
+      if (nameId) {
+        const nameRef = refs[nameId];
+        if (nameRef && nameRef.value) {
+          return nameRef.value; // element.type.name
+        }
+      }
+      if (typeRef.value && typeRef.value.name) {
+        return typeRef.value.name;  // element.type symbolicated function name
+      }
+    }
+  }
+  return '#unknown';
+}
+
 function registerReactComponentTreeImpl(refs, registry, parents, inEdgeNames, trees, id) {
   if (parents[id] === undefined) {
     // not a component
   } else if (parents[id] === null) {
-    trees[id] = registry.insert(registry.root, '<internalInstance>');
+    trees[id] = registry.insert(registry.root, getInternalInstanceName(refs, id));
   } else {
     const parent = parents[id];
     const inEdgeName = inEdgeNames[id];
@@ -39,32 +101,29 @@ function registerReactComponentTree(refs, registry) {
   const parents = {};
   const inEdgeNames = {};
   for (const id in refs) {
-    const ref = refs[id];
-    for (const linkId in ref.edges) {
-      if (linkId !== '0x0') {
-        const name = ref.edges[linkId];
+    idPropForEach(refs, id, (name, propId) => {
+      if (propId !== '0x0') {
         if (name === '_renderedChildren') {
           if (parents[id] === undefined) {
             // mark that we are a react component, even if we don't have a parent
             parents[id] = null;
           }
-          const childrenRef = refs[linkId];
-          for (const childId in childrenRef.edges) {
-            const linkName = childrenRef.edges[childId];
-            if (linkName.startsWith('.')) {
-              parents[childId] = id;
-              inEdgeNames[childId] = linkName;
+          idPropForEach(refs, propId, (childName, childPropId) => {
+            if (childName.startsWith('.')) {
+              parents[childPropId] = id;
+              inEdgeNames[childPropId] = childName + ': '
+                + getInternalInstanceName(refs, childPropId);
             }
-          }
+          });
         } else if (name === '_renderedComponent') {
           if (parents[id] === undefined) {
             parents[id] = null;
           }
-          parents[linkId] = id;
-          inEdgeNames[linkId] = '_renderedComponent';
+          parents[propId] = id;
+          inEdgeNames[propId] = getInternalInstanceName(refs, propId);
         }
       }
-    }
+    });
   }
   // build tree of react internal instances (since that's what has the structure)
   const trees = {};
@@ -73,14 +132,9 @@ function registerReactComponentTree(refs, registry) {
   }
   // hook in components by looking at their _reactInternalInstance fields
   for (const id in refs) {
-    const ref = refs[id];
-    for (const linkId in ref.edges) {
-      const name = ref.edges[linkId];
-      if (name === '_reactInternalInstance') {
-        if (trees[linkId] !== undefined) {
-          trees[id] = registry.insert(trees[linkId], '<component>');
-        }
-      }
+    const internalInstance = idGetProp(refs, id, '_reactInternalInstance');
+    if (internalInstance && trees[internalInstance]) {
+      trees[id] = trees[internalInstance];
     }
   }
   return trees;
@@ -93,7 +147,7 @@ function registerPathToRoot(roots, refs, registry, reactComponentTree) {
     const id = roots[i];
     if (visited[id] === undefined) {
       const ref = refs[id];
-      visited[id] = registry.insert(registry.root, ref.type);
+      visited[id] = registry.insert(registry.root, getTypeName(ref));
       breadth.push(id);
     }
   }
@@ -133,7 +187,7 @@ function registerPathToRoot(roots, refs, registry, reactComponentTree) {
             // TODO: figure out why we have edges that point to things not JSCell
             //console.log('registerPathToRoot unable to follow edge from ' + id + ' to ' + edgeId);
           } else {
-            visited[edgeId] = registry.insert(node, edgeName + edgeRef.type);
+            visited[edgeId] = registry.insert(node, edgeName + getTypeName(edgeRef));
             nextBreadth.push(edgeId);
             if (reactComponentTree[edgeId] === undefined) {
               reactComponentTree[edgeId] = reactComponentTree[id];
@@ -171,6 +225,9 @@ function captureRegistry() {
       for (const id in capture.refs) { // eslint-disable-line no-unused-vars
         rowCount++;
       }
+      for (const id in capture.markedBlocks) { // eslint-disable-line no-unused-vars
+        rowCount++;
+      }
       console.log(
         'increasing row data from ' + (this.data.length * 4).toString() + 'B to ' +
         (this.data.length * 4 + rowCount * numFields * 4).toString() + 'B'
@@ -191,7 +248,7 @@ function captureRegistry() {
       for (const id in capture.refs) {
         const ref = capture.refs[id];
         newData[dataOffset + idField] = parseInt(id, 16);
-        newData[dataOffset + typeField] = this.strings.intern(ref.type);
+        newData[dataOffset + typeField] = this.strings.intern(getTypeName(ref));
         newData[dataOffset + sizeField] = ref.size;
         newData[dataOffset + traceField] = internedCaptureId;
         const pathNode = rootPathMap[id];
@@ -206,6 +263,16 @@ function captureRegistry() {
         } else {
           newData[dataOffset + reactField] = reactTree.id;
         }
+        dataOffset += numFields;
+      }
+      for (const id in capture.markedBlocks) {
+        const block = capture.markedBlocks[id];
+        newData[dataOffset + idField] = parseInt(id, 16);
+        newData[dataOffset + typeField] = this.strings.intern('Marked Block Overhead');
+        newData[dataOffset + sizeField] = block.capacity - block.size;
+        newData[dataOffset + traceField] = internedCaptureId;
+        newData[dataOffset + pathField] = this.stacks.root;
+        newData[dataOffset + reactField] = this.stacks.root;
         dataOffset += numFields;
       }
       this.data = newData;
