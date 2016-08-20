@@ -15,6 +15,7 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
@@ -92,7 +93,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
                                                object:self];
 
     if (!_bridge.loading) {
-      [self bundleFinishedLoading:_bridge];
+      [self bundleFinishedLoading:[_bridge batchedBridge]];
     }
 
     [self showLoadingView];
@@ -199,6 +200,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)javaScriptDidLoad:(NSNotification *)notification
 {
   RCTAssertMainQueue();
+
+  // Use the (batched) bridge that's sent in the notification payload, so the
+  // RCTRootContentView is scoped to the right bridge
   RCTBridge *bridge = notification.userInfo[@"bridge"];
   [self bundleFinishedLoading:bridge];
 }
@@ -213,11 +217,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds
                                                     bridge:bridge
                                                   reactTag:self.reactTag
-                                            sizeFlexiblity:self.sizeFlexibility];
+                                            sizeFlexiblity:_sizeFlexibility];
   [self runApplication:bridge];
 
   _contentView.backgroundColor = self.backgroundColor;
   [self insertSubview:_contentView atIndex:0];
+
+  if (_sizeFlexibility == RCTRootViewSizeFlexibilityNone) {
+    self.intrinsicSize = self.bounds.size;
+  }
 }
 
 - (void)runApplication:(RCTBridge *)bridge

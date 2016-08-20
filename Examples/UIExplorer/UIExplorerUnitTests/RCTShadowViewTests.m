@@ -56,8 +56,8 @@
 
   RCTShadowView *centerView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
     CSSNodeStyleSetFlex(node, 2);
-    CSSNodeStyleSetMarginLeft(node, 10);
-    CSSNodeStyleSetMarginRight(node, 10);
+    CSSNodeStyleSetMargin(node, CSSEdgeLeft, 10);
+    CSSNodeStyleSetMargin(node, CSSEdgeRight, 10);
   }];
 
   RCTShadowView *rightView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
@@ -67,8 +67,8 @@
   RCTShadowView *mainView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
     CSSNodeStyleSetFlexDirection(node, CSSFlexDirectionRow);
     CSSNodeStyleSetFlex(node, 2);
-    CSSNodeStyleSetMarginTop(node, 10);
-    CSSNodeStyleSetMarginBottom(node, 10);
+    CSSNodeStyleSetMargin(node, CSSEdgeTop, 10);
+    CSSNodeStyleSetMargin(node, CSSEdgeBottom, 10);
   }];
 
   [mainView insertReactSubview:leftView atIndex:0];
@@ -83,10 +83,10 @@
     CSSNodeStyleSetFlex(node, 1);
   }];
 
-  CSSNodeStyleSetPaddingLeft(self.parentView.cssNode, 10);
-  CSSNodeStyleSetPaddingTop(self.parentView.cssNode, 10);
-  CSSNodeStyleSetPaddingRight(self.parentView.cssNode, 10);
-  CSSNodeStyleSetPaddingBottom(self.parentView.cssNode, 10);
+  CSSNodeStyleSetPadding(self.parentView.cssNode, CSSEdgeLeft, 10);
+  CSSNodeStyleSetPadding(self.parentView.cssNode, CSSEdgeTop, 10);
+  CSSNodeStyleSetPadding(self.parentView.cssNode, CSSEdgeRight, 10);
+  CSSNodeStyleSetPadding(self.parentView.cssNode, CSSEdgeBottom, 10);
 
   [self.parentView insertReactSubview:headerView atIndex:0];
   [self.parentView insertReactSubview:mainView atIndex:1];
@@ -111,20 +111,20 @@
   RCTShadowView *centerView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
     CSSNodeStyleSetFlex(node, 1);
   }];
-  
+
   RCTShadowView *mainView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
     CSSNodeStyleSetFlex(node, 1);
   }];
-  
+
   [mainView insertReactSubview:centerView atIndex:0];
 
   RCTShadowView *footerView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
     CSSNodeStyleSetFlex(node, 1);
   }];
-  
+
   [self.parentView insertReactSubview:mainView atIndex:0];
   [self.parentView insertReactSubview:footerView atIndex:1];
-  
+
   XCTAssertTrue([centerView viewIsDescendantOf:mainView]);
   XCTAssertFalse([footerView viewIsDescendantOf:mainView]);
 }
@@ -132,8 +132,8 @@
 - (void)testAssignsSuggestedWidthDimension
 {
   [self _withShadowViewWithStyle:^(CSSNodeRef node) {
-                                   CSSNodeStyleSetPositionLeft(node, 0);
-                                   CSSNodeStyleSetPositionTop(node, 0);
+                                   CSSNodeStyleSetPosition(node, CSSEdgeLeft, 0);
+                                   CSSNodeStyleSetPosition(node, CSSEdgeTop, 0);
                                    CSSNodeStyleSetHeight(node, 10);
                                  }
             assertRelativeLayout:CGRectMake(0, 0, 3, 10)
@@ -143,8 +143,8 @@
 - (void)testAssignsSuggestedHeightDimension
 {
   [self _withShadowViewWithStyle:^(CSSNodeRef node) {
-                                   CSSNodeStyleSetPositionLeft(node, 0);
-                                   CSSNodeStyleSetPositionTop(node, 0);
+                                   CSSNodeStyleSetPosition(node, CSSEdgeLeft, 0);
+                                   CSSNodeStyleSetPosition(node, CSSEdgeTop, 0);
                                    CSSNodeStyleSetWidth(node, 10);
                                  }
             assertRelativeLayout:CGRectMake(0, 0, 10, 4)
@@ -154,8 +154,8 @@
 - (void)testDoesNotOverrideDimensionStyleWithSuggestedDimensions
 {
   [self _withShadowViewWithStyle:^(CSSNodeRef node) {
-                                   CSSNodeStyleSetPositionLeft(node, 0);
-                                   CSSNodeStyleSetPositionTop(node, 0);
+                                   CSSNodeStyleSetPosition(node, CSSEdgeLeft, 0);
+                                   CSSNodeStyleSetPosition(node, CSSEdgeTop, 0);
                                    CSSNodeStyleSetWidth(node, 10);
                                    CSSNodeStyleSetHeight(node, 10);
                                  }

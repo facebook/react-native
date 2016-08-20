@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.devsupport;
 
 import javax.annotation.Nullable;
 
@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JavaJSExecutor;
 
 /**
  * Executes JS remotely via the react nodejs server as a proxy to a browser on the host machine.
@@ -40,7 +41,7 @@ public class WebsocketJavaScriptExecutor implements JavaJSExecutor {
   }
 
   private static class JSExecutorCallbackFuture implements
-      JSDebuggerWebSocketClient.JSDebuggerCallback {
+    JSDebuggerWebSocketClient.JSDebuggerCallback {
 
     private final Semaphore mSemaphore = new Semaphore(0);
     private @Nullable Throwable mCause;

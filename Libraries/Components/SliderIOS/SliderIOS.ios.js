@@ -131,7 +131,7 @@ var SliderIOS = React.createClass({
       'future versions of React Native. Use the cross-platform Slider ' +
       'as a drop-in replacement.');
 
-    let {style, onValueChange, onSlidingComplete, ...props} = this.props;
+    const {style, onValueChange, onSlidingComplete, ...props} = this.props;
     props.style = [styles.slider, style];
 
     props.onValueChange = onValueChange && ((event: Event) => {

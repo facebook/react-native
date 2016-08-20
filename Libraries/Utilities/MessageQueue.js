@@ -96,9 +96,9 @@ class MessageQueue {
     if (spyOrToggle === true){
       MessageQueue.prototype.__spy = (info)=>{
         console.log(`${info.type == TO_JS ? 'N->JS' : 'JS->N'} : ` +
-                    `${info.module ? (info.module+'.') : ''}${info.method}` +
+                    `${info.module ? (info.module + '.') : ''}${info.method}` +
                     `(${JSON.stringify(info.args)})`);
-      }
+      };
     } else if (spyOrToggle === false) {
       MessageQueue.prototype.__spy = null;
     } else {
@@ -218,8 +218,8 @@ class MessageQueue {
     const moduleMethods = this._callableModules[module];
     invariant(
       !!moduleMethods,
-      'Module %s is not a registered callable module.',
-      module
+      'Module %s is not a registered callable module (calling %s)',
+      module, method
     );
     invariant(
       !!moduleMethods[method],

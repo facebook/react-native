@@ -24,10 +24,10 @@ var subscriptions = [];
 var updatesEnabled = false;
 
 type GeoOptions = {
-  timeout: number;
-  maximumAge: number;
-  enableHighAccuracy: bool;
-  distanceFilter: number;
+  timeout: number,
+  maximumAge: number,
+  enableHighAccuracy: bool,
+  distanceFilter: number,
 }
 
 /**

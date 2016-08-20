@@ -22,7 +22,7 @@ var ElementBox = require('ElementBox');
 var PropTypes = React.PropTypes;
 
 type EventLike = {
-  nativeEvent: Object;
+  nativeEvent: Object,
 };
 
 class InspectorOverlay extends React.Component {

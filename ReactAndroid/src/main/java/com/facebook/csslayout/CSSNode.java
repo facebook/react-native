@@ -19,10 +19,6 @@ import static com.facebook.csslayout.CSSLayout.DIMENSION_HEIGHT;
 import static com.facebook.csslayout.CSSLayout.DIMENSION_WIDTH;
 import static com.facebook.csslayout.CSSLayout.POSITION_LEFT;
 import static com.facebook.csslayout.CSSLayout.POSITION_TOP;
-import static com.facebook.csslayout.Spacing.BOTTOM;
-import static com.facebook.csslayout.Spacing.LEFT;
-import static com.facebook.csslayout.Spacing.RIGHT;
-import static com.facebook.csslayout.Spacing.TOP;
 
 /**
  * A CSS Node. It has a style object you can manipulate at {@link #style}. After calling
@@ -323,6 +319,19 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     }
   }
 
+  @Override
+  public CSSAlign getAlignContent() {
+    return style.alignContent;
+  }
+
+  @Override
+  public void setAlignContent(CSSAlign alignContent) {
+    if (style.alignContent != alignContent) {
+      style.alignContent = alignContent;
+      dirty();
+    }
+  }
+
   /**
    * Get this node's position type, as defined by style.
    */
@@ -412,67 +421,15 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
    * Get this node's position, as defined by style.
    */
   @Override
-  public Spacing getPositionValue() {
+  public Spacing getPosition() {
     return style.position;
   }
 
   @Override
-  public void setPositionValue(int spacingType, float position) {
+  public void setPosition(int spacingType, float position) {
     if (style.position.set(spacingType, position)) {
       dirty();
     }
-  }
-
-  /**
-   * Get this node's position top, as defined by style.
-   */
-  @Override
-  public float getPositionTop() {
-    return style.position.get(TOP);
-  }
-
-  @Override
-  public void setPositionTop(float positionTop) {
-    setPositionValue(TOP, positionTop);
-  }
-
-  /**
-   * Get this node's position bottom, as defined by style.
-   */
-  @Override
-  public float getPositionBottom() {
-    return style.position.get(BOTTOM);
-  }
-
-  @Override
-  public void setPositionBottom(float positionBottom) {
-    setPositionValue(BOTTOM, positionBottom);
-  }
-
-  /**
-   * Get this node's position left, as defined by style.
-   */
-  @Override
-  public float getPositionLeft() {
-    return style.position.get(LEFT);
-  }
-
-  @Override
-  public void setPositionLeft(float positionLeft) {
-    setPositionValue(LEFT, positionLeft);
-  }
-
-  /**
-   * Get this node's position right, as defined by style.
-   */
-  @Override
-  public float getPositionRight() {
-    return style.position.get(RIGHT);
-  }
-
-  @Override
-  public void setPositionRight(float positionRight) {
-    setPositionValue(RIGHT, positionRight);
   }
 
   /**
@@ -594,16 +551,6 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   @Override
   public CSSDirection getLayoutDirection() {
     return layout.direction;
-  }
-
-  /**
-   * Set a default padding (left/top/right/bottom) for this node.
-   */
-  @Override
-  public void setDefaultPadding(int spacingType, float padding) {
-    if (style.padding.setDefault(spacingType, padding)) {
-      dirty();
-    }
   }
 
   /**

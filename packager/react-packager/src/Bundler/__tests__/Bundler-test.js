@@ -129,6 +129,7 @@ describe('Bundler', function() {
         dependencies: modules,
         transformOptions,
         getModuleId: () => 123,
+        getResolvedDependencyPairs: () => [],
       })
     );
 
@@ -141,7 +142,7 @@ describe('Bundler', function() {
     });
   });
 
-  pit('create a bundle', function() {
+  it('create a bundle', function() {
     assetServer.getAssetData.mockImpl(() => {
       return {
         scales: [1,2,3],
@@ -170,9 +171,11 @@ describe('Bundler', function() {
         expect(ithAddedModule(3)).toEqual('/root/img/new_image.png');
         expect(ithAddedModule(4)).toEqual('/root/file.json');
 
-        expect(bundle.finalize.mock.calls[0]).toEqual([
-          {runMainModule: true, runBeforeMainModule: []}
-        ]);
+        expect(bundle.finalize.mock.calls[0]).toEqual([{
+            runMainModule: true,
+            runBeforeMainModule: [],
+            allowUpdates: false,
+        }]);
 
         expect(bundle.addAsset.mock.calls[0]).toEqual([{
           __packager_asset: true,

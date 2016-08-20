@@ -13,7 +13,9 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 
+import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 
@@ -59,6 +61,8 @@ public class ReactShadowNode extends CSSNode {
   private float mAbsoluteTop;
   private float mAbsoluteRight;
   private float mAbsoluteBottom;
+  private final Spacing mDefaultPadding = new Spacing(0);
+  private final Spacing mPadding = new Spacing(CSSConstants.UNDEFINED);
 
   /**
    * Nodes that return {@code true} will be treated as "virtual" nodes. That is, nodes that are not
@@ -113,6 +117,48 @@ public class ReactShadowNode extends CSSNode {
   public void dirty() {
     if (!isVirtual()) {
       super.dirty();
+    }
+  }
+
+  public void setDefaultPadding(int spacingType, float padding) {
+    mDefaultPadding.set(spacingType, padding);
+    updatePadding();
+  }
+
+  @Override
+  public void setPadding(int spacingType, float padding) {
+    mPadding.set(spacingType, padding);
+    updatePadding();
+  }
+
+  private void updatePadding() {
+    for (int spacingType = Spacing.LEFT; spacingType <= Spacing.ALL; spacingType++) {
+      if (spacingType == Spacing.LEFT ||
+          spacingType == Spacing.RIGHT ||
+          spacingType == Spacing.START ||
+          spacingType == Spacing.END) {
+        if (CSSConstants.isUndefined(mPadding.getRaw(spacingType)) &&
+            CSSConstants.isUndefined(mPadding.getRaw(Spacing.HORIZONTAL)) &&
+            CSSConstants.isUndefined(mPadding.getRaw(Spacing.ALL))) {
+          super.setPadding(spacingType, mDefaultPadding.getRaw(spacingType));
+        } else {
+          super.setPadding(spacingType, mPadding.getRaw(spacingType));
+        }
+      } else if (spacingType == Spacing.TOP || spacingType == Spacing.BOTTOM) {
+        if (CSSConstants.isUndefined(mPadding.getRaw(spacingType)) &&
+            CSSConstants.isUndefined(mPadding.getRaw(Spacing.VERTICAL)) &&
+            CSSConstants.isUndefined(mPadding.getRaw(Spacing.ALL))) {
+          super.setPadding(spacingType, mDefaultPadding.getRaw(spacingType));
+        } else {
+          super.setPadding(spacingType, mPadding.getRaw(spacingType));
+        }
+      } else {
+        if (CSSConstants.isUndefined(mPadding.getRaw(spacingType))) {
+          super.setPadding(spacingType, mDefaultPadding.getRaw(spacingType));
+        } else {
+          super.setPadding(spacingType, mPadding.getRaw(spacingType));
+        }
+      }
     }
   }
 

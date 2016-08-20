@@ -16,6 +16,8 @@
 
 #import "RCTFont.h"
 
+#import <CoreText/CoreText.h>
+
 @interface RCTFontTests : XCTestCase
 
 @end
@@ -174,6 +176,27 @@
   {
     UIFont *expected = [UIFont fontWithName:@"HelveticaNeue" size:14];
     UIFont *result = [RCTConvert UIFont:@{@"fontFamily": @"HelveticaNeue-Italic", @"fontStyle": @"normal", @"fontWeight": @"normal"}];
+    RCTAssertEqualFonts(expected, result);
+  }
+}
+
+- (void)testVariant
+{
+  {
+    UIFont *expected = [UIFont monospacedDigitSystemFontOfSize:14 weight:UIFontWeightRegular];
+    UIFont *result = [RCTConvert UIFont:@{@"fontVariant": @[@"tabular-nums"]}];
+    RCTAssertEqualFonts(expected, result);
+  }
+  {
+    UIFont *monospaceFont = [UIFont monospacedDigitSystemFontOfSize:14 weight:UIFontWeightRegular];
+    UIFontDescriptor *fontDescriptor = [monospaceFont.fontDescriptor fontDescriptorByAddingAttributes:@{
+      UIFontDescriptorFeatureSettingsAttribute: @[@{
+        UIFontFeatureTypeIdentifierKey: @(kLowerCaseType),
+        UIFontFeatureSelectorIdentifierKey: @(kLowerCaseSmallCapsSelector),
+      }]
+    }];
+    UIFont *expected = [UIFont fontWithDescriptor:fontDescriptor size:14];
+    UIFont *result = [RCTConvert UIFont:@{@"fontVariant": @[@"tabular-nums", @"small-caps"]}];
     RCTAssertEqualFonts(expected, result);
   }
 }

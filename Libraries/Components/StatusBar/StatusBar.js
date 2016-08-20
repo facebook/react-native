@@ -52,7 +52,7 @@ export type StatusBarAnimation = $Enum<{
 }>;
 
 type DefaultProps = {
-  animated: boolean;
+  animated: boolean,
 };
 
 /**
@@ -60,7 +60,7 @@ type DefaultProps = {
  */
 function mergePropsStack(propsStack: Array<Object>, defaultValues: Object): Object {
   return propsStack.reduce((prev, cur) => {
-    for (let prop in cur) {
+    for (const prop in cur) {
       if (cur[prop] != null) {
         prev[prop] = cur[prop];
       }
