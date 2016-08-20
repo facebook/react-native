@@ -33,6 +33,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   [super layoutSubviews];
 
+  // Quick fix for iOS backgroundColor bug #7976 - To be removed on update
+  if (self.backgroundColor == nil) self.backgroundColor = [UIColor clearColor];
+
   // If the control is refreshing when mounted we need to call
   // beginRefreshing in layoutSubview or it doesn't work.
   if (_currentRefreshingState && _isInitialRender && _initialRefreshingState) {

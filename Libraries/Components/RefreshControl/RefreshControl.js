@@ -149,11 +149,9 @@ const RefreshControl = React.createClass({
   },
 
   render() {
-    var adjustedProps = {...this.props}
-    if (!this.props.style || !this.props.style.backgroundColor) adjustedProps.style = {...this.props.style, backgroundColor: 'transparent'}
     return (
       <NativeRefreshControl
-        {...adjustedProps}
+        {...this.props}
         ref={ref => this._nativeRef = ref}
         onRefresh={this._onRefresh}
       />
