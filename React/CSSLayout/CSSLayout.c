@@ -23,6 +23,34 @@ __forceinline const float fmaxf(const float a, const float b) {
 #endif
 #endif
 
+static float computedEdgeValue(float edges[CSSEdgeCount], CSSEdge edge, float defaultValue) {
+  CSS_ASSERT(edge <= CSSEdgeEnd, "Cannot get computed value of multi-edge shorthands");
+
+  if (!CSSValueIsUndefined(edges[edge])) {
+    return edges[edge];
+  }
+
+  if ((edge == CSSEdgeTop || edge == CSSEdgeBottom) &&
+      !CSSValueIsUndefined(edges[CSSEdgeVertical])) {
+    return edges[CSSEdgeVertical];
+  }
+
+  if ((edge == CSSEdgeLeft || edge == CSSEdgeRight || edge == CSSEdgeStart || edge == CSSEdgeEnd) &&
+      !CSSValueIsUndefined(edges[CSSEdgeHorizontal])) {
+    return edges[CSSEdgeHorizontal];
+  }
+
+  if (!CSSValueIsUndefined(edges[CSSEdgeAll])) {
+    return edges[CSSEdgeAll];
+  }
+
+  if (edge == CSSEdgeStart || edge == CSSEdgeEnd) {
+    return CSSUndefined;
+  }
+
+  return defaultValue;
+}
+
 CSSNodeRef CSSNodeNew() {
   CSSNodeRef node = calloc(1, sizeof(CSSNode));
   CSS_ASSERT(node, "Could not allocate memory for node");
@@ -64,19 +92,12 @@ void CSSNodeInit(CSSNodeRef node) {
   node->style.maxDimensions[CSSDimensionWidth] = CSSUndefined;
   node->style.maxDimensions[CSSDimensionHeight] = CSSUndefined;
 
-  node->style.position[CSSPositionLeft] = CSSUndefined;
-  node->style.position[CSSPositionTop] = CSSUndefined;
-  node->style.position[CSSPositionRight] = CSSUndefined;
-  node->style.position[CSSPositionBottom] = CSSUndefined;
-  node->style.position[CSSPositionStart] = CSSUndefined;
-  node->style.position[CSSPositionEnd] = CSSUndefined;
-
-  node->style.margin[CSSPositionStart] = CSSUndefined;
-  node->style.margin[CSSPositionEnd] = CSSUndefined;
-  node->style.padding[CSSPositionStart] = CSSUndefined;
-  node->style.padding[CSSPositionEnd] = CSSUndefined;
-  node->style.border[CSSPositionStart] = CSSUndefined;
-  node->style.border[CSSPositionEnd] = CSSUndefined;
+  for (CSSEdge edge = CSSEdgeLeft; edge < CSSEdgeCount; edge++) {
+    node->style.position[edge] = CSSUndefined;
+    node->style.margin[edge] = CSSUndefined;
+    node->style.padding[edge] = CSSUndefined;
+    node->style.border[edge] = CSSUndefined;
+  }
 
   node->layout.dimensions[CSSDimensionWidth] = CSSUndefined;
   node->layout.dimensions[CSSDimensionHeight] = CSSUndefined;
@@ -179,35 +200,16 @@ float CSSNodeStyleGetFlex(CSSNodeRef node) {
     return node->style.instanceName;                                      \
   }
 
-#define CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(type, name, paramName, instanceName) \
-  void CSSNodeStyleSet##name(CSSNodeRef node, CSSEdge edge, type paramName) {  \
-    switch (edge) {                                                            \
-      case CSSEdgeHorizontal:                                                  \
-        CSSNodeStyleSet##name(node, CSSEdgeLeft, paramName);                   \
-        CSSNodeStyleSet##name(node, CSSEdgeRight, paramName);                  \
-        CSSNodeStyleSet##name(node, CSSEdgeStart, paramName);                  \
-        CSSNodeStyleSet##name(node, CSSEdgeEnd, paramName);                    \
-        break;                                                                 \
-      case CSSEdgeVertical:                                                    \
-        CSSNodeStyleSet##name(node, CSSEdgeTop, paramName);                    \
-        CSSNodeStyleSet##name(node, CSSEdgeBottom, paramName);                 \
-        break;                                                                 \
-      case CSSEdgeAll:                                                         \
-        CSSNodeStyleSet##name(node, CSSEdgeHorizontal, paramName);             \
-        CSSNodeStyleSet##name(node, CSSEdgeVertical, paramName);               \
-        break;                                                                 \
-      default:                                                                 \
-        if (node->style.instanceName[edge] != paramName) {                     \
-          node->style.instanceName[edge] = paramName;                          \
-          _CSSNodeMarkDirty(node);                                             \
-        }                                                                      \
-        break;                                                                 \
-    }                                                                          \
-  }                                                                            \
-                                                                               \
-  type CSSNodeStyleGet##name(CSSNodeRef node, CSSEdge edge) {                  \
-    CSS_ASSERT(edge <= CSSEdgeEnd, "Cannot get value of compound edge");       \
-    return node->style.instanceName[edge];                                     \
+#define CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(type, name, paramName, instanceName, defaultValue) \
+  void CSSNodeStyleSet##name(CSSNodeRef node, CSSEdge edge, type paramName) {                \
+    if (node->style.instanceName[edge] != paramName) {                                       \
+      node->style.instanceName[edge] = paramName;                                            \
+      _CSSNodeMarkDirty(node);                                                               \
+    }                                                                                        \
+  }                                                                                          \
+                                                                                             \
+  type CSSNodeStyleGet##name(CSSNodeRef node, CSSEdge edge) {                                \
+    return computedEdgeValue(node->style.instanceName, edge, defaultValue);                  \
   }
 
 #define CSS_NODE_LAYOUT_PROPERTY_IMPL(type, name, instanceName) \
@@ -234,10 +236,10 @@ CSS_NODE_STYLE_PROPERTY_IMPL(float, FlexGrow, flexGrow, flexGrow);
 CSS_NODE_STYLE_PROPERTY_IMPL(float, FlexShrink, flexShrink, flexShrink);
 CSS_NODE_STYLE_PROPERTY_IMPL(float, FlexBasis, flexBasis, flexBasis);
 
-CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Position, position, position);
-CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Margin, margin, margin);
-CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Padding, padding, padding);
-CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Border, border, border);
+CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Position, position, position, CSSUndefined);
+CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Margin, margin, margin, 0);
+CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Padding, padding, padding, 0);
+CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Border, border, border, 0);
 
 CSS_NODE_STYLE_PROPERTY_IMPL(float, Width, width, dimensions[CSSDimensionWidth]);
 CSS_NODE_STYLE_PROPERTY_IMPL(float, Height, height, dimensions[CSSDimensionHeight]);
@@ -246,10 +248,10 @@ CSS_NODE_STYLE_PROPERTY_IMPL(float, MinHeight, minHeight, minDimensions[CSSDimen
 CSS_NODE_STYLE_PROPERTY_IMPL(float, MaxWidth, maxWidth, maxDimensions[CSSDimensionWidth]);
 CSS_NODE_STYLE_PROPERTY_IMPL(float, MaxHeight, maxHeight, maxDimensions[CSSDimensionHeight]);
 
-CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Left, position[CSSPositionLeft]);
-CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Top, position[CSSPositionTop]);
-CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Right, position[CSSPositionRight]);
-CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Bottom, position[CSSPositionBottom]);
+CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Left, position[CSSEdgeLeft]);
+CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Top, position[CSSEdgeTop]);
+CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Right, position[CSSEdgeRight]);
+CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Bottom, position[CSSEdgeBottom]);
 CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Width, dimensions[CSSDimensionWidth]);
 CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Height, dimensions[CSSDimensionHeight]);
 CSS_NODE_LAYOUT_PROPERTY_IMPL(CSSDirection, Direction, direction);
@@ -310,8 +312,8 @@ static void print_css_node_rec(CSSNode *node, CSSPrintOptions options, uint32_t 
     printf("layout: {");
     printf("width: %g, ", node->layout.dimensions[CSSDimensionWidth]);
     printf("height: %g, ", node->layout.dimensions[CSSDimensionHeight]);
-    printf("top: %g, ", node->layout.position[CSSPositionTop]);
-    printf("left: %g", node->layout.position[CSSPositionLeft]);
+    printf("top: %g, ", node->layout.position[CSSEdgeTop]);
+    printf("left: %g", node->layout.position[CSSEdgeLeft]);
     printf("}, ");
   }
 
@@ -373,36 +375,36 @@ static void print_css_node_rec(CSSNode *node, CSSPrintOptions options, uint32_t 
     }
 
     if (four_equal(node->style.margin)) {
-      print_number_0("margin", node->style.margin[CSSPositionLeft]);
+      print_number_0("margin", computedEdgeValue(node->style.margin, CSSEdgeLeft, 0));
     } else {
-      print_number_0("marginLeft", node->style.margin[CSSPositionLeft]);
-      print_number_0("marginRight", node->style.margin[CSSPositionRight]);
-      print_number_0("marginTop", node->style.margin[CSSPositionTop]);
-      print_number_0("marginBottom", node->style.margin[CSSPositionBottom]);
-      print_number_0("marginStart", node->style.margin[CSSPositionStart]);
-      print_number_0("marginEnd", node->style.margin[CSSPositionEnd]);
+      print_number_0("marginLeft", computedEdgeValue(node->style.margin, CSSEdgeLeft, 0));
+      print_number_0("marginRight", computedEdgeValue(node->style.margin, CSSEdgeRight, 0));
+      print_number_0("marginTop", computedEdgeValue(node->style.margin, CSSEdgeTop, 0));
+      print_number_0("marginBottom", computedEdgeValue(node->style.margin, CSSEdgeBottom, 0));
+      print_number_0("marginStart", computedEdgeValue(node->style.margin, CSSEdgeStart, 0));
+      print_number_0("marginEnd", computedEdgeValue(node->style.margin, CSSEdgeEnd, 0));
     }
 
     if (four_equal(node->style.padding)) {
-      print_number_0("padding", node->style.padding[CSSPositionLeft]);
+      print_number_0("padding", computedEdgeValue(node->style.padding, CSSEdgeLeft, 0));
     } else {
-      print_number_0("paddingLeft", node->style.padding[CSSPositionLeft]);
-      print_number_0("paddingRight", node->style.padding[CSSPositionRight]);
-      print_number_0("paddingTop", node->style.padding[CSSPositionTop]);
-      print_number_0("paddingBottom", node->style.padding[CSSPositionBottom]);
-      print_number_0("paddingStart", node->style.padding[CSSPositionStart]);
-      print_number_0("paddingEnd", node->style.padding[CSSPositionEnd]);
+      print_number_0("paddingLeft", computedEdgeValue(node->style.padding, CSSEdgeLeft, 0));
+      print_number_0("paddingRight", computedEdgeValue(node->style.padding, CSSEdgeRight, 0));
+      print_number_0("paddingTop", computedEdgeValue(node->style.padding, CSSEdgeTop, 0));
+      print_number_0("paddingBottom", computedEdgeValue(node->style.padding, CSSEdgeBottom, 0));
+      print_number_0("paddingStart", computedEdgeValue(node->style.padding, CSSEdgeStart, 0));
+      print_number_0("paddingEnd", computedEdgeValue(node->style.padding, CSSEdgeEnd, 0));
     }
 
     if (four_equal(node->style.border)) {
-      print_number_0("borderWidth", node->style.border[CSSPositionLeft]);
+      print_number_0("borderWidth", computedEdgeValue(node->style.border, CSSEdgeLeft, 0));
     } else {
-      print_number_0("borderLeftWidth", node->style.border[CSSPositionLeft]);
-      print_number_0("borderRightWidth", node->style.border[CSSPositionRight]);
-      print_number_0("borderTopWidth", node->style.border[CSSPositionTop]);
-      print_number_0("borderBottomWidth", node->style.border[CSSPositionBottom]);
-      print_number_0("borderStartWidth", node->style.border[CSSPositionStart]);
-      print_number_0("borderEndWidth", node->style.border[CSSPositionEnd]);
+      print_number_0("borderLeftWidth", computedEdgeValue(node->style.border, CSSEdgeLeft, 0));
+      print_number_0("borderRightWidth", computedEdgeValue(node->style.border, CSSEdgeRight, 0));
+      print_number_0("borderTopWidth", computedEdgeValue(node->style.border, CSSEdgeTop, 0));
+      print_number_0("borderBottomWidth", computedEdgeValue(node->style.border, CSSEdgeBottom, 0));
+      print_number_0("borderStartWidth", computedEdgeValue(node->style.border, CSSEdgeStart, 0));
+      print_number_0("borderEndWidth", computedEdgeValue(node->style.border, CSSEdgeEnd, 0));
     }
 
     print_number_nan("width", node->style.dimensions[CSSDimensionWidth]);
@@ -416,10 +418,11 @@ static void print_css_node_rec(CSSNode *node, CSSPrintOptions options, uint32_t 
       printf("position: 'absolute', ");
     }
 
-    print_number_nan("left", node->style.position[CSSPositionLeft]);
-    print_number_nan("right", node->style.position[CSSPositionRight]);
-    print_number_nan("top", node->style.position[CSSPositionTop]);
-    print_number_nan("bottom", node->style.position[CSSPositionBottom]);
+    print_number_nan("left", computedEdgeValue(node->style.position, CSSEdgeLeft, CSSUndefined));
+    print_number_nan("right", computedEdgeValue(node->style.position, CSSEdgeRight, CSSUndefined));
+    print_number_nan("top", computedEdgeValue(node->style.position, CSSEdgeTop, CSSUndefined));
+    print_number_nan("bottom",
+                     computedEdgeValue(node->style.position, CSSEdgeBottom, CSSUndefined));
   }
 
   uint32_t childCount = CSSNodeListCount(node->children);
@@ -439,23 +442,23 @@ void CSSNodePrint(CSSNode *node, CSSPrintOptions options) {
   print_css_node_rec(node, options, 0);
 }
 
-static CSSPosition leading[4] = {
-        [CSSFlexDirectionColumn] = CSSPositionTop,
-        [CSSFlexDirectionColumnReverse] = CSSPositionBottom,
-        [CSSFlexDirectionRow] = CSSPositionLeft,
-        [CSSFlexDirectionRowReverse] = CSSPositionRight,
+static CSSEdge leading[4] = {
+        [CSSFlexDirectionColumn] = CSSEdgeTop,
+        [CSSFlexDirectionColumnReverse] = CSSEdgeBottom,
+        [CSSFlexDirectionRow] = CSSEdgeLeft,
+        [CSSFlexDirectionRowReverse] = CSSEdgeRight,
 };
-static CSSPosition trailing[4] = {
-        [CSSFlexDirectionColumn] = CSSPositionBottom,
-        [CSSFlexDirectionColumnReverse] = CSSPositionTop,
-        [CSSFlexDirectionRow] = CSSPositionRight,
-        [CSSFlexDirectionRowReverse] = CSSPositionLeft,
+static CSSEdge trailing[4] = {
+        [CSSFlexDirectionColumn] = CSSEdgeBottom,
+        [CSSFlexDirectionColumnReverse] = CSSEdgeTop,
+        [CSSFlexDirectionRow] = CSSEdgeRight,
+        [CSSFlexDirectionRowReverse] = CSSEdgeLeft,
 };
-static CSSPosition pos[4] = {
-        [CSSFlexDirectionColumn] = CSSPositionTop,
-        [CSSFlexDirectionColumnReverse] = CSSPositionBottom,
-        [CSSFlexDirectionRow] = CSSPositionLeft,
-        [CSSFlexDirectionRowReverse] = CSSPositionRight,
+static CSSEdge pos[4] = {
+        [CSSFlexDirectionColumn] = CSSEdgeTop,
+        [CSSFlexDirectionColumnReverse] = CSSEdgeBottom,
+        [CSSFlexDirectionRow] = CSSEdgeLeft,
+        [CSSFlexDirectionRowReverse] = CSSEdgeRight,
 };
 static CSSDimension dim[4] = {
         [CSSFlexDirectionColumn] = CSSDimensionHeight,
@@ -473,68 +476,74 @@ static bool isColumnDirection(CSSFlexDirection flexDirection) {
 }
 
 static float getLeadingMargin(CSSNode *node, CSSFlexDirection axis) {
-  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.margin[CSSPositionStart])) {
-    return node->style.margin[CSSPositionStart];
+  if (isRowDirection(axis) &&
+      !CSSValueIsUndefined(computedEdgeValue(node->style.margin, CSSEdgeStart, 0))) {
+    return computedEdgeValue(node->style.margin, CSSEdgeStart, 0);
   }
 
-  return node->style.margin[leading[axis]];
+  return computedEdgeValue(node->style.margin, leading[axis], 0);
 }
 
 static float getTrailingMargin(CSSNode *node, CSSFlexDirection axis) {
-  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.margin[CSSPositionEnd])) {
-    return node->style.margin[CSSPositionEnd];
+  if (isRowDirection(axis) &&
+      !CSSValueIsUndefined(computedEdgeValue(node->style.margin, CSSEdgeEnd, 0))) {
+    return computedEdgeValue(node->style.margin, CSSEdgeEnd, 0);
   }
 
-  return node->style.margin[trailing[axis]];
+  return computedEdgeValue(node->style.margin, trailing[axis], 0);
 }
 
 static float getLeadingPadding(CSSNode *node, CSSFlexDirection axis) {
-  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.padding[CSSPositionStart]) &&
-      node->style.padding[CSSPositionStart] >= 0) {
-    return node->style.padding[CSSPositionStart];
+  if (isRowDirection(axis) &&
+      !CSSValueIsUndefined(computedEdgeValue(node->style.padding, CSSEdgeStart, 0)) &&
+      computedEdgeValue(node->style.padding, CSSEdgeStart, 0) >= 0) {
+    return computedEdgeValue(node->style.padding, CSSEdgeStart, 0);
   }
 
-  if (node->style.padding[leading[axis]] >= 0) {
-    return node->style.padding[leading[axis]];
+  if (computedEdgeValue(node->style.padding, leading[axis], 0) >= 0) {
+    return computedEdgeValue(node->style.padding, leading[axis], 0);
   }
 
   return 0;
 }
 
 static float getTrailingPadding(CSSNode *node, CSSFlexDirection axis) {
-  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.padding[CSSPositionEnd]) &&
-      node->style.padding[CSSPositionEnd] >= 0) {
-    return node->style.padding[CSSPositionEnd];
+  if (isRowDirection(axis) &&
+      !CSSValueIsUndefined(computedEdgeValue(node->style.padding, CSSEdgeEnd, 0)) &&
+      computedEdgeValue(node->style.padding, CSSEdgeEnd, 0) >= 0) {
+    return computedEdgeValue(node->style.padding, CSSEdgeEnd, 0);
   }
 
-  if (node->style.padding[trailing[axis]] >= 0) {
-    return node->style.padding[trailing[axis]];
+  if (computedEdgeValue(node->style.padding, trailing[axis], 0) >= 0) {
+    return computedEdgeValue(node->style.padding, trailing[axis], 0);
   }
 
   return 0;
 }
 
 static float getLeadingBorder(CSSNode *node, CSSFlexDirection axis) {
-  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.border[CSSPositionStart]) &&
-      node->style.border[CSSPositionStart] >= 0) {
-    return node->style.border[CSSPositionStart];
+  if (isRowDirection(axis) &&
+      !CSSValueIsUndefined(computedEdgeValue(node->style.border, CSSEdgeStart, 0)) &&
+      computedEdgeValue(node->style.border, CSSEdgeStart, 0) >= 0) {
+    return computedEdgeValue(node->style.border, CSSEdgeStart, 0);
   }
 
-  if (node->style.border[leading[axis]] >= 0) {
-    return node->style.border[leading[axis]];
+  if (computedEdgeValue(node->style.border, leading[axis], 0) >= 0) {
+    return computedEdgeValue(node->style.border, leading[axis], 0);
   }
 
   return 0;
 }
 
 static float getTrailingBorder(CSSNode *node, CSSFlexDirection axis) {
-  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.border[CSSPositionEnd]) &&
-      node->style.border[CSSPositionEnd] >= 0) {
-    return node->style.border[CSSPositionEnd];
+  if (isRowDirection(axis) &&
+      !CSSValueIsUndefined(computedEdgeValue(node->style.border, CSSEdgeEnd, 0)) &&
+      computedEdgeValue(node->style.border, CSSEdgeEnd, 0) >= 0) {
+    return computedEdgeValue(node->style.border, CSSEdgeEnd, 0);
   }
 
-  if (node->style.border[trailing[axis]] >= 0) {
-    return node->style.border[trailing[axis]];
+  if (computedEdgeValue(node->style.border, trailing[axis], 0) >= 0) {
+    return computedEdgeValue(node->style.border, trailing[axis], 0);
   }
 
   return 0;
@@ -623,13 +632,18 @@ static bool isLayoutDimDefined(CSSNode *node, CSSFlexDirection axis) {
 }
 
 static bool isLeadingPosDefined(CSSNode *node, CSSFlexDirection axis) {
-  return (isRowDirection(axis) && !CSSValueIsUndefined(node->style.position[CSSPositionStart])) ||
-         !CSSValueIsUndefined(node->style.position[leading[axis]]);
+  return (isRowDirection(axis) &&
+          !CSSValueIsUndefined(
+              computedEdgeValue(node->style.position, CSSEdgeStart, CSSUndefined))) ||
+         !CSSValueIsUndefined(computedEdgeValue(node->style.position, leading[axis], CSSUndefined));
 }
 
 static bool isTrailingPosDefined(CSSNode *node, CSSFlexDirection axis) {
-  return (isRowDirection(axis) && !CSSValueIsUndefined(node->style.position[CSSPositionEnd])) ||
-         !CSSValueIsUndefined(node->style.position[trailing[axis]]);
+  return (isRowDirection(axis) &&
+          !CSSValueIsUndefined(
+              computedEdgeValue(node->style.position, CSSEdgeEnd, CSSUndefined))) ||
+         !CSSValueIsUndefined(
+             computedEdgeValue(node->style.position, trailing[axis], CSSUndefined));
 }
 
 static bool isMeasureDefined(CSSNode *node) {
@@ -637,21 +651,23 @@ static bool isMeasureDefined(CSSNode *node) {
 }
 
 static float getLeadingPosition(CSSNode *node, CSSFlexDirection axis) {
-  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.position[CSSPositionStart])) {
-    return node->style.position[CSSPositionStart];
+  if (isRowDirection(axis) &&
+      !CSSValueIsUndefined(computedEdgeValue(node->style.position, CSSEdgeStart, CSSUndefined))) {
+    return computedEdgeValue(node->style.position, CSSEdgeStart, CSSUndefined);
   }
-  if (!CSSValueIsUndefined(node->style.position[leading[axis]])) {
-    return node->style.position[leading[axis]];
+  if (!CSSValueIsUndefined(computedEdgeValue(node->style.position, leading[axis], CSSUndefined))) {
+    return computedEdgeValue(node->style.position, leading[axis], CSSUndefined);
   }
   return 0;
 }
 
 static float getTrailingPosition(CSSNode *node, CSSFlexDirection axis) {
-  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.position[CSSPositionEnd])) {
-    return node->style.position[CSSPositionEnd];
+  if (isRowDirection(axis) &&
+      !CSSValueIsUndefined(computedEdgeValue(node->style.position, CSSEdgeEnd, CSSUndefined))) {
+    return computedEdgeValue(node->style.position, CSSEdgeEnd, CSSUndefined);
   }
-  if (!CSSValueIsUndefined(node->style.position[trailing[axis]])) {
-    return node->style.position[trailing[axis]];
+  if (!CSSValueIsUndefined(computedEdgeValue(node->style.position, trailing[axis], CSSUndefined))) {
+    return computedEdgeValue(node->style.position, trailing[axis], CSSUndefined);
   }
   return 0;
 }

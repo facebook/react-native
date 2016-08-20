@@ -396,6 +396,7 @@ var TouchableMixin = {
       this._handleLongDelay.bind(this, e),
       longDelayMS + delayMS
     );
+    return this.props.shouldBlockResponder && this.props.shouldBlockResponder();
   },
 
   /**

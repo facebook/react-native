@@ -67,7 +67,7 @@ class Bundle extends BundleBase {
     const name = 'require-' + moduleId;
     super.addModule(new ModuleTransport({
       name,
-      id: this._numRequireCalls - 1,
+      id: -this._numRequireCalls - 1,
       code,
       virtual: true,
       sourceCode: code,

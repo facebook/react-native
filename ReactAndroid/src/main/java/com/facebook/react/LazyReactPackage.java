@@ -15,6 +15,10 @@ import java.util.List;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.systrace.Systrace;
+import com.facebook.systrace.SystraceMessage;
+
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 /**
  * React package supporting lazy creation of native modules.
@@ -33,7 +37,14 @@ public abstract class LazyReactPackage implements ReactPackage {
   public final List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
     for (ModuleSpec holder : getNativeModules(reactContext)) {
-      modules.add(holder.getProvider().get());
+      SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createNativeModule")
+        .arg("module", holder.getType())
+        .flush();
+      try {
+        modules.add(holder.getProvider().get());
+      } finally {
+        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      }
     }
     return modules;
   }

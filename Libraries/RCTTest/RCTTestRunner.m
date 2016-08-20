@@ -117,6 +117,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     RCTAssert(_testController != nil, @"_testController should not be nil");
     testModule.controller = _testController;
     testModule.testSelector = test;
+    testModule.testSuffix = _testSuffix;
     testModule.view = rootView;
 
     UIViewController *vc = [UIApplication sharedApplication].delegate.window.rootViewController;
