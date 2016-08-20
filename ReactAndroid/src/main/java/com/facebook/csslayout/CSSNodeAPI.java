@@ -47,6 +47,8 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   void setAlignItems(CSSAlign alignItems);
   CSSAlign getAlignSelf();
   void setAlignSelf(CSSAlign alignSelf);
+  CSSAlign getAlignContent();
+  void setAlignContent(CSSAlign alignContent);
   CSSPositionType getPositionType();
   void setPositionType(CSSPositionType positionType);
   void setWrap(CSSWrap flexWrap);
@@ -58,16 +60,8 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   void setPadding(int spacingType, float padding);
   Spacing getBorder();
   void setBorder(int spacingType, float border);
-  Spacing getPositionValue();
-  void setPositionValue(int spacingType, float position);
-  float getPositionTop();
-  void setPositionTop(float positionTop);
-  float getPositionBottom();
-  void setPositionBottom(float positionBottom);
-  float getPositionLeft();
-  void setPositionLeft(float positionLeft);
-  float getPositionRight();
-  void setPositionRight(float positionRight);
+  Spacing getPosition();
+  void setPosition(int spacingType, float position);
   float getStyleWidth();
   void setStyleWidth(float width);
   float getStyleHeight();
@@ -85,7 +79,6 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   float getLayoutWidth();
   float getLayoutHeight();
   CSSDirection getLayoutDirection();
-  void setDefaultPadding(int spacingType, float padding);
   CSSOverflow getOverflow();
   void setOverflow(CSSOverflow overflow);
   void setData(Object data);

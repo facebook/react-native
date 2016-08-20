@@ -51,10 +51,6 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ModalExample'),
   },
   {
-    key: 'NativeAnimationsExample',
-    module: require('./NativeAnimationsExample'),
-  },
-  {
     key: 'PickerExample',
     module: require('./PickerExample'),
   },
@@ -122,6 +118,10 @@ const APIExamples = [
     module: require('./AlertExample').AlertExample,
   },
   {
+    key: 'AnimatedExample',
+    module: require('./AnimatedExample'),
+  },
+  {
     key: 'AppStateExample',
     module: require('./AppStateExample'),
   },
@@ -166,6 +166,10 @@ const APIExamples = [
     module: require('./LayoutExample'),
   },
   {
+    key: 'NativeAnimationsExample',
+    module: require('./NativeAnimationsExample'),
+  },
+  {
     key: 'NavigationExperimentalExample',
     module: require('./NavigationExperimental/NavigationExperimentalExample'),
   },
@@ -184,6 +188,10 @@ const APIExamples = [
   {
     key: 'PointerEventsExample',
     module: require('./PointerEventsExample'),
+  },
+  {
+    key: 'RTLExample',
+    module: require('./RTLExample'),
   },
   {
     key: 'ShareExample',

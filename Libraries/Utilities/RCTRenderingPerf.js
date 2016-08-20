@@ -18,8 +18,8 @@ var invariant = require('fbjs/lib/invariant');
 var performanceNow = require('fbjs/lib/performanceNow');
 
 type perfModule = {
-  start: () => void;
-  stop: () => void;
+  start: () => void,
+  stop: () => void,
 }
 
 var perfModules = [];

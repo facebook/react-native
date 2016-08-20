@@ -20,8 +20,8 @@ var View = require('View');
 var requireNativeComponent = require('requireNativeComponent');
 
 type DefaultProps = {
-  values: Array<string>;
-  enabled: boolean;
+  values: Array<string>,
+  enabled: boolean,
 };
 
 var SEGMENTED_CONTROL_REFERENCE = 'segmentedcontrol';

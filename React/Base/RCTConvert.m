@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <CoreText/CoreText.h>
+
 #import "RCTConvert.h"
 
 #import <objc/message.h>
@@ -699,13 +701,17 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
         filePath = [filePath stringByAppendingPathExtension:@"png"];
       }
       image = [UIImage imageWithContentsOfFile:filePath];
+      if (!image) {
+        RCTLogConvertError(json, @"an image. File not found.");
+      }
     }
   } else if ([scheme isEqualToString:@"data"]) {
     image = [UIImage imageWithData:[NSData dataWithContentsOfURL:URL]];
   } else if ([scheme isEqualToString:@"http"] && imageSource.packagerAsset) {
     image = [UIImage imageWithData:[NSData dataWithContentsOfURL:URL]];
   } else {
-    RCTLogConvertError(json, @"an image. Only local files or data URIs are supported");
+    RCTLogConvertError(json, @"an image. Only local files or data URIs are supported.");
+    return nil;
   }
 
   CGFloat scale = imageSource.scale;

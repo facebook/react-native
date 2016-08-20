@@ -46,6 +46,8 @@ import com.facebook.csslayout.Spacing;
 /* package */ class ReactViewBackgroundDrawable extends Drawable {
 
   private static final int DEFAULT_BORDER_COLOR = Color.BLACK;
+  private static final int DEFAULT_BORDER_RGB = 0x00FFFFFF & DEFAULT_BORDER_COLOR;
+  private static final int DEFAULT_BORDER_ALPHA = (0xFF000000 & DEFAULT_BORDER_COLOR) >>> 24;
 
   private static enum BorderStyle {
     SOLID,
@@ -73,7 +75,8 @@ import com.facebook.csslayout.Spacing;
 
   /* Value at Spacing.ALL index used for rounded borders, whole array used by rectangular borders */
   private @Nullable Spacing mBorderWidth;
-  private @Nullable Spacing mBorderColor;
+  private @Nullable Spacing mBorderRGB;
+  private @Nullable Spacing mBorderAlpha;
   private @Nullable BorderStyle mBorderStyle;
 
   /* Used for rounded border and rounded background */
@@ -142,7 +145,7 @@ import com.facebook.csslayout.Spacing;
       super.getOutline(outline);
       return;
     }
-    if((!CSSConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) || mBorderCornerRadii != null) {
+    if ((!CSSConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) || mBorderCornerRadii != null) {
       updatePath();
 
       outline.setConvexPath(mPathForBorderRadiusOutline);
@@ -164,16 +167,29 @@ import com.facebook.csslayout.Spacing;
     }
   }
 
-  public void setBorderColor(int position, float color) {
-    if (mBorderColor == null) {
-      mBorderColor = new Spacing();
-      mBorderColor.setDefault(Spacing.LEFT, DEFAULT_BORDER_COLOR);
-      mBorderColor.setDefault(Spacing.TOP, DEFAULT_BORDER_COLOR);
-      mBorderColor.setDefault(Spacing.RIGHT, DEFAULT_BORDER_COLOR);
-      mBorderColor.setDefault(Spacing.BOTTOM, DEFAULT_BORDER_COLOR);
+  public void setBorderColor(int position, float rgb, float alpha) {
+    this.setBorderRGB(position, rgb);
+    this.setBorderAlpha(position, alpha);
+  }
+
+  private void setBorderRGB(int position, float rgb) {
+    // set RGB component
+    if (mBorderRGB == null) {
+      mBorderRGB = new Spacing(DEFAULT_BORDER_RGB);
     }
-    if (!FloatUtil.floatsEqual(mBorderColor.getRaw(position), color)) {
-      mBorderColor.set(position, color);
+    if (!FloatUtil.floatsEqual(mBorderRGB.getRaw(position), rgb)) {
+      mBorderRGB.set(position, rgb);
+      invalidateSelf();
+    }
+  }
+
+  private void setBorderAlpha(int position, float alpha) {
+    // set Alpha component
+    if (mBorderAlpha == null) {
+      mBorderAlpha = new Spacing(DEFAULT_BORDER_ALPHA);
+    }
+    if (!FloatUtil.floatsEqual(mBorderAlpha.getRaw(position), alpha)) {
+      mBorderAlpha.set(position, alpha);
       invalidateSelf();
     }
   }
@@ -267,7 +283,6 @@ import com.facebook.csslayout.Spacing;
     float bottomRightRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[2]) ? mBorderCornerRadii[2] : defaultBorderRadius;
     float bottomLeftRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[3]) ? mBorderCornerRadii[3] : defaultBorderRadius;
 
-
     mPathForBorderRadius.addRoundRect(
         mTempRectForBorderRadius,
         new float[] {
@@ -327,8 +342,11 @@ import com.facebook.csslayout.Spacing;
    * {@link #getFullBorderWidth}.
    */
   private int getFullBorderColor() {
-    return (mBorderColor != null && !CSSConstants.isUndefined(mBorderColor.getRaw(Spacing.ALL))) ?
-        (int) (long) mBorderColor.getRaw(Spacing.ALL) : DEFAULT_BORDER_COLOR;
+    float rgb = (mBorderRGB != null && !CSSConstants.isUndefined(mBorderRGB.getRaw(Spacing.ALL))) ?
+        mBorderRGB.getRaw(Spacing.ALL) : DEFAULT_BORDER_RGB;
+    float alpha = (mBorderAlpha != null && !CSSConstants.isUndefined(mBorderAlpha.getRaw(Spacing.ALL))) ?
+        mBorderAlpha.getRaw(Spacing.ALL) : DEFAULT_BORDER_ALPHA;
+    return ReactViewBackgroundDrawable.colorFromAlphaAndRGBComponents(alpha, rgb);
   }
 
   private void drawRectangularBackgroundWithBorders(Canvas canvas) {
@@ -419,8 +437,17 @@ import com.facebook.csslayout.Spacing;
     return mBorderWidth != null ? Math.round(mBorderWidth.get(position)) : 0;
   }
 
+  private static int colorFromAlphaAndRGBComponents(float alpha, float rgb) {
+    int rgbComponent = 0x00FFFFFF & (int)rgb;
+    int alphaComponent = 0xFF000000 & ((int)alpha) << 24;
+
+    return rgbComponent | alphaComponent;
+  }
+
   private int getBorderColor(int position) {
-    // Check ReactStylesDiffMap#getColorInt() to see why this is needed
-    return mBorderColor != null ? (int) (long) mBorderColor.get(position) : DEFAULT_BORDER_COLOR;
+    float rgb = mBorderRGB != null ? mBorderRGB.get(position) : DEFAULT_BORDER_RGB;
+    float alpha = mBorderAlpha != null ? mBorderAlpha.get(position) : DEFAULT_BORDER_ALPHA;
+
+    return ReactViewBackgroundDrawable.colorFromAlphaAndRGBComponents(alpha, rgb);
   }
 }

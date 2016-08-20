@@ -9,7 +9,10 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.annotations.ReactModule;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
@@ -463,12 +466,24 @@ public abstract class BaseJavaModule implements NativeModule {
   }
 
   @Override
+  public String getName() {
+    ReactModule module = getClass().getAnnotation(ReactModule.class);
+    if (module == null) {
+      throw new IllegalStateException(
+        getClass().getSimpleName() +
+          "module must have @ReactModule annotation or override getName()");
+    }
+    return module.name();
+  }
+
+  @Override
   public void initialize() {
     // do nothing
   }
 
   @Override
   public boolean canOverrideExistingModule() {
+    // TODO(t11394819): Make this final and use annotation
     return false;
   }
 
@@ -484,7 +499,11 @@ public abstract class BaseJavaModule implements NativeModule {
 
   @Override
   public boolean supportsWebWorkers() {
-    return false;
+    ReactModule module = getClass().getAnnotation(ReactModule.class);
+    if (module == null) {
+      return false;
+    }
+    return module.supportsWebWorkers();
   }
 
   private static char paramTypeToChar(Class paramClass) {

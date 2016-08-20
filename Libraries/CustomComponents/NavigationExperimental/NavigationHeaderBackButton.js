@@ -27,6 +27,7 @@ const React = require('react');
 const ReactNative = require('react-native');
 
 const {
+  I18nManager,
   Image,
   Platform,
   StyleSheet,
@@ -58,7 +59,8 @@ const styles = StyleSheet.create({
     height: 24,
     width: 24,
     margin: Platform.OS === 'ios' ? 10 : 16,
-    resizeMode: 'contain'
+    resizeMode: 'contain',
+    transform: [{scaleX: I18nManager.isRTL ? -1 : 1}],
   }
 });
 
