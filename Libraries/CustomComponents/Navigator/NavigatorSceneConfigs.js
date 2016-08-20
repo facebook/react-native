@@ -146,6 +146,15 @@ var FadeToTheRight = {
 };
 
 var FadeIn = {
+  transformTranslate: {
+    from: {x: 0, y: 0, z: 0},
+    to: {x: 0, y: 0, z: 0},
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
   opacity: {
     from: 0,
     to: 1,
@@ -158,6 +167,15 @@ var FadeIn = {
 };
 
 var FadeOut = {
+  transformTranslate: {
+    from: {x: 0, y: 0, z: 0},
+    to: {x: 0, y: 0, z: 0},
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
   opacity: {
     from: 1,
     to: 0,
