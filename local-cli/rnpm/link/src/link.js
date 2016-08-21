@@ -21,6 +21,9 @@ log.heading = 'rnpm-link';
 const commandStub = (cb) => cb();
 const dedupeAssets = (assets) => uniq(assets, asset => path.basename(asset));
 
+// Add previously linked logging level
+log.addLevel('linked', 2001, { fg: 'blue' }, 'prev-linked');
+
 const promisify = (func) => new Promise((resolve, reject) =>
   func((err, res) => err ? reject(err) : resolve(res))
 );
@@ -33,7 +36,7 @@ const linkDependencyAndroid = (androidProject, dependency) => {
   const isInstalled = isInstalledAndroid(androidProject, dependency.name);
 
   if (isInstalled) {
-    log.info(`Android module ${dependency.name} is already linked`);
+    log.linked(`Android module ${dependency.name} is already linked`);
     return null;
   }
 
@@ -59,7 +62,7 @@ const linkDependencyIOS = (iOSProject, dependency) => {
   const isInstalled = isInstalledIOS(iOSProject, dependency.config.ios);
 
   if (isInstalled) {
-    log.info(`iOS module ${dependency.name} is already linked`);
+    log.linked(`iOS module ${dependency.name} is already linked`);
     return;
   }
 
