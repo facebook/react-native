@@ -112,7 +112,7 @@ Next, let's add the more complex `region` prop.  We start by adding the native c
 
 ```objective-c
 // RCTMapManager.m
-RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
+RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, MKMapView)
 {
   [view setRegion:json ? [RCTConvert MKCoordinateRegion:json] : defaultView.region animated:YES];
 }
