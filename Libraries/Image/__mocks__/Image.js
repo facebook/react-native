@@ -9,10 +9,14 @@
  */
 'use strict';
 
+const ImageResizeMode = require('ImageResizeMode');
 const React = require('React');
 const {Component} = React;
 
 class Image extends Component {
+  static get resizeMode() {
+    return ImageResizeMode;
+  }
   render() {
     const {children, ...props} = this.props;
     return React.createElement('Image', props, children);

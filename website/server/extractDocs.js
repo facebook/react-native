@@ -550,6 +550,7 @@ const apis = [
   '../Libraries/BatchedBridge/BatchedBridgedModules/NativeModules.js',
   '../Libraries/Network/NetInfo.js',
   '../Libraries/Interaction/PanResponder.js',
+  '../Libraries/PermissionsAndroid/PermissionsAndroid.js',
   '../Libraries/Utilities/PixelRatio.js',
   '../Libraries/PushNotificationIOS/PushNotificationIOS.js',
   '../Libraries/Settings/Settings.ios.js',

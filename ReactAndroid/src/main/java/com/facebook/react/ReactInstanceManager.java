@@ -97,8 +97,22 @@ public abstract class ReactInstanceManager {
   /**
    * Call this from {@link Activity#onPause()}. This notifies any listening modules so they can do
    * any necessary cleanup.
+   *
+   * @deprecated Use {@link #onHostPause(Activity)} instead.
    */
+  @Deprecated
   public abstract void onHostPause();
+
+  /**
+   * Call this from {@link Activity#onPause()}. This notifies any listening modules so they can do
+   * any necessary cleanup. The passed Activity is the current Activity being paused. This will
+   * always be the foreground activity that would be returned by
+   * {@link ReactContext#getCurrentActivity()}.
+   *
+   * @param activity the activity being paused
+   */
+  public abstract void onHostPause(Activity activity);
+
   /**
    * Use this method when the activity resumes to enable invoking the back button directly from JS.
    *
@@ -117,9 +131,26 @@ public abstract class ReactInstanceManager {
   /**
    * Call this from {@link Activity#onDestroy()}. This notifies any listening modules so they can do
    * any necessary cleanup.
+   *
+   * @deprecated use {@link #onHostDestroy(Activity)} instead
    */
+  @Deprecated
   public abstract void onHostDestroy();
-  public abstract void onActivityResult(int requestCode, int resultCode, Intent data);
+
+  /**
+   * Call this from {@link Activity#onDestroy()}. This notifies any listening modules so they can do
+   * any necessary cleanup. If the activity being destroyed is not the current activity, no modules
+   * are notified.
+   *
+   * @param activity the activity being destroyed
+   */
+  public abstract void onHostDestroy(Activity activity);
+
+  public abstract void onActivityResult(
+    Activity activity,
+    int requestCode,
+    int resultCode,
+    Intent data);
   public abstract void showDevOptionsDialog();
 
   /**
@@ -202,7 +233,6 @@ public abstract class ReactInstanceManager {
     protected @Nullable Activity mCurrentActivity;
     protected @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
     protected @Nullable RedBoxHandler mRedBoxHandler;
-    protected boolean mUseOldBridge;
 
     protected Builder() {
     }
@@ -330,11 +360,6 @@ public abstract class ReactInstanceManager {
       return this;
     }
 
-    public Builder setUseOldBridge(boolean enable) {
-      mUseOldBridge = enable;
-      return this;
-    }
-
     /**
      * Instantiates a new {@link ReactInstanceManagerImpl}.
      * Before calling {@code build}, the following must be called:
@@ -351,10 +376,6 @@ public abstract class ReactInstanceManager {
           "Application property has not been set with this builder");
 
       Assertions.assertCondition(
-          mJSBundleLoader == null || !mUseOldBridge,
-          "JSBundleLoader can't be used with the old bridge");
-
-      Assertions.assertCondition(
           mUseDeveloperSupport || mJSBundleFile != null || mJSBundleLoader != null,
           "JS Bundle File has to be provided when dev support is disabled");
 
@@ -367,38 +388,21 @@ public abstract class ReactInstanceManager {
         mUIImplementationProvider = new UIImplementationProvider();
       }
 
-      if (mUseOldBridge) {
-        return new ReactInstanceManagerImpl(
-            mApplication,
-            mCurrentActivity,
-            mDefaultHardwareBackBtnHandler,
-            mJSBundleFile,
-            mJSMainModuleName,
-            mPackages,
-            mUseDeveloperSupport,
-            mBridgeIdleDebugListener,
-            Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
-            mUIImplementationProvider,
-            mNativeModuleCallExceptionHandler,
-            mJSCConfig,
-            mRedBoxHandler);
-      } else {
-        return new XReactInstanceManagerImpl(
-            mApplication,
-            mCurrentActivity,
-            mDefaultHardwareBackBtnHandler,
-            (mJSBundleLoader == null && mJSBundleFile != null) ?
-              JSBundleLoader.createFileLoader(mApplication, mJSBundleFile) : mJSBundleLoader,
-            mJSMainModuleName,
-            mPackages,
-            mUseDeveloperSupport,
-            mBridgeIdleDebugListener,
-            Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
-            mUIImplementationProvider,
-            mNativeModuleCallExceptionHandler,
-            mJSCConfig,
-            mRedBoxHandler);
-      }
+      return new XReactInstanceManagerImpl(
+          mApplication,
+          mCurrentActivity,
+          mDefaultHardwareBackBtnHandler,
+          (mJSBundleLoader == null && mJSBundleFile != null) ?
+            JSBundleLoader.createFileLoader(mApplication, mJSBundleFile) : mJSBundleLoader,
+          mJSMainModuleName,
+          mPackages,
+          mUseDeveloperSupport,
+          mBridgeIdleDebugListener,
+          Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
+          mUIImplementationProvider,
+          mNativeModuleCallExceptionHandler,
+          mJSCConfig,
+          mRedBoxHandler);
     }
   }
 }

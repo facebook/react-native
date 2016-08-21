@@ -16,8 +16,9 @@ import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.facebook.csslayout.CSSDirection;
 import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
@@ -33,7 +34,7 @@ import com.facebook.react.views.text.ReactTextUpdate;
 
 @VisibleForTesting
 public class ReactTextInputShadowNode extends ReactTextShadowNode implements
-    CSSNode.MeasureFunction {
+    CSSNodeAPI.MeasureFunction {
 
   private @Nullable EditText mEditText;
   private @Nullable float[] mComputedPadding;
@@ -57,16 +58,16 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT));
 
-    setDefaultPadding(Spacing.LEFT, mEditText.getPaddingLeft());
+    setDefaultPadding(Spacing.START, mEditText.getPaddingStart());
     setDefaultPadding(Spacing.TOP, mEditText.getPaddingTop());
-    setDefaultPadding(Spacing.RIGHT, mEditText.getPaddingRight());
+    setDefaultPadding(Spacing.END, mEditText.getPaddingEnd());
     setDefaultPadding(Spacing.BOTTOM, mEditText.getPaddingBottom());
     mComputedPadding = spacingToFloatArray(getPadding());
   }
 
   @Override
   public void measure(
-      CSSNode node,
+      CSSNodeAPI node,
       float width,
       CSSMeasureMode widthMode,
       float height,
@@ -81,9 +82,9 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
             (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)) : mFontSize);
     mComputedPadding = spacingToFloatArray(getPadding());
     editText.setPadding(
-        (int) Math.ceil(getPadding().get(Spacing.LEFT)),
+        (int) Math.ceil(getPadding().get(Spacing.START)),
         (int) Math.ceil(getPadding().get(Spacing.TOP)),
-        (int) Math.ceil(getPadding().get(Spacing.RIGHT)),
+        (int) Math.ceil(getPadding().get(Spacing.END)),
         (int) Math.ceil(getPadding().get(Spacing.BOTTOM)));
 
     if (mNumberOfLines != UNSET) {
@@ -112,7 +113,11 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
     super.onCollectExtraUpdates(uiViewOperationQueue);
     if (mComputedPadding != null) {
-      uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), mComputedPadding);
+      float[] updatedPadding = mComputedPadding;
+      if (getLayoutDirection() == CSSDirection.RTL) {
+        updatedPadding = spacingToFloatArrayForRTL(getPadding());
+      }
+      uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), updatedPadding);
       mComputedPadding = null;
     }
 
@@ -138,11 +143,22 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     markUpdated();
   }
 
-  private static float[] spacingToFloatArray(Spacing spacing) {
+  private float[] spacingToFloatArray(Spacing spacing) {
     return new float[] {
-        spacing.get(Spacing.LEFT),
+        spacing.get(Spacing.START),
         spacing.get(Spacing.TOP),
-        spacing.get(Spacing.RIGHT),
+        spacing.get(Spacing.END),
+        spacing.get(Spacing.BOTTOM),
+    };
+  }
+
+  // Since TextInput communicate with native component but not CSSLayout,
+  // So flip the padding for RTL is necessary when the padding is updated
+  private float[] spacingToFloatArrayForRTL(Spacing spacing) {
+    return new float[] {
+        spacing.get(Spacing.END),
+        spacing.get(Spacing.TOP),
+        spacing.get(Spacing.START),
         spacing.get(Spacing.BOTTOM),
     };
   }

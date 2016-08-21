@@ -43,6 +43,8 @@ import javax.annotation.Nullable;
       @Nullable AnimatedNode node = mNativeAnimatedNodesManager.getNodeById(entry.getValue());
       if (node == null) {
         throw new IllegalArgumentException("Mapped style node does not exists");
+      } else if (node instanceof TransformAnimatedNode) {
+        ((TransformAnimatedNode) node).collectViewUpdates(propsMap);
       } else if (node instanceof ValueAnimatedNode) {
         propsMap.putDouble(entry.getKey(), ((ValueAnimatedNode) node).mValue);
       } else {

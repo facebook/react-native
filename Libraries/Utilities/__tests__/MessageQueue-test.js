@@ -64,7 +64,7 @@ describe('MessageQueue', function() {
 
   it('should enqueue native calls', () => {
     queue.__nativeCall(0, 1, [2]);
-    let flushedQueue = queue.flushedQueue();
+    const flushedQueue = queue.flushedQueue();
     assertQueue(flushedQueue, 0, 0, 1, [2]);
   });
 
@@ -77,13 +77,13 @@ describe('MessageQueue', function() {
 
   it('should generate native modules', () => {
     queue.RemoteModules.RemoteModule1.remoteMethod1('foo');
-    let flushedQueue = queue.flushedQueue();
+    const flushedQueue = queue.flushedQueue();
     assertQueue(flushedQueue, 0, 0, 0, ['foo']);
   });
 
   it('should store callbacks', () => {
     queue.RemoteModules.RemoteModule1.remoteMethod2('foo', () => {}, () => {});
-    let flushedQueue = queue.flushedQueue();
+    const flushedQueue = queue.flushedQueue();
     assertQueue(flushedQueue, 0, 0, 1, ['foo', 0, 1]);
   });
 
@@ -111,8 +111,8 @@ describe('MessageQueue', function() {
 
     // First we're going to call into this (overriden) test hook pretending to
     // be a remote module making a "local" invocation into JS.
-    let onFail = jasmine.createSpy();
-    let onSucc = jasmine.createSpy();
+    const onFail = jasmine.createSpy();
+    const onSucc = jasmine.createSpy();
     MessageQueueTestModule1.testHook1 = function() {
       // Then inside of this local module, we're going to fire off a remote
       // request.
@@ -173,7 +173,7 @@ describe('MessageQueue', function() {
     var secondSuccCBID = resultingRemoteInvocations[2][1][3];
 
     // Trigger init
-    queue.RemoteModules
+    queue.RemoteModules;
     // Handle the first remote invocation by signaling failure.
     // -------------------------------------------------------
     queue.__invokeCallback(firstFailCBID, ['firstFailure']);

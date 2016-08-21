@@ -1072,14 +1072,17 @@ var Navigator = React.createClass({
     });
   },
 
-  _popN: function(n) {
-    if (n === 0) {
+  /**
+   * Go back N scenes at once. When N=1, behavior matches `pop()`.
+   * When N is invalid(negative or bigger than current routes count), do nothing.
+   * @param {number} n The number of scenes to pop. Should be an integer.
+   */
+  popN: function(n) {
+    invariant(typeof n === 'number', 'Must supply a number to popN');
+    n = parseInt(n, 10);
+    if (n <= 0 || this.state.presentedIndex - n < 0) {
       return;
     }
-    invariant(
-      this.state.presentedIndex - n >= 0,
-      'Cannot pop below zero'
-    );
     var popIndex = this.state.presentedIndex - n;
     var presentedRoute = this.state.routeStack[this.state.presentedIndex];
     var popSceneConfig = this.props.configureScene(presentedRoute); // using the scene config of the currently presented view
@@ -1109,9 +1112,7 @@ var Navigator = React.createClass({
       return;
     }
 
-    if (this.state.presentedIndex > 0) {
-      this._popN(1);
-    }
+    this.popN(1);
   },
 
   /**
@@ -1185,7 +1186,7 @@ var Navigator = React.createClass({
       'Calling popToRoute for a route that doesn\'t exist!'
     );
     var numToPop = this.state.presentedIndex - indexOfRoute;
-    this._popN(numToPop);
+    this.popN(numToPop);
   },
 
   /**
@@ -1209,9 +1210,7 @@ var Navigator = React.createClass({
     this.replaceAtIndex(route, 0, () => {
       // Do not use popToRoute here, because race conditions could prevent the
       // route from existing at this time. Instead, just go to index 0
-      if (this.state.presentedIndex > 0) {
-        this._popN(this.state.presentedIndex);
-      }
+      this.popN(this.state.presentedIndex);
     });
   },
 
@@ -1259,7 +1258,7 @@ var Navigator = React.createClass({
   },
 
   _renderNavigationBar: function() {
-    let { navigationBar } = this.props;
+    const { navigationBar } = this.props;
     if (!navigationBar) {
       return null;
     }

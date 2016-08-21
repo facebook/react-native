@@ -103,7 +103,7 @@ $ sudo gem install cocoapods
 
 <block class="objc" />
 
-Assume the [app for integration](https://github.com/JoelMarcey/iOS-2048) is a [2048](https://en.wikipedia.org/wiki/2048_(video_game) game. Here is what the main menu of the native application looks like without React Native.
+Assume the [app for integration](https://github.com/JoelMarcey/iOS-2048) is a [2048](https://en.wikipedia.org/wiki/2048_(video_game)) game. Here is what the main menu of the native application looks like without React Native.
 
 <block class="swift" />
 
@@ -630,6 +630,16 @@ public class MyReactActivity extends Activity implements DefaultHardwareBackBtnH
     }
 }
 ```
+We need set the theme of `MyReactActivity` to `Theme.AppCompat.Light.NoActionBar` beause some components rely on this theme.
+```xml
+<activity
+  android:name=".MyReactActivity"
+  android:label="@string/app_name"
+  android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+</activity>
+```
+
+
 
 > A `ReactInstanceManager` can be shared amongst multiple activities and/or fragments. You will want to make your own `ReactFragment` or `ReactActivity` and have a singleton *holder* that holds a `ReactInstanceManager`. When you need the `ReactInstanceManager` (e.g., to hook up the `ReactInstanceManager` to the lifecycle of those Activities or Fragments) use the one provided by the singleton.
 
@@ -641,7 +651,7 @@ protected void onPause() {
     super.onPause();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onHostPause();
+        mReactInstanceManager.onPause();
     }
 }
 
@@ -650,7 +660,7 @@ protected void onResume() {
     super.onResume();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onHostResume(this, this);
+        mReactInstanceManager.onResume(this, this);
     }
 }
 
@@ -659,7 +669,7 @@ protected void onDestroy() {
     super.onDestroy();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onHostDestroy();
+        mReactInstanceManager.onDestroy();
     }
 }
 ```

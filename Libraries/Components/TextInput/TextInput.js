@@ -47,6 +47,15 @@ if (Platform.OS === 'android') {
 
 type Event = Object;
 
+const DataDetectorTypes = [
+  'phoneNumber',
+  'link',
+  'address',
+  'calendarEvent',
+  'none',
+  'all',
+];
+
 /**
  * A foundational component for inputting text into the app via a
  * keyboard. Props provide configurability for several features, such as
@@ -441,6 +450,29 @@ const TextInput = React.createClass({
      * @platform android
      */
     inlineImagePadding: PropTypes.number,
+
+    /**
+     * Determines the types of data converted to clickable URLs in the text input.
+     * Only valid if `multiline={true}` and `editable={false}`.
+     * By default no data types are detected.
+     *
+     * You can provide one type or an array of many types.
+     *
+     * Possible values for `dataDetectorTypes` are:
+     *
+     * - `'phoneNumber'`
+     * - `'link'`
+     * - `'address'`
+     * - `'calendarEvent'`
+     * - `'none'`
+     * - `'all'`
+     *
+     * @platform ios
+     */
+    dataDetectorTypes: PropTypes.oneOfType([
+      PropTypes.oneOf(DataDetectorTypes),
+      PropTypes.arrayOf(PropTypes.oneOf(DataDetectorTypes)),
+    ]),
   },
 
   /**
@@ -596,6 +628,7 @@ const TextInput = React.createClass({
           onTextInput={this._onTextInput}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
           text={this._getText()}
+          dataDetectorTypes={this.props.dataDetectorTypes}
         />;
     }
 
@@ -625,7 +658,9 @@ const TextInput = React.createClass({
       };
     }
 
-    var autoCapitalize =
+    const props = Object.assign({}, this.props);
+    props.style = [this.props.style];
+    props.autoCapitalize =
       UIManager.AndroidTextInput.Constants.AutoCapitalizationType[this.props.autoCapitalize];
     var children = this.props.children;
     var childCount = 0;
@@ -638,45 +673,25 @@ const TextInput = React.createClass({
       children = <Text>{children}</Text>;
     }
 
-    var textContainer =
+    const textContainer =
       <AndroidTextInput
         ref="input"
-        style={[this.props.style]}
-        autoCapitalize={autoCapitalize}
-        autoCorrect={this.props.autoCorrect}
-        keyboardType={this.props.keyboardType}
+        {...props}
         mostRecentEventCount={0}
-        multiline={this.props.multiline}
-        numberOfLines={this.props.numberOfLines}
-        maxLength={this.props.maxLength}
         onFocus={this._onFocus}
         onBlur={this._onBlur}
         onChange={this._onChange}
-        onContentSizeChange={this.props.onContentSizeChange}
         onSelectionChange={onSelectionChange}
         onTextInput={this._onTextInput}
-        onEndEditing={this.props.onEndEditing}
-        onSubmitEditing={this.props.onSubmitEditing}
-        blurOnSubmit={this.props.blurOnSubmit}
-        onLayout={this.props.onLayout}
-        placeholder={this.props.placeholder}
-        placeholderTextColor={this.props.placeholderTextColor}
-        secureTextEntry={this.props.secureTextEntry}
-        selectionColor={this.props.selectionColor}
         text={this._getText()}
-        underlineColorAndroid={this.props.underlineColorAndroid}
-        inlineImageLeft={this.props.inlineImageLeft}
-        inlineImagePadding={this.props.inlineImagePadding}
         children={children}
-        editable={this.props.editable}
-        selectTextOnFocus={this.props.selectTextOnFocus}
-        returnKeyType={this.props.returnKeyType}
-        returnKeyLabel={this.props.returnKeyLabel}
       />;
 
     return (
       <TouchableWithoutFeedback
+        onLayout={this.props.onLayout}
         onPress={this._onPress}
+        shouldBlockResponder={this.isFocused}
         accessible={this.props.accessible}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}

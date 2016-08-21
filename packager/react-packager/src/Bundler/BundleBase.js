@@ -59,8 +59,10 @@ class BundleBase {
   }
 
   finalize(options) {
-    Object.freeze(this._modules);
-    Object.freeze(this._assets);
+    if (!options.allowUpdates) {
+      Object.freeze(this._modules);
+      Object.freeze(this._assets);
+    }
 
     this._finalized = true;
   }
@@ -74,6 +76,10 @@ class BundleBase {
 
     this._source = this._modules.map((module) => module.code).join('\n');
     return this._source;
+  }
+
+  invalidateSource() {
+    this._source = null;
   }
 
   assertFinalized(message) {

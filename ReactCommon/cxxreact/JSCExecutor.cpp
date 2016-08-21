@@ -40,7 +40,7 @@
 #include "JSCMemory.h"
 #endif
 
-#ifdef WITH_FB_JSC_TUNING
+#if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
 #include <jsc_config_android.h>
 #endif
 
@@ -188,7 +188,7 @@ void JSCExecutor::destroy() {
 void JSCExecutor::initOnJSVMThread() throw(JSException) {
   SystraceSection s("JSCExecutor.initOnJSVMThread");
 
-  #if defined(WITH_FB_JSC_TUNING)
+  #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
   configureJSCForAndroid(m_jscConfig);
   #endif
 
@@ -237,7 +237,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   addJSCPerfStatsHooks(m_context);
   #endif
 
-  #if defined(WITH_FB_JSC_TUNING)
+  #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
   configureJSContextForAndroid(m_context, m_jscConfig, m_deviceCacheDir);
   #endif
 }
@@ -273,6 +273,10 @@ void JSCExecutor::loadApplicationScript(
   if (jsScriptBigString->encoding() != JSBigMmapString::Encoding::Ascii) {
     LOG(WARNING) << "Bundle is not ASCII encoded - falling back to the slow path";
     return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
+  }
+
+  if (flags & UNPACKED_BC_CACHE) {
+    configureJSCBCCache(m_context, bundlePath);
   }
 
   String jsSourceURL(sourceURL.c_str());

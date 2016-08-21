@@ -51,7 +51,7 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
   // maxLines can only be set in master view (block), doesn't really make sense to set in a span
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = ViewDefaults.NUMBER_OF_LINES)
   public void setNumberOfLines(ReactTextView view, int numberOfLines) {
-    view.setMaxLines(numberOfLines);
+    view.setMaxLines(numberOfLines == 0 ? ViewDefaults.NUMBER_OF_LINES : numberOfLines);
     view.setEllipsize(TextUtils.TruncateAt.END);
   }
 

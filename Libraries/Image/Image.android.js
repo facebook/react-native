@@ -130,6 +130,26 @@ var Image = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
+    /**
+     * Determines how to resize the image when the frame doesn't match the raw
+     * image dimensions.
+     *
+     * 'cover': Scale the image uniformly (maintain the image's aspect ratio)
+     * so that both dimensions (width and height) of the image will be equal
+     * to or larger than the corresponding dimension of the view (minus padding).
+     *
+     * 'contain': Scale the image uniformly (maintain the image's aspect ratio)
+     * so that both dimensions (width and height) of the image will be equal to
+     * or less than the corresponding dimension of the view (minus padding).
+     *
+     * 'stretch': Scale width and height independently, This may change the
+     * aspect ratio of the src.
+     *
+     * 'center': Scale the image down so that it is completely visible,
+     * if bigger than the area of the view.
+     * The image will not be scaled up.
+     */
+    resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch', 'center']),
   },
 
   statics: {
