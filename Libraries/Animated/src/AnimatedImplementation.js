@@ -1193,7 +1193,7 @@ class AnimatedModulo extends AnimatedWithChildren {
   }
 }
 
-class AnimatedClamp extends AnimatedWithChildren {
+class AnimatedDiffClamp extends AnimatedWithChildren {
   _a: Animated;
   _min: number;
   _max: number;
@@ -1730,12 +1730,12 @@ var modulo = function(
   return new AnimatedModulo(a, modulus);
 };
 
-var clamp = function(
+var diffClamp = function(
   a: Animated,
   min: number,
   max: number,
-): AnimatedClamp {
-  return new AnimatedClamp(a, min, max);
+): AnimatedDiffClamp {
+  return new AnimatedDiffClamp(a, min, max);
 };
 
 const _combineCallbacks = function(callback: ?EndCallback, config : AnimationConfig) {
@@ -2138,7 +2138,7 @@ module.exports = {
    * This is useful with scroll events, for example, to show the navbar when
    * scrolling up and to hide it when scrolling down.
    */
-  clamp,
+  diffClamp,
 
   /**
    * Starts an animation after the given delay.
