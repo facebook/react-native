@@ -23,6 +23,7 @@
 #import "RCTLog.h"
 
 NSString *const RCTErrorUnspecified = @"EUNSPECIFIED";
+NSString *const RCTErrorWithNoData = @"NULL";
 
 static NSString *__nullable _RCTJSONStringifyNoRetry(id __nullable jsonObject, NSError **error)
 {
@@ -423,6 +424,8 @@ NSDictionary<NSString *, id> *RCTJSErrorFromCodeMessageAndNSError(NSString *code
     errorInfo[@"domain"] = RCTErrorDomain;
   }
   errorInfo[@"code"] = code ?: RCTErrorUnspecified;
+  errorInfo[@"userInfo"] = error.userInfo?:RCTErrorWithNoData;
+
   // Allow for explicit overriding of the error message
   errorMessage = message ?: errorMessage;
 
