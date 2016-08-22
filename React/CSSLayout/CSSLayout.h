@@ -123,18 +123,18 @@ typedef void (*CSSPrintFunc)(void *context);
 
 // CSSNode
 CSSNodeRef CSSNodeNew();
-void CSSNodeInit(CSSNodeRef node);
-void CSSNodeFree(CSSNodeRef node);
+void CSSNodeInit(const CSSNodeRef node);
+void CSSNodeFree(const CSSNodeRef node);
 
-void CSSNodeInsertChild(CSSNodeRef node, CSSNodeRef child, uint32_t index);
-void CSSNodeRemoveChild(CSSNodeRef node, CSSNodeRef child);
-CSSNodeRef CSSNodeGetChild(CSSNodeRef node, uint32_t index);
-uint32_t CSSNodeChildCount(CSSNodeRef node);
+void CSSNodeInsertChild(const CSSNodeRef node, const CSSNodeRef child, const uint32_t index);
+void CSSNodeRemoveChild(const CSSNodeRef node, const CSSNodeRef child);
+CSSNodeRef CSSNodeGetChild(const CSSNodeRef node, const uint32_t index);
+uint32_t CSSNodeChildCount(const CSSNodeRef node);
 
-void CSSNodeCalculateLayout(CSSNodeRef node,
-                            float availableWidth,
-                            float availableHeight,
-                            CSSDirection parentDirection);
+void CSSNodeCalculateLayout(const CSSNodeRef node,
+                            const float availableWidth,
+                            const float availableHeight,
+                            const CSSDirection parentDirection);
 
 // Mark a node as dirty. Only valid for nodes with a custom measure function
 // set.
@@ -142,26 +142,26 @@ void CSSNodeCalculateLayout(CSSNodeRef node,
 // measure functions
 // depends on information not known to CSSLayout they must perform this dirty
 // marking manually.
-void CSSNodeMarkDirty(CSSNodeRef node);
-bool CSSNodeIsDirty(CSSNodeRef node);
+void CSSNodeMarkDirty(const CSSNodeRef node);
+bool CSSNodeIsDirty(const CSSNodeRef node);
 
-void CSSNodePrint(CSSNodeRef node, CSSPrintOptions options);
+void CSSNodePrint(const CSSNodeRef node, const CSSPrintOptions options);
 
-bool CSSValueIsUndefined(float value);
+bool CSSValueIsUndefined(const float value);
 
-#define CSS_NODE_PROPERTY(type, name, paramName)          \
-  void CSSNodeSet##name(CSSNodeRef node, type paramName); \
-  type CSSNodeGet##name(CSSNodeRef node);
+#define CSS_NODE_PROPERTY(type, name, paramName)                \
+  void CSSNodeSet##name(const CSSNodeRef node, type paramName); \
+  type CSSNodeGet##name(const CSSNodeRef node);
 
-#define CSS_NODE_STYLE_PROPERTY(type, name, paramName)         \
-  void CSSNodeStyleSet##name(CSSNodeRef node, type paramName); \
-  type CSSNodeStyleGet##name(CSSNodeRef node);
+#define CSS_NODE_STYLE_PROPERTY(type, name, paramName)                     \
+  void CSSNodeStyleSet##name(const CSSNodeRef node, const type paramName); \
+  type CSSNodeStyleGet##name(const CSSNodeRef node);
 
-#define CSS_NODE_STYLE_EDGE_PROPERTY(type, name, paramName)                  \
-  void CSSNodeStyleSet##name(CSSNodeRef node, CSSEdge edge, type paramName); \
-  type CSSNodeStyleGet##name(CSSNodeRef node, CSSEdge edge);
+#define CSS_NODE_STYLE_EDGE_PROPERTY(type, name, paramName)                                    \
+  void CSSNodeStyleSet##name(const CSSNodeRef node, const CSSEdge edge, const type paramName); \
+  type CSSNodeStyleGet##name(const CSSNodeRef node, const CSSEdge edge);
 
-#define CSS_NODE_LAYOUT_PROPERTY(type, name) type CSSNodeLayoutGet##name(CSSNodeRef node);
+#define CSS_NODE_LAYOUT_PROPERTY(type, name) type CSSNodeLayoutGet##name(const CSSNodeRef node);
 
 CSS_NODE_PROPERTY(void *, Context, context);
 CSS_NODE_PROPERTY(CSSMeasureFunc, MeasureFunc, measureFunc);
