@@ -31,7 +31,6 @@ export type Command = {
 };
 
 const documentedCommands = [
-  // $FlowFixMe: For some reason it reports missing `android/android` module
   require('./android/android'),
   require('./server/server'),
   require('./runIOS/runIOS'),
