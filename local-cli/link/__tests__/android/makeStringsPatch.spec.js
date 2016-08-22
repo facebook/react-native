@@ -10,10 +10,8 @@ describe('makeStringsPatch', () => {
       keyA: 'valueA',
     };
 
-    const hasCorrectPatch = makeStringsPatch(params, 'module').patch
-      .indexOf('<string moduleConfig="true" name="module_keyA">valueA</string>') >= 0;
-
-    expect(hasCorrectPatch).toBe(true);
+    expect(makeStringsPatch(params, 'module').patch)
+      .toContain('<string moduleConfig="true" name="module_keyA">valueA</string>');
   });
 
   it('should export an empty patch if no params given', () => {
