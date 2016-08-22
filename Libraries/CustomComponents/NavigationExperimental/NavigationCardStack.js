@@ -64,10 +64,12 @@ type Props = {
   cardStyle?: any,
   style: any,
   gestureResponseDistance?: ?number,
+  enableGestures: ?boolean
 };
 
 type DefaultProps = {
   direction: NavigationGestureDirection,
+  enableGestures: boolean
 };
 
 /**
@@ -143,6 +145,11 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     gestureResponseDistance: PropTypes.number,
 
     /**
+     * Enable gestures. Default value is true
+     */
+    enableGestures: PropTypes.bool,
+
+    /**
      * The controlled navigation state. Typically, the navigation state
      * look like this:
      *
@@ -183,6 +190,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
 
   static defaultProps: DefaultProps = {
     direction: Directions.HORIZONTAL,
+    enableGestures: true,
   };
 
   constructor(props: Props, context: any) {
@@ -236,14 +244,18 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
       NavigationCardStackStyleInterpolator.forVertical(props) :
       NavigationCardStackStyleInterpolator.forHorizontal(props);
 
-    const panHandlersProps = {
-      ...props,
-      onNavigateBack: this.props.onNavigateBack,
-      gestureResponseDistance: this.props.gestureResponseDistance,
-    };
-    const panHandlers = isVertical ?
-      NavigationCardStackPanResponder.forVertical(panHandlersProps) :
-      NavigationCardStackPanResponder.forHorizontal(panHandlersProps);
+    let panHandlers = null;
+
+    if (this.props.enableGestures) {
+      const panHandlersProps = {
+        ...props,
+        onNavigateBack: this.props.onNavigateBack,
+        gestureResponseDistance: this.props.gestureResponseDistance,
+      };
+      panHandlers = isVertical ?
+        NavigationCardStackPanResponder.forVertical(panHandlersProps) :
+        NavigationCardStackPanResponder.forHorizontal(panHandlersProps);
+    }
 
     return (
       <NavigationCard

@@ -80,10 +80,18 @@ if [[ "$CONFIGURATION" = "Debug" && "$PLATFORM_NAME" != "iphonesimulator" ]]; th
   echo "$IP.xip.io" > "$DEST/ip.txt"
 fi
 
+BUNDLE_FILE="$DEST/main.jsbundle"
+
 $NODE_BINARY "$REACT_NATIVE_DIR/local-cli/cli.js" bundle \
   --entry-file "$ENTRY_FILE" \
   --platform ios \
   --dev $DEV \
   --reset-cache \
-  --bundle-output "$DEST/main.jsbundle" \
+  --bundle-output "$BUNDLE_FILE" \
   --assets-dest "$DEST"
+
+if [[ ! $DEV && ! -f "$BUNDLE_FILE" ]]; then
+  echo "error: File $BUNDLE_FILE does not exist. This must be a bug with" >&2
+  echo "React Native, please report it here: https://github.com/facebook/react-native/issues"
+  exit 2
+fi

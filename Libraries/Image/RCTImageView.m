@@ -273,8 +273,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     }
 
     RCTImageSource *source = _imageSource;
-    CGFloat blurRadius = _blurRadius;
     __weak RCTImageView *weakSelf = self;
+    RCTImageLoaderCompletionBlock completionHandler = ^(NSError *error, UIImage *loadedImage) {
+      [weakSelf imageLoaderLoadedImage:loadedImage error:error forImageSource:source];
+    };
+
     _reloadImageCancellationBlock =
     [_bridge.imageLoader loadImageWithURLRequest:source.request
                                             size:imageSize
@@ -282,54 +285,61 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                          clipped:NO
                                       resizeMode:_resizeMode
                                    progressBlock:progressHandler
-                                 completionBlock:^(NSError *error, UIImage *loadedImage) {
-
-      RCTImageView *strongSelf = weakSelf;
-      void (^setImageBlock)(UIImage *) = ^(UIImage *image) {
-        if (![source isEqual:strongSelf.imageSource]) {
-          // Bail out if source has changed since we started loading
-          return;
-        }
-        if (image.reactKeyframeAnimation) {
-          [strongSelf.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
-        } else {
-          [strongSelf.layer removeAnimationForKey:@"contents"];
-          strongSelf.image = image;
-        }
-        if (error) {
-          if (strongSelf->_onError) {
-            strongSelf->_onError(@{ @"error": error.localizedDescription });
-          }
-        } else {
-          if (strongSelf->_onLoad) {
-            strongSelf->_onLoad(nil);
-          }
-        }
-        if (strongSelf->_onLoadEnd) {
-          strongSelf->_onLoadEnd(nil);
-        }
-      };
-
-      if (blurRadius > __FLT_EPSILON__) {
-        // Blur on a background thread to avoid blocking interaction
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-          UIImage *image = RCTBlurredImageWithRadius(loadedImage, blurRadius);
-          RCTExecuteOnMainQueue(^{
-            setImageBlock(image);
-          });
-        });
-      } else {
-        // No blur, so try to set the image on the main thread synchronously to minimize image
-        // flashing. (For instance, if this view gets attached to a window, then -didMoveToWindow
-        // calls -reloadImage, and we want to set the image synchronously if possible so that the
-        // image property is set in the same CATransaction that attaches this view to the window.)
-        RCTExecuteOnMainQueue(^{
-          setImageBlock(loadedImage);
-        });
-      }
-    }];
+                                 completionBlock:completionHandler];
   } else {
     [self clearImage];
+  }
+}
+
+- (void)imageLoaderLoadedImage:(UIImage *)loadedImage error:(NSError *)error forImageSource:(RCTImageSource *)source
+{
+  if (![source isEqual:_imageSource]) {
+    // Bail out if source has changed since we started loading
+    return;
+  }
+
+  if (error) {
+    if (_onError) {
+      _onError(@{ @"error": error.localizedDescription });
+    }
+    if (_onLoadEnd) {
+      _onLoadEnd(nil);
+    }
+    return;
+  }
+
+  void (^setImageBlock)(UIImage *) = ^(UIImage *image) {
+    if (image.reactKeyframeAnimation) {
+      [self.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
+    } else {
+      [self.layer removeAnimationForKey:@"contents"];
+      self.image = image;
+    }
+
+    if (self->_onLoad) {
+      self->_onLoad(nil);
+    }
+    if (self->_onLoadEnd) {
+      self->_onLoadEnd(nil);
+    }
+  };
+
+  if (_blurRadius > __FLT_EPSILON__) {
+    // Blur on a background thread to avoid blocking interaction
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+      UIImage *blurredImage = RCTBlurredImageWithRadius(loadedImage, self->_blurRadius);
+      RCTExecuteOnMainQueue(^{
+        setImageBlock(blurredImage);
+      });
+    });
+  } else {
+    // No blur, so try to set the image on the main thread synchronously to minimize image
+    // flashing. (For instance, if this view gets attached to a window, then -didMoveToWindow
+    // calls -reloadImage, and we want to set the image synchronously if possible so that the
+    // image property is set in the same CATransaction that attaches this view to the window.)
+    RCTExecuteOnMainQueue(^{
+      setImageBlock(loadedImage);
+    });
   }
 }
 
