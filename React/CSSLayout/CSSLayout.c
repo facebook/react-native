@@ -582,10 +582,6 @@ static CSSDirection resolveDirection(CSSNode *node, CSSDirection parentDirection
   return direction;
 }
 
-static CSSFlexDirection getFlexDirection(CSSNode *node) {
-  return node->style.flexDirection;
-}
-
 static CSSFlexDirection resolveAxis(CSSFlexDirection flexDirection, CSSDirection direction) {
   if (direction == CSSDirectionRTL) {
     if (flexDirection == CSSFlexDirectionRow) {
@@ -610,10 +606,6 @@ static CSSFlexDirection getCrossFlexDirection(CSSFlexDirection flexDirection,
 static bool isFlex(CSSNode *node) {
   return (node->style.positionType == CSSPositionTypeRelative &&
           (node->style.flexGrow != 0 || node->style.flexShrink != 0));
-}
-
-static bool isFlexWrap(CSSNode *node) {
-  return node->style.flexWrap == CSSWrapTypeWrap;
 }
 
 static float getDimWithMargin(CSSNode *node, CSSFlexDirection axis) {
@@ -644,10 +636,6 @@ static bool isTrailingPosDefined(CSSNode *node, CSSFlexDirection axis) {
               computedEdgeValue(node->style.position, CSSEdgeEnd, CSSUndefined))) ||
          !CSSValueIsUndefined(
              computedEdgeValue(node->style.position, trailing[axis], CSSUndefined));
-}
-
-static bool isMeasureDefined(CSSNode *node) {
-  return node->measure;
 }
 
 static float getLeadingPosition(CSSNode *node, CSSFlexDirection axis) {
@@ -719,7 +707,7 @@ static float getRelativePosition(CSSNode *node, CSSFlexDirection axis) {
 }
 
 static void setPosition(CSSNode *node, CSSDirection direction) {
-  CSSFlexDirection mainAxis = resolveAxis(getFlexDirection(node), direction);
+  CSSFlexDirection mainAxis = resolveAxis(node->style.flexDirection, direction);
   CSSFlexDirection crossAxis = getCrossFlexDirection(mainAxis, direction);
 
   node->layout.position[leading[mainAxis]] =
@@ -871,7 +859,7 @@ static void layoutNodeImpl(CSSNode *node,
 
   // For content (text) nodes, determine the dimensions based on the text
   // contents.
-  if (isMeasureDefined(node)) {
+  if (node->measure) {
     float innerWidth = availableWidth - marginAxisRow - paddingAndBorderAxisRow;
     float innerHeight = availableHeight - marginAxisColumn - paddingAndBorderAxisColumn;
 
@@ -985,11 +973,11 @@ static void layoutNodeImpl(CSSNode *node,
   }
 
   // STEP 1: CALCULATE VALUES FOR REMAINDER OF ALGORITHM
-  CSSFlexDirection mainAxis = resolveAxis(getFlexDirection(node), direction);
+  CSSFlexDirection mainAxis = resolveAxis(node->style.flexDirection, direction);
   CSSFlexDirection crossAxis = getCrossFlexDirection(mainAxis, direction);
   bool isMainAxisRow = isRowDirection(mainAxis);
   CSSJustify justifyContent = node->style.justifyContent;
-  bool isNodeFlexWrap = isFlexWrap(node);
+  bool isNodeFlexWrap = node->style.flexWrap == CSSWrapTypeWrap;
 
   CSSNode *firstAbsoluteChild = NULL;
   CSSNode *currentAbsoluteChild = NULL;
@@ -2023,7 +2011,7 @@ bool layoutNodeInternal(CSSNode *node,
   // most
   // expensive to measure, so it's worth avoiding redundant measurements if at
   // all possible.
-  if (isMeasureDefined(node)) {
+  if (node->measure) {
     float marginAxisRow = getMarginAxis(node, CSSFlexDirectionRow);
     float marginAxisColumn = getMarginAxis(node, CSSFlexDirectionColumn);
 
