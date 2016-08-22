@@ -133,10 +133,9 @@ public class LayoutShadowNode extends ReactShadowNode {
       ViewProps.BOTTOM,
   }, defaultFloat = CSSConstants.UNDEFINED)
   public void setPositionValues(int index, float position) {
-    setPositionValue(
+    setPosition(
       ViewProps.POSITION_SPACING_TYPES[index],
-      CSSConstants.isUndefined(position) ? position : PixelUtil.toPixelFromDIP(position)
-    );
+      CSSConstants.isUndefined(position) ? position : PixelUtil.toPixelFromDIP(position));
   }
 
   @ReactProp(name = ViewProps.POSITION)

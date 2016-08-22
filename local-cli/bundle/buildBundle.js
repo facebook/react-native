@@ -13,6 +13,7 @@ const path = require('path');
 const Promise = require('promise');
 const saveAssets = require('./saveAssets');
 const Server = require('../../packager/react-packager/src/Server');
+const defaultAssetExts = require('../../packager/defaultAssetExts');
 
 function saveBundle(output, bundle, args) {
   return Promise.resolve(
@@ -25,20 +26,9 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
   // have other choice than defining it as an env variable here.
   process.env.NODE_ENV = args.dev ? 'development' : 'production';
 
-  const options = {
-    projectRoots: config.getProjectRoots(),
-    assetRoots: config.getAssetRoots(),
-    blacklistRE: config.getBlacklistRE(args.platform),
-    getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-    transformModulePath: args.transformer,
-    extraNodeModules: config.extraNodeModules,
-    nonPersistent: true,
-    resetCache: args.resetCache,
-  };
-
   const requestOpts = {
     entryFile: args.entryFile,
-    sourceMapUrl: args.sourcemapOutput,
+    sourceMapUrl: args.sourcemapOutput && path.basename(args.sourcemapOutput),
     dev: args.dev,
     minify: !args.dev,
     platform: args.platform,
@@ -48,6 +38,20 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
   // bundle command and close it down afterwards.
   var shouldClosePackager = false;
   if (!packagerInstance) {
+    let assetExts = (config.getAssetExts && config.getAssetExts()) || [];
+
+    const options = {
+      projectRoots: config.getProjectRoots(),
+      assetExts: defaultAssetExts.concat(assetExts),
+      assetRoots: config.getAssetRoots(),
+      blacklistRE: config.getBlacklistRE(args.platform),
+      getTransformOptionsModulePath: config.getTransformOptionsModulePath,
+      transformModulePath: args.transformer,
+      extraNodeModules: config.extraNodeModules,
+      nonPersistent: true,
+      resetCache: args.resetCache,
+    };
+
     packagerInstance = new Server(options);
     shouldClosePackager = true;
   }

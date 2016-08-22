@@ -2,7 +2,7 @@
 
 var blacklist = require('../packager/blacklist');
 var path = require('path');
-var rnpmConfig = require('./rnpm/core/src/config');
+var rnpmConfig = require('./core/config');
 
 /**
  * Default configuration for the CLI.
@@ -26,6 +26,15 @@ var config = {
    */
   getAssetRoots() {
     return getRoots();
+  },
+
+  /**
+   * Specify any additional asset extentions to be used by the packager.
+   * For example, if you want to include a .ttf file, you would return ['ttf']
+   * from here and use `require('./fonts/example.ttf')` inside your app.
+   */
+  getAssetExts() {
+    return [];
   },
 
   /**

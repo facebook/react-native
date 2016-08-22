@@ -29,7 +29,7 @@ var BlogPost = React.createClass({
     var day = parseInt(match[3], 10);
 
     return (
-      <div>
+      <div className="article">
         <h1>{post.title}</h1>
         <p className="meta">
           {month} {day}, {year} by{' '}

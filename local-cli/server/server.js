@@ -13,6 +13,7 @@ const formatBanner = require('./formatBanner');
 const path = require('path');
 const runServer = require('./runServer');
 const findSymlinksPaths = require('./findSymlinksPaths');
+const NODE_MODULES = path.resolve(__dirname, '..', '..', '..');
 
 /**
  * Starts the React Native Packager Server.
@@ -20,7 +21,7 @@ const findSymlinksPaths = require('./findSymlinksPaths');
 function server(argv, config, args) {
   args.projectRoots = args.projectRoots.concat(
     args.root,
-    findSymlinksPaths(path.resolve(process.cwd(), 'node_modules'))
+    findSymlinksPaths(NODE_MODULES)
   );
 
   console.log(formatBanner(
@@ -95,6 +96,11 @@ module.exports = {
     description: 'specify the root directories of app assets',
     parse: (val) => val.split(',').map(dir => path.resolve(process.cwd(), dir)),
     default: (config) => config.getAssetRoots(),
+  }, {
+    command: '--assetExts [list]',
+    description: 'Specify any additional asset extentions to be used by the packager',
+    parse: (val) => val.split(','),
+    default: (config) => config.getAssetExts(),
   }, {
     command: '--skipflow',
     description: 'Disable flow checks'

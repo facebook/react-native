@@ -17,6 +17,7 @@ robolectric3_test(
     react_native_dep('third-party/java/robolectric3/robolectric:robolectric'),
     react_native_target('java/com/facebook/react/animation:animation'),
     react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/common/network:network'),
     react_native_target('java/com/facebook/react/common:common'),
     react_native_target('java/com/facebook/react/devsupport:devsupport'),
     react_native_target('java/com/facebook/react/modules/clipboard:clipboard'),

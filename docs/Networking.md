@@ -47,8 +47,8 @@ The above examples show how you can make a request. In many cases, you will want
 Networking is an inherently asynchronous operation. Fetch methods will return a  [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that make it straightforward to write code that works in an asynchronous manner:
 
   ```js
-  getMoviesFromApiAsync() {
-    return fetch('http://facebook.github.io/react-native/movies.json')
+  function getMoviesFromApiAsync() {
+    return fetch('https://facebook.github.io/react-native/movies.json')
       .then((response) => response.json())
       .then((responseJson) => {
         return responseJson.movies;
@@ -62,9 +62,9 @@ Networking is an inherently asynchronous operation. Fetch methods will return a 
 You can also use the proposed ES2017 `async`/`await` syntax in a React Native app:
 
   ```js
-  async getMoviesFromApi() {
+  async function getMoviesFromApi() {
     try {
-      let response = await fetch('http://facebook.github.io/react-native/movies.json');
+      let response = await fetch('https://facebook.github.io/react-native/movies.json');
       let responseJson = await response.json();
       return responseJson.movies;
     } catch(error) {
@@ -74,6 +74,8 @@ You can also use the proposed ES2017 `async`/`await` syntax in a React Native ap
   ```
 
 Don't forget to catch any errors that may be thrown by `fetch`, otherwise they will be dropped silently.
+
+> By default, iOS will block any request that's not encrypted using SSL. If you need to fetch from a cleartext URL (one that begins with `http`) you will first need to add an App Transport Security exception. If you know ahead of time what domains you will need access to, it is more secure to add exceptions just for those domains; if the domains are not known until runtime you can [disable ATS completely](/react-native/docs/integration-with-existing-apps.html#app-transport-security). [See Apple's documentation for more information](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW33).
 
 ### Using Other Networking Libraries
 

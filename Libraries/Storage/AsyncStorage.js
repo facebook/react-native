@@ -263,13 +263,13 @@ var AsyncStorage = {
       //
       // Is there a way to avoid using the map but fix the bug in this breaking test?
       // https://github.com/facebook/react-native/commit/8dd8ad76579d7feef34c014d387bf02065692264
-      let map = {};
+      const map = {};
       result.forEach(([key, value]) => map[key] = value);
       const reqLength = getRequests.length;
       for (let i = 0; i < reqLength; i++) {
         const request = getRequests[i];
         const requestKeys = request.keys;
-        let requestResult = requestKeys.map(key => [key, map[key]]);
+        const requestResult = requestKeys.map(key => [key, map[key]]);
         request.callback && request.callback(null, requestResult);
         request.resolve && request.resolve(requestResult);
       }
