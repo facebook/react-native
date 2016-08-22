@@ -42,13 +42,32 @@ function runIOS(argv, config, args) {
         console.log('No iOS devices connected.');
       }
     }
+  } else if (args.udid) {
+      runOnDeviceByUdid(args.udid, scheme, xcodeProject);
   } else {
-    runOnSimulator(xcodeProject, args, inferredSchemeName, scheme);
+      runOnSimulator(xcodeProject, args, inferredSchemeName, scheme);
+  }
+}
+
+function runOnDeviceByUdid(udid, scheme, xcodeProject) {
+  const devices = parseIOSDevicesList(
+    child_process.execFileSync('xcrun', ['instruments', '-s'], {encoding: 'utf8'})
+  );
+  const selectedDevice = matchingDeviceByUdid(devices, udid);
+  if (selectedDevice){
+    runOnDevice(selectedDevice, scheme, xcodeProject);
+  } else {
+      if (devices){
+        console.log('Could not find device with the udid: "' + udid + '".');
+        console.log('Choose one of the following:');
+        printFoundDevices(devices);
+      } else {
+        console.log('No iOS devices connected.');
+      }
   }
 }
 
 function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
-
   try {
     var simulators = JSON.parse(
       child_process.execFileSync('xcrun', ['simctl', 'list', '--json', 'devices'], {encoding: 'utf8'})
@@ -68,7 +87,7 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
     child_process.spawnSync('xcrun', ['instruments', '-w', selectedSimulator.udid]);
   } catch (e) {
     // instruments always fail with 255 because it expects more arguments,
-    // but we want it to only launch the simulator
+    // but we want it to only launch the simulator 
   }
 
   buildProject(xcodeProject, selectedSimulator.udid, scheme);
@@ -98,7 +117,7 @@ function runOnDevice(selectedDevice, scheme, xcodeProject){
   child_process.spawnSync('ios-deploy', iosDeployInstallArgs, {stdio: 'inherit'});
 }
 
-function buildProject(xcodeProject, udid, scheme){
+function buildProject(xcodeProject, udid, scheme) {
   const xcodebuildArgs = [
     xcodeProject.isWorkspace ? '-workspace' : '-project', xcodeProject.name,
     '-scheme', scheme,
@@ -117,13 +136,21 @@ function matchingDevice(devices, deviceName) {
   }
 }
 
+function matchingDeviceByUdid(devices, udid) {
+  for (let i = devices.length - 1; i >= 0; i--) {
+    if (devices[i].udid === udid) {
+      return devices[i];
+    }
+  }
+}
+
 function formattedDeviceName(simulator) {
   return `${simulator.name} (${simulator.version})`;
 }
 
 function printFoundDevices(devices){
   for (let i = devices.length - 1; i >= 0; i--) {
-    console.log(devices[i].name);
+    console.log(devices[i].name + ' Udid: ' + devices[i].udid);
   }
 }
 
@@ -159,6 +186,9 @@ module.exports = {
     default: 'ios',
   }, {
     command: '--device [string]',
-    description: 'Explicitly set device to use',
+    description: 'Explicitly set device to use by name',
+  },{
+    command: '--udid [string]',
+    description: 'Explicitly set device to use by udid',
   }]
 };
