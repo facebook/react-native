@@ -85,7 +85,7 @@ const linkAssets = (project, assets) => {
     copyAssetsAndroid(assets, project.android.assetsPath);
   }
 
-  log.info(`Assets has been successfully linked to your project`);
+  log.info(`Assets have been successfully linked to your project`);
 };
 
 /**
