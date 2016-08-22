@@ -21,13 +21,13 @@ CSS_EXTERN_C_BEGIN
 
 typedef struct CSSNodeList *CSSNodeListRef;
 
-CSSNodeListRef CSSNodeListNew(uint32_t initialCapacity);
-void CSSNodeListFree(CSSNodeListRef list);
-uint32_t CSSNodeListCount(CSSNodeListRef list);
-void CSSNodeListAdd(CSSNodeListRef list, CSSNodeRef node);
-void CSSNodeListInsert(CSSNodeListRef list, CSSNodeRef node, uint32_t index);
-CSSNodeRef CSSNodeListRemove(CSSNodeListRef list, uint32_t index);
-CSSNodeRef CSSNodeListDelete(CSSNodeListRef list, CSSNodeRef node);
-CSSNodeRef CSSNodeListGet(CSSNodeListRef list, uint32_t index);
+CSSNodeListRef CSSNodeListNew(const uint32_t initialCapacity);
+void CSSNodeListFree(const CSSNodeListRef list);
+uint32_t CSSNodeListCount(const CSSNodeListRef list);
+void CSSNodeListAdd(const CSSNodeListRef list, const CSSNodeRef node);
+void CSSNodeListInsert(const CSSNodeListRef list, const CSSNodeRef node, const uint32_t index);
+CSSNodeRef CSSNodeListRemove(const CSSNodeListRef list, const uint32_t index);
+CSSNodeRef CSSNodeListDelete(const CSSNodeListRef list, const CSSNodeRef node);
+CSSNodeRef CSSNodeListGet(const CSSNodeListRef list, const uint32_t index);
 
 CSS_EXTERN_C_END

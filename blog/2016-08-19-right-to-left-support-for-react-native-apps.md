@@ -3,7 +3,7 @@ title: Right-to-Left Layout Support For React Native Apps
 author: Mengjue (Mandy) Wang
 authorURL: https://github.com/MengjueW
 ---
-After launching an app to the app stores, internationalization is the next step to further your audience reach. Over 20 countries and numerous people around the world use Right-to-Left (RTL) languages. Thus, making your app RTL support for them is necessary.
+After launching an app to the app stores, internationalization is the next step to further your audience reach. Over 20 countries and numerous people around the world use Right-to-Left (RTL) languages. Thus, making your app support RTL for them is necessary.
 
 We're glad to announce that React Native has been improved to support RTL layouts. This is now available in the [react-native](https://github.com/facebook/react-native) master branch today, and will be available in the next RC: [`v0.33.0-rc`](https://github.com/facebook/react-native/releases).
 
@@ -26,6 +26,7 @@ The diagram below describes the changes at high level:
 ![](/react-native/blog/img/rtl-rn-core-updates.png)
 
 These include:
+
 * [css-layout RTL support for absolute positioning](https://github.com/facebook/css-layout/commit/46c842c71a1232c3c78c4215275d104a389a9a0f)
 * mapping `left` and `right` to `start` and `end` in RN core implementation for shadow nodes
 * and exposing a [bridged utility module](https://github.com/facebook/react-native/blob/f0fb228ec76ed49e6ed6d786d888e8113b8959a2/Libraries/Utilities/I18nManager.js) to help control the RTL layout
