@@ -4,5 +4,7 @@
   "allowBotCommands": true,
   "internalRepository": "fbsource",
   "cannedReplies": {
+    "Move to Stack Overflow": "Thanks for your question!\n\nWe want to make sure to keep signal strong in the GitHub issue tracker – to make sure that it remains the best place to track issues that affect the development of React Native.\n\nQuestions like yours deserve a purpose-built Q&A forum. Would you like to [post this question to Stack Overflow with the tag #react-native](http://stackoverflow.com/questions/tagged/react-native)? We'll be happy to answer there. Post a link to your Stack Overflow question here, so that we don't lose track of it.",
+    "Showcase submission does not follow guidelines": "Thanks for sending this pull request. According to the guidelines in that file, \"infoLink\" must be one of:\n\n 1/ An English-language news article discussing the app, built either by a funded startup or for a public company\n2/ An English-language technical post on a funded startup or public company blog discussing React Native\n\nI am going to close this, but if you have one of those two things, feel free to reopen with a new link."
   }
 }
