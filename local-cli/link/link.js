@@ -4,7 +4,6 @@ const uniq = require('lodash').uniq;
 const flatten = require('lodash').flatten;
 const chalk = require('chalk');
 
-
 const isEmpty = require('lodash').isEmpty;
 const promiseWaterfall = require('./promiseWaterfall');
 const registerDependencyAndroid = require('./android/registerNativeModule');
