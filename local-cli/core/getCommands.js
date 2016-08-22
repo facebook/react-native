@@ -12,10 +12,14 @@ const attachPackage = (command, pkg) => Array.isArray(command)
 module.exports = function getCommands() {
   const appRoot = process.cwd();
   const plugins = findPlugins([appRoot])
-    .map(name => attachPackage(
-      require(path.join(appRoot, 'node_modules', name)),
-      require(path.join(appRoot, 'node_modules', name, 'package.json'))
-    ));
+    .map(pathToCommands => {
+      const name = pathToCommands.split('/')[0];
+
+      return attachPackage(
+        require(path.join(appRoot, 'node_modules', pathToCommands)),
+        require(path.join(appRoot, 'node_modules', name, 'package.json'))
+      ));
+    });
 
   return flatten(plugins);
 };
