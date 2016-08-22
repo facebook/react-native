@@ -52,11 +52,19 @@ function printHelpInformation() {
     cmdName = cmdName + '|' + this._alias;
   }
 
+  const sourceInformation = this.pkg
+    ? [
+      `  ${chalk.bold('Source:')} ${this.pkg.name}@${this.pkg.version}`,
+      '',
+    ]
+    : [];
+
   let output = [
     '',
     chalk.bold(chalk.cyan((`  react-native ${cmdName} ${this.usage()}`))),
     `  ${this._description}`,
     '',
+    ...sourceInformation,
     `  ${chalk.bold('Options:')}`,
     '',
     this.optionHelp().replace(/^/gm, '    '),
@@ -114,6 +122,7 @@ const addCommand = (command: Command, config: Config) => {
 
     cmd.helpInformation = printHelpInformation.bind(cmd);
     cmd.examples = command.examples;
+    cmd.pkg = command.pkg;
 
   options
     .forEach(opt => cmd.option(

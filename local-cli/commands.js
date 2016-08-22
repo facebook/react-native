@@ -28,6 +28,10 @@ export type Command = {
     desc: string,
     cmd: string,
   }>,
+  pkg?: {
+    version: string,
+    name: string,
+  },
 };
 
 const documentedCommands = [
