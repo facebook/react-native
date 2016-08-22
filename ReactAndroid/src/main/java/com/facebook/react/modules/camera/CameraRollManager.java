@@ -17,9 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -101,11 +99,6 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return "RKCameraRollManager";
-  }
-
-  @Override
-  public Map<String, Object> getConstants() {
-    return Collections.emptyMap();
   }
 
   /**
@@ -440,5 +433,4 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       node.putMap("location", location);
     }
   }
-
 }
