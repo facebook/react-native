@@ -17,7 +17,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.UIImplementation;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -254,6 +253,63 @@ public class NativeAnimatedNodeTraversalTest {
     assertThat(previousValue).isEqualTo(1d);
     // verify that value has reached some maximum value that is greater than the final value (bounce)
     assertThat(wasGreaterThanOne);
+    reset(mUIImplementationMock);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verifyNoMoreInteractions(mUIImplementationMock);
+  }
+
+  @Test
+  public void testDecayAnimation() {
+    createSimpleAnimatedViewWithOpacity(1000, 0d);
+
+    Callback animationCallback = mock(Callback.class);
+    mNativeAnimatedNodesManager.startAnimatingNode(
+      1,
+      1,
+      JavaOnlyMap.of(
+        "type",
+        "decay",
+        "velocity",
+        0.5d,
+        "deceleration",
+        0.998d),
+      animationCallback);
+
+    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+
+    reset(mUIImplementationMock);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verify(mUIImplementationMock, atMost(1))
+      .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
+    double previousValue = stylesCaptor.getValue().getDouble("opacity", Double.NaN);
+    double previousDiff = Double.POSITIVE_INFINITY;
+    /* run 3 secs of animation */
+    for (int i = 0; i < 3 * 60; i++) {
+      reset(mUIImplementationMock);
+      mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+      verify(mUIImplementationMock, atMost(1))
+        .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
+      double currentValue = stylesCaptor.getValue().getDouble("opacity", Double.NaN);
+      double currentDiff = currentValue - previousValue;
+      // verify monotonicity
+      // greater *or equal* because the animation stops during these 3 seconds
+      assertThat(currentValue).as("on frame " + i).isGreaterThanOrEqualTo(previousValue);
+      // verify decay
+      if (i > 3) {
+        // i > 3 because that's how long it takes to settle previousDiff
+        if (i % 3 != 0) {
+          // i % 3 != 0 because every 3 frames we go a tiny
+          // bit faster, because frame length is 16.(6)ms
+          assertThat(currentDiff).as("on frame " + i).isLessThanOrEqualTo(previousDiff);
+        } else {
+          assertThat(currentDiff).as("on frame " + i).isGreaterThanOrEqualTo(previousDiff);
+        }
+      }
+      previousValue = currentValue;
+      previousDiff = currentDiff;
+    }
+    // should be done in 3s
     reset(mUIImplementationMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
     verifyNoMoreInteractions(mUIImplementationMock);
