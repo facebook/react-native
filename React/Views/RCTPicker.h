@@ -11,6 +11,8 @@
 
 #import "UIView+React.h"
 
+#if !TARGET_OS_TV
+
 @interface RCTPicker : UIPickerView
 
 @property (nonatomic, copy) NSArray<NSDictionary *> *items;
@@ -23,3 +25,7 @@
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 
 @end
+
+#endif //TARGET_OS_TV
+
+

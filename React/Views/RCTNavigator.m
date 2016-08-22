@@ -21,6 +21,12 @@
 #import "RCTWrapperViewController.h"
 #import "UIView+React.h"
 
+#if TARGET_OS_TV
+
+#import "RCTTVRemoteHandler.h"
+
+#endif
+
 typedef NS_ENUM(NSUInteger, RCTNavigationLock) {
   RCTNavigationLockNone,
   RCTNavigationLockNative,
@@ -169,6 +175,7 @@ NSInteger kNeverProgressed = -10000;
  */
 - (BOOL)navigationBar:(UINavigationBar *)navigationBar shouldPopItem:(UINavigationItem *)item
 {
+#if !TARGET_OS_TV
   if (self.interactivePopGestureRecognizer.state == UIGestureRecognizerStateBegan) {
     if (self.navigationLock == RCTNavigationLockNone) {
       self.navigationLock = RCTNavigationLockNative;
@@ -181,6 +188,7 @@ NSInteger kNeverProgressed = -10000;
       RCTAssert(NO, @"Should never receive gesture start while JS locks navigator");
     }
   } else {
+#endif //TARGET_OS_TV
     if (self.navigationLock == RCTNavigationLockNone) {
       // Must be coming from native interaction, lock it - it will be unlocked
       // in `didMoveToNavigationController`
@@ -199,7 +207,9 @@ NSInteger kNeverProgressed = -10000;
       // length (`currentReactCount` - 1).
       return [super navigationBar:navigationBar shouldPopItem:item];
     }
+#if !TARGET_OS_TV
   }
+#endif
   return [super navigationBar:navigationBar shouldPopItem:item];
 }
 
@@ -275,6 +285,11 @@ NSInteger kNeverProgressed = -10000;
 // navigation animation/interaction.
 @property (nonatomic, readonly, strong) UIView *dummyView;
 
+@property (nonatomic, strong) UIGestureRecognizer *menuGestureRecognizer;
+@property (nonatomic, assign) Boolean isMenuGestureAdded ;
+#if TARGET_OS_TV
+@property (nonatomic, strong) RCTTVRemoteHandler *tvRemoteHandler;
+#endif
 @end
 
 @implementation RCTNavigator
@@ -293,6 +308,7 @@ NSInteger kNeverProgressed = -10000;
   if ((self = [super initWithFrame:CGRectZero])) {
     _paused = YES;
 
+      _isMenuGestureAdded = YES;
     _bridge = bridge;
     _mostRecentProgress = kNeverProgressed;
     _dummyView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -307,6 +323,10 @@ NSInteger kNeverProgressed = -10000;
 
     [self addSubview:_navigationController.view];
     [_navigationController.view addSubview:_dummyView];
+
+    #if TARGET_OS_TV
+    _tvRemoteHandler = [[RCTTVRemoteHandler alloc] initWithBridge:_bridge];
+    #endif
   }
   return self;
 }
@@ -348,19 +368,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setInteractivePopGestureEnabled:(BOOL)interactivePopGestureEnabled
 {
+#if !TARGET_OS_TV
   _interactivePopGestureEnabled = interactivePopGestureEnabled;
 
   _navigationController.interactivePopGestureRecognizer.delegate = self;
   _navigationController.interactivePopGestureRecognizer.enabled = interactivePopGestureEnabled;
 
   _popGestureState = interactivePopGestureEnabled ? RCTPopGestureStateEnabled : RCTPopGestureStateDisabled;
+#endif
 }
 
 - (void)dealloc
 {
+#if !TARGET_OS_TV
   if (_navigationController.interactivePopGestureRecognizer.delegate == self) {
     _navigationController.interactivePopGestureRecognizer.delegate = nil;
   }
+#endif
   _navigationController.delegate = nil;
   [_navigationController removeFromParentViewController];
 }
@@ -422,7 +446,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   if (_navigationController.navigationLock == RCTNavigationLockNone) {
     _navigationController.navigationLock = RCTNavigationLockJavaScript;
+#if !TARGET_OS_TV
     _navigationController.interactivePopGestureRecognizer.enabled = NO;
+#endif
     return YES;
   }
   return NO;
@@ -435,7 +461,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // Unless the pop gesture has been explicitly disabled (RCTPopGestureStateDisabled),
   // Set interactivePopGestureRecognizer.enabled to YES
   // If the popGestureState is RCTPopGestureStateDefault the default behavior will be maintained
+#if !TARGET_OS_TV
   _navigationController.interactivePopGestureRecognizer.enabled = self.popGestureState != RCTPopGestureStateDisabled;
+#endif
 }
 
 /**
@@ -558,7 +586,20 @@ BOOL jsGettingtooSlow =
   if (currentReactCount < 1) {
     RCTLogError(@"should be at least one current view");
   }
+
+  #if TARGET_OS_TV
+
+  if(currentReactCount == 1 && _isMenuGestureAdded){
+      [self removeTypeMenuGesture];
+  } else if (currentReactCount > 1 && !_isMenuGestureAdded){
+      [self addTypeMenuGesture];
+  }
+
+  #endif
+
   if (jsGettingAhead) {
+    UIViewController *rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    NSArray *gestureRecognizers = [rootViewController.view gestureRecognizers];
     if (reactPushOne) {
       UIView *lastView = self.reactSubviews.lastObject;
       RCTWrapperViewController *vc = [[RCTWrapperViewController alloc] initWithNavItem:(RCTNavItem *)lastView];
@@ -575,7 +616,7 @@ BOOL jsGettingtooSlow =
   } else if (jsCatchingUp) {
     [self freeLock]; // Nothing to push/pop
   } else {
-    // Else, JS making no progress, could have been unrelated to anything nav.
+        // Else, JS making no progress, could have been unrelated to anything nav.
     return;
   }
 
@@ -614,5 +655,40 @@ didMoveToNavigationController:(UINavigationController *)navigationController
     [self freeLock];
   }
 }
+
+#if TARGET_OS_TV
+
+- (void) removeTypeMenuGesture {
+     _isMenuGestureAdded = NO;
+    UIViewController *rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
+
+    NSArray *gestureRecognizers = [rootViewController.view gestureRecognizers];
+    for(UIGestureRecognizer *recognizer in gestureRecognizers){
+        NSArray *allowedPressTypes = recognizer.allowedPressTypes;
+
+        if([[allowedPressTypes objectAtIndex:0] intValue] == UIPressTypeMenu){
+            [rootViewController.view removeGestureRecognizer:recognizer];
+        };
+    }
+
+}
+
+- (void) addTypeMenuGesture {
+    _isMenuGestureAdded = YES;
+
+    UIViewController *rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
+
+    for(UIGestureRecognizer *recognizer in _tvRemoteHandler.tvRemoteGestureRecognizers){
+        NSArray *allowedPressTypes = recognizer.allowedPressTypes;
+
+        if([[allowedPressTypes objectAtIndex:0] intValue] == UIPressTypeMenu){
+            [rootViewController.view addGestureRecognizer:recognizer];
+            break;
+
+        };
+    }
+}
+
+#endif
 
 @end

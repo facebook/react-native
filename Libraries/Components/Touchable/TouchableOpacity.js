@@ -58,11 +58,26 @@ var TouchableOpacity = React.createClass({
      * active. Defaults to 0.2.
      */
     activeOpacity: React.PropTypes.number,
+    focusedOpacity: React.PropTypes.number,
+    /**
+     * Apple TV parallax effects
+     */
+    tvParallaxDisable: React.PropTypes.bool,
+    tvParallaxShiftDistanceX: React.PropTypes.number,
+    tvParallaxShiftDistanceY: React.PropTypes.number,
+    tvParallaxTiltAngle: React.PropTypes.number,
+    tvParallaxMagnification: React.PropTypes.number,
   },
 
   getDefaultProps: function() {
     return {
       activeOpacity: 0.2,
+      focusedOpacity: 0.7,
+      tvParallaxDisable: false,
+      tvParallaxShiftDistanceX: 2.0,
+      tvParallaxShiftDistanceY: 2.0,
+      tvParallaxTiltAngle: 0.05,
+      tvParallaxMagnification: 1.0
     };
   },
 
@@ -157,6 +172,10 @@ var TouchableOpacity = React.createClass({
     );
   },
 
+  _opacityFocused: function() {
+    this.setOpacityTo(this.props.focusedOpacity);
+  },
+
   render: function() {
     return (
       <Animated.View
@@ -167,6 +186,14 @@ var TouchableOpacity = React.createClass({
         style={[this.props.style, {opacity: this.state.anim}]}
         testID={this.props.testID}
         onLayout={this.props.onLayout}
+        onTVSelect={this.props.onPress}
+        onTVFocus={this._opacityFocused}
+        onTVBlur={this._opacityInactive}
+        tvParallaxDisable={this.props.tvParallaxDisable}
+        tvParallaxShiftDistanceX={this.props.tvParallaxShiftDistanceX}
+        tvParallaxShiftDistanceY={this.props.tvParallaxShiftDistanceY}
+        tvParallaxTiltAngle={this.props.tvParallaxTiltAngle}
+        tvParallaxMagnification={this.props.tvParallaxMagnification}
         hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}

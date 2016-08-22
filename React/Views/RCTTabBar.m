@@ -151,12 +151,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (UITabBarItemPositioning)itemPositoning
 {
+#if TARGET_OS_TV
+  return 0;
+#else
   return _tabController.tabBar.itemPositioning;
+#endif
 }
 
 - (void)setItemPositioning:(UITabBarItemPositioning)itemPositioning
 {
+#if !TARGET_OS_TV
   _tabController.tabBar.itemPositioning = itemPositioning;
+#endif
 }
 
 #pragma mark - UITabBarControllerDelegate
@@ -168,5 +174,33 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (tab.onPress) tab.onPress(nil);
   return NO;
 }
+
+#if TARGET_OS_TV
+
+- (BOOL)isUserInteractionEnabled {
+  return YES;
+}
+
+// - (BOOL)canBecomeFocused {
+// //  return (self.onTVSelect != nil);
+//   return YES;
+// }
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
+  if(context.nextFocusedView == self) {
+    if(self.onTVFocus) {
+      self.onTVFocus(nil);
+    }
+    [self becomeFirstResponder];
+  } else {
+    if(self.onTVBlur) {
+      self.onTVBlur(nil);
+    }
+    [self resignFirstResponder];
+  }
+}
+
+#endif
+
 
 @end

@@ -11,6 +11,8 @@
 
 #import "RCTUtils.h"
 
+#if !TARGET_OS_TV
+
 @implementation RCTRefreshControl {
   BOOL _initialRefreshingState;
   BOOL _isInitialRender;
@@ -134,3 +136,5 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 
 @end
+
+#endif //TARGET_OS_TV

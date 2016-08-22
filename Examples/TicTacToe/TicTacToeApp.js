@@ -237,14 +237,14 @@ var styles = StyleSheet.create({
     backgroundColor: 'white'
   },
   title: {
-    fontFamily: 'Chalkduster',
-    fontSize: 39,
+    fontFamily: __APPLETV__ ? 'Helvetica' : 'Chalkduster',
+    fontSize: __APPLETV__ ? 78 : 39,
     marginBottom: 20,
   },
   board: {
-    padding: 5,
+    padding: __APPLETV__ ? 10 : 5,
     backgroundColor: '#47525d',
-    borderRadius: 10,
+    borderRadius: __APPLETV__ ? 20 :10,
   },
   row: {
     flexDirection: 'row',
@@ -253,11 +253,11 @@ var styles = StyleSheet.create({
   // CELL
 
   cell: {
-    width: 80,
-    height: 80,
-    borderRadius: 5,
+    width: __APPLETV__ ? 160 : 80,
+    height: __APPLETV__ ? 160 : 80,
+    borderRadius: __APPLETV__ ? 10 : 5,
     backgroundColor: '#7b8994',
-    margin: 5,
+    margin: __APPLETV__ ? 10 : 5,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -272,7 +272,7 @@ var styles = StyleSheet.create({
   // CELL TEXT
 
   cellText: {
-    fontSize: 50,
+    fontSize: __APPLETV__ ? 100 : 50,
     fontFamily: 'AvenirNext-Bold',
   },
   cellTextX: {

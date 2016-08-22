@@ -27,12 +27,20 @@ static NSURL *mainBundleURL()
 
 static NSURL *localhostBundleURL()
 {
+#if TARGET_OS_TV
+  return [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&appletv=true&dev=true&minify=false", testFile]];
+#else
   return [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true&minify=false", testFile]];
+#endif
 }
 
 static NSURL *ipBundleURL()
 {
+#if TARGET_OS_TV
+  return [NSURL URLWithString:[NSString stringWithFormat:@"http://192.168.1.1:8081/%@.bundle?platform=ios&appletv=true&dev=true&minify=false", testFile]];
+#else
   return [NSURL URLWithString:[NSString stringWithFormat:@"http://192.168.1.1:8081/%@.bundle?platform=ios&dev=true&minify=false", testFile]];
+#endif
 }
 
 @implementation NSBundle (RCTBundleURLProviderTests)

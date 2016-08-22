@@ -190,11 +190,11 @@ exports.examples = [
   render: function() {
     return (
       <View>
-        <Text style={{fontFamily: 'Cochin'}}>
-          Cochin
+        <Text style={{fontFamily: 'Courier'}}>
+          Courier
         </Text>
-        <Text style={{fontFamily: 'Cochin', fontWeight: 'bold'}}>
-          Cochin bold
+        <Text style={{fontFamily: 'Courier', fontWeight: 'bold'}}>
+          Courier bold
         </Text>
         <Text style={{fontFamily: 'Helvetica'}}>
           Helvetica
@@ -202,11 +202,11 @@ exports.examples = [
         <Text style={{fontFamily: 'Helvetica', fontWeight: 'bold'}}>
           Helvetica bold
         </Text>
-        <Text style={{fontFamily: 'Verdana'}}>
-          Verdana
+        <Text style={{fontFamily: 'Times'}}>
+          Times
         </Text>
-        <Text style={{fontFamily: 'Verdana', fontWeight: 'bold'}}>
-          Verdana bold
+        <Text style={{fontFamily: 'Times', fontWeight: 'bold'}}>
+          Times bold
         </Text>
       </View>
     );
@@ -554,10 +554,10 @@ exports.examples = [
         <Text style={{fontVariant: ['small-caps']}}>
           Small Caps{'\n'}
         </Text>
-        <Text style={{fontFamily: 'Hoefler Text', fontVariant: ['oldstyle-nums']}}>
+        <Text style={{fontFamily: (__APPLETV__ ? 'Helvetica' : 'Hoefler Text') , fontVariant: ['oldstyle-nums']}}>
           Old Style nums 0123456789{'\n'}
         </Text>
-        <Text style={{fontFamily: 'Hoefler Text', fontVariant: ['lining-nums']}}>
+        <Text style={{fontFamily: (__APPLETV__ ? 'Helvetica' : 'Hoefler Text') , fontVariant: ['lining-nums']}}>
           Lining nums 0123456789{'\n'}
         </Text>
         <Text style={{fontVariant: ['tabular-nums']}}>

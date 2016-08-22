@@ -60,6 +60,10 @@ class TabBarIOS extends React.Component {
      * it defaults to center.
      */
     itemPositioning: React.PropTypes.oneOf(['fill', 'center', 'auto']),
+
+    onTVFocus: React.PropTypes.func,
+    onTVBlur: React.PropTypes.func,
+    onTVNavEvent: React.PropTypes.func
   };
 
   render() {
@@ -70,7 +74,10 @@ class TabBarIOS extends React.Component {
         tintColor={this.props.tintColor}
         barTintColor={this.props.barTintColor}
         itemPositioning={this.props.itemPositioning}
-        translucent={this.props.translucent !== false}>
+        translucent={this.props.translucent !== false}
+        onTVFocus={this.props.onTVFocus}
+        onTVBlur={this.props.onTVBlur}
+        onTVNavEvent={this.props.onTVNavEvent}>
         {
           // $FlowFixMe found when converting React.createClass to ES6
           this.props.children}

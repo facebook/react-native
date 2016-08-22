@@ -93,6 +93,7 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
 // `UIKeyboardWillChangeFrameNotification`s.
 + (void)initializeStatics
 {
+#if !TARGET_OS_TV
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -100,12 +101,15 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
                                                 name:UIKeyboardWillChangeFrameNotification
                                                object:nil];
   });
+#endif
 }
 
 + (void)keyboardWillChangeFrame:(NSNotification *)notification
 {
+#if !TARGET_OS_TV
   NSDictionary *userInfo = notification.userInfo;
   _currentKeyboardAnimationCurve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+#endif
 }
 
 - (instancetype)initWithDuration:(NSTimeInterval)duration dictionary:(NSDictionary *)config
@@ -219,8 +223,9 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
   NSDictionary *_componentDataByName;
 
   NSMutableSet<id<RCTComponent>> *_bridgeTransactionListeners;
-
+#if !TARGET_OS_TV
   UIInterfaceOrientation _currentInterfaceOrientation;
+#endif
 }
 
 @synthesize bridge = _bridge;
@@ -238,6 +243,7 @@ RCT_EXPORT_MODULE()
 
 - (void)interfaceOrientationWillChange:(NSNotification *)notification
 {
+#if !TARGET_OS_TV
   UIInterfaceOrientation nextOrientation =
     [notification.userInfo[UIApplicationStatusBarOrientationUserInfoKey] integerValue];
 
@@ -254,6 +260,7 @@ RCT_EXPORT_MODULE()
   }
 
   _currentInterfaceOrientation = nextOrientation;
+#endif
 }
 
 - (void)invalidate
@@ -333,11 +340,13 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                              object:_bridge.accessibilityManager];
-
+#if !TARGET_OS_TV
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceOrientationWillChange:)
                                                name:UIApplicationWillChangeStatusBarOrientationNotification
                                              object:nil];
+#endif
+
   [RCTAnimation initializeStatics];
 }
 
@@ -1504,8 +1513,10 @@ RCT_EXPORT_METHOD(clearJSResponder)
 
      allJSConstants[name] = constantsNamespace;
   }];
-
+  
+#if !TARGET_OS_TV
   _currentInterfaceOrientation = [RCTSharedApplication() statusBarOrientation];
+#endif
   [allJSConstants addEntriesFromDictionary:@{
     @"customBubblingEventTypes": bubblingEvents,
     @"customDirectEventTypes": directEvents,

@@ -18,6 +18,8 @@
 
 RCT_EXPORT_MODULE()
 
+#if !TARGET_OS_TV
+
 - (UIView *)view
 {
   RCTSlider *slider = [RCTSlider new];
@@ -94,5 +96,7 @@ RCT_CUSTOM_VIEW_PROPERTY(disabled, BOOL, RCTSlider)
     view.enabled = defaultView.enabled;
   }
 }
+
+#endif //TARGET_OS_TV
 
 @end

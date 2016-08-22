@@ -372,7 +372,7 @@ class YellowBox extends React.Component {
     ];
     return (
       <View style={inspector ? styles.fullScreen : listStyle}>
-        <ScrollView style={listStyle} scrollsToTop={false}>
+        <ScrollView style={listStyle} >
           {rows}
         </ScrollView>
         {inspector}

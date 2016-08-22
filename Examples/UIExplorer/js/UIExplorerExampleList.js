@@ -44,7 +44,11 @@ const ds = new ListView.DataSource({
 
 class UIExplorerExampleList extends React.Component {
 
-  state = {filter: ''};
+  // Uncomment focusedKey, and Apple TV initially will focus on the ListView example row
+  state = {
+    filter: '',
+    //focusedKey: 'ListViewExample'
+  };
 
   constructor(props: {
     disableTitleRow: ?boolean,
@@ -57,6 +61,15 @@ class UIExplorerExampleList extends React.Component {
     style: ?any,
   }) {
     super(props);
+    var c = this;
+    this.componentDidMount = function() {
+      // Uncomment this, and Apple TV focus will move to Navigator example after 2 seconds
+      //setTimeout(function() {
+      //  c.rows['ListViewExample'].setState({'hasTVPreferredFocus':false});
+      //  c.rows['NavigatorExample'].setState({'hasTVPreferredFocus' : true});
+      //},2000);
+    };
+    this.rows = {};
   }
 
   static makeRenderable(example: any): ReactClass<any> {
@@ -68,7 +81,7 @@ class UIExplorerExampleList extends React.Component {
   render(): ?ReactElement<any> {
     const filterText = this.state.filter || '';
     const filterRegex = new RegExp(String(filterText), 'i');
-    const filter = (example) => filterRegex.test(example.module.title);
+    const filter = (example) => (filterRegex.test(example.module.title) && (example.tvosSupported || !__APPLETV__));
 
     const dataSource = ds.cloneWithRowsAndSections({
       components: this.props.list.ComponentExamples.filter(filter),
@@ -150,7 +163,12 @@ class UIExplorerExampleList extends React.Component {
   _renderRow(title: string, description: string, key: ?string, handler: ?Function): ?ReactElement<any> {
     return (
       <View key={key || title}>
-        <TouchableHighlight onPress={handler}>
+        <TouchableHighlight 
+            ref={(row) => this.rows[key] = row} 
+            onPress={handler} hasTVPreferredFocus={key === this.state.focusedKey}
+            tvParallaxShiftDistanceX={0.0}
+            tvParallaxShiftDistanceY={5.0}
+            tvParallaxTiltAngle={0.0}>
           <View style={styles.row}>
             <Text style={styles.rowTitleText}>
               {title}

@@ -108,6 +108,10 @@ const bundleOpts = declareOpts({
     type: 'boolean',
     default: true,
   },
+  appletv: {
+    type: 'boolean',
+    default: false,
+  },
   minify: {
     type: 'boolean',
     default: false,
@@ -622,6 +626,7 @@ class Server {
             inlineSourceMap: options.inlineSourceMap,
             minify: options.minify,
             dev: options.dev,
+            appletv: options.appletv,
           });
           debug('Writing response headers');
           res.setHeader('Content-Type', 'application/javascript');
@@ -640,6 +645,7 @@ class Server {
           let sourceMap = p.getSourceMap({
             minify: options.minify,
             dev: options.dev,
+            appletv: options.appletv,
           });
 
           if (typeof sourceMap !== 'string') {
@@ -788,6 +794,7 @@ class Server {
       sourceMapUrl: url.format(sourceMapUrlObj),
       entryFile: entryFile,
       dev: this._getBoolOptionFromQuery(urlObj.query, 'dev', true),
+      appletv: this._getBoolOptionFromQuery(urlObj.query, 'appletv', false),
       minify: this._getBoolOptionFromQuery(urlObj.query, 'minify'),
       hot: this._getBoolOptionFromQuery(urlObj.query, 'hot', false),
       runModule: this._getBoolOptionFromQuery(urlObj.query, 'runModule', true),

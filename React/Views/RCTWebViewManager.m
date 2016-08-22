@@ -14,6 +14,8 @@
 #import "RCTWebView.h"
 #import "UIView+React.h"
 
+#if !TARGET_OS_TV
+
 @interface RCTWebViewManager () <RCTWebViewDelegate>
 
 @end
@@ -47,7 +49,7 @@ RCT_EXPORT_VIEW_PROPERTY(onLoadingError, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onShouldStartLoadWithRequest, RCTDirectEventBlock)
 RCT_REMAP_VIEW_PROPERTY(allowsInlineMediaPlayback, _webView.allowsInlineMediaPlayback, BOOL)
 RCT_REMAP_VIEW_PROPERTY(mediaPlaybackRequiresUserAction, _webView.mediaPlaybackRequiresUserAction, BOOL)
-RCT_REMAP_VIEW_PROPERTY(dataDetectorTypes, _webView.dataDetectorTypes, UIDataDetectorTypes)
+RCT_REMAP_VIEW_PROPERTY(dataDetectorTypes, _webView.dataDetectorTypes, RCTDataDetectorTypes)
 
 RCT_EXPORT_METHOD(goBack:(nonnull NSNumber *)reactTag)
 {
@@ -132,3 +134,5 @@ RCT_EXPORT_METHOD(startLoadWithResult:(BOOL)result lockIdentifier:(NSInteger)loc
 }
 
 @end
+
+#endif //TARGET_OS_TV

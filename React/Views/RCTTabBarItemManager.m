@@ -28,6 +28,12 @@ RCT_EXPORT_VIEW_PROPERTY(icon, UIImage)
 RCT_EXPORT_VIEW_PROPERTY(selectedIcon, UIImage)
 RCT_EXPORT_VIEW_PROPERTY(systemIcon, UITabBarSystemItem)
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
+
+RCT_EXPORT_VIEW_PROPERTY(onTVSelect, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onTVFocus, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onTVBlur, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onTVNavEvent, RCTDirectEventBlock)
+
 RCT_CUSTOM_VIEW_PROPERTY(title, NSString, RCTTabBarItem)
 {
   view.barItem.title = json ? [RCTConvert NSString:json] : defaultView.barItem.title;

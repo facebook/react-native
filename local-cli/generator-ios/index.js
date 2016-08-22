@@ -44,6 +44,18 @@ module.exports = yeoman.generators.NamedBase.extend({
       this.destinationPath(path.join('ios', this.name + '.xcodeproj', 'xcshareddata', 'xcschemes', this.name + '.xcscheme')),
       templateVars
     );
+
+    // SomeApp/ios/SomeAppTV.xcodeproj
+    this.fs.copyTpl(
+      this.templatePath(path.join('xcodeproj-appletv', 'project.pbxproj')),
+      this.destinationPath(path.join('ios', this.name + 'TV.xcodeproj', 'project.pbxproj')),
+      templateVars
+    );
+    this.fs.copyTpl(
+      this.templatePath(path.join('xcodeproj-appletv', 'xcshareddata', 'xcschemes', '_xcscheme')),
+      this.destinationPath(path.join('ios', this.name + 'TV.xcodeproj', 'xcshareddata', 'xcschemes', this.name + '.xcscheme')),
+      templateVars
+    );
   },
 
   end: function() {
