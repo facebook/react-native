@@ -3,7 +3,7 @@ const path = require('path');
 const uniq = require('lodash').uniq;
 const flatten = require('lodash').flatten;
 const pkg = require('../package.json');
-const chalk = require('chalk')
+const chalk = require('chalk');
 
 const isEmpty = require('lodash').isEmpty;
 const promiseWaterfall = require('./promiseWaterfall');
