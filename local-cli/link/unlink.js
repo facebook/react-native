@@ -129,7 +129,7 @@ function unlink(args, config) {
     })
     .catch(err => {
       log.error(
-        `It seems something went wrong while linking. Error: ${err.message}`
+        `It seems something went wrong while unlinking. Error: ${err.message}`
       );
       throw err;
     });
