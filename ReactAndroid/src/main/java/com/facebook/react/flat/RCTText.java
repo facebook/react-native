@@ -38,6 +38,10 @@ import com.facebook.textcachewarmer.DefaultTextLayoutCacheWarmer;
  */
 /* package */ final class RCTText extends RCTVirtualText implements CSSNodeAPI.MeasureFunction {
 
+  // index of left and right in the Layout.Alignment enum since the base values are @hide
+  private static final int ALIGNMENT_LEFT = 3;
+  private static final int ALIGNMENT_RIGHT = 4;
+
   // We set every value we use every time we use the layout builder, so we can get away with only
   // using a single instance.
   private static final TextLayoutBuilder sTextLayoutBuilder =
@@ -282,10 +286,10 @@ import com.facebook.textcachewarmer.DefaultTextLayoutCacheWarmer;
     switch (mAlignment) {
       // Layout.Alignment.RIGHT and Layout.Alignment.LEFT are @hide :(
       case Gravity.LEFT:
-        int index = isRtl ? /* RIGHT */ 4 : /* LEFT */ 3;
+        int index = isRtl ? ALIGNMENT_RIGHT : ALIGNMENT_LEFT;
         return Layout.Alignment.values()[index];
       case Gravity.RIGHT:
-        index = isRtl ? /* LEFT */ 3 : /* RIGHT */ 4;
+        index = isRtl ? ALIGNMENT_LEFT : ALIGNMENT_RIGHT;
         return Layout.Alignment.values()[index];
       case Gravity.CENTER:
         return Layout.Alignment.ALIGN_CENTER;
