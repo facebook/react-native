@@ -41,7 +41,7 @@ var BlogPageLayout = React.createClass({
               .map((post) => {
                 return (
                   <div>
-                    <BlogPost post={post} content={post.content} />
+                    <BlogPost post={post} content={post.content} excerpt={true} />
                     <hr />
                   </div>
                 )

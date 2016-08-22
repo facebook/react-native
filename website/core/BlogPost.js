@@ -13,6 +13,9 @@
 
 var Marked = require('Marked');
 var React = require('React');
+var BlogPostHeader = require('BlogPostHeader');
+var BlogPostFooter = require('BlogPostFooter');
+var ReadMoreLink = require('ReadMoreLink');
 
 var BlogPost = React.createClass({
   render: function() {
@@ -28,29 +31,27 @@ var BlogPost = React.createClass({
     ][parseInt(match[2], 10) - 1];
     var day = parseInt(match[3], 10);
 
-    var shareURL = '/react-native/blog/' + post.path;
+    var postedOnDate = month + ' ' + day + ', ' + year;
+
+    var footer = <BlogPostFooter post={post} postedOnDate={postedOnDate} />;
+
+    if (this.props.excerpt) {
+      var excerptLength = 50;
+      var words = content.trim().split(' ');
+      if (words.length > excerptLength) {
+        content = words.slice(0,excerptLength).join(' ') + '...';
+        footer = <ReadMoreLink href={'/react-native/blog/' + post.path} />;
+      }
+    }
+
     return (
-      <div className="article">
-        <p className="meta">
-          <a href={post.authorURL} target="_blank"
-          className="author">
-            {post.author}
-          </a>
-          {' — '}
-          <span className="date">{month} {day}, {year}</span>
-        </p>
-        <h1>{post.title}</h1>
-        <Marked>{content}</Marked>
-        <p>
-          <div
-            className="fb-like"
-            data-share="true"
-            data-width="450"
-            data-show-faces="true">
-          </div>
-          <a href="https://twitter.com/share" className="twitter-share-button" data-text={post.title} data-url={"http://facebook.github.io/react-native/blog/" + post.path} data-via={post.twitterUsername} data-related="reactnative" data-show-count="false">Tweet</a>
-        </p>
-      </div>
+      <article>
+        <BlogPostHeader post={post} postedOnDate={postedOnDate} />
+        <div className="entry-content">
+          <Marked>{content}</Marked>
+        </div>
+        {footer}
+      </article>
     );
   }
 });

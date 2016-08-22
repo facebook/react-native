@@ -28,7 +28,9 @@ var BlogPostLayout = React.createClass({
         <section className="content wrap documentationContent">
           <BlogSidebar title={this.props.metadata.title} />
           <div className="inner-content">
-            <BlogPost post={this.props.metadata} content={this.props.children} />
+            <BlogPost
+              post={this.props.metadata}
+              content={this.props.children} />
           </div>
         </section>
       </Site>
