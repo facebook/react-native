@@ -102,6 +102,15 @@ var styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     top: 0,
+    transform: [
+      {translateX: 0},
+      {translateY: 0},
+      {scaleX: 1},
+      {scaleY: 1},
+      {rotate: '0deg'},
+      {skewX: '0deg'},
+      {skewY: '0deg'},
+    ],
   },
   baseScene: {
     position: 'absolute',
@@ -697,6 +706,11 @@ var Navigator = React.createClass({
       this.refs['scene_' + sceneIndex].setNativeProps(enabledSceneNativeProps);
   },
 
+  _clearTransformations: function(sceneIndex) {
+    const defaultStyle = flattenStyle([styles.defaultSceneStyle]);
+    this.refs['scene_' + sceneIndex].setNativeProps({ style: defaultStyle });
+  },
+
   _onAnimationStart: function() {
     var fromIndex = this.state.presentedIndex;
     var toIndex = this.state.presentedIndex;
@@ -1092,6 +1106,7 @@ var Navigator = React.createClass({
     var presentedRoute = this.state.routeStack[this.state.presentedIndex];
     var popSceneConfig = this.props.configureScene(presentedRoute); // using the scene config of the currently presented view
     this._enableScene(popIndex);
+    this._clearTransformations(popIndex);
     this._emitWillFocus(this.state.routeStack[popIndex]);
     this._transitionTo(
       popIndex,
