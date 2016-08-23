@@ -190,11 +190,11 @@ exports.examples = [
   render: function() {
     return (
       <View>
-        <Text style={{fontFamily: 'Courier'}}>
-          Courier
+        <Text style={{fontFamily: (__APPLETV__ ? 'Courier' : 'Cochin')}}>
+          Cochin
         </Text>
-        <Text style={{fontFamily: 'Courier', fontWeight: 'bold'}}>
-          Courier bold
+        <Text style={{fontFamily: (__APPLETV__ ? 'Courier' : 'Cochin'), fontWeight: 'bold'}}>
+          Cochin bold
         </Text>
         <Text style={{fontFamily: 'Helvetica'}}>
           Helvetica
@@ -202,11 +202,11 @@ exports.examples = [
         <Text style={{fontFamily: 'Helvetica', fontWeight: 'bold'}}>
           Helvetica bold
         </Text>
-        <Text style={{fontFamily: 'Times'}}>
-          Times
+        <Text style={{fontFamily: (__APPLETV__ ? 'Times' : 'Verdana')}}>
+          Verdana
         </Text>
-        <Text style={{fontFamily: 'Times', fontWeight: 'bold'}}>
-          Times bold
+        <Text style={{fontFamily: (__APPLETV__ ? 'Times' : 'Verdana'), fontWeight: 'bold'}}>
+          Verdana bold
         </Text>
       </View>
     );
