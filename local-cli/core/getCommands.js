@@ -18,7 +18,7 @@ module.exports = function getCommands() {
       return attachPackage(
         require(path.join(appRoot, 'node_modules', pathToCommands)),
         require(path.join(appRoot, 'node_modules', name, 'package.json'))
-      ));
+      );
     });
 
   return flatten(plugins);
