@@ -321,6 +321,13 @@ var featured = [
     infoLink: 'https://www.zfanw.com/blog/developing-react-native-image-viewer-library.html',
     infoTitle: 'Developing the react-native-image-viewer library',
   },
+  {
+    name: 'Artsy – Collect and Bid on Fine Art & Design',
+    icon: 'https://raw.githubusercontent.com/artsy/eigen/master/Artsy/Resources/Images.xcassets/AppIcon.appiconset/AppIcon167.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/artsy-collect-bid-on-fine/id703796080?mt=8',
+    infoLink: 'https://artsy.github.io/series/react-native-at-artsy/',
+    infoTitle: 'React Native at Artsy',
+  },
 ];
 
 featured.sort(function(a, b) {
