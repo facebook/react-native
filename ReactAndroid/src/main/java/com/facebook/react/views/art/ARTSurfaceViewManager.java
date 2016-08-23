@@ -9,9 +9,6 @@
 
 package com.facebook.react.views.art;
 
-import android.graphics.Bitmap;
-import android.view.TextureView;
-
 import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
@@ -24,8 +21,6 @@ import com.facebook.react.uimanager.ThemedReactContext;
  */
 public class ARTSurfaceViewManager extends
     BaseViewManager<ARTSurfaceView, ARTSurfaceViewShadowNode> {
-
-  private ARTSurfaceViewShadowNode mShadowNode;
 
   private static final String REACT_CLASS = "ARTSurfaceView";
 
@@ -49,9 +44,9 @@ public class ARTSurfaceViewManager extends
 
   @Override
   public ARTSurfaceViewShadowNode createShadowNodeInstance() {
-    mShadowNode = new ARTSurfaceViewShadowNode();
-    mShadowNode.setMeasureFunction(MEASURE_FUNCTION);
-    return mShadowNode;
+    ARTSurfaceViewShadowNode node = new ARTSurfaceViewShadowNode();
+    node.setMeasureFunction(MEASURE_FUNCTION);
+    return node;
   }
 
   @Override
@@ -61,13 +56,11 @@ public class ARTSurfaceViewManager extends
 
   @Override
   protected ARTSurfaceView createViewInstance(ThemedReactContext reactContext) {
-    ARTSurfaceView node = new ARTSurfaceView(reactContext);    
-    return node;
+    return new ARTSurfaceView(reactContext);
   }
 
   @Override
   public void updateExtraData(ARTSurfaceView root, Object extraData) {
-    ARTSurfaceViewShadowNode shadowNode = (ARTSurfaceViewShadowNode)extraData;
-    root.setSurfaceTextureListener(shadowNode);
+    root.setSurfaceTextureListener((ARTSurfaceViewShadowNode)extraData);
   }
 }

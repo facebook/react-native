@@ -9,7 +9,6 @@
 
 package com.facebook.react.views.art;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Color;
@@ -25,7 +24,8 @@ import com.facebook.react.uimanager.ReactShadowNode;
 /**
  * Shadow node for ART virtual tree root - ARTSurfaceView
  */
-public class ARTSurfaceViewShadowNode extends LayoutShadowNode implements TextureView.SurfaceTextureListener {
+public class ARTSurfaceViewShadowNode extends LayoutShadowNode 
+  implements TextureView.SurfaceTextureListener {
 
   private Surface mSurface;
 
