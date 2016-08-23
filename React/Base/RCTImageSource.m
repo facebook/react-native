@@ -48,16 +48,6 @@
 
 @end
 
-
-@implementation RCTImageSource (Deprecated)
-
-- (NSURL *)imageURL
-{
-  return self.request.URL;
-}
-
-@end
-
 @implementation RCTConvert (ImageSource)
 
 + (RCTImageSource *)RCTImageSource:(id)json

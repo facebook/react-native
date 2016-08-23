@@ -2,7 +2,6 @@ const log = require('npmlog');
 const path = require('path');
 const uniq = require('lodash').uniq;
 const flatten = require('lodash').flatten;
-const chalk = require('chalk');
 
 const isEmpty = require('lodash').isEmpty;
 const promiseWaterfall = require('./promiseWaterfall');
@@ -33,7 +32,7 @@ const linkDependencyAndroid = (androidProject, dependency) => {
   const isInstalled = isInstalledAndroid(androidProject, dependency.name);
 
   if (isInstalled) {
-    log.info(chalk.grey(`Android module ${dependency.name} is already linked`));
+    log.info(`Android module ${dependency.name} is already linked`);
     return null;
   }
 
@@ -59,7 +58,7 @@ const linkDependencyIOS = (iOSProject, dependency) => {
   const isInstalled = isInstalledIOS(iOSProject, dependency.config.ios);
 
   if (isInstalled) {
-    log.info(chalk.grey(`iOS module ${dependency.name} is already linked`));
+    log.info(`iOS module ${dependency.name} is already linked`);
     return;
   }
 
