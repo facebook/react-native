@@ -36,13 +36,6 @@
 
 @end
 
-@interface RCTImageSource (Deprecated)
-
-@property (nonatomic, strong, readonly) NSURL *imageURL
-__deprecated_msg("Use request.URL instead.");
-
-@end
-
 @interface RCTConvert (ImageSource)
 
 + (RCTImageSource *)RCTImageSource:(id)json;
