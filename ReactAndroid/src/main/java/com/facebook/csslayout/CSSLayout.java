@@ -31,7 +31,7 @@ public class CSSLayout {
   public float[] dimensions = new float[2];
   public CSSDirection direction = CSSDirection.LTR;
 
-  public float flexBasis;
+  public float computedFlexBasis;
 
   public int generationCount;
   public CSSDirection lastParentDirection;
@@ -51,7 +51,7 @@ public class CSSLayout {
     Arrays.fill(dimensions, CSSConstants.UNDEFINED);
     direction = CSSDirection.LTR;
 
-    flexBasis = 0;
+    computedFlexBasis = 0;
 
     generationCount = 0;
     lastParentDirection = null;
