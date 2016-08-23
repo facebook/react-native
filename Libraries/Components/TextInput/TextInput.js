@@ -560,7 +560,11 @@ const TextInput = React.createClass({
   _getText: function(): ?string {
     return typeof this.props.value === 'string' ?
       this.props.value :
-      this.props.defaultValue;
+      (
+        this.props.defaultValue ? 
+        this.props.defaultValue : 
+        ''
+      );
   },
 
   _renderIOS: function() {
