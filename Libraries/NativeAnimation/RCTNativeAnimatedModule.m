@@ -32,19 +32,29 @@
   CADisplayLink *_displayLink;
 }
 
-@synthesize bridge = _bridge;
-
 RCT_EXPORT_MODULE()
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  _bridge = bridge;
+  [super setBridge:bridge];
+
   _animationNodes = [NSMutableDictionary new];
   _animationDrivers = [NSMutableDictionary new];
   _activeAnimations = [NSMutableSet new];
   _finishedAnimations = [NSMutableSet new];
   _updatedValueNodes = [NSMutableSet new];
   _propAnimationNodes = [NSMutableSet new];
+}
+
+
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[@"onAnimatedValueUpdate"];
 }
 
 RCT_EXPORT_METHOD(createAnimatedNode:(nonnull NSNumber *)tag
@@ -192,6 +202,29 @@ RCT_EXPORT_METHOD(dropAnimatedNode:(nonnull NSNumber *)tag)
     }
   }
 }
+
+RCT_EXPORT_METHOD(startListeningToAnimatedNodeValue:(nonnull NSNumber *)tag)
+{
+  RCTAnimatedNode *node = _animationNodes[tag];
+  if (node && [node isKindOfClass:[RCTValueAnimatedNode class]]) {
+    ((RCTValueAnimatedNode *)node).valueObserver = self;
+  }
+}
+
+RCT_EXPORT_METHOD(stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag)
+{
+  RCTAnimatedNode *node = _animationNodes[tag];
+  if (node && [node isKindOfClass:[RCTValueAnimatedNode class]]) {
+    ((RCTValueAnimatedNode *)node).valueObserver = nil;
+  }
+}
+
+- (void)animatedNode:(RCTValueAnimatedNode *)node didUpdateValue:(CGFloat)value
+{
+  [self sendEventWithName:@"onAnimatedValueUpdate"
+                     body:@{@"tag": node.nodeTag, @"value": @(value)}];
+}
+
 
 #pragma mark -- Animation Loop
 

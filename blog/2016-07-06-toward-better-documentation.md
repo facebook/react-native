@@ -2,6 +2,7 @@
 title: Toward Better Documentation
 author: Kevin Lacker
 authorURL: https://twitter.com/lacker
+authorTwitter: lacker
 ---
 
 Part of having a great developer experience is having great documentation. A lot goes into creating good docs - the ideal documentation is concise, helpful, accurate, complete, and delightful. Recently we've been working hard to make the docs better based on your feedback, and we wanted to share some of the improvements we've made.

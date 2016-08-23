@@ -457,7 +457,7 @@ static NSThread *newJavaScriptThread(void)
     context[@"nativeTraceBeginAsyncFlow"] = ^(__unused uint64_t tag, __unused NSString *name, int64_t cookie) {
       if (RCTProfileIsProfiling()) {
         [weakBridge.flowIDMapLock lock];
-        int64_t newCookie = [_RCTProfileBeginFlowEvent() longLongValue];
+        NSUInteger newCookie = _RCTProfileBeginFlowEvent();
         CFDictionarySetValue(weakBridge.flowIDMap, (const void *)cookie, (const void *)newCookie);
         [weakBridge.flowIDMapLock unlock];
       }
@@ -466,8 +466,8 @@ static NSThread *newJavaScriptThread(void)
     context[@"nativeTraceEndAsyncFlow"] = ^(__unused uint64_t tag, __unused NSString *name, int64_t cookie) {
       if (RCTProfileIsProfiling()) {
         [weakBridge.flowIDMapLock lock];
-        int64_t newCookie = (int64_t)CFDictionaryGetValue(weakBridge.flowIDMap, (const void *)cookie);
-        _RCTProfileEndFlowEvent(@(newCookie));
+        NSUInteger newCookie = (int64_t)CFDictionaryGetValue(weakBridge.flowIDMap, (const void *)cookie);
+        _RCTProfileEndFlowEvent(newCookie);
         CFDictionaryRemoveValue(weakBridge.flowIDMap, (const void *)cookie);
         [weakBridge.flowIDMapLock unlock];
       }

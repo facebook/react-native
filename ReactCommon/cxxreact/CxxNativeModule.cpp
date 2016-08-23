@@ -3,6 +3,8 @@
 #include "CxxNativeModule.h"
 #include "Instance.h"
 
+#include <folly/json.h>
+
 #include <cxxreact/JsArgumentHelpers.h>
 
 using facebook::xplat::module::CxxModule;
@@ -37,10 +39,12 @@ std::string CxxNativeModule::getName() {
 std::vector<MethodDescriptor> CxxNativeModule::getMethods() {
   // Same as MessageQueue.MethodTypes.remote
   static const auto kMethodTypeRemote = "remote";
+  static const auto kMethodTypeSyncHook = "syncHook";
 
   std::vector<MethodDescriptor> descs;
   for (auto& method : methods_) {
-    descs.emplace_back(method.name, kMethodTypeRemote);
+    assert(method.func || method.syncFunc);
+    descs.emplace_back(method.name, method.func ? kMethodTypeRemote : kMethodTypeSyncHook);
   }
   return descs;
 }
@@ -72,6 +76,12 @@ void CxxNativeModule::invoke(ExecutorToken token, unsigned int reactMethodId, fo
   CxxModule::Callback second;
 
   const auto& method = methods_[reactMethodId];
+
+  if (!method.func) {
+    throw std::runtime_error(
+      folly::to<std::string>("Method ", method.name,
+                             " is synchronous but invoked asynchronously"));
+  }
 
   if (params.size() < method.callbacks) {
     throw std::invalid_argument(
@@ -119,8 +129,35 @@ void CxxNativeModule::invoke(ExecutorToken token, unsigned int reactMethodId, fo
   }
 }
 
-MethodCallResult CxxNativeModule::callSerializableNativeHook(ExecutorToken token, unsigned int hookId, folly::dynamic&& args) {
-  throw std::runtime_error("Not supported");
+MethodCallResult CxxNativeModule::callSerializableNativeHook(
+    ExecutorToken token, unsigned int hookId, folly::dynamic&& args) {
+  if (hookId >= methods_.size()) {
+    throw std::invalid_argument(
+      folly::to<std::string>("methodId ", hookId, " out of range [0..", methods_.size(), "]"));
+  }
+
+  const auto& method = methods_[hookId];
+
+  if (!method.syncFunc) {
+    throw std::runtime_error(
+      folly::to<std::string>("Method ", method.name,
+                             " is asynchronous but invoked synchronously"));
+  }
+
+  if (!args.isString()) {
+    throw std::invalid_argument(
+      folly::to<std::string>("method parameters should be string, but are ", args.typeName()));
+  }
+
+  folly::dynamic params = folly::parseJson(args.stringPiece());
+
+  if (!params.isArray()) {
+    throw std::invalid_argument(
+      folly::to<std::string>("parsed method parameters should be array, but are ",
+                             args.typeName()));
+  }
+
+  return { method.syncFunc(std::move(params)), false };
 }
 
 }

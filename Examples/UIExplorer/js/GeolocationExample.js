@@ -59,7 +59,7 @@ class GeolocationExample extends React.Component {
         var initialPosition = JSON.stringify(position);
         this.setState({initialPosition});
       },
-      (error) => alert(error.message),
+      (error) => alert(error),
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
     );
     this.watchID = navigator.geolocation.watchPosition((position) => {

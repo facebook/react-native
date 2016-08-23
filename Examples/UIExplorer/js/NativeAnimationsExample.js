@@ -22,16 +22,15 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   View,
   Text,
   Animated,
   StyleSheet,
   TouchableWithoutFeedback,
 } = ReactNative;
-var UIExplorerButton = require('./UIExplorerButton');
 
 class Tester extends React.Component {
   state = {
@@ -42,17 +41,17 @@ class Tester extends React.Component {
   current = 0;
 
   onPress = () => {
+    const animConfig = (
+      this.current && this.props.reverseConfig ? this.props.reverseConfig : this.props.config
+    );
     this.current = this.current ? 0 : 1;
     const config = {
-      ...this.props.config,
+      ...animConfig,
       toValue: this.current,
     };
-    try {
-      Animated[this.props.type](this.state.native, { ...config, useNativeDriver: true }).start();
-    } catch (e) {
-      // uncomment this if you want to get the redbox errors!
-      throw e;
-    }
+
+    // $FlowIssue #0000000
+    Animated[this.props.type](this.state.native, { ...config, useNativeDriver: true }).start();
     Animated[this.props.type](this.state.js, { ...config, useNativeDriver: false }).start();
   };
 
@@ -72,6 +71,52 @@ class Tester extends React.Component {
           <View style={styles.row}>
             {this.props.children(this.state.js)}
           </View>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  }
+}
+
+class ValueListenerExample extends React.Component {
+  state = {
+    anim: new Animated.Value(0),
+    progress: 0,
+  };
+  _current = 0;
+
+  componentDidMount() {
+    this.state.anim.addListener((e) => this.setState({ progress: e.value }));
+  }
+
+  componentWillUnmount() {
+    this.state.anim.removeAllListeners();
+  }
+
+  _onPress = () => {
+    this._current = this._current ? 0 : 1;
+    const config = {
+      duration: 1000,
+      toValue: this._current,
+    };
+
+    Animated.timing(this.state.anim, { ...config, useNativeDriver: true }).start();
+  };
+
+  render() {
+    return (
+      <TouchableWithoutFeedback onPress={this._onPress}>
+        <View>
+          <View style={styles.row}>
+            <Animated.View
+              style={[
+                styles.block,
+                {
+                  opacity: this.state.anim,
+                }
+              ]}
+            />
+          </View>
+          <Text>Value: {this.state.progress}</Text>
         </View>
       </TouchableWithoutFeedback>
     );
@@ -294,13 +339,47 @@ exports.examples = [
                         inputRange: [0, 1],
                         outputRange: [0, 100],
                       })
-                    }
+                    },
                   ],
                 }
               ]}
             />
           )}
         </Tester>
+      );
+    },
+  },{
+    title: 'translateX => Animated.decay',
+    render: function() {
+      return (
+        <Tester
+          type="decay"
+          config={{ velocity: 0.5 }}
+          reverseConfig={{ velocity: -0.5 }}
+        >
+          {anim => (
+            <Animated.View
+              style={[
+                styles.block,
+                {
+                  transform: [
+                    {
+                      translateX: anim
+                    },
+                  ],
+                }
+              ]}
+            />
+          )}
+        </Tester>
+      );
+    },
+  },
+  {
+    title: 'Animated value listener',
+    render: function() {
+      return (
+        <ValueListenerExample />
       );
     },
   },

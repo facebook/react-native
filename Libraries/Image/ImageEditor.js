@@ -19,33 +19,33 @@ type ImageCropData = {
    * image's coordinate space.
    */
   offset: {
-    x: number;
-    y: number;
-  };
+    x: number,
+    y: number,
+  },
   /**
    * The size (dimensions) of the cropped image, specified in the original
    * image's coordinate space.
    */
   size: {
-    width: number;
-    height: number;
-  };
+    width: number,
+    height: number,
+  },
   /**
    * (Optional) size to scale the cropped image to.
    */
   displaySize?: ?{
-    width: number;
-    height: number;
-  };
+    width: number,
+    height: number,
+  },
   /**
    * (Optional) the resizing mode to use when scaling the image. If the
    * `displaySize` param is not specified, this has no effect.
    */
   resizeMode?: ?$Enum<{
-    contain: string;
-    cover: string;
-    stretch: string;
-  }>;
+    contain: string,
+    cover: string,
+    stretch: string,
+  }>,
 };
 
 class ImageEditor {

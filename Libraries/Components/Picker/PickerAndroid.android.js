@@ -79,11 +79,11 @@ class PickerAndroid extends React.Component {
   // Translate prop and children into stuff that the native picker understands.
   _stateFromProps = (props) => {
     var selectedIndex = 0;
-    let items = ReactChildren.map(props.children, (child, index) => {
+    const items = ReactChildren.map(props.children, (child, index) => {
       if (child.props.value === props.selectedValue) {
         selectedIndex = index;
       }
-      let childProps = {
+      const childProps = {
         value: child.props.value,
         label: child.props.label,
       };

@@ -17,7 +17,7 @@ var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var DEVICE_BACK_EVENT = 'hardwareBackPress';
 
 type BackPressEventName = $Enum<{
-  backPress: string;
+  backPress: string,
 }>;
 
 var _backPressSubscriptions = new Set();
@@ -30,7 +30,7 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
     if (subscriptions[i]()) {
       invokeDefault = false;
       break;
-    };
+    }
   }
 
   if (invokeDefault) {
