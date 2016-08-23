@@ -36,6 +36,20 @@ static BOOL RCTShouldReloadImageForSizeChange(CGSize currentSize, CGSize idealSi
     heightMultiplier > upscaleThreshold || heightMultiplier < downscaleThreshold;
 }
 
+/**
+ * See RCTConvert (ImageSource). We want to send down the source as a similar
+ * JSON parameter.
+ */
+static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
+{
+  NSDictionary *dict = @{
+    @"width": @(source.size.width),
+    @"height": @(source.size.height),
+    @"url": source.request.URL.absoluteString,
+  };
+  return @{ @"source": dict };
+}
+
 @interface RCTImageView ()
 
 @property (nonatomic, strong) RCTImageSource *imageSource;
@@ -317,7 +331,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     }
 
     if (self->_onLoad) {
-      self->_onLoad(nil);
+      self->_onLoad(onLoadParamsForSource(source));
     }
     if (self->_onLoadEnd) {
       self->_onLoadEnd(nil);

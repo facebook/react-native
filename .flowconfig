@@ -1,7 +1,7 @@
 [ignore]
 
 # We fork some components by platform.
-.*/*.android.js
+.*/*[.]android.js
 
 # Ignore templates with `@flow` in header
 .*/local-cli/generator.*

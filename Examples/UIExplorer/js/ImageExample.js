@@ -61,7 +61,15 @@ var NetworkImageCallbackExample = React.createClass({
           source={this.props.source}
           style={[styles.base, {overflow: 'visible'}]}
           onLoadStart={() => this._loadEventFired(`✔ onLoadStart (+${new Date() - mountTime}ms)`)}
-          onLoad={() => this._loadEventFired(`✔ onLoad (+${new Date() - mountTime}ms)`)}
+          onLoad={(event) => {
+            // Currently this image source feature is only available on iOS.
+            if (event.nativeEvent.source) {
+              const url = event.nativeEvent.source.url;
+              this._loadEventFired(`✔ onLoad (+${new Date() - mountTime}ms) for URL ${url}`);
+            } else {
+              this._loadEventFired(`✔ onLoad (+${new Date() - mountTime}ms)`);
+            }
+          }}
           onLoadEnd={() => {
             this._loadEventFired(`✔ onLoadEnd (+${new Date() - mountTime}ms)`);
             this.setState({startLoadPrefetched: true}, () => {
@@ -78,7 +86,15 @@ var NetworkImageCallbackExample = React.createClass({
             source={this.props.prefetchedSource}
             style={[styles.base, {overflow: 'visible'}]}
             onLoadStart={() => this._loadEventFired(`✔ (prefetched) onLoadStart (+${new Date() - mountTime}ms)`)}
-            onLoad={() => this._loadEventFired(`✔ (prefetched) onLoad (+${new Date() - mountTime}ms)`)}
+            onLoad={(event) => {
+              // Currently this image source feature is only available on iOS.
+              if (event.nativeEvent.source) {
+                const url = event.nativeEvent.source.url;
+                this._loadEventFired(`✔ (prefetched) onLoad (+${new Date() - mountTime}ms) for URL ${url}`);
+              } else {
+                this._loadEventFired(`✔ (prefetched) onLoad (+${new Date() - mountTime}ms)`);
+              }
+            }}
             onLoadEnd={() => this._loadEventFired(`✔ (prefetched) onLoadEnd (+${new Date() - mountTime}ms)`)}
           />
           : null}
