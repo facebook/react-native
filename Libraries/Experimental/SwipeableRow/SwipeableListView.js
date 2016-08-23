@@ -155,7 +155,6 @@ class SwipeableListView extends React.Component {
     }
 
     let shouldBounceOnMount = false;
-    // $FlowFixMe found when converting React.createClass to ES6
     if (this._shouldBounceFirstRowOnMount) {
       this._shouldBounceFirstRowOnMount = false;
       shouldBounceOnMount = rowID === this.props.dataSource.getFirstRowID();
