@@ -58,18 +58,18 @@ class UIExplorerExampleList extends React.Component {
       ComponentExamples: Array<UIExplorerExample>,
       APIExamples: Array<UIExplorerExample>,
     },
-    style: ?any,
+    style: ?any
   }) {
     super(props);
     var c = this;
-    this.componentDidMount = function() {
-      // Uncomment this, and Apple TV focus will move to Navigator example after 2 seconds
+    // Uncomment this, and Apple TV focus will move to Navigator example after 2 seconds
+    //this.componentDidMount = function() {
       //setTimeout(function() {
       //  c.rows['ListViewExample'].setState({'hasTVPreferredFocus':false});
       //  c.rows['NavigatorExample'].setState({'hasTVPreferredFocus' : true});
       //},2000);
-    };
-    this.rows = {};
+    //};
+    //this.rows = {};
   }
 
   static makeRenderable(example: any): ReactClass<any> {
@@ -81,7 +81,7 @@ class UIExplorerExampleList extends React.Component {
   render(): ?ReactElement<any> {
     const filterText = this.state.filter || '';
     const filterRegex = new RegExp(String(filterText), 'i');
-    const filter = (example) => (filterRegex.test(example.module.title) && (example.tvosSupported || !__APPLETV__));
+    const filter = (example: UIExplorerExample) => (filterRegex.test(example.module.title) && (example.tvosSupported || !__APPLETV__));
 
     const dataSource = ds.cloneWithRowsAndSections({
       components: this.props.list.ComponentExamples.filter(filter),
@@ -164,8 +164,9 @@ class UIExplorerExampleList extends React.Component {
     return (
       <View key={key || title}>
         <TouchableHighlight 
-            ref={(row) => this.rows[key] = row} 
-            onPress={handler} hasTVPreferredFocus={key === this.state.focusedKey}
+            //ref={(row) => this.rows[key] = row} 
+            onPress={handler} 
+            //hasTVPreferredFocus={key === this.state.focusedKey}
             tvParallaxShiftDistanceX={0.0}
             tvParallaxShiftDistanceY={5.0}
             tvParallaxTiltAngle={0.0}>

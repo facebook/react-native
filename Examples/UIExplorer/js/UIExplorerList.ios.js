@@ -49,6 +49,7 @@ const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'KeyboardAvoidingViewExample',
     module: require('./KeyboardAvoidingViewExample'),
+    tvosSupported: false
   },
   {
     key: 'LayoutEventsExample',
@@ -137,7 +138,8 @@ const ComponentExamples: Array<UIExplorerExample> = [
   },
   {
     key: 'SwipeableListViewExample',
-    module: require('./SwipeableListViewExample')
+    module: require('./SwipeableListViewExample'),
+    tvosSupported: false
   },
   {
     key: 'SwitchExample',
@@ -275,6 +277,7 @@ const APIExamples: Array<UIExplorerExample> = [
   {
     key: 'NativeAnimationsExample',
     module: require('./NativeAnimationsExample'),
+    tvosSupported: false
   },
   {
     key: 'NavigationExperimentalExample',
@@ -309,10 +312,12 @@ const APIExamples: Array<UIExplorerExample> = [
   {
     key: 'RTLExample',
     module: require('./RTLExample'),
+    tvosSupported: false
   },
   {
     key: 'ShareExample',
     module: require('./ShareExample'),
+    tvosSupported: false
   },
   {
     key: 'SnapshotExample',

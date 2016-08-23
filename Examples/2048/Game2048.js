@@ -194,7 +194,7 @@ class Game2048 extends React.Component {
     }
   }
 
-  handleTVNavEvent(evt) {
+  handleTVNavEvent(evt: Object) {
       console.log("TV remote event: " + evt.nativeEvent.eventType);
       if(evt.nativeEvent.eventType === "left") {
         this.setState({board: this.state.board.move(0)});

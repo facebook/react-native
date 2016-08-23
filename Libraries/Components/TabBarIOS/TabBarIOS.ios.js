@@ -27,6 +27,9 @@ class TabBarIOS extends React.Component {
     barTintColor?: $FlowFixMe,
     translucent?: boolean,
     itemPositioning?: 'fill' | 'center' | 'auto',
+    onTVFocus?: $FlowFixMe,
+    onTVBlur?: $FlowFixMe,
+    onTVNavEvent?: $FlowFixMe,
   };
 
   static Item = TabBarItemIOS;
