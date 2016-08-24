@@ -66,9 +66,9 @@ class Package {
           : replacement || name;
       }
 
-      const relPath = './' + path.relative(this.root, name);
+      let relPath = './' + path.relative(this.root, name);
       if (path.sep !== '/') {
-        relPath.replace(path.sep, '/');
+        relPath = relPath.replace(path.sep, '/');
       }
 
       let redirect = replacements[relPath];
