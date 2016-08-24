@@ -163,10 +163,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
-- (void)setSource:(NSArray<RCTImageSource *> *)source
+- (void)setImageSources:(NSArray<RCTImageSource *> *)imageSources
 {
-  if (![source isEqual:_source]) {
-    _source = [source copy];
+  if (![imageSources isEqual:_imageSources]) {
+    _imageSources = [imageSources copy];
     [self reloadImage];
   }
 }
@@ -221,13 +221,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (BOOL)hasMultipleSources
 {
-  return _source.count > 1;
+  return _imageSources.count > 1;
 }
 
 - (RCTImageSource *)imageSourceForSize:(CGSize)size
 {
   if (![self hasMultipleSources]) {
-    return _source.firstObject;
+    return _imageSources.firstObject;
   }
   // Need to wait for layout pass before deciding.
   if (CGSizeEqualToSize(size, CGSizeZero)) {
@@ -238,7 +238,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   RCTImageSource *bestSource = nil;
   CGFloat bestFit = CGFLOAT_MAX;
-  for (RCTImageSource *source in _source) {
+  for (RCTImageSource *source in _imageSources) {
     CGSize imgSize = source.size;
     const CGFloat imagePixels =
       imgSize.width * imgSize.height * source.scale * source.scale;
@@ -261,7 +261,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   [self cancelImageLoad];
 
-  _imageSource = [self imageSourceForSize:self.frame.size];
+  RCTImageSource *source = [self imageSourceForSize:self.frame.size];
+  _imageSource = source;
 
   if (_imageSource && self.frame.size.width > 0 && self.frame.size.height > 0) {
     if (_onLoadStart) {
@@ -286,7 +287,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       imageScale = _imageSource.scale;
     }
 
-    RCTImageSource *source = _imageSource;
     __weak RCTImageView *weakSelf = self;
     RCTImageLoaderCompletionBlock completionHandler = ^(NSError *error, UIImage *loadedImage) {
       [weakSelf imageLoaderLoadedImage:loadedImage error:error forImageSource:source];
