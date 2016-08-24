@@ -691,7 +691,6 @@ const TextInput = React.createClass({
       <TouchableWithoutFeedback
         onLayout={this.props.onLayout}
         onPress={this._onPress}
-        shouldBlockResponder={this.isFocused}
         accessible={this.props.accessible}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}
