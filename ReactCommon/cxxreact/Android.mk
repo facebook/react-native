@@ -21,6 +21,7 @@ LOCAL_SRC_FILES := \
   NativeToJsBridge.cpp \
   Platform.cpp \
   Value.cpp \
+  Unicode.cpp \
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/..
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
