@@ -490,6 +490,7 @@ BOOL RCTForceTouchAvailable(void)
     (RCTKeyWindow() ?: [UIView new]).traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable;
 }
 
+#if !TARGET_OS_TV
 UIAlertView *__nullable RCTAlertView(NSString *title,
                                      NSString *__nullable message,
                                      id __nullable delegate,
@@ -514,6 +515,7 @@ UIAlertView *__nullable RCTAlertView(NSString *title,
   }
   return alertView;
 }
+#endif //TARGET_OS_TV
 
 NSError *RCTErrorWithMessage(NSString *message)
 {

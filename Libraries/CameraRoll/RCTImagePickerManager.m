@@ -20,18 +20,24 @@
 
 #import <MobileCoreServices/UTCoreTypes.h>
 
+#if !TARGET_OS_TV
 @interface RCTImagePickerManager ()<UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 @end
+#endif
 
 @implementation RCTImagePickerManager
+#if !TARGET_OS_TV
 {
   NSMutableArray<UIImagePickerController *> *_pickers;
   NSMutableArray<RCTResponseSenderBlock> *_pickerCallbacks;
   NSMutableArray<RCTResponseSenderBlock> *_pickerCancelCallbacks;
 }
+#endif
 
 RCT_EXPORT_MODULE(ImagePickerIOS);
+
+#if !TARGET_OS_TV
 
 @synthesize bridge = _bridge;
 
@@ -173,5 +179,7 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
     cancelCallback(@[]);
   }
 }
+
+#endif //TARGET_OS_TV
 
 @end

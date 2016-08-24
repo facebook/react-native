@@ -26,7 +26,7 @@
  */
 'use strict';
 
-var React = require('React');
+var React = require('react');
 var NavigatorNavigationBarStylesAndroid = require('NavigatorNavigationBarStylesAndroid');
 var NavigatorNavigationBarStylesIOS = require('NavigatorNavigationBarStylesIOS');
 var Platform = require('Platform');

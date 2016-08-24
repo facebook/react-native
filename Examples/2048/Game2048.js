@@ -29,9 +29,9 @@ var Animated = require('Animated');
 var GameBoard = require('GameBoard');
 var TouchableBounce = require('TouchableBounce');
 
-var BOARD_PADDING = 3;
-var CELL_MARGIN = 4;
-var CELL_SIZE = 60;
+var BOARD_PADDING = __APPLETV__ ? 6 : 3;
+var CELL_MARGIN = __APPLETV__ ? 8 : 4;
+var CELL_SIZE = __APPLETV__ ? 180 : 60;
 
 class Cell extends React.Component {
   render() {
@@ -194,14 +194,30 @@ class Game2048 extends React.Component {
     }
   }
 
+  handleTVNavEvent(evt: Object) {
+      console.log("TV remote event: " + evt.nativeEvent.eventType);
+      if(evt.nativeEvent.eventType === "left") {
+        this.setState({board: this.state.board.move(0)});
+      } else if(evt.nativeEvent.eventType === "right") {
+        this.setState({board: this.state.board.move(2)});
+      } else if(evt.nativeEvent.eventType === "up") {
+        this.setState({board: this.state.board.move(1)});
+      } else if(evt.nativeEvent.eventType === "down") {
+        this.setState({board: this.state.board.move(3)});
+      } 
+  }
+
   render() {
     var tiles = this.state.board.tiles
       .filter((tile) => tile.value)
       .map((tile) => <Tile ref={tile.id} key={tile.id} tile={tile} />);
 
+    ReactNative.NativeAppEventEmitter.addListener( 'tvEvent', evt => {
+    });
     return (
       <View
         style={styles.container}
+        onTVNavEvent={(event) => this.handleTVNavEvent(event)}
         onTouchStart={(event) => this.handleTouchStart(event)}
         onTouchEnd={(event) => this.handleTouchEnd(event)}>
         <Board>
@@ -271,9 +287,9 @@ var styles = StyleSheet.create({
     alignItems: 'center',
   },
   value: {
-    fontSize: 24,
+    fontSize: __APPLETV__ ? 96 : 24,
     color: '#776666',
-    fontFamily: 'Verdana',
+    fontFamily: __APPLETV__ ? 'Helvetica' : 'Verdana',
     fontWeight: '500',
   },
   tile2: {
@@ -313,10 +329,10 @@ var styles = StyleSheet.create({
     color: '#ffffff',
   },
   threeDigits: {
-    fontSize: 20,
+    fontSize: __APPLETV__ ? 60 : 20,
   },
   fourDigits: {
-    fontSize: 18,
+    fontSize: __APPLETV__ ? 54 : 18,
   },
 });
 

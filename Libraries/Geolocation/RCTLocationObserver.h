@@ -9,6 +9,10 @@
 
 #import "RCTEventEmitter.h"
 
+#if !TARGET_OS_TV
+
 @interface RCTLocationObserver : RCTEventEmitter
 
 @end
+
+#endif
