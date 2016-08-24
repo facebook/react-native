@@ -202,7 +202,7 @@
     "eslint-plugin-babel": "^3.2.0",
     "eslint-plugin-flow-vars": "^0.2.1",
     "eslint-plugin-react": "^4.2.1",
-    "flow-bin": "^0.30.0",
+    "flow-bin": "^0.31.1",
     "jest": "~14.1.0",
     "jest-repl": "~14.1.0",
     "jest-runtime": "~14.1.0",

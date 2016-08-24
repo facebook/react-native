@@ -39,7 +39,12 @@ var BlogPageLayout = React.createClass({
             {MetadataBlog.files
               .slice(page * perPage, (page + 1) * perPage)
               .map((post) => {
-                return <BlogPost post={post} content={post.content} />
+                return (
+                  <div>
+                    <BlogPost post={post} content={post.content} excerpt={true} />
+                    <hr />
+                  </div>
+                )
               })
             }
             <div className="docs-prevnext">
