@@ -598,8 +598,6 @@ BOOL jsGettingtooSlow =
   #endif
 
   if (jsGettingAhead) {
-    UIViewController *rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
-    NSArray *gestureRecognizers = [rootViewController.view gestureRecognizers];
     if (reactPushOne) {
       UIView *lastView = self.reactSubviews.lastObject;
       RCTWrapperViewController *vc = [[RCTWrapperViewController alloc] initWithNavItem:(RCTNavItem *)lastView];
