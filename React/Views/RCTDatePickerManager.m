@@ -14,6 +14,8 @@
 #import "RCTEventDispatcher.h"
 #import "UIView+React.h"
 
+#if !TARGET_OS_TV
+
 @implementation RCTConvert(UIDatePicker)
 
 RCT_ENUM_CONVERTER(UIDatePickerMode, (@{
@@ -25,9 +27,13 @@ RCT_ENUM_CONVERTER(UIDatePickerMode, (@{
 
 @end
 
+#endif //TARGET_OS_TV
+
 @implementation RCTDatePickerManager
 
 RCT_EXPORT_MODULE()
+
+#if !TARGET_OS_TV
 
 - (UIView *)view
 {
@@ -41,5 +47,7 @@ RCT_EXPORT_VIEW_PROPERTY(minuteInterval, NSInteger)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_REMAP_VIEW_PROPERTY(mode, datePickerMode, UIDatePickerMode)
 RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone, NSTimeZone)
+
+#endif //TARGET_OS_TV
 
 @end

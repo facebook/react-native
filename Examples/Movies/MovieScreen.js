@@ -113,17 +113,17 @@ var styles = StyleSheet.create({
   },
   movieTitle: {
     flex: 1,
-    fontSize: 16,
+    fontSize: __APPLETV__ ? 32 : 16,
     fontWeight: '500',
   },
   rating: {
     marginTop: 10,
   },
   ratingTitle: {
-    fontSize: 14,
+    fontSize: __APPLETV__ ? 28 : 14,
   },
   ratingValue: {
-    fontSize: 28,
+    fontSize: __APPLETV__ ? 56 : 28,
     fontWeight: '500',
   },
   mpaaWrapper: {
@@ -134,7 +134,7 @@ var styles = StyleSheet.create({
     marginVertical: 5,
   },
   mpaaText: {
-    fontFamily: 'Palatino',
+    fontFamily: __APPLETV__ ? 'Helvetica' : 'Palatino',
     fontSize: 13,
     fontWeight: '500',
   },

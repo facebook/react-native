@@ -16,6 +16,7 @@
 
   // Map from global var to bool specifying if it can be redefined
   "globals": {
+    "__APPLETV__": false,
     "__DEV__": true,
     "__dirname": false,
     "__fbBatchedBridgeConfig": false,

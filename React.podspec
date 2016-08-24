@@ -109,7 +109,7 @@ Pod::Spec.new do |s|
     ss.preserve_paths = "Libraries/Text/*.js"
   end
 
-  s.subspec 'RCTVibration' do |ss|
+  s.rubspec 'RCTVibration' do |ss|
     ss.dependency       'React/Core'
     ss.source_files   = "Libraries/Vibration/*.{h,m}"
     ss.preserve_paths = "Libraries/Vibration/*.js"

@@ -49,7 +49,6 @@ class NavigatorIOSColors extends React.Component {
   render() {
     // Set StatusBar with light contents to get better contrast
     StatusBar.setBarStyle('light-content');
-
     return (
       <NavigatorIOS
         style={styles.container}

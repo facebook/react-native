@@ -11,9 +11,13 @@
 
 #import "RCTComponent.h"
 
+#if !TARGET_OS_TV
+
 @interface RCTRefreshControl : UIRefreshControl
 
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) RCTDirectEventBlock onRefresh;
 
 @end
+
+#endif

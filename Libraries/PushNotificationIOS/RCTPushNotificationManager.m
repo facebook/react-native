@@ -33,6 +33,8 @@ NSString *const RCTErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMI
 
 @implementation RCTConvert (UILocalNotification)
 
+#if !TARGET_OS_TV
+
 + (UILocalNotification *)UILocalNotification:(id)json
 {
   NSDictionary<NSString *, id> *details = [self NSDictionary:json];
@@ -48,6 +50,7 @@ NSString *const RCTErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMI
   }
   return notification;
 }
+#endif //TARGET_OS_TV
 
 @end
 
@@ -55,6 +58,10 @@ NSString *const RCTErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMI
 {
   RCTPromiseResolveBlock _requestPermissionsResolveBlock;
 }
+
+RCT_EXPORT_MODULE()
+
+#if !TARGET_OS_TV
 
 static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notification)
 {
@@ -74,8 +81,6 @@ static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notificatio
   formattedLocalNotification[@"remote"] = @NO;
   return formattedLocalNotification;
 }
-
-RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue
 {
@@ -107,12 +112,21 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#endif //TARGET_OS_TV
+
+
 - (NSArray<NSString *> *)supportedEvents
 {
+#if TARGET_OS_TV
+  return @[];
+#else
   return @[@"localNotificationReceived",
            @"remoteNotificationReceived",
            @"remoteNotificationsRegistered"];
+#endif
 }
+
+#if !TARGET_OS_TV
 
 + (void)didRegisterUserNotificationSettings:(__unused UIUserNotificationSettings *)notificationSettings
 {
@@ -338,5 +352,7 @@ RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTResponseSenderBlock)callbac
   }
   callback(@[formattedScheduledLocalNotifications]);
 }
+
+#endif //TARGET_OS_TV
 
 @end

@@ -81,6 +81,11 @@ class TabBarItemIOS extends React.Component {
      * is defined.
      */
     title: React.PropTypes.string,
+
+    onTVSelect: React.PropTypes.func,
+    onTVFocus: React.PropTypes.func,
+    onTVBlur: React.PropTypes.func,
+    onTVNavEvent: React.PropTypes.func
   };
 
   state = {
