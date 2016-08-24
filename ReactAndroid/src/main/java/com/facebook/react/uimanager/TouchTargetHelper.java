@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.ReactHitSlopView;
+import com.facebook.react.views.view.ReactViewGroup;
 
 /**
  * Class responsible for identifying which react view should handle a given {@link MotionEvent}.
@@ -124,8 +125,12 @@ public class TouchTargetHelper {
    */
   private static View findTouchTargetView(float[] eventCoords, ViewGroup viewGroup) {
     int childrenCount = viewGroup.getChildCount();
+    final boolean useCustomOrder = (viewGroup instanceof ReactViewGroup) &&
+      ((ReactViewGroup) viewGroup).isChildrenDrawingOrderEnabled();
     for (int i = childrenCount - 1; i >= 0; i--) {
-      View child = viewGroup.getChildAt(i);
+      int childIndex = useCustomOrder ?
+        ((ReactViewGroup) viewGroup).getChildDrawingOrder(childrenCount, i) : i;
+      View child = viewGroup.getChildAt(childIndex);
       PointF childPoint = mTempPoint;
       if (isTransformedTouchPointInView(eventCoords[0], eventCoords[1], viewGroup, child, childPoint)) {
         // If it is contained within the child View, the childPoint value will contain the view
@@ -136,13 +141,7 @@ public class TouchTargetHelper {
         float restoreY = eventCoords[1];
         eventCoords[0] = childPoint.x;
         eventCoords[1] = childPoint.y;
-        View targetView;
-        // If the child is a ReactHitTestView it handles finding the touch target itself.
-        if (child instanceof ReactHitTestView) {
-          targetView = ((ReactHitTestView) child).hitTest(eventCoords);
-        } else {
-          targetView = findTouchTargetViewWithPointerEvents(eventCoords, child);
-        }
+        View targetView = findTouchTargetViewWithPointerEvents(eventCoords, child);
         if (targetView != null) {
           return targetView;
         }
@@ -158,7 +157,7 @@ public class TouchTargetHelper {
    * It is transform aware and will invert the transform Matrix to find the true local points
    * This code is taken from {@link ViewGroup#isTransformedTouchPointInView()}
    */
-  public static boolean isTransformedTouchPointInView(
+  private static boolean isTransformedTouchPointInView(
       float x,
       float y,
       ViewGroup parent,
@@ -202,7 +201,7 @@ public class TouchTargetHelper {
    * Returns the touch target View of the event given, or null if neither the given View nor any of
    * its descendants are the touch target.
    */
-  public static @Nullable View findTouchTargetViewWithPointerEvents(
+  private static @Nullable View findTouchTargetViewWithPointerEvents(
       float eventCoords[], View view) {
     PointerEvents pointerEvents = view instanceof ReactPointerEventsView ?
         ((ReactPointerEventsView) view).getPointerEvents() : PointerEvents.AUTO;

@@ -540,13 +540,21 @@ public class ReactViewGroup extends ViewGroup implements
     mHitSlopRect = rect;
   }
 
+  /**
+   * Expose protected drawing order methods to be used by #{@link TouchTargetHelper}
+   */
   @Override
-  protected int getChildDrawingOrder(int childCount, int i) {
+  public int getChildDrawingOrder(int childCount, int i) {
     if (mChildDrawingOrderDelegate == null) {
       return super.getChildDrawingOrder(childCount, i);
     } else {
       return mChildDrawingOrderDelegate.getChildDrawingOrder(this, i);
     }
+  }
+
+  @Override
+  public boolean isChildrenDrawingOrderEnabled() {
+    return super.isChildrenDrawingOrderEnabled();
   }
 
   public void setChildDrawingOrderDelegate(@Nullable ChildDrawingOrderDelegate delegate) {
