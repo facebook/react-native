@@ -126,6 +126,7 @@ react_library(
     'NativeToJsBridge.cpp',
     'Platform.cpp',
     'Value.cpp',
+    'Unicode.cpp',
   ],
   headers = [
     'JSCLegacyProfiler.h',
@@ -155,6 +156,7 @@ react_library(
     'Platform.h',
     'SystraceSection.h',
     'Value.h',
+    'Unicode.h',
   ],
   preprocessor_flags = [
     '-DLOG_TAG="ReactNative"',
