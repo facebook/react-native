@@ -1,3 +1,3 @@
 module.exports = {
-  grey: (str) => { return str }
+  grey: (str) => str,
 };
