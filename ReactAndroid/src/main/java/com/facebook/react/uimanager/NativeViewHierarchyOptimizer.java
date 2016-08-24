@@ -437,7 +437,7 @@ public class NativeViewHierarchyOptimizer {
 
   private static boolean isLayoutOnlyAndCollapsable(@Nullable ReactStylesDiffMap props) {
     if (props == null) {
-      return true;
+      return false;
     }
 
     if (props.hasKey(ViewProps.COLLAPSABLE) && !props.getBoolean(ViewProps.COLLAPSABLE, true)) {
