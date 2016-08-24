@@ -36,7 +36,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
  * initializes most of the storage needed for them.
  */
 public class ReactViewGroup extends ViewGroup implements
-    ReactInterceptingViewGroup, com.facebook.react.uimanager.ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView {
+    ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView, DrawingOrderViewGroup {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
@@ -302,10 +302,10 @@ public class ReactViewGroup extends ViewGroup implements
       matrix.mapRect(sHelperRect);
     }
     boolean intersects = clippingRect.intersects(
-      (int) (sHelperRect.left - 0.5f),
-      (int) (sHelperRect.top - 0.5f),
-      (int) (sHelperRect.right + 0.5f),
-      (int) (sHelperRect.bottom + 0.5f));
+      (int) sHelperRect.left,
+      (int) sHelperRect.top,
+      (int) Math.ceil(sHelperRect.right),
+      (int) Math.ceil(sHelperRect.bottom));
     boolean needUpdateClippingRecursive = false;
     // We never want to clip children that are being animated, as this can easily break layout :
     // when layout animation changes size and/or position of views contained inside a listview that
@@ -356,10 +356,10 @@ public class ReactViewGroup extends ViewGroup implements
       matrix.mapRect(sHelperRect);
     }
     boolean intersects = mClippingRect.intersects(
-      (int) (sHelperRect.left - 0.5f),
-      (int) (sHelperRect.top - 0.5f),
-      (int) (sHelperRect.right + 0.5f),
-      (int) (sHelperRect.bottom + 0.5f));
+      (int) sHelperRect.left,
+      (int) sHelperRect.top,
+      (int) Math.ceil(sHelperRect.right),
+      (int) Math.ceil(sHelperRect.bottom));
 
     // If it was intersecting before, should be attached to the parent
     boolean oldIntersects = (subview.getParent() != null);
@@ -552,21 +552,23 @@ public class ReactViewGroup extends ViewGroup implements
     mHitSlopRect = rect;
   }
 
-  /**
-   * Expose protected drawing order methods to be used by #{@link TouchTargetHelper}
-   */
   @Override
-  public int getChildDrawingOrder(int childCount, int i) {
+  public int getDrawingOrder(int i) {
+    return getChildDrawingOrder(getChildCount(), i);
+  }
+
+  @Override
+  public boolean isDrawingOrderEnabled() {
+    return isChildrenDrawingOrderEnabled();
+  }
+
+  @Override
+  protected int getChildDrawingOrder(int childCount, int i) {
     if (mChildDrawingOrderDelegate == null) {
       return super.getChildDrawingOrder(childCount, i);
     } else {
       return mChildDrawingOrderDelegate.getChildDrawingOrder(this, i);
     }
-  }
-
-  @Override
-  public boolean isChildrenDrawingOrderEnabled() {
-    return super.isChildrenDrawingOrderEnabled();
   }
 
   public void setChildDrawingOrderDelegate(@Nullable ChildDrawingOrderDelegate delegate) {

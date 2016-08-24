@@ -21,7 +21,6 @@ import android.view.ViewGroup;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.ReactHitSlopView;
-import com.facebook.react.views.view.ReactViewGroup;
 
 /**
  * Class responsible for identifying which react view should handle a given {@link MotionEvent}.
@@ -125,11 +124,11 @@ public class TouchTargetHelper {
    */
   private static View findTouchTargetView(float[] eventCoords, ViewGroup viewGroup) {
     int childrenCount = viewGroup.getChildCount();
-    final boolean useCustomOrder = (viewGroup instanceof ReactViewGroup) &&
-      ((ReactViewGroup) viewGroup).isChildrenDrawingOrderEnabled();
+    final boolean useCustomOrder = (viewGroup instanceof DrawingOrderViewGroup) &&
+      ((DrawingOrderViewGroup) viewGroup).isDrawingOrderEnabled();
     for (int i = childrenCount - 1; i >= 0; i--) {
       int childIndex = useCustomOrder ?
-        ((ReactViewGroup) viewGroup).getChildDrawingOrder(childrenCount, i) : i;
+        ((DrawingOrderViewGroup) viewGroup).getDrawingOrder(i) : i;
       View child = viewGroup.getChildAt(childIndex);
       PointF childPoint = mTempPoint;
       if (isTransformedTouchPointInView(eventCoords[0], eventCoords[1], viewGroup, child, childPoint)) {
