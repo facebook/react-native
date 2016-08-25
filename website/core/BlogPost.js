@@ -46,7 +46,10 @@ var BlogPost = React.createClass({
 
     return (
       <article>
-        <BlogPostHeader post={post} postedOnDate={postedOnDate} />
+        <BlogPostHeader
+          post={post}
+          postedOnDate={postedOnDate}
+          excerpt={this.props.excerpt} />
         <div className="entry-content">
           <Marked>{content}</Marked>
         </div>
