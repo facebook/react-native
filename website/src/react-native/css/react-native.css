@@ -1713,7 +1713,7 @@ input#algolia-doc-search:focus {
   margin: 0;
 }
 
-.help-list-entry {
+.help-list .help-list-entry {
   padding: 16px 0;
   border-top: 1px solid #f1eff0;
 }
