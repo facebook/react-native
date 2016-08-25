@@ -328,6 +328,13 @@ var featured = [
     infoLink: 'https://artsy.github.io/series/react-native-at-artsy/',
     infoTitle: 'React Native at Artsy',
   },
+  {
+    name: 'Zribbble',
+    icon: 'http://zribbble.com/images/appstore-logo.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/zribbble/id1124550060?ls=1&mt=8',
+    infoLink: 'https://medium.com/@mironcatalin/building-zribbble-a-dribbble-client-for-ios-f21836cc1a1f',
+    infoTitle: 'Building Zribbble, a Dribbble client for iOS',
+  },
 ];
 
 featured.sort(function(a, b) {
