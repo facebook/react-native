@@ -618,6 +618,16 @@ exports.examples = [
       );
     },
   },
+  {
+    title: 'Resources Bundle',
+    render: function() {
+        return (
+          <Image
+            style={{width: 60, height: 60}}
+            source={{ uri: 'logo_small_2x', bundle: 'UIExplorerBundle' }} />
+        );
+    }
+  },
 ];
 
 var fullImage = {uri: 'http://facebook.github.io/react/img/logo_og.png'};

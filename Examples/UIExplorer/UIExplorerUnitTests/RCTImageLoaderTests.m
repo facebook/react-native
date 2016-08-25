@@ -49,7 +49,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   id<RCTImageURLLoader> loader = [[RCTImageLoaderTestsURLLoader1 alloc] initWithPriority:1.0 canLoadImageURLHandler:^BOOL(__unused NSURL *requestURL) {
     return YES;
-  } loadImageURLHandler:^RCTImageLoaderCancellationBlock(__unused NSURL *imageURL, __unused CGSize size, __unused CGFloat scale, __unused RCTResizeMode resizeMode, RCTImageLoaderProgressBlock progressHandler, RCTImageLoaderCompletionBlock completionHandler) {
+  } loadImageURLHandler:^RCTImageLoaderCancellationBlock(__unused NSURL *imageURL, __unused NSString *bundlePath, __unused CGSize size, __unused CGFloat scale, __unused RCTResizeMode resizeMode, RCTImageLoaderProgressBlock progressHandler, RCTImageLoaderCompletionBlock completionHandler) {
     progressHandler(1, 1);
     completionHandler(nil, image);
     return nil;
@@ -58,7 +58,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:^{ return @[loader]; } launchOptions:nil];
 
   NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://facebook.github.io/react/img/logo_og.png"]];
-  [bridge.imageLoader loadImageWithURLRequest:urlRequest size:CGSizeMake(100, 100) scale:1.0 clipped:YES resizeMode:RCTResizeModeContain progressBlock:^(int64_t progress, int64_t total) {
+  [bridge.imageLoader loadImageWithURLRequest:urlRequest bundlePath:nil size:CGSizeMake(100, 100) scale:1.0 clipped:YES resizeMode:RCTResizeModeContain progressBlock:^(int64_t progress, int64_t total) {
     XCTAssertEqual(progress, 1);
     XCTAssertEqual(total, 1);
   } completionBlock:^(NSError *loadError, id loadedImage) {
@@ -73,7 +73,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   id<RCTImageURLLoader> loader1 = [[RCTImageLoaderTestsURLLoader1 alloc] initWithPriority:1.0 canLoadImageURLHandler:^BOOL(__unused NSURL *requestURL) {
     return YES;
-  } loadImageURLHandler:^RCTImageLoaderCancellationBlock(__unused NSURL *imageURL, __unused CGSize size, __unused CGFloat scale, __unused RCTResizeMode resizeMode, RCTImageLoaderProgressBlock progressHandler, RCTImageLoaderCompletionBlock completionHandler) {
+  } loadImageURLHandler:^RCTImageLoaderCancellationBlock(__unused NSURL *imageURL, __unused NSString *bundlePath, __unused CGSize size, __unused CGFloat scale, __unused RCTResizeMode resizeMode, RCTImageLoaderProgressBlock progressHandler, RCTImageLoaderCompletionBlock completionHandler) {
     progressHandler(1, 1);
     completionHandler(nil, image);
     return nil;
@@ -81,7 +81,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   id<RCTImageURLLoader> loader2 = [[RCTImageLoaderTestsURLLoader2 alloc] initWithPriority:0.5 canLoadImageURLHandler:^BOOL(__unused NSURL *requestURL) {
     return YES;
-  } loadImageURLHandler:^RCTImageLoaderCancellationBlock(__unused NSURL *imageURL, __unused CGSize size, __unused CGFloat scale, __unused RCTResizeMode resizeMode, __unused RCTImageLoaderProgressBlock progressHandler, __unused RCTImageLoaderCompletionBlock completionHandler) {
+  } loadImageURLHandler:^RCTImageLoaderCancellationBlock(__unused NSURL *imageURL, __unused NSString *bundlePath, __unused CGSize size, __unused CGFloat scale, __unused RCTResizeMode resizeMode, __unused RCTImageLoaderProgressBlock progressHandler, __unused RCTImageLoaderCompletionBlock completionHandler) {
     XCTFail(@"Should not have used loader2");
     return nil;
   }];
@@ -89,7 +89,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:^{ return @[loader1, loader2]; } launchOptions:nil];
 
   NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://facebook.github.io/react/img/logo_og.png"]];
-  [bridge.imageLoader loadImageWithURLRequest:urlRequest size:CGSizeMake(100, 100) scale:1.0 clipped:YES resizeMode:RCTResizeModeContain progressBlock:^(int64_t progress, int64_t total) {
+  [bridge.imageLoader loadImageWithURLRequest:urlRequest bundlePath:nil size:CGSizeMake(100, 100) scale:1.0 clipped:YES resizeMode:RCTResizeModeContain progressBlock:^(int64_t progress, int64_t total) {
     XCTAssertEqual(progress, 1);
     XCTAssertEqual(total, 1);
   } completionBlock:^(NSError *loadError, id loadedImage) {

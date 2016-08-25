@@ -221,9 +221,11 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 }
 
 - (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+                                                bundlePath:(NSString *)bundlePath
                                                   callback:(RCTImageLoaderCompletionBlock)callback
 {
   return [self loadImageWithURLRequest:imageURLRequest
+                            bundlePath:(NSString *)bundlePath
                                   size:CGSizeZero
                                  scale:1
                                clipped:YES
@@ -288,6 +290,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
  * the image, or retrieving metadata.
  */
 - (RCTImageLoaderCancellationBlock)_loadImageOrDataWithURLRequest:(NSURLRequest *)request
+                                                       bundlePath:(NSString *)bundlePath
                                                              size:(CGSize)size
                                                             scale:(CGFloat)scale
                                                        resizeMode:(RCTResizeMode)resizeMode
@@ -339,6 +342,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   // the main queue.
   if (loadHandler && !requiresScheduling) {
     return [loadHandler loadImageForURL:request.URL
+                             bundlePath:bundlePath
                                    size:size
                                   scale:scale
                              resizeMode:resizeMode
@@ -362,6 +366,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
     if (loadHandler) {
       cancelLoad = [loadHandler loadImageForURL:request.URL
+                                     bundlePath:bundlePath
                                            size:size
                                           scale:scale
                                      resizeMode:resizeMode
@@ -486,6 +491,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 }
 
 - (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+                                                bundlePath:(NSString *)bundlePath
                                                       size:(CGSize)size
                                                      scale:(CGFloat)scale
                                                    clipped:(BOOL)clipped
@@ -518,6 +524,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     // Check decoded image cache
     if (cacheResult) {
       UIImage *image = [[strongSelf imageCache] imageForUrl:imageURLRequest.URL.absoluteString
+                                                 bundlePath:bundlePath
                                                        size:size
                                                       scale:scale
                                                  resizeMode:resizeMode
@@ -534,6 +541,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         // Store decoded image in cache
         [[strongSelf imageCache] addImageToCache:image
                                              URL:imageURLRequest.URL.absoluteString
+                                      bundlePath:bundlePath
                                             size:size
                                            scale:scale
                                       resizeMode:resizeMode
@@ -553,6 +561,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   };
 
   cancelLoad = [self _loadImageOrDataWithURLRequest:imageURLRequest
+                                         bundlePath:bundlePath
                                                size:size
                                               scale:scale
                                          resizeMode:resizeMode
@@ -668,6 +677,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 }
 
 - (RCTImageLoaderCancellationBlock)getImageSizeForURLRequest:(NSURLRequest *)imageURLRequest
+                                                  bundlePath:(NSString *)bundlePath
                                                        block:(void(^)(NSError *error, CGSize size))callback
 {
   void (^completion)(NSError *, id, BOOL, NSString *) = ^(NSError *error, id imageOrData, BOOL cacheResult, NSString *fetchDate) {
@@ -689,6 +699,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   };
 
   return [self _loadImageOrDataWithURLRequest:imageURLRequest
+                                   bundlePath:bundlePath
                                          size:CGSizeZero
                                         scale:1
                                    resizeMode:RCTResizeModeStretch
@@ -716,7 +727,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 - (id)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
   __block RCTImageLoaderCancellationBlock requestToken;
-  requestToken = [self loadImageWithURLRequest:request callback:^(NSError *error, UIImage *image) {
+  requestToken = [self loadImageWithURLRequest:request bundlePath:nil callback:^(NSError *error, UIImage *image) {
     if (error) {
       [delegate URLRequest:requestToken didCompleteWithError:error];
       return;

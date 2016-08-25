@@ -17,6 +17,7 @@
 @interface RCTImageSource : NSObject
 
 @property (nonatomic, copy, readonly) NSURLRequest *request;
+@property (nonatomic, strong, readonly) NSURL *bundleURL;
 @property (nonatomic, assign, readonly) CGSize size;
 @property (nonatomic, assign, readonly) CGFloat scale;
 
@@ -26,6 +27,7 @@
  * size. Pass a scale of zero if you do not know or wish to specify the scale.
  */
 - (instancetype)initWithURLRequest:(NSURLRequest *)request
+                         bundleURL:(NSURL *)bundleURL
                               size:(CGSize)size
                              scale:(CGFloat)scale;
 

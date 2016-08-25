@@ -23,6 +23,7 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 @protocol RCTImageCache <NSObject>
 
 - (UIImage *)imageForUrl:(NSString *)url
+              bundlePath:(NSString *)bundlePath
                     size:(CGSize)size
                    scale:(CGFloat)scale
               resizeMode:(RCTResizeMode)resizeMode
@@ -30,6 +31,7 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 
 - (void)addImageToCache:(UIImage *)image
                     URL:(NSString *)url
+             bundlePath:(NSString *)bundlePath
                    size:(CGSize)size
                   scale:(CGFloat)scale
              resizeMode:(RCTResizeMode)resizeMode
@@ -75,6 +77,7 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
  * Can be called from any thread, will call back on an unspecified thread.
  */
 - (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+                                                bundlePath:(NSString *)bundlePath
                                                   callback:(RCTImageLoaderCompletionBlock)callback;
 
 /**
@@ -84,6 +87,7 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
  * or if the original aspect ratio should be retained.
  */
 - (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+                                                bundlePath:(NSString *)bundlePath
                                                       size:(CGSize)size
                                                      scale:(CGFloat)scale
                                                    clipped:(BOOL)clipped
@@ -110,6 +114,7 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
  * the information, and won't decode the image if it doesn't have to.
  */
 - (RCTImageLoaderCancellationBlock)getImageSizeForURLRequest:(NSURLRequest *)imageURLRequest
+                                                  bundlePath:(NSString *)bundlePath
                                                        block:(void(^)(NSError *error, CGSize size))completionBlock;
 
 /**
@@ -151,6 +156,7 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
  * applicable.
  */
 - (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
+                                        bundlePath:(NSString *)bundlePath
                                               size:(CGSize)size
                                              scale:(CGFloat)scale
                                         resizeMode:(RCTResizeMode)resizeMode
