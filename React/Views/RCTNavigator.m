@@ -79,7 +79,7 @@ NSInteger kNeverProgressed = -10000;
  * pushes/pops accordingly. If `RCTNavigator` sees a `UIKit` driven push/pop, it
  * notifies JavaScript that this has happened, and expects that JavaScript will
  * eventually render more children to match `UIKit`. There's no rush for
- * JavaScript to catch up. But if it does rener anything, it must catch up to
+ * JavaScript to catch up. But if it does render anything, it must catch up to
  * UIKit. It cannot deviate.
  *
  * To implement this, we need a lock, which we store on the native thread. This
