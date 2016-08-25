@@ -5,7 +5,7 @@ package com.facebook.react.uimanager;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.ViewParent;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -56,6 +56,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     } else {
       setTransformProperty(view, matrix);
     }
+
+    updateClipping(view);
   }
 
   @ReactProp(name = PROP_OPACITY, defaultFloat = 1.f)
@@ -114,30 +116,40 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = PROP_ROTATION)
   public void setRotation(T view, float rotation) {
     view.setRotation(rotation);
+
+    updateClipping(view);
   }
 
   @Deprecated
   @ReactProp(name = PROP_SCALE_X, defaultFloat = 1f)
   public void setScaleX(T view, float scaleX) {
     view.setScaleX(scaleX);
+
+    updateClipping(view);
   }
 
   @Deprecated
   @ReactProp(name = PROP_SCALE_Y, defaultFloat = 1f)
   public void setScaleY(T view, float scaleY) {
     view.setScaleY(scaleY);
+
+    updateClipping(view);
   }
 
   @Deprecated
   @ReactProp(name = PROP_TRANSLATE_X, defaultFloat = 0f)
   public void setTranslateX(T view, float translateX) {
     view.setTranslationX(PixelUtil.toPixelFromDIP(translateX));
+
+    updateClipping(view);
   }
 
   @Deprecated
   @ReactProp(name = PROP_TRANSLATE_Y, defaultFloat = 0f)
   public void setTranslateY(T view, float translateY) {
     view.setTranslationY(PixelUtil.toPixelFromDIP(translateY));
+
+    updateClipping(view);
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_LIVE_REGION)
@@ -175,5 +187,12 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setRotationY(0);
     view.setScaleX(1);
     view.setScaleY(1);
+  }
+
+  private static void updateClipping(View view) {
+    ViewParent parent = view.getParent();
+    if (parent instanceof ReactClippingViewGroup) {
+      ((ReactClippingViewGroup) parent).updateClippingRect();
+    }
   }
 }
