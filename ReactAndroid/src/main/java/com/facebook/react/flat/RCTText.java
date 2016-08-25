@@ -339,7 +339,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
     sTextLayoutBuilder.setTextStyle(textStyle);
 
-    sTextLayoutBuilder.textDirection(TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR);
+    sTextLayoutBuilder.setTextDirection(TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR);
     sTextLayoutBuilder.setIncludeFontPadding(shouldIncludeFontPadding);
     sTextLayoutBuilder.setTextSpacingExtra(extraSpacing);
     sTextLayoutBuilder.setTextSpacingMultiplier(spacingMultiplier);
