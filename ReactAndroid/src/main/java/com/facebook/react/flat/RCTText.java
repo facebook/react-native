@@ -22,12 +22,12 @@ import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.csslayout.Spacing;
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
+import com.facebook.fbui.textlayoutbuilder.cachewarmer.DefaultTextLayoutCacheWarmer;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.textcachewarmer.DefaultTextLayoutCacheWarmer;
 
 /**
  * RCTText is a top-level node for text. It extends {@link RCTVirtualText} because it can contain
