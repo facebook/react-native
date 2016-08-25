@@ -1040,8 +1040,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
         child->layout.computedFlexBasis =
             fmaxf(child->style.dimensions[CSSDimensionHeight],
                   getPaddingAndBorderAxis(child, CSSFlexDirectionColumn));
-      } else if (!CSSValueIsUndefined(child->style.flexBasis) &&
-                 !CSSValueIsUndefined(availableInnerMainDim)) {
+      } else if (!CSSValueIsUndefined(child->style.flexBasis)) {
         child->layout.computedFlexBasis =
             fmaxf(child->style.flexBasis, getPaddingAndBorderAxis(child, mainAxis));
       } else {
