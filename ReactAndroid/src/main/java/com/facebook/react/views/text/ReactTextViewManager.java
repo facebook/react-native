@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.uimanager.BaseViewManager;
-import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewDefaults;
@@ -34,6 +33,8 @@ import com.facebook.react.common.annotations.VisibleForTesting;
  * whole text subtree.
  */
 public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTextShadowNode> {
+  private int mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
+  private @Nullable TextUtils.TruncateAt mEllipsizeLocation = TextUtils.TruncateAt.END;
 
   @VisibleForTesting
   public static final String REACT_CLASS = "RCTText";
@@ -51,22 +52,20 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
   // maxLines can only be set in master view (block), doesn't really make sense to set in a span
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = ViewDefaults.NUMBER_OF_LINES)
   public void setNumberOfLines(ReactTextView view, int numberOfLines) {
-    view.setMaxLines(numberOfLines == 0 ? ViewDefaults.NUMBER_OF_LINES : numberOfLines);
-    view.setEllipsize(TextUtils.TruncateAt.END);
+    mNumberOfLines = numberOfLines == 0 ? ViewDefaults.NUMBER_OF_LINES : numberOfLines;
+    view.setMaxLines(mNumberOfLines);
   }
 
-  @ReactProp(name = ViewProps.LINE_BREAK_MODE)
-  public void setLineBreakMode(ReactTextView view, @Nullable String ellipsizeMode) {
-    if(ellipsizeMode == null) {
-      return;
-    }
-
-    if (ellipsizeMode.equals("head")) {
-      view.setEllipsize(TextUtils.TruncateAt.START);
+  @ReactProp(name = ViewProps.ELLIPSIZE_MODE)
+  public void setEllipsizeMode(ReactTextView view, @Nullable String ellipsizeMode) {
+    if (ellipsizeMode == null || ellipsizeMode.equals("tail")) {
+      mEllipsizeLocation = TextUtils.TruncateAt.END;
+    } else if (ellipsizeMode.equals("head")) {
+      mEllipsizeLocation = TextUtils.TruncateAt.START;
     } else if (ellipsizeMode.equals("middle")) {
-      view.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-    } else if (ellipsizeMode.equals("tail")) {
-      view.setEllipsize(TextUtils.TruncateAt.END);
+      mEllipsizeLocation = TextUtils.TruncateAt.MIDDLE;
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid ellipsizeMode: " + ellipsizeMode);
     }
   }
 
@@ -108,5 +107,11 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
   @Override
   public Class<ReactTextShadowNode> getShadowNodeClass() {
     return ReactTextShadowNode.class;
+  }
+
+  @Override
+  protected void onAfterUpdateTransaction(ReactTextView view) {
+    @Nullable TextUtils.TruncateAt ellipsizeLocation = mNumberOfLines == ViewDefaults.NUMBER_OF_LINES ? null : mEllipsizeLocation;
+    view.setEllipsize(ellipsizeLocation);
   }
 }
