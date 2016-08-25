@@ -26,7 +26,7 @@ Example:</p><div class="prism language-javascript">  <span class="token punctuat
 by it look crisp) and will try to match the standard width of a thin line
 on the underlying platform. However, you should not rely on it being a
 constant size, because on different platforms and screen densities its
-value may be calculated differently.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="absolutefill"></a>absoluteFill<span class="propType">: CallExpression</span> <a class="hash-link" href="docs/stylesheet.html#absolutefill">#</a></h4><div><p>A very common pattern is to create overlays with position absolute and zero positioning,
+value may be calculated differently.</p><p>A line with hairline width may not be visible if your simulator is downscaled.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="absolutefill"></a>absoluteFill<span class="propType">: CallExpression</span> <a class="hash-link" href="docs/stylesheet.html#absolutefill">#</a></h4><div><p>A very common pattern is to create overlays with position absolute and zero positioning,
 so <code>absoluteFill</code> can be used for convenience and to reduce duplication of these repeated
 styles.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="absolutefillobject"></a>absoluteFillObject<span class="propType">: ObjectExpression</span> <a class="hash-link" href="docs/stylesheet.html#absolutefillobject">#</a></h4><div><p>Sometimes you may want <code>absoluteFill</code> but with a couple tweaks - <code>absoluteFillObject</code> can be
 used to create a customized entry in a <code>StyleSheet</code>, e.g.:</p><p>  const styles = StyleSheet.create({
