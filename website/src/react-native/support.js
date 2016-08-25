@@ -39,7 +39,7 @@ var support = React.createClass({
                   Find what you're looking for in our detailed documentation and guides.
                 </p>
 
-                <ul className="help-list">
+                <ul>
                   <li className="help-list-entry">
                     <a href="/react-native/docs/getting-started.html">Getting Started</a>
                   </li>
@@ -55,12 +55,15 @@ var support = React.createClass({
                   Take apart these fully built applications, and get some inspiration for your own.
                 </p>
 
-                <ul className="help-list">
+                <ul>
                   <li className="help-list-entry">
                     <a href="http://makeitopen.com/">Building the F8 2016 App</a>
                   </li>
                   <li className="help-list-entry">
                     <a href="https://github.com/facebook/react-native/tree/master/Examples/UIExplorer">UIExplorer</a>
+                  </li>
+                  <li className="help-list-entry">
+                    <a href="https://github.com/facebook/react-native/tree/master/Examples/Movies">Movies</a>
                   </li>
                 </ul>
 
@@ -69,7 +72,7 @@ var support = React.createClass({
                   Find out what's happening in the world of React Native.
                 </p>
 
-                <ul className="help-list">
+                <ul>
                   <li className="help-list-entry">
                     <a href="https://twitter.com/reactnative">React Native on Twitter</a>
                   </li>
@@ -90,21 +93,21 @@ var support = React.createClass({
 
                 <ul className="help-list">
                   <li className="help-list-entry">
-                    <h3><a href="http://stackoverflow.com/questions/tagged/react-native">Frequently Asked Questions</a></h3>
+                    <h3>Frequently Asked Questions</h3>
                     <p>
-                      Many React Native users are active on Stack Overflow. Check <a href="http://stackoverflow.com/questions/tagged/react-native">existing questions</a>, or ask your own technical question.
+                      Many React Native users are active on Stack Overflow. Browse <a href="http://stackoverflow.com/questions/tagged/react-native">existing questions</a>, or ask your own technical question.
                     </p>
                   </li>
                   <li className="help-list-entry">
-                    <h3><a href="https://www.facebook.com/groups/react.native.community">React Native Community</a></h3>
+                    <h3>React Native Community</h3>
                     <p>
                       If you have an open-ended question or you just want to get a general sense of what React Native folks talk about, check out the <a href="https://www.facebook.com/groups/react.native.community">React Native Community</a> Facebook group. It has thousands of developers and almost all posts get a response.
                     </p>
                   </li>
                   <li className="help-list-entry">
-                    <h3><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a></h3>
+                    <h3>Reactiflux Chat</h3>
                     <p>
-                      If you need an answer right away, check out the <a href="https://discord.gg/0ZcbPKXt5bZjGY5n">#react-native channel</a>. There are usually a number of React Native experts there who can help out or point you to somewhere you might want to look.
+                      If you need an answer right away, check out the <a href="https://discord.gg/0ZcbPKXt5bZjGY5n">#react-native</a> channel. There are usually a number of React Native experts there who can help out or point you to somewhere you might want to look.
                     </p>
                   </li>
                 </ul>
@@ -118,23 +121,23 @@ var support = React.createClass({
 
                 <ul className="help-list">
                   <li className="help-list-entry">
-                    <h3><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Guidelines</a></h3>
+                    <h3>Get Involved</h3>
                     <p>
-                      If you want to contribute, take a look at the list of <a href="https://github.com/facebook/react-native/issues?q=is%3Aopen+is%3Aissue+label%3A%22Good+First+Task%22">Good First Tasks</a> on GitHub.
+                      If you want to contribute, take a look at the list of <a href="https://github.com/facebook/react-native/issues?q=is%3Aopen+is%3Aissue+label%3A%22Good+First+Task%22">good first tasks</a> on GitHub.
                     </p>
                   </li>
 
                   <li className="help-list-entry">
-                    <h3><a href="https://github.com/facebook/react-native/issues">Report a Bug</a></h3>
-                    <p>
-                      If you have discovered a bug in React Native, consider submitting a <a href="https://github.com/facebook/react-native/">pull request</a> with a fix. If you don't think you can fix it yourself, you can open a GitHub issue.
-                    </p>
-                  </li>
-
-                  <li className="help-list-entry">
-                    <h3><a href="https://productpains.com/product/react-native/">Feature Requests</a></h3>
+                    <h3>Feature Requests</h3>
                     <p>
                       If you have a feature request, <a href="https://productpains.com/product/react-native/">add it to the list</a> or upvote a similar one. The voting system helps surface which issues are most important to the community.
+                    </p>
+                  </li>
+
+                  <li className="help-list-entry">
+                    <h3>Report a Bug</h3>
+                    <p>
+                      If you have discovered a bug in React Native, consider submitting a <a href="https://github.com/facebook/react-native/">pull request</a> with a fix. If you don't think you can fix it yourself, you can <a href="https://github.com/facebook/react-native/issues">open an issue</a> on GitHub.
                     </p>
                   </li>
                 </ul>

@@ -28,7 +28,7 @@ var BlogPostLayout = React.createClass({
         path={'blog/' + this.props.metadata.path}
         author={this.props.metadata.author}
         authorTwitter={this.props.metadata.authorTwitter}
-        image={this.props.metadata.hero}
+        image={this.props.metadata.hero ? 'http://facebook.github.io' + this.props.metadata.hero : 'http://facebook.github.io/react-native/img/opengraph.png' }
         >
         <section className="content wrap documentationContent">
           <BlogSidebar title={this.props.metadata.title} />
