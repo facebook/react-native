@@ -64,13 +64,10 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
   @Override
   public void initialize() {
     super.initialize();
-    // Make sure the SoLoaderShim is configured to use our loader for native libraries.
-    // This code can be removed if using Fresco from Maven rather than from source
-    SoLoaderShim.setHandler(new FrescoHandler());
+    if (!FrescoInitializer.isInitialized()) {
+      FrescoInitializer.initialize(getReactApplicationContext(), mConfig);
+    }
 
-    Context context = getReactApplicationContext().getApplicationContext();
-    Fresco.initialize(context, mConfig);
-    mConfig = null;
   }
 
   @Override
@@ -111,12 +108,5 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     }
 
     return builder.build();
-  }
-
-  private static class FrescoHandler implements SoLoaderShim.Handler {
-    @Override
-    public void loadLibrary(String libraryName) {
-      SoLoader.loadLibrary(libraryName);
-    }
   }
 }
