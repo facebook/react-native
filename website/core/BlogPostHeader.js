@@ -22,6 +22,12 @@ var BlogPostHeader = React.createClass({
       hero = <img src={post.hero} />;
     }
 
+    var title = post.title;
+    var href = "/react-native/blog/" + post.path;
+    if (this.props.excerpt) {
+      title = <a href={href}>{post.title}</a>
+    }
+
     return (
       <header className="entry-header">
         {hero}
@@ -33,7 +39,7 @@ var BlogPostHeader = React.createClass({
           {' — '}
           <span className="date">{this.props.postedOnDate}</span>
         </h4>
-        <h1 className="entry-title">{post.title}</h1>
+        <h1 className="entry-title">{title}</h1>
       </header>
     );
   }
