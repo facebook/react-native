@@ -97,8 +97,10 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
       }
       
       if (mEventType == ON_LOAD) {
-        eventData.putDouble("width", mWidth);
-        eventData.putDouble("height", mHeight);
+        WritableMap source = Arguments.createMap();
+        source.putDouble("width", mWidth);
+        source.putDouble("height", mHeight);
+        eventData.putMap("source", source);
       }
     }
     
