@@ -694,7 +694,7 @@ public class LayoutEngine {
 
           // The height is definite, so use that as the flex basis.
           child.layout.computedFlexBasis = Math.max(child.style.dimensions[DIMENSION_HEIGHT], ((child.style.padding.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN]) + child.style.border.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN])) + (child.style.padding.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]) + child.style.border.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]))));
-        } else if (!isFlexBasisAuto(child)) {
+        } else if (!isFlexBasisAuto(child) && !Float.isNaN(availableInnerMainDim)) {
 
           // If the basis isn't 'auto', it is assumed to be zero.
           child.layout.computedFlexBasis = Math.max(child.style.flexBasis, ((child.style.padding.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis]) + child.style.border.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis])) + (child.style.padding.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis]) + child.style.border.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis]))));
