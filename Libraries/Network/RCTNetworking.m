@@ -517,13 +517,13 @@ RCT_EXPORT_METHOD(abortRequest:(nonnull NSNumber *)requestID)
 
 RCT_EXPORT_METHOD(clearCookies:(RCTResponseSenderBlock)responseSender)
 {
-  NSHTTPCookieStorage* storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+  NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
   if (!storage.cookies.count) {
     responseSender(@[@NO]);
     return;
   }
 
-  for (NSHTTPCookie* cookie in storage.cookies) {
+  for (NSHTTPCookie *cookie in storage.cookies) {
     [storage deleteCookie:cookie];
   }
   responseSender(@[@YES]);
