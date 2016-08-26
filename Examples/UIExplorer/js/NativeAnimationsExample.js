@@ -191,6 +191,7 @@ class EventExample extends React.Component {
         <Animated.ScrollView
           horizontal
           style={{ height: 100, marginTop: 16 }}
+          scrollEventThrottle={16}
           onScroll={
             Animated.event([{
               nativeEvent: { contentOffset: { x: this.state.scrollX } }
@@ -472,7 +473,6 @@ exports.examples = [
   },
   {
     title: 'Animated events',
-    platform: 'android',
     render: function() {
       return (
         <EventExample />

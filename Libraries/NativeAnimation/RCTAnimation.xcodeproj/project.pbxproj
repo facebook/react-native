@@ -39,6 +39,7 @@
 		94C129511D40692B0025F25C /* RCTFrameAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 94C1294D1D4069170025F25C /* RCTFrameAnimation.m */; };
 		94C129521D40692B0025F25C /* RCTSpringAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 94C1294F1D4069170025F25C /* RCTSpringAnimation.m */; };
 		94DAE3F91D7334A70059942F /* RCTModuloAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DAE3F81D7334A70059942F /* RCTModuloAnimatedNode.m */; };
+		195140411D6FD650003D5882 /* RCTEventAnimationDriver.m in Sources */ = {isa = PBXBuildFile; fileRef = 195140401D6FD650003D5882 /* RCTEventAnimationDriver.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -98,6 +99,8 @@
 		94C1294F1D4069170025F25C /* RCTSpringAnimation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTSpringAnimation.m; sourceTree = "<group>"; };
 		94DAE3F71D7334A70059942F /* RCTModuloAnimatedNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTModuloAnimatedNode.h; sourceTree = "<group>"; };
 		94DAE3F81D7334A70059942F /* RCTModuloAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModuloAnimatedNode.m; sourceTree = "<group>"; };
+		1951403F1D6FD650003D5882 /* RCTEventAnimationDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTEventAnimationDriver.h; sourceTree = "<group>"; };
+		195140401D6FD650003D5882 /* RCTEventAnimationDriver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTEventAnimationDriver.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,6 +161,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				1951403F1D6FD650003D5882 /* RCTEventAnimationDriver.h */,
+				195140401D6FD650003D5882 /* RCTEventAnimationDriver.m */,
 				13E501B71D07A644005F35D8 /* RCTAnimationUtils.h */,
 				13E501B81D07A644005F35D8 /* RCTAnimationUtils.m */,
 				13E501C71D07A644005F35D8 /* RCTViewPropertyMapper.h */,
@@ -298,6 +303,7 @@
 				13E501EB1D07A6C9005F35D8 /* RCTInterpolationAnimatedNode.m in Sources */,
 				13E501E81D07A6C9005F35D8 /* RCTAdditionAnimatedNode.m in Sources */,
 				5C9894951D999639008027DB /* RCTDivisionAnimatedNode.m in Sources */,
+				195140411D6FD650003D5882 /* RCTEventAnimationDriver.m in Sources */,
 				13E501EF1D07A6C9005F35D8 /* RCTTransformAnimatedNode.m in Sources */,
 				13E501D41D07A644005F35D8 /* RCTViewPropertyMapper.m in Sources */,
 			);
