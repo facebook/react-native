@@ -187,7 +187,10 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
 
   _onLayout(event: any): void {
     const {height, width} = event.nativeEvent.layout;
-
+    if (this.state.layout.initWidth === width &&
+      this.state.layout.initHeight === height) {
+      return;
+    }
     const layout = {
       ...this.state.layout,
       initHeight: height,
