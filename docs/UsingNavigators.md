@@ -22,7 +22,7 @@ React Native has several built-in navigation components, but for your first app 
 
 At this point you should feel comfortable rendering all sorts of components in your app, be it a simple `View` with `Text` inside, or a `ScrollView` with a list of `Image`s. Together, these components make up a scene (another word for screen) in your app.
 
-A scene is nothing other than a React component that is typically rendered full screen. This is in contrast to a `Text`, an `Image`, or even a custom `SpinningBeachball` component that is meant to be rendered as part of a screen. You may have already used one without realizing it - the ["HelloWorldApp"](docs/tutorial.html), the ["FlexDirectionBasics"](docs/flexbox.html), and the ["ListViewBasics"](docs/using-a-listview.html) components covered earlier in the tutorial are all examples of scenes.
+A scene is nothing other than a React component that is typically rendered full screen. This is in contrast to a `Text`, an `Image`, or even a custom `SpinningBeachball` component that is meant to be rendered as part of a screen. You may have already used one without realizing it - the ["HelloWorldApp"](/react-native/docs/tutorial.html), the ["FlexDirectionBasics"](/react-native/docs/flexbox.html), and the ["ListViewBasics"](/react-native/docs/using-a-listview.html) components covered earlier in the tutorial are all examples of scenes.
 
 For simplicity's sake, let's define a simple scene that displays a bit of text. We will come back to this scene later as we add navigation to our app. Create a new file called "MyScene.js" with the following contents:
 
@@ -76,10 +76,10 @@ Enough about scenes, let's start navigating. We will start by rendering a `Navig
 render() {
   return (
     <Navigator
-      initialRoute={{ title: 'My Initial Scene', index: 0 }}
-      renderScene={(route, navigator) => {
-        return <MyScene title={route.title} />
-      }}
+      initialRoute={{ title: 'My Initial Scene' }}
+      renderScene={(route, navigator) =>
+        <MyScene title={route.title} navigator={navigator} />
+      }
     />
   );
 }
@@ -94,7 +94,6 @@ In order to transition to a new scene, you will need to learn about `push` and `
 ```javascript
 navigator.push({
   title: 'Next Scene',
-  index: 1,
 });
 
 navigator.pop();
@@ -104,35 +103,37 @@ A more complete example that demonstrates the pushing and popping of routes coul
 
 ```javascript
 import React, { Component, PropTypes } from 'react';
-import { Navigator, Text, TouchableHighlight, View } from 'react-native';
+import {
+  AppRegistry, Navigator, PixelRatio, StyleSheet, Text, TouchableHighlight, View
+} from 'react-native';
 
-export default class SimpleNavigationApp extends Component {
+const styles = StyleSheet.create({
+  container: {
+    paddingTop: 20,
+  },
+  row: {
+    padding: 15,
+    backgroundColor: 'white',
+    borderBottomWidth: 1 / PixelRatio.get(),
+    borderBottomColor: '#CDCDCD',
+  },
+  rowText: {
+    fontSize: 17,
+    textAlign: 'center',
+  },
+  buttonText: {
+    fontSize: 17,
+    fontWeight: '500',
+  },
+});
+
+export default class UsingNavigators extends Component {
   render() {
     return (
       <Navigator
-        initialRoute={{ title: 'My Initial Scene', index: 0 }}
+        initialRoute={{ title: 'My Initial Scene' }}
         renderScene={(route, navigator) =>
-          return (
-            <MyScene
-              title={route.title}
-  
-              // Function to call when a new scene should be displayed           
-              onForward={ () => {    
-                const nextIndex = route.index + 1;
-                navigator.push({
-                  title: 'Scene ' + nextIndex,
-                  index: nextIndex,
-                });
-              }}
-  
-              // Function to call to go back to the previous scene
-              onBack={() => {
-                if (route.index > 0) {
-                  navigator.pop();
-                }
-              }}
-            />
-          )
+          <MyScene title={route.title} navigator={navigator} />
         }
       />
     )
@@ -142,28 +143,62 @@ export default class SimpleNavigationApp extends Component {
 class MyScene extends Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
-    onForward: PropTypes.func.isRequired,
-    onBack: PropTypes.func.isRequired,
+    navigator: PropTypes.object.isRequired,
   }
+
+  constructor(props, context) {
+    super(props, context);
+    this._onForward = this._onForward.bind(this);
+    this._onBack = this._onBack.bind(this);
+  }
+
+  // Function to call when a new scene should be displayed           
+  _onForward() {    
+    this.props.navigator.push({ title: 'Next Scene' });
+  }
+
+  // Function to call to go back to the previous scene
+  _onBack() {
+    this.props.navigator.pop();
+  }
+
   render() {
     return (
-      <View>
-        <Text>Current Scene: { this.props.title }</Text>
-        <TouchableHighlight onPress={this.props.onForward}>
-          <Text>Tap me to load the next scene</Text>
+      <View style={styles.container}>
+        <View style={styles.row}>
+          <Text style={styles.rowText}>
+            Current Scene: { this.props.title }
+          </Text>
+        </View>
+        <TouchableHighlight
+          style={styles.row}
+          underlayColor="#D0D0D0"
+          onPress={this._onForward}
+        >
+          <Text style={styles.buttonText}>
+            Tap me to load the next scene
+          </Text>
         </TouchableHighlight>
-        <TouchableHighlight onPress={this.props.onBack}>
-          <Text>Tap me to go back</Text>
+        <TouchableHighlight
+          style={styles.row}
+          underlayColor="#D0D0D0"
+          onPress={this._onBack}
+        >
+          <Text style={styles.buttonText}>
+            Tap me to go back
+          </Text>
         </TouchableHighlight>
       </View>
     )
   }
 }
+
+AppRegistry.registerComponent('UsingNavigators', () => UsingNavigators);
 ```
 
-In this example, the `MyScene` component is passed the title of the current route via the `title` prop. It displays two tappable components that call the `onForward` and `onBack` functions passed through its props, which in turn will call `navigator.push()` and `navigator.pop()` as needed.
+In this example, the `MyScene` component is passed the title of the current route via the `title` prop, as well as a reference to the `Navigator`. The component displays two tappable components that call the `_onForward` and `_onBack` methods, which in turn will call `push()` and `pop()` as needed.
 
-Check out the [Navigator API reference](docs/navigator.html) for more `Navigator` code samples, or read through the [Navigation guide](docs/navigation.html) for other examples of what you can do with navigators.
+Check out the [Navigator API reference](/react-native/docs/navigator.html) for more `Navigator` code samples, or read through the [Navigation guide](/react-native/docs/navigation.html) for other examples of what you can do with navigators.
 
 ## High Five!
 
