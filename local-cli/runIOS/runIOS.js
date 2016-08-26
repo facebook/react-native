@@ -25,11 +25,10 @@ function runIOS(argv, config, args) {
   const inferredSchemeName = path.basename(xcodeProject.name, path.extname(xcodeProject.name));
   const scheme = args.scheme || inferredSchemeName;
   console.log(`Found Xcode ${xcodeProject.isWorkspace ? 'workspace' : 'project'} ${xcodeProject.name}`);
-
+  const devices = parseIOSDevicesList(
+    child_process.execFileSync('xcrun', ['instruments', '-s'], {encoding: 'utf8'})
+  );
   if (args.device) {
-    const devices = parseIOSDevicesList(
-      child_process.execFileSync('xcrun', ['instruments', '-s'], {encoding: 'utf8'})
-    );
     const selectedDevice = matchingDevice(devices, args.device);
     if (selectedDevice){
       runOnDevice(selectedDevice, scheme, xcodeProject);
@@ -43,16 +42,13 @@ function runIOS(argv, config, args) {
       }
     }
   } else if (args.udid) {
-      runOnDeviceByUdid(args.udid, scheme, xcodeProject);
+      runOnDeviceByUdid(args.udid, scheme, xcodeProject, devices);
   } else {
       runOnSimulator(xcodeProject, args, inferredSchemeName, scheme);
   }
 }
 
-function runOnDeviceByUdid(udid, scheme, xcodeProject) {
-  const devices = parseIOSDevicesList(
-    child_process.execFileSync('xcrun', ['instruments', '-s'], {encoding: 'utf8'})
-  );
+function runOnDeviceByUdid(udid, scheme, xcodeProject, devices) {
   const selectedDevice = matchingDeviceByUdid(devices, udid);
   if (selectedDevice){
     runOnDevice(selectedDevice, scheme, xcodeProject);
@@ -87,7 +83,7 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
     child_process.spawnSync('xcrun', ['instruments', '-w', selectedSimulator.udid]);
   } catch (e) {
     // instruments always fail with 255 because it expects more arguments,
-    // but we want it to only launch the simulator 
+    // but we want it to only launch the simulator
   }
 
   buildProject(xcodeProject, selectedSimulator.udid, scheme);
@@ -113,8 +109,16 @@ function runOnDevice(selectedDevice, scheme, xcodeProject){
     '--id' , selectedDevice.udid,
     '--justlaunch'
   ];
-  console.log('installing and launching app on connected device...');
-  child_process.spawnSync('ios-deploy', iosDeployInstallArgs, {stdio: 'inherit'});
+  console.log(`installing and launching your app on ${selectedDevice.name}...`);
+  var iosDeployOutput = child_process.spawnSync('ios-deploy', iosDeployInstallArgs, {encoding: 'utf8'});
+  if (iosDeployOutput.error) {
+      console.log('');
+      console.log('** INSTALLATION FAILED **');
+      console.log('Make sure you have ios-deploy installed globally.');
+      console.log('(e.g "npm install -g ios-deploy")');
+  } else {
+      console.log('** INSTALLATION SUCCEEDED **');
+  }
 }
 
 function buildProject(xcodeProject, udid, scheme) {
