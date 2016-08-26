@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const AppContainer = require('AppContainer')
 const I18nManager = require('I18nManager');
 const Platform = require('Platform');
 const PropTypes = require('react/lib/ReactPropTypes');
@@ -146,7 +147,10 @@ class Modal extends React.Component {
         onStartShouldSetResponder={this._shouldSetResponder}
         >
         <View style={[styles.container, containerStyles]}>
-          {this.props.children}
+          {/* rendering childern inside AppContainer, so it does not cover element inspector */}
+          <AppContainer>
+            {this.props.children}
+          </AppContainer>
         </View>
       </RCTModalHostView>
     );
