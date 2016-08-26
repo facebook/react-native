@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const AppContainer = require('AppContainer')
+const AppContainer = require('AppContainer');
 const I18nManager = require('I18nManager');
 const Platform = require('Platform');
 const PropTypes = require('react/lib/ReactPropTypes');
