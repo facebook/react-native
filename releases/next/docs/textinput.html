@@ -157,7 +157,11 @@ automatically enables it when there is text. The default value is <code>false</c
   &#x27;dark&#x27;,
 ])</span> <a class="hash-link" href="docs/textinput.html#keyboardappearance">#</a></h4><div><p>Determines the color of the keyboard.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="onkeypress"></a><span class="platform">ios</span>onKeyPress <span class="propType">PropTypes.func</span> <a class="hash-link" href="docs/textinput.html#onkeypress">#</a></h4><div><p>Callback that is called when a key is pressed.
 Pressed key value is passed as an argument to the callback handler.
-Fires before <code>onChange</code> callbacks.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="selectionstate"></a><span class="platform">ios</span>selectionState <span class="propType">PropTypes.instanceOf(DocumentSelectionState)</span> <a class="hash-link" href="docs/textinput.html#selectionstate">#</a></h4><div><p>An instance of <code>DocumentSelectionState</code>, this is some state that is responsible for
+Fires before <code>onChange</code> callbacks.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="selection"></a><span class="platform">ios</span>selection <span class="propType">PropTypes.shape({
+  start: PropTypes.number.isRequired,
+  end: PropTypes.number,
+})</span> <a class="hash-link" href="docs/textinput.html#selection">#</a></h4><div><p>The start and end of the text input&#x27;s selection. Set start and end to
+the same value to position the cursor.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="selectionstate"></a><span class="platform">ios</span>selectionState <span class="propType">PropTypes.instanceOf(DocumentSelectionState)</span> <a class="hash-link" href="docs/textinput.html#selectionstate">#</a></h4><div><p>An instance of <code>DocumentSelectionState</code>, this is some state that is responsible for
 maintaining selection information for a document.</p><p>Some functionality that can be performed with this instance is:</p><ul><li><code>blur()</code></li><li><code>focus()</code></li><li><code>update()</code></li></ul><blockquote><p>You can reference <code>DocumentSelectionState</code> in
 <a href="https://github.com/facebook/react-native/blob/master/Libraries/vendor/document/selection/DocumentSelectionState.js" target="_blank"><code>vendor/document/selection/DocumentSelectionState.js</code></a></p></blockquote></div></div></div><span><h3><a class="anchor" name="methods"></a>Methods <a class="hash-link" href="docs/textinput.html#methods">#</a></h3><div class="props"><div class="prop"><h4 class="methodTitle"><a class="anchor" name="isfocused"></a>isFocused<span class="methodType">(0): </span> <a class="hash-link" href="docs/textinput.html#isfocused">#</a></h4><div><p>Returns <code>true</code> if the input is currently focused; <code>false</code> otherwise.</p></div></div><div class="prop"><h4 class="methodTitle"><a class="anchor" name="clear"></a>clear<span class="methodType">(0)</span> <a class="hash-link" href="docs/textinput.html#clear">#</a></h4><div><p>Removes all text from the <code>TextInput</code>.</p></div></div></div></span></div><p class="edit-page-block">You can <a target="_blank" href="https://github.com/facebook/react-native/blob/master/Libraries/Components/TextInput/TextInput.js">edit the content above on GitHub</a> and send us a pull request!</p><div><h3><a class="anchor" name="examples"></a>Examples <a class="hash-link" href="docs/textinput.html#examples">#</a></h3><div><table width="100%"><tbody><tr><td><h4><a class="anchor" name="ios"></a>IOS <a class="hash-link" href="docs/textinput.html#ios">#</a></h4></td><td style="text-align:right;"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/js/TextInputExample.ios.js">Edit on GitHub</a></td></tr></tbody></table><div class="example-container"><div class="prism language-javascript"><span class="token string">&#x27;use strict&#x27;</span><span class="token punctuation">;</span>
 
@@ -428,6 +432,93 @@ class <span class="token class-name">BlurOnSubmitExample</span> extends <span cl
           placeholder<span class="token operator">=</span><span class="token string">&quot;blurOnSubmit = true&quot;</span>
           returnKeyType<span class="token operator">=</span><span class="token string">&quot;done&quot;</span>
         <span class="token operator">/</span><span class="token operator">&gt;</span>
+      &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+type SelectionExampleState <span class="token operator">=</span> <span class="token punctuation">{</span>
+  selection<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    start<span class="token punctuation">:</span> number<span class="token punctuation">;</span>
+    end<span class="token operator">?</span><span class="token punctuation">:</span> number<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  value<span class="token punctuation">:</span> string<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+class <span class="token class-name">SelectionExample</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  state<span class="token punctuation">:</span> SelectionExampleState<span class="token punctuation">;</span>
+
+  _textInput<span class="token punctuation">:</span> any<span class="token punctuation">;</span>
+
+  <span class="token function">constructor<span class="token punctuation">(</span></span>props<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">super<span class="token punctuation">(</span></span>props<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>state <span class="token operator">=</span> <span class="token punctuation">{</span>
+      selection<span class="token punctuation">:</span> <span class="token punctuation">{</span>start<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span> end<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+      value<span class="token punctuation">:</span> props<span class="token punctuation">.</span>value
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">onSelectionChange<span class="token punctuation">(</span></span><span class="token punctuation">{</span>nativeEvent<span class="token punctuation">:</span> <span class="token punctuation">{</span>selection<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>selection<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">getRandomPosition<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> length <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>value<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> Math<span class="token punctuation">.</span><span class="token function">round<span class="token punctuation">(</span></span>Math<span class="token punctuation">.</span><span class="token function">random<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token operator">*</span> length<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">select<span class="token punctuation">(</span></span>start<span class="token punctuation">,</span> end<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_textInput<span class="token punctuation">.</span><span class="token function">focus<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>selection<span class="token punctuation">:</span> <span class="token punctuation">{</span>start<span class="token punctuation">,</span> end<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">selectRandom<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> positions <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">getRandomPosition<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">getRandomPosition<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">sort<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">select<span class="token punctuation">(</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>positions<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">placeAt<span class="token punctuation">(</span></span>position<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">select<span class="token punctuation">(</span></span>position<span class="token punctuation">,</span> position<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">placeAtRandom<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">placeAt<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">getRandomPosition<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> length <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>value<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      &lt;View<span class="token operator">&gt;</span>
+        &lt;TextInput
+          multiline<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>multiline<span class="token punctuation">}</span>
+          onChangeText<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>value<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+          onSelectionChange<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>onSelectionChange<span class="token punctuation">.</span><span class="token function">bind<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+          ref<span class="token operator">=</span><span class="token punctuation">{</span>textInput <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>_textInput <span class="token operator">=</span> textInput<span class="token punctuation">)</span><span class="token punctuation">}</span>
+          selection<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>selection<span class="token punctuation">}</span>
+          style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>style<span class="token punctuation">}</span>
+          value<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>value<span class="token punctuation">}</span>
+        <span class="token operator">/</span><span class="token operator">&gt;</span>
+        &lt;View<span class="token operator">&gt;</span>
+          &lt;Text<span class="token operator">&gt;</span>
+            selection <span class="token operator">=</span> <span class="token punctuation">{</span>JSON<span class="token punctuation">.</span><span class="token function">stringify<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>selection<span class="token punctuation">)</span><span class="token punctuation">}</span>
+          &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+          &lt;Text onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>placeAt<span class="token punctuation">.</span><span class="token function">bind<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+            Place at Start <span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
+          &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+          &lt;Text onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>placeAt<span class="token punctuation">.</span><span class="token function">bind<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">,</span> length<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+            Place at End <span class="token punctuation">(</span><span class="token punctuation">{</span>length<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>length<span class="token punctuation">}</span><span class="token punctuation">)</span>
+          &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+          &lt;Text onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>placeAtRandom<span class="token punctuation">.</span><span class="token function">bind<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+            Place at Random
+          &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+          &lt;Text onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>select<span class="token punctuation">.</span><span class="token function">bind<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> length<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+            Select All
+          &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+          &lt;Text onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>selectRandom<span class="token punctuation">.</span><span class="token function">bind<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+            Select Random
+          &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
@@ -867,6 +958,24 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
       <span class="token keyword">return</span> &lt;TokenizedTextExample <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Text selection &amp; cursor placement&#x27;</span><span class="token punctuation">,</span>
+    render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token punctuation">(</span>
+        &lt;View<span class="token operator">&gt;</span>
+          &lt;SelectionExample
+            style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>default<span class="token punctuation">}</span>
+            value<span class="token operator">=</span><span class="token string">&quot;text selection can be changed&quot;</span>
+          <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;SelectionExample
+            multiline
+            style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>multiline<span class="token punctuation">}</span>
+            value<span class="token operator">=</span><span class="token punctuation">{</span><span class="token string">&quot;multiline text selection\ncan also be changed&quot;</span><span class="token punctuation">}</span>
+          <span class="token operator">/</span><span class="token operator">&gt;</span>
+        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
 <span class="token punctuation">]</span><span class="token punctuation">;</span></div><div class="embedded-simulator"><p><a class="modal-button-open"><strong>Run this example</strong></a></p><div class="modal-button-open modal-button-open-img"><img alt="Run example in simulator" width="170" height="356" src="img/uiexplorer_main_ios.png"></div><div><div class="modal"><div class="modal-content"><button class="modal-button-close">×</button><div class="center"><iframe class="simulator" src="https://appetize.io/embed/7vdfm9h3e6vuf4gfdm7r5rgc48?device=iphone6s&amp;scale=60&amp;autoplay=false&amp;orientation=portrait&amp;deviceColor=white&amp;params=%7B%22route%22%3A%22TextInput%22%7D" width="256" height="550" scrolling="no"></iframe><p>Powered by <a target="_blank" href="https://appetize.io">appetize.io</a></p></div></div></div><div class="modal-backdrop"></div></div></div></div></div><div><table width="100%"><tbody><tr><td><h4><a class="anchor" name="android"></a>ANDROID <a class="hash-link" href="docs/textinput.html#android">#</a></h4></td><td style="text-align:right;"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/js/TextInputExample.android.js">Edit on GitHub</a></td></tr></tbody></table><div class="example-container"><div class="prism language-javascript"><span class="token string">&#x27;use strict&#x27;</span><span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
