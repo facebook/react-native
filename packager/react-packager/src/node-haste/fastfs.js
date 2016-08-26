@@ -46,7 +46,13 @@ class Fastfs extends EventEmitter {
       let fastfsActivity;
       const activity = this._activity;
       if (activity) {
-        fastfsActivity = activity.startEvent('Building in-memory fs for ' + this._name);
+        fastfsActivity = activity.startEvent(
+          'Building in-memory fs for ' + this._name,
+          null,
+          {
+            telemetric: true,
+          },
+        );
       }
       files.forEach(filePath => {
         const root = this._getRoot(filePath);

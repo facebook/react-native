@@ -489,7 +489,7 @@ class Server {
   _processAssetsRequest(req, res) {
     const urlObj = url.parse(req.url, true);
     const assetPath = urlObj.pathname.match(/^\/assets\/(.+)$/);
-    const assetEvent = Activity.startEvent(`processing asset request ${assetPath[1]}`);
+    const assetEvent = Activity.startEvent('Processing asset request', {asset: assetPath[1]});
     this._assetServer.get(assetPath[1], urlObj.query.platform)
       .then(
         data => res.end(this._rangeRequestMiddleware(req, res, data, assetPath)),
@@ -614,7 +614,15 @@ class Server {
       return;
     }
 
-    const startReqEventId = Activity.startEvent('request:' + req.url);
+    const startReqEventId = Activity.startEvent(
+      'Requesting bundle',
+      {
+        url: req.url,
+      },
+      {
+        telemetric: true,
+      },
+    );
     const options = this._getOptionsFromUrl(req.url);
     debug('Getting bundle for request');
     const building = this._useCachedOrUpdateOrCreateBundle(options);
@@ -667,7 +675,13 @@ class Server {
   }
 
   _symbolicate(req, res) {
-    const startReqEventId = Activity.startEvent('symbolicate');
+    const startReqEventId = Activity.startEvent(
+      'Symbolicating',
+      null,
+      {
+        telemetric: true,
+      },
+    );
     new Promise.resolve(req.rawBody).then(body => {
       const stack = JSON.parse(body).stack;
 
