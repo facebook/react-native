@@ -36,18 +36,24 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
 
   private final int mEventType;
   private final @Nullable String mImageUri;
+  private final int mWidth;
+  private final int mHeight;
 
   public ImageLoadEvent(int viewId, @ImageEventType int eventType) {
-    this(viewId, eventType, null);
+    this(viewId, eventType, null, 0, 0);
   }
 
   public ImageLoadEvent(
     int viewId,
     @ImageEventType int eventType,
-    @Nullable String imageUri) {
+    @Nullable String imageUri,
+    int width,
+    int height) {
     super(viewId);
     mEventType = eventType;
     mImageUri = imageUri;
+    mWidth = width;
+    mHeight = height;
   }
 
   public static String eventNameForType(@ImageEventType int eventType) {
@@ -82,10 +88,20 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     WritableMap eventData = null;
-    if (mImageUri != null) {
+    
+    if (mImageUri != null || mEventType == ON_LOAD) {
       eventData = Arguments.createMap();
-      eventData.putString("uri", mImageUri);
+
+      if (mImageUri != null) {
+        eventData.putString("uri", mImageUri);
+      }
+      
+      if (mEventType == ON_LOAD) {
+        eventData.putDouble("width", mWidth);
+        eventData.putDouble("height", mHeight);
+      }
     }
+    
     rctEventEmitter.receiveEvent(getViewTag(), getEventName(), eventData);
   }
 }
