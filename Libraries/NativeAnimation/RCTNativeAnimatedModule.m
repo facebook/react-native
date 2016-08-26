@@ -13,6 +13,7 @@
 #import "RCTAnimationUtils.h"
 #import "RCTBridge.h"
 #import "RCTConvert.h"
+#import "RCTEventAnimationDriver.h"
 #import "RCTInterpolationAnimatedNode.h"
 #import "RCTLog.h"
 #import "RCTDiffClampAnimatedNode.h"
@@ -27,6 +28,7 @@
 {
   NSMutableDictionary<NSNumber *, RCTAnimatedNode *> *_animationNodes;
   NSMutableDictionary<NSNumber *, RCTAnimationDriverNode *> *_animationDrivers;
+  NSMutableDictionary<NSString *, RCTEventAnimationDriver *> *_eventAnimationDrivers;
   NSMutableSet<RCTAnimationDriverNode *> *_activeAnimations;
   NSMutableSet<RCTAnimationDriverNode *> *_finishedAnimations;
   NSMutableSet<RCTValueAnimatedNode *> *_updatedValueNodes;
@@ -42,10 +44,18 @@ RCT_EXPORT_MODULE()
 
   _animationNodes = [NSMutableDictionary new];
   _animationDrivers = [NSMutableDictionary new];
+  _eventAnimationDrivers = [NSMutableDictionary new];
   _activeAnimations = [NSMutableSet new];
   _finishedAnimations = [NSMutableSet new];
   _updatedValueNodes = [NSMutableSet new];
   _propAnimationNodes = [NSMutableSet new];
+
+  [bridge.eventDispatcher addDispatchObserver:self];
+}
+
+- (void)dealloc
+{
+  [self.bridge.eventDispatcher removeDispatchObserver:self];
 }
 
 
@@ -148,7 +158,7 @@ RCT_EXPORT_METHOD(startAnimatingNode:(nonnull NSNumber *)animationId
   [_activeAnimations addObject:animationDriver];
   _animationDrivers[animationId] = animationDriver;
   [animationDriver startAnimation];
-  [self startAnimation];
+  [self startAnimationLoopIfNeeded];
 }
 
 RCT_EXPORT_METHOD(stopAnimation:(nonnull NSNumber *)animationId)
@@ -223,20 +233,84 @@ RCT_EXPORT_METHOD(stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag)
   }
 }
 
+RCT_EXPORT_METHOD(addAnimatedEventToView:(nonnull NSNumber *)viewTag
+                  eventName:(nonnull NSString *)eventName
+                  eventMapping:(NSDictionary<NSString *, id> *)eventMapping)
+{
+  NSNumber *nodeTag = [RCTConvert NSNumber:eventMapping[@"animatedValueTag"]];
+  RCTAnimatedNode *node = _animationNodes[nodeTag];
+
+  if (!node) {
+    RCTLogError(@"Animated node with tag %@ does not exists", nodeTag);
+    return;
+  }
+
+  if (![node isKindOfClass:[RCTValueAnimatedNode class]]) {
+    RCTLogError(@"Animated node connected to event should be of type RCTValueAnimatedNode");
+    return;
+  }
+
+  NSArray<NSString *> *eventPath = [RCTConvert NSStringArray:eventMapping[@"nativeEventPath"]];
+
+  RCTEventAnimationDriver *driver =
+  [[RCTEventAnimationDriver alloc] initWithEventPath:eventPath valueNode:(RCTValueAnimatedNode *)node];
+
+  [_eventAnimationDrivers setObject:driver forKey:[NSString stringWithFormat:@"%@%@", viewTag, eventName]];
+}
+
+RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
+                  eventName:(nonnull NSString *)eventName)
+{
+  [_eventAnimationDrivers removeObjectForKey:[NSString stringWithFormat:@"%@%@", viewTag, eventName]];
+}
+
 - (void)animatedNode:(RCTValueAnimatedNode *)node didUpdateValue:(CGFloat)value
 {
   [self sendEventWithName:@"onAnimatedValueUpdate"
                      body:@{@"tag": node.nodeTag, @"value": @(value)}];
 }
 
+- (BOOL)eventDispatcherWillDispatchEvent:(id<RCTEvent>)event
+{
+  // Native animated events only work for events dispatched from the main queue.
+  if (!RCTIsMainQueue() || [_eventAnimationDrivers count] == 0) {
+    return NO;
+  }
+
+  NSString *key = [NSString stringWithFormat:@"%@%@", [event viewTag], [event eventName]];
+  RCTEventAnimationDriver *driver = [_eventAnimationDrivers valueForKey:key];
+
+  if (driver) {
+    [driver updateWithEvent:event];
+
+    for (RCTPropsAnimatedNode *propsNode in _propAnimationNodes) {
+      [propsNode updateNodeIfNecessary];
+    }
+
+    [driver.valueNode cleanupAnimationUpdate];
+
+    return YES;
+  }
+
+  return NO;
+}
+
 
 #pragma mark -- Animation Loop
 
-- (void)startAnimation
+- (void)startAnimationLoopIfNeeded
 {
-  if (!_displayLink && _activeAnimations.count > 0) {
+  if (!_displayLink && (_activeAnimations.count > 0 || _updatedValueNodes.count > 0)) {
     _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(updateAnimations)];
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+  }
+}
+
+- (void)stopAnimationLoopIfNeeded
+{
+  if (_displayLink && _activeAnimations.count == 0 && _updatedValueNodes.count == 0) {
+    [_displayLink invalidate];
+    _displayLink = nil;
   }
 }
 
@@ -274,11 +348,8 @@ RCT_EXPORT_METHOD(stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag)
     [_animationDrivers removeObjectForKey:driverNode.animationId];
   }
   [_finishedAnimations removeAllObjects];
-
-  if (_activeAnimations.count == 0) {
-    [_displayLink invalidate];
-    _displayLink = nil;
-  }
+  
+  [self stopAnimationLoopIfNeeded];
 }
 
 @end
