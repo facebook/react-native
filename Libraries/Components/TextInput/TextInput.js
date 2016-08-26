@@ -46,6 +46,10 @@ if (Platform.OS === 'android') {
 }
 
 type Event = Object;
+type Selection = {
+  start: number,
+  end?: number,
+};
 
 const DataDetectorTypes = [
   'phoneNumber',
@@ -387,6 +391,15 @@ const TextInput = React.createClass({
      */
     selectionState: PropTypes.instanceOf(DocumentSelectionState),
     /**
+     * The start and end of the text input's selection. Set start and end to
+     * the same value to position the cursor.
+     * @platform ios
+     */
+    selection: PropTypes.shape({
+      start: PropTypes.number.isRequired,
+      end: PropTypes.number,
+    }),
+    /**
      * The value to show for the text input. `TextInput` is a controlled
      * component, which means the native value will be forced to match this
      * value prop if provided. For most uses, this works great, but in some
@@ -493,7 +506,7 @@ const TextInput = React.createClass({
    */
   isFocused: function(): boolean {
     return TextInputState.currentlyFocusedField() ===
-      ReactNative.findNodeHandle(this.refs.input);
+      ReactNative.findNodeHandle(this._inputRef);
   },
 
   contextTypes: {
@@ -501,8 +514,10 @@ const TextInput = React.createClass({
     focusEmitter: React.PropTypes.instanceOf(EventEmitter),
   },
 
+  _inputRef: (undefined: any),
   _focusSubscription: (undefined: ?Function),
   _lastNativeText: (undefined: ?string),
+  _lastNativeSelection: (undefined: ?Selection),
 
   componentDidMount: function() {
     this._lastNativeText = this.props.value;
@@ -563,22 +578,20 @@ const TextInput = React.createClass({
       this.props.defaultValue;
   },
 
+  _setNativeRef: function(ref: any) {
+    this._inputRef = ref;
+  },
+
   _renderIOS: function() {
     var textContainer;
 
-    var onSelectionChange;
-    if (this.props.selectionState || this.props.onSelectionChange) {
-      onSelectionChange = (event: Event) => {
-        if (this.props.selectionState) {
-          var selection = event.nativeEvent.selection;
-          this.props.selectionState.update(selection.start, selection.end);
-        }
-        this.props.onSelectionChange && this.props.onSelectionChange(event);
-      };
-    }
-
     var props = Object.assign({}, this.props);
     props.style = [styles.input, this.props.style];
+
+    if (props.selection && props.selection.end == null) {
+      props.selection = {start: props.selection.start, end: props.selection.start};
+    }
+
     if (!props.multiline) {
       if (__DEV__) {
         for (var propKey in onlyMultiline) {
@@ -592,12 +605,12 @@ const TextInput = React.createClass({
       }
       textContainer =
         <RCTTextField
-          ref="input"
+          ref={this._setNativeRef}
           {...props}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
-          onSelectionChange={onSelectionChange}
+          onSelectionChange={this._onSelectionChange}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
           text={this._getText()}
         />;
@@ -617,14 +630,14 @@ const TextInput = React.createClass({
       }
       textContainer =
         <RCTTextView
-          ref="input"
+          ref={this._setNativeRef}
           {...props}
           children={children}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
           onContentSizeChange={this.props.onContentSizeChange}
-          onSelectionChange={onSelectionChange}
+          onSelectionChange={this._onSelectionChange}
           onTextInput={this._onTextInput}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
           text={this._getText()}
@@ -647,17 +660,6 @@ const TextInput = React.createClass({
   },
 
   _renderAndroid: function() {
-    var onSelectionChange;
-    if (this.props.selectionState || this.props.onSelectionChange) {
-      onSelectionChange = (event: Event) => {
-        if (this.props.selectionState) {
-          var selection = event.nativeEvent.selection;
-          this.props.selectionState.update(selection.start, selection.end);
-        }
-        this.props.onSelectionChange && this.props.onSelectionChange(event);
-      };
-    }
-
     const props = Object.assign({}, this.props);
     props.style = [this.props.style];
     props.autoCapitalize =
@@ -675,13 +677,13 @@ const TextInput = React.createClass({
 
     const textContainer =
       <AndroidTextInput
-        ref="input"
+        ref={this._setNativeRef}
         {...props}
         mostRecentEventCount={0}
         onFocus={this._onFocus}
         onBlur={this._onBlur}
         onChange={this._onChange}
-        onSelectionChange={onSelectionChange}
+        onSelectionChange={this._onSelectionChange}
         onTextInput={this._onTextInput}
         text={this._getText()}
         children={children}
@@ -719,7 +721,7 @@ const TextInput = React.createClass({
   _onChange: function(event: Event) {
     // Make sure to fire the mostRecentEventCount first so it is already set on
     // native when the text value is set.
-    this.refs.input.setNativeProps({
+    this._inputRef.setNativeProps({
       mostRecentEventCount: event.nativeEvent.eventCount,
     });
 
@@ -727,7 +729,7 @@ const TextInput = React.createClass({
     this.props.onChange && this.props.onChange(event);
     this.props.onChangeText && this.props.onChangeText(text);
 
-    if (!this.refs.input) {
+    if (!this._inputRef) {
       // calling `this.props.onChange` or `this.props.onChangeText`
       // may clean up the input itself. Exits here.
       return;
@@ -737,14 +739,47 @@ const TextInput = React.createClass({
     this.forceUpdate();
   },
 
+  _onSelectionChange: function(event: Event) {
+    this.props.onSelectionChange && this.props.onSelectionChange(event);
+
+    if (!this._inputRef) {
+      // calling `this.props.onSelectionChange`
+      // may clean up the input itself. Exits here.
+      return;
+    }
+
+    this._lastNativeSelection = event.nativeEvent.selection;
+
+    if (this.props.selection || this.props.selectionState) {
+      this.forceUpdate();
+    }
+  },
+
   componentDidUpdate: function () {
     // This is necessary in case native updates the text and JS decides
     // that the update should be ignored and we should stick with the value
     // that we have in JS.
+    const nativeProps = {};
+
     if (this._lastNativeText !== this.props.value && typeof this.props.value === 'string') {
-      this.refs.input.setNativeProps({
-        text: this.props.value,
-      });
+      nativeProps.text = this.props.value;
+    }
+
+    // Selection is also a controlled prop, if the native value doesn't match
+    // JS, update to the JS value.
+    const {selection} = this.props;
+    if (this._lastNativeSelection && selection &&
+        (this._lastNativeSelection.start !== selection.start ||
+        this._lastNativeSelection.end !== selection.end)) {
+      nativeProps.selection = this.props.selection;
+    }
+
+    if (Object.keys(nativeProps).length > 0) {
+      this._inputRef.setNativeProps(nativeProps);
+    }
+
+    if (this.props.selectionState && selection) {
+      this.props.selectionState.update(selection.start, selection.end);
     }
   },
 
