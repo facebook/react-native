@@ -70,6 +70,8 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
   // The image source that's being loaded from the network
   RCTImageSource *_pendingImageSource;
 
+  // Size of the image loaded / being loaded, so we can determine when to issue
+  // a reload to accomodate a changing size.
   CGSize _targetSize;
 
   /**
@@ -236,6 +238,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (CGSizeEqualToSize(size, CGSizeZero)) {
     return nil;
   }
+
   const CGFloat scale = RCTScreenScale();
   const CGFloat targetImagePixels = size.width * size.height * scale * scale;
 
@@ -384,18 +387,29 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     [self reloadImage];
   } else if ([self shouldReloadImageSourceAfterResize]) {
     CGSize imageSize = self.image.size;
-    CGSize idealSize = RCTTargetSize(imageSize, self.image.scale, frame.size,
-                                     RCTScreenScale(), (RCTResizeMode)self.contentMode, YES);
+    CGFloat imageScale = self.image.scale;
+    CGSize idealSize = RCTTargetSize(imageSize, imageScale, frame.size, RCTScreenScale(),
+                                     (RCTResizeMode)self.contentMode, YES);
 
-    if (RCTShouldReloadImageForSizeChange(imageSize, idealSize) &&
-        RCTShouldReloadImageForSizeChange(_targetSize, idealSize)) {
-      RCTLogInfo(@"Reloading image %@ as size %@", [_imageSources firstObject].request.URL.absoluteString, NSStringFromCGSize(idealSize));
-
-      // If the existing image or an image being loaded are not the right
-      // size, reload the asset in case there is a better size available.
-      _targetSize = idealSize;
-      [self reloadImage];
+    // Don't reload if the current image or target image size is close enough
+    if (!RCTShouldReloadImageForSizeChange(imageSize, idealSize) ||
+        !RCTShouldReloadImageForSizeChange(_targetSize, idealSize)) {
+      return;
     }
+
+    // Don't reload if the current image size is the maximum size of the image source
+    CGSize imageSourceSize = _imageSource.size;
+    if (imageSize.width * imageScale == imageSourceSize.width * _imageSource.scale &&
+        imageSize.height * imageScale == imageSourceSize.height * _imageSource.scale) {
+      return;
+    }
+
+    RCTLogInfo(@"Reloading image %@ as size %@", _imageSource.request.URL.absoluteString, NSStringFromCGSize(idealSize));
+
+    // If the existing image or an image being loaded are not the right
+    // size, reload the asset in case there is a better size available.
+    _targetSize = idealSize;
+    [self reloadImage];
   }
 }
 
