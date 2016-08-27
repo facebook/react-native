@@ -526,7 +526,7 @@ You can examine the code that added the React Native screen on [GitHub](https://
 In your app's root folder, run:
 
     $ npm init
-    $ npm install --save react-native
+    $ npm install --save react react-native
     $ curl -o .flowconfig https://raw.githubusercontent.com/facebook/react-native/master/.flowconfig
 
 This creates a node module for your app and adds the `react-native` npm dependency. Now open the newly created `package.json` file and add this under `scripts`:
