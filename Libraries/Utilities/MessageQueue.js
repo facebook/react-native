@@ -170,10 +170,10 @@ class MessageQueue {
   __nativeCall(module, method, params, onFail, onSucc) {
     if (onFail || onSucc) {
       if (__DEV__) {
-        let debugId = this._callbackID >> 1;
-        this._debugInfo[debugId] = [module, method];
-        if (debugId > DEBUG_INFO_LIMIT) {
-          delete this._debugInfo[debugId - DEBUG_INFO_LIMIT];
+        let callId = this._callbackID >> 1;
+        this._debugInfo[callId] = [module, method];
+        if (callId > DEBUG_INFO_LIMIT) {
+          delete this._debugInfo[callId - DEBUG_INFO_LIMIT];
         }
       }
       onFail && params.push(this._callbackID);
