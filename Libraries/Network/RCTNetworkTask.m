@@ -148,11 +148,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 #pragma mark - Decoding helper
 
-- (void)saveUndecodablePartialData:(NSData *)data {
+- (void)saveUndecodablePartialData:(NSData *)data
+{
   _undecodablePartialData = data;
 }
 
-- (NSData *)unshiftUndecodablePartialDataToData:(NSData *)data {
+- (NSData *)unshiftUndecodablePartialDataToData:(NSData *)data
+{
   if (!_undecodablePartialData) {
     return data;
   }
