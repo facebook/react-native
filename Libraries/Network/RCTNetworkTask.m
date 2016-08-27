@@ -16,6 +16,7 @@
   NSMutableData *_data;
   id<RCTURLRequestHandler> _handler;
   RCTNetworkTask *_selfReference;
+  NSData *_undecodablePartialData;
 }
 
 - (instancetype)initWithRequest:(NSURLRequest *)request
@@ -143,6 +144,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     }
     [self invalidate];
   }
+}
+
+#pragma mark - Decoding helper
+
+- (void)saveUndecodablePartialData:(NSData *)data {
+  _undecodablePartialData = data;
+}
+
+- (NSData *)unshiftUndecodablePartialDataToData:(NSData *)data {
+  if (!_undecodablePartialData) {
+    return data;
+  }
+  
+  NSMutableData *cominbedData = [NSMutableData dataWithData:_undecodablePartialData];
+  [cominbedData appendData:data];
+  
+  _undecodablePartialData = nil;
+  
+  return cominbedData;
 }
 
 @end

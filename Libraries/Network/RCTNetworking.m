@@ -330,7 +330,7 @@ RCT_EXPORT_MODULE()
                isIncremental:(BOOL)isIncremental
            undecodableLength:(NSUInteger *)undecodableLength
 {
-  NSData *data = [self unshiftUndecodablePartialDataToData:dataToDecode task:task];
+  NSData *data = [task unshiftUndecodablePartialDataToData:dataToDecode];
   NSURLResponse *response = task.response;
   NSStringEncoding encoding = NSUTF8StringEncoding;
   if (response.textEncodingName) {
@@ -372,7 +372,7 @@ RCT_EXPORT_MODULE()
         NSData *undecodablePartialData = [data subdataWithRange:NSMakeRange(validData.length, data.length - validData.length)];
         
         if (undecodablePartialData.length > 0) {
-          [self saveUndecodablePartialData:undecodablePartialData task:task];
+          [task saveUndecodablePartialData:undecodablePartialData];
         }
         
         if (undecodableLength) {
@@ -486,7 +486,7 @@ RCT_EXPORT_MODULE()
     dispatch_async(self->_methodQueue, ^{
       // If the final part incremental data ends with some undecodable data,
       // then the undecodable part will also be send to JS
-      NSData *leftedData = [self.class unshiftUndecodablePartialDataToData:nil task:task];
+      NSData *leftedData = [task unshiftUndecodablePartialDataToData:nil];
       if (leftedData.length > 0) {
         NSString *responseString = [RCTNetworking decodeTextData:data task:task];
         if (!responseString) {
@@ -571,32 +571,6 @@ RCT_EXPORT_METHOD(abortRequest:(nonnull NSNumber *)requestID)
 {
   [_tasksByRequestID[requestID] cancel];
   [_tasksByRequestID removeObjectForKey:requestID];
-}
-
-#pragma mark - Decoding Helper
-
-static NSMutableDictionary *undecodablePartialDataPool;
-
-+ (void)saveUndecodablePartialData:(NSData *)data task:(RCTNetworkTask *)task {
-  if (!undecodablePartialDataPool) {
-    undecodablePartialDataPool = [NSMutableDictionary dictionary];
-  }
-  
-  undecodablePartialDataPool[task.requestID] = data;
-}
-
-+ (NSData *)unshiftUndecodablePartialDataToData:(NSData *)data task:(RCTNetworkTask *)task {
-  NSData *undecodablePartialData = undecodablePartialDataPool[task.requestID];
-  if (!undecodablePartialData) {
-    return data;
-  }
-  
-  NSMutableData *cominbedData = [NSMutableData dataWithData:undecodablePartialData];
-  [cominbedData appendData:data];
-  
-  [undecodablePartialDataPool removeObjectForKey:task.requestID];
-  
-  return cominbedData;
 }
 
 @end
