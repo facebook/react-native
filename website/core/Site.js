@@ -22,6 +22,10 @@ var Site = React.createClass({
     var title = this.props.title ? this.props.title + ' – ' : '';
     var currentYear = (new Date()).getFullYear();
     title += 'React Native | A framework for building native apps using React';
+    var description = this.props.description ? this.props.description : 'A framework for building native apps using React';
+    var shareURL = 'https://facebook.github.io/react-native/';
+    shareURL += this.props.path ? this.props.path : 'index.html';
+
     return (
       <html>
         <head>
@@ -31,9 +35,9 @@ var Site = React.createClass({
           <meta name="viewport" content="width=device-width" />
           <meta property="og:title" content={title} />
           <meta property="og:type" content="website" />
-          <meta property="og:url" content="http://facebook.github.io/react-native/index.html" />
+          <meta property="og:url" content={shareURL} />
           <meta property="og:image" content="http://facebook.github.io/react-native/img/opengraph.png?2" />
-          <meta property="og:description" content="A framework for building native apps using React" />
+          <meta property="og:description" content={description} />
 
           <base href={basePath} />
 
