@@ -9,6 +9,8 @@
 
 #import "RCTHTTPRequestHandler.h"
 
+#import "RCTNetworking.h"
+
 @interface RCTHTTPRequestHandler () <NSURLSessionDataDelegate>
 
 @end
@@ -18,6 +20,8 @@
   NSMapTable *_delegates;
   NSURLSession *_session;
 }
+
+@synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
 
@@ -55,6 +59,7 @@ RCT_EXPORT_MODULE()
 
     NSOperationQueue *callbackQueue = [NSOperationQueue new];
     callbackQueue.maxConcurrentOperationCount = 1;
+    callbackQueue.underlyingQueue = [[_bridge networking] methodQueue];
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     _session = [NSURLSession sessionWithConfiguration:configuration
                                              delegate:self

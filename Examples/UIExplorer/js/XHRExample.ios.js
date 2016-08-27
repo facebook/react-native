@@ -41,6 +41,7 @@ var {
 var XHRExampleHeaders = require('./XHRExampleHeaders');
 var XHRExampleFetch = require('./XHRExampleFetch');
 var XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
+var XHRExampleCookies = require('./XHRExampleCookies');
 
 /**
  * Convert number of bytes to MB and round to the nearest 0.1 MB.
@@ -431,6 +432,11 @@ exports.examples = [{
   title: 'Time Out Test',
   render() {
     return <XHRExampleOnTimeOut/>;
+  }
+}, {
+  title: 'Cookies',
+  render() {
+    return <XHRExampleCookies />;
   }
 }];
 

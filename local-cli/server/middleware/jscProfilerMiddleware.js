@@ -38,6 +38,8 @@ class TreeTransformator {
       tree.url = 'file://' + original.source;
       tree.lineNumber = original.line;
       tree.columnNumber = original.column;
+    } else if (tree.deoptReason === 'outside_vm') {
+      tree.functionName = 'OUTSIDE VM';
     }
     tree.children = tree.children.map((t) => this.transformNode(t));
     return tree;
@@ -78,7 +80,7 @@ class TreeTransformator {
 
     const parsedUrl = urlLib.parse(url);
     const options = {
-      host: parsedUrl.hostname,
+      host: 'localhost',
       port: parsedUrl.port,
       path: parsedUrl.pathname.replace(/\.bundle$/, '.map') + parsedUrl.search,
     };
@@ -97,13 +99,11 @@ class TreeTransformator {
         if (!sawEnd) {
           console.error('Connection terminated prematurely because of: '
                         + err.code + ' for url: ' + url);
-          this.urlResults[url] = null;
           callback();
         }
       });
     }).on('error', (err) => {
       console.error('Could not get response from: ' + url);
-      this.urlResults[url] = null;
       callback();
     });
   }

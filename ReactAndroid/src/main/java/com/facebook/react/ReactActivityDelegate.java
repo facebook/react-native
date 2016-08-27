@@ -33,19 +33,21 @@ public class ReactActivityDelegate {
 
   private final @Nullable Activity mActivity;
   private final @Nullable FragmentActivity mFragmentActivity;
-  private final String mMainComponentName;
+  private final @Nullable String mMainComponentName;
 
   private @Nullable ReactRootView mReactRootView;
   private @Nullable DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
   private @Nullable PermissionListener mPermissionListener;
 
-  public ReactActivityDelegate(Activity activity, String mainComponentName) {
+  public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
     mActivity = activity;
     mMainComponentName = mainComponentName;
     mFragmentActivity = null;
   }
 
-  public ReactActivityDelegate(FragmentActivity fragmentActivity, String mainComponentName) {
+  public ReactActivityDelegate(
+    FragmentActivity fragmentActivity,
+    @Nullable String mainComponentName) {
     mFragmentActivity = fragmentActivity;
     mMainComponentName = mainComponentName;
     mActivity = null;
@@ -85,13 +87,22 @@ public class ReactActivityDelegate {
       }
     }
 
+    if (mMainComponentName != null) {
+      loadApp(mMainComponentName);
+    }
+    mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
+  }
+
+  protected void loadApp(String appKey) {
+    if (mReactRootView != null) {
+      throw new IllegalStateException("Cannot loadApp while app is already running.");
+    }
     mReactRootView = createRootView();
     mReactRootView.startReactApplication(
       getReactNativeHost().getReactInstanceManager(),
-      mMainComponentName,
+      appKey,
       getLaunchOptions());
     getPlainActivity().setContentView(mReactRootView);
-    mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
   }
 
   protected void onPause() {
@@ -121,7 +132,7 @@ public class ReactActivityDelegate {
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (getReactNativeHost().hasInstance()) {
       getReactNativeHost().getReactInstanceManager()
-        .onActivityResult(requestCode, resultCode, data);
+        .onActivityResult(getPlainActivity(), requestCode, resultCode, data);
     }
   }
 

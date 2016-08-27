@@ -8,11 +8,11 @@
  */
 'use strict';
 
+const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 
 const RN_CLI_CONFIG = 'rn-cli.config.js';
-let cachedConfig = null;
 
 /**
  * Module capable of getting the configuration that should be used for
@@ -25,26 +25,37 @@ let cachedConfig = null;
  * error will be thrown.
  */
 const Config = {
-  get(cwd, defaultConfig) {
-    if (cachedConfig) {
-      return cachedConfig;
+  get(cwd, defaultConfig, pathToConfig) {
+    let baseConfig;
+
+    // Handle the legacy code path where pathToConfig is unspecified
+    if (pathToConfig === undefined) {
+      const configPath = Config.findConfigPath(cwd);
+      if (!configPath && !defaultConfig) {
+        throw new Error(
+          `Can't find "${RN_CLI_CONFIG}" file in any parent folder of "${cwd}"`
+        );
+      }
+      baseConfig = require(configPath);
+    } else if (pathToConfig == null) {
+      assert(defaultConfig, 'Must have a default config if config is missing');
+    } else {
+      baseConfig = path.isAbsolute(pathToConfig) ?
+        require(pathToConfig) :
+        require(path.join(cwd, pathToConfig));
     }
 
+    return {
+      ...defaultConfig,
+      ...baseConfig,
+      cwd,
+    };
+  },
+
+  findConfigPath(cwd) {
     const parentDir = findParentDirectory(cwd, RN_CLI_CONFIG);
-    if (!parentDir && !defaultConfig) {
-      throw new Error(
-        `Can't find "rn-cli.config.js" file in any parent folder of "${cwd}"`
-      );
-    }
-
-    const config = parentDir
-      ? require(path.join(parentDir, RN_CLI_CONFIG))
-      : {};
-
-    cachedConfig = Object.assign({}, defaultConfig, config);
-    cachedConfig.cwd = cwd;
-    return cachedConfig;
-  }
+    return parentDir ? path.join(parentDir, RN_CLI_CONFIG) : null;
+  },
 };
 
 // Finds the most near ancestor starting at `currentFullPath` that has

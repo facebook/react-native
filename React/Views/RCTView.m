@@ -477,7 +477,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   // the content. For this reason, only use iOS border drawing when clipping
   // or when the border is hidden.
 
-  (borderInsets.top == 0 || CGColorGetAlpha(borderColors.top) == 0 || self.clipsToBounds);
+  (borderInsets.top == 0 || (borderColors.top && CGColorGetAlpha(borderColors.top) == 0) || self.clipsToBounds);
 
   // iOS clips to the outside of the border, but CSS clips to the inside. To
   // solve this, we'll need to add a container view inside the main view to

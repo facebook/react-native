@@ -252,6 +252,10 @@ const APIExamples: Array<UIExplorerExample> = [
     module: require('./RCTRootViewIOSExample'),
   },
   {
+    key: 'RTLExample',
+    module: require('./RTLExample'),
+  },
+  {
     key: 'ShareExample',
     module: require('./ShareExample'),
   },

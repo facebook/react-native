@@ -33,6 +33,9 @@
 - (void)setUp
 {
   _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/js/UIExplorerApp.ios", nil);
+  if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10) {
+    _runner.testSuffix = @"-iOS10";
+  }
   _runner.recordMode = NO;
 }
 
@@ -46,8 +49,8 @@ RCT_TEST(ViewExample)
 RCT_TEST(LayoutExample)
 RCT_TEST(TextExample)
 RCT_TEST(SwitchExample)
-//RCT_TEST(SliderExample) // Disabled: #8985988
-//RCT_TEST(TabBarExample) // Disabled: #8985988
+RCT_TEST(SliderExample)
+RCT_TEST(TabBarExample)
 
 - (void)testZZZNotInRecordMode
 {
