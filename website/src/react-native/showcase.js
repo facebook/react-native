@@ -71,6 +71,14 @@ var featured = [
 
   },
   {
+    name: 'Geektime',
+    icon: 'https://s11.postimg.org/d46czaz5f/app_icon_175x175.png',
+    linkAppStore: 'https://itunes.apple.com/il/app/geektime-gyqtyym/id824174835?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.zuznow.geektime',
+    infoLink: 'http://www.geektime.co.il/geektime-app-version-four/',
+    infoTitle: '"It`s here, finally: meet the new Geektime mobile app."',
+  },
+  {
     name: 'Discord',
     icon: 'http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg',
     linkAppStore:  'https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8',
