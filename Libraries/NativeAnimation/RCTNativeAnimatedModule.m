@@ -175,6 +175,32 @@ RCT_EXPORT_METHOD(setAnimatedNodeValue:(nonnull NSNumber *)nodeTag
   [valueNode setNeedsUpdate];
 }
 
+RCT_EXPORT_METHOD(setAnimatedNodeOffset:(nonnull NSNumber *)nodeTag
+                  offset:(nonnull NSNumber *)offset)
+{
+  RCTAnimatedNode *node = _animationNodes[nodeTag];
+  if (![node isKindOfClass:[RCTValueAnimatedNode class]]) {
+    RCTLogError(@"Not a value node.");
+    return;
+  }
+
+  RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)node;
+  [valueNode setOffset:offset.floatValue];
+  [_updatedValueNodes addObject:valueNode];
+}
+
+RCT_EXPORT_METHOD(flattenAnimatedNodeOffset:(nonnull NSNumber *)nodeTag)
+{
+  RCTAnimatedNode *node = _animationNodes[nodeTag];
+  if (![node isKindOfClass:[RCTValueAnimatedNode class]]) {
+    RCTLogError(@"Not a value node.");
+    return;
+  }
+
+  RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)node;
+  [valueNode flattenOffset];
+}
+
 RCT_EXPORT_METHOD(connectAnimatedNodeToView:(nonnull NSNumber *)nodeTag
                   viewTag:(nonnull NSNumber *)viewTag)
 {
