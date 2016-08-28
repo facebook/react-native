@@ -28,7 +28,7 @@ For simplicity's sake, let's define a simple scene that displays a bit of text. 
 
 ```javascript
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Navigator } from 'react-native';
 
 export default class MyScene extends Component {
   static get defaultProps() {

@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <CSSLayout/CSSLayout.h>
-#include <CSSLayout/CSSNodeList.h>
+#include "CSSLayout.h"
+#include "CSSNodeList.h"
 
 CSS_EXTERN_C_BEGIN
 

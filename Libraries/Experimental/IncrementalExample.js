@@ -34,7 +34,7 @@ const IncrementalPresenter = require('IncrementalPresenter');
 const JSEventLoopWatchdog = require('JSEventLoopWatchdog');
 const StaticContainer = require('StaticContainer.react');
 
-const performanceNow = require('performanceNow');
+const performanceNow = require('fbjs/lib/performanceNow');
 
 InteractionManager.setDeadline(1000);
 JSEventLoopWatchdog.install({thresholdMS: 200});

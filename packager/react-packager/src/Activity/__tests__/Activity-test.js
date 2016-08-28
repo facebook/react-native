@@ -13,14 +13,17 @@ jest.disableAutomock();
 var Activity = require('../');
 
 describe('Activity', () => {
+  // eslint-disable-next-line no-console-disallow
   const origConsoleLog = console.log;
 
   beforeEach(() => {
+    // eslint-disable-next-line no-console-disallow
     console.log = jest.fn();
     jest.runOnlyPendingTimers();
   });
 
   afterEach(() => {
+    // eslint-disable-next-line no-console-disallow
     console.log = origConsoleLog;
   });
 
@@ -32,7 +35,9 @@ describe('Activity', () => {
       Activity.startEvent(EVENT_NAME, DATA);
       jest.runOnlyPendingTimers();
 
+      // eslint-disable-next-line no-console-disallow
       expect(console.log.mock.calls.length).toBe(1);
+      // eslint-disable-next-line no-console-disallow
       const consoleMsg = console.log.mock.calls[0][0];
       expect(consoleMsg).toContain('START');
       expect(consoleMsg).toContain(EVENT_NAME);
@@ -49,7 +54,9 @@ describe('Activity', () => {
       Activity.endEvent(eventID);
       jest.runOnlyPendingTimers();
 
+      // eslint-disable-next-line no-console-disallow
       expect(console.log.mock.calls.length).toBe(2);
+      // eslint-disable-next-line no-console-disallow
       const consoleMsg = console.log.mock.calls[1][0];
       expect(consoleMsg).toContain('END');
       expect(consoleMsg).toContain(EVENT_NAME);
