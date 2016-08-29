@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.csslayout.CSSLayoutContext;
 import com.facebook.csslayout.CSSDirection;
 import com.facebook.infer.annotation.Assertions;
@@ -24,6 +25,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -575,7 +577,6 @@ public class UIImplementation {
     mOperationsQueue.enqueueConfigureLayoutAnimation(config, success, error);
   }
 
-
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
     assertViewExists(reactTag, "setJSResponder");
     ReactShadowNode node = mShadowNodeRegistry.getNode(reactTag);
@@ -788,5 +789,23 @@ public class UIImplementation {
 
   public void addUIBlock(UIBlock block) {
     mOperationsQueue.enqueueUIBlock(block);
+  }
+
+  public int resolveRootTagFromReactTag(int reactTag) {
+    if (mShadowNodeRegistry.isRootNode(reactTag)) {
+      return reactTag;
+    }
+
+    ReactShadowNode node = resolveShadowNode(reactTag);
+    int rootTag = 0;
+    if (node != null) {
+      rootTag = node.getRootNode().getReactTag();
+    } else {
+      FLog.w(
+        ReactConstants.TAG,
+        "Warning : attempted to resolve a non-existent react shadow node. reactTag=" + reactTag);
+    }
+
+    return rootTag;
   }
 }
