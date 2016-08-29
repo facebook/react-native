@@ -100,6 +100,9 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
         WritableMap source = Arguments.createMap();
         source.putDouble("width", mWidth);
         source.putDouble("height", mHeight);
+        if (mImageUri != null) {
+          source.putString("url", mImageUri);
+        }
         eventData.putMap("source", source);
       }
     }

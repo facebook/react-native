@@ -202,7 +202,7 @@ public class ReactImageView extends GenericDraweeView {
           if (imageInfo != null) {
             mEventDispatcher.dispatchEvent(
               new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD,
-                null, imageInfo.getWidth(), imageInfo.getHeight())
+                mImageSource.getSource(), imageInfo.getWidth(), imageInfo.getHeight())
             );
             mEventDispatcher.dispatchEvent(
               new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_END));
