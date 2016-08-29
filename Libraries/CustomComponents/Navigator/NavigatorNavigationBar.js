@@ -87,7 +87,7 @@ class NavigatorNavigationBar extends React.Component {
     this.forceUpdate();
   };
 
-  _reset = () => {
+  _reset() {
     this._key = guid();
     this._reusableProps = {};
     this._components = {};
