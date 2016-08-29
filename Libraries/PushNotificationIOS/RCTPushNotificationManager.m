@@ -32,8 +32,7 @@ NSString *const RCTRegisterUserNotificationSettings = @"RegisterUserNotification
 NSString *const RCTErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMISSIONS";
 
 @interface RCTPushNotificationManager ()
-@property (nonatomic, copy) RCTPromiseResolveBlock requestPermissionsResolveBlock;
-@property (strong, nonatomic) NSMutableDictionary* remoteNotificationCallbacks;
+@property (nonatomic, strong) NSMutableDictionary *remoteNotificationCallbacks;
 @end
 
 @implementation RCTConvert (UILocalNotification)
@@ -157,7 +156,7 @@ RCT_EXPORT_MODULE()
 }
 
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification
-              fetchCompletionHandler:(RemoteNotificationCallback)completionHandler
+              fetchCompletionHandler:(RCTRemoteNotificationCallback)completionHandler
 {
   NSDictionary *userInfo = @{@"notification": notification, @"completionHandler": completionHandler};
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
@@ -180,12 +179,12 @@ RCT_EXPORT_MODULE()
 - (void)handleRemoteNotificationReceived:(NSNotification *)notification
 {
   NSMutableDictionary *remoteNotification = [NSMutableDictionary dictionaryWithDictionary:notification.userInfo[@"notification"]];
-  RemoteNotificationCallback completionHandler = notification.userInfo[@"completionHandler"];
+  RCTRemoteNotificationCallback completionHandler = notification.userInfo[@"completionHandler"];
   NSString* notificationId = [[NSUUID UUID] UUIDString];
   remoteNotification[@"notificationId"] = notificationId;
   remoteNotification[@"remote"] = @YES;
   if (completionHandler) {
-    if (self.remoteNotificationCallbacks == nil) {
+    if (!self.remoteNotificationCallbacks) {
       // Lazy initialization
       self.remoteNotificationCallbacks = [NSMutableDictionary dictionary];
     }
@@ -193,7 +192,6 @@ RCT_EXPORT_MODULE()
   }
 
   [self sendEventWithName:@"remoteNotificationReceived" body:notification.userInfo];
-  [self sendEventWithName:@"remoteNotificationReceived" body:userInfo];
 }
 
 - (void)handleRemoteNotificationsRegistered:(NSNotification *)notification
@@ -219,14 +217,12 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_METHOD(onFinishRemoteNotification:(NSString*)notificationId fetchResult:(UIBackgroundFetchResult)result) {
-  RemoteNotificationCallback completionHandler = self.remoteNotificationCallbacks[notificationId];
-  if (completionHandler == nil) {
-    @throw [NSException
-            exceptionWithName:@"NotificationIdNotFound"
-            reason:[NSString stringWithFormat:
+  RCTRemoteNotificationCallback completionHandler = self.remoteNotificationCallbacks[notificationId];
+  if (!completionHandler) {
+    RCTLogError([NSString stringWithFormat:
                     @"There is no completion handler with notification id: %@",
-                    notificationId]
-            userInfo:nil];
+                    notificationId]);
+    return;
   }
   completionHandler(result);
   [self.remoteNotificationCallbacks removeObjectForKey:notificationId];
