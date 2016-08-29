@@ -32,6 +32,7 @@ NSString *const RCTRegisterUserNotificationSettings = @"RegisterUserNotification
 NSString *const RCTErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMISSIONS";
 
 @interface RCTPushNotificationManager ()
+@property (nonatomic, copy) RCTPromiseResolveBlock requestPermissionsResolveBlock;
 @property (nonatomic, strong) NSMutableDictionary *remoteNotificationCallbacks;
 @end
 
