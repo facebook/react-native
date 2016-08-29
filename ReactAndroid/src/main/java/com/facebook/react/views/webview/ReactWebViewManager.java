@@ -23,7 +23,10 @@ import android.webkit.GeolocationPermissions;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 
+import com.facebook.react.views.webview.events.MessageEvent;
 import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
 import com.facebook.react.views.webview.events.TopLoadingStartEvent;
@@ -89,6 +92,21 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   private static class ReactWebViewClient extends WebViewClient {
 
     private boolean mLastLoadFailed = false;
+
+    @Override
+    public WebResourceResponse shouldInterceptRequest (final WebView webView, WebResourceRequest request) {
+      ReactWebView reactWebView = (ReactWebView) webView;
+
+      if (reactWebView.getMessageProtocol().equals(request.getUrl().getScheme())) {
+        WritableMap eventData = Arguments.createMap();
+        eventData.putString("url", request.getUrl().toString());
+        eventData.putString("method", request.getMethod().toString());
+
+        dispatchEvent(webView, new MessageEvent(webView.getId(), SystemClock.nanoTime(), eventData));
+      }
+
+      return super.shouldInterceptRequest(webView, request);
+    }
 
     @Override
     public void onPageFinished(WebView webView, String url) {
@@ -193,6 +211,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
    */
   private static class ReactWebView extends WebView implements LifecycleEventListener {
     private @Nullable String injectedJS;
+    private @Nullable String messageProtocol;
 
     /**
      * WebView must be created with an context of the current activity
@@ -222,6 +241,14 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     public void setInjectedJavaScript(@Nullable String js) {
       injectedJS = js;
+    }
+
+    public String getMessageProtocol() {
+      return messageProtocol;
+    }
+
+    public void setMessageProtocol(@Nullable String mp) {
+      messageProtocol = mp;
     }
 
     public void callInjectedJavaScript() {
@@ -295,7 +322,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     view.getSettings().setDomStorageEnabled(enabled);
   }
 
-
   @ReactProp(name = "userAgent")
   public void setUserAgent(WebView view, @Nullable String userAgent) {
     if (userAgent != null) {
@@ -312,6 +338,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @ReactProp(name = "injectedJavaScript")
   public void setInjectedJavaScript(WebView view, @Nullable String injectedJavaScript) {
     ((ReactWebView) view).setInjectedJavaScript(injectedJavaScript);
+  }
+
+  @ReactProp(name = "messageProtocol")
+  public void setMessageProtocol(WebView view, @Nullable String messageProtocol) {
+    ((ReactWebView) view).setMessageProtocol(messageProtocol);
   }
 
   @ReactProp(name = "source")
