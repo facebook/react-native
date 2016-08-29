@@ -32,7 +32,9 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
 
 @end
 
-@implementation RCTTabBarItem
+@implementation RCTTabBarItem{
+  UITapGestureRecognizer *_selectRecognizer;
+}
 
 @synthesize barItem = _barItem;
 
@@ -107,5 +109,53 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
 {
   return self.superview.reactViewController;
 }
+
+#if TARGET_OS_TV
+
+- (void)setOnTVSelect:(RCTDirectEventBlock)onTVSelect {
+  _onTVSelect = [onTVSelect copy];
+  if(_onTVSelect) {
+    UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSelect:)];
+    recognizer.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeSelect]];
+    _selectRecognizer = recognizer;
+    [self addGestureRecognizer:_selectRecognizer];
+  } else {
+    if(_selectRecognizer) {
+      [self removeGestureRecognizer:_selectRecognizer];
+    }
+  }
+  
+}
+
+- (void)handleSelect:(UIGestureRecognizer*)r {
+  RCTTabBarItem *v = (RCTTabBarItem*)r.view;
+  if(v.onTVSelect) {
+    v.onTVSelect(nil);
+  }
+}
+
+- (BOOL)isUserInteractionEnabled {
+  return YES;
+}
+
+- (BOOL)canBecomeFocused {
+  return (self.onTVSelect != nil);
+}
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
+  if(context.nextFocusedView == self && self.onTVSelect != nil) {
+    if(self.onTVFocus) {
+      self.onTVFocus(nil);
+    }
+    [self becomeFirstResponder];
+  } else {
+    if(self.onTVBlur) {
+      self.onTVBlur(nil);
+    }
+    [self resignFirstResponder];
+  }
+}
+
+#endif
 
 @end

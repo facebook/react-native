@@ -248,6 +248,7 @@ static NSError *RCTNSErrorFromJSError(RCTJSCWrapper *jscWrapper, JSContextRef co
 static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 {
   if (RCTJSCProfilerIsSupported()) {
+#ifndef TARGET_OS_TV
     [bridge.devMenu addItem:[RCTDevMenuItem toggleItemWithKey:RCTJSCProfilerEnabledDefaultsKey title:@"Start Profiling" selectedTitle:@"Stop Profiling" handler:^(BOOL shouldStart) {
       if (shouldStart != RCTJSCProfilerIsProfiling(context)) {
         if (shouldStart) {
@@ -259,6 +260,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
         }
       }
     }]];
+#endif
   }
 }
 

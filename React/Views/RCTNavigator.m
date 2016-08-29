@@ -169,6 +169,7 @@ NSInteger kNeverProgressed = -10000;
  */
 - (BOOL)navigationBar:(UINavigationBar *)navigationBar shouldPopItem:(UINavigationItem *)item
 {
+#if !TARGET_OS_TV
   if (self.interactivePopGestureRecognizer.state == UIGestureRecognizerStateBegan) {
     if (self.navigationLock == RCTNavigationLockNone) {
       self.navigationLock = RCTNavigationLockNative;
@@ -181,6 +182,7 @@ NSInteger kNeverProgressed = -10000;
       RCTAssert(NO, @"Should never receive gesture start while JS locks navigator");
     }
   } else {
+#endif //TARGET_OS_TV
     if (self.navigationLock == RCTNavigationLockNone) {
       // Must be coming from native interaction, lock it - it will be unlocked
       // in `didMoveToNavigationController`
@@ -199,7 +201,9 @@ NSInteger kNeverProgressed = -10000;
       // length (`currentReactCount` - 1).
       return [super navigationBar:navigationBar shouldPopItem:item];
     }
+#if !TARGET_OS_TV
   }
+#endif
   return [super navigationBar:navigationBar shouldPopItem:item];
 }
 
@@ -348,19 +352,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setInteractivePopGestureEnabled:(BOOL)interactivePopGestureEnabled
 {
+#if !TARGET_OS_TV
   _interactivePopGestureEnabled = interactivePopGestureEnabled;
 
   _navigationController.interactivePopGestureRecognizer.delegate = self;
   _navigationController.interactivePopGestureRecognizer.enabled = interactivePopGestureEnabled;
 
   _popGestureState = interactivePopGestureEnabled ? RCTPopGestureStateEnabled : RCTPopGestureStateDisabled;
+#endif
 }
 
 - (void)dealloc
 {
+#if !TARGET_OS_TV
   if (_navigationController.interactivePopGestureRecognizer.delegate == self) {
     _navigationController.interactivePopGestureRecognizer.delegate = nil;
   }
+#endif
   _navigationController.delegate = nil;
   [_navigationController removeFromParentViewController];
 }
@@ -422,7 +430,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   if (_navigationController.navigationLock == RCTNavigationLockNone) {
     _navigationController.navigationLock = RCTNavigationLockJavaScript;
+#if !TARGET_OS_TV
     _navigationController.interactivePopGestureRecognizer.enabled = NO;
+#endif
     return YES;
   }
   return NO;
@@ -435,7 +445,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // Unless the pop gesture has been explicitly disabled (RCTPopGestureStateDisabled),
   // Set interactivePopGestureRecognizer.enabled to YES
   // If the popGestureState is RCTPopGestureStateDefault the default behavior will be maintained
+#if !TARGET_OS_TV
   _navigationController.interactivePopGestureRecognizer.enabled = self.popGestureState != RCTPopGestureStateDisabled;
+#endif
 }
 
 /**
