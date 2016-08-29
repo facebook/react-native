@@ -74,6 +74,11 @@ class NavigatorNavigationBar extends React.Component {
     navigationStyles: NavigatorNavigationBarStyles,
   };
 
+  constructor(props){
+    super(props);
+    this._reset = this._reset.bind(this)
+  }
+
   componentWillMount() {
     this._reset();
   }
@@ -87,7 +92,7 @@ class NavigatorNavigationBar extends React.Component {
     this.forceUpdate();
   };
 
-  _reset() {
+  _reset = () => {
     this._key = guid();
     this._reusableProps = {};
     this._components = {};
