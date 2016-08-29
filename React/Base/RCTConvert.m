@@ -321,14 +321,14 @@ RCT_ENUM_CONVERTER(UIKeyboardType, (@{
   @"numeric": @(UIKeyboardTypeDecimalPad),
 }), UIKeyboardTypeDefault, integerValue)
 
-RCT_MULTI_ENUM_CONVERTER(UIDataDetectorTypes, (@{
-  @"phoneNumber": @(UIDataDetectorTypePhoneNumber),
-  @"link": @(UIDataDetectorTypeLink),
-  @"address": @(UIDataDetectorTypeAddress),
-  @"calendarEvent": @(UIDataDetectorTypeCalendarEvent),
-  @"none": @(UIDataDetectorTypeNone),
-  @"all": @(UIDataDetectorTypeAll),
-}), UIDataDetectorTypePhoneNumber, unsignedLongLongValue)
+RCT_MULTI_ENUM_CONVERTER(RCTDataDetectorTypes, (@{
+  @"phoneNumber": @(RCTDataDetectorTypePhoneNumber),
+  @"link": @(RCTDataDetectorTypeLink),
+  @"address": @(RCTDataDetectorTypeAddress),
+  @"calendarEvent": @(RCTDataDetectorTypeCalendarEvent),
+  @"none": @(RCTDataDetectorTypeNone),
+  @"all": @(RCTDataDetectorTypeAll),
+}), RCTDataDetectorTypePhoneNumber, unsignedLongLongValue)
 
 RCT_ENUM_CONVERTER(UIKeyboardAppearance, (@{
   @"default": @(UIKeyboardAppearanceDefault),
@@ -370,10 +370,10 @@ RCT_ENUM_CONVERTER(UIViewContentMode, (@{
   @"stretch": @(UIViewContentModeScaleToFill),
 }), UIViewContentModeScaleAspectFill, integerValue)
 
-RCT_ENUM_CONVERTER(UIBarStyle, (@{
-  @"default": @(UIBarStyleDefault),
-  @"black": @(UIBarStyleBlack),
-}), UIBarStyleDefault, integerValue)
+RCT_ENUM_CONVERTER(RCTBarStyle, (@{
+  @"default": @(RCTBarStyleDefault),
+  @"black": @(RCTBarStyleBlack),
+}), RCTBarStyleDefault, integerValue)
 
 // TODO: normalise the use of w/width so we can do away with the alias values (#6566645)
 static void RCTConvertCGStructValue(const char *type, NSArray *fields, NSDictionary *aliases, CGFloat *result, id json)
@@ -726,6 +726,7 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
                           orientation:image.imageOrientation];
   }
 
+#if !TARGET_OS_TV
   if (!CGSizeEqualToSize(imageSource.size, CGSizeZero) &&
       !CGSizeEqualToSize(imageSource.size, image.size)) {
     RCTLogError(@"Image source %@ size %@ does not match loaded image size %@.",
@@ -733,7 +734,8 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
                 NSStringFromCGSize(imageSource.size),
                 NSStringFromCGSize(image.size));
   }
-
+#endif
+  
   return image;
 }
 

@@ -17,6 +17,7 @@
 
 RCT_EXPORT_MODULE()
 
+#if !TARGET_OS_TV
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
@@ -35,5 +36,7 @@ RCT_EXPORT_METHOD(getString:(RCTPromiseResolveBlock)resolve
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   resolve((clipboard.string ? : @""));
 }
+
+#endif //TARGET_OS_TV
 
 @end

@@ -156,6 +156,7 @@ class Bundler {
           this._transformer.transformFile(module.path, code, options),
       extraNodeModules: opts.extraNodeModules,
       minifyCode: this._transformer.minify,
+      appletv: opts.appletv,
     });
 
     this._projectRoots = opts.projectRoots;
@@ -174,9 +175,9 @@ class Bundler {
   }
 
   bundle(options) {
-    const {dev, minify, unbundle} = options;
+    const {dev, minify, unbundle, appletv} = options;
     const moduleSystemDeps =
-      this._resolver.getModuleSystemDependencies({dev, unbundle});
+      this._resolver.getModuleSystemDependencies({dev, unbundle, appletv});
     return this._bundle({
       ...options,
       bundle: new Bundle({dev, minify, sourceMapUrl: options.sourceMapUrl}),

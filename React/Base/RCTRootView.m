@@ -28,6 +28,10 @@
 #import "UIView+React.h"
 #import "RCTProfile.h"
 
+#if TARGET_OS_TV
+#import "RCTTVRemoteHandler.h"
+#endif
+
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
 
 @interface RCTUIManager (RCTRootView)
@@ -91,6 +95,14 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
                                              selector:@selector(hideLoadingView)
                                                  name:RCTContentDidAppearNotification
                                                object:self];
+    
+#if TARGET_OS_TV
+    self.tvRemoteHandler = [[RCTTVRemoteHandler alloc] initWithBridge:_bridge];
+    for(UIGestureRecognizer *gr in self.tvRemoteHandler.tvRemoteGestureRecognizers) {
+      [self addGestureRecognizer:gr];
+    }
+#endif
+
 
     if (!_bridge.loading) {
       [self bundleFinishedLoading:[_bridge batchedBridge]];
@@ -118,6 +130,15 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+
+#if TARGET_OS_TV
+- (UIView*)preferredFocusedView {
+  if(self.reactPreferredFocusedView) {
+    return self.reactPreferredFocusedView;
+  };
+  return [super preferredFocusedView];
+}
+#endif
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {

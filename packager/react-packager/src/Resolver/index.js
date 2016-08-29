@@ -57,6 +57,10 @@ const validateOpts = declareOpts({
   minifyCode: {
     type: 'function',
   },
+  appletv: {
+    type: 'boolean',
+    default: false
+  }
 });
 
 const getDependenciesValidateOpts = declareOpts({
@@ -67,6 +71,10 @@ const getDependenciesValidateOpts = declareOpts({
   platform: {
     type: 'string',
     required: false,
+  },
+  appletv: {
+    type: 'boolean',
+    default: false,
   },
   unbundle: {
     type: 'boolean',
@@ -109,6 +117,7 @@ class Resolver {
       transformCode: opts.transformCode,
       extraNodeModules: opts.extraNodeModules,
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
+      appletv: opts.appletv,
     });
 
     this._minifyCode = opts.minifyCode;
@@ -157,10 +166,15 @@ class Resolver {
         ? path.join(__dirname, 'polyfills/prelude_dev.js')
         : path.join(__dirname, 'polyfills/prelude.js');
 
+    const tvos_prelude = opts.appletv
+        ? path.join(__dirname, 'polyfills/appletv_true.js')
+        : path.join(__dirname, 'polyfills/appletv_false.js');
+
     const moduleSystem = path.join(__dirname, 'polyfills/require.js');
 
     return [
       prelude,
+      tvos_prelude,
       moduleSystem
     ].map(moduleName => this._depGraph.createPolyfill({
       file: moduleName,

@@ -11,6 +11,8 @@
 
 #import "RCTComponent.h"
 
+#if !TARGET_OS_TV
+
 @interface RCTSlider : UISlider
 
 @property (nonatomic, copy) RCTBubblingEventBlock onValueChange;
@@ -27,3 +29,5 @@
 
 
 @end
+
+#endif

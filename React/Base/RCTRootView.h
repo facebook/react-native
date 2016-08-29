@@ -13,6 +13,10 @@
 
 @protocol RCTRootViewDelegate;
 
+#if TARGET_OS_TV
+@class RCTTVRemoteHandler;
+#endif
+
 /**
  * This enum is used to define size flexibility type of the root view.
  * If a dimension is flexible, the view will recalculate that dimension
@@ -108,6 +112,14 @@ extern NSString *const RCTContentDidAppearNotification;
  * The React-managed contents view of the root view.
  */
 @property (nonatomic, strong, readonly) UIView *contentView;
+
+/**
+ * TV remote gesture recognizers
+ */
+#if TARGET_OS_TV
+@property (nonatomic, strong, readwrite) RCTTVRemoteHandler *tvRemoteHandler;
+@property (nonatomic, strong, readwrite) UIView *reactPreferredFocusedView;
+#endif
 
 /**
  * A view to display while the JavaScript is loading, so users aren't presented

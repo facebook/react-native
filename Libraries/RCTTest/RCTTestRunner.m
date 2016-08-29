@@ -46,7 +46,11 @@ static const NSTimeInterval kTestTeardownTimeoutSeconds = 30;
     _moduleProvider = [block copy];
 
     if (getenv("CI_USE_PACKAGER")) {
+#if TARGET_OS_TV
+      _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true&appletv=true", app]];
+#else
       _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true", app]];
+#endif
     } else {
       _scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
     }

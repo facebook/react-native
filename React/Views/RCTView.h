@@ -28,6 +28,28 @@
 @property (nonatomic, copy) RCTDirectEventBlock onMagicTap;
 
 /**
+ * TV event handlers
+ */
+@property (nonatomic, copy) RCTDirectEventBlock onTVSelect; // Called if this view is focused and the TV remote select button is pressed
+@property (nonatomic, copy) RCTDirectEventBlock onTVFocus; // Called when this view comes into focus when navigating via TV remote swipes or arrow keys
+@property (nonatomic, copy) RCTDirectEventBlock onTVBlur; // Called when this view leaves focus when navigating via TV remote swipes or arrow keys
+@property (nonatomic, copy) RCTDirectEventBlock onTVNavEvent; // Called on any TV remote action other than select (menu, play/pause, swipes or arrow keys);
+
+/**
+ *  Properties for Apple TV focus parallax effects
+ */
+@property (nonatomic, assign) BOOL tvParallaxDisable;
+@property (nonatomic, assign) float tvParallaxShiftDistanceX;
+@property (nonatomic, assign) float tvParallaxShiftDistanceY;
+@property (nonatomic, assign) float tvParallaxTiltAngle;
+@property (nonatomic, assign) float tvParallaxMagnification;
+
+/**
+ * TV preferred focus
+ */
+@property (nonatomic, assign) BOOL hasTVPreferredFocus;
+
+/**
  * Used to control how touch events are processed.
  */
 @property (nonatomic, assign) RCTPointerEvents pointerEvents;
@@ -82,6 +104,8 @@
 @property (nonatomic, assign) CGColorRef borderBottomColor;
 @property (nonatomic, assign) CGColorRef borderLeftColor;
 @property (nonatomic, assign) CGColorRef borderColor;
+
+@property (nonatomic, strong) UIColor *tvFocusedBorderColor;
 
 /**
  * Border widths.
