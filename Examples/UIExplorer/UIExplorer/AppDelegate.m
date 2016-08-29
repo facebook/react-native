@@ -19,6 +19,7 @@
 #import "RCTJavaScriptLoader.h"
 #import "RCTLinkingManager.h"
 #import "RCTRootView.h"
+#import "RCTPushNotificationManager.h"
 
 @interface AppDelegate() <RCTBridgeDelegate>
 
@@ -74,6 +75,38 @@
 {
   [RCTJavaScriptLoader loadBundleAtURL:[self sourceURLForBridge:bridge]
                             onComplete:loadCallback];
+}
+
+# pragma mark - Push Notifications
+
+// Required to register for notifications
+- (void)application:(UIApplication *)__unused application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+{
+  [RCTPushNotificationManager didRegisterUserNotificationSettings:notificationSettings];
+}
+
+// Required for the remoteNotificationsRegistered event.
+- (void)application:(UIApplication *)__unused application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+  [RCTPushNotificationManager didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+
+// Required for the remoteNotificationRegistrationError event.
+- (void)application:(UIApplication *)__unused application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+  [RCTPushNotificationManager didFailToRegisterForRemoteNotificationsWithError:error];
+}
+
+// Required for the remoteNotificationReceived event.
+- (void)application:(UIApplication *)__unused application didReceiveRemoteNotification:(NSDictionary *)notification
+{
+  [RCTPushNotificationManager didReceiveRemoteNotification:notification];
+}
+
+// Required for the localNotificationReceived event.
+- (void)application:(UIApplication *)__unused application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+  [RCTPushNotificationManager didReceiveLocalNotification:notification];
 }
 
 @end
