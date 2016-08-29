@@ -83,7 +83,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 - (void)dismissModalViewController
 {
   if (_isPresented) {
-    [_modalViewController dismissViewControllerAnimated:[self hasAnimationType] completion:nil];
+    [_delegate dismissModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
     _isPresented = NO;
   }
 }
@@ -100,11 +100,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
     } else if ([self.animationType isEqualToString:@"slide"]) {
       _modalViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     }
-    [self.reactViewController presentViewController:_modalViewController animated:[self hasAnimationType] completion:^{
-      if (self->_onShow) {
-        self->_onShow(nil);
-      }
-    }];
+    [_delegate presentModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
     _isPresented = YES;
   }
 }

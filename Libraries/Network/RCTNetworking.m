@@ -504,6 +504,20 @@ RCT_EXPORT_METHOD(abortRequest:(nonnull NSNumber *)requestID)
   [_tasksByRequestID removeObjectForKey:requestID];
 }
 
+RCT_EXPORT_METHOD(clearCookies:(RCTResponseSenderBlock)responseSender)
+{
+  NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+  if (!storage.cookies.count) {
+    responseSender(@[@NO]);
+    return;
+  }
+
+  for (NSHTTPCookie *cookie in storage.cookies) {
+    [storage deleteCookie:cookie];
+  }
+  responseSender(@[@YES]);
+}
+
 @end
 
 @implementation RCTBridge (RCTNetworking)

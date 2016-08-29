@@ -27,7 +27,7 @@ static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
 
 #define CSSUndefined NAN
 
-#include <CSSLayout/CSSMacros.h>
+#include "CSSMacros.h"
 
 CSS_EXTERN_C_BEGIN
 
