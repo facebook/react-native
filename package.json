@@ -194,7 +194,8 @@
     "xmldoc": "^0.4.0",
     "yargs": "^3.24.0",
     "yeoman-environment": "1.5.3",
-    "yeoman-generator": "0.21.2"
+    "yeoman-generator": "0.21.2",
+    "react-native-camera": "latest"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.0",
