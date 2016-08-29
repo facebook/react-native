@@ -131,6 +131,11 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     view.setScaleType(ImageResizeMode.toScaleType(resizeMode));
   }
 
+  @ReactProp(name = ViewProps.FORCE_RESIZE, defaultBoolean = false)
+  public void setForceResize(ReactImageView view, boolean forceResize) {
+    view.setForceResize(forceResize);
+  }
+
   @ReactProp(name = "tintColor", customType = "Color")
   public void setTintColor(ReactImageView view, @Nullable Integer tintColor) {
     if (tintColor == null) {

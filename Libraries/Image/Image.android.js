@@ -66,6 +66,7 @@ var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   src: true,
   loadingIndicatorSrc: true,
   resizeMode: true,
+  forceResize: true,
   progressiveRenderingEnabled: true,
   fadeDuration: true,
   shouldNotifyLoadEvents: true,
@@ -114,6 +115,7 @@ var Image = React.createClass({
     ]),
     progressiveRenderingEnabled: PropTypes.bool,
     fadeDuration: PropTypes.number,
+    forceResize: PropTypes.bool,
     /**
      * Invoked on load start
      */
