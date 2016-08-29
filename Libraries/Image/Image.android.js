@@ -144,8 +144,12 @@ var Image = React.createClass({
      *
      * 'stretch': Scale width and height independently, This may change the
      * aspect ratio of the src.
+     *
+     * 'center': Scale the image down so that it is completely visible,
+     * if bigger than the area of the view.
+     * The image will not be scaled up.
      */
-    resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch']),
+    resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch', 'center']),
   },
 
   statics: {

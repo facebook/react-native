@@ -22,6 +22,10 @@ var Site = React.createClass({
     var title = this.props.title ? this.props.title + ' – ' : '';
     var currentYear = (new Date()).getFullYear();
     title += 'React Native | A framework for building native apps using React';
+    var description = this.props.description ? this.props.description : 'A framework for building native apps using React';
+    var shareURL = 'https://facebook.github.io/react-native/';
+    shareURL += this.props.path ? this.props.path : 'index.html';
+
     return (
       <html>
         <head>
@@ -31,9 +35,9 @@ var Site = React.createClass({
           <meta name="viewport" content="width=device-width" />
           <meta property="og:title" content={title} />
           <meta property="og:type" content="website" />
-          <meta property="og:url" content="http://facebook.github.io/react-native/index.html" />
+          <meta property="og:url" content={shareURL} />
           <meta property="og:image" content="http://facebook.github.io/react-native/img/opengraph.png?2" />
-          <meta property="og:description" content="A framework for building native apps using React" />
+          <meta property="og:description" content={description} />
 
           <base href={basePath} />
 
@@ -46,7 +50,8 @@ var Site = React.createClass({
           <script type="text/javascript">{'try{Typekit.load();}catch(e){}'}</script>
         </head>
         <body>
-
+          <script dangerouslySetInnerHTML={{__html: `window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));`}} />
+          <script dangerouslySetInnerHTML={{__html: `window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, "script", "twitter-wjs"));`}} />
           <div className="container">
             <div className="nav-main">
               <div className="wrap">

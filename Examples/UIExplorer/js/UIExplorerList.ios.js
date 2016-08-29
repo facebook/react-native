@@ -69,10 +69,6 @@ const ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ModalExample'),
   },
   {
-    key: 'NativeAnimationsExample',
-    module: require('./NativeAnimationsExample'),
-  },
-  {
     key: 'NavigatorExample',
     module: require('./Navigator/NavigatorExample'),
   },
@@ -228,6 +224,10 @@ const APIExamples: Array<UIExplorerExample> = [
     module: require('./LinkingExample'),
   },
   {
+    key: 'NativeAnimationsExample',
+    module: require('./NativeAnimationsExample'),
+  },
+  {
     key: 'NavigationExperimentalExample',
     module: require('./NavigationExperimental/NavigationExperimentalExample'),
   },
@@ -250,6 +250,10 @@ const APIExamples: Array<UIExplorerExample> = [
   {
     key: 'RCTRootViewIOSExample',
     module: require('./RCTRootViewIOSExample'),
+  },
+  {
+    key: 'RTLExample',
+    module: require('./RTLExample'),
   },
   {
     key: 'ShareExample',

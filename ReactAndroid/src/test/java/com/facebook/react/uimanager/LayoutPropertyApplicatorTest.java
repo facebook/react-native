@@ -36,7 +36,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyFloat;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -73,19 +72,23 @@ public class LayoutPropertyApplicatorTest {
     LayoutShadowNode reactShadowNode = spy(new LayoutShadowNode());
     ReactStylesDiffMap map = spy(
         buildStyles(
-            "width", 10.0,
-            "height", 10.0,
-            "left", 10.0,
-            "top", 10.0));
+            "width",
+            10.0,
+            "height",
+            10.0,
+            "left",
+            10.0,
+            "top",
+            10.0));
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setStyleWidth(anyFloat());
     verify(map).getFloat(eq("width"), anyFloat());
     verify(reactShadowNode).setStyleHeight(anyFloat());
     verify(map).getFloat(eq("height"), anyFloat());
-    verify(reactShadowNode).setPositionValue(eq(Spacing.START), anyFloat());
+    verify(reactShadowNode).setPosition(eq(Spacing.START), anyFloat());
     verify(map).getFloat(eq("left"), anyFloat());
-    verify(reactShadowNode).setPositionValue(eq(Spacing.TOP), anyFloat());
+    verify(reactShadowNode).setPosition(eq(Spacing.TOP), anyFloat());
     verify(map).getFloat(eq("top"), anyFloat());
 
     reactShadowNode = spy(new LayoutShadowNode());
@@ -96,9 +99,9 @@ public class LayoutPropertyApplicatorTest {
     verify(map, never()).getFloat(eq("width"), anyFloat());
     verify(reactShadowNode, never()).setStyleHeight(anyFloat());
     verify(map, never()).getFloat(eq("height"), anyFloat());
-    verify(reactShadowNode, never()).setPositionValue(eq(Spacing.START), anyFloat());
+    verify(reactShadowNode, never()).setPosition(eq(Spacing.START), anyFloat());
     verify(map, never()).getFloat(eq("left"), anyFloat());
-    verify(reactShadowNode, never()).setPositionValue(eq(Spacing.TOP), anyFloat());
+    verify(reactShadowNode, never()).setPosition(eq(Spacing.TOP), anyFloat());
     verify(map, never()).getFloat(eq("top"), anyFloat());
   }
 
@@ -123,13 +126,16 @@ public class LayoutPropertyApplicatorTest {
   public void testPosition() {
     LayoutShadowNode reactShadowNode = spy(new LayoutShadowNode());
     ReactStylesDiffMap map = spy(buildStyles(
-            "position", "absolute",
-            "bottom", 10.0,
-            "right", 5.0));
+        "position",
+        "absolute",
+        "bottom",
+        10.0,
+        "right",
+        5.0));
 
     reactShadowNode.updateProperties(map);
-    verify(reactShadowNode).setPositionValue(eq(Spacing.BOTTOM), anyFloat());
-    verify(reactShadowNode).setPositionValue(eq(Spacing.END), anyFloat());
+    verify(reactShadowNode).setPosition(eq(Spacing.BOTTOM), anyFloat());
+    verify(reactShadowNode).setPosition(eq(Spacing.END), anyFloat());
     verify(reactShadowNode).setPositionType(any(CSSPositionType.class));
     verify(map).getFloat("bottom", Float.NaN);
     verify(map).getFloat("right", Float.NaN);
@@ -138,8 +144,8 @@ public class LayoutPropertyApplicatorTest {
     map = spy(buildStyles());
 
     reactShadowNode.updateProperties(map);
-    verify(reactShadowNode, never()).setPositionValue(eq(Spacing.BOTTOM), anyFloat());
-    verify(reactShadowNode, never()).setPositionValue(eq(Spacing.END), anyFloat());
+    verify(reactShadowNode, never()).setPosition(eq(Spacing.BOTTOM), anyFloat());
+    verify(reactShadowNode, never()).setPosition(eq(Spacing.END), anyFloat());
     verify(reactShadowNode, never()).setPositionType(any(CSSPositionType.class));
     verify(map, never()).getFloat("bottom", Float.NaN);
     verify(map, never()).getFloat("right", Float.NaN);
@@ -283,11 +289,16 @@ public class LayoutPropertyApplicatorTest {
   public void testEnumerations() {
     LayoutShadowNode reactShadowNode = spy(new LayoutShadowNode());
     ReactStylesDiffMap map = buildStyles(
-        "flexDirection", "column",
-        "alignSelf", "stretch",
-        "alignItems", "center",
-        "justifyContent", "space_between",
-        "position", "relative");
+        "flexDirection",
+        "column",
+        "alignSelf",
+        "stretch",
+        "alignItems",
+        "center",
+        "justifyContent",
+        "space_between",
+        "position",
+        "relative");
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setFlexDirection(CSSFlexDirection.COLUMN);
@@ -315,25 +326,38 @@ public class LayoutPropertyApplicatorTest {
 
     LayoutShadowNode reactShadowNode = spy(new LayoutShadowNode());
     ReactStylesDiffMap map = buildStyles(
-        "width", 10.0,
-        "height", 10.0,
-        "left", 10.0,
-        "top", 10.0,
-        "flex", 1.0,
-        "padding", 10.0,
-        "marginLeft", 10.0,
-        "borderTopWidth", 10.0,
-        "flexDirection", "row",
-        "alignSelf", "stretch",
-        "alignItems", "center",
-        "justifyContent", "space_between",
-        "position", "absolute");
+        "width",
+        10.0,
+        "height",
+        10.0,
+        "left",
+        10.0,
+        "top",
+        10.0,
+        "flex",
+        1.0,
+        "padding",
+        10.0,
+        "marginLeft",
+        10.0,
+        "borderTopWidth",
+        10.0,
+        "flexDirection",
+        "row",
+        "alignSelf",
+        "stretch",
+        "alignItems",
+        "center",
+        "justifyContent",
+        "space_between",
+        "position",
+        "absolute");
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setStyleWidth(10.f);
     verify(reactShadowNode).setStyleHeight(10.f);
-    verify(reactShadowNode).setPositionValue(Spacing.START, 10.f);
-    verify(reactShadowNode).setPositionValue(Spacing.TOP, 10.f);
+    verify(reactShadowNode).setPosition(Spacing.START, 10.f);
+    verify(reactShadowNode).setPosition(Spacing.TOP, 10.f);
     verify(reactShadowNode).setFlex(1.0f);
     verify(reactShadowNode).setPadding(Spacing.ALL, 10.f);
     verify(reactShadowNode).setMargin(Spacing.START, 10.f);
@@ -345,26 +369,39 @@ public class LayoutPropertyApplicatorTest {
     verify(reactShadowNode).setPositionType(CSSPositionType.ABSOLUTE);
 
     map = buildStyles(
-        "width", null,
-        "height", null,
-        "left", null,
-        "top", null,
-        "flex", null,
-        "padding", null,
-        "marginLeft", null,
-        "borderTopWidth", null,
-        "flexDirection", null,
-        "alignSelf", null,
-        "alignItems", null,
-        "justifyContent", null,
-        "position", null);
+        "width",
+        null,
+        "height",
+        null,
+        "left",
+        null,
+        "top",
+        null,
+        "flex",
+        null,
+        "padding",
+        null,
+        "marginLeft",
+        null,
+        "borderTopWidth",
+        null,
+        "flexDirection",
+        null,
+        "alignSelf",
+        null,
+        "alignItems",
+        null,
+        "justifyContent",
+        null,
+        "position",
+        null);
 
     reset(reactShadowNode);
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setStyleWidth(CSSConstants.UNDEFINED);
     verify(reactShadowNode).setStyleHeight(CSSConstants.UNDEFINED);
-    verify(reactShadowNode).setPositionValue(Spacing.START, CSSConstants.UNDEFINED);
-    verify(reactShadowNode).setPositionValue(Spacing.TOP, CSSConstants.UNDEFINED);
+    verify(reactShadowNode).setPosition(Spacing.START, CSSConstants.UNDEFINED);
+    verify(reactShadowNode).setPosition(Spacing.TOP, CSSConstants.UNDEFINED);
     verify(reactShadowNode).setFlex(0.f);
     verify(reactShadowNode).setPadding(Spacing.ALL, CSSConstants.UNDEFINED);
     verify(reactShadowNode).setMargin(Spacing.START, CSSConstants.UNDEFINED);
@@ -404,9 +441,12 @@ public class LayoutPropertyApplicatorTest {
     mapNodes[3] = buildStyles("paddingBottom", 10.0, "paddingHorizontal", 5.0);
     mapNodes[4] = buildStyles("padding", null, "paddingTop", 5.0);
     mapNodes[5] = buildStyles(
-        "paddingRight", 10.0,
-        "paddingHorizontal", null,
-        "paddingVertical", 7.0);
+        "paddingRight",
+        10.0,
+        "paddingHorizontal",
+        null,
+        "paddingVertical",
+        7.0);
     mapNodes[6] = buildStyles("margin", 5.0);
 
     for (int idx = 0; idx < nodes.length; idx++) {

@@ -33,7 +33,7 @@ RCT_EXTERN const uint64_t RCTProfileTagAlways;
 #define RCTProfileBeginFlowEvent() \
 _Pragma("clang diagnostic push") \
 _Pragma("clang diagnostic ignored \"-Wshadow\"") \
-NSNumber *__rct_profile_flow_id = _RCTProfileBeginFlowEvent(); \
+NSUInteger __rct_profile_flow_id = _RCTProfileBeginFlowEvent(); \
 _Pragma("clang diagnostic pop")
 
 #define RCTProfileEndFlowEvent() \
@@ -41,8 +41,8 @@ _RCTProfileEndFlowEvent(__rct_profile_flow_id)
 
 RCT_EXTERN dispatch_queue_t RCTProfileGetQueue(void);
 
-RCT_EXTERN NSNumber *_RCTProfileBeginFlowEvent(void);
-RCT_EXTERN void _RCTProfileEndFlowEvent(NSNumber *);
+RCT_EXTERN NSUInteger _RCTProfileBeginFlowEvent(void);
+RCT_EXTERN void _RCTProfileEndFlowEvent(NSUInteger);
 
 /**
  * Returns YES if the profiling information is currently being collected
