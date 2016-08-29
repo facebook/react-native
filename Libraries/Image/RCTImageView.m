@@ -109,7 +109,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)updateWithImage:(UIImage *)image
 {
   if (!image) {
-    self.image = nil;
+    super.image = nil;
     return;
   }
 
