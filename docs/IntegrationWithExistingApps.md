@@ -595,7 +595,7 @@ allprojects {
 }
 ```
 
-Make sure that the path is correct! You shouldn’t run into any “Failed to resolve: com.facebook.react:react-native:0.x.x" errors after running Gradle sync in Android Studio.
+> Make sure that the path is correct! You shouldn’t run into any “Failed to resolve: com.facebook.react:react-native:0.x.x" errors after running Gradle sync in Android Studio.
 
 Next, make sure you have the Internet permission in your `AndroidManifest.xml`:
 
@@ -637,7 +637,7 @@ public class MyReactActivity extends AppCompatActivity implements DefaultHardwar
     }
 }
 ```
-If you are using a starter kit for React Native, replace the "HelloWorld" string with the one in your index.android.js file (it’s the first argument to the AppRegistry.registerComponent() method).
+If you are using a starter kit for React Native, replace the "HelloWorld" string with the one in your index.android.js file (it’s the first argument to the `AppRegistry.registerComponent()` method).
 
 If you are using Android Studio, use `Alt + Enter` to add all missing imports in your MyReactActivity class. Be careful to use your package’s `BuildConfig` and not the one from the `...facebook...` package.
 
@@ -723,7 +723,7 @@ To run your app, you need to first start the development server. To do this, sim
 
 Now build and run your Android app as normal (`./gradlew installDebug` from command-line; in Android Studio just create debug build as usual).
 
-*Note: If you are using Android Studio for your builds and not the Gradle Wrapper directly, make sure you install [watchman](https://facebook.github.io/watchman/) before running `npm start`. It will prevent the packager from crashing due to conflicts between Android Studio and the React Native packager.*
+> If you are using Android Studio for your builds and not the Gradle Wrapper directly, make sure you install [watchman](https://facebook.github.io/watchman/) before running `npm start`. It will prevent the packager from crashing due to conflicts between Android Studio and the React Native packager.
 
 Once you reach your React-powered activity inside the app, it should load the JavaScript code from the development server and display:
 
@@ -798,7 +798,7 @@ if (!foundHash) {
 }
 </script>
 
-## Creating production build in Android Studio
+## Creating a release build in Android Studio
 
 You can use Android Studio to create your release builds too! It’s as easy as creating release builds of your previously-existing native Android app. There’s just one additional step, which you’ll have to do before every release build. You need to execute the following to create a React Native bundle, which’ll be included with your native Android app:
 
