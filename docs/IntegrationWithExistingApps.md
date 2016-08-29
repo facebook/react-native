@@ -605,10 +605,12 @@ This is only really used in dev mode when reloading JavaScript from the developm
 
 ## Add native code
 
-You need to add some native code in order to start the React Native runtime and get it to render something. To do this, we're going to create an `AppCompatActivity` that creates a `ReactRootView`, starts a React application inside it and sets it as the main content view.
+You need to add some native code in order to start the React Native runtime and get it to render something. To do this, we're going to create an `Activity` that creates a `ReactRootView`, starts a React application inside it and sets it as the main content view.
+
+> If you are targetting Android version <5, use the `AppCompatActivity` class from the `com.android.support:appcompat` package instead of `Activity`.
 
 ```java
-public class MyReactActivity extends AppCompatActivity implements DefaultHardwareBackBtnHandler {
+public class MyReactActivity extends Activity implements DefaultHardwareBackBtnHandler {
     private ReactRootView mReactRootView;
     private ReactInstanceManager mReactInstanceManager;
 
