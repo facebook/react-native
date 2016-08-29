@@ -576,9 +576,11 @@ In your app's `build.gradle` file add the React Native dependency:
 ```
 dependencies {
     ...
-    compile "com.facebook.react:react-native:+" // From node_modules. Replace + with actual React Native version.
+    compile "com.facebook.react:react-native:+" // From node_modules.
 }
 ```
+
+> If you want to ensure that you are always using a specific React Native version in your native build, replace `+` with an actual React Native version you've downloaded from `npm`.
 
 In your project's `build.gradle` file add an entry for the local React Native maven directory:
 
