@@ -95,7 +95,7 @@ public class EventDispatcher implements LifecycleEventListener {
 
   private Event[] mEventsToDispatch = new Event[16];
   private int mEventsToDispatchSize = 0;
-  private @Nullable RCTEventEmitter mRCTEventEmitter;
+  private volatile @Nullable RCTEventEmitter mRCTEventEmitter;
   private final ScheduleDispatchFrameCallback mCurrentFrameCallback;
   private short mNextEventTypeId = 0;
   private volatile boolean mHasDispatchScheduled = false;
