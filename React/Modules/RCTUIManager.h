@@ -91,6 +91,17 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 - (void)addUIBlock:(RCTViewManagerUIBlock)block;
 
 /**
+ * Given a reactTag from a component, find its root view, if possible.
+ * Otherwise, this will give back nil.
+ *
+ * @param reactTag the component tag
+ * @param completion the completion block that will hand over the rootView, if any.
+ *
+ * @return the rootView
+ */
+- (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion;
+
+/**
  * The view that is currently first responder, according to the JS context.
  */
 + (UIView *)JSResponder;

@@ -17,8 +17,8 @@ export type EventOptions = {
 
 export type Event = {
   id: number,
-  startTimeStamp: number,
-  endTimeStamp?: number,
+  startTimeStamp: [number, number],
+  durationMs?: number,
   name: string,
   data?: any,
   options: EventOptions,
