@@ -601,10 +601,10 @@ RCT_ENUM_CONVERTER(css_backface_visibility_t, (@{
   @"visible": @YES
 }), YES, boolValue)
 
-RCT_ENUM_CONVERTER(css_clip_t, (@{
-  @"hidden": @YES,
-  @"visible": @NO
-}), NO, boolValue)
+RCT_ENUM_CONVERTER(CSSOverflow, (@{
+  @"hidden": @(CSSOverflowHidden),
+  @"visible": @(CSSOverflowVisible)
+}), CSSOverflowVisible, intValue)
 
 RCT_ENUM_CONVERTER(CSSFlexDirection, (@{
   @"row": @(CSSFlexDirectionRow),
