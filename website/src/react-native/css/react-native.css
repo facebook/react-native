@@ -1718,10 +1718,37 @@ article li {
 }
 
 .author-info {
-    margin-top: 26px;
-    text-align: center;
-    border-bottom: 1px solid #f1f1f1;
-    padding-bottom: 20px
+  margin-top: 26px;
+  text-align: center;
+  border-bottom: 1px solid #f1f1f1;
+  padding-bottom: 20px
+}
+
+.the-image {
+  position: relative;
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background-position: center center;
+  background-color: #fff;
+  background-size: cover;
+}
+
+.author-image {
+  position: relative;
+}
+
+.author-image:before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  top: 50%;
+  left: 0;
+  background-color: #F1F1F1;
 }
 
 .posted-on {
@@ -1743,6 +1770,9 @@ article li {
   color: #5A6B77;
 }
 
+.name-title .title {
+  color: rgba(102,99,122,.44);
+}
 
 .btn {
     background: 0 0;
