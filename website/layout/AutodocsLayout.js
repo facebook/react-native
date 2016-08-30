@@ -890,8 +890,7 @@ var Autodocs = React.createClass({
     return (
       <Site
         section="docs"
-        title={metadata.title}
-        description={content.trim().split('\n')[0]} >
+        title={metadata.title} >
         <section className="content wrap documentationContent">
           <DocsSidebar metadata={metadata} />
           <div className="inner-content">
