@@ -140,6 +140,11 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) NSInteger zIndex;
 
 /**
+ * Clipping properties
+ */
+@property (nonatomic, assign) CSSOverflow overflow;
+
+/**
  * Calculate property changes that need to be propagated to the view.
  * The applierBlocks set contains RCTApplierBlock functions that must be applied
  * on the main thread in order to update the view.

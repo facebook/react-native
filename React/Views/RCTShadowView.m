@@ -632,6 +632,7 @@ RCT_STYLE_PROPERTY(AlignSelf, alignSelf, AlignSelf, CSSAlign)
 RCT_STYLE_PROPERTY(AlignItems, alignItems, AlignItems, CSSAlign)
 RCT_STYLE_PROPERTY(Position, position, PositionType, CSSPositionType)
 RCT_STYLE_PROPERTY(FlexWrap, flexWrap, FlexWrap, CSSWrapType)
+RCT_STYLE_PROPERTY(Overflow, overflow, Overflow, CSSOverflow)
 
 - (void)setBackgroundColor:(UIColor *)color
 {
